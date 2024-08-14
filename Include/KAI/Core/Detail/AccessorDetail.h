@@ -1,15 +1,18 @@
 #pragma once
 
+#include <KAI/Core/Object.h>
 #include <KAI/Core/Object/AccessorBase.h>
+#include <KAI/Core/Registry.h>
 #include <KAI/Core/TypeInfo.h>
 
 KAI_BEGIN
 
 namespace property_detail {
+
 // common functionality for accessors and mutators of either system or
-// non-system types a `non-system` type is anything that is not convertible to
-// an Object a `system type` is an Object, a Pointer<T>, a Pointer<const T>, or
-// a Value<T> or Value<const T>
+// non-system types a `non-system` type is anything that is not convertible
+// to an Object a `system type` is an Object, a Pointer<T>, a Pointer<const
+// T>, or a Value<T> or Value<const T>
 template <class Base, class C, class T, class F>
 struct CommonBase : Base {
     typedef F Field;

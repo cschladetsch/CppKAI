@@ -9,8 +9,7 @@ flags = [
   '-std=c++17',  # Change this to match your project's C++ standard
   '-x', 'c++',
   '-I', 'include',  # Add your include directories here
-  '-I', '/path/to/your/project/include',
-  '-I', '/path/to/another/include'
+  '-I', 'Include',
 ]
 
 # Set this to the absolute path to the folder (NOT the file!) containing the compilation database
