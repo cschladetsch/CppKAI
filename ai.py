@@ -1,12 +1,10 @@
 import os
-import sys
 import subprocess
 from collections import defaultdict
 import llvmlite.binding as llvm
-import re
+import hashlib
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-import numpy as np
 import concurrent.futures
 import pickle
 import argparse
@@ -19,6 +17,7 @@ class EnhancedLocalAICodeAnalyzer:
         self.analysis_results = defaultdict(int)
         self.file_contents = {}
         self.function_info = defaultdict(list)
+        self.file_hashes = {}
 
         # Initialize LLVM
         llvm.initialize()
@@ -38,6 +37,7 @@ class EnhancedLocalAICodeAnalyzer:
                         content = f.read()
                     self.files.append(file_path)
                     self.file_contents[file_path] = content
+                    self.file_hashes[file_path] = hashlib.md5(content.encode('utf-8')).hexdigest()
         print(f"Loaded {len(self.files)} C++ files.")
 
     def generate_llvm_ir(self):
@@ -54,7 +54,11 @@ class EnhancedLocalAICodeAnalyzer:
 
     def _compile_to_ir(self, file_path):
         include_paths = self._get_include_paths()
-        cmd = ['clang++', '-S', '-emit-llvm', '-o', '-', '-std=c++17'] + include_paths + [file_path]
+        std_lib_path = '/usr/include/x86_64-linux-gnu/c++/11'  # Adjust based on your system
+        cmd = [
+            'clang++', '-S', '-emit-llvm', '-o', '-', '-std=c++17',
+            '-isystem', std_lib_path
+        ] + include_paths + [file_path]
         try:
             result = subprocess.run(cmd, capture_output=True, check=True, timeout=30)
             return result.stdout.decode('utf-8', errors='ignore')
@@ -70,13 +74,21 @@ class EnhancedLocalAICodeAnalyzer:
     def _get_include_paths(self):
         include_paths = ['-I' + self.root_dir]
         for root, dirs, _ in os.walk(self.root_dir):
+            # Skip hidden directories like .git
+            dirs[:] = [d for d in dirs if not d.startswith('.')]
             for dir in dirs:
                 include_paths.append('-I' + os.path.join(root, dir))
         return include_paths
 
     def analyze_files(self):
         for file_path, ir in self.llvm_ir.items():
-            self.analyze_ir(file_path, ir)
+            if ir.strip():  # Check if the IR is not empty or just whitespace
+                try:
+                    self.analyze_ir(file_path, ir)
+                except Exception as e:
+                    print(f"Error analyzing IR for {file_path}: {e}")
+            else:
+                print(f"Skipping {file_path} due to empty or invalid LLVM IR.")
 
     def analyze_ir(self, file_path, ir):
         try:
@@ -174,7 +186,8 @@ class EnhancedLocalAICodeAnalyzer:
             pickle.dump({
                 'analysis_results': self.analysis_results,
                 'function_info': self.function_info,
-                'file_contents': self.file_contents
+                'file_contents': self.file_contents,
+                'file_hashes': self.file_hashes
             }, f)
         print(f"Analysis results saved to {filename}")
 
@@ -185,20 +198,41 @@ class EnhancedLocalAICodeAnalyzer:
                 self.analysis_results = data['analysis_results']
                 self.function_info = data['function_info']
                 self.file_contents = data['file_contents']
+                self.file_hashes = data['file_hashes']
             print(f"Analysis results loaded from {filename}")
             return True
+        return False
+
+    def retrain_needed(self):
+        # Check if any file has changed by comparing hashes
+        current_hashes = {}
+        for file_path, content in self.file_contents.items():
+            current_hashes[file_path] = hashlib.md5(content.encode('utf-8')).hexdigest()
+        
+        for file_path, hash_value in current_hashes.items():
+            if self.file_hashes.get(file_path) != hash_value:
+                return True
+        
         return False
 
 def main():
     parser = argparse.ArgumentParser(description="Local AI C++ Code Analyzer")
     parser.add_argument('--dir', default='.', help='Directory to analyze')
+    parser.add_argument('--retrain', action='store_true', help='Force retraining')
+   
     parser.add_argument('--load', action='store_true', help='Load previous analysis results')
     args = parser.parse_args()
 
     analyzer = EnhancedLocalAICodeAnalyzer(args.dir)
 
-    if args.load and analyzer.load_analysis():
+    if args.load and not args.retrain and analyzer.load_analysis():
         print("Loaded previous analysis results.")
+        if analyzer.retrain_needed():
+            print("Codebase has changed, retraining required.")
+            analyzer.load_files()
+            analyzer.generate_llvm_ir()
+            analyzer.analyze_files()
+            analyzer.save_analysis()
     else:
         analyzer.load_files()
         analyzer.generate_llvm_ir()
