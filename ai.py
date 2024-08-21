@@ -1,252 +1,221 @@
 import os
 import sys
-import argparse
-import torch
-from transformers import RobertaTokenizer, RobertaForMaskedLM, RobertaConfig
-from transformers import Trainer, TrainingArguments
+import subprocess
+from collections import defaultdict
+import llvmlite.binding as llvm
+import re
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
-import llvmlite.binding as llvm
-import subprocess
-import re
+import concurrent.futures
 import pickle
-import warnings
-from clang.cindex import Index, CursorKind, TypeKind
-import clang.cindex
+import argparse
 
-class CodeAnalyzer:
+class EnhancedLocalAICodeAnalyzer:
     def __init__(self, root_dir="."):
         self.root_dir = root_dir
         self.files = []
         self.llvm_ir = {}
-        self.ast_data = {}
-        self.tokenizer = None
-        self.model = None
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.analysis_results = defaultdict(int)
+        self.file_contents = {}
+        self.function_info = defaultdict(list)
 
         # Initialize LLVM
         llvm.initialize()
         llvm.initialize_native_target()
         llvm.initialize_native_asmprinter()
 
-        # Set up Clang
-        clang.cindex.Config.set_library_file('/usr/lib/llvm-10/lib/libclang.so.1')
+        # Initialize TF-IDF vectorizer
+        self.vectorizer = TfidfVectorizer(stop_words='english')
 
     def load_files(self):
         self.files = []
         for root, _, files in os.walk(self.root_dir):
             for file in files:
-                if file.endswith(('.cpp', '.h', '.hpp')):
+                if file.endswith(('.cpp', '.hpp', '.h')):  # Include header files
                     file_path = os.path.join(root, file)
-                    with open(file_path, 'r', encoding='utf-8') as f:
+                    with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
                         content = f.read()
-                    self.files.append((file_path, content))
+                    self.files.append(file_path)
+                    self.file_contents[file_path] = content
         print(f"Loaded {len(self.files)} C++ files.")
 
     def generate_llvm_ir(self):
-        self.llvm_ir = {}
-        include_paths = [
-            './Include',
-            './Source',
-            './ThirdParty',
-            './Source/Library',
-            '/usr/include',
-            '/usr/local/include',
-        ]
-        include_args = [f'-I{path}' for path in include_paths]
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            futures = {executor.submit(self._compile_to_ir, file_path): file_path for file_path in self.files}
+            for future in concurrent.futures.as_completed(futures):
+                file_path = futures[future]
+                try:
+                    ir = future.result()
+                    if ir:
+                        self.llvm_ir[file_path] = ir
+                except Exception as e:
+                    print(f"Error generating LLVM IR for {file_path}: {e}")
 
-        for file_path, _ in self.files:
-            try:
-                process = subprocess.Popen(
-                    ['clang++', '-std=c++17', '-S', '-emit-llvm', '-o', '-'] + include_args + [file_path],
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    universal_newlines=True
-                )
-                stdout, stderr = process.communicate()
-                if process.returncode == 0:
-                    self.llvm_ir[file_path] = stdout
-                else:
-                    warnings.warn(f"Error generating LLVM IR for {file_path}:\n{stderr}")
-                    if "file not found" in stderr:
-                        missing_file = re.search(r"'(.+)' file not found", stderr)
-                        if missing_file:
-                            warnings.warn(f"Missing header file: {missing_file.group(1)}")
-                            warnings.warn(f"Make sure the file exists and is in one of these directories: {include_paths}")
-            except Exception as e:
-                warnings.warn(f"Exception while processing {file_path}: {str(e)}")
+    def _compile_to_ir(self, file_path):
+        include_paths = self._get_include_paths()
+        cmd = ['clang++', '-S', '-emit-llvm', '-o', '-', '-std=c++17'] + include_paths + [file_path]
+        try:
+            result = subprocess.run(cmd, capture_output=True, check=True, timeout=30)
+            return result.stdout.decode('utf-8', errors='ignore')
+        except subprocess.CalledProcessError as e:
+            print(f"Compilation error for {file_path}:")
+            print(e.stderr.decode('utf-8', errors='ignore'))
+        except subprocess.TimeoutExpired:
+            print(f"Compilation timeout for {file_path}")
+        except Exception as e:
+            print(f"Unexpected error compiling {file_path}: {e}")
+        return None
+
+    def _get_include_paths(self):
+        include_paths = ['-I' + self.root_dir]
+        for root, dirs, _ in os.walk(self.root_dir):
+            for dir in dirs:
+                include_paths.append('-I' + os.path.join(root, dir))
+        return include_paths
+
+    def analyze_files(self):
+        for file_path, ir in self.llvm_ir.items():
+            self.analyze_ir(file_path, ir)
+
+    def analyze_ir(self, file_path, ir):
+        try:
+            module = llvm.parse_assembly(ir)
+            
+            for func in module.functions:
+                self.analysis_results['functions'] += 1
+                self.function_info[file_path].append(func.name)
+                
+                for block in func.blocks:
+                    for instr in block.instructions:
+                        self._analyze_instruction(instr)
+        except Exception as e:
+            print(f"Error analyzing IR for {file_path}: {e}")
+
+    def _analyze_instruction(self, instr):
+        op_name = instr.opcode.name
         
-        print(f"LLVM IR generation complete. Successfully processed {len(self.llvm_ir)} out of {len(self.files)} files.")
-        if len(self.llvm_ir) < len(self.files):
-            print(f"Failed to process {len(self.files) - len(self.llvm_ir)} files. Check the warnings for details.")
-
-    def parse_ast(self):
-        index = Index.create()
-        for file_path, _ in self.files:
-            try:
-                tu = index.parse(file_path, args=['-std=c++17'])
-                self.ast_data[file_path] = self.process_ast_node(tu.cursor)
-            except Exception as e:
-                warnings.warn(f"Error parsing AST for {file_path}: {str(e)}")
-        print(f"AST parsing complete. Successfully processed {len(self.ast_data)} out of {len(self.files)} files.")
-
-    def process_ast_node(self, node):
-        result = {
-            'kind': node.kind.name,
-            'spelling': node.spelling,
-            'type': node.type.spelling if node.type else None,
-            'children': []
-        }
+        if op_name == 'call':
+            called_func = instr.called_function
+            if called_func:
+                func_name = called_func.name
+                if 'std::' in func_name:
+                    self.analysis_results['std_library_calls'] += 1
+                if 'thread' in func_name:
+                    self.analysis_results['threading'] += 1
+                if 'mutex' in func_name or 'lock' in func_name:
+                    self.analysis_results['synchronization'] += 1
+                if 'malloc' in func_name or 'free' in func_name or 'new' in func_name or 'delete' in func_name:
+                    self.analysis_results['dynamic_memory'] += 1
         
-        if node.kind == CursorKind.CLASS_DECL:
-            result['methods'] = self.get_class_methods(node)
-            result['templates'] = self.get_template_info(node)
-            result['smart_pointers'] = self.get_smart_pointer_usage(node)
-        elif node.kind == CursorKind.FUNCTION_DECL:
-            result['is_template'] = self.is_template(node)
-            result['is_overloaded'] = self.is_overloaded(node)
-            result['has_move_semantics'] = self.has_move_semantics(node)
-            result['is_constexpr'] = 'constexpr' in node.displayname
-            result['is_consteval'] = 'consteval' in node.displayname
-            result['is_variadic'] = self.is_variadic_template(node)
-            result['has_noexcept'] = 'noexcept' in node.displayname
-        elif node.kind == CursorKind.LAMBDA_EXPR:
-            result['is_lambda'] = True
-        elif node.kind == CursorKind.CXX_FOR_RANGE_STMT:
-            result['is_range_based_for'] = True
-        elif node.kind == CursorKind.USING_DECLARATION:
-            result['is_structured_binding'] = self.is_structured_binding(node)
-        elif node.kind == CursorKind.NAMESPACE:
-            result['is_inline'] = 'inline' in node.displayname
+        elif op_name == 'alloca':
+            self.analysis_results['local_variables'] += 1
         
-        result['attributes'] = self.get_attributes(node)
-        result['auto_usage'] = self.has_auto_type(node)
-        result['stl_usage'] = self.get_stl_usage(node)
-        result['algorithm_usage'] = self.get_algorithm_usage(node)
-        result['threading_usage'] = self.get_threading_usage(node)
+        elif op_name in ('load', 'store'):
+            self.analysis_results['memory_operations'] += 1
         
-        result['concurrency'] = self.analyze_concurrency(node)
-        result['network'] = self.analyze_network(node)
-        result['performance'] = self.analyze_performance(node)
-        result['rhel_specific'] = self.analyze_rhel_specific(node)
-        result['build_system'] = self.analyze_build_system(node)
-        result['error_handling'] = self.analyze_error_handling(node)
-        result['memory_management'] = self.analyze_memory_management(node)
-        result['distributed_systems'] = self.analyze_distributed_systems(node)
+        elif op_name.startswith('cmp'):
+            self.analysis_results['comparisons'] += 1
         
-        for child in node.get_children():
-            result['children'].append(self.process_ast_node(child))
+        elif op_name.startswith('br'):
+            self.analysis_results['branches'] += 1
+
+    def generate_report(self):
+        report = "C++ Code Analysis Report (LLVM-based)\n"
+        report += "=====================================\n\n"
+        report += f"Total files analyzed: {len(self.llvm_ir)}\n\n"
+        report += "Feature usage:\n"
+        for feature, count in sorted(self.analysis_results.items()):
+            report += f"- {feature}: {count}\n"
+        return report
+
+    def answer_question(self, question):
+        # Prepare the corpus
+        corpus = list(self.file_contents.values())
+        corpus.append(question)
         
-        return result
+        # Vectorize the corpus
+        tfidf_matrix = self.vectorizer.fit_transform(corpus)
+        
+        # Compute similarity between the question and each file
+        cosine_similarities = cosine_similarity(tfidf_matrix[-1], tfidf_matrix[:-1]).flatten()
+        
+        # Find the top 3 most similar files
+        top_indices = cosine_similarities.argsort()[-3:][::-1]
+        
+        response = f"Based on the analysis of your codebase, here's what I found:\n\n"
+        
+        for idx in top_indices:
+            file_path = list(self.file_contents.keys())[idx]
+            response += f"Relevant file: {file_path}\n"
+            response += f"Functions in this file: {', '.join(self.function_info[file_path])}\n\n"
+        
+        # Add some specific information based on the question
+        if "function" in question.lower():
+            response += f"Total functions in the codebase: {self.analysis_results['functions']}\n"
+        if "thread" in question.lower():
+            response += f"Threading-related calls: {self.analysis_results['threading']}\n"
+        if "memory" in question.lower():
+            response += f"Dynamic memory operations: {self.analysis_results['dynamic_memory']}\n"
+        if "standard library" in question.lower():
+            response += f"Standard library calls: {self.analysis_results['std_library_calls']}\n"
+        
+        # Add a snippet from the most similar file
+        most_similar_file = list(self.file_contents.keys())[top_indices[0]]
+        file_content = self.file_contents[most_similar_file]
+        lines = file_content.split('\n')
+        snippet = '\n'.join(lines[:15])  # First 15 lines as a snippet
+        response += f"\nHere's a snippet from the most relevant file ({most_similar_file}):\n\n{snippet}\n..."
+        
+        return response
 
-    # ... [All other methods remain the same as in the previous version]
+    def save_analysis(self, filename='analysis_results.pkl'):
+        with open(filename, 'wb') as f:
+            pickle.dump({
+                'analysis_results': self.analysis_results,
+                'function_info': self.function_info,
+                'file_contents': self.file_contents
+            }, f)
+        print(f"Analysis results saved to {filename}")
 
-    def retrain(self):
-        print("Retraining CodeBERT on the local codebase...")
-        self.tokenizer = RobertaTokenizer.from_pretrained("microsoft/codebert-base")
-        self.model = RobertaForMaskedLM.from_pretrained("microsoft/codebert-base")
-        self.model.to(self.device)
-
-        train_dataset = self.tokenizer(
-            [content for _, content in self.files],
-            truncation=True,
-            padding=True,
-            max_length=512,
-            return_tensors="pt"
-        )
-        train_dataset = train_dataset.with_labels(train_dataset["input_ids"].clone())
-
-        training_args = TrainingArguments(
-            output_dir="./results",
-            overwrite_output_dir=True,
-            num_train_epochs=3,
-            per_device_train_batch_size=4,
-            save_steps=10_000,
-            save_total_limit=2,
-        )
-
-        trainer = Trainer(
-            model=self.model,
-            args=training_args,
-            train_dataset=train_dataset,
-        )
-
-        trainer.train()
-        self.model = trainer.model
-        print("Retraining complete.")
-
-    def save_data(self, path="./analyzer_data"):
-        os.makedirs(path, exist_ok=True)
-        self.model.save_pretrained(os.path.join(path, "model"))
-        self.tokenizer.save_pretrained(os.path.join(path, "tokenizer"))
-        with open(os.path.join(path, "llvm_ir.pkl"), "wb") as f:
-            pickle.dump(self.llvm_ir, f)
-        with open(os.path.join(path, "ast_data.pkl"), "wb") as f:
-            pickle.dump(self.ast_data, f)
-        print(f"Data saved to {path}")
-
-    def load_data(self, path="./analyzer_data"):
-        if os.path.exists(path):
-            self.model = RobertaForMaskedLM.from_pretrained(os.path.join(path, "model"))
-            self.tokenizer = RobertaTokenizer.from_pretrained(os.path.join(path, "tokenizer"))
-            self.model.to(self.device)
-            with open(os.path.join(path, "llvm_ir.pkl"), "rb") as f:
-                self.llvm_ir = pickle.load(f)
-            with open(os.path.join(path, "ast_data.pkl"), "rb") as f:
-                self.ast_data = pickle.load(f)
-            print(f"Data loaded from {path}")
+    def load_analysis(self, filename='analysis_results.pkl'):
+        if os.path.exists(filename):
+            with open(filename, 'rb') as f:
+                data = pickle.load(f)
+                self.analysis_results = data['analysis_results']
+                self.function_info = data['function_info']
+                self.file_contents = data['file_contents']
+            print(f"Analysis results loaded from {filename}")
             return True
         return False
 
-    def analyze_query(self, question):
-        inputs = self.tokenizer(question, return_tensors="pt", truncation=True, max_length=512, padding=True)
-        inputs = {k: v.to(self.device) for k, v in inputs.items()}
-        with torch.no_grad():
-            outputs = self.model(**inputs)
-        
-        question_embedding = outputs.last_hidden_state.mean(dim=1).cpu().numpy()
-
-        file_embeddings = [self.get_file_embedding(content) for _, content in self.files]
-        similarities = cosine_similarity(question_embedding, np.vstack(file_embeddings))
-        relevant_files = sorted(zip(self.files, similarities[0]), key=lambda x: x[1], reverse=True)[:3]
-
-        analysis_results = []
-        for (file_path, _), _ in relevant_files:
-            ir = self.llvm_ir.get(file_path, "")
-            ast = self.ast_data.get(file_path, {})
-            analysis_results.append(self.analyze_file(file_path, ir, ast, question))
-
-        combined_analysis = self.combine_analyses(analysis_results, question)
-
-        return combined_analysis
-
-    # ... [All other methods remain the same as in the previous version]
-
 def main():
-    parser = argparse.ArgumentParser(description="Analyze a C++17 codebase using CodeBERT and LLVM.")
-    parser.add_argument('--retrain', action='store_true', help="Retrain the model on the current codebase")
+    parser = argparse.ArgumentParser(description="Local AI C++ Code Analyzer")
+    parser.add_argument('--dir', default='.', help='Directory to analyze')
+    parser.add_argument('--load', action='store_true', help='Load previous analysis results')
     args = parser.parse_args()
 
-    analyzer = CodeAnalyzer()
-    analyzer.load_files()
+    analyzer = EnhancedLocalAICodeAnalyzer(args.dir)
 
-    if args.retrain or not analyzer.load_data():
-        analyzer.generate_llvm_ir()
-        analyzer.parse_ast()
-        analyzer.retrain()
-        analyzer.save_data()
+    if args.load and analyzer.load_analysis():
+        print("Loaded previous analysis results.")
     else:
-        print("Using existing data.")
-
-    print("Advanced C++17 RHEL Codebase Analyzer for High-Performance Distributed Systems")
-    print("-------------------------------------------------------------------------------")
-    print("You can now ask questions about the codebase.")
-
+        analyzer.load_files()
+        analyzer.generate_llvm_ir()
+        analyzer.analyze_files()
+        analyzer.save_analysis()
+    
+    print("\nLocal AI C++ Code Analyzer")
+    print("==========================")
+    print("You can now ask questions about your codebase.")
+    print("Type 'exit' to quit.")
+    
     while True:
-        question = input("\nEnter your question (or 'exit' to quit): ")
+        question = input("\nEnter your question: ")
         if question.lower() == 'exit':
             break
-        answer = analyzer.analyze_query(question)
+        answer = analyzer.answer_question(question)
+        print("\nAnswer:")
         print(answer)
 
 if __name__ == "__main__":
