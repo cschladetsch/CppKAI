@@ -90,10 +90,13 @@ DotGraph &operator<<(DotGraph &graph, Object const &object) {
 }
 
 bool DotGraph::IsExcluded(Object const &object) const {
+    return false;
+#if 0
     if (!object.Exists()) return true;
     return excluded_types.find(object.GetTypeNumber()) !=
                excluded_types.end() ||
            excluded_names.find(object.GetLabel()) != excluded_names.end();
+#endif
 }
 
 void DotGraph::WriteToFile(const char *filename) {

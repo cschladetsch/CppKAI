@@ -1,0 +1,5 @@
+#!/bin/sh
+
+cmake .. && make > make_output.log 2>&1
+
+
