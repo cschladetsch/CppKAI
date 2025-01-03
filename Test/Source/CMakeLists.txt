@@ -1,5 +1,3 @@
-# Build all tests for the KAI framework
-
 cmake_minimum_required(VERSION 3.6)
 
 set(name KaiTest)
