@@ -134,6 +134,10 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
             Append(New<Pathname>(Pathname(node->Text())));
             return;
 
+        case TokenEnum::ToPi:
+            AppendOp(Operation::ToPi);
+            return;
+
         case TokenEnum::Yield:
             // for (auto ch : node->Children)
             //     Translate(ch);

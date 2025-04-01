@@ -35,6 +35,9 @@ void Console::Create() {
 
         executor.SetManaged(false);
         compiler.SetManaged(false);
+        
+        // Set the compiler reference in the executor
+        executor->SetCompiler(compiler);
 
         CreateTree();
 
