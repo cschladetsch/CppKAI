@@ -9,5 +9,8 @@ link_libraries(Executor Core PiLang RhoLang)# platform-Linux)
 add_executable(${name} ${SOURCE_FILES})
 #cotire(${name})
 
+# Find Boost components explicitly including program_options
+find_package(Boost REQUIRED COMPONENTS system filesystem program_options)
+include_directories(${Boost_INCLUDE_DIRS})
 target_link_libraries(${name} ${Boost_LIBRARIES})
 

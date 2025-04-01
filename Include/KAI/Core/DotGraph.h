@@ -1,6 +1,10 @@
 #pragma once
 
 #include <KAI/Core/Base.h>
+#include <KAI/Core/StringStream.h>
+#include <KAI/Core/Object/Label.h>
+#include <KAI/Core/Type/Number.h>
+#include <KAI/Core/Object/Object.h>
 
 // TODO: remove this and have DotGraph use Pimpl
 // not very important as few things include this file.

@@ -29,15 +29,20 @@ foreach (lang ${langs})
     enable_testing()
 	message(STATUS ">>>> SOURCES: ${sources} <<<<")
     add_executable(${testName} ${sources} "${TEST_HOME}/Source/Main.cpp")
-    target_link_libraries(${testName} ${core_libs} ${GTEST_BOTH_LIBRARIES} ${Boost_LIBRARIES} gtest_main)
+    target_link_libraries(${testName} ${core_libs} ${GTEST_BOTH_LIBRARIES} ${Boost_LIBRARIES})
     include(GoogleTest)
-    gtest_discover_tests(${testName})
+    
+    # Try to discover tests if the module is available
+    if(COMMAND gtest_discover_tests)
+        gtest_discover_tests(${testName})
+    endif()
+    
     source_group("Scripts" FILES ${scripts} )
-    target_compile_definitions(${testName} PRIVATE KAI_SCRIPT_ROOT=${script_path} KAI_LANG_NAME=${lang} KAI_LANG_EXT=.${ext} gtest gtest_main)
-	gtest_add_tests(
-         TARGET ${testName}
-         SOURCES ${sources}
-     )
+    target_compile_definitions(${testName} PRIVATE 
+        KAI_SCRIPT_ROOT=${script_path} 
+        KAI_LANG_NAME=${lang} 
+        KAI_LANG_EXT=.${ext}
+    )
 endforeach()
 
 

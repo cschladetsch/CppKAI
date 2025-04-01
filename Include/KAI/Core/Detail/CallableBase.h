@@ -17,27 +17,27 @@ using namespace meta;
 
 template <typename F, typename Tuple, size_t... I>
 decltype(auto) CallFunImpl(F f, Tuple &&t, index_sequence<I...>) {
-    return forward<F>(f)(get<I>(forward<Tuple>(t))...);
+    return std::forward<F>(f)(get<I>(std::forward<Tuple>(t))...);
 }
 
 // invoke a function with any arity given arguments in a tuple
 template <typename F, typename Tuple>
 decltype(auto) CallFun(F f, Tuple &&t) {
     using idx = make_index_sequence<tuple_size<decay_t<Tuple>>::value>;
-    return CallFunImpl(forward<F>(f), forward<Tuple>(t), idx{});
+    return CallFunImpl(std::forward<F>(f), std::forward<Tuple>(t), idx{});
 }
 
 template <class Q, typename F, typename Tuple, size_t... I>
 decltype(auto) CallMethodImpl(Q &q, F f, Tuple &&t, index_sequence<I...>) {
-    auto m = forward<F>(f);
-    return (q.*m)(get<I>(forward<Tuple>(t))...);
+    auto m = std::forward<F>(f);
+    return (q.*m)(get<I>(std::forward<Tuple>(t))...);
 }
 
 // invoke a method of any arity given arguments in a tuple
 template <class Q, typename F, typename Tuple>
 decltype(auto) CallMethod(Q &q, F f, Tuple &&t) {
     using idx = make_index_sequence<tuple_size<decay_t<Tuple>>::value>;
-    return CallMethodImpl(q, forward<F>(f), forward<Tuple>(t), idx{});
+    return CallMethodImpl(q, std::forward<F>(f), std::forward<Tuple>(t), idx{});
 }
 
 template <class T>

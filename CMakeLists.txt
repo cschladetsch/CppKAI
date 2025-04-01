@@ -21,7 +21,7 @@ option(KAI_BUILD_TEST_NETWORK "Build networking tests" OFF)
 option(KAI_BUILD_RAKNET "Build RakNet" OFF)
 
 # Find and link Boost libraries
-find_package(Boost REQUIRED COMPONENTS system filesystem)
+find_package(Boost REQUIRED COMPONENTS system filesystem program_options date_time regex)
 include_directories(${Boost_INCLUDE_DIRS})
 
 # Set the CMake module path
@@ -116,6 +116,42 @@ set(TopLevels Library App)
 foreach(top ${TopLevels})
     include(${SOURCE_HOME}/${top}/CMakeLists.txt)
 endforeach()
+
+# Find or download Google Test if needed for tests
+if(KAI_BUILD_TEST_ALL OR KAI_BUILD_CORE_TEST OR KAI_BUILD_TEST_LANG)
+  # First try to find the system's gtest
+  find_package(GTest QUIET)
+  
+  if(NOT GTEST_FOUND)
+    message(STATUS "GTest not found in system, downloading it...")
+    
+    # Download and unpack googletest at configure time
+    configure_file(CMakeLists.txt.in googletest-download/CMakeLists.txt)
+    execute_process(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" .
+        WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/googletest-download" )
+    execute_process(COMMAND "${CMAKE_COMMAND}" --build .
+        WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/googletest-download" )
+
+    # Prevent overriding compiler/linker options 
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+        
+    # Add googletest directly to our build
+    add_subdirectory("${CMAKE_BINARY_DIR}/googletest-src"
+                     "${CMAKE_BINARY_DIR}/googletest-build"
+                     EXCLUDE_FROM_ALL)
+                     
+    # Define needed variables
+    set(GTEST_INCLUDE_DIRS "${CMAKE_BINARY_DIR}/googletest-src/googletest/include")
+    set(GTEST_BOTH_LIBRARIES gtest gtest_main)
+    set(GTEST_LIBRARIES gtest)
+    set(GTEST_MAIN_LIBRARIES gtest_main)
+  else()
+    message(STATUS "Using system GTest")
+  endif()
+  
+  # Always add the include directories for tests
+  include_directories(${GTEST_INCLUDE_DIRS})
+endif()
 
 # Add tests if requested
 add_subdirectory(Test)
