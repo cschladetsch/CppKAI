@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "KAI/Console/Console.h"
+#include "rang.hpp"
 using namespace std;
 using namespace kai;
 
@@ -45,7 +46,10 @@ std::string KaiVersionString() {
 int main(int argc, char **argv) {
     KAI_UNUSED_2(argc, argv);
 
-    cout << "KAI v" << KaiVersionString() << endl << endl;
+    // Force color mode
+    cout << rang::control::forceColor;
+    // Apply bold style from the start and use \n instead of endl
+    cout << rang::style::bold << "KAI v" << KaiVersionString() << "\n\n";
 
     console.SetLanguage(Language::Pi);
 

@@ -192,7 +192,7 @@ String Console::WriteStack() const {
 }
 
 int Console::Run() {
-    // Apply bold formatting once at the beginning and maintain it
+    // Enable bold formatting at the start and maintain it
     cout << rang::style::bold;
     
     for (;;) {
@@ -212,7 +212,7 @@ int Console::Run() {
                 executor->PrintStack(cout);
                 
                 // Reset color but maintain bold
-                cout << rang::style::bold;
+                cout << rang::style::bold << rang::fg::reset;
 
                 if (_end) return _endCode;
             }
@@ -222,17 +222,17 @@ int Console::Run() {
             cout << rang::style::bold << rang::fg::red;
             KAI_TRACE_ERROR_1(E); 
             // Reset color but maintain bold
-            cout << rang::style::bold;
+            cout << rang::style::bold << rang::fg::reset;
         }
         KAI_CATCH(exception, E) { 
             cout << rang::style::bold << rang::fg::red;
             KAI_TRACE_ERROR_1(E.what());
-            cout << rang::style::bold;
+            cout << rang::style::bold << rang::fg::reset;
         }
         KAI_CATCH_ALL() { 
             cout << rang::style::bold << rang::fg::red;
             KAI_TRACE_ERROR() << " something went wrong";
-            cout << rang::style::bold;
+            cout << rang::style::bold << rang::fg::reset;
         }
     }
 }

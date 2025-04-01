@@ -47,7 +47,11 @@ Value<Stack> Executor::GetContextStack() const { return _context; }
 void Executor::SetContinuation(Value<Continuation> C) { _continuation = C; }
 
 struct Trace {
-    static std::ostream &Debug() { return std::cout; }
+    static std::ostream &Debug() { 
+        // Always apply bold style before returning cout
+        std::cout << rang::style::bold;
+        return std::cout; 
+    }
 };
 
 void Executor::Continue() {
@@ -407,7 +411,11 @@ void Executor::DumpStack(Stack const &stack) {
         result << "\n";
     }
 
+    // Make sure to apply bold style before output
+    cout << rang::style::bold;
     Trace::Debug() << result.ToString().c_str();
+    // Reapply bold style after output
+    cout << rang::style::bold;
 }
 
 void Executor::DumpContinuation(Continuation const &C, int ip) {
@@ -480,17 +488,18 @@ void WriteHumanReadableString(std::ostream &out, const Object &obj) {
         return;
     }
 
-    const auto dim = rang::style::dim;
+    // Only use bold style, no dim styling at all
     const auto bold = rang::style::bold;
 
     const auto str = obj.ToString();
     switch (obj.GetTypeNumber().ToInt()) {
         case Type::Number::Bool:
-            out << rang::fg::cyan << str;
+            out << bold << rang::fg::cyan << str;
             break;
 
         case Type::Number::String:
-            out << dim << '"' << bold << str << dim << '"';
+            // Keep quotes bold as well - no dim styling at all
+            out << bold << '"' << str << '"';
             break;
 
         case Type::Number::Label:
@@ -499,25 +508,31 @@ void WriteHumanReadableString(std::ostream &out, const Object &obj) {
 
         case Type::Number::Pathname: {
             const auto &label = ConstDeref<Pathname>(obj);
+            out << bold;
             if (label.Quoted()) out << '\'';
             out << rang::fg::cyan << str;
         } break;
 
         default:
-            out << str;
+            out << bold << str;
             break;
     }
+    // Always reapply bold after writing
+    out << bold;
 }
 
 void Executor::PrintStack(std::ostream &out) const {
     int n = 0;
     for (const auto &obj : _data->GetStack()) {
-        out << rang::style::dim << rang::fg::gray << "[" << n++
-            << rang::style::dim << "]: ";
+        // Removed dim styling, using only bold styling with color
+        out << rang::style::bold << rang::fg::gray << "[" << n++
+            << "]: ";
         out << rang::style::bold << rang::fg::yellow;
         WriteHumanReadableString(out, obj);
         // Use newline character instead of std::endl to avoid flushing
         out << "\n";
+        // Reapply bold after each line to ensure it persists
+        out << rang::style::bold;
     }
     
     // Make sure we maintain bold style after printing the stack
