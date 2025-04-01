@@ -150,6 +150,7 @@ String Console::Process(const String &text) {
 void Console::WritePrompt(ostream &out) const {
     const auto path = GetFullname(GetTree().GetScope());
     auto pathName = path.ToString();
+    out << rang::style::bold; // Maintain bold style after command execution
     out << rang::fg::green
         << ToString(static_cast<Language>(compiler->GetLanguage())) << " "
         << rang::fg::yellow << pathName.c_str() << rang::fg::gray << "> ";
@@ -195,6 +196,7 @@ int Console::Run() {
 
                 cout << rang::fg::reset << Process(text.c_str()).c_str();
                 executor->PrintStack(cout);
+                cout << rang::style::bold; // Maintain bold style after command execution
 
                 if (_end) return _endCode;
             }
