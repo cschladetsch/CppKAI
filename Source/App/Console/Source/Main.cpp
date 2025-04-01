@@ -46,9 +46,7 @@ std::string KaiVersionString() {
 int main(int argc, char **argv) {
     KAI_UNUSED_2(argc, argv);
 
-    // Force color mode
-    cout << rang::control::forceColor;
-    // Apply bold style from the start and use \n instead of endl
+    // Apply bold style from the start
     cout << rang::style::bold << "KAI v" << KaiVersionString() << "\n\n";
 
     console.SetLanguage(Language::Pi);

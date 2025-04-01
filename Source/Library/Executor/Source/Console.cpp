@@ -126,13 +126,9 @@ void Console::Execute(String const &text, Structure st) {
 String Console::Process(const String &text) {
     StringStream result;
     KAI_TRY {
-        // Use rang for consistent formatting, keeping bold
-        cout << rang::style::bold << rang::fg::red;
         auto cont = compiler->Translate(text.c_str());
         if (cont.Exists()) {
             cont->SetScope(tree.GetScope());
-            // Switch to gray for execution, keeping bold
-            cout << rang::style::bold << rang::fg::gray;
             Execute(cont);
         }
 
@@ -158,7 +154,6 @@ void Console::WritePrompt(ostream &out) const {
     out << ToString(static_cast<Language>(compiler->GetLanguage())) << " ";
     out << rang::style::bold << rang::fg::yellow;
     out << pathName.c_str();
-    out << rang::style::bold << rang::fg::gray;
     out << "> ";
 }
 
@@ -207,8 +202,6 @@ int Console::Run() {
                 cout << rang::style::bold;
                 cout << Process(text.c_str()).c_str();
                 
-                // Print stack with bold formatting
-                cout << rang::style::bold << rang::fg::gray;
                 executor->PrintStack(cout);
                 
                 // Reset color but maintain bold
