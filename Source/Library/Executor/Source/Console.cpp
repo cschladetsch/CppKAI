@@ -126,13 +126,13 @@ void Console::Execute(String const &text, Structure st) {
 String Console::Process(const String &text) {
     StringStream result;
     KAI_TRY {
-        // Use direct ANSI codes for color (bold is already set)
-        cout << "\033[31m"; // Red color
+        // Use rang for consistent formatting, keeping bold
+        cout << rang::style::bold << rang::fg::red;
         auto cont = compiler->Translate(text.c_str());
         if (cont.Exists()) {
             cont->SetScope(tree.GetScope());
-            // Switch to gray for execution
-            cout << "\033[37m"; // Gray color
+            // Switch to gray for execution, keeping bold
+            cout << rang::style::bold << rang::fg::gray;
             Execute(cont);
         }
 
@@ -153,13 +153,12 @@ void Console::WritePrompt(ostream &out) const {
     const auto path = GetFullname(GetTree().GetScope());
     auto pathName = path.ToString();
     
-    // Use direct ANSI escape codes for consistency
-    // Bold is already set from the main loop, just need colors
-    out << "\033[32m"; // Green for language
+    // Use rang for consistent formatting, keeping bold
+    out << rang::style::bold << rang::fg::green;
     out << ToString(static_cast<Language>(compiler->GetLanguage())) << " ";
-    out << "\033[33m"; // Yellow for path
+    out << rang::style::bold << rang::fg::yellow;
     out << pathName.c_str();
-    out << "\033[37m"; // Gray for prompt symbol
+    out << rang::style::bold << rang::fg::gray;
     out << "> ";
 }
 
@@ -193,46 +192,47 @@ String Console::WriteStack() const {
 }
 
 int Console::Run() {
-    // Set text to bold directly with ANSI escape code
-    // This is a more direct approach than using rang
-    cout << "\033[1m";  // ANSI escape code for bold
+    // Apply bold formatting once at the beginning and maintain it
+    cout << rang::style::bold;
     
     for (;;) {
         KAI_TRY {
             for (;;) {
                 WritePrompt(cout);
-                // Don't need to set bold here anymore
+                // Bold is already applied, just get input
                 string text;
                 getline(cin, text);
 
-                // Process the input, keeping the bold setting
+                // Process input and maintain bold formatting
+                cout << rang::style::bold;
                 cout << Process(text.c_str()).c_str();
                 
-                // Set foreground color to gray for stack output
-                cout << "\033[37m";  // ANSI gray color
+                // Print stack with bold formatting
+                cout << rang::style::bold << rang::fg::gray;
                 executor->PrintStack(cout);
-                // Reset to default color but keep bold
-                cout << "\033[39m";  // Default foreground color
+                
+                // Reset color but maintain bold
+                cout << rang::style::bold;
 
                 if (_end) return _endCode;
             }
         }
         KAI_CATCH(Exception::Base, E) { 
-            // Use direct ANSI red color for errors, while keeping bold
-            cout << "\033[31m"; // Red color
+            // Use rang for formatting, keeping bold
+            cout << rang::style::bold << rang::fg::red;
             KAI_TRACE_ERROR_1(E); 
-            // Reset to default color
-            cout << "\033[39m";
+            // Reset color but maintain bold
+            cout << rang::style::bold;
         }
         KAI_CATCH(exception, E) { 
-            cout << "\033[31m"; // Red color
+            cout << rang::style::bold << rang::fg::red;
             KAI_TRACE_ERROR_1(E.what());
-            cout << "\033[39m";
+            cout << rang::style::bold;
         }
         KAI_CATCH_ALL() { 
-            cout << "\033[31m"; // Red color
+            cout << rang::style::bold << rang::fg::red;
             KAI_TRACE_ERROR() << " something went wrong";
-            cout << "\033[39m";
+            cout << rang::style::bold;
         }
     }
 }

@@ -516,8 +516,12 @@ void Executor::PrintStack(std::ostream &out) const {
             << rang::style::dim << "]: ";
         out << rang::style::bold << rang::fg::yellow;
         WriteHumanReadableString(out, obj);
-        out << std::endl;
+        // Use newline character instead of std::endl to avoid flushing
+        out << "\n";
     }
+    
+    // Make sure we maintain bold style after printing the stack
+    out << rang::style::bold;
 }
 
 // TODO: put container size in traits, as per above.
