@@ -1,4 +1,4 @@
-#include "KAI/Core/Event.h"
+#include "EventHelper.h"
 #include "TestCommon.h"
 
 USING_NAMESPACE_KAI
