@@ -6,7 +6,7 @@
 // Include KAI Network and RakNetStub
 #include "KAI/Network/RakNetStub.h"
 
-// Implement RakString class
+// Implement RakString class for proper string handling
 namespace RakNet {
     class RakString {
     private:
@@ -28,12 +28,13 @@ namespace RakNet {
 
 using namespace std;
 
+// Define custom message types for communication
 enum CustomMessageTypes {
     ID_CUSTOM_MESSAGE = RakNet::ID_USER_PACKET_ENUM + 1
 };
 
 int main(int argc, char **argv) {
-    cout << "KAI Minimal Network Server Example\n\n";
+    cout << "KAI Minimal Network Server\n\n";
 
     // Parse command line arguments
     int port = 14591;  // Default port
@@ -81,8 +82,7 @@ int main(int argc, char **argv) {
                         // Send a welcome message
                         RakNet::BitStream bs;
                         bs.Write((RakNet::MessageID)ID_CUSTOM_MESSAGE);
-                        bs.Write(std::string("Welcome to the KAI server!"));
-                        // Use channel 0 instead of priority and reliability which are not in stub
+                        bs.Write(std::string("Welcome to the KAI minimal server!"));
                         peer->Send(&bs, 0, 0, 0, packet->systemAddress, false);
                     }
                     break;
@@ -109,8 +109,7 @@ int main(int argc, char **argv) {
                         // Echo the message back
                         RakNet::BitStream response;
                         response.Write((RakNet::MessageID)ID_CUSTOM_MESSAGE);
-                        response.Write(std::string("Server received: " + message));
-                        // Use channel 0 instead of priority and reliability which are not in stub
+                        response.Write(std::string("Server echoed: " + message));
                         peer->Send(&response, 0, 0, 0, packet->systemAddress, false);
                     }
                     break;
@@ -119,19 +118,26 @@ int main(int argc, char **argv) {
             peer->DeallocatePacket(packet);
         }
         
-        // Show connection info every 5 seconds
+        // Display minimal server status every ~5 seconds
         static int counter = 0;
         if (++counter % 50 == 0) {
-            // Our stub doesn't have NumberOfConnections method
-            // Just display a placeholder message
-            cout << "Server is running..." << endl;
+            // Get currently connected clients (implementation dependent on RakNetStub)
+            unsigned int numConnections = 0; // In a full implementation, this would be peer->NumberOfConnections()
+            
+            // In our minimal version, just show we're alive
+            cout << "Minimal server is running..." << endl;
+            
+            // If we had connections, we'd display them like this:
+            if (numConnections > 0) {
+                cout << "Connected clients: " << numConnections << endl;
+            }
         }
         
         // Sleep to prevent high CPU usage
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
     
-    // Clean up
+    // Clean up - in practice this won't be reached due to the infinite loop
     peer->Shutdown(300);
     RakNet::RakPeerInterface::DestroyInstance(peer);
     
