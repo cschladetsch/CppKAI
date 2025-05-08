@@ -33,6 +33,10 @@ const char *RhoAstNodes::ToString(Enum ty) {
         CASE(Continuation)
         CASE(TokenType)
         CASE(Pathname)
+        CASE(While)
+        CASE(For)
+        CASE(DoWhile)
+        CASE(ForEach)
     }
 
     static char buff[BUFSIZ];

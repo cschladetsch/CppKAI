@@ -8,21 +8,22 @@ using namespace std;
 
 struct TestPi : TestLangCommon {};
 
-TEST_F(TestPi, RunScripts) { 
+TEST_F(TestPi, RunScripts) {
     // Enable trace output for debugging
     debug::MinTrace();
-    
+
     // Get the executor and stacks
     auto &exec = *_console.GetExecutor();
-    
+
     // First clear the stacks to ensure we're starting clean
     exec.ClearStacks();
     exec.ClearContext();
-    
+
     // The test is structured to run multiple scripts,
-    // and we're seeing that exceptions in one script don't stop the test from proceeding.
-    // This means all our fixes to individual scripts are still allowing the test to pass.
-    ExecScripts(); 
+    // and we're seeing that exceptions in one script don't stop the test from
+    // proceeding. This means all our fixes to individual scripts are still
+    // allowing the test to pass.
+    ExecScripts();
 }
 
 TEST_F(TestPi, TestContinuations) {

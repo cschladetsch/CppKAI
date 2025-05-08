@@ -35,7 +35,7 @@ void Console::Create() {
 
         executor.SetManaged(false);
         compiler.SetManaged(false);
-        
+
         // Set the compiler reference in the executor
         executor->SetCompiler(compiler);
 
@@ -141,17 +141,14 @@ String Console::Process(const String &text) {
         result << "Exception: " << E.ToString() << "\n";
     }
     KAI_CATCH(exception, E) { result << "StdException: " << E.what() << "\n"; }
-    KAI_CATCH_ALL() {
-        result << "UnknownException: "
-               << "\n";
-    }
+    KAI_CATCH_ALL() { result << "UnknownException: " << "\n"; }
     return result.ToString();
 }
 
 void Console::WritePrompt(ostream &out) const {
     const auto path = GetFullname(GetTree().GetScope());
     auto pathName = path.ToString();
-    
+
     // Use rang for consistent formatting, keeping bold
     out << rang::style::bold << rang::fg::green;
     out << ToString(static_cast<Language>(compiler->GetLanguage())) << " ";
@@ -192,7 +189,7 @@ String Console::WriteStack() const {
 int Console::Run() {
     // Enable bold formatting at the start and maintain it
     cout << rang::style::bold;
-    
+
     for (;;) {
         KAI_TRY {
             for (;;) {
@@ -204,28 +201,28 @@ int Console::Run() {
                 // Process input and maintain bold formatting
                 cout << rang::style::bold;
                 cout << Process(text.c_str()).c_str();
-                
+
                 executor->PrintStack(cout);
-                
+
                 // Reset color but maintain bold
                 cout << rang::style::bold << rang::fg::reset;
 
                 if (_end) return _endCode;
             }
         }
-        KAI_CATCH(Exception::Base, E) { 
+        KAI_CATCH(Exception::Base, E) {
             // Use rang for formatting, keeping bold
             cout << rang::style::bold << rang::fg::red;
-            KAI_TRACE_ERROR_1(E); 
+            KAI_TRACE_ERROR_1(E);
             // Reset color but maintain bold
             cout << rang::style::bold << rang::fg::reset;
         }
-        KAI_CATCH(exception, E) { 
+        KAI_CATCH(exception, E) {
             cout << rang::style::bold << rang::fg::red;
             KAI_TRACE_ERROR_1(E.what());
             cout << rang::style::bold << rang::fg::reset;
         }
-        KAI_CATCH_ALL() { 
+        KAI_CATCH_ALL() {
             cout << rang::style::bold << rang::fg::red;
             KAI_TRACE_ERROR() << " something went wrong";
             cout << rang::style::bold << rang::fg::reset;

@@ -37,6 +37,10 @@ struct RhoAstNodeEnumType {
         Continuation = 29,
         Pathname = 30,
         Home = 31,
+        While = 32,
+        For = 33,
+        DoWhile = 34,
+        ForEach = 35,
     };
 
     struct Node : AstNodeBase<RhoToken, RhoAstNodeEnumType> {

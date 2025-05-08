@@ -42,8 +42,7 @@ char LexerBase::Peek() const {
 
 Slice LexerBase::Gather(int (*filt)(int)) {
     int start = offset;
-    while (filt(Next()))
-        ;
+    while (filt(Next()));
 
     return Slice(start, offset);
 }

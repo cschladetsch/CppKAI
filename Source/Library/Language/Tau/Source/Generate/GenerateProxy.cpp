@@ -11,7 +11,7 @@ GenerateProxy::GenerateProxy(const char *input, string &output) {
     GenerateProcess::Generate(input, output);
 }
 
-bool GenerateProxy::Generate(TauParser const& p, string& output) {
+bool GenerateProxy::Generate(TauParser const &p, string &output) {
     auto const &root = p.GetRoot();
     if (root->GetType() != TauAstEnumType::Module)
         return Fail("Expected a Module");
@@ -20,8 +20,7 @@ bool GenerateProxy::Generate(TauParser const& p, string& output) {
         if (ch->GetType() != TauAstEnumType::Namespace)
             return Fail("Namespace expected");
 
-        if (!Namespace(*ch))
-            return false;
+        if (!Namespace(*ch)) return false;
     }
 
     stringstream str;
@@ -38,9 +37,7 @@ struct GenerateProxy::ProxyDecl {
     string RootName;
     string ProxyName;
 
-    ProxyDecl(string const &root)
-        : RootName(root)
-    {
+    ProxyDecl(string const &root) : RootName(root) {
         ProxyName = root + "Proxy";
     }
 
@@ -53,7 +50,9 @@ struct GenerateProxy::ProxyDecl {
 
 void GenerateProxy::AddProxyBoilerplate(ProxyDecl const &proxy) {
     Output() << "using ProxyBase::StreamType;" << EndLine();
-    Output() << proxy.ProxyName << "(Node &node, NetHandle handle) : ProxyBase(node, handle) { }" << EndLine();
+    Output() << proxy.ProxyName
+             << "(Node &node, NetHandle handle) : ProxyBase(node, handle) { }"
+             << EndLine();
     Output() << EndLine();
 }
 
@@ -61,20 +60,19 @@ bool GenerateProxy::Namespace(Node const &ns) {
     StartBlock(string("namespace ") + ns.GetToken().Text());
     for (auto const &ch : ns.GetChildren()) {
         switch (ch->GetType()) {
-        case TauAstEnumType::Namespace:
-            if (!Namespace(*ch))
-                return false;
-            break;
+            case TauAstEnumType::Namespace:
+                if (!Namespace(*ch)) return false;
+                break;
 
-        case TauAstEnumType::Class:
-            if (!Class(*ch))
-                return false;
-            break;
+            case TauAstEnumType::Class:
+                if (!Class(*ch)) return false;
+                break;
 
-        default:
-            KAI_TRACE_ERROR_1("Parser failed to fail");
-            Fail("[Internal] Unexpected %s in namespace", TauAstEnumType::ToString(ch->GetType()));
-            break;
+            default:
+                KAI_TRACE_ERROR_1("Parser failed to fail");
+                Fail("[Internal] Unexpected %s in namespace",
+                     TauAstEnumType::ToString(ch->GetType()));
+                break;
         }
     }
 
@@ -119,12 +117,13 @@ bool GenerateProxy::Method(Node const &method) {
     return true;
 }
 
-void GenerateProxy::MethodDecl(const string &returnType, const Node::ChildrenType &args, const string &name) {
+void GenerateProxy::MethodDecl(const string &returnType,
+                               const Node::ChildrenType &args,
+                               const string &name) {
     Output() << ReturnType(returnType) << " " << name << "(";
     bool first = true;
     for (auto const &a : args) {
-        if (!first)
-            Output() << ", ";
+        if (!first) Output() << ", ";
 
         auto &ty = a->GetChild(0);
         auto &id = a->GetChild(1);
@@ -141,7 +140,9 @@ static string ReturnLead(string const &rt, string const &name) {
     return str.str();
 }
 
-void GenerateProxy::MethodBody(const string &returnType, const Node::ChildrenType &args, const string &name) {
+void GenerateProxy::MethodBody(const string &returnType,
+                               const Node::ChildrenType &args,
+                               const string &name) {
     StartBlock();
     const auto ret = ReturnLead(returnType, name);
     if (!args.empty()) {
@@ -152,8 +153,7 @@ void GenerateProxy::MethodBody(const string &returnType, const Node::ChildrenTyp
         }
         Output() << ";" << EndLine();
         Output() << ret << ", args);";
-    }
-    else {
+    } else {
         Output() << ret << ");";
     }
 
@@ -165,9 +165,7 @@ string GenerateProxy::ReturnType(string const &text) const {
     return string("Future<") + text + ">";
 }
 
-string GenerateProxy::ArgType(string const &text) const {
-    return text;
-}
+string GenerateProxy::ArgType(string const &text) const { return text; }
 
 }  // namespace Generate
 

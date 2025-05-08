@@ -147,7 +147,7 @@ HashValue GetHash(const Pair &P) { return GetHash(P.first); }
 
 StringStream &operator<<(StringStream &S, Type::Number T) {
     return S << T.ToString();  //"TypeNumber: " << T.ToInt() << "(" <<
-                               //T.ToString() << ")";
+                               // T.ToString() << ")";
 }
 
 StringStream &operator<<(StringStream &S, BasePointer<PropertyBase> const &P) {

@@ -1,0 +1,394 @@
+// IterationTests.rho
+// Comprehensive tests for all iteration constructs in the Rho language
+
+// Enable maximum diagnostic output 
+print("Enabling maximum diagnostic level")
+setTraceLevel(5)
+
+// Initialize results array to track test outcomes
+results = []
+pass_count = 0
+fail_count = 0
+
+// Helper function to record test results
+record_test = fun(name, result, expected, notes) {
+    is_pass = result == expected
+    
+    if (is_pass)
+        pass_count = pass_count + 1
+    else
+        fail_count = fail_count + 1
+        
+    test_result = {
+        "name": name,
+        "passed": is_pass,
+        "result": result,
+        "expected": expected,
+        "notes": notes
+    }
+    
+    results.append(test_result)
+    return is_pass
+}
+
+// =====================================================================
+// SECTION 1: WHILE LOOPS
+// =====================================================================
+print("\n==== SECTION 1: WHILE LOOPS ====")
+
+// Test 1.1: Basic while loop
+print("\nTest 1.1: Basic while loop")
+counter = 0
+sum = 0
+
+while (counter < 5) {
+    sum = sum + counter
+    counter = counter + 1
+    print("  Iteration " + counter + ": sum = " + sum)
+}
+
+record_test("Basic while loop", sum, 10, "Sum of numbers 0-4 should be 10")
+
+// Test 1.2: While loop with break
+print("\nTest 1.2: While loop with break")
+counter = 0
+sum = 0
+
+while (counter < 10) {
+    sum = sum + counter
+    counter = counter + 1
+    
+    if (counter == 5) {
+        print("  Breaking at counter = " + counter)
+        break
+    }
+}
+
+record_test("While loop with break", sum, 10, "Sum should be 10 when break at counter == 5")
+
+// Test 1.3: While loop with early false condition
+print("\nTest 1.3: While loop with early false condition")
+counter = 10
+executed = false
+
+while (counter < 5) {
+    executed = true
+    counter = counter + 1
+}
+
+record_test("While loop early false", executed, false, "Loop body should not execute")
+
+// Test 1.4: Nested while loops
+print("\nTest 1.4: Nested while loops")
+outer = 0
+inner_sum = 0
+total_iterations = 0
+
+while (outer < 3) {
+    inner = 0
+    while (inner < 3) {
+        inner_sum = inner_sum + (outer * 3 + inner)
+        inner = inner + 1
+        total_iterations = total_iterations + 1
+    }
+    outer = outer + 1
+}
+
+record_test("Nested while outer counter", outer, 3, "Outer loop should iterate 3 times")
+record_test("Nested while iterations", total_iterations, 9, "Total iterations should be 9")
+record_test("Nested while sum", inner_sum, 36, "Sum of all values should be 36")
+
+// =====================================================================
+// SECTION 2: FOR LOOPS
+// =====================================================================
+print("\n==== SECTION 2: FOR LOOPS ====")
+
+// Test 2.1: Basic for loop
+print("\nTest 2.1: Basic for loop")
+sum = 0
+
+for (i = 0; i < 5; i = i + 1) {
+    print("  Iteration: i = " + i)
+    sum = sum + i
+}
+
+record_test("Basic for loop", sum, 10, "Sum of numbers 0-4 should be 10")
+
+// Test 2.2: For loop with break
+print("\nTest 2.2: For loop with break")
+sum = 0
+
+for (i = 0; i < 10; i = i + 1) {
+    sum = sum + i
+    
+    if (i == 4) {
+        print("  Breaking at i = " + i)
+        break
+    }
+}
+
+record_test("For loop with break", sum, 10, "Sum should be 10 when break at i == 4")
+
+// Test 2.3: For loop with early false condition
+print("\nTest 2.3: For loop with early false condition")
+executed = false
+
+for (i = 10; i < 5; i = i + 1) {
+    executed = true
+}
+
+record_test("For loop early false", executed, false, "Loop body should not execute")
+
+// Test 2.4: Nested for loops
+print("\nTest 2.4: Nested for loops")
+sum = 0
+iterations = 0
+
+for (i = 0; i < 3; i = i + 1) {
+    for (j = 0; j < 3; j = j + 1) {
+        sum = sum + (i * 3 + j)
+        iterations = iterations + 1
+    }
+}
+
+record_test("Nested for sum", sum, 36, "Sum of all values should be 36")
+record_test("Nested for iterations", iterations, 9, "Total iterations should be 9")
+
+// Test 2.5: For loop with complex condition
+print("\nTest 2.5: For loop with complex condition")
+sum = 0
+
+for (i = 0; i < 10 && sum < 20; i = i + 1) {
+    sum = sum + i
+    print("  Iteration: i = " + i + ", sum = " + sum)
+}
+
+record_test("For loop complex condition", i, 6, "Loop should stop at i=6 when sum becomes >= 20")
+
+// =====================================================================
+// SECTION 3: DO LOOPS (DO-WHILE)
+// =====================================================================
+print("\n==== SECTION 3: DO LOOPS (DO-WHILE) ====")
+
+// Test 3.1: Basic do-while loop
+print("\nTest 3.1: Basic do-while loop")
+counter = 0
+sum = 0
+
+do {
+    sum = sum + counter
+    counter = counter + 1
+    print("  Iteration " + counter + ": sum = " + sum)
+} while (counter < 5)
+
+record_test("Basic do-while loop", sum, 10, "Sum of numbers 0-4 should be 10")
+
+// Test 3.2: Do-while with immediate false condition
+print("\nTest 3.2: Do-while with immediate false condition")
+counter = 10
+executions = 0
+
+do {
+    executions = executions + 1
+    print("  Executed once despite false condition")
+} while (counter < 5)
+
+record_test("Do-while with false condition", executions, 1, "Loop body should execute exactly once")
+
+// Test 3.3: Do-while with break
+print("\nTest 3.3: Do-while with break")
+counter = 0
+sum = 0
+
+do {
+    sum = sum + counter
+    counter = counter + 1
+    
+    if (counter == 3) {
+        print("  Breaking at counter = " + counter)
+        break
+    }
+} while (counter < 5)
+
+record_test("Do-while with break", sum, 3, "Sum should be 3 when break at counter == 3")
+
+// =====================================================================
+// SECTION 4: FOREACH LOOPS
+// =====================================================================
+print("\n==== SECTION 4: FOREACH LOOPS ====")
+
+// Test 4.1: ForEach over array
+print("\nTest 4.1: ForEach over array")
+numbers = [1, 2, 3, 4, 5]
+sum = 0
+
+for item in numbers {
+    print("  Array item: " + item)
+    sum = sum + item
+}
+
+record_test("ForEach over array", sum, 15, "Sum of array elements should be 15")
+
+// Test 4.2: ForEach over list
+print("\nTest 4.2: ForEach over list")
+my_list = []
+my_list.append(10)
+my_list.append(20)
+my_list.append(30)
+sum = 0
+
+for item in my_list {
+    print("  List item: " + item)
+    sum = sum + item
+}
+
+record_test("ForEach over list", sum, 60, "Sum of list elements should be 60")
+
+// Test 4.3: ForEach over string
+print("\nTest 4.3: ForEach over string")
+text = "hello"
+chars = []
+
+for char in text {
+    print("  Character: " + char)
+    chars.append(char)
+}
+
+record_test("ForEach over string length", chars.size(), 5, "Should have 5 characters")
+record_test("ForEach over string first char", chars[0], "h", "First character should be 'h'")
+record_test("ForEach over string last char", chars[4], "o", "Last character should be 'o'")
+
+// Test 4.4: ForEach with break
+print("\nTest 4.4: ForEach with break")
+numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+sum = 0
+iterations = 0
+
+for item in numbers {
+    sum = sum + item
+    iterations = iterations + 1
+    
+    if (sum >= 10) {
+        print("  Breaking at sum = " + sum)
+        break
+    }
+}
+
+record_test("ForEach with break iterations", iterations, 4, "Should break after 4 iterations")
+record_test("ForEach with break sum", sum, 10, "Sum should be 10 when breaking")
+
+// =====================================================================
+// SECTION 5: ACROSSALLNODES (NETWORK ITERATION)
+// =====================================================================
+print("\n==== SECTION 5: ACROSSALLNODES (NETWORK ITERATION) ====")
+
+// Test 5.1: Local AcrossAllNodes (null network node)
+print("\nTest 5.1: Local AcrossAllNodes (null network node)")
+numbers = [1, 2, 3, 4, 5]
+result = []
+
+// Create a simple function to square numbers
+square = fun(x) {
+    return x * x
+}
+
+try {
+    // Using null for network node to execute locally
+    result = acrossallnodes(null, numbers, square)
+    print("  Result: " + result)
+    
+    record_test("AcrossAllNodes local execution", result.size(), 5, "Should have 5 elements")
+    record_test("AcrossAllNodes first element", result[0], 1, "First element should be 1")
+    record_test("AcrossAllNodes last element", result[4], 25, "Last element should be 25")
+} catch (e) {
+    print("  Error: " + e)
+    record_test("AcrossAllNodes local execution", false, true, "Local execution failed: " + e)
+}
+
+// =====================================================================
+// SECTION 6: EDGE CASES
+// =====================================================================
+print("\n==== SECTION 6: EDGE CASES ====")
+
+// Test 6.1: Empty loops
+print("\nTest 6.1: Empty loops")
+executed_while = false
+while (false) {
+    executed_while = true
+}
+
+executed_for = false
+for (i = 0; i < 0; i = i + 1) {
+    executed_for = true
+}
+
+executed_do = 0
+do {
+    executed_do = executed_do + 1
+} while (false)
+
+record_test("Empty while loop", executed_while, false, "While loop body should not execute")
+record_test("Empty for loop", executed_for, false, "For loop body should not execute")
+record_test("Empty do-while loop", executed_do, 1, "Do-while body should execute once")
+
+// Test 6.2: Type handling - using non-boolean condition
+print("\nTest 6.2: Type handling - using non-boolean condition")
+
+safe_counter = 0
+try {
+    // This might fail if the type handling is incorrect
+    i = 0
+    while (i < 5) {
+        safe_counter = safe_counter + 1
+        i = i + 1
+    }
+    
+    record_test("While with numeric comparison", safe_counter, 5, "Should handle numeric comparison correctly")
+} catch (e) {
+    print("  Error: " + e)
+    record_test("While with numeric comparison", false, true, "Failed with type error: " + e)
+}
+
+// =====================================================================
+// SECTION 7: PERFORMANCE TEST
+// =====================================================================
+print("\n==== SECTION 7: PERFORMANCE TEST ====")
+
+// Test 7.1: Large iteration count
+print("\nTest 7.1: Large iteration count")
+large_counter = 0
+iterations = 1000
+
+print("  Starting large iteration test with " + iterations + " iterations")
+for (i = 0; i < iterations; i = i + 1) {
+    large_counter = large_counter + 1
+}
+
+record_test("Large iteration count", large_counter, iterations, "Should complete all iterations")
+
+// =====================================================================
+// RESULTS SUMMARY
+// =====================================================================
+print("\n==== TEST RESULTS SUMMARY ====")
+print("Total tests: " + results.size())
+print("Passed: " + pass_count)
+print("Failed: " + fail_count)
+
+failures = []
+for (i = 0; i < results.size(); i = i + 1) {
+    test = results[i]
+    if (!test["passed"]) {
+        failures.append(test["name"] + ": expected " + test["expected"] + " but got " + test["result"] + " - " + test["notes"])
+    }
+}
+
+if (failures.size() > 0) {
+    print("\nFAILED TESTS:")
+    for (i = 0; i < failures.size(); i = i + 1) {
+        print("  - " + failures[i])
+    }
+} else {
+    print("\nAll tests passed successfully!")
+}
+
+print("\nIteration tests completed")

@@ -76,8 +76,7 @@ bool RhoLexer::NextToken() {
             if (Peek() == '/') {
                 Next();
                 int start = offset;
-                while (Next() != '\n')
-                    ;
+                while (Next() != '\n');
 
                 Token comment(Enum::Comment, *this, lineNumber,
                               Slice(start, offset));

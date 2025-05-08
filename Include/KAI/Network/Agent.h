@@ -1,8 +1,8 @@
 #pragma once
 
 #include "KAI/Network/AgentBase.h"
-#include "KAI/Network/NetHandle.h"
 #include "KAI/Network/Future.h"  // Added explicit include for Future
+#include "KAI/Network/NetHandle.h"
 #include "NetPointer.h"
 
 KAI_NET_BEGIN

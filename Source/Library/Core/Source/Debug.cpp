@@ -61,9 +61,11 @@ Trace::~Trace() {
     const auto val = ToString();
 
     if (TraceFileLocation)
-        cout << rang::style::bold << filelocCol << file_location.ToString().c_str();
+        cout << rang::style::bold << filelocCol
+             << file_location.ToString().c_str();
 
-    cout << rang::style::bold << TypeToString(type) << ": " << textCol << val.c_str() << "\n";
+    cout << rang::style::bold << TypeToString(type) << ": " << textCol
+         << val.c_str() << "\n";
     // Reapply bold style instead of using endl which resets formatting
     cout << rang::style::bold;
 }

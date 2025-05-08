@@ -2,25 +2,25 @@
 
 #include <KAI/Network/Config.h>
 
-#include <string>
 #include <functional>
 #include <sstream>
+#include <string>
 
 KAI_NET_BEGIN
 
 struct MacAddress {
     MacAddress() = default;
     MacAddress(const std::string& text) : _text(text) {}
-    
+
     const std::string& Text() const { return _text; }
-    
+
     std::string ToString() const { return _text; }
-    
-    friend bool operator==(MacAddress const &A, MacAddress const &B) {
+
+    friend bool operator==(MacAddress const& A, MacAddress const& B) {
         return A._text == B._text;
     }
-    
-    friend bool operator!=(MacAddress const &A, MacAddress const &B) {
+
+    friend bool operator!=(MacAddress const& A, MacAddress const& B) {
         return !(A == B);
     }
 
@@ -36,29 +36,26 @@ struct MacAddress {
 struct IpAddress {
     IpAddress() = default;
     IpAddress(const std::string& text) : _text(text) {}
-    
+
     const std::string& Text() const { return _text; }
-    
+
     // Convert to string for use with RakNet
     std::string ToString() const { return _text; }
-    
+
     // Parse IP address from string
     static IpAddress FromString(const std::string& str) {
         return IpAddress(str);
     }
-    
+
     // Create a localhost address
-    static IpAddress Localhost() {
-        return IpAddress("127.0.0.1");
-    }
-    
+    static IpAddress Localhost() { return IpAddress("127.0.0.1"); }
+
     // Create a broadcast address
-    static IpAddress Broadcast() {
-        return IpAddress("255.255.255.255");
-    }
-    
+    static IpAddress Broadcast() { return IpAddress("255.255.255.255"); }
+
     // Get port from combined address:port string
-    static int GetPort(const std::string& addressWithPort, int defaultPort = 0) {
+    static int GetPort(const std::string& addressWithPort,
+                       int defaultPort = 0) {
         size_t pos = addressWithPort.find(":");
         if (pos != std::string::npos) {
             std::string portStr = addressWithPort.substr(pos + 1);
@@ -70,7 +67,7 @@ struct IpAddress {
         }
         return defaultPort;
     }
-    
+
     // Get address part from combined address:port string
     static std::string GetAddress(const std::string& addressWithPort) {
         size_t pos = addressWithPort.find(":");
@@ -79,49 +76,43 @@ struct IpAddress {
         }
         return addressWithPort;
     }
-    
+
     // Comparison operators
-    friend bool operator==(IpAddress const &A, IpAddress const &B) {
+    friend bool operator==(IpAddress const& A, IpAddress const& B) {
         return A._text == B._text;
     }
-    
-    friend bool operator!=(IpAddress const &A, IpAddress const &B) {
+
+    friend bool operator!=(IpAddress const& A, IpAddress const& B) {
         return !(A == B);
     }
-    
+
     // Hash function for unordered containers
-    size_t Hash() const {
-        return std::hash<std::string>()(_text);
-    }
-    
-private:
+    size_t Hash() const { return std::hash<std::string>()(_text); }
+
+   private:
     std::string _text;
 };
 
 // Hash functions for STL containers
-inline std::size_t hash_value(const IpAddress& addr) {
-    return addr.Hash();
-}
+inline std::size_t hash_value(const IpAddress& addr) { return addr.Hash(); }
 
-inline std::size_t hash_value(const MacAddress& addr) {
-    return addr.Hash();
-}
+inline std::size_t hash_value(const MacAddress& addr) { return addr.Hash(); }
 
 KAI_NET_END
 
 // STL hash specialization
 namespace std {
-    template<>
-    struct hash<kai::net::IpAddress> {
-        std::size_t operator()(const kai::net::IpAddress& addr) const {
-            return addr.Hash();
-        }
-    };
-    
-    template<>
-    struct hash<kai::net::MacAddress> {
-        std::size_t operator()(const kai::net::MacAddress& addr) const {
-            return addr.Hash();
-        }
-    };
-}
+template <>
+struct hash<kai::net::IpAddress> {
+    std::size_t operator()(const kai::net::IpAddress& addr) const {
+        return addr.Hash();
+    }
+};
+
+template <>
+struct hash<kai::net::MacAddress> {
+    std::size_t operator()(const kai::net::MacAddress& addr) const {
+        return addr.Hash();
+    }
+};
+}  // namespace std

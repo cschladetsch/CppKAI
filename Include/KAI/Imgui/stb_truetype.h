@@ -4152,7 +4152,7 @@ static stbtt_int32 stbtt__CompareUTF8toUTF16_bigendian_prefix(
             if (s1[i++] != 0xf0 + (c >> 18)) return -1;
             if (s1[i++] != 0x80 + ((c >> 12) & 0x3f)) return -1;
             if (s1[i++] != 0x80 + ((c >> 6) & 0x3f)) return -1;
-            if (s1[i++] != 0x80 + ((c)&0x3f)) return -1;
+            if (s1[i++] != 0x80 + ((c) & 0x3f)) return -1;
             s2 += 2;  // plus another 2 below
             len2 -= 2;
         } else if (ch >= 0xdc00 && ch < 0xe000) {
@@ -4161,7 +4161,7 @@ static stbtt_int32 stbtt__CompareUTF8toUTF16_bigendian_prefix(
             if (i + 2 >= len1) return -1;
             if (s1[i++] != 0xe0 + (ch >> 12)) return -1;
             if (s1[i++] != 0x80 + ((ch >> 6) & 0x3f)) return -1;
-            if (s1[i++] != 0x80 + ((ch)&0x3f)) return -1;
+            if (s1[i++] != 0x80 + ((ch) & 0x3f)) return -1;
         }
         s2 += 2;
         len2 -= 2;

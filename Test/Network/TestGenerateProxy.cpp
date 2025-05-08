@@ -1,22 +1,23 @@
-#include <gtest/gtest.h>
 #include <KAI/Network/Network.h>
-#include <iostream>
+#include <gtest/gtest.h>
+
 #include <fstream>
+#include <iostream>
 #include <regex>
 #include <string>
 
 // Forward declaration for the function we'll test
 namespace kai {
 namespace net {
-    void GenerateNetworkProxy();
+void GenerateNetworkProxy();
 }
-}
+}  // namespace kai
 
 // Helper function to create a test Tau interface file
 void CreateTestInterfaceFile(const std::string& path) {
     std::ofstream file(path);
     ASSERT_TRUE(file.is_open()) << "Failed to create test interface file";
-    
+
     file << "// TestInterface.tau - Test interface for proxy generation\n\n";
     file << "namespace test {\n\n";
     file << "class Calculator {\n";
@@ -32,7 +33,7 @@ void CreateTestInterfaceFile(const std::string& path) {
     file << "    void DeleteData(string key);\n";
     file << "};\n\n";
     file << "} // namespace test\n";
-    
+
     file.close();
 }
 
@@ -44,7 +45,8 @@ bool VerifyGeneratedCode(const std::string& filePath) {
         return false;
     }
 
-    std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    std::string content((std::istreambuf_iterator<char>(file)),
+                        std::istreambuf_iterator<char>());
     file.close();
 
     // Define patterns to check for key components
@@ -64,13 +66,15 @@ bool VerifyGeneratedCode(const std::string& filePath) {
         // Check for proxy method implementation
         std::regex("auto future = _node->SendWithResponse"),
         // Check for agent method implementation
-        std::regex("void Handle_\\w+\\(RakNet::BitStream& bs, RakNet::SystemAddress& sender\\)")
-    };
+        std::regex("void Handle_\\w+\\(RakNet::BitStream& bs, "
+                   "RakNet::SystemAddress& sender\\)")};
 
     // Verify each pattern exists in the generated code
     for (const auto& pattern : patterns) {
         if (!std::regex_search(content, pattern)) {
-            std::cerr << "Generated code verification failed: missing expected pattern" << std::endl;
+            std::cerr << "Generated code verification failed: missing expected "
+                         "pattern"
+                      << std::endl;
             return false;
         }
     }
@@ -83,24 +87,24 @@ TEST(NetworkProxyTest, GeneratesValidProxyFromTauFile) {
     // Create test files in the current directory
     std::string testFilePath = "TestInterface.tau";
     std::string outputFilePath = "GeneratedProxy.h";
-    
+
     // Create the test Tau interface file
     CreateTestInterfaceFile(testFilePath);
-    
+
     // Call the function being tested
     std::cout << "Calling GenerateNetworkProxy..." << std::endl;
     kai::net::GenerateNetworkProxy();
-    
+
     // Verify the generated file exists and contains expected patterns
-    ASSERT_TRUE(VerifyGeneratedCode(outputFilePath)) 
+    ASSERT_TRUE(VerifyGeneratedCode(outputFilePath))
         << "Generated proxy code failed verification";
 }
 
 // Clean up test files after the test
 class NetworkProxyEnvironment : public ::testing::Environment {
-public:
+   public:
     ~NetworkProxyEnvironment() override {}
-    
+
     void TearDown() override {
         // Clean up test files
         std::remove("TestInterface.tau");
@@ -109,5 +113,5 @@ public:
 };
 
 // Register the environment for cleanup
-::testing::Environment* const env = 
+::testing::Environment* const env =
     ::testing::AddGlobalTestEnvironment(new NetworkProxyEnvironment);

@@ -9,8 +9,8 @@ enum Enum {
     Create = 1,
 
     //< when supplied to a ClassBuilder<>'s property list, this indicates that
-    //the associated property will < not be created when the owning object
-    //instance is created. for example:
+    // the associated property will < not be created when the owning object
+    // instance is created. for example:
     /*
     struct Foo
     {

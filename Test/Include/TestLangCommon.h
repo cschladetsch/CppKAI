@@ -24,8 +24,7 @@ class TestLangCommon : public TestCommon {
     void TearDown() override;
 
     void ExecScripts();
-    void ExecScriptFile(const std::string& scriptName);
-    
+    void ExecScriptFile(const std::string &scriptName);
 
     // Get const ref to data at index on stack
     template <class T>

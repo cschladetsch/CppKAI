@@ -79,6 +79,15 @@ const char *RhoTokenEnumType::ToString(Enum val) {
         CASE(Quote)
         CASE(Sep)
         CASE(Pathname)
+        CASE(AcrossAllNodes)
+        CASE(Mod)
+        CASE(Colon)
+        CASE(ModAssign)
+        CASE(DoubleColon)
+        CASE(While)
+        CASE(For)
+        CASE(DoWhile)
+        CASE(ForEach)
     }
 
     static char buff[BUFSIZ];

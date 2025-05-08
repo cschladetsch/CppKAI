@@ -68,6 +68,15 @@ struct RhoTokenEnumType {
         Debug = 69,
         Quote = 70,
         Sep = 71,
+        AcrossAllNodes = 72,
+        Mod = 73,
+        Colon = 74,
+        ModAssign = 75,
+        DoubleColon = 76,
+        While = 77,
+        For = 78,
+        DoWhile = 79,
+        ForEach = 80,
     };
 
     struct Type : TokenBase<RhoTokenEnumType> {

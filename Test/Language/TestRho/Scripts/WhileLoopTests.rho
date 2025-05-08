@@ -1,0 +1,261 @@
+// WhileLoopTests.rho
+// Specialized tests for while loops in the Rho language
+
+// Enable debug tracing
+print("Enabling maximum diagnostic level")
+setTraceLevel(5)
+
+// Initialize test metrics
+test_count = 0
+pass_count = 0
+fail_count = 0
+
+// Helper function to run and verify a test
+run_test = fun(name, test_func, expected) {
+    test_count = test_count + 1
+    print("\nTest " + test_count + ": " + name)
+    
+    try {
+        result = test_func()
+        passed = result == expected
+        
+        if (passed) {
+            pass_count = pass_count + 1
+            print("  ✅ PASSED: Got expected result: " + result)
+        } else {
+            fail_count = fail_count + 1
+            print("  ❌ FAILED: Expected " + expected + " but got " + result)
+        }
+        
+        return passed
+    } catch (error) {
+        fail_count = fail_count + 1
+        print("  ❌ FAILED with exception: " + error)
+        return false
+    }
+}
+
+// =============================================================================
+// TEST 1: Basic counting loop
+// =============================================================================
+test_basic_counter = fun() {
+    counter = 0
+    
+    while (counter < 10) {
+        counter = counter + 1
+    }
+    
+    return counter
+}
+
+run_test("Basic counting loop", test_basic_counter, 10)
+
+// =============================================================================
+// TEST 2: Sum of numbers
+// =============================================================================
+test_sum = fun() {
+    sum = 0
+    i = 1
+    
+    while (i <= 100) {
+        sum = sum + i
+        i = i + 1
+    }
+    
+    return sum
+}
+
+run_test("Sum of numbers 1-100", test_sum, 5050)  // Sum = n*(n+1)/2 = 5050
+
+// =============================================================================
+// TEST 3: Early break
+// =============================================================================
+test_early_break = fun() {
+    counter = 0
+    
+    while (counter < 100) {
+        counter = counter + 1
+        
+        if (counter == 50) {
+            break
+        }
+    }
+    
+    return counter
+}
+
+run_test("Early break", test_early_break, 50)
+
+// =============================================================================
+// TEST 4: Nested while loops
+// =============================================================================
+test_nested_loops = fun() {
+    outer = 0
+    inner_total = 0
+    
+    while (outer < 5) {
+        inner = 0
+        
+        while (inner < 5) {
+            inner_total = inner_total + 1
+            inner = inner + 1
+        }
+        
+        outer = outer + 1
+    }
+    
+    return inner_total
+}
+
+run_test("Nested while loops", test_nested_loops, 25)  // 5×5 = 25 iterations
+
+// =============================================================================
+// TEST 5: Break from nested loop
+// =============================================================================
+test_nested_break = fun() {
+    outer = 0
+    inner_total = 0
+    
+    while (outer < 5) {
+        inner = 0
+        
+        while (inner < 5) {
+            inner_total = inner_total + 1
+            
+            if (inner_total >= 12) {
+                break
+            }
+            
+            inner = inner + 1
+        }
+        
+        if (inner_total >= 12) {
+            break
+        }
+        
+        outer = outer + 1
+    }
+    
+    return inner_total
+}
+
+run_test("Break from nested loop", test_nested_break, 12)
+
+// =============================================================================
+// TEST 6: Complex condition
+// =============================================================================
+test_complex_condition = fun() {
+    i = 0
+    sum = 0
+    
+    while (i < 20 && sum < 100) {
+        sum = sum + i
+        i = i + 1
+    }
+    
+    return [i, sum]  // Return array with both values
+}
+
+complex_result = test_complex_condition()
+run_test("Complex condition - iterations", fun() { return complex_result[0] }, 15)
+run_test("Complex condition - sum", fun() { return complex_result[1] }, 105)  // Sum exceeds 100
+
+// =============================================================================
+// TEST 7: Type handling - return value from function
+// =============================================================================
+is_even = fun(n) {
+    return n % 2 == 0
+}
+
+test_function_condition = fun() {
+    count = 0
+    i = 0
+    
+    while (is_even(i)) {
+        count = count + 1
+        i = i + 2  // Keep i even
+        
+        if (count >= 5) {
+            break  // Safety break
+        }
+    }
+    
+    return count
+}
+
+run_test("Function condition", test_function_condition, 5)
+
+// =============================================================================
+// TEST 8: Initial false condition
+// =============================================================================
+test_initial_false = fun() {
+    executed = false
+    
+    while (1 > 10) {
+        executed = true
+    }
+    
+    return executed
+}
+
+run_test("Initial false condition", test_initial_false, false)
+
+// =============================================================================
+// TEST 9: Fibonacci sequence
+// =============================================================================
+test_fibonacci = fun() {
+    a = 0
+    b = 1
+    count = 0
+    
+    while (count < 10) {
+        temp = a
+        a = b
+        b = temp + b
+        count = count + 1
+    }
+    
+    return a  // 10th Fibonacci number
+}
+
+run_test("Fibonacci sequence", test_fibonacci, 55)  // 10th Fibonacci number is 55
+
+// =============================================================================
+// TEST 10: Loop with variable updates
+// =============================================================================
+test_variable_updates = fun() {
+    status = "pending"
+    iterations = 0
+    
+    while (status != "complete") {
+        iterations = iterations + 1
+        
+        if (iterations < 3) {
+            status = "running"
+        } else if (iterations < 5) {
+            status = "almost done"
+        } else {
+            status = "complete"
+        }
+    }
+    
+    return iterations
+}
+
+run_test("Loop with variable updates", test_variable_updates, 5)
+
+// =============================================================================
+// Print final results
+// =============================================================================
+print("\n==== WHILE LOOP TEST RESULTS ====")
+print("Total tests: " + test_count)
+print("Passed: " + pass_count)
+print("Failed: " + fail_count)
+
+if (fail_count == 0) {
+    print("\nAll while loop tests passed successfully! ✅")
+} else {
+    print("\nSome tests failed. Please check the output for details. ❌")
+}
+
+print("\nWhile loop tests completed")

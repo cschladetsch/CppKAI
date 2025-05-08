@@ -122,14 +122,51 @@ class ParserCommon : public ProcessCommon {
         return true;
     }
 
-    TokenNode const &Next() { return tokens[++current]; }
+    TokenNode const &Next() {
+        // First check if tokens vector is empty
+        if (tokens.empty()) {
+            KAI_TRACE_ERROR_1(Fail("No tokens to process in Next()"));
+            KAI_THROW_1(LogicError, "No tokens to process");
+        }
 
-    TokenNode const &Last() { return tokens[current - 1]; }
+        // Increment token index
+        ++current;
+
+        // Check if the new index is valid
+        if (current >= tokens.size()) {
+            KAI_TRACE_ERROR_1(Fail("Next token index out of range"));
+            KAI_THROW_1(LogicError, "Next token index out of range");
+        }
+
+        return tokens[current];
+    }
+
+    TokenNode const &Last() {
+        // Check if tokens vector is empty
+        if (tokens.empty()) {
+            KAI_TRACE_ERROR_1(Fail("No tokens to process in Last()"));
+            KAI_THROW_1(LogicError, "No tokens to process in Last()");
+        }
+
+        // Check if we can access the previous token
+        if (current <= 0) {
+            KAI_TRACE_ERROR_1(Fail("No previous token available"));
+            KAI_THROW_1(LogicError, "No previous token available");
+        }
+
+        return tokens[current - 1];
+    }
 
     TokenNode const &Current() const {
-        if (!Has()) {
-            KAI_TRACE_ERROR_1(Fail("Expected something"));
-            KAI_THROW_1(LogicError, "Expected something");
+        // First check if tokens vector is empty to avoid range check error
+        if (tokens.empty()) {
+            KAI_TRACE_ERROR_1(Fail("No tokens to process"));
+            KAI_THROW_1(LogicError, "No tokens to process");
+        }
+
+        if (current >= tokens.size()) {
+            KAI_TRACE_ERROR_1(Fail("Token index out of range"));
+            KAI_THROW_1(LogicError, "Token index out of range");
         }
 
         return tokens[current];
@@ -146,9 +183,15 @@ class ParserCommon : public ProcessCommon {
     bool Empty() const { return current >= tokens.size(); }
 
     TokenNode const &Peek() const {
+        // Check if tokens vector is empty
+        if (tokens.empty()) {
+            KAI_TRACE_ERROR_1(Fail("No tokens to process in Peek()"));
+            KAI_THROW_1(LogicError, "No tokens to process in Peek()");
+        }
+
         if (current + 1 >= tokens.size()) {
             KAI_TRACE_ERROR() << "Unexpected end of tokens stream";
-            return false;
+            KAI_THROW_1(LogicError, "Peek: No more tokens in stream");
         }
 
         return tokens[current + 1];
@@ -192,7 +235,13 @@ class ParserCommon : public ProcessCommon {
         return false;
     }
 
-    bool Try(TokenEnum type) { return Current().type == type; }
+    bool Try(TokenEnum type) {
+        // Make sure there are tokens to examine and current index is in bounds
+        if (tokens.empty() || current >= tokens.size()) {
+            return false;  // No tokens or current out of bounds
+        }
+        return tokens[current].type == type;
+    }
 
     AstNodePtr Expect(TokenEnum type) {
         TokenNode tok = Current();

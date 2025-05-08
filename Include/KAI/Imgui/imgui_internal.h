@@ -861,8 +861,8 @@ struct IMGUI_API ImGuiWindow {
                                   // via SetNextWindowContentSize()
     ImRect ContentsRegionRect;    // Maximum visible content position in window
                                   // coordinates. ~~ (SizeContentsExplicit ?
-                                // SizeContentsExplicit : Size - ScrollbarSizes)
-                                // - CursorStartPos, per axis
+    // SizeContentsExplicit : Size - ScrollbarSizes)
+    // - CursorStartPos, per axis
     ImVec2 WindowPadding;  // Window padding at the time of begin. We need to
                            // lock it, in particular manipulation of the
                            // ShowBorder would have an effect
@@ -936,8 +936,8 @@ struct IMGUI_API ImGuiWindow {
     int FocusIdxTabRequestCurrent;  // Tab-able item being requested for focus
     int FocusIdxAllRequestNext;     // Item being requested for focus, for next
                                     // update (relies on layout to be stable
-                                 // between the frame pressing TAB and the next
-                                 // frame)
+    // between the frame pressing TAB and the next
+    // frame)
     int FocusIdxTabRequestNext;  // "
 
    public:

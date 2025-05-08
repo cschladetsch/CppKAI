@@ -1,0 +1,283 @@
+// ForLoopTests.rho
+// Specialized tests for for loops in the Rho language
+
+// Enable debug tracing
+print("Enabling maximum diagnostic level")
+setTraceLevel(5)
+
+// Initialize test metrics
+test_count = 0
+pass_count = 0
+fail_count = 0
+
+// Helper function to run and verify a test
+run_test = fun(name, test_func, expected) {
+    test_count = test_count + 1
+    print("\nTest " + test_count + ": " + name)
+    
+    try {
+        result = test_func()
+        passed = result == expected
+        
+        if (passed) {
+            pass_count = pass_count + 1
+            print("  ✅ PASSED: Got expected result: " + result)
+        } else {
+            fail_count = fail_count + 1
+            print("  ❌ FAILED: Expected " + expected + " but got " + result)
+        }
+        
+        return passed
+    } catch (error) {
+        fail_count = fail_count + 1
+        print("  ❌ FAILED with exception: " + error)
+        return false
+    }
+}
+
+// =============================================================================
+// TEST 1: Basic counting loop
+// =============================================================================
+test_basic_counter = fun() {
+    counter = 0
+    
+    for (i = 0; i < 10; i = i + 1) {
+        counter = counter + 1
+    }
+    
+    return counter
+}
+
+run_test("Basic counting loop", test_basic_counter, 10)
+
+// =============================================================================
+// TEST 2: Sum of numbers
+// =============================================================================
+test_sum = fun() {
+    sum = 0
+    
+    for (i = 1; i <= 100; i = i + 1) {
+        sum = sum + i
+    }
+    
+    return sum
+}
+
+run_test("Sum of numbers 1-100", test_sum, 5050)  // Sum = n*(n+1)/2 = 5050
+
+// =============================================================================
+// TEST 3: Early break
+// =============================================================================
+test_early_break = fun() {
+    result = 0
+    
+    for (i = 0; i < 100; i = i + 1) {
+        result = i
+        
+        if (i == 50) {
+            break
+        }
+    }
+    
+    return result
+}
+
+run_test("Early break", test_early_break, 50)
+
+// =============================================================================
+// TEST 4: Nested for loops
+// =============================================================================
+test_nested_loops = fun() {
+    iterations = 0
+    
+    for (i = 0; i < 5; i = i + 1) {
+        for (j = 0; j < 5; j = j + 1) {
+            iterations = iterations + 1
+        }
+    }
+    
+    return iterations
+}
+
+run_test("Nested for loops", test_nested_loops, 25)  // 5×5 = 25 iterations
+
+// =============================================================================
+// TEST 5: Break from nested loop
+// =============================================================================
+test_nested_break = fun() {
+    iterations = 0
+    
+    for (i = 0; i < 5; i = i + 1) {
+        for (j = 0; j < 5; j = j + 1) {
+            iterations = iterations + 1
+            
+            if (iterations >= 12) {
+                break
+            }
+        }
+        
+        if (iterations >= 12) {
+            break
+        }
+    }
+    
+    return iterations
+}
+
+run_test("Break from nested loop", test_nested_break, 12)
+
+// =============================================================================
+// TEST 6: Complex condition
+// =============================================================================
+test_complex_condition = fun() {
+    sum = 0
+    
+    for (i = 0; i < 20 && sum < 100; i = i + 1) {
+        sum = sum + i
+    }
+    
+    return [i, sum]  // Return array with both values
+}
+
+complex_result = test_complex_condition()
+run_test("Complex condition - iterations", fun() { return complex_result[0] }, 15)
+run_test("Complex condition - sum", fun() { return complex_result[1] }, 105)  // Sum exceeds 100
+
+// =============================================================================
+// TEST 7: Custom increment
+// =============================================================================
+test_custom_increment = fun() {
+    values = []
+    
+    for (i = 0; i < 10; i = i + 2) {
+        values.append(i)
+    }
+    
+    return values.size()  // Should have 5 elements (0,2,4,6,8)
+}
+
+run_test("Custom increment", test_custom_increment, 5)
+
+// =============================================================================
+// TEST 8: Decrement loop
+// =============================================================================
+test_decrement = fun() {
+    values = []
+    
+    for (i = 10; i > 0; i = i - 1) {
+        values.append(i)
+    }
+    
+    return values
+}
+
+decrement_result = test_decrement()
+run_test("Decrement loop - size", fun() { return decrement_result.size() }, 10)
+run_test("Decrement loop - first", fun() { return decrement_result[0] }, 10)
+run_test("Decrement loop - last", fun() { return decrement_result[9] }, 1)
+
+// =============================================================================
+// TEST 9: Initial false condition
+// =============================================================================
+test_initial_false = fun() {
+    executed = false
+    
+    for (i = 10; i < 0; i = i + 1) {
+        executed = true
+    }
+    
+    return executed
+}
+
+run_test("Initial false condition", test_initial_false, false)
+
+// =============================================================================
+// TEST 10: Empty parts
+// =============================================================================
+test_empty_parts = fun() {
+    // Initialize outside the loop
+    i = 0
+    count = 0
+    
+    // Empty initialization section
+    for (; i < 5; i = i + 1) {
+        count = count + 1
+    }
+    
+    return count
+}
+
+run_test("Empty initialization", test_empty_parts, 5)
+
+// =============================================================================
+// TEST 11: Multiple initializations and increments
+// =============================================================================
+test_multiple_parts = fun() {
+    sum = 0
+    
+    // This test uses multiple variables in a single for loop
+    for (i = 0, j = 10; i < 10 && j > 0; i = i + 1, j = j - 1) {
+        sum = sum + (i * j)
+    }
+    
+    return sum
+}
+
+// Result should be sum of i*j where i goes from 0-9 and j from 10-1
+run_test("Multiple variables", test_multiple_parts, 165)
+
+// =============================================================================
+// TEST 12: Loop variable scope
+// =============================================================================
+test_variable_scope = fun() {
+    // Test whether the loop variable is accessible outside the loop
+    for (i = 0; i < 10; i = i + 1) {
+        // Just incrementing i
+    }
+    
+    return i  // Should be 10 if i remains in scope
+}
+
+run_test("Variable scope", test_variable_scope, 10)
+
+// =============================================================================
+// TEST 13: Prime number finder
+// =============================================================================
+test_prime_finder = fun() {
+    primes = []
+    
+    for (n = 2; n <= 20; n = n + 1) {
+        is_prime = true
+        
+        for (i = 2; i * i <= n; i = i + 1) {
+            if (n % i == 0) {
+                is_prime = false
+                break
+            }
+        }
+        
+        if (is_prime) {
+            primes.append(n)
+        }
+    }
+    
+    return primes.size()  // Should find 8 primes (2,3,5,7,11,13,17,19)
+}
+
+run_test("Prime number finder", test_prime_finder, 8)
+
+// =============================================================================
+// Print final results
+// =============================================================================
+print("\n==== FOR LOOP TEST RESULTS ====")
+print("Total tests: " + test_count)
+print("Passed: " + pass_count)
+print("Failed: " + fail_count)
+
+if (fail_count == 0) {
+    print("\nAll for loop tests passed successfully! ✅")
+} else {
+    print("\nSome tests failed. Please check the output for details. ❌")
+}
+
+print("\nFor loop tests completed")

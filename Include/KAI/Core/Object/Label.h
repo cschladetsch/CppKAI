@@ -49,7 +49,7 @@ KAI_TYPE_TRAITS(Label, Number::Label,
 
 KAI_END
 
-//#include "KAI/Core/LabelHash.h"
+// #include "KAI/Core/LabelHash.h"
 
 namespace boost {
 inline size_t hash_value(KAI_NAMESPACE(Label) const &label) {

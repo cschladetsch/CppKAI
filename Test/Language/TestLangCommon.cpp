@@ -1,12 +1,13 @@
 #include "TestLangCommon.h"
 
+#include <KAI/Core/Exception.h>
+
 #include <boost/algorithm/string/predicate.hpp>
 #include <cwctype>
 #include <filesystem>
 
 #include "File.h"
 #include "TestCommon.h"
-#include <KAI/Core/Exception.h>
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -33,11 +34,10 @@ void TestLangCommon::SetUp() {
     _context = &*_exec->GetContextStack();
     _tree = &_console.GetTree();
     _root = _tree->GetRoot();
-    
+
     // Always ensure a clean state on setup
     _exec->ClearStacks();
     _exec->ClearContext();
-    
 }
 
 void TestLangCommon::TearDown() {
@@ -46,98 +46,97 @@ void TestLangCommon::TearDown() {
     _exec->ClearContext();
 }
 
-void TestLangCommon::ExecScriptFile(const std::string& scriptFileName) {
-    
+void TestLangCommon::ExecScriptFile(const std::string &scriptFileName) {
     const fs::path scriptsRoot(KAI_STRINGISE(KAI_SCRIPT_ROOT));
     const fs::path scriptPath = scriptsRoot / scriptFileName;
-    
+
     // Set the language based on file extension
     if (scriptFileName.find(".pi") != std::string::npos) {
         _console.SetLanguage(Language::Pi);
-    }
-    else if (scriptFileName.find(".rho") != std::string::npos) {
+    } else if (scriptFileName.find(".rho") != std::string::npos) {
         _console.SetLanguage(Language::Rho);
-        std::cout << "Setting language to Rho for script: " << scriptFileName << std::endl;
-    }
-    else if (scriptFileName.find(".tau") != std::string::npos) {
+        std::cout << "Setting language to Rho for script: " << scriptFileName
+                  << std::endl;
+    } else if (scriptFileName.find(".tau") != std::string::npos) {
         _console.SetLanguage(Language::Tau);
     }
-    
+
     // Clear stacks before execution
     _exec->ClearStacks();
     _exec->ClearContext();
-    
+
     try {
         auto contents = File::ReadAllText(scriptPath);
         std::cout << "Loaded script file: " << scriptPath.string() << std::endl;
-        
+
         // Add detailed execution steps
-        std::cout << "Executing script with length: " << contents.size() << " bytes" << std::endl;
-        
+        std::cout << "Executing script with length: " << contents.size()
+                  << " bytes" << std::endl;
+
         // Execute the script - let any exceptions propagate to the caller
         _console.Execute(contents.c_str());
-        
+
         std::cout << "Script execution complete" << std::endl;
-    }
-    catch (const std::exception& e) {
+    } catch (const std::exception &e) {
         std::cerr << "Exception in ExecScriptFile: " << e.what() << std::endl;
-        throw; // Re-throw the exception
-    }
-    catch (...) {
+        throw;  // Re-throw the exception
+    } catch (...) {
         std::cerr << "Unknown exception in ExecScriptFile" << std::endl;
-        throw; // Re-throw the exception
+        throw;  // Re-throw the exception
     }
 }
 
 void TestLangCommon::ExecScripts() {
     const fs::path scriptsRoot(KAI_STRINGISE(KAI_SCRIPT_ROOT));
-    
-    // Change this to match the test we're running
-    #ifdef KAI_LANG_NAME
-        const auto ext = File::Extension(".pi");
-        _console.SetLanguage(Language::KAI_LANG_NAME);
-    #else
-        // Default to the current test language
-        const auto ext = File::Extension(".rho");
-        _console.SetLanguage(Language::Rho);
-        std::cout << "Testing Rho language scripts" << std::endl;
-    #endif
+
+// Change this to match the test we're running
+#ifdef KAI_LANG_NAME
+    const auto ext = File::Extension(".pi");
+    _console.SetLanguage(Language::KAI_LANG_NAME);
+#else
+    // Default to the current test language
+    const auto ext = File::Extension(".rho");
+    _console.SetLanguage(Language::Rho);
+    std::cout << "Testing Rho language scripts" << std::endl;
+#endif
     for (auto const &scriptName :
          File::GetFilesWithExtensionRecursively(scriptsRoot, ext)) {
         // Include all scripts, including WIP ones
         // Only print script name in debug mode if needed
-        // KAI_TRACE() << "Testing script: " << scriptName.generic_string().c_str();
-        
+        // KAI_TRACE() << "Testing script: " <<
+        // scriptName.generic_string().c_str();
+
         // Clear stacks before each script execution to ensure a clean state
         _exec->ClearStacks();
         _exec->ClearContext();
-        
+
         auto contents = File::ReadAllText(scriptName);
         try {
             _console.Execute(contents.c_str());
-        }
-        catch (std::exception &e) {
+        } catch (std::exception &e) {
             // Log the exception but continue with the next script
             // This ensures one failing script doesn't stop the entire test
-            KAI_TRACE() << "Exception in script " << scriptName.generic_string().c_str() 
-                        << ": " << e.what();
-            
+            KAI_TRACE() << "Exception in script "
+                        << scriptName.generic_string().c_str() << ": "
+                        << e.what();
+
             // Make sure stacks are clean after an exception
             _exec->ClearStacks();
             _exec->ClearContext();
-        }
-        catch (...) {
+        } catch (...) {
             // Catch any other type of exception
-            KAI_TRACE() << "Unknown exception in script " << scriptName.generic_string().c_str();
-            
+            KAI_TRACE() << "Unknown exception in script "
+                        << scriptName.generic_string().c_str();
+
             // Make sure stacks are clean after an exception
             _exec->ClearStacks();
             _exec->ClearContext();
         }
-        
+
         // Debug stack state only when needed
-        // KAI_TRACE() << "Final stack depth: " << _exec->GetDataStack()->Size();
-        // KAI_TRACE() << "Final context stack depth: " << _exec->GetContextStack()->Size();
+        // KAI_TRACE() << "Final stack depth: " <<
+        // _exec->GetDataStack()->Size(); KAI_TRACE() << "Final context stack
+        // depth: " << _exec->GetContextStack()->Size();
     }
 }
 

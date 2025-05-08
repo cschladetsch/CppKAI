@@ -3,6 +3,10 @@
 #include <KAI/Core/Config/Options.h>
 #include <KAI/Core/Config/Platform.h>
 
+#ifndef KAI_NAMESPACE_NAME
+#define KAI_NAMESPACE_NAME kai
+#endif
+
 #define KAI_STRINGISE(A) KAI_STRINGISE2(A)
 #define KAI_STRINGISE2(A) #A
 
@@ -32,7 +36,7 @@
 
 // These no longer work :(
 //
-//#    define KAI_PLATFORM_INCLUDE(Header) \
+// #    define KAI_PLATFORM_INCLUDE(Header) \
 //    KAI_PP_CONCAT( \
 //        KAI_PP_CONCAT("KAI/Platform", KAI_PP_STRINGISE(KAI_PLATFORM_LABEL)) \
 //        , KAI_PP_STRINGISE(Header))

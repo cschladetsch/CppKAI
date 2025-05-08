@@ -47,10 +47,10 @@ Value<Stack> Executor::GetContextStack() const { return _context; }
 void Executor::SetContinuation(Value<Continuation> C) { _continuation = C; }
 
 struct Trace {
-    static std::ostream &Debug() { 
+    static std::ostream &Debug() {
         // Always apply bold style before returning cout
         std::cout << rang::style::bold;
-        return std::cout; 
+        return std::cout;
     }
 };
 
@@ -349,8 +349,8 @@ void Executor::Trace(const Label &, const StorageBase &object,
     stream << "Handle=" << object.GetHandle().GetValue() << ": "
            << "Parent=" << object.GetParentHandle().GetValue() << ": "
            << "Fullname=" << GetFullname(object) << ": "
-           << "Type=" << object.GetClass()->GetName() << ": "
-           << "StrStrm='" << object << "'\n";
+           << "Type=" << object.GetClass()->GetName() << ": " << "StrStrm='"
+           << object << "'\n";
 }
 
 void Executor::Trace(const Object &Q, StringStream &S) {
@@ -525,8 +525,7 @@ void Executor::PrintStack(std::ostream &out) const {
     int n = 0;
     for (const auto &obj : _data->GetStack()) {
         // Removed dim styling, using only bold styling with color
-        out << rang::style::bold << rang::fg::gray << "[" << n++
-            << "]: ";
+        out << rang::style::bold << rang::fg::gray << "[" << n++ << "]: ";
         out << rang::style::bold << rang::fg::yellow;
         WriteHumanReadableString(out, obj);
         // Use newline character instead of std::endl to avoid flushing
@@ -534,7 +533,7 @@ void Executor::PrintStack(std::ostream &out) const {
         // Reapply bold after each line to ensure it persists
         out << rang::style::bold;
     }
-    
+
     // Make sure we maintain bold style after printing the stack
     out << rang::style::bold;
 }
@@ -728,20 +727,394 @@ void Executor::Perform(Operation::Type op) {
             break;
 
         case Operation::WhileLoop: {
-            KAI_TRACE_ERROR() << "WhileLoop operation has been removed from the language";
-            KAI_THROW_1(Base, "WhileLoop operation has been removed from the language");
+            KAI_TRACE() << "Starting WhileLoop operation";
+
+            // Check if we have at least 2 items on the stack
+            if (_data->Size() < 2) {
+                KAI_TRACE_ERROR() << "WhileLoop: Expected at least 2 items on "
+                                     "stack, but found "
+                                  << _data->Size();
+                KAI_THROW_1(
+                    Base, "Not enough items on stack for WhileLoop operation");
+            }
+
+            // Log current stack for debugging
+            KAI_TRACE() << "Dumping stack content before popping:";
+            for (int i = 0; i < _data->Size(); i++) {
+                Object obj = _data->At(i);
+                if (obj.GetClass()) {
+                    KAI_TRACE() << "  Stack[" << i
+                                << "]: Type = " << obj.GetClass()->GetName();
+                } else {
+                    KAI_TRACE() << "  Stack[" << i << "]: <No class>";
+                }
+            }
+
+            // Pop the body and test continuations
+            Object bodyObj = Pop();
+            Object testObj = Pop();
+
+            // Verify types
+            if (!bodyObj.IsType<Continuation>() ||
+                !testObj.IsType<Continuation>()) {
+                KAI_TRACE_ERROR()
+                    << "WhileLoop: Expected Continuations, but got:";
+                if (bodyObj.GetClass()) {
+                    KAI_TRACE_ERROR()
+                        << "  Body: " << bodyObj.GetClass()->GetName();
+                } else {
+                    KAI_TRACE_ERROR() << "  Body: <No class>";
+                }
+
+                if (testObj.GetClass()) {
+                    KAI_TRACE_ERROR()
+                        << "  Test: " << testObj.GetClass()->GetName();
+                } else {
+                    KAI_TRACE_ERROR() << "  Test: <No class>";
+                }
+
+                // Push back what we popped so the stack stays consistent
+                Push(testObj);
+                Push(bodyObj);
+
+                KAI_THROW_1(
+                    Base, "WhileLoop: Type mismatch - expected Continuations");
+            }
+
+            // Convert to Continuation pointers
+            const Pointer<Continuation> body = bodyObj;
+            const Pointer<Continuation> test = testObj;
+
+            KAI_TRACE() << "Got valid continuations for test and body";
+
+            // Save current continuation
+            _context->Push(_continuation);
+
+            // Execute test, continue if true
+            KAI_TRACE() << "Starting while loop execution";
+            while (true) {
+                // Run the test condition
+                KAI_TRACE() << "Executing test condition";
+                _context->Push(Object());
+                Continue(test);
+
+                // Check if stack is empty after running test
+                if (_data->Empty()) {
+                    KAI_TRACE_ERROR()
+                        << "WhileLoop: Stack empty after running test";
+                    break;
+                }
+
+                // Get test result
+                bool testResult = PopBool();
+                KAI_TRACE()
+                    << "Test result: " << (testResult ? "true" : "false");
+
+                // Exit loop if test is false
+                if (!testResult) break;
+
+                // Run the body
+                KAI_TRACE() << "Executing loop body";
+                ContinueOnly(body);
+
+                // Check for break statement
+                if (_break) {
+                    KAI_TRACE() << "Break statement detected";
+                    _break = false;  // Reset break flag
+                    break;
+                }
+            }
+
+            // Restore continuation
+            _context->Pop();
+
+            KAI_TRACE() << "While loop completed successfully";
             break;
         }
-        
+
         case Operation::ForLoop: {
-            KAI_TRACE_ERROR() << "ForLoop operation has been removed from the language";
-            KAI_THROW_1(Base, "ForLoop operation has been removed from the language");
+            KAI_TRACE() << "Starting ForLoop operation";
+
+            // C-style for loops require at least 3 continuations:
+            // init, condition, increment, and body (optional)
+
+            // Check if we have at least 3 items on the stack
+            if (_data->Size() < 3) {
+                KAI_TRACE_ERROR()
+                    << "ForLoop: Expected at least 3 items on stack, but found "
+                    << _data->Size();
+                KAI_THROW_1(Base,
+                            "Not enough items on stack for ForLoop operation");
+            }
+
+            // Log current stack for debugging
+            KAI_TRACE() << "Dumping stack content before popping:";
+            for (int i = 0; i < _data->Size(); i++) {
+                Object obj = _data->At(i);
+                if (obj.GetClass()) {
+                    KAI_TRACE() << "  Stack[" << i
+                                << "]: Type = " << obj.GetClass()->GetName();
+                } else {
+                    KAI_TRACE() << "  Stack[" << i << "]: <No class>";
+                }
+            }
+
+            // Pop the continuations (body, increment, condition, init)
+            Object bodyObj, incObj, condObj, initObj;
+
+            // Check if we have a body (optional)
+            if (_data->Size() >= 4) {
+                bodyObj = Pop();
+            }
+
+            incObj = Pop();
+            condObj = Pop();
+            initObj = Pop();
+
+            // Verify types
+            bool validTypes = true;
+
+            if (!initObj.IsType<Continuation>()) {
+                KAI_TRACE_ERROR()
+                    << "ForLoop: Init is not a Continuation: "
+                    << (initObj.GetClass()
+                            ? initObj.GetClass()->GetName().ToString()
+                            : "<No class>");
+                validTypes = false;
+            }
+
+            if (!condObj.IsType<Continuation>()) {
+                KAI_TRACE_ERROR()
+                    << "ForLoop: Condition is not a Continuation: "
+                    << (condObj.GetClass()
+                            ? condObj.GetClass()->GetName().ToString()
+                            : "<No class>");
+                validTypes = false;
+            }
+
+            if (!incObj.IsType<Continuation>()) {
+                KAI_TRACE_ERROR()
+                    << "ForLoop: Increment is not a Continuation: "
+                    << (incObj.GetClass()
+                            ? incObj.GetClass()->GetName().ToString()
+                            : "<No class>");
+                validTypes = false;
+            }
+
+            if (bodyObj.Exists() && !bodyObj.IsType<Continuation>()) {
+                KAI_TRACE_ERROR()
+                    << "ForLoop: Body is not a Continuation: "
+                    << (bodyObj.GetClass()
+                            ? bodyObj.GetClass()->GetName().ToString()
+                            : "<No class>");
+                validTypes = false;
+            }
+
+            if (!validTypes) {
+                // Push back what we popped so the stack stays consistent
+                Push(initObj);
+                Push(condObj);
+                Push(incObj);
+                if (bodyObj.Exists()) Push(bodyObj);
+
+                KAI_THROW_1(Base,
+                            "ForLoop: Type mismatch - expected Continuations");
+            }
+
+            // Convert to Continuation pointers
+            const Pointer<Continuation> init = initObj;
+            const Pointer<Continuation> condition = condObj;
+            const Pointer<Continuation> increment = incObj;
+            Pointer<Continuation> body;
+            if (bodyObj.Exists()) body = bodyObj;
+
+            KAI_TRACE() << "Got valid continuations for for loop";
+
+            // Save current continuation
+            _context->Push(_continuation);
+
+            // Execute initialization
+            KAI_TRACE() << "Executing initialization";
+            ContinueOnly(init);
+
+            // Execute for loop
+            KAI_TRACE() << "Starting for loop execution";
+            while (true) {
+                // Run the condition
+                KAI_TRACE() << "Executing condition";
+                _context->Push(Object());
+                Continue(condition);
+
+                // Check if stack is empty after running condition
+                if (_data->Empty()) {
+                    KAI_TRACE_ERROR()
+                        << "ForLoop: Stack empty after running condition";
+                    break;
+                }
+
+                // Get condition result
+                bool condResult = PopBool();
+                KAI_TRACE()
+                    << "Condition result: " << (condResult ? "true" : "false");
+
+                // Exit loop if condition is false
+                if (!condResult) break;
+
+                // Run the body if it exists
+                if (body.Exists()) {
+                    KAI_TRACE() << "Executing loop body";
+                    ContinueOnly(body);
+
+                    // Check for break statement
+                    if (_break) {
+                        KAI_TRACE() << "Break statement detected";
+                        _break = false;  // Reset break flag
+                        break;
+                    }
+                }
+
+                // Run the increment
+                KAI_TRACE() << "Executing increment";
+                ContinueOnly(increment);
+            }
+
+            // Restore continuation
+            _context->Pop();
+
+            KAI_TRACE() << "For loop completed successfully";
             break;
         }
-        
+
         case Operation::DoLoop: {
-            KAI_TRACE_ERROR() << "DoLoop operation has been removed from the language";
-            KAI_THROW_1(Base, "DoLoop operation has been removed from the language");
+            KAI_TRACE() << "Starting DoLoop operation";
+
+            // DoLoop requires 2 continuations:
+            // 1. Body - executed first, then condition is checked
+            // 2. Condition - determines whether to continue looping
+
+            // Check if we have at least 2 items on the stack
+            if (_data->Size() < 2) {
+                KAI_TRACE_ERROR()
+                    << "DoLoop: Expected at least 2 items on stack, but found "
+                    << _data->Size();
+                KAI_THROW_1(Base,
+                            "Not enough items on stack for DoLoop operation");
+            }
+
+            // Log current stack for debugging
+            KAI_TRACE() << "Dumping stack content before popping:";
+            for (int i = 0; i < _data->Size(); i++) {
+                Object obj = _data->At(i);
+                if (obj.GetClass()) {
+                    KAI_TRACE() << "  Stack[" << i
+                                << "]: Type = " << obj.GetClass()->GetName();
+                } else {
+                    KAI_TRACE() << "  Stack[" << i << "]: <No class>";
+                }
+            }
+
+            // Pop body and condition continuations
+            Object condObj = Pop();
+            Object bodyObj = Pop();
+
+            // Verify types
+            if (!bodyObj.IsType<Continuation>() ||
+                !condObj.IsType<Continuation>()) {
+                KAI_TRACE_ERROR()
+                    << "DoLoop: Expected Continuations, but got types:";
+                if (bodyObj.GetClass()) {
+                    KAI_TRACE_ERROR()
+                        << "  Body: "
+                        << bodyObj.GetClass()->GetName().ToString();
+                } else {
+                    KAI_TRACE_ERROR() << "  Body: <No class>";
+                }
+
+                if (condObj.GetClass()) {
+                    KAI_TRACE_ERROR()
+                        << "  Condition: "
+                        << condObj.GetClass()->GetName().ToString();
+                } else {
+                    KAI_TRACE_ERROR() << "  Condition: <No class>";
+                }
+
+                // Push back what we popped so the stack stays consistent
+                Push(bodyObj);
+                Push(condObj);
+
+                KAI_THROW_1(Base,
+                            "DoLoop: Type mismatch - expected Continuations");
+            }
+
+            // Convert to Continuation pointers
+            const Pointer<Continuation> body = bodyObj;
+            const Pointer<Continuation> condition = condObj;
+
+            KAI_TRACE() << "Got valid continuations for body and condition";
+
+            // Save current continuation
+            _context->Push(_continuation);
+
+            int loopCount = 0;
+            const int MAX_LOOPS = 1000;  // Safety to prevent infinite loops
+
+            // Do-while loop logic - execute body first, then check condition
+            KAI_TRACE() << "Starting do-while loop execution";
+            do {
+                loopCount++;
+                if (loopCount > MAX_LOOPS) {
+                    KAI_TRACE_ERROR()
+                        << "DoLoop: Exceeded maximum loop count of "
+                        << MAX_LOOPS;
+                    KAI_THROW_1(Base,
+                                "DoLoop: Possible infinite loop detected");
+                }
+
+                // Execute body
+                KAI_TRACE()
+                    << "Executing loop body (iteration " << loopCount << ")";
+                ContinueOnly(body);
+
+                // Check for break statement
+                if (_break) {
+                    KAI_TRACE() << "Break statement detected";
+                    _break = false;  // Reset break flag
+                    break;
+                }
+
+                // Execute condition
+                KAI_TRACE()
+                    << "Executing condition (iteration " << loopCount << ")";
+                _context->Push(Object());
+                Continue(condition);
+
+                // Check if stack is empty after condition
+                if (_data->Empty()) {
+                    KAI_TRACE_ERROR()
+                        << "DoLoop: Stack empty after running condition";
+                    break;
+                }
+
+                // Check condition result
+                bool continueLoop = PopBool();
+                KAI_TRACE() << "Condition result: "
+                            << (continueLoop ? "true" : "false");
+
+                // Exit if condition is false
+                if (!continueLoop) {
+                    KAI_TRACE() << "Loop condition is false, exiting loop";
+                    break;
+                }
+
+                KAI_TRACE() << "Loop condition is true, continuing loop";
+
+            } while (true);
+
+            // Restore continuation
+            _context->Pop();
+
+            KAI_TRACE() << "DoLoop completed successfully after " << loopCount
+                        << " iterations";
             break;
         }
 
@@ -843,66 +1216,213 @@ void Executor::Perform(Operation::Type op) {
         }
 
         case Operation::ForEach: {
-            Object F = Pop();
-            Object C = Pop();
+            KAI_TRACE() << "Starting ForEach operation";
 
+            Object F = Pop();  // Function or continuation to apply
+            Object C = Pop();  // Collection to iterate over
+
+            // Log types for diagnostic purposes
+            KAI_TRACE() << "Function/continuation type: "
+                        << (F.GetClass() ? F.GetClass()->GetName().ToString()
+                                         : "<No class>");
+            KAI_TRACE() << "Collection type: "
+                        << (C.GetClass() ? C.GetClass()->GetName().ToString()
+                                         : "<No class>");
+
+            // Verify that F is a valid function or continuation
+            if (!F.Exists() || !F.IsType<Continuation>()) {
+                KAI_TRACE_ERROR()
+                    << "ForEach: Expected a Continuation, but got: "
+                    << (F.GetClass() ? F.GetClass()->GetName().ToString()
+                                     : "<No class>");
+
+                // Push back objects to maintain stack consistency
+                Push(C);
+                Push(F);
+
+                KAI_THROW_1(Base, "ForEach: Invalid continuation");
+            }
+
+            // Handle different collection types
             switch (C.GetTypeNumber().ToInt()) {
                 case Type::Number::Array:
+                    KAI_TRACE() << "Iterating over Array";
                     Push(ForEach(ConstDeref<Array>(C), F));
                     break;
 
                 case Type::Number::Stack:
+                    KAI_TRACE() << "Iterating over Stack";
                     Push(ForEach(ConstDeref<Stack>(C), F));
                     break;
 
                 case Type::Number::List:
+                    KAI_TRACE() << "Iterating over List";
                     Push(ForEach(ConstDeref<List>(C), F));
                     break;
-                    
-                /* Set not implemented yet
-                case Type::Number::Set:
-                    Push(ForEach(ConstDeref<Set>(C), F));
-                    break;
-                */
-                    
+
                 case Type::Number::Map:
+                    KAI_TRACE() << "Iterating over Map";
                     Push(ForEach(ConstDeref<Map>(C), F));
                     break;
-                    
+
                 case Type::Number::String: {
+                    KAI_TRACE() << "Iterating over String";
                     // Special case for strings - iterate over characters
                     auto array = New<Array>();
-                    const String& str = ConstDeref<String>(C);
+                    const String &str = ConstDeref<String>(C);
                     for (auto ch : str) {
                         // Convert character to string and push
                         String charStr(1, ch);
                         Push(New(charStr));
-                        
+
                         // Run the function on this character
                         _context->Push(Object());
+                        KAI_TRACE()
+                            << "Running function on character: " << charStr;
                         Continue(F);
-                        
+
                         // Store the result
-                        array->Append(Pop());
+                        if (!_data->Empty()) {
+                            array->Append(Pop());
+                        } else {
+                            KAI_TRACE_ERROR() << "ForEach: Function returned "
+                                                 "no result for character";
+                        }
+
+                        // Check for break
+                        if (_break) {
+                            KAI_TRACE()
+                                << "Break detected during string iteration";
+                            _break = false;
+                            break;
+                        }
                     }
                     Push(array);
                     break;
                 }
-                    
+
                 default: {
-                    String msg = String("ForEach not implemented for type ") + 
-                        C.GetClass()->GetName().ToString();
+                    String msg = String("ForEach not implemented for type ") +
+                                 C.GetClass()->GetName().ToString();
+                    KAI_TRACE_ERROR() << msg;
+
+                    // Push back objects to maintain stack consistency
+                    Push(C);
+                    Push(F);
+
                     KAI_THROW_1(Base, msg.c_str());
                     break;
                 }
             }
 
+            KAI_TRACE() << "ForEach completed successfully";
             break;
         }
-        
+
         case Operation::AcrossAllNodes: {
-            KAI_TRACE_ERROR() << "AcrossAllNodes operation has been removed from the language";
-            KAI_THROW_1(Base, "AcrossAllNodes operation has been removed from the language");
+            KAI_TRACE() << "Starting AcrossAllNodes operation";
+
+            // AcrossAllNodes requires 3 arguments:
+            // 1. Function or continuation to apply
+            // 2. Collection to iterate over
+            // 3. Network node (or null for local execution)
+
+            // Check if we have at least 3 items on the stack
+            if (_data->Size() < 3) {
+                KAI_TRACE_ERROR() << "AcrossAllNodes: Expected at least 3 "
+                                     "items on stack, but found "
+                                  << _data->Size();
+                KAI_THROW_1(
+                    Base,
+                    "Not enough items on stack for AcrossAllNodes operation");
+            }
+
+            // Pop the arguments
+            Object funcObj = Pop();  // Function to apply
+            Object collObj = Pop();  // Collection to iterate over
+            Object nodeObj = Pop();  // Network node (or null)
+
+            // Log types for diagnostics
+            KAI_TRACE() << "Function type: "
+                        << (funcObj.GetClass()
+                                ? funcObj.GetClass()->GetName().ToString()
+                                : "<No class>");
+            KAI_TRACE() << "Collection type: "
+                        << (collObj.GetClass()
+                                ? collObj.GetClass()->GetName().ToString()
+                                : "<No class>");
+            KAI_TRACE() << "Node type: "
+                        << (nodeObj.GetClass()
+                                ? nodeObj.GetClass()->GetName().ToString()
+                                : "<No class>");
+
+            // Verify function type
+            if (!funcObj.IsType<Continuation>()) {
+                KAI_TRACE_ERROR()
+                    << "AcrossAllNodes: Expected Continuation, but got: "
+                    << (funcObj.GetClass()
+                            ? funcObj.GetClass()->GetName().ToString()
+                            : "<No class>");
+
+                // Push back objects
+                Push(nodeObj);
+                Push(collObj);
+                Push(funcObj);
+
+                KAI_THROW_1(Base, "AcrossAllNodes: Invalid continuation type");
+            }
+
+            // Check if we have a valid collection
+            if (!collObj.Exists() ||
+                (collObj.GetTypeNumber() != Type::Number::Array &&
+                 collObj.GetTypeNumber() != Type::Number::List &&
+                 collObj.GetTypeNumber() != Type::Number::Map)) {
+                KAI_TRACE_ERROR()
+                    << "AcrossAllNodes: Expected Array, List, or Map, but got: "
+                    << (collObj.GetClass()
+                            ? collObj.GetClass()->GetName().ToString()
+                            : "<No class>");
+
+                // Push back objects
+                Push(nodeObj);
+                Push(collObj);
+                Push(funcObj);
+
+                KAI_THROW_1(Base, "AcrossAllNodes: Invalid collection type");
+            }
+
+            // Create a result array
+            auto result = New<Array>();
+
+            // Check if we're running locally (empty or null node)
+            if (!nodeObj.Exists() ||
+                nodeObj.GetTypeNumber() == Type::Number::None) {
+                KAI_TRACE() << "Executing locally (no network node)";
+
+                // Just forward to ForEach
+                Push(collObj);  // Collection
+                Push(funcObj);  // Function
+                Perform(Operation::ForEach);
+
+                // Return the result from ForEach
+                return;
+            }
+
+// Handle network node case - execute remotely
+#ifdef KAI_USE_RAKNET
+            // This requires full implementation of the network framework
+            KAI_TRACE() << "Network nodes not fully implemented yet";
+            KAI_THROW_1(
+                Base,
+                "Network execution in AcrossAllNodes not fully implemented");
+#else
+            KAI_TRACE_ERROR() << "Network support not enabled";
+            KAI_THROW_1(Base,
+                        "Network support is required for remote AcrossAllNodes "
+                        "execution");
+#endif
+
+            KAI_TRACE() << "AcrossAllNodes completed";
             break;
         }
 
@@ -911,32 +1431,32 @@ void Executor::Perform(Operation::Type op) {
             break;
 
         case Operation::ForEachContained: {
-            // ForEachContained applies a function to each property/field of an object
+            // ForEachContained applies a function to each property/field of an
+            // object
             Object func = Pop();
             Object obj = Pop();
-            
-            if (!obj.Exists())
-                KAI_THROW_0(NullObject);
-                
+
+            if (!obj.Exists()) KAI_THROW_0(NullObject);
+
             auto result = New<Array>();
-            const StorageBase& storage = GetStorageBase(obj);
-            
+            const StorageBase &storage = GetStorageBase(obj);
+
             // Get all children
-            for (const auto& pair : storage.GetDictionary()) {
+            for (const auto &pair : storage.GetDictionary()) {
                 // Push the key (label)
                 Push(New(pair.first));
-                
+
                 // Push the value
                 Push(pair.second);
-                
+
                 // Run the function on this pair
                 _context->Push(Object());
                 Continue(func);
-                
+
                 // Store the result
                 result->Append(Pop());
             }
-            
+
             Push(result);
             break;
         }
@@ -1241,8 +1761,10 @@ void Executor::Perform(Operation::Type op) {
         }
 
         case Operation::ModEquals: {
-            KAI_TRACE_ERROR() << "ModEquals operation has been removed from the language";
-            KAI_THROW_1(Base, "ModEquals operation has been removed from the language");
+            KAI_TRACE_ERROR()
+                << "ModEquals operation has been removed from the language";
+            KAI_THROW_1(
+                Base, "ModEquals operation has been removed from the language");
             break;
         }
 
@@ -1277,10 +1799,12 @@ void Executor::Perform(Operation::Type op) {
 
             break;
         }
-        
+
         case Operation::Modulo: {
-            KAI_TRACE_ERROR() << "Modulo operation has been removed from the language";
-            KAI_THROW_1(Base, "Modulo operation has been removed from the language");
+            KAI_TRACE_ERROR()
+                << "Modulo operation has been removed from the language";
+            KAI_THROW_1(Base,
+                        "Modulo operation has been removed from the language");
             break;
         }
 

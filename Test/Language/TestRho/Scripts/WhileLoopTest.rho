@@ -1,0 +1,38 @@
+// Test file for while loops in the Rho language
+
+// Initialize variables
+print("Testing basic while loop")
+i = 0
+sum = 0
+
+// Basic while loop with parentheses and braces
+while (i < 5) {
+    print("Iteration " + i)
+    sum = sum + i
+    i = i + 1
+}
+
+print("Sum should be 10: " + sum)
+
+// Reset for another test
+j = 10
+countdown = ""
+
+// While loop with decrement
+while (j > 0) {
+    countdown = countdown + j + " "
+    j = j - 1
+}
+
+print("Countdown: " + countdown)
+
+// Test a while loop that doesn't execute (false condition)
+x = 0
+while (x > 5) {
+    print("This should not print")
+    x = x + 1
+}
+
+print("x should still be 0: " + x)
+
+print("While loop tests complete")

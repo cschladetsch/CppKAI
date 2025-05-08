@@ -69,10 +69,7 @@ class String {
     }
 
     // We need this for the Boolean property to work properly
-    explicit operator bool() const
-    {
-        return !empty();
-    }
+    explicit operator bool() const { return !empty(); }
 
     const_iterator begin() const { return _string.begin(); }
     const_iterator end() const { return _string.end(); }

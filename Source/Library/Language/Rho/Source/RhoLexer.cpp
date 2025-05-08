@@ -1,4 +1,5 @@
 #include <KAI/Language/Rho/RhoLexer.h>
+
 #include <iostream>
 
 using namespace std;
@@ -7,7 +8,8 @@ KAI_BEGIN
 
 void RhoLexer::AddKeyWords() {
     std::cout << "RhoLexer::AddKeyWords() - Adding keywords" << std::endl;
-    
+
+    // Basic keywords
     keyWords["if"] = Enum::If;
     keyWords["else"] = Enum::Else;
     keyWords["true"] = Enum::True;
@@ -17,10 +19,25 @@ void RhoLexer::AddKeyWords() {
     keyWords["fun"] = Enum::Fun;
     keyWords["yield"] = Enum::Yield;
     keyWords["assert"] = Enum::Assert;
+
+    // Pi language transitions
     keyWords["pi"] = Enum::ToPi;
     keyWords["pi{"] = Enum::PiSequence;
-    
+
+    // Iteration constructs
+    keyWords["while"] = Enum::While;
+    keyWords["for"] = Enum::For;
+    keyWords["do"] = Enum::DoWhile;  // 'do' is recognized as DoWhile token
+    keyWords["foreach"] = Enum::ForEach;
+
     std::cout << "Keywords added: " << keyWords.size() << std::endl;
+
+    // Debug output of all keywords
+    for (const auto& kw : keyWords) {
+        std::cout << "  Keyword: '" << kw.first << "' -> token type: "
+                  << RhoTokenEnumType::ToString(kw.second) << " ("
+                  << (int)kw.second << ")" << std::endl;
+    }
 }
 
 bool RhoLexer::NextToken() {
@@ -30,11 +47,13 @@ bool RhoLexer::NextToken() {
         return false;
     }
 
-    std::cout << "RhoLexer::NextToken() - Current char: '" << current << "' (ASCII " << (int)current << ")" << std::endl;
+    std::cout << "RhoLexer::NextToken() - Current char: '" << current
+              << "' (ASCII " << (int)current << ")" << std::endl;
 
     // Allow identifiers to start with either a letter or an underscore
     if (isalpha(current) || current == '_') {
-        std::cout << "Lexing identifier or keyword starting with: " << current << std::endl;
+        std::cout << "Lexing identifier or keyword starting with: " << current
+                  << std::endl;
         return LexPathname();
     }
 
@@ -90,8 +109,7 @@ bool RhoLexer::NextToken() {
             if (Peek() == '/') {
                 Next();
                 int start = offset;
-                while (Next() != '\n')
-                    ;
+                while (Next() != '\n');
 
                 Token comment(Enum::Comment, *this, lineNumber,
                               Slice(start, offset));
@@ -128,53 +146,76 @@ bool RhoLexer::NextToken() {
     return false;
 }
 
-bool Contains(const char *allowed, char current);
+bool Contains(const char* allowed, char current);
 
 // TODO: this is the same as PiLexer::PathnameOrKeyword(!)
 bool RhoLexer::LexPathname() {
+    // Store the current position for later use
     int start = offset;
+
+    // Check if this is a quoted pathname
     bool quoted = Current() == '\'';
     if (quoted) Next();
 
+    // Check if this is a rooted pathname
     bool rooted = Current() == '/';
     if (rooted) Next();
 
-    bool prevIdent = false;
-    do {
-        Token result = LexAlpha();
+    // If this is not quoted or rooted, it might be a keyword or identifier
+    if (!quoted && !rooted && (isalpha(Current()) || Current() == '_')) {
+        // Save the start position of the word
+        int wordStart = offset;
+        std::string word;
 
-        if (result.type != TokenEnumType::Ident) {
-            // this is actually a keyword
-            if (quoted || rooted) {
-                return false;
-            }
-
-            // keywords cannot be part of a path
-            if (prevIdent) {
-                return false;
-            }
-
-            Add(result);
-            return true;
-        }
-
-        prevIdent = true;
-
-        auto isSeparator = Contains(Pathname::Literals::AllButQuote, Current());
-        if (isSeparator) {
+        // Collect the entire word
+        while (isalnum(Current()) || Current() == '_') {
+            word += Current();
             Next();
-            continue;
         }
 
-        // Allow identifiers to start with either a letter or an underscore
-        if (!isalpha(Current()) && Current() != '_') {
+        // Check if it's a keyword - simplified logic to just use the keyWords
+        // map
+        auto it = keyWords.find(word);
+        if (it != keyWords.end()) {
+            std::cout << "Found keyword: '" << word << "' -> token type: "
+                      << RhoTokenEnumType::ToString(it->second) << " ("
+                      << (int)it->second << ")" << std::endl;
+
+            // Add the token with the appropriate enum type
+            return Add(it->second, offset - wordStart);
+        }
+
+        // Not a keyword, it's a regular identifier
+        std::cout << "Regular identifier: '" << word << "'" << std::endl;
+        return Add(Enum::Ident, offset - wordStart);
+    }
+
+    // If it's a quoted or rooted path, process it as a pathname
+    if (quoted || rooted) {
+        bool prevIdent = false;
+
+        do {
+            if (isalpha(Current()) || Current() == '_') {
+                // Gather the identifier part
+                while (isalnum(Current()) || Current() == '_') {
+                    Next();
+                }
+                prevIdent = true;
+            }
+
+            if (Contains(Pathname::Literals::AllButQuote, Current())) {
+                Next();
+                continue;
+            }
+
             break;
-        }
-    } while (true);
+        } while (true);
 
-    Add(Enum::Pathname, Slice(start, offset));
+        return Add(Enum::Pathname, Slice(start, offset));
+    }
 
-    return true;
+    // If we get here, it's probably an error or an empty identifier
+    return Add(Enum::Ident, Slice(start, offset));
 }
 
 void RhoLexer::Terminate() { Add(Enum::None, 0); }

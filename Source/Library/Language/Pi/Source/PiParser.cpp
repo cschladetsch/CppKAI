@@ -27,8 +27,7 @@ bool PiParser::Run(Structure st) {
     KAI_UNUSED_1(
         st);  // no real structure to Pi - it's mostly a sequence of tokens
     root = NewNode(AstEnum::Continuation);
-    while (!Failed && NextSingle(root))
-        ;
+    while (!Failed && NextSingle(root));
 
     return !Failed;
 }

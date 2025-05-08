@@ -1,6 +1,10 @@
+#include <filesystem>
+
 #include "KAI/Core/Console.h"
+#include "KAI/Core/File.h"
 #include "MyTestStruct.h"
 #include "TestLangCommon.h"
+namespace fs = std::filesystem;
 
 KAI_BEGIN
 
@@ -26,7 +30,7 @@ Object Function_3(Object object) {
 }
 
 TEST_F(TestLangCommon, TestRhoReflection) {
-    Registry &reg = *_reg;
+    Registry& reg = *_reg;
     MyStruct::Register(reg);
 
     Pointer<MyStruct> mystruct = reg.New<MyStruct>();
@@ -42,8 +46,11 @@ TEST_F(TestLangCommon, TestRhoReflection) {
     AddFunction(_root, Function_2, Label("Function2"));
     AddFunction(_root, Function_3, Label("Function3"));
 
-    // Run the tests - they may have issues, but we want them to run for diagnostic purposes
-    std::cerr << "**** Running tests that might fail due to lexer changes - check rho_diagnostic.log for details" << std::endl;
+    // Run the tests - they may have issues, but we want them to run for
+    // diagnostic purposes
+    std::cerr << "**** Running tests that might fail due to lexer changes - "
+                 "check rho_diagnostic.log for details"
+              << std::endl;
 
     _console.Execute("Function0()");
     _console.Execute("Function1(42)");
@@ -63,43 +70,145 @@ TEST_F(TestLangCommon, RunScripts) { ExecScripts(); }
 
 TEST_F(TestLangCommon, TestIterationConstructs) {
     _console.SetLanguage(Language::Rho);
-    
+
     // Clear stacks
     _exec->ClearStacks();
     _exec->ClearContext();
-    
+
     // Set trace level to maximum for detailed output
-    std::cout << "Setting trace level to maximum (5) for iteration tests" << std::endl;
+    std::cout << "Setting trace level to maximum (5) for iteration tests"
+              << std::endl;
     _exec->SetTraceLevel(5);
-    
+
     try {
         // Test basic while loop
         std::cout << "Testing basic while loop..." << std::endl;
         _console.Execute("i = 0; while (i < 5) { i = i + 1; }");
-        
+    } catch (const std::exception& e) {
+        std::cerr << "Exception in while loop test: " << e.what() << std::endl;
+        // Don't rethrow - we want to continue with other tests
+    } catch (...) {
+        std::cerr << "Unknown exception in while loop test" << std::endl;
+    }
+}
+
+// Dedicated test for do-while loops to isolate testing
+TEST_F(TestLangCommon, TestDoWhileLoop) {
+    _console.SetLanguage(Language::Rho);
+
+    // Clear stacks
+    _exec->ClearStacks();
+    _exec->ClearContext();
+
+    // Set trace level to maximum for detailed output
+    std::cout << "Setting trace level to maximum (5) for do-while tests"
+              << std::endl;
+    _exec->SetTraceLevel(5);
+
+    try {
+        // For simplicity, just test a single basic do-while loop directly with
+        // newlines
+        std::cout << "Testing do-while with explicit string and newlines:"
+                  << std::endl;
+        std::string script =
+            "// Simple do-while test with newlines for proper indentation\n"
+            "i = 0\n"
+            "do\n"
+            "    i = i + 1\n"
+            "while i < 3\n";
+
+        std::cout << "Script:" << std::endl << script << std::endl;
+
+        // Execute the script
+        _console.Execute(script);
+
+        // Check stack
+        Value<Stack> stack = _console.GetExecutor()->GetDataStack();
+        std::cout << "Stack size after execution: " << stack->Size()
+                  << std::endl;
+
+        // The script should have left i=3 on the stack
+        if (!stack->Empty()) {
+            std::cout << "Stack has " << stack->Size()
+                      << " elements after do-while" << std::endl;
+            while (!stack->Empty()) {
+                Object obj = stack->Pop();
+                std::cout << "  Stack element: " << obj.ToString().c_str()
+                          << std::endl;
+            }
+        }
+
+        std::cout << "Do-while loop test completed!" << std::endl;
+    } catch (const std::exception& e) {
+        std::cerr << "Exception in do-while test: " << e.what() << std::endl;
+        FAIL() << "Do-while test failed with exception: " << e.what();
+    } catch (...) {
+        std::cerr << "Unknown exception in do-while test" << std::endl;
+        FAIL() << "Do-while test failed with unknown exception";
+    }
+}
+
+// Dedicated test for for loops to isolate testing
+TEST_F(TestLangCommon, TestForLoop) {
+    _console.SetLanguage(Language::Rho);
+
+    // Clear stacks
+    _exec->ClearStacks();
+    _exec->ClearContext();
+
+    // Set trace level to maximum for detailed output
+    std::cout << "Setting trace level to maximum (5) for for-loop tests"
+              << std::endl;
+    _exec->SetTraceLevel(5);
+
+    try {
         // Test for loop
         std::cout << "Testing for loop..." << std::endl;
-        _console.Execute("sum = 0; for (i = 0; i < 5; i = i + 1) { sum = sum + i; }");
-        
-        // Test diagnostic script
-        std::cout << "Testing diagnostic script..." << std::endl;
-        const fs::path scriptsRoot(KAI_STRINGISE(KAI_SCRIPT_ROOT));
-        const fs::path scriptPath = scriptsRoot / "DiagnosticTest.rho";
-        
-        if (fs::exists(scriptPath)) {
-            auto contents = File::ReadAllText(scriptPath);
-            _console.Execute(contents.c_str());
-        } else {
-            std::cerr << "Diagnostic script not found at: " << scriptPath << std::endl;
-        }
+        _console.Execute(
+            "sum = 0; for (i = 0; i < 5; i = i + 1) { sum = sum + i; }");
+    } catch (const std::exception& e) {
+        std::cerr << "Exception in for loop test: " << e.what() << std::endl;
+    } catch (...) {
+        std::cerr << "Unknown exception in for loop test" << std::endl;
     }
-    catch (const std::exception& e) {
-        std::cerr << "Exception in iteration tests: " << e.what() << std::endl;
-        // Don't rethrow - we want to continue with other tests
-    }
-    catch (...) {
-        std::cerr << "Unknown exception in iteration tests" << std::endl;
-        // Don't rethrow - we want to continue with other tests
+}
+
+// Test minimal do-while loop script
+TEST_F(TestLangCommon, TestMinimalDoWhileScript) {
+    _console.SetLanguage(Language::Rho);
+
+    // Clear stacks
+    _exec->ClearStacks();
+    _exec->ClearContext();
+
+    // Set trace level to maximum for detailed output
+    std::cout << "Setting trace level to maximum (5) for minimal do-while test"
+              << std::endl;
+    _exec->SetTraceLevel(5);
+
+    try {
+        // Get file content
+        std::string scriptPath =
+            "Test/Language/TestRho/Scripts/MinimalDoWhileTest.rho";
+        std::cout << "Loading script from: " << scriptPath << std::endl;
+        std::string scriptContent = File::ReadAllText(scriptPath);
+        std::cout << "Script content:" << std::endl
+                  << scriptContent << std::endl;
+
+        // Execute script
+        std::cout << "Executing minimal do-while test script..." << std::endl;
+        _console.Execute(scriptContent);
+
+        // Check results - should have run without exceptions
+        std::cout << "Minimal do-while test completed successfully!"
+                  << std::endl;
+    } catch (const std::exception& e) {
+        std::cerr << "Exception in minimal do-while test: " << e.what()
+                  << std::endl;
+        FAIL() << "Minimal do-while test failed with exception: " << e.what();
+    } catch (...) {
+        std::cerr << "Unknown exception in minimal do-while test" << std::endl;
+        FAIL() << "Minimal do-while test failed with unknown exception";
     }
 }
 

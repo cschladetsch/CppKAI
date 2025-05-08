@@ -31,6 +31,8 @@ class RhoTranslator : public TranslatorBase<RhoParser> {
     void TranslatePathname(AstNodePtr node);
     void TranslateIndex(AstNodePtr node);
     void TranslateIf(AstNodePtr node);
+    void TranslateWhile(AstNodePtr node);
+    void TranslateDoWhile(AstNodePtr node);
 };
 
 KAI_END

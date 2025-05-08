@@ -137,8 +137,7 @@ bool PiLexer::NextToken() {
             if (Peek() == '/') {
                 Next();
                 const int start = offset;
-                while (Next() != '\n')
-                    ;
+                while (Next() != '\n');
 
                 Add(Token(Enum::Comment, *this, lineNumber,
                           Slice(start, offset)));

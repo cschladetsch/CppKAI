@@ -49,8 +49,7 @@ bool TauLexer::NextToken() {
             if (Peek() == '/') {
                 Next();
                 int start = offset;
-                while (Next() != '\n')
-                    ;
+                while (Next() != '\n');
                 return Add(Enum::Comment, offset - start);
             }
 

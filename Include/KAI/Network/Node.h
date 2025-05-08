@@ -1,7 +1,7 @@
 #pragma once
 
 #include "KAI/Network/Network.h"
-#include "KAI/Network/RakNetStub.h" // Include RakNetStub.h directly
+#include "KAI/Network/RakNetStub.h"  // Include RakNetStub.h directly
 
 KAI_NET_BEGIN
 
@@ -34,46 +34,48 @@ struct Node {
     void Connect(IpAddress const &, int port);
     void Disconnect();
     void Shutdown();
-    
+
     bool IsRunning() const { return _isRunning; }
-    bool Update(); // Process incoming messages, returns true if messages were processed
+    bool Update();  // Process incoming messages, returns true if messages were
+                    // processed
 
     // Peer discovery methods
     void StartDiscovery(int discoveryPort = DefaultPort);
     void StopDiscovery();
     bool IsDiscovering() const;
     std::vector<RakNet::SystemAddress> GetDiscoveredPeers() const;
-    void SetPeerDiscoveryCallback(std::function<void(const RakNet::SystemAddress&)> callback);
+    void SetPeerDiscoveryCallback(
+        std::function<void(const RakNet::SystemAddress &)> callback);
 
     // Get all active connections
     std::vector<RakNet::SystemAddress> GetConnections() const;
-    
+
     // Check if connected to a specific address
-    bool IsConnectedTo(const IpAddress& address, int port) const;
-    
+    bool IsConnectedTo(const IpAddress &address, int port) const;
+
     // Get connection count
     size_t GetConnectionCount() const;
-    
+
     // Get ping to a specific address
-    int GetPing(const IpAddress& address, int port) const;
+    int GetPing(const IpAddress &address, int port) const;
 
     template <class T = void>
     Future<T> Send(NetHandle handle, const Object &obj);
 
     template <class T = void>
     Future<T> Receive(NetHandle handle, Object obj);
-    
+
     // Broadcast an object to all connected peers
     template <class T = void>
     void Broadcast(const Object &obj);
-    
+
    private:
     void ProcessPacket(RakNet::Packet *packet);
     void ProcessObjectMessage(RakNet::Packet *packet);
     void ProcessFunctionCall(RakNet::Packet *packet);
     void ProcessEventNotification(RakNet::Packet *packet);
     void OnConnectionEvent(int connectionId, ConnectionEvent event);
-    
+
     // Helper method to get the packet identifier
     unsigned char GetPacketIdentifier(RakNet::Packet *packet);
 

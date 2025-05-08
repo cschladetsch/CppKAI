@@ -1,47 +1,48 @@
-// DiagnosticTest.rho
-// This is a diagnostic test script for the Rho language
-// Iteration constructs have been removed
+// Simple diagnostic test file for Rho language
 
-// Initialize diagnostic variables
-test_results = []
+///
+// This is a simplified test file for debugging purposes
+// It exercises basic language features to verify core functionality
 
-// SECTION 1: Basic tests
-print("==== SECTION 1: Basic tests ====")
+// Define a trace array for logging
+trace = []
 
-// Test 1.1: Basic arithmetic
-print("Test 1.1: Basic arithmetic")
-a = 10 + 5
-b = 20 - 7
+print("Begin diagnostic test")
+
+// Try basic expressions
+a = 1 + 5
+b = 2 - 7
 c = 6 * 4
-d = 20 / 4
-test_results.append("Basic arithmetic: 10 + 5 = " + a)
-test_results.append("Basic arithmetic: 20 - 7 = " + b)
-test_results.append("Basic arithmetic: 6 * 4 = " + c) 
-test_results.append("Basic arithmetic: 20 / 4 = " + d)
+d = 2 / 4
+trace("a = " + a)
+trace("b = " + b)
+trace("c = " + c) 
+trace("d = " + d)
 
-// SECTION 2: Conditionals
-print("==== SECTION 2: Conditionals ====")
-
-// Test 2.1: Simple conditional
-print("Test 2.1: Simple conditional")
-result = ""
-if 10 > 5
-    result = "10 is greater than 5"
+print("Testing simple conditionals")
+// Try a basic conditional
+if 1 > 5
+    trace("1 > 5")
 else
-    result = "This should not happen"
-test_results.append("Conditional result: " + result)
+    trace("1 <= 5")
 
-// SECTION 3: Functions
-print("==== SECTION 3: Functions ====")
-
-// Test 3.1: Basic function
-print("Test 3.1: Basic function")
+// Define a function
+print("Testing functions")
 square = fun(x) { 
     return x * x 
 }
 result = square(5)
-test_results.append("Square function: square(5) = " + result)
+trace("square(5) = " + result)
 
-// Print results
-print("\n==== DIAGNOSTIC TEST RESULTS ====")
-print("Test completed - iteration constructs removed")
+print("Testing loops")
+// Try a basic while loop - this will probably fail
+i = 0
+print("Starting loop test...")
+// Try a basic while loop with diagnostic tracing
+while (i < 3) {
+    trace("i = " + i)
+    i = i + 1
+}
+
+print("Diagnostic test complete")
+print()

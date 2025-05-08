@@ -57,10 +57,10 @@ KAI_END
 // }
 //}
 //
-//#define TEST_PRINTF(COLOR, ...)  do {
-//testing::internal::ColoredPrintf(testing::internal::COLOR, "[   KAI    ] ");
-//testing::internal::ColoredPrintf(testing::internal::COLOR, __VA_ARGS__); }
-//while(0)
+// #define TEST_PRINTF(COLOR, ...)  do {
+// testing::internal::ColoredPrintf(testing::internal::COLOR, "[   KAI    ] ");
+// testing::internal::ColoredPrintf(testing::internal::COLOR, __VA_ARGS__); }
+// while(0)
 //
 
 // Above fix no longer works.

@@ -7,10 +7,10 @@ KAI_NET_BEGIN
 
 struct NetHandle {
     int value;
-    
+
     NetHandle() : value(0) {}
     explicit NetHandle(int v) : value(v) {}
-    
+
     friend bool operator==(NetHandle const &A, NetHandle const &B) {
         return A.value == B.value;
     }

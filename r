@@ -1,6 +1,6 @@
 #!/bin/bash
 
-mkdir -p build && cd build && cmake ..
+rm -rf build && mkdir build && cd build && cmake ..
 if [[ $? -ne 0 ]]; then
 	exit $?
 fi

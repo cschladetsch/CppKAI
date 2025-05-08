@@ -9,9 +9,8 @@
 KAI_NET_BEGIN
 
 template <class T>
-class IFuture 
-{
-public:
+class IFuture {
+   public:
     // Basic interface for generated proxies
     typedef T Type;
 };

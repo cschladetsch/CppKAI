@@ -15,7 +15,7 @@
 #endif
 
 ////#undef min
-//#undef max
+// #undef max
 
 KAI_BEGIN
 
@@ -59,8 +59,7 @@ class LexerCommon : public LexerBase {
         offset = 0;
         lineNumber = 0;
 
-        while (!Failed && NextToken())
-            ;
+        while (!Failed && NextToken());
 
         Terminate();
 
@@ -68,11 +67,12 @@ class LexerCommon : public LexerBase {
     }
 
     Token LexAlpha() {
-        // Custom function to check if character is valid in an identifier (alphanumeric or underscore)
-        auto isIdentChar = [](int ch) -> int { 
-            return isalnum(ch) || ch == '_'; 
+        // Custom function to check if character is valid in an identifier
+        // (alphanumeric or underscore)
+        auto isIdentChar = [](int ch) -> int {
+            return isalnum(ch) || ch == '_';
         };
-        
+
         Token tok(Enum::Ident, *this, lineNumber, Gather(isIdentChar));
         auto kw = keyWords.find(tok.Text());
         auto keyword = kw != keyWords.end();
@@ -146,12 +146,15 @@ class LexerCommon : public LexerBase {
 #endif
 
         const char *fmt1 = "%s(%d):[%d]: %s\n";
-        // Ensure buffer is large enough to handle the maximum size of buff0 plus the format string
+        // Ensure buffer is large enough to handle the maximum size of buff0
+        // plus the format string
         char buff[4096];
 #ifdef WIN32
-        sprintf_s(buff, sizeof(buff), fmt1, "", tok.lineNumber, tok.slice.Start, buff0);
+        sprintf_s(buff, sizeof(buff), fmt1, "", tok.lineNumber, tok.slice.Start,
+                  buff0);
 #else
-        snprintf(buff, sizeof(buff), fmt1, "", tok.lineNumber, tok.slice.Start, buff0);
+        snprintf(buff, sizeof(buff), fmt1, "", tok.lineNumber, tok.slice.Start,
+                 buff0);
 #endif
         int beforeContext = 2;
         int afterContext = 2;

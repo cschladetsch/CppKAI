@@ -2,7 +2,9 @@
 /CMakeFiles
 /.current
 /build
+/Build
 /build.ninja
+*.log
 
 .vscode/
 

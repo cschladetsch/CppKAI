@@ -4,30 +4,30 @@
 #define KAI_OPTION_USE_NAMESPACES
 
 // if KAI_OPTION_USE_NAMESPACES is defined, this is the namespace _name to use
-//#define KAI_NAMESPACE_NAME kai
+// #define KAI_NAMESPACE_NAME kai
 #ifndef KAI_NAMESPACE_NAME
 #warning please define KAI_NAMESPACE_NAME
 #define KAI_NAMESPACE_NAME kai
 #endif
 
 //  use lots of extra info in trace mesages
-//#define KAI_TRACE_VERBOSE
+// #define KAI_TRACE_VERBOSE
 
 // generally more safety and checking
-//#define KAI_DEBUG
+// #define KAI_DEBUG
 
 // enable tracing at all
-//#define KAI_DEBUG_TRACE
+// #define KAI_DEBUG_TRACE
 
 // use exceptions or not
 // defaults to on
-//#define KAI_USE_EXCEPTIONS
+// #define KAI_USE_EXCEPTIONS
 
 // deprecated
-//#define KAI_UNIT_TESTS
+// #define KAI_UNIT_TESTS
 
 // extra tracing for Registry/Garbage collection system
-//#define KAI_TRACE_REGISTRY
+// #define KAI_TRACE_REGISTRY
 
 // if KAI_DEBUG is defined, extra debugging features may be exposed
 #if defined(_DEBUG) || defined(DEBUG)

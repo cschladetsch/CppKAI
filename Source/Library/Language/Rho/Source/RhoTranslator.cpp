@@ -4,6 +4,7 @@
 
 #include <boost/lexical_cast.hpp>
 #include <boost/range/adaptor/reversed.hpp>
+#include <iostream>  // For std::cout and std::endl
 
 using namespace std;
 
@@ -32,7 +33,6 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
             TranslateNode(node->GetChild(0));
             AppendOp(Operation::Assert);
             return;
-
 
         case TokenEnum::DivAssign:
             TranslateBinaryOp(node, Operation::DivEquals);
@@ -222,6 +222,14 @@ void RhoTranslator::TranslateNode(AstNodePtr node) {
             TranslateIf(node);
             return;
 
+        case AstEnum::While:
+            TranslateWhile(node);
+            return;
+
+        case AstEnum::DoWhile:
+            TranslateDoWhile(node);
+            return;
+
         case AstEnum::Block:
             PushNew();
             for (auto st : node->GetChildren()) TranslateNode(st);
@@ -231,7 +239,6 @@ void RhoTranslator::TranslateNode(AstNodePtr node) {
         case AstEnum::List:
             KAI_NOT_IMPLEMENTED();
             return;
-
 
         case AstEnum::Function:
             TranslateFunction(node);
@@ -258,13 +265,27 @@ void RhoTranslator::TranslateFunction(AstNodePtr node) {
 
     // write the body
     PushNew();
-    for (auto b : ch[2]->GetChildren()) TranslateNode(b);
+    for (auto b : ch[2]->GetChildren()) {
+        // Special handling for return statements
+        if (b->GetType() == AstEnum::TokenType &&
+            b->GetToken().type == TokenEnum::Return) {
+            // Process the return value if it exists
+            if (b->GetChildren().size() > 0) {
+                TranslateNode(b->GetChild(0));
+            }
+
+            // Add the Return operation
+            AppendOp(Operation::Return);
+        } else {
+            TranslateNode(b);
+        }
+    }
 
     // add the args
     auto cont = Pop();
     for (auto a : ch[1]->GetChildren()) cont->AddArg(Label(a->GetTokenText()));
 
-    // write the _name and store
+    // write the name and store
     Append(cont);
     AppendNew(Label(ch[0]->Text()));
     AppendOp(Operation::Store);
@@ -293,5 +314,121 @@ void RhoTranslator::TranslateIf(AstNodePtr node) {
                      : Operation::IfThenSuspend);
 }
 
+void RhoTranslator::TranslateWhile(AstNodePtr node) {
+    // Simple implementation for while loops
+    try {
+        // Verify we have enough children
+        if (node->GetChildren().size() < 1) {
+            Fail("While node must have at least a condition child");
+            return;
+        }
+
+        // Get condition and body nodes
+        AstNodePtr condition = node->GetChild(0);
+
+        AstNodePtr body = nullptr;
+        if (node->GetChildren().size() > 1) {
+            body = node->GetChild(1);
+        } else {
+            // Create an empty body block node
+            body = std::make_shared<RhoAstNode>(RhoAstNodeEnumType::Block);
+        }
+
+        // Create a continuation for the condition
+        PushNew();
+        TranslateNode(condition);
+        Object condCont = Pop();
+
+        // Create a continuation for the body
+        PushNew();
+        TranslateNode(body);
+        Object bodyCont = Pop();
+
+        // Push test continuation then body continuation
+        Append(condCont);
+        Append(bodyCont);
+
+        // Add WhileLoop operation
+        AppendOp(Operation::WhileLoop);
+    } catch (std::exception &e) {
+        Fail(std::string("Exception in TranslateWhile: ") + e.what());
+    }
+}
+
+void RhoTranslator::TranslateDoWhile(AstNodePtr node) {
+    // Implementation for do-while loops
+    try {
+        std::cout << "RhoTranslator::TranslateDoWhile - Starting translation"
+                  << std::endl;
+
+        // Verify we have enough children
+        int childCount = node->GetChildren().size();
+        std::cout << "RhoTranslator::TranslateDoWhile - Node has " << childCount
+                  << " children" << std::endl;
+
+        if (childCount < 2) {
+            std::cout << "RhoTranslator::TranslateDoWhile - ERROR: Not enough "
+                         "children in DoWhile node"
+                      << std::endl;
+            Fail("DoWhile node must have both body and condition children");
+            return;
+        }
+
+        // Get body and condition nodes (order is different from while loop)
+        AstNodePtr body = node->GetChild(0);
+        AstNodePtr condition = node->GetChild(1);
+
+        std::cout << "RhoTranslator::TranslateDoWhile - Body node type: "
+                  << RhoAstNodeEnumType::ToString(body->GetType()) << std::endl;
+        std::cout << "RhoTranslator::TranslateDoWhile - Condition node type: "
+                  << RhoAstNodeEnumType::ToString(condition->GetType())
+                  << std::endl;
+
+        // Create a continuation for the body
+        std::cout
+            << "RhoTranslator::TranslateDoWhile - Creating body continuation"
+            << std::endl;
+        PushNew();
+        TranslateNode(body);
+        Object bodyCont = Pop();
+
+        // Create a continuation for the condition
+        std::cout << "RhoTranslator::TranslateDoWhile - Creating condition "
+                     "continuation"
+                  << std::endl;
+        PushNew();
+        TranslateNode(condition);
+        Object condCont = Pop();
+
+        // Push body continuation then test continuation (order matters for
+        // do-while)
+        std::cout
+            << "RhoTranslator::TranslateDoWhile - Pushing body continuation"
+            << std::endl;
+        Append(bodyCont);
+
+        std::cout << "RhoTranslator::TranslateDoWhile - Pushing condition "
+                     "continuation"
+                  << std::endl;
+        Append(condCont);
+
+        // Add DoLoop operation
+        std::cout << "RhoTranslator::TranslateDoWhile - Adding DoLoop operation"
+                  << std::endl;
+        AppendOp(Operation::DoLoop);
+
+        std::cout << "RhoTranslator::TranslateDoWhile - Successfully "
+                     "translated do-while loop"
+                  << std::endl;
+    } catch (std::exception &e) {
+        std::cout << "RhoTranslator::TranslateDoWhile - EXCEPTION: " << e.what()
+                  << std::endl;
+        Fail(std::string("Exception in TranslateDoWhile: ") + e.what());
+    } catch (...) {
+        std::cout << "RhoTranslator::TranslateDoWhile - UNKNOWN EXCEPTION"
+                  << std::endl;
+        Fail("Unknown exception in TranslateDoWhile");
+    }
+}
 
 KAI_END

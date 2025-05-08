@@ -5,8 +5,7 @@
 KAI_NET_BEGIN
 
 // Connection event types
-enum class ConnectionEvent
-{
+enum class ConnectionEvent {
     Connected,
     Disconnected,
     ConnectionFailed,

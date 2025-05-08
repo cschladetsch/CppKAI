@@ -43,9 +43,7 @@ bool GenerateProcess::Generate(TauParser const &p, string &output) {
 
 string GenerateProcess::CommonPrepend() {
     stringstream str;
-    str << "// auto-generated on "
-        << "Tuesday"
-        << "; modify at own risk\n";
+    str << "// auto-generated on " << "Tuesday" << "; modify at own risk\n";
     return str.str();
 }
 

@@ -11,7 +11,7 @@ BinaryStream &operator<<(BinaryStream &S, size_t N);
 BinaryStream &operator>>(BinaryStream &S, size_t &N);
 
 // Use Signed32 type since there's no specific unsigned type available
-KAI_TYPE_TRAITS(size_t, Number::Signed32, 
+KAI_TYPE_TRAITS(size_t, Number::Signed32,
                 Properties::Arithmetic | Properties::Multiplicative |
                     Properties::Streaming | Properties::Assign |
                     Properties::Relational | Properties::Absolute |
