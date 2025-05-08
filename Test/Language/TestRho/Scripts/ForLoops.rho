@@ -1,0 +1,67 @@
+// Tests for for loop functionality in Rho
+// Tests basic for loops, break conditions, and nesting
+
+// Basic for loop (C-style)
+sum = 0
+for i = 0; i < 10; i = i + 1
+    sum = sum + i
+assert(sum == 45)  // 0+1+2+3+4+5+6+7+8+9
+
+// For loop with break
+sum = 0
+for i = 0; i < 10; i = i + 1
+    if i >= 5
+        break
+    sum = sum + i
+assert(sum == 10)  // 0+1+2+3+4
+
+// For loop with continue
+sum = 0
+for i = 0; i < 10; i = i + 1
+    if i % 2 == 0  // Skip even numbers
+        continue
+    sum = sum + i
+assert(sum == 25)  // 1+3+5+7+9
+
+// Nested for loops
+outer_sum = 0
+inner_sum = 0
+for i = 0; i < 3; i = i + 1
+    for j = 0; j < 3; j = j + 1
+        inner_sum = inner_sum + (i * j)
+    outer_sum = outer_sum + i
+assert(inner_sum == 9)  // (0*0)+(0*1)+(0*2)+(1*0)+(1*1)+(1*2)+(2*0)+(2*1)+(2*2) = 0+0+0+0+1+2+0+2+4 = 9
+assert(outer_sum == 3)  // 0+1+2 = 3
+
+// For loop with complex expressions
+product = 1
+for i = 2; i <= 5; i = i + 1
+    product = product * i
+assert(product == 120)  // 1*2*3*4*5 = 120
+
+// For loop with empty body
+counter = 0
+for i = 0; i < 10; counter = counter + 1
+    // Empty body, increment happens in the increment part
+assert(counter == 10)
+
+// For loop with multiple declarations
+result = []
+for i = 0, j = 10; i < j; i = i + 1, j = j - 1
+    result.push(i + j)
+assert(result == [10, 10, 10, 10, 10])
+
+// For loop to build array
+squares = []
+for i = 1; i <= 5; i = i + 1
+    squares.push(i * i)
+assert(squares == [1, 4, 9, 16, 25])
+
+// For loop with early exit
+found = false
+for i = 0; i < 100; i = i + 1
+    if i * i > 50
+        found = true
+        break
+assert(found == true)
+assert(i == 8)  // 8^2 = 64, which is > 50

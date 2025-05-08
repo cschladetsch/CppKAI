@@ -45,6 +45,30 @@ void TestLangCommon::TearDown() {
     _exec->ClearContext();
 }
 
+void TestLangCommon::ExecScriptFile(const std::string& scriptFileName) {
+    const fs::path scriptsRoot(KAI_STRINGISE(KAI_SCRIPT_ROOT));
+    const fs::path scriptPath = scriptsRoot / scriptFileName;
+    
+    // Set the language based on file extension
+    if (scriptFileName.find(".pi") != std::string::npos) {
+        _console.SetLanguage(Language::Pi);
+    }
+    else if (scriptFileName.find(".rho") != std::string::npos) {
+        _console.SetLanguage(Language::Rho);
+    }
+    else if (scriptFileName.find(".tau") != std::string::npos) {
+        _console.SetLanguage(Language::Tau);
+    }
+    
+    // Clear stacks before execution
+    _exec->ClearStacks();
+    _exec->ClearContext();
+    
+    auto contents = File::ReadAllText(scriptPath);
+    // Execute the script - let any exceptions propagate to the caller
+    _console.Execute(contents.c_str());
+}
+
 void TestLangCommon::ExecScripts() {
     const fs::path scriptsRoot(KAI_STRINGISE(KAI_SCRIPT_ROOT));
     const auto ext = File::Extension(".pi");

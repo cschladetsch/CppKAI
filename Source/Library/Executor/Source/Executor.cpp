@@ -732,10 +732,106 @@ void Executor::Perform(Operation::Type op) {
             const Pointer<Continuation> test = Pop();
 
             _context->Push(_continuation);
-            while (Deref<bool>(test)) ContinueOnly(body);
+            
+            // Execute test, continue if true
+            while (true) {
+                // Run the test condition
+                _context->Push(Object());
+                Continue(test);
+                
+                // Check if test passed
+                if (!PopBool())
+                    break;
+                
+                // Run the body
+                ContinueOnly(body);
+                
+                // Break if requested
+                if (_break)
+                    break;
+            }
 
             _context->Pop();
 
+            break;
+        }
+        
+        case Operation::ForLoop: {
+            // The for loop takes 4 arguments:
+            // 1. The initialization continuation
+            // 2. The test continuation
+            // 3. The increment continuation
+            // 4. The body continuation
+            const Pointer<Continuation> body = Pop();
+            const Pointer<Continuation> increment = Pop();
+            const Pointer<Continuation> test = Pop();
+            const Pointer<Continuation> init = Pop();
+            
+            _context->Push(_continuation);
+            
+            // Run initialization once
+            _context->Push(Object());
+            Continue(init);
+            
+            // Execute loop
+            while (true) {
+                // Run the test condition
+                _context->Push(Object());
+                Continue(test);
+                
+                // Check if test passed
+                if (!PopBool())
+                    break;
+                
+                // Run the body
+                _context->Push(Object());
+                Continue(body);
+                
+                // Break if requested during body execution
+                if (_break)
+                    break;
+                
+                // Run the increment
+                _context->Push(Object());
+                Continue(increment);
+                
+                // Break if requested during increment
+                if (_break)
+                    break;
+            }
+            
+            _context->Pop();
+            
+            break;
+        }
+        
+        case Operation::DoLoop: {
+            // Do-while loop takes 2 arguments:
+            // 1. The body continuation
+            // 2. The test continuation (executed after the body)
+            const Pointer<Continuation> test = Pop();
+            const Pointer<Continuation> body = Pop();
+            
+            _context->Push(_continuation);
+            
+            do {
+                // Run the body
+                _context->Push(Object());
+                Continue(body);
+                
+                // Break if requested during body execution
+                if (_break)
+                    break;
+                
+                // Run the test condition
+                _context->Push(Object());
+                Continue(test);
+                
+                // Continue if test is true
+            } while (PopBool() && !_break);
+            
+            _context->Pop();
+            
             break;
         }
 
@@ -849,23 +945,46 @@ void Executor::Perform(Operation::Type op) {
                     Push(ForEach(ConstDeref<Stack>(C), F));
                     break;
 
-                    /* TODO
                 case Type::Number::List:
-                    ForEach(ConstDeref<List>(C), F);
+                    Push(ForEach(ConstDeref<List>(C), F));
                     break;
+                    
+                /* Set not implemented yet
                 case Type::Number::Set:
-                    ForEach(ConstDeref<Set>(C), F);
+                    Push(ForEach(ConstDeref<Set>(C), F));
                     break;
-                    */
+                */
+                    
                 case Type::Number::Map:
                     Push(ForEach(ConstDeref<Map>(C), F));
                     break;
-
-                    /* TODO
-                    case Type::Number::HashMap:
-                        Push(ForEach(ConstDeref<HashMap>(C), F));
-                        break;
-                        */
+                    
+                case Type::Number::String: {
+                    // Special case for strings - iterate over characters
+                    auto array = New<Array>();
+                    const String& str = ConstDeref<String>(C);
+                    for (auto ch : str) {
+                        // Convert character to string and push
+                        String charStr(1, ch);
+                        Push(New(charStr));
+                        
+                        // Run the function on this character
+                        _context->Push(Object());
+                        Continue(F);
+                        
+                        // Store the result
+                        array->Append(Pop());
+                    }
+                    Push(array);
+                    break;
+                }
+                    
+                default: {
+                    String msg = String("ForEach not implemented for type ") + 
+                        C.GetClass()->GetName().ToString();
+                    KAI_THROW_1(Base, msg.c_str());
+                    break;
+                }
             }
 
             break;
@@ -876,16 +995,33 @@ void Executor::Perform(Operation::Type op) {
             break;
 
         case Operation::ForEachContained: {
-            Object gen = Pop();
-            switch (gen.GetTypeNumber().ToInt()) {
-                case Type::Number::Set:
-                case Type::Number::Map:
-                case Type::Number::Array:
-                case Type::Number::String:
-                    break;
+            // ForEachContained applies a function to each property/field of an object
+            Object func = Pop();
+            Object obj = Pop();
+            
+            if (!obj.Exists())
+                KAI_THROW_0(NullObject);
+                
+            auto result = New<Array>();
+            const StorageBase& storage = GetStorageBase(obj);
+            
+            // Get all children
+            for (const auto& pair : storage.GetDictionary()) {
+                // Push the key (label)
+                Push(New(pair.first));
+                
+                // Push the value
+                Push(pair.second);
+                
+                // Run the function on this pair
+                _context->Push(Object());
+                Continue(func);
+                
+                // Store the result
+                result->Append(Pop());
             }
-
-            KAI_NOT_IMPLEMENTED();
+            
+            Push(result);
             break;
         }
 

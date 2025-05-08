@@ -1,0 +1,81 @@
+// Tests for foreach loop functionality in Rho
+// Tests iteration over different collection types
+
+// Foreach over array
+numbers = [1, 2, 3, 4, 5]
+sum = 0
+for n in numbers
+    sum = sum + n
+assert(sum == 15)
+
+// Foreach with index
+values = [10, 20, 30, 40]
+indexed_sum = 0
+for i, v in values
+    indexed_sum = indexed_sum + (i * v)
+assert(indexed_sum == 0*10 + 1*20 + 2*30 + 3*40)  // 0 + 20 + 60 + 120 = 200
+
+// Foreach over string
+str = "hello"
+chars = []
+for c in str
+    chars.push(c)
+assert(chars == ["h", "e", "l", "l", "o"])
+
+// Foreach over map/dictionary
+scores = { "Alice": 95, "Bob": 80, "Charlie": 90 }
+total = 0
+names = []
+for name, score in scores
+    total = total + score
+    names.push(name)
+assert(total == 265)  // 95 + 80 + 90
+assert(names.length == 3)
+assert("Alice" in names)
+assert("Bob" in names)
+assert("Charlie" in names)
+
+// Foreach with break
+letters = ["a", "b", "c", "d", "e"]
+result = ""
+for letter in letters
+    if letter == "d"
+        break
+    result = result + letter
+assert(result == "abc")
+
+// Foreach with continue
+numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+even_sum = 0
+for num in numbers
+    if num % 2 != 0  // Skip odd numbers
+        continue
+    even_sum = even_sum + num
+assert(even_sum == 30)  // 2+4+6+8+10
+
+// Nested foreach loops
+matrix = [[1, 2], [3, 4], [5, 6]]
+flat = []
+row_sums = []
+for row in matrix
+    row_sum = 0
+    for val in row
+        flat.push(val)
+        row_sum = row_sum + val
+    row_sums.push(row_sum)
+assert(flat == [1, 2, 3, 4, 5, 6])
+assert(row_sums == [3, 7, 11])
+
+// Foreach with transformation
+words = ["hello", "world", "test"]
+lengths = []
+for word in words
+    lengths.push(word.length)
+assert(lengths == [5, 5, 4])
+
+// Foreach over set (if supported)
+unique_nums = set([1, 2, 3, 3, 2, 1, 4])
+set_sum = 0
+for num in unique_nums
+    set_sum = set_sum + num
+assert(set_sum == 10)  // 1+2+3+4

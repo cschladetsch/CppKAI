@@ -1,0 +1,110 @@
+// Tests for property iteration in Rho
+// Tests the ForEachContained operation to iterate over object properties
+
+// Define an object with properties
+person = object()
+person.name = "John"
+person.age = 30
+person.city = "New York"
+person.isEmployed = true
+
+// Collect all property names
+keys = []
+for key in person
+    keys.push(key)
+assert("name" in keys)
+assert("age" in keys)
+assert("city" in keys)
+assert("isEmployed" in keys)
+assert(keys.length == 4)
+
+// Collect all property values
+values = []
+for key, value in person
+    values.push(value)
+assert("John" in values)
+assert(30 in values)
+assert("New York" in values)
+assert(true in values)
+assert(values.length == 4)
+
+// Build a string representation of the object
+str_repr = "{"
+for key, value in person
+    if typeof(value) == "string"
+        str_repr = str_repr + key + ': "' + value + '", '
+    else
+        str_repr = str_repr + key + ": " + value + ", "
+str_repr = str_repr + "}"
+assert(str_repr.contains("name: \"John\""))
+assert(str_repr.contains("age: 30"))
+assert(str_repr.contains("city: \"New York\""))
+assert(str_repr.contains("isEmployed: true"))
+
+// Modify all numeric properties
+obj = object()
+obj.a = 1
+obj.b = 2
+obj.c = "string"
+obj.d = 3
+for key, value in obj
+    if typeof(value) == "number"
+        obj[key] = value * 2
+assert(obj.a == 2)
+assert(obj.b == 4)
+assert(obj.c == "string")
+assert(obj.d == 6)
+
+// Find a specific property
+obj = object()
+obj.prop1 = "value1"
+obj.prop2 = "value2"
+obj.targetProp = "found"
+obj.prop3 = "value3"
+found = false
+found_key = ""
+found_value = ""
+for key, value in obj
+    if value == "found"
+        found = true
+        found_key = key
+        found_value = value
+assert(found == true)
+assert(found_key == "targetProp")
+assert(found_value == "found")
+
+// Nested objects
+parent = object()
+parent.child1 = object()
+parent.child1.name = "Child 1"
+parent.child2 = object()
+parent.child2.name = "Child 2"
+children = []
+for key, value in parent
+    if typeof(value) == "object"
+        children.push(value.name)
+assert(children.length == 2)
+assert("Child 1" in children)
+assert("Child 2" in children)
+
+// Count properties of a certain type
+obj = object()
+obj.a = 1
+obj.b = "string"
+obj.c = true
+obj.d = 2
+obj.e = "another string"
+counts = object()
+counts.number = 0
+counts.string = 0
+counts.boolean = 0
+for key, value in obj
+    if typeof(value) == "number"
+        counts.number = counts.number + 1
+    elif typeof(value) == "string"
+        counts.string = counts.string + 1
+    elif typeof(value) == "boolean"
+        counts.boolean = counts.boolean + 1
+assert(counts.number == 2)
+assert(counts.string == 2)
+assert(counts.boolean == 1)

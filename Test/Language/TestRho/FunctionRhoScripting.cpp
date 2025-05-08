@@ -62,4 +62,58 @@ TEST_F(TestLangCommon, TestRhoReflection) {
 
 TEST_F(TestLangCommon, RunScripts) { ExecScripts(); }
 
+TEST_F(TestLangCommon, TestIterationConstructs) {
+    // Skip if Common Lexer issues persist
+    if (_skipDueToLexerIssues) {
+        std::cerr << "**** Skipping iteration tests due to Common Lexer issues" << std::endl;
+        return;
+    }
+    
+    // Create a vector of just the iteration-specific test files
+    const std::vector<std::string> iterationTests = {
+        "WhileLoops.rho",
+        "ForLoops.rho",
+        "DoWhileLoops.rho",
+        "ForEachLoops.rho",
+        "PropertyIteration.rho"
+    };
+    
+    // Run each iteration test individually and report results
+    for (const auto& testFile : iterationTests) {
+        std::cout << "Running iteration test: " << testFile << std::endl;
+        try {
+            ExecScriptFile(testFile);
+            std::cout << "PASSED: " << testFile << std::endl;
+        }
+        catch (std::exception &e) {
+            std::cerr << "FAILED: " << testFile << ": " << e.what() << std::endl;
+            FAIL() << "Iteration test " << testFile << " failed: " << e.what();
+        }
+    }
+}
+
+TEST_F(TestLangCommon, TestSingleIterationScript) {
+    // Skip if Common Lexer issues persist
+    if (_skipDueToLexerIssues) {
+        std::cerr << "**** Skipping direct iteration test due to Common Lexer issues" << std::endl;
+        return;
+    }
+    
+    // Run the direct test script
+    std::cout << "Running direct iteration test: IterationTest.rho" << std::endl;
+    try {
+        // Clear everything before test
+        _exec->ClearStacks();
+        _exec->ClearContext();
+        _console.GetExecutor()->SetTraceLevel(5); // Turn on tracing for more output
+        
+        ExecScriptFile("IterationTest.rho");
+        std::cout << "PASSED: IterationTest.rho" << std::endl;
+    }
+    catch (std::exception &e) {
+        std::cerr << "FAILED: IterationTest.rho: " << e.what() << std::endl;
+        FAIL() << "Direct iteration test failed: " << e.what();
+    }
+}
+
 KAI_END
