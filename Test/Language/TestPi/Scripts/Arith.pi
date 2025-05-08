@@ -1,12 +1,26 @@
 
+// Start with a clean state
+clear
+
+// Test logical not on 0
 0 not assert 
 
+// Test basic addition
 1 2 + 3 == assert 
 
+// Test complex arithmetic
 1 2 + 3 mul 3 + 6 div 2 == assert 
 
+// Test swap operation with subtraction
 2 3 swap - 1 == assert
 
+// Verify stack is empty after all operations
+depth 0 == assert
+
+// Clean up at the end
+clear
+
+// Commented out for now
 // 1 2 3 3 toarray [1 2 3] == assert
 
 

@@ -1,7 +1,15 @@
-{ 1 } 'a #
-a & 1 == assert
+// Ensure clean state first
+clear
 
+// Define a simple continuation that returns 1
+{ 1 } 'a #
+
+// Execute the continuation and check result
+a & 1 == assert
 
 //TODO: re-entrancy of continuations:
 //a & 1 == assert
+
+// Clean up at the end
+clear
 

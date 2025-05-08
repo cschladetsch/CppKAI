@@ -1,15 +1,20 @@
-1 depth == assert
+// Start with a clean state ensuring depth is 1
+1 depth 1 == assert
 
+// Test simple variable assignment and comparison
 'w 'z # 
 'w 'y #
 z y == assert
 
+// Test non-existent variable
 'foo exists not assert
 
+// Test variable assignment and retrieval
 42 'a #
 'a exists assert
 a 42 == assert
 
+// Test variable arithmetic
 2 'b #
 a b + 44 == assert
 
@@ -24,25 +29,29 @@ p @ 42 == assert
 { a } & 42 == assert
 { p @ } & 42 == assert
 
+// Test non-existent variable
 'e exists not assert
 
-// name resoluton works up the context stack
+// name resolution works up the context stack
 { 5 'e # { 'e exists assert } & } &
 
 // e was local to the previous continuation
 'e exists not assert
 
-// be creative
+// Test continuation as function
 { + } 'plus #
 1 2 + 3 == assert
 1 2 plus & 3 == assert
 
-// just exercise
+// Complex nested continuation
 { 7 'e # { e 2 } & { + } 'p # p & } & 9 == assert
 
-// z only exists in scope of the local continuation
+// Test variable scope in continuation
 { 1 'qq # 'qq exists assert } & 'qq exists not assert
 
-// ensure nothing left over
-1 depth == assert
+// Ensure only one value left on stack (our initial 1)
+depth 1 == assert
+
+// Clean up at the end
+clear
 

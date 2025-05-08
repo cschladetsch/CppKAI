@@ -101,7 +101,8 @@ TEST(PiParser, TestCompoundFail2) {
     shared_ptr<PiParser> parse = make_shared<PiParser>(reg);
     parse->Process(lex, Structure::Sequence);
 
-    KAI_TRACE_1(parse->PrintTree());
+    // Disabled for cleaner output
+    // KAI_TRACE_1(parse->PrintTree());
     ASSERT_FALSE(lex->Failed);
     ASSERT_TRUE(parse->Failed);
 }

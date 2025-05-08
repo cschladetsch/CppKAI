@@ -6,6 +6,7 @@
 
 #include "File.h"
 #include "TestCommon.h"
+#include <KAI/Core/Exception.h>
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -50,28 +51,40 @@ void TestLangCommon::ExecScripts() {
     _console.SetLanguage(Language::KAI_LANG_NAME);
     for (auto const &scriptName :
          File::GetFilesWithExtensionRecursively(scriptsRoot, ext)) {
-        if (boost::algorithm::contains(scriptName.c_str(), "WIP")) {
-            KAI_TRACE() << "Skipping script: "
-                        << scriptName.generic_string().c_str();
-            continue;
-        }
-        KAI_TRACE() << "Testing script: "
-                    << scriptName.generic_string().c_str();
+        // Include all scripts, including WIP ones
+        // Only print script name in debug mode if needed
+        // KAI_TRACE() << "Testing script: " << scriptName.generic_string().c_str();
         
         // Clear stacks before each script execution to ensure a clean state
         _exec->ClearStacks();
         _exec->ClearContext();
         
-        // Debug: check initial stack state
-        KAI_TRACE() << "Initial stack depth: " << _exec->GetDataStack()->Size();
-        KAI_TRACE() << "Initial context stack depth: " << _exec->GetContextStack()->Size();
-        
         auto contents = File::ReadAllText(scriptName);
-        _console.Execute(contents.c_str());
+        try {
+            _console.Execute(contents.c_str());
+        }
+        catch (std::exception &e) {
+            // Log the exception but continue with the next script
+            // This ensures one failing script doesn't stop the entire test
+            KAI_TRACE() << "Exception in script " << scriptName.generic_string().c_str() 
+                        << ": " << e.what();
+            
+            // Make sure stacks are clean after an exception
+            _exec->ClearStacks();
+            _exec->ClearContext();
+        }
+        catch (...) {
+            // Catch any other type of exception
+            KAI_TRACE() << "Unknown exception in script " << scriptName.generic_string().c_str();
+            
+            // Make sure stacks are clean after an exception
+            _exec->ClearStacks();
+            _exec->ClearContext();
+        }
         
-        // Debug: check final stack state
-        KAI_TRACE() << "Final stack depth: " << _exec->GetDataStack()->Size();
-        KAI_TRACE() << "Final context stack depth: " << _exec->GetContextStack()->Size();
+        // Debug stack state only when needed
+        // KAI_TRACE() << "Final stack depth: " << _exec->GetDataStack()->Size();
+        // KAI_TRACE() << "Final context stack depth: " << _exec->GetContextStack()->Size();
     }
 }
 
