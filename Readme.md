@@ -153,6 +153,136 @@ _KAI_ has various dependencies, but can be built with many sub-sets. That is, if
 
 Feel free to contact [me](matilto:christian.schladetsch@gmail.com) with any questions about building or use of the system.
 
+## Distributed Iteration with ForEachNetwork
+
+One of the most powerful features of KAI is its ability to distribute both computation and data across network nodes. The `ForEachNetwork` operation exemplifies this capability by enabling distributed parallel iteration over collections.
+
+### How It Works
+
+`ForEachNetwork` enables the distribution of iteration tasks across multiple network nodes. It takes three arguments:
+
+1. A network node (or null for local execution)
+2. A collection to iterate over
+3. A function to apply to each element
+
+The operation then distributes the workload across connected network peers, collects the results, and returns them as a new collection.
+
+### Example in Rho
+
+```rho
+// Create a network node
+node = createNetworkNode()
+node.listen(14589)
+
+// Connect to other nodes in the network
+node.connect("192.168.1.10", 14589)
+node.connect("192.168.1.11", 14589)
+
+// Create a large array of data to process
+largeArray = array(1000) 
+for i = 0; i < 1000; i = i + 1
+    largeArray[i] = i
+end
+
+// Define a compute-intensive function
+fun computeIntensive(x) {
+    result = 0
+    // Simulate complex computation
+    for j = 0; j < 10000; j = j + 1
+        result = result + (x * x) / (j + 1)
+    end
+    return result
+}
+
+// Run the computation in parallel across the network
+start = currentTimeMillis()
+results = forEachNetwork(node, largeArray, computeIntensive)
+end = currentTimeMillis()
+
+print("Computation completed in " + (end - start) + "ms")
+print("First few results: " + results[0:5])
+```
+
+### Demo Interaction
+
+Here's an example of what a session might look like when using the distributed iteration feature:
+
+```
+> // Create a network node and connect to peers
+> node = createNetworkNode()
+Node(5c7a8b4d-e9f0-4a2d-9c7b-8a5d3e6f2c1a)
+
+> node.listen(14589)
+Listening on port 14589...
+
+> node.connect("192.168.1.10", 14589)
+Connected to peer at 192.168.1.10:14589
+
+> node.connect("192.168.1.11", 14589)
+Connected to peer at 192.168.1.11:14589
+
+> // Create test data
+> data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+> // Define a function to square numbers
+> fun square(x) { x * x }
+<Function:square>
+
+> // Run the calculation locally
+> start = currentTimeMillis()
+1683042851342
+
+> result1 = forEachNetwork(null, data, square)
+[1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
+
+> end = currentTimeMillis()
+1683042851345
+
+> print("Local execution took " + (end - start) + "ms")
+Local execution took 3ms
+
+> // Run the calculation distributed across the network
+> start = currentTimeMillis()
+1683042851350
+
+> result2 = forEachNetwork(node, data, square)
+[1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
+
+> end = currentTimeMillis()
+1683042851352
+
+> print("Network execution took " + (end - start) + "ms")
+Network execution took 2ms
+
+> // Verify results are identical
+> result1 == result2
+true
+```
+
+For small calculations on a simple array like this, the performance difference is minimal. However, for large datasets and computationally intensive operations, the network distribution can provide significant speedups by leveraging the computational power of multiple machines.
+
+### Supported Collection Types
+
+`ForEachNetwork` supports the following collection types:
+
+- **Array**: Distributes array elements across network nodes
+- **List**: Distributes list elements across network nodes
+- **Map**: Distributes map entries as key-value pairs across network nodes
+- **String**: Treats the string as a collection of characters to process individually
+
+### Advanced Features
+
+When a network node is provided, the `ForEachNetwork` operation:
+
+1. Analyzes the size and complexity of the workload
+2. Distributes elements to connected peers based on their available capacity
+3. Handles failures and retries if a node becomes unresponsive
+4. Aggregates results back into a single collection
+5. Maintains type consistency between input and output collections
+
+This enables true distributed parallel processing with minimal developer effort.
+
 ## Conclusion
 This library will be useful to those that want to expose C++ types and instances to the runtime, and across the network.
 
@@ -162,8 +292,8 @@ This means you can expose and script other classes as well, including those in a
 
 To be clear: you do not have to change the source code of a class in order to access and use it at runtime with KAI. Further, these exposed classes are directly accessible via the Network.
 
-A REPL [Console](Source/App/Console) is also supplied, as well as a [Windowed](Source/App/Window) application on all platforms 
+The distributed iteration feature is a prime example of how KAI enables not just data sharing, but computational sharing across networked systems with minimal code changes.
 
-
+A REPL [Console](Source/App/Console) is also supplied, as well as a [Windowed](Source/App/Window) application on all platforms.
 
 
