@@ -1,0 +1,84 @@
+// NetworkIterations.rho
+// Test script for network iteration operations
+
+// Define various transformation functions to test with ForEachNetwork
+fun square(x) { x * x };
+fun double(x) { x + x };
+fun uppercase(s) { 
+    if (s == "a") return "A";
+    if (s == "b") return "B";
+    if (s == "c") return "C";
+    if (s == "d") return "D";
+    if (s == "e") return "E";
+    return s;
+};
+fun makePair(x) { [x, x * 10] };
+
+// Create test collections of various types
+array = [1, 2, 3, 4, 5];
+list = list(10, 20, 30, 40, 50);
+map = { "a": 1, "b": 2, "c": 3 };
+text = "hello";
+
+// We need to test with null node since we can't create a real network node in a test script
+// This tests the fallback to local execution when no network node is available
+print("Testing ForEachNetwork with null node (local execution fallback)");
+
+null_node = null;
+
+// Test array operations with local execution fallback
+array_result1 = forEachNetwork(null_node, array, square);
+print("Array squared result: " + array_result1);
+array_result2 = forEachNetwork(null_node, array, double);
+print("Array doubled result: " + array_result2);
+array_result3 = forEachNetwork(null_node, array, makePair);
+print("Array to pairs result: " + array_result3);
+
+// Test list operations with local execution fallback
+list_result1 = forEachNetwork(null_node, list, square);
+print("List squared result: " + list_result1);
+list_result2 = forEachNetwork(null_node, list, double);
+print("List doubled result: " + list_result2);
+
+// Test map operations with a transformation function (local execution fallback)
+map_result = forEachNetwork(null_node, map, fun(p) { 
+    return [uppercase(p[0]), p[1] * p[1]]; 
+});
+print("Map transformed result: " + map_result);
+
+// Test string operations with local execution fallback
+string_result = forEachNetwork(null_node, text, fun(ch) { ch + ch });
+print("String duplicated characters result: " + string_result);
+
+// Test chaining ForEachNetwork operations with local execution fallback
+chained_result = forEachNetwork(null_node, 
+                               forEachNetwork(null_node, array, square),
+                               double);
+print("Chained operations result: " + chained_result);
+
+// Note: In a real application, you would create a Network::Node object,
+// connect it to peers, and then pass it as the first argument to forEachNetwork.
+// This would enable distributed execution of the mapping function across the network.
+//
+// Example (not testable in this script):
+//   node = createNetworkNode();
+//   node.listen(14589);
+//   node.connect("192.168.1.5", 14589);
+//   result = forEachNetwork(node, largeArray, computeIntensiveFunction);
+
+// Verify the results
+assert(array_result1 == [1, 4, 9, 16, 25]);
+assert(array_result2 == [2, 4, 6, 8, 10]);
+assert(array_result3[0] == [1, 10]);
+assert(array_result3[4] == [5, 50]);
+
+assert(list_result1 == list(100, 400, 900, 1600, 2500));
+assert(list_result2 == list(20, 40, 60, 80, 100));
+
+// String result should have duplicated characters
+assert(string_result == ["hh", "ee", "ll", "ll", "oo"]);
+
+// Chained result should be double the squares
+assert(chained_result == [2, 8, 18, 32, 50]);
+
+print("All ForEachNetwork tests passed!");

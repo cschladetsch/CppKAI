@@ -39,6 +39,7 @@ struct RhoAstNodeEnumType {
         Continuation = 29,
         Pathname = 30,
         Home = 31,
+        ForEachNetwork = 32,
     };
 
     struct Node : AstNodeBase<RhoToken, RhoAstNodeEnumType> {

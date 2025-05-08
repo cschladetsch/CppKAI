@@ -989,6 +989,68 @@ void Executor::Perform(Operation::Type op) {
 
             break;
         }
+        
+        case Operation::ForEachNetwork: {
+            // ForEachNetwork takes 3 arguments:
+            // 1. The function to apply to each element
+            // 2. The collection to iterate over
+            // 3. The network node to use for distributed execution (or null for local execution)
+            
+            Object F = Pop();      // The function to apply
+            Object C = Pop();      // The collection to iterate over
+            Object N = Pop();      // The network node (or null for local execution)
+            
+            // For this implementation, we'll just do local processing 
+            // regardless of whether a network node is provided
+            
+            // Use local ForEach operation
+            switch (C.GetTypeNumber().ToInt()) {
+                case Type::Number::Array:
+                    Push(ForEach(ConstDeref<Array>(C), F));
+                    break;
+
+                case Type::Number::Stack:
+                    Push(ForEach(ConstDeref<Stack>(C), F));
+                    break;
+
+                case Type::Number::List:
+                    Push(ForEach(ConstDeref<List>(C), F));
+                    break;
+                    
+                case Type::Number::Map:
+                    Push(ForEach(ConstDeref<Map>(C), F));
+                    break;
+                    
+                case Type::Number::String: {
+                    // Special case for strings, implement directly
+                    auto array = New<Array>();
+                    const String& str = ConstDeref<String>(C);
+                    for (auto ch : str) {
+                        // Convert character to string and push
+                        String charStr(1, ch);
+                        Push(New(charStr));
+                        
+                        // Run the function on this character
+                        _context->Push(Object());
+                        Continue(F);
+                        
+                        // Store the result
+                        array->Append(Pop());
+                    }
+                    Push(array);
+                    break;
+                }
+                    
+                default: {
+                    String msg = String("ForEachNetwork not implemented for type ") + 
+                        C.GetClass()->GetName().ToString();
+                    KAI_THROW_1(Base, msg.c_str());
+                    break;
+                }
+            }
+            
+            break;
+        }
 
         case Operation::Executor:
             Push(*Self);

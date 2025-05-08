@@ -92,6 +92,46 @@ TEST_F(TestLangCommon, TestIterationConstructs) {
     }
 }
 
+TEST_F(TestLangCommon, TestAdvancedIterations) {
+    // Skip if Common Lexer issues persist
+    if (_skipDueToLexerIssues) {
+        std::cerr << "**** Skipping advanced iteration tests due to Common Lexer issues" << std::endl;
+        return;
+    }
+    
+    // Create a vector of advanced iteration test files
+    const std::vector<std::string> advancedTests = {
+        "AdvancedIterations.rho",
+        "ErrorHandlingLoops.rho",
+        "LoopOptimizations.rho"
+    };
+    
+    // Run each advanced test individually and report results
+    for (const auto& testFile : advancedTests) {
+        std::cout << "Running advanced iteration test: " << testFile << std::endl;
+        try {
+            // Clear everything before test
+            _exec->ClearStacks();
+            _exec->ClearContext();
+            
+            // Set trace level to higher for more detailed output when testing
+            int previousTraceLevel = _exec->GetTraceLevel();
+            _exec->SetTraceLevel(4);
+            
+            // Execute the test file
+            ExecScriptFile(testFile);
+            std::cout << "PASSED: " << testFile << std::endl;
+            
+            // Restore trace level
+            _exec->SetTraceLevel(previousTraceLevel);
+        }
+        catch (std::exception &e) {
+            std::cerr << "FAILED: " << testFile << ": " << e.what() << std::endl;
+            FAIL() << "Advanced iteration test failed: " << e.what();
+        }
+    }
+}
+
 TEST_F(TestLangCommon, TestSingleIterationScript) {
     // Skip if Common Lexer issues persist
     if (_skipDueToLexerIssues) {
@@ -113,6 +153,30 @@ TEST_F(TestLangCommon, TestSingleIterationScript) {
     catch (std::exception &e) {
         std::cerr << "FAILED: IterationTest.rho: " << e.what() << std::endl;
         FAIL() << "Direct iteration test failed: " << e.what();
+    }
+}
+
+TEST_F(TestLangCommon, TestNetworkIterations) {
+    // Skip if Common Lexer issues persist
+    if (_skipDueToLexerIssues) {
+        std::cerr << "**** Skipping network iteration test due to Common Lexer issues" << std::endl;
+        return;
+    }
+    
+    // Run the network iteration test script
+    std::cout << "Running network iteration test: NetworkIterations.rho" << std::endl;
+    try {
+        // Clear everything before test
+        _exec->ClearStacks();
+        _exec->ClearContext();
+        _console.GetExecutor()->SetTraceLevel(5); // Turn on tracing for more output
+        
+        ExecScriptFile("NetworkIterations.rho");
+        std::cout << "PASSED: NetworkIterations.rho" << std::endl;
+    }
+    catch (std::exception &e) {
+        std::cerr << "FAILED: NetworkIterations.rho: " << e.what() << std::endl;
+        FAIL() << "Network iteration test failed: " << e.what();
     }
 }
 

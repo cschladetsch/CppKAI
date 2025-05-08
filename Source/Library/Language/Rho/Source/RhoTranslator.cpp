@@ -238,6 +238,10 @@ void RhoTranslator::TranslateNode(AstNodePtr node) {
         case AstEnum::For:
             TranslateFor(node);
             return;
+            
+        case AstEnum::ForEachNetwork:
+            TranslateForEachNetwork(node);
+            return;
 
         case AstEnum::Function:
             TranslateFunction(node);
@@ -300,6 +304,17 @@ void RhoTranslator::TranslateIf(AstNodePtr node) {
 }
 
 void RhoTranslator::TranslateFor(AstNodePtr node) { AppendOp(Operation::None); }
+
+void RhoTranslator::TranslateForEachNetwork(AstNodePtr node) {
+    // Translate the three arguments (network node, collection, function)
+    // The order is reversed because the stack operations are executed in reverse order
+    TranslateNode(node->GetChild(2));  // Function to apply
+    TranslateNode(node->GetChild(1));  // Collection
+    TranslateNode(node->GetChild(0));  // Network node
+    
+    // Append the ForEachNetwork operation
+    AppendOp(Operation::ForEachNetwork);
+}
 
 void RhoTranslator::TranslateWhile(AstNodePtr node) {
     AppendOp(Operation::None);

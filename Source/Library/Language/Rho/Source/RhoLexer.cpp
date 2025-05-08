@@ -19,6 +19,7 @@ void RhoLexer::AddKeyWords() {
     keyWords["assert"] = Enum::Assert;
     keyWords["pi"] = Enum::ToPi;
     keyWords["pi{"] = Enum::PiSequence;
+    keyWords["forEachNetwork"] = Enum::ForEachNetwork;
 }
 
 bool RhoLexer::NextToken() {

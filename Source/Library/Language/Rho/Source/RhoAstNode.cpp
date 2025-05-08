@@ -29,6 +29,7 @@ const char *RhoAstNodes::ToString(Enum ty) {
         CASE(ArgList)
         CASE(IndexOp)
         CASE(ForEach)
+        CASE(ForEachNetwork)
         CASE(For)
         CASE(List)
         CASE(Map)

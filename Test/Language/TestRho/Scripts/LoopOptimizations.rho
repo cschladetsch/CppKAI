@@ -1,0 +1,255 @@
+// Loop Optimization Patterns
+// Tests advanced optimization patterns with loops
+
+// TEST 1: Loop fusion
+// Demonstrates combining multiple loops into one
+
+// Separate loops
+array1 = [1, 2, 3, 4, 5]
+array2 = [6, 7, 8, 9, 10]
+sum1 = 0
+sum2 = 0
+
+// Two separate loops
+for i = 0; i < 5; i = i + 1
+    sum1 = sum1 + array1[i]
+end
+
+for i = 0; i < 5; i = i + 1
+    sum2 = sum2 + array2[i]
+end
+
+// Verify separate loops
+assert(sum1 == 15)
+assert(sum2 == 40)
+
+// Fused loop
+fusedSum1 = 0
+fusedSum2 = 0
+
+// Single loop that processes both arrays
+for i = 0; i < 5; i = i + 1
+    fusedSum1 = fusedSum1 + array1[i]
+    fusedSum2 = fusedSum2 + array2[i]
+end
+
+// Verify fused loop
+assert(fusedSum1 == 15)
+assert(fusedSum2 == 40)
+
+// TEST 2: Loop unrolling
+// Demonstrates manual loop unrolling for performance
+
+// Regular loop
+regularSum = 0
+for i = 0; i < 8; i = i + 1
+    regularSum = regularSum + i
+end
+
+// Unrolled loop (manual unrolling)
+unrolledSum = 0
+// Process 4 elements at a time
+for i = 0; i < 8; i = i + 4
+    unrolledSum = unrolledSum + i
+    unrolledSum = unrolledSum + (i + 1)
+    unrolledSum = unrolledSum + (i + 2)
+    unrolledSum = unrolledSum + (i + 3)
+end
+
+// Verify both approaches give same result
+assert(regularSum == 28)
+assert(unrolledSum == 28)
+
+// TEST 3: Loop tiling/blocking
+// Demonstrates processing 2D data in blocks
+
+// Create a 2D matrix (4x4)
+matrix = [
+    [1, 2, 3, 4],
+    [5, 6, 7, 8],
+    [9, 10, 11, 12],
+    [13, 14, 15, 16]
+]
+
+// Regular nested loops to sum all elements
+regularSum = 0
+for i = 0; i < 4; i = i + 1
+    for j = 0; j < 4; j = j + 1
+        regularSum = regularSum + matrix[i][j]
+    end
+end
+
+// Tiled/blocked approach (2x2 blocks)
+tiledSum = 0
+blockSize = 2
+
+// Process 2x2 blocks
+for iBlock = 0; iBlock < 4; iBlock = iBlock + blockSize
+    for jBlock = 0; jBlock < 4; jBlock = jBlock + blockSize
+        // Process each block
+        for i = iBlock; i < iBlock + blockSize; i = i + 1
+            for j = jBlock; j < jBlock + blockSize; j = j + 1
+                tiledSum = tiledSum + matrix[i][j]
+            end
+        end
+    end
+end
+
+// Verify both approaches give same result
+assert(regularSum == 136)
+assert(tiledSum == 136)
+
+// TEST 4: Loop interchange
+// Demonstrates changing loop order for better memory access
+
+// Create another 2D matrix (3x3)
+matrix2 = [
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9]
+]
+
+// Row-major order traversal
+rowMajorSum = 0
+for i = 0; i < 3; i = i + 1       // outer loop over rows
+    for j = 0; j < 3; j = j + 1   // inner loop over columns
+        rowMajorSum = rowMajorSum + matrix2[i][j]
+    end
+end
+
+// Column-major order traversal (interchanged loops)
+colMajorSum = 0
+for j = 0; j < 3; j = j + 1       // outer loop over columns
+    for i = 0; i < 3; i = i + 1   // inner loop over rows
+        colMajorSum = colMajorSum + matrix2[i][j]
+    end
+end
+
+// Verify both approaches give same result
+assert(rowMajorSum == 45)
+assert(colMajorSum == 45)
+
+// TEST 5: Loop invariant code motion
+// Demonstrates moving invariant computations outside loops
+
+// With redundant computation
+sum1 = 0
+expensiveResult = 10 * 20  // pretend this is expensive
+
+for i = 0; i < 5; i = i + 1
+    // Redundantly compute the same value in each iteration
+    expensiveResult = 10 * 20
+    sum1 = sum1 + expensiveResult
+end
+
+// With loop invariant code motion
+sum2 = 0
+// Compute once before the loop
+expensiveResult = 10 * 20
+
+for i = 0; i < 5; i = i + 1
+    // Reuse the precomputed value
+    sum2 = sum2 + expensiveResult
+end
+
+// Verify both approaches give same result
+assert(sum1 == 1000)  // 5 * 200
+assert(sum2 == 1000)
+
+// TEST 6: Loop splitting
+// Demonstrates splitting a loop with divergent paths
+
+numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+evenSum = 0
+oddSum = 0
+
+// Single loop with condition checking
+for i = 0; i < 10; i = i + 1
+    if numbers[i] % 2 == 0
+        evenSum = evenSum + numbers[i]
+    else
+        oddSum = oddSum + numbers[i]
+    end
+end
+
+// Split loops
+splitEvenSum = 0
+splitOddSum = 0
+
+// First loop handles even numbers
+for i = 0; i < 10; i = i + 1
+    if numbers[i] % 2 == 0
+        splitEvenSum = splitEvenSum + numbers[i]
+    end
+end
+
+// Second loop handles odd numbers
+for i = 0; i < 10; i = i + 1
+    if numbers[i] % 2 != 0
+        splitOddSum = splitOddSum + numbers[i]
+    end
+end
+
+// Verify both approaches give same result
+assert(evenSum == 30)     // 2+4+6+8+10
+assert(oddSum == 25)      // 1+3+5+7+9
+assert(splitEvenSum == 30)
+assert(splitOddSum == 25)
+
+// TEST 7: Loop unswitching
+// Demonstrates moving a loop-invariant condition outside the loop
+
+values = [1, 2, 3, 4, 5]
+mode = 1  // Simulate different processing modes
+result1 = 0
+
+// Loop with condition checking inside
+for i = 0; i < 5; i = i + 1
+    if mode == 1
+        result1 = result1 + values[i]
+    else
+        result1 = result1 + (values[i] * 2)
+    end
+end
+
+// Loop unswitching
+result2 = 0
+
+// Move the invariant condition check outside the loop
+if mode == 1
+    for i = 0; i < 5; i = i + 1
+        result2 = result2 + values[i]
+    end
+else
+    for i = 0; i < 5; i = i + 1
+        result2 = result2 + (values[i] * 2)
+    end
+end
+
+// Verify both approaches give same result
+assert(result1 == 15)
+assert(result2 == 15)
+
+// TEST 8: Loop peeling
+// Demonstrates handling the first iteration separately
+
+array = [10, 20, 30, 40, 50]
+regularResult = array[0]
+
+// Regular loop starting from index 1
+for i = 1; i < 5; i = i + 1
+    regularResult = regularResult + array[i]
+end
+
+// Peeled loop
+peeledResult = array[0]  // First iteration peeled off
+                         // Now peeledResult = 10
+
+// Remaining iterations
+for i = 1; i < 5; i = i + 1
+    peeledResult = peeledResult + array[i]
+end
+
+// Verify both approaches give same result
+assert(regularResult == 150)
+assert(peeledResult == 150)

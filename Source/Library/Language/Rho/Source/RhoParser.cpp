@@ -151,6 +151,11 @@ bool RhoParser::Statement(AstNodePtr block) {
             return true;
         }
 
+        case TokenType::ForEachNetwork: {
+            ForEachNetwork(block);
+            return true;
+        }
+
         case TokenType::If: {
             IfCondition(block);
             return true;
@@ -471,6 +476,35 @@ bool RhoParser::While(AstNodePtr block) {
 
     while_->Add(Pop());
     return block->Add(while_);
+}
+
+bool RhoParser::ForEachNetwork(AstNodePtr block) {
+    if (!Try(TokenType::ForEachNetwork)) return false;
+
+    Consume();  // Consume forEachNetwork token
+
+    Expect(TokenType::OpenParan);  // Expect (
+
+    // Parse the first argument (network node)
+    if (!Expression()) return CreateError("ForEachNetwork requires a network node as first argument");
+    auto forEach = NewNode(RhoAstNodeEnumType::ForEachNetwork);
+    forEach->Add(Pop());  // Add network node
+
+    Expect(TokenType::Comma);  // Expect ,
+
+    // Parse the second argument (collection)
+    if (!Expression()) return CreateError("ForEachNetwork requires a collection as second argument");
+    forEach->Add(Pop());  // Add collection
+
+    Expect(TokenType::Comma);  // Expect ,
+
+    // Parse the third argument (function to apply)
+    if (!Expression()) return CreateError("ForEachNetwork requires a function as third argument");
+    forEach->Add(Pop());  // Add function
+
+    Expect(TokenType::CloseParan);  // Expect )
+
+    return block->Add(forEach);
 }
 
 bool RhoParser::CreateError(const char *text) {

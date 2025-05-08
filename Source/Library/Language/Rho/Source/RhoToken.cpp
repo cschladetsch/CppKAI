@@ -82,6 +82,7 @@ const char *RhoTokenEnumType::ToString(Enum val) {
         CASE(Quote)
         CASE(Sep)
         CASE(Pathname)
+        CASE(ForEachNetwork)
     }
 
     static char buff[BUFSIZ];
