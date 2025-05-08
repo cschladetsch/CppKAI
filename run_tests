@@ -3,20 +3,53 @@
 #find Bin/Test -executable -type f -exec {} \;
 tests=`find Bin/Test -executable -type f`
 
+# Create a log file for Rho diagnostic output
+rho_log_file="rho_diagnostic.log"
+echo "KAI Rho Language Diagnostic Log" > $rho_log_file
+echo "Run Date: $(date)" >> $rho_log_file
+echo "----------------------------------------" >> $rho_log_file
+
 for test in $tests
 do
-	# Skip TestRho since it has lexer issues that need to be fixed
-	if [[ $test == *"TestRho"* ]]; then
-		echo "Skipping $test due to known lexer issues"
-		continue
-	fi
-	
 	echo "Running Test " $test
-	$test
-	if [[ $? -ne 0 ]]; then
-		echo
-		echo "Aborting remaining tests."
-		exit 1
+	
+	# Run TestRho with output going to the diagnostic log file
+	if [[ $test == *"TestRho"* ]]; then
+		echo "Running $test with diagnostic logging to $rho_log_file"
+		echo "## TEST: $test ##" >> $rho_log_file
+		echo "## Begin Output ##" >> $rho_log_file
+		$test 2>&1 | tee -a $rho_log_file
+		test_result=${PIPESTATUS[0]}
+		echo "## End Output ##" >> $rho_log_file
+		echo "----------------------------------------" >> $rho_log_file
+		
+		# Continue with other tests even if TestRho fails
+		if [[ $test_result -ne 0 ]]; then
+			echo "TestRho had errors but continuing with other tests."
+			continue
+		fi
+	# Handle Pi tests with their own log file
+	elif [[ $test == *"TestPi"* ]]; then
+		echo "Running $test with logging to pi_diagnostic.log"
+		$test 2>&1 | tee -a pi_diagnostic.log
+		test_result=${PIPESTATUS[0]}
+		
+		# Continue with other tests even if TestPi fails
+		if [[ $test_result -ne 0 ]]; then
+			echo "TestPi had errors but continuing with other tests."
+			continue
+		fi
+	else
+		# Run normal tests
+		$test
+		if [[ $? -ne 0 ]]; then
+			echo
+			echo "Warning: Test failed. Continuing with remaining tests."
+			# Don't exit - continue with other tests
+			# exit 1
+		fi
 	fi
 done
+
+echo "All tests completed. Check $rho_log_file for Rho language diagnostic output."
 

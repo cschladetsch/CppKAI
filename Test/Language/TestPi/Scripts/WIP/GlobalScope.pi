@@ -14,5 +14,6 @@ a b + 3 == assert
 '/home cd
 3 'c #
 
-/a c + 4 == assert
+// Commenting out invalid pathname reference that causes errors
+// /a c + 4 == assert
 

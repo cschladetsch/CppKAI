@@ -2,6 +2,7 @@
 /CMakeFiles
 /.current
 /build
+/build.ninja
 
 .vscode/
 

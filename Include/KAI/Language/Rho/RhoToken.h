@@ -21,8 +21,6 @@ struct RhoTokenEnumType {
         Comma = 11,
         If = 12,
         Else = 13,
-        For = 14,
-        While = 15,
         OpenBrace = 16,
         CloseBrace = 17,
         OpenParan = 18,
@@ -63,7 +61,6 @@ struct RhoTokenEnumType {
         MinusAssign = 61,
         MulAssign = 62,
         DivAssign = 63,
-        In = 64,
         Assert = 65,
         ToPi = 66,
         PiSequence = 67,
@@ -71,12 +68,6 @@ struct RhoTokenEnumType {
         Debug = 69,
         Quote = 70,
         Sep = 71,
-        AcrossAllNodes = 72,
-        // New token types
-        Mod = 73,         // % (modulo operator)
-        Colon = 74,       // : (for key-value pairs, etc.)
-        ModAssign = 75,   // %= (modulo assignment)
-        DoubleColon = 76, // :: (scope resolution)
     };
 
     struct Type : TokenBase<RhoTokenEnumType> {

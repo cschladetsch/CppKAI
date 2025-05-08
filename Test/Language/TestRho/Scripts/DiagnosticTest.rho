@@ -1,0 +1,47 @@
+// DiagnosticTest.rho
+// This is a diagnostic test script for the Rho language
+// Iteration constructs have been removed
+
+// Initialize diagnostic variables
+test_results = []
+
+// SECTION 1: Basic tests
+print("==== SECTION 1: Basic tests ====")
+
+// Test 1.1: Basic arithmetic
+print("Test 1.1: Basic arithmetic")
+a = 10 + 5
+b = 20 - 7
+c = 6 * 4
+d = 20 / 4
+test_results.append("Basic arithmetic: 10 + 5 = " + a)
+test_results.append("Basic arithmetic: 20 - 7 = " + b)
+test_results.append("Basic arithmetic: 6 * 4 = " + c) 
+test_results.append("Basic arithmetic: 20 / 4 = " + d)
+
+// SECTION 2: Conditionals
+print("==== SECTION 2: Conditionals ====")
+
+// Test 2.1: Simple conditional
+print("Test 2.1: Simple conditional")
+result = ""
+if 10 > 5
+    result = "10 is greater than 5"
+else
+    result = "This should not happen"
+test_results.append("Conditional result: " + result)
+
+// SECTION 3: Functions
+print("==== SECTION 3: Functions ====")
+
+// Test 3.1: Basic function
+print("Test 3.1: Basic function")
+square = fun(x) { 
+    return x * x 
+}
+result = square(5)
+test_results.append("Square function: square(5) = " + result)
+
+// Print results
+print("\n==== DIAGNOSTIC TEST RESULTS ====")
+print("Test completed - iteration constructs removed")

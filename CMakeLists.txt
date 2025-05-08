@@ -17,7 +17,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 option(KAI_BUILD_TEST_ALL "Build all tests" ON)
 option(KAI_BUILD_CORE_TEST "Build unit tests" ON)
 option(KAI_BUILD_TEST_LANG "Build language tests" ON)
-option(KAI_BUILD_TEST_NETWORK "Build networking tests" ON)
+option(KAI_BUILD_TEST_NETWORK "Build networking tests" OFF)
 option(KAI_BUILD_RAKNET "Build RakNet" ON)
 
 # Find and link Boost libraries

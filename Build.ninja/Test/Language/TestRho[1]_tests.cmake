@@ -1,0 +1,5 @@
+add_test([=[TestLangCommon.TestRhoReflection]=]  /home/xian/local/KAI/Bin/Test/TestRho [==[--gtest_filter=TestLangCommon.TestRhoReflection]==] --gtest_also_run_disabled_tests)
+set_tests_properties([=[TestLangCommon.TestRhoReflection]=]  PROPERTIES WORKING_DIRECTORY /home/xian/local/KAI/Build.ninja/Test/Language SKIP_REGULAR_EXPRESSION [==[\[  SKIPPED \]]==])
+add_test([=[TestLangCommon.RunScripts]=]  /home/xian/local/KAI/Bin/Test/TestRho [==[--gtest_filter=TestLangCommon.RunScripts]==] --gtest_also_run_disabled_tests)
+set_tests_properties([=[TestLangCommon.RunScripts]=]  PROPERTIES WORKING_DIRECTORY /home/xian/local/KAI/Build.ninja/Test/Language SKIP_REGULAR_EXPRESSION [==[\[  SKIPPED \]]==])
+set(  TestRho_TESTS TestLangCommon.TestRhoReflection TestLangCommon.RunScripts)

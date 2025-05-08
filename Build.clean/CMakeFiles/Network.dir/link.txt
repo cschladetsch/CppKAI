@@ -1,0 +1,2 @@
+/usr/bin/ar qc /home/xian/local/KAI/Lib/libNetwork.a CMakeFiles/Network.dir/Source/Library/Network/Source/AgentBase.cpp.o CMakeFiles/Network.dir/Source/Library/Network/Source/ConnectionManager.cpp.o CMakeFiles/Network.dir/Source/Library/Network/Source/GenerateProxy.cpp.o CMakeFiles/Network.dir/Source/Library/Network/Source/Node.cpp.o CMakeFiles/Network.dir/Source/Library/Network/Source/PeerDiscovery.cpp.o CMakeFiles/Network.dir/Source/Library/Network/Source/ProxyBase.cpp.o
+/usr/bin/ranlib /home/xian/local/KAI/Lib/libNetwork.a

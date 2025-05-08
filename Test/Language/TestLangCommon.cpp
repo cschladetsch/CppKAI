@@ -91,8 +91,17 @@ void TestLangCommon::ExecScriptFile(const std::string& scriptFileName) {
 
 void TestLangCommon::ExecScripts() {
     const fs::path scriptsRoot(KAI_STRINGISE(KAI_SCRIPT_ROOT));
-    const auto ext = File::Extension(".pi");
-    _console.SetLanguage(Language::KAI_LANG_NAME);
+    
+    // Change this to match the test we're running
+    #ifdef KAI_LANG_NAME
+        const auto ext = File::Extension(".pi");
+        _console.SetLanguage(Language::KAI_LANG_NAME);
+    #else
+        // Default to the current test language
+        const auto ext = File::Extension(".rho");
+        _console.SetLanguage(Language::Rho);
+        std::cout << "Testing Rho language scripts" << std::endl;
+    #endif
     for (auto const &scriptName :
          File::GetFilesWithExtensionRecursively(scriptsRoot, ext)) {
         // Include all scripts, including WIP ones

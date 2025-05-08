@@ -23,8 +23,6 @@ struct RhoAstNodeEnumType {
         Negative = 13,
         ArgList = 14,
         IndexOp = 15,
-        ForEach = 16,
-        For = 17,
         List = 18,
         Map = 19,
         Plus = 20,
@@ -39,7 +37,6 @@ struct RhoAstNodeEnumType {
         Continuation = 29,
         Pathname = 30,
         Home = 31,
-        AcrossAllNodes = 32,
     };
 
     struct Node : AstNodeBase<RhoToken, RhoAstNodeEnumType> {

@@ -1,0 +1,2 @@
+/usr/bin/ar qc /home/xian/local/KAI/Lib/libPiLang.a CMakeFiles/PiLang.dir/Pi/Source/PiAstNode.cpp.o CMakeFiles/PiLang.dir/Pi/Source/PiLexer.cpp.o CMakeFiles/PiLang.dir/Pi/Source/PiParser.cpp.o CMakeFiles/PiLang.dir/Pi/Source/PiToken.cpp.o CMakeFiles/PiLang.dir/Pi/Source/PiTranslator.cpp.o
+/usr/bin/ranlib /home/xian/local/KAI/Lib/libPiLang.a

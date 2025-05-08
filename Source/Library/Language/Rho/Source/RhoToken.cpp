@@ -32,8 +32,6 @@ const char *RhoTokenEnumType::ToString(Enum val) {
         CASE(Comma)
         CASE(If)
         CASE(Else)
-        CASE(For)
-        CASE(While)
         CASE(OpenBrace)
         CASE(CloseBrace)
         CASE(OpenParan)
@@ -74,7 +72,6 @@ const char *RhoTokenEnumType::ToString(Enum val) {
         CASE(MinusAssign)
         CASE(MulAssign)
         CASE(DivAssign)
-        CASE(In)
         CASE(Assert)
         CASE(ToPi)
         CASE(PiSequence)
@@ -82,11 +79,6 @@ const char *RhoTokenEnumType::ToString(Enum val) {
         CASE(Quote)
         CASE(Sep)
         CASE(Pathname)
-        CASE(AcrossAllNodes)
-        CASE(Mod)
-        CASE(Colon)
-        CASE(ModAssign)
-        CASE(DoubleColon)
     }
 
     static char buff[BUFSIZ];
