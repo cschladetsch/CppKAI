@@ -37,6 +37,7 @@ void TestLangCommon::SetUp() {
     // Always ensure a clean state on setup
     _exec->ClearStacks();
     _exec->ClearContext();
+    
 }
 
 void TestLangCommon::TearDown() {
@@ -46,6 +47,7 @@ void TestLangCommon::TearDown() {
 }
 
 void TestLangCommon::ExecScriptFile(const std::string& scriptFileName) {
+    
     const fs::path scriptsRoot(KAI_STRINGISE(KAI_SCRIPT_ROOT));
     const fs::path scriptPath = scriptsRoot / scriptFileName;
     

@@ -68,7 +68,12 @@ class LexerCommon : public LexerBase {
     }
 
     Token LexAlpha() {
-        Token tok(Enum::Ident, *this, lineNumber, Gather(isalnum));
+        // Custom function to check if character is valid in an identifier (alphanumeric or underscore)
+        auto isIdentChar = [](int ch) -> int { 
+            return isalnum(ch) || ch == '_'; 
+        };
+        
+        Token tok(Enum::Ident, *this, lineNumber, Gather(isIdentChar));
         auto kw = keyWords.find(tok.Text());
         auto keyword = kw != keyWords.end();
         if (keyword) tok.type = kw->second;

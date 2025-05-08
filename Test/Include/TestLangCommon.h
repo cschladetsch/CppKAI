@@ -26,8 +26,6 @@ class TestLangCommon : public TestCommon {
     void ExecScripts();
     void ExecScriptFile(const std::string& scriptName);
     
-    // Flag to skip tests that have Lexer issues
-    bool _skipDueToLexerIssues = false;
 
     // Get const ref to data at index on stack
     template <class T>

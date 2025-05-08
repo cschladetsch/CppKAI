@@ -26,7 +26,8 @@ bool RhoLexer::NextToken() {
     char current = Current();
     if (current == 0) return false;
 
-    if (isalpha(current)) return LexPathname();
+    // Allow identifiers to start with either a letter or an underscore
+    if (isalpha(current) || current == '_') return LexPathname();
 
     if (isdigit(current)) return Add(Enum::Int, Gather(isdigit));
 
@@ -108,6 +109,12 @@ bool RhoLexer::NextToken() {
             if (Peek() == '+') return AddTwoCharOp(Enum::Increment);
             if (Peek() == '=') return AddTwoCharOp(Enum::PlusAssign);
             return Add(Enum::Plus);
+            
+        case '%':
+            return Add(Enum::Mod);
+            
+        case ':':
+            return Add(Enum::Colon);
     }
 
     LexError("Unrecognised %c");
@@ -153,7 +160,8 @@ bool RhoLexer::LexPathname() {
             continue;
         }
 
-        if (!isalpha(Current())) {
+        // Allow identifiers to start with either a letter or an underscore
+        if (!isalpha(Current()) && Current() != '_') {
             break;
         }
     } while (true);

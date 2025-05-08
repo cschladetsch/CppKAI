@@ -72,6 +72,9 @@ struct RhoTokenEnumType {
         Quote = 70,
         Sep = 71,
         AcrossAllNodes = 72,
+        // New token types
+        Mod = 73,      // % (modulo operator)
+        Colon = 74,    // : (for key-value pairs, etc.)
     };
 
     struct Type : TokenBase<RhoTokenEnumType> {
