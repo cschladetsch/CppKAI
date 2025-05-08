@@ -8,7 +8,19 @@ using namespace std;
 
 struct TestPi : TestLangCommon {};
 
-TEST_F(TestPi, RunScripts) { ExecScripts(); }
+TEST_F(TestPi, RunScripts) { 
+    // Enable trace output for debugging
+    debug::MinTrace();
+    
+    // Get the executor and stacks
+    auto &exec = *_console.GetExecutor();
+    
+    // First clear the stacks to ensure we're starting clean
+    exec.ClearStacks();
+    exec.ClearContext();
+    
+    ExecScripts(); 
+}
 
 TEST_F(TestPi, TestContinuations) {
     auto &exec = *_console.GetExecutor();

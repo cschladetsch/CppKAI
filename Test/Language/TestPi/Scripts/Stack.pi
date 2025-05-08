@@ -1,26 +1,40 @@
+// Make sure to reset stack and continuations
+clear
+
+// Check for initial clean state
 depth 0 == assert
 
+// Test depth operation with values
 1 2 3 depth 3 == assert
-clear depth 0 == assert
 
+// Test clear operation
+clear 
+depth 0 == assert
+
+// Define a helper function for "to array"
 { depth toarray } 'toa #
 
+// Test toarray with simple values
 1 2 toa & [1 2] == assert
 
-// why does this fail?
-// ...beacuse continuations aren't reset!
-// ...same reason why other tests fail
-//1 2 swap toa & [2 1] == assert
-
-//1 2 3 rot toa & [3 1 2] == assert
-//1 2 3 2 pickn toa & [1 2 3 2 3] == assert
-
+// Make sure the stack is clean for next tests
+clear
 depth 0 == assert
 
+// Test depth after pushing a value
 1 depth 1 == assert
+
+// Test clear and depth equivalence
 clear 0 depth == assert
 
+// Test clear with multiple values
 1 2 3 clear depth 0 == assert
 
+// Test toarray with simple values
 1 2 2 toarray [1 2] == assert
+
+// Test swap and toarray
 1 2 swap 2 toarray [2 1] == assert
+
+// Explicitly clear at the end to avoid state leakage
+clear

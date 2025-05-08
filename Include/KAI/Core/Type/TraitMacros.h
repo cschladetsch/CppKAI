@@ -37,7 +37,7 @@ KAI_BEGIN
 // their Traits
 KAI_TYPE_TRAITS(String, Number::String,
                 Properties::Streaming | Properties::Plus | Properties::Equiv |
-                    Properties::Relational)
+                    Properties::Relational | Properties::Boolean)
 
 KAI_TYPE_TRAITS(Handle, Number::Handle,
                 Properties::Boolean | Properties::StringStreamInsert)

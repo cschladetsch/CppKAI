@@ -32,9 +32,17 @@ void TestLangCommon::SetUp() {
     _context = &*_exec->GetContextStack();
     _tree = &_console.GetTree();
     _root = _tree->GetRoot();
+    
+    // Always ensure a clean state on setup
+    _exec->ClearStacks();
+    _exec->ClearContext();
 }
 
-void TestLangCommon::TearDown() {}
+void TestLangCommon::TearDown() {
+    // Clean up after each test to avoid state persistence
+    _exec->ClearStacks();
+    _exec->ClearContext();
+}
 
 void TestLangCommon::ExecScripts() {
     const fs::path scriptsRoot(KAI_STRINGISE(KAI_SCRIPT_ROOT));
@@ -49,8 +57,21 @@ void TestLangCommon::ExecScripts() {
         }
         KAI_TRACE() << "Testing script: "
                     << scriptName.generic_string().c_str();
+        
+        // Clear stacks before each script execution to ensure a clean state
+        _exec->ClearStacks();
+        _exec->ClearContext();
+        
+        // Debug: check initial stack state
+        KAI_TRACE() << "Initial stack depth: " << _exec->GetDataStack()->Size();
+        KAI_TRACE() << "Initial context stack depth: " << _exec->GetContextStack()->Size();
+        
         auto contents = File::ReadAllText(scriptName);
         _console.Execute(contents.c_str());
+        
+        // Debug: check final stack state
+        KAI_TRACE() << "Final stack depth: " << _exec->GetDataStack()->Size();
+        KAI_TRACE() << "Final context stack depth: " << _exec->GetContextStack()->Size();
     }
 }
 

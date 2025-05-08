@@ -170,7 +170,7 @@ struct TraitsBase {
 
     template <class Dummy>
     struct BoolOp<Dummy, true> {
-        static bool Perform(ConstReference A) { return A; }
+        static bool Perform(ConstReference A) { return static_cast<bool>(A); }
     };
 
     template <class, bool>

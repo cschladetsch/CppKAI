@@ -1,4 +1,5 @@
 #include <KAI/Core/Object/ClassBuilder.h>
+#include <KAI/Core/Type/Properties.h>
 
 #include <algorithm>
 
@@ -79,6 +80,7 @@ void String::Register(Registry &R) {
     ClassBuilder<String>(R, Label("String"))
         .Methods("Size", &String::Size)("Empty", &String::Empty)(
             "Clear", &String::Clear);
+    // Note: Plus and Equiv operations are already registered via KAI_TYPE_TRAITS in TraitMacros.h
 }
 
 KAI_END
