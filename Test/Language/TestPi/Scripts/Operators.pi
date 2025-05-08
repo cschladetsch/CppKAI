@@ -1,0 +1,40 @@
+// Test file for Pi language operators
+// First clear any leftover stack items
+clear
+
+// Test basic arithmetic operators
+1 2 + 3 == assert
+5 2 - 3 == assert
+3 4 * 12 == assert
+10 2 div 5 == assert
+// mod not available in Pi yet
+// 10 3 mod 1 == assert
+
+// Test comparison operators
+5 5 == assert
+5 6 == not assert
+// These operators might not be implemented yet
+// 5 6 < assert
+// 6 5 > assert
+// 5 5 <= assert
+// 5 5 >= assert
+// Use != operator if available, otherwise just invert ==
+5 6 == not assert
+
+// Test logical operators
+true true and assert
+true false or assert
+false not assert
+
+// Test stack operations
+1 2 3 
+depth 3 == assert
+clear
+depth 0 == assert
+
+// Test more complex expressions
+1 2 + 3 * 4 div // Should be (1+2)*3/4 = 9/4 = 2.25, but integer division gives 2
+2 == assert
+
+// Make sure we clean up at the end
+clear

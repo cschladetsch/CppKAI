@@ -1,0 +1,28 @@
+// Test file for Pi language data types
+// First clear any leftover stack items
+clear
+
+// Test integers
+42 'int_val #
+int_val 42 == assert
+
+// Test strings
+"Hello" 'str_val #
+str_val "Hello" == assert
+
+// Test booleans
+true 'bool_true #
+bool_true assert
+false 'bool_false #
+bool_false not assert
+
+// Test arrays
+[1 2 3] 'array_val #
+array_val [1 2 3] == assert
+
+// Test continuations as a data type
+{ 5 } 'cont_val #
+cont_val & 5 == assert
+
+// Clean up
+clear

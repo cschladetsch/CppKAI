@@ -1,0 +1,23 @@
+// Test file for Pi language continuations (functions)
+// First clear any leftover stack items
+clear
+
+// Define a simple continuation
+{ 42 } 'answer #
+answer & 42 == assert
+
+// Define a continuation that takes arguments
+{ + } 'add #
+3 4 add & 7 == assert
+
+// Define a continuation with multiple operations
+{ 2 * 3 + } 'calculate #
+5 calculate & 13 == assert
+
+// Test nested continuation calls
+{ 2 * } 'double #
+{ 3 + } 'add3 #
+5 double & add3 & 13 == assert
+
+// Clean up
+clear
