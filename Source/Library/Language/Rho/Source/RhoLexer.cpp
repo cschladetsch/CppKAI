@@ -1,10 +1,13 @@
 #include <KAI/Language/Rho/RhoLexer.h>
+#include <iostream>
 
 using namespace std;
 
 KAI_BEGIN
 
 void RhoLexer::AddKeyWords() {
+    std::cout << "RhoLexer::AddKeyWords() - Adding keywords" << std::endl;
+    
     keyWords["if"] = Enum::If;
     keyWords["else"] = Enum::Else;
     keyWords["for"] = Enum::For;
@@ -20,16 +23,29 @@ void RhoLexer::AddKeyWords() {
     keyWords["pi"] = Enum::ToPi;
     keyWords["pi{"] = Enum::PiSequence;
     keyWords["acrossAllNodes"] = Enum::AcrossAllNodes;
+    
+    std::cout << "Keywords added: " << keyWords.size() << std::endl;
 }
 
 bool RhoLexer::NextToken() {
     char current = Current();
-    if (current == 0) return false;
+    if (current == 0) {
+        std::cout << "RhoLexer::NextToken() - End of input" << std::endl;
+        return false;
+    }
+
+    std::cout << "RhoLexer::NextToken() - Current char: '" << current << "' (ASCII " << (int)current << ")" << std::endl;
 
     // Allow identifiers to start with either a letter or an underscore
-    if (isalpha(current) || current == '_') return LexPathname();
+    if (isalpha(current) || current == '_') {
+        std::cout << "Lexing identifier or keyword starting with: " << current << std::endl;
+        return LexPathname();
+    }
 
-    if (isdigit(current)) return Add(Enum::Int, Gather(isdigit));
+    if (isdigit(current)) {
+        std::cout << "Lexing number starting with: " << current << std::endl;
+        return Add(Enum::Int, Gather(isdigit));
+    }
 
     switch (current) {
         case '\'':
@@ -111,9 +127,13 @@ bool RhoLexer::NextToken() {
             return Add(Enum::Plus);
             
         case '%':
+            // Added proper handling for Mod operator
+            if (Peek() == '=') return AddTwoCharOp(Enum::ModAssign);
             return Add(Enum::Mod);
             
         case ':':
+            // Added proper handling for Colon operator
+            if (Peek() == ':') return AddTwoCharOp(Enum::DoubleColon);
             return Add(Enum::Colon);
     }
 

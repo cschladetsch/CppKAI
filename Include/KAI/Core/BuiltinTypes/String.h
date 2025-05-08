@@ -129,6 +129,7 @@ StringStream &operator<<(StringStream &, const String &);
 StringStream &operator>>(StringStream &, String &);
 BinaryStream &operator<<(BinaryStream &, const String &);
 BinaryStream &operator>>(BinaryStream &, String &);
+std::ostream &operator<<(std::ostream &, const String &);
 
 KAI_END
 

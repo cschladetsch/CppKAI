@@ -53,6 +53,10 @@ BinaryStream &operator>>(BinaryStream &S, Label &L) {
     return S;
 }
 
+std::ostream &operator<<(std::ostream &S, const Label &L) {
+    return S << L.ToString();
+}
+
 void Label::Register(Registry &R) {
     ClassBuilder<Label>(R, Label("Label"))
         .Methods("ToString", &Label::ToString, "ToString")(

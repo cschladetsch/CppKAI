@@ -57,6 +57,7 @@ void TestLangCommon::ExecScriptFile(const std::string& scriptFileName) {
     }
     else if (scriptFileName.find(".rho") != std::string::npos) {
         _console.SetLanguage(Language::Rho);
+        std::cout << "Setting language to Rho for script: " << scriptFileName << std::endl;
     }
     else if (scriptFileName.find(".tau") != std::string::npos) {
         _console.SetLanguage(Language::Tau);
@@ -66,9 +67,26 @@ void TestLangCommon::ExecScriptFile(const std::string& scriptFileName) {
     _exec->ClearStacks();
     _exec->ClearContext();
     
-    auto contents = File::ReadAllText(scriptPath);
-    // Execute the script - let any exceptions propagate to the caller
-    _console.Execute(contents.c_str());
+    try {
+        auto contents = File::ReadAllText(scriptPath);
+        std::cout << "Loaded script file: " << scriptPath.string() << std::endl;
+        
+        // Add detailed execution steps
+        std::cout << "Executing script with length: " << contents.size() << " bytes" << std::endl;
+        
+        // Execute the script - let any exceptions propagate to the caller
+        _console.Execute(contents.c_str());
+        
+        std::cout << "Script execution complete" << std::endl;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Exception in ExecScriptFile: " << e.what() << std::endl;
+        throw; // Re-throw the exception
+    }
+    catch (...) {
+        std::cerr << "Unknown exception in ExecScriptFile" << std::endl;
+        throw; // Re-throw the exception
+    }
 }
 
 void TestLangCommon::ExecScripts() {

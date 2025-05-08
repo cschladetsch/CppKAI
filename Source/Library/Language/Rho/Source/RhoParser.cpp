@@ -5,14 +5,21 @@ KAI_BEGIN
 
 bool RhoParser::Process(std::shared_ptr<Lexer> lex, Structure st) {
     lexer = lex;
-    if (lex->Failed) return Fail(lex->Error);
+    if (lex->Failed) {
+        KAI_TRACE_ERROR() << "Lexer failed: " << lex->Error;
+        return Fail(lex->Error);
+    }
 
+    KAI_TRACE() << "Starting to process tokens";
     for (auto tok : lexer->GetTokens()) {
-        if (tok.type != TokenEnum::Whitespace && tok.type != TokenEnum::Comment)
+        if (tok.type != TokenEnum::Whitespace && tok.type != TokenEnum::Comment) {
             tokens.push_back(tok);
+            KAI_TRACE() << "Token";
+        }
     }
 
     root = NewNode(AstEnum::Program);
+    KAI_TRACE() << "Created root Program node";
 
     return Run(st);
 }
@@ -471,39 +478,122 @@ bool RhoParser::For(AstNodePtr block) {
 }
 
 bool RhoParser::While(AstNodePtr block) {
-    auto while_ = NewNode(Consume());
-    if (!Expression()) return CreateError("While what?");
-
-    while_->Add(Pop());
+    KAI_TRACE() << "Starting to parse While construct";
+    
+    // First, make sure we're parsing a while keyword
+    if (!Try(TokenType::While)) {
+        KAI_TRACE_ERROR() << "Expected 'while' keyword";
+        return false;
+    }
+    
+    // Create a while node
+    auto whileToken = Consume();
+    KAI_TRACE() << "Consumed while token";
+    auto while_ = NewNode(whileToken);
+    
+    // Parse the condition
+    KAI_TRACE() << "Parsing condition expression";
+    if (!Expression()) {
+        KAI_TRACE_ERROR() << "Expected condition expression after 'while'";
+        return CreateError("While condition expected");
+    }
+    
+    auto condition = Pop();
+    KAI_TRACE() << "Got condition: " << condition->ToString();
+    
+    // Add the condition as the first child of the while node
+    while_->Add(condition);
+    
+    // Create a block for the body statements
+    KAI_TRACE() << "Creating body block";
+    auto body = NewNode(RhoAstNodeEnumType::Block);
+    
+    // Parse the body block
+    KAI_TRACE() << "Parsing body statements";
+    if (!Block(body)) {
+        KAI_TRACE_ERROR() << "Failed to parse block after while condition";
+        return CreateError("Expected block after while condition");
+    }
+    
+    int stmtCount = (int)body->GetChildren().size();
+    KAI_TRACE() << "Body has " << stmtCount << " statements";
+    
+    // Ensure we have at least one statement in the body
+    if (stmtCount == 0) {
+        KAI_TRACE_WARN() << "While loop body is empty";
+    }
+    
+    // Add the body block as the second child of the while node
+    while_->Add(body);
+    
+    // Final check of the while node structure
+    KAI_TRACE() << "While node structure:";
+    KAI_TRACE() << "  Child count: " << (int)while_->GetChildren().size();
+    KAI_TRACE() << "  Child 0 (condition): " << while_->GetChild(0)->ToString();
+    KAI_TRACE() << "  Child 1 (body): " << while_->GetChild(1)->ToString();
+    
+    // Add the while node to the parent block
+    KAI_TRACE() << "Adding while node to parent block";
     return block->Add(while_);
 }
 
 bool RhoParser::AcrossAllNodes(AstNodePtr block) {
     if (!Try(TokenType::AcrossAllNodes)) return false;
 
-    Consume();  // Consume acrossAllNodes token
+    KAI_TRACE() << "Starting to parse AcrossAllNodes construct";
+    
+    auto token = Consume();  // Consume acrossAllNodes token
+    KAI_TRACE() << "AcrossAllNodes token";
 
-    Expect(TokenType::OpenParan);  // Expect (
+    auto openParen = Expect(TokenType::OpenParan);  // Expect (
+    KAI_TRACE() << "OpenParan token";
 
     // Parse the first argument (network node)
-    if (!Expression()) return CreateError("AcrossAllNodes requires a network node as first argument");
+    KAI_TRACE() << "Parsing first argument (network node)";
+    if (!Expression()) {
+        KAI_TRACE_ERROR() << "Failed to parse network node argument";
+        return CreateError("AcrossAllNodes requires a network node as first argument");
+    }
+    
     auto forEach = NewNode(RhoAstNodeEnumType::AcrossAllNodes);
-    forEach->Add(Pop());  // Add network node
+    auto networkNode = Pop();
+    KAI_TRACE() << "Got network node";
+    forEach->Add(networkNode);  // Add network node
 
-    Expect(TokenType::Comma);  // Expect ,
+    auto comma1 = Expect(TokenType::Comma);  // Expect ,
+    KAI_TRACE() << "Comma token";
 
     // Parse the second argument (collection)
-    if (!Expression()) return CreateError("AcrossAllNodes requires a collection as second argument");
-    forEach->Add(Pop());  // Add collection
+    KAI_TRACE() << "Parsing second argument (collection)";
+    if (!Expression()) {
+        KAI_TRACE_ERROR() << "Failed to parse collection argument";
+        return CreateError("AcrossAllNodes requires a collection as second argument");
+    }
+    
+    auto collection = Pop();
+    KAI_TRACE() << "Got collection";
+    forEach->Add(collection);  // Add collection
 
-    Expect(TokenType::Comma);  // Expect ,
+    auto comma2 = Expect(TokenType::Comma);  // Expect ,
+    KAI_TRACE() << "Comma token";
 
     // Parse the third argument (function to apply)
-    if (!Expression()) return CreateError("AcrossAllNodes requires a function as third argument");
-    forEach->Add(Pop());  // Add function
+    KAI_TRACE() << "Parsing third argument (function)";
+    if (!Expression()) {
+        KAI_TRACE_ERROR() << "Failed to parse function argument";
+        return CreateError("AcrossAllNodes requires a function as third argument");
+    }
+    
+    auto function = Pop();
+    KAI_TRACE() << "Got function";
+    forEach->Add(function);  // Add function
 
-    Expect(TokenType::CloseParan);  // Expect )
+    auto closeParen = Expect(TokenType::CloseParan);  // Expect )
+    KAI_TRACE() << "CloseParan token";
 
+    // Trace the complete forEach node
+    KAI_TRACE() << "AcrossAllNodes construct complete";
+    
     return block->Add(forEach);
 }
 

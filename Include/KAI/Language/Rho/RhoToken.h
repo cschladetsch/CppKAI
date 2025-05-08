@@ -73,8 +73,10 @@ struct RhoTokenEnumType {
         Sep = 71,
         AcrossAllNodes = 72,
         // New token types
-        Mod = 73,      // % (modulo operator)
-        Colon = 74,    // : (for key-value pairs, etc.)
+        Mod = 73,         // % (modulo operator)
+        Colon = 74,       // : (for key-value pairs, etc.)
+        ModAssign = 75,   // %= (modulo assignment)
+        DoubleColon = 76, // :: (scope resolution)
     };
 
     struct Type : TokenBase<RhoTokenEnumType> {

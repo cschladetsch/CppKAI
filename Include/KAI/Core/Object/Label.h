@@ -42,6 +42,7 @@ StringStream &operator<<(StringStream &S, const Label &L);
 StringStream &operator>>(StringStream &S, Label &L);
 BinaryStream &operator<<(BinaryStream &, Label const &);
 BinaryStream &operator>>(BinaryStream &, Label &);
+std::ostream &operator<<(std::ostream &, const Label &);
 
 KAI_TYPE_TRAITS(Label, Number::Label,
                 Properties::Streaming | Properties::Relational);
