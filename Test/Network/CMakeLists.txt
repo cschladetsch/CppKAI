@@ -8,6 +8,7 @@ if(KAI_BUILD_TEST_NETWORK)
     # Source files
     set(SOURCES
         TestNode.cpp
+        TestGenerateProxy.cpp
     )
 
     # Create the test executable

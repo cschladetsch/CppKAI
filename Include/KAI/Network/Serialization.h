@@ -58,13 +58,10 @@ public:
         try
         {
             // Read the size
-            unsigned int size;
-            if (!bitStream.Read(size))
-                return Object(); // Return empty object on read failure
-                
-            // If we have a zero-size packet, it was an error during serialization
+            unsigned int size = 0;
+            bitStream.Read(size);
             if (size == 0)
-                return Object();
+                return Object(); // Return empty object on read failure
                 
             // In a real implementation, we would read the data and deserialize it:
             // std::vector<char> buffer(size);
@@ -75,7 +72,7 @@ public:
             // return result;
             
             // For now, just read the placeholder data and return an empty object
-            int objectTypeId;
+            unsigned int objectTypeId = 0;
             bitStream.Read(objectTypeId);
             
             // Create a new object of the appropriate type based on objectTypeId

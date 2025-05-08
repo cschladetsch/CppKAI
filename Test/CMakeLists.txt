@@ -6,6 +6,7 @@ add_subdirectory(Language)
 
 if (KAI_BUILD_TEST_NETWORK)
     add_subdirectory(Network)
+    add_subdirectory(Network/ProxyTest)
 else()
     message(WARNING "Not building Network unit tests")
 endif()
