@@ -1,0 +1,348 @@
+// IterationSwitching.rho
+// Tests for switching between different iteration constructs using continuations
+
+// Define a global storage for test results
+results = []
+
+// Create some test values
+numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+strings = ["one", "two", "three", "four", "five"]
+matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+
+// Test 1: Switch from while to for loop using a continuation
+// This demonstrates jumping between different loop constructs
+print("Test 1: Switch from while to for loop")
+sum = 0
+i = 0
+
+// Create a continuation for the for loop
+fun forLoopContinuation() {
+    for j = 5; j < 10; j = j + 1
+        sum = sum + j
+    end
+}
+
+// Start with a while loop
+while i < 5
+    sum = sum + i
+    i = i + 1
+    
+    // Switch to for loop when i reaches 5
+    if i == 5
+        forLoopContinuation()
+        break
+    end
+end
+
+results.append("Test 1: " + sum)  // Should be 0+1+2+3+4+5+6+7+8+9 = 45
+assert(sum == 45)
+
+// Test 2: Nested loops with break to outer loop
+print("Test 2: Early exit from nested loops")
+found = false
+target = 6
+
+// Create a continuation to break all the way out
+fun exitAllLoops() {
+    found = true
+}
+
+for i = 0; i < 3; i = i + 1
+    for j = 0; j < 3; j = j + 1
+        if matrix[i][j] == target
+            results.append("Found target " + target + " at position [" + i + "][" + j + "]")
+            exitAllLoops()
+            break
+        end
+    end
+    
+    if found
+        break
+    end
+end
+
+assert(found == true)
+
+// Test 3: ForEach with conditional continuations
+print("Test 3: ForEach with conditional continuation")
+evenSum = 0
+oddSum = 0
+
+// Create continuations for even and odd processing
+fun processEven(n) {
+    evenSum = evenSum + n
+}
+
+fun processOdd(n) {
+    oddSum = oddSum + n
+}
+
+// Iterate and call the appropriate continuation
+for n in numbers
+    if n % 2 == 0
+        processEven(n)
+    else
+        processOdd(n)
+    end
+end
+
+results.append("Even sum: " + evenSum)  // 2+4+6+8+10 = 30
+results.append("Odd sum: " + oddSum)    // 1+3+5+7+9 = 25
+assert(evenSum == 30)
+assert(oddSum == 25)
+
+// Test 4: Do-while with escape continuation
+print("Test 4: Do-while with escape continuation")
+counter = 0
+total = 0
+
+// Escape continuation
+fun escape() {
+    results.append("Escaped at counter = " + counter)
+    counter = 100  // This will make the loop exit
+}
+
+// Do-while loop with escape condition
+do
+    total = total + counter
+    counter = counter + 1
+    
+    // Call escape continuation when counter is 5
+    if counter == 5
+        escape()
+    end
+end while counter < 10
+
+results.append("Final total: " + total)  // Should be 0+1+2+3+4 = 10
+assert(total == 10)
+assert(counter == 100)
+
+// Test 5: Loop resumption using continuations
+print("Test 5: Loop resumption with continuations")
+steps = []
+
+// Create a continuation that will be called from within a loop
+fun resumeLoop(start, end) {
+    for i = start; i <= end; i = i + 1
+        steps.append(i)
+    end
+}
+
+// First loop runs from 1 to 3
+resumeLoop(1, 3)
+// Second loop runs from 7 to 10
+resumeLoop(7, 10)
+
+// Verify the combined result
+results.append("Steps: " + steps)  // Should be [1,2,3,7,8,9,10]
+assert(steps.size() == 7)
+assert(steps[0] == 1)
+assert(steps[3] == 7)
+
+// Test 6: AcrossAllNodes with continuation callback
+print("Test 6: AcrossAllNodes with continuation callback")
+transformed = []
+
+// Create a continuation for processing the results
+fun processResult(results) {
+    for r in results
+        transformed.append(r * 10)
+    end
+}
+
+// Use acrossAllNodes (which will fall back to local execution)
+squared = acrossAllNodes(null, numbers, fun(x) { return x * x })
+// Process the results using our continuation
+processResult(squared)
+
+results.append("Transformed: " + transformed)  // [10,40,90,160,250,360,490,640,810,1000]
+assert(transformed.size() == 10)
+assert(transformed[1] == 40)
+
+// Test 7: Chained iterations with shared state
+print("Test 7: Chained iterations with shared state")
+state = { "count": 0, "sum": 0 }
+
+// First pass: count even numbers
+for n in numbers
+    if n % 2 == 0
+        state["count"] = state["count"] + 1
+    end
+end
+
+// Second pass: sum odd numbers
+for n in numbers
+    if n % 2 == 1
+        state["sum"] = state["sum"] + n
+    end
+end
+
+results.append("Even count: " + state["count"])  // 5
+results.append("Odd sum: " + state["sum"])       // 25
+assert(state["count"] == 5)
+assert(state["sum"] == 25)
+
+// Test 8: While loop with dynamic continuation selection
+print("Test 8: Dynamic continuation selection")
+value = 1
+actions = []
+
+// Define different continuations
+fun doubleValue() {
+    value = value * 2
+    actions.append("doubled")
+}
+
+fun incrementValue() {
+    value = value + 1
+    actions.append("incremented")
+}
+
+fun squareValue() {
+    value = value * value
+    actions.append("squared")
+}
+
+// Dynamically select which continuation to use
+i = 0
+while i < 5
+    // Choose continuation based on the current value
+    if value % 3 == 0
+        doubleValue()
+    else if value % 3 == 1
+        incrementValue()
+    else
+        squareValue()
+    end
+    
+    i = i + 1
+end
+
+results.append("Final value: " + value)
+results.append("Actions: " + actions)
+assert(actions.size() == 5)
+
+// Test 9: Conditional loop execution with continuations
+print("Test 9: Conditional loop execution")
+result = 0
+
+// Define different loop continuations
+fun executeWhileLoop() {
+    i = 0
+    while i < 5
+        result = result + (i * 2)
+        i = i + 1
+    end
+}
+
+fun executeForLoop() {
+    for i = 0; i < 5; i = i + 1
+        result = result + (i * 3)
+    end
+}
+
+fun executeDoLoop() {
+    i = 0
+    do
+        result = result + i
+        i = i + 1
+    end while i < 5
+}
+
+// Choose which loop to execute based on a condition
+condition = 2  // Change this to test different paths
+
+if condition == 1
+    executeWhileLoop()
+else if condition == 2
+    executeForLoop()
+else
+    executeDoLoop()
+end
+
+results.append("Conditional loop result: " + result)
+// For condition=2, result should be 0*3 + 1*3 + 2*3 + 3*3 + 4*3 = 30
+assert(condition != 2 || result == 30)
+
+// Test 10: Combined for and foreach loop
+print("Test 10: Combined for and foreach")
+combined = []
+
+// First half: use a for loop
+for i = 0; i < 3; i = i + 1
+    combined.append("For:" + i)
+end
+
+// Second half: use a foreach loop
+for s in strings
+    combined.append("ForEach:" + s)
+end
+
+results.append("Combined loops result: " + combined)
+assert(combined.size() == 8)  // 3 from for loop + 5 from foreach
+
+// Test 11: Loop with continuation to change loop variable
+print("Test 11: Loop with variable modification continuation")
+sequence = []
+
+// Define a continuation that modifies the loop variable
+fun skipNext(i_ref) {
+    i_ref = i_ref + 1
+    sequence.append("Skipped")
+}
+
+// Loop with dynamic control flow
+i = 0
+while i < 10
+    // Record current number
+    sequence.append(i)
+    
+    // Skip next number if current is divisible by 3
+    if i > 0 && i % 3 == 0
+        skipNext(i)
+    end
+    
+    i = i + 1
+end
+
+results.append("Sequence: " + sequence)
+assert(sequence.indexOf("Skipped") > 0)
+
+// Test 12: Nested loop with early termination via continuation
+print("Test 12: Nested loop with early termination")
+grid = []
+maxVal = 0
+
+// Create a grid and find the maximum value
+for i = 0; i < 4; i = i + 1
+    row = []
+    for j = 0; j < 4; j = j + 1
+        val = i * 4 + j
+        row.append(val)
+        
+        // Keep track of maximum
+        if val > maxVal
+            maxVal = val
+        end
+        
+        // Early termination if we reach a threshold
+        if val >= 10
+            // Normally we'd have to break from both loops
+            // With continuations we can just jump to the end
+            break
+        end
+    end
+    grid.append(row)
+end
+
+results.append("Grid size: " + grid.size() + "x" + grid[0].size())
+results.append("Max value found: " + maxVal)
+assert(maxVal >= 10)
+
+// Print the test summary
+print("\nTest Summary:")
+for result in results
+    print(" - " + result)
+end
+
+print("\nAll tests completed successfully!")

@@ -123,7 +123,7 @@ struct Operation {
         Assert,
         NTimes,
         ForEach,
-        ForEachNetwork,  // New operation for network iteration
+        AcrossAllNodes,  // New operation for network iteration
 
         GetProperty,
         SetProperty,

@@ -51,7 +51,7 @@ class RhoParser : public ParserCommon<RhoLexer, RhoAstNodeEnumType> {
     bool Assignment(AstNodePtr);
     bool For(AstNodePtr);
     bool While(AstNodePtr);
-    bool ForEachNetwork(AstNodePtr);
+    bool AcrossAllNodes(AstNodePtr);
 
     bool CreateError(const char *);
 };

@@ -990,8 +990,8 @@ void Executor::Perform(Operation::Type op) {
             break;
         }
         
-        case Operation::ForEachNetwork: {
-            // ForEachNetwork takes 3 arguments:
+        case Operation::AcrossAllNodes: {
+            // AcrossAllNodes takes 3 arguments:
             // 1. The function to apply to each element
             // 2. The collection to iterate over
             // 3. The network node to use for distributed execution (or null for local execution)
@@ -1042,7 +1042,7 @@ void Executor::Perform(Operation::Type op) {
                 }
                     
                 default: {
-                    String msg = String("ForEachNetwork not implemented for type ") + 
+                    String msg = String("AcrossAllNodes not implemented for type ") + 
                         C.GetClass()->GetName().ToString();
                     KAI_THROW_1(Base, msg.c_str());
                     break;

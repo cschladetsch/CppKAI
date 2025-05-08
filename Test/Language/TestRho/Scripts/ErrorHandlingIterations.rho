@@ -1,0 +1,336 @@
+// ErrorHandlingIterations.rho
+// Tests for error handling in iteration constructs
+
+// Define a results array
+results = []
+
+// Create test data
+numbers = [1, 2, 3, 0, 5, 0, 7, 8, 9, 0]
+strings = ["hello", null, "world", "", "test", null]
+nested = [[1, 2], null, [3, 4], [5, null]]
+
+// Test 1: Basic error handling in loops
+print("Test 1: Basic error handling")
+safeResults = []
+
+// Iterate with error handling
+for i = 0; i < numbers.size(); i = i + 1
+    try
+        // Division by zero will cause an error
+        result = 100 / numbers[i]
+        safeResults.append(result)
+    catch e
+        // Record the error
+        safeResults.append("Error: Division by zero")
+    end
+end
+
+results.append("Safe division results: " + safeResults)
+// Should have 3 error messages for the zeros
+assert(safeResults.size() == numbers.size())
+assert(safeResults[3] == "Error: Division by zero")
+
+// Test 2: Error handling with continue
+print("Test 2: Error handling with continue")
+validResults = []
+
+// Skip errors with continue
+for num in numbers
+    try
+        if num == 0
+            throw "Zero value encountered"
+        end
+        
+        result = 100 / num
+        validResults.append(result)
+    catch e
+        // Skip this iteration
+        continue
+    end
+end
+
+results.append("Valid division results: " + validResults)
+// Should only have the non-zero division results
+assert(validResults.size() == 7)  // 10 total - 3 zeros
+
+// Test 3: Handling null values
+print("Test 3: Handling null values")
+processed = []
+
+// Process strings safely
+for s in strings
+    if s == null
+        processed.append("(null)")
+    else if s == ""
+        processed.append("(empty)")
+    else
+        processed.append(s)
+    end
+end
+
+results.append("Null-safe string processing: " + processed)
+// Should replace nulls and empty strings
+assert(processed.size() == strings.size())
+assert(processed[1] == "(null)")
+assert(processed[3] == "(empty)")
+
+// Test 4: Error recovery in nested loops
+print("Test 4: Error recovery in nested loops")
+nestedResults = []
+
+// Process nested array with errors
+for i = 0; i < nested.size(); i = i + 1
+    rowResults = []
+    
+    try
+        if nested[i] == null
+            throw "Null array encountered"
+        end
+        
+        // Process each element in the inner array
+        for j = 0; j < nested[i].size(); j = j + 1
+            try
+                if nested[i][j] == null
+                    throw "Null element encountered"
+                end
+                
+                rowResults.append(nested[i][j] * 2)
+            catch e
+                rowResults.append("(null element)")
+            end
+        end
+        
+        nestedResults.append(rowResults)
+    catch e
+        nestedResults.append("(null array)")
+    end
+end
+
+results.append("Nested error handling: " + nestedResults)
+// Should handle both null arrays and null elements
+assert(nestedResults.size() == nested.size())
+assert(nestedResults[1] == "(null array)")
+assert(nestedResults[3][1] == "(null element)")
+
+// Test 5: Bubble up errors
+print("Test 5: Bubble up errors")
+finalResult = "Success"
+
+// Try to process with errors that bubble up
+try
+    for num in numbers
+        if num == 0
+            // This error will bubble up and break the loop
+            throw "Critical error: zero found"
+        end
+        
+        // Process number
+        result = 100 / num
+    end
+catch e
+    finalResult = e
+end
+
+results.append("Bubbled up error: " + finalResult)
+// Should have caught the critical error
+assert(finalResult == "Critical error: zero found")
+
+// Test 6: Retry logic
+print("Test 6: Retry logic")
+retryResults = []
+
+// Process with retry logic
+for num in numbers
+    retries = 3
+    success = false
+    
+    while retries > 0 && !success
+        try
+            if num == 0
+                throw "Zero encountered, retrying..."
+            end
+            
+            result = 100 / num
+            retryResults.append(result)
+            success = true
+        catch e
+            retries = retries - 1
+            
+            if retries == 0
+                // Out of retries
+                retryResults.append("Failed after 3 retries")
+            end
+        end
+    end
+end
+
+results.append("Retry results: " + retryResults)
+// Should have "Failed after 3 retries" for zeros
+assert(retryResults.size() == numbers.size())
+assert(retryResults[3] == "Failed after 3 retries")
+
+// Test 7: Finally block with loops
+print("Test 7: Finally block")
+finallyResult = []
+totalIterations = 0
+
+// Use finally to ensure cleanup
+for i = 0; i < 5; i = i + 1
+    try
+        if i == 3
+            throw "Error at index 3"
+        end
+        
+        finallyResult.append("Process " + i)
+    catch e
+        finallyResult.append("Error: " + e)
+    finally
+        // This code runs regardless of errors
+        totalIterations = totalIterations + 1
+    end
+end
+
+results.append("Finally results: " + finallyResult)
+results.append("Total iterations: " + totalIterations)
+// Should have executed 5 iterations, even with error
+assert(finallyResult.size() == 5)
+assert(totalIterations == 5)
+assert(finallyResult[3] == "Error: Error at index 3")
+
+// Test 8: Custom error handling function
+print("Test 8: Custom error handler")
+// Define a safe iterator function
+fun safeIterate(array, processFn, errorFn) {
+    results = []
+    
+    for item in array
+        try
+            results.append(processFn(item))
+        catch e
+            results.append(errorFn(item, e))
+        end
+    end
+    
+    return results
+}
+
+// Process with custom error handling
+customResults = safeIterate(
+    numbers,
+    fun(x) { return 100 / x },
+    fun(x, err) { return "Error processing " + x }
+)
+
+results.append("Custom error handling: " + customResults)
+// Should have custom error messages for zeros
+assert(customResults.size() == numbers.size())
+assert(customResults[3] == "Error processing 0")
+
+// Test 9: Conditional error generation
+print("Test 9: Conditional error generation")
+oddEvenResults = []
+
+// Generate errors for odd numbers
+for num in numbers
+    try
+        if num % 2 == 1
+            throw "Odd number found: " + num
+        end
+        
+        // Only even numbers reach here
+        oddEvenResults.append("Even: " + num)
+    catch e
+        oddEvenResults.append(e)
+    end
+end
+
+results.append("Odd/Even results: " + oddEvenResults)
+// Should have errors for odd numbers, success for even
+assert(oddEvenResults.size() == numbers.size())
+assert(oddEvenResults[0] == "Odd number found: 1")
+assert(oddEvenResults[1] == "Even: 2")
+
+// Test 10: Early termination with errors
+print("Test 10: Early termination")
+earlyResult = "Completed"
+
+// Try to process until an error occurs
+try
+    for i = 0; i < 100; i = i + 1
+        if i > 5
+            throw "Terminating early"
+        end
+    end
+catch e
+    earlyResult = e
+end
+
+results.append("Early termination: " + earlyResult)
+// Should have terminated at i=6
+assert(earlyResult == "Terminating early")
+
+// Test 11: Error propagation between nested loops
+print("Test 11: Error propagation")
+propagationResult = ""
+
+// Set up nested loops with error propagation
+try
+    for i = 0; i < 3; i = i + 1
+        for j = 0; j < 3; j = j + 1
+            for k = 0; k < 3; k = k + 1
+                if i == 1 && j == 1 && k == 1
+                    // Throw from innermost loop
+                    throw "Error from depth 3"
+                end
+            end
+        end
+    end
+catch e
+    propagationResult = e
+end
+
+results.append("Error propagation: " + propagationResult)
+// Should have caught the error from the innermost loop
+assert(propagationResult == "Error from depth 3")
+
+// Test 12: Defensive error handling
+print("Test 12: Defensive error handling")
+defensiveResults = []
+
+// Define a safe access function
+fun safeAccess(array, index, defaultValue) {
+    try
+        if index < 0 || index >= array.size()
+            return defaultValue
+        end
+        
+        value = array[index]
+        if value == null
+            return defaultValue
+        end
+        
+        return value
+    catch e
+        return defaultValue
+    end
+}
+
+// Use safe access to process array
+for i = -1; i < strings.size() + 2; i = i + 1
+    defensiveResults.append(safeAccess(strings, i, "DEFAULT"))
+end
+
+results.append("Defensive access results: " + defensiveResults)
+// Should have DEFAULT for out-of-range and null values
+assert(defensiveResults.size() == strings.size() + 3)
+assert(defensiveResults[0] == "DEFAULT")  // index -1
+assert(defensiveResults[2] == "DEFAULT")  // null value
+assert(defensiveResults[4] == "test")     // valid value
+
+// Print the test summary
+print("\nTest Summary:")
+for result in results
+    print(" - " + result)
+end
+
+print("\nAll tests completed successfully!")

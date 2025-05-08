@@ -151,8 +151,8 @@ bool RhoParser::Statement(AstNodePtr block) {
             return true;
         }
 
-        case TokenType::ForEachNetwork: {
-            ForEachNetwork(block);
+        case TokenType::AcrossAllNodes: {
+            AcrossAllNodes(block);
             return true;
         }
 
@@ -478,28 +478,28 @@ bool RhoParser::While(AstNodePtr block) {
     return block->Add(while_);
 }
 
-bool RhoParser::ForEachNetwork(AstNodePtr block) {
-    if (!Try(TokenType::ForEachNetwork)) return false;
+bool RhoParser::AcrossAllNodes(AstNodePtr block) {
+    if (!Try(TokenType::AcrossAllNodes)) return false;
 
-    Consume();  // Consume forEachNetwork token
+    Consume();  // Consume acrossAllNodes token
 
     Expect(TokenType::OpenParan);  // Expect (
 
     // Parse the first argument (network node)
-    if (!Expression()) return CreateError("ForEachNetwork requires a network node as first argument");
-    auto forEach = NewNode(RhoAstNodeEnumType::ForEachNetwork);
+    if (!Expression()) return CreateError("AcrossAllNodes requires a network node as first argument");
+    auto forEach = NewNode(RhoAstNodeEnumType::AcrossAllNodes);
     forEach->Add(Pop());  // Add network node
 
     Expect(TokenType::Comma);  // Expect ,
 
     // Parse the second argument (collection)
-    if (!Expression()) return CreateError("ForEachNetwork requires a collection as second argument");
+    if (!Expression()) return CreateError("AcrossAllNodes requires a collection as second argument");
     forEach->Add(Pop());  // Add collection
 
     Expect(TokenType::Comma);  // Expect ,
 
     // Parse the third argument (function to apply)
-    if (!Expression()) return CreateError("ForEachNetwork requires a function as third argument");
+    if (!Expression()) return CreateError("AcrossAllNodes requires a function as third argument");
     forEach->Add(Pop());  // Add function
 
     Expect(TokenType::CloseParan);  // Expect )

@@ -23,9 +23,9 @@ KAI's networking architecture is designed around these key principles:
 3. **Object Synchronization**: Objects can be synchronized across nodes with automatic state propagation.
 4. **Code Mobility**: Functions and code can be transmitted between nodes and executed remotely.
 
-## Distributed Computation with ForEachNetwork
+## Distributed Computation with AcrossAllNodes
 
-One of the most powerful features of KAI's networking capabilities is the `ForEachNetwork` operation, which enables distributed parallel processing across connected nodes. This feature allows you to:
+One of the most powerful features of KAI's networking capabilities is the `AcrossAllNodes` operation, which enables distributed parallel processing across connected nodes. This feature allows you to:
 
 - Distribute computation across multiple machines
 - Process large collections in parallel
@@ -53,13 +53,13 @@ for i = 0; i < 10000; i = i + 1
 end
 
 // Process the data in parallel across all connected nodes
-result = forEachNetwork(node, data, process)
+result = acrossAllNodes(node, data, process)
 
 // The result contains the processed values, computed in parallel
 // across all available network nodes
 ```
 
-For more details on the ForEachNetwork operation, see the [Network Iteration documentation](Doc/NetworkIteration.md).
+For more details on the AcrossAllNodes operation, see the [Network Iteration documentation](Doc/NetworkIteration.md).
 
 ## Background and Development
 
@@ -104,7 +104,7 @@ data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 fun square(x) { x * x }
 
 // Process the data using distributed execution
-result = forEachNetwork(node, data, square)
+result = acrossAllNodes(node, data, square)
 print(result)  // [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
 ```
 
@@ -182,9 +182,9 @@ When using KAI's networking features, consider these performance tips:
 
 1. **Batch Operations**: Group multiple operations together when possible to reduce network overhead.
 
-2. **Use ForEachNetwork for Large Datasets**: For large collections, distributed processing offers significant performance advantages.
+2. **Use AcrossAllNodes for Large Datasets**: For large collections, distributed processing offers significant performance advantages.
 
-3. **Local Fallback**: When network nodes aren't available, operations like ForEachNetwork automatically fall back to local execution.
+3. **Local Fallback**: When network nodes aren't available, operations like AcrossAllNodes automatically fall back to local execution.
 
 4. **Connection Management**: Monitor connection status with `node.IsConnectedTo()` before performing distributed operations.
 

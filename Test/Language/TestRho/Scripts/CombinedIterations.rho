@@ -1,0 +1,630 @@
+// CombinedIterations.rho
+// Tests for complex combinations of different iteration types
+
+// Define a results array
+results = []
+
+// Create test data
+numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+tree = {
+    "value": 1,
+    "children": [
+        { "value": 2, "children": [
+            { "value": 4, "children": [] },
+            { "value": 5, "children": [] }
+        ]},
+        { "value": 3, "children": [
+            { "value": 6, "children": [] }
+        ]}
+    ]
+}
+
+// Test 1: Combine while, for, and foreach in one flow
+print("Test 1: Combining while, for, and foreach")
+combinedResult = []
+i = 0
+
+// Start with a while loop
+while i < 3
+    row = []
+    
+    // Use a for loop to iterate through columns
+    for j = 0; j < 3; j = j + 1
+        // Use foreach to transform the matrix value
+        forEachResult = acrossAllNodes(null, [matrix[i][j]], fun(x) { return x * 2 })
+        row.append(forEachResult[0])
+    end
+    
+    combinedResult.append(row)
+    i = i + 1
+end
+
+results.append("Combined loop result: " + combinedResult)
+// Should be [[2, 4, 6], [8, 10, 12], [14, 16, 18]]
+assert(combinedResult.size() == 3)
+assert(combinedResult[1][1] == 10)  // 5 * 2 = 10
+
+// Test 2: Nested loops with conditional switching
+print("Test 2: Nested loops with conditional switching")
+adaptiveResult = []
+
+// Create a complex loop pattern with conditional switching
+for i = 0; i < 5; i = i + 1
+    if i % 2 == 0
+        // Even rows: use while loop
+        j = 0
+        while j < 3
+            adaptiveResult.append("While:" + i + "," + j)
+            j = j + 1
+        end
+    else
+        // Odd rows: use foreach
+        for val in [0, 1, 2]
+            adaptiveResult.append("ForEach:" + i + "," + val)
+        end
+    end
+end
+
+results.append("Adaptive loop results: " + adaptiveResult)
+// Should have alternating While/ForEach entries
+assert(adaptiveResult.size() == 15)  // 5 rows * 3 columns
+assert(adaptiveResult[0].indexOf("While:0,0") >= 0)
+assert(adaptiveResult[3].indexOf("ForEach:1,0") >= 0)
+
+// Test 3: Recursive tree traversal with multiple loop types
+print("Test 3: Recursive tree traversal with multiple loop types")
+traversalResult = []
+
+// Define a recursive function that uses different loop types
+fun traverseTree(node, depth) {
+    // Record this node
+    traversalResult.append("Depth " + depth + ": " + node["value"])
+    
+    // Different loop types based on depth
+    if depth % 3 == 0
+        // Use for loop
+        for i = 0; i < node["children"].size(); i = i + 1
+            traverseTree(node["children"][i], depth + 1)
+        end
+    else if depth % 3 == 1
+        // Use while loop
+        i = 0
+        while i < node["children"].size()
+            traverseTree(node["children"][i], depth + 1)
+            i = i + 1
+        end
+    else
+        // Use foreach
+        for child in node["children"]
+            traverseTree(child, depth + 1)
+        end
+    end
+}
+
+// Start traversal at the root
+traverseTree(tree, 0)
+
+results.append("Tree traversal result: " + traversalResult)
+// Should have traversed all nodes in the tree
+assert(traversalResult.size() == 6)  // 6 nodes in the tree
+assert(traversalResult[0] == "Depth 0: 1")
+assert(traversalResult[5] == "Depth 2: 6")
+
+// Test 4: Async-like behavior with continuation-based loops
+print("Test 4: Async-like behavior with continuations")
+asyncResult = []
+
+// Simulate 'async' calls with continuations
+fun simulateAsync(data, callback) {
+    // Process the data (would be async in real code)
+    processedData = []
+    for item in data
+        processedData.append(item * 10)
+    end
+    
+    // Call the callback with the result
+    callback(processedData)
+}
+
+// Define a sequence of 'async' operations
+fun step1() {
+    asyncResult.append("Starting step 1")
+    simulateAsync([1, 2, 3], step2)
+}
+
+fun step2(data) {
+    asyncResult.append("Step 1 result: " + data)
+    asyncResult.append("Starting step 2")
+    simulateAsync(data, step3)
+}
+
+fun step3(data) {
+    asyncResult.append("Step 2 result: " + data)
+    asyncResult.append("Starting step 3")
+    
+    // Use different loop types in different 'async' steps
+    processedData = []
+    i = 0
+    while i < data.size()
+        processedData.append(data[i] + 5)
+        i = i + 1
+    end
+    
+    step4(processedData)
+}
+
+fun step4(data) {
+    asyncResult.append("Step 3 result: " + data)
+    asyncResult.append("Sequence complete")
+}
+
+// Start the 'async' sequence
+step1()
+
+results.append("Async operations: " + asyncResult.size() + " steps")
+// Should have completed all steps in the sequence
+assert(asyncResult.size() == 8)  // 8 messages in total
+assert(asyncResult[7] == "Sequence complete")
+
+// Test 5: Generator-based iteration with continuations
+print("Test 5: Generator-based iteration")
+genResult = []
+
+// Create a Fibonacci generator
+fun createFibGenerator() {
+    state = { "a": 0, "b": 1, "count": 0 }
+    
+    // Return a generator function
+    return fun() {
+        if state["count"] >= 10
+            return null
+        end
+        
+        result = state["a"]
+        next = state["a"] + state["b"]
+        state["a"] = state["b"]
+        state["b"] = next
+        state["count"] = state["count"] + 1
+        
+        return result
+    }
+}
+
+// Use the generator in a while loop
+generator = createFibGenerator()
+value = generator()
+
+while value != null
+    genResult.append(value)
+    value = generator()
+end
+
+results.append("Generator results: " + genResult)
+// Should have 10 Fibonacci numbers
+assert(genResult.size() == 10)
+assert(genResult[6] == 8)  // 7th Fibonacci number (0-indexed)
+
+// Test 6: Complex loop combination with AcrossAllNodes
+print("Test 6: Complex loop combination with AcrossAllNodes")
+gridResult = []
+
+// Create a 2D grid data structure
+grid = []
+for i = 0; i < 3; i = i + 1
+    row = []
+    for j = 0; j < 3; j = j + 1
+        row.append(i * 3 + j + 1)  // Values 1-9
+    end
+    grid.append(row)
+end
+
+// Process the grid using multiple iteration techniques
+// Outer loop: regular for loop
+for i = 0; i < grid.size(); i = i + 1
+    // Middle loop: while loop
+    j = 0
+    while j < grid[i].size()
+        // Inner processing: AcrossAllNodes for each cell
+        cellValue = grid[i][j]
+        
+        // Process with AcrossAllNodes
+        transformedValues = acrossAllNodes(null, [cellValue], fun(x) {
+            results = []
+            
+            // Inner-most loop: for loop inside the AcrossAllNodes function
+            for k = 1; k <= 3; k = k + 1
+                results.append(x * k)
+            end
+            
+            return results
+        })
+        
+        // Unwrap the result (comes as a single-element array containing an array)
+        values = transformedValues[0]
+        
+        // Add a record of this cell's processing
+        gridResult.append("Cell(" + i + "," + j + "): " + values)
+        
+        j = j + 1
+    end
+end
+
+results.append("Grid processing results: " + gridResult.size() + " cells")
+// Should have processed 9 cells
+assert(gridResult.size() == 9)
+
+// Test 7: Loop fusion with multiple loop types
+print("Test 7: Loop fusion with multiple loop types")
+fusedResults = {
+    "sum": 0,
+    "product": 1,
+    "concatenated": ""
+}
+
+// Multiple operations in a single loop iteration
+for num in numbers
+    // Update sum (for loop style)
+    fusedResults["sum"] = fusedResults["sum"] + num
+    
+    // Update product (while loop style)
+    if num != 0  // Avoid multiplying by zero
+        fusedResults["product"] = fusedResults["product"] * num
+    end
+    
+    // Update string (foreach style)
+    fusedResults["concatenated"] = fusedResults["concatenated"] + num
+end
+
+results.append("Fused loop results: sum=" + fusedResults["sum"] + 
+              ", product=" + fusedResults["product"])
+// Sum should be 55, product should be 3628800 (10!)
+assert(fusedResults["sum"] == 55)
+assert(fusedResults["product"] == 3628800)
+
+// Test 8: Parallel task simulation with loop combinations
+print("Test 8: Parallel task simulation")
+taskResults = []
+
+// Define tasks with different loop types
+fun task1() {
+    result = 0
+    for i = 1; i <= 10; i = i + 1
+        result = result + i
+    end
+    return result
+}
+
+fun task2() {
+    result = 1
+    i = 1
+    while i <= 10
+        result = result * i
+        i = i + 1
+    end
+    return result
+}
+
+fun task3() {
+    result = []
+    for val in numbers
+        if val % 2 == 0
+            result.append(val)
+        end
+    end
+    return result
+}
+
+// Simulate parallel execution by interleaving
+tasks = [task1, task2, task3]
+taskNames = ["Sum", "Product", "Even Numbers"]
+
+// Execute all tasks and collect results
+for i = 0; i < tasks.size(); i = i + 1
+    task = tasks[i]
+    taskResult = task()
+    taskResults.append(taskNames[i] + ": " + taskResult)
+end
+
+results.append("Task results: " + taskResults)
+// Should have results from all three tasks
+assert(taskResults.size() == 3)
+assert(taskResults[0].indexOf("Sum: 55") >= 0)
+assert(taskResults[1].indexOf("Product: 3628800") >= 0)
+
+// Test 9: Coroutine-like task switching
+print("Test 9: Coroutine-like task switching")
+coroutineResult = []
+
+// Define coroutine-like functions
+fun coroutine1(state) {
+    // First portion of work
+    for i = 0; i < 3; i = i + 1
+        state["value"] = state["value"] + i
+        coroutineResult.append("Co1: " + state["value"])
+    end
+    
+    // Yield to coroutine2
+    coroutine2(state)
+    
+    // Resume coroutine1
+    for i = 0; i < 2; i = i + 1
+        state["value"] = state["value"] * 2
+        coroutineResult.append("Co1 resumed: " + state["value"])
+    end
+}
+
+fun coroutine2(state) {
+    // Do some work
+    i = 0
+    while i < 3
+        state["value"] = state["value"] - 1
+        coroutineResult.append("Co2: " + state["value"])
+        i = i + 1
+    end
+    
+    // Yield to coroutine3
+    coroutine3(state)
+    
+    // Resume coroutine2
+    for i = 0; i < 2; i = i + 1
+        state["value"] = state["value"] / 2
+        coroutineResult.append("Co2 resumed: " + state["value"])
+    end
+}
+
+fun coroutine3(state) {
+    // Just do some work and return
+    for val in [10, 20, 30]
+        state["value"] = state["value"] + val
+        coroutineResult.append("Co3: " + state["value"])
+    end
+}
+
+// Start the coroutine chain
+state = { "value": 0 }
+coroutine1(state)
+
+results.append("Coroutine execution: " + coroutineResult.size() + " steps")
+// Should have executed all steps in all coroutines
+assert(coroutineResult.size() >= 10)
+
+// Test 10: Domain-specific language with custom iteration
+print("Test 10: Domain-specific language with custom iteration")
+dslResult = []
+
+// Define a simple DSL for defining and running sequences
+dsl = {
+    "sequences": {},
+    
+    "define": fun(name, steps) {
+        dsl["sequences"][name] = steps
+    },
+    
+    "run": fun(name, initialState) {
+        if !dsl["sequences"].hasKey(name)
+            return "Error: Sequence not found"
+        end
+        
+        state = initialState
+        steps = dsl["sequences"][name]
+        results = []
+        
+        // Execute each step in the sequence
+        for step in steps
+            // Get step type and parameters
+            type = step["type"]
+            params = step["params"]
+            
+            if type == "loop"
+                // Loop step
+                count = params["count"]
+                action = params["action"]
+                
+                for i = 0; i < count; i = i + 1
+                    state = action(state, i)
+                    results.append(state)
+                end
+            else if type == "transform"
+                // Transform step
+                transform = params["transform"]
+                state = transform(state)
+                results.append(state)
+            else if type == "condition"
+                // Conditional step
+                condition = params["condition"]
+                ifTrue = params["ifTrue"]
+                ifFalse = params["ifFalse"]
+                
+                if condition(state)
+                    state = ifTrue(state)
+                else
+                    state = ifFalse(state)
+                end
+                
+                results.append(state)
+            end
+        end
+        
+        return results
+    }
+}
+
+// Define a sequence using our DSL
+dsl["define"]("example", [
+    {
+        "type": "transform",
+        "params": {
+            "transform": fun(state) { return state * 2 }
+        }
+    },
+    {
+        "type": "loop",
+        "params": {
+            "count": 3,
+            "action": fun(state, i) { return state + i }
+        }
+    },
+    {
+        "type": "condition",
+        "params": {
+            "condition": fun(state) { return state > 10 },
+            "ifTrue": fun(state) { return state * 2 },
+            "ifFalse": fun(state) { return state + 5 }
+        }
+    }
+])
+
+// Run the sequence
+sequenceResult = dsl["run"]("example", 3)
+results.append("DSL sequence result: " + sequenceResult)
+// Should have executed all steps in the sequence
+assert(sequenceResult.size() >= 5)
+
+// Test 11: Event-driven iteration with continuation passing
+print("Test 11: Event-driven iteration")
+events = []
+eventHandlers = {}
+
+// Define an event system
+fun registerHandler(eventType, handler) {
+    if !eventHandlers.hasKey(eventType)
+        eventHandlers[eventType] = []
+    end
+    
+    eventHandlers[eventType].append(handler)
+}
+
+fun triggerEvent(eventType, data) {
+    events.append({ "type": eventType, "data": data })
+    
+    // Process this event immediately
+    if eventHandlers.hasKey(eventType)
+        handlers = eventHandlers[eventType]
+        
+        for handler in handlers
+            handler(data)
+        end
+    end
+}
+
+// Event processing loop
+fun processEvents() {
+    processedEvents = []
+    
+    // Process all events
+    for i = 0; i < events.size(); i = i + 1
+        event = events[i]
+        processedEvents.append("Processed: " + event["type"])
+    end
+    
+    return processedEvents
+}
+
+// Register event handlers
+registerHandler("click", fun(data) {
+    triggerEvent("log", "Click at " + data["x"] + "," + data["y"])
+})
+
+registerHandler("log", fun(message) {
+    // Log event just records the message
+})
+
+// Trigger some events
+triggerEvent("click", { "x": 100, "y": 200 })
+triggerEvent("click", { "x": 150, "y": 300 })
+
+// Process the event queue
+processedEvents = processEvents()
+results.append("Event processing: " + processedEvents.size() + " events")
+// Should have processed all events (including cascaded ones)
+assert(processedEvents.size() >= 2)
+
+// Test 12: Complex data transformation with multiple iteration types
+print("Test 12: Complex data transformation")
+inputData = {
+    "users": [
+        { "id": 1, "name": "Alice", "active": true },
+        { "id": 2, "name": "Bob", "active": false },
+        { "id": 3, "name": "Charlie", "active": true }
+    ],
+    "products": [
+        { "id": 101, "name": "Laptop", "price": 1200 },
+        { "id": 102, "name": "Phone", "price": 800 },
+        { "id": 103, "name": "Tablet", "price": 400 }
+    ],
+    "orders": [
+        { "id": 1001, "userId": 1, "productId": 101 },
+        { "id": 1002, "userId": 1, "productId": 103 },
+        { "id": 1003, "userId": 3, "productId": 102 }
+    ]
+}
+
+// Transform data to create order summaries
+orderSummaries = []
+
+// Use multiple nested loops and different types to process the data
+// Outer loop: forEach for orders
+for order in inputData["orders"]
+    // Find user with while loop
+    user = null
+    userId = order["userId"]
+    i = 0
+    while i < inputData["users"].size()
+        if inputData["users"][i]["id"] == userId
+            user = inputData["users"][i]
+            break
+        end
+        i = i + 1
+    end
+    
+    // Skip inactive users
+    if user != null && !user["active"]
+        continue
+    end
+    
+    // Find product with for loop
+    product = null
+    productId = order["productId"]
+    for j = 0; j < inputData["products"].size(); j = j + 1
+        if inputData["products"][j]["id"] == productId
+            product = inputData["products"][j]
+            break
+        end
+    end
+    
+    // Create order summary using AcrossAllNodes for consistency
+    if user != null && product != null
+        summaryData = [{ 
+            "orderId": order["id"],
+            "customerName": user["name"],
+            "productName": product["name"],
+            "price": product["price"]
+        }]
+        
+        // Process with AcrossAllNodes
+        processed = acrossAllNodes(null, summaryData, fun(summary) {
+            // Add a formatted summary string
+            summary["summary"] = 
+                "Order #" + summary["orderId"] + ": " +
+                summary["customerName"] + " purchased " +
+                summary["productName"] + " for $" + summary["price"]
+            
+            return summary
+        })
+        
+        orderSummaries.append(processed[0])
+    end
+end
+
+results.append("Order summaries: " + orderSummaries.size())
+// Should have created summaries for active users only
+assert(orderSummaries.size() == 2)  // 3 orders - 1 for inactive user
+
+// Print the test summary
+print("\nTest Summary:")
+for result in results
+    print(" - " + result)
+end
+
+print("\nAll tests completed successfully!")

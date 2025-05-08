@@ -153,13 +153,13 @@ _KAI_ has various dependencies, but can be built with many sub-sets. That is, if
 
 Feel free to contact [me](matilto:christian.schladetsch@gmail.com) with any questions about building or use of the system.
 
-## Distributed Iteration with ForEachNetwork
+## Distributed Iteration with AcrossAllNodes
 
-One of the most powerful features of KAI is its ability to distribute both computation and data across network nodes. The `ForEachNetwork` operation exemplifies this capability by enabling distributed parallel iteration over collections.
+One of the most powerful features of KAI is its ability to distribute both computation and data across network nodes. The `AcrossAllNodes` operation exemplifies this capability by enabling distributed parallel iteration over collections.
 
 ### How It Works
 
-`ForEachNetwork` enables the distribution of iteration tasks across multiple network nodes. It takes three arguments:
+`AcrossAllNodes` enables the distribution of iteration tasks across multiple network nodes. It takes three arguments:
 
 1. A network node (or null for local execution)
 2. A collection to iterate over
@@ -196,7 +196,7 @@ fun computeIntensive(x) {
 
 // Run the computation in parallel across the network
 start = currentTimeMillis()
-results = forEachNetwork(node, largeArray, computeIntensive)
+results = acrossAllNodes(node, largeArray, computeIntensive)
 end = currentTimeMillis()
 
 print("Computation completed in " + (end - start) + "ms")
@@ -233,7 +233,7 @@ Connected to peer at 192.168.1.11:14589
 > start = currentTimeMillis()
 1683042851342
 
-> result1 = forEachNetwork(null, data, square)
+> result1 = acrossAllNodes(null, data, square)
 [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
 
 > end = currentTimeMillis()
@@ -246,7 +246,7 @@ Local execution took 3ms
 > start = currentTimeMillis()
 1683042851350
 
-> result2 = forEachNetwork(node, data, square)
+> result2 = acrossAllNodes(node, data, square)
 [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
 
 > end = currentTimeMillis()
@@ -264,7 +264,7 @@ For small calculations on a simple array like this, the performance difference i
 
 ### Supported Collection Types
 
-`ForEachNetwork` supports the following collection types:
+`AcrossAllNodes` supports the following collection types:
 
 - **Array**: Distributes array elements across network nodes
 - **List**: Distributes list elements across network nodes
@@ -273,7 +273,7 @@ For small calculations on a simple array like this, the performance difference i
 
 ### Advanced Features
 
-When a network node is provided, the `ForEachNetwork` operation:
+When a network node is provided, the `AcrossAllNodes` operation:
 
 1. Analyzes the size and complexity of the workload
 2. Distributes elements to connected peers based on their available capacity

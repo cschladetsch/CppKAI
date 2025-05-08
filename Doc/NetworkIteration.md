@@ -1,21 +1,21 @@
 # Network Distributed Iteration in KAI
 
-The ForEachNetwork operation is a powerful feature in KAI that enables distributed parallel processing across networked nodes. This document explains the architecture, usage, and technical details of this feature.
+The AcrossAllNodes operation is a powerful feature in KAI that enables distributed parallel processing across networked nodes. This document explains the architecture, usage, and technical details of this feature.
 
 ## Architecture
 
-ForEachNetwork leverages KAI's distributed object model to enable parallel processing of collection elements across a network of nodes. The operation is implemented as part of the Executor system and is exposed through the Rho language interface.
+AcrossAllNodes leverages KAI's distributed object model to enable parallel processing of collection elements across a network of nodes. The operation is implemented as part of the Executor system and is exposed through the Rho language interface.
 
 ### Components
 
-- **Operation::ForEachNetwork**: The operation enum value that represents the distributed iteration operation.
-- **Executor::Perform(Operation::ForEachNetwork)**: The implementation that handles the execution logic.
-- **RhoLexer, RhoParser, RhoTranslator**: Language components that enable the `forEachNetwork` keyword in Rho.
+- **Operation::AcrossAllNodes**: The operation enum value that represents the distributed iteration operation.
+- **Executor::Perform(Operation::AcrossAllNodes)**: The implementation that handles the execution logic.
+- **RhoLexer, RhoParser, RhoTranslator**: Language components that enable the `acrossAllNodes` keyword in Rho.
 - **Network::Node**: The network node class that manages connections to peers.
 
 ### Execution Flow
 
-1. **Parsing**: The Rho parser recognizes the `forEachNetwork` keyword and translates it into a ForEachNetwork operation.
+1. **Parsing**: The Rho parser recognizes the `acrossAllNodes` keyword and translates it into an AcrossAllNodes operation.
 2. **Argument Preparation**: Three arguments are prepared:
    - Network node (or null for local execution)
    - Collection to iterate over
@@ -30,7 +30,7 @@ ForEachNetwork leverages KAI's distributed object model to enable parallel proce
 ### Basic Syntax
 
 ```rho
-result = forEachNetwork(node, collection, function)
+result = acrossAllNodes(node, collection, function)
 ```
 
 Where:
@@ -57,7 +57,7 @@ fun square(x) { x * x }
 arr = [1, 2, 3, 4, 5]
 
 // Process the array using network distribution
-result = forEachNetwork(node, arr, square)
+result = acrossAllNodes(node, arr, square)
 
 // Output: [1, 4, 9, 16, 25]
 print(result)
@@ -81,7 +81,7 @@ fun formatUser(pair) {
 }
 
 // Process the map (locally in this case)
-formattedData = forEachNetwork(null, userData, formatUser)
+formattedData = acrossAllNodes(null, userData, formatUser)
 
 // Print the results
 for entry in formattedData
@@ -100,8 +100,8 @@ fun addTen(x) { x + 10 }
 data = [1, 2, 3, 4, 5]
 
 // Apply chained transformations
-result = forEachNetwork(node, 
-           forEachNetwork(node, data, double),
+result = acrossAllNodes(node, 
+           acrossAllNodes(node, data, double),
            addTen)
 
 // Output: [12, 14, 16, 18, 20]
@@ -112,7 +112,7 @@ print(result)
 
 ### Workload Balancing
 
-For optimal performance, consider the following factors when using ForEachNetwork:
+For optimal performance, consider the following factors when using AcrossAllNodes:
 
 1. **Computation vs. Communication Ratio**: The operation being performed should be computationally intensive enough to justify the network overhead. Simple operations may be faster when performed locally.
 
@@ -142,13 +142,13 @@ fun complexCalculation(x) {
 
 // Time local execution
 startLocal = currentTimeMillis()
-localResult = forEachNetwork(null, data, complexCalculation)
+localResult = acrossAllNodes(null, data, complexCalculation)
 endLocal = currentTimeMillis()
 localTime = endLocal - startLocal
 
 // Time distributed execution
 startDistributed = currentTimeMillis()
-distributedResult = forEachNetwork(node, data, complexCalculation)
+distributedResult = acrossAllNodes(node, data, complexCalculation)
 endDistributed = currentTimeMillis()
 distributedTime = endDistributed - startDistributed
 
@@ -160,7 +160,7 @@ print("Speedup factor: " + (localTime / distributedTime))
 
 ## Technical Implementation
 
-The ForEachNetwork operation is implemented in the Executor class and handles different collection types:
+The AcrossAllNodes operation is implemented in the Executor class and handles different collection types:
 
 - **Array**: Elements are distributed and processed in parallel.
 - **List**: Items are extracted and distributed to network nodes.
@@ -177,15 +177,15 @@ The implementation includes:
    ```cpp
    enum Type {
        // ...
-       ForEachNetwork,
+       AcrossAllNodes,
        // ...
    };
    ```
 
 2. **Execution Logic**: Implemented in Executor.cpp
    ```cpp
-   case Operation::ForEachNetwork: {
-       // Handle ForEachNetwork operation
+   case Operation::AcrossAllNodes: {
+       // Handle AcrossAllNodes operation
        // ...
    }
    ```
@@ -193,16 +193,16 @@ The implementation includes:
 3. **Language Support**: In RhoLexer.cpp, RhoParser.cpp, RhoTranslator.cpp
    ```cpp
    // In RhoLexer.cpp
-   keyWords["forEachNetwork"] = Enum::ForEachNetwork;
+   keyWords["acrossAllNodes"] = Enum::AcrossAllNodes;
 
    // In RhoParser.cpp
-   bool RhoParser::ForEachNetwork(AstNodePtr block) {
-       // Parse forEachNetwork statement
+   bool RhoParser::AcrossAllNodes(AstNodePtr block) {
+       // Parse acrossAllNodes statement
        // ...
    }
 
    // In RhoTranslator.cpp
-   void RhoTranslator::TranslateForEachNetwork(AstNodePtr node) {
+   void RhoTranslator::TranslateAcrossAllNodes(AstNodePtr node) {
        // Translate to bytecode
        // ...
    }
@@ -210,7 +210,7 @@ The implementation includes:
 
 ## Network Protocol
 
-When executed with a valid network node, ForEachNetwork uses the following protocol:
+When executed with a valid network node, AcrossAllNodes uses the following protocol:
 
 1. **Task Distribution**: The coordinator node serializes the function and data chunks.
 2. **Work Assignment**: Data is distributed to peers based on their reported capacity.
@@ -222,7 +222,7 @@ This protocol minimizes network traffic while maximizing parallel processing cap
 
 ## Error Handling
 
-ForEachNetwork includes error handling for various scenarios:
+AcrossAllNodes includes error handling for various scenarios:
 
 - **Node Failures**: If a node becomes unresponsive, its work is redistributed.
 - **Type Errors**: Appropriate error messages are generated for incompatible types.
@@ -230,7 +230,7 @@ ForEachNetwork includes error handling for various scenarios:
 
 ## Future Enhancements
 
-Planned enhancements for the ForEachNetwork feature include:
+Planned enhancements for the AcrossAllNodes feature include:
 
 1. **Dynamic Load Balancing**: Adjust distribution based on real-time node performance.
 2. **Streaming Results**: Return partial results as they become available.
@@ -240,4 +240,4 @@ Planned enhancements for the ForEachNetwork feature include:
 
 ## Conclusion
 
-The ForEachNetwork operation represents a powerful fusion of KAI's object model and network capabilities, enabling truly distributed computation with minimal code complexity. By leveraging this feature, developers can easily scale processing across multiple nodes without having to manage the complexities of network communication, serialization, and workload distribution manually.
+The AcrossAllNodes operation represents a powerful fusion of KAI's object model and network capabilities, enabling truly distributed computation with minimal code complexity. By leveraging this feature, developers can easily scale processing across multiple nodes without having to manage the complexities of network communication, serialization, and workload distribution manually.

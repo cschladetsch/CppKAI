@@ -1,0 +1,449 @@
+// OptimizedIterations.rho
+// Tests for optimized iteration patterns and techniques
+
+// Define a results array
+results = []
+
+// Create test data
+numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+largeArray = []
+for i = 0; i < 100; i = i + 1
+    largeArray.append(i)
+end
+
+// Test 1: Loop fusion - combining multiple loops into one
+print("Test 1: Loop fusion")
+// Inefficient: Multiple loops over the same data
+sumNonFused = 0
+productNonFused = 1
+maxNonFused = numbers[0]
+minNonFused = numbers[0]
+
+// Non-fused approach (multiple iterations)
+for n in numbers
+    sumNonFused = sumNonFused + n
+end
+
+for n in numbers
+    productNonFused = productNonFused * n
+end
+
+for n in numbers
+    if n > maxNonFused
+        maxNonFused = n
+    end
+end
+
+for n in numbers
+    if n < minNonFused
+        minNonFused = n
+    end
+end
+
+// Fused approach (single iteration)
+sumFused = 0
+productFused = 1
+maxFused = numbers[0]
+minFused = numbers[0]
+
+for n in numbers
+    sumFused = sumFused + n
+    productFused = productFused * n
+    
+    if n > maxFused
+        maxFused = n
+    end
+    
+    if n < minFused
+        minFused = n
+    end
+end
+
+// Verify results are the same
+assert(sumFused == sumNonFused)
+assert(productFused == productNonFused)
+assert(maxFused == maxNonFused)
+assert(minFused == minNonFused)
+
+results.append("Loop fusion produced identical results with fewer iterations")
+
+// Test 2: Loop unrolling - processing multiple elements per iteration
+print("Test 2: Loop unrolling")
+sumRegular = 0
+sumUnrolled = 0
+
+// Regular loop
+for i = 0; i < largeArray.size(); i = i + 1
+    sumRegular = sumRegular + largeArray[i]
+end
+
+// Unrolled loop (process 4 elements at a time)
+i = 0
+// Handle blocks of 4
+while i < largeArray.size() - 3
+    sumUnrolled = sumUnrolled + largeArray[i] + largeArray[i+1] + 
+                  largeArray[i+2] + largeArray[i+3]
+    i = i + 4
+end
+
+// Handle remaining elements
+while i < largeArray.size()
+    sumUnrolled = sumUnrolled + largeArray[i]
+    i = i + 1
+end
+
+assert(sumRegular == sumUnrolled)
+results.append("Loop unrolling sum: " + sumUnrolled)
+
+// Test 3: Loop tiling - optimizing for data locality
+print("Test 3: Loop tiling")
+// Create a matrix
+matrix = []
+for i = 0; i < 8; i = i + 1
+    row = []
+    for j = 0; j < 8; j = j + 1
+        row.append(i * 8 + j)
+    end
+    matrix.append(row)
+end
+
+// Standard row-major traversal
+rowMajorSum = 0
+for i = 0; i < matrix.size(); i = i + 1
+    for j = 0; j < matrix[i].size(); j = j + 1
+        rowMajorSum = rowMajorSum + matrix[i][j]
+    end
+end
+
+// Tiled traversal (2x2 tiles)
+tiledSum = 0
+tileSize = 2
+for iOuter = 0; iOuter < matrix.size(); iOuter = iOuter + tileSize
+    for jOuter = 0; jOuter < matrix[0].size(); jOuter = jOuter + tileSize
+        // Process one tile
+        for iInner = iOuter; iInner < iOuter + tileSize && iInner < matrix.size(); iInner = iInner + 1
+            for jInner = jOuter; jInner < jOuter + tileSize && jInner < matrix[0].size(); jInner = jInner + 1
+                tiledSum = tiledSum + matrix[iInner][jInner]
+            end
+        end
+    end
+end
+
+assert(rowMajorSum == tiledSum)
+results.append("Tiled access sum: " + tiledSum)
+
+// Test 4: Early loop termination
+print("Test 4: Early loop termination")
+// Find the first occurrence
+target = 42
+foundIndex = -1
+
+// Create a larger array with the target somewhere in the middle
+searchArray = []
+for i = 0; i < 100; i = i + 1
+    if i == 42
+        searchArray.append(target)
+    else
+        searchArray.append(i)
+    end
+end
+
+// Standard full iteration
+for i = 0; i < searchArray.size(); i = i + 1
+    if searchArray[i] == target
+        foundIndex = i
+    end
+end
+
+// Early termination
+earlyFoundIndex = -1
+for i = 0; i < searchArray.size(); i = i + 1
+    if searchArray[i] == target
+        earlyFoundIndex = i
+        break  // Early termination
+    end
+end
+
+assert(foundIndex == earlyFoundIndex)
+results.append("Early termination found target at index: " + earlyFoundIndex)
+
+// Test 5: Loop hoisting - moving invariant code outside the loop
+print("Test 5: Loop hoisting")
+// Non-hoisted version
+nonHoistedSum = 0
+size = largeArray.size()  // This should be hoisted
+
+for i = 0; i < largeArray.size(); i = i + 1
+    // Repeated size calculation inside the loop
+    nonHoistedSum = nonHoistedSum + (i * largeArray.size())
+end
+
+// Hoisted version
+hoistedSum = 0
+size = largeArray.size()  // Hoisted outside the loop
+
+for i = 0; i < size; i = i + 1
+    // Use the pre-computed size
+    hoistedSum = hoistedSum + (i * size)
+end
+
+assert(nonHoistedSum == hoistedSum)
+results.append("Hoisted loop calculation: " + hoistedSum)
+
+// Test 6: Loop-invariant code motion
+print("Test 6: Loop-invariant code motion")
+invariantResults = []
+
+// Function with expensive computation
+fun expensiveCalculation(x) {
+    // Simulate expensive calculation
+    result = 0
+    for i = 0; i < 10; i = i + 1
+        result = result + (x * x) / (i + 1)
+    end
+    return result
+}
+
+// Non-optimized version (recalculates unnecessarily)
+for i = 0; i < 5; i = i + 1
+    // This call is invariant and should be hoisted out of the loop
+    factor = expensiveCalculation(10)
+    invariantResults.append(i * factor)
+end
+
+// Optimized version
+factor = expensiveCalculation(10)  // Calculated once
+optimizedResults = []
+for i = 0; i < 5; i = i + 1
+    optimizedResults.append(i * factor)
+end
+
+// Verify results are the same
+for i = 0; i < invariantResults.size(); i = i + 1
+    assert(invariantResults[i] == optimizedResults[i])
+end
+
+results.append("Loop-invariant code motion: " + optimizedResults)
+
+// Test 7: Strength reduction - replacing expensive operations with equivalent cheaper ones
+print("Test 7: Strength reduction")
+// Non-reduced version
+nonReducedSum = 0
+for i = 0; i < 10; i = i + 1
+    // Uses multiplication each time
+    nonReducedSum = nonReducedSum + (i * 3)
+end
+
+// Reduced version
+reducedSum = 0
+value = 0
+for i = 0; i < 10; i = i + 1
+    // Uses addition instead of multiplication
+    reducedSum = reducedSum + value
+    value = value + 3
+end
+
+assert(nonReducedSum == reducedSum)
+results.append("Strength reduction: " + reducedSum)
+
+// Test 8: Loop vectorization simulation
+print("Test 8: Loop vectorization simulation")
+// Standard scalar processing
+scalarOutput = []
+for i = 0; i < numbers.size(); i = i + 1
+    scalarOutput.append(numbers[i] * 2)
+end
+
+// Simulated vectorized processing (process 4 elements at once)
+vectorOutput = []
+i = 0
+// Process blocks of 4
+while i < numbers.size() - 3
+    // Simulate SIMD by processing 4 elements together
+    vectorOutput.append(numbers[i] * 2)
+    vectorOutput.append(numbers[i+1] * 2)
+    vectorOutput.append(numbers[i+2] * 2)
+    vectorOutput.append(numbers[i+3] * 2)
+    i = i + 4
+end
+
+// Handle remaining elements
+while i < numbers.size()
+    vectorOutput.append(numbers[i] * 2)
+    i = i + 1
+end
+
+// Verify results
+for i = 0; i < scalarOutput.size(); i = i + 1
+    assert(scalarOutput[i] == vectorOutput[i])
+end
+
+results.append("Vectorized processing: " + vectorOutput)
+
+// Test 9: Loop interchange - changing the order of nested loops
+print("Test 9: Loop interchange")
+// Create a 3D array
+array3D = []
+for i = 0; i < 3; i = i + 1
+    array2D = []
+    for j = 0; j < 4; j = j + 1
+        array1D = []
+        for k = 0; k < 5; k = k + 1
+            array1D.append(i * 100 + j * 10 + k)
+        end
+        array2D.append(array1D)
+    end
+    array3D.append(array2D)
+end
+
+// Original loop order: i-j-k
+ijkSum = 0
+for i = 0; i < array3D.size(); i = i + 1
+    for j = 0; j < array3D[i].size(); j = j + 1
+        for k = 0; k < array3D[i][j].size(); k = k + 1
+            ijkSum = ijkSum + array3D[i][j][k]
+        end
+    end
+end
+
+// Interchanged loop order: k-j-i (improves locality in some cases)
+kjiSum = 0
+for k = 0; k < array3D[0][0].size(); k = k + 1
+    for j = 0; j < array3D[0].size(); j = j + 1
+        for i = 0; i < array3D.size(); i = i + 1
+            kjiSum = kjiSum + array3D[i][j][k]
+        end
+    end
+end
+
+assert(ijkSum == kjiSum)
+results.append("Loop interchange sum: " + kjiSum)
+
+// Test 10: Loop peeling - handling first iteration separately
+print("Test 10: Loop peeling")
+// Create data for loop peeling test
+peeledArray = [5, 8, 13, 21, 34, 55, 89]
+ratios = []
+
+// Non-peeled loop (has a special case in first iteration)
+for i = 0; i < peeledArray.size() - 1; i = i + 1
+    // Calculate ratio between consecutive elements
+    ratios.append(peeledArray[i+1] / peeledArray[i])
+end
+
+// Peeled loop (handle first iteration separately)
+peeledRatios = []
+// First iteration peeled
+if peeledArray.size() > 1
+    peeledRatios.append(peeledArray[1] / peeledArray[0])
+end
+
+// Remaining iterations
+for i = 1; i < peeledArray.size() - 1; i = i + 1
+    // The loop body is now simpler
+    peeledRatios.append(peeledArray[i+1] / peeledArray[i])
+end
+
+// Verify results are the same
+for i = 0; i < ratios.size(); i = i + 1
+    assert(ratios[i] == peeledRatios[i])
+end
+
+results.append("Loop peeling ratios: " + peeledRatios)
+
+// Test 11: Loop splitting - splitting a loop for better optimization
+print("Test 11: Loop splitting")
+// Data with mixed types of operations
+mixedOperations = []
+for i = 0; i < 20; i = i + 1
+    mixedOperations.append(i)
+end
+
+// Regular loop with mixed operations
+mixedResults = []
+for i = 0; i < mixedOperations.size(); i = i + 1
+    if i % 2 == 0
+        // Even index - square the number
+        mixedResults.append(mixedOperations[i] * mixedOperations[i])
+    else
+        // Odd index - add 10
+        mixedResults.append(mixedOperations[i] + 10)
+    end
+end
+
+// Split loop - separate operations into different loops
+splitResults = []
+// First loop - handle even indices
+for i = 0; i < mixedOperations.size(); i = i + 2
+    splitResults.append(mixedOperations[i] * mixedOperations[i])
+end
+
+// Second loop - handle odd indices
+for i = 1; i < mixedOperations.size(); i = i + 2
+    // Need to insert at the correct position
+    splitResults.insert(i, mixedOperations[i] + 10)
+end
+
+// Verify results
+for i = 0; i < mixedResults.size(); i = i + 1
+    assert(mixedResults[i] == splitResults[i])
+end
+
+results.append("Loop splitting produced identical results")
+
+// Test 12: Recursive splitting for divide-and-conquer iteration
+print("Test 12: Recursive splitting")
+// Find max value using divide and conquer
+fun findMaxRecursive(array, start, end) {
+    // Base case: single element
+    if start == end
+        return array[start]
+    end
+    
+    // Base case: two elements
+    if start + 1 == end
+        return max(array[start], array[end])
+    end
+    
+    // Recursive case: split array in half
+    mid = start + ((end - start) / 2)
+    leftMax = findMaxRecursive(array, start, mid)
+    rightMax = findMaxRecursive(array, mid + 1, end)
+    
+    // Combine results
+    return max(leftMax, rightMax)
+}
+
+// Helper function for max
+fun max(a, b) {
+    if a > b
+        return a
+    else
+        return b
+    end
+}
+
+// Create test data with a known maximum
+maxArray = [3, 7, 2, 9, 5, 1, 8, 4, 6]
+linearMax = maxArray[0]
+
+// Find max using linear scan
+for num in maxArray
+    if num > linearMax
+        linearMax = num
+    end
+end
+
+// Find max using recursive approach
+recursiveMax = findMaxRecursive(maxArray, 0, maxArray.size() - 1)
+
+assert(linearMax == recursiveMax)
+results.append("Recursive maximum finding: " + recursiveMax)
+
+// Print the test summary
+print("\nTest Summary:")
+for result in results
+    print(" - " + result)
+end
+
+print("\nAll tests completed successfully!")

@@ -32,7 +32,7 @@ class RhoTranslator : public TranslatorBase<RhoParser> {
     void TranslateIndex(AstNodePtr node);
     void TranslateIf(AstNodePtr node);
     void TranslateFor(AstNodePtr node);
-    void TranslateForEachNetwork(AstNodePtr node);
+    void TranslateAcrossAllNodes(AstNodePtr node);
     void TranslateWhile(AstNodePtr node);
 };
 

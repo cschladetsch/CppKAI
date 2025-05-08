@@ -104,7 +104,7 @@ const char *Operation::ToString(int value) {
         CASE(Assert)
         CASE(NTimes)
         CASE(ForEach)
-        CASE(ForEachNetwork)
+        CASE(AcrossAllNodes)
         CASE(GetProperty)
         CASE(SetProperty)
         CASE(Index)

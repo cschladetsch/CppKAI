@@ -71,7 +71,7 @@ struct RhoTokenEnumType {
         Debug = 69,
         Quote = 70,
         Sep = 71,
-        ForEachNetwork = 72,
+        AcrossAllNodes = 72,
     };
 
     struct Type : TokenBase<RhoTokenEnumType> {

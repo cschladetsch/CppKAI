@@ -1,0 +1,297 @@
+// NestedIterations.rho
+// Tests for complex nested and interleaved iteration patterns
+
+// Create test data structures
+results = []
+matrix3d = [
+    [ [1, 2], [3, 4] ],
+    [ [5, 6], [7, 8] ]
+]
+collection = [10, 20, 30, 40, 50]
+dict = { "a": 1, "b": 2, "c": 3, "d": 4 }
+
+// Test 1: Triple-nested iteration with array access
+print("Test 1: Triple-nested loops")
+sum3d = 0
+
+// Iterate through the 3D matrix
+for i = 0; i < matrix3d.size(); i = i + 1
+    for j = 0; j < matrix3d[i].size(); j = j + 1
+        for k = 0; k < matrix3d[i][j].size(); k = k + 1
+            sum3d = sum3d + matrix3d[i][j][k]
+            // Print the current element
+            print("Element [" + i + "][" + j + "][" + k + "] = " + matrix3d[i][j][k])
+        end
+    end
+end
+
+results.append("3D matrix sum: " + sum3d)  // Should be 36
+assert(sum3d == 36)
+
+// Test 2: Interleaved while and for loops
+print("Test 2: Interleaved while and for loops")
+interleaved = []
+i = 0
+
+while i < 3
+    // Start with a while loop iteration
+    interleaved.append("While:" + i)
+    
+    // Interleave with a for loop based on current i
+    for j = 0; j < i + 1; j = j + 1
+        interleaved.append("For:" + j)
+    end
+    
+    i = i + 1
+end
+
+results.append("Interleaved loops: " + interleaved)
+// Should generate: ["While:0", "For:0", "While:1", "For:0", "For:1", "While:2", "For:0", "For:1", "For:2"]
+assert(interleaved.size() == 9)
+
+// Test 3: Fibonacci sequence using loop with look-back
+print("Test 3: Fibonacci sequence calculation")
+fibonacci = [1, 1]
+
+// Generate Fibonacci sequence using a for loop with look-back to previous elements
+for i = 2; i < 10; i = i + 1
+    // Each number is the sum of the two previous ones
+    nextFib = fibonacci[i-1] + fibonacci[i-2]
+    fibonacci.append(nextFib)
+end
+
+results.append("Fibonacci sequence: " + fibonacci)
+// Should be [1, 1, 2, 3, 5, 8, 13, 21, 34, 55]
+assert(fibonacci.size() == 10)
+assert(fibonacci[9] == 55)
+
+// Test 4: Triangle pattern using nested loops
+print("Test 4: Triangle pattern generation")
+trianglePattern = []
+
+// Generate a triangle pattern with increasing row width
+for i = 1; i <= 5; i = i + 1
+    row = ""
+    
+    // Add spaces for alignment
+    for s = 0; s < 5 - i; s = s + 1
+        row = row + " "
+    end
+    
+    // Add stars
+    for j = 0; j < i * 2 - 1; j = j + 1
+        row = row + "*"
+    end
+    
+    trianglePattern.append(row)
+end
+
+results.append("Triangle pattern generated with " + trianglePattern.size() + " rows")
+for row in trianglePattern
+    print(row)
+end
+assert(trianglePattern.size() == 5)
+
+// Test 5: Dictionary and array combined iteration
+print("Test 5: Dictionary and array combined iteration")
+combined = []
+
+// Iterate over the dictionary
+for key, value in dict
+    // For each dictionary entry, iterate over array elements
+    for num in collection
+        // Only process elements that meet a condition
+        if num > value * 10
+            combined.append(key + ":" + num)
+        end
+    end
+end
+
+results.append("Combined iterations result: " + combined)
+// Number of entries will depend on how many pass the condition
+assert(combined.size() > 0)
+
+// Test 6: Nested loops with conditional continue and break
+print("Test 6: Nested loops with conditional control")
+controlFlow = []
+
+for i = 0; i < 5; i = i + 1
+    // Skip even iterations in outer loop
+    if i % 2 == 0
+        continue
+    end
+    
+    innerResults = []
+    for j = 0; j < 5; j = j + 1
+        // Break inner loop at j=3
+        if j == 3
+            break
+        end
+        
+        innerResults.append(j)
+    end
+    
+    controlFlow.append(i + ":" + innerResults)
+end
+
+results.append("Control flow result: " + controlFlow)
+// Should have entries for i=1 and i=3 only, each with j=0,1,2
+assert(controlFlow.size() == 2)
+
+// Test 7: Double-loop iteration with index tracking
+print("Test 7: Double-loop index tracking")
+coordinates = []
+
+// Create a matrix-like structure by tracking coordinates
+for y = 0; y < 3; y = y + 1
+    for x = 0; x < 4; x = x + 1
+        coordinates.append([x, y])
+    end
+end
+
+results.append("Generated " + coordinates.size() + " coordinates")
+// Should generate 12 coordinate pairs
+assert(coordinates.size() == 12)
+assert(coordinates[4][0] == 0)  // First element of 5th coordinate (index 4) should be x=0
+assert(coordinates[4][1] == 1)  // Second element of 5th coordinate (index 4) should be y=1
+
+// Test 8: Nested loop with running sum calculation
+print("Test 8: Nested loop with running sum")
+runningSum = 0
+runningAverages = []
+
+// Calculate running averages within nested loop
+for i = 1; i <= 5; i = i + 1
+    // Inner loop from 1 to current i
+    innerSum = 0
+    for j = 1; j <= i; j = j + 1
+        innerSum = innerSum + j
+    end
+    
+    // Calculate running average and add to results
+    runningSum = runningSum + innerSum
+    runningAverage = runningSum / i
+    runningAverages.append(runningAverage)
+end
+
+results.append("Running averages: " + runningAverages)
+assert(runningAverages.size() == 5)
+
+// Test 9: Matrix multiplication using triple-nested loops
+print("Test 9: Matrix multiplication")
+// Define two matrices
+matrixA = [[1, 2], [3, 4]]
+matrixB = [[5, 6], [7, 8]]
+matrixResult = [[0, 0], [0, 0]]
+
+// Perform matrix multiplication: matrixResult = matrixA * matrixB
+for i = 0; i < 2; i = i + 1
+    for j = 0; j < 2; j = j + 1
+        sum = 0
+        for k = 0; k < 2; k = k + 1
+            sum = sum + matrixA[i][k] * matrixB[k][j]
+        end
+        matrixResult[i][j] = sum
+    end
+end
+
+results.append("Matrix multiplication result: " + matrixResult)
+// Expected: [[19, 22], [43, 50]]
+assert(matrixResult[0][0] == 19)
+assert(matrixResult[1][1] == 50)
+
+// Test 10: Dynamic loop boundary adjustment
+print("Test 10: Dynamic loop boundary adjustment")
+sequence = []
+n = 10
+
+// Adjust the loop boundary dynamically
+for i = 0; i < n; i = i + 1
+    sequence.append(i)
+    
+    // Dynamically reduce the boundary based on a condition
+    if i == 5
+        n = 7
+    end
+end
+
+results.append("Dynamic boundary loop: " + sequence)
+// Should go from 0 to 6 only, since we reduced n to 7 when i reached 5
+assert(sequence.size() == 7)
+assert(sequence[sequence.size() - 1] == 6)
+
+// Test 11: Iteration with computation reuse
+print("Test 11: Iteration with computation reuse")
+factorials = [1]
+
+// Calculate factorials using previous results
+for i = 1; i <= 10; i = i + 1
+    factorials.append(factorials[i-1] * i)
+end
+
+results.append("Factorials: " + factorials)
+// 10! = 3,628,800
+assert(factorials[10] == 3628800)
+
+// Test 12: Spiral matrix traversal
+print("Test 12: Spiral matrix traversal")
+// Create a 4x4 matrix
+spiralMatrix = [
+    [1, 2, 3, 4],
+    [5, 6, 7, 8],
+    [9, 10, 11, 12],
+    [13, 14, 15, 16]
+]
+spiral = []
+
+// Traverse the matrix in spiral order
+top = 0
+bottom = 3
+left = 0
+right = 3
+direction = 0  // 0: left to right, 1: top to bottom, 2: right to left, 3: bottom to top
+
+while top <= bottom && left <= right
+    if direction == 0
+        // Move from left to right
+        for i = left; i <= right; i = i + 1
+            spiral.append(spiralMatrix[top][i])
+        end
+        top = top + 1
+    else if direction == 1
+        // Move from top to bottom
+        for i = top; i <= bottom; i = i + 1
+            spiral.append(spiralMatrix[i][right])
+        end
+        right = right - 1
+    else if direction == 2
+        // Move from right to left
+        for i = right; i >= left; i = i - 1
+            spiral.append(spiralMatrix[bottom][i])
+        end
+        bottom = bottom - 1
+    else
+        // Move from bottom to top
+        for i = bottom; i >= top; i = i - 1
+            spiral.append(spiralMatrix[i][left])
+        end
+        left = left + 1
+    end
+    
+    // Update direction
+    direction = (direction + 1) % 4
+end
+
+results.append("Spiral traversal: " + spiral)
+// Should traverse the matrix in spiral order
+assert(spiral.size() == 16)
+assert(spiral[0] == 1)
+assert(spiral[15] == 16)
+
+// Print the test summary
+print("\nTest Summary:")
+for result in results
+    print(" - " + result)
+end
+
+print("\nAll tests completed successfully!")
