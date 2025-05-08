@@ -1,4 +1,0 @@
-#!/bin/sh
-
-for file in Test/*; do $file; done
-

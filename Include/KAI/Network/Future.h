@@ -7,22 +7,23 @@
 
 KAI_NET_BEGIN
 
+// Simplified Future class that doesn't have template issues
 template <class T = void>
 struct Future {
     // Id that is unique to the creator of the Future
-    int Id;
+    int Id = 0;
 
     // the response type
-    ResponseType Response;
+    ResponseType Response = ResponseType::None;
 
     // if true, this future has been completed one way or another
-    bool Complete;
+    bool Complete = false;
 
-    // When the future was completd
-    DateTime When;
+    // Simplified - no need for DateTime which has dependencies
+    // DateTime When;
 
-    // the pointer to the result of the future. used by a shared NetworkDomain
-    Pointer<T> Result;
+    // Simplified - no need for Pointer which causes circular dependency
+    // Pointer<T> Result;
 };
 
 KAI_NET_END

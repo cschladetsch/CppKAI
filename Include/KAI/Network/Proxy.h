@@ -2,8 +2,12 @@
 
 #include "KAI/Network/Config.h"
 #include "KAI/Network/Future.h"
-#include "KAI/Network/Node.h"
 #include "KAI/Network/ProxyBase.h"
+
+// Forward declare Node to avoid circular dependency
+KAI_NET_BEGIN
+class Node;
+KAI_NET_END
 
 KAI_NET_BEGIN
 

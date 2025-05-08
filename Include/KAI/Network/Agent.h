@@ -2,6 +2,7 @@
 
 #include "KAI/Network/AgentBase.h"
 #include "KAI/Network/NetHandle.h"
+#include "KAI/Network/Future.h"  // Added explicit include for Future
 #include "NetPointer.h"
 
 KAI_NET_BEGIN
@@ -15,7 +16,8 @@ struct Agent : AgentBase {
     }
 
     template <class R = void>
-    Future<R> Respond(NetHandle handle, TypeNumber ty, Object request) {
+    Future<R> Respond(NetHandle handle, int ty, Object request) {
+        KAI_UNUSED_3(handle, ty, request);
         return Future<R>();
     }
 

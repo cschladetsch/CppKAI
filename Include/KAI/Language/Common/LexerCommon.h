@@ -131,21 +131,22 @@ class LexerCommon : public LexerBase {
 
    public:
     static std::string CreateErrorMessage(Token tok, const char *fmt, ...) {
-        char buff0[2000];
+        char buff0[4096];
         va_list ap;
         va_start(ap, fmt);
 #ifdef WIN32
-        vsprintf_s(buff0, fmt, ap);
+        vsprintf_s(buff0, sizeof(buff0), fmt, ap);
 #else
-        vsprintf(buff0, fmt, ap);
+        vsnprintf(buff0, sizeof(buff0), fmt, ap);
 #endif
 
         const char *fmt1 = "%s(%d):[%d]: %s\n";
-        char buff[2000];
+        // Ensure buffer is large enough to handle the maximum size of buff0 plus the format string
+        char buff[4096];
 #ifdef WIN32
-        sprintf_s(buff, fmt1, "", tok.lineNumber, tok.slice.Start, buff0);
+        sprintf_s(buff, sizeof(buff), fmt1, "", tok.lineNumber, tok.slice.Start, buff0);
 #else
-        sprintf(buff, fmt1, "", tok.lineNumber, tok.slice.Start, buff0);
+        snprintf(buff, sizeof(buff), fmt1, "", tok.lineNumber, tok.slice.Start, buff0);
 #endif
         int beforeContext = 2;
         int afterContext = 2;

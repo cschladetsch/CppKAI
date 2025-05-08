@@ -5,6 +5,11 @@
 #include "KAI/Network/NetHandle.h"
 #include "KAI/Network/NetObject.h"
 
+// Forward declare Node to avoid circular dependency
+KAI_NET_BEGIN
+class Node;
+KAI_NET_END
+
 KAI_NET_BEGIN
 
 NetHandle GetNetHandle(Object const &t, Node const &);

@@ -215,3 +215,5 @@ Lib/
 *.o
 /Bin
 
+
+**/.claude/settings.local.json
