@@ -4,14 +4,15 @@
 
 #include <boost/lexical_cast.hpp>
 #include <boost/range/adaptor/reversed.hpp>
-#include <iostream>  // For std::cout and std::endl
 
 using namespace std;
 
 KAI_BEGIN
 
-void RhoTranslator::TranslateToken(AstNodePtr node) {
+void RhoTranslator::TranslateToken(AstNodePtr node)
+{
     KAI_TRACE() << "TranslateToken: " << RhoTokenEnumType::ToString(node->GetToken().type);
+    KAI_TRACE() << "TranslateToken with text: " << node->Text();
 
     switch (node->GetToken().type) {
         case TokenEnum::OpenParan:
@@ -105,6 +106,10 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
             TranslateBinaryOp(node, Operation::Divide);
             return;
 
+        case TokenEnum::Mod:
+            TranslateBinaryOp(node, Operation::Modulo);
+            return;
+
         case TokenEnum::Or:
             TranslateBinaryOp(node, Operation::LogicalOr);
             return;
@@ -126,12 +131,16 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
 
         case TokenEnum::String:
             KAI_TRACE() << "Translating String: " << node->Text();
+            // Do NOT wrap strings in Continuations
             Append(New<String>(node->Text()));
+            KAI_TRACE() << "String translation complete";
             return;
 
         case TokenEnum::Ident:
             KAI_TRACE() << "Translating Ident: " << node->Text();
+            // Do NOT wrap identifiers in Continuations
             Append(New<Label>(Label(node->Text())));
+            KAI_TRACE() << "Ident translation complete";
             return;
 
         case TokenEnum::Pathname:
@@ -161,21 +170,13 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
     KAI_NOT_IMPLEMENTED();
 }
 
-void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
+void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op)
+{
     KAI_TRACE() << "TranslateBinaryOp: Operation=" << Operation::ToString(op);
 
-    // Create a new continuation to hold this operation
-    PushNew();
-
-    // Translate left and right operands into the continuation
     TranslateNode(node->GetChild(0));
     TranslateNode(node->GetChild(1));
-
-    // Add the operation to the continuation
     AppendOp(op);
-
-    // Pop the continuation and append it to the parent
-    Append(Pop());
 
     KAI_TRACE() << "Binary operation successfully translated";
 }
@@ -204,11 +205,15 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
 //     AppendNew(Pathname(move(elements)));
 // }
 
-void RhoTranslator::TranslateNode(AstNodePtr node) {
+void RhoTranslator::TranslateNode(AstNodePtr node)
+{
     if (!node) {
         Failed = true;
         return;
     }
+
+    KAI_TRACE() << "TranslateNode: Type=" << RhoAstNodeEnumType::ToString(node->GetType())
+               << " Text=" << node->Text();
 
     switch (node->GetType()) {
         case AstEnum::Pathname:
@@ -228,19 +233,35 @@ void RhoTranslator::TranslateNode(AstNodePtr node) {
             return;
 
         case AstEnum::Assignment:
-            // like a binary op, but argument order is reversed
             KAI_TRACE() << "Translating Assignment";
+            // Put this in a try-catch block to help diagnose issues
+            try {
+                // Basic validation
+                if (node->GetChildren().size() < 2) {
+                    KAI_TRACE_ERROR() << "Assignment node has fewer than 2 children";
+                    Fail("Assignment node has fewer than 2 children");
+                    return;
+                }
 
-            // Translate right-hand side (value) first
-            TranslateNode(node->GetChild(1));
+                // Value first (right side)
+                TranslateNode(node->GetChild(1));
 
-            // Then translate left-hand side (target/variable)
-            TranslateNode(node->GetChild(0));
+                // Then target (left side)
+                TranslateNode(node->GetChild(0));
 
-            // Append the store operation directly
-            AppendNew(Operation(Operation::Store));
+                // Add the store operation
+                AppendOp(Operation::Store);
 
-            KAI_TRACE() << "Completed assignment translation";
+                KAI_TRACE() << "Completed assignment translation without Continuations";
+            }
+            catch (const std::exception& e) {
+                KAI_TRACE_ERROR() << "Exception in assignment: " << e.what();
+                Fail(std::string("Assignment failed: ") + e.what());
+            }
+            catch (...) {
+                KAI_TRACE_ERROR() << "Unknown exception in assignment";
+                Fail("Assignment failed with unknown exception");
+            }
             return;
 
         case AstEnum::Call:
@@ -260,9 +281,7 @@ void RhoTranslator::TranslateNode(AstNodePtr node) {
             return;
 
         case AstEnum::Block:
-            PushNew();
             for (auto st : node->GetChildren()) TranslateNode(st);
-            Append(Pop());
             return;
 
         case AstEnum::List:
@@ -282,18 +301,36 @@ void RhoTranslator::TranslateNode(AstNodePtr node) {
     KAI_NOT_IMPLEMENTED();
 }
 
-void RhoTranslator::TranslateBlock(AstNodePtr node) {
+void RhoTranslator::TranslateBlock(AstNodePtr node)
+{
     for (auto st : node->GetChildren()) TranslateNode(st);
 }
 
-void RhoTranslator::TranslateFunction(AstNodePtr node) {
+void RhoTranslator::TranslateFunction(AstNodePtr node)
+{
     // child 0: ident
     // child 1: args
     // child 2: block
     AstNode::ChildrenType const &ch = node->GetChildren();
 
-    // write the body
-    PushNew();
+    // In Pi, we need to create a Continuation for the function body
+    Pointer<Continuation> cont = _reg->New<Continuation>();
+    if (!cont.Exists()) {
+        KAI_TRACE_ERROR() << "Failed to create function continuation";
+        Fail("Failed to create function continuation");
+        return;
+    }
+
+    // Set its code array
+    cont->SetCode(_reg->New<Array>());
+    if (!cont->GetCode().Exists()) {
+        KAI_TRACE_ERROR() << "Failed to create function code array";
+        Fail("Failed to create function code array");
+        return;
+    }
+
+    // Write the body into the continuation's code array
+    stack.push_back(cont);
     for (auto b : ch[2]->GetChildren()) {
         // Special handling for return statements
         if (b->GetType() == AstEnum::TokenType &&
@@ -309,33 +346,30 @@ void RhoTranslator::TranslateFunction(AstNodePtr node) {
             TranslateNode(b);
         }
     }
+    stack.pop_back();
 
-    // add the args
-    auto cont = Pop();
-    for (auto a : ch[1]->GetChildren()) cont->AddArg(Label(a->GetTokenText()));
+    // Add the args
+    for (auto a : ch[1]->GetChildren()) {
+        cont->AddArg(Label(a->GetTokenText()));
+    }
 
-    // write the name and store
+    // Write the name and store in this sequence: function object, function name, Store
     Append(cont);
-    AppendNew(Label(ch[0]->Text()));
+    Append(New<Label>(Label(ch[0]->Text())));
     AppendOp(Operation::Store);
 }
 
-void RhoTranslator::TranslateCall(AstNodePtr node) {
+void RhoTranslator::TranslateCall(AstNodePtr node)
+{
     KAI_TRACE() << "Translating call";
 
-    // Create a new continuation to hold this operation
-    PushNew();
-
-    // Get the function arguments and translate them first
     typename AstNode::ChildrenType const &children = node->GetChildren();
     for (auto a : children[1]->GetChildren()) {
         TranslateNode(a);
     }
 
-    // Translate the function/method being called
     TranslateNode(children[0]);
 
-    // Determine whether to use Replace or Suspend operation
     Operation::Type callOp;
     if (children.size() > 2 && children[2]->GetToken().type == TokenEnum::Replace) {
         callOp = Operation::Replace;
@@ -343,57 +377,63 @@ void RhoTranslator::TranslateCall(AstNodePtr node) {
         callOp = Operation::Suspend;
     }
 
-    // Add the operation to the continuation
     AppendOp(callOp);
-
-    // Pop the continuation and append it to the parent
-    Append(Pop());
 
     KAI_TRACE() << "Completed call translation";
 }
 
-void RhoTranslator::TranslateIf(AstNodePtr node) {
+void RhoTranslator::TranslateIf(AstNodePtr node)
+{
     KAI_TRACE() << "Translating if statement";
-
-    // Create a new continuation for the whole if statement
-    PushNew();
 
     typename AstNode::ChildrenType const &ch = node->GetChildren();
     bool hasElse = ch.size() > 2;
 
-    // Translate condition
-    KAI_TRACE() << "Translating condition";
-    TranslateNode(ch[0]);
+    // For if statements in Pi, we need to create continuations for then and else blocks
+    Pointer<Continuation> thenCont = _reg->New<Continuation>();
+    thenCont->SetCode(_reg->New<Array>());
 
-    // Translate else branch if present
+    Pointer<Continuation> elseCont;
     if (hasElse) {
-        KAI_TRACE() << "Translating else branch";
-        TranslateNode(ch[2]);
+        elseCont = _reg->New<Continuation>();
+        elseCont->SetCode(_reg->New<Array>());
     }
 
-    // Translate then branch
-    KAI_TRACE() << "Translating then branch";
+    // First translate the condition
+    TranslateNode(ch[0]);
+
+    // Translate then branch into its continuation
+    stack.push_back(thenCont);
     TranslateNode(ch[1]);
+    stack.pop_back();
 
-    // Choose the appropriate operation based on whether there's an else branch
-    Operation::Type ifOp = hasElse ? Operation::IfThenSuspendElseSuspend
-                                  : Operation::IfThenSuspend;
+    // Translate else branch if it exists
+    if (hasElse) {
+        stack.push_back(elseCont);
+        TranslateNode(ch[2]);
+        stack.pop_back();
+    }
 
-    // Append the if operation to the continuation
-    KAI_TRACE() << "Appending if operation: " << Operation::ToString(ifOp);
+    // Add continuations and if operation
+    Append(thenCont);
+
+    Operation::Type ifOp;
+    if (hasElse) {
+        Append(elseCont);
+        ifOp = Operation::IfThenSuspendElseSuspend;
+    } else {
+        ifOp = Operation::IfThenSuspend;
+    }
+
     AppendOp(ifOp);
-
-    // Pop the continuation and append it to the parent
-    Append(Pop());
 
     KAI_TRACE() << "Completed if statement translation";
 }
 
-void RhoTranslator::TranslateWhile(AstNodePtr node) {
-    // Enhanced implementation for while loops
+void RhoTranslator::TranslateWhile(AstNodePtr node)
+{
     try {
-        KAI_TRACE() << "---------------------------------------------";
-        KAI_TRACE() << "Starting translation of while loop with enhanced debugging";
+        KAI_TRACE() << "Translating while loop";
 
         // Verify we have enough children
         if (node->GetChildren().size() < 1) {
@@ -404,104 +444,57 @@ void RhoTranslator::TranslateWhile(AstNodePtr node) {
 
         // Get condition and body nodes
         AstNodePtr condition = node->GetChild(0);
-        KAI_TRACE() << "Condition node type: " << RhoAstNodeEnumType::ToString(condition->GetType());
 
         AstNodePtr body = nullptr;
         if (node->GetChildren().size() > 1) {
             body = node->GetChild(1);
-            KAI_TRACE() << "Body node type: " << RhoAstNodeEnumType::ToString(body->GetType());
         } else {
             // Create an empty body block node
             body = std::make_shared<RhoAstNode>(RhoAstNodeEnumType::Block);
-            KAI_TRACE() << "Created empty body block node";
         }
 
-        // 1. Create the condition continuation
-        KAI_TRACE() << "Creating condition continuation";
+        // For while loops in Pi, we need continuations for condition and body
+        // First create condition continuation
         Pointer<Continuation> condCont = _reg->New<Continuation>();
-        if (!condCont.Exists()) {
-            KAI_TRACE_ERROR() << "Failed to create condition continuation";
-            Fail("Failed to create condition continuation");
-            return;
-        }
-
-        // Set its code array
         condCont->SetCode(_reg->New<Array>());
-        if (!condCont->GetCode().Exists()) {
-            KAI_TRACE_ERROR() << "Failed to create condition code array";
-            Fail("Failed to create condition code array");
-            return;
-        }
 
-        // 2. Create the body continuation
-        KAI_TRACE() << "Creating body continuation";
+        // Then create body continuation
         Pointer<Continuation> bodyCont = _reg->New<Continuation>();
-        if (!bodyCont.Exists()) {
-            KAI_TRACE_ERROR() << "Failed to create body continuation";
-            Fail("Failed to create body continuation");
-            return;
-        }
-
-        // Set its code array
         bodyCont->SetCode(_reg->New<Array>());
-        if (!bodyCont->GetCode().Exists()) {
-            KAI_TRACE_ERROR() << "Failed to create body code array";
-            Fail("Failed to create body code array");
-            return;
-        }
 
-        // 3. Translate the condition node into the condition continuation
-        KAI_TRACE() << "Translating condition node into condition continuation";
+        // Translate condition into condition continuation
         stack.push_back(condCont);
         TranslateNode(condition);
         stack.pop_back();
 
-        // 4. Translate the body node into the body continuation
-        KAI_TRACE() << "Translating body node into body continuation";
+        // Translate body into body continuation
         stack.push_back(bodyCont);
         TranslateNode(body);
         stack.pop_back();
 
-        // 5. Verify continuations have proper code arrays
-        if (!condCont->GetCode().Exists()) {
-            KAI_TRACE_ERROR() << "Condition continuation has invalid code array after translation";
-            Fail("Condition continuation has invalid code array after translation");
-            return;
-        }
+        // Add continuations to code in correct order for WhileLoop operation
+        Append(condCont);
+        Append(bodyCont);
 
-        if (!bodyCont->GetCode().Exists()) {
-            KAI_TRACE_ERROR() << "Body continuation has invalid code array after translation";
-            Fail("Body continuation has invalid code array after translation");
-            return;
-        }
-
-        // 6. Add condition and body continuations to the current code array
-        // Push condition continuation then body continuation (order matters for while)
-        KAI_TRACE() << "Adding condition continuation to result";
-        Append(condCont);  // Append takes Object by const reference
-
-        KAI_TRACE() << "Adding body continuation to result";
-        Append(bodyCont);  // Append takes Object by const reference
-
-        // 7. Add WhileLoop operation
-        KAI_TRACE() << "Adding WhileLoop operation";
+        // Add WhileLoop operation
         AppendOp(Operation::WhileLoop);
 
-        KAI_TRACE() << "Successfully completed while loop translation";
-        KAI_TRACE() << "---------------------------------------------";
-    } catch (std::exception &e) {
+        KAI_TRACE() << "While loop translation complete";
+    }
+    catch (std::exception &e) {
         KAI_TRACE_ERROR() << "Exception in TranslateWhile: " << e.what();
         Fail(std::string("Exception in TranslateWhile: ") + e.what());
-    } catch (...) {
+    }
+    catch (...) {
         KAI_TRACE_ERROR() << "Unknown exception in TranslateWhile";
         Fail("Unknown exception in TranslateWhile");
     }
 }
 
-void RhoTranslator::TranslateDoWhile(AstNodePtr node) {
+void RhoTranslator::TranslateDoWhile(AstNodePtr node)
+{
     try {
-        KAI_TRACE() << "---------------------------------------------";
-        KAI_TRACE() << "Starting translation of do-while loop";
+        KAI_TRACE() << "Translating do-while loop";
 
         // Verify we have enough children
         if (node->GetChildren().size() < 2) {
@@ -514,94 +507,44 @@ void RhoTranslator::TranslateDoWhile(AstNodePtr node) {
         AstNodePtr body = node->GetChild(0);
         AstNodePtr condition = node->GetChild(1);
 
-        KAI_TRACE() << "Body node type: " << RhoAstNodeEnumType::ToString(body->GetType());
-        KAI_TRACE() << "Condition node type: " << RhoAstNodeEnumType::ToString(condition->GetType());
-
-        // Following TranslateWhile pattern, but with order reversed for do-while
-        // In DoLoop operation, the executor pops condition first, then body
-        // So we need to push body first, then condition (LIFO order)
-
-        // 1. Create condition continuation explicitly with Registry::New
-        KAI_TRACE() << "Creating condition continuation";
+        // For do-while loops in Pi, we need continuations for condition and body
+        // First create condition continuation
         Pointer<Continuation> condCont = _reg->New<Continuation>();
-        if (!condCont.Exists()) {
-            KAI_TRACE_ERROR() << "Failed to create condition continuation";
-            Fail("Failed to create condition continuation");
-            return;
-        }
-
-        // Set its code array
         condCont->SetCode(_reg->New<Array>());
-        if (!condCont->GetCode().Exists()) {
-            KAI_TRACE_ERROR() << "Failed to create condition code array";
-            Fail("Failed to create condition code array");
-            return;
-        }
 
-        // 2. Create body continuation explicitly with Registry::New
-        KAI_TRACE() << "Creating body continuation";
+        // Then create body continuation
         Pointer<Continuation> bodyCont = _reg->New<Continuation>();
-        if (!bodyCont.Exists()) {
-            KAI_TRACE_ERROR() << "Failed to create body continuation";
-            Fail("Failed to create body continuation");
-            return;
-        }
-
-        // Set its code array
         bodyCont->SetCode(_reg->New<Array>());
-        if (!bodyCont->GetCode().Exists()) {
-            KAI_TRACE_ERROR() << "Failed to create body code array";
-            Fail("Failed to create body code array");
-            return;
-        }
 
-        // 3. Translate body node into body continuation
-        KAI_TRACE() << "Translating body node into body continuation";
+        // Translate body into body continuation
         stack.push_back(bodyCont);
         TranslateNode(body);
         stack.pop_back();
 
-        // 4. Translate condition node into condition continuation
-        KAI_TRACE() << "Translating condition node into condition continuation";
+        // Translate condition into condition continuation
         stack.push_back(condCont);
         TranslateNode(condition);
         stack.pop_back();
 
-        // 5. Check code arrays after translation
-        if (!bodyCont->GetCode().Exists()) {
-            KAI_TRACE_ERROR() << "Body continuation has invalid code array after translation";
-            Fail("Body continuation has invalid code array after translation");
-            return;
-        }
-
-        if (!condCont->GetCode().Exists()) {
-            KAI_TRACE_ERROR() << "Condition continuation has invalid code array after translation";
-            Fail("Condition continuation has invalid code array after translation");
-            return;
-        }
-
-        // 6. Add continuations to code array in correct order:
-        // For DoLoop operation, executor pops condition first, then body
-        // So we need to push in reverse order (LIFO)
-        KAI_TRACE() << "Adding condition continuation first (will be popped second)";
+        // Add continuations to code in correct order for DoLoop operation
+        // Note: Order is different for do-while compared to while
         Append(condCont);
-
-        KAI_TRACE() << "Adding body continuation second (will be popped first)";
         Append(bodyCont);
 
-        // 7. Add DoLoop operation
-        KAI_TRACE() << "Adding DoLoop operation";
+        // Add DoLoop operation
         AppendOp(Operation::DoLoop);
 
-        KAI_TRACE() << "Successfully completed do-while translation";
-        KAI_TRACE() << "---------------------------------------------";
-    } catch (kai::Exception::Base &e) {
+        KAI_TRACE() << "Do-while loop translation complete";
+    }
+    catch (kai::Exception::Base &e) {
         KAI_TRACE_ERROR() << "KAI Exception in TranslateDoWhile: " << e.ToString();
         Fail(std::string("Exception in TranslateDoWhile: ") + e.ToString().c_str());
-    } catch (std::exception &e) {
+    }
+    catch (std::exception &e) {
         KAI_TRACE_ERROR() << "Exception in TranslateDoWhile: " << e.what();
         Fail(std::string("Exception in TranslateDoWhile: ") + e.what());
-    } catch (...) {
+    }
+    catch (...) {
         KAI_TRACE_ERROR() << "Unknown exception in TranslateDoWhile";
         Fail("Unknown exception in TranslateDoWhile");
     }
