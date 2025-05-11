@@ -139,6 +139,10 @@ bool RhoLexer::NextToken() {
             if (Peek() == '+') return AddTwoCharOp(Enum::Increment);
             if (Peek() == '=') return AddTwoCharOp(Enum::PlusAssign);
             return Add(Enum::Plus);
+
+        case '%':
+            if (Peek() == '=') return AddTwoCharOp(Enum::ModAssign);
+            return Add(Enum::Mod);
     }
 
     LexError("Unrecognised %c");

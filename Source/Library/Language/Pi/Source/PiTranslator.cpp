@@ -128,6 +128,10 @@ void PiTranslator::AppendTokenised(const TokenNode &tok) {
             AppendOp(Operation::Divide);
             break;
 
+        case PiTokenEnumType::Modulo:
+            AppendOp(Operation::Modulo);
+            break;
+
         case PiTokenEnumType::Equiv:
             AppendOp(Operation::Equiv);
             break;

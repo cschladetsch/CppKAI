@@ -135,6 +135,8 @@ struct PiTokenEnumType {
         Freeze,
         Thaw,
 
+        Modulo,  // % operator
+
         Self,  // _current continuation 'self'
         This,  // _current _scope '.'
     };

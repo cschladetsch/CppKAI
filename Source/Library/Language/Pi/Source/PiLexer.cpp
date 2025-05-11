@@ -98,7 +98,7 @@ bool PiLexer::NextToken() {
         case '!':
             return Add(Enum::Replace);
         case '&':
-            return Add(Enum::Suspend);
+            return AddIfNext('&', Enum::And, Enum::Suspend);
         case '|':
             return AddIfNext('|', Enum::Or, Enum::BitOr);
         case '<':
@@ -132,6 +132,9 @@ bool PiLexer::NextToken() {
             if (Peek() == '+') return AddTwoCharOp(Enum::Increment);
             if (Peek() == '=') return AddTwoCharOp(Enum::PlusAssign);
             return Add(Enum::Plus);
+
+        case '%':
+            return Add(Enum::Modulo);
 
         case '/':
             if (Peek() == '/') {
