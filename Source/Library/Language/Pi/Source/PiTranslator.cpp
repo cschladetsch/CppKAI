@@ -136,6 +136,14 @@ void PiTranslator::AppendTokenised(const TokenNode &tok) {
             AppendOp(Operation::Greater);
             break;
 
+        case PiTokenEnumType::GreaterEquiv:
+            AppendOp(Operation::GreaterOrEquiv);
+            break;
+
+        case PiTokenEnumType::LessEquiv:
+            AppendOp(Operation::LessOrEquiv);
+            break;
+
         case PiTokenEnumType::Rot:
             AppendOp(Operation::Rot);
             break;
@@ -264,6 +272,8 @@ void PiTranslator::AppendTokenised(const TokenNode &tok) {
         case PiTokenEnumType::ToList:
             AppendOp(Operation::ToList);
             return;
+
+        // Note: "call" was added here but removed due to conflict
 
         default:
             KAI_TRACE_1(tok.type)

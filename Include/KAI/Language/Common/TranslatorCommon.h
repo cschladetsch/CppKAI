@@ -32,6 +32,7 @@ struct TranslatorCommon : ProcessCommon {
     }
 
     void AppendOp(Operation::Type op);
+    void AppendDirectOperation(Operation::Type op);
 
     struct Exception {};
     struct Unsupported : Exception {};

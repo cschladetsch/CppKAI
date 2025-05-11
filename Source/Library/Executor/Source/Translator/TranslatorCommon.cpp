@@ -8,12 +8,49 @@ KAI_BEGIN
 TranslatorCommon::TranslatorCommon(Registry &r) : ProcessCommon(r) {}
 
 void TranslatorCommon::Append(Object const &ob) {
-    Top()->GetCode()->Append(ob);
+    try {
+        if (stack.empty()) {
+            KAI_TRACE_ERROR() << "TranslatorCommon::Append: Stack is empty";
+            KAI_THROW_0(EmptyStack);
+        }
+
+        auto top = Top();
+        if (!top.Exists()) {
+            KAI_TRACE_ERROR() << "TranslatorCommon::Append: Top of stack is invalid";
+            KAI_THROW_0(NullObject);
+        }
+
+        auto code = top->GetCode();
+        if (!code.Exists()) {
+            KAI_TRACE_ERROR() << "TranslatorCommon::Append: Code array is invalid";
+            KAI_THROW_0(NullObject);
+        }
+
+        KAI_TRACE() << "TranslatorCommon::Append: " << ob.ToString();
+        code->Append(ob);
+    }
+    catch (kai::Exception::Base &e) {
+        KAI_TRACE_ERROR() << "Exception in TranslatorCommon::Append: " << e.ToString();
+        throw;
+    }
+    catch (std::exception &e) {
+        KAI_TRACE_ERROR() << "Exception in TranslatorCommon::Append: " << e.what();
+        throw;
+    }
+    catch (...) {
+        KAI_TRACE_ERROR() << "Unknown exception in TranslatorCommon::Append";
+        throw;
+    }
 }
 
 void TranslatorCommon::AppendOp(Operation::Type op) {
     std::cout << "Appending operation: " << Operation::ToString(op) << std::endl;
-    AppendNew(Operation(op));
+
+    // Create a new Operation object and add it directly to the code array
+    Object opObject = _reg->New<Operation>(op);
+
+    // The operation should be added directly to the current continuation's code array
+    Append(opObject);
 }
 
 Pointer<Continuation> TranslatorCommon::Top() { return stack.back(); }

@@ -3,6 +3,12 @@ cmake_minimum_required(VERSION 3.10)
 # Add the new test file to the build
 add_library(TestRhoFiles OBJECT
     TestForLoopSemicolons.cpp
+    HelloWorld.cpp
+    SimpleRhoTest.cpp
+    SimpleRhoPiTests.cpp
+    AdvancedRhoPiTests.cpp
+    # Note: DoWhile tests are disabled pending implementation completion
+    # See /home/xian/local/KAI/Todo-DoWhile.md for details
 )
 
 # Make sure the test files get included in the main test binary
