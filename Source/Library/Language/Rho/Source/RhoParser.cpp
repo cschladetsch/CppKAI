@@ -640,6 +640,7 @@ bool RhoParser::DoWhileLoop(AstNodePtr block) {
     }
     Consume();
 
+    // Create a body block for the do-while body
     auto bodyClause = NewNode(NodeType::Block);
 
     // Use the Block method for indented code blocks
@@ -690,21 +691,30 @@ bool RhoParser::DoWhileLoop(AstNodePtr block) {
               << std::endl;
     Consume();
 
+    // Create a separate AST node for the condition
+    auto condNode = NewNode(NodeType::None);
+    Push(condNode); // Push condition node to be populated by Expression
+
     std::cout << "RhoParser::DoWhileLoop - Parsing condition expression"
               << std::endl;
 
+    // Parse the condition expression
     if (!Expression()) {
         return CreateError("Do-while what? Expected condition expression");
     }
 
+    // Get the populated condition node
     auto condition = Pop();
 
+    // Create the DoWhile node
     std::cout << "RhoParser::DoWhileLoop - Creating DoWhile node" << std::endl;
     auto doWhileNode = NewNode(NodeType::DoWhile);
-    doWhileNode->Add(bodyClause);
-    doWhileNode->Add(
-        condition);  // Note: condition is second for do-while (after body)
 
+    // Add body followed by condition (order is important)
+    doWhileNode->Add(bodyClause);
+    doWhileNode->Add(condition);
+
+    // Add the whole do-while construct to the block
     return block->Add(doWhileNode);
 }
 

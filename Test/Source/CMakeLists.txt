@@ -48,6 +48,7 @@ set(core_sources
     # New additional tests
     ${source_path}/TestAdditionalStringOps.cpp
     ${source_path}/TestRegistryOperations.cpp
+    ${source_path}/TestAdditionalCore.cpp
 )
 
 # Add common test files

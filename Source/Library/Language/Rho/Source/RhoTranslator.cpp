@@ -446,74 +446,30 @@ void RhoTranslator::TranslateDoWhile(AstNodePtr node) {
         KAI_TRACE() << "Body node type: " << RhoAstNodeEnumType::ToString(body->GetType());
         KAI_TRACE() << "Condition node type: " << RhoAstNodeEnumType::ToString(condition->GetType());
 
-        // 1. Create the body continuation
-        KAI_TRACE() << "Creating body continuation";
-        Pointer<Continuation> bodyCont = _reg->New<Continuation>();
-        if (!bodyCont.Exists()) {
-            KAI_TRACE_ERROR() << "Failed to create body continuation";
-            Fail("Failed to create body continuation");
-            return;
-        }
+        // Instead of creating continuations separately and translating nodes into them,
+        // we'll create the continuations directly during translation
 
-        // Set its code array
-        bodyCont->SetCode(_reg->New<Array>());
-        if (!bodyCont->GetCode().Exists()) {
-            KAI_TRACE_ERROR() << "Failed to create body code array";
-            Fail("Failed to create body code array");
-            return;
-        }
-
-        // 2. Create the condition continuation
-        KAI_TRACE() << "Creating condition continuation";
-        Pointer<Continuation> condCont = _reg->New<Continuation>();
-        if (!condCont.Exists()) {
-            KAI_TRACE_ERROR() << "Failed to create condition continuation";
-            Fail("Failed to create condition continuation");
-            return;
-        }
-
-        // Set its code array
-        condCont->SetCode(_reg->New<Array>());
-        if (!condCont->GetCode().Exists()) {
-            KAI_TRACE_ERROR() << "Failed to create condition code array";
-            Fail("Failed to create condition code array");
-            return;
-        }
-
-        // 3. Translate the body node into the body continuation
-        KAI_TRACE() << "Translating body node into body continuation";
-        stack.push_back(bodyCont);
+        // 1. Create and translate the body continuation
+        KAI_TRACE() << "Creating and translating body continuation";
+        PushNew(); // Start a new code section for body
         TranslateNode(body);
-        stack.pop_back();
+        auto bodyCont = Pop(); // Get the body continuation
+        KAI_TRACE() << "Body continuation created";
 
-        // 4. Translate the condition node into the condition continuation
-        KAI_TRACE() << "Translating condition node into condition continuation";
-        stack.push_back(condCont);
+        // 2. Create and translate the condition continuation
+        KAI_TRACE() << "Creating and translating condition continuation";
+        PushNew(); // Start a new code section for condition
         TranslateNode(condition);
-        stack.pop_back();
+        auto condCont = Pop(); // Get the condition continuation
+        KAI_TRACE() << "Condition continuation created";
 
-        // 5. Verify continuations have proper code arrays
-        if (!bodyCont->GetCode().Exists()) {
-            KAI_TRACE_ERROR() << "Body continuation has invalid code array after translation";
-            Fail("Body continuation has invalid code array after translation");
-            return;
-        }
-
-        if (!condCont->GetCode().Exists()) {
-            KAI_TRACE_ERROR() << "Condition continuation has invalid code array after translation";
-            Fail("Condition continuation has invalid code array after translation");
-            return;
-        }
-
-        // 6. Add body and condition continuations to the current code array
+        // 3. Add body and condition continuations to the current code array
         // Push body continuation then condition continuation (order matters for do-while)
-        KAI_TRACE() << "Adding body continuation to result";
-        Append(bodyCont);  // Append takes Object by const reference
+        KAI_TRACE() << "Adding continuations to the stack";
+        Append(bodyCont);
+        Append(condCont);
 
-        KAI_TRACE() << "Adding condition continuation to result";
-        Append(condCont);  // Append takes Object by const reference
-
-        // 7. Add DoLoop operation
+        // 4. Add DoLoop operation
         KAI_TRACE() << "Adding DoLoop operation";
         AppendOp(Operation::DoLoop);
 

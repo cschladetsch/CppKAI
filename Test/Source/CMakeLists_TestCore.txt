@@ -25,6 +25,10 @@ set(core_sources
     ${source_path}/TestPathname.cpp
     ${source_path}/TestString.cpp
     ${source_path}/TestStringStream.cpp
+    # Additional tests
+    ${source_path}/TestAdditionalStringOps.cpp
+    ${source_path}/TestRegistryOperations.cpp
+    ${source_path}/TestAdditionalCore.cpp
 )
 
 # Add common test files
