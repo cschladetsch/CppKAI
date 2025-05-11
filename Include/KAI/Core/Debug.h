@@ -30,6 +30,9 @@ struct Trace : StringStream {
     // trace the function _name as well
     static bool TraceFunction;
 
+    // directory where log files will be stored
+    static std::string LogDirectory;
+
     Type type;
     FileLocation file_location;
     Trace(FileLocation const &F, Type T = Information)

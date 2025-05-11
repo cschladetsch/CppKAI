@@ -40,6 +40,9 @@ class PeerDiscovery {
     // Check if discovery is in progress
     bool IsActive() const;
 
+    // Check if discovery is in progress (alias for IsActive())
+    bool IsDiscovering() const;
+
     // Clear list of discovered peers
     void ClearDiscoveredPeers();
 

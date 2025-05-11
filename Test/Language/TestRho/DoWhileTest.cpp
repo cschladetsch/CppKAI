@@ -1,25 +1,29 @@
 #include <iostream>
 #include <string>
+#include <gtest/gtest.h>
 
 #include "KAI/Core/Console.h"
 #include "KAI/Core/File.h"
 #include "MyTestStruct.h"
 #include "TestLangCommon.h"
 
+// Use the kai namespace (KAI_NAMESPACE_NAME is defined as kai)
 KAI_BEGIN
 
-void TestDoWhileLoop() {
+TEST(RhoLanguage, TestDoWhileImplementation) {
     std::cout << "=== Testing Do-While Loop Implementation ===" << std::endl;
 
-    Registry reg;
-    reg.AddClass<int>("int");
-    reg.AddClass<float>("float");
-    reg.AddClass<String>("String");
-    reg.AddClass<bool>("bool");
-    reg.AddClass<Array>("Array");
-
-    Console console(&reg);
+    // Use the console's registry directly instead of creating our own
+    Console console;
     console.SetLanguage(Language::Rho);
+    
+    // Make sure types are registered in the console's registry
+    Registry& reg = console.GetRegistry();
+    reg.AddClass<int>(Label("int"));
+    reg.AddClass<float>(Label("float"));
+    reg.AddClass<String>(Label("String"));
+    reg.AddClass<bool>(Label("bool"));
+    reg.AddClass<Array>(Label("Array"));
 
     auto exec = console.GetExecutor();
     exec->SetTraceLevel(5);  // Maximum trace level for debugging
@@ -47,16 +51,14 @@ void TestDoWhileLoop() {
                   << std::endl;
 
         std::cout << "Do-while loop tests completed successfully!" << std::endl;
+        SUCCEED();
     } catch (const std::exception& e) {
         std::cerr << "Exception in do-while test: " << e.what() << std::endl;
+        FAIL() << "Exception in do-while test: " << e.what();
     } catch (...) {
         std::cerr << "Unknown exception in do-while test" << std::endl;
+        FAIL() << "Unknown exception in do-while test";
     }
-}
-
-int main() {
-    TestDoWhileLoop();
-    return 0;
 }
 
 KAI_END

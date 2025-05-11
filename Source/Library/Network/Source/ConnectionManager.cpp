@@ -4,6 +4,7 @@
 
 #include "KAI/Network/ConnectionEvent.h"
 #include "KAI/Network/RakNetStub.h"
+#include "KAI/Network/NetworkLogger.h"
 
 KAI_NET_BEGIN
 
@@ -44,7 +45,10 @@ ConnectionManager::ConnectionId ConnectionManager::AddConnection(
     _connections[id] = info;
     _addressToId[addrStr] = id;
 
-    std::cout << "Added connection " << id << " for " << addrStr << std::endl;
+    // Create log message and log it
+    std::string logMessage = "Added connection " + std::to_string(id) + " for " + addrStr;
+    std::cout << logMessage << std::endl;
+    NetworkLogger::LogConnection(logMessage);
 
     return id;
 }
@@ -59,7 +63,10 @@ void ConnectionManager::RemoveConnection(ConnectionId id) {
         // Remove from connections
         _connections.erase(it);
 
-        std::cout << "Removed connection " << id << std::endl;
+        // Log the removal
+        std::string logMessage = "Removed connection " + std::to_string(id);
+        std::cout << logMessage << std::endl;
+        NetworkLogger::LogConnection(logMessage);
     }
 }
 
@@ -73,7 +80,10 @@ void ConnectionManager::RemoveConnection(const RakNet::SystemAddress& address) {
         _addressToId.erase(it);
         _connections.erase(id);
 
-        std::cout << "Removed connection for " << addrStr << std::endl;
+        // Log the removal
+        std::string logMessage = "Removed connection for " + addrStr;
+        std::cout << logMessage << std::endl;
+        NetworkLogger::LogConnection(logMessage);
     }
 }
 
@@ -89,132 +99,111 @@ void ConnectionManager::Update() {
         ConnectionId id = pair.first;
         ConnectionInfo& info = pair.second;
 
-        // Update ping
+        // Update ping time
         info.ping = _peer->GetAveragePing(info.address);
 
-        // Check if peer is still connected
-        if (_peer->GetConnectionState(info.address) != RakNet::IS_CONNECTED) {
-            if (info.state == ConnectionState::Connected) {
-                info.state = ConnectionState::Disconnected;
-
-                // Trigger disconnect callback
-                if (_callback) {
-                    _callback(id, ConnectionEvent::ConnectionLost);
-                }
-
-                timedOutConnections.push_back(id);
-            }
-        } else {
-            // Connection is active, update last activity time
-            info.lastActivity = currentTime;
-        }
-
-        // Check for timeout - if last activity is too old
-        if (info.state == ConnectionState::Connected &&
-            currentTime - info.lastActivity > _connectionTimeout) {
-            // Connection timed out
-            info.state = ConnectionState::Disconnected;
-
-            if (_callback) {
-                _callback(id, ConnectionEvent::Timeout);
-            }
-
+        // Check for timeout
+        if (currentTime - info.lastActivity > _connectionTimeout) {
             timedOutConnections.push_back(id);
         }
     }
 
     // Remove timed out connections
-    for (ConnectionId id : timedOutConnections) {
+    for (auto id : timedOutConnections) {
+        std::string logMessage = "Connection " + std::to_string(id) + " timed out";
+        std::cout << logMessage << std::endl;
+        NetworkLogger::LogConnection(logMessage);
+        
         RemoveConnection(id);
     }
 }
 
-ConnectionInfo* ConnectionManager::GetConnection(ConnectionId id) {
+void ConnectionManager::UpdateActivity(ConnectionId id) {
     auto it = _connections.find(id);
     if (it != _connections.end()) {
-        return &it->second;
+        it->second.lastActivity = RakNet::GetTimeMS();
     }
-
-    return nullptr;
 }
 
-ConnectionInfo* ConnectionManager::GetConnectionByAddress(
-    const RakNet::SystemAddress& address) {
+void ConnectionManager::UpdateActivity(const RakNet::SystemAddress& address) {
     std::string addrStr = address.ToString();
     auto it = _addressToId.find(addrStr);
     if (it != _addressToId.end()) {
-        return GetConnection(it->second);
+        UpdateActivity(it->second);
     }
-
-    return nullptr;
 }
 
-const std::unordered_map<ConnectionManager::ConnectionId, ConnectionInfo>&
+ConnectionState ConnectionManager::GetConnectionState(
+    ConnectionId id) const {
+    auto it = _connections.find(id);
+    if (it != _connections.end()) {
+        return it->second.state;
+    }
+    return ConnectionState::Disconnected;
+}
+
+void ConnectionManager::SetConnectionState(ConnectionId id, ConnectionState state) {
+    auto it = _connections.find(id);
+    if (it != _connections.end()) {
+        it->second.state = state;
+        
+        // Log the state change
+        std::string stateStr;
+        switch (state) {
+            case ConnectionState::Connected: stateStr = "Connected"; break;
+            case ConnectionState::Connecting: stateStr = "Connecting"; break;
+            case ConnectionState::Disconnected: stateStr = "Disconnected"; break;
+            case ConnectionState::Failed: stateStr = "Failed"; break;
+            default: stateStr = "Unknown"; break;
+        }
+        
+        std::string logMessage = "Connection " + std::to_string(id) + " state changed to " + stateStr;
+        NetworkLogger::LogConnection(logMessage);
+    }
+}
+
+int ConnectionManager::GetPing(ConnectionId id) const {
+    auto it = _connections.find(id);
+    if (it != _connections.end()) {
+        return it->second.ping;
+    }
+    return -1;
+}
+
+RakNet::SystemAddress ConnectionManager::GetSystemAddress(
+    ConnectionId id) const {
+    auto it = _connections.find(id);
+    if (it != _connections.end()) {
+        return it->second.address;
+    }
+    return RakNet::UNASSIGNED_SYSTEM_ADDRESS;
+}
+
+ConnectionManager::ConnectionId ConnectionManager::GetConnectionId(
+    const RakNet::SystemAddress& address) const {
+    std::string addrStr = address.ToString();
+    auto it = _addressToId.find(addrStr);
+    if (it != _addressToId.end()) {
+        return it->second;
+    }
+    return 0;  // 0 is invalid connection ID
+}
+
+std::vector<ConnectionManager::ConnectionId>
 ConnectionManager::GetAllConnections() const {
-    return _connections;
-}
-
-void ConnectionManager::SetConnectionCallback(ConnectionCallback callback) {
-    _callback = callback;
+    std::vector<ConnectionId> result;
+    for (const auto& pair : _connections) {
+        result.push_back(pair.first);
+    }
+    return result;
 }
 
 size_t ConnectionManager::GetConnectionCount() const {
     return _connections.size();
 }
 
-bool ConnectionManager::IsConnected(ConnectionId id) const {
-    auto it = _connections.find(id);
-    if (it != _connections.end()) {
-        return it->second.state == ConnectionState::Connected;
-    }
-
-    return false;
-}
-
-bool ConnectionManager::IsConnected(
-    const RakNet::SystemAddress& address) const {
-    std::string addrStr = address.ToString();
-    auto it = _addressToId.find(addrStr);
-    if (it != _addressToId.end()) {
-        return IsConnected(it->second);
-    }
-
-    return false;
-}
-
-void ConnectionManager::OnConnectionEvent(const RakNet::SystemAddress& address,
-                                          ConnectionEvent event) {
-    std::string addrStr = address.ToString();
-    auto it = _addressToId.find(addrStr);
-    if (it != _addressToId.end()) {
-        // Update connection state
-        ConnectionId id = it->second;
-        ConnectionInfo& info = _connections[id];
-
-        switch (event) {
-            case ConnectionEvent::Connected:
-                info.state = ConnectionState::Connected;
-                info.lastActivity = RakNet::GetTimeMS();
-                break;
-
-            case ConnectionEvent::Disconnected:
-            case ConnectionEvent::ConnectionLost:
-                info.state = ConnectionState::Disconnected;
-                break;
-
-            case ConnectionEvent::ConnectionFailed:
-                info.state = ConnectionState::Failed;
-                break;
-
-            default:
-                break;
-        }
-
-        // Call callback
-        if (_callback) {
-            _callback(id, event);
-        }
-    }
+void ConnectionManager::SetConnectionTimeout(RakNet::TimeMS timeout) {
+    _connectionTimeout = timeout;
 }
 
 KAI_NET_END

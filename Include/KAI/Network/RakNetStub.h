@@ -81,6 +81,9 @@ class SystemAddress {
     }
 };
 
+// Unassigned system address constant
+const SystemAddress UNASSIGNED_SYSTEM_ADDRESS("0.0.0.0", 0);
+
 // BitStream class for serialization
 class BitStream {
    private:

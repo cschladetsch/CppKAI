@@ -122,6 +122,18 @@ A general-purpose stack-based virtual machine. I wanted two stacks (one for data
 
 This provides for some rich computational control. This can also result in confusion, so there is a debugger and extensive (optional) tracing available.
 
+## Logging System
+KAI includes a comprehensive logging system that captures debug traces, network events, and application messages:
+
+* **Centralized Storage**: All logs are written to the `/Logs` directory for easy access and management.
+* **Log Categorization**: Logs are separated by type and component for better organization:
+  * Core system logs (debug, info, warning, error, fatal)
+  * Network-specific logs (connections, messages, discovery events, status updates)
+* **Timestamp Integration**: All log entries include timestamps for precise event tracking.
+* **Console Mirroring**: Important log messages are also displayed in the console with color coding.
+
+The logging system is used throughout KAI to track system events, diagnose issues, and monitor network activity. This is especially useful when running distributed computations across multiple nodes.
+
 ## Folder Structure
 * *Bin*. Where to write executable output files.
 * *CMake*. Auxiliary CMake modules, primarily for finding other projects and libraries like Boost and Google Test.
@@ -129,6 +141,7 @@ This provides for some rich computational control. This can also result in confu
 * *Ext*. External dependencies, primarily as _git submodules_.
 * *Include*. Root of the global include path. Add this to your compiler's include path.
 * *Lib*. Location for built static and dynamic library files. Also add this this to your compilers library path.
+* *Logs*. Directory for all system logs including debug traces, network events, and application logs.
 * *Source*. The root for the source code of the project.
 * *Test*. Unit tests. Output goes to *Bin/Tests*.
 

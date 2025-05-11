@@ -315,61 +315,126 @@ void RhoTranslator::TranslateIf(AstNodePtr node) {
 }
 
 void RhoTranslator::TranslateWhile(AstNodePtr node) {
-    // Simple implementation for while loops
+    // Enhanced implementation for while loops
     try {
+        KAI_TRACE() << "---------------------------------------------";
+        KAI_TRACE() << "Starting translation of while loop with enhanced debugging";
+
         // Verify we have enough children
         if (node->GetChildren().size() < 1) {
+            KAI_TRACE_ERROR() << "Not enough children in While node";
             Fail("While node must have at least a condition child");
             return;
         }
 
         // Get condition and body nodes
         AstNodePtr condition = node->GetChild(0);
+        KAI_TRACE() << "Condition node type: " << RhoAstNodeEnumType::ToString(condition->GetType());
 
         AstNodePtr body = nullptr;
         if (node->GetChildren().size() > 1) {
             body = node->GetChild(1);
+            KAI_TRACE() << "Body node type: " << RhoAstNodeEnumType::ToString(body->GetType());
         } else {
             // Create an empty body block node
             body = std::make_shared<RhoAstNode>(RhoAstNodeEnumType::Block);
+            KAI_TRACE() << "Created empty body block node";
         }
 
-        // Create a continuation for the condition
-        PushNew();
+        // 1. Create the condition continuation
+        KAI_TRACE() << "Creating condition continuation";
+        Pointer<Continuation> condCont = _reg->New<Continuation>();
+        if (!condCont.Exists()) {
+            KAI_TRACE_ERROR() << "Failed to create condition continuation";
+            Fail("Failed to create condition continuation");
+            return;
+        }
+
+        // Set its code array
+        condCont->SetCode(_reg->New<Array>());
+        if (!condCont->GetCode().Exists()) {
+            KAI_TRACE_ERROR() << "Failed to create condition code array";
+            Fail("Failed to create condition code array");
+            return;
+        }
+
+        // 2. Create the body continuation
+        KAI_TRACE() << "Creating body continuation";
+        Pointer<Continuation> bodyCont = _reg->New<Continuation>();
+        if (!bodyCont.Exists()) {
+            KAI_TRACE_ERROR() << "Failed to create body continuation";
+            Fail("Failed to create body continuation");
+            return;
+        }
+
+        // Set its code array
+        bodyCont->SetCode(_reg->New<Array>());
+        if (!bodyCont->GetCode().Exists()) {
+            KAI_TRACE_ERROR() << "Failed to create body code array";
+            Fail("Failed to create body code array");
+            return;
+        }
+
+        // 3. Translate the condition node into the condition continuation
+        KAI_TRACE() << "Translating condition node into condition continuation";
+        stack.push_back(condCont);
         TranslateNode(condition);
-        Object condCont = Pop();
+        stack.pop_back();
 
-        // Create a continuation for the body
-        PushNew();
+        // 4. Translate the body node into the body continuation
+        KAI_TRACE() << "Translating body node into body continuation";
+        stack.push_back(bodyCont);
         TranslateNode(body);
-        Object bodyCont = Pop();
+        stack.pop_back();
 
-        // Push test continuation then body continuation
-        Append(condCont);
-        Append(bodyCont);
+        // 5. Verify continuations have proper code arrays
+        if (!condCont->GetCode().Exists()) {
+            KAI_TRACE_ERROR() << "Condition continuation has invalid code array after translation";
+            Fail("Condition continuation has invalid code array after translation");
+            return;
+        }
 
-        // Add WhileLoop operation
+        if (!bodyCont->GetCode().Exists()) {
+            KAI_TRACE_ERROR() << "Body continuation has invalid code array after translation";
+            Fail("Body continuation has invalid code array after translation");
+            return;
+        }
+
+        // 6. Add condition and body continuations to the current code array
+        // Push condition continuation then body continuation (order matters for while)
+        KAI_TRACE() << "Adding condition continuation to result";
+        Append(condCont);  // Append takes Object by const reference
+
+        KAI_TRACE() << "Adding body continuation to result";
+        Append(bodyCont);  // Append takes Object by const reference
+
+        // 7. Add WhileLoop operation
+        KAI_TRACE() << "Adding WhileLoop operation";
         AppendOp(Operation::WhileLoop);
+
+        KAI_TRACE() << "Successfully completed while loop translation";
+        KAI_TRACE() << "---------------------------------------------";
     } catch (std::exception &e) {
+        KAI_TRACE_ERROR() << "Exception in TranslateWhile: " << e.what();
         Fail(std::string("Exception in TranslateWhile: ") + e.what());
+    } catch (...) {
+        KAI_TRACE_ERROR() << "Unknown exception in TranslateWhile";
+        Fail("Unknown exception in TranslateWhile");
     }
 }
 
 void RhoTranslator::TranslateDoWhile(AstNodePtr node) {
     // Implementation for do-while loops
     try {
-        std::cout << "RhoTranslator::TranslateDoWhile - Starting translation"
-                  << std::endl;
+        KAI_TRACE() << "---------------------------------------------";
+        KAI_TRACE() << "Starting translation of do-while loop with enhanced debugging";
 
         // Verify we have enough children
         int childCount = node->GetChildren().size();
-        std::cout << "RhoTranslator::TranslateDoWhile - Node has " << childCount
-                  << " children" << std::endl;
+        KAI_TRACE() << "DoWhile node has " << childCount << " children";
 
         if (childCount < 2) {
-            std::cout << "RhoTranslator::TranslateDoWhile - ERROR: Not enough "
-                         "children in DoWhile node"
-                      << std::endl;
+            KAI_TRACE_ERROR() << "Not enough children in DoWhile node";
             Fail("DoWhile node must have both body and condition children");
             return;
         }
@@ -378,55 +443,87 @@ void RhoTranslator::TranslateDoWhile(AstNodePtr node) {
         AstNodePtr body = node->GetChild(0);
         AstNodePtr condition = node->GetChild(1);
 
-        std::cout << "RhoTranslator::TranslateDoWhile - Body node type: "
-                  << RhoAstNodeEnumType::ToString(body->GetType()) << std::endl;
-        std::cout << "RhoTranslator::TranslateDoWhile - Condition node type: "
-                  << RhoAstNodeEnumType::ToString(condition->GetType())
-                  << std::endl;
+        KAI_TRACE() << "Body node type: " << RhoAstNodeEnumType::ToString(body->GetType());
+        KAI_TRACE() << "Condition node type: " << RhoAstNodeEnumType::ToString(condition->GetType());
 
-        // Create a continuation for the body
-        std::cout
-            << "RhoTranslator::TranslateDoWhile - Creating body continuation"
-            << std::endl;
-        PushNew();
+        // 1. Create the body continuation
+        KAI_TRACE() << "Creating body continuation";
+        Pointer<Continuation> bodyCont = _reg->New<Continuation>();
+        if (!bodyCont.Exists()) {
+            KAI_TRACE_ERROR() << "Failed to create body continuation";
+            Fail("Failed to create body continuation");
+            return;
+        }
+
+        // Set its code array
+        bodyCont->SetCode(_reg->New<Array>());
+        if (!bodyCont->GetCode().Exists()) {
+            KAI_TRACE_ERROR() << "Failed to create body code array";
+            Fail("Failed to create body code array");
+            return;
+        }
+
+        // 2. Create the condition continuation
+        KAI_TRACE() << "Creating condition continuation";
+        Pointer<Continuation> condCont = _reg->New<Continuation>();
+        if (!condCont.Exists()) {
+            KAI_TRACE_ERROR() << "Failed to create condition continuation";
+            Fail("Failed to create condition continuation");
+            return;
+        }
+
+        // Set its code array
+        condCont->SetCode(_reg->New<Array>());
+        if (!condCont->GetCode().Exists()) {
+            KAI_TRACE_ERROR() << "Failed to create condition code array";
+            Fail("Failed to create condition code array");
+            return;
+        }
+
+        // 3. Translate the body node into the body continuation
+        KAI_TRACE() << "Translating body node into body continuation";
+        stack.push_back(bodyCont);
         TranslateNode(body);
-        Object bodyCont = Pop();
+        stack.pop_back();
 
-        // Create a continuation for the condition
-        std::cout << "RhoTranslator::TranslateDoWhile - Creating condition "
-                     "continuation"
-                  << std::endl;
-        PushNew();
+        // 4. Translate the condition node into the condition continuation
+        KAI_TRACE() << "Translating condition node into condition continuation";
+        stack.push_back(condCont);
         TranslateNode(condition);
-        Object condCont = Pop();
+        stack.pop_back();
 
-        // Push body continuation then test continuation (order matters for
-        // do-while)
-        std::cout
-            << "RhoTranslator::TranslateDoWhile - Pushing body continuation"
-            << std::endl;
-        Append(bodyCont);
+        // 5. Verify continuations have proper code arrays
+        if (!bodyCont->GetCode().Exists()) {
+            KAI_TRACE_ERROR() << "Body continuation has invalid code array after translation";
+            Fail("Body continuation has invalid code array after translation");
+            return;
+        }
 
-        std::cout << "RhoTranslator::TranslateDoWhile - Pushing condition "
-                     "continuation"
-                  << std::endl;
-        Append(condCont);
+        if (!condCont->GetCode().Exists()) {
+            KAI_TRACE_ERROR() << "Condition continuation has invalid code array after translation";
+            Fail("Condition continuation has invalid code array after translation");
+            return;
+        }
 
-        // Add DoLoop operation
-        std::cout << "RhoTranslator::TranslateDoWhile - Adding DoLoop operation"
-                  << std::endl;
+        // 6. Add body and condition continuations to the current code array
+        // Push body continuation then condition continuation (order matters for do-while)
+        KAI_TRACE() << "Adding body continuation to result";
+        Append(bodyCont);  // Append takes Object by const reference
+
+        KAI_TRACE() << "Adding condition continuation to result";
+        Append(condCont);  // Append takes Object by const reference
+
+        // 7. Add DoLoop operation
+        KAI_TRACE() << "Adding DoLoop operation";
         AppendOp(Operation::DoLoop);
 
-        std::cout << "RhoTranslator::TranslateDoWhile - Successfully "
-                     "translated do-while loop"
-                  << std::endl;
+        KAI_TRACE() << "Successfully completed do-while translation";
+        KAI_TRACE() << "---------------------------------------------";
     } catch (std::exception &e) {
-        std::cout << "RhoTranslator::TranslateDoWhile - EXCEPTION: " << e.what()
-                  << std::endl;
+        KAI_TRACE_ERROR() << "Exception in TranslateDoWhile: " << e.what();
         Fail(std::string("Exception in TranslateDoWhile: ") + e.what());
     } catch (...) {
-        std::cout << "RhoTranslator::TranslateDoWhile - UNKNOWN EXCEPTION"
-                  << std::endl;
+        KAI_TRACE_ERROR() << "Unknown exception in TranslateDoWhile";
         Fail("Unknown exception in TranslateDoWhile");
     }
 }

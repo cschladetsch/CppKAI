@@ -6,7 +6,7 @@
 // if KAI_OPTION_USE_NAMESPACES is defined, this is the namespace _name to use
 // #define KAI_NAMESPACE_NAME kai
 #ifndef KAI_NAMESPACE_NAME
-#warning please define KAI_NAMESPACE_NAME
+// Namespace defaults to 'kai' if not defined elsewhere (e.g. in CMakeLists.txt)
 #define KAI_NAMESPACE_NAME kai
 #endif
 

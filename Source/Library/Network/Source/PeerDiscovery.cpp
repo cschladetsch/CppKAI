@@ -70,6 +70,8 @@ const std::vector<RakNet::SystemAddress>& PeerDiscovery::GetDiscoveredPeers()
 
 bool PeerDiscovery::IsActive() const { return _isDiscovering; }
 
+bool PeerDiscovery::IsDiscovering() const { return IsActive(); }
+
 void PeerDiscovery::ClearDiscoveredPeers() { _discoveredPeers.clear(); }
 
 void PeerDiscovery::ProcessDiscoveryResponse(RakNet::Packet* packet) {

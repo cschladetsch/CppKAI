@@ -55,8 +55,7 @@ class ConnectionManager {
         const RakNet::SystemAddress& address);
 
     // Get all connections
-    const std::unordered_map<ConnectionId, ConnectionInfo>& GetAllConnections()
-        const;
+    std::vector<ConnectionId> GetAllConnections() const;
 
     // Set callback for connection events
     void SetConnectionCallback(ConnectionCallback callback);
@@ -73,6 +72,30 @@ class ConnectionManager {
     // Handle connection events for a system address
     void OnConnectionEvent(const RakNet::SystemAddress& address,
                            ConnectionEvent event);
+
+    // Update activity timestamp for a connection
+    void UpdateActivity(ConnectionId id);
+
+    // Update activity timestamp for a connection by address
+    void UpdateActivity(const RakNet::SystemAddress& address);
+
+    // Get connection state
+    ConnectionState GetConnectionState(ConnectionId id) const;
+
+    // Set connection state
+    void SetConnectionState(ConnectionId id, ConnectionState state);
+
+    // Get ping for a connection
+    int GetPing(ConnectionId id) const;
+
+    // Get system address for a connection ID
+    RakNet::SystemAddress GetSystemAddress(ConnectionId id) const;
+
+    // Get connection ID for a system address
+    ConnectionId GetConnectionId(const RakNet::SystemAddress& address) const;
+
+    // Set connection timeout
+    void SetConnectionTimeout(RakNet::TimeMS timeout);
 
    private:
     RakNet::RakPeerInterface* _peer;

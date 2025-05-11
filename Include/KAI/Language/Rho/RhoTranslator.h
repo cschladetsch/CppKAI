@@ -22,6 +22,17 @@ class RhoTranslator : public TranslatorBase<RhoParser> {
     virtual void TranslateNode(AstNodePtr node) override;
     using Parent::_reg;
 
+    // Helper method for loop-related continuation creation
+    Pointer<Continuation> CreateContinuationAndTranslate(AstNodePtr node) {
+        // Use Pointer<Continuation> instead of Object
+        Pointer<Continuation> cont = _reg->New<Continuation>();
+        cont->SetCode(_reg->New<Array>());
+        stack.push_back(cont);  // Use direct stack manipulation
+        TranslateNode(node);
+        stack.pop_back();
+        return cont;
+    }
+
    private:
     void TranslateToken(AstNodePtr node);
     void TranslateFunction(AstNodePtr node);

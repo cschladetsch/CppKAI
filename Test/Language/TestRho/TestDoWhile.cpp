@@ -1,18 +1,26 @@
 #include <iostream>
+#include <gtest/gtest.h>
 
 #include "KAI/Core/Console.h"
 #include "KAI/Core/File.h"
 #include "MyTestStruct.h"
 #include "TestLangCommon.h"
 
-using namespace KAI;
+using namespace kai;
 using namespace std;
 
-// Simple standalone test for do-while loops
-int main() {
+// Convert to a test instead of a standalone main function
+TEST(RhoLanguage, TestDoWhileLoops) {
     // Initialize console
     Console console;
     console.SetLanguage(Language::Rho);
+    
+    // Register necessary types
+    Registry& reg = console.GetRegistry();
+    reg.AddClass<int>(Label("int"));
+    reg.AddClass<float>(Label("float"));
+    reg.AddClass<String>(Label("String"));
+    reg.AddClass<bool>(Label("bool"));
 
     // Get executor and set trace level
     auto exec = console.GetExecutor();
@@ -29,7 +37,7 @@ int main() {
         string scriptPath =
             "/home/xian/local/KAI/Test/Language/TestRho/Scripts/"
             "SimplestDoWhile.rho";
-        string scriptContent = File::ReadAllText(scriptPath);
+        string scriptContent = String(File::ReadAllText(scriptPath)).c_str();
         cout << "Script content:" << endl << scriptContent << endl;
 
         // Execute the script
@@ -47,14 +55,15 @@ int main() {
         }
 
         cout << "Test completed successfully!" << endl;
-        return 0;
+        SUCCEED();
     } catch (const Exception::Base& e) {
         cerr << "KAI Exception: " << e.ToString() << endl;
+        FAIL() << "KAI Exception: " << e.ToString();
     } catch (const std::exception& e) {
         cerr << "C++ Exception: " << e.what() << endl;
+        FAIL() << "C++ Exception: " << e.what();
     } catch (...) {
         cerr << "Unknown exception" << endl;
+        FAIL() << "Unknown exception";
     }
-
-    return 1;
 }
