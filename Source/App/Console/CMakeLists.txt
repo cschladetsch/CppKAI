@@ -8,13 +8,16 @@ set(header_path ${INCLUDE_HOME}/${name})
 add_executable(${name} ${source_path}/Main.cpp)
 target_link_libraries(${name} Executor Core PiLang RhoLang ${Boost_LIBRARIES})
 
-# Network examples
-add_executable(SimpleServer ${source_path}/SimpleServer.cpp)
-target_link_libraries(SimpleServer Executor Core Network ${Boost_LIBRARIES})
+# Network examples - only build if RakNet is enabled
+if (KAI_BUILD_RAKNET)
+    add_executable(SimpleServer ${source_path}/SimpleServer.cpp)
+    target_link_libraries(SimpleServer Executor Core Network ${Boost_LIBRARIES})
 
-add_executable(SimpleClient ${source_path}/SimpleClient.cpp)
-target_link_libraries(SimpleClient Executor Core Network ${Boost_LIBRARIES})
+    add_executable(SimpleClient ${source_path}/SimpleClient.cpp)
+    target_link_libraries(SimpleClient Executor Core Network ${Boost_LIBRARIES})
+endif()
 
+# Minimal examples that don't require networking
 add_executable(MinimalServer ${source_path}/MinimalServer.cpp)
 target_link_libraries(MinimalServer Executor Core ${Boost_LIBRARIES})
 
