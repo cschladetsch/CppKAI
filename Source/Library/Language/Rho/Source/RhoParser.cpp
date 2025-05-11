@@ -58,9 +58,9 @@ bool RhoParser::Program() {
 
     // Continue parsing until we reach the end or encounter an error
     while (!Try(TokenType::None) && !Failed) {
-        // Skip any newlines or semicolons between statements
-        while (Try(TokenType::NewLine) || Try(TokenType::Semi)) {
-            std::cout << "RhoParser::Program - Skipping newline or semicolon"
+        // Skip any newlines between statements
+        while (Try(TokenType::NewLine)) {
+            std::cout << "RhoParser::Program - Skipping newline"
                       << std::endl;
             Consume();
         }
@@ -128,55 +128,19 @@ bool RhoParser::Function(AstNodePtr node) {
 
     Expect(TokenType::CloseParan);
 
-    // Handle optional open brace after function declaration
-    bool hasOpenBrace = false;
-    if (Try(TokenType::OpenBrace)) {
-        Consume();
-        hasOpenBrace = true;
-    } else {
-        Expect(TokenType::NewLine);
-    }
+    // Expect newline after function declaration
+    Expect(TokenType::NewLine);
 
     auto block = NewNode(RhoAstNodeEnumType::Block);
 
-    // Parse the body
-    if (hasOpenBrace) {
-        // Parse statements in the function body until we hit a closing brace
-        while (!Try(TokenType::CloseBrace) && !Try(TokenType::None) &&
-               !Failed) {
-            if (!Statement(block))
-                return CreateError("Statement expected in function body");
-
-            // After each statement, consume any semicolons
-            while (Try(TokenType::Semi)) {
-                Consume();
-                if (!Try(TokenType::CloseBrace) && !Try(TokenType::None) &&
-                    !Try(TokenType::NewLine)) {
-                    // If there's another statement after the semicolon, process
-                    // it
-                    if (!Statement(block))
-                        return CreateError(
-                            "Statement expected after semicolon");
-                }
-            }
-        }
-
-        if (Try(TokenType::CloseBrace)) {
-            Consume();
-        } else {
-            return CreateError("Expected closing brace for function body");
-        }
-    } else {
-        // Use the old Block method for indented code blocks
-        if (!Block(block)) {
-            return CreateError("Block Expected for function body");
-        }
+    // Use the Block method for indented code blocks
+    if (!Block(block)) {
+        return CreateError("Block Expected for function body");
     }
 
     fun->Add(block);
 
-    // Handle optional semicolon after the entire function declaration
-    if (Try(TokenType::Semi)) Consume();
+    // No trailing semicolon in Rho
 
     return node->Add(fun);
 }
@@ -230,7 +194,7 @@ bool RhoParser::Statement(AstNodePtr block) {
               << TokenEnumType::ToString(Current().type) << std::endl;
 
     // Process statement terminators first
-    if (Try(TokenType::NewLine) || Try(TokenType::Semi)) {
+    if (Try(TokenType::NewLine)) {
         std::cout << "RhoParser::Statement - Consuming statement terminator"
                   << std::endl;
         Consume();
@@ -275,7 +239,7 @@ bool RhoParser::Statement(AstNodePtr block) {
                 return false;
             }
             // after handling a while loop, there may be an optional semicolon
-            if (Try(TokenType::Semi)) Consume();
+            // Rho doesn't use semicolons
             return true;
         }
 
@@ -287,7 +251,7 @@ bool RhoParser::Statement(AstNodePtr block) {
             }
             // after handling a do-while loop, there may be an optional
             // semicolon
-            if (Try(TokenType::Semi)) Consume();
+            // Rho doesn't use semicolons
             return true;
         }
 
@@ -312,23 +276,16 @@ bool RhoParser::Statement(AstNodePtr block) {
     block->Add(Pop());
 
 finis:
-    // statements can end with an optional semi followed by a new line
-    if (Try(TokenType::Semi)) {
-        std::cout << "RhoParser::Statement - Consuming trailing semicolon"
-                  << std::endl;
-        Consume();
-    }
-
-    // Accept either a semicolon, a newline, or none at the end of file
-    if (!Try(TokenType::None) && !Try(TokenType::CloseBrace)) {
+    // In Rho, statements end with a newline
+    // Accept a newline or none at the end of file
+    if (!Try(TokenType::None)) {
         if (Try(TokenType::NewLine)) {
             std::cout << "RhoParser::Statement - Consuming newline"
                       << std::endl;
             Consume();
-        } else if (!Try(TokenType::Semi) && !Try(TokenType::While) &&
-                   !Try(TokenType::For) && !Try(TokenType::If) &&
-                   !Try(TokenType::Else) && !Try(TokenType::Fun) &&
-                   !Try(TokenType::DoWhile)) {
+        } else if (!Try(TokenType::While) && !Try(TokenType::For) &&
+                   !Try(TokenType::If) && !Try(TokenType::Else) &&
+                   !Try(TokenType::Fun) && !Try(TokenType::DoWhile)) {
             // Only expect a newline if the next token isn't another statement
             // starter
             std::cout << "RhoParser::Statement - Expecting NewLine"
@@ -552,46 +509,23 @@ bool RhoParser::IfCondition(AstNodePtr block) {
 
     Consume();
 
-    // Handle optional parentheses around condition
-    bool hasParens = false;
-    if (Try(TokenType::OpenParan)) {
-        Consume();
-        hasParens = true;
-    }
-
+    // No parentheses in Rho
     if (!Expression()) {
         return CreateError("If what?");
     }
 
     auto condition = Pop();
 
-    // Consume closing parenthesis if we had an opening one
-    if (hasParens) {
-        if (!Try(TokenType::CloseParan)) {
-            return CreateError("Expected closing parenthesis for if condition");
-        }
-        Consume();
+    // Expect newline after condition
+    if (!Try(TokenType::NewLine)) {
+        return CreateError("Expected newline after if condition");
     }
-
-    // Handle optional open brace
-    bool hasOpenBrace = false;
-    if (Try(TokenType::OpenBrace)) {
-        Consume();
-        hasOpenBrace = true;
-    }
+    Consume();
 
     auto trueClause = NewNode(NodeType::Block);
 
     if (!Block(trueClause)) {
         return CreateError("Block Expected for if body");
-    }
-
-    // If we opened with a brace, expect a closing brace
-    if (hasOpenBrace) {
-        if (!Try(TokenType::CloseBrace)) {
-            return CreateError("Expected closing brace for if body");
-        }
-        Consume();
     }
 
     auto cond = NewNode(NodeType::Conditional);
@@ -601,29 +535,19 @@ bool RhoParser::IfCondition(AstNodePtr block) {
     if (Try(TokenType::Else)) {
         Consume();
 
-        // Handle optional open brace for else block
-        bool hasElseOpenBrace = false;
-        if (Try(TokenType::OpenBrace)) {
-            Consume();
-            hasElseOpenBrace = true;
+            // Expect newline after else
+        if (!Try(TokenType::NewLine)) {
+            return CreateError("Expected newline after else");
         }
+        Consume();
 
         auto falseClause = NewNode(NodeType::Block);
         Block(falseClause);
 
-        // If else had an open brace, expect a closing brace
-        if (hasElseOpenBrace) {
-            if (!Try(TokenType::CloseBrace)) {
-                return CreateError("Expected closing brace for else body");
-            }
-            Consume();
-        }
-
         cond->Add(falseClause);
     }
 
-    // After handling an if condition, there may be an optional semicolon
-    if (Try(TokenType::Semi)) Consume();
+    // Rho doesn't use semicolons
 
     return block->Add(cond);
 }
@@ -651,19 +575,7 @@ bool RhoParser::WhileLoop(AstNodePtr block) {
     std::cout << "RhoParser::WhileLoop - Found 'while' token" << std::endl;
     Consume();
 
-    // Handle optional parentheses around condition
-    bool hasParens = false;
-    if (Try(TokenType::OpenParan)) {
-        std::cout << "RhoParser::WhileLoop - Found open parenthesis"
-                  << std::endl;
-        Consume();
-        hasParens = true;
-    } else {
-        std::cout << "RhoParser::WhileLoop - No opening parenthesis found, "
-                     "current token: "
-                  << TokenEnumType::ToString(Current().type) << std::endl;
-    }
-
+    // In Rho, we don't use parentheses for conditions
     std::cout << "RhoParser::WhileLoop - Parsing condition expression"
               << std::endl;
     if (!Expression()) {
@@ -674,31 +586,11 @@ bool RhoParser::WhileLoop(AstNodePtr block) {
     std::cout << "RhoParser::WhileLoop - Parsed condition expression"
               << std::endl;
 
-    // Consume closing parenthesis if we had an opening one
-    if (hasParens) {
-        if (!Try(TokenType::CloseParan)) {
-            std::cout << "RhoParser::WhileLoop - Missing closing parenthesis, "
-                         "current token: "
-                      << TokenEnumType::ToString(Current().type) << std::endl;
-            return CreateError(
-                "Expected closing parenthesis for while condition");
-        }
-        std::cout << "RhoParser::WhileLoop - Found close parenthesis"
-                  << std::endl;
-        Consume();
+    // Expect newline after condition
+    if (!Try(TokenType::NewLine)) {
+        return CreateError("Expected newline after while condition");
     }
-
-    // Handle optional open brace
-    bool hasOpenBrace = false;
-    if (Try(TokenType::OpenBrace)) {
-        std::cout << "RhoParser::WhileLoop - Found open brace" << std::endl;
-        Consume();
-        hasOpenBrace = true;
-    } else {
-        std::cout
-            << "RhoParser::WhileLoop - No open brace found, current token: "
-            << TokenEnumType::ToString(Current().type) << std::endl;
-    }
+    Consume();
 
     auto bodyClause = NewNode(NodeType::Block);
     std::cout << "RhoParser::WhileLoop - Created body block node" << std::endl;
@@ -709,18 +601,6 @@ bool RhoParser::WhileLoop(AstNodePtr block) {
         return CreateError("Block Expected for While loop body");
     }
     std::cout << "RhoParser::WhileLoop - Parsed body block" << std::endl;
-
-    // If we opened with a brace, expect a closing brace
-    if (hasOpenBrace) {
-        if (!Try(TokenType::CloseBrace)) {
-            std::cout << "RhoParser::WhileLoop - Missing closing brace, "
-                         "current token: "
-                      << TokenEnumType::ToString(Current().type) << std::endl;
-            return CreateError("Expected closing brace for while loop body");
-        }
-        std::cout << "RhoParser::WhileLoop - Found close brace" << std::endl;
-        Consume();
-    }
 
     auto whileNode = NewNode(NodeType::While);
     whileNode->Add(condition);
@@ -754,74 +634,45 @@ bool RhoParser::DoWhileLoop(AstNodePtr block) {
     std::cout << "RhoParser::DoWhileLoop - Found 'do' token" << std::endl;
     Consume();
 
-    // Handle optional open brace
-    bool hasOpenBrace = false;
-    if (Try(TokenType::OpenBrace)) {
-        std::cout << "RhoParser::DoWhileLoop - Found open brace" << std::endl;
-        Consume();
-        hasOpenBrace = true;
-    } else {
-        if (current < tokens.size()) {
-            std::cout
-                << "RhoParser::DoWhileLoop - No open brace, current token: "
-                << TokenEnumType::ToString(Current().type) << std::endl;
-        } else {
-            std::cout << "RhoParser::DoWhileLoop - No open brace, current "
-                         "token index out of range"
-                      << std::endl;
-        }
+    // Expect newline after 'do'
+    if (!Try(TokenType::NewLine)) {
+        return CreateError("Expected newline after 'do'");
     }
+    Consume();
 
     auto bodyClause = NewNode(NodeType::Block);
 
-    // Parse the body block
-    if (hasOpenBrace) {
-        // Parse statements in the do body until we hit a closing brace
-        std::cout
-            << "RhoParser::DoWhileLoop - Parsing statements until closing brace"
-            << std::endl;
-        while (current < tokens.size() && !Try(TokenType::CloseBrace) &&
-               !Try(TokenType::None) && !Failed) {
-            if (!Statement(bodyClause)) {
-                return CreateError("Statement expected in do-while body");
-            }
-
-            // After each statement, consume any semicolons
-            while (current < tokens.size() && Try(TokenType::Semi)) {
-                Consume();
-                if (current < tokens.size() && !Try(TokenType::CloseBrace) &&
-                    !Try(TokenType::None) && !Try(TokenType::NewLine)) {
-                    // If there's another statement after the semicolon, process
-                    // it
-                    if (!Statement(bodyClause)) {
-                        return CreateError(
-                            "Statement expected after semicolon in do-while "
-                            "body");
-                    }
-                }
-            }
-        }
-
-        if (current < tokens.size() && Try(TokenType::CloseBrace)) {
-            std::cout << "RhoParser::DoWhileLoop - Found closing brace"
-                      << std::endl;
-            Consume();
-        } else {
-            std::cout
-                << "RhoParser::DoWhileLoop - Missing closing brace at position "
-                << current << std::endl;
-            return CreateError("Expected closing brace for do-while body");
-        }
-    } else {
-        // Use the Block method for indented code blocks
-        std::cout << "RhoParser::DoWhileLoop - Using Block for body"
-                  << std::endl;
-        if (!Block(bodyClause)) {
-            return CreateError("Block Expected for do-while body");
-        }
+    // Use the Block method for indented code blocks
+    std::cout << "RhoParser::DoWhileLoop - Using Block for body"
+              << std::endl;
+    if (!Block(bodyClause)) {
+        return CreateError("Block Expected for do-while body");
     }
 
     // After the body, expect 'while' keyword
+    // For indentation-based syntax, consume any indentation before checking for 'while'
+    int level = 0;
+    // Count and consume any tabs before the 'while' token
+    while (Try(TokenType::Tab)) {
+        ++level;
+        Consume();
+    }
+
+    // If we're at a newline after tabs, consume it and look for while token
+    if (Try(TokenType::NewLine)) {
+        Consume();
+        // Count and consume any tabs again after the newline
+        level = 0;
+        while (Try(TokenType::Tab)) {
+            ++level;
+            Consume();
+        }
+    }
+
+    std::cout << "RhoParser::DoWhileLoop - After indentation, current token: "
+              << (current < tokens.size() ? TokenEnumType::ToString(Current().type) : "end of tokens")
+              << std::endl;
+
     if (current >= tokens.size() || !Try(TokenType::While)) {
         if (current < tokens.size()) {
             std::cout
@@ -829,7 +680,7 @@ bool RhoParser::DoWhileLoop(AstNodePtr block) {
                 << TokenEnumType::ToString(Current().type) << std::endl;
         } else {
             std::cout << "RhoParser::DoWhileLoop - Expected 'while', but "
-                         "reached end of tokens"
+                      << "reached end of tokens"
                       << std::endl;
         }
         return CreateError("Expected 'while' after do-while body");
@@ -839,45 +690,14 @@ bool RhoParser::DoWhileLoop(AstNodePtr block) {
               << std::endl;
     Consume();
 
-    // Handle optional parentheses around condition
-    bool hasParens = false;
-    if (current < tokens.size() && Try(TokenType::OpenParan)) {
-        std::cout << "RhoParser::DoWhileLoop - Found opening parenthesis for "
-                     "condition"
-                  << std::endl;
-        Consume();
-        hasParens = true;
-    }
-
     std::cout << "RhoParser::DoWhileLoop - Parsing condition expression"
               << std::endl;
+
     if (!Expression()) {
         return CreateError("Do-while what? Expected condition expression");
     }
 
     auto condition = Pop();
-
-    // Consume closing parenthesis if we had an opening one
-    if (hasParens) {
-        if (current >= tokens.size() || !Try(TokenType::CloseParan)) {
-            if (current < tokens.size()) {
-                std::cout << "RhoParser::DoWhileLoop - Missing closing "
-                             "parenthesis, current token: "
-                          << TokenEnumType::ToString(Current().type)
-                          << std::endl;
-            } else {
-                std::cout << "RhoParser::DoWhileLoop - Missing closing "
-                             "parenthesis, reached end of tokens"
-                          << std::endl;
-            }
-            return CreateError(
-                "Expected closing parenthesis for do-while condition");
-        }
-        std::cout << "RhoParser::DoWhileLoop - Found closing parenthesis for "
-                     "condition"
-                  << std::endl;
-        Consume();
-    }
 
     std::cout << "RhoParser::DoWhileLoop - Creating DoWhile node" << std::endl;
     auto doWhileNode = NewNode(NodeType::DoWhile);
