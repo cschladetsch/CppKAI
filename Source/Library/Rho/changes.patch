@@ -1,0 +1,51 @@
+diff --git a/Include/KAI/Language/Common/TranslatorBase.h b/Include/KAI/Language/Common/TranslatorBase.h
+index f33c7250..9ef8e555 100644
+--- a/Include/KAI/Language/Common/TranslatorBase.h
++++ b/Include/KAI/Language/Common/TranslatorBase.h
+@@ -25,6 +25,7 @@ struct TranslatorBase : TranslatorCommon {
+ 
+         trace = 0;
+ 
++        // Lexing phase - convert text to tokens
+         auto lex = std::make_shared<Lexer>(text, *_reg);
+         lex->Process();
+         if (lex->GetTokens().empty()) {
+@@ -40,26 +41,33 @@ struct TranslatorBase : TranslatorCommon {
+ 
+         if (trace > 0) KAI_TRACE_1(lex->Print());
+ 
++        // Parsing phase - convert tokens to AST
+         auto parse = std::make_shared<Parser>(*_reg);
+         parse->Process(lex, st);
+         if (parse->Failed) {
+             if (trace > 1) KAI_TRACE_1(parse->PrintTree());
+-
+             Fail(parse->Error);
+             return Object();
+         }
+ 
+         if (trace > 1) KAI_TRACE_1(parse->PrintTree());
+ 
+-        PushNew();
++        // Translation phase - convert AST to executable code
++        // Create a single Continuation to hold the translated code
++        Pointer<Continuation> result = _reg->New<Continuation>();
++        result->SetCode(_reg->New<Array>());
++
++        // Push the result continuation onto our stack
++        stack.push_back(result);
+ 
++        // Translate the root node, adding operations to the continuation
+         TranslateNode(parse->GetRoot());
+ 
++        // Return the filled continuation directly
+         if (stack.empty()) KAI_THROW_0(EmptyStack);
+ 
+-        // the continuation is wrapped in a continuation
+-        auto cont = Pop();
+-        return cont->GetCode()->At(0);
++        // Return the program continuation directly - no need to pop
++        return stack[0];
+     }
+ 
+    protected:

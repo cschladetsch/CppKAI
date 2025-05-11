@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Check for exactly two arguments
+if [ "$#" -ne 2 ]; then
+    echo "Usage: $0 output_file 'command'" >&2
+    exit 1
+fi
+
+outfile="$1"
+cmd="$2"
+
+# Execute the command and redirect both stdout and stderr to the output file
+bash -c "$cmd" >"$outfile" 2>&1
