@@ -1013,7 +1013,8 @@ void Executor::Perform(Operation::Type op) {
                 }
             }
 
-            // Pop body and condition continuations - order was swapped in translator
+            // Pop body and condition continuations - order was swapped in
+            // translator
             Object condObj = Pop();
             Object bodyObj = Pop();
 
@@ -1025,14 +1026,16 @@ void Executor::Perform(Operation::Type op) {
 
                 if (bodyObj.GetClass()) {
                     KAI_TRACE_ERROR()
-                        << "  Body: " << bodyObj.GetClass()->GetName().ToString();
+                        << "  Body: "
+                        << bodyObj.GetClass()->GetName().ToString();
                 } else {
                     KAI_TRACE_ERROR() << "  Body: <No class>";
                 }
 
                 if (condObj.GetClass()) {
                     KAI_TRACE_ERROR()
-                        << "  Condition: " << condObj.GetClass()->GetName().ToString();
+                        << "  Condition: "
+                        << condObj.GetClass()->GetName().ToString();
                 } else {
                     KAI_TRACE_ERROR() << "  Condition: <No class>";
                 }
@@ -1041,7 +1044,8 @@ void Executor::Perform(Operation::Type op) {
                 Push(bodyObj);
                 Push(condObj);
 
-                KAI_THROW_1(Base, "DoLoop: Type mismatch - expected Continuations");
+                KAI_THROW_1(Base,
+                            "DoLoop: Type mismatch - expected Continuations");
             }
 
             // Convert to Continuation pointers
@@ -1061,12 +1065,16 @@ void Executor::Perform(Operation::Type op) {
             do {
                 loopCount++;
                 if (loopCount > MAX_LOOPS) {
-                    KAI_TRACE_ERROR() << "DoLoop: Exceeded maximum loop count of " << MAX_LOOPS;
-                    KAI_THROW_1(Base, "DoLoop: Possible infinite loop detected");
+                    KAI_TRACE_ERROR()
+                        << "DoLoop: Exceeded maximum loop count of "
+                        << MAX_LOOPS;
+                    KAI_THROW_1(Base,
+                                "DoLoop: Possible infinite loop detected");
                 }
 
                 // Execute body
-                KAI_TRACE() << "Executing loop body (iteration " << loopCount << ")";
+                KAI_TRACE()
+                    << "Executing loop body (iteration " << loopCount << ")";
                 ContinueOnly(body);
 
                 // Check for break statement
@@ -1077,19 +1085,22 @@ void Executor::Perform(Operation::Type op) {
                 }
 
                 // Execute condition
-                KAI_TRACE() << "Executing condition (iteration " << loopCount << ")";
+                KAI_TRACE()
+                    << "Executing condition (iteration " << loopCount << ")";
                 _context->Push(Object());
                 Continue(condition);
 
                 // Check if stack is empty after condition
                 if (_data->Empty()) {
-                    KAI_TRACE_ERROR() << "DoLoop: Stack empty after running condition";
+                    KAI_TRACE_ERROR()
+                        << "DoLoop: Stack empty after running condition";
                     break;
                 }
 
                 // Check condition result
                 bool continueLoop = PopBool();
-                KAI_TRACE() << "Condition result: " << (continueLoop ? "true" : "false");
+                KAI_TRACE() << "Condition result: "
+                            << (continueLoop ? "true" : "false");
 
                 // Exit if condition is false
                 if (!continueLoop) {
@@ -1104,7 +1115,8 @@ void Executor::Perform(Operation::Type op) {
             // Restore continuation
             _context->Pop();
 
-            KAI_TRACE() << "DoLoop completed successfully after " << loopCount << " iterations";
+            KAI_TRACE() << "DoLoop completed successfully after " << loopCount
+                        << " iterations";
             break;
         }
 
@@ -1804,10 +1816,11 @@ void Executor::Perform(Operation::Type op) {
                 }
 
                 Push(New<int>(a % b));
-            }
-            else {
-                KAI_TRACE_ERROR() << "Modulo operation only supported for integer types";
-                KAI_THROW_1(Base, "Modulo operation only supported for integer types");
+            } else {
+                KAI_TRACE_ERROR()
+                    << "Modulo operation only supported for integer types";
+                KAI_THROW_1(
+                    Base, "Modulo operation only supported for integer types");
             }
 
             break;

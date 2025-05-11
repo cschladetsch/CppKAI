@@ -1,5 +1,5 @@
-#include <KAI/Network/NetworkLogger.h>
 #include <KAI/Core/Logger.h>
+#include <KAI/Network/NetworkLogger.h>
 
 KAI_NET_BEGIN
 
@@ -13,11 +13,16 @@ void NetworkLogger::Init(const std::string& logDirectory) {
 
 std::string NetworkLogger::CategoryToString(Category category) {
     switch (category) {
-        case Category::Connection: return "connection";
-        case Category::Message: return "message";
-        case Category::Discovery: return "discovery";
-        case Category::Status: return "status";
-        default: return "network";
+        case Category::Connection:
+            return "connection";
+        case Category::Message:
+            return "message";
+        case Category::Discovery:
+            return "discovery";
+        case Category::Status:
+            return "status";
+        default:
+            return "network";
     }
 }
 
@@ -29,10 +34,10 @@ void NetworkLogger::Log(Category category, const std::string& message) {
     if (!s_initialized) {
         Init();
     }
-    
+
     // Log to the main logger
     Logger::Info(CategoryToString(category) + ": " + message);
-    
+
     // Also log to category-specific file
     std::string filename = GetLogFilename(category);
     // Logger will handle writing to the specific file

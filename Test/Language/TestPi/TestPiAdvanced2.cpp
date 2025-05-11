@@ -14,20 +14,20 @@ struct TestPiAdvanced2 : TestLangCommon {};
 // Test 1: Variable Assignment and Retrieval
 TEST_F(TestPiAdvanced2, TestVariableOperations) {
     _console.SetLanguage(Language::Pi);
-    
+
     // Test variable assignment and retrieval using # and @
     _data->Clear();
     _console.Execute("42 'answer #");  // store 42 as 'answer'
     _console.Execute("answer @");      // retrieve value of 'answer'
     ASSERT_EQ(_data->Size(), 1);
     ASSERT_EQ(AtData<int>(0), 42);
-    
+
     // Test variable update
     _data->Clear();
     _console.Execute("100 'answer #");  // update the value
     _console.Execute("answer @");       // retrieve the new value
     ASSERT_EQ(AtData<int>(0), 100);
-    
+
     // Test multiple variable assignments
     _data->Clear();
     _console.Execute("1 'x # 2 'y # 3 'z #");
@@ -127,7 +127,8 @@ TEST_F(TestPiAdvanced2, TestAdvancedContinuations) {
     _data->Clear();
     _console.Execute("{ 42 } 'get_42 #");  // Store a continuation
     _console.Execute("get_42 @");          // Retrieve the continuation
-    ASSERT_TRUE(_data->At(0).IsType<Continuation>());  // Verify it's a continuation
+    ASSERT_TRUE(
+        _data->At(0).IsType<Continuation>());  // Verify it's a continuation
 
     _data->Clear();
     _console.Execute("get_42 @ &");  // Execute the retrieved continuation
@@ -285,33 +286,33 @@ TEST_F(TestPiAdvanced2, TestTypeOperations) {
 // Test 9: Logical Operators
 TEST_F(TestPiAdvanced2, TestLogicalOperators) {
     _console.SetLanguage(Language::Pi);
-    
+
     // Test basic logical operators
     _data->Clear();
     _console.Execute("true true and");
     ASSERT_TRUE(AtData<bool>(0));
-    
+
     _data->Clear();
     _console.Execute("true false and");
     ASSERT_FALSE(AtData<bool>(0));
-    
+
     _data->Clear();
     _console.Execute("false false or");
     ASSERT_FALSE(AtData<bool>(0));
-    
+
     _data->Clear();
     _console.Execute("true false or");
     ASSERT_TRUE(AtData<bool>(0));
-    
+
     _data->Clear();
     _console.Execute("true not");
     ASSERT_FALSE(AtData<bool>(0));
-    
+
     // Test complex logical expressions
     _data->Clear();
     _console.Execute("true false or true and");
     ASSERT_TRUE(AtData<bool>(0));
-    
+
     _data->Clear();
     _console.Execute("false true and true or");
     ASSERT_TRUE(AtData<bool>(0));
@@ -320,40 +321,41 @@ TEST_F(TestPiAdvanced2, TestLogicalOperators) {
 // Test 10: Comparison Operators
 TEST_F(TestPiAdvanced2, TestComparisonOperators) {
     _console.SetLanguage(Language::Pi);
-    
+
     // Test equality
     _data->Clear();
     _console.Execute("5 5 ==");
     ASSERT_TRUE(AtData<bool>(0));
-    
+
     _data->Clear();
     _console.Execute("5 6 ==");
     ASSERT_FALSE(AtData<bool>(0));
-    
+
     // Test not equal (using not with ==)
     _data->Clear();
     _console.Execute("5 6 == not");
     ASSERT_TRUE(AtData<bool>(0));
-    
+
     // Test other comparison operators if available
     try {
         _data->Clear();
         _console.Execute("5 6 <");  // 5 < 6
         ASSERT_TRUE(AtData<bool>(0));
-        
+
         _data->Clear();
         _console.Execute("6 5 >");  // 6 > 5
         ASSERT_TRUE(AtData<bool>(0));
     } catch (const std::exception& e) {
         // Some comparison operators might not be implemented in Pi
-        std::cout << "Skipping some comparison operators, not implemented: " << e.what() << std::endl;
+        std::cout << "Skipping some comparison operators, not implemented: "
+                  << e.what() << std::endl;
     }
-    
+
     // Test string comparisons
     _data->Clear();
     _console.Execute("\"abc\" \"abc\" ==");
     ASSERT_TRUE(AtData<bool>(0));
-    
+
     _data->Clear();
     _console.Execute("\"abc\" \"def\" ==");
     ASSERT_FALSE(AtData<bool>(0));
@@ -362,37 +364,35 @@ TEST_F(TestPiAdvanced2, TestComparisonOperators) {
 // Test 11: Script Execution Context
 TEST_F(TestPiAdvanced2, TestScriptExecutionContext) {
     _console.SetLanguage(Language::Pi);
-    
+
     // Test script-level variable assignment and retrieval
     _data->Clear();
     _console.Execute("10 'global_var # global_var @");
     ASSERT_EQ(AtData<int>(0), 10);
-    
+
     // Test local scope within continuations
     _data->Clear();
     _console.Execute(
         "10 'outer # "
         "{ 20 'inner # "
-        "  inner @ "   // Push inner var value
-        "  outer @ "   // Push outer var value
-        "} &"
-    );
+        "  inner @ "  // Push inner var value
+        "  outer @ "  // Push outer var value
+        "} &");
     ASSERT_EQ(_data->Size(), 2);
     ASSERT_EQ(AtData<int>(0), 10);  // outer var (last on stack)
     ASSERT_EQ(AtData<int>(1), 20);  // inner var
-    
+
     // Test that variables persist after continuation execution
     _data->Clear();
     _console.Execute("outer @");  // This should retrieve the outer variable
     ASSERT_EQ(AtData<int>(0), 10);
-    
+
     // Test nested continuations and scoping
     _data->Clear();
     _console.Execute(
         "{ 1 'x # "
         "  { 2 'y # x @ y @ + } & "
-        "} &"
-    );
+        "} &");
     ASSERT_EQ(AtData<int>(0), 3);  // 1 + 2 = 3
 }
 

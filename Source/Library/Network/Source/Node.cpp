@@ -3,10 +3,10 @@
 #include <iostream>
 
 #include "KAI/Network/ConnectionManager.h"
+#include "KAI/Network/NetworkLogger.h"
 #include "KAI/Network/PeerDiscovery.h"
 #include "KAI/Network/RakNetStub.h"
 #include "KAI/Network/Serialization.h"
-#include "KAI/Network/NetworkLogger.h"
 
 KAI_NET_BEGIN
 
@@ -26,7 +26,7 @@ Node::Node() : _peer(nullptr), _isRunning(false) {
 
     // Create the peer discovery component
     _peerDiscovery = std::make_unique<PeerDiscovery>(_peer);
-    
+
     // Initialize NetworkLogger
     NetworkLogger::Init();
 }
@@ -41,9 +41,7 @@ Node::~Node() {
     }
 }
 
-void Node::Listen(int port) {
-    Listen(IpAddress("0.0.0.0"), port);
-}
+void Node::Listen(int port) { Listen(IpAddress("0.0.0.0"), port); }
 
 void Node::Listen(IpAddress const &address, int port) {
     if (!_peer) return;
@@ -53,7 +51,8 @@ void Node::Listen(IpAddress const &address, int port) {
     RakNet::StartupResult result = _peer->Startup(32, &sd, 1);
 
     if (result != RakNet::RAKNET_STARTED) {
-        std::string errorMsg = "Failed to start RakNet server, error code: " + std::to_string(result);
+        std::string errorMsg = "Failed to start RakNet server, error code: " +
+                               std::to_string(result);
         std::cerr << errorMsg << std::endl;
         NetworkLogger::LogStatus(errorMsg);
         return;
@@ -63,7 +62,8 @@ void Node::Listen(IpAddress const &address, int port) {
     _isRunning = true;
 
     // Log that we're listening
-    std::string logMessage = "Network node listening on " + address.ToString() + ":" + std::to_string(port);
+    std::string logMessage = "Network node listening on " + address.ToString() +
+                             ":" + std::to_string(port);
     std::cout << logMessage << std::endl;
     NetworkLogger::LogStatus(logMessage);
 }
@@ -77,7 +77,9 @@ void Node::Connect(IpAddress const &ip, int port) {
         RakNet::StartupResult result = _peer->Startup(32, &sd, 1);
 
         if (result != RakNet::RAKNET_STARTED) {
-            std::string errorMsg = "Failed to start RakNet client, error code: " + std::to_string(result);
+            std::string errorMsg =
+                "Failed to start RakNet client, error code: " +
+                std::to_string(result);
             std::cerr << errorMsg << std::endl;
             NetworkLogger::LogStatus(errorMsg);
             return;
@@ -91,14 +93,16 @@ void Node::Connect(IpAddress const &ip, int port) {
         _peer->Connect(ip.ToString().c_str(), port, nullptr, 0);
 
     if (result != RakNet::CONNECTION_ATTEMPT_STARTED) {
-        std::string errorMsg = "Failed to connect to " + ip.ToString() + ":" + std::to_string(port) + 
-                              ", error code: " + std::to_string(result);
+        std::string errorMsg = "Failed to connect to " + ip.ToString() + ":" +
+                               std::to_string(port) +
+                               ", error code: " + std::to_string(result);
         std::cerr << errorMsg << std::endl;
         NetworkLogger::LogStatus(errorMsg);
         return;
     }
 
-    std::string logMessage = "Connecting to " + ip.ToString() + ":" + std::to_string(port);
+    std::string logMessage =
+        "Connecting to " + ip.ToString() + ":" + std::to_string(port);
     std::cout << logMessage << std::endl;
     NetworkLogger::LogConnection(logMessage);
 }
@@ -118,7 +122,7 @@ void Node::Disconnect() {
     }
 
     _isRunning = false;
-    
+
     NetworkLogger::LogStatus("Node disconnected from all peers");
 }
 
@@ -128,7 +132,7 @@ void Node::Shutdown() {
 
     // Disconnect from all peers
     Disconnect();
-    
+
     NetworkLogger::LogStatus("Node shutdown complete");
 }
 
@@ -161,7 +165,8 @@ bool Node::Update() {
 void Node::StartDiscovery(int discoveryPort) {
     if (_peerDiscovery) {
         _peerDiscovery->Start(discoveryPort);
-        NetworkLogger::LogDiscovery("Node started peer discovery on port " + std::to_string(discoveryPort));
+        NetworkLogger::LogDiscovery("Node started peer discovery on port " +
+                                    std::to_string(discoveryPort));
     }
 }
 
@@ -177,7 +182,8 @@ bool Node::IsDiscovering() const {
 }
 
 std::vector<RakNet::SystemAddress> Node::GetDiscoveredPeers() const {
-    return _peerDiscovery ? _peerDiscovery->GetDiscoveredPeers() : std::vector<RakNet::SystemAddress>();
+    return _peerDiscovery ? _peerDiscovery->GetDiscoveredPeers()
+                          : std::vector<RakNet::SystemAddress>();
 }
 
 void Node::SetPeerDiscoveryCallback(
@@ -217,9 +223,9 @@ size_t Node::GetConnectionCount() const {
 int Node::GetPing(const IpAddress &address, int port) const {
     if (!_peer || !_connectionManager) return -1;
 
-    RakNet::SystemAddress systemAddr = 
+    RakNet::SystemAddress systemAddr =
         RakNet::SystemAddress(address.ToString().c_str(), port);
-    
+
     return _peer->GetAveragePing(systemAddr);
 }
 
@@ -264,8 +270,8 @@ void Node::ProcessPacket(RakNet::Packet *packet) {
             break;
     }
 
-    std::string logMessage = "Received packet of type '" + packetType + "' from " + 
-                            packet->systemAddress.ToString();
+    std::string logMessage = "Received packet of type '" + packetType +
+                             "' from " + packet->systemAddress.ToString();
     NetworkLogger::LogMessage(logMessage);
 
     // Update connection activity
@@ -344,7 +350,8 @@ void Node::ProcessPacket(RakNet::Packet *packet) {
 
 void Node::ProcessObjectMessage(RakNet::Packet *packet) {
     // TODO: Implement object message processing
-    NetworkLogger::LogMessage("Processing object message (not yet implemented)");
+    NetworkLogger::LogMessage(
+        "Processing object message (not yet implemented)");
 }
 
 void Node::ProcessFunctionCall(RakNet::Packet *packet) {
@@ -354,7 +361,8 @@ void Node::ProcessFunctionCall(RakNet::Packet *packet) {
 
 void Node::ProcessEventNotification(RakNet::Packet *packet) {
     // TODO: Implement event notification processing
-    NetworkLogger::LogMessage("Processing event notification (not yet implemented)");
+    NetworkLogger::LogMessage(
+        "Processing event notification (not yet implemented)");
 }
 
 void Node::OnConnectionEvent(int connectionId, ConnectionEvent event) {
@@ -380,11 +388,12 @@ void Node::OnConnectionEvent(int connectionId, ConnectionEvent event) {
             eventType = "Unknown";
             break;
     }
-    
-    std::string logMessage = "Connection event: " + eventType + 
-                            " for connection ID " + std::to_string(connectionId);
+
+    std::string logMessage = "Connection event: " + eventType +
+                             " for connection ID " +
+                             std::to_string(connectionId);
     NetworkLogger::LogConnection(logMessage);
-    
+
     // TODO: Implement connection event handling
 }
 

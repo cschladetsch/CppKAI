@@ -1,6 +1,7 @@
-#include "../../Include/TestLangCommon.h"
 #include <iostream>
 #include <sstream>
+
+#include "../../Include/TestLangCommon.h"
 
 KAI_BEGIN
 
@@ -82,16 +83,15 @@ TEST_F(TestLangCommon, ForLoopSemicolonsSyntax) {
 
         // Success if we get here (all assertions passed)
         std::cout << "ForLoopSemicolonsSyntax test passed!" << std::endl;
-    }
-    catch (const Exception::Base& e) {
+    } catch (const Exception::Base& e) {
         std::cerr << "KAI Exception: " << e.ToString() << std::endl;
-        FAIL() << "ForLoopSemicolonsSyntax test failed with KAI exception: " << e.ToString();
-    }
-    catch (const std::exception& e) {
+        FAIL() << "ForLoopSemicolonsSyntax test failed with KAI exception: "
+               << e.ToString();
+    } catch (const std::exception& e) {
         std::cerr << "Standard exception: " << e.what() << std::endl;
-        FAIL() << "ForLoopSemicolonsSyntax test failed with exception: " << e.what();
-    }
-    catch (...) {
+        FAIL() << "ForLoopSemicolonsSyntax test failed with exception: "
+               << e.what();
+    } catch (...) {
         std::cerr << "Unknown exception" << std::endl;
         FAIL() << "ForLoopSemicolonsSyntax test failed with unknown exception";
     }
@@ -143,18 +143,18 @@ TEST_F(TestLangCommon, ForLoopFormattingVariations) {
 
         // Success if we get here (all assertions passed)
         std::cout << "ForLoopFormattingVariations test passed!" << std::endl;
-    }
-    catch (const Exception::Base& e) {
+    } catch (const Exception::Base& e) {
         std::cerr << "KAI Exception: " << e.ToString() << std::endl;
-        FAIL() << "ForLoopFormattingVariations test failed with KAI exception: " << e.ToString();
-    }
-    catch (const std::exception& e) {
+        FAIL() << "ForLoopFormattingVariations test failed with KAI exception: "
+               << e.ToString();
+    } catch (const std::exception& e) {
         std::cerr << "Standard exception: " << e.what() << std::endl;
-        FAIL() << "ForLoopFormattingVariations test failed with exception: " << e.what();
-    }
-    catch (...) {
+        FAIL() << "ForLoopFormattingVariations test failed with exception: "
+               << e.what();
+    } catch (...) {
         std::cerr << "Unknown exception" << std::endl;
-        FAIL() << "ForLoopFormattingVariations test failed with unknown exception";
+        FAIL()
+            << "ForLoopFormattingVariations test failed with unknown exception";
     }
 }
 

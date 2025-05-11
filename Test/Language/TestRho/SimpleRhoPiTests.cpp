@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include <iostream>
 #include <string>
 
@@ -19,13 +20,13 @@ using namespace std;
 TEST(RhoPiBasic, Addition) {
     Console console;
     console.SetLanguage(Language::Pi);
-    
+
     Registry& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
-    
+
     // Test addition
     stack->Clear();
     console.Execute("2 3 +");
@@ -38,13 +39,13 @@ TEST(RhoPiBasic, Addition) {
 TEST(RhoPiBasic, Subtraction) {
     Console console;
     console.SetLanguage(Language::Pi);
-    
+
     Registry& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
-    
+
     // Test subtraction
     stack->Clear();
     console.Execute("10 4 -");
@@ -57,13 +58,13 @@ TEST(RhoPiBasic, Subtraction) {
 TEST(RhoPiBasic, Multiplication) {
     Console console;
     console.SetLanguage(Language::Pi);
-    
+
     Registry& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
-    
+
     // Test multiplication
     stack->Clear();
     console.Execute("6 7 *");
@@ -95,13 +96,13 @@ TEST(RhoPiBasic, AnotherAddition) {
 TEST(RhoPiBasic, ComplexExpression) {
     Console console;
     console.SetLanguage(Language::Pi);
-    
+
     Registry& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
-    
+
     // (6 + 4) * 2
     stack->Clear();
     console.Execute("6 4 + 2 *");
@@ -114,16 +115,16 @@ TEST(RhoPiBasic, ComplexExpression) {
 TEST(RhoPiBasic, StackOperations) {
     Console console;
     console.SetLanguage(Language::Pi);
-    
+
     Registry& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
-    
+
     // Test dup (duplicate top stack item)
     stack->Clear();
-    console.Execute("5 dup + "); // 5 5 +
+    console.Execute("5 dup + ");  // 5 5 +
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 10);
@@ -142,24 +143,25 @@ TEST(RhoPiBasic, StackManipulation) {
 
     // Test swap (swap top two stack items)
     stack->Clear();
-    console.Execute("3 4 swap -"); // 4 3 -
+    console.Execute("3 4 swap -");  // 4 3 -
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
-    ASSERT_EQ(ConstDeref<int>(stack->Top()), 1); // The actual result is 1 (3-4=-1, but 4-3=1)
+    ASSERT_EQ(ConstDeref<int>(stack->Top()),
+              1);  // The actual result is 1 (3-4=-1, but 4-3=1)
 }
 
 // Test 8: Comparison Operations with Pi
 TEST(RhoPiBasic, ComparisonOperations) {
     Console console;
     console.SetLanguage(Language::Pi);
-    
+
     Registry& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
-    
+
     // Test greater than
     stack->Clear();
     console.Execute("10 5 >");
@@ -172,16 +174,16 @@ TEST(RhoPiBasic, ComparisonOperations) {
 TEST(RhoPiBasic, FunctionCompilation) {
     Console console;
     console.SetLanguage(Language::Pi);
-    
+
     Registry& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
-    
+
     // Simple Pi function to double a number: x -> x*2
     stack->Clear();
-    console.Execute("{ dup + }"); // Creates a function object on the stack
+    console.Execute("{ dup + }");  // Creates a function object on the stack
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<Continuation>());
 }
@@ -190,13 +192,13 @@ TEST(RhoPiBasic, FunctionCompilation) {
 TEST(RhoPiBasic, StringSupport) {
     Console console;
     console.SetLanguage(Language::Pi);
-    
+
     Registry& reg = console.GetRegistry();
     reg.AddClass<String>(Label("String"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
-    
+
     // Test string creation
     stack->Clear();
     console.Execute("\"Hello World\"");

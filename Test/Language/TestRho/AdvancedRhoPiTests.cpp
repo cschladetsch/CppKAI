@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include <iostream>
 #include <string>
 
@@ -253,7 +254,7 @@ TEST(RhoPiAdvanced, FunctionWithParameters) {
     console.Execute("{ dup * } 5 swap call");
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
-    ASSERT_EQ(ConstDeref<int>(stack->Top()), 25); // 5 squared = 25
+    ASSERT_EQ(ConstDeref<int>(stack->Top()), 25);  // 5 squared = 25
 }
 
 // Test 10: Store and retrieve variable

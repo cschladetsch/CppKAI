@@ -9,9 +9,9 @@ using namespace std;
 
 KAI_BEGIN
 
-void RhoTranslator::TranslateToken(AstNodePtr node)
-{
-    KAI_TRACE() << "TranslateToken: " << RhoTokenEnumType::ToString(node->GetToken().type);
+void RhoTranslator::TranslateToken(AstNodePtr node) {
+    KAI_TRACE() << "TranslateToken: "
+                << RhoTokenEnumType::ToString(node->GetToken().type);
     KAI_TRACE() << "TranslateToken with text: " << node->Text();
 
     switch (node->GetToken().type) {
@@ -170,8 +170,7 @@ void RhoTranslator::TranslateToken(AstNodePtr node)
     KAI_NOT_IMPLEMENTED();
 }
 
-void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op)
-{
+void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
     KAI_TRACE() << "TranslateBinaryOp: Operation=" << Operation::ToString(op);
 
     TranslateNode(node->GetChild(0));
@@ -205,15 +204,15 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op)
 //     AppendNew(Pathname(move(elements)));
 // }
 
-void RhoTranslator::TranslateNode(AstNodePtr node)
-{
+void RhoTranslator::TranslateNode(AstNodePtr node) {
     if (!node) {
         Failed = true;
         return;
     }
 
-    KAI_TRACE() << "TranslateNode: Type=" << RhoAstNodeEnumType::ToString(node->GetType())
-               << " Text=" << node->Text();
+    KAI_TRACE() << "TranslateNode: Type="
+                << RhoAstNodeEnumType::ToString(node->GetType())
+                << " Text=" << node->Text();
 
     switch (node->GetType()) {
         case AstEnum::Pathname:
@@ -238,7 +237,8 @@ void RhoTranslator::TranslateNode(AstNodePtr node)
             try {
                 // Basic validation
                 if (node->GetChildren().size() < 2) {
-                    KAI_TRACE_ERROR() << "Assignment node has fewer than 2 children";
+                    KAI_TRACE_ERROR()
+                        << "Assignment node has fewer than 2 children";
                     Fail("Assignment node has fewer than 2 children");
                     return;
                 }
@@ -252,13 +252,12 @@ void RhoTranslator::TranslateNode(AstNodePtr node)
                 // Add the store operation
                 AppendOp(Operation::Store);
 
-                KAI_TRACE() << "Completed assignment translation without Continuations";
-            }
-            catch (const std::exception& e) {
+                KAI_TRACE()
+                    << "Completed assignment translation without Continuations";
+            } catch (const std::exception &e) {
                 KAI_TRACE_ERROR() << "Exception in assignment: " << e.what();
                 Fail(std::string("Assignment failed: ") + e.what());
-            }
-            catch (...) {
+            } catch (...) {
                 KAI_TRACE_ERROR() << "Unknown exception in assignment";
                 Fail("Assignment failed with unknown exception");
             }
@@ -301,13 +300,11 @@ void RhoTranslator::TranslateNode(AstNodePtr node)
     KAI_NOT_IMPLEMENTED();
 }
 
-void RhoTranslator::TranslateBlock(AstNodePtr node)
-{
+void RhoTranslator::TranslateBlock(AstNodePtr node) {
     for (auto st : node->GetChildren()) TranslateNode(st);
 }
 
-void RhoTranslator::TranslateFunction(AstNodePtr node)
-{
+void RhoTranslator::TranslateFunction(AstNodePtr node) {
     // child 0: ident
     // child 1: args
     // child 2: block
@@ -353,14 +350,14 @@ void RhoTranslator::TranslateFunction(AstNodePtr node)
         cont->AddArg(Label(a->GetTokenText()));
     }
 
-    // Write the name and store in this sequence: function object, function name, Store
+    // Write the name and store in this sequence: function object, function
+    // name, Store
     Append(cont);
     Append(New<Label>(Label(ch[0]->Text())));
     AppendOp(Operation::Store);
 }
 
-void RhoTranslator::TranslateCall(AstNodePtr node)
-{
+void RhoTranslator::TranslateCall(AstNodePtr node) {
     KAI_TRACE() << "Translating call";
 
     typename AstNode::ChildrenType const &children = node->GetChildren();
@@ -371,7 +368,8 @@ void RhoTranslator::TranslateCall(AstNodePtr node)
     TranslateNode(children[0]);
 
     Operation::Type callOp;
-    if (children.size() > 2 && children[2]->GetToken().type == TokenEnum::Replace) {
+    if (children.size() > 2 &&
+        children[2]->GetToken().type == TokenEnum::Replace) {
         callOp = Operation::Replace;
     } else {
         callOp = Operation::Suspend;
@@ -382,14 +380,14 @@ void RhoTranslator::TranslateCall(AstNodePtr node)
     KAI_TRACE() << "Completed call translation";
 }
 
-void RhoTranslator::TranslateIf(AstNodePtr node)
-{
+void RhoTranslator::TranslateIf(AstNodePtr node) {
     KAI_TRACE() << "Translating if statement";
 
     typename AstNode::ChildrenType const &ch = node->GetChildren();
     bool hasElse = ch.size() > 2;
 
-    // For if statements in Pi, we need to create continuations for then and else blocks
+    // For if statements in Pi, we need to create continuations for then and
+    // else blocks
     Pointer<Continuation> thenCont = _reg->New<Continuation>();
     thenCont->SetCode(_reg->New<Array>());
 
@@ -430,8 +428,7 @@ void RhoTranslator::TranslateIf(AstNodePtr node)
     KAI_TRACE() << "Completed if statement translation";
 }
 
-void RhoTranslator::TranslateWhile(AstNodePtr node)
-{
+void RhoTranslator::TranslateWhile(AstNodePtr node) {
     try {
         KAI_TRACE() << "Translating while loop";
 
@@ -480,19 +477,16 @@ void RhoTranslator::TranslateWhile(AstNodePtr node)
         AppendOp(Operation::WhileLoop);
 
         KAI_TRACE() << "While loop translation complete";
-    }
-    catch (std::exception &e) {
+    } catch (std::exception &e) {
         KAI_TRACE_ERROR() << "Exception in TranslateWhile: " << e.what();
         Fail(std::string("Exception in TranslateWhile: ") + e.what());
-    }
-    catch (...) {
+    } catch (...) {
         KAI_TRACE_ERROR() << "Unknown exception in TranslateWhile";
         Fail("Unknown exception in TranslateWhile");
     }
 }
 
-void RhoTranslator::TranslateDoWhile(AstNodePtr node)
-{
+void RhoTranslator::TranslateDoWhile(AstNodePtr node) {
     try {
         KAI_TRACE() << "Translating do-while loop";
 
@@ -507,8 +501,8 @@ void RhoTranslator::TranslateDoWhile(AstNodePtr node)
         AstNodePtr body = node->GetChild(0);
         AstNodePtr condition = node->GetChild(1);
 
-        // For do-while loops in Pi, we need continuations for condition and body
-        // First create condition continuation
+        // For do-while loops in Pi, we need continuations for condition and
+        // body First create condition continuation
         Pointer<Continuation> condCont = _reg->New<Continuation>();
         condCont->SetCode(_reg->New<Array>());
 
@@ -535,16 +529,15 @@ void RhoTranslator::TranslateDoWhile(AstNodePtr node)
         AppendOp(Operation::DoLoop);
 
         KAI_TRACE() << "Do-while loop translation complete";
-    }
-    catch (kai::Exception::Base &e) {
-        KAI_TRACE_ERROR() << "KAI Exception in TranslateDoWhile: " << e.ToString();
-        Fail(std::string("Exception in TranslateDoWhile: ") + e.ToString().c_str());
-    }
-    catch (std::exception &e) {
+    } catch (kai::Exception::Base &e) {
+        KAI_TRACE_ERROR() << "KAI Exception in TranslateDoWhile: "
+                          << e.ToString();
+        Fail(std::string("Exception in TranslateDoWhile: ") +
+             e.ToString().c_str());
+    } catch (std::exception &e) {
         KAI_TRACE_ERROR() << "Exception in TranslateDoWhile: " << e.what();
         Fail(std::string("Exception in TranslateDoWhile: ") + e.what());
-    }
-    catch (...) {
+    } catch (...) {
         KAI_TRACE_ERROR() << "Unknown exception in TranslateDoWhile";
         Fail("Unknown exception in TranslateDoWhile");
     }

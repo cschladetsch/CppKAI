@@ -60,8 +60,7 @@ bool RhoParser::Program() {
     while (!Try(TokenType::None) && !Failed) {
         // Skip any newlines between statements
         while (Try(TokenType::NewLine)) {
-            std::cout << "RhoParser::Program - Skipping newline"
-                      << std::endl;
+            std::cout << "RhoParser::Program - Skipping newline" << std::endl;
             Consume();
         }
 
@@ -244,15 +243,17 @@ bool RhoParser::Statement(AstNodePtr block) {
         }
 
         case TokenType::DoWhile: {
-            std::cout << "RhoParser::Statement - Processing Do-While loop" << std::endl;
+            std::cout << "RhoParser::Statement - Processing Do-While loop"
+                      << std::endl;
 
-            // Use the proper DoWhileLoop function to parse the do-while statement
+            // Use the proper DoWhileLoop function to parse the do-while
+            // statement
             if (!DoWhileLoop(block)) {
                 return false;
             }
 
-            // After handling a do-while loop, there may be an optional semicolon
-            // Rho doesn't use semicolons
+            // After handling a do-while loop, there may be an optional
+            // semicolon Rho doesn't use semicolons
             return true;
         }
 
@@ -536,7 +537,7 @@ bool RhoParser::IfCondition(AstNodePtr block) {
     if (Try(TokenType::Else)) {
         Consume();
 
-            // Expect newline after else
+        // Expect newline after else
         if (!Try(TokenType::NewLine)) {
             return CreateError("Expected newline after else");
         }
@@ -656,13 +657,15 @@ bool RhoParser::DoWhileLoop(AstNodePtr block) {
 
     // Debug current token
     if (current < tokens.size()) {
-        KAI_TRACE() << "Next token after whitespace: " << TokenEnumType::ToString(Current().type);
+        KAI_TRACE() << "Next token after whitespace: "
+                    << TokenEnumType::ToString(Current().type);
     }
 
     // Check for the 'while' token
     if (current >= tokens.size() || !Try(TokenType::While)) {
         if (current < tokens.size()) {
-            KAI_TRACE_ERROR() << "Expected 'while', got: " << TokenEnumType::ToString(Current().type);
+            KAI_TRACE_ERROR() << "Expected 'while', got: "
+                              << TokenEnumType::ToString(Current().type);
         } else {
             KAI_TRACE_ERROR() << "Expected 'while', but reached end of tokens";
         }
@@ -693,14 +696,16 @@ bool RhoParser::DoWhileLoop(AstNodePtr block) {
     auto condition = Pop();
 
     if (!condition) {
-        return CreateError("Failed to parse condition expression for do-while loop");
+        return CreateError(
+            "Failed to parse condition expression for do-while loop");
     }
 
     // If we had opening parenthesis, expect a closing one
     if (hasParentheses) {
         ConsumeWhitespace();
         if (!Try(TokenType::CloseParan)) {
-            return CreateError("Expected closing parenthesis after do-while condition");
+            return CreateError(
+                "Expected closing parenthesis after do-while condition");
         }
         Consume();
     }
@@ -720,7 +725,8 @@ bool RhoParser::DoWhileLoop(AstNodePtr block) {
         return CreateError("Failed to add condition to do-while node");
     }
 
-    KAI_TRACE() << "Do-while node created with " << (int)doWhileNode->GetChildren().size() << " children";
+    KAI_TRACE() << "Do-while node created with "
+                << (int)doWhileNode->GetChildren().size() << " children";
 
     // Add the whole do-while construct to the block
     if (!block->Add(doWhileNode)) {
@@ -733,7 +739,8 @@ bool RhoParser::DoWhileLoop(AstNodePtr block) {
 
 void RhoParser::ConsumeWhitespace() {
     // Skip any whitespace, tabs, or newlines
-    while (Try(TokenType::Tab) || Try(TokenType::Whitespace) || Try(TokenType::NewLine)) {
+    while (Try(TokenType::Tab) || Try(TokenType::Whitespace) ||
+           Try(TokenType::NewLine)) {
         Consume();
     }
 }

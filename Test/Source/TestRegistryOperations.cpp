@@ -4,7 +4,7 @@ USING_NAMESPACE_KAI
 
 // Registry tests for operations on existing classes
 struct TestRegistryOperations : TestCommon {
-protected:
+   protected:
     void AddRequiredClasses() override {
         Reg().AddClass<bool>();
         Reg().AddClass<int>();
@@ -43,7 +43,8 @@ TEST_F(TestRegistryOperations, TestObjectResolution) {
     Pointer<int> obj = Reg().New<int>();
     *obj = 123;
 
-    // Name and add to root - ensure we use the same type of label for Set and Get
+    // Name and add to root - ensure we use the same type of label for Set and
+    // Get
     Label label("testObject");
     Root().Set(label, obj);
 

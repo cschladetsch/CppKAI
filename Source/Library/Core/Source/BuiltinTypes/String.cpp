@@ -34,8 +34,7 @@ bool String::Contains(String const &substr) const {
 }
 
 bool String::StartsWith(String const &prefix) const {
-    if (prefix._string.size() > _string.size())
-        return false;
+    if (prefix._string.size() > _string.size()) return false;
     return _string.compare(0, prefix._string.size(), prefix._string) == 0;
 }
 
@@ -59,10 +58,9 @@ void String::RemoveAll(String const &what) {
 }
 
 bool String::EndsWith(String const &suffix) const {
-    if (suffix._string.size() > _string.size())
-        return false;
+    if (suffix._string.size() > _string.size()) return false;
     return _string.compare(_string.size() - suffix._string.size(),
-                         suffix._string.size(), suffix._string) == 0;
+                           suffix._string.size(), suffix._string) == 0;
 }
 
 BinaryStream &operator<<(BinaryStream &S, const String &T) {

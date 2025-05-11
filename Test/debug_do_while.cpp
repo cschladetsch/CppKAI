@@ -1,11 +1,11 @@
 #include <iostream>
-#include <string>
 #include <memory>
+#include <string>
 
-#include "KAI/KAI.h"
 #include "KAI/Core/Console.h"
-#include "KAI/Language/Rho/RhoTranslator.h"
 #include "KAI/Core/File.h"
+#include "KAI/KAI.h"
+#include "KAI/Language/Rho/RhoTranslator.h"
 
 using namespace kai;
 using namespace std;
@@ -26,7 +26,7 @@ int main() {
 
     try {
         // Try a simple do-while loop
-        const char* script = 
+        const char* script =
             "i = 0\n"
             "do\n"
             "    i = i + 1\n"
@@ -34,22 +34,19 @@ int main() {
 
         cout << "Executing script:\n" << script << endl;
         console.Execute(script);
-        
+
         // Print the value of i after execution
         int i = ConstDeref<int>(console.GetRegistry().GetGlobal(Label("i")));
         cout << "Final value of i: " << i << endl;
-        
+
         cout << "Execution succeeded!" << endl;
-    }
-    catch (const Exception::Base& e) {
+    } catch (const Exception::Base& e) {
         cerr << "KAI Exception: " << e.ToString() << endl;
         return 1;
-    }
-    catch (const std::exception& e) {
+    } catch (const std::exception& e) {
         cerr << "Standard Exception: " << e.what() << endl;
         return 2;
-    }
-    catch (...) {
+    } catch (...) {
         cerr << "Unknown Exception" << endl;
         return 3;
     }

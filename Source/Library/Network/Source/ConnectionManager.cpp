@@ -3,8 +3,8 @@
 #include <iostream>
 
 #include "KAI/Network/ConnectionEvent.h"
-#include "KAI/Network/RakNetStub.h"
 #include "KAI/Network/NetworkLogger.h"
+#include "KAI/Network/RakNetStub.h"
 
 KAI_NET_BEGIN
 
@@ -46,7 +46,8 @@ ConnectionManager::ConnectionId ConnectionManager::AddConnection(
     _addressToId[addrStr] = id;
 
     // Create log message and log it
-    std::string logMessage = "Added connection " + std::to_string(id) + " for " + addrStr;
+    std::string logMessage =
+        "Added connection " + std::to_string(id) + " for " + addrStr;
     std::cout << logMessage << std::endl;
     NetworkLogger::LogConnection(logMessage);
 
@@ -110,10 +111,11 @@ void ConnectionManager::Update() {
 
     // Remove timed out connections
     for (auto id : timedOutConnections) {
-        std::string logMessage = "Connection " + std::to_string(id) + " timed out";
+        std::string logMessage =
+            "Connection " + std::to_string(id) + " timed out";
         std::cout << logMessage << std::endl;
         NetworkLogger::LogConnection(logMessage);
-        
+
         RemoveConnection(id);
     }
 }
@@ -133,8 +135,7 @@ void ConnectionManager::UpdateActivity(const RakNet::SystemAddress& address) {
     }
 }
 
-ConnectionState ConnectionManager::GetConnectionState(
-    ConnectionId id) const {
+ConnectionState ConnectionManager::GetConnectionState(ConnectionId id) const {
     auto it = _connections.find(id);
     if (it != _connections.end()) {
         return it->second.state;
@@ -142,22 +143,34 @@ ConnectionState ConnectionManager::GetConnectionState(
     return ConnectionState::Disconnected;
 }
 
-void ConnectionManager::SetConnectionState(ConnectionId id, ConnectionState state) {
+void ConnectionManager::SetConnectionState(ConnectionId id,
+                                           ConnectionState state) {
     auto it = _connections.find(id);
     if (it != _connections.end()) {
         it->second.state = state;
-        
+
         // Log the state change
         std::string stateStr;
         switch (state) {
-            case ConnectionState::Connected: stateStr = "Connected"; break;
-            case ConnectionState::Connecting: stateStr = "Connecting"; break;
-            case ConnectionState::Disconnected: stateStr = "Disconnected"; break;
-            case ConnectionState::Failed: stateStr = "Failed"; break;
-            default: stateStr = "Unknown"; break;
+            case ConnectionState::Connected:
+                stateStr = "Connected";
+                break;
+            case ConnectionState::Connecting:
+                stateStr = "Connecting";
+                break;
+            case ConnectionState::Disconnected:
+                stateStr = "Disconnected";
+                break;
+            case ConnectionState::Failed:
+                stateStr = "Failed";
+                break;
+            default:
+                stateStr = "Unknown";
+                break;
         }
-        
-        std::string logMessage = "Connection " + std::to_string(id) + " state changed to " + stateStr;
+
+        std::string logMessage = "Connection " + std::to_string(id) +
+                                 " state changed to " + stateStr;
         NetworkLogger::LogConnection(logMessage);
     }
 }
