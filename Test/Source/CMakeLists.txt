@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.6)
 
+# Original KaiTest target
 set(name KaiTest)
 project(${name})
 set(source_path ${TEST_HOME}/Source)
@@ -17,9 +18,41 @@ list(APPEND sources ${TEST_HOME}/Common/TestCommon.cpp)
 list(APPEND sources ${TEST_HOME}/Common/MyTestStruct.cpp)
 
 include_directories(${header_path})
-link_libraries(Executor Core PiLang RhoLang TauLang Network ${GTEST_BOTH_LIBRARIES} ${Boost_LIBRARIES} gtest_main)
+link_libraries(Executor Core PiLang RhoLang TauLang ${GTEST_BOTH_LIBRARIES} ${Boost_LIBRARIES} gtest_main)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${BIN_HOME}/Test")
 add_executable(${name} ${sources})
-#cotire(${name})
 
+# New TestCore target - just core functionality tests
+set(core_name TestCore)
+project(${core_name})
 
+# Core test files - explicitly listing to avoid network tests and problematic TestAdditionalCore.cpp
+set(core_sources
+    ${source_path}/Main.cpp
+    ${source_path}/TestBasePointer.cpp
+    ${source_path}/TestBinaryStream.cpp
+    ${source_path}/TestClassScripting.cpp
+    ${source_path}/TestContainer/TestList.cpp
+    ${source_path}/TestContainer/TestMap.cpp
+    ${source_path}/TestContainer/TestSet.cpp
+    ${source_path}/TestContainer/TestStack.cpp
+    ${source_path}/TestContainer/TestVector.cpp
+    ${source_path}/TestDebugTrace.cpp
+    ${source_path}/TestDotGraph.cpp
+    ${source_path}/TestEvents.cpp
+    ${source_path}/TestFunction.cpp
+    ${source_path}/TestGarbageCollection.cpp
+    ${source_path}/TestPathname.cpp
+    ${source_path}/TestString.cpp
+    ${source_path}/TestStringStream.cpp
+    # New additional tests
+    ${source_path}/TestAdditionalStringOps.cpp
+    ${source_path}/TestRegistryOperations.cpp
+)
+
+# Add common test files
+list(APPEND core_sources ${TEST_HOME}/Common/TestCommon.cpp)
+list(APPEND core_sources ${TEST_HOME}/Common/MyTestStruct.cpp)
+
+add_executable(${core_name} ${core_sources})
+target_link_libraries(${core_name} Executor Core PiLang RhoLang TauLang ${GTEST_BOTH_LIBRARIES} ${Boost_LIBRARIES} gtest_main)

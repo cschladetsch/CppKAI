@@ -29,27 +29,41 @@ String String::Capitalise() const {
     KAI_NOT_IMPLEMENTED();
 }
 
-bool String::Contains(String const &) const { KAI_NOT_IMPLEMENTED(); }
+bool String::Contains(String const &substr) const {
+    return _string.find(substr._string) != std::string::npos;
+}
 
-bool String::StartsWith(String const &) const { KAI_NOT_IMPLEMENTED(); }
+bool String::StartsWith(String const &prefix) const {
+    if (prefix._string.size() > _string.size())
+        return false;
+    return _string.compare(0, prefix._string.size(), prefix._string) == 0;
+}
 
 void String::ReplaceFirst(String const &what, String const &with) {
-    KAI_UNUSED_2(what, with);
-    KAI_NOT_IMPLEMENTED();
+    size_t pos = _string.find(what._string);
+    if (pos != std::string::npos)
+        _string.replace(pos, what._string.length(), with._string);
 }
 
 void String::ReplaceLast(String const &what, String const &with) {
-    KAI_UNUSED_2(what, with);
-    KAI_NOT_IMPLEMENTED();
+    size_t pos = _string.rfind(what._string);
+    if (pos != std::string::npos)
+        _string.replace(pos, what._string.length(), with._string);
 }
 
 void String::RemoveAll(String const &what) {
-    KAI_UNUSED(what);
-    KAI_NOT_IMPLEMENTED();
-    // boost::algorithm::erase_all(*this, what);
+    size_t pos = 0;
+    while ((pos = _string.find(what._string, pos)) != std::string::npos) {
+        _string.erase(pos, what._string.length());
+    }
 }
 
-bool String::EndsWith(String const &) const { KAI_NOT_IMPLEMENTED(); }
+bool String::EndsWith(String const &suffix) const {
+    if (suffix._string.size() > _string.size())
+        return false;
+    return _string.compare(_string.size() - suffix._string.size(),
+                         suffix._string.size(), suffix._string) == 0;
+}
 
 BinaryStream &operator<<(BinaryStream &S, const String &T) {
     int length = T.Size();
