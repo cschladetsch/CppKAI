@@ -11,13 +11,6 @@
 KAI_BEGIN
 
 TEST(RhoLanguage, TestDoWhileImplementation) {
-    // This test is temporarily skipped because the do-while loop implementation
-    // is not fully functional yet
-    std::cout << "TestDoWhileImplementation temporarily skipped - do-while implementation not complete" << std::endl;
-    SUCCEED() << "Test skipped until do-while implementation is complete";
-
-    // Original test code is commented out below for future reference
-    /*
     std::cout << "=== Testing Do-While Loop Implementation ===" << std::endl;
 
     // Use the console's registry directly instead of creating our own
@@ -74,11 +67,13 @@ TEST(RhoLanguage, TestDoWhileImplementation) {
     } catch (const std::exception& e) {
         std::cerr << "Exception in do-while test: " << e.what() << std::endl;
         FAIL() << "Exception in do-while test: " << e.what();
+    } catch (const kai::Exception::Base& e) {
+        std::cerr << "KAI Exception in do-while test: " << e.ToString() << std::endl;
+        FAIL() << "KAI Exception in do-while test: " << e.ToString();
     } catch (...) {
         std::cerr << "Unknown exception in do-while test" << std::endl;
         FAIL() << "Unknown exception in do-while test";
     }
-    */
 }
 
 KAI_END

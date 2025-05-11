@@ -644,36 +644,38 @@ bool RhoParser::DoWhileLoop(AstNodePtr block) {
     auto bodyClause = NewNode(NodeType::Block);
 
     // Use the Block method for indented code blocks
-    std::cout << "RhoParser::DoWhileLoop - Using Block for body"
-              << std::endl;
+    std::cout << "RhoParser::DoWhileLoop - Using Block for body" << std::endl;
     if (!Block(bodyClause)) {
         return CreateError("Block Expected for do-while body");
     }
 
     // After the body, expect 'while' keyword
-    // For indentation-based syntax, consume any indentation before checking for 'while'
-    int level = 0;
-    // Count and consume any tabs before the 'while' token
-    while (Try(TokenType::Tab)) {
-        ++level;
+    // For indentation-based syntax, match the indentation level of the 'do' statement
+    std::cout << "RhoParser::DoWhileLoop - Looking for 'while' token" << std::endl;
+
+    // Skip any whitespace before the while token
+    while (Try(TokenType::Tab) || Try(TokenType::Whitespace)) {
         Consume();
     }
 
-    // If we're at a newline after tabs, consume it and look for while token
+    // If we're at a newline, consume it and any following whitespace
     if (Try(TokenType::NewLine)) {
         Consume();
-        // Count and consume any tabs again after the newline
-        level = 0;
-        while (Try(TokenType::Tab)) {
-            ++level;
+        while (Try(TokenType::Tab) || Try(TokenType::Whitespace)) {
             Consume();
         }
     }
 
-    std::cout << "RhoParser::DoWhileLoop - After indentation, current token: "
+    // Add additional debugging here to show what we're about to process
+    std::cout << "RhoParser::DoWhileLoop - Next token after any whitespace: "
               << (current < tokens.size() ? TokenEnumType::ToString(Current().type) : "end of tokens")
               << std::endl;
 
+    std::cout << "RhoParser::DoWhileLoop - After whitespace, current token: "
+              << (current < tokens.size() ? TokenEnumType::ToString(Current().type) : "end of tokens")
+              << std::endl;
+
+    // Check for the 'while' token
     if (current >= tokens.size() || !Try(TokenType::While)) {
         if (current < tokens.size()) {
             std::cout
@@ -691,31 +693,46 @@ bool RhoParser::DoWhileLoop(AstNodePtr block) {
               << std::endl;
     Consume();
 
-    // Create a separate AST node for the condition
-    auto condNode = NewNode(NodeType::None);
-    Push(condNode); // Push condition node to be populated by Expression
-
-    std::cout << "RhoParser::DoWhileLoop - Parsing condition expression"
-              << std::endl;
-
-    // Parse the condition expression
+    // Parse the condition expression directly
+    std::cout << "RhoParser::DoWhileLoop - Parsing condition expression" << std::endl;
     if (!Expression()) {
         return CreateError("Do-while what? Expected condition expression");
     }
 
-    // Get the populated condition node
+    // Get the condition expression
     auto condition = Pop();
+
+    if (!condition) {
+        return CreateError("Failed to parse condition expression for do-while loop");
+    }
+
+    std::cout << "RhoParser::DoWhileLoop - Successfully parsed condition" << std::endl;
 
     // Create the DoWhile node
     std::cout << "RhoParser::DoWhileLoop - Creating DoWhile node" << std::endl;
     auto doWhileNode = NewNode(NodeType::DoWhile);
 
-    // Add body followed by condition (order is important)
-    doWhileNode->Add(bodyClause);
-    doWhileNode->Add(condition);
+    // Add body and condition to the do-while node (order matters!)
+    if (!doWhileNode->Add(bodyClause)) {
+        return CreateError("Failed to add body clause to do-while node");
+    }
+
+    if (!doWhileNode->Add(condition)) {
+        return CreateError("Failed to add condition to do-while node");
+    }
+
+    std::cout << "RhoParser::DoWhileLoop - Do-while node created successfully with "
+              << doWhileNode->GetChildren().size() << " children" << std::endl;
 
     // Add the whole do-while construct to the block
-    return block->Add(doWhileNode);
+    if (!block->Add(doWhileNode)) {
+        return CreateError("Failed to add do-while node to parent block");
+    }
+
+    std::cout << "RhoParser::DoWhileLoop - Do-while construct added to block successfully"
+              << std::endl;
+
+    return true;
 }
 
 bool RhoParser::AddBlock(AstNodePtr fun) {

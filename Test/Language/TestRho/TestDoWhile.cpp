@@ -11,12 +11,6 @@ using namespace std;
 
 // Convert to a test instead of a standalone main function
 TEST(RhoLanguage, TestDoWhileLoops) {
-    // This test is temporarily skipped because the do-while loop implementation
-    // is not fully functional yet
-    std::cout << "TestDoWhileLoops temporarily skipped - do-while implementation not complete" << std::endl;
-    SUCCEED() << "Test skipped until do-while implementation is complete";
-
-    /* Original test code commented out for future reference
     // Initialize console
     Console console;
     console.SetLanguage(Language::Rho);
@@ -72,5 +66,4 @@ TEST(RhoLanguage, TestDoWhileLoops) {
         cerr << "Unknown exception" << endl;
         FAIL() << "Unknown exception";
     }
-    */
 }

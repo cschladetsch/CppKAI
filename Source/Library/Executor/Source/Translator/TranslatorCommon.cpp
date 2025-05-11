@@ -1,6 +1,7 @@
 #include <KAI/Core/Config/Base.h>
 #include <KAI/Core/Registry.h>
 #include <KAI/Language/Common/TranslatorCommon.h>
+#include <iostream>
 
 KAI_BEGIN
 
@@ -11,6 +12,7 @@ void TranslatorCommon::Append(Object const &ob) {
 }
 
 void TranslatorCommon::AppendOp(Operation::Type op) {
+    std::cout << "Appending operation: " << Operation::ToString(op) << std::endl;
     AppendNew(Operation(op));
 }
 

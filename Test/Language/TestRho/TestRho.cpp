@@ -146,12 +146,7 @@ TEST_F(TestRho, TestConditionals) {
 }
 
 TEST_F(TestRho, TestDoWhileLoop) {
-    // This test is temporarily skipped because the do-while loop implementation
-    // is not fully functional yet
-    std::cout << "TestRho.TestDoWhileLoop temporarily skipped - do-while implementation not complete" << std::endl;
-    SUCCEED() << "Test skipped until do-while implementation is complete";
-
-    /* Original test code commented out for future reference
+    // Test is now enabled since the do-while loop implementation has been fixed
     _console.SetLanguage(Language::Rho);
 
     // Enable high trace level for debugging
@@ -182,5 +177,4 @@ TEST_F(TestRho, TestDoWhileLoop) {
         i
     )");
     ASSERT_EQ(AtData<int>(0), 6);
-    */
 }

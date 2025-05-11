@@ -424,7 +424,7 @@ void RhoTranslator::TranslateWhile(AstNodePtr node) {
 }
 
 void RhoTranslator::TranslateDoWhile(AstNodePtr node) {
-    // Implementation for do-while loops
+    // Implementation for do-while loops with improved error handling and robustness
     try {
         KAI_TRACE() << "---------------------------------------------";
         KAI_TRACE() << "Starting translation of do-while loop with enhanced debugging";
@@ -446,27 +446,36 @@ void RhoTranslator::TranslateDoWhile(AstNodePtr node) {
         KAI_TRACE() << "Body node type: " << RhoAstNodeEnumType::ToString(body->GetType());
         KAI_TRACE() << "Condition node type: " << RhoAstNodeEnumType::ToString(condition->GetType());
 
-        // Instead of creating continuations separately and translating nodes into them,
-        // we'll create the continuations directly during translation
+        // Use the same approach as in TranslateWhile but with reversed continuation order
 
-        // 1. Create and translate the body continuation
-        KAI_TRACE() << "Creating and translating body continuation";
-        PushNew(); // Start a new code section for body
-        TranslateNode(body);
-        auto bodyCont = Pop(); // Get the body continuation
-        KAI_TRACE() << "Body continuation created";
-
-        // 2. Create and translate the condition continuation
-        KAI_TRACE() << "Creating and translating condition continuation";
-        PushNew(); // Start a new code section for condition
+        // 1. Create and translate the condition continuation
+        KAI_TRACE() << "Creating condition continuation";
+        PushNew();
         TranslateNode(condition);
-        auto condCont = Pop(); // Get the condition continuation
-        KAI_TRACE() << "Condition continuation created";
+        Pointer<Continuation> condCont = Pop();
 
-        // 3. Add body and condition continuations to the current code array
-        // Push body continuation then condition continuation (order matters for do-while)
-        KAI_TRACE() << "Adding continuations to the stack";
+        // 2. Create and translate the body continuation
+        KAI_TRACE() << "Creating body continuation";
+        PushNew();
+        TranslateNode(body);
+        Pointer<Continuation> bodyCont = Pop();
+
+        // 3. Push the continuations in the correct order for a do-while loop
+        // First body, then condition - exactly the reverse of a while loop
+        KAI_TRACE() << "Adding body continuation to result";
+        if (stack.empty()) {
+            KAI_TRACE_ERROR() << "Stack is empty when adding body continuation";
+            Fail("Stack is empty when adding body continuation");
+            return;
+        }
+
+        // Stack should already have a continuation on top
+        // Append continuation directly to the array
+        std::cout << "Appending body continuation with address: " << &bodyCont << std::endl;
         Append(bodyCont);
+
+        KAI_TRACE() << "Adding condition continuation to result";
+        std::cout << "Appending condition continuation with address: " << &condCont << std::endl;
         Append(condCont);
 
         // 4. Add DoLoop operation
@@ -475,6 +484,9 @@ void RhoTranslator::TranslateDoWhile(AstNodePtr node) {
 
         KAI_TRACE() << "Successfully completed do-while translation";
         KAI_TRACE() << "---------------------------------------------";
+    } catch (kai::Exception::Base &e) {
+        KAI_TRACE_ERROR() << "KAI Exception in TranslateDoWhile: " << e.ToString();
+        Fail(std::string("Exception in TranslateDoWhile: ") + e.ToString().c_str());
     } catch (std::exception &e) {
         KAI_TRACE_ERROR() << "Exception in TranslateDoWhile: " << e.what();
         Fail(std::string("Exception in TranslateDoWhile: ") + e.what());

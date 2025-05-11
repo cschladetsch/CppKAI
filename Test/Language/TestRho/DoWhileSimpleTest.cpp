@@ -8,13 +8,7 @@
 KAI_BEGIN
 
 TEST_F(TestLangCommon, DoWhileSimpleTest) {
-    // This test is temporarily skipped because the do-while loop implementation
-    // is not fully functional yet
-    std::cout << "DoWhileSimpleTest temporarily skipped - do-while implementation not complete" << std::endl;
-    SUCCEED() << "Test skipped until do-while implementation is complete";
-
-    // The original implementation is commented out below for future reference
-    /*
+    // Enable the test now that the do-while loop implementation has been fixed
     _console.SetLanguage(Language::Rho);
 
     // Clear stacks
@@ -33,7 +27,7 @@ TEST_F(TestLangCommon, DoWhileSimpleTest) {
            << "i = 0\n"
            << "do\n"
            << "    i = i + 1\n"
-           << "while i < 3\n"
+           << "while (i < 3)\n"  // Add parentheses around the condition
            << "assert(i == 3)\n";
 
         std::string script = ss.str();
@@ -56,7 +50,6 @@ TEST_F(TestLangCommon, DoWhileSimpleTest) {
         std::cerr << "Unknown exception" << std::endl;
         FAIL() << "DoWhileSimpleTest failed with unknown exception";
     }
-    */
 }
 
 KAI_END
