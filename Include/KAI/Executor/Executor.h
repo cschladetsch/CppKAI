@@ -26,6 +26,7 @@ struct Executor : Reflected {
     void Continue(Value<Continuation>);
     void ContinueOnly(Value<Continuation> C);
     void Continue();
+    // No need for language-specific methods - Executor only executes Pi
 
     Object GetCompiler() const { return _compiler; }
     void SetCompiler(Object c) { _compiler = c; }
@@ -51,6 +52,9 @@ struct Executor : Reflected {
 
     void SetTraceLevel(int);
     int GetTraceLevel() const;
+
+    // Executor only handles Pi language operations
+    // No need for language-specific methods
 
     template <class T>
     void Push(const Value<T> &val) {
@@ -152,6 +156,7 @@ struct Executor : Reflected {
     Tree *_tree;
     int _traceLevel;
     int _stepNumber;
+    // Executor only handles Pi language operations
 };
 
 StringStream &operator<<(StringStream &, Executor const &);
