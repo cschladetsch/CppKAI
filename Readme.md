@@ -45,6 +45,15 @@ Currently supported platforms are:
 
 You can create and connect Kai nodes on different machines, swap and monitor workloads, and remote manage all nodes in the system.
 
+## Build System
+
+KAI supports multiple build systems:
+
+1. **CMake/Make** - Traditional build system (use `./r` script)
+2. **Ninja** - Faster build system with better incremental builds (use `./n` script)
+
+For more information on using the Ninja build system, see [Ninja Build Guide](ninja_build_guide.md).
+
 Kai comes with distributed tri-color garbage collection. It is incremental; there are no spikes in cost for the GC over time. It is smooth, and allows for a constant update loop times even with tens of thousands of objects, and with hundreds of objects being created each frame on the compute power of a gaming console from 2012.
 
 There is also an Interface Definition Language (IDL) called ***Tau***, which is used to generate code for proxies and agents in the system.

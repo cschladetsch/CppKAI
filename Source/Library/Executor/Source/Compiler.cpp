@@ -64,25 +64,6 @@ void Compiler::SetLanguage(int n) { _language = static_cast<Language>(n); }
 
 int Compiler::GetLanguage() const { return static_cast<int>(_language); }
 
-StringStream &operator<<(StringStream &S, Operation const &P) {
-    return S << P.ToString();
-}
-
-StringStream &operator>>(StringStream &, Operation &) { KAI_NOT_IMPLEMENTED(); }
-
-BinaryStream &operator<<(BinaryStream &S, Operation const &P) {
-    return S << (int)(P.GetTypeNumber());
-}
-
-BinaryStream &operator>>(BinaryStream &S, Operation &P) {
-    int val;
-    S >> val;
-    P.SetType(Operation::Type(val));
-    return S;
-}
-
-void Operation::Register(Registry &R) {
-    ClassBuilder<Operation>(R, "Operation");
-}
+// Operator definitions moved to Operation.cpp
 
 KAI_END

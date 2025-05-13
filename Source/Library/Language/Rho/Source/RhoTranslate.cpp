@@ -57,9 +57,9 @@ Pointer<Continuation> RhoTranslator::Translate(const char *text, Structure st) {
 
     auto cont = Pop();
     
-    // For Rho, we want to make sure the cont we return has the type
-    // information that indicates it's a Rho source, not a generic continuation
-    cont->SetProperty("Language", "Rho");
+    // Note: We're not setting Language properties anymore since they're not registered
+    // in the Continuation class. Language context is now handled in Console.cpp.
+    // cont.SetPropertyValue(Label("Language"), _reg->New<String>("Rho"));
     
     return cont;
 }

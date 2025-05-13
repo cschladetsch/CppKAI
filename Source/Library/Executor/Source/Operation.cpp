@@ -1,4 +1,6 @@
 #include "KAI/Executor/Operation.h"
+#include "KAI/Core/BinaryStream.h" // Include the full implementation of BinaryStream
+#include "KAI/Core/Object/ClassBuilder.h" // Include ClassBuilder for Register function
 
 KAI_BEGIN
 
@@ -136,5 +138,36 @@ const char *Operation::ToString(int value) {
 }
 
 char const *Operation::ToString() const { return Operation::ToString(value); }
+
+void Operation::Register(Registry &registry) {
+    ClassBuilder<Operation>(registry, "Operation");
+}
+
+KAI_END
+
+// Implement streaming operators for Operation - these must be outside the namespace
+KAI_BEGIN
+
+BinaryStream &operator<<(BinaryStream &stream, const Operation &op) {
+    return stream << (int)op.GetTypeNumber();
+}
+
+BinaryStream &operator>>(BinaryStream &stream, Operation &op) {
+    // Use the template method from BinaryPacket which is inherited by BinaryStream
+    int val;
+    stream.BinaryPacket::Read(val);
+    op.SetType((Operation::Type)val);
+    return stream;
+}
+
+StringStream &operator<<(StringStream &stream, const Operation &op) {
+    return stream << op.ToString();
+}
+
+StringStream &operator>>(StringStream &stream, Operation &op) {
+    // Cannot deserialize from string
+    // This is a stub implementation just to satisfy the compiler
+    return stream;
+}
 
 KAI_END

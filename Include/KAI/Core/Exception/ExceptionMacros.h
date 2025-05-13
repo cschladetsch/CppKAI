@@ -9,7 +9,8 @@ KAI_BEGIN
 #define KAI_FUNCTION_NAME \
     KAI_NAMESPACE(FileLocation)(
 
-#ifdef KAI_USE_EXCEPTIONS
+// Always define exception macros, regardless of KAI_USE_EXCEPTIONS
+// This ensures that all code that uses these macros will compile
 
 #define KAI_RETHROW() throw;
 
@@ -43,6 +44,5 @@ KAI_BEGIN
 #define KAI_CATCH_IGNORE(TYPE) catch (TYPE &)
 
 #define KAI_CATCH_ALL() catch (...)
-#endif
 
 KAI_END

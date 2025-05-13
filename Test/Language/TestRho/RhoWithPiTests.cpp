@@ -187,9 +187,15 @@ TEST(RhoPiWorkaround, ArrayOperations) {
     // Create an array [1, 2, 3]
     stack->Clear();
     auto array = reg.New<Array>();
-    array->Append(reg.New(1));
-    array->Append(reg.New(2));
-    array->Append(reg.New(3));
+    
+    // Use GetStorageBase first, then cast appropriately
+    StorageBase &storage = array.GetStorageBase();
+    Array &arrayRef = static_cast<Storage<Array>&>(storage).GetReference();
+    
+    // Use reference instead of pointer
+    arrayRef.Append(reg.New(1));
+    arrayRef.Append(reg.New(2));
+    arrayRef.Append(reg.New(3));
     stack->Push(array);
     ASSERT_TRUE(stack->Top().IsType<Array>());
 

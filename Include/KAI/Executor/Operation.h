@@ -189,4 +189,10 @@ struct Operation {
 KAI_TYPE_TRAITS(Operation, Number::Operation,
                 Properties::Streaming | Properties::Assign);
 
+// Add streaming operators for Operation
+BinaryStream &operator<<(BinaryStream &, const Operation &);
+BinaryStream &operator>>(BinaryStream &, Operation &);
+StringStream &operator<<(StringStream &, const Operation &);
+StringStream &operator>>(StringStream &, Operation &);
+
 KAI_END
