@@ -1,4 +1,4 @@
-# Kai ![Foo](Doc/swords.jpg)
+# Kai ![Logo](Doc/swords.jpg)
 [![Build status](https://ci.appveyor.com/api/projects/status/github/cschladetsch/kai?svg=true)](https://ci.appveyor.com/project/cschladetsch/kai)
 [![CodeFactor](https://www.codefactor.io/repository/github/cschladetsch/kai/badge)](https://www.codefactor.io/repository/github/cschladetsch/kai)
 [![License](https://img.shields.io/github/license/cschladetsch/flow.svg?label=License&maxAge=86400)](./LICENSE.txt)
@@ -17,72 +17,102 @@ If a node is over-loaded, it can push it's load out to other peers in the *Domai
 
 This is all done via distributed object model, and a few languages.
 
-### Heart of the System :heart:
+## Key Features 🔑
+
+- **Zero-Macro Reflection**: Expose C++ types and methods to scripting without macros or source modifications
+- **Distributed Computing**: Share both data and computation across networked nodes
+- **Multiple Languages**: Use Pi (stack-based), Rho (infix), or Tau (IDL) as needed
+- **Type Safety**: Full type checking across network boundaries
+- **Incremental GC**: Smooth, constant-time garbage collection with no spikes
+- **Cross-Platform**: Works on Windows, Linux, macOS, and Unity3D
+- **Network Transparent**: Access remote objects as if they were local
+- **Dynamic Load Balancing**: Automatically distribute workload across network nodes
+
+## Heart of the System :heart:
 At the heart of KAI are three things: A Registry, A Domain, and some Languages.
 
-* Registry. A statically-typesafe over-the-wire object factory.
-* Domain. A Local Registry that is part of the larger Newtork. Objects in a Domain are in a Registry that is qualified by the Guid of that domain.
-* Languages:
-  * Pi. Is RPN and is the base language.
-  * Rho. Is like Python but has native support for continuations in its syntax. It transposes to Pi.
-  * Tau. Is the Interface Definition Language (IDL) than is shared between nodes. In theory, it could produce code for any language.
+* **Registry**: A statically-typesafe over-the-wire object factory.
+* **Domain**: A Local Registry that is part of the larger Network. Objects in a Domain are in a Registry that is qualified by the Guid of that domain.
+* **Languages**:
+  * **Pi**: A stack-based RPN language that forms the foundation of execution.
+  * **Rho**: A Python-like infix language with native continuations and Pi code embedding.
+  * **Tau**: The Interface Definition Language (IDL) used to define network-distributed components.
 
 For a comprehensive overview of KAI's language system, see the [Language Guide](Doc/LanguageGuide.md) and the [Common Language System Architecture](Doc/CommonLanguageSystem.md).
 
-## Pi
+## Languages
+
+### Pi
 [Pi](Source/Library/Language/Pi) (see [Tests](Test/Language/TestPi) and [Tests Scripts](Test/Language/TestPi/Scripts)) is heavily influenced by [Forth](https://en.wikipedia.org/wiki/Forth_(programming_language)). It has two directly interactable stacks: one for data, and one for context. The data stack is used for operations (as is the context stack), but the context stack tells the machine `where to go next`. This is used to create the idea of a co-routine, which is then pushed up to Rho.
+
+```pi
+// Pi example: A function that squares its input
+{ dup * } 'square #  // Define a function that squares its input
+5 square @           // Retrieve the function
+&                    // Execute the function
+```
 
 For a comprehensive guide on using Pi, see the [Pi Language Tutorial](Doc/PiTutorial.md).
 
-## Rho
+### Rho
 [Rho](Source/Library/Language/Rho) (see [Tests](Test/Language/TestRho) and [Tests Scripts](Test/Language/TestRho/Scripts)), is an infix language much like Python, LUA or Ruby, but with native continuations and the ability to inject Pi code as any factor in an expression.
+
+```rho
+// Rho example: Same functionality as the Pi example above
+fun square(x) {
+    return x * x
+}
+result = square(5)  // result is 25
+```
 
 The general idea has always been to move algorithms around the network, as well as data. In this manner, *real* load-balancing can be conducted.
 
 For a comprehensive guide on using Rho, see the [Rho Language Tutorial](Doc/RhoTutorial.md).
 
-## Tau
+### Tau
 [Tau](Source/Library/Language/Tau) is the Interface Definition Language (IDL) used in KAI to define how components communicate across the network. It enables seamless cross-network communication while maintaining type safety and versioning.
+
+```tau
+// Tau example: Defining a network service interface
+namespace Calculation {
+    interface ICalculator {
+        int Add(int a, int b);
+        int Subtract(int a, int b);
+        float Divide(float a, float b) throws DivideByZeroException;
+    }
+    
+    service CalculatorService {
+        implements ICalculator;
+        version = "1.0";
+        discoverable = true;
+    }
+}
+```
 
 For a comprehensive guide on using Tau, see the [Tau Language Tutorial](Doc/TauTutorial.md).
 
 ## Platforms
 Currently supported platforms are:
 
-1. **Windows 10** (VS 2017-19)
-1. **Linux** (Ubuntu)
-1. **macOS** (Sierra)
-1. **Unity3d** (2017+)
+1. **Windows 10/11** (VS 2017-22)
+2. **Linux** (Ubuntu, Debian)
+3. **macOS** (Sierra and newer)
+4. **Unity3d** (2017+)
 
 You can create and connect Kai nodes on different machines, swap and monitor workloads, and remote manage all nodes in the system.
 
-## Build System
+## Getting Started 🚀
 
-KAI supports multiple build systems:
+### Prerequisites
 
-1. **CMake/Make** - Traditional build system (use `./r` script)
-2. **Ninja** - Faster build system with better incremental builds (use `./n` script)
-
-For more information on using the Ninja build system, see [Ninja Build Guide](ninja_build_guide.md).
-
-Kai comes with distributed tri-color garbage collection. It is incremental; there are no spikes in cost for the GC over time. It is smooth, and allows for a constant update loop times even with tens of thousands of objects, and with hundreds of objects being created each frame on the compute power of a gaming console from 2012.
-
-There is also an Interface Definition Language (IDL) called ***Tau***, which is used to generate code for proxies and agents in the system.
-
-Refer to the [Language Systems](Include/KAI/Language) and [implementation](Source/Library).
-
-## Building :zap:
-
-Prerequisites:
-
-* A modern C++ compiler.
-* [Cmake](https://cmake.org/install/).
+* A modern C++ compiler (C++14 or newer)
+* [Cmake](https://cmake.org/install/) (3.15+)
 
 ```bash
 $ sudo apt-get install cmake
 ```
 
-* [Boost](https://www.boost.org/). The specific packages required are `filesystem`, `chrono`, `programoptions`, `date-time` and `regex`.
+* [Boost](https://www.boost.org/) libraries: `filesystem`, `chrono`, `programoptions`, `date-time` and `regex`.
 
 ```bash
 $ sudo apt-get install libboost-filesystem-dev libboost-chrono-dev libboost-regex-dev libboost-program-options-dev libboost-date-time-dev
@@ -120,44 +150,24 @@ You can also specify a particular compiler:
 cmake .. -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -G Ninja && ninja
 ```
 
-## Console
+## Architecture Overview 🏗️
 
-The basic [Console](Source/App/Console) supports both Pi and Rho as a Repl shell. It works and colored on Windows, Linux, and macOs. The following is just a basic look at the shell.
+### Registry
+The Registry is a type-safe object factory that:
+- Manages type information for the system
+- Creates and destroys objects
+- Enables runtime reflection
+- Provides serialization and deserialization
+- Maintains object relationships
 
-![Image](Images/BasicConsole.png)
-
-### Window
-There is also a [Gui](/Source/App/Window) based on imgui.
-
-## Examples
-Basic C++/runtime interaction. First, see [Sample use of non-POD structure](Test/Source/TestClassScripting.cpp). Note that to be used by KAI, the target struct or class has no conceptual or practical requirements. Specifically, it doesn't have to derive from anything and there are no macros used to expose fields or methods:
-
-Part of the output is:
-
-```
-[----------] 1 test from TestClassScripting
-[ RUN      ] TestClassScripting.Test
-Info: mystruct.ToXmlString()='
-<Object type='MyStruct' name=''> <!-- no name because structure is not in a dictionary -->
-  <Property name='num'>42>/Property>
-  <Property name='string'>Freddy</Property>
-</Object>
-'
-
-Info: stream.ToString()='Handle=55, type=MyStruct '
-Info: binary_stream='BinaryStream: size=32'
+```cpp
+// C++ example of using the Registry
+Registry reg;
+reg.AddClass<Vector3>("Vector3");
+Object vec = reg.New<Vector3>(1.0f, 2.0f, 3.0f);
 ```
 
-After building, you can run the the tests yourself in ```Bin/Test/KaiTest.exe```. (Or without the `.exe` on Linux of macOS of course).
-
-Start withe the [Unit Tests](Test) then have a look at the [Applications](Source/App).
-
-## Networking
-The entire motivation for KAI was to allow for efficient, low-latency and correct networking of object state and command execution (which results in state changes!) across a group of Objects in a Registry, a group of Registries in a Domain, and across a group of Domains in a Network System.
-
-Read more about Kai [object and compuational distribution](Networking.md).
-
-## Executor
+### Executor
 A general-purpose stack-based virtual machine with a clean architecture. The Executor follows a separation of concerns design:
 
 1. **Console** handles user interaction and passes input to the Translator
@@ -172,55 +182,116 @@ Stack operations like Dup, Swap, Drop, and Over manipulate the data stack, while
 
 For debugging purposes, the Executor includes extensive tracing capabilities that can log each operation's effect on the stacks.
 
-## Logging System
-KAI includes a comprehensive logging system that captures debug traces, network events, and application messages:
+### Network System
+The network system enables distributed computing by:
+- Distributing objects across nodes
+- Synchronizing state changes
+- Transferring computation between nodes
+- Managing load balancing
+- Handling node discovery and connection
 
-* **Centralized Storage**: All logs are written to the `/Logs` directory for easy access and management.
-* **Log Categorization**: Logs are separated by type and component for better organization:
-  * Core system logs (debug, info, warning, error, fatal)
-  * Network-specific logs (connections, messages, discovery events, status updates)
-* **Timestamp Integration**: All log entries include timestamps for precise event tracking.
-* **Console Mirroring**: Important log messages are also displayed in the console with color coding.
+### Memory Management
+KAI uses a tri-color incremental garbage collector that:
+- Runs in small, constant-time increments
+- Avoids collection spikes
+- Works across network boundaries
+- Preserves object relationships
+- Handles cycles correctly
 
-The logging system is used throughout KAI to track system events, diagnose issues, and monitor network activity. This is especially useful when running distributed computations across multiple nodes.
+## Applications
 
-## Folder Structure
-* *Bin*. Where to write executable output files.
-* *CMake*. Auxiliary CMake modules, primarily for finding other projects and libraries like Boost and Google Test.
-* *Doc*. Generated documentation.
-* *Ext*. External dependencies, primarily as _git submodules_.
-* *Include*. Root of the global include path. Add this to your compiler's include path.
-* *Lib*. Location for built static and dynamic library files. Also add this this to your compilers library path.
-* *Logs*. Directory for all system logs including debug traces, network events, and application logs.
-* *Source*. The root for the source code of the project.
-* *Test*. Unit tests. Output goes to *Bin/Tests*.
+### Console
 
-## Interesting Files and locations
-* The Test scripts for [Pi](Test/Language/TestPi/Scripts) shows the basics of pi.
-* Similarly, the test scripts for [Rho](Test/Language/TestRho/Scripts) show that it's a minimalist Python-like system. Note That Rho translates to pi, and Pi transcribes very efficiently from either text or binary.
-* The top-level [Include folder](Include/KAI) and [Source Folder](Source).
-* [Installation](Install.md). Some information on how to install and build the system.
-* [Tests](Test/Readme.md). Describes the Google Tests that indicate what doesn't currently work.
-* The [top level CMake file](CMakeLists.txt).
+The basic [Console](Source/App/Console) supports both Pi and Rho as a Repl shell. It works with color on Windows, Linux, and macOS. The following is just a basic look at the shell.
 
-## Installing and Running
-See [Install.md](Install.md) for installation instructions.
+![Console Screenshot](Images/BasicConsole.png)
 
-The project will build using _CMake_ via _Visual Studio 2019_. No more mucking around with various *nix shells on Windows.
+```
+$ ./Console
+KAI Console v1.0
+Language: Pi> 2 3 +
+5
+Language: Pi> :rho
+Language: Rho> x = 10
+Language: Rho> y = 20
+Language: Rho> x + y
+30
+```
 
-Your safest first bet is to build the *Console* app. This gives you a *Pi* Repl console.
+### GUI Application
 
-_RakNet_ is integrated but needs some work to get back to connecting to remote nodes etc., due to recent changes in *Raknet*. This is a top priority.
+There is also a [GUI application](/Source/App/Window) based on Dear ImGui, providing:
+- Syntax highlighted code editing
+- Visual stack inspection
+- Network monitoring
+- Object browser
+- Performance metrics
 
-_KAI_ has various dependencies, but can be built with many sub-sets. That is, if you don't want to use [ImGui](https://github.com/ocornut/imgui) you can stick with text-based (colored) [Console](Source/App/Console).
+![GUI Screenshot](Images/Gui.jpg)
 
-Feel free to contact [me](matilto:christian.schladetsch@gmail.com) with any questions about building or use of the system.
+## Advanced Features
 
-## Distributed Iteration with AcrossAllNodes
+### Exposing C++ Classes
+
+KAI allows exposing any C++ class to the runtime without modifying its source:
+
+```cpp
+// Define a regular C++ class (no base classes or macros needed)
+class Vector3 {
+public:
+    float x, y, z;
+    
+    Vector3(float _x = 0, float _y = 0, float _z = 0) 
+        : x(_x), y(_y), z(_z) {}
+        
+    float Length() const { 
+        return std::sqrt(x*x + y*y + z*z); 
+    }
+    
+    Vector3 Normalize() const {
+        float len = Length();
+        if (len == 0) return *this;
+        return Vector3(x/len, y/len, z/len);
+    }
+};
+
+// Register with KAI (typically done once at startup)
+void RegisterVector3(Registry& registry) {
+    ClassBuilder<Vector3> builder(registry, "Vector3");
+    
+    // Expose properties
+    builder.Property("x", &Vector3::x);
+    builder.Property("y", &Vector3::y);
+    builder.Property("z", &Vector3::z);
+    
+    // Expose methods
+    builder.Method("Length", &Vector3::Length);
+    builder.Method("Normalize", &Vector3::Normalize);
+    
+    // Register the constructor
+    builder.Constructor<float, float, float>();
+}
+```
+
+Now Vector3 can be used from any KAI language:
+
+```rho
+// Create a Vector3 in Rho
+v = Vector3(1, 2, 3)
+
+// Call methods
+length = v.Length()
+normalized = v.Normalize()
+
+// Access properties
+v.x = 5
+```
+
+### Distributed Iteration with AcrossAllNodes
 
 One of the most powerful features of KAI is its ability to distribute both computation and data across network nodes. The `AcrossAllNodes` operation exemplifies this capability by enabling distributed parallel iteration over collections.
 
-### How It Works
+#### How It Works
 
 `AcrossAllNodes` enables the distribution of iteration tasks across multiple network nodes. It takes three arguments:
 
@@ -230,7 +301,7 @@ One of the most powerful features of KAI is its ability to distribute both compu
 
 The operation then distributes the workload across connected network peers, collects the results, and returns them as a new collection.
 
-### Example in Rho
+#### Example in Rho
 
 ```rho
 // Create a network node
@@ -266,66 +337,7 @@ print("Computation completed in " + (end - start) + "ms")
 print("First few results: " + results[0:5])
 ```
 
-### Demo Interaction
-
-Here's an example of what a session might look like when using the distributed iteration feature:
-
-```
-> // Create a network node and connect to peers
-> node = createNetworkNode()
-Node(5c7a8b4d-e9f0-4a2d-9c7b-8a5d3e6f2c1a)
-
-> node.listen(14589)
-Listening on port 14589...
-
-> node.connect("192.168.1.10", 14589)
-Connected to peer at 192.168.1.10:14589
-
-> node.connect("192.168.1.11", 14589)
-Connected to peer at 192.168.1.11:14589
-
-> // Create test data
-> data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-
-> // Define a function to square numbers
-> fun square(x) { x * x }
-<Function:square>
-
-> // Run the calculation locally
-> start = currentTimeMillis()
-1683042851342
-
-> result1 = acrossAllNodes(null, data, square)
-[1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
-
-> end = currentTimeMillis()
-1683042851345
-
-> print("Local execution took " + (end - start) + "ms")
-Local execution took 3ms
-
-> // Run the calculation distributed across the network
-> start = currentTimeMillis()
-1683042851350
-
-> result2 = acrossAllNodes(node, data, square)
-[1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
-
-> end = currentTimeMillis()
-1683042851352
-
-> print("Network execution took " + (end - start) + "ms")
-Network execution took 2ms
-
-> // Verify results are identical
-> result1 == result2
-true
-```
-
-For small calculations on a simple array like this, the performance difference is minimal. However, for large datasets and computationally intensive operations, the network distribution can provide significant speedups by leveraging the computational power of multiple machines.
-
-### Supported Collection Types
+#### Supported Collection Types
 
 `AcrossAllNodes` supports the following collection types:
 
@@ -334,7 +346,7 @@ For small calculations on a simple array like this, the performance difference i
 - **Map**: Distributes map entries as key-value pairs across network nodes
 - **String**: Treats the string as a collection of characters to process individually
 
-### Advanced Features
+#### Advanced Features
 
 When a network node is provided, the `AcrossAllNodes` operation:
 
@@ -346,17 +358,105 @@ When a network node is provided, the `AcrossAllNodes` operation:
 
 This enables true distributed parallel processing with minimal developer effort.
 
+## Debugging and Monitoring
+
+### Logging System
+KAI includes a comprehensive logging system that captures debug traces, network events, and application messages:
+
+* **Centralized Storage**: All logs are written to the `/Logs` directory for easy access and management.
+* **Log Categorization**: Logs are separated by type and component for better organization:
+  * Core system logs (debug, info, warning, error, fatal)
+  * Network-specific logs (connections, messages, discovery events, status updates)
+* **Timestamp Integration**: All log entries include timestamps for precise event tracking.
+* **Console Mirroring**: Important log messages are also displayed in the console with color coding.
+
+The logging system is used throughout KAI to track system events, diagnose issues, and monitor network activity. This is especially useful when running distributed computations across multiple nodes.
+
+### Debugging Commands
+
+KAI provides built-in debugging capabilities:
+
+```rho
+// Enable trace logging
+System.SetTraceLevel(5)  // 0-5, where 5 is most verbose
+
+// Print stack contents
+System.PrintStack()
+
+// Show object details
+System.Inspect(myObject)
+
+// Time an operation
+start = System.CurrentTimeMillis()
+// ... operations to time ...
+elapsed = System.CurrentTimeMillis() - start
+```
+
+## Project Structure
+
+### Folder Structure
+* **Bin**: Where to write executable output files.
+* **CMake**: Auxiliary CMake modules, primarily for finding other projects and libraries like Boost and Google Test.
+* **Doc**: Documentation and tutorials.
+* **Ext**: External dependencies, primarily as _git submodules_.
+* **Include**: Root of the global include path. Add this to your compiler's include path.
+* **Lib**: Location for built static and dynamic library files. Also add this this to your compilers library path.
+* **Logs**: Directory for all system logs including debug traces, network events, and application logs.
+* **Source**: The root for the source code of the project.
+* **Test**: Unit tests. Output goes to *Bin/Tests*.
+
+### Key Files and Directories
+* The Test scripts for [Pi](Test/Language/TestPi/Scripts) shows the basics of pi.
+* Similarly, the test scripts for [Rho](Test/Language/TestRho/Scripts) show that it's a minimalist Python-like system. Note That Rho translates to pi, and Pi transcribes very efficiently from either text or binary.
+* The top-level [Include folder](Include/KAI) and [Source Folder](Source).
+* [Installation](Install.md): Information on how to install and build the system.
+* [Tests](Test/Readme.md): Describes the Google Tests that indicate what doesn't currently work.
+* The [top level CMake file](CMakeLists.txt).
+
+## Documentation
+
+KAI comes with comprehensive documentation:
+
+* **[Installation Guide](Install.md)**: Step-by-step instructions for setting up KAI
+* **[Language Tutorials](Doc/)**: Detailed guides for Pi, Rho, and Tau
+* **[Architecture Overview](Doc/Architecure.md)**: In-depth explanation of KAI's design
+* **[Networking Guide](Networking.md)**: How to use KAI's distributed features
+* **[API Reference](Include/KAI/)**: Header files with detailed comments
+
+## Use Cases
+
+KAI is particularly well-suited for:
+
+1. **Game Development**: Scripting, networking, and distributed AI
+2. **Distributed Systems**: Coordinating computation across multiple nodes
+3. **Simulation**: Sharing computational load for complex simulations
+4. **Legacy Integration**: Exposing existing C++ libraries to scripting
+5. **Real-time Systems**: Low-latency networking and computation
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Contact
+
+Christian Schladetsch - [christian.schladetsch@gmail.com](mailto:christian.schladetsch@gmail.com)
+
+Project Link: [https://github.com/cschladetsch/kai](https://github.com/cschladetsch/kai)
+
 ## Conclusion
-This library will be useful to those that want to expose C++ types and instances to the runtime, and across the network.
 
-It allows you to script C++ in a very simple way. Adding a new 'built-in type' to the system requires no macros, but just defining the type-traits for your class. No modifications to any class is required. After that you can script with any type and instances as you wish.
+KAI provides a powerful foundation for distributed computing with seamless language integration. Its ability to expose C++ types without modification, distribute computation across networks, and maintain type safety throughout makes it unique in the field of distributed systems.
 
-This means you can expose and script other classes as well, including those in a library that you do not have the source code to.
-
-To be clear: you do not have to change the source code of a class in order to access and use it at runtime with KAI. Further, these exposed classes are directly accessible via the Network.
+This library will be useful to those that want to expose C++ types and instances to the runtime and across the network. It allows you to script C++ in a very simple way, with no macros or modifications to existing classes.
 
 The distributed iteration feature is a prime example of how KAI enables not just data sharing, but computational sharing across networked systems with minimal code changes.
-
-A REPL [Console](Source/App/Console) is also supplied, as well as a [Windowed](Source/App/Window) application on all platforms.
-
-
