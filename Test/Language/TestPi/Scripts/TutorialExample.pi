@@ -1,0 +1,38 @@
+// Basic Pi operations from the tutorial
+// Stack manipulation
+1 2 3
+dup    // Stack should be: 1 2 3 3
+drop   // Stack should be: 1 2 3
+swap   // Stack should be: 1 3 2
+over   // Stack should be: 1 3 2 3
+depth  // Stack should be: 1 3 2 3 4
+clear  // Stack should be empty
+
+// Arithmetic
+2 3 +          // Result: 5
+5 2 -          // Result: 3
+4 3 *          // Result: 12
+10 2 div       // Result: 5
+7 4 mod        // Result: 3
+
+// Variables
+42 'answer #
+'answer @     // Should push 42
+
+// Conditionals 
+1 2 true ife   // Result should be 1
+1 2 false ife  // Result should be 2
+
+// Simple function definition
+{ dup * } 'square #
+4 'square @ &  // Should push 16
+
+// Fibonacci function (compact version from tutorial)
+{
+  dup 1 <= 
+  { } 
+  { dup 1 - 'fib @ & swap 1 - 1 - 'fib @ & + } 
+  ife
+} 'fib #
+
+5 'fib @ &    // Should calculate 5th Fibonacci number (5)

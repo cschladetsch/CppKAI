@@ -1,0 +1,54 @@
+// Basic Rho operations from the tutorial
+
+// Variables and assignments
+x = 42
+name = "Alice"
+is_valid = true
+
+// Multiple assignments
+a = b = c = 0
+
+// Compound assignments
+count = 10
+count += 5      // count should be 15
+count -= 3      // count should be 12
+count *= 2      // count should be 24
+count /= 4      // count should be 6
+
+// Arithmetic operations
+sum = 5 + 3             // 8
+difference = 10 - 4     // 6
+product = 7 * 6         // 42
+quotient = 20 / 5       // 4
+remainder = 10 % 3      // 1
+
+// Combined operations with proper precedence
+result = (4 + 2) * 3 - 5  // 13
+
+// Simple if statement
+if true {
+    test_value = 10
+} else {
+    test_value = 20
+}
+// test_value should be 10
+
+// Simple function
+fun add(a, b) {
+    return a + b
+}
+function_result = add(5, 3)  // Should be 8
+
+// Pi integration
+embedded_result = 10 + pi{ 3 4 + }  // 10 + 7 = 17
+
+// Fibonacci implementation from Rho tutorial
+fun fibonacci_recursive(n) {
+    if (n <= 1) {
+        return n
+    } else {
+        return fibonacci_recursive(n - 1) + fibonacci_recursive(n - 2)
+    }
+}
+
+fib_result = fibonacci_recursive(5)  // Should be 5
