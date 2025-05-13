@@ -225,33 +225,52 @@ Pi provides several operations for debugging:
 
 ## Example: Computing Fibonacci Numbers
 
-Here's a complete example that computes Fibonacci numbers using Pi:
+Here's an elegant example that computes Fibonacci numbers using Pi:
 
 ```pi
-// Fibonacci function
+// Fibonacci function - compact implementation
 {
-  // Check if n <= 1
-  dup 1 <=
-  
-  // If n <= 1, just return n
-  { }
-  
-  // Else compute fib(n-1) + fib(n-2)
-  {
-    // Compute fib(n-1)
-    dup 1 - 'fibonacci @ &
-    
-    // Compute fib(n-2)
-    swap 2 - 'fibonacci @ &
-    
-    // Add the results
-    +
-  }
+  dup 1 <= 
+  { } 
+  { dup 1 - 'fib @ & swap 1 - 1 - 'fib @ & + } 
   ife
-} 'fibonacci #
+} 'fib #
 
 // Calculate the 10th Fibonacci number
-10 'fibonacci @ &  // Result: 55
+10 'fib @ &  // Result: 55
+```
+
+An optimized version using memoization to avoid redundant calculations:
+
+```pi
+// Create an empty array to cache results
+[] 'fib_cache #
+
+// Optimized Fibonacci function
+{
+  // Check if we already calculated this value
+  dup 'fib_cache @ swap dup rot array_has_index
+  { 'fib_cache @ swap array_get }
+  {
+    // Not in cache, compute it
+    dup 1 <=
+    { }
+    { 
+      // Calculate fib(n-1) and fib(n-2)
+      dup 1 - 'fib_memo @ &
+      swap 2 - 'fib_memo @ &
+      +
+      
+      // Store in cache before returning
+      dup rot 'fib_cache @ swap rot array_set 'fib_cache #
+    }
+    ife
+  }
+  ife
+} 'fib_memo #
+
+// Calculate the 30th Fibonacci number (would be very slow without memoization)
+30 'fib_memo @ &  // Result: 832040
 ```
 
 ## Real-World Applications
