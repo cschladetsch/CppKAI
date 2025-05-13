@@ -100,7 +100,7 @@ void TranslatorCommon::MarkAsRhoExpression() {
     }
     
     // Mark this continuation as a Rho expression for special handling in the Console
-    top->SetProperty("RhoExpression", true);
+    top.SetPropertyValue(Label("RhoExpression"), _reg->New<bool>(true));
 }
 
 Pointer<Continuation> TranslatorCommon::Top() { return stack.back(); }

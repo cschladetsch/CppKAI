@@ -68,16 +68,36 @@ $ sudo apt-get install cmake
 $ sudo apt-get install libboost-filesystem-dev libboost-chrono-dev libboost-regex-dev libboost-program-options-dev libboost-date-time-dev
 ```
 
-After this do the usual:
+* [Ninja](https://ninja-build.org/) (optional but recommended for faster builds)
 
 ```bash
-mkdir -p build && cd build && cmake ..
+$ sudo apt-get install ninja-build
 ```
 
-Finally, make sure to use the same compiler/linker for C and C++ and generate Ninja:
+### Quick Build with Scripts
 
+KAI provides several convenient build scripts:
+
+* `./r` - Full clean build with Ninja and runs tests and console
+* `./n` - Incremental build with Ninja (preserves the build directory)
+* `./nt <TestName>` - Builds and runs a specific test (e.g., `./nt TestPi`)
+
+### Manual Build
+
+If you prefer to manually control the build process:
+
+```bash
+# With Make
+mkdir -p build && cd build && cmake .. && make
+
+# With Ninja (recommended for faster builds)
+mkdir -p build_ninja && cd build_ninja && cmake -G Ninja .. && ninja
 ```
-$ cmake .. -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -G Ninja && ninja
+
+You can also specify a particular compiler:
+
+```bash
+cmake .. -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -G Ninja && ninja
 ```
 
 ## Console

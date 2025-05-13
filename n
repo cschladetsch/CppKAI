@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Script to quickly build using Ninja
+# Uses a dedicated "build_ninja" directory to avoid conflicts with other build systems
+
+# Define the Ninja-specific build directory
+BUILD_DIR="build_ninja"
+
+# Create build directory if it doesn't exist
+if [ ! -d "$BUILD_DIR" ]; then
+    echo "Creating Ninja build directory ($BUILD_DIR)..."
+    mkdir -p "$BUILD_DIR"
+fi
+
+# Navigate to build directory
+cd "$BUILD_DIR"
+
+# Run CMake configuration with Ninja generator
+echo "Configuring with CMake and Ninja..."
+cmake -G Ninja ..
+if [ $? -ne 0 ]; then
+    echo "CMake configuration failed"
+    exit 1
+fi
+
+# Build with Ninja
+echo "Building with Ninja..."
+ninja $@
+build_result=$?
+
+cd ..
+
+if [ $build_result -eq 0 ]; then
+    echo "Build successful!"
+    echo "Binaries are in ./$BUILD_DIR/Bin"
+else
+    echo "Build failed with error code $build_result"
+fi
+
+exit $build_result

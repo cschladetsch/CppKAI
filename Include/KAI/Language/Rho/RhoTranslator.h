@@ -48,6 +48,7 @@ class RhoTranslator : public TranslatorBase<RhoParser> {
     void TranslateIf(AstNodePtr node);
     void TranslateWhile(AstNodePtr node);
     void TranslateDoWhile(AstNodePtr node);
+    void TranslatePiBlock(AstNodePtr parentNode, size_t startIndex);
 };
 
 KAI_END

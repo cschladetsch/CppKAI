@@ -21,7 +21,8 @@
 
 // use exceptions or not
 // defaults to on
-#define KAI_USE_EXCEPTIONS
+// Defined in CMakeLists.txt with add_definitions(-DKAI_USE_EXCEPTIONS)
+// #define KAI_USE_EXCEPTIONS
 
 // deprecated
 // #define KAI_UNIT_TESTS

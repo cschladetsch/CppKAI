@@ -154,6 +154,7 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
             return;
             
         case TokenEnum::PiSequence:
+        {
             KAI_TRACE() << "Translating PiSequence: " << node->Text();
             // Create a continuation for the Pi code block
             PushNew();
@@ -165,11 +166,12 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
             
             // Get the continuation and convert it to Pi
             auto piCont = Pop();
-            piCont->SetProperty("Language", "Pi");
+            piCont.SetPropertyValue(Label("Language"), _reg->New<String>("Pi"));
             
             // Add the continuation to the parent
             Append(piCont);
             return;
+        }
 
         case TokenEnum::Yield:
             // for (auto ch : node->Children)
@@ -254,9 +256,47 @@ void RhoTranslator::TranslateNode(AstNodePtr node) {
             TranslateBinaryOp(node, Operation::GetProperty);
             return;
 
-        case AstEnum::TokenType:
+        case AstEnum::TokenType: {
+            // Special handling for Pi with braces (handle the case where pi + { are separate tokens)
+            if (node->GetToken().type == TokenEnum::ToPi) {
+                // We can't directly access the parent, so we'll have to rely on context
+                // from the AST structure that was built during parsing
+                
+                // For now, skip this check until we can properly implement parent-child navigation
+                // TODO: Implement proper parent-child navigation in the AST
+                
+                /* Commenting out code that depends on GetParent
+                if (node->GetParent() && node->GetParent()->GetChildren().size() > 1) {
+                    size_t nodeIndex = 0;
+                    const auto& siblings = node->GetParent()->GetChildren();
+                    
+                    // Find this node's index
+                    for (size_t i = 0; i < siblings.size(); i++) {
+                        if (siblings[i] == node) {
+                            nodeIndex = i;
+                            break;
+                        }
+                    }
+                    
+                    // Check if next node is an open brace
+                    if (nodeIndex + 1 < siblings.size()) {
+                        auto nextNode = siblings[nodeIndex + 1];
+                        if (nextNode->GetType() == AstEnum::TokenType && 
+                            nextNode->GetToken().type == TokenEnum::OpenBrace) {
+                            
+                            // This is a Pi block - create a continuation
+                            TranslatePiBlock(node->GetParent(), nodeIndex);
+                            return;
+                        }
+                    }
+                }
+                */
+            }
+            
+            // Regular token handling
             TranslateToken(node);
             return;
+        }
 
         case AstEnum::Assignment:
             KAI_TRACE() << "Translating Assignment";
@@ -356,8 +396,8 @@ void RhoTranslator::TranslateFunction(AstNodePtr node) {
     }
     
     // Mark this as a Rho language function
-    cont->SetProperty("Language", "Rho");
-    cont->SetProperty("RhoFunction", true);
+    cont.SetPropertyValue(Label("Language"), _reg->New<String>("Rho"));
+    cont.SetPropertyValue(Label("RhoFunction"), _reg->New<bool>(true));
 
     // Write the body into the continuation's code array
     stack.push_back(cont);
@@ -365,7 +405,7 @@ void RhoTranslator::TranslateFunction(AstNodePtr node) {
     // Process the function body (the block)
     if (ch.size() > 2) {
         KAI_TRACE() << "Processing function body with " 
-                    << ch[2]->GetChildren().size() << " statements";
+                    << static_cast<int>(ch[2]->GetChildren().size()) << " statements";
                     
         // Process each statement in the block
         for (auto b : ch[2]->GetChildren()) {
@@ -585,6 +625,24 @@ void RhoTranslator::TranslateDoWhile(AstNodePtr node) {
         KAI_TRACE_ERROR() << "Unknown exception in TranslateDoWhile";
         Fail("Unknown exception in TranslateDoWhile");
     }
+}
+
+// Handle Pi block with braces: pi { ... }
+void RhoTranslator::TranslatePiBlock(AstNodePtr parentNode, size_t startIndex) {
+    KAI_TRACE() << "Translating Pi block (with braces)";
+    
+    // This method is not currently used since we commented out the parent-child
+    // navigation code in TranslateNode. This will need to be revisited
+    // when parent-child navigation is added to the AST.
+    
+    // For now, this is kept as a placeholder for future implementation.
+    // We'll add a proper implementation that doesn't rely on GetParent() in a future update
+    
+    // The original implementation would:
+    // 1. Find all nodes between opening and closing braces
+    // 2. Create a Pi language continuation
+    // 3. Process all nodes as Pi code
+    // 4. Add the continuation to the current code array
 }
 
 KAI_END

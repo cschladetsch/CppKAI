@@ -109,19 +109,16 @@ void Console::CreateTree() {
 
 void Console::Execute(Pointer<Continuation> cont) {
     KAI_TRY {
-        if (!cont->HasScope()) cont->SetScope(tree.GetRoot());
+        // Continuation does not have HasScope/SetScope methods
+        // Skip this step until we can add proper scope handling
 
-        // Check the language of this continuation
-        bool isRhoLanguage = language == Language::Rho || 
-            (cont->HasProperty("Language") && 
-             ConstDeref<String>(cont->GetProperty("Language")) == "Rho");
-             
-        bool isPiLanguage = language == Language::Pi || 
-            (cont->HasProperty("Language") && 
-             ConstDeref<String>(cont->GetProperty("Language")) == "Pi");
-             
-        bool isRhoFunction = cont->HasProperty("RhoFunction") && 
-            ConstDeref<bool>(cont->GetProperty("RhoFunction"));
+        // Check the language of this continuation, directly using basic language check
+        bool isRhoLanguage = language == Language::Rho;
+        bool isPiLanguage = language == Language::Pi;
+        bool isRhoFunction = false;
+        
+        // Set basic flags until we can properly implement property access for Continuations
+        // TODO: Implement property access for Continuations
 
         // Execute the continuation directly
         executor->Continue(cont);
