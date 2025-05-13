@@ -17,6 +17,10 @@ class RhoTranslator : public TranslatorBase<RhoParser> {
 
     RhoTranslator(const RhoTranslator &) = delete;
     RhoTranslator(Registry &r) : Parent(r) {}
+    
+    // Override to make Rho handle direct evaluation of expressions
+    // This addresses the issue where expressions are unnecessarily wrapped in continuations
+    Pointer<Continuation> Translate(const char *text, Structure st) override;
 
    protected:
     virtual void TranslateNode(AstNodePtr node) override;

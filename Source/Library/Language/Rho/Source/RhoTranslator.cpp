@@ -21,20 +21,20 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
 
         case TokenEnum::Not:
             TranslateNode(node->GetChild(0));
-            AppendOp(Operation::LogicalNot);
+            AppendDirectOperation(Operation::LogicalNot);
             return;
 
         case TokenEnum::True:
-            AppendOp(Operation::True);
+            AppendDirectOperation(Operation::True);
             return;
 
         case TokenEnum::False:
-            AppendOp(Operation::False);
+            AppendDirectOperation(Operation::False);
             return;
 
         case TokenEnum::Assert:
             TranslateNode(node->GetChild(0));
-            AppendOp(Operation::Assert);
+            AppendDirectOperation(Operation::Assert);
             return;
 
         case TokenEnum::DivAssign:
@@ -58,11 +58,11 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
             return;
 
         case TokenEnum::Lookup:
-            AppendOp(Operation::Lookup);
+            AppendDirectOperation(Operation::Lookup);
             return;
 
         case TokenEnum::Self:
-            AppendOp(Operation::This);
+            AppendDirectOperation(Operation::This);
             return;
 
         case TokenEnum::NotEquiv:
@@ -120,26 +120,27 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
 
         case TokenEnum::Int:
             KAI_TRACE() << "Translating Int: " << node->GetTokenText();
-            Append(New<int>(boost::lexical_cast<int>(node->GetTokenText())));
+            // Use the AppendLiteral template to directly add without wrapping
+            AppendLiteral(boost::lexical_cast<int>(node->GetTokenText()));
             return;
 
         case TokenEnum::Float:
             KAI_TRACE() << "Translating Float: " << node->GetTokenText();
-            Append(
-                New<float>(boost::lexical_cast<float>(node->GetTokenText())));
+            // Use the AppendLiteral template to directly add without wrapping
+            AppendLiteral(boost::lexical_cast<float>(node->GetTokenText()));
             return;
 
         case TokenEnum::String:
             KAI_TRACE() << "Translating String: " << node->Text();
-            // Do NOT wrap strings in Continuations
-            Append(New<String>(node->Text()));
+            // Use the AppendLiteral template for strings too
+            AppendLiteral(String(node->Text()));
             KAI_TRACE() << "String translation complete";
             return;
 
         case TokenEnum::Ident:
             KAI_TRACE() << "Translating Ident: " << node->Text();
-            // Do NOT wrap identifiers in Continuations
-            Append(New<Label>(Label(node->Text())));
+            // Use the AppendLiteral template for labels too
+            AppendLiteral(Label(node->Text()));
             KAI_TRACE() << "Ident translation complete";
             return;
 
@@ -149,7 +150,25 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
             return;
 
         case TokenEnum::ToPi:
-            AppendOp(Operation::ToPi);
+            AppendDirectOperation(Operation::ToPi);
+            return;
+            
+        case TokenEnum::PiSequence:
+            KAI_TRACE() << "Translating PiSequence: " << node->Text();
+            // Create a continuation for the Pi code block
+            PushNew();
+            
+            // Translate all the children nodes
+            for (auto child : node->GetChildren()) {
+                TranslateNode(child);
+            }
+            
+            // Get the continuation and convert it to Pi
+            auto piCont = Pop();
+            piCont->SetProperty("Language", "Pi");
+            
+            // Add the continuation to the parent
+            Append(piCont);
             return;
 
         case TokenEnum::Yield:
@@ -161,7 +180,7 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
 
         case TokenEnum::Return:
             for (auto ch : node->GetChildren()) TranslateNode(ch);
-            AppendOp(Operation::Return);
+            AppendDirectOperation(Operation::Return);
             return;
     }
 
@@ -173,9 +192,17 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
 void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
     KAI_TRACE() << "TranslateBinaryOp: Operation=" << Operation::ToString(op);
 
+    // For binary operations, we need to ensure we're not just pushing Continuations
+    // but actually getting the result of evaluating expressions
     TranslateNode(node->GetChild(0));
     TranslateNode(node->GetChild(1));
-    AppendOp(op);
+    
+    // Instead of wrapping in a Continuation, add the operation directly
+    // This will make the operation get executed immediately in the Console::Execute method
+    AppendDirectOperation(op);
+    
+    // Mark this as a Rho expression for special handling in the executor
+    MarkAsRhoExpression();
 
     KAI_TRACE() << "Binary operation successfully translated";
 }
@@ -249,8 +276,8 @@ void RhoTranslator::TranslateNode(AstNodePtr node) {
                 // Then target (left side)
                 TranslateNode(node->GetChild(0));
 
-                // Add the store operation
-                AppendOp(Operation::Store);
+                // Add the store operation directly
+                AppendDirectOperation(Operation::Store);
 
                 KAI_TRACE()
                     << "Completed assignment translation without Continuations";
@@ -305,12 +332,14 @@ void RhoTranslator::TranslateBlock(AstNodePtr node) {
 }
 
 void RhoTranslator::TranslateFunction(AstNodePtr node) {
+    KAI_TRACE() << "TranslateFunction: Creating function continuation";
+    
     // child 0: ident
     // child 1: args
     // child 2: block
     AstNode::ChildrenType const &ch = node->GetChildren();
 
-    // In Pi, we need to create a Continuation for the function body
+    // Create a Continuation for the function body
     Pointer<Continuation> cont = _reg->New<Continuation>();
     if (!cont.Exists()) {
         KAI_TRACE_ERROR() << "Failed to create function continuation";
@@ -325,36 +354,51 @@ void RhoTranslator::TranslateFunction(AstNodePtr node) {
         Fail("Failed to create function code array");
         return;
     }
+    
+    // Mark this as a Rho language function
+    cont->SetProperty("Language", "Rho");
+    cont->SetProperty("RhoFunction", true);
 
     // Write the body into the continuation's code array
     stack.push_back(cont);
-    for (auto b : ch[2]->GetChildren()) {
-        // Special handling for return statements
-        if (b->GetType() == AstEnum::TokenType &&
-            b->GetToken().type == TokenEnum::Return) {
-            // Process the return value if it exists
-            if (b->GetChildren().size() > 0) {
-                TranslateNode(b->GetChild(0));
-            }
+    
+    // Process the function body (the block)
+    if (ch.size() > 2) {
+        KAI_TRACE() << "Processing function body with " 
+                    << ch[2]->GetChildren().size() << " statements";
+                    
+        // Process each statement in the block
+        for (auto b : ch[2]->GetChildren()) {
+            // Special handling for return statements
+            if (b->GetType() == AstEnum::TokenType &&
+                b->GetToken().type == TokenEnum::Return) {
+                
+                // Process the return value if it exists
+                if (b->GetChildren().size() > 0) {
+                    TranslateNode(b->GetChild(0));
+                }
 
-            // Add the Return operation
-            AppendOp(Operation::Return);
-        } else {
-            TranslateNode(b);
+                // Add the Return operation directly
+                AppendDirectOperation(Operation::Return);
+            } else {
+                TranslateNode(b);
+            }
         }
     }
+    
     stack.pop_back();
 
-    // Add the args
+    // Add the args to the function
     for (auto a : ch[1]->GetChildren()) {
         cont->AddArg(Label(a->GetTokenText()));
     }
 
-    // Write the name and store in this sequence: function object, function
-    // name, Store
+    // Store the function: push function object, push function name, store
     Append(cont);
     Append(New<Label>(Label(ch[0]->Text())));
-    AppendOp(Operation::Store);
+    AppendDirectOperation(Operation::Store);
+    
+    KAI_TRACE() << "Function translation complete";
 }
 
 void RhoTranslator::TranslateCall(AstNodePtr node) {
@@ -375,7 +419,7 @@ void RhoTranslator::TranslateCall(AstNodePtr node) {
         callOp = Operation::Suspend;
     }
 
-    AppendOp(callOp);
+    AppendDirectOperation(callOp);
 
     KAI_TRACE() << "Completed call translation";
 }
@@ -423,7 +467,7 @@ void RhoTranslator::TranslateIf(AstNodePtr node) {
         ifOp = Operation::IfThenSuspend;
     }
 
-    AppendOp(ifOp);
+    AppendDirectOperation(ifOp);
 
     KAI_TRACE() << "Completed if statement translation";
 }
@@ -473,8 +517,8 @@ void RhoTranslator::TranslateWhile(AstNodePtr node) {
         Append(condCont);
         Append(bodyCont);
 
-        // Add WhileLoop operation
-        AppendOp(Operation::WhileLoop);
+        // Add WhileLoop operation directly
+        AppendDirectOperation(Operation::WhileLoop);
 
         KAI_TRACE() << "While loop translation complete";
     } catch (std::exception &e) {
@@ -525,8 +569,8 @@ void RhoTranslator::TranslateDoWhile(AstNodePtr node) {
         Append(condCont);
         Append(bodyCont);
 
-        // Add DoLoop operation
-        AppendOp(Operation::DoLoop);
+        // Add DoLoop operation directly
+        AppendDirectOperation(Operation::DoLoop);
 
         KAI_TRACE() << "Do-while loop translation complete";
     } catch (kai::Exception::Base &e) {

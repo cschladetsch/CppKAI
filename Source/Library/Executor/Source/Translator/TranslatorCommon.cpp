@@ -57,6 +57,52 @@ void TranslatorCommon::AppendOp(Operation::Type op) {
     Append(opObject);
 }
 
+void TranslatorCommon::AppendDirectOperation(Operation::Type op) {
+    KAI_TRACE() << "Info: TranslatorCommon::AppendDirectOperation: " << Operation::ToString(op);
+    
+    // This method creates and adds an operation directly to the parent stack
+    // instead of wrapping it in another continuation
+    // This is used for Rho language binary operations to avoid unnecessary nesting
+    
+    Object opObject = _reg->New<Operation>(op);
+    
+    // Add directly to the current continuation's code array
+    if (stack.empty()) {
+        KAI_TRACE_ERROR() << "TranslatorCommon::AppendDirectOperation: Stack is empty";
+        return; // Instead of throwing, just return
+    }
+    
+    auto top = Top();
+    if (!top.Exists()) {
+        KAI_TRACE_ERROR() << "TranslatorCommon::AppendDirectOperation: Top of stack is invalid";
+        return; // Instead of throwing, just return
+    }
+    
+    auto code = top->GetCode();
+    if (!code.Exists()) {
+        KAI_TRACE_ERROR() << "TranslatorCommon::AppendDirectOperation: Code array is invalid";
+        return; // Instead of throwing, just return
+    }
+    
+    code->Append(opObject);
+}
+
+void TranslatorCommon::MarkAsRhoExpression() {
+    if (stack.empty()) {
+        KAI_TRACE_ERROR() << "TranslatorCommon::MarkAsRhoExpression: Stack is empty";
+        return; // Instead of throwing, just return
+    }
+    
+    auto top = Top();
+    if (!top.Exists()) {
+        KAI_TRACE_ERROR() << "TranslatorCommon::MarkAsRhoExpression: Top of stack is invalid";
+        return; // Instead of throwing, just return
+    }
+    
+    // Mark this continuation as a Rho expression for special handling in the Console
+    top->SetProperty("RhoExpression", true);
+}
+
 Pointer<Continuation> TranslatorCommon::Top() { return stack.back(); }
 
 void TranslatorCommon::PushNew() {

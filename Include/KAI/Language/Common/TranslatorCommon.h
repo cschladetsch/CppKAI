@@ -31,8 +31,24 @@ struct TranslatorCommon : ProcessCommon {
         Append(_reg->New<T>(val));
     }
 
+    // Append an operation to the current continuation
     void AppendOp(Operation::Type op);
+    
+    // Add operations directly to the continuation without wrapping in another continuation
+    // Used by Rho language to avoid unnecessary nesting and allow proper evaluation
     void AppendDirectOperation(Operation::Type op);
+    
+    // Mark the current continuation as a Rho expression
+    // This helps the executor identify and properly evaluate Rho expressions
+    void MarkAsRhoExpression();
+    
+    // Add literal values directly to the code array
+    // This helps avoid unnecessary wrapping in Rho expressions
+    template<typename T>
+    void AppendLiteral(const T& value) {
+        Object obj = _reg->New<T>(value);
+        Append(obj);
+    }
 
     struct Exception {};
     struct Unsupported : Exception {};

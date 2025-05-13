@@ -54,7 +54,9 @@ struct ConstPointer : PointerBase<T>, Object {
     typedef typename PointerBase<T>::ConstReference ConstReference;
     typedef typename PointerBase<T>::ConstPointerType ConstPointerType;
     using PointerBase<T>::CanAssign;
+#ifdef KAI_POINTER_HAS_STORAGEBASE
     using PointerBase<T>::pointer;
+#endif
     // typedef typename PointerBase<T>::PointerType;
 
    protected:

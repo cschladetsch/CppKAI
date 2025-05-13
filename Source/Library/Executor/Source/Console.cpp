@@ -111,7 +111,74 @@ void Console::Execute(Pointer<Continuation> cont) {
     KAI_TRY {
         if (!cont->HasScope()) cont->SetScope(tree.GetRoot());
 
+        // Check the language of this continuation
+        bool isRhoLanguage = language == Language::Rho || 
+            (cont->HasProperty("Language") && 
+             ConstDeref<String>(cont->GetProperty("Language")) == "Rho");
+             
+        bool isPiLanguage = language == Language::Pi || 
+            (cont->HasProperty("Language") && 
+             ConstDeref<String>(cont->GetProperty("Language")) == "Pi");
+             
+        bool isRhoFunction = cont->HasProperty("RhoFunction") && 
+            ConstDeref<bool>(cont->GetProperty("RhoFunction"));
+
+        // Execute the continuation directly
         executor->Continue(cont);
+        
+        // Process any remaining operations and continuations on the stack
+        auto dataStack = executor->GetDataStack();
+        
+        // Process top of stack operations
+        while (dataStack->Size() > 0 && dataStack->Top().IsType<Operation>()) {
+            Object op = dataStack->Top();
+            dataStack->Pop();
+            
+            // Create a mini-continuation with just this operation
+            Pointer<Continuation> opCont = _reg->New<Continuation>();
+            opCont->SetScope(tree.GetScope());
+            opCont->GetCode()->Append(op);
+            
+            // Execute it
+            executor->Continue(opCont);
+        }
+        
+        // Process top of stack continuations based on language
+        while (dataStack->Size() > 0 && dataStack->Top().IsType<Continuation>()) {
+            Pointer<Continuation> topCont = dataStack->Top();
+            
+            // Handle differently based on the continuation's language/properties
+            bool isTopPi = topCont->HasProperty("Language") && 
+                ConstDeref<String>(topCont->GetProperty("Language")) == "Pi";
+                
+            bool isTopRhoFunction = topCont->HasProperty("RhoFunction") && 
+                ConstDeref<bool>(topCont->GetProperty("RhoFunction"));
+                
+            // If we have a Pi sequence or a Rho function, don't auto-execute
+            if (isTopPi || isTopRhoFunction) {
+                // Leave them on the stack - they should be called explicitly
+                break;
+            }
+            
+            // Otherwise, execute the continuation
+            dataStack->Pop();
+            executor->Continue(topCont);
+        }
+        
+        // Special handling for Rho language - evaluate any expression results
+        if (isRhoLanguage) {
+            // Unwrap any remaining continuations that represent expressions
+            while (dataStack->Size() > 0 && 
+                   dataStack->Top().IsType<Continuation>() && 
+                   dataStack->Top().HasProperty("RhoExpression")) {
+                
+                Pointer<Continuation> exprCont = dataStack->Top();
+                dataStack->Pop();
+                
+                // Execute the continuation to get its value
+                executor->Continue(exprCont);
+            }
+        }
     }
     KAI_CATCH(Exception::Base, E) { KAI_TRACE_ERROR_1(E); }
     KAI_CATCH(exception, E) { KAI_TRACE_ERROR_2("StdException: ", E.what()); }
@@ -119,19 +186,27 @@ void Console::Execute(Pointer<Continuation> cont) {
 }
 
 void Console::Execute(String const &text, Structure st) {
+    // Translate the text into a continuation
     Pointer<Continuation> cont = compiler->Translate(text.c_str(), st);
     if (!cont.Exists()) return;
 
+    // Set the execution scope
     cont->SetScope(executor->GetTree()->GetScope());
-    executor->Continue(cont);
+
+    // Execute the continuation
+    Execute(cont);
 }
 
 String Console::Process(const String &text) {
     StringStream result;
     KAI_TRY {
+        // Translate the text into a continuation
         auto cont = compiler->Translate(text.c_str());
         if (cont.Exists()) {
+            // Set the scope
             cont->SetScope(tree.GetScope());
+
+            // Execute the continuation using our improved Execute method
             Execute(cont);
         }
 

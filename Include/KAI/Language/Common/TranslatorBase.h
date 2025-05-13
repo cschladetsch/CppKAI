@@ -57,9 +57,12 @@ struct TranslatorBase : TranslatorCommon {
 
         if (stack.empty()) KAI_THROW_0(EmptyStack);
 
-        // the continuation is wrapped in a continuation
         auto cont = Pop();
-        return cont->GetCode()->At(0);
+
+        // Return the full continuation
+        // The Console.Execute method is now enhanced to handle both Pi and Rho languages
+        // It will properly evaluate operations and results according to the language
+        return cont;
     }
 
    protected:
