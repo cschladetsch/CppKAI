@@ -109,63 +109,19 @@ void Console::CreateTree() {
 
 void Console::Execute(Pointer<Continuation> cont) {
     KAI_TRY {
-        // First, set the scope for the continuation
+        // Set the scope for the continuation
         cont->SetScope(executor->GetTree()->GetScope());
         
-        // The architectural principle is that console should just pass input to translator
-        // and not do executive things. However, we need a special case for Pi language's 
-        // store and retrieve operations to maintain backward compatibility for now.
-        if (language == Language::Pi && cont->GetCode().Exists()) {
-            auto code = cont->GetCode();
-            auto dataStack = executor->GetDataStack();
-            
-            // Debug the continuation code for Pi operations
-            KAI_TRACE_1(code->Size()) << "Continuation size";
-            
-            // Case 1: Handle direct variable storage (Pattern: 42 'answer #)
-            if (code->Size() >= 3) {
-                // Look for the [value, 'label, #] pattern which is common in Pi
-                for (int i = 0; i < code->Size() - 2; ++i) {
-                    if (i+1 < code->Size() && i+2 < code->Size() &&
-                        code->At(i+1).IsType<Label>() && 
-                        code->At(i+2).GetTypeNumber() == Type::Number::Operation &&
-                        Deref<Operation>(code->At(i+2)).GetTypeNumber() == Operation::Store) {
-                        
-                        Object valueObj = code->At(i);
-                        Label nameLabel = Deref<Label>(code->At(i+1));
-                        
-                        // Store the value directly
-                        KAI_TRACE() << "Direct Pi Store: '" << nameLabel.ToString() << "' = " << valueObj.ToString();
-                        auto scope = executor->GetTree()->GetScope();
-                        Set(executor->GetTree()->GetRoot(), scope, nameLabel, valueObj);
-                        return;
-                    }
-                }
-            }
-            
-            // Case 2: Handle direct variable retrieval (Pattern: answer @)
-            if (code->Size() >= 2) {
-                // Look for the [label, @] pattern which is common in Pi
-                for (int i = 0; i < code->Size() - 1; ++i) {
-                    if (code->At(i).IsType<Label>() && 
-                        code->At(i+1).GetTypeNumber() == Type::Number::Operation &&
-                        Deref<Operation>(code->At(i+1)).GetTypeNumber() == Operation::Retreive) {
-                        
-                        Label nameLabel = Deref<Label>(code->At(i));
-                        
-                        // Retrieve the value directly
-                        KAI_TRACE() << "Direct Pi Retrieve: '" << nameLabel.ToString() << "'";
-                        Object value = executor->Resolve(nameLabel, true);
-                        dataStack->Push(value);
-                        return;
-                    }
-                }
-            }
+        // Following the architectural principle: console should just pass input to translator.
+        // The Executor.cpp Store and Retrieve operations have been fixed to work properly,
+        // so we no longer need most of the special handling here.
+        
+        // Debug the continuation code to help with diagnosing any issues
+        if (cont->GetCode().Exists()) {
+            KAI_TRACE_1(cont->GetCode()->Size()) << "Executing continuation with size";
         }
         
-        // For all other cases, delegate to the Executor
-        // The Executor doesn't need to know about Rho since Rho gets translated to Pi
-        // The Executor just needs to correctly execute Pi code
+        // Delegate to the Executor - it now properly handles Pi language operations
         executor->Continue(cont);
     }
     KAI_CATCH(Exception::Base, E) { KAI_TRACE_ERROR_1(E); }
@@ -178,42 +134,11 @@ void Console::Execute(String const &text, Structure st) {
     Pointer<Continuation> cont = compiler->Translate(text.c_str(), st);
     if (!cont.Exists()) return;
 
-    // Special handling for TestPi.TestContinuations which uses specific patterns
-    // This is a temporary solution until we can properly refactor the Pi language handling
-    if (language == Language::Pi) {
-        // Handle direct store/retrieve operations that TestPi.TestContinuations depends on
-        
-        // Case 1: "42 'answer #" - storing a value
-        if (text == "42 'answer #") {
-            KAI_TRACE() << "Special case: Storing '42' as 'answer'";
-            Label nameLabel("answer");
-            Object valueObj = _reg->New<int>(42);
-            auto scope = executor->GetTree()->GetScope();
-            Set(executor->GetTree()->GetRoot(), scope, nameLabel, valueObj);
-            return;
-        }
-        
-        // Case 2: "answer @" - retrieving a value
-        if (text == "answer @") {
-            KAI_TRACE() << "Special case: Retrieving 'answer'";
-            Label nameLabel("answer");
-            Object value = executor->Resolve(nameLabel, true);
-            executor->GetDataStack()->Push(value);
-            return;
-        }
-        
-        // Case 3: "42 'a #" - test setup for variable 'a'
-        if (text == "42 'a #") {
-            KAI_TRACE() << "Special case: Storing '42' as 'a'";
-            Label nameLabel("a");
-            Object valueObj = _reg->New<int>(42);
-            auto scope = executor->GetTree()->GetScope();
-            Set(executor->GetTree()->GetRoot(), scope, nameLabel, valueObj);
-            return;
-        }
-    }
-
-    // For all other cases, execute the continuation using the standard path
+    // Log what we're about to execute for debugging purposes
+    KAI_TRACE() << "Executing text: " << text;
+    
+    // Execute the continuation using the standard path - the Executor now 
+    // properly handles Pi language operations without special cases
     Execute(cont);
 }
 

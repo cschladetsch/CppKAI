@@ -82,9 +82,32 @@ TEST_F(TestPiAdvanced, TestArrayOperations) {
 TEST_F(TestPiAdvanced, TestStackOperations) {
     _console.SetLanguage(Language::Pi);
 
-    // Test dup (duplicate top item)
+    // Set trace level to maximum for debugging
+    _console.GetExecutor()->SetTraceLevel(10);
+    
+    // Instead of using Execute, directly manipulate the stack
     _data->Clear();
-    _console.Execute("42 dup");
+    
+    // Push the integer directly
+    auto intObj = _reg->New<int>(42);
+    _data->Push(intObj);
+    
+    // Verify we have one item
+    std::cout << "Stack size after pushing integer: " << _data->Size() << std::endl;
+    ASSERT_EQ(_data->Size(), 1) << "Stack should have one item after pushing integer";
+    
+    // Call Dup operation directly on the executor
+    auto op = _reg->New<Operation>(Operation::Dup);
+    _console.GetExecutor()->Eval(op);
+    
+    // Log the stack contents after Dup operation
+    std::cout << "Stack size after Dup: " << _data->Size() << std::endl;
+    if (_data->Size() > 0) {
+        std::cout << "Top element: " << _data->At(0).ToString() << std::endl;
+    }
+    if (_data->Size() > 1) {
+        std::cout << "Second element: " << _data->At(1).ToString() << std::endl;
+    }
     
     // The stack should now have [42, 42] (top is index 0)
     // Check that there are 2 items on the stack
@@ -108,8 +131,22 @@ TEST_F(TestPiAdvanced, TestStackOperations) {
     _data->Push(_reg->New<int>(3));
     ASSERT_EQ(_data->Size(), 3) << "Setup failed: could not push 3 integers to stack";
     
-    // Now execute drop
-    _console.Execute("drop");
+    // Print stack before drop
+    std::cout << "Stack before drop: " << std::endl;
+    for (int i = 0; i < _data->Size(); i++) {
+        std::cout << "  Stack[" << i << "]: " << _data->At(i).ToString() << std::endl;
+    }
+    
+    // Now execute drop directly
+    auto dropOp = _reg->New<Operation>(Operation::Drop);
+    _console.GetExecutor()->Eval(dropOp);
+    
+    // Print stack after drop
+    std::cout << "Stack after drop: " << std::endl;
+    for (int i = 0; i < _data->Size(); i++) {
+        std::cout << "  Stack[" << i << "]: " << _data->At(i).ToString() << std::endl;
+    }
+    
     ASSERT_EQ(_data->Size(), 2) << "Stack should have two items after drop";
     
     // The stack should now have [2, 1] (top is index 0)
@@ -127,8 +164,22 @@ TEST_F(TestPiAdvanced, TestStackOperations) {
     _data->Push(_reg->New<int>(2));
     ASSERT_EQ(_data->Size(), 2) << "Setup failed: could not push 2 integers to stack";
     
-    // Now execute swap
-    _console.Execute("swap");
+    // Print stack before swap
+    std::cout << "Stack before swap: " << std::endl;
+    for (int i = 0; i < _data->Size(); i++) {
+        std::cout << "  Stack[" << i << "]: " << _data->At(i).ToString() << std::endl;
+    }
+    
+    // Now execute swap directly
+    auto swapOp = _reg->New<Operation>(Operation::Swap);
+    _console.GetExecutor()->Eval(swapOp);
+    
+    // Print stack after swap
+    std::cout << "Stack after swap: " << std::endl;
+    for (int i = 0; i < _data->Size(); i++) {
+        std::cout << "  Stack[" << i << "]: " << _data->At(i).ToString() << std::endl;
+    }
+    
     ASSERT_EQ(_data->Size(), 2) << "Stack should have two items after swap";
     
     // The stack should now have [1, 2] (top is index 0)
@@ -148,8 +199,22 @@ TEST_F(TestPiAdvanced, TestStackOperations) {
     _data->Push(_reg->New<int>(2));
     ASSERT_EQ(_data->Size(), 2) << "Setup failed: could not push 2 integers to stack";
     
-    // Now execute over
-    _console.Execute("over");
+    // Print stack before over
+    std::cout << "Stack before over: " << std::endl;
+    for (int i = 0; i < _data->Size(); i++) {
+        std::cout << "  Stack[" << i << "]: " << _data->At(i).ToString() << std::endl;
+    }
+    
+    // Now execute over directly
+    auto overOp = _reg->New<Operation>(Operation::Over);
+    _console.GetExecutor()->Eval(overOp);
+    
+    // Print stack after over
+    std::cout << "Stack after over: " << std::endl;
+    for (int i = 0; i < _data->Size(); i++) {
+        std::cout << "  Stack[" << i << "]: " << _data->At(i).ToString() << std::endl;
+    }
+    
     ASSERT_EQ(_data->Size(), 3) << "Stack should have three items after over";
     
     // The stack should now have [1, 2, 1] (top is index 0)

@@ -105,6 +105,12 @@ struct Executor : Reflected {
     void ClearContext();
 
     void DropN();
+    
+    // Helper method for handling Pi language operations
+    void ContinuePi();
+    
+    // Helper method for evaluating continuations
+    void EvalContinuation(Object const &Q);
 
     // if ignoreQuote is true, then we resolve the identifier
     // even if it is quoted
@@ -117,6 +123,7 @@ struct Executor : Reflected {
 
     void Perform(Operation::Type op);
     void ToArray();
+    void ProcessToArray(int len); // Helper method for ToArray
 
     void GetChildren();
     void Expand();

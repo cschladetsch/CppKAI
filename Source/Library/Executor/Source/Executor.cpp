@@ -135,72 +135,14 @@ void Executor::Eval(Object const &Q) {
         case Type::Number::Label:
             EvalIdent<Label>(Q);
             break;
-
+            
         case Type::Number::Continuation:
-            // Special case for Pi language - some continuations are values
-            auto cont = ConstDeref<Continuation>(Q);
-            auto code = cont.GetCode();
-            
-            // Check if this is a simple value wrapped in a continuation
-            if (code && code->Size() == 3 && 
-                code->At(0).GetTypeNumber() == Type::Number::Operation && 
-                Deref<Operation>(code->At(0)).GetTypeNumber() == Operation::ContinuationBegin &&
-                code->At(2).GetTypeNumber() == Type::Number::Operation && 
-                Deref<Operation>(code->At(2)).GetTypeNumber() == Operation::ContinuationEnd) {
-                
-                // Extract the wrapped value and push it
-                Object valueObj = code->At(1);
-                if (valueObj.GetClass()) {
-                    // Clone the value to ensure types are preserved
-                    KAI_TRACE() << "Unwrapping value from continuation: " << valueObj.ToString();
-                    Push(valueObj.Clone());
-                    return;
-                }
+            // When evaluating a continuation, we need to execute it
+            // rather than just pushing it onto the stack
+            if (_traceLevel > 1) {
+                KAI_TRACE() << "Executing continuation: " << Q.ToString();
             }
-            // Pi language special case for Store operation ("42 'answer #")
-            else if (code && code->Size() >= 5 && 
-                     code->At(0).GetTypeNumber() == Type::Number::Operation && 
-                     Deref<Operation>(code->At(0)).GetTypeNumber() == Operation::ContinuationBegin &&
-                     code->At(code->Size()-1).GetTypeNumber() == Type::Number::Operation && 
-                     Deref<Operation>(code->At(code->Size()-1)).GetTypeNumber() == Operation::ContinuationEnd) {
-                
-                // Look for Store operation pattern (value, label, store)
-                for (int i = 1; i < code->Size()-2; i++) {
-                    if (code->At(i+1).IsType<Label>() && 
-                        code->At(i+2).GetTypeNumber() == Type::Number::Operation && 
-                        Deref<Operation>(code->At(i+2)).GetTypeNumber() == Operation::Store) {
-                        
-                        // This is a Store operation pattern
-                        Object valueObj = code->At(i);
-                        Label nameLabel = Deref<Label>(code->At(i+1));
-                        
-                        // Store the value directly
-                        KAI_TRACE() << "Pi Store operation: '" << nameLabel.ToString() << "' = " << valueObj.ToString();
-                        Set(_tree->GetRoot(), _continuation->GetScope(), nameLabel, valueObj);
-                        return;
-                    }
-                }
-                
-                // Look for Retreive operation pattern (label, retreive)
-                for (int i = 1; i < code->Size()-2; i++) {
-                    if (code->At(i).IsType<Label>() && 
-                        code->At(i+1).GetTypeNumber() == Type::Number::Operation && 
-                        Deref<Operation>(code->At(i+1)).GetTypeNumber() == Operation::Retreive) {
-                        
-                        // This is a Retreive operation pattern
-                        Label nameLabel = Deref<Label>(code->At(i));
-                        
-                        // Retrieve the value directly
-                        KAI_TRACE() << "Pi Retreive operation: '" << nameLabel.ToString() << "'";
-                        Object value = Resolve(nameLabel, true);
-                        Push(value);
-                        return;
-                    }
-                }
-            }
-            
-            // Regular continuations
-            Push(Q.Clone());
+            Continue(Q);
             break;
 
         default:
@@ -208,6 +150,16 @@ void Executor::Eval(Object const &Q) {
             Push(Q.Clone());
             break;
     }
+}
+
+// Helper method for evaluating continuations
+void Executor::EvalContinuation(Object const &Q) {
+    // Execute the continuation instead of just pushing it
+    if (_traceLevel > 1) {
+        KAI_TRACE() << "EvalContinuation: Executing continuation: " << Q.ToString();
+    }
+    // When a continuation is encountered, execute it
+    Continue(Q);
 }
 
 template <class Cont>
@@ -277,28 +229,78 @@ void Executor::ToArray() {
     // Rho translates to Pi, so we always use Pi language semantics
     KAI_TRACE() << "ToArray operation using Pi language semantics";
     
+    // Add more detailed stack debugging
+    KAI_TRACE() << "Stack size before ToArray: " << _data->Size();
+    for (int i = 0; i < std::min(5, _data->Size()); i++) {
+        Object item = _data->At(_data->Size() - 1 - i);
+        KAI_TRACE() << "  Stack[" << (_data->Size() - 1 - i) << "]: " 
+                 << (item.GetClass() ? item.ToString() : "<No class>")
+                 << " (type: " << (item.GetClass() ? item.GetClass()->GetName().ToString() : "<No class>") << ")";
+    }
+    
+    // Handle empty stack case
+    if (_data->Empty()) {
+        KAI_TRACE_WARN() << "ToArray: Stack is empty, creating empty array";
+        Push(New<Array>());
+        return;
+    }
+    
     // Get the size parameter off the stack
     auto sizeObj = Pop();
+    KAI_TRACE() << "ToArray: Size parameter is " 
+              << (sizeObj.GetClass() ? sizeObj.ToString() : "<No class>")
+              << " (type: " << (sizeObj.GetClass() ? sizeObj.GetClass()->GetName().ToString() : "<No class>") << ")";
+              
+    // Handle non-integer size parameter more gracefully
     if (!sizeObj.IsType<int>()) {
-        KAI_TRACE_ERROR() << "ToArray: Expected integer count, got " 
-                         << (sizeObj.GetClass() ? sizeObj.GetClass()->GetName().ToString() : "<No class>");
+        KAI_TRACE_WARN() << "ToArray: Expected integer count, got " 
+                       << (sizeObj.GetClass() ? sizeObj.GetClass()->GetName().ToString() : "<No class>");
         
-        // Pi language needs to be more forgiving
-        // Default to creating an empty array
+        // Try to convert different types to an integer size
+        if (sizeObj.IsType<float>()) {
+            // Convert float to int
+            int len = static_cast<int>(Deref<float>(sizeObj));
+            KAI_TRACE() << "ToArray: Converted float " << Deref<float>(sizeObj) << " to int " << len;
+            
+            // Continue with converted value
+            if (len < 0) {
+                KAI_TRACE_WARN() << "Pi ToArray: Negative size " << len << " treated as 0";
+                len = 0;
+            }
+            
+            // Process with converted size
+            ProcessToArray(len);
+            return;
+        }
+        
+        // For other types or if conversion fails
+        KAI_TRACE_WARN() << "Pi ToArray: Creating empty array due to invalid size parameter";
         Push(New<Array>());
         return;
     }
     
     int len = Deref<int>(sizeObj);
+    
+    // Handle special cases more gracefully
     if (len < 0) {
         // In Pi, treat negative size as 0
-        KAI_TRACE_WARNING() << "Pi ToArray: Negative size " << len << " treated as 0";
+        KAI_TRACE_WARN() << "Pi ToArray: Negative size " << len << " treated as 0";
         len = 0;
+        ProcessToArray(len);
+        return;
     }
+    
+    // Normal case - positive size
+    ProcessToArray(len);
+}
 
+// Helper method to process ToArray with a valid length
+void Executor::ProcessToArray(int len) {
+    KAI_TRACE() << "ProcessToArray with length: " << len;
+    
     // Check if we have enough items on the stack
     if (_data->Size() < len) {
-        KAI_TRACE_WARNING() << "ToArray: Not enough items on stack. Need " << len 
+        KAI_TRACE_WARN() << "ToArray: Not enough items on stack. Need " << len 
                         << " but only have " << _data->Size();
                         
         // In Pi language, create an array with what we have
@@ -313,7 +315,11 @@ void Executor::ToArray() {
     // Fill the array with items from the stack
     // Items are popped in reverse order to maintain correct ordering
     for (int i = len - 1; i >= 0; i--) {
-        array->RefAt(i) = Pop();
+        Object item = Pop();
+        KAI_TRACE() << "  Adding item to array[" << i << "]: " 
+                 << (item.GetClass() ? item.ToString() : "<No class>")
+                 << " (type: " << (item.GetClass() ? item.GetClass()->GetName().ToString() : "<No class>") << ")";
+        array->RefAt(i) = item;
     }
 
     // Push the resulting array back onto the stack
@@ -1666,24 +1672,35 @@ void Executor::Perform(Operation::Type op) {
         case Operation::Over: {
             // Pi language needs special checking
             if (_data->Size() < 2) {
-                KAI_TRACE_WARNING() << "Pi Over: Not enough items on stack (need 2, have " << _data->Size() << ")";
+                KAI_TRACE_WARN() << "Pi Over: Not enough items on stack (need 2, have " << _data->Size() << ")";
                 // In Pi, we should be forgiving - don't throw
                 if (_data->Size() == 1) {
                     // Just duplicate the single value as a fallback
-                    Object A = Pop();
-                    Push(A);
-                    Push(A.Duplicate());
+                    Object A = _data->Top(); // Don't pop, just reference
+                    Object duplicate = A.Duplicate();
+                    Push(duplicate); // Push a duplicate
                     KAI_TRACE() << "Pi Over: Only one value available, duplicated instead";
                 }
                 // If empty, nothing to do
             } else {
-                // Normal over operation
-                Object A = Pop();
-                Object B = Pop();
-                Push(B);
-                Push(A);
-                Push(B.Duplicate());  // Duplicate B to ensure type integrity
-                KAI_TRACE() << "Pi Over: Operation completed successfully";
+                // Normal over operation - copy the second item to the top
+                // In stack [A, B] (top is B), we want [A, B, A]
+                
+                // Get the values without popping them
+                Object B = _data->At(0); // Top of stack
+                Object A = _data->At(1); // Second item
+                
+                // Log the values for debugging
+                KAI_TRACE() << "Pi Over: Stack before: " 
+                           << (A.GetClass() ? A.ToString() : "<No class>") << ", " 
+                           << (B.GetClass() ? B.ToString() : "<No class>");
+                
+                // Create a duplicate of A and push it
+                Object duplicateA = A.Duplicate();
+                Push(duplicateA);
+                
+                KAI_TRACE() << "Pi Over: Copied second item to top of stack";
+                KAI_TRACE() << "Pi Over: Stack size now: " << _data->Size();
             }
             break;
         }
@@ -1760,7 +1777,7 @@ void Executor::Perform(Operation::Type op) {
         case Operation::Drop:
             // For Pi language, check if the stack is empty first
             if (_data->Empty()) {
-                KAI_TRACE_WARNING() << "Pi Drop: Stack is already empty";
+                KAI_TRACE_WARN() << "Pi Drop: Stack is already empty";
                 // No-op for empty stack in Pi
             } else {
                 Pop();
@@ -1770,7 +1787,7 @@ void Executor::Perform(Operation::Type op) {
         case Operation::Swap: {
             // For Pi language, check if we have enough items
             if (_data->Size() < 2) {
-                KAI_TRACE_WARNING() << "Pi Swap: Not enough items on stack (need 2, have " << _data->Size() << ")";
+                KAI_TRACE_WARN() << "Pi Swap: Not enough items on stack (need 2, have " << _data->Size() << ")";
                 // In Pi, we should be forgiving - don't throw
                 if (_data->Size() == 1) {
                     // Just keep the single value
@@ -1781,9 +1798,18 @@ void Executor::Perform(Operation::Type op) {
                 // Normal swap operation
                 auto A = Pop();
                 auto B = Pop();
+                
+                // Log the values being swapped for debugging
+                KAI_TRACE() << "Pi Swap: Swapping values: " 
+                           << (A.GetClass() ? A.ToString() : "<No class>") << " and "
+                           << (B.GetClass() ? B.ToString() : "<No class>");
+                
+                // Make sure to push in the correct order
                 Push(A);
                 Push(B);
+                
                 KAI_TRACE() << "Pi Swap: Swapped values successfully";
+                KAI_TRACE() << "Pi Swap: Stack size now: " << _data->Size();
             }
             break;
         }
@@ -1791,13 +1817,38 @@ void Executor::Perform(Operation::Type op) {
         case Operation::Dup: {
             // For Pi language, check if the stack is empty first
             if (_data->Empty()) {
-                KAI_TRACE_WARNING() << "Pi Dup: Stack is empty, nothing to duplicate";
+                KAI_TRACE_WARN() << "Pi Dup: Stack is empty, nothing to duplicate";
                 // No-op for empty stack in Pi
             } else {
-                auto Q = Pop();
-                Push(Q);
-                Push(Q.Duplicate());
-                KAI_TRACE() << "Pi Dup: Duplicated value successfully";
+                // Don't pop the value - just peek it with Top() and push a duplicate
+                // This keeps the original value on the stack
+                Object Q = _data->Top();
+                KAI_TRACE() << "Pi Dup: Duplicating value: " << Q.ToString();
+                
+                // Create a duplicate (clone) of the value
+                Object duplicate = Q.Duplicate();
+                
+                // Debug stack size before pushing
+                KAI_TRACE() << "Pi Dup: Stack size before push: " << _data->Size();
+                
+                // First push the original value back (unnecessary since Top() doesn't pop)
+                // Push(Q); - this line was causing the stack size to grow incorrectly
+                
+                // Push the duplicate value
+                Push(duplicate);
+                
+                KAI_TRACE() << "Pi Dup: Original value still on stack, duplicated value pushed";
+                KAI_TRACE() << "Pi Dup: Stack size after push: " << _data->Size();
+                
+                // Stack should now have two copies of the same value
+                // KAI_ASSERT(_data->Size() >= 2); - Using trace instead
+                
+                // Additional debug logging to verify stack state
+                if (_data->Size() >= 2) {
+                    KAI_TRACE() << "Pi Dup: Top two elements:";
+                    KAI_TRACE() << "  [0]: " << _data->At(0).ToString();
+                    KAI_TRACE() << "  [1]: " << _data->At(1).ToString();
+                }
             }
             break;
         }
@@ -1928,33 +1979,164 @@ void Executor::Perform(Operation::Type op) {
         }
 
         case Operation::Plus: {
+            // Make sure we have at least two items on the stack
+            if (_data->Size() < 2) {
+                KAI_TRACE_ERROR() << "Pi Plus: Not enough items on stack (need 2, have " << _data->Size() << ")";
+                KAI_THROW_1(Base, "Not enough items on stack for Plus operation");
+            }
+            
             Object B = Pop();
             Object A = Pop();
-            Push(A.GetClass()->Plus(A, B));
+            
+            KAI_TRACE() << "Pi Plus: Adding " 
+                       << (A.GetClass() ? A.ToString() : "<No class>") << " and "
+                       << (B.GetClass() ? B.ToString() : "<No class>");
+            
+            // Handle special case for integer addition which is most common
+            if (A.IsType<int>() && B.IsType<int>()) {
+                int result = Deref<int>(A) + Deref<int>(B);
+                KAI_TRACE() << "Pi Plus: Integer result: " << result;
+                Push(New<int>(result));
+            }
+            // Handle string concatenation
+            else if (A.IsType<String>() && B.IsType<String>()) {
+                String result = Deref<String>(A) + Deref<String>(B);
+                KAI_TRACE() << "Pi Plus: String result: " << result;
+                Push(New<String>(result));
+            }
+            // Use standard class traits for other types
+            else {
+                try {
+                    Object result = A.GetClass()->Plus(A, B);
+                    Push(result);
+                    KAI_TRACE() << "Pi Plus: Result: " << (result.GetClass() ? result.ToString() : "<No class>");
+                }
+                catch (Exception::Base& E) {
+                    KAI_TRACE_ERROR() << "Pi Plus: Exception: " << E.ToString();
+                    // For Pi language, create a default value when operation fails
+                    Push(New<int>(0));
+                }
+            }
 
             break;
         }
 
         case Operation::Minus: {
+            // Make sure we have at least two items on the stack
+            if (_data->Size() < 2) {
+                KAI_TRACE_ERROR() << "Pi Minus: Not enough items on stack (need 2, have " << _data->Size() << ")";
+                KAI_THROW_1(Base, "Not enough items on stack for Minus operation");
+            }
+            
             Object B = Pop();
             Object A = Pop();
-            Push(A.GetClass()->Minus(A, B));
+            
+            KAI_TRACE() << "Pi Minus: Subtracting " 
+                       << (B.GetClass() ? B.ToString() : "<No class>") << " from "
+                       << (A.GetClass() ? A.ToString() : "<No class>");
+            
+            // Handle special case for integer subtraction which is most common
+            if (A.IsType<int>() && B.IsType<int>()) {
+                int result = Deref<int>(A) - Deref<int>(B);
+                KAI_TRACE() << "Pi Minus: Integer result: " << result;
+                Push(New<int>(result));
+            }
+            // Use standard class traits for other types
+            else {
+                try {
+                    Object result = A.GetClass()->Minus(A, B);
+                    Push(result);
+                    KAI_TRACE() << "Pi Minus: Result: " << (result.GetClass() ? result.ToString() : "<No class>");
+                }
+                catch (Exception::Base& E) {
+                    KAI_TRACE_ERROR() << "Pi Minus: Exception: " << E.ToString();
+                    // For Pi language, create a default value when operation fails
+                    Push(New<int>(0));
+                }
+            }
 
             break;
         }
 
         case Operation::Multiply: {
+            // Make sure we have at least two items on the stack
+            if (_data->Size() < 2) {
+                KAI_TRACE_ERROR() << "Pi Multiply: Not enough items on stack (need 2, have " << _data->Size() << ")";
+                KAI_THROW_1(Base, "Not enough items on stack for Multiply operation");
+            }
+            
             Object B = Pop();
             Object A = Pop();
-            Push(A.GetClass()->Multiply(A, B));
+            
+            KAI_TRACE() << "Pi Multiply: Multiplying " 
+                       << (A.GetClass() ? A.ToString() : "<No class>") << " by "
+                       << (B.GetClass() ? B.ToString() : "<No class>");
+            
+            // Handle special case for integer multiplication which is most common
+            if (A.IsType<int>() && B.IsType<int>()) {
+                int result = Deref<int>(A) * Deref<int>(B);
+                KAI_TRACE() << "Pi Multiply: Integer result: " << result;
+                Push(New<int>(result));
+            }
+            // Use standard class traits for other types
+            else {
+                try {
+                    Object result = A.GetClass()->Multiply(A, B);
+                    Push(result);
+                    KAI_TRACE() << "Pi Multiply: Result: " << (result.GetClass() ? result.ToString() : "<No class>");
+                }
+                catch (Exception::Base& E) {
+                    KAI_TRACE_ERROR() << "Pi Multiply: Exception: " << E.ToString();
+                    // For Pi language, create a default value when operation fails
+                    Push(New<int>(0));
+                }
+            }
 
             break;
         }
 
         case Operation::Divide: {
+            // Make sure we have at least two items on the stack
+            if (_data->Size() < 2) {
+                KAI_TRACE_ERROR() << "Pi Divide: Not enough items on stack (need 2, have " << _data->Size() << ")";
+                KAI_THROW_1(Base, "Not enough items on stack for Divide operation");
+            }
+            
             Object B = Pop();
             Object A = Pop();
-            Push(A.GetClass()->Divide(A, B));
+            
+            KAI_TRACE() << "Pi Divide: Dividing " 
+                       << (A.GetClass() ? A.ToString() : "<No class>") << " by "
+                       << (B.GetClass() ? B.ToString() : "<No class>");
+            
+            // Handle special case for integer division which is most common
+            if (A.IsType<int>() && B.IsType<int>()) {
+                // Check for division by zero
+                int divisor = Deref<int>(B);
+                if (divisor == 0) {
+                    KAI_TRACE_ERROR() << "Pi Divide: Division by zero";
+                    // For Pi language, return 0 on division by zero
+                    Push(New<int>(0));
+                    break;
+                }
+                
+                int result = Deref<int>(A) / divisor;
+                KAI_TRACE() << "Pi Divide: Integer result: " << result;
+                Push(New<int>(result));
+            }
+            // Use standard class traits for other types
+            else {
+                try {
+                    Object result = A.GetClass()->Divide(A, B);
+                    Push(result);
+                    KAI_TRACE() << "Pi Divide: Result: " << (result.GetClass() ? result.ToString() : "<No class>");
+                }
+                catch (Exception::Base& E) {
+                    KAI_TRACE_ERROR() << "Pi Divide: Exception: " << E.ToString();
+                    // For Pi language, create a default value when operation fails
+                    Push(New<int>(0));
+                }
+            }
 
             break;
         }
@@ -1991,14 +2173,65 @@ void Executor::Perform(Operation::Type op) {
             KAI_TRACE() << "Executor Store: " << (ident.GetClass() ? ident.ToString() : "<No class>") 
                        << " = " << (value.GetClass() ? value.ToString() : "<No class>");
             
-            // Make sure we're handling Pi language's store operation correctly
+            // Improved handling of Pi language's store operation
             if (ident.IsType<Label>()) {
                 Label nameLabel = Deref<Label>(ident);
-                KAI_TRACE() << "Storing variable '" << nameLabel.ToString() << "' = " << value.ToString();
-                Set(_tree->GetRoot(), _continuation->GetScope(), nameLabel, value);
+                
+                // Store the value, ensuring we clone it to preserve type information
+                // Pi language requires preserving the exact object type when storing
+                KAI_TRACE() << "Storing variable '" << nameLabel.ToString() << "' = " << value.ToString() 
+                           << " (type: " << (value.GetClass() ? value.GetClass()->GetName().ToString() : "<No class>") << ")";
+                
+                // First check if we're storing a primitive type (int, float, bool, string)
+                // which should be stored directly
+                if (value.IsType<int>() || value.IsType<float>() || 
+                    value.IsType<bool>() || value.IsType<String>()) {
+                    // Store primitive types directly to preserve exact type
+                    Object labelObj = New<Label>(nameLabel);
+                    Set(_tree->GetRoot(), _continuation->GetScope(), labelObj, value);
+                    
+                    // Push the value back onto the stack as Pi expects
+                    Push(value);
+                }
+                else {
+                    // For complex types, we need to clone to ensure type information is preserved
+                    Object clonedValue = value.Clone();
+                    Object labelObj = New<Label>(nameLabel);
+                    Set(_tree->GetRoot(), _continuation->GetScope(), labelObj, clonedValue);
+                    
+                    // Push the original value back onto the stack as Pi expects
+                    Push(value);
+                }
+            } else if (ident.IsType<Pathname>()) {
+                // Handle Pathname type correctly
+                Pathname path = Deref<Pathname>(ident);
+                KAI_TRACE() << "Storing at path '" << path.ToString() << "' = " << value.ToString();
+                
+                // Ensure we're storing the clone to preserve type information
+                if (value.IsType<int>() || value.IsType<float>() || 
+                    value.IsType<bool>() || value.IsType<String>()) {
+                    // Store primitive types directly
+                    Set(_continuation->GetScope(), path, value);
+                    
+                    // Push the value back onto the stack as Pi expects
+                    Push(value);
+                }
+                else {
+                    // Clone complex types
+                    Object clonedValue = value.Clone();
+                    Set(_continuation->GetScope(), path, clonedValue);
+                    
+                    // Push the original value back onto the stack as Pi expects
+                    Push(value);
+                }
             } else {
                 // Fallback for other types of identifiers
+                KAI_TRACE() << "Storing with generic identifier type: " 
+                           << (ident.GetClass() ? ident.GetClass()->GetName().ToString() : "<No class>");
                 Set(_tree->GetRoot(), _continuation->GetScope(), ident, value);
+                
+                // Push the value back onto the stack as Pi expects
+                Push(value);
             }
 
             break;
@@ -2008,16 +2241,83 @@ void Executor::Perform(Operation::Type op) {
             Object ident = Pop();
             KAI_TRACE() << "Executor Retreive: " << (ident.GetClass() ? ident.ToString() : "<No class>");
             
-            // Handle Pi language retreive operation more carefully
+            // Improved handling of Pi language retrieve operation
             if (ident.IsType<Label>()) {
                 Label nameLabel = Deref<Label>(ident);
                 KAI_TRACE() << "Retrieving variable '" << nameLabel.ToString() << "'";
-                Object value = Resolve(nameLabel, true);
-                Push(value);
+                
+                // First try to resolve directly (faster path)
+                Object value = TryResolve(nameLabel);
+                
+                if (value.Exists()) {
+                    // We found the variable
+                    KAI_TRACE() << "Found variable '" << nameLabel.ToString() << "' with type " 
+                               << (value.GetClass() ? value.GetClass()->GetName().ToString() : "<No class>");
+                    
+                    // For Pi language, we shouldn't clone primitive values as they're immutable
+                    if (value.IsType<int>() || value.IsType<float>() || 
+                        value.IsType<bool>() || value.IsType<String>()) {
+                        // Push primitive types directly - they're immutable
+                        Push(value);
+                    } else {
+                        // For complex types, generally we want to push a reference to preserve identity
+                        // but the Pi language expects a reference, not a clone
+                        Push(value);
+                    }
+                } else {
+                    // Variable not found - for Pi language, this is an error
+                    KAI_TRACE_ERROR() << "Pi Retreive: Variable '" << nameLabel.ToString() << "' not found";
+                    
+                    // In Pi, when a variable isn't found, we should throw an error
+                    // rather than returning None or a placeholder value
+                    KAI_THROW_1(CannotResolve, nameLabel);
+                }
+            } else if (ident.IsType<Pathname>()) {
+                // Handle Pathname type correctly
+                Pathname path = Deref<Pathname>(ident);
+                KAI_TRACE() << "Retrieving value at path '" << path.ToString() << "'";
+                
+                // Try to resolve the Pathname
+                Object value = TryResolve(path);
+                
+                if (value.Exists()) {
+                    KAI_TRACE() << "Found value at path '" << path.ToString() << "' with type " 
+                               << (value.GetClass() ? value.GetClass()->GetName().ToString() : "<No class>");
+                    
+                    // For Pi language, we shouldn't clone primitive values as they're immutable
+                    if (value.IsType<int>() || value.IsType<float>() || 
+                        value.IsType<bool>() || value.IsType<String>()) {
+                        // Push primitive types directly - they're immutable
+                        Push(value);
+                    } else {
+                        // For complex types, we want to push a reference to preserve identity
+                        Push(value);
+                    }
+                } else {
+                    KAI_TRACE_ERROR() << "Pi Retreive: Path '" << path.ToString() << "' not found";
+                    KAI_THROW_1(CannotResolve, path);
+                }
             } else {
-                // Fallback to standard resolve
-                Push(Resolve(ident, true));
+                // Fallback to standard resolve, but use TryResolve first to check existence
+                Object value = TryResolve(ident);  
+                if (value.Exists()) {
+                    // Push the value directly - Pi language prefers references for all types
+                    Push(value);
+                } else {
+                    KAI_TRACE_ERROR() << "Pi Retreive: Cannot resolve identifier";
+                    KAI_THROW_1(CannotResolve, ident);
+                }
             }
+            
+            // Add extra debug info about what we pushed
+            if (_data->Size() > 0) {
+                KAI_TRACE() << "Pi Retreive: Pushed value: " 
+                          << (_data->Top().GetClass() ? _data->Top().ToString() : "<No class>")
+                          << " (type: " 
+                          << (_data->Top().GetClass() ? _data->Top().GetClass()->GetName().ToString() : "<No class>")
+                          << ")";
+            }
+            
             break;
         }
 
@@ -2196,84 +2496,180 @@ void Executor::Perform(Operation::Type op) {
         }
 
         case Operation::LogicalNot: {
+            // Make sure we have at least one item on the stack
+            if (_data->Empty()) {
+                KAI_TRACE_ERROR() << "Pi LogicalNot: Empty stack, nothing to negate";
+                KAI_THROW_1(Base, "Empty stack for LogicalNot operation");
+            }
+            
             // Get the value to negate
             Object val = Pop();
             
-            // Type checking for Pi
-            if (!val.IsType<bool>()) {
-                KAI_TRACE_ERROR() << "Pi LogicalNot: Expected boolean, got " 
-                               << (val.GetClass() ? val.GetClass()->GetName().ToString() : "<No class>");
-                // In Pi, only booleans can be negated
-                Push(New<bool>(false));  // Default to false for type errors
-            } else {
-                // Perform the logical not
-                bool result = !val.GetClass()->Boolean(val);
-                Push(New<bool>(result));
-                KAI_TRACE() << "LogicalNot: " << (!result) << " -> " << result;
+            KAI_TRACE() << "Pi LogicalNot: Negating " 
+                       << (val.GetClass() ? val.ToString() : "<No class>");
+            
+            // Handle coercion to boolean for Pi language
+            bool boolValue = false;
+            
+            // Get boolean value from the operand
+            if (val.IsType<bool>()) {
+                boolValue = Deref<bool>(val);
+            } else if (val.IsType<int>()) {
+                boolValue = Deref<int>(val) != 0;
+            } else if (val.Exists() && val.GetClass()) {
+                // Use the Boolean trait if available
+                boolValue = val.GetClass()->Boolean(val);
             }
+            
+            // Perform logical NOT
+            bool result = !boolValue;
+            Push(New<bool>(result));
+            
+            KAI_TRACE() << "Pi LogicalNot: !" << boolValue << " = " << result;
             break;
         }
 
         case Operation::LogicalXor: {
+            // Make sure we have at least two items on the stack
+            if (_data->Size() < 2) {
+                KAI_TRACE_ERROR() << "Pi LogicalXor: Not enough items on stack (need 2, have " << _data->Size() << ")";
+                KAI_THROW_1(Base, "Not enough items on stack for LogicalXor operation");
+            }
+            
             // Get the operands
             Object B = Pop();
             Object A = Pop();
             
-            // Type checking for Pi
-            if (!A.IsType<bool>() || !B.IsType<bool>()) {
-                KAI_TRACE_ERROR() << "Pi LogicalXor: Expected booleans, got " 
-                               << (A.GetClass() ? A.GetClass()->GetName().ToString() : "<No class>") << " and "
-                               << (B.GetClass() ? B.GetClass()->GetName().ToString() : "<No class>");
-                // In Pi, only booleans can be used with logical operators
-                Push(New<bool>(false));  // Default to false for type errors
-            } else {
-                // Both are booleans, perform the operation
-                bool result = Deref<bool>(A) != Deref<bool>(B);  // XOR is boolean inequality
-                Push(New<bool>(result));
-                KAI_TRACE() << "Pi LogicalXor: " << Deref<bool>(A) << " ^ " << Deref<bool>(B) << " = " << result;
+            KAI_TRACE() << "Pi LogicalXor: Operating on " 
+                       << (A.GetClass() ? A.ToString() : "<No class>") << " and "
+                       << (B.GetClass() ? B.ToString() : "<No class>");
+            
+            // Handle coercion to boolean for Pi language
+            // In Pi, we want to be more forgiving about types
+            bool aValue = false;
+            bool bValue = false;
+            
+            // Get boolean value from A
+            if (A.IsType<bool>()) {
+                aValue = Deref<bool>(A);
+            } else if (A.IsType<int>()) {
+                aValue = Deref<int>(A) != 0;
+            } else if (A.Exists() && A.GetClass()) {
+                // Use the Boolean trait if available
+                aValue = A.GetClass()->Boolean(A);
             }
+            
+            // Get boolean value from B
+            if (B.IsType<bool>()) {
+                bValue = Deref<bool>(B);
+            } else if (B.IsType<int>()) {
+                bValue = Deref<int>(B) != 0;
+            } else if (B.Exists() && B.GetClass()) {
+                // Use the Boolean trait if available
+                bValue = B.GetClass()->Boolean(B);
+            }
+            
+            // Perform logical XOR (exclusive-or) - true when inputs differ
+            bool result = aValue != bValue;
+            Push(New<bool>(result));
+            
+            KAI_TRACE() << "Pi LogicalXor: " << aValue << " ^ " << bValue << " = " << result;
             break;
         }
 
         case Operation::LogicalAnd: {
+            // Make sure we have at least two items on the stack
+            if (_data->Size() < 2) {
+                KAI_TRACE_ERROR() << "Pi LogicalAnd: Not enough items on stack (need 2, have " << _data->Size() << ")";
+                KAI_THROW_1(Base, "Not enough items on stack for LogicalAnd operation");
+            }
+            
             // Get the operands
             Object B = Pop();
             Object A = Pop();
             
-            // Type checking for Pi
-            if (!A.IsType<bool>() || !B.IsType<bool>()) {
-                KAI_TRACE_ERROR() << "Pi LogicalAnd: Expected booleans, got " 
-                               << (A.GetClass() ? A.GetClass()->GetName().ToString() : "<No class>") << " and "
-                               << (B.GetClass() ? B.GetClass()->GetName().ToString() : "<No class>");
-                // In Pi, only booleans can be used with logical operators
-                Push(New<bool>(false));  // Default to false for type errors
-            } else {
-                // Both are booleans, perform the operation
-                bool result = Deref<bool>(A) && Deref<bool>(B);
-                Push(New<bool>(result));
-                KAI_TRACE() << "Pi LogicalAnd: " << Deref<bool>(A) << " && " << Deref<bool>(B) << " = " << result;
+            KAI_TRACE() << "Pi LogicalAnd: Operating on " 
+                       << (A.GetClass() ? A.ToString() : "<No class>") << " and "
+                       << (B.GetClass() ? B.ToString() : "<No class>");
+            
+            // Handle coercion to boolean for Pi language
+            // In Pi, we want to be more forgiving about types
+            bool aValue = false;
+            bool bValue = false;
+            
+            // Get boolean value from A
+            if (A.IsType<bool>()) {
+                aValue = Deref<bool>(A);
+            } else if (A.IsType<int>()) {
+                aValue = Deref<int>(A) != 0;
+            } else if (A.Exists() && A.GetClass()) {
+                // Use the Boolean trait if available
+                aValue = A.GetClass()->Boolean(A);
             }
+            
+            // Get boolean value from B
+            if (B.IsType<bool>()) {
+                bValue = Deref<bool>(B);
+            } else if (B.IsType<int>()) {
+                bValue = Deref<int>(B) != 0;
+            } else if (B.Exists() && B.GetClass()) {
+                // Use the Boolean trait if available
+                bValue = B.GetClass()->Boolean(B);
+            }
+            
+            // Perform logical AND
+            bool result = aValue && bValue;
+            Push(New<bool>(result));
+            
+            KAI_TRACE() << "Pi LogicalAnd: " << aValue << " && " << bValue << " = " << result;
             break;
         }
 
         case Operation::LogicalOr: {
+            // Make sure we have at least two items on the stack
+            if (_data->Size() < 2) {
+                KAI_TRACE_ERROR() << "Pi LogicalOr: Not enough items on stack (need 2, have " << _data->Size() << ")";
+                KAI_THROW_1(Base, "Not enough items on stack for LogicalOr operation");
+            }
+            
             // Get the operands
             Object B = Pop();
             Object A = Pop();
             
-            // Type checking for Pi
-            if (!A.IsType<bool>() || !B.IsType<bool>()) {
-                KAI_TRACE_ERROR() << "Pi LogicalOr: Expected booleans, got " 
-                               << (A.GetClass() ? A.GetClass()->GetName().ToString() : "<No class>") << " and "
-                               << (B.GetClass() ? B.GetClass()->GetName().ToString() : "<No class>");
-                // In Pi, only booleans can be used with logical operators
-                Push(New<bool>(false));  // Default to false for type errors
-            } else {
-                // Both are booleans, perform the operation
-                bool result = Deref<bool>(A) || Deref<bool>(B);
-                Push(New<bool>(result));
-                KAI_TRACE() << "Pi LogicalOr: " << Deref<bool>(A) << " || " << Deref<bool>(B) << " = " << result;
+            KAI_TRACE() << "Pi LogicalOr: Operating on " 
+                       << (A.GetClass() ? A.ToString() : "<No class>") << " and "
+                       << (B.GetClass() ? B.ToString() : "<No class>");
+            
+            // Handle coercion to boolean for Pi language
+            // In Pi, we want to be more forgiving about types
+            bool aValue = false;
+            bool bValue = false;
+            
+            // Get boolean value from A
+            if (A.IsType<bool>()) {
+                aValue = Deref<bool>(A);
+            } else if (A.IsType<int>()) {
+                aValue = Deref<int>(A) != 0;
+            } else if (A.Exists() && A.GetClass()) {
+                // Use the Boolean trait if available
+                aValue = A.GetClass()->Boolean(A);
             }
+            
+            // Get boolean value from B
+            if (B.IsType<bool>()) {
+                bValue = Deref<bool>(B);
+            } else if (B.IsType<int>()) {
+                bValue = Deref<int>(B) != 0;
+            } else if (B.Exists() && B.GetClass()) {
+                // Use the Boolean trait if available
+                bValue = B.GetClass()->Boolean(B);
+            }
+            
+            // Perform logical OR
+            bool result = aValue || bValue;
+            Push(New<bool>(result));
+            
+            KAI_TRACE() << "Pi LogicalOr: " << aValue << " || " << bValue << " = " << result;
             break;
         }
 

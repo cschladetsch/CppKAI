@@ -123,13 +123,14 @@ void PiTranslator::AppendTokenised(const TokenNode &tok) {
         case PiTokenEnumType::Store:
             // In Pi, 'Store' (# operator) stores a value with a label
             // We need to make sure it preserves type when storing
+            // Store operation must ensure exact type is preserved
             AppendOp(Operation::Store);
             break;
 
         case PiTokenEnumType::Lookup:
             // In Pi, 'Lookup' (@ operator) retrieves a value by label
-            // We need to make sure it maintains proper type information
-            // The key fix is using AppendOp which correctly sets up the operation
+            // We need to make sure it maintains proper type information during retrieval
+            // and correctly handles error cases when variables don't exist
             AppendOp(Operation::Retreive);
             break;
 
