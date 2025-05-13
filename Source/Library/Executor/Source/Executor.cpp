@@ -1762,11 +1762,37 @@ void Executor::Perform(Operation::Type op) {
         }
 
         case Operation::Assert: {
-            if (!PopBool()) {
-                KAI_TRACE_ERROR_1(_continuation->Show()) << "Assertion failed";
+            // Make sure we have at least one item on the stack
+            if (_data->Size() < 1) {
+                KAI_THROW_1(EmptyStack, "Assert operation requires a condition on the stack");
+            }
+            
+            Object condition = Pop();
+            if (!condition.Exists()) {
+                KAI_TRACE_ERROR() << "Pi Assert: Null condition object";
+                KAI_THROW_1(Base, "Assert requires a valid boolean value");
+            }
+            
+            if (!condition.IsType<bool>()) {
+                KAI_TRACE_ERROR() << "Pi Assert: Expected boolean value, got " 
+                                 << (condition.GetClass() ? condition.GetClass()->GetName().ToString() : "<No class>");
+                KAI_THROW_1(Base, "Assert requires a boolean value");
+            }
+            
+            bool result = Deref<bool>(condition);
+            if (!result) {
+                // Add detailed logging for the assertion failure
+                String location = _continuation->GetScope().Exists()
+                    ? "in " + _continuation->GetScope().ToString()
+                    : "at unknown location";
+                
+                KAI_TRACE_ERROR_1(_continuation->Show()) << "Pi Assert: Assertion failed " << location;
+                
+                // Use KAI_THROW_0(Assertion) as originally implemented
                 KAI_THROW_0(Assertion);
             }
-
+            
+            // When assertion passes, don't push anything onto the stack
             break;
         }
 

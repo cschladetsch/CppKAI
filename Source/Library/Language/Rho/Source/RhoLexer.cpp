@@ -59,7 +59,12 @@ bool RhoLexer::NextToken() {
 
     if (isdigit(current)) {
         std::cout << "Lexing number starting with: " << current << std::endl;
-        return Add(Enum::Int, Gather(isdigit));
+        // Collect the digits
+        int start = offset;
+        while (isdigit(Current())) {
+            Next();
+        }
+        return Add(Enum::Int, Slice(start, offset));
     }
 
     switch (current) {

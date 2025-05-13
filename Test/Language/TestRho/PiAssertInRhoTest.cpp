@@ -41,17 +41,16 @@ TEST(RhoLanguage, PiAssertInRho) {
     // Test a failing assertion
     cout << "Testing failing Pi assertion inside Rho: pi { 1 1 + 3 == assert }" << endl;
     
-    bool assertionFailed = false;
-    try {
-        console.Process("pi { 1 1 + 3 == assert }");
-        
-        // If we get here, the assertion didn't fail as expected
-        FAIL() << "Failing Pi assertion did not throw an exception as expected";
-    }
-    catch (const std::exception&) {
-        // This is expected - the assertion should fail
-        assertionFailed = true;
-    }
+    // The Process method catches exceptions and returns a string with the error message
+    // It won't throw an exception to the caller, so we need to check the return value
+    String result = console.Process("pi { 1 1 + 3 == assert }");
     
-    ASSERT_TRUE(assertionFailed) << "Failing Pi assertion threw exception as expected";
+    // Convert to std::string for easier testing
+    std::string stdResult = result.StdString();
+    
+    // If the assertion failed, the result should contain an exception message
+    // The Process method returns a string with "Exception: " prefix when an exception occurs
+    ASSERT_FALSE(stdResult.empty()) << "Failing Pi assertion should return an error message";
+    ASSERT_TRUE(stdResult.find("Exception:") != std::string::npos) 
+        << "Error message should indicate an exception occurred, but got: " << stdResult;
 }

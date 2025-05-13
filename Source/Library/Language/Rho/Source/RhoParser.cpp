@@ -206,10 +206,28 @@ bool RhoParser::Statement(AstNodePtr block) {
             std::cout << "RhoParser::Statement - Processing Assert"
                       << std::endl;
             auto ass = NewNode(Consume());
+            
+            // Handle parentheses in assert statements (e.g., assert(expression))
+            bool hasParentheses = false;
+            if (Try(TokenType::OpenParan)) {
+                hasParentheses = true;
+                Consume();
+            }
+            
             if (!Expression()) {
                 Fail(Lexer::CreateErrorMessage(
                     Current(), "Assert needs an expression to test"));
                 return false;
+            }
+
+            // If opening parenthesis was used, expect closing parenthesis
+            if (hasParentheses) {
+                if (!Try(TokenType::CloseParan)) {
+                    Fail(Lexer::CreateErrorMessage(
+                        Current(), "Expected closing parenthesis after assert condition"));
+                    return false;
+                }
+                Consume();
             }
 
             ass->Add(Pop());
