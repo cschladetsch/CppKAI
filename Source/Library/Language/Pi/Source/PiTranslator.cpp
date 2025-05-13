@@ -33,14 +33,17 @@ void PiTranslator::TranslateNode(AstNodePtr node) {
             Pointer<Continuation> cont = _reg->New<Continuation>();
             Pointer<Array> code = _reg->New<Array>();
             
+            // First, add an operation marker to indicate the start of a continuation block
+            // This helps the executor properly handle Pi continuations
+            AppendDirectOperation(code, Operation::ContinuationBegin);
+            
             // For empty continuations '{}' in Pi language
             if (node->GetChildren().empty()) {
-                // For empty continuations, we create a valid but empty code array
-                // Empty continuations executed with & should leave nothing on the stack
+                // For empty continuations, just add the end marker and we're done
+                AppendDirectOperation(code, Operation::ContinuationEnd);
                 cont->SetCode(code);
                 
-                // For Pi language continuations, we need a consistent approach
-                // but we can't use SetManaged as we originally tried
+                // The continuation markers are sufficient, no need for extra properties
                 
                 Append(cont);
                 break;
@@ -62,11 +65,13 @@ void PiTranslator::TranslateNode(AstNodePtr node) {
                 }
             }
             
+            // Add the end marker for this continuation block
+            AppendDirectOperation(code, Operation::ContinuationEnd);
+            
             // Set the code array and append the continuation
             cont->SetCode(code);
             
-            // For Pi language continuations, we need a consistent approach
-            // but we can't use SetManaged as we originally tried
+            // The continuation markers are sufficient, no need for extra properties
             
             Append(cont);
             break;
@@ -173,6 +178,8 @@ void PiTranslator::AppendTokenised(const TokenNode &tok) {
             break;
 
         case PiTokenEnumType::Divide:
+            // Make sure both 'div' and '/' tokens are handled as division operations
+            // This is critical for Pi language division operations to work correctly
             AppendOp(Operation::Divide);
             break;
 
@@ -233,6 +240,7 @@ void PiTranslator::AppendTokenised(const TokenNode &tok) {
             break;
 
         case PiTokenEnumType::Size:
+            // Make sure Size operation is correctly identified and appended
             AppendOp(Operation::Size);
             break;
 
@@ -334,6 +342,12 @@ void PiTranslator::AppendTokenised(const TokenNode &tok) {
                 << ": PiTranslator: token not implemented: " << tok.ToString();
             break;
     }
+}
+
+// Helper method to append an operation directly to a code array
+void PiTranslator::AppendDirectOperation(Pointer<Array> code, Operation::Type opType) {
+    Object op = _reg->New<Operation>(opType);
+    code->Append(op);
 }
 
 KAI_END

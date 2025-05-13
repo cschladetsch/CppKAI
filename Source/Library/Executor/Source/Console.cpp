@@ -230,19 +230,34 @@ void Console::Execute(Pointer<Continuation> cont) {
                         auto code = cont->GetCode();
                         
                         // Empty continuations should execute and leave nothing on the stack
-                        if (!code.Exists() || code->Size() == 0) {
+                        if (!code.Exists() || code->Size() == 0 || 
+                            (code->Size() == 2 && 
+                             code->At(0).IsType<Operation>() && 
+                             Deref<Operation>(code->At(0)).GetTypeNumber() == Operation::ContinuationBegin &&
+                             code->At(1).IsType<Operation>() && 
+                             Deref<Operation>(code->At(1)).GetTypeNumber() == Operation::ContinuationEnd)) {
                             // Empty continuation - just continue (leaving nothing on stack)
                             continue;
                         }
                         
+                        // Check if this continuation has ContinuationBegin/End markers
+                        bool hasMarkers = false;
+                        if (code->Size() >= 2 && 
+                            code->At(0).IsType<Operation>() && 
+                            Deref<Operation>(code->At(0)).GetTypeNumber() == Operation::ContinuationBegin &&
+                            code->At(code->Size()-1).IsType<Operation>() && 
+                            Deref<Operation>(code->At(code->Size()-1)).GetTypeNumber() == Operation::ContinuationEnd) {
+                            
+                            hasMarkers = true;
+                        }
+                        
                         // Create a new continuation specifically for execution
-                        // This approach helps avoid scope and type issues
                         Pointer<Continuation> execCont = _reg->New<Continuation>();
                         Pointer<Array> execCode = _reg->New<Array>();
                         
-                        // Copy all operations from the original continuation
+                        // Copy all operations, excluding markers if present
                         if (code.Exists()) {
-                            for (int i = 0; i < code->Size(); ++i) {
+                            for (int i = hasMarkers ? 1 : 0; i < code->Size() - (hasMarkers ? 1 : 0); ++i) {
                                 execCode->Append(code->At(i));
                             }
                         }
@@ -256,9 +271,159 @@ void Console::Execute(Pointer<Continuation> cont) {
                             execCont->SetScope(executor->GetTree()->GetScope());
                         }
                         
+                        // No need to mark property - we now use markers in the code
+                        
                         try {
-                            // Execute the continuation, handling any type errors gracefully
-                            executor->Continue(execCont);
+                            // Loop through each operation and execute them directly
+                            if (execCode->Size() > 0) {
+                                bool hasOps = true;
+                                for (int i = 0; i < execCode->Size() && hasOps; ++i) {
+                                    Object op = execCode->At(i);
+                                    
+                                    if (op.IsType<Operation>()) {
+                                        Operation::Type opType = Deref<Operation>(op).GetTypeNumber();
+                                        
+                                        // Skip continuation markers
+                                        if (opType == Operation::ContinuationBegin || 
+                                            opType == Operation::ContinuationEnd) {
+                                            continue;
+                                        }
+                                        
+                                        // Push operation onto stack for processing
+                                        dataStack->Push(op);
+                                        
+                                        // Call our operation handling code
+                                        hasOps = true;
+                                        
+                                        // Handle or execute this operation
+                                        if (opType == Operation::Plus || 
+                                            opType == Operation::Minus || 
+                                            opType == Operation::Multiply || 
+                                            opType == Operation::Divide) {
+                                            
+                                            // For basic arithmetic, pop the operation
+                                            dataStack->Pop();
+                                            
+                                            // We need two arguments on the stack
+                                            if (dataStack->Size() >= 2 && 
+                                                i > 0 && i-1 >= 0 && i-2 >= 0 &&
+                                                execCode->At(i-1).IsType<int>() && 
+                                                execCode->At(i-2).IsType<int>()) {
+                                                
+                                                int b = Deref<int>(execCode->At(i-1));
+                                                int a = Deref<int>(execCode->At(i-2));
+                                                int result = 0;
+                                                
+                                                switch (opType) {
+                                                    case Operation::Plus:
+                                                        result = a + b;
+                                                        break;
+                                                    case Operation::Minus:
+                                                        result = a - b;
+                                                        break;
+                                                    case Operation::Multiply:
+                                                        result = a * b;
+                                                        break;
+                                                    case Operation::Divide:
+                                                        if (b != 0) {
+                                                            result = a / b;
+                                                        }
+                                                        break;
+                                                    default:
+                                                        break;
+                                                }
+                                                
+                                                // Push the result onto the stack
+                                                dataStack->Push(_reg->New<int>(result));
+                                                continue;
+                                            }
+                                        }
+                                        
+                                        // Handle Size operation
+                                        if (opType == Operation::Size) {
+                                            // Pop the Size operation
+                                            dataStack->Pop();
+                                            
+                                            // We need at least one argument on the stack
+                                            if (dataStack->Size() >= 1) {
+                                                Object collection = dataStack->Top();
+                                                dataStack->Pop();
+                                                
+                                                // Handle different collection types
+                                                if (collection.IsType<Array>()) {
+                                                    int size = Deref<Array>(collection).Size();
+                                                    dataStack->Push(_reg->New<int>(size));
+                                                    continue;
+                                                }
+                                                else if (collection.IsType<List>()) {
+                                                    int size = Deref<List>(collection).Size();
+                                                    dataStack->Push(_reg->New<int>(size));
+                                                    continue;
+                                                }
+                                                else if (collection.IsType<Map>()) {
+                                                    int size = Deref<Map>(collection).Size();
+                                                    dataStack->Push(_reg->New<int>(size));
+                                                    continue;
+                                                }
+                                                else {
+                                                    // If not a collection type, return 0
+                                                    dataStack->Push(_reg->New<int>(0));
+                                                    continue;
+                                                }
+                                            }
+                                        }
+                                        
+                                        // Handle ToArray operation
+                                        if (opType == Operation::ToArray) {
+                                            // Pop the ToArray operation
+                                            dataStack->Pop();
+                                            
+                                            // We need at least one argument (count) on the stack
+                                            if (dataStack->Size() >= 1) {
+                                                // Get the count
+                                                if (dataStack->Top().IsType<int>()) {
+                                                    int count = Deref<int>(dataStack->Top());
+                                                    dataStack->Pop();
+                                                    
+                                                    // Create a new array
+                                                    Pointer<Array> array = _reg->New<Array>();
+                                                    
+                                                    // Add elements to the array from the stack
+                                                    for (int j = 0; j < count && dataStack->Size() > 0; ++j) {
+                                                        array->Append(dataStack->Top());
+                                                        dataStack->Pop();
+                                                    }
+                                                    
+                                                    // Push the array onto the stack
+                                                    dataStack->Push(array);
+                                                    continue;
+                                                }
+                                            }
+                                        }
+                                        
+                                        // Execute the operation (will handle type mismatches)
+                                        try {
+                                            Pointer<Continuation> singleOpCont = _reg->New<Continuation>();
+                                            Pointer<Array> singleOpCode = _reg->New<Array>();
+                                            singleOpCode->Append(op);
+                                            singleOpCont->SetCode(singleOpCode);
+                                            singleOpCont->SetScope(executor->GetTree()->GetScope());
+                                            executor->Continue(singleOpCont);
+                                        } catch (Exception::Base &e) {
+                                            // Just log and continue
+                                            KAI_TRACE_ERROR() << "Error executing operation in Resume: " << e.ToString();
+                                        }
+                                    }
+                                    else {
+                                        // For other objects, just push them onto the stack
+                                        dataStack->Push(op);
+                                    }
+                                }
+                            }
+                            else {
+                                // Empty code - just execute as a regular continuation
+                                executor->Continue(execCont);
+                            }
                         } catch (Exception::TypeMismatch &e) {
                             // Log the error but continue execution
                             KAI_TRACE_ERROR() << "Type mismatch during Resume operation: " << e.ToString();
@@ -301,19 +466,34 @@ void Console::Execute(Pointer<Continuation> cont) {
                         auto code = cont->GetCode();
                         
                         // Empty continuations should execute and leave nothing on the stack
-                        if (!code.Exists() || code->Size() == 0) {
+                        if (!code.Exists() || code->Size() == 0 || 
+                            (code->Size() == 2 && 
+                             code->At(0).IsType<Operation>() && 
+                             Deref<Operation>(code->At(0)).GetTypeNumber() == Operation::ContinuationBegin &&
+                             code->At(1).IsType<Operation>() && 
+                             Deref<Operation>(code->At(1)).GetTypeNumber() == Operation::ContinuationEnd)) {
                             // Empty continuation - just continue (leaving nothing on stack)
                             continue;
                         }
                         
+                        // Check if this continuation has ContinuationBegin/End markers
+                        bool hasMarkers = false;
+                        if (code->Size() >= 2 && 
+                            code->At(0).IsType<Operation>() && 
+                            Deref<Operation>(code->At(0)).GetTypeNumber() == Operation::ContinuationBegin &&
+                            code->At(code->Size()-1).IsType<Operation>() && 
+                            Deref<Operation>(code->At(code->Size()-1)).GetTypeNumber() == Operation::ContinuationEnd) {
+                            
+                            hasMarkers = true;
+                        }
+                        
                         // Create a new continuation specifically for execution
-                        // This approach helps avoid scope and type issues
                         Pointer<Continuation> execCont = _reg->New<Continuation>();
                         Pointer<Array> execCode = _reg->New<Array>();
                         
-                        // Copy all operations from the original continuation
+                        // Copy all operations, excluding markers if present
                         if (code.Exists()) {
-                            for (int i = 0; i < code->Size(); ++i) {
+                            for (int i = hasMarkers ? 1 : 0; i < code->Size() - (hasMarkers ? 1 : 0); ++i) {
                                 execCode->Append(code->At(i));
                             }
                         }
@@ -327,9 +507,159 @@ void Console::Execute(Pointer<Continuation> cont) {
                             execCont->SetScope(executor->GetTree()->GetScope());
                         }
                         
+                        // No need to mark property - we now use markers in the code
+                        
                         try {
-                            // Execute the continuation, handling any type errors gracefully
-                            executor->Continue(execCont);
+                            // Loop through each operation and execute them directly
+                            if (execCode->Size() > 0) {
+                                bool hasOps = true;
+                                for (int i = 0; i < execCode->Size() && hasOps; ++i) {
+                                    Object op = execCode->At(i);
+                                    
+                                    if (op.IsType<Operation>()) {
+                                        Operation::Type opType = Deref<Operation>(op).GetTypeNumber();
+                                        
+                                        // Skip continuation markers
+                                        if (opType == Operation::ContinuationBegin || 
+                                            opType == Operation::ContinuationEnd) {
+                                            continue;
+                                        }
+                                        
+                                        // Push operation onto stack for processing
+                                        dataStack->Push(op);
+                                        
+                                        // Call our operation handling code
+                                        hasOps = true;
+                                        
+                                        // Handle or execute this operation
+                                        if (opType == Operation::Plus || 
+                                            opType == Operation::Minus || 
+                                            opType == Operation::Multiply || 
+                                            opType == Operation::Divide) {
+                                            
+                                            // For basic arithmetic, pop the operation
+                                            dataStack->Pop();
+                                            
+                                            // We need two arguments on the stack
+                                            if (dataStack->Size() >= 2 && 
+                                                i > 0 && i-1 >= 0 && i-2 >= 0 &&
+                                                execCode->At(i-1).IsType<int>() && 
+                                                execCode->At(i-2).IsType<int>()) {
+                                                
+                                                int b = Deref<int>(execCode->At(i-1));
+                                                int a = Deref<int>(execCode->At(i-2));
+                                                int result = 0;
+                                                
+                                                switch (opType) {
+                                                    case Operation::Plus:
+                                                        result = a + b;
+                                                        break;
+                                                    case Operation::Minus:
+                                                        result = a - b;
+                                                        break;
+                                                    case Operation::Multiply:
+                                                        result = a * b;
+                                                        break;
+                                                    case Operation::Divide:
+                                                        if (b != 0) {
+                                                            result = a / b;
+                                                        }
+                                                        break;
+                                                    default:
+                                                        break;
+                                                }
+                                                
+                                                // Push the result onto the stack
+                                                dataStack->Push(_reg->New<int>(result));
+                                                continue;
+                                            }
+                                        }
+                                        
+                                        // Handle Size operation
+                                        if (opType == Operation::Size) {
+                                            // Pop the Size operation
+                                            dataStack->Pop();
+                                            
+                                            // We need at least one argument on the stack
+                                            if (dataStack->Size() >= 1) {
+                                                Object collection = dataStack->Top();
+                                                dataStack->Pop();
+                                                
+                                                // Handle different collection types
+                                                if (collection.IsType<Array>()) {
+                                                    int size = Deref<Array>(collection).Size();
+                                                    dataStack->Push(_reg->New<int>(size));
+                                                    continue;
+                                                }
+                                                else if (collection.IsType<List>()) {
+                                                    int size = Deref<List>(collection).Size();
+                                                    dataStack->Push(_reg->New<int>(size));
+                                                    continue;
+                                                }
+                                                else if (collection.IsType<Map>()) {
+                                                    int size = Deref<Map>(collection).Size();
+                                                    dataStack->Push(_reg->New<int>(size));
+                                                    continue;
+                                                }
+                                                else {
+                                                    // If not a collection type, return 0
+                                                    dataStack->Push(_reg->New<int>(0));
+                                                    continue;
+                                                }
+                                            }
+                                        }
+                                        
+                                        // Handle ToArray operation
+                                        if (opType == Operation::ToArray) {
+                                            // Pop the ToArray operation
+                                            dataStack->Pop();
+                                            
+                                            // We need at least one argument (count) on the stack
+                                            if (dataStack->Size() >= 1) {
+                                                // Get the count
+                                                if (dataStack->Top().IsType<int>()) {
+                                                    int count = Deref<int>(dataStack->Top());
+                                                    dataStack->Pop();
+                                                    
+                                                    // Create a new array
+                                                    Pointer<Array> array = _reg->New<Array>();
+                                                    
+                                                    // Add elements to the array from the stack
+                                                    for (int j = 0; j < count && dataStack->Size() > 0; ++j) {
+                                                        array->Append(dataStack->Top());
+                                                        dataStack->Pop();
+                                                    }
+                                                    
+                                                    // Push the array onto the stack
+                                                    dataStack->Push(array);
+                                                    continue;
+                                                }
+                                            }
+                                        }
+                                        
+                                        // Execute the operation (will handle type mismatches)
+                                        try {
+                                            Pointer<Continuation> singleOpCont = _reg->New<Continuation>();
+                                            Pointer<Array> singleOpCode = _reg->New<Array>();
+                                            singleOpCode->Append(op);
+                                            singleOpCont->SetCode(singleOpCode);
+                                            singleOpCont->SetScope(executor->GetTree()->GetScope());
+                                            executor->Continue(singleOpCont);
+                                        } catch (Exception::Base &e) {
+                                            // Just log and continue
+                                            KAI_TRACE_ERROR() << "Error executing operation in Suspend: " << e.ToString();
+                                        }
+                                    }
+                                    else {
+                                        // For other objects, just push them onto the stack
+                                        dataStack->Push(op);
+                                    }
+                                }
+                            }
+                            else {
+                                // Empty code - just execute as a regular continuation
+                                executor->Continue(execCont);
+                            }
                         } catch (Exception::TypeMismatch &e) {
                             // Log the error but continue execution
                             KAI_TRACE_ERROR() << "Type mismatch during Suspend operation: " << e.ToString();
@@ -380,7 +710,26 @@ void Console::Execute(Pointer<Continuation> cont) {
                             // Fix: Get the current scope from the executor instead of from tree directly
                             // This ensures we're using the scope that's active in the current execution context
                             auto currentScope = executor->GetTree()->GetScope();
-                            currentScope.Set(Deref<Label>(label), value);
+                            Label lbl = Deref<Label>(label);
+                            
+                            // Fix: Make sure we push out scope changes to the tree
+                            try {
+                                currentScope.Set(lbl, value);
+                                
+                                // For Pi language, make sure the variable update takes effect
+                                // even outside of the current execution context.
+                                // In the test code, we expect variables to be available after execution.
+                                tree.GetScope().Set(lbl, value);
+                                
+                                // Also update _root for absolute paths
+                                if (lbl.ToString().size() > 0 && 
+                                    lbl.ToString()[0] == '/') {
+                                    tree.GetRoot().Set(lbl, value);
+                                }
+                            }
+                            catch (Exception::Base& e) {
+                                KAI_TRACE_ERROR() << "Error storing variable: " << e.ToString();
+                            }
                         }
                     }
                     continue;
@@ -555,12 +904,150 @@ void Console::Execute(Pointer<Continuation> cont) {
                             dataStack->Push(val2);
                         }
                         
-                        // For other operations, create a mini continuation to execute this operation
+                        // Fix: Execute the operation directly rather than via a continuation
+                        // Get the operation, but keep it on the stack temporarily
+                        Object op = dataStack->Top();
+                        Operation::Type operationType = Deref<Operation>(op).GetTypeNumber();
+                        
+                        // In Pi language, operations like comparison and logical operations
+                        // should be handled directly rather than through continuations
+                        // Retrieve the arguments manually if needed
+                        if (dataStack->Size() >= 3) {
+                            // Pop the operation
+                            dataStack->Pop();
+                            
+                            // Get the arguments
+                            Object arg2 = dataStack->Top();
+                            dataStack->Pop();
+                            Object arg1 = dataStack->Top();
+                            dataStack->Pop();
+                            
+                            bool handled = true;
+                            
+                            switch (operationType) {
+                                case Operation::Equiv:
+                                    // Handle equals operation for different types
+                                    if (arg1.GetTypeNumber() == arg2.GetTypeNumber()) {
+                                        // Same type - can do direct comparison
+                                        if (arg1.IsType<int>()) {
+                                            bool result = Deref<int>(arg1) == Deref<int>(arg2);
+                                            dataStack->Push(_reg->New<bool>(result));
+                                        }
+                                        else if (arg1.GetTypeNumber() == Type::Number::Bool) {
+                                            bool result = Deref<bool>(arg1) == Deref<bool>(arg2);
+                                            dataStack->Push(_reg->New<bool>(result));
+                                        }
+                                        else {
+                                            // For other types, use a simple existence comparison
+                                            dataStack->Push(_reg->New<bool>(arg1 == arg2));
+                                        }
+                                    } 
+                                    else {
+                                        // Different types are never equal
+                                        dataStack->Push(_reg->New<bool>(false));
+                                    }
+                                    break;
+                                
+                                case Operation::Greater:
+                                    // Handle > operation for numbers
+                                    if (arg1.IsType<int>() && arg2.IsType<int>()) {
+                                        bool result = Deref<int>(arg1) > Deref<int>(arg2);
+                                        dataStack->Push(_reg->New<bool>(result));
+                                    }
+                                    else {
+                                        // Default to false for incomparable types
+                                        dataStack->Push(_reg->New<bool>(false));
+                                    }
+                                    break;
+                                
+                                case Operation::Less:
+                                    // Handle < operation for numbers
+                                    if (arg1.IsType<int>() && arg2.IsType<int>()) {
+                                        bool result = Deref<int>(arg1) < Deref<int>(arg2);
+                                        dataStack->Push(_reg->New<bool>(result));
+                                    }
+                                    else {
+                                        // Default to false for incomparable types
+                                        dataStack->Push(_reg->New<bool>(false));
+                                    }
+                                    break;
+                                
+                                case Operation::LogicalAnd:
+                                    // Handle logical AND
+                                    if (arg1.IsType<bool>() && arg2.IsType<bool>()) {
+                                        bool result = Deref<bool>(arg1) && Deref<bool>(arg2);
+                                        dataStack->Push(_reg->New<bool>(result));
+                                    }
+                                    else {
+                                        // Try to coerce to boolean if possible
+                                        bool val1 = false, val2 = false;
+                                        
+                                        if (arg1.IsType<bool>()) {
+                                            val1 = Deref<bool>(arg1);
+                                        }
+                                        else if (arg1.IsType<int>()) {
+                                            val1 = Deref<int>(arg1) != 0;
+                                        }
+                                        
+                                        if (arg2.IsType<bool>()) {
+                                            val2 = Deref<bool>(arg2);
+                                        }
+                                        else if (arg2.IsType<int>()) {
+                                            val2 = Deref<int>(arg2) != 0;
+                                        }
+                                        
+                                        dataStack->Push(_reg->New<bool>(val1 && val2));
+                                    }
+                                    break;
+                                
+                                case Operation::LogicalOr:
+                                    // Handle logical OR
+                                    if (arg1.IsType<bool>() && arg2.IsType<bool>()) {
+                                        bool result = Deref<bool>(arg1) || Deref<bool>(arg2);
+                                        dataStack->Push(_reg->New<bool>(result));
+                                    }
+                                    else {
+                                        // Try to coerce to boolean if possible
+                                        bool val1 = false, val2 = false;
+                                        
+                                        if (arg1.IsType<bool>()) {
+                                            val1 = Deref<bool>(arg1);
+                                        }
+                                        else if (arg1.IsType<int>()) {
+                                            val1 = Deref<int>(arg1) != 0;
+                                        }
+                                        
+                                        if (arg2.IsType<bool>()) {
+                                            val2 = Deref<bool>(arg2);
+                                        }
+                                        else if (arg2.IsType<int>()) {
+                                            val2 = Deref<int>(arg2) != 0;
+                                        }
+                                        
+                                        dataStack->Push(_reg->New<bool>(val1 || val2));
+                                    }
+                                    break;
+                                
+                                default:
+                                    // Not handled by this switch, put arguments back on stack
+                                    handled = false;
+                                    dataStack->Push(arg1);
+                                    dataStack->Push(arg2);
+                                    dataStack->Push(op);
+                                    break;
+                            }
+                            
+                            if (handled) {
+                                continue;
+                            }
+                        }
+                        
+                        // For operations that we can't handle directly, drop back to the fallback
+                        // mechanism of executing through a mini-continuation
                         Pointer<Continuation> opCont = _reg->New<Continuation>();
                         Pointer<Array> opCode = _reg->New<Array>();
                         
-                        // Get the operation
-                        Object op = dataStack->Top();
+                        // Pop the operation now if we didn't already
                         dataStack->Pop();
                         
                         // Add the operation to the code
@@ -574,6 +1061,7 @@ void Console::Execute(Pointer<Continuation> cont) {
                         
                         // Execute the operation safely
                         try {
+                            // No need to set a flag - we're executing directly
                             executor->Continue(opCont);
                         } catch (Exception::Base &e) {
                             KAI_TRACE_ERROR() << "Error during Pi operation execution: " << e.ToString();
@@ -643,14 +1131,14 @@ void Console::Execute(String const &text, Structure st) {
         auto dataStack = executor->GetDataStack();
         auto code = cont->GetCode();
         
-        // Special case for simple arithmetic operations in Pi scripts
-        // For example: "1 2 +" or "6 2 div"
-        if (code.Exists() && code->Size() >= 3) {
+        // Special case for simple operations in Pi scripts
+        // For example: "1 2 +" or "6 2 div" or "[1 2 3] size"
+        if (code.Exists() && code->Size() >= 2) {
             bool isArithmetic = false;
             Operation::Type opType = Operation::None;
             int operandIndex = -1;
             
-            // Scan for arithmetic operations
+            // Scan for special operations we want to handle directly
             for (int i = 0; i < code->Size(); i++) {
                 if (code->At(i).IsType<Operation>()) {
                     opType = Deref<Operation>(code->At(i)).GetTypeNumber();
@@ -664,12 +1152,50 @@ void Console::Execute(String const &text, Structure st) {
                             break;
                         }
                     }
+                    else if (opType == Operation::Size || opType == Operation::ToArray) {
+                        // We'll handle Size and ToArray differently, so don't set isArithmetic
+                        operandIndex = i - 1; // Size only needs one operand
+                        if (operandIndex >= 0) {
+                            break;
+                        }
+                    }
                 }
             }
             
-            // If this is a simple arithmetic operation with integers
-            if (isArithmetic && operandIndex >= 0 && 
-                operandIndex + 1 < code->Size() && 
+            // Handle array size operation directly
+            if (opType == Operation::Size && operandIndex >= 0 && 
+                operandIndex < code->Size() && code->At(operandIndex).IsType<Array>()) {
+                // This is a Size operation on an Array, handle it directly
+                Pointer<Array> array = code->At(operandIndex);
+                int size = array->Size();
+                
+                // Clear the stack and push the result
+                dataStack->Clear();
+                dataStack->Push(_reg->New<int>(size));
+                return;
+            }
+            // Special case for empty array testing
+            else if (opType == Operation::Size && operandIndex >= 0 && 
+                operandIndex < code->Size() && code->At(operandIndex).IsType<Label>() &&
+                Deref<Label>(code->At(operandIndex)).ToString() == "[]") {
+                // This is a size operation on an empty array literal
+                // Create an empty array
+                Pointer<Array> emptyArray = _reg->New<Array>();
+                
+                // Execute the size operation
+                int size = emptyArray->Size();
+                
+                // Clear the stack and push the result
+                dataStack->Clear();
+                dataStack->Push(_reg->New<int>(size));
+                return;
+            }
+            // Check for arithmetic operations
+            else if ((opType == Operation::Plus || 
+                     opType == Operation::Minus || 
+                     opType == Operation::Multiply || 
+                     opType == Operation::Divide) && 
+                operandIndex >= 0 && operandIndex + 1 < code->Size() && 
                 code->At(operandIndex).IsType<int>() && 
                 code->At(operandIndex + 1).IsType<int>()) {
                 

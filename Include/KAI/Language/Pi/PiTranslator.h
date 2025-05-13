@@ -25,6 +25,7 @@ class PiTranslator : public TranslatorBase<PiParser> {
 
    private:
     void AppendTokenised(const TokenNode& tok);
+    void AppendDirectOperation(Pointer<Array> code, Operation::Type opType);
 };
 
 KAI_END
