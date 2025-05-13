@@ -27,13 +27,24 @@ At the heart of KAI are three things: A Registry, A Domain, and some Languages.
   * Rho. Is like Python but has native support for continuations in its syntax. It transposes to Pi.
   * Tau. Is the Interface Definition Language (IDL) than is shared between nodes. In theory, it could produce code for any language.
 
+For a comprehensive overview of KAI's language system, see the [Language Guide](Doc/LanguageGuide.md) and the [Common Language System Architecture](Doc/CommonLanguageSystem.md).
+
 ## Pi
 [Pi](Source/Library/Language/Pi) (see [Tests](Test/Language/TestPi) and [Tests Scripts](Test/Language/TestPi/Scripts)) is heavily influenced by [Forth](https://en.wikipedia.org/wiki/Forth_(programming_language)). It has two directly interactable stacks: one for data, and one for context. The data stack is used for operations (as is the context stack), but the context stack tells the machine `where to go next`. This is used to create the idea of a co-routine, which is then pushed up to Rho.
+
+For a comprehensive guide on using Pi, see the [Pi Language Tutorial](Doc/PiTutorial.md).
 
 ## Rho
 [Rho](Source/Library/Language/Rho) (see [Tests](Test/Language/TestRho) and [Tests Scripts](Test/Language/TestRho/Scripts)), is an infix language much like Python, LUA or Ruby, but with native continuations and the ability to inject Pi code as any factor in an expression.
 
 The general idea has always been to move algorithms around the network, as well as data. In this manner, *real* load-balancing can be conducted.
+
+For a comprehensive guide on using Rho, see the [Rho Language Tutorial](Doc/RhoTutorial.md).
+
+## Tau
+[Tau](Source/Library/Language/Tau) is the Interface Definition Language (IDL) used in KAI to define how components communicate across the network. It enables seamless cross-network communication while maintaining type safety and versioning.
+
+For a comprehensive guide on using Tau, see the [Tau Language Tutorial](Doc/TauTutorial.md).
 
 ## Platforms
 Currently supported platforms are:

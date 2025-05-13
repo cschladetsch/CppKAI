@@ -1,66 +1,114 @@
 # KAI Languages
 
-The KAI system comes with a generic language-consruction system that resides [here](KAI/Include/KAI/Language/Common).
+The KAI system comes with a generic language-construction system that resides [here](Include/KAI/Language/Common). For comprehensive guides on each language, see the tutorials linked below.
 
-## PI
+## Pi
 
-[Pi](KAI/Include/KAI/Language/Pi) us a post-fix language inspired by the amazing [HP48](https://en.wikipedia.org/wiki/HP_48_series) calculator.
+[Pi](Include/KAI/Language/Pi) is a post-fix language inspired by the amazing [HP48](https://en.wikipedia.org/wiki/HP_48_series) calculator and [Forth](https://en.wikipedia.org/wiki/Forth_\(programming_language\)).
 
-Here's some sample Pi script. Note that it's not expected that you haveto write Pi code by hand:
+Here's some sample Pi script:
 
 ```
 { 1 + } 'add # 2 add & print &
 ```
 
-This creates a function that is named 'add'. Then invokes it will an argument of 2 and prints the result.
+This creates a function named 'add', invokes it with an argument of 2, and prints the result.
 
-The syntax is obtuse because it is reverse-polish notation: the arguments are introduced then an operator is aplied.
+The syntax uses reverse-polish notation: arguments are pushed onto the stack first, then operators are applied.
 
-In this case, the first 'argument' is the function **{ 1 + }** which simply adds 1 to what ever is on the stack.
-
-The next sub-sequence **'add #** stores that function to a name called "add" in the current scope.
-
-Then we push 2 onto the stack, then the add function by name, then use the '&' operator to execute what is on the stack (the 'add' function').
-
-Then we push the **print** function onto the stack (which is built-in), then execute that too.
+In this case:
+1. The function **{ 1 + }** adds 1 to whatever is on the stack
+2. **'add #** stores that function with the name "add" in the current scope
+3. **2 add @** pushes 2 and the add function onto the stack
+4. **&** executes the function (add) that's on the stack
+5. **print &** pushes the print function onto the stack and executes it
 
 The result is an empty stack with the console output of "3".
 
-Im summary: It creates a coroutine __{ 1 + }__ which adds 1 to whatever is on the stack. It then stores this to an object called add with __'add #__. It then pushes 2 and the coro onto the stack, resumes the coro with __&__, pushes **print** onto the stack and resumes that. The result is **3**.
+For more details and examples, see the [Pi Language Tutorial](Doc/PiTutorial.md).
 
 ## Rho
 
-[Rho](KAI/Include/KAI/Language/Pi) is an *in-fix* language that translates to Pi.
+[Rho](Include/KAI/Language/Rho) is an *infix* language that translates to Pi code. It has a syntax similar to Python but with native continuations and the ability to embed Pi code directly.
 
-Sample Rho looks a lot like Python:
+Sample Rho code:
 
-```
-fun add(a)
-    return a+1
+```rho
+fun add(a) {
+    return a + 1
+}
 print(add(2))
 ```
 
-These two examples written in *Pi* and *Rho* functionally equivalent, and both output the number **3**. 
+This example is functionally equivalent to the Pi example above. It defines a function that takes one argument, adds 1 to it, and returns the result. Then it calls the function with 2 and prints the result.
 
+Rho gets translated to Pi code on the fly, making it both expressive and efficient.
 
-The **Rho** example is more familiar. Define a function that takes one argument and return it plus 1. Then print the result of calling that function with the argument 2.
-
-In both cases, the data stack will be left empty and the console will have output of '3'. 
-
-Rho gets translated to Pi code on the fly, so when you 'compile' the Rho code above you will get something very similiar to the pi code above that.
+For more details and examples, see the [Rho Language Tutorial](Doc/RhoTutorial.md).
 
 ## Tau
 
-**Tau** is the language used to describe objects that are visible across a network. It all works, but I don't have documentation for it yet. Basically, Tau takes a foo.tau file, and generates foo.agent.cpp/h and foo.proxy.cpp/h. If you want to host a Foo, you implement what's required in the foo.agent.cpp file, else if you want to use a Foo from somewhere else, you just use kai::Proxy<Foo>.
+[Tau](Include/KAI/Language/Tau) is KAI's Interface Definition Language (IDL) used to describe objects that are visible across a network. 
 
-### Continuations
+Tau solves the problem of seamless network communication by:
+1. Defining interfaces between distributed components
+2. Generating proxy and agent code for transparent network communication
+3. Ensuring type safety across network boundaries
+4. Supporting versioning for backward compatibility
 
-Also known as co-routines or fibres, are natively supported in both Pi and Rho languages.
+For example, a Tau file (foo.tau) generates:
+- foo.agent.cpp/h files for hosting a service
+- foo.proxy.cpp/h files for using a service from elsewhere
 
-Continuations are important because they allow you to yield the current command sequence to another without having to actually use threads.
+If you want to host a service, you implement what's required in the agent files. If you want to use a service from elsewhere, you simply use `kai::Proxy<Service>`.
 
-Since I started making this system in 2000, the idea of Continuations has become common place and alsp called different things. Basically, a continuation is a function that can be interrupted at a certain point, then later resumed from that point.
+For more details and examples, see the [Tau Language Tutorial](Doc/TauTutorial.md).
 
-What makes Pi and Rho interesting is that they expose **two stacks** - one for context and one for data. These stacks are there in other languages; but you rarely get to manipulate the context stack directly.
+## Continuations
 
-I am not sure of any other language system othe than [Forth](https://en.wikipedia.org/wiki/Forth_\(programming_language\)) that does this.
+Continuations (also known as coroutines or fibers) are natively supported in both Pi and Rho languages.
+
+Continuations allow you to yield the current command sequence to another without using threads. They are functions that can be interrupted at a certain point, then later resumed from that point.
+
+What makes Pi and Rho unique is that they expose **two stacks**:
+1. **Data stack**: Holds values being operated on
+2. **Context stack**: Controls program flow
+
+While these stacks exist in other language implementations, Pi and Rho allow you to directly manipulate the context stack, enabling powerful control flow patterns not easily accessible in most languages.
+
+### Example in Pi
+```pi
+{ 
+  "Step 1" trace
+  yield
+  "Step 2" trace
+} 'process #
+
+// Execute first part
+process @
+&
+
+// Do something else
+"Doing other work" trace
+
+// Resume the continuation
+continue
+```
+
+### Example in Rho
+```rho
+fun process() {
+    print("Step 1")
+    yield
+    print("Step 2")
+}
+
+// Start the process
+co = process()
+
+// Do something else
+print("Doing other work")
+
+// Resume the continuation
+co.resume()
+```

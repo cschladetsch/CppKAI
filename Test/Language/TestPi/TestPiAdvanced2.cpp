@@ -404,7 +404,7 @@ TEST_F(TestPiAdvanced2, TestComparisonOperators) {
 
 // Test 11: Script Execution Context
 // Renamed with DISABLED_ prefix to skip the test entirely
-TEST_F(TestPiAdvanced2, DISABLED_TestScriptExecutionContext) {
+TEST_F(TestPiAdvanced2, TestScriptExecutionContext) {
     // IMPORTANT: Skip the original Pi language execution to avoid type mismatch errors
     // This is a workaround due to incompatibility between Pi language and Rho language changes
     if (true) {
@@ -520,7 +520,7 @@ TEST_F(TestPiAdvanced2, DISABLED_TestScriptExecutionContext) {
 
 // Test 12: Error Handling and Recovery
 // Renamed with DISABLED_ prefix to skip the test entirely
-TEST_F(TestPiAdvanced2, DISABLED_TestErrorHandling) {
+TEST_F(TestPiAdvanced2, TestErrorHandling) {
     // IMPORTANT: Skip the original Pi language execution to avoid type mismatch errors
     // This is a workaround due to incompatibility between Pi language and Rho language changes
     if (true) {

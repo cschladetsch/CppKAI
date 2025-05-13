@@ -332,7 +332,7 @@ void RhoTranslator::TranslateNode(AstNodePtr node) {
             return;
 
         case AstEnum::List:
-            KAI_NOT_IMPLEMENTED();
+            TranslateList(node);
             return;
 
         case AstEnum::Function:
@@ -625,6 +625,26 @@ void RhoTranslator::TranslatePiBlock(AstNodePtr parentNode, size_t startIndex) {
     // 2. Create a Pi language continuation
     // 3. Process all nodes as Pi code
     // 4. Add the continuation to the current code array
+}
+
+void RhoTranslator::TranslateList(AstNodePtr node) {
+    KAI_TRACE() << "Translating List (array): " << node->ToString();
+
+    // First push all elements onto the stack
+    for (auto element : node->GetChildren()) {
+        TranslateNode(element);
+    }
+
+    // Get the number of elements
+    int numElements = static_cast<int>(node->GetChildren().size());
+    
+    // Create a new integer representing the count
+    AppendLiteral(numElements);
+    
+    // Now create an array from the top N elements on the stack
+    AppendDirectOperation(Operation::ToArray);
+
+    KAI_TRACE() << "List translation complete with " << numElements << " elements";
 }
 
 KAI_END

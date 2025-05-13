@@ -29,7 +29,7 @@ Object Function_3(Object object) {
     return object["num"];
 }
 
-TEST_F(TestLangCommon, DISABLED_TestRhoReflection) {
+TEST_F(TestLangCommon, TestRhoReflection) {
     Registry& reg = *_reg;
     MyStruct::Register(reg);
 
@@ -93,7 +93,7 @@ TEST_F(TestLangCommon, TestIterationConstructs) {
 }
 
 // Dedicated test for do-while loops to isolate testing
-TEST_F(TestLangCommon, DISABLED_TestDoWhileLoop) {
+TEST_F(TestLangCommon, TestDoWhileLoop) {
     _console.SetLanguage(Language::Rho);
 
     // Clear stacks
@@ -174,7 +174,7 @@ TEST_F(TestLangCommon, TestForLoop) {
 }
 
 // Test minimal do-while loop script
-TEST_F(TestLangCommon, DISABLED_TestMinimalDoWhileScript) {
+TEST_F(TestLangCommon, TestMinimalDoWhileScript) {
     _console.SetLanguage(Language::Rho);
 
     // Clear stacks

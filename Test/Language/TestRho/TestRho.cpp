@@ -23,7 +23,7 @@ TEST_F(TestRho, RunScripts) {
     ExecScripts();
 }
 
-TEST_F(TestRho, DISABLED_TestBasicOperations) {
+TEST_F(TestRho, TestBasicOperations) {
     _console.SetLanguage(Language::Rho);
     _data->Clear();
 
@@ -44,7 +44,7 @@ TEST_F(TestRho, DISABLED_TestBasicOperations) {
     ASSERT_EQ(AtData<int>(0), 12);
 }
 
-TEST_F(TestRho, DISABLED_TestArrays) {
+TEST_F(TestRho, TestArrays) {
     _console.SetLanguage(Language::Rho);
 
     _data->Clear();
@@ -69,7 +69,7 @@ TEST_F(TestRho, DISABLED_TestArrays) {
     ASSERT_EQ(AtData<int>(0), 3);
 }
 
-TEST_F(TestRho, DISABLED_TestIterationConstructs) {
+TEST_F(TestRho, TestIterationConstructs) {
     _console.SetLanguage(Language::Rho);
 
     // Test while loop
@@ -101,7 +101,7 @@ TEST_F(TestRho, DISABLED_TestIterationConstructs) {
     // do-while implementation
 }
 
-TEST_F(TestRho, DISABLED_TestFunctionDefinitionAndCall) {
+TEST_F(TestRho, TestFunctionDefinitionAndCall) {
     _console.SetLanguage(Language::Rho);
 
     _data->Clear();
@@ -119,7 +119,7 @@ TEST_F(TestRho, DISABLED_TestFunctionDefinitionAndCall) {
     ASSERT_EQ(AtData<int>(0), 7);
 }
 
-TEST_F(TestRho, DISABLED_TestConditionals) {
+TEST_F(TestRho, TestConditionals) {
     _console.SetLanguage(Language::Rho);
 
     _data->Clear();
@@ -147,7 +147,7 @@ TEST_F(TestRho, DISABLED_TestConditionals) {
     ASSERT_EQ(AtData<int>(0), 2);
 }
 
-TEST_F(TestRho, DISABLED_TestDoWhileLoop) {
+TEST_F(TestRho, TestDoWhileLoop) {
     // Test is now enabled since the do-while loop implementation has been fixed
     _console.SetLanguage(Language::Rho);
 

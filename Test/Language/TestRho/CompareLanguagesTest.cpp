@@ -10,7 +10,7 @@ using namespace std;
 
 // A test that compares Pi and Rho language arithmetic with detailed trace
 // output
-TEST(LanguageComparison, DISABLED_ArithmeticRhoVsPi) {
+TEST(LanguageComparison, ArithmeticRhoVsPi) {
     cout << "=========== PI LANGUAGE TEST ===========" << endl;
 
     // Create Pi console
