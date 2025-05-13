@@ -147,9 +147,19 @@ The entire motivation for KAI was to allow for efficient, low-latency and correc
 Read more about Kai [object and compuational distribution](Networking.md).
 
 ## Executor
-A general-purpose stack-based virtual machine. I wanted two stacks (one for data, one for context). These two stacks (data and context) provide some abilities that are not available on any other non-Forth based system - especially since you can readily swap between them. That is, you can move _context_ to the data-stack, do work, then push back onto the _context_ stack.
+A general-purpose stack-based virtual machine with a clean architecture. The Executor follows a separation of concerns design:
 
-This provides for some rich computational control. This can also result in confusion, so there is a debugger and extensive (optional) tracing available.
+1. **Console** handles user interaction and passes input to the Translator
+2. **Translator** converts language-specific syntax to Continuations
+3. **Executor** executes Continuations in a language-agnostic manner
+
+All languages (Pi, Rho, Tau) are ultimately translated to Pi operations, which the Executor handles natively. This design ensures that the Executor only needs to understand Pi's semantics, simplifying the codebase and improving maintainability.
+
+The Executor uses two stacks (data and context) that provide capabilities not available in most languages. You can move _context_ to the data-stack, do work, then push back onto the _context_ stack. This enables powerful control flow patterns like continuations and tail recursion.
+
+Stack operations like Dup, Swap, Drop, and Over manipulate the data stack, while operations like continuation execution (&) work with the context stack. All operations maintain proper type information and include robust error handling.
+
+For debugging purposes, the Executor includes extensive tracing capabilities that can log each operation's effect on the stacks.
 
 ## Logging System
 KAI includes a comprehensive logging system that captures debug traces, network events, and application messages:

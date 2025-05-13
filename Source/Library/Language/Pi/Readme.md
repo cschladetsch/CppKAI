@@ -26,12 +26,25 @@ The same for adding two numbers: `1 2 +` yields `3`, etc. See [Reverse Polish No
 
 It's worth noting how simple it is to write functions in C++ that are addressable by _Pi_:
 
-```
+```cpp
 void Print(Object obj)
 {
    std::cout << obj.ToString();
 }
 ```
+
+## Integration with Executor
+
+Pi code is executed by the Executor component, which implements all the stack operations, arithmetic functions, and control flow constructs needed by the language. The Executor handles Pi operations in a type-safe and efficient manner, with appropriate error handling for operations like:
+
+- Stack manipulation (Dup, Swap, Drop, Over)
+- Variable operations (Store with `#`, Retrieve with `@`)
+- Arithmetic (Plus, Minus, Multiply, Divide)
+- Logical operations (And, Or, Xor, Not)
+- Comparison (Equiv, Less, Greater)
+- Array and collection handling
+
+All Pi operations preserve the stack-based semantics while ensuring type safety. For example, the `Dup` operation duplicates the top item on the stack, ensuring both the original and the duplicate maintain their full type information.
 
 ## A brief example
 ```
