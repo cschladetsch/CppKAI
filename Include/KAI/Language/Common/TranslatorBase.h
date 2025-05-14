@@ -59,9 +59,20 @@ struct TranslatorBase : TranslatorCommon {
 
         auto cont = Pop();
 
-        // Return the full continuation
-        // The Console.Execute method is now enhanced to handle both Pi and Rho languages
-        // It will properly evaluate operations and results according to the language
+        // If the continuation contains a simple code array with a single value
+        // or a simple operation, evaluate it immediately to avoid excessive wrapping
+        if (cont.Exists() && cont->GetCode().Exists() && cont->GetCode()->Size() == 1) {
+            // If the code has only one element, it's likely a direct value
+            Object value = cont->GetCode()->At(0);
+            
+            // If this is a simple value (int, bool, string), return it directly
+            if (value.GetTypeNumber() != Type::Number::Continuation &&
+                value.GetTypeNumber() != Type::Number::Operation) {
+                return value;
+            }
+        }
+
+        // For more complex cases, return the continuation for evaluation
         return cont;
     }
 

@@ -46,7 +46,13 @@ struct TranslatorCommon : ProcessCommon {
     // This helps avoid unnecessary wrapping in Rho expressions
     template<typename T>
     void AppendLiteral(const T& value) {
+        // Use explicit type parameter for New to ensure proper type identification
         Object obj = _reg->New<T>(value);
+        
+        // Add debug logging to track type information
+        KAI_TRACE() << "AppendLiteral: Created value of type: " << obj.GetClass()->GetName().ToString()
+                   << ", value: " << obj.ToString();
+        
         Append(obj);
     }
 

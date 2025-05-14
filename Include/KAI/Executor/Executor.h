@@ -111,6 +111,10 @@ struct Executor : Reflected {
     
     // Helper method for evaluating continuations
     void EvalContinuation(Object const &Q);
+    
+    // Helper method to unwrap continuations and extract the underlying value
+    // This resolves issues with tests expecting a specific type but finding a continuation
+    Object UnwrapValue(Object const &Q);
 
     // if ignoreQuote is true, then we resolve the identifier
     // even if it is quoted

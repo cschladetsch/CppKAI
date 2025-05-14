@@ -120,33 +120,34 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
 
         case TokenEnum::Int:
             KAI_TRACE() << "Translating Int: " << node->GetTokenText();
-            // Use the AppendLiteral template to directly add without wrapping
-            AppendLiteral(boost::lexical_cast<int>(node->GetTokenText()));
+            // Use explicit type parameter for New to ensure proper type identification
+            Append(_reg->New<int>(boost::lexical_cast<int>(node->GetTokenText())));
             return;
 
         case TokenEnum::Float:
             KAI_TRACE() << "Translating Float: " << node->GetTokenText();
-            // Use the AppendLiteral template to directly add without wrapping
-            AppendLiteral(boost::lexical_cast<float>(node->GetTokenText()));
+            // Use explicit type parameter for New to ensure proper type identification
+            Append(_reg->New<float>(boost::lexical_cast<float>(node->GetTokenText())));
             return;
 
         case TokenEnum::String:
             KAI_TRACE() << "Translating String: " << node->Text();
-            // Use the AppendLiteral template for strings too
-            AppendLiteral(String(node->Text()));
+            // Use explicit type parameter for New to ensure proper type identification
+            Append(_reg->New<String>(String(node->Text())));
             KAI_TRACE() << "String translation complete";
             return;
 
         case TokenEnum::Ident:
             KAI_TRACE() << "Translating Ident: " << node->Text();
-            // Use the AppendLiteral template for labels too
-            AppendLiteral(Label(node->Text()));
+            // Use explicit type parameter for New to ensure proper type identification
+            Append(_reg->New<Label>(Label(node->Text())));
             KAI_TRACE() << "Ident translation complete";
             return;
 
         case TokenEnum::Pathname:
             KAI_TRACE() << "Translating Pathname: " << node->Text();
-            Append(New<Pathname>(Pathname(node->Text())));
+            // Use explicit type parameter for New to ensure proper type identification
+            Append(_reg->New<Pathname>(Pathname(node->Text())));
             return;
 
         case TokenEnum::ToPi:
@@ -197,16 +198,82 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
 
     // For binary operations, we need to ensure we're not just pushing Continuations
     // but actually getting the result of evaluating expressions
+    
+    // First, check if both children are simple integer literals
+    // In such case, we could evaluate the operation at translation time
+    bool canEvaluateNow = false;
+    int leftValue = 0, rightValue = 0;
+    
+    if (node->GetChild(0)->GetType() == AstNodeEnum::TokenType && 
+        node->GetChild(1)->GetType() == AstNodeEnum::TokenType) {
+        
+        TokenNode leftToken = node->GetChild(0)->GetToken();
+        TokenNode rightToken = node->GetChild(1)->GetToken();
+        
+        // Check if both tokens are integers
+        if (leftToken.type == TokenEnum::Int && rightToken.type == TokenEnum::Int) {
+            try {
+                leftValue = boost::lexical_cast<int>(node->GetChild(0)->GetTokenText());
+                rightValue = boost::lexical_cast<int>(node->GetChild(1)->GetTokenText());
+                canEvaluateNow = true;
+            }
+            catch (...) {
+                canEvaluateNow = false;
+            }
+        }
+    }
+    
+    // If we can evaluate the operation now, do it directly to avoid wrapping
+    if (canEvaluateNow) {
+        int result = 0;
+        bool validOp = true;
+        
+        // Evaluate the operation
+        switch (op) {
+            case Operation::Plus:
+                result = leftValue + rightValue;
+                break;
+            case Operation::Minus:
+                result = leftValue - rightValue;
+                break;
+            case Operation::Multiply:
+                result = leftValue * rightValue;
+                break;
+            case Operation::Divide:
+                if (rightValue != 0) {
+                    result = leftValue / rightValue;
+                } else {
+                    validOp = false;  // Cannot divide by zero
+                }
+                break;
+            case Operation::Modulo:
+                if (rightValue != 0) {
+                    result = leftValue % rightValue;
+                } else {
+                    validOp = false;  // Cannot modulo by zero
+                }
+                break;
+            default:
+                // For other operations, we'll use the general approach
+                validOp = false;
+                break;
+        }
+        
+        if (validOp) {
+            // Push the result directly as an integer
+            KAI_TRACE() << "Direct evaluation of binary op: " << leftValue << " " 
+                        << Operation::ToString(op) << " " << rightValue << " = " << result;
+            Append(_reg->New<int>(result));
+            return;
+        }
+    }
+    
+    // General case: translate left and right operands, then add the operation
     TranslateNode(node->GetChild(0));
     TranslateNode(node->GetChild(1));
     
-    // Instead of wrapping in a Continuation, add the operation directly
-    // This will make the operation get executed immediately in the Console::Execute method
+    // Add the operation directly to avoid wrapping it in a continuation
     AppendDirectOperation(op);
-    
-    // MarkAsRhoExpression method has been disabled since it used SetPropertyValue
-    // on a property that wasn't registered in the Continuation class
-    // MarkAsRhoExpression();
 
     KAI_TRACE() << "Binary operation successfully translated";
 }

@@ -119,9 +119,50 @@ void Console::Execute(Pointer<Continuation> cont) {
         // Debug the continuation code to help with diagnosing any issues
         if (cont->GetCode().Exists()) {
             KAI_TRACE_1(cont->GetCode()->Size()) << "Executing continuation with size";
+            
+            // Quick optimization for single-element continuations
+            if (cont->GetCode()->Size() == 1) {
+                Object singleValue = cont->GetCode()->At(0);
+                
+                // If this is a simple value (not an operation or continuation), just push it
+                if (singleValue.GetTypeNumber() != Type::Number::Operation &&
+                    singleValue.GetTypeNumber() != Type::Number::Continuation) {
+                    KAI_TRACE() << "Optimization: Direct push of singleton value in continuation";
+                    executor->Push(singleValue);
+                    return;
+                }
+            }
         }
         
-        // Delegate to the Executor - it now properly handles Pi language operations
+        // Special handling for Rho language
+        if (language == Language::Rho) {
+            // For Rho language, if the continuation has multiple code elements that
+            // form a simple expression (e.g., "2 3 Plus"), execute them individually
+            if (cont->GetCode().Exists() && cont->GetCode()->Size() <= 4) {
+                bool isSimpleExpression = true;
+                
+                // Check if this looks like a simple expression
+                for (int i = 0; i < cont->GetCode()->Size(); i++) {
+                    Object item = cont->GetCode()->At(i);
+                    if (item.GetTypeNumber() == Type::Number::Continuation) {
+                        isSimpleExpression = false;
+                        break;
+                    }
+                }
+                
+                // For simple expressions, handle them more directly
+                if (isSimpleExpression) {
+                    KAI_TRACE() << "Detected simple Rho expression, using optimized execution";
+                    for (int i = 0; i < cont->GetCode()->Size(); i++) {
+                        Object item = cont->GetCode()->At(i);
+                        executor->Eval(item);
+                    }
+                    return;
+                }
+            }
+        }
+        
+        // Delegate to the Executor for more complex cases
         executor->Continue(cont);
     }
     KAI_CATCH(Exception::Base, E) { KAI_TRACE_ERROR_1(E); }
