@@ -421,7 +421,7 @@ void Executor::TraceAll() {
 
 void Executor::DumpStack(Stack const &stack) {
     StringStream result;
-    auto A = stack.Begin(), B = stack.End();
+    auto A = stack.begin(), B = stack.end();
     for (int N = stack.Size() - 1; A != B; ++A, --N) {
         result << "[" << N << "] ";
         bool is_string = A->GetTypeNumber() == Type::Number::String;
@@ -2485,10 +2485,10 @@ void Executor::Perform(Operation::Type op) {
                 
                 // Check each element
                 bool equal = true;
-                List::Iterator itA = listA.Begin();
-                List::Iterator itB = listB.Begin();
+                auto itA = listA.begin();
+                auto itB = listB.begin();
                 
-                while (itA != listA.End() && itB != listB.End()) {
+                while (itA != listA.end() && itB != listB.end()) {
                     if (!(*itA).GetClass()->Equiv2(*itA, *itB)) {
                         equal = false;
                         break;

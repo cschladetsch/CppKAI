@@ -1,6 +1,10 @@
 #include "KAI/Language/Pi/PiTranslator.h"
 
 #include <boost/lexical_cast.hpp>
+#include <iostream>
+#include "KAI/Core/BuiltinTypes/List.h"
+#include "KAI/Core/BuiltinTypes/Map.h"
+#include "KAI/Core/BuiltinTypes/String.h"
 
 using namespace boost;
 using namespace std;
@@ -15,31 +19,74 @@ void PiTranslator::TranslateNode(AstNodePtr node) {
 
     switch (node->GetType()) {
         case PiAstNodeEnumType::Array: {
-            // Create a new array to hold the elements directly
-            Object arrayObj = reg_->New<Array>();
-            Array& array = Deref<Array>(arrayObj);
-            
-            // Process all array elements and add them directly to the array
-            for (auto const &ch : node->GetChildren()) {
-                // For integers, handle them directly
-                if (ch->GetToken().type == PiTokenEnumType::Int) {
-                    int value = boost::lexical_cast<int>(ch->GetToken().Text());
-                    array.Append(reg_->New<int>(value));
-                }
-                // Handle other literal types as needed
-                else if (ch->GetToken().type == PiTokenEnumType::String) {
-                    String value = ch->GetToken().Text();
-                    array.Append(reg_->New<String>(value));
-                }
-                else if (ch->GetToken().type == PiTokenEnumType::Bool) {
-                    bool value = boost::lexical_cast<bool>(ch->GetToken().Text());
-                    array.Append(reg_->New<bool>(value));
-                }
-                // For other complex types, we'd need to process them - but the tests only use integers
+            // Debug print for array node
+            if (node->GetToken().type != PiTokenEnumType::None) {
+                std::cout << "Array node with token: " << node->GetToken().Text() << std::endl;
+            } else {
+                std::cout << "Array node with children: " << node->GetChildren().size() << std::endl;
             }
             
-            // Append the completed array object
-            Append(arrayObj);
+            // For empty array, create it directly
+            if (node->GetChildren().empty()) {
+                Object emptyArray = reg_->New<Array>();
+                Append(emptyArray);
+                break;
+            }
+            
+            // For non-empty arrays, we need to handle two approaches:
+            // 1. Create array with elements directly for simple cases
+            // 2. Use proper ToArray operation for more complex cases
+            
+            // First check if all children are simple literals (int, string, bool)
+            bool allSimpleLiterals = true;
+            for (auto const &ch : node->GetChildren()) {
+                if (ch->GetToken().type != PiTokenEnumType::Int && 
+                    ch->GetToken().type != PiTokenEnumType::String && 
+                    ch->GetToken().type != PiTokenEnumType::Bool) {
+                    allSimpleLiterals = false;
+                    break;
+                }
+            }
+            
+            // If all simple literals, create array directly
+            if (allSimpleLiterals) {
+                Object arrayObj = reg_->New<Array>();
+                Array& array = Deref<Array>(arrayObj);
+                
+                // Process all array elements and add them directly to the array
+                for (auto const &ch : node->GetChildren()) {
+                    // For integers, handle them directly
+                    if (ch->GetToken().type == PiTokenEnumType::Int) {
+                        int value = boost::lexical_cast<int>(ch->GetToken().Text());
+                        array.Append(reg_->New<int>(value));
+                    }
+                    // Handle other literal types as needed
+                    else if (ch->GetToken().type == PiTokenEnumType::String) {
+                        String value = ch->GetToken().Text();
+                        array.Append(reg_->New<String>(value));
+                    }
+                    else if (ch->GetToken().type == PiTokenEnumType::Bool) {
+                        bool value = boost::lexical_cast<bool>(ch->GetToken().Text());
+                        array.Append(reg_->New<bool>(value));
+                    }
+                }
+                
+                // Append the completed array object
+                Append(arrayObj);
+            }
+            // For more complex cases, use the normal array creation approach
+            else {
+                // First add the array size
+                AppendNew(static_cast<int>(node->GetChildren().size()));
+                
+                // Add all elements in reverse order
+                for (auto it = node->GetChildren().rbegin(); it != node->GetChildren().rend(); ++it) {
+                    TranslateNode(*it);
+                }
+                
+                // Finally, add the ToArray operation
+                AppendOp(Operation::ToArray);
+            }
             break;
         }
 
@@ -260,36 +307,64 @@ void PiTranslator::AppendTokenised(const TokenNode &tok) {
             break;
 
         case PiTokenEnumType::Size: {
-            // Special handling for array size operation
-            // If the previous code element was an array, get its size directly
+            // Debug print for size operation
+            std::cout << "Size operation detected, stack size: " << stack.size() << std::endl;
+            
+            // Special case for "[] size" - directly push 0
             if (stack.size() > 0) {
                 auto cont = stack.back();
-                if (cont->GetCode().Exists() && cont->GetCode()->Size() > 0) {
-                    auto lastItem = cont->GetCode()->At(cont->GetCode()->Size() - 1);
-                    if (lastItem.IsType<Array>()) {
-                        // Get the array directly
-                        Array& array = Deref<Array>(lastItem);
-                        // Create a new code array without the array
-                        Pointer<Array> newCode = reg_->New<Array>();
-                        // Copy all but the last item (the array)
-                        for (int i = 0; i < cont->GetCode()->Size() - 1; i++) {
-                            newCode->Append(cont->GetCode()->At(i));
+                if (cont->GetCode().Exists()) {
+                    if (cont->GetCode()->Size() == 1) {
+                        auto firstItem = cont->GetCode()->At(0);
+                        // Check if it's an empty array
+                        if (firstItem.IsType<Array>() && Deref<Array>(firstItem).Size() == 0) {
+                            std::cout << "Empty array detected, pushing 0 directly" << std::endl;
+                            // Replace the array with integer 0
+                            Pointer<Array> newCode = reg_->New<Array>();
+                            newCode->Append(reg_->New<int>(0));
+                            cont->SetCode(newCode);
+                            return;
                         }
-                        // Add the size instead
-                        newCode->Append(reg_->New<int>(array.Size()));
-                        // Replace the code
-                        cont->SetCode(newCode);
-                        return;
+                    }
+                    
+                    // Check if the last item is an array (non-empty)
+                    if (cont->GetCode()->Size() > 0) {
+                        auto lastItem = cont->GetCode()->At(cont->GetCode()->Size() - 1);
+                        
+                        if (lastItem.IsType<Array>()) {
+                            // Get the array directly
+                            Array& array = Deref<Array>(lastItem);
+                            std::cout << "Array found, size: " << array.Size() << std::endl;
+                            
+                            // Create a new code array without the array
+                            Pointer<Array> newCode = reg_->New<Array>();
+                            // Copy all but the last item (the array)
+                            for (int i = 0; i < cont->GetCode()->Size() - 1; i++) {
+                                newCode->Append(cont->GetCode()->At(i));
+                            }
+                            // Add the size instead
+                            newCode->Append(reg_->New<int>(array.Size()));
+                            // Replace the code
+                            cont->SetCode(newCode);
+                            return;
+                        }
                     }
                 }
             }
             
-            // Default behavior: append the Size operation
+            // For all other cases, use the Size operation
+            std::cout << "Using regular Size operation" << std::endl;
+            AppendNew(Label("size"));
             AppendOp(Operation::Size);
             break;
         }
 
         case PiTokenEnumType::ToArray:
+            // Debug print
+            std::cout << "ToArray operation detected" << std::endl;
+            
+            // Our improved Executor.ToArray implementation properly handles 
+            // empty arrays and array creation from stack elements
             AppendOp(Operation::ToArray);
             break;
 
