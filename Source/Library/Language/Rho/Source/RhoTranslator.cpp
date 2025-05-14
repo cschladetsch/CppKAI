@@ -228,8 +228,8 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
 void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
     KAI_TRACE() << "TranslateBinaryOp: Operation=" << Operation::ToString(op);
 
-    // For binary operations, we need to ensure we're not just pushing Continuations
-    // but actually getting the result of evaluating expressions
+    // For binary operations, we need to ensure we're translating directly to Pi streams
+    // without introducing unnecessary continuations
     
     // First, check if both children are simple integer literals
     // In such case, we could evaluate the operation at translation time
@@ -300,28 +300,18 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
         }
     }
     
-    // Create a new continuation for this binary operation
-    // This ensures it gets properly wrapped and typed for the executor
-    Pointer<Continuation> opCont = reg_->New<Continuation>();
-    opCont->SetCode(reg_->New<Array>());
-    
-    // Push this new continuation to become the current context
-    stack.push_back(opCont);
-    
-    // Translate left and right operands into this continuation
+    // Translate directly to Pi stream without creating a continuation
+    // This is the key change - we want to directly translate binary operations to Pi
+    // First translate the left operand
     TranslateNode(node->GetChild(0));
+    
+    // Then translate the right operand
     TranslateNode(node->GetChild(1));
     
-    // Add the operation to the continuation
+    // Finally, add the operation directly
     AppendDirectOperation(op);
-    
-    // Pop the continuation from the stack
-    Pointer<Continuation> completedOp = Pop();
-    
-    // Add the completed operation continuation to the parent
-    Append(completedOp);
 
-    KAI_TRACE() << "Binary operation successfully translated";
+    KAI_TRACE() << "Binary operation successfully translated to Pi stream";
 }
 
 // void RhoTranslator::TranslatePathname(AstNodePtr node)
@@ -368,7 +358,15 @@ void RhoTranslator::TranslateNode(AstNodePtr node) {
             return;
 
         case AstEnum::GetMember:
-            TranslateBinaryOp(node, Operation::GetProperty);
+            // Translate directly to Pi stream without creating a continuation
+            // First translate the object (pushes it onto the stack)
+            TranslateNode(node->GetChild(0));
+            
+            // Then translate the property name (pushes it onto the stack)
+            TranslateNode(node->GetChild(1));
+            
+            // Add the GetProperty operation directly
+            AppendDirectOperation(Operation::GetProperty);
             return;
 
         case AstEnum::TokenType: {
@@ -629,33 +627,16 @@ void RhoTranslator::TranslateWhile(AstNodePtr node) {
             body = std::make_shared<RhoAstNode>(RhoAstNodeEnumType::Block);
         }
 
-        // For while loops in Pi, we need continuations for condition and body
-        // First create condition continuation
-        Pointer<Continuation> condCont = reg_->New<Continuation>();
-        condCont->SetCode(reg_->New<Array>());
-
-        // Then create body continuation
-        Pointer<Continuation> bodyCont = reg_->New<Continuation>();
-        bodyCont->SetCode(reg_->New<Array>());
-
-        // Translate condition into condition continuation
-        stack.push_back(condCont);
+        // First translate the condition
         TranslateNode(condition);
-        stack.pop_back();
 
-        // Translate body into body continuation
-        stack.push_back(bodyCont);
+        // Then translate the body
         TranslateNode(body);
-        stack.pop_back();
-
-        // Add continuations to code in correct order for WhileLoop operation
-        Append(condCont);
-        Append(bodyCont);
 
         // Add WhileLoop operation directly
         AppendDirectOperation(Operation::WhileLoop);
 
-        KAI_TRACE() << "While loop translation complete";
+        KAI_TRACE() << "While loop translation complete with direct Pi operations";
     } catch (std::exception &e) {
         KAI_TRACE_ERROR() << "Exception in TranslateWhile: " << e.what();
         Fail(std::string("Exception in TranslateWhile: ") + e.what());
@@ -680,34 +661,16 @@ void RhoTranslator::TranslateDoWhile(AstNodePtr node) {
         AstNodePtr body = node->GetChild(0);
         AstNodePtr condition = node->GetChild(1);
 
-        // For do-while loops in Pi, we need continuations for condition and
-        // body First create condition continuation
-        Pointer<Continuation> condCont = reg_->New<Continuation>();
-        condCont->SetCode(reg_->New<Array>());
-
-        // Then create body continuation
-        Pointer<Continuation> bodyCont = reg_->New<Continuation>();
-        bodyCont->SetCode(reg_->New<Array>());
-
-        // Translate body into body continuation
-        stack.push_back(bodyCont);
-        TranslateNode(body);
-        stack.pop_back();
-
-        // Translate condition into condition continuation
-        stack.push_back(condCont);
+        // For do-while loops, first translate the condition
         TranslateNode(condition);
-        stack.pop_back();
-
-        // Add continuations to code in correct order for DoLoop operation
-        // Note: Order is different for do-while compared to while
-        Append(condCont);
-        Append(bodyCont);
-
+        
+        // Then translate the body
+        TranslateNode(body);
+        
         // Add DoLoop operation directly
         AppendDirectOperation(Operation::DoLoop);
-
-        KAI_TRACE() << "Do-while loop translation complete";
+        
+        KAI_TRACE() << "Do-while loop translation complete with direct Pi operations";
     } catch (kai::Exception::Base &e) {
         KAI_TRACE_ERROR() << "KAI Exception in TranslateDoWhile: "
                           << e.ToString();
@@ -743,13 +706,13 @@ void RhoTranslator::TranslatePiBlock(AstNodePtr parentNode, size_t startIndex) {
 void RhoTranslator::TranslateList(AstNodePtr node) {
     KAI_TRACE() << "Translating List (array): " << node->ToString();
 
-    // First push all elements onto the stack
+    // Get the number of elements
+    int numElements = static_cast<int>(node->GetChildren().size());
+    
+    // First translate all elements onto the stack
     for (auto element : node->GetChildren()) {
         TranslateNode(element);
     }
-
-    // Get the number of elements
-    int numElements = static_cast<int>(node->GetChildren().size());
     
     // Create a new integer representing the count
     AppendLiteral(numElements);
