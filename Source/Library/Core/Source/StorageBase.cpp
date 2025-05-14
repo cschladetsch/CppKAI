@@ -123,12 +123,35 @@ void StorageBase::SetColorRecursive(ObjectColor::Color color,
     GetClass()->SetReferencedObjectsColor(*this, color, handles);
     if (dictionary.empty()) return;
 
+    // Use non-recursive iteration with a stack to avoid stack overflow
+    std::vector<StorageBase*> stack;
+    
+    // First pass: add all direct children to the stack
     for (Dictionary::value_type const &child : dictionary) {
-        StorageBase *sub =
-            GetRegistry()->GetStorageBase(child.second.GetHandle());
-        if (!sub) continue;
-
-        sub->SetColorRecursive(color, handles);
+        StorageBase *sub = GetRegistry()->GetStorageBase(child.second.GetHandle());
+        if (sub && handles.find(sub->GetHandle()) == handles.end()) {
+            stack.push_back(sub);
+            handles.insert(sub->GetHandle());
+        }
+    }
+    
+    // Process the stack iteratively
+    while (!stack.empty()) {
+        StorageBase* current = stack.back();
+        stack.pop_back();
+        
+        if (!current->SetColor(color)) continue;
+        
+        current->GetClass()->SetReferencedObjectsColor(*current, color, handles);
+        
+        // Add all child objects to the stack if not already processed
+        for (Dictionary::value_type const &child : current->dictionary) {
+            StorageBase *sub = GetRegistry()->GetStorageBase(child.second.GetHandle());
+            if (sub && handles.find(sub->GetHandle()) == handles.end()) {
+                stack.push_back(sub);
+                handles.insert(sub->GetHandle());
+            }
+        }
     }
 }
 
@@ -159,7 +182,18 @@ void StorageBase::MakeReachableGrey() {
     GetClass()->MakeReachableGrey(*this);
 }
 
-bool StorageBase::CanBlacken() { KAI_NOT_IMPLEMENTED(); }
+bool StorageBase::CanBlacken() {
+    // Check if all children can be blackened
+    for (const auto &[_, child] : dictionary) {
+        StorageBase *sub = GetRegistry()->GetStorageBase(child.GetHandle());
+        if (!sub || sub->IsWhite()) {
+            return false;
+        }
+    }
+
+    // Check if referenced objects can be blackened
+    return GetClass()->CanBlackenReferencedObjects(*this);
+}
 
 void StorageBase::RemovedFromContainer(Object const &container) {
     ObjectColor::Color color = ObjectColor::White;

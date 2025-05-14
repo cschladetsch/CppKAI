@@ -74,7 +74,10 @@ struct IAllocator {
         if (!ptr) return;
         try {
             Destruct(ptr);
+        } catch (const std::exception& e) {
+            KAI_TRACE_ERROR() << "exception destructing object at " << ptr << ": " << e.what();
         } catch (...) {
+            KAI_TRACE_ERROR() << "unknown exception destructing object at " << ptr;
         }
         DeAllocateBytes(reinterpret_cast<VoidPtr>(ptr), sizeof(T));
     }
@@ -104,10 +107,12 @@ struct IAllocator {
                 Destruct(reinterpret_cast<T *>(base));
                 base += sizeof(T);
             }
+        } catch (const std::exception& e) {
+            KAI_TRACE_ERROR() << "exception releasing object at " << base << ": " << e.what();
         } catch (...) {
-            KAI_TRACE_ERROR() << "exception releasing object at " << base;
+            KAI_TRACE_ERROR() << "unknown exception releasing object at " << base;
         }
-        DeAllocateBytes(ptr, sizeof(T));
+        DeAllocateBytes(ptr, sizeof(T) * N);
     }
 };
 }  // namespace Memory

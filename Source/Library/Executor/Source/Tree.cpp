@@ -142,7 +142,13 @@ Object Get(Object scope, const Pathname &path) {
 bool Exists(Object const &scope, const Pathname &path) {
     try {
         return Get(scope, path).Exists();
-    } catch (Exception::ObjectNotFound &) {
+    } catch (const Exception::ObjectNotFound &e) {
+        // Object not found is expected and not an error in Exists check
+        KAI_TRACE() << "Path not found: " << path.ToString() << " - " << e.ToString();
+    } catch (const std::exception &e) {
+        KAI_TRACE_ERROR() << "Error checking existence: " << e.what();
+    } catch (...) {
+        KAI_TRACE_ERROR() << "Unknown error checking existence";
     }
 
     return false;
@@ -151,7 +157,13 @@ bool Exists(Object const &scope, const Pathname &path) {
 bool Exists(Object const &root, Object const &scope, const Pathname &path) {
     try {
         return Get(root, scope, path).Exists();
-    } catch (Exception::ObjectNotFound &) {
+    } catch (const Exception::ObjectNotFound &e) {
+        // Object not found is expected and not an error in Exists check
+        KAI_TRACE() << "Path not found: " << path.ToString() << " - " << e.ToString();
+    } catch (const std::exception &e) {
+        KAI_TRACE_ERROR() << "Error checking existence: " << e.what();
+    } catch (...) {
+        KAI_TRACE_ERROR() << "Unknown error checking existence";
     }
 
     return false;

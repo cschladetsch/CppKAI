@@ -86,7 +86,7 @@ void Registry::DestroyNominated() {
 
 void Registry::DestroyObject(Handle handle, bool force) {
     bool succeeded = false;
-    KAI_TRY {
+    try {
         const auto found = instances_.find(handle);
         if (found == instances_.end()) {
 #ifdef KAI_DEBUG_REGISTRY
@@ -112,8 +112,15 @@ void Registry::DestroyObject(Handle handle, bool force) {
         bool trace = gc_trace_level > 3;
         trace = trace || IsWatching(base);
         if (trace) {
-            KAI_TRY { KAI_TRACE() << handle; }
-            KAI_CATCH_ALL() {}
+            try { 
+                KAI_TRACE() << handle; 
+            }
+            catch (const std::exception& e) {
+                KAI_TRACE_ERROR() << "Exception while tracing: " << e.what();
+            }
+            catch (...) {
+                KAI_TRACE_ERROR() << "Unknown exception while tracing";
+            }
         }
 #endif
 
@@ -134,24 +141,29 @@ void Registry::DestroyObject(Handle handle, bool force) {
 
         succeeded = true;
     }
-    KAI_CATCH(Exception::Base, E) {
-        KAI_UNUSED(E);
-        KAI_TRACE() << "\n\t" << E.ToString();
+    catch (const Exception::Base& e) {
+        KAI_TRACE_ERROR() << "Exception during object destruction: " << e.ToString();
+        // Log error but attempt recovery below
     }
-    KAI_CATCH(std::exception, E) {
-        KAI_UNUSED(E);
-        KAI_TRACE() << "std::exception: " << E.what();
+    catch (const std::exception& e) {
+        KAI_TRACE_ERROR() << "Standard exception during object destruction: " << e.what();
+        // Log error but attempt recovery below
     }
-    KAI_CATCH_ALL() {}
+    catch (...) {
+        KAI_TRACE_ERROR() << "Unknown exception during object destruction";
+        // Log error but attempt recovery below
+    }
 
     if (!succeeded) {
-        KAI_TRACE_WARN() << " coudldn't delete handle " << handle;
-        if (auto const found = instances_.find(handle);
-            found != instances_.end()) {
-            // this leaks and has other *TERRIBLE* consequences but it is the
-            // best we can do to keep afloat
-            KAI_TRACE_ERROR() << "failed to delete " << handle;
+        KAI_TRACE_WARN() << "Failed to delete handle " << handle;
+        if (auto const found = instances_.find(handle); found != instances_.end()) {
+            KAI_TRACE_ERROR() << "Force removing object with handle " << handle << " from instances";
+            // Remove the object from instances to prevent memory leaks, but log the error
+            // This is safer than keeping invalid objects in the registry
             instances_.erase(found);
+            
+            // Add an entry to a failed deletion log that can be reviewed later
+            failed_deletions_.push_back(handle);
         }
     }
 }
