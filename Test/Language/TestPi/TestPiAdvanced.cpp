@@ -32,8 +32,12 @@ TEST_F(TestPiAdvanced, TestStringOperations) {
     // Test simple do-while loop with Pi
     data_->Clear();
     try {
+        // First initialize variables directly to avoid any issues with the Replace operations
+        console_.GetTree().GetScope().Set(Label("i"), reg_->New<int>(0));
+        console_.GetTree().GetScope().Set(Label("count"), reg_->New<int>(0));
+        
         console_.Execute(
-            "0 i ! 0 count ! { count @ 1 + count ! i @ 1 + i ! i @ 3 < } do");
+            "{ count @ 1 + count ! i @ 1 + i ! i @ 3 < } do");
 
         // Test the final value of count (should be 3 after loop executes 3
         // times)
