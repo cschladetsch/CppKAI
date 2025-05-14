@@ -35,6 +35,14 @@ void TestLangCommon::SetUp() {
     tree_ = &console_.GetTree();
     root_ = tree_->GetRoot();
 
+    // Check if the root object is valid
+    if (!root_.Exists()) {
+        // If not valid, create a new root object
+        root_ = reg_->New<void>();
+        // Root is now the tree's root
+        tree_->SetRoot(root_);
+    }
+
     // Always ensure a clean state on setup
     exec_->ClearStacks();
     exec_->ClearContext();

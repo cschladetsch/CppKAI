@@ -49,6 +49,9 @@ class TestLangCommon : public TestCommon {
     Stack *data_;
     const Stack *context_;
     Executor *exec_;
+    Registry *reg_;
+    Tree *tree_;
+    Object root_;
 };
 
 KAI_END

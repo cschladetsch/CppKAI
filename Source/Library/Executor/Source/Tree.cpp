@@ -236,10 +236,25 @@ void Tree::SetScope(const Pathname &path) {
     scope_ = Get(root_, scope_, path);
 }
 
-void Tree::AddSearchPath(const Object &path) { path_.push_back(path); }
+void Tree::AddSearchPath(const Object &path) { 
+    if (!path.Exists()) {
+        KAI_TRACE_ERROR() << "AddSearchPath with invalid object";
+        return;
+    }
+    path_.push_back(path); 
+}
 
 void Tree::AddSearchPath(const Pathname &path) {
-    path_.push_back(Get(root_, scope_, path));
+    if (path.Empty()) {
+        KAI_TRACE_ERROR() << "AddSearchPath with empty pathname";
+        return;
+    }
+    Object found = Get(root_, scope_, path);
+    if (!found.Exists()) {
+        KAI_TRACE_ERROR() << "AddSearchPath failed to resolve: " << path.ToString();
+        return;
+    }
+    path_.push_back(found);
 }
 
 Object Tree::Resolve(const Label &label) const {

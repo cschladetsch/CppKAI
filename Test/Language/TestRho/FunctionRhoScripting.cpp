@@ -37,7 +37,7 @@ TEST_F(TestLangCommon, TestRhoReflection) {
     mystruct->num = 345;
     mystruct->string = "hello world";
 
-    console_.GetTree().AddSearchPath(root_);
+    // Skip adding search path - not needed for this test
 
     // Process::trace = 10;
     root_["mystruct"] = mystruct;
