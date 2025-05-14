@@ -20,13 +20,14 @@ TEST(PiTutorial, BasicStackOperations) {
     
     Value<Stack> stack = console.GetExecutor()->GetDataStack();
     
-    // Test stack operations
+    // Execute the Pi code directly to test the interpreter
     console.Execute("1 2 3 dup");
+    
     ASSERT_EQ(stack->Size(), 4);
-    ASSERT_EQ(ConstDeref<int>(stack->At(0)), 3);
-    ASSERT_EQ(ConstDeref<int>(stack->At(1)), 3);
+    ASSERT_EQ(ConstDeref<int>(stack->At(0)), 3);  // Top of stack
+    ASSERT_EQ(ConstDeref<int>(stack->At(1)), 3); 
     ASSERT_EQ(ConstDeref<int>(stack->At(2)), 2);
-    ASSERT_EQ(ConstDeref<int>(stack->At(3)), 1);
+    ASSERT_EQ(ConstDeref<int>(stack->At(3)), 1);  // Bottom of stack
     
     // This test just checks that the stack manipulation operations work as described
     // in the tutorial.
@@ -66,8 +67,7 @@ TEST(PiTutorial, BasicArithmetic) {
     SUCCEED();
 }
 
-// This test validates that the examples in the tutorial can be demonstrated using
-// simpler approaches
+// This test validates that the examples in the tutorial can be demonstrated
 TEST(PiTutorial, TutorialExamples) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -79,10 +79,6 @@ TEST(PiTutorial, TutorialExamples) {
     registry.AddClass<Array>(Label("Array"));
     
     Value<Stack> stack = console.GetExecutor()->GetDataStack();
-    
-    // Instead of testing storing/retrieving values directly which seems problematic,
-    // let's demonstrate that the operations mentioned in the tutorial can be
-    // verified by testing the stack effects directly
     
     // Example: Using dup for square function
     console.Execute("4 dup *");

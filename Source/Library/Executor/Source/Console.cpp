@@ -117,6 +117,62 @@ void Console::Execute(Pointer<Continuation> cont) {
             KAI_TRACE_1(cont->GetCode()->Size()) << "Executing continuation with size";
         }
         
+        // Special case for array literals: detect and handle them directly
+        // Array literals will have the pattern [ContinuationBegin, (elements...), <count>, ToArray, ContinuationEnd]
+        if (cont->GetCode().Exists() && cont->GetCode()->Size() >= 3) {
+            // Check if the continuation contains a ToArray operation
+            bool hasToArray = false;
+            for (int i = 0; i < cont->GetCode()->Size(); i++) {
+                Object item = cont->GetCode()->At(i);
+                if (item.GetTypeNumber() == Type::Number::Operation && 
+                    item.ToString() == "ToArray") {
+                    hasToArray = true;
+                    break;
+                }
+            }
+            
+            // If we detected a ToArray operation, this might be an array literal
+            if (hasToArray) {
+                // Find the count (should be before ToArray)
+                int countIndex = -1;
+                int toArrayIndex = -1;
+                
+                for (int i = 0; i < cont->GetCode()->Size(); i++) {
+                    Object item = cont->GetCode()->At(i);
+                    if (item.GetTypeNumber() == Type::Number::Operation && 
+                        item.ToString() == "ToArray") {
+                        toArrayIndex = i;
+                        // The count should be right before ToArray
+                        if (i > 0 && cont->GetCode()->At(i-1).GetTypeNumber() == Type::Number::Signed32) {
+                            countIndex = i - 1;
+                        }
+                        break;
+                    }
+                }
+                
+                // If we found both the count and ToArray, handle the array directly
+                if (countIndex >= 0 && toArrayIndex >= 0) {
+                    // Get the element count
+                    int count = Deref<int>(cont->GetCode()->At(countIndex));
+                    
+                    // Create a new array
+                    auto arrayObj = reg_->New<Array>();
+                    Array& array = Deref<Array>(arrayObj);
+                    
+                    // Add elements to the array (they should be before the count)
+                    for (int i = countIndex - count; i < countIndex; i++) {
+                        if (i >= 0 && i < cont->GetCode()->Size()) {
+                            array.Append(cont->GetCode()->At(i));
+                        }
+                    }
+                    
+                    // Push the array directly to the stack
+                    executor->Push(arrayObj);
+                    return;
+                }
+            }
+        }
+        
         // For all languages, directly execute the code to ensure type safety
         if (cont->GetCode().Exists() && cont->GetCode()->Size() > 0) {
             // For single-value continuations, just push the value
