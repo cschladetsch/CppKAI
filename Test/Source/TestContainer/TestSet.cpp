@@ -16,10 +16,10 @@ class TestSet : public TestCommon {
 TEST_F(TestSet, TestCreation) {}
 
 TEST_F(TestSet, TestInsertDelete) {
-    Pointer<ObjectSet> set = _reg->New<ObjectSet>();
-    _root.Set("set", set);
+    Pointer<ObjectSet> set = reg_->New<ObjectSet>();
+    root_.Set("set", set);
 
-    Object n = _reg->New(42);
+    Object n = reg_->New(42);
     set->Insert(n);
     Reg().GarbageCollect();
 

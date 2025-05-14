@@ -23,7 +23,7 @@ TEST_F(TestArray, TestCreation) {
 
 TEST_F(TestArray, TestInsertDelete) {
     Pointer<Array> cont = Reg().New<Array>();
-    _root.Set("cont", cont);
+    root_.Set("cont", cont);
 
     Object n = Reg().New(42);
     cont->PushBack(n);

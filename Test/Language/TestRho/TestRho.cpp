@@ -13,7 +13,7 @@ TEST_F(TestRho, RunScripts) {
     debug::MinTrace();
 
     // Get the executor and stacks
-    auto &exec = *_console.GetExecutor();
+    auto &exec = *console_.GetExecutor();
 
     // First clear the stacks to ensure we're starting clean
     exec.ClearStacks();
@@ -24,38 +24,38 @@ TEST_F(TestRho, RunScripts) {
 }
 
 TEST_F(TestRho, TestBasicOperations) {
-    _console.SetLanguage(Language::Rho);
+    console_.SetLanguage(Language::Rho);
     data_->Clear();
 
-    _console.Execute("6 / 2");
+    console_.Execute("6 / 2");
     ASSERT_EQ(AtData<int>(0), 3);
 
     data_->Clear();
-    _console.Execute("1 + 2");
+    console_.Execute("1 + 2");
     auto result = AtData<int>(0);
     ASSERT_EQ(result, 3);
 
     data_->Clear();
-    _console.Execute("5 - 3");
+    console_.Execute("5 - 3");
     ASSERT_EQ(AtData<int>(0), 2);
 
     data_->Clear();
-    _console.Execute("3 * 4");
+    console_.Execute("3 * 4");
     ASSERT_EQ(AtData<int>(0), 12);
 }
 
 TEST_F(TestRho, TestArrays) {
-    _console.SetLanguage(Language::Rho);
+    console_.SetLanguage(Language::Rho);
 
     data_->Clear();
-    _console.Execute("[]");
+    console_.Execute("[]");
     Pointer<Array> array = data_->At(0);
     ASSERT_TRUE(array.Exists());
     ASSERT_TRUE(array->Empty());
     ASSERT_EQ(array->Size(), 0);
 
     data_->Clear();
-    _console.Execute("[1, 2, 3]");
+    console_.Execute("[1, 2, 3]");
     array = data_->At(0);
     ASSERT_TRUE(array.Exists());
     ASSERT_FALSE(array->Empty());
@@ -65,16 +65,16 @@ TEST_F(TestRho, TestArrays) {
     ASSERT_EQ(ConstDeref<int>(array->At(2)), 3);
 
     data_->Clear();
-    _console.Execute("a = [1, 2, 3]; a.Count");
+    console_.Execute("a = [1, 2, 3]; a.Count");
     ASSERT_EQ(AtData<int>(0), 3);
 }
 
 TEST_F(TestRho, TestIterationConstructs) {
-    _console.SetLanguage(Language::Rho);
+    console_.SetLanguage(Language::Rho);
 
     // Test while loop
     data_->Clear();
-    _console.Execute(R"(
+    console_.Execute(R"(
         counter = 0;
         sum = 0;
         while (counter < 5) {
@@ -87,7 +87,7 @@ TEST_F(TestRho, TestIterationConstructs) {
 
     // Test for loop
     data_->Clear();
-    _console.Execute(R"(
+    console_.Execute(R"(
         sum = 0;
         for (i = 0; i < 5; i = i + 1) {
             sum = sum + i;
@@ -102,17 +102,17 @@ TEST_F(TestRho, TestIterationConstructs) {
 }
 
 TEST_F(TestRho, TestFunctionDefinitionAndCall) {
-    _console.SetLanguage(Language::Rho);
+    console_.SetLanguage(Language::Rho);
 
     data_->Clear();
-    _console.Execute(R"(
+    console_.Execute(R"(
         square = fun(x) { return x * x; };
         square(5)
     )");
     ASSERT_EQ(AtData<int>(0), 25);
 
     data_->Clear();
-    _console.Execute(R"(
+    console_.Execute(R"(
         sum = fun(a, b) { return a + b; };
         sum(3, 4)
     )");
@@ -120,10 +120,10 @@ TEST_F(TestRho, TestFunctionDefinitionAndCall) {
 }
 
 TEST_F(TestRho, TestConditionals) {
-    _console.SetLanguage(Language::Rho);
+    console_.SetLanguage(Language::Rho);
 
     data_->Clear();
-    _console.Execute(R"(
+    console_.Execute(R"(
         result = 0;
         if (5 > 3) {
             result = 1;
@@ -135,7 +135,7 @@ TEST_F(TestRho, TestConditionals) {
     ASSERT_EQ(AtData<int>(0), 1);
 
     data_->Clear();
-    _console.Execute(R"(
+    console_.Execute(R"(
         result = 0;
         if (2 > 3) {
             result = 1;
@@ -149,15 +149,15 @@ TEST_F(TestRho, TestConditionals) {
 
 TEST_F(TestRho, TestDoWhileLoop) {
     // Test is now enabled since the do-while loop implementation has been fixed
-    _console.SetLanguage(Language::Rho);
+    console_.SetLanguage(Language::Rho);
 
     // Enable high trace level for debugging
-    auto &exec = *_console.GetExecutor();
+    auto &exec = *console_.GetExecutor();
     exec.SetTraceLevel(5);
 
     // Test simple do-while with indentation syntax
     data_->Clear();
-    _console.Execute(R"(
+    console_.Execute(R"(
         // Simple do-while with proper indentation
         i = 0
         do
@@ -170,7 +170,7 @@ TEST_F(TestRho, TestDoWhileLoop) {
     // Test do-while that runs exactly once (condition is false after first
     // iteration)
     data_->Clear();
-    _console.Execute(R"(
+    console_.Execute(R"(
         // Do-while that runs once because condition is false after first iteration
         i = 5
         do

@@ -10,14 +10,14 @@ KAI_NET_BEGIN
 
 struct MacAddress {
     MacAddress() = default;
-    MacAddress(const std::string& text) : _text(text) {}
+    MacAddress(const std::string& text) : text_(text) {}
 
-    const std::string& Text() const { return _text; }
+    const std::string& Text() const { return text_; }
 
-    std::string ToString() const { return _text; }
+    std::string ToString() const { return text_; }
 
     friend bool operator==(MacAddress const& A, MacAddress const& B) {
-        return A._text == B._text;
+        return A.text_ == B.text_;
     }
 
     friend bool operator!=(MacAddress const& A, MacAddress const& B) {
@@ -26,21 +26,21 @@ struct MacAddress {
 
     size_t Hash() const {
         // Use std::hash instead of boost::hash for simplicity
-        return std::hash<std::string>()(_text);
+        return std::hash<std::string>()(text_);
     }
 
    private:
-    std::string _text;
+    std::string text_;
 };
 
 struct IpAddress {
     IpAddress() = default;
-    IpAddress(const std::string& text) : _text(text) {}
+    IpAddress(const std::string& text) : text_(text) {}
 
-    const std::string& Text() const { return _text; }
+    const std::string& Text() const { return text_; }
 
     // Convert to string for use with RakNet
-    std::string ToString() const { return _text; }
+    std::string ToString() const { return text_; }
 
     // Parse IP address from string
     static IpAddress FromString(const std::string& str) {
@@ -79,7 +79,7 @@ struct IpAddress {
 
     // Comparison operators
     friend bool operator==(IpAddress const& A, IpAddress const& B) {
-        return A._text == B._text;
+        return A.text_ == B.text_;
     }
 
     friend bool operator!=(IpAddress const& A, IpAddress const& B) {
@@ -87,10 +87,10 @@ struct IpAddress {
     }
 
     // Hash function for unordered containers
-    size_t Hash() const { return std::hash<std::string>()(_text); }
+    size_t Hash() const { return std::hash<std::string>()(text_); }
 
    private:
-    std::string _text;
+    std::string text_;
 };
 
 // Hash functions for STL containers

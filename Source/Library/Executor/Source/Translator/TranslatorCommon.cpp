@@ -50,7 +50,7 @@ void TranslatorCommon::AppendOp(Operation::Type op) {
               << std::endl;
 
     // Create a new Operation object and add it directly to the code array
-    Object opObject = _reg->New<Operation>(op);
+    Object opObject = reg_->New<Operation>(op);
 
     // The operation should be added directly to the current continuation's code
     // array
@@ -64,7 +64,7 @@ void TranslatorCommon::AppendDirectOperation(Operation::Type op) {
     // instead of wrapping it in another continuation
     // This is used for Rho language binary operations to avoid unnecessary nesting
     
-    Object opObject = _reg->New<Operation>(op);
+    Object opObject = reg_->New<Operation>(op);
     
     // Add directly to the current continuation's code array
     if (stack.empty()) {
@@ -107,14 +107,14 @@ void TranslatorCommon::MarkAsRhoExpression() {
     // to determine how to process continuations
     
     // Original code commented out to prevent errors:
-    // top.SetPropertyValue(Label("RhoExpression"), _reg->New<bool>(true));
+    // top.SetPropertyValue(Label("RhoExpression"), reg_->New<bool>(true));
 }
 
 Pointer<Continuation> TranslatorCommon::Top() { return stack.back(); }
 
 void TranslatorCommon::PushNew() {
-    Pointer<Continuation> c = _reg->New<Continuation>();
-    c->SetCode(_reg->New<Array>());
+    Pointer<Continuation> c = reg_->New<Continuation>();
+    c->SetCode(reg_->New<Array>());
     stack.push_back(c);
 }
 

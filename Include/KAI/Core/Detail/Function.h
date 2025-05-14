@@ -30,9 +30,9 @@ struct VoidFun : FunctionBase {
     }
 
     void Invoke(Registry &reg, Stack &stack) {
-        std::tuple<Args...> _args;
-        Add<arity - 1>::Arg(stack, _args);
-        CallFun(fun, _args);
+        std::tuple<Args...> args_;
+        Add<arity - 1>::Arg(stack, args_);
+        CallFun(fun, args_);
     }
 };
 
@@ -40,7 +40,7 @@ template <class Ret, class... Args>
 struct NonVoidFun : FunctionBase {
     typedef Ret (*Func)(Args...);
     Func fun;
-    std::tuple<Args...> _args;
+    std::tuple<Args...> args_;
     static constexpr int arity = sizeof...(Args);
     using FunctionBase::arguments;
     using FunctionBase::return_type;
@@ -51,8 +51,8 @@ struct NonVoidFun : FunctionBase {
     }
 
     void Invoke(Registry &reg, Stack &stack) {
-        Add<arity - 1>::Arg(stack, _args);
-        stack.Push(reg.New<Ret>(CallFun(fun, _args)));
+        Add<arity - 1>::Arg(stack, args_);
+        stack.Push(reg.New<Ret>(CallFun(fun, args_)));
     }
 };
 

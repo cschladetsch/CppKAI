@@ -40,15 +40,15 @@ class TestLangCommon : public TestCommon {
     template <class T>
     void AssertResult(const char *text, T const &val) {
         data_->Clear();
-        _console.Execute(text);
+        console_.Execute(text);
         ASSERT_EQ(AtData<T>(0), val);
     }
 
    protected:
-    Console _console;
+    Console console_;
     Stack *data_;
     const Stack *context_;
-    Executor *_exec;
+    Executor *exec_;
 };
 
 KAI_END

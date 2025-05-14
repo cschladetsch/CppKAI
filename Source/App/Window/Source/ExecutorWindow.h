@@ -23,10 +23,10 @@ struct ExecutorWindow {
     vector<string> Items;
     vector<string> History;
 
-    Console _console;
+    Console console_;
     Tree* tree_;
-    Executor* _exec;
-    Registry* _reg;
+    Executor* exec_;
+    Registry* reg_;
 
    public:
     ExecutorWindow();

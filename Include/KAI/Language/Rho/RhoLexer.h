@@ -18,7 +18,7 @@ struct RhoLexer : LexerCommon<RhoTokenEnumType> {
 
    protected:
     bool LexPathname();
-    using Parent::_reg;
+    using Parent::reg_;
 };
 
 KAI_END

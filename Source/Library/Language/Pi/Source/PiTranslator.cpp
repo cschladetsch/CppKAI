@@ -30,8 +30,8 @@ void PiTranslator::TranslateNode(AstNodePtr node) {
             // explicitly executed with & or !
             
             // Create a new continuation for the {} block
-            Pointer<Continuation> cont = _reg->New<Continuation>();
-            Pointer<Array> code = _reg->New<Array>();
+            Pointer<Continuation> cont = reg_->New<Continuation>();
+            Pointer<Array> code = reg_->New<Array>();
             
             // First, add an operation marker to indicate the start of a continuation block
             // This helps the executor properly handle Pi continuations
@@ -347,7 +347,7 @@ void PiTranslator::AppendTokenised(const TokenNode &tok) {
 
 // Helper method to append an operation directly to a code array
 void PiTranslator::AppendDirectOperation(Pointer<Array> code, Operation::Type opType) {
-    Object op = _reg->New<Operation>(opType);
+    Object op = reg_->New<Operation>(opType);
     code->Append(op);
 }
 

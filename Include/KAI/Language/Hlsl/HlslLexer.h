@@ -17,7 +17,7 @@ struct HlslLexer : LexerCommon<HlslTokenEnumType> {
 
    protected:
     bool LexIdent();
-    using Parent::_reg;
+    using Parent::reg_;
 };
 
 KAI_END

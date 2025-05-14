@@ -116,19 +116,19 @@ string GenerateProcess::Prepend() const { return ""; }
 
 stringstream &GenerateProcess::StartBlock(const string &name) {
     str_ << name << EndLine() << '{';
-    _indentation++;
+    indentation_++;
     str_ << EndLine();
     return str_;
 }
 
 string GenerateProcess::EndLine() const {
     stringstream s;
-    s << "\n" << string(_indentation, '\t');
+    s << "\n" << string(indentation_, '\t');
     return s.str();
 }
 
 void GenerateProcess::EndBlock() {
-    _indentation--;
+    indentation_--;
     str_ << EndLine() << '}';
 }
 }  // namespace Generate

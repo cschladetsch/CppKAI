@@ -16,26 +16,26 @@ struct ExecutorWindow {
     std::vector<std::string> Items;
     std::vector<std::string> History;
 
-    Console _console;
+    Console console_;
     Tree* tree_;
-    Executor* _exec;
-    Registry* _reg;
+    Executor* exec_;
+    Registry* reg_;
 
     ExecutorWindow() {
-        ClearLog() memset(InputBuf, 0, sizeof(InputBuf));
+        ClearLog(); memset(InputBuf, 0, sizeof(InputBuf));
         HistoryPos = -1;
 
-        _console.SetLanguage(Language::Pi);
-        _exec = &*_console.GetExecutor();
-        _reg = &_console.GetRegistry();
-        tree_ = &_console.GetTree();
+        console_.SetLanguage(Language::Pi);
+        exec_ = &*console_.GetExecutor();
+        reg_ = &console_.GetRegistry();
+        tree_ = &console_.GetTree();
 
         ClearLog()
     }
 
     void ClearLog() {
         Items.clear();
-        _exec->GetDataStack()->Clear();
+        exec_->GetDataStack()->Clear();
         ScrollToBottom = true;
     }
 
@@ -149,7 +149,7 @@ struct ExecutorWindow {
 
     void ExecCommand(const char* command_line) {
         try {
-            _console.Execute(command_line, Structure::Expression);
+            console_.Execute(command_line, Structure::Expression);
         } catch (Exception::Base& e) {
             StringStream st;
             st << e.ToString() << "\n";
@@ -163,7 +163,7 @@ struct ExecutorWindow {
         ClearLog();
 
         // draw executor data stack
-        for (auto obj : *_exec->GetDataStack()) {
+        for (auto obj : *exec_->GetDataStack()) {
             StringStream st;
             st << obj << "\n";
             AddLog(st.ToString().c_str());

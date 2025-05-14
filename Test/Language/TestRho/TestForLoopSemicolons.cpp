@@ -7,14 +7,14 @@ KAI_BEGIN
 
 // Test the Rho for loop with semicolons
 TEST_F(TestLangCommon, ForLoopSemicolonsSyntax) {
-    _console.SetLanguage(Language::Rho);
+    console_.SetLanguage(Language::Rho);
 
     // Clear stacks before testing
-    _exec->ClearStacks();
-    _exec->ClearContext();
+    exec_->ClearStacks();
+    exec_->ClearContext();
 
     // Set trace level to debug
-    _exec->SetTraceLevel(3);
+    exec_->SetTraceLevel(3);
 
     try {
         // Create a script with various for loop syntaxes that use semicolons
@@ -79,7 +79,7 @@ TEST_F(TestLangCommon, ForLoopSemicolonsSyntax) {
 
         // Execute the script
         std::cout << "Executing script..." << std::endl;
-        _console.Execute(script);
+        console_.Execute(script);
 
         // Success if we get here (all assertions passed)
         std::cout << "ForLoopSemicolonsSyntax test passed!" << std::endl;
@@ -99,14 +99,14 @@ TEST_F(TestLangCommon, ForLoopSemicolonsSyntax) {
 
 // Test advanced for loop syntax with formatting variations
 TEST_F(TestLangCommon, ForLoopFormattingVariations) {
-    _console.SetLanguage(Language::Rho);
+    console_.SetLanguage(Language::Rho);
 
     // Clear stacks before testing
-    _exec->ClearStacks();
-    _exec->ClearContext();
+    exec_->ClearStacks();
+    exec_->ClearContext();
 
     // Set trace level to debug
-    _exec->SetTraceLevel(3);
+    exec_->SetTraceLevel(3);
 
     try {
         // Create a script with variations in for loop formatting
@@ -139,7 +139,7 @@ TEST_F(TestLangCommon, ForLoopFormattingVariations) {
 
         // Execute the script
         std::cout << "Executing script..." << std::endl;
-        _console.Execute(script);
+        console_.Execute(script);
 
         // Success if we get here (all assertions passed)
         std::cout << "ForLoopFormattingVariations test passed!" << std::endl;

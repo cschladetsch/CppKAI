@@ -23,9 +23,9 @@ std::string LoadScriptText(const char *filename);
 // TODO: Rename to BaseTestClass once refactoring works with VSCode again :P
 class TestCommon : public ::testing::Test {
    protected:
-    Registry *_reg = nullptr;
+    Registry *reg_ = nullptr;
     Tree *tree_ = nullptr;
-    Object _root;
+    Object root_;
 
     ~TestCommon() {}
     Registry &Reg() const;
@@ -71,10 +71,10 @@ KAI_END
 // C++ stream interface
 class TestCout : public std::stringstream {
    public:
-    bool _isError;
-    TestCout(bool e = false) : _isError(e) {}
+    bool isError_;
+    TestCout(bool e = false) : isError_(e) {}
     ~TestCout() {
-        if (_isError)
+        if (isError_)
             GTEST_COUT << " [ERROR] " << str().c_str();
         else
             GTEST_COUT << "[INFO] " << str().c_str();

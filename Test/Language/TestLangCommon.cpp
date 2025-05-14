@@ -28,22 +28,22 @@ void ToLower(std::wstring &str) {
 }
 
 void TestLangCommon::SetUp() {
-    _reg = &_console.GetRegistry();
-    _exec = &*_console.GetExecutor();
-    data_ = &*_exec->GetDataStack();
-    context_ = &*_exec->GetContextStack();
-    tree_ = &_console.GetTree();
-    _root = tree_->GetRoot();
+    reg_ = &console_.GetRegistry();
+    exec_ = &*console_.GetExecutor();
+    data_ = &*exec_->GetDataStack();
+    context_ = &*exec_->GetContextStack();
+    tree_ = &console_.GetTree();
+    root_ = tree_->GetRoot();
 
     // Always ensure a clean state on setup
-    _exec->ClearStacks();
-    _exec->ClearContext();
+    exec_->ClearStacks();
+    exec_->ClearContext();
 }
 
 void TestLangCommon::TearDown() {
     // Clean up after each test to avoid state persistence
-    _exec->ClearStacks();
-    _exec->ClearContext();
+    exec_->ClearStacks();
+    exec_->ClearContext();
 }
 
 void TestLangCommon::ExecScriptFile(const std::string &scriptFileName) {
@@ -52,18 +52,18 @@ void TestLangCommon::ExecScriptFile(const std::string &scriptFileName) {
 
     // Set the language based on file extension
     if (scriptFileName.find(".pi") != std::string::npos) {
-        _console.SetLanguage(Language::Pi);
+        console_.SetLanguage(Language::Pi);
     } else if (scriptFileName.find(".rho") != std::string::npos) {
-        _console.SetLanguage(Language::Rho);
+        console_.SetLanguage(Language::Rho);
         std::cout << "Setting language to Rho for script: " << scriptFileName
                   << std::endl;
     } else if (scriptFileName.find(".tau") != std::string::npos) {
-        _console.SetLanguage(Language::Tau);
+        console_.SetLanguage(Language::Tau);
     }
 
     // Clear stacks before execution
-    _exec->ClearStacks();
-    _exec->ClearContext();
+    exec_->ClearStacks();
+    exec_->ClearContext();
 
     try {
         auto contents = File::ReadAllText(scriptPath);
@@ -74,7 +74,7 @@ void TestLangCommon::ExecScriptFile(const std::string &scriptFileName) {
                   << " bytes" << std::endl;
 
         // Execute the script - let any exceptions propagate to the caller
-        _console.Execute(contents.c_str());
+        console_.Execute(contents.c_str());
 
         std::cout << "Script execution complete" << std::endl;
     } catch (const std::exception &e) {
@@ -92,11 +92,11 @@ void TestLangCommon::ExecScripts() {
 // Change this to match the test we're running
 #ifdef KAI_LANG_NAME
     const auto ext = File::Extension(".pi");
-    _console.SetLanguage(Language::KAI_LANG_NAME);
+    console_.SetLanguage(Language::KAI_LANG_NAME);
 #else
     // Default to the current test language
     const auto ext = File::Extension(".rho");
-    _console.SetLanguage(Language::Rho);
+    console_.SetLanguage(Language::Rho);
     std::cout << "Testing Rho language scripts" << std::endl;
 #endif
     for (auto const &scriptName :
@@ -107,12 +107,12 @@ void TestLangCommon::ExecScripts() {
         // scriptName.generic_string().c_str();
 
         // Clear stacks before each script execution to ensure a clean state
-        _exec->ClearStacks();
-        _exec->ClearContext();
+        exec_->ClearStacks();
+        exec_->ClearContext();
 
         auto contents = File::ReadAllText(scriptName);
         try {
-            _console.Execute(contents.c_str());
+            console_.Execute(contents.c_str());
         } catch (std::exception &e) {
             // Log the exception but continue with the next script
             // This ensures one failing script doesn't stop the entire test
@@ -121,16 +121,16 @@ void TestLangCommon::ExecScripts() {
                         << e.what();
 
             // Make sure stacks are clean after an exception
-            _exec->ClearStacks();
-            _exec->ClearContext();
+            exec_->ClearStacks();
+            exec_->ClearContext();
         } catch (...) {
             // Catch any other type of exception
             KAI_TRACE() << "Unknown exception in script "
                         << scriptName.generic_string().c_str();
 
             // Make sure stacks are clean after an exception
-            _exec->ClearStacks();
-            _exec->ClearContext();
+            exec_->ClearStacks();
+            exec_->ClearContext();
         }
 
         // Debug stack state only when needed

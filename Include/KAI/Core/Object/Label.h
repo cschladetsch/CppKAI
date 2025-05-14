@@ -10,7 +10,7 @@ struct Label {
 
    private:
     Value value_;
-    bool _quoted = false;
+    bool quoted_ = false;
 
    public:
     Label() = default;
@@ -18,8 +18,8 @@ struct Label {
     explicit Label(const Value &S) { FromString(S); }
 
     bool Empty() const { return value_.empty(); }
-    bool Quoted() const { return _quoted; }
-    void SetQuoted(bool q) { _quoted = q; }
+    bool Quoted() const { return quoted_; }
+    void SetQuoted(bool q) { quoted_ = q; }
 
     void FromString(const Value &S);
     String ToString() const;

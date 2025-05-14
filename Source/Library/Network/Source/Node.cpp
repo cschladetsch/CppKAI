@@ -10,22 +10,22 @@
 
 KAI_NET_BEGIN
 
-Node::Node() : _peer(nullptr), isRunning_(false) {
+Node::Node() : peer_(nullptr), isRunning_(false) {
     // Use an empty registry for now
     // _reg = std::make_shared<Registry>();
 
     // Initialize RakNet
-    _peer = RakNet::RakPeerInterface::GetInstance();
-    if (_peer == nullptr) {
+    peer_ = RakNet::RakPeerInterface::GetInstance();
+    if (peer_ == nullptr) {
         std::cerr << "Failed to create RakNet peer interface" << std::endl;
         return;
     }
 
     // Create the connection manager
-    _connectionManager = std::make_unique<ConnectionManager>(_peer);
+    connectionManager_ = std::make_unique<ConnectionManager>(peer_);
 
     // Create the peer discovery component
-    _peerDiscovery = std::make_unique<PeerDiscovery>(_peer);
+    peerDiscovery_ = std::make_unique<PeerDiscovery>(peer_);
 
     // Initialize NetworkLogger
     NetworkLogger::Init();
@@ -35,20 +35,20 @@ Node::~Node() {
     Shutdown();
 
     // Clean up RakNet
-    if (_peer) {
-        RakNet::RakPeerInterface::DestroyInstance(_peer);
-        _peer = nullptr;
+    if (peer_) {
+        RakNet::RakPeerInterface::DestroyInstance(peer_);
+        peer_ = nullptr;
     }
 }
 
 void Node::Listen(int port) { Listen(IpAddress("0.0.0.0"), port); }
 
 void Node::Listen(IpAddress const &address, int port) {
-    if (!_peer) return;
+    if (!peer_) return;
 
     // Max 32 connections, use all available network interfaces
     RakNet::SocketDescriptor sd(port, address.ToString().c_str());
-    RakNet::StartupResult result = _peer->Startup(32, &sd, 1);
+    RakNet::StartupResult result = peer_->Startup(32, &sd, 1);
 
     if (result != RakNet::RAKNET_STARTED) {
         std::string errorMsg = "Failed to start RakNet server, error code: " +
@@ -58,7 +58,7 @@ void Node::Listen(IpAddress const &address, int port) {
         return;
     }
 
-    _peer->SetMaximumIncomingConnections(32);
+    peer_->SetMaximumIncomingConnections(32);
     isRunning_ = true;
 
     // Log that we're listening
@@ -69,12 +69,12 @@ void Node::Listen(IpAddress const &address, int port) {
 }
 
 void Node::Connect(IpAddress const &ip, int port) {
-    if (!_peer) return;
+    if (!peer_) return;
 
     // If not started yet, start with any available port
     if (!isRunning_) {
         RakNet::SocketDescriptor sd(0, nullptr);  // Use any available port
-        RakNet::StartupResult result = _peer->Startup(32, &sd, 1);
+        RakNet::StartupResult result = peer_->Startup(32, &sd, 1);
 
         if (result != RakNet::RAKNET_STARTED) {
             std::string errorMsg =
@@ -90,7 +90,7 @@ void Node::Connect(IpAddress const &ip, int port) {
 
     // Connect to remote peer
     RakNet::ConnectionAttemptResult result =
-        _peer->Connect(ip.ToString().c_str(), port, nullptr, 0);
+        peer_->Connect(ip.ToString().c_str(), port, nullptr, 0);
 
     if (result != RakNet::CONNECTION_ATTEMPT_STARTED) {
         std::string errorMsg = "Failed to connect to " + ip.ToString() + ":" +
@@ -108,16 +108,16 @@ void Node::Connect(IpAddress const &ip, int port) {
 }
 
 void Node::Disconnect() {
-    if (!_peer || !isRunning_) return;
+    if (!peer_ || !isRunning_) return;
 
     // Disconnect from all peers gracefully
-    _peer->Shutdown(300);  // Give 300ms to send disconnect packets
+    peer_->Shutdown(300);  // Give 300ms to send disconnect packets
 
     // Reset connection manager
-    if (_connectionManager) {
-        auto connections = _connectionManager->GetAllConnections();
+    if (connectionManager_) {
+        auto connections = connectionManager_->GetAllConnections();
         for (auto id : connections) {
-            _connectionManager->RemoveConnection(id);
+            connectionManager_->RemoveConnection(id);
         }
     }
 
@@ -137,75 +137,75 @@ void Node::Shutdown() {
 }
 
 bool Node::Update() {
-    if (!_peer || !isRunning_) return false;
+    if (!peer_ || !isRunning_) return false;
 
     bool processedPackets = false;
 
     // Process incoming packets
     RakNet::Packet *packet = nullptr;
-    while ((packet = _peer->Receive()) != nullptr) {
+    while ((packet = peer_->Receive()) != nullptr) {
         processedPackets = true;
         ProcessPacket(packet);
-        _peer->DeallocatePacket(packet);
+        peer_->DeallocatePacket(packet);
     }
 
     // Update connection manager
-    if (_connectionManager) {
-        _connectionManager->Update();
+    if (connectionManager_) {
+        connectionManager_->Update();
     }
 
     // Update peer discovery
-    if (_peerDiscovery && _peerDiscovery->IsDiscovering()) {
-        _peerDiscovery->Update();
+    if (peerDiscovery_ && peerDiscovery_->IsDiscovering()) {
+        peerDiscovery_->Update();
     }
 
     return processedPackets;
 }
 
 void Node::StartDiscovery(int discoveryPort) {
-    if (_peerDiscovery) {
-        _peerDiscovery->Start(discoveryPort);
+    if (peerDiscovery_) {
+        peerDiscovery_->Start(discoveryPort);
         NetworkLogger::LogDiscovery("Node started peer discovery on port " +
                                     std::to_string(discoveryPort));
     }
 }
 
 void Node::StopDiscovery() {
-    if (_peerDiscovery && _peerDiscovery->IsDiscovering()) {
-        _peerDiscovery->Stop();
+    if (peerDiscovery_ && peerDiscovery_->IsDiscovering()) {
+        peerDiscovery_->Stop();
         NetworkLogger::LogDiscovery("Node stopped peer discovery");
     }
 }
 
 bool Node::IsDiscovering() const {
-    return _peerDiscovery ? _peerDiscovery->IsDiscovering() : false;
+    return peerDiscovery_ ? peerDiscovery_->IsDiscovering() : false;
 }
 
 std::vector<RakNet::SystemAddress> Node::GetDiscoveredPeers() const {
-    return _peerDiscovery ? _peerDiscovery->GetDiscoveredPeers()
+    return peerDiscovery_ ? peerDiscovery_->GetDiscoveredPeers()
                           : std::vector<RakNet::SystemAddress>();
 }
 
 void Node::SetPeerDiscoveryCallback(
     std::function<void(const RakNet::SystemAddress &)> callback) {
-    if (_peerDiscovery) {
-        _peerDiscovery->SetDiscoveryCallback(callback);
+    if (peerDiscovery_) {
+        peerDiscovery_->SetDiscoveryCallback(callback);
     }
 }
 
 std::vector<RakNet::SystemAddress> Node::GetConnections() const {
     std::vector<RakNet::SystemAddress> result;
-    if (_connectionManager) {
-        auto connectionIds = _connectionManager->GetAllConnections();
+    if (connectionManager_) {
+        auto connectionIds = connectionManager_->GetAllConnections();
         for (auto id : connectionIds) {
-            result.push_back(_connectionManager->GetSystemAddress(id));
+            result.push_back(connectionManager_->GetSystemAddress(id));
         }
     }
     return result;
 }
 
 bool Node::IsConnectedTo(const IpAddress &address, int port) const {
-    if (!_connectionManager) return false;
+    if (!connectionManager_) return false;
 
     std::string addrStr = address.ToString() + ":" + std::to_string(port);
     for (auto conn : GetConnections()) {
@@ -217,16 +217,16 @@ bool Node::IsConnectedTo(const IpAddress &address, int port) const {
 }
 
 size_t Node::GetConnectionCount() const {
-    return _connectionManager ? _connectionManager->GetConnectionCount() : 0;
+    return connectionManager_ ? connectionManager_->GetConnectionCount() : 0;
 }
 
 int Node::GetPing(const IpAddress &address, int port) const {
-    if (!_peer || !_connectionManager) return -1;
+    if (!peer_ || !connectionManager_) return -1;
 
     RakNet::SystemAddress systemAddr =
         RakNet::SystemAddress(address.ToString().c_str(), port);
 
-    return _peer->GetAveragePing(systemAddr);
+    return peer_->GetAveragePing(systemAddr);
 }
 
 unsigned char Node::GetPacketIdentifier(RakNet::Packet *packet) {
@@ -275,8 +275,8 @@ void Node::ProcessPacket(RakNet::Packet *packet) {
     NetworkLogger::LogMessage(logMessage);
 
     // Update connection activity
-    if (_connectionManager) {
-        _connectionManager->UpdateActivity(packet->systemAddress);
+    if (connectionManager_) {
+        connectionManager_->UpdateActivity(packet->systemAddress);
     }
 
     // Handle standard connection events
@@ -284,7 +284,7 @@ void Node::ProcessPacket(RakNet::Packet *packet) {
         case RakNet::ID_CONNECTION_REQUEST_ACCEPTED: {
             // We connected to another system
             OnConnectionEvent(
-                _connectionManager->AddConnection(packet->systemAddress),
+                connectionManager_->AddConnection(packet->systemAddress),
                 ConnectionEvent::Connected);
             break;
         }
@@ -297,14 +297,14 @@ void Node::ProcessPacket(RakNet::Packet *packet) {
             // We're already connected to this system
             // Re-use Connected event since AlreadyConnected is not defined
             OnConnectionEvent(
-                _connectionManager->GetConnectionId(packet->systemAddress),
+                connectionManager_->GetConnectionId(packet->systemAddress),
                 ConnectionEvent::Connected);
             break;
         }
         case RakNet::ID_NEW_INCOMING_CONNECTION: {
             // A remote system connected to us
             OnConnectionEvent(
-                _connectionManager->AddConnection(packet->systemAddress),
+                connectionManager_->AddConnection(packet->systemAddress),
                 ConnectionEvent::Connected);
             break;
         }
@@ -316,17 +316,17 @@ void Node::ProcessPacket(RakNet::Packet *packet) {
         case RakNet::ID_DISCONNECTION_NOTIFICATION: {
             // Remote system disconnected
             OnConnectionEvent(
-                _connectionManager->GetConnectionId(packet->systemAddress),
+                connectionManager_->GetConnectionId(packet->systemAddress),
                 ConnectionEvent::Disconnected);
-            _connectionManager->RemoveConnection(packet->systemAddress);
+            connectionManager_->RemoveConnection(packet->systemAddress);
             break;
         }
         case RakNet::ID_CONNECTION_LOST: {
             // Connection lost
             OnConnectionEvent(
-                _connectionManager->GetConnectionId(packet->systemAddress),
+                connectionManager_->GetConnectionId(packet->systemAddress),
                 ConnectionEvent::ConnectionLost);
-            _connectionManager->RemoveConnection(packet->systemAddress);
+            connectionManager_->RemoveConnection(packet->systemAddress);
             break;
         }
         default: {

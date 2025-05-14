@@ -9,32 +9,32 @@
 KAI_BEGIN
 
 void TestCommon::SetUp() {
-    _reg = new Registry();
+    reg_ = new Registry();
     tree_ = new kai::Tree();
 
-    _reg->AddClass<void>();
-    _reg->AddClass<bool>();
-    _reg->AddClass<int>();
-    _reg->AddClass<float>();
-    _reg->AddClass<String>();
-    _reg->AddClass<StringStream>();
-    _reg->AddClass<BinaryStream>();
+    reg_->AddClass<void>();
+    reg_->AddClass<bool>();
+    reg_->AddClass<int>();
+    reg_->AddClass<float>();
+    reg_->AddClass<String>();
+    reg_->AddClass<StringStream>();
+    reg_->AddClass<BinaryStream>();
 
-    _root = _reg->New<void>();
-    tree_->SetRoot(_root);
-    _reg->SetTree(*tree_);
+    root_ = reg_->New<void>();
+    tree_->SetRoot(root_);
+    reg_->SetTree(*tree_);
 
     AddRequiredClasses();
 }
 
-Registry &TestCommon::Reg() const { return *_reg; }
+Registry &TestCommon::Reg() const { return *reg_; }
 
 Tree &TestCommon::GetTree() const { return *tree_; }
 
-Object TestCommon::Root() const { return _root; }
+Object TestCommon::Root() const { return root_; }
 
 void TestCommon::TearDown() {
-    delete _reg;
+    delete reg_;
     delete tree_;
 }
 

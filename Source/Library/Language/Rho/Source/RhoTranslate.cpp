@@ -18,7 +18,7 @@ Pointer<Continuation> RhoTranslator::Translate(const char *text, Structure st) {
 
     trace = 0;
 
-    auto lex = std::make_shared<Lexer>(text, *_reg);
+    auto lex = std::make_shared<Lexer>(text, *reg_);
     lex->Process();
     if (lex->GetTokens().empty()) {
         KAI_TRACE_WARN_1("No tokens");
@@ -33,7 +33,7 @@ Pointer<Continuation> RhoTranslator::Translate(const char *text, Structure st) {
 
     if (trace > 0) KAI_TRACE_1(lex->Print());
 
-    auto parse = std::make_shared<Parser>(*_reg);
+    auto parse = std::make_shared<Parser>(*reg_);
     parse->Process(lex, st);
     if (parse->Failed) {
         if (trace > 1) KAI_TRACE_1(parse->PrintTree());

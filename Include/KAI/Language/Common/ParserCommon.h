@@ -35,7 +35,7 @@ class ParserCommon : public ProcessCommon {
 
     template <class T>
     Pointer<T> New(T const &val) {
-        return _reg->New<T>(val);
+        return reg_->New<T>(val);
     }
 
     bool Run(Structure st) {

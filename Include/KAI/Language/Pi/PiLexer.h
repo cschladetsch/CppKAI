@@ -22,7 +22,7 @@ class PiLexer : public LexerCommon<PiTokenEnumType> {
     bool PathnameOrKeyword();
 
    protected:
-    using Parent::_reg;
+    using Parent::reg_;
 
     bool ParsePathname();
 };

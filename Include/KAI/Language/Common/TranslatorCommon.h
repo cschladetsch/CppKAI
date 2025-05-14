@@ -28,7 +28,7 @@ struct TranslatorCommon : ProcessCommon {
 
     template <class T>
     void AppendNew(T val) {
-        Append(_reg->New<T>(val));
+        Append(reg_->New<T>(val));
     }
 
     // Append an operation to the current continuation
@@ -47,7 +47,7 @@ struct TranslatorCommon : ProcessCommon {
     template<typename T>
     void AppendLiteral(const T& value) {
         // Use explicit type parameter for New to ensure proper type identification
-        Object obj = _reg->New<T>(value);
+        Object obj = reg_->New<T>(value);
         
         // Add debug logging to track type information
         KAI_TRACE() << "AppendLiteral: Created value of type: " << obj.GetClass()->GetName().ToString()
@@ -61,7 +61,7 @@ struct TranslatorCommon : ProcessCommon {
 
    protected:
     std::vector<Pointer<Continuation> > stack;
-    using ProcessCommon::_reg;
+    using ProcessCommon::reg_;
 };
 
 KAI_END

@@ -10,37 +10,37 @@ using namespace std;
 KAI_BEGIN
 
 Peer::Peer()
-    : _nextPeerId(1)
+    : nextPeerId_(1)
 {
-    _peer = RakNet::RakPeerInterface::GetInstance();
+    peer_ = RakNet::RakPeerInterface::GetInstance();
     
-    _peer->SetTimeoutTime(3000, RakNet::UNASSIGNED_SYSTEM_ADDRESS);
-    _peer->DisableSecurity();
+    peer_->SetTimeoutTime(3000, RakNet::UNASSIGNED_SYSTEM_ADDRESS);
+    peer_->DisableSecurity();
 }
 
 bool Peer::Start(int listenPort, PacketReceiveCallback r0, ReceiveCallback r1)
 {
     // attempt both IPV4 and V6
-    _socketDescriptors[0].port = listenPort;
-    _socketDescriptors[0].socketFamily = AF_INET;
-    _socketDescriptors[1].port = listenPort;
-    _socketDescriptors[1].socketFamily = AF_INET6;
+    socketDescriptors_[0].port = listenPort;
+    socketDescriptors_[0].socketFamily = AF_INET;
+    socketDescriptors_[1].port = listenPort;
+    socketDescriptors_[1].socketFamily = AF_INET6;
     // TODO: try IP6 first. this only attempts IPV4
     // confusingly, the last parameter to Startup
     // is 1-based: so this listens on IP4. changing
     // the 3rd parameter to 2 attempts ip6...
-    int startResult = _peer->Startup(MaxConnections, _socketDescriptors, 1);
+    int startResult = peer_->Startup(MaxConnections, socketDescriptors_, 1);
 
     bool started = startResult == RakNet::RAKNET_STARTED;
     
     if (!started)
         return false;
 
-    _peer->SetMaximumIncomingConnections(MaxConnections);
-    _peer->SetOccasionalPing(true);
-    _peer->SetUnreliableTimeout(1000);
+    peer_->SetMaximumIncomingConnections(MaxConnections);
+    peer_->SetOccasionalPing(true);
+    peer_->SetUnreliableTimeout(1000);
 
-    _peer->GetSockets(_sockets);
+    peer_->GetSockets(sockets_);
 
     return true;
 }
@@ -49,12 +49,12 @@ bool Peer::Connect(const char *ip, int port)
 {
     RakNet::PublicKey *publicKey = 0;
     const char *password = "";
-    return _peer->Connect(ip, port, password, strlen(password)) == RakNet::CONNECTION_ATTEMPT_STARTED;
+    return peer_->Connect(ip, port, password, strlen(password)) == RakNet::CONNECTION_ATTEMPT_STARTED;
 }
 
 void Peer::Step()
 {
-    for (RakNet::Packet *p = _peer->Receive(); p; _peer->DeallocatePacket(p), p = _peer->Receive())
+    for (RakNet::Packet *p = peer_->Receive(); p; peer_->DeallocatePacket(p), p = peer_->Receive())
     {
         PacketType type = GetPacketIdentifier(p);
         switch (type)
@@ -102,7 +102,7 @@ void Peer::HandShake(RakNet::Packet *p)
     // DisconnectOriginal(...)
     // ReconnectAsRealPeer(...)
 
-    //_peers[++_nextPeerId] = p->systemAddress;
+    //peers_[++nextPeerId_] = p->systemAddress;
 
     CompleteConnnection(p);
 }
@@ -119,7 +119,7 @@ void Peer::CompleteConnnection(RakNet::Packet *p)
     printf("Remote internal IDs:\n");
     for (int index=0; index < MAXIMUM_NUMBER_OF_INTERNAL_IDS; index++)
     {
-        RakNet::SystemAddress internalId = _peer->GetInternalID(p->systemAddress, index);
+        RakNet::SystemAddress internalId = peer_->GetInternalID(p->systemAddress, index);
         if (internalId != RakNet::UNASSIGNED_SYSTEM_ADDRESS)
         {
             printf("%i. %s\n", index+1, internalId.ToString(true));
@@ -139,7 +139,7 @@ int Peer::SendBlob(Pointer<BinaryPacket> packet)
 
 int Peer::SendText(const char *text)
 {
-    int messageId = _peer->Send(text, strlen(text) + 1, HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
+    int messageId = peer_->Send(text, strlen(text) + 1, HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
     if (messageId == 0)
     {
         cerr << "Failed to send " << text << endl;
@@ -151,8 +151,8 @@ int Peer::SendText(const char *text)
 
 void Peer::Shutdown()
 {
-    _peer->Shutdown(300);
-    RakNet::RakPeerInterface::DestroyInstance(_peer);
+    peer_->Shutdown(300);
+    RakNet::RakPeerInterface::DestroyInstance(peer_);
 }
 
 const char *Peer::AddressFromPacket(RakNet::Packet *p)

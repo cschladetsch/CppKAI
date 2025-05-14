@@ -33,16 +33,16 @@ class ClassBase {
     Label name_;
     Methods methods_;
     Properties properties_;
-    Type::Number _type_number;
+    Type::Number type_number_;
 
    public:
     ClassBase(Label const &name, Type::Number T)
-        : name_(name), _type_number(T) {}
+        : name_(name), type_number_(T) {}
     virtual ~ClassBase();
 
     const Label &GetName() const { return name_; }
     const Label &GetLabel() const { return GetName(); }
-    Type::Number GetTypeNumber() const { return _type_number; }
+    Type::Number GetTypeNumber() const { return type_number_; }
 
     virtual void SetReferencedObjectsColor(StorageBase &base,
                                            ObjectColor::Color color,

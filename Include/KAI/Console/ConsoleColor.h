@@ -10,7 +10,7 @@ KAI_BEGIN
 
 class ConsoleColor {
     struct Impl;
-    std::unique_ptr<Impl> _impl;
+    std::unique_ptr<Impl> impl_;
 
    public:
     enum EType {

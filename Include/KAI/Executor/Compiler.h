@@ -19,7 +19,7 @@ class Compiler : public Reflected {
    private:
     OperationToString op_to_string;
     StringToOperation string_to_op;
-    Language _language = Language::Pi;
+    Language language_ = Language::Pi;
     int traceLevel_ = 0;
 
    public:

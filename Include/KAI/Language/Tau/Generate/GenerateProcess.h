@@ -46,7 +46,7 @@ struct GenerateProcess : Process {
 
    private:
     stringstream str_;
-    int _indentation = 0;
+    int indentation_ = 0;
 };
 }  // namespace Generate
 

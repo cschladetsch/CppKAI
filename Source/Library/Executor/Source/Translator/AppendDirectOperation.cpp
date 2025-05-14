@@ -10,7 +10,7 @@ void TranslatorCommon::AppendDirectOperation(Operation::Type op) {
               << std::endl;
 
     // Create the operation as a raw object, no continuation wrapping
-    Object opObject = _reg->New<Operation>(op);
+    Object opObject = reg_->New<Operation>(op);
     Append(opObject);
 }
 

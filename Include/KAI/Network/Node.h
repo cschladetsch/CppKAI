@@ -18,10 +18,10 @@ class PeerDiscovery;
 
 struct Node {
    private:
-    RakNet::RakPeerInterface *_peer;
+    RakNet::RakPeerInterface *peer_;
     bool isRunning_;
-    std::unique_ptr<ConnectionManager> _connectionManager;
-    std::unique_ptr<PeerDiscovery> _peerDiscovery;
+    std::unique_ptr<ConnectionManager> connectionManager_;
+    std::unique_ptr<PeerDiscovery> peerDiscovery_;
 
    public:
     static int constexpr DefaultPort = 14589;

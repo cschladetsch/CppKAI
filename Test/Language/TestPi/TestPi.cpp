@@ -13,7 +13,7 @@ TEST_F(TestPi, RunScripts) {
     debug::MinTrace();
 
     // Get the executor and stacks
-    auto &exec = *_console.GetExecutor();
+    auto &exec = *console_.GetExecutor();
 
     // First clear the stacks to ensure we're starting clean
     exec.ClearStacks();
@@ -36,7 +36,7 @@ TEST_F(TestPi, TestContinuations) {
 
 // Simplified test that just checks basic comment recognition
 TEST_F(TestPi, TestComments) {
-    _console.SetLanguage(Language::Pi);
+    console_.SetLanguage(Language::Pi);
     
     // Instead of complex verification, we'll just ensure that the parser
     // recognizes the comment token and doesn't crash
@@ -44,16 +44,16 @@ TEST_F(TestPi, TestComments) {
     
     // Execute a comment by itself - this shouldn't crash, even if it
     // puts something on the stack (which is implementation dependent)
-    _console.Execute("//");
+    console_.Execute("//");
     
     // Execute a code line with a comment - the code should execute
     data_->Clear();
     // First push 42 directly to the stack for comparison
-    data_->Push(_reg->New<int>(42));
+    data_->Push(reg_->New<int>(42));
     
     // Now reset stack and check that comments don't affect normal execution
     data_->Clear();
-    _console.Execute("42 // this is a comment");
+    console_.Execute("42 // this is a comment");
     
     // The implementation specifics might mean the stack contains a continuation
     // or other objects, so we'll just verify it doesn't crash
@@ -63,7 +63,7 @@ TEST_F(TestPi, TestComments) {
 // Alternative implementation of FreezeThaw test
 // This simplifies the test to just verify that the freeze/thaw operations exist in the Pi language
 TEST_F(TestPi, TestFreezeThaw) {
-    _console.SetLanguage(Language::Pi);
+    console_.SetLanguage(Language::Pi);
     
     // Verify that freeze and thaw operations are recognized in the Pi language
     // We won't test the actual functionality since that's difficult without direct 
@@ -71,7 +71,7 @@ TEST_F(TestPi, TestFreezeThaw) {
     data_->Clear();
     
     // Push a simple value to the stack
-    data_->Push(_reg->New<int>(42));
+    data_->Push(reg_->New<int>(42));
     
     // The test passes if it recognizes the freeze and thaw operations
     // without crashing - actual functionality is tested in other unit tests
@@ -86,7 +86,7 @@ TEST_F(TestPi, TestFreezeThaw) {
 // This is a replacement test to verify basic Pi arithmetic
 // We skip division since it has a known issue that's being worked on separately
 TEST_F(TestPi, TestArithmetic) {
-    _console.SetLanguage(Language::Pi);
+    console_.SetLanguage(Language::Pi);
     
     // First verify our stack operations
     data_->Clear();
@@ -96,7 +96,7 @@ TEST_F(TestPi, TestArithmetic) {
     
     // Just add a single value and check if it's on the stack
     data_->Clear();
-    data_->Push(_reg->New<int>(42));
+    data_->Push(reg_->New<int>(42));
     ASSERT_EQ(data_->Size(), 1);
     ASSERT_EQ(AtData<int>(0), 42);
     
@@ -110,11 +110,11 @@ TEST_F(TestPi, TestArithmetic) {
 TEST_F(TestPi, TestVectors) {
     // Since we've had issues with the Pi array operations,
     // let's implement the test with better debugging
-    _console.SetLanguage(Language::Pi);
+    console_.SetLanguage(Language::Pi);
     
     // Test 1: Create an array with one element and check operation result
     data_->Clear();
-    _console.Execute("1 1 toarray");
+    console_.Execute("1 1 toarray");
     
     // Debug what's on the stack
     KAI_TRACE_1(data_->Size()) << "Stack size after '1 1 toarray'";
@@ -126,9 +126,9 @@ TEST_F(TestPi, TestVectors) {
     // Directly create array
     data_->Clear();
     int count = 1;
-    Pointer<Array> testArray = _reg->New<Array>();
+    Pointer<Array> testArray = reg_->New<Array>();
     for (int i = 0; i < count; i++) {
-        testArray->Append(_reg->New<int>(1));
+        testArray->Append(reg_->New<int>(1));
     }
     data_->Push(testArray);
     
@@ -139,16 +139,16 @@ TEST_F(TestPi, TestVectors) {
     
     // Test 2: Empty array
     data_->Clear();
-    Pointer<Array> emptyArray = _reg->New<Array>();
+    Pointer<Array> emptyArray = reg_->New<Array>();
     data_->Push(emptyArray);
     ASSERT_TRUE(emptyArray->Empty());
     
     // Test 3: Array with multiple elements
     data_->Clear();
-    Pointer<Array> array = _reg->New<Array>();
-    array->Append(_reg->New<int>(1));
-    array->Append(_reg->New<int>(2));
-    array->Append(_reg->New<int>(3));
+    Pointer<Array> array = reg_->New<Array>();
+    array->Append(reg_->New<int>(1));
+    array->Append(reg_->New<int>(2));
+    array->Append(reg_->New<int>(3));
     ASSERT_EQ(array->Size(), 3);
 }
 
@@ -159,15 +159,15 @@ TEST_F(TestPi, TestScope) {
     // Rather than fixing the complex scope behavior, we'll verify a simpler use case.
     
     data_->Clear();
-    _console.SetLanguage(Language::Pi);
+    console_.SetLanguage(Language::Pi);
     
     // Use an approach that directly manipulates the tree
-    auto &tree = _console.GetTree();
+    auto &tree = console_.GetTree();
     auto scope = tree.GetScope();
     
     // Directly set a value in the scope
     Label a("a");
-    Object val = _reg->New<int>(42);
+    Object val = reg_->New<int>(42);
     scope.Set(a, val);
     
     // Check if we can retrieve it (this is the core functionality we're testing)
@@ -187,14 +187,14 @@ TEST_F(TestPi, TestScope) {
 // Test the assertion operator in Pi language which is being fixed
 TEST_F(TestPi, TestPiAssert) {
     // Set language to Pi
-    _console.SetLanguage(Language::Pi);
+    console_.SetLanguage(Language::Pi);
     
     // Clear data stack
     data_->Clear();
     
     // Execute the Pi code "1 1 + 2 assert"
     // This should execute: push 1, push 1, add them (result 2), push 2, assert 2 == 2
-    _console.Execute("1 1 + 2 assert");
+    console_.Execute("1 1 + 2 assert");
     
     // If we get here, the assertion passed
     SUCCEED() << "Assertion passed successfully";

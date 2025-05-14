@@ -20,7 +20,7 @@ TEST_F(TestList, TestCreation) {
 
 TEST_F(TestList, TestInsertDelete) {
     Pointer<List> list = Reg().New<List>();
-    _root.Set("list", list);
+    root_.Set("list", list);
 
     Object n = Reg().New(42);
     list->PushBack(n);
@@ -43,8 +43,8 @@ TEST_F(TestList, TestInsertDelete) {
 TEST_F(TestList, TestComparison) {
     Pointer<List> l0 = Reg().New<List>();
     Pointer<List> l1 = Reg().New<List>();
-    _root.Set("list0", l0);
-    _root.Set("list1", l1);
+    root_.Set("list0", l0);
+    root_.Set("list1", l1);
 
     l0->PushBack(Reg().New(42));
     l0->PushBack(Reg().New<String>("Hello"));

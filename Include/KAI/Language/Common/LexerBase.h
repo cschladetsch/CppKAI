@@ -33,7 +33,7 @@ class LexerBase : public ProcessCommon {
     Lines lines;
     std::string input;
     int offset, lineNumber;
-    using ProcessCommon::_reg;
+    using ProcessCommon::reg_;
 
     void CreateLines();
     bool LexString();

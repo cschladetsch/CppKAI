@@ -20,7 +20,7 @@ class LispTranslator : public TranslatorBase<LispParser> {
 
    protected:
     virtual void TranslateNode(AstNodePtr node) override;
-    using Parent::_reg;
+    using Parent::reg_;
 
    private:
     void TranslateToken(AstNodePtr node);

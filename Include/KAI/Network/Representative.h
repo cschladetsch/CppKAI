@@ -18,7 +18,7 @@ NetHandle GetNetHandle(Object const &t, Node const &);
 struct Representative : Reflected {
    protected:
     Representative(Node &node, NetHandle handle)
-        : _node(node), netHandle_(handle) {}
+        : node_(node), netHandle_(handle) {}
 
    protected:
     void Receive(NetHandle sender, BinaryStream &packet);
@@ -28,7 +28,7 @@ struct Representative : Reflected {
     void Send(NetHandle recipient, BinaryPacket const &);
 
    private:
-    Node &_node;
+    Node &node_;
     NetHandle netHandle_;
 };
 

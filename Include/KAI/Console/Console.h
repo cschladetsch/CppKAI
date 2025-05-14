@@ -13,7 +13,7 @@ struct Coloriser;
 // This is a language-independant REPL console
 class Console : public Reflected {
     Tree tree;
-    Registry *_reg;
+    Registry *reg_;
     Pointer<Executor> executor;
     Pointer<Compiler> compiler;
     std::shared_ptr<Memory::IAllocator> alloc;
@@ -31,7 +31,7 @@ class Console : public Reflected {
     void WritePrompt(std::ostream &out) const;
     String GetPrompt() const;
     String Process(const String &);
-    Registry &GetRegistry() const { return *_reg; }
+    Registry &GetRegistry() const { return *reg_; }
     Tree &GetTree() { return tree; }
     Tree const &GetTree() const { return tree; }
 
@@ -58,8 +58,8 @@ class Console : public Reflected {
     void ExposeTypesToTree(Object types);
 
    private:
-    bool _end = false;
-    int _endCode = 0;
+    bool end_ = false;
+    int endCode_ = 0;
 };
 
 KAI_TYPE_TRAITS(Console, Number::Console, Properties::Reflected);

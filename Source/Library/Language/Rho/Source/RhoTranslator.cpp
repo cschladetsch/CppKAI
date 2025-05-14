@@ -121,33 +121,33 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
         case TokenEnum::Int:
             KAI_TRACE() << "Translating Int: " << node->GetTokenText();
             // Use explicit type parameter for New to ensure proper type identification
-            Append(_reg->New<int>(boost::lexical_cast<int>(node->GetTokenText())));
+            Append(reg_->New<int>(boost::lexical_cast<int>(node->GetTokenText())));
             return;
 
         case TokenEnum::Float:
             KAI_TRACE() << "Translating Float: " << node->GetTokenText();
             // Use explicit type parameter for New to ensure proper type identification
-            Append(_reg->New<float>(boost::lexical_cast<float>(node->GetTokenText())));
+            Append(reg_->New<float>(boost::lexical_cast<float>(node->GetTokenText())));
             return;
 
         case TokenEnum::String:
             KAI_TRACE() << "Translating String: " << node->Text();
             // Use explicit type parameter for New to ensure proper type identification
-            Append(_reg->New<String>(String(node->Text())));
+            Append(reg_->New<String>(String(node->Text())));
             KAI_TRACE() << "String translation complete";
             return;
 
         case TokenEnum::Ident:
             KAI_TRACE() << "Translating Ident: " << node->Text();
             // Use explicit type parameter for New to ensure proper type identification
-            Append(_reg->New<Label>(Label(node->Text())));
+            Append(reg_->New<Label>(Label(node->Text())));
             KAI_TRACE() << "Ident translation complete";
             return;
 
         case TokenEnum::Pathname:
             KAI_TRACE() << "Translating Pathname: " << node->Text();
             // Use explicit type parameter for New to ensure proper type identification
-            Append(_reg->New<Pathname>(Pathname(node->Text())));
+            Append(reg_->New<Pathname>(Pathname(node->Text())));
             return;
 
         case TokenEnum::ToPi:
@@ -263,7 +263,7 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
             // Push the result directly as an integer
             KAI_TRACE() << "Direct evaluation of binary op: " << leftValue << " " 
                         << Operation::ToString(op) << " " << rightValue << " = " << result;
-            Append(_reg->New<int>(result));
+            Append(reg_->New<int>(result));
             return;
         }
     }
@@ -428,7 +428,7 @@ void RhoTranslator::TranslateFunction(AstNodePtr node) {
     AstNode::ChildrenType const &ch = node->GetChildren();
 
     // Create a Continuation for the function body
-    Pointer<Continuation> cont = _reg->New<Continuation>();
+    Pointer<Continuation> cont = reg_->New<Continuation>();
     if (!cont.Exists()) {
         KAI_TRACE_ERROR() << "Failed to create function continuation";
         Fail("Failed to create function continuation");
@@ -436,7 +436,7 @@ void RhoTranslator::TranslateFunction(AstNodePtr node) {
     }
 
     // Set its code array
-    cont->SetCode(_reg->New<Array>());
+    cont->SetCode(reg_->New<Array>());
     if (!cont->GetCode().Exists()) {
         KAI_TRACE_ERROR() << "Failed to create function code array";
         Fail("Failed to create function code array");
@@ -521,13 +521,13 @@ void RhoTranslator::TranslateIf(AstNodePtr node) {
 
     // For if statements in Pi, we need to create continuations for then and
     // else blocks
-    Pointer<Continuation> thenCont = _reg->New<Continuation>();
-    thenCont->SetCode(_reg->New<Array>());
+    Pointer<Continuation> thenCont = reg_->New<Continuation>();
+    thenCont->SetCode(reg_->New<Array>());
 
     Pointer<Continuation> elseCont;
     if (hasElse) {
-        elseCont = _reg->New<Continuation>();
-        elseCont->SetCode(_reg->New<Array>());
+        elseCont = reg_->New<Continuation>();
+        elseCont->SetCode(reg_->New<Array>());
     }
 
     // First translate the condition
@@ -585,12 +585,12 @@ void RhoTranslator::TranslateWhile(AstNodePtr node) {
 
         // For while loops in Pi, we need continuations for condition and body
         // First create condition continuation
-        Pointer<Continuation> condCont = _reg->New<Continuation>();
-        condCont->SetCode(_reg->New<Array>());
+        Pointer<Continuation> condCont = reg_->New<Continuation>();
+        condCont->SetCode(reg_->New<Array>());
 
         // Then create body continuation
-        Pointer<Continuation> bodyCont = _reg->New<Continuation>();
-        bodyCont->SetCode(_reg->New<Array>());
+        Pointer<Continuation> bodyCont = reg_->New<Continuation>();
+        bodyCont->SetCode(reg_->New<Array>());
 
         // Translate condition into condition continuation
         stack.push_back(condCont);
@@ -636,12 +636,12 @@ void RhoTranslator::TranslateDoWhile(AstNodePtr node) {
 
         // For do-while loops in Pi, we need continuations for condition and
         // body First create condition continuation
-        Pointer<Continuation> condCont = _reg->New<Continuation>();
-        condCont->SetCode(_reg->New<Array>());
+        Pointer<Continuation> condCont = reg_->New<Continuation>();
+        condCont->SetCode(reg_->New<Array>());
 
         // Then create body continuation
-        Pointer<Continuation> bodyCont = _reg->New<Continuation>();
-        bodyCont->SetCode(_reg->New<Array>());
+        Pointer<Continuation> bodyCont = reg_->New<Continuation>();
+        bodyCont->SetCode(reg_->New<Array>());
 
         // Translate body into body continuation
         stack.push_back(bodyCont);

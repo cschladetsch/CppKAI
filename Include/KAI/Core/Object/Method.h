@@ -19,15 +19,15 @@ struct MethodConst : ConstMethodBase<R (T::*)(Args...) const> {
     typedef R (T::*MethodType)(Args...) const;
     typedef ConstMethodBase<MethodType> Parent;
     MethodType meth;
-    tuple<Args...> _args;
+    tuple<Args...> args_;
     static int constexpr arity = (int)sizeof...(Args);
 
     MethodConst(MethodType m, const Label &N) : meth(m), Parent(m, N) {}
 
     void ConstInvoke(const Object &servant, Stack &stack) {
-        detail::Add<arity - 1>::Arg(stack, _args);
+        detail::Add<arity - 1>::Arg(stack, args_);
         stack.Push(servant.GetRegistry()->New(
-            CallMethod(ConstDeref<T>(servant), meth, _args)));
+            CallMethod(ConstDeref<T>(servant), meth, args_)));
     }
 };
 
@@ -38,12 +38,12 @@ struct VoidMethodConst : ConstMethodBase<void (T::*)(Args...) const> {
     typedef ConstMethodBase<MethodType> Parent;
     static size_t constexpr arity = sizeof...(Args);
     MethodType meth;
-    tuple<Args...> _args;
+    tuple<Args...> args_;
     VoidMethodConst(MethodType mb, const Label &N) : meth(mb), Parent(mb, N) {}
 
     void ConstInvoke(const Object &servant, Stack &stack) {
-        detail::Add<arity - 1>::Arg(stack, _args);
-        CallMethod(ConstDeref<T>(servant), meth, _args);
+        detail::Add<arity - 1>::Arg(stack, args_);
+        CallMethod(ConstDeref<T>(servant), meth, args_);
     }
 };
 
@@ -54,13 +54,13 @@ struct VoidMethod : MutatingMethodBase<void (T::*)(Args...)> {
     typedef MutatingMethodBase<MethodType> Parent;
     static size_t constexpr arity = sizeof...(Args);
     MethodType meth;
-    tuple<Args...> _args;
+    tuple<Args...> args_;
 
     VoidMethod(MethodType m, const Label &N) : meth(m), Parent(m, N) {}
 
     void Invoke(Object &servant, Stack &stack) {
-        detail::Add<arity - 1>::Arg(stack, _args);
-        CallMethod(Deref<T>(servant), meth, _args);
+        detail::Add<arity - 1>::Arg(stack, args_);
+        CallMethod(Deref<T>(servant), meth, args_);
     }
 };
 
@@ -71,14 +71,14 @@ struct Method : MutatingMethodBase<R (T::*)(Args...)> {
     typedef MutatingMethodBase<MethodType> Parent;
     static size_t constexpr arity = sizeof...(Args);
     MethodType meth;
-    tuple<Args...> _args;
+    tuple<Args...> args_;
 
     Method(MethodType m, const Label &N) : meth(m), Parent(m, N) {}
 
     void Invoke(Object &servant, Stack &stack) {
-        detail::Add<arity - 1>::Arg(stack, _args);
+        detail::Add<arity - 1>::Arg(stack, args_);
         stack.Push(servant.GetRegistry()->New(
-            Deref<T>(servant)(CallMethod(servant, meth, _args))));
+            Deref<T>(servant)(CallMethod(servant, meth, args_))));
     }
 };
 

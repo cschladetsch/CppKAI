@@ -32,11 +32,11 @@ struct Peer : Reflected {
     typedef unsigned char PacketType;
     typedef std::map<int, RakNet::SystemAddress> Peers;
 
-    RakNet::RakPeerInterface *_peer;
-    DataStructures::List<RakNet::RakNetSocket2 *> _sockets;
-    RakNet::SocketDescriptor _socketDescriptors[2];
-    Peers _peers;
-    int _nextPeerId;
+    RakNet::RakPeerInterface *peer_;
+    DataStructures::List<RakNet::RakNetSocket2 *> sockets_;
+    RakNet::SocketDescriptor socketDescriptors_[2];
+    Peers peers_;
+    int nextPeerId_;
 
    public:
     Peer();

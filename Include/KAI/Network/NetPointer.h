@@ -8,7 +8,7 @@ template <class T>
 struct NetPointer : Pointer<T> {
    private:
     NetHandle netHandle_;
-    Domain *_domain;
+    Domain *domain_;
 
    public:
     NetHandle GetNetHandle() const;

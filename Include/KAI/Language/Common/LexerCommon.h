@@ -53,7 +53,7 @@ class LexerCommon : public LexerBase {
    protected:
     Tokens tokens;
     Keywords keyWords;
-    using LexerBase::_reg;
+    using LexerBase::reg_;
 
     bool Run() {
         offset = 0;

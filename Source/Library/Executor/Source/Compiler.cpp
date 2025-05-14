@@ -23,7 +23,7 @@ bool Compiler::Destroy() {
 
 Pointer<Continuation> Compiler::Translate(const String &text,
                                           Structure st) const {
-    switch (_language) {
+    switch (language_) {
         case Language::None:
             return Object();
 
@@ -60,9 +60,9 @@ void Compiler::Register(Registry &R, const char *name) {
     ClassBuilder<Compiler>(R, name);
 }
 
-void Compiler::SetLanguage(int n) { _language = static_cast<Language>(n); }
+void Compiler::SetLanguage(int n) { language_ = static_cast<Language>(n); }
 
-int Compiler::GetLanguage() const { return static_cast<int>(_language); }
+int Compiler::GetLanguage() const { return static_cast<int>(language_); }
 
 // Operator definitions moved to Operation.cpp
 

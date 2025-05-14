@@ -30,21 +30,21 @@ Object Function_3(Object object) {
 }
 
 TEST_F(TestLangCommon, TestRhoReflection) {
-    Registry& reg = *_reg;
+    Registry& reg = *reg_;
     MyStruct::Register(reg);
 
     Pointer<MyStruct> mystruct = reg.New<MyStruct>();
     mystruct->num = 345;
     mystruct->string = "hello world";
 
-    _console.GetTree().AddSearchPath(_root);
+    console_.GetTree().AddSearchPath(root_);
 
     // Process::trace = 10;
-    _root["mystruct"] = mystruct;
-    AddFunction(_root, Function_0, Label("Function0"));
-    AddFunction(_root, Function_1, Label("Function1"));
-    AddFunction(_root, Function_2, Label("Function2"));
-    AddFunction(_root, Function_3, Label("Function3"));
+    root_["mystruct"] = mystruct;
+    AddFunction(root_, Function_0, Label("Function0"));
+    AddFunction(root_, Function_1, Label("Function1"));
+    AddFunction(root_, Function_2, Label("Function2"));
+    AddFunction(root_, Function_3, Label("Function3"));
 
     // Run the tests - they may have issues, but we want them to run for
     // diagnostic purposes
@@ -52,14 +52,14 @@ TEST_F(TestLangCommon, TestRhoReflection) {
                  "check rho_diagnostic.log for details"
               << std::endl;
 
-    _console.Execute("Function0()");
-    _console.Execute("Function1(42)");
-    _console.Execute("Function2(123, 3, \"bar\")");
-    _console.Execute("Function3(mystruct)");
+    console_.Execute("Function0()");
+    console_.Execute("Function1(42)");
+    console_.Execute("Function2(123, 3, \"bar\")");
+    console_.Execute("Function3(mystruct)");
 
     for (int n = 0; n < 2; ++n) ASSERT_TRUE(funCalled[n]);
 
-    Value<Stack> stack = _console.GetExecutor()->GetDataStack();
+    Value<Stack> stack = console_.GetExecutor()->GetDataStack();
     EXPECT_EQ(stack->Size(), 2);
     EXPECT_EQ(ConstDeref<int>(stack->Pop()), 345);
     EXPECT_EQ(ConstDeref<String>(stack->Pop()), "barfoo");
@@ -69,21 +69,21 @@ TEST_F(TestLangCommon, TestRhoReflection) {
 TEST_F(TestLangCommon, RunScripts) { ExecScripts(); }
 
 TEST_F(TestLangCommon, TestIterationConstructs) {
-    _console.SetLanguage(Language::Rho);
+    console_.SetLanguage(Language::Rho);
 
     // Clear stacks
-    _exec->ClearStacks();
-    _exec->ClearContext();
+    exec_->ClearStacks();
+    exec_->ClearContext();
 
     // Set trace level to maximum for detailed output
     std::cout << "Setting trace level to maximum (5) for iteration tests"
               << std::endl;
-    _exec->SetTraceLevel(5);
+    exec_->SetTraceLevel(5);
 
     try {
         // Test basic while loop
         std::cout << "Testing basic while loop..." << std::endl;
-        _console.Execute("i = 0; while (i < 5) { i = i + 1; }");
+        console_.Execute("i = 0; while (i < 5) { i = i + 1; }");
     } catch (const std::exception& e) {
         std::cerr << "Exception in while loop test: " << e.what() << std::endl;
         // Don't rethrow - we want to continue with other tests
@@ -94,16 +94,16 @@ TEST_F(TestLangCommon, TestIterationConstructs) {
 
 // Dedicated test for do-while loops to isolate testing
 TEST_F(TestLangCommon, TestDoWhileLoop) {
-    _console.SetLanguage(Language::Rho);
+    console_.SetLanguage(Language::Rho);
 
     // Clear stacks
-    _exec->ClearStacks();
-    _exec->ClearContext();
+    exec_->ClearStacks();
+    exec_->ClearContext();
 
     // Set trace level to maximum for detailed output
     std::cout << "Setting trace level to maximum (5) for do-while tests"
               << std::endl;
-    _exec->SetTraceLevel(5);
+    exec_->SetTraceLevel(5);
 
     try {
         // For simplicity, just test a single basic do-while loop directly with
@@ -120,10 +120,10 @@ TEST_F(TestLangCommon, TestDoWhileLoop) {
         std::cout << "Script:" << std::endl << script << std::endl;
 
         // Execute the script
-        _console.Execute(script);
+        console_.Execute(script);
 
         // Check stack
-        Value<Stack> stack = _console.GetExecutor()->GetDataStack();
+        Value<Stack> stack = console_.GetExecutor()->GetDataStack();
         std::cout << "Stack size after execution: " << stack->Size()
                   << std::endl;
 
@@ -150,21 +150,21 @@ TEST_F(TestLangCommon, TestDoWhileLoop) {
 
 // Dedicated test for for loops to isolate testing
 TEST_F(TestLangCommon, TestForLoop) {
-    _console.SetLanguage(Language::Rho);
+    console_.SetLanguage(Language::Rho);
 
     // Clear stacks
-    _exec->ClearStacks();
-    _exec->ClearContext();
+    exec_->ClearStacks();
+    exec_->ClearContext();
 
     // Set trace level to maximum for detailed output
     std::cout << "Setting trace level to maximum (5) for for-loop tests"
               << std::endl;
-    _exec->SetTraceLevel(5);
+    exec_->SetTraceLevel(5);
 
     try {
         // Test for loop
         std::cout << "Testing for loop..." << std::endl;
-        _console.Execute(
+        console_.Execute(
             "sum = 0; for (i = 0; i < 5; i = i + 1) { sum = sum + i; }");
     } catch (const std::exception& e) {
         std::cerr << "Exception in for loop test: " << e.what() << std::endl;
@@ -175,16 +175,16 @@ TEST_F(TestLangCommon, TestForLoop) {
 
 // Test minimal do-while loop script
 TEST_F(TestLangCommon, TestMinimalDoWhileScript) {
-    _console.SetLanguage(Language::Rho);
+    console_.SetLanguage(Language::Rho);
 
     // Clear stacks
-    _exec->ClearStacks();
-    _exec->ClearContext();
+    exec_->ClearStacks();
+    exec_->ClearContext();
 
     // Set trace level to maximum for detailed output
     std::cout << "Setting trace level to maximum (5) for minimal do-while test"
               << std::endl;
-    _exec->SetTraceLevel(5);
+    exec_->SetTraceLevel(5);
 
     try {
         // Get file content
@@ -197,7 +197,7 @@ TEST_F(TestLangCommon, TestMinimalDoWhileScript) {
 
         // Execute script
         std::cout << "Executing minimal do-while test script..." << std::endl;
-        _console.Execute(scriptContent);
+        console_.Execute(scriptContent);
 
         // Check results - should have run without exceptions
         std::cout << "Minimal do-while test completed successfully!"

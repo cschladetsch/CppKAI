@@ -3,7 +3,7 @@
 KAI_BEGIN
 
 String Label::ToString() const {
-    if (!_quoted) return value_;
+    if (!quoted_) return value_;
 
     return String("'") + value_;
 }
@@ -11,13 +11,13 @@ String Label::ToString() const {
 void Label::FromString2(String text) { FromString(text); }
 
 void Label::FromString(const Value &S) {
-    _quoted = false;
+    quoted_ = false;
     value_ = "";
     if (S.empty()) return;
 
     const String::Char *str = S.c_str();
     if (str[0] == '\'') {
-        _quoted = true;
+        quoted_ = true;
         str++;
     }
 

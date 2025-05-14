@@ -9,12 +9,12 @@ KAI_TYPE_BEGIN
 template <typename Reference, bool IsContainer>
 struct ContainerOperations {
     struct ColorSetter {
-        ObjectColor::Color _c;
+        ObjectColor::Color c_;
 
-        ColorSetter(ObjectColor::Color c) : _c(c) {}
+        ColorSetter(ObjectColor::Color c) : c_(c) {}
         template <class T>
         void operator()(T &obj) {
-            obj.SetColor(_c);
+            obj.SetColor(c_);
         }
     };
 

@@ -18,7 +18,7 @@ struct LispLexer : LexerCommon<LispTokenEnumType> {
 
    protected:
     bool LexPathname();
-    using Parent::_reg;
+    using Parent::reg_;
 };
 
 KAI_END

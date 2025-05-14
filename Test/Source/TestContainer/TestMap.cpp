@@ -26,9 +26,9 @@ TEST_F(TestMap, TestInsertDelete) {
     Pointer<Map> map = Reg().New<Map>();
     Pointer<Map> dangling = Reg().New<Map>();
 
-    // add the map to the _root of the object tree_, so it can be
+    // add the map to the root_ of the object tree_, so it can be
     // found and hence not GC'd
-    _root.Set("map", map);
+    root_.Set("map", map);
     Reg().GarbageCollect();
 
     // the map will still exist after the GC - but the `dangling` map
@@ -58,7 +58,7 @@ TEST_F(TestMap, TestInsertDelete) {
 
     // now, neither the key nor value should exist,
     // but the map itself should exist because it was added
-    // to the _root of the tree_ above
+    // to the root_ of the tree_ above
     ASSERT_TRUE(map.Exists());
     ASSERT_FALSE(n.Exists());
     ASSERT_FALSE(found.Exists());
