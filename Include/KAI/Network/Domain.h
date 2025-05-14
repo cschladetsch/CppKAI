@@ -21,7 +21,7 @@ struct Domain {
     Proxy<T> MakeProxy(NetHandle handle);
 
    private:
-    Node &_node;
+    Node &node_;
 };
 
 KAI_NET_END

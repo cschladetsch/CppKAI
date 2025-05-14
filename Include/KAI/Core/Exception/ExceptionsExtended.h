@@ -86,7 +86,7 @@ struct UnknownClass : Base {
           type_number(Type::Traits<T>::Number),
           name("TODO boost::typeindex") {}
     void WriteExtendedInformation(StringStream &S) const {
-        S << "name_=" << name << ", _type_number=" << type_number.value;
+        S << "name_=" << name << ", type_number_=" << type_number.value;
     }
 };
 

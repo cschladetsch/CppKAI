@@ -7,7 +7,7 @@ KAI_NET_BEGIN
 
 struct NetObject : Object {
     NetHandle netHandle_;
-    Domain *_domain;
+    Domain *domain_;
 
    public:
     NetHandle GetNetHandle() const;
