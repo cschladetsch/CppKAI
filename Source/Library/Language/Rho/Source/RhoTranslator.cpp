@@ -9,6 +9,10 @@ using namespace std;
 
 KAI_BEGIN
 
+// Note: The RhoTranslator::Translate method is now implemented in RhoTranslate.cpp
+// to avoid duplicate implementation errors
+
+
 void RhoTranslator::TranslateToken(AstNodePtr node) {
     KAI_TRACE() << "TranslateToken: "
                 << RhoTokenEnumType::ToString(node->GetToken().type);
@@ -20,21 +24,49 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
             return;
 
         case TokenEnum::Not:
-            TranslateNode(node->GetChild(0));
-            AppendDirectOperation(Operation::LogicalNot);
+            // Create a continuation for this unary operation
+            {
+                Pointer<Continuation> opCont = reg_->New<Continuation>();
+                opCont->SetCode(reg_->New<Array>());
+                stack.push_back(opCont);
+                
+                // Translate the operand
+                TranslateNode(node->GetChild(0));
+                
+                // Add the operation
+                AppendDirectOperation(Operation::LogicalNot);
+                
+                // Pop and append to parent
+                Append(Pop());
+            }
             return;
 
         case TokenEnum::True:
-            AppendDirectOperation(Operation::True);
+            // Create an actual boolean true value
+            Append(reg_->New<bool>(true));
             return;
 
         case TokenEnum::False:
-            AppendDirectOperation(Operation::False);
+            // Create an actual boolean false value
+            Append(reg_->New<bool>(false));
             return;
 
         case TokenEnum::Assert:
-            TranslateNode(node->GetChild(0));
-            AppendDirectOperation(Operation::Assert);
+            // Create a continuation for assert operation
+            {
+                Pointer<Continuation> opCont = reg_->New<Continuation>();
+                opCont->SetCode(reg_->New<Array>());
+                stack.push_back(opCont);
+                
+                // Translate the assertion condition
+                TranslateNode(node->GetChild(0));
+                
+                // Add the operation
+                AppendDirectOperation(Operation::Assert);
+                
+                // Pop and append to parent
+                Append(Pop());
+            }
             return;
 
         case TokenEnum::DivAssign:
@@ -268,12 +300,26 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
         }
     }
     
-    // General case: translate left and right operands, then add the operation
+    // Create a new continuation for this binary operation
+    // This ensures it gets properly wrapped and typed for the executor
+    Pointer<Continuation> opCont = reg_->New<Continuation>();
+    opCont->SetCode(reg_->New<Array>());
+    
+    // Push this new continuation to become the current context
+    stack.push_back(opCont);
+    
+    // Translate left and right operands into this continuation
     TranslateNode(node->GetChild(0));
     TranslateNode(node->GetChild(1));
     
-    // Add the operation directly to avoid wrapping it in a continuation
+    // Add the operation to the continuation
     AppendDirectOperation(op);
+    
+    // Pop the continuation from the stack
+    Pointer<Continuation> completedOp = Pop();
+    
+    // Add the completed operation continuation to the parent
+    Append(completedOp);
 
     KAI_TRACE() << "Binary operation successfully translated";
 }

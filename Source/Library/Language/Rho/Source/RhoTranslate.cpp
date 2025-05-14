@@ -59,26 +59,20 @@ Pointer<Continuation> RhoTranslator::Translate(const char *text, Structure st) {
     // Get the resulting continuation
     auto cont = Pop();
     
-    // Handle the special case where we have a simple binary operation
-    // that has been translated into literal values followed by an operation
-    // For example: "2 + 3" -> [2, 3, Plus]
-    if (cont->GetCode().Exists() && (cont->GetCode()->Size() == 3)) {
-        Object first = cont->GetCode()->At(0);
-        Object second = cont->GetCode()->At(1);
-        Object third = cont->GetCode()->At(2);
+    // In the future, we may want to add auto-execution of simple expressions here
+    // For now, just log what we've found to help with debugging
+    if (cont.Exists() && cont->GetCode().Exists()) {
+        int size = static_cast<int>(cont->GetCode()->Size());
+        KAI_TRACE() << "Rho translated code has " << size << " elements";
         
-        // Check if this is a binary operation pattern: value value operation
-        if (third.GetTypeNumber() == Type::Number::Operation) {
-            // Check if the values are direct numbers (not complex expressions)
-            if ((first.GetTypeNumber() == Type::Number::Signed32 || 
-                 first.GetTypeNumber() == Type::Number::Single) &&
-                (second.GetTypeNumber() == Type::Number::Signed32 || 
-                 second.GetTypeNumber() == Type::Number::Single)) {
+        // Special detection of binary operations (pattern: value value operation)
+        if (size == 3) {
+            Object third = cont->GetCode()->At(2);
+            if (third.GetTypeNumber() == Type::Number::Operation) {
+                KAI_TRACE() << "Detected possible binary operation pattern in code array";
                 
-                // We have a simple binary operation with direct values
-                // This is already in the correct format for direct execution
-                // No need to modify it
-                KAI_TRACE() << "Detected simple binary operation pattern in Rho translation";
+                // For now we're not modifying the continuation, just returning it
+                // We could try to evaluate it here but that needs more work
             }
         }
     }

@@ -78,6 +78,7 @@ class ClassBase {
     bool HasOperation(int N) const { return HasTraitsProperty(N); }
 
     virtual void MakeReachableGrey(StorageBase &base) const = 0;
+    virtual bool CanBlackenReferencedObjects(StorageBase &base) const { return true; }
     virtual void GetContainedObjects(StorageBase &object,
                                      ObjectList &contained) const = 0;
     virtual void CreateProperties(StorageBase &object) const = 0;
