@@ -59,8 +59,12 @@ bool RhoParser::Program() {
     // Continue parsing until we reach the end or encounter an error
     while (!Try(TokenType::None) && !Failed) {
         // Skip any newlines between statements
-        while (Try(TokenType::NewLine)) {
-            std::cout << "RhoParser::Program - Skipping newline" << std::endl;
+        while (Try(TokenType::NewLine) || Try(TokenType::Semi)) {
+            if (Try(TokenType::NewLine)) {
+                std::cout << "RhoParser::Program - Skipping newline" << std::endl;
+            } else {
+                std::cout << "RhoParser::Program - Skipping semicolon" << std::endl;
+            }
             Consume();
         }
 
@@ -256,7 +260,15 @@ bool RhoParser::Statement(AstNodePtr block) {
                 return false;
             }
             // after handling a while loop, there may be an optional semicolon
-            // Rho doesn't use semicolons
+            return true;
+        }
+            
+        case TokenType::For: {
+            std::cout << "RhoParser::Statement - Processing For" << std::endl;
+            if (!ForLoop(block)) {
+                return false;
+            }
+            // after handling a for loop, there may be an optional semicolon
             return true;
         }
 
@@ -296,21 +308,34 @@ bool RhoParser::Statement(AstNodePtr block) {
     block->Add(Pop());
 
 finis:
-    // In Rho, statements end with a newline
-    // Accept a newline or none at the end of file
+    // In Rho, statements end with a newline or semicolon
+    // Accept a newline, semicolon, or none at the end of file
     if (!Try(TokenType::None)) {
         if (Try(TokenType::NewLine)) {
-            std::cout << "RhoParser::Statement - Consuming newline"
-                      << std::endl;
+            std::cout << "RhoParser::Statement - Consuming newline" << std::endl;
             Consume();
-        } else if (!Try(TokenType::While) && !Try(TokenType::For) &&
+        }
+        else if (Try(TokenType::Semi)) {
+            std::cout << "RhoParser::Statement - Consuming semicolon" << std::endl;
+            Consume();
+            
+            // After a semicolon, there may be another statement on the same line
+            // so we should not require a newline, just continue parsing
+        }
+        else if (!Try(TokenType::While) && !Try(TokenType::For) &&
                    !Try(TokenType::If) && !Try(TokenType::Else) &&
                    !Try(TokenType::Fun) && !Try(TokenType::DoWhile)) {
-            // Only expect a newline if the next token isn't another statement
-            // starter
-            std::cout << "RhoParser::Statement - Expecting NewLine"
-                      << std::endl;
-            Expect(TokenType::NewLine);
+            // Only expect a newline or semicolon if the next token isn't another statement starter
+            std::cout << "RhoParser::Statement - Expecting NewLine or Semicolon" << std::endl;
+            
+            // Accept either a newline or semicolon
+            if (Try(TokenType::NewLine) || Try(TokenType::Semi)) {
+                Consume();
+            }
+            else {
+                Fail(Lexer::CreateErrorMessage(Current(), "Expected NewLine or Semi"));
+                return false;
+            }
         }
     }
 
@@ -756,9 +781,9 @@ bool RhoParser::DoWhileLoop(AstNodePtr block) {
 }
 
 void RhoParser::ConsumeWhitespace() {
-    // Skip any whitespace, tabs, or newlines
+    // Skip any whitespace, tabs, newlines, or semicolons
     while (Try(TokenType::Tab) || Try(TokenType::Whitespace) ||
-           Try(TokenType::NewLine)) {
+           Try(TokenType::NewLine) || Try(TokenType::Semi)) {
         Consume();
     }
 }
@@ -768,8 +793,128 @@ bool RhoParser::AddBlock(AstNodePtr fun) {
     return Block(block) && fun->Add(block);
 }
 
+bool RhoParser::ForLoop(AstNodePtr block) {
+    if (!Try(TokenType::For)) return false;
+
+    std::cout << "RhoParser::ForLoop - Found 'for' token" << std::endl;
+    Consume();
+
+    // Unlike the previous Rho syntax, we will support 
+    // for (init; condition; increment) { body }
+    // where semicolons separate the parts
+
+    // Expect an opening parenthesis
+    if (!Try(TokenType::OpenParan)) {
+        return CreateError("Expected opening parenthesis after 'for'");
+    }
+    Consume();
+    
+    // Parse the initialization expression
+    std::cout << "RhoParser::ForLoop - Parsing initialization" << std::endl;
+    AstNodePtr initExpr = nullptr;
+    if (!Try(TokenType::Semi)) {
+        // We have an initialization expression
+        if (!Expression()) {
+            return CreateError("Expected initialization expression in for loop");
+        }
+        initExpr = Pop();
+    }
+
+    // Expect semicolon after initialization
+    if (!Try(TokenType::Semi)) {
+        return CreateError("Expected semicolon after initialization in for loop");
+    }
+    Consume();
+    
+    // Parse the condition expression
+    std::cout << "RhoParser::ForLoop - Parsing condition" << std::endl;
+    AstNodePtr condExpr = nullptr;
+    if (!Try(TokenType::Semi)) {
+        // We have a condition expression
+        if (!Expression()) {
+            return CreateError("Expected condition expression in for loop");
+        }
+        condExpr = Pop();
+    }
+
+    // Expect semicolon after condition
+    if (!Try(TokenType::Semi)) {
+        return CreateError("Expected semicolon after condition in for loop");
+    }
+    Consume();
+    
+    // Parse the increment expression
+    std::cout << "RhoParser::ForLoop - Parsing increment" << std::endl;
+    AstNodePtr incrExpr = nullptr;
+    if (!Try(TokenType::CloseParan)) {
+        // We have an increment expression
+        if (!Expression()) {
+            return CreateError("Expected increment expression in for loop");
+        }
+        incrExpr = Pop();
+    }
+
+    // Expect the closing parenthesis
+    if (!Try(TokenType::CloseParan)) {
+        return CreateError("Expected closing parenthesis after for loop declarations");
+    }
+    Consume();
+
+    // Expect newline after for declarations
+    if (!Try(TokenType::NewLine)) {
+        return CreateError("Expected newline after for loop declarations");
+    }
+    Consume();
+
+    // Parse the body of the for loop
+    auto bodyClause = NewNode(NodeType::Block);
+    std::cout << "RhoParser::ForLoop - Parsing body block" << std::endl;
+    if (!Block(bodyClause)) {
+        return CreateError("Block Expected for for loop body");
+    }
+    std::cout << "RhoParser::ForLoop - Parsed body block" << std::endl;
+
+    // Create the for loop AST node structure
+    auto forNode = NewNode(NodeType::For);
+    
+    // Add all parts to the for node (init, condition, increment, body)
+    if (initExpr) {
+        forNode->Add(initExpr);
+    } else {
+        // If no init expression, add an empty placeholder
+        forNode->Add(NewNode(NodeType::None));
+    }
+    
+    if (condExpr) {
+        forNode->Add(condExpr);
+    } else {
+        // If no condition, add a 'true' literal to make it an infinite loop
+        auto trueNode = NewNode(RhoToken(TokenEnum::True, *lexer.get(), 0, Slice()));
+        forNode->Add(trueNode);
+    }
+    
+    if (incrExpr) {
+        forNode->Add(incrExpr);
+    } else {
+        // If no increment expression, add an empty placeholder
+        forNode->Add(NewNode(NodeType::None));
+    }
+    
+    forNode->Add(bodyClause);
+    
+    std::cout << "RhoParser::ForLoop - Created for node with init, condition, increment, and body" << std::endl;
+
+    if (!block->Add(forNode)) {
+        std::cout << "RhoParser::ForLoop - Failed to add for node to block" << std::endl;
+        return false;
+    }
+
+    std::cout << "RhoParser::ForLoop - Successfully added for node to block" << std::endl;
+    return true;
+}
+
 bool RhoParser::ConsumeNewLines() {
-    while (Try(TokenType::NewLine)) Consume();
+    while (Try(TokenType::NewLine) || Try(TokenType::Semi)) Consume();
     return true;
 }
 

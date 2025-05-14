@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 
 # Add the new test file to the build
 add_library(TestRhoFiles OBJECT
+    SemicolonSyntaxTests.cpp
     TestForLoopSemicolons.cpp
     HelloWorld.cpp
     SimpleRhoTest.cpp
