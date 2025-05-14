@@ -197,8 +197,8 @@ class LexerCommon : public LexerBase {
 
     std::string Print() const {
         std::stringstream str;
-        int n = 0;
-        for (auto tok : tokens) {
+        // Print all tokens in the token list
+        for (const auto& tok : tokens) {
             str << tok << ", ";
         }
         return str.str();

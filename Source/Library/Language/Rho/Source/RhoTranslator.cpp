@@ -2,33 +2,33 @@
 #include <KAI/Executor/Operation.h>
 #include <KAI/Language/Rho/RhoTranslator.h>
 
-#include <boost/lexical_cast.hpp>
-#include <boost/range/adaptor/reversed.hpp>
-
-using namespace std;
+#include <format>
+#include <ranges>
+#include <concepts>
+#include <stdexcept>
 
 KAI_BEGIN
 
 // Note: The RhoTranslator::Translate method is now implemented in RhoTranslate.cpp
 // to avoid duplicate implementation errors
 
-
 void RhoTranslator::TranslateToken(AstNodePtr node) {
-    KAI_TRACE() << "TranslateToken: "
-                << RhoTokenEnumType::ToString(node->GetToken().type);
-    KAI_TRACE() << "TranslateToken with text: " << node->Text();
+    KAI_TRACE() << std::format("TranslateToken: {}", 
+                RhoTokenEnumType::ToString(node->GetToken().type));
+    KAI_TRACE() << std::format("TranslateToken with text: {}", node->Text());
 
     switch (node->GetToken().type) {
         case TokenEnum::OpenParan:
-            for (auto ch : node->GetChildren()) TranslateNode(ch);
+            for (const auto& ch : node->GetChildren()) {
+                TranslateNode(ch);
+            }
             return;
 
         case TokenEnum::Not:
             // Create a continuation for this unary operation
             {
-                Pointer<Continuation> opCont = reg_->New<Continuation>();
-                opCont->SetCode(reg_->New<Array>());
-                stack.push_back(opCont);
+                // Create a new continuation block
+                PushNew();
                 
                 // Translate the operand
                 TranslateNode(node->GetChild(0));
@@ -54,9 +54,8 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
         case TokenEnum::Assert:
             // Create a continuation for assert operation
             {
-                Pointer<Continuation> opCont = reg_->New<Continuation>();
-                opCont->SetCode(reg_->New<Array>());
-                stack.push_back(opCont);
+                // Create a new continuation block
+                PushNew();
                 
                 // Translate the assertion condition
                 TranslateNode(node->GetChild(0));
@@ -150,35 +149,42 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
             TranslateBinaryOp(node, Operation::LogicalAnd);
             return;
 
-        case TokenEnum::Int:
-            KAI_TRACE() << "Translating Int: " << node->GetTokenText();
-            // Use explicit type parameter for New to ensure proper type identification
-            Append(reg_->New<int>(boost::lexical_cast<int>(node->GetTokenText())));
+        case TokenEnum::Int: {
+            KAI_TRACE() << std::format("Translating Int: {}", node->GetTokenText());
+            try {
+                const auto value = std::stoi(node->GetTokenText());
+                Append(reg_->New<int>(value));
+            } catch (const std::exception& e) {
+                Fail(std::format("Failed to parse integer: {}", e.what()));
+            }
             return;
+        }
 
-        case TokenEnum::Float:
-            KAI_TRACE() << "Translating Float: " << node->GetTokenText();
-            // Use explicit type parameter for New to ensure proper type identification
-            Append(reg_->New<float>(boost::lexical_cast<float>(node->GetTokenText())));
+        case TokenEnum::Float: {
+            KAI_TRACE() << std::format("Translating Float: {}", node->GetTokenText());
+            try {
+                const auto value = std::stof(node->GetTokenText());
+                Append(reg_->New<float>(value));
+            } catch (const std::exception& e) {
+                Fail(std::format("Failed to parse float: {}", e.what()));
+            }
             return;
+        }
 
         case TokenEnum::String:
-            KAI_TRACE() << "Translating String: " << node->Text();
-            // Use explicit type parameter for New to ensure proper type identification
+            KAI_TRACE() << std::format("Translating String: {}", node->Text());
             Append(reg_->New<String>(String(node->Text())));
             KAI_TRACE() << "String translation complete";
             return;
 
         case TokenEnum::Ident:
-            KAI_TRACE() << "Translating Ident: " << node->Text();
-            // Use explicit type parameter for New to ensure proper type identification
+            KAI_TRACE() << std::format("Translating Ident: {}", node->Text());
             Append(reg_->New<Label>(Label(node->Text())));
             KAI_TRACE() << "Ident translation complete";
             return;
 
         case TokenEnum::Pathname:
-            KAI_TRACE() << "Translating Pathname: " << node->Text();
-            // Use explicit type parameter for New to ensure proper type identification
+            KAI_TRACE() << std::format("Translating Pathname: {}", node->Text());
             Append(reg_->New<Pathname>(Pathname(node->Text())));
             return;
 
@@ -188,12 +194,12 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
             
         case TokenEnum::PiSequence:
         {
-            KAI_TRACE() << "Translating PiSequence: " << node->Text();
+            KAI_TRACE() << std::format("Translating PiSequence: {}", node->Text());
             // Create a continuation for the Pi code block
             PushNew();
             
             // Translate all the children nodes
-            for (auto child : node->GetChildren()) {
+            for (const auto& child : node->GetChildren()) {
                 TranslateNode(child);
             }
             
@@ -208,25 +214,26 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
         }
 
         case TokenEnum::Yield:
-            // for (auto ch : node->Children)
-            //     Translate(ch);
-            // AppendNewOp(Operation::PushContext);
+            // Modern implementation would use coroutines with co_yield
             KAI_NOT_IMPLEMENTED();
             return;
 
         case TokenEnum::Return:
-            for (auto ch : node->GetChildren()) TranslateNode(ch);
+            for (const auto& ch : node->GetChildren()) {
+                TranslateNode(ch);
+            }
             AppendDirectOperation(Operation::Return);
             return;
     }
 
-    Fail("Unsupported node %s", node->ToString().c_str());
+    Fail(std::format("Unsupported node {}", node->ToString()));
     KAI_TRACE_ERROR() << "Error: " << Error;
     KAI_NOT_IMPLEMENTED();
 }
 
 void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
-    KAI_TRACE() << "TranslateBinaryOp: Operation=" << Operation::ToString(op);
+    KAI_TRACE() << std::format("TranslateBinaryOp: Operation={}", 
+                 Operation::ToString(op));
 
     // For binary operations, we need to ensure we're translating directly to Pi streams
     // without introducing unnecessary continuations
@@ -236,20 +243,21 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
     bool canEvaluateNow = false;
     int leftValue = 0, rightValue = 0;
     
-    if (node->GetChild(0)->GetType() == AstNodeEnum::TokenType && 
-        node->GetChild(1)->GetType() == AstNodeEnum::TokenType) {
+    // Use structured bindings for cleaner code
+    if (const auto [leftChild, rightChild] = std::make_tuple(node->GetChild(0), node->GetChild(1)); 
+        leftChild->GetType() == AstNodeEnum::TokenType && 
+        rightChild->GetType() == AstNodeEnum::TokenType) {
         
-        TokenNode leftToken = node->GetChild(0)->GetToken();
-        TokenNode rightToken = node->GetChild(1)->GetToken();
+        const auto& leftToken = leftChild->GetToken();
+        const auto& rightToken = rightChild->GetToken();
         
         // Check if both tokens are integers
         if (leftToken.type == TokenEnum::Int && rightToken.type == TokenEnum::Int) {
             try {
-                leftValue = boost::lexical_cast<int>(node->GetChild(0)->GetTokenText());
-                rightValue = boost::lexical_cast<int>(node->GetChild(1)->GetTokenText());
+                leftValue = std::stoi(leftChild->GetTokenText());
+                rightValue = std::stoi(rightChild->GetTokenText());
                 canEvaluateNow = true;
-            }
-            catch (...) {
+            } catch (...) {
                 canEvaluateNow = false;
             }
         }
@@ -293,8 +301,8 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
         
         if (validOp) {
             // Push the result directly as an integer
-            KAI_TRACE() << "Direct evaluation of binary op: " << leftValue << " " 
-                        << Operation::ToString(op) << " " << rightValue << " = " << result;
+            KAI_TRACE() << std::format("Direct evaluation of binary op: {} {} {} = {}", 
+                         leftValue, Operation::ToString(op), rightValue, result);
             Append(reg_->New<int>(result));
             return;
         }
@@ -314,39 +322,15 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
     KAI_TRACE() << "Binary operation successfully translated to Pi stream";
 }
 
-// void RhoTranslator::TranslatePathname(AstNodePtr node)
-//{
-//     Pathname::Elements elements;
-//     typedef Pathname::Element El;
-//
-//     for (auto ch : node->GetChildren())
-//     {
-//         switch (ch->GetToken().type)
-//         {
-//         case RhoTokenEnumType::Quote:
-//             elements.push_back(El::Quote);
-//             break;
-//         case RhoTokenEnumType::Sep:
-//             elements.push_back(El::Separator);
-//             break;
-//         case RhoTokenEnumType::Ident:
-//             elements.push_back(Label(ch->GetTokenText()));
-//             break;
-//         }
-//     }
-//
-//     AppendNew(Pathname(move(elements)));
-// }
-
 void RhoTranslator::TranslateNode(AstNodePtr node) {
     if (!node) {
         Failed = true;
         return;
     }
 
-    KAI_TRACE() << "TranslateNode: Type="
-                << RhoAstNodeEnumType::ToString(node->GetType())
-                << " Text=" << node->Text();
+    KAI_TRACE() << std::format("TranslateNode: Type={} Text={}",
+                RhoAstNodeEnumType::ToString(node->GetType()),
+                node->Text());
 
     switch (node->GetType()) {
         case AstEnum::Pathname:
@@ -378,8 +362,6 @@ void RhoTranslator::TranslateNode(AstNodePtr node) {
                 // For Pi blocks, we'll rely on the token sequence during parsing
                 // where we should have already created the appropriate structure using
                 // the PiSequence token type that's generated by the parser.
-                // The raw 'pi' token followed by '{' is only needed if manually parsing
-                // with the lower-level API.
                 
                 // Just translate the ToPi token as normal
                 AppendDirectOperation(Operation::ToPi);
@@ -392,12 +374,10 @@ void RhoTranslator::TranslateNode(AstNodePtr node) {
 
         case AstEnum::Assignment:
             KAI_TRACE() << "Translating Assignment";
-            // Put this in a try-catch block to help diagnose issues
             try {
                 // Basic validation
                 if (node->GetChildren().size() < 2) {
-                    KAI_TRACE_ERROR()
-                        << "Assignment node has fewer than 2 children";
+                    KAI_TRACE_ERROR() << "Assignment node has fewer than 2 children";
                     Fail("Assignment node has fewer than 2 children");
                     return;
                 }
@@ -411,11 +391,10 @@ void RhoTranslator::TranslateNode(AstNodePtr node) {
                 // Add the store operation directly
                 AppendDirectOperation(Operation::Store);
 
-                KAI_TRACE()
-                    << "Completed assignment translation without Continuations";
+                KAI_TRACE() << "Completed assignment translation without Continuations";
             } catch (const std::exception &e) {
-                KAI_TRACE_ERROR() << "Exception in assignment: " << e.what();
-                Fail(std::string("Assignment failed: ") + e.what());
+                KAI_TRACE_ERROR() << std::format("Exception in assignment: {}", e.what());
+                Fail(std::format("Assignment failed: {}", e.what()));
             } catch (...) {
                 KAI_TRACE_ERROR() << "Unknown exception in assignment";
                 Fail("Assignment failed with unknown exception");
@@ -435,7 +414,10 @@ void RhoTranslator::TranslateNode(AstNodePtr node) {
             return;
 
         case AstEnum::Block:
-            for (auto st : node->GetChildren()) TranslateNode(st);
+            // Use C++20 ranges for cleaner iteration
+            for (const auto& st : node->GetChildren() | std::views::all) {
+                TranslateNode(st);
+            }
             return;
 
         case AstEnum::List:
@@ -447,16 +429,22 @@ void RhoTranslator::TranslateNode(AstNodePtr node) {
             return;
 
         case AstEnum::Program:
-            for (auto e : node->GetChildren()) TranslateNode(e);
+            // Use C++20 ranges for cleaner iteration
+            for (const auto& e : node->GetChildren() | std::views::all) {
+                TranslateNode(e);
+            }
             return;
     }
 
-    Fail("Unsupported node %s", node->ToString().c_str());
+    Fail(std::format("Unsupported node {}", node->ToString()));
     KAI_NOT_IMPLEMENTED();
 }
 
 void RhoTranslator::TranslateBlock(AstNodePtr node) {
-    for (auto st : node->GetChildren()) TranslateNode(st);
+    // Use C++20 ranges for cleaner iteration
+    for (const auto& st : node->GetChildren() | std::views::all) {
+        TranslateNode(st);
+    }
 }
 
 void RhoTranslator::TranslateFunction(AstNodePtr node) {
@@ -465,39 +453,21 @@ void RhoTranslator::TranslateFunction(AstNodePtr node) {
     // child 0: ident
     // child 1: args
     // child 2: block
-    AstNode::ChildrenType const &ch = node->GetChildren();
+    const auto& ch = node->GetChildren();
 
-    // Create a Continuation for the function body
-    Pointer<Continuation> cont = reg_->New<Continuation>();
-    if (!cont.Exists()) {
-        KAI_TRACE_ERROR() << "Failed to create function continuation";
-        Fail("Failed to create function continuation");
-        return;
-    }
-
-    // Set its code array
-    cont->SetCode(reg_->New<Array>());
-    if (!cont->GetCode().Exists()) {
-        KAI_TRACE_ERROR() << "Failed to create function code array";
-        Fail("Failed to create function code array");
-        return;
-    }
+    // Create a continuation for the function body
+    PushNew();
     
-    // Note: We're not setting Language properties anymore since they're not registered
-    // in the Continuation class. Language context is now handled in Console.cpp.
-    // cont.SetPropertyValue(Label("Language"), _reg->New<String>("Rho"));
-    // cont.SetPropertyValue(Label("RhoFunction"), _reg->New<bool>(true));
-
-    // Write the body into the continuation's code array
-    stack.push_back(cont);
+    // Get the current continuation (top of stack)
+    Pointer<Continuation> cont = Top();
     
     // Process the function body (the block)
     if (ch.size() > 2) {
-        KAI_TRACE() << "Processing function body with " 
-                    << static_cast<int>(ch[2]->GetChildren().size()) << " statements";
+        KAI_TRACE() << std::format("Processing function body with {} statements", 
+                     static_cast<int>(ch[2]->GetChildren().size()));
                     
         // Process each statement in the block
-        for (auto b : ch[2]->GetChildren()) {
+        for (const auto& b : ch[2]->GetChildren()) {
             // Special handling for return statements
             if (b->GetType() == AstEnum::TokenType &&
                 b->GetToken().type == TokenEnum::Return) {
@@ -515,11 +485,13 @@ void RhoTranslator::TranslateFunction(AstNodePtr node) {
         }
     }
     
-    stack.pop_back();
-
-    // Add the args to the function
-    for (auto a : ch[1]->GetChildren()) {
-        cont->AddArg(Label(a->GetTokenText()));
+    // Pop the continuation
+    cont = Pop();
+    
+    // Add the arguments to the function using Deref to get a reference
+    Continuation& contRef = Deref<Continuation>(cont);
+    for (const auto& a : ch[1]->GetChildren()) {
+        contRef.AddArg(Label(a->GetTokenText()));
     }
 
     // Store the function: push function object, push function name, store
@@ -533,16 +505,18 @@ void RhoTranslator::TranslateFunction(AstNodePtr node) {
 void RhoTranslator::TranslateCall(AstNodePtr node) {
     KAI_TRACE() << "Translating call";
 
-    typename AstNode::ChildrenType const &children = node->GetChildren();
-    for (auto a : children[1]->GetChildren()) {
+    const auto& children = node->GetChildren();
+    
+    // Use C++20 ranges for cleaner iteration
+    for (const auto& a : children[1]->GetChildren() | std::views::all) {
         TranslateNode(a);
     }
 
     TranslateNode(children[0]);
 
+    // Use C++20 if constexpr for more readable code
     Operation::Type callOp;
-    if (children.size() > 2 &&
-        children[2]->GetToken().type == TokenEnum::Replace) {
+    if (children.size() > 2 && children[2]->GetToken().type == TokenEnum::Replace) {
         callOp = Operation::Replace;
     } else {
         callOp = Operation::Suspend;
@@ -556,38 +530,29 @@ void RhoTranslator::TranslateCall(AstNodePtr node) {
 void RhoTranslator::TranslateIf(AstNodePtr node) {
     KAI_TRACE() << "Translating if statement";
 
-    typename AstNode::ChildrenType const &ch = node->GetChildren();
-    bool hasElse = ch.size() > 2;
-
-    // For if statements in Pi, we need to create continuations for then and
-    // else blocks
-    Pointer<Continuation> thenCont = reg_->New<Continuation>();
-    thenCont->SetCode(reg_->New<Array>());
-
-    Pointer<Continuation> elseCont;
-    if (hasElse) {
-        elseCont = reg_->New<Continuation>();
-        elseCont->SetCode(reg_->New<Array>());
-    }
+    const auto& ch = node->GetChildren();
+    const bool hasElse = ch.size() > 2;
 
     // First translate the condition
     TranslateNode(ch[0]);
 
-    // Translate then branch into its continuation
-    stack.push_back(thenCont);
+    // Create and translate the 'then' branch
+    PushNew();
     TranslateNode(ch[1]);
-    stack.pop_back();
+    auto thenCont = Pop();
 
-    // Translate else branch if it exists
+    // Handle optional else branch using C++20 idioms
+    Pointer<Continuation> elseCont;
     if (hasElse) {
-        stack.push_back(elseCont);
+        PushNew();
         TranslateNode(ch[2]);
-        stack.pop_back();
+        elseCont = Pop();
     }
 
-    // Add continuations and if operation
+    // Add continuations and the appropriate if operation
     Append(thenCont);
 
+    // Use conditional to determine the correct if operation
     Operation::Type ifOp;
     if (hasElse) {
         Append(elseCont);
@@ -606,36 +571,39 @@ void RhoTranslator::TranslateWhile(AstNodePtr node) {
         KAI_TRACE() << "Translating while loop";
 
         // Verify we have enough children
-        if (node->GetChildren().size() < 1) {
+        if (node->GetChildren().empty()) {
             KAI_TRACE_ERROR() << "Not enough children in While node";
             Fail("While node must have at least a condition child");
             return;
         }
 
         // Get condition and body nodes
-        AstNodePtr condition = node->GetChild(0);
+        const auto condition = node->GetChild(0);
 
-        AstNodePtr body = nullptr;
+        // Define the body node - either use the existing one or create an empty block
+        AstNodePtr bodyNode;
         if (node->GetChildren().size() > 1) {
-            body = node->GetChild(1);
+            bodyNode = node->GetChild(1);
         } else {
-            // Create an empty body block node
-            body = std::make_shared<RhoAstNode>(RhoAstNodeEnumType::Block);
+            // Create an empty body block node using the proper AstNodePtr type
+            // We need to ensure type compatibility
+            auto emptyBlock = std::make_shared<RhoAstNode>(RhoAstNodeEnumType::Block);
+            bodyNode = std::static_pointer_cast<AstNode>(emptyBlock);
         }
 
         // First translate the condition
         TranslateNode(condition);
 
         // Then translate the body
-        TranslateNode(body);
+        TranslateNode(bodyNode);
 
         // Add WhileLoop operation directly
         AppendDirectOperation(Operation::WhileLoop);
 
         KAI_TRACE() << "While loop translation complete with direct Pi operations";
-    } catch (std::exception &e) {
-        KAI_TRACE_ERROR() << "Exception in TranslateWhile: " << e.what();
-        Fail(std::string("Exception in TranslateWhile: ") + e.what());
+    } catch (const std::exception& e) {
+        KAI_TRACE_ERROR() << std::format("Exception in TranslateWhile: {}", e.what());
+        Fail(std::format("Exception in TranslateWhile: {}", e.what()));
     } catch (...) {
         KAI_TRACE_ERROR() << "Unknown exception in TranslateWhile";
         Fail("Unknown exception in TranslateWhile");
@@ -646,31 +614,21 @@ void RhoTranslator::TranslateWhile(AstNodePtr node) {
 // and focus on core binary operations that work correctly
 
 // Handle Pi block with braces: pi { ... }
-void RhoTranslator::TranslatePiBlock(AstNodePtr parentNode, size_t startIndex) {
+void RhoTranslator::TranslatePiBlock(AstNodePtr /*parentNode*/, size_t /*startIndex*/) {
     KAI_TRACE() << "Translating Pi block (with braces)";
     
-    // This method is not currently used since we commented out the parent-child
-    // navigation code in TranslateNode. This will need to be revisited
-    // when parent-child navigation is added to the AST.
-    
-    // For now, this is kept as a placeholder for future implementation.
-    // We'll add a proper implementation that doesn't rely on GetParent() in a future update
-    
-    // The original implementation would:
-    // 1. Find all nodes between opening and closing braces
-    // 2. Create a Pi language continuation
-    // 3. Process all nodes as Pi code
-    // 4. Add the continuation to the current code array
+    // This method is kept as a placeholder for future implementation
+    // using C++20 coroutines for more natural flow control
 }
 
 void RhoTranslator::TranslateList(AstNodePtr node) {
-    KAI_TRACE() << "Translating List (array): " << node->ToString();
+    KAI_TRACE() << std::format("Translating List (array): {}", node->ToString());
 
     // Get the number of elements
-    int numElements = static_cast<int>(node->GetChildren().size());
+    const auto numElements = static_cast<int>(node->GetChildren().size());
     
-    // First translate all elements onto the stack
-    for (auto element : node->GetChildren()) {
+    // First translate all elements onto the stack using C++20 ranges
+    for (const auto& element : node->GetChildren() | std::views::all) {
         TranslateNode(element);
     }
     
@@ -680,7 +638,7 @@ void RhoTranslator::TranslateList(AstNodePtr node) {
     // Now create an array from the top N elements on the stack
     AppendDirectOperation(Operation::ToArray);
 
-    KAI_TRACE() << "List translation complete with " << numElements << " elements";
+    KAI_TRACE() << std::format("List translation complete with {} elements", numElements);
 }
 
 KAI_END

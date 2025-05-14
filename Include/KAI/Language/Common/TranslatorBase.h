@@ -17,7 +17,7 @@ struct TranslatorBase : TranslatorCommon {
     TranslatorBase(const TranslatorBase &) = delete;
     TranslatorBase(Registry &reg) : TranslatorCommon(reg) {}
 
-    Pointer<Continuation> Translate(const char *text, Structure st) override {
+    virtual Pointer<Continuation> Translate(const char *text, Structure st) override {
         if (text == 0 || text[0] == 0) {
             KAI_TRACE_WARN_1("No input");
             return Object();
@@ -74,6 +74,18 @@ struct TranslatorBase : TranslatorCommon {
 
         // For more complex cases, return the continuation for evaluation
         return cont;
+    }
+    
+    // Helper method for loop-related continuation creation
+    [[nodiscard]] Pointer<Continuation> CreateContinuationAndTranslate(AstNodePtr node) {
+        // Create a new continuation for the code block
+        PushNew();
+        
+        // Translate the node into the continuation
+        TranslateNode(node);
+        
+        // Get the resulting continuation
+        return Pop();
     }
 
    protected:

@@ -34,7 +34,7 @@ class AstNodeBase {
     Enum GetType() const { return astType_; }
 
     const Token &GetToken() const { return token_; }
-    std::string GetTokenText() const { return std::move(token_.Text()); }
+    std::string GetTokenText() const { return token_.Text(); }
 
     std::string ToString() const {
         std::stringstream out;
@@ -44,7 +44,7 @@ class AstNodeBase {
         return out.str();
     }
 
-    std::string Text() const { return std::move(token_.Text()); }
+    std::string Text() const { return token_.Text(); }
 
     bool Add(AstNodePtr node) {
         if (!node) {
