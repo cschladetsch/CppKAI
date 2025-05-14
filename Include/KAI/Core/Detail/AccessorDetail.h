@@ -43,7 +43,7 @@ struct NonSystemProperty : CommonBase<Base, C, T, F> {
     void SetMarked(Object &, bool) {}
 };
 
-// common functionality for accessors and mutators of _properties which are
+// common functionality for accessors and mutators of properties_ which are
 // system types.
 template <class Base, class C, class T, class F>
 struct SystemProperty : CommonBase<Base, C, T, F> {
@@ -72,7 +72,7 @@ struct SystemProperty : CommonBase<Base, C, T, F> {
     }
 };
 
-// accessor to non-system _properties
+// accessor to non-system properties_
 template <class Class, class C, bool, class T, class = T>
 struct Accessor : NonSystemProperty<AccessorBase, C, T, T(Class::*)> {
     typedef NonSystemProperty<AccessorBase, C, T, T(Class::*)> Parent;
@@ -88,7 +88,7 @@ struct Accessor : NonSystemProperty<AccessorBase, C, T, T(Class::*)> {
     }
 };
 
-// accessor to system _properties
+// accessor to system properties_
 template <class Class, class C, class T, class S>
 struct Accessor<Class, C, true, T, S>
     : SystemProperty<AccessorBase, C, T, S(Class::*)> {

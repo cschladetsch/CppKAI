@@ -12,14 +12,14 @@ TEST(TestClassScripting, Test) {
     // the standard one which uses malloc and free.
     Console console;
 
-    // A registry is a factory for _classes and _instances.
+    // A registry is a factory for classes_ and instances_.
     Registry &reg = console.GetRegistry();
 
     // Tell the registry about our structure.
     MyStruct::Register(reg);
 
     // Make a new instance. Note that we use a registry to make a new instance.
-    // after that, we can use that instance to make other _instances, which will
+    // after that, we can use that instance to make other instances_, which will
     // just use the registry that created it.
     Pointer<MyStruct> mystruct = reg.New<MyStruct>();
 
@@ -32,9 +32,9 @@ TEST(TestClassScripting, Test) {
     mystruct->string = "Freddy";
     if (trace) KAI_TRACE_1(mystruct.ToXmlString());
     /* Output:
-    <Object type='MyStruct' _name=''> <!-- no _name since no in a parent
-    dictionary --> <Property _name='num'>42</Property> <Property
-    _name='string'>Freddy</Property>
+    <Object type='MyStruct' name_=''> <!-- no name_ since no in a parent
+    dictionary --> <Property name_='num'>42</Property> <Property
+    name_='string'>Freddy</Property>
     </Object>
     */
 
@@ -49,7 +49,7 @@ TEST(TestClassScripting, Test) {
     binary_stream << mystruct;
     if (trace) KAI_TRACE_1(binary_stream);
 
-    // Accessing fields and _methods uses pointer semantics:
+    // Accessing fields and methods_ uses pointer semantics:
     mystruct->num = 345;
     mystruct->string = "hello world";
     mystruct->list = reg.New<List>();

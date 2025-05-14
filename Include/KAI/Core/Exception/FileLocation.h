@@ -4,7 +4,7 @@
 
 KAI_BEGIN
 
-/// A location in a source file represented as the file _name and a line number
+/// A location in a source file represented as the file name_ and a line number
 struct FileLocation {
     String file;
     String function;

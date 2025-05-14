@@ -12,7 +12,7 @@ struct Agent : AgentBase {
     typedef Pointer<T> Servant;
 
     Agent(Node &node, NetPointer<Servant> server) : AgentBase(node, server) {
-        _servant = server;
+        servant_ = server;
     }
 
     template <class R = void>
@@ -22,7 +22,7 @@ struct Agent : AgentBase {
     }
 
    private:
-    Pointer<Servant> _servant;
+    Pointer<Servant> servant_;
 };
 
 KAI_NET_END

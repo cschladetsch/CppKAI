@@ -30,10 +30,10 @@ void ToLower(std::wstring &str) {
 void TestLangCommon::SetUp() {
     _reg = &_console.GetRegistry();
     _exec = &*_console.GetExecutor();
-    _data = &*_exec->GetDataStack();
-    _context = &*_exec->GetContextStack();
-    _tree = &_console.GetTree();
-    _root = _tree->GetRoot();
+    data_ = &*_exec->GetDataStack();
+    context_ = &*_exec->GetContextStack();
+    tree_ = &_console.GetTree();
+    _root = tree_->GetRoot();
 
     // Always ensure a clean state on setup
     _exec->ClearStacks();

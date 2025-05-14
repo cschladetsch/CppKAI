@@ -10,7 +10,7 @@
 
 KAI_NET_BEGIN
 
-Node::Node() : _peer(nullptr), _isRunning(false) {
+Node::Node() : _peer(nullptr), isRunning_(false) {
     // Use an empty registry for now
     // _reg = std::make_shared<Registry>();
 
@@ -59,7 +59,7 @@ void Node::Listen(IpAddress const &address, int port) {
     }
 
     _peer->SetMaximumIncomingConnections(32);
-    _isRunning = true;
+    isRunning_ = true;
 
     // Log that we're listening
     std::string logMessage = "Network node listening on " + address.ToString() +
@@ -72,7 +72,7 @@ void Node::Connect(IpAddress const &ip, int port) {
     if (!_peer) return;
 
     // If not started yet, start with any available port
-    if (!_isRunning) {
+    if (!isRunning_) {
         RakNet::SocketDescriptor sd(0, nullptr);  // Use any available port
         RakNet::StartupResult result = _peer->Startup(32, &sd, 1);
 
@@ -85,7 +85,7 @@ void Node::Connect(IpAddress const &ip, int port) {
             return;
         }
 
-        _isRunning = true;
+        isRunning_ = true;
     }
 
     // Connect to remote peer
@@ -108,7 +108,7 @@ void Node::Connect(IpAddress const &ip, int port) {
 }
 
 void Node::Disconnect() {
-    if (!_peer || !_isRunning) return;
+    if (!_peer || !isRunning_) return;
 
     // Disconnect from all peers gracefully
     _peer->Shutdown(300);  // Give 300ms to send disconnect packets
@@ -121,7 +121,7 @@ void Node::Disconnect() {
         }
     }
 
-    _isRunning = false;
+    isRunning_ = false;
 
     NetworkLogger::LogStatus("Node disconnected from all peers");
 }
@@ -137,7 +137,7 @@ void Node::Shutdown() {
 }
 
 bool Node::Update() {
-    if (!_peer || !_isRunning) return false;
+    if (!_peer || !isRunning_) return false;
 
     bool processedPackets = false;
 

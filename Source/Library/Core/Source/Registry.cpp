@@ -16,20 +16,20 @@
 KAI_BEGIN
 
 Registry::Registry() {
-    _allocator = std::make_shared<Memory::StandardAllocator>();
+    allocator_ = std::make_shared<Memory::StandardAllocator>();
     Construct();
 }
 
 Registry::Registry(std::shared_ptr<Memory::IAllocator> alloc) {
-    _allocator = std::move(alloc);
+    allocator_ = std::move(alloc);
     Construct();
 }
 
 void Registry::Construct() {
-    _classes.resize(2000, nullptr);
+    classes_.resize(2000, nullptr);
     gc_trace_level = 1;
-    _tree = nullptr;
-    std::fill(_classes.begin(), _classes.end(),
+    tree_ = nullptr;
+    std::fill(classes_.begin(), classes_.end(),
               static_cast<ClassBase const *>(nullptr));
 }
 
@@ -42,20 +42,20 @@ void Registry::ClearInstances() {
     // this can't be done in one pass, as otherwise we would be mutating the
     // container as we traverse it.
     std::vector<Handle> handles;
-    for (auto const &instance : _instances) handles.push_back(instance.first);
+    for (auto const &instance : instances_) handles.push_back(instance.first);
 
     for (auto const &handle : handles) DestroyObject(handle, true);
 
-    _instances.clear();
+    instances_.clear();
 }
 
 void Registry::NominateAll() {
-    _deathRow.clear();
-    for (const auto &[handle, _] : _instances) _deathRow.insert(handle);
+    deathRow_.clear();
+    for (const auto &[handle, _] : instances_) deathRow_.insert(handle);
 }
 
 Object Registry::NewFromTypeNumber(Type::Number type_number) {
-    ClassBase const *klass = _classes[type_number.ToInt()];
+    ClassBase const *klass = classes_[type_number.ToInt()];
     if (!klass) KAI_THROW_1(UnknownTypeNumber, type_number.ToInt());
 
     return NewFromClass(klass);
@@ -70,7 +70,7 @@ Object Registry::NewFromClassName(const char *classname_str) {
 }
 
 const ClassBase *Registry::GetClass(const Label &name) {
-    for (auto const klass : _classes)
+    for (auto const klass : classes_)
         if (klass && klass->GetName() == name) return klass;
 
     return nullptr;
@@ -79,16 +79,16 @@ const ClassBase *Registry::GetClass(const Label &name) {
 void Registry::DestroyNominated() {
     // Copy the elements in death row because when we delete
     // objects, they may release other objects.
-    DeathRow copy = _deathRow;
-    _deathRow.clear();
+    DeathRow copy = deathRow_;
+    deathRow_.clear();
     for (auto const &ob : copy) DestroyObject(ob);
 }
 
 void Registry::DestroyObject(Handle handle, bool force) {
     bool succeeded = false;
     KAI_TRY {
-        const auto found = _instances.find(handle);
-        if (found == _instances.end()) {
+        const auto found = instances_.find(handle);
+        if (found == instances_.end()) {
 #ifdef KAI_DEBUG_REGISTRY
             if (IsWatching(handle)) {
                 KAI_TRACE() << handle << ": doesn't exist, not deleted";
@@ -126,11 +126,11 @@ void Registry::DestroyObject(Handle handle, bool force) {
         }
 #endif
         base.GetClass()->Delete(base);
-        _instances.erase(found);
+        instances_.erase(found);
 
-        if (const auto retained = _retainedObjects.find(handle);
-            retained != _retainedObjects.end())
-            _retainedObjects.erase(retained);
+        if (const auto retained = retainedObjects_.find(handle);
+            retained != retainedObjects_.end())
+            retainedObjects_.erase(retained);
 
         succeeded = true;
     }
@@ -146,22 +146,22 @@ void Registry::DestroyObject(Handle handle, bool force) {
 
     if (!succeeded) {
         KAI_TRACE_WARN() << " coudldn't delete handle " << handle;
-        if (auto const found = _instances.find(handle);
-            found != _instances.end()) {
+        if (auto const found = instances_.find(handle);
+            found != instances_.end()) {
             // this leaks and has other *TERRIBLE* consequences but it is the
             // best we can do to keep afloat
             KAI_TRACE_ERROR() << "failed to delete " << handle;
-            _instances.erase(found);
+            instances_.erase(found);
         }
     }
 }
 
 void Registry::PruneRetained() {
-    auto retained = _retainedObjects.begin();
-    const auto end = _retainedObjects.end();
+    auto retained = retainedObjects_.begin();
+    const auto end = retainedObjects_.end();
     while (retained != end) {
         if (Object object = GetObject(*retained); !object.Exists())
-            retained = _retainedObjects.erase(retained);
+            retained = retainedObjects_.erase(retained);
         else
             ++retained;
     }
@@ -169,23 +169,23 @@ void Registry::PruneRetained() {
 
 const ClassBase *Registry::GetClass(Type::Number type_number) {
     const auto tn = type_number.ToInt();
-    if (tn >= static_cast<int>(_classes.size()))
+    if (tn >= static_cast<int>(classes_.size()))
         KAI_THROW_1(LogicError, "Inalid type number");
 
-    return _classes[tn];
+    return classes_[tn];
 }
 
 StorageBase *Registry::GetStorageBase(Handle handle) const {
     if (handle == Handle(0)) return nullptr;
 
-    const auto obj = _instances.find(handle);
-    if (obj == _instances.end()) return nullptr;
+    const auto obj = instances_.find(handle);
+    if (obj == instances_.end()) return nullptr;
 
     return obj->second;
 }
 
 bool Registry::OnDeathRow(Handle handle) const {
-    return _deathRow.find(handle) != _deathRow.end();
+    return deathRow_.find(handle) != deathRow_.end();
 }
 
 void Registry::AddClass(const ClassBase *klass) {
@@ -193,7 +193,7 @@ void Registry::AddClass(const ClassBase *klass) {
 
     if (GetClass(klass->GetTypeNumber())) KAI_THROW_1(Base, "Duplicate Class");
 
-    _classes[klass->GetTypeNumber().ToInt()] = klass;
+    classes_[klass->GetTypeNumber().ToInt()] = klass;
 }
 
 Object Registry::GetObject(Handle handle) const {
@@ -203,8 +203,8 @@ Object Registry::GetObject(Handle handle) const {
 
     if (handle == Handle(0)) return Object();
 
-    const auto found = _instances.find(handle);
-    if (found == _instances.end()) return Object();
+    const auto found = instances_.find(handle);
+    if (found == instances_.end()) return Object();
 
     return static_cast<Object>(*found->second);
 }
@@ -216,7 +216,7 @@ void Registry::MarkSweepAndDestroy(Object root) {
     return;
 #else
     DestroyNominated();   // destroy any pending
-    MarkAndSweep(_root);  // mark objects for destruction
+    MarkAndSweep(root_);  // mark objects for destruction
     DestroyNominated();   // destroy them
 #endif
 }
@@ -227,7 +227,7 @@ void Registry::MarkAndSweep(Object root) {
 }
 
 void Registry::Mark(Object root) {
-    // Mark everything that is reachable from the given object _root.
+    // Mark everything that is reachable from the given object root_.
     if (root.Exists()) MarkAll(root.GetStorageBase(), true);
 }
 
@@ -248,11 +248,11 @@ void Registry::MarkAll(StorageBase &root, bool marked) const {
 }
 
 void Registry::Sweep() {
-    if (_instances.empty()) return;
+    if (instances_.empty()) return;
 
-    auto A = _instances.begin(), B = _instances.end();
+    auto A = instances_.begin(), B = instances_.end();
     // the handle of the next object created
-    const auto last = Handle(_nextHandle.GetValue());
+    const auto last = Handle(nextHandle_.GetValue());
     for (; A != B; ++A) {
         StorageBase *base = A->second;
 
@@ -279,8 +279,8 @@ void Registry::Delete(Handle handle) {
     }
 #endif
     // if unknown handle, do nothing
-    Instances::const_iterator instance = _instances.find(handle);
-    if (instance == _instances.end()) return;
+    Instances::const_iterator instance = instances_.find(handle);
+    if (instance == instances_.end()) return;
 
     // detach from parent
     if (instance->second) {
@@ -291,13 +291,13 @@ void Registry::Delete(Handle handle) {
         // Detach(storage);
     }
 
-    // remove from list of _retained objects
-    auto etained = _retainedObjects.find(handle);
-    if (_retained != _retainedObjects.end()) _retainedObjects.erase(_retained);
+    // remove from list of retained_ objects
+    auto etained = retainedObjects_.find(handle);
+    if (retained_ != retainedObjects_.end()) retainedObjects_.erase(retained_);
 
         // mark for pending collection
 #ifndef KAI_USE_TRICOLOR
-    _deathRow.insert(handle);
+    deathRow_.insert(handle);
 #endif
 #endif
 }
@@ -311,7 +311,7 @@ void Registry::Delete(Object const &object) {
 
 Pointer<ClassBase const *> Registry::AddClass(Type::Number N,
                                               ClassBase const *K) {
-    _classes[N.ToInt()] = K;
+    classes_[N.ToInt()] = K;
     return Pointer<ClassBase const *>();
 }
 
@@ -324,18 +324,18 @@ bool Registry::Pin(Handle) { return false; }
 bool Registry::Unpin(Handle) { return false; }
 
 void Registry::GarbageCollect() {
-    if (!_tree) {
+    if (!tree_) {
         KAI_TRACE_WARN() << "GC requested with no tree";
         return;
     }
 
-    GarbageCollect(_tree->GetRoot());
+    GarbageCollect(tree_->GetRoot());
 }
 
 Object Registry::NewFromClass(const ClassBase *klass) {
     if (klass == nullptr) KAI_THROW_1(UnknownClass<>, "NULL Class");
 
-    const Handle handle(_nextHandle.NextValue());
+    const Handle handle(nextHandle_.NextValue());
     StorageBase *base = nullptr;
     base = klass->NewStorage(this, handle);
 
@@ -347,7 +347,7 @@ Object Registry::NewFromClass(const ClassBase *klass) {
     base->SetColor(ObjectColor::White);
     base->SetMarked(false);
 
-    _instances[handle] = base;
+    instances_[handle] = base;
 
     klass->Create(*base);
     return Object(ObjectConstructParams(this, klass, handle));
@@ -389,7 +389,7 @@ void Registry::GarbageCollect(Object root) {
     AddRoot(root);
     TriColor();
 #else
-    MarkSweepAndDestroy(_root);
+    MarkSweepAndDestroy(root_);
 #endif
 }
 
@@ -409,9 +409,9 @@ void Registry::TriColor() {
     const int MaxCycles = 17;
 
     if (gc_trace_level >= 1)
-        KAI_TRACE_3(static_cast<int>(_instances.size()),
-                    static_cast<int>(_grey.size()),
-                    static_cast<int>(_white.size()));
+        KAI_TRACE_3(static_cast<int>(instances_.size()),
+                    static_cast<int>(grey_.size()),
+                    static_cast<int>(white_.size()));
 
     int cycle = 0;
     for (; cycle < MaxCycles; ++cycle) {
@@ -419,14 +419,14 @@ void Registry::TriColor() {
         if (gc_trace_level > 2) TraceTriColor();
 #endif
 
-        if (_grey.empty()) {
+        if (grey_.empty()) {
             ReleaseWhite();
             break;
         }
 
-        auto iterator = _grey.begin();
+        auto iterator = grey_.begin();
         const Handle handle = *iterator;
-        _grey.erase(iterator);
+        grey_.erase(iterator);
         StorageBase *base = GetStorageBase(handle);
         if (base == nullptr) continue;
 
@@ -438,11 +438,11 @@ void Registry::TriColor() {
 }
 
 void Registry::ReleaseWhite() {
-    // Make a copy of the _white set to avoid mutation while iterating.
+    // Make a copy of the white_ set to avoid mutation while iterating.
     // Yes, this is expensive and is a good candidate to use Monotonic memory
     // allocation.
-    std::vector<Handle> to_delete(_white.begin(), _white.end());
-    _white.clear();
+    std::vector<Handle> to_delete(white_.begin(), white_.end());
+    white_.clear();
 
     for (auto const &handle : to_delete) DestroyObject(handle);
 }
@@ -467,13 +467,13 @@ bool Registry::SetColor(StorageBase &base, ObjectColor::Color color) {
     Handle handle = base.GetHandle();
     switch (color) {
         case ObjectColor::White:
-            RemoveFromSet(_grey, handle);
-            _white.insert(handle);
+            RemoveFromSet(grey_, handle);
+            white_.insert(handle);
             break;
 
         case ObjectColor::Grey:
-            RemoveFromSet(_white, handle);
-            _grey.insert(handle);
+            RemoveFromSet(white_, handle);
+            grey_.insert(handle);
             break;
 
         case ObjectColor::Black:
@@ -484,8 +484,8 @@ bool Registry::SetColor(StorageBase &base, ObjectColor::Color color) {
 }
 
 void Registry::SetTree(Tree &tree) {
-    this->_tree = &tree;
-    AddRoot(this->_tree->GetRoot());
+    this->tree_ = &tree;
+    AddRoot(this->tree_->GetRoot());
 }
 
 template <class II, class T, class Pred>
@@ -504,8 +504,8 @@ bool SameHandle(Object const &A, Object const &B) {
 void Registry::AddRoot(Object const &root) {
     if (!root.Exists()) return;
 
-    if (find(_roots.begin(), _roots.end(), root, SameHandle) == _roots.end())
-        _roots.push_back(root);
+    if (find(roots_.begin(), roots_.end(), root, SameHandle) == roots_.end())
+        roots_.push_back(root);
 
     SetColor(root.GetStorageBase(), ObjectColor::Grey);
 }
@@ -530,7 +530,7 @@ bool Registry::IsWatching(Handle handle) const {
 }
 
 void Registry::WatchAllTypes() {
-    for (auto klass : _classes)
+    for (auto klass : classes_)
         if (klass) WatchType(klass->GetTypeNumber());
 }
 
@@ -547,8 +547,8 @@ void Registry::WatchType(Type::Number N, bool watch) {
 }
 
 void Registry::TraceSet(Registry::ColoredSet const &set,
-                        const char *_name) const {
-    KAI_TRACE() << _name << "(" << (int)set.size() << "): ";
+                        const char *name_) const {
+    KAI_TRACE() << name_ << "(" << (int)set.size() << "): ";
     if (gc_trace_level > 2) {
         for (auto handle : set) {
             Object Q = GetObject(handle);
@@ -567,12 +567,12 @@ void Registry::TraceTriColor() const {
 }
 
 void Registry::TraceGCCounts() const {
-    KAI_TRACE_3((int)_instances.size(), (int)_grey.size(), (int)_white.size());
+    KAI_TRACE_3((int)instances_.size(), (int)grey_.size(), (int)white_.size());
 }
 
-void Registry::TraceGrey() const { TraceSet(_grey, "***GREY*** "); }
+void Registry::TraceGrey() const { TraceSet(grey_, "***GREY*** "); }
 
-void Registry::TraceWhite() const { TraceSet(_white, "***WHITE*** "); }
+void Registry::TraceWhite() const { TraceSet(white_, "***WHITE*** "); }
 
 #endif
 

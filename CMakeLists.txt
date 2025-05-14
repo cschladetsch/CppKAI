@@ -1,14 +1,35 @@
 cmake_minimum_required(VERSION 3.28...3.30)
 
+# KAI Project Build Configuration
+# -------------------------------
+# - Uses Ninja by default (override with -DBUILD_GCC=ON)
+# - Defaults to C++23 standard
+# - Outputs all build artifacts to /Bin directory
+
+# Set the default generator to Ninja unless BUILD_GCC is set
+if(NOT DEFINED BUILD_GCC)
+    # Ensure Ninja is used as the default generator
+    if(NOT CMAKE_GENERATOR)
+        set(CMAKE_GENERATOR "Ninja" CACHE INTERNAL "Generator used by CMake")
+        message(STATUS "Using Ninja generator by default (override with -DBUILD_GCC=ON)")
+    endif()
+else()
+    message(STATUS "Using default generator (BUILD_GCC is set)")
+endif()
+
 project(KAI)
 
-# Set the compiler to GCC
-#set(CMAKE_C_COMPILER /usr/bin/gcc)
-#set(CMAKE_CXX_COMPILER /usr/bin/g++)
+# Set the C++ standard to C++23 as default for all targets
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Set the C++ standard
-#set(CMAKE_CXX_STANDARD 20)
-#set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# Define global log directory relative to KAI_HOME
+set(KAI_LOG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Logs")
+# Create the directory at configure time if it doesn't exist
+execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${KAI_LOG_DIR})
+# Define as a compile-time definition with proper escaping for C++23
+add_definitions(-DKAI_LOG_DIR="${KAI_LOG_DIR}")
 
 # Ensure the global project uses folders
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -39,10 +60,18 @@ set(INCLUDE_HOME ${KAI_HOME}/Include)
 set(EXTERNAL ${KAI_HOME}/Ext)
 set(dir ${KAI_HOME})
 
-# Set output directories
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${dir}/Lib")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${dir}/Lib")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${dir}/Bin")
+# Set output directories - everything to Bin for simplicity
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${BIN_HOME}")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${BIN_HOME}")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${BIN_HOME}")
+
+# Also set per-configuration output directories
+foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
+    string(TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} "${BIN_HOME}")
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG} "${BIN_HOME}")
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} "${BIN_HOME}")
+endforeach()
 
 include_directories(${KAI_HOME}/Include)
 
@@ -50,8 +79,32 @@ include_directories(${KAI_HOME}/Include)
 link_directories(${HOME}/lib /usr/local/lib)
 link_directories(${KAI_HOME}/Lib/Debug)
 
-# Compiler warnings to ignore
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wno-deprecated -Wno-switch")
+# Modern C++23 compiler flags
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    # Enable modern C++ features and warnings
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall")
+    
+    # Disable specific warnings that are too noisy in legacy code
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated -Wno-switch -Wno-comment -Wno-reorder")
+    
+    # Disable pedantic warnings for now as the codebase has many legacy issues
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-parameter -Wno-missing-field-initializers")
+    
+    # Disable additional warnings seen during build
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas -Wno-unused-value -Wno-unused-but-set-variable")
+    
+    # Add backward compatibility for format library - use C++20 std::format
+    add_definitions(-D_GLIBCXX_USE_CXX11_ABI=1)
+    
+    # Add format-like behavior even in older compilers
+    add_definitions(-DKAI_FORMAT_COMPATIBLE)
+    
+    # Modern features
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        # GCC-specific flags for C++23
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fconcepts-diagnostics-depth=3")
+    endif()
+endif()
 
 # Add common defines
 add_definitions(-DKAI_USE_NAMESPACES)

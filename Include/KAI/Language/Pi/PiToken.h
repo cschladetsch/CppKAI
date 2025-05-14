@@ -137,8 +137,8 @@ struct PiTokenEnumType {
 
         Modulo,  // % operator
 
-        Self,  // _current continuation 'self'
-        This,  // _current _scope '.'
+        Self,  // current_ continuation 'self'
+        This,  // current_ _scope '.'
     };
 
     struct Type : TokenBase<PiTokenEnumType> {

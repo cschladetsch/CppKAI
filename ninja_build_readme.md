@@ -1,117 +1,94 @@
-# Ninja Build System Integration
+# KAI Project Ninja Build System
 
-This documentation describes the changes made to support the Ninja build system for the KAI project.
+## Overview
 
-## Changes Made
+This document describes the ninja build system configuration for the KAI project, which has been updated to use C++23 features and improve logging.
 
-1. Modified `./r` script to use Ninja instead of Make
-   - Now uses a separate `build_ninja` directory to avoid conflicts
-   - Improved error handling and status reporting
-   - Updated path resolution for finding the Console executable
+## Build Configuration
 
-2. Created a new `./n` script for incremental Ninja builds
-   - Preserves the build directory between runs
-   - Supports passing arguments directly to Ninja
-   - Provides better status reporting
+### C++23 Standard
+The project now uses the C++23 standard by default, enabling modern C++ features:
+- `std::format` for type-safe string formatting
+- Enhanced template metaprogramming with improved concepts support
+- More robust and safer coding patterns
+- Better compiler error diagnostics for templates
 
-3. Created a new `./nt` script for running specific tests
-   - Allows building and running a specific test (e.g., `./nt TestPi`)
-   - Shows colorized test results
-   - Lists available tests when no arguments are provided
-
-4. Fixed several compilation errors:
-   - Changed `SetProperty` calls to `SetPropertyValue` with proper Label objects
-   - Fixed scope brackets in switch-case statements to prevent jumping over variable initialization
-   - Temporarily disabled parent-child navigation in the AST (needs proper implementation)
-   - Updated Console.cpp to use simplified language detection
-
-## Usage
-
-### Full Clean Build
-
-To perform a full clean build of the project:
-
+### Ninja Build System
+We use the Ninja build system for faster compilation. You can use the provided build script:
 ```bash
-./r
+# Make the script executable if needed
+chmod +x build_with_ninja.sh
+
+# Run the script to build with Ninja
+./build_with_ninja.sh
 ```
 
-This will:
-1. Remove and recreate the `build_ninja` directory
-2. Run CMake with the Ninja generator
-3. Build the project with Ninja
-4. Run the tests
-5. Launch the Console application
-
-### Incremental Build
-
-For faster incremental builds during development:
-
+Or manually run the build commands:
 ```bash
-./n
+mkdir -p ninja_build
+cd ninja_build
+cmake ..  # Ninja is now the default generator
+ninja -j$(nproc)
 ```
 
-This will:
-1. Use the existing `build_ninja` directory (creating if it doesn't exist)
-2. Build only what has changed since the last build
-3. Optionally run the tests if the build succeeds
+### Log Directory Structure
+All logs are written to the `Logs` directory in the project root:
+- `kai.log` - Main application log
+- `errors.log` - Error-level messages 
+- Module-specific logs (e.g., `rho.log`)
 
-You can also pass specific targets to build:
+### Output Directory
+All build outputs (executables, libraries) are placed in the `Bin` directory in the project root for easier access.
 
+## Building Without Ninja
+
+If you want to use the default build system instead of Ninja:
 ```bash
-./n Console
-./n TestPi
+mkdir -p build
+cd build
+cmake -DBUILD_GCC=ON ..
+make
 ```
 
-### Running Specific Tests
+## Compiler Flags
 
-To build and run just one test:
+The build system includes special compiler flags to handle legacy code:
+```
+# Basic warning suppressions
+-Wno-deprecated -Wno-switch -Wno-comment -Wno-reorder -Wno-unused-parameter -Wno-missing-field-initializers
 
-```bash
-./nt TestPi
+# Additional suppressions for smooth C++23 builds
+-Wno-unknown-pragmas -Wno-unused-value -Wno-unused-but-set-variable
 ```
 
-This will:
-1. Build only the specified test
-2. Run the test and show results
-3. Return the test exit code
+GCC-specific flags are also included for better C++23 support:
+```
+-fconcepts-diagnostics-depth=3  # Better template error messages
+```
 
-## Remaining Issues
+We've also added a compatibility define for format support:
+```
+-DKAI_FORMAT_COMPATIBLE  # Enable std::format compatibility
+```
 
-Several compilation issues still need to be addressed:
+## Best Practices
 
-1. TestForLoopSemicolons.cpp and other backup test files have include path issues:
-   ```
-   fatal error: ../../Include/TestLangCommon.h: No such file or directory
-   ```
+When developing with this configuration:
 
-2. BinaryStream operator errors in OpCodes.h:
-   ```
-   error: no match for 'operator>>' (operand types are 'kai::BinaryStream' and 'kai::Operation')
-   ```
+1. **Log Usage**: 
+   - Use the Logger class for all logging
+   - Log errors with appropriate severity
+   - Check the `Logs` directory for runtime information
 
-3. Remaining issues with parent-child navigation in RhoTranslator.cpp:
-   ```
-   class kai::AstNodeBase<...> has no member named 'GetParent'
-   ```
+2. **Modern C++ Usage**:
+   - Leverage C++23 features like `std::format` and standardized utilities
+   - Replace string concatenation with `std::format`
+   - Use structured bindings and other modern features
+   - Take advantage of improved concepts and template metaprogramming
 
-4. Format string warnings in PiTranslator.cpp:
-   ```
-   warning: '%s' directive output may be truncated writing up to 4095 bytes
-   ```
+3. **Building**:
+   - Prefer the Ninja build system for faster compile times
+   - Run builds from the `ninja_build` directory
+   - Check compiler output carefully despite warning suppressions
 
-## Benefits of Ninja
-
-1. Faster build times compared to Make
-2. Better parallelization of compilation tasks
-3. More efficient dependency tracking
-4. Consistent build system across platforms
-
-## Future Work
-
-1. Add proper parent-child navigation to the AST nodes to support "pi { ... }" blocks
-2. Fix compilation issues with test files in the backups directory
-3. Implement proper property access for Continuation objects
-4. Fix format string truncation warnings
-5. Consider adding a CMake option to specify the build system
-6. Add support for build profiles (Debug/Release)
-7. Fix the AST node navigation system
+For more detailed information, see the accompanying `ninja_build_guide.md` file.

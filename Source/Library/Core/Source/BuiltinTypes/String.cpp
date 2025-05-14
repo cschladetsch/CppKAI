@@ -8,59 +8,59 @@
 KAI_BEGIN
 
 String String::LowerCase() const {
-    String result((int)_string.size(), ' ');
-    std::transform(_string.begin(), _string.end(), result.begin(), ::tolower);
+    String result((int)string_.size(), ' ');
+    std::transform(string_.begin(), string_.end(), result.begin(), ::tolower);
     return result;
 }
 
 String String::UpperCase() const {
-    String result((int)_string.size(), ' ');
-    std::transform(_string.begin(), _string.end(), result.begin(), ::toupper);
+    String result((int)string_.size(), ' ');
+    std::transform(string_.begin(), string_.end(), result.begin(), ::toupper);
     return result;
 }
 
 String String::Capitalise() const {
-    // if (_string.empty())
+    // if (string_.empty())
     //     return String();
 
-    // String result = _string;
+    // String result = string_;
     // result[0] = (String::Char)::toupper(result[0]);
     // return result;
     KAI_NOT_IMPLEMENTED();
 }
 
 bool String::Contains(String const &substr) const {
-    return _string.find(substr._string) != std::string::npos;
+    return string_.find(substr.string_) != std::string::npos;
 }
 
 bool String::StartsWith(String const &prefix) const {
-    if (prefix._string.size() > _string.size()) return false;
-    return _string.compare(0, prefix._string.size(), prefix._string) == 0;
+    if (prefix.string_.size() > string_.size()) return false;
+    return string_.compare(0, prefix.string_.size(), prefix.string_) == 0;
 }
 
 void String::ReplaceFirst(String const &what, String const &with) {
-    size_t pos = _string.find(what._string);
+    size_t pos = string_.find(what.string_);
     if (pos != std::string::npos)
-        _string.replace(pos, what._string.length(), with._string);
+        string_.replace(pos, what.string_.length(), with.string_);
 }
 
 void String::ReplaceLast(String const &what, String const &with) {
-    size_t pos = _string.rfind(what._string);
+    size_t pos = string_.rfind(what.string_);
     if (pos != std::string::npos)
-        _string.replace(pos, what._string.length(), with._string);
+        string_.replace(pos, what.string_.length(), with.string_);
 }
 
 void String::RemoveAll(String const &what) {
     size_t pos = 0;
-    while ((pos = _string.find(what._string, pos)) != std::string::npos) {
-        _string.erase(pos, what._string.length());
+    while ((pos = string_.find(what.string_, pos)) != std::string::npos) {
+        string_.erase(pos, what.string_.length());
     }
 }
 
 bool String::EndsWith(String const &suffix) const {
-    if (suffix._string.size() > _string.size()) return false;
-    return _string.compare(_string.size() - suffix._string.size(),
-                           suffix._string.size(), suffix._string) == 0;
+    if (suffix.string_.size() > string_.size()) return false;
+    return string_.compare(string_.size() - suffix.string_.size(),
+                           suffix.string_.size(), suffix.string_) == 0;
 }
 
 BinaryStream &operator<<(BinaryStream &S, const String &T) {

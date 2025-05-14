@@ -11,21 +11,21 @@ class Tree {
     typedef std::list<Object> SearchPath;
 
    private:
-    SearchPath _path;
-    Object _root, _scope;
-    Pathname _current;
+    SearchPath path_;
+    Object root_, scope_;
+    Pathname current_;
 
    public:
-    void SetRoot(const Object &Q) { _root = Q; }
+    void SetRoot(const Object &Q) { root_ = Q; }
     void AddSearchPath(const Pathname &);
     void AddSearchPath(const Object &);
 
     Object Resolve(const Pathname &) const;
     Object Resolve(const Label &) const;
 
-    Object GetRoot() const { return _root; }
-    Object GetScope() const { return _scope; }
-    const SearchPath &GetSearchPath() const { return _path; }
+    Object GetRoot() const { return root_; }
+    Object GetScope() const { return scope_; }
+    const SearchPath &GetSearchPath() const { return path_; }
 
     void SetScope(const Object &);
     void SetScope(const Pathname &);

@@ -10,17 +10,17 @@ void RegisterClass(Registry &reg, ClassBase const &klass, Object const &root,
 }
 
 ClassBase::~ClassBase() {
-    for (const auto &[_, snd] : _methods) delete snd;
+    for (const auto &[_, snd] : methods_) delete snd;
 
-    for (const auto &[_, snd] : _properties) delete snd;
+    for (const auto &[_, snd] : properties_) delete snd;
 }
 
 void ClassBase::SetReferencedObjectsColor(StorageBase &base,
                                           ObjectColor::Color color,
                                           HandleSet &handles) const {
-    if (_properties.empty()) return;
+    if (properties_.empty()) return;
 
-    for (const auto &[_, propertyBase] : _properties) {
+    for (const auto &[_, propertyBase] : properties_) {
         PropertyBase const &prop = *propertyBase;
         if (!prop.IsSystemType()) continue;
 
@@ -33,14 +33,14 @@ void ClassBase::SetReferencedObjectsColor(StorageBase &base,
 }
 
 void ClassBase::SetMarked(StorageBase &Q, bool M) const {
-    for (auto const &[_, property] : _properties) property->SetMarked(Q, M);
+    for (auto const &[_, property] : properties_) property->SetMarked(Q, M);
 
     SetMarked2(Q, M);
 }
 
 void ClassBase::MakeReachableGrey(StorageBase &base) const {
-    if (_properties.empty()) return;
-    for (auto const &[_, prop] : _properties) {
+    if (properties_.empty()) return;
+    for (auto const &[_, prop] : properties_) {
         if (!prop->IsSystemType()) continue;
 
         auto property = prop->GetObject(base);
@@ -55,9 +55,9 @@ void ClassBase::MakeReachableGrey(StorageBase &base) const {
 
 void ClassBase::GetPropertyObjects(StorageBase &object,
                                    ObjectList &contained) const {
-    if (_properties.empty()) return;
+    if (properties_.empty()) return;
 
-    for (auto const &[_, prop] : _properties) {
+    for (auto const &[_, prop] : properties_) {
         if (!prop->IsSystemType()) continue;
 
         Object property = prop->GetObject(object);

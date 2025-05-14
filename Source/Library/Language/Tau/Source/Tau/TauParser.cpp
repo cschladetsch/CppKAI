@@ -144,7 +144,7 @@ bool TauParser::Field(AstNodePtr klass, TokenNode const &ty,
 void TauParser::AddArg(AstNodePtr parent) {
     auto arg = NewNode(AstEnum::Argument);
     arg->Add(Consume());  // type
-    arg->Add(Consume());  // _name
+    arg->Add(Consume());  // name_
     parent->Add(arg);
 }
 

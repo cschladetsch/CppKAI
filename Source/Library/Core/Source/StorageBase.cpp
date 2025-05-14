@@ -68,7 +68,7 @@ void StorageBase::Set(const Label &name, Object const &child) {
     bool clean = base.IsClean();
     bool konst = base.IsConst();
     bool managed = base.IsManaged();
-    base.switches = switches;  // inherit _properties of parent...
+    base.switches = switches;  // inherit properties_ of parent...
 
     if (clean)  // ...but preserve cleanliness
         base.switches |= IObject::Clean;
@@ -180,10 +180,10 @@ void StorageBase::RemovedFromContainer(Object const &container) {
             iter = containers.erase(iter);
             removed = true;
             if (parent_is_black) {
-                // if removed from container and parent is _black early out
+                // if removed from container and parent is black_ early out
                 break;
             } else {
-                // we need to check for other _black parents to enforce the
+                // we need to check for other black_ parents to enforce the
                 // TriColor invariant
                 continue;
             }
@@ -192,7 +192,7 @@ void StorageBase::RemovedFromContainer(Object const &container) {
         if (base->IsBlack()) {
             color = ObjectColor::Grey;
             parent_is_black = true;
-            // if any parent container is _black, and we have already removed
+            // if any parent container is black_, and we have already removed
             // from the given container, we can early out
             if (removed) break;
         }
@@ -248,7 +248,7 @@ void StorageBase::Delete() {
     StorageBase *parent = GetParentBasePtr();
     if (parent != 0) parent->Remove(GetLabel());
 
-    // Set this and all referent objects to be _white, and mark it for deletion.
+    // Set this and all referent objects to be white_, and mark it for deletion.
     SetColorRecursive(ObjectColor::White);
     SetMarked(true);
 }

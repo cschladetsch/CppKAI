@@ -30,17 +30,17 @@ class ClassBase {
     typedef std::list<Object> ObjectList;
 
    protected:
-    Label _name;
-    Methods _methods;
-    Properties _properties;
+    Label name_;
+    Methods methods_;
+    Properties properties_;
     Type::Number _type_number;
 
    public:
     ClassBase(Label const &name, Type::Number T)
-        : _name(name), _type_number(T) {}
+        : name_(name), _type_number(T) {}
     virtual ~ClassBase();
 
-    const Label &GetName() const { return _name; }
+    const Label &GetName() const { return name_; }
     const Label &GetLabel() const { return GetName(); }
     Type::Number GetTypeNumber() const { return _type_number; }
 
@@ -50,27 +50,27 @@ class ClassBase {
 
     void GetPropertyObjects(StorageBase &object, ObjectList &contained) const;
 
-    /// _methods
-    void AddMethod(const Label &L, MethodBase *M) { _methods[L] = M; }
-    const Methods &GetMethods() const { return _methods; }
+    /// methods_
+    void AddMethod(const Label &L, MethodBase *M) { methods_[L] = M; }
+    const Methods &GetMethods() const { return methods_; }
     MethodBase *GetMethod(const Label &L) const {
-        const auto found = _methods.find(L);
-        return found == _methods.end() ? nullptr : found->second;
+        const auto found = methods_.find(L);
+        return found == methods_.end() ? nullptr : found->second;
     }
 
-    /// _properties
+    /// properties_
     void AddProperty(Label const &label, PropertyBase *property) {
-        _properties[label] = property;
+        properties_[label] = property;
     }
     bool HasProperty(Label const &label) const {
-        return _properties.find(label) != _properties.end();
+        return properties_.find(label) != properties_.end();
     }
 
-    Properties const &GetProperties() const { return _properties; }
+    Properties const &GetProperties() const { return properties_; }
 
     PropertyBase const &GetProperty(Label const &L) const {
-        auto found = _properties.find(L);
-        if (found == _properties.end())
+        auto found = properties_.find(L);
+        if (found == properties_.end())
             KAI_THROW_2(UnknownProperty, GetName(), L);
         return *found->second;
     }

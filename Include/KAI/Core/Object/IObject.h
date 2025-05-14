@@ -45,7 +45,7 @@ class IObject {
     virtual void SetManaged(bool = true) = 0;
     virtual void SetClean(bool = true) = 0;
 
-    /* apparently, none of these _methods are used...
+    /* apparently, none of these methods_ are used...
     virtual void SetSwitches(int) = 0;
     virtual void SetConst() = 0;
     virtual int GetSwitches() const = 0;

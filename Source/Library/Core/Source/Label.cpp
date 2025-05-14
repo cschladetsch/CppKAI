@@ -3,16 +3,16 @@
 KAI_BEGIN
 
 String Label::ToString() const {
-    if (!_quoted) return _value;
+    if (!_quoted) return value_;
 
-    return String("'") + _value;
+    return String("'") + value_;
 }
 
 void Label::FromString2(String text) { FromString(text); }
 
 void Label::FromString(const Value &S) {
     _quoted = false;
-    _value = "";
+    value_ = "";
     if (S.empty()) return;
 
     const String::Char *str = S.c_str();
@@ -21,7 +21,7 @@ void Label::FromString(const Value &S) {
         str++;
     }
 
-    _value = str;
+    value_ = str;
 }
 
 StringStream &operator<<(StringStream &S, const Label &L) {

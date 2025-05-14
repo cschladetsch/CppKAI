@@ -42,10 +42,10 @@ struct GenerateProcess : Process {
     virtual string ArgType(string const &text) const = 0;
     virtual string ReturnType(string const &text) const = 0;
 
-    stringstream &Output() { return _str; }
+    stringstream &Output() { return str_; }
 
    private:
-    stringstream _str;
+    stringstream str_;
     int _indentation = 0;
 };
 }  // namespace Generate

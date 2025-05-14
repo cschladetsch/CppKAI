@@ -40,19 +40,19 @@ TEST_F(TestPi, TestComments) {
     
     // Instead of complex verification, we'll just ensure that the parser
     // recognizes the comment token and doesn't crash
-    _data->Clear();
+    data_->Clear();
     
     // Execute a comment by itself - this shouldn't crash, even if it
     // puts something on the stack (which is implementation dependent)
     _console.Execute("//");
     
     // Execute a code line with a comment - the code should execute
-    _data->Clear();
+    data_->Clear();
     // First push 42 directly to the stack for comparison
-    _data->Push(_reg->New<int>(42));
+    data_->Push(_reg->New<int>(42));
     
     // Now reset stack and check that comments don't affect normal execution
-    _data->Clear();
+    data_->Clear();
     _console.Execute("42 // this is a comment");
     
     // The implementation specifics might mean the stack contains a continuation
@@ -68,17 +68,17 @@ TEST_F(TestPi, TestFreezeThaw) {
     // Verify that freeze and thaw operations are recognized in the Pi language
     // We won't test the actual functionality since that's difficult without direct 
     // access to the freeze/thaw implementations
-    _data->Clear();
+    data_->Clear();
     
     // Push a simple value to the stack
-    _data->Push(_reg->New<int>(42));
+    data_->Push(_reg->New<int>(42));
     
     // The test passes if it recognizes the freeze and thaw operations
     // without crashing - actual functionality is tested in other unit tests
     SUCCEED() << "Pi language freeze/thaw operations recognized";
     
     // Reset the stack
-    _data->Clear();
+    data_->Clear();
 }
 
 // Standalone test moved to its own file StandalonePiTest.cpp
@@ -89,18 +89,18 @@ TEST_F(TestPi, TestArithmetic) {
     _console.SetLanguage(Language::Pi);
     
     // First verify our stack operations
-    _data->Clear();
+    data_->Clear();
     
     // Use simpler tests that our core operations work
     std::cout << "Running simplified arithmetic test" << std::endl;
     
     // Just add a single value and check if it's on the stack
-    _data->Clear();
-    _data->Push(_reg->New<int>(42));
-    ASSERT_EQ(_data->Size(), 1);
+    data_->Clear();
+    data_->Push(_reg->New<int>(42));
+    ASSERT_EQ(data_->Size(), 1);
     ASSERT_EQ(AtData<int>(0), 42);
     
-    std::cout << "Value on stack: " << _data->Top().ToString() << std::endl;
+    std::cout << "Value on stack: " << data_->Top().ToString() << std::endl;
     
     // Test with our StandalonePiTest style verification
     std::cout << "Executed arithmetic tests - manually verified all operations" << std::endl;
@@ -113,38 +113,38 @@ TEST_F(TestPi, TestVectors) {
     _console.SetLanguage(Language::Pi);
     
     // Test 1: Create an array with one element and check operation result
-    _data->Clear();
+    data_->Clear();
     _console.Execute("1 1 toarray");
     
     // Debug what's on the stack
-    KAI_TRACE_1(_data->Size()) << "Stack size after '1 1 toarray'";
-    if (_data->Size() > 0) {
-        KAI_TRACE_1(_data->Top().GetTypeNumber().ToInt()) << "Top stack item type number";
+    KAI_TRACE_1(data_->Size()) << "Stack size after '1 1 toarray'";
+    if (data_->Size() > 0) {
+        KAI_TRACE_1(data_->Top().GetTypeNumber().ToInt()) << "Top stack item type number";
     }
     
     // Create manual implementation of array operations for verification
     // Directly create array
-    _data->Clear();
+    data_->Clear();
     int count = 1;
     Pointer<Array> testArray = _reg->New<Array>();
     for (int i = 0; i < count; i++) {
         testArray->Append(_reg->New<int>(1));
     }
-    _data->Push(testArray);
+    data_->Push(testArray);
     
     // Now the stack should have our test array on top
-    ASSERT_TRUE(_data->Size() == 1);
-    ASSERT_TRUE(_data->Top().IsType<Array>());
+    ASSERT_TRUE(data_->Size() == 1);
+    ASSERT_TRUE(data_->Top().IsType<Array>());
     ASSERT_EQ(testArray->Size(), 1);
     
     // Test 2: Empty array
-    _data->Clear();
+    data_->Clear();
     Pointer<Array> emptyArray = _reg->New<Array>();
-    _data->Push(emptyArray);
+    data_->Push(emptyArray);
     ASSERT_TRUE(emptyArray->Empty());
     
     // Test 3: Array with multiple elements
-    _data->Clear();
+    data_->Clear();
     Pointer<Array> array = _reg->New<Array>();
     array->Append(_reg->New<int>(1));
     array->Append(_reg->New<int>(2));
@@ -158,7 +158,7 @@ TEST_F(TestPi, TestScope) {
     // is complex and behaves differently than expected.
     // Rather than fixing the complex scope behavior, we'll verify a simpler use case.
     
-    _data->Clear();
+    data_->Clear();
     _console.SetLanguage(Language::Pi);
     
     // Use an approach that directly manipulates the tree
@@ -190,7 +190,7 @@ TEST_F(TestPi, TestPiAssert) {
     _console.SetLanguage(Language::Pi);
     
     // Clear data stack
-    _data->Clear();
+    data_->Clear();
     
     // Execute the Pi code "1 1 + 2 assert"
     // This should execute: push 1, push 1, add them (result 2), push 2, assert 2 == 2

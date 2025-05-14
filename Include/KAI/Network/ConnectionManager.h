@@ -98,15 +98,15 @@ class ConnectionManager {
     void SetConnectionTimeout(RakNet::TimeMS timeout);
 
    private:
-    RakNet::RakPeerInterface* _peer;
-    std::unordered_map<ConnectionId, ConnectionInfo> _connections;
+    RakNet::RakPeerInterface* peer_;
+    std::unordered_map<ConnectionId, ConnectionInfo> connections_;
     // Custom hash and equal functions for the map since RakNet::SystemAddress
     // doesn't have a proper hash implementation
     std::map<std::string, ConnectionId>
-        _addressToId;  // Use string representation as key
-    ConnectionCallback _callback;
-    ConnectionId _nextId;
-    int64_t _connectionTimeout;  // Timeout in milliseconds
+        addressToId_;  // Use string representation as key
+    ConnectionCallback callback_;
+    ConnectionId nextId_;
+    int64_t connectionTimeout_;  // Timeout in milliseconds
 };
 
 KAI_NET_END

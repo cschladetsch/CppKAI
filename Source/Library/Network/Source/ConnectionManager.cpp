@@ -9,41 +9,41 @@
 KAI_NET_BEGIN
 
 ConnectionManager::ConnectionManager(RakNet::RakPeerInterface* peer)
-    : _peer(peer),
-      _nextId(1),
-      _connectionTimeout(30000)  // 30 seconds timeout
+    : peer_(peer),
+      nextId_(1),
+      connectionTimeout_(30000)  // 30 seconds timeout
 {}
 
 ConnectionManager::~ConnectionManager() {
     // Clear all connections
-    _connections.clear();
-    _addressToId.clear();
+    connections_.clear();
+    addressToId_.clear();
 }
 
 ConnectionManager::ConnectionId ConnectionManager::AddConnection(
     const RakNet::SystemAddress& address) {
-    if (!_peer) return 0;
+    if (!peer_) return 0;
 
     // Convert SystemAddress to string for map lookup
     std::string addrStr = address.ToString();
 
     // Check if we already have this connection
-    auto it = _addressToId.find(addrStr);
-    if (it != _addressToId.end()) {
+    auto it = addressToId_.find(addrStr);
+    if (it != addressToId_.end()) {
         return it->second;
     }
 
     // Create a new connection
-    ConnectionId id = _nextId++;
+    ConnectionId id = nextId_++;
     ConnectionInfo info;
     info.address = address;
     info.state = ConnectionState::Connected;
     info.lastActivity = RakNet::GetTimeMS();
-    info.ping = _peer->GetAveragePing(address);
+    info.ping = peer_->GetAveragePing(address);
 
     // Add to our maps
-    _connections[id] = info;
-    _addressToId[addrStr] = id;
+    connections_[id] = info;
+    addressToId_[addrStr] = id;
 
     // Create log message and log it
     std::string logMessage =
@@ -55,14 +55,14 @@ ConnectionManager::ConnectionId ConnectionManager::AddConnection(
 }
 
 void ConnectionManager::RemoveConnection(ConnectionId id) {
-    auto it = _connections.find(id);
-    if (it != _connections.end()) {
+    auto it = connections_.find(id);
+    if (it != connections_.end()) {
         // Remove from address map
         std::string addrStr = it->second.address.ToString();
-        _addressToId.erase(addrStr);
+        addressToId_.erase(addrStr);
 
         // Remove from connections
-        _connections.erase(it);
+        connections_.erase(it);
 
         // Log the removal
         std::string logMessage = "Removed connection " + std::to_string(id);
@@ -73,13 +73,13 @@ void ConnectionManager::RemoveConnection(ConnectionId id) {
 
 void ConnectionManager::RemoveConnection(const RakNet::SystemAddress& address) {
     std::string addrStr = address.ToString();
-    auto it = _addressToId.find(addrStr);
-    if (it != _addressToId.end()) {
+    auto it = addressToId_.find(addrStr);
+    if (it != addressToId_.end()) {
         ConnectionId id = it->second;
 
         // Remove from maps
-        _addressToId.erase(it);
-        _connections.erase(id);
+        addressToId_.erase(it);
+        connections_.erase(id);
 
         // Log the removal
         std::string logMessage = "Removed connection for " + addrStr;
@@ -89,22 +89,22 @@ void ConnectionManager::RemoveConnection(const RakNet::SystemAddress& address) {
 }
 
 void ConnectionManager::Update() {
-    if (!_peer) return;
+    if (!peer_) return;
 
     // Update ping times and check for timeouts
     RakNet::TimeMS currentTime = RakNet::GetTimeMS();
 
     std::vector<ConnectionId> timedOutConnections;
 
-    for (auto& pair : _connections) {
+    for (auto& pair : connections_) {
         ConnectionId id = pair.first;
         ConnectionInfo& info = pair.second;
 
         // Update ping time
-        info.ping = _peer->GetAveragePing(info.address);
+        info.ping = peer_->GetAveragePing(info.address);
 
         // Check for timeout
-        if (currentTime - info.lastActivity > _connectionTimeout) {
+        if (currentTime - info.lastActivity > connectionTimeout_) {
             timedOutConnections.push_back(id);
         }
     }
@@ -121,23 +121,23 @@ void ConnectionManager::Update() {
 }
 
 void ConnectionManager::UpdateActivity(ConnectionId id) {
-    auto it = _connections.find(id);
-    if (it != _connections.end()) {
+    auto it = connections_.find(id);
+    if (it != connections_.end()) {
         it->second.lastActivity = RakNet::GetTimeMS();
     }
 }
 
 void ConnectionManager::UpdateActivity(const RakNet::SystemAddress& address) {
     std::string addrStr = address.ToString();
-    auto it = _addressToId.find(addrStr);
-    if (it != _addressToId.end()) {
+    auto it = addressToId_.find(addrStr);
+    if (it != addressToId_.end()) {
         UpdateActivity(it->second);
     }
 }
 
 ConnectionState ConnectionManager::GetConnectionState(ConnectionId id) const {
-    auto it = _connections.find(id);
-    if (it != _connections.end()) {
+    auto it = connections_.find(id);
+    if (it != connections_.end()) {
         return it->second.state;
     }
     return ConnectionState::Disconnected;
@@ -145,8 +145,8 @@ ConnectionState ConnectionManager::GetConnectionState(ConnectionId id) const {
 
 void ConnectionManager::SetConnectionState(ConnectionId id,
                                            ConnectionState state) {
-    auto it = _connections.find(id);
-    if (it != _connections.end()) {
+    auto it = connections_.find(id);
+    if (it != connections_.end()) {
         it->second.state = state;
 
         // Log the state change
@@ -176,8 +176,8 @@ void ConnectionManager::SetConnectionState(ConnectionId id,
 }
 
 int ConnectionManager::GetPing(ConnectionId id) const {
-    auto it = _connections.find(id);
-    if (it != _connections.end()) {
+    auto it = connections_.find(id);
+    if (it != connections_.end()) {
         return it->second.ping;
     }
     return -1;
@@ -185,8 +185,8 @@ int ConnectionManager::GetPing(ConnectionId id) const {
 
 RakNet::SystemAddress ConnectionManager::GetSystemAddress(
     ConnectionId id) const {
-    auto it = _connections.find(id);
-    if (it != _connections.end()) {
+    auto it = connections_.find(id);
+    if (it != connections_.end()) {
         return it->second.address;
     }
     return RakNet::UNASSIGNED_SYSTEM_ADDRESS;
@@ -195,8 +195,8 @@ RakNet::SystemAddress ConnectionManager::GetSystemAddress(
 ConnectionManager::ConnectionId ConnectionManager::GetConnectionId(
     const RakNet::SystemAddress& address) const {
     std::string addrStr = address.ToString();
-    auto it = _addressToId.find(addrStr);
-    if (it != _addressToId.end()) {
+    auto it = addressToId_.find(addrStr);
+    if (it != addressToId_.end()) {
         return it->second;
     }
     return 0;  // 0 is invalid connection ID
@@ -205,18 +205,18 @@ ConnectionManager::ConnectionId ConnectionManager::GetConnectionId(
 std::vector<ConnectionManager::ConnectionId>
 ConnectionManager::GetAllConnections() const {
     std::vector<ConnectionId> result;
-    for (const auto& pair : _connections) {
+    for (const auto& pair : connections_) {
         result.push_back(pair.first);
     }
     return result;
 }
 
 size_t ConnectionManager::GetConnectionCount() const {
-    return _connections.size();
+    return connections_.size();
 }
 
 void ConnectionManager::SetConnectionTimeout(RakNet::TimeMS timeout) {
-    _connectionTimeout = timeout;
+    connectionTimeout_ = timeout;
 }
 
 KAI_NET_END

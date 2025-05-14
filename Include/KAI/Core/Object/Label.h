@@ -9,7 +9,7 @@ struct Label {
     typedef String Value;
 
    private:
-    Value _value;
+    Value value_;
     bool _quoted = false;
 
    public:
@@ -17,7 +17,7 @@ struct Label {
     explicit Label(const String::Char *S) { FromString(S); }
     explicit Label(const Value &S) { FromString(S); }
 
-    bool Empty() const { return _value.empty(); }
+    bool Empty() const { return value_.empty(); }
     bool Quoted() const { return _quoted; }
     void SetQuoted(bool q) { _quoted = q; }
 
@@ -25,7 +25,7 @@ struct Label {
     String ToString() const;
 
     void FromString2(Value S);
-    const Value &GetValue() const { return _value; }
+    const Value &GetValue() const { return value_; }
 
     friend bool operator<(const Label &A, const Label &B) {
         return A.ToString() < B.ToString();

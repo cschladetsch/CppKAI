@@ -26,7 +26,7 @@ TEST_F(TestMap, TestInsertDelete) {
     Pointer<Map> map = Reg().New<Map>();
     Pointer<Map> dangling = Reg().New<Map>();
 
-    // add the map to the _root of the object _tree, so it can be
+    // add the map to the _root of the object tree_, so it can be
     // found and hence not GC'd
     _root.Set("map", map);
     Reg().GarbageCollect();
@@ -58,7 +58,7 @@ TEST_F(TestMap, TestInsertDelete) {
 
     // now, neither the key nor value should exist,
     // but the map itself should exist because it was added
-    // to the _root of the _tree above
+    // to the _root of the tree_ above
     ASSERT_TRUE(map.Exists());
     ASSERT_FALSE(n.Exists());
     ASSERT_FALSE(found.Exists());
@@ -139,7 +139,7 @@ TEST_F(TestMap, TestBinaryStream) {
     // a BinaryPacket with a null Registry.
     //
     // There should be a way to inject custom code on construction. If it
-    // doesn't exist in the _current Traits system, it has to be added.
+    // doesn't exist in the current_ Traits system, it has to be added.
     //
     // The main functionality is to be able to pass arguments to base class
     // on construction...

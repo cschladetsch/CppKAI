@@ -41,10 +41,10 @@ struct ExecutorWindow {
     int WatchIndex = 0;
     
     // KAI console objects
-    Console _console;
-    Tree* _tree;
-    Executor* _exec;
-    Registry* _reg;
+    Console console_;
+    Tree* tree_;
+    Executor* exec_;
+    Registry* reg_;
 
     ExecutorWindow() {
         HistoryPos = -1;
@@ -52,10 +52,10 @@ struct ExecutorWindow {
         CurrentTab = ConsoleTab::Pi;
 
         // Initialize console with Pi language by default
-        _console.SetLanguage(CurrentLanguage);
-        _exec = &*_console.GetExecutor();
-        _reg = &_console.GetRegistry();
-        _tree = &_console.GetTree();
+        console_.SetLanguage(CurrentLanguage);
+        exec_ = &*console_.GetExecutor();
+        reg_ = &console_.GetRegistry();
+        tree_ = &console_.GetTree();
 
         // Initialize language-specific logs
         Items[Language::Pi] = vector<string>();
@@ -69,9 +69,9 @@ struct ExecutorWindow {
         DebugLog.push_back("Debugger initialized");
         
         // Register core types
-        _reg->AddClass<int>(Label("int"));
-        _reg->AddClass<bool>(Label("bool"));
-        _reg->AddClass<String>(Label("String"));
+        reg_->AddClass<int>(Label("int"));
+        reg_->AddClass<bool>(Label("bool"));
+        reg_->AddClass<String>(Label("String"));
     }
 
     void ClearLog(Language lang = Language::None) {
@@ -111,8 +111,8 @@ struct ExecutorWindow {
     void SwitchLanguage(Language lang) {
         if (CurrentLanguage != lang) {
             CurrentLanguage = lang;
-            _console.SetLanguage(CurrentLanguage);
-            _exec = &*_console.GetExecutor();
+            console_.SetLanguage(CurrentLanguage);
+            exec_ = &*console_.GetExecutor();
             
             // Clear the input buffer when switching languages
             InputBuf[0] = '\0';
@@ -187,7 +187,7 @@ struct ExecutorWindow {
         }
         ImGui::SameLine();
         if (ImGui::SmallButton("Clear Stack")) {
-            _exec->ClearStacks();
+            exec_->ClearStacks();
             AddLog("Stack cleared");
         }
 
@@ -284,9 +284,9 @@ struct ExecutorWindow {
         ImGui::BeginChild("StackView", ImVec2(0, 200), true);
         ImGui::Text("Data Stack");
         
-        if (_exec->GetDataStack()->Size() > 0) {
-            for (int i = 0; i < _exec->GetDataStack()->Size(); i++) {
-                auto obj = _exec->GetDataStack()->At(i);
+        if (exec_->GetDataStack()->Size() > 0) {
+            for (int i = 0; i < exec_->GetDataStack()->Size(); i++) {
+                auto obj = exec_->GetDataStack()->At(i);
                 StringStream st;
                 st << i << ": " << obj;
                 
@@ -304,8 +304,8 @@ struct ExecutorWindow {
         ImGui::Text("Context");
         
         // Show information about the currently selected variable if available
-        if (_exec->GetDataStack()->Size() > 0 && WatchIndex >= 0 && WatchIndex < _exec->GetDataStack()->Size()) {
-            auto obj = _exec->GetDataStack()->At(WatchIndex);
+        if (exec_->GetDataStack()->Size() > 0 && WatchIndex >= 0 && WatchIndex < exec_->GetDataStack()->Size()) {
+            auto obj = exec_->GetDataStack()->At(WatchIndex);
             
             ImGui::Separator();
             ImGui::Text("Watch - Stack Item %d", WatchIndex);
@@ -349,14 +349,14 @@ struct ExecutorWindow {
         
         // Show current executor state
         StringStream st;
-        st << "Data Stack Size: " << _exec->GetDataStack()->Size();
+        st << "Data Stack Size: " << exec_->GetDataStack()->Size();
         AddLog("%s", st.ToString().c_str());
         
         // Show all stack items
-        if (_exec->GetDataStack()->Size() > 0) {
+        if (exec_->GetDataStack()->Size() > 0) {
             AddLog("Stack:");
-            for (int i = 0; i < _exec->GetDataStack()->Size(); i++) {
-                auto obj = _exec->GetDataStack()->At(i);
+            for (int i = 0; i < exec_->GetDataStack()->Size(); i++) {
+                auto obj = exec_->GetDataStack()->At(i);
                 StringStream itemSt;
                 itemSt << "  " << i << ": " << obj;
                 AddLog("%s", itemSt.ToString().c_str());
@@ -367,13 +367,13 @@ struct ExecutorWindow {
         try {
             // Try to execute a simple Pi operation to see stack changes
             if (CurrentLanguage == Language::Pi) {
-                _console.Execute("dup", Structure::Expression);
+                console_.Execute("dup", Structure::Expression);
                 AddLog("Executed 'dup' operation");
             }
             else {
                 // For Rho, show scope information instead
                 AddLog("Current scope information:");
-                Object scope = _exec->GetScope();
+                Object scope = exec_->GetScope();
                 if (scope.Exists()) {
                     StringStream scopeSt;
                     scopeSt << scope;
@@ -406,12 +406,12 @@ struct ExecutorWindow {
                 ? Structure::Expression 
                 : Structure::Statement;
                 
-            _console.Execute(command_line, structure);
+            console_.Execute(command_line, structure);
             
             // Report stack contents
-            if (_exec->GetDataStack()->Size() > 0) {
+            if (exec_->GetDataStack()->Size() > 0) {
                 AddLog("Stack:");
-                for (auto obj : *_exec->GetDataStack()) {
+                for (auto obj : *exec_->GetDataStack()) {
                     StringStream st;
                     st << "  " << obj;
                     AddLog("%s", st.ToString().c_str());

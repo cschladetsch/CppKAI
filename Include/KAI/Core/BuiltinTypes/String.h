@@ -16,83 +16,83 @@ class String {
     typedef typename Storage::iterator iterator;
 
    private:
-    Storage _string;
+    Storage string_;
 
    public:
     String() {}
     template <class II>
     String(II A, II B) {
-        _string.assign(A, B);
+        string_.assign(A, B);
     }
     String(const Char *S) {
-        if (S != 0) _string = S;
+        if (S != 0) string_ = S;
     }
-    String(const std::string &X) { _string = X; }
-    String(const String &X) { _string = X._string; }
-    //    String(String &&X) { _string = std::move(X._string); }
-    explicit String(int N, Char C) : _string(N, C) {}
+    String(const std::string &X) { string_ = X; }
+    String(const String &X) { string_ = X.string_; }
+    //    String(String &&X) { string_ = std::move(X.string_); }
+    explicit String(int N, Char C) : string_(N, C) {}
 
     friend bool operator==(String const &A, String const &B) {
-        return A._string == B._string;
+        return A.string_ == B.string_;
     }
 
     friend bool operator!=(String const &A, String const &B) {
-        return A._string != B._string;
+        return A.string_ != B.string_;
     }
 
     friend bool operator<(String const &A, String const &B) {
-        return A._string < B._string;
+        return A.string_ < B.string_;
     }
 
     friend bool operator<=(String const &A, String const &B) {
-        return A._string <= B._string;
+        return A.string_ <= B.string_;
     }
 
     friend String &operator+=(String &A, Char B) {
-        A._string += B;
+        A.string_ += B;
         return A;
     }
 
     friend String &operator+=(String &A, String const &B) {
-        A._string += B._string;
+        A.string_ += B.string_;
         return A;
     }
 
     // friend String operator+(String &A, Char B)
     // {
-    //     A._string += B;
+    //     A.string_ += B;
     //     return std::move(A);
     // }
 
     friend String operator+(String const &A, String const &B) {
-        return String(A._string + B._string);
+        return String(A.string_ + B.string_);
     }
 
     // We need this for the Boolean property to work properly
     explicit operator bool() const { return !empty(); }
 
-    const_iterator begin() const { return _string.begin(); }
-    const_iterator end() const { return _string.end(); }
+    const_iterator begin() const { return string_.begin(); }
+    const_iterator end() const { return string_.end(); }
 
-    iterator begin() { return _string.begin(); }
-    iterator end() { return _string.end(); }
+    iterator begin() { return string_.begin(); }
+    iterator end() { return string_.end(); }
 
-    iterator erase(iterator A, iterator B) { return _string.erase(A, B); }
+    iterator erase(iterator A, iterator B) { return string_.erase(A, B); }
 
     template <class II0, class II1>
     void insert(II0 where, II1 begin, II1 end) {
-        _string.insert(where, begin, end);
+        string_.insert(where, begin, end);
     }
 
-    int size() const { return (int)_string.size(); }
-    bool empty() const { return _string.empty(); }
-    std::string StdString() const { return _string; }
-    const Storage &GetStorage() const { return _string; }
-    void clear() { _string.clear(); }
+    int size() const { return (int)string_.size(); }
+    bool empty() const { return string_.empty(); }
+    std::string StdString() const { return string_; }
+    const Storage &GetStorage() const { return string_; }
+    void clear() { string_.clear(); }
     int Size() const { return size(); }
-    bool Empty() const { return empty() || _string[0] == 0; }
+    bool Empty() const { return empty() || string_[0] == 0; }
     const_iterator Begin() const { return begin(); }
-    void Clear() { _string.clear(); }
+    void Clear() { string_.clear(); }
 
     String tolower() const { return LowerCase(); }
     String toupper() { return UpperCase(); }
@@ -105,9 +105,9 @@ class String {
     bool StartsWith(String const &) const;
     bool EndsWith(String const &) const;
 
-    Char &operator[](int N) { return _string.at(N); }
-    const Char &operator[](int N) const { return _string.at(N); }
-    const Char *c_str() const { return _string.c_str(); }
+    Char &operator[](int N) { return string_.at(N); }
+    const Char &operator[](int N) const { return string_.at(N); }
+    const Char *c_str() const { return string_.c_str(); }
 
     void ReplaceFirst(String const &what, String const &with);
     void ReplaceLast(String const &what, String const &with);

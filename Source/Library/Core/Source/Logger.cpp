@@ -1,19 +1,94 @@
 #include "KAI/Core/Logger.h"
+#include <filesystem>
+#include <chrono>
+#include <thread>
+#include <sstream>
+
+// Choose the appropriate format implementation
+#ifdef KAI_FORMAT_COMPATIBLE
+  #include <format>
+#else
+  #include <iomanip>
+#endif
 
 KAI_BEGIN
 
-// Initialize static members
+// Initialize static members with the centralized log directory from CMake
+#ifdef KAI_LOG_DIR
+std::string default_log_dir = KAI_LOG_DIR;
+#else
+// Fallback to a default logs directory in the user's home folder
+std::string default_log_dir = std::string(getenv("HOME")) + "/local/KAI/Logs";
+#endif
+
 Logger::Level Logger::s_level = Logger::Level::Info;
-std::string Logger::s_logDirectory = "/home/xian/local/KAI/Logs";
+std::string Logger::s_logDirectory = default_log_dir;
 bool Logger::s_initialized = false;
 
+// Helper function to create a formatted timestamp, compatible with older compilers
+std::string FormatTimestamp(const std::tm& time_info) {
+#ifdef KAI_FORMAT_COMPATIBLE
+    try {
+        return std::format("{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}",
+            time_info.tm_year + 1900, time_info.tm_mon + 1, time_info.tm_mday,
+            time_info.tm_hour, time_info.tm_min, time_info.tm_sec);
+    } catch(...) {
+        // Fallback if format fails
+        std::stringstream ss;
+        ss << std::setfill('0') 
+           << std::setw(4) << (time_info.tm_year + 1900) << "-"
+           << std::setw(2) << (time_info.tm_mon + 1) << "-"
+           << std::setw(2) << time_info.tm_mday << " "
+           << std::setw(2) << time_info.tm_hour << ":"
+           << std::setw(2) << time_info.tm_min << ":"
+           << std::setw(2) << time_info.tm_sec;
+        return ss.str();
+    }
+#else
+    std::stringstream ss;
+    ss << std::setfill('0') 
+       << std::setw(4) << (time_info.tm_year + 1900) << "-"
+       << std::setw(2) << (time_info.tm_mon + 1) << "-"
+       << std::setw(2) << time_info.tm_mday << " "
+       << std::setw(2) << time_info.tm_hour << ":"
+       << std::setw(2) << time_info.tm_min << ":"
+       << std::setw(2) << time_info.tm_sec;
+    return ss.str();
+#endif
+}
+
 void Logger::Init(const std::string& logDirectory) {
-    s_logDirectory = logDirectory;
+    // If a specific directory is provided, use it
+    // Otherwise keep using the default from KAI_LOG_DIR
+    if (!logDirectory.empty()) {
+        s_logDirectory = logDirectory;
+    }
 
     // Create the logs directory if it doesn't exist
     try {
         std::filesystem::create_directories(s_logDirectory);
         s_initialized = true;
+        
+        // Write a startup marker to the log
+        std::string startupFile = s_logDirectory + "/kai_startup.log";
+        std::ofstream logFile(startupFile, std::ios_base::app);
+        if (logFile) {
+            auto now = std::chrono::system_clock::now();
+            auto time_t_now = std::chrono::system_clock::to_time_t(now);
+            auto localtime = *std::localtime(&time_t_now);
+            auto threadId = std::this_thread::get_id();
+            
+            // Format message using compatibility function
+            std::string timestamp = FormatTimestamp(localtime);
+            std::stringstream ss;
+            ss << "[" << timestamp << "] Logger initialized. Log directory: " 
+               << s_logDirectory << ", Thread ID: " 
+               << std::hex << std::showbase 
+               << reinterpret_cast<uintptr_t>(&threadId);
+                
+            logFile << ss.str() << std::endl;
+            logFile.close();
+        }
     } catch (const std::exception& e) {
         std::cerr << "Failed to create log directory: " << e.what()
                   << std::endl;
@@ -56,30 +131,47 @@ void Logger::Log(Level level, const std::string& message) {
     // Create timestamp
     auto now = std::chrono::system_clock::now();
     auto time_t_now = std::chrono::system_clock::to_time_t(now);
-    std::stringstream timestamp;
-    timestamp << std::put_time(std::localtime(&time_t_now),
-                               "%Y-%m-%d %H:%M:%S");
-
-    // Format message
+    auto localtime = *std::localtime(&time_t_now);
+    
+    // Use the format helper to ensure compatibility
+    std::string timestamp = FormatTimestamp(localtime);
     std::string levelStr = LevelToString(level);
-    std::string formattedMessage =
-        "[" + timestamp.str() + "] [" + levelStr + "] " + message;
+    
+    // Create formatted message
+    std::stringstream ss;
+    ss << "[" << timestamp << "] [" << levelStr << "] " << message;
+    std::string formattedMessage = ss.str();
 
-    // Print to console
-    std::cout << formattedMessage << std::endl;
+    // Print to console with color based on level
+    if (level == Level::Error || level == Level::Fatal) {
+        std::cerr << formattedMessage << std::endl;
+    } else {
+        std::cout << formattedMessage << std::endl;
+    }
 
     // Ensure the log directory exists
     if (!IsInitialized()) {
         Init();
     }
 
-    // Write to file
+    // Write to appropriate log files
     if (IsInitialized()) {
-        std::string logFilename = s_logDirectory + "/kai.log";
-        std::ofstream logFile(logFilename, std::ios_base::app);
-        if (logFile) {
-            logFile << formattedMessage << std::endl;
-            logFile.close();
+        // Write to main log file
+        std::string mainLogFilename = s_logDirectory + "/kai.log";
+        std::ofstream mainLogFile(mainLogFilename, std::ios_base::app);
+        if (mainLogFile) {
+            mainLogFile << formattedMessage << std::endl;
+            mainLogFile.close();
+        }
+        
+        // Also write to level-specific log file for errors and fatal messages
+        if (level == Level::Error || level == Level::Fatal) {
+            std::string errorLogFilename = s_logDirectory + "/errors.log";
+            std::ofstream errorLogFile(errorLogFilename, std::ios_base::app);
+            if (errorLogFile) {
+                errorLogFile << formattedMessage << std::endl;
+                errorLogFile.close();
+            }
         }
     }
 }

@@ -266,7 +266,7 @@ void RhoTranslator::TranslateFunction(AstNodePtr node) {
     auto cont = Pop();
     for (auto a : ch[1]->GetChildren()) cont->AddArg(Label(a->GetTokenText()));
 
-    // write the _name and store
+    // write the name_ and store
     Append(cont);
     AppendNew(Label(ch[0]->Text()));
     AppendOp(Operation::Store);

@@ -1,0 +1,344 @@
+[==========] Running 75 tests from 20 test suites.
+[----------] Global test environment set-up.
+[----------] 1 test from RakNetSimple
+[ RUN      ] RakNetSimple.BasicStubTest
+[       OK ] RakNetSimple.BasicStubTest (0 ms)
+[----------] 1 test from RakNetSimple (0 ms total)
+
+[----------] 12 tests from TestAdditionalCore
+[ RUN      ] TestAdditionalCore.StringAdvancedOperations
+[       OK ] TestAdditionalCore.StringAdvancedOperations (0 ms)
+[ RUN      ] TestAdditionalCore.StringCaseConversion
+[       OK ] TestAdditionalCore.StringCaseConversion (0 ms)
+[ RUN      ] TestAdditionalCore.ObjectComparison
+[       OK ] TestAdditionalCore.ObjectComparison (0 ms)
+[ RUN      ] TestAdditionalCore.RegistryOperations
+[       OK ] TestAdditionalCore.RegistryOperations (0 ms)
+[ RUN      ] TestAdditionalCore.StringRepresentation
+[       OK ] TestAdditionalCore.StringRepresentation (0 ms)
+[ RUN      ] TestAdditionalCore.ObjectLifecycle
+[2025-05-14 18:17:00] [INFO] Info: static_cast<int>(_instances.size())='2' static_cast<int>(_grey.size())='1' static_cast<int>(_white.size())='1' 
+Info: static_cast<int>(_instances.size())='2' static_cast<int>(_grey.size())='1' static_cast<int>(_white.size())='1' 
+[2025-05-14 18:17:00] [INFO] Info: TriColor: 1 passes
+Info: TriColor: 1 passes
+[       OK ] TestAdditionalCore.ObjectLifecycle (0 ms)
+[ RUN      ] TestAdditionalCore.ArrayOperations
+[       OK ] TestAdditionalCore.ArrayOperations (0 ms)
+[ RUN      ] TestAdditionalCore.StringUtilities
+[       OK ] TestAdditionalCore.StringUtilities (0 ms)
+[ RUN      ] TestAdditionalCore.StringAdvancedOperations2
+[       OK ] TestAdditionalCore.StringAdvancedOperations2 (0 ms)
+[ RUN      ] TestAdditionalCore.RegistryOperations2
+[       OK ] TestAdditionalCore.RegistryOperations2 (0 ms)
+[ RUN      ] TestAdditionalCore.ObjectReferenceAndIdentity
+[       OK ] TestAdditionalCore.ObjectReferenceAndIdentity (0 ms)
+[ RUN      ] TestAdditionalCore.ArrayAdvancedFeatures
+[       OK ] TestAdditionalCore.ArrayAdvancedFeatures (0 ms)
+[----------] 12 tests from TestAdditionalCore (0 ms total)
+
+[----------] 3 tests from TestAdditionalStringOps
+[ RUN      ] TestAdditionalStringOps.TestContentChecks
+[       OK ] TestAdditionalStringOps.TestContentChecks (0 ms)
+[ RUN      ] TestAdditionalStringOps.TestCaseConversion
+[       OK ] TestAdditionalStringOps.TestCaseConversion (0 ms)
+[ RUN      ] TestAdditionalStringOps.TestSizeAndEmpty
+[       OK ] TestAdditionalStringOps.TestSizeAndEmpty (0 ms)
+[----------] 3 tests from TestAdditionalStringOps (0 ms total)
+
+[----------] 1 test from BasePointerTest
+[ RUN      ] BasePointerTest.TestUpCast
+[       OK ] BasePointerTest.TestUpCast (0 ms)
+[----------] 1 test from BasePointerTest (0 ms total)
+
+[----------] 8 tests from TestBinaryStream
+[ RUN      ] TestBinaryStream.Builtins
+[       OK ] TestBinaryStream.Builtins (0 ms)
+[ RUN      ] TestBinaryStream.TestObject
+[       OK ] TestBinaryStream.TestObject (0 ms)
+[ RUN      ] TestBinaryStream.TestArray
+[       OK ] TestBinaryStream.TestArray (0 ms)
+[ RUN      ] TestBinaryStream.TestProperties
+[2025-05-14 18:17:00] [INFO] Info: tps='Handle=1, type=TestPropertiesStruct ' 
+Info: tps='Handle=1, type=TestPropertiesStruct ' 
+[2025-05-14 18:17:00] [INFO] Info: stream='BinaryStream: size=46' 
+Info: stream='BinaryStream: size=46' 
+[2025-05-14 18:17:00] [INFO] Info: result='Handle=5, type=TestPropertiesStruct ' 
+Info: result='Handle=5, type=TestPropertiesStruct ' 
+[       OK ] TestBinaryStream.TestProperties (0 ms)
+[ RUN      ] TestBinaryStream.TestList
+[2025-05-14 18:17:00] [INFO] Info: list='List[123, 456, Hello]' 
+Info: list='List[123, 456, Hello]' 
+[2025-05-14 18:17:00] [INFO] Info: stream='BinaryStream: size=53' 
+Info: stream='BinaryStream: size=53' 
+[2025-05-14 18:17:00] [INFO] Info: result='List[123, 456, Hello]' 
+Info: result='List[123, 456, Hello]' 
+[       OK ] TestBinaryStream.TestList (0 ms)
+[ RUN      ] TestBinaryStream.TestMap
+[       OK ] TestBinaryStream.TestMap (0 ms)
+[ RUN      ] TestBinaryStream.TestSet
+[       OK ] TestBinaryStream.TestSet (0 ms)
+[ RUN      ] TestBinaryStream.TestStreams
+[       OK ] TestBinaryStream.TestStreams (0 ms)
+[----------] 8 tests from TestBinaryStream (0 ms total)
+
+[----------] 1 test from TestClassScripting
+[ RUN      ] TestClassScripting.Test
+[2025-05-14 18:17:00] [INFO] Info: mystruct.ToXmlString()='
+<Object type='MyStruct' name=''>
+<Property name='string'>Freddy</Property>
+<Property name='num'>42</Property>
+</Object>
+' 
+Info: mystruct.ToXmlString()='
+<Object type='MyStruct' name=''>
+<Property name='string'>Freddy</Property>
+<Property name='num'>42</Property>
+</Object>
+' 
+[2025-05-14 18:17:00] [INFO] Info: stream.ToString()='Handle=55, type=MyStruct ' 
+Info: stream.ToString()='Handle=55, type=MyStruct ' 
+[2025-05-14 18:17:00] [INFO] Info: binary_stream='BinaryStream: size=38' 
+Info: binary_stream='BinaryStream: size=38' 
+[2025-05-14 18:17:00] [INFO] Info: mystruct.ToXmlString()='
+<Object type='MyStruct' name=''>
+<Property name='string'>hello world</Property>
+<Property name='num'>345</Property>
+</Object>
+' 
+Info: mystruct.ToXmlString()='
+<Object type='MyStruct' name=''>
+<Property name='string'>hello world</Property>
+<Property name='num'>345</Property>
+</Object>
+' 
+[2025-05-14 18:17:00] [INFO] Info: stream.ToString()='Handle=55, type=MyStruct ' 
+Info: stream.ToString()='Handle=55, type=MyStruct ' 
+[       OK ] TestClassScripting.Test (0 ms)
+[----------] 1 test from TestClassScripting (0 ms total)
+
+[----------] 5 tests from TestList
+[ RUN      ] TestList.TestCreation
+[2025-05-14 18:17:00] [INFO] Info: static_cast<int>(_instances.size())='2' static_cast<int>(_grey.size())='1' static_cast<int>(_white.size())='1' 
+Info: static_cast<int>(_instances.size())='2' static_cast<int>(_grey.size())='1' static_cast<int>(_white.size())='1' 
+[2025-05-14 18:17:00] [INFO] Info: TriColor: 1 passes
+Info: TriColor: 1 passes
+[       OK ] TestList.TestCreation (0 ms)
+[ RUN      ] TestList.TestInsertDelete
+[2025-05-14 18:17:00] [INFO] Info: static_cast<int>(_instances.size())='3' static_cast<int>(_grey.size())='3' static_cast<int>(_white.size())='0' 
+Info: static_cast<int>(_instances.size())='3' static_cast<int>(_grey.size())='3' static_cast<int>(_white.size())='0' 
+[2025-05-14 18:17:00] [INFO] Info: TriColor: 3 passes
+Info: TriColor: 3 passes
+[2025-05-14 18:17:00] [INFO] Info: static_cast<int>(_instances.size())='3' static_cast<int>(_grey.size())='2' static_cast<int>(_white.size())='1' 
+Info: static_cast<int>(_instances.size())='3' static_cast<int>(_grey.size())='2' static_cast<int>(_white.size())='1' 
+[2025-05-14 18:17:00] [INFO] Info: TriColor: 2 passes
+Info: TriColor: 2 passes
+[       OK ] TestList.TestInsertDelete (0 ms)
+[ RUN      ] TestList.TestComparison
+[       OK ] TestList.TestComparison (0 ms)
+[ RUN      ] TestList.TestStringStream
+[       OK ] TestList.TestStringStream (0 ms)
+[ RUN      ] TestList.TestBinaryStream
+[       OK ] TestList.TestBinaryStream (0 ms)
+[----------] 5 tests from TestList (0 ms total)
+
+[----------] 5 tests from TestMap
+[ RUN      ] TestMap.TestCreation
+[2025-05-14 18:17:00] [INFO] Info: static_cast<int>(_instances.size())='2' static_cast<int>(_grey.size())='1' static_cast<int>(_white.size())='1' 
+Info: static_cast<int>(_instances.size())='2' static_cast<int>(_grey.size())='1' static_cast<int>(_white.size())='1' 
+[2025-05-14 18:17:00] [INFO] Info: TriColor: 1 passes
+Info: TriColor: 1 passes
+[       OK ] TestMap.TestCreation (0 ms)
+[ RUN      ] TestMap.TestInsertDelete
+[2025-05-14 18:17:00] [INFO] Info: static_cast<int>(_instances.size())='3' static_cast<int>(_grey.size())='2' static_cast<int>(_white.size())='1' 
+Info: static_cast<int>(_instances.size())='3' static_cast<int>(_grey.size())='2' static_cast<int>(_white.size())='1' 
+[2025-05-14 18:17:00] [INFO] Info: TriColor: 2 passes
+Info: TriColor: 2 passes
+[2025-05-14 18:17:00] [INFO] Info: static_cast<int>(_instances.size())='4' static_cast<int>(_grey.size())='2' static_cast<int>(_white.size())='2' 
+Info: static_cast<int>(_instances.size())='4' static_cast<int>(_grey.size())='2' static_cast<int>(_white.size())='2' 
+[2025-05-14 18:17:00] [INFO] Info: TriColor: 2 passes
+Info: TriColor: 2 passes
+[       OK ] TestMap.TestInsertDelete (0 ms)
+[ RUN      ] TestMap.TestComparison
+[       OK ] TestMap.TestComparison (0 ms)
+[ RUN      ] TestMap.TestStringStream
+{ [42, Hello] }
+[       OK ] TestMap.TestStringStream (0 ms)
+[ RUN      ] TestMap.TestBinaryStream
+[       OK ] TestMap.TestBinaryStream (0 ms)
+[----------] 5 tests from TestMap (0 ms total)
+
+[----------] 6 tests from TestSet
+[ RUN      ] TestSet.TestCreation
+[       OK ] TestSet.TestCreation (0 ms)
+[ RUN      ] TestSet.TestInsertDelete
+[2025-05-14 18:17:00] [INFO] Info: static_cast<int>(_instances.size())='3' static_cast<int>(_grey.size())='3' static_cast<int>(_white.size())='0' 
+Info: static_cast<int>(_instances.size())='3' static_cast<int>(_grey.size())='3' static_cast<int>(_white.size())='0' 
+[2025-05-14 18:17:00] [INFO] Info: TriColor: 3 passes
+Info: TriColor: 3 passes
+[2025-05-14 18:17:00] [INFO] Info: static_cast<int>(_instances.size())='3' static_cast<int>(_grey.size())='2' static_cast<int>(_white.size())='1' 
+Info: static_cast<int>(_instances.size())='3' static_cast<int>(_grey.size())='2' static_cast<int>(_white.size())='1' 
+[2025-05-14 18:17:00] [INFO] Info: TriColor: 2 passes
+Info: TriColor: 2 passes
+[       OK ] TestSet.TestInsertDelete (0 ms)
+[ RUN      ] TestSet.TestOwnership
+[       OK ] TestSet.TestOwnership (0 ms)
+[ RUN      ] TestSet.TestComparison
+[       OK ] TestSet.TestComparison (0 ms)
+[ RUN      ] TestSet.TestStringStream
+[       OK ] TestSet.TestStringStream (0 ms)
+[ RUN      ] TestSet.TestBinaryStream
+[       OK ] TestSet.TestBinaryStream (0 ms)
+[----------] 6 tests from TestSet (0 ms total)
+
+[----------] 5 tests from TestStack
+[ RUN      ] TestStack.TestCreation
+[2025-05-14 18:17:00] [INFO] Info: static_cast<int>(_instances.size())='2' static_cast<int>(_grey.size())='1' static_cast<int>(_white.size())='1' 
+Info: static_cast<int>(_instances.size())='2' static_cast<int>(_grey.size())='1' static_cast<int>(_white.size())='1' 
+[2025-05-14 18:17:00] [INFO] Info: TriColor: 1 passes
+Info: TriColor: 1 passes
+[       OK ] TestStack.TestCreation (0 ms)
+[ RUN      ] TestStack.TestInsertDelete
+[       OK ] TestStack.TestInsertDelete (0 ms)
+[ RUN      ] TestStack.TestComparison
+[       OK ] TestStack.TestComparison (0 ms)
+[ RUN      ] TestStack.TestStringStream
+[       OK ] TestStack.TestStringStream (0 ms)
+[ RUN      ] TestStack.TestBinaryStream
+[       OK ] TestStack.TestBinaryStream (0 ms)
+[----------] 5 tests from TestStack (0 ms total)
+
+[----------] 5 tests from TestArray
+[ RUN      ] TestArray.TestCreation
+[2025-05-14 18:17:00] [INFO] Info: static_cast<int>(_instances.size())='2' static_cast<int>(_grey.size())='1' static_cast<int>(_white.size())='1' 
+Info: static_cast<int>(_instances.size())='2' static_cast<int>(_grey.size())='1' static_cast<int>(_white.size())='1' 
+[2025-05-14 18:17:00] [INFO] Info: TriColor: 1 passes
+Info: TriColor: 1 passes
+[       OK ] TestArray.TestCreation (0 ms)
+[ RUN      ] TestArray.TestInsertDelete
+[2025-05-14 18:17:00] [INFO] Info: static_cast<int>(_instances.size())='3' static_cast<int>(_grey.size())='3' static_cast<int>(_white.size())='0' 
+Info: static_cast<int>(_instances.size())='3' static_cast<int>(_grey.size())='3' static_cast<int>(_white.size())='0' 
+[2025-05-14 18:17:00] [INFO] Info: TriColor: 3 passes
+Info: TriColor: 3 passes
+[2025-05-14 18:17:00] [INFO] Info: static_cast<int>(_instances.size())='3' static_cast<int>(_grey.size())='2' static_cast<int>(_white.size())='1' 
+Info: static_cast<int>(_instances.size())='3' static_cast<int>(_grey.size())='2' static_cast<int>(_white.size())='1' 
+[2025-05-14 18:17:00] [INFO] Info: TriColor: 2 passes
+Info: TriColor: 2 passes
+[       OK ] TestArray.TestInsertDelete (0 ms)
+[ RUN      ] TestArray.TestComparison
+[       OK ] TestArray.TestComparison (0 ms)
+[ RUN      ] TestArray.TestStringStream
+[       OK ] TestArray.TestStringStream (0 ms)
+[ RUN      ] TestArray.TestBinaryStream
+[       OK ] TestArray.TestBinaryStream (0 ms)
+[----------] 5 tests from TestArray (0 ms total)
+
+[----------] 1 test from TestDotGraph
+[ RUN      ] TestDotGraph.Test
+[       OK ] TestDotGraph.Test (0 ms)
+[----------] 1 test from TestDotGraph (0 ms total)
+
+[----------] 1 test from TestEvents
+[ RUN      ] TestEvents.TestFunctionsAndMethods
+[2025-05-14 18:17:00] [WARNING] Warn: GC requested with no tree
+Warn: GC requested with no tree
+[       OK ] TestEvents.TestFunctionsAndMethods (0 ms)
+[----------] 1 test from TestEvents (0 ms total)
+
+[----------] 1 test from FunctionTest
+[ RUN      ] FunctionTest.TestConstruction
+[       OK ] FunctionTest.TestConstruction (0 ms)
+[----------] 1 test from FunctionTest (0 ms total)
+
+[----------] 5 tests from GarbageCollectionTest
+[ RUN      ] GarbageCollectionTest.ObjectDeletedWhenNotInTree
+[2025-05-14 18:17:00] [INFO] Info: static_cast<int>(_instances.size())='2' static_cast<int>(_grey.size())='1' static_cast<int>(_white.size())='1' 
+Info: static_cast<int>(_instances.size())='2' static_cast<int>(_grey.size())='1' static_cast<int>(_white.size())='1' 
+[2025-05-14 18:17:00] [INFO] Info: TriColor: 1 passes
+Info: TriColor: 1 passes
+[       OK ] GarbageCollectionTest.ObjectDeletedWhenNotInTree (0 ms)
+[ RUN      ] GarbageCollectionTest.ObjectDeletedWhenRemovedFromTree
+[2025-05-14 18:17:00] [INFO] Info: static_cast<int>(_instances.size())='2' static_cast<int>(_grey.size())='2' static_cast<int>(_white.size())='0' 
+Info: static_cast<int>(_instances.size())='2' static_cast<int>(_grey.size())='2' static_cast<int>(_white.size())='0' 
+[2025-05-14 18:17:00] [INFO] Info: TriColor: 2 passes
+Info: TriColor: 2 passes
+[2025-05-14 18:17:00] [INFO] Info: static_cast<int>(_instances.size())='2' static_cast<int>(_grey.size())='1' static_cast<int>(_white.size())='1' 
+Info: static_cast<int>(_instances.size())='2' static_cast<int>(_grey.size())='1' static_cast<int>(_white.size())='1' 
+[2025-05-14 18:17:00] [INFO] Info: TriColor: 1 passes
+Info: TriColor: 1 passes
+[       OK ] GarbageCollectionTest.ObjectDeletedWhenRemovedFromTree (0 ms)
+[ RUN      ] GarbageCollectionTest.ObjectCanDeleteItself
+[2025-05-14 18:17:00] [INFO] Info: static_cast<int>(_instances.size())='2' static_cast<int>(_grey.size())='2' static_cast<int>(_white.size())='0' 
+Info: static_cast<int>(_instances.size())='2' static_cast<int>(_grey.size())='2' static_cast<int>(_white.size())='0' 
+[2025-05-14 18:17:00] [INFO] Info: TriColor: 2 passes
+Info: TriColor: 2 passes
+[2025-05-14 18:17:00] [INFO] Info: static_cast<int>(_instances.size())='2' static_cast<int>(_grey.size())='1' static_cast<int>(_white.size())='1' 
+Info: static_cast<int>(_instances.size())='2' static_cast<int>(_grey.size())='1' static_cast<int>(_white.size())='1' 
+[2025-05-14 18:17:00] [INFO] Info: TriColor: 1 passes
+Info: TriColor: 1 passes
+[       OK ] GarbageCollectionTest.ObjectCanDeleteItself (0 ms)
+[ RUN      ] GarbageCollectionTest.ObjectNotDeletedWhenInArray
+[2025-05-14 18:17:00] [INFO] Info: static_cast<int>(_instances.size())='3' static_cast<int>(_grey.size())='3' static_cast<int>(_white.size())='0' 
+Info: static_cast<int>(_instances.size())='3' static_cast<int>(_grey.size())='3' static_cast<int>(_white.size())='0' 
+[2025-05-14 18:17:00] [INFO] Info: TriColor: 3 passes
+Info: TriColor: 3 passes
+[       OK ] GarbageCollectionTest.ObjectNotDeletedWhenInArray (0 ms)
+[ RUN      ] GarbageCollectionTest.ObjectDeletedWhenRemovedFromArray
+[2025-05-14 18:17:00] [INFO] Info: static_cast<int>(_instances.size())='3' static_cast<int>(_grey.size())='3' static_cast<int>(_white.size())='0' 
+Info: static_cast<int>(_instances.size())='3' static_cast<int>(_grey.size())='3' static_cast<int>(_white.size())='0' 
+[2025-05-14 18:17:00] [INFO] Info: TriColor: 3 passes
+Info: TriColor: 3 passes
+[2025-05-14 18:17:00] [INFO] Info: static_cast<int>(_instances.size())='3' static_cast<int>(_grey.size())='2' static_cast<int>(_white.size())='1' 
+Info: static_cast<int>(_instances.size())='3' static_cast<int>(_grey.size())='2' static_cast<int>(_white.size())='1' 
+[2025-05-14 18:17:00] [INFO] Info: TriColor: 2 passes
+Info: TriColor: 2 passes
+[       OK ] GarbageCollectionTest.ObjectDeletedWhenRemovedFromArray (0 ms)
+[----------] 5 tests from GarbageCollectionTest (0 ms total)
+
+[----------] 1 test from TestPathname
+[ RUN      ] TestPathname.TestBasic
+[       OK ] TestPathname.TestBasic (0 ms)
+[----------] 1 test from TestPathname (0 ms total)
+
+[----------] 5 tests from RakNetStubTest
+[ RUN      ] RakNetStubTest.BitStreamWorks
+[       OK ] RakNetStubTest.BitStreamWorks (0 ms)
+[ RUN      ] RakNetStubTest.SystemAddressWorks
+[       OK ] RakNetStubTest.SystemAddressWorks (0 ms)
+[ RUN      ] RakNetStubTest.RakPeerInterfaceWorks
+[       OK ] RakNetStubTest.RakPeerInterfaceWorks (0 ms)
+[ RUN      ] RakNetStubTest.TimeHandlingWorks
+[       OK ] RakNetStubTest.TimeHandlingWorks (0 ms)
+[ RUN      ] RakNetStubTest.PacketHandlingWorks
+[       OK ] RakNetStubTest.PacketHandlingWorks (0 ms)
+[----------] 5 tests from RakNetStubTest (0 ms total)
+
+[----------] 1 test from RakNetStubSimple
+[ RUN      ] RakNetStubSimple.BasicTest
+[       OK ] RakNetStubSimple.BasicTest (0 ms)
+[----------] 1 test from RakNetStubSimple (0 ms total)
+
+[----------] 3 tests from TestRegistryOperations
+[ RUN      ] TestRegistryOperations.TestCreateAndRetrieve
+[       OK ] TestRegistryOperations.TestCreateAndRetrieve (0 ms)
+[ RUN      ] TestRegistryOperations.TestObjectResolution
+[       OK ] TestRegistryOperations.TestObjectResolution (0 ms)
+[ RUN      ] TestRegistryOperations.TestScopeOperations
+[       OK ] TestRegistryOperations.TestScopeOperations (0 ms)
+[----------] 3 tests from TestRegistryOperations (0 ms total)
+
+[----------] 5 tests from TestString
+[ RUN      ] TestString.TestCompare
+[       OK ] TestString.TestCompare (0 ms)
+[ RUN      ] TestString.TestConcat
+[       OK ] TestString.TestConcat (0 ms)
+[ RUN      ] TestString.TestLength
+[       OK ] TestString.TestLength (0 ms)
+[ RUN      ] TestString.TestStringStreamInsert
+[       OK ] TestString.TestStringStreamInsert (0 ms)
+[ RUN      ] TestString.TestStringStreamExtract
+[       OK ] TestString.TestStringStreamExtract (0 ms)
+[----------] 5 tests from TestString (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 75 tests from 20 test suites ran. (4 ms total)
+[  PASSED  ] 75 tests.

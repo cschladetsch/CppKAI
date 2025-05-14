@@ -27,7 +27,7 @@ struct Trace : StringStream {
     // only show basename of location of trace
     static bool StripPath;
 
-    // trace the function _name as well
+    // trace the function name_ as well
     static bool TraceFunction;
 
     // directory where log files will be stored

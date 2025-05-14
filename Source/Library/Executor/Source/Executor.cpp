@@ -17,13 +17,13 @@ KAI_BEGIN
 int Process::trace = 0;
 
 void Executor::Create() {
-    _data = New<Stack>();
-    _context = New<Stack>();
-    _break = false;
-    _traceLevel = 0;
-    _stepNumber = 0;
+    data_ = New<Stack>();
+    context_ = New<Stack>();
+    break_ = false;
+    traceLevel_ = 0;
+    stepNumber_ = 0;
     // The Executor only needs to correctly execute Pi code
-    // No _currentLanguage field needed
+    // No currentLanguage_ field needed
 }
 
 bool Executor::Destroy() { return true; }
@@ -31,22 +31,22 @@ bool Executor::Destroy() { return true; }
 void Executor::Push(Object const &Q) {
     // Push the referenced object if needed.
     if (Q.GetTypeNumber() == Type::Number::Object)
-        Push(*_data, ConstDeref<Object>(Q));
+        Push(*data_, ConstDeref<Object>(Q));
     else
-        Push(*_data, Q);
+        Push(*data_, Q);
 }
 
 void Executor::Push(const std::pair<Object, Object> &P) {
     Push(New(Pair(P.first, P.second)));
 }
 
-Object Executor::Pop() { return Pop(*_data); }
+Object Executor::Pop() { return Pop(*data_); }
 
-Value<Stack> Executor::GetDataStack() { return _data; }
+Value<Stack> Executor::GetDataStack() { return data_; }
 
-Value<Stack> Executor::GetContextStack() const { return _context; }
+Value<Stack> Executor::GetContextStack() const { return context_; }
 
-void Executor::SetContinuation(Value<Continuation> C) { _continuation = C; }
+void Executor::SetContinuation(Value<Continuation> C) { continuation_ = C; }
 
 struct Trace {
     static std::ostream &Debug() {
@@ -58,15 +58,15 @@ struct Trace {
 
 void Executor::Continue() {
     while (true) {
-        _break = false;
+        break_ = false;
         Object next;
-        if (_continuation->Next(next)) {
+        if (continuation_->Next(next)) {
             KAI_TRY {
-                if (_traceLevel > 10) KAI_TRACE() << "Start step\n";
-                if (_traceLevel > 10) KAI_TRACE_1(_stepNumber);
-                if (_traceLevel > 10) KAI_TRACE_1(_data);
-                if (_traceLevel > 10) KAI_TRACE_1(_context);
-                if (_traceLevel > 10) KAI_TRACE_1(next);
+                if (traceLevel_ > 10) KAI_TRACE() << "Start step\n";
+                if (traceLevel_ > 10) KAI_TRACE_1(stepNumber_);
+                if (traceLevel_ > 10) KAI_TRACE_1(data_);
+                if (traceLevel_ > 10) KAI_TRACE_1(context_);
+                if (traceLevel_ > 10) KAI_TRACE_1(next);
 
                 Eval(next);
             }
@@ -74,20 +74,20 @@ void Executor::Continue() {
                 KAI_TRACE_1(E);
             }
         } else
-            _break = true;
+            break_ = true;
 
-        if (_break) {
+        if (break_) {
             NextContinuation();
-            if (!_continuation.Exists()) return;
+            if (!continuation_.Exists()) return;
         }
     }
 }
 
-void Executor::SetScope(Object scope) { _context->Push(scope); }
+void Executor::SetScope(Object scope) { context_->Push(scope); }
 
-void Executor::PopScope() { _context->Pop(); }
+void Executor::PopScope() { context_->Pop(); }
 
-Object Executor::GetScope() const { return _context->Top(); }
+Object Executor::GetScope() const { return context_->Top(); }
 
 void Executor::Continue(Value<Continuation> C) {
     if (!C.Exists()) return;
@@ -101,22 +101,22 @@ void Executor::ContinuePi() {
 }
 
 void Executor::NextContinuation() {
-    if (_context->Empty()) {
-        _continuation = Object();
+    if (context_->Empty()) {
+        continuation_ = Object();
         return;
     }
 
-    const auto next = _context->Pop();
+    const auto next = context_->Pop();
     SetContinuation(next);
 }
 
 void Executor::Push(Stack &stack, Object const &Q) { stack.Push(Q); }
 
 void Executor::Eval(Object const &Q) {
-    _stepNumber++;
+    stepNumber_++;
 
     // Debug information - helps to see what's being evaluated
-    if (_traceLevel > 1) {
+    if (traceLevel_ > 1) {
         KAI_TRACE() << "Evaluating: " << (Q.GetClass() ? Q.ToString() : "<No class>");
     }
 
@@ -142,7 +142,7 @@ void Executor::Eval(Object const &Q) {
             
             // If unwrapping resulted in a different type, evaluate the unwrapped value
             if (unwrapped.GetTypeNumber() != Type::Number::Continuation) {
-                if (_traceLevel > 1) {
+                if (traceLevel_ > 1) {
                     KAI_TRACE() << "Unwrapped continuation to " << unwrapped.GetClass()->GetName().ToString();
                 }
                 Eval(unwrapped);
@@ -151,7 +151,7 @@ void Executor::Eval(Object const &Q) {
             
             // When evaluating a continuation, we need to execute it
             // rather than just pushing it onto the stack
-            if (_traceLevel > 1) {
+            if (traceLevel_ > 1) {
                 KAI_TRACE() << "Executing continuation: " << Q.ToString();
             }
             Continue(Q);
@@ -168,7 +168,7 @@ void Executor::Eval(Object const &Q) {
 // Helper method for evaluating continuations
 void Executor::EvalContinuation(Object const &Q) {
     // Execute the continuation instead of just pushing it
-    if (_traceLevel > 1) {
+    if (traceLevel_ > 1) {
         KAI_TRACE() << "EvalContinuation: Executing continuation: " << Q.ToString();
     }
     // When a continuation is encountered, execute it
@@ -232,7 +232,7 @@ Value<Continuation> Executor::NewContinuation(Value<Continuation> orig) {
 
 void Executor::MarkAndSweep() {
     KAI_NOT_IMPLEMENTED();
-    // MarkAndSweep(_tree->GetRoot());
+    // MarkAndSweep(tree_->GetRoot());
 }
 
 void Executor::MarkAndSweep(Object &root) {
@@ -283,16 +283,16 @@ void Executor::ToArray() {
     KAI_TRACE() << "ToArray operation using Pi language semantics";
     
     // Add more detailed stack debugging
-    KAI_TRACE() << "Stack size before ToArray: " << _data->Size();
-    for (int i = 0; i < std::min(5, _data->Size()); i++) {
-        Object item = _data->At(_data->Size() - 1 - i);
-        KAI_TRACE() << "  Stack[" << (_data->Size() - 1 - i) << "]: " 
+    KAI_TRACE() << "Stack size before ToArray: " << data_->Size();
+    for (int i = 0; i < std::min(5, data_->Size()); i++) {
+        Object item = data_->At(data_->Size() - 1 - i);
+        KAI_TRACE() << "  Stack[" << (data_->Size() - 1 - i) << "]: " 
                  << (item.GetClass() ? item.ToString() : "<No class>")
                  << " (type: " << (item.GetClass() ? item.GetClass()->GetName().ToString() : "<No class>") << ")";
     }
     
     // Handle empty stack case
-    if (_data->Empty()) {
+    if (data_->Empty()) {
         KAI_TRACE_WARN() << "ToArray: Stack is empty, creating empty array";
         Push(New<Array>());
         return;
@@ -352,12 +352,12 @@ void Executor::ProcessToArray(int len) {
     KAI_TRACE() << "ProcessToArray with length: " << len;
     
     // Check if we have enough items on the stack
-    if (_data->Size() < len) {
+    if (data_->Size() < len) {
         KAI_TRACE_WARN() << "ToArray: Not enough items on stack. Need " << len 
-                        << " but only have " << _data->Size();
+                        << " but only have " << data_->Size();
                         
         // In Pi language, create an array with what we have
-        len = _data->Size();
+        len = data_->Size();
         KAI_TRACE() << "Pi ToArray: Adjusted size to " << len;
     }
 
@@ -396,14 +396,14 @@ void Executor::ConditionalContextSwitch(Operation::Type op) {
 
     switch (op) {
         case Operation::Suspend:
-            _continuation->Next();
-            _context->Push(_continuation);
+            continuation_->Next();
+            context_->Push(continuation_);
             // fallthrough
         case Operation::Replace:
-            _context->Push(NewContinuation(Pop()));
+            context_->Push(NewContinuation(Pop()));
             // fallthrough
         case Operation::Resume:
-            _break = true;
+            break_ = true;
         default:
             KAI_NOT_IMPLEMENTED();
             break;
@@ -413,7 +413,7 @@ void Executor::ConditionalContextSwitch(Operation::Type op) {
 void Executor::ContinueOnly(Value<Continuation> C) {
     // Add an empty context to break. this forces exection to stop after C is
     // finished.
-    _context->Push(Object());
+    context_->Push(Object());
     Continue(C);
 }
 
@@ -422,7 +422,7 @@ Value<Array> Executor::ForEach(Container const &cont, Object const &fun) {
     auto array = New<Array>();
     for (auto const &elem : cont) {
         Push(elem);
-        _context->Push(Object());
+        context_->Push(Object());
         Continue(fun);
         array->Append(Pop());
     }
@@ -432,7 +432,7 @@ Value<Array> Executor::ForEach(Container const &cont, Object const &fun) {
 
 Object Executor::Pop(Stack &stack) { return stack.Pop(); }
 
-Object Executor::Top() const { return _data->Top(); }
+Object Executor::Top() const { return data_->Top(); }
 
 Object Executor::Resolve(Object Q, bool ignoreQuote) const {
     // TODO: this double-handling of Labels and Pathnames is tedious and wrong.
@@ -463,14 +463,14 @@ Object Executor::TryResolve(Object const &Q) const {
 }
 
 Object Executor::TryResolve(Label const &label) const {
-    // Search in _current _scope.
-    if (_continuation.Exists()) {
-        Object scope = _continuation->GetScope();
+    // Search in current_ _scope.
+    if (continuation_.Exists()) {
+        Object scope = continuation_->GetScope();
         if (scope.Exists() && scope.Has(label)) return scope.Get(label);
     }
 
     // search in parent scopes...
-    Stack const &scopes = *_context;
+    Stack const &scopes = *context_;
     for (int N = 0; N < scopes.Size(); ++N) {
         Pointer<Continuation> cont = scopes.At(N);
         if (!cont.Exists()) break;
@@ -480,22 +480,22 @@ Object Executor::TryResolve(Label const &label) const {
             return scope.GetChild(label);
     }
 
-    // Finally, search the _tree.
-    return _tree->Resolve(label);
+    // Finally, search the tree_.
+    return tree_->Resolve(label);
 }
 
 Object Executor::TryResolve(Pathname const &path) const {
-    // If it's not an absolute _path, search up the continuation scopes.
-    if (path.Absolute()) return _tree->Resolve(path);
+    // If it's not an absolute path_, search up the continuation scopes.
+    if (path.Absolute()) return tree_->Resolve(path);
 
-    // Search in _current _scope.
-    if (_continuation.Exists()) {
-        auto found = Get(_continuation->GetScope(), path);
+    // Search in current_ _scope.
+    if (continuation_.Exists()) {
+        auto found = Get(continuation_->GetScope(), path);
         if (found.Exists()) return found;
     }
 
     // Search in parent scopes.
-    Stack const &scopes = *_context;
+    Stack const &scopes = *context_;
     for (int N = 0; N < scopes.Size(); ++N) {
         Pointer<Continuation> cont = scopes.At(N);
         if (!cont.Exists()) continue;
@@ -546,8 +546,8 @@ void Executor::Trace(const Object &Q) {
 }
 
 void Executor::ClearContext() {
-    _continuation = Object();
-    _context->Clear();
+    continuation_ = Object();
+    context_->Clear();
 }
 
 void Executor::TraceAll() {
@@ -599,9 +599,9 @@ void Executor::DumpContinuation(Continuation const &C, int ip) {
     KAI_UNUSED_2(C, ip);
 }
 
-void Executor::SetTraceLevel(int N) { _traceLevel = N; }
+void Executor::SetTraceLevel(int N) { traceLevel_ = N; }
 
-int Executor::GetTraceLevel() const { return _traceLevel; }
+int Executor::GetTraceLevel() const { return traceLevel_; }
 
 void Executor::Register(Registry &R, const char *N) {
     ClassBuilder<Executor>(R, N).Methods(
@@ -615,23 +615,23 @@ void Executor::Register(Registry &R, const char *N) {
 }
 
 void Executor::Dump(Object const &Q) {
-    if (_traceLevel > 0) {
-        if (_traceLevel > 1) {
+    if (traceLevel_ > 0) {
+        if (traceLevel_ > 1) {
             std::cout << "Stack:\n";
-            DumpStack(*_data);
+            DumpStack(*data_);
         }
 
-        if (_traceLevel > 2) {
+        if (traceLevel_ > 2) {
             std::cout << "Context:\n";
-            for (auto c : *_context) {
+            for (auto c : *context_) {
                 StringStream str;
                 str << c;
                 cout << str.ToString().c_str() << endl;
             }
         }
 
-        std::cout << "\n[" << _stepNumber << "]: Eval: @"
-                  << *_continuation->index << " " << Q.ToString().c_str()
+        std::cout << "\n[" << stepNumber_ << "]: Eval: @"
+                  << *continuation_->index << " " << Q.ToString().c_str()
                   << "\n";  // std::endl;
     }
 }
@@ -639,7 +639,7 @@ void Executor::Dump(Object const &Q) {
 std::string Executor::PrintStack() const {
     int n = 0;
     StringStream str;
-    for (const auto &elem : _data->GetStack())
+    for (const auto &elem : data_->GetStack())
         str << "[" << n++ << "]: " << elem << "\n";
 
     return str.ToString().c_str();
@@ -700,7 +700,7 @@ void WriteHumanReadableString(std::ostream &out, const Object &obj) {
 
 void Executor::PrintStack(std::ostream &out) const {
     int n = 0;
-    for (const auto &obj : _data->GetStack()) {
+    for (const auto &obj : data_->GetStack()) {
         // Removed dim styling, using only bold styling with color
         out << rang::style::bold << rang::fg::gray << "[" << n++ << "]: ";
         out << rang::style::bold << rang::fg::yellow;
@@ -760,12 +760,12 @@ bool Executor::PopBool() {
 void Executor::Perform(Operation::Type op) {
     switch (op) {
         case Operation::ToPi:
-            Deref<Compiler>(_compiler).SetLanguage(
+            Deref<Compiler>(compiler_).SetLanguage(
                 static_cast<int>(Language::Pi));
             break;
 
         case Operation::ToRho:
-            Deref<Compiler>(_compiler).SetLanguage(
+            Deref<Compiler>(compiler_).SetLanguage(
                 static_cast<int>(Language::Rho));
             break;
 
@@ -849,14 +849,14 @@ void Executor::Perform(Operation::Type op) {
         }
 
         case Operation::LevelStack: {
-            const int required_depth = _continuation->InitialStackDepth;
-            int depth = _data->Size();
+            const int required_depth = continuation_->InitialStackDepth;
+            int depth = data_->Size();
 
             if (depth < required_depth)
                 KAI_THROW_0(EmptyStack);  // we lost some objects off the stack
 
             int num_pops = depth - required_depth;
-            for (int N = 0; N < num_pops; ++N) _data->Pop();
+            for (int N = 0; N < num_pops; ++N) data_->Pop();
 
             break;
         }
@@ -900,25 +900,25 @@ void Executor::Perform(Operation::Type op) {
         }
 
         case Operation::Break:
-            _break = true;
+            break_ = true;
             break;
 
         case Operation::WhileLoop: {
             KAI_TRACE() << "Starting WhileLoop operation";
 
             // Check if we have at least 2 items on the stack
-            if (_data->Size() < 2) {
+            if (data_->Size() < 2) {
                 KAI_TRACE_ERROR() << "WhileLoop: Expected at least 2 items on "
                                      "stack, but found "
-                                  << _data->Size();
+                                  << data_->Size();
                 KAI_THROW_1(
                     Base, "Not enough items on stack for WhileLoop operation");
             }
 
             // Log current stack for debugging
             KAI_TRACE() << "Dumping stack content before popping:";
-            for (int i = 0; i < _data->Size(); i++) {
-                Object obj = _data->At(i);
+            for (int i = 0; i < data_->Size(); i++) {
+                Object obj = data_->At(i);
                 if (obj.GetClass()) {
                     KAI_TRACE() << "  Stack[" << i
                                 << "]: Type = " << obj.GetClass()->GetName();
@@ -965,18 +965,18 @@ void Executor::Perform(Operation::Type op) {
             KAI_TRACE() << "Got valid continuations for test and body";
 
             // Save current continuation
-            _context->Push(_continuation);
+            context_->Push(continuation_);
 
             // Execute test, continue if true
             KAI_TRACE() << "Starting while loop execution";
             while (true) {
                 // Run the test condition
                 KAI_TRACE() << "Executing test condition";
-                _context->Push(Object());
+                context_->Push(Object());
                 Continue(test);
 
                 // Check if stack is empty after running test
-                if (_data->Empty()) {
+                if (data_->Empty()) {
                     KAI_TRACE_ERROR()
                         << "WhileLoop: Stack empty after running test";
                     break;
@@ -995,15 +995,15 @@ void Executor::Perform(Operation::Type op) {
                 ContinueOnly(body);
 
                 // Check for break statement
-                if (_break) {
+                if (break_) {
                     KAI_TRACE() << "Break statement detected";
-                    _break = false;  // Reset break flag
+                    break_ = false;  // Reset break flag
                     break;
                 }
             }
 
             // Restore continuation
-            _context->Pop();
+            context_->Pop();
 
             KAI_TRACE() << "While loop completed successfully";
             break;
@@ -1016,18 +1016,18 @@ void Executor::Perform(Operation::Type op) {
             // init, condition, increment, and body (optional)
 
             // Check if we have at least 3 items on the stack
-            if (_data->Size() < 3) {
+            if (data_->Size() < 3) {
                 KAI_TRACE_ERROR()
                     << "ForLoop: Expected at least 3 items on stack, but found "
-                    << _data->Size();
+                    << data_->Size();
                 KAI_THROW_1(Base,
                             "Not enough items on stack for ForLoop operation");
             }
 
             // Log current stack for debugging
             KAI_TRACE() << "Dumping stack content before popping:";
-            for (int i = 0; i < _data->Size(); i++) {
-                Object obj = _data->At(i);
+            for (int i = 0; i < data_->Size(); i++) {
+                Object obj = data_->At(i);
                 if (obj.GetClass()) {
                     KAI_TRACE() << "  Stack[" << i
                                 << "]: Type = " << obj.GetClass()->GetName();
@@ -1040,7 +1040,7 @@ void Executor::Perform(Operation::Type op) {
             Object bodyObj, incObj, condObj, initObj;
 
             // Check if we have a body (optional)
-            if (_data->Size() >= 4) {
+            if (data_->Size() >= 4) {
                 bodyObj = Pop();
             }
 
@@ -1108,7 +1108,7 @@ void Executor::Perform(Operation::Type op) {
             KAI_TRACE() << "Got valid continuations for for loop";
 
             // Save current continuation
-            _context->Push(_continuation);
+            context_->Push(continuation_);
 
             // Execute initialization
             KAI_TRACE() << "Executing initialization";
@@ -1119,11 +1119,11 @@ void Executor::Perform(Operation::Type op) {
             while (true) {
                 // Run the condition
                 KAI_TRACE() << "Executing condition";
-                _context->Push(Object());
+                context_->Push(Object());
                 Continue(condition);
 
                 // Check if stack is empty after running condition
-                if (_data->Empty()) {
+                if (data_->Empty()) {
                     KAI_TRACE_ERROR()
                         << "ForLoop: Stack empty after running condition";
                     break;
@@ -1143,9 +1143,9 @@ void Executor::Perform(Operation::Type op) {
                     ContinueOnly(body);
 
                     // Check for break statement
-                    if (_break) {
+                    if (break_) {
                         KAI_TRACE() << "Break statement detected";
-                        _break = false;  // Reset break flag
+                        break_ = false;  // Reset break flag
                         break;
                     }
                 }
@@ -1156,7 +1156,7 @@ void Executor::Perform(Operation::Type op) {
             }
 
             // Restore continuation
-            _context->Pop();
+            context_->Pop();
 
             KAI_TRACE() << "For loop completed successfully";
             break;
@@ -1170,18 +1170,18 @@ void Executor::Perform(Operation::Type op) {
             // 2. Condition - determines whether to continue looping
 
             // Check if we have at least 2 items on the stack
-            if (_data->Size() < 2) {
+            if (data_->Size() < 2) {
                 KAI_TRACE_ERROR()
                     << "DoLoop: Expected at least 2 items on stack, but found "
-                    << _data->Size();
+                    << data_->Size();
                 KAI_THROW_1(Base,
                             "Not enough items on stack for DoLoop operation");
             }
 
             // Log current stack for debugging
             KAI_TRACE() << "Dumping stack content before popping:";
-            for (int i = 0; i < _data->Size(); i++) {
-                Object obj = _data->At(i);
+            for (int i = 0; i < data_->Size(); i++) {
+                Object obj = data_->At(i);
                 if (obj.GetClass()) {
                     KAI_TRACE() << "  Stack[" << i
                                 << "]: Type = " << obj.GetClass()->GetName();
@@ -1232,7 +1232,7 @@ void Executor::Perform(Operation::Type op) {
             KAI_TRACE() << "Got valid continuations for body and condition";
 
             // Save current continuation
-            _context->Push(_continuation);
+            context_->Push(continuation_);
 
             int loopCount = 0;
             const int MAX_LOOPS = 1000;  // Safety to prevent infinite loops
@@ -1255,20 +1255,20 @@ void Executor::Perform(Operation::Type op) {
                 ContinueOnly(body);
 
                 // Check for break statement
-                if (_break) {
+                if (break_) {
                     KAI_TRACE() << "Break statement detected";
-                    _break = false;  // Reset break flag
+                    break_ = false;  // Reset break flag
                     break;
                 }
 
                 // Execute condition
                 KAI_TRACE()
                     << "Executing condition (iteration " << loopCount << ")";
-                _context->Push(Object());
+                context_->Push(Object());
                 Continue(condition);
 
                 // Check if stack is empty after condition
-                if (_data->Empty()) {
+                if (data_->Empty()) {
                     KAI_TRACE_ERROR()
                         << "DoLoop: Stack empty after running condition";
                     break;
@@ -1290,7 +1290,7 @@ void Executor::Perform(Operation::Type op) {
             } while (true);
 
             // Restore continuation
-            _context->Pop();
+            context_->Pop();
 
             KAI_TRACE() << "DoLoop completed successfully after " << loopCount
                         << " iterations";
@@ -1298,7 +1298,7 @@ void Executor::Perform(Operation::Type op) {
         }
 
         case Operation::ThisContinuation:
-            Push(_continuation);
+            Push(continuation_);
             break;
 
         case Operation::Delete:
@@ -1322,7 +1322,7 @@ void Executor::Perform(Operation::Type op) {
         }
 
         case Operation::Suspend: {
-            if (_data->Size() < 1) {
+            if (data_->Size() < 1) {
                 KAI_TRACE_ERROR() << "Suspend: nothing to suspend to";
                 KAI_NOT_IMPLEMENTED();
             }
@@ -1331,13 +1331,13 @@ void Executor::Perform(Operation::Type op) {
             switch (where_to_go.GetTypeNumber().GetValue()) {
                 case Type::Number::Function:
                     ConstDeref<BasePointer<FunctionBase> >(where_to_go)
-                        ->Invoke(*where_to_go.GetRegistry(), *_data);
+                        ->Invoke(*where_to_go.GetRegistry(), *data_);
                     return;
 
                 case Type::Number::SignedContinuation: {
                     SignedContinuation &signed_continuation =
                         Deref<SignedContinuation>(where_to_go);
-                    signed_continuation.Enter(*_data);
+                    signed_continuation.Enter(*data_);
                     where_to_go = signed_continuation.GetContinuation();
                     break;
                 }
@@ -1346,37 +1346,37 @@ void Executor::Perform(Operation::Type op) {
                     break;
             }
 
-            _context->Push(_continuation);
-            _context->Push(where_to_go);
+            context_->Push(continuation_);
+            context_->Push(where_to_go);
 
-            if (_traceLevel > 10) KAI_TRACE_2(_continuation, where_to_go);
+            if (traceLevel_ > 10) KAI_TRACE_2(continuation_, where_to_go);
 
             if (where_to_go.IsType<Continuation>())
                 Deref<Continuation>(where_to_go).Enter(this);
 
-            _break = true;
+            break_ = true;
 
             break;
         }
 
         case Operation::Return: {
             int n = 0;
-            for (auto sc : *_context) {
+            for (auto sc : *context_) {
                 if (*Deref<Continuation>(sc).scopeBreak) break;
 
                 ++n;
             }
 
-            for (; n > 0; --n) _context->Pop();
+            for (; n > 0; --n) context_->Pop();
 
             break;
         }
 
         case Operation::Replace:
-            _context->Push(NewContinuation(Pop()));
+            context_->Push(NewContinuation(Pop()));
             // fallthrough
         case Operation::Resume:
-            _break = true;
+            break_ = true;
             break;
 
         case Operation::NTimes: {
@@ -1386,7 +1386,7 @@ void Executor::Perform(Operation::Type op) {
             Pointer<Continuation> C = Pop();
             for (int N = 0; N < M; ++N) {
                 // Push a null continuation to break the call chain.
-                _context->Push(Object());
+                context_->Push(Object());
                 // Re-continue the functor.
                 Continue(C);
             }
@@ -1455,13 +1455,13 @@ void Executor::Perform(Operation::Type op) {
                         Push(New(charStr));
 
                         // Run the function on this character
-                        _context->Push(Object());
+                        context_->Push(Object());
                         KAI_TRACE()
                             << "Running function on character: " << charStr;
                         Continue(F);
 
                         // Store the result
-                        if (!_data->Empty()) {
+                        if (!data_->Empty()) {
                             array->Append(Pop());
                         } else {
                             KAI_TRACE_ERROR() << "ForEach: Function returned "
@@ -1469,10 +1469,10 @@ void Executor::Perform(Operation::Type op) {
                         }
 
                         // Check for break
-                        if (_break) {
+                        if (break_) {
                             KAI_TRACE()
                                 << "Break detected during string iteration";
-                            _break = false;
+                            break_ = false;
                             break;
                         }
                     }
@@ -1507,10 +1507,10 @@ void Executor::Perform(Operation::Type op) {
             // 3. Network node (or null for local execution)
 
             // Check if we have at least 3 items on the stack
-            if (_data->Size() < 3) {
+            if (data_->Size() < 3) {
                 KAI_TRACE_ERROR() << "AcrossAllNodes: Expected at least 3 "
                                      "items on stack, but found "
-                                  << _data->Size();
+                                  << data_->Size();
                 KAI_THROW_1(
                     Base,
                     "Not enough items on stack for AcrossAllNodes operation");
@@ -1629,7 +1629,7 @@ void Executor::Perform(Operation::Type op) {
                 Push(pair.second);
 
                 // Run the function on this pair
-                _context->Push(Object());
+                context_->Push(Object());
                 Continue(func);
 
                 // Store the result
@@ -1647,9 +1647,9 @@ void Executor::Perform(Operation::Type op) {
         }
 
         case Operation::IfElse: {
-            if (_data->Size() < 3) {
+            if (data_->Size() < 3) {
                 KAI_TRACE_ERROR() << "Attempting IfElse, but stack of "
-                                  << _data->Size() << " is too small.";
+                                  << data_->Size() << " is too small.";
                 KAI_NOT_IMPLEMENTED();
             }
 
@@ -1668,9 +1668,9 @@ void Executor::Perform(Operation::Type op) {
         case Operation::IfThenSuspend: {
             Object then = Pop();
             if (PopBool()) {
-                _context->Push(_continuation);
-                _context->Push(NewContinuation(then));
-                _break = true;
+                context_->Push(continuation_);
+                context_->Push(NewContinuation(then));
+                break_ = true;
             }
 
             break;
@@ -1679,13 +1679,13 @@ void Executor::Perform(Operation::Type op) {
         case Operation::IfThenSuspendElseSuspend: {
             const Pointer<Continuation> else_ = Pop();
             const Pointer<Continuation> then = Pop();
-            _context->Push(_continuation);
+            context_->Push(continuation_);
             if (PopBool())
-                _context->Push(NewContinuation(then));
+                context_->Push(NewContinuation(then));
             else
-                _context->Push(NewContinuation(else_));
+                context_->Push(NewContinuation(else_));
 
-            _break = true;
+            break_ = true;
 
             break;
         }
@@ -1707,11 +1707,11 @@ void Executor::Perform(Operation::Type op) {
         }
 
         case Operation::ThisContext:
-            Push(_continuation);
+            Push(continuation_);
             break;
 
         case Operation::Remove:
-            Remove(_tree->GetRoot(), _continuation->GetScope(), Pop());
+            Remove(tree_->GetRoot(), continuation_->GetScope(), Pop());
             break;
 
         case Operation::MarkAndSweep:
@@ -1724,12 +1724,12 @@ void Executor::Perform(Operation::Type op) {
 
         case Operation::Over: {
             // Pi language needs special checking
-            if (_data->Size() < 2) {
-                KAI_TRACE_WARN() << "Pi Over: Not enough items on stack (need 2, have " << _data->Size() << ")";
+            if (data_->Size() < 2) {
+                KAI_TRACE_WARN() << "Pi Over: Not enough items on stack (need 2, have " << data_->Size() << ")";
                 // In Pi, we should be forgiving - don't throw
-                if (_data->Size() == 1) {
+                if (data_->Size() == 1) {
                     // Just duplicate the single value as a fallback
-                    Object A = _data->Top(); // Don't pop, just reference
+                    Object A = data_->Top(); // Don't pop, just reference
                     Object duplicate = A.Duplicate();
                     Push(duplicate); // Push a duplicate
                     KAI_TRACE() << "Pi Over: Only one value available, duplicated instead";
@@ -1740,8 +1740,8 @@ void Executor::Perform(Operation::Type op) {
                 // In stack [A, B] (top is B), we want [A, B, A]
                 
                 // Get the values without popping them
-                Object B = _data->At(0); // Top of stack
-                Object A = _data->At(1); // Second item
+                Object B = data_->At(0); // Top of stack
+                Object A = data_->At(1); // Second item
                 
                 // Log the values for debugging
                 KAI_TRACE() << "Pi Over: Stack before: " 
@@ -1753,7 +1753,7 @@ void Executor::Perform(Operation::Type op) {
                 Push(duplicateA);
                 
                 KAI_TRACE() << "Pi Over: Copied second item to top of stack";
-                KAI_TRACE() << "Pi Over: Stack size now: " << _data->Size();
+                KAI_TRACE() << "Pi Over: Stack size now: " << data_->Size();
             }
             break;
         }
@@ -1769,7 +1769,7 @@ void Executor::Perform(Operation::Type op) {
         case Operation::CppFunctionCall: {
             Object Q = Pop();
             ConstDeref<BasePointer<FunctionBase> >(Q)->Invoke(*Q.GetRegistry(),
-                                                              *_data);
+                                                              *data_);
 
             break;
         }
@@ -1816,7 +1816,7 @@ void Executor::Perform(Operation::Type op) {
 
         case Operation::Assert: {
             // Make sure we have at least one item on the stack
-            if (_data->Size() < 1) {
+            if (data_->Size() < 1) {
                 KAI_THROW_1(EmptyStack, "Assert operation requires a condition on the stack");
             }
             
@@ -1835,11 +1835,11 @@ void Executor::Perform(Operation::Type op) {
             bool result = Deref<bool>(condition);
             if (!result) {
                 // Add detailed logging for the assertion failure
-                String location = _continuation->GetScope().Exists()
-                    ? "in " + _continuation->GetScope().ToString()
+                String location = continuation_->GetScope().Exists()
+                    ? "in " + continuation_->GetScope().ToString()
                     : "at unknown location";
                 
-                KAI_TRACE_ERROR_1(_continuation->Show()) << "Pi Assert: Assertion failed " << location;
+                KAI_TRACE_ERROR_1(continuation_->Show()) << "Pi Assert: Assertion failed " << location;
                 
                 // Use KAI_THROW_0(Assertion) as originally implemented
                 KAI_THROW_0(Assertion);
@@ -1855,7 +1855,7 @@ void Executor::Perform(Operation::Type op) {
 
         case Operation::Drop:
             // For Pi language, check if the stack is empty first
-            if (_data->Empty()) {
+            if (data_->Empty()) {
                 KAI_TRACE_WARN() << "Pi Drop: Stack is already empty";
                 // No-op for empty stack in Pi
             } else {
@@ -1865,10 +1865,10 @@ void Executor::Perform(Operation::Type op) {
 
         case Operation::Swap: {
             // For Pi language, check if we have enough items
-            if (_data->Size() < 2) {
-                KAI_TRACE_WARN() << "Pi Swap: Not enough items on stack (need 2, have " << _data->Size() << ")";
+            if (data_->Size() < 2) {
+                KAI_TRACE_WARN() << "Pi Swap: Not enough items on stack (need 2, have " << data_->Size() << ")";
                 // In Pi, we should be forgiving - don't throw
-                if (_data->Size() == 1) {
+                if (data_->Size() == 1) {
                     // Just keep the single value
                     KAI_TRACE() << "Pi Swap: Keeping single value";
                 } 
@@ -1888,27 +1888,27 @@ void Executor::Perform(Operation::Type op) {
                 Push(B);
                 
                 KAI_TRACE() << "Pi Swap: Swapped values successfully";
-                KAI_TRACE() << "Pi Swap: Stack size now: " << _data->Size();
+                KAI_TRACE() << "Pi Swap: Stack size now: " << data_->Size();
             }
             break;
         }
 
         case Operation::Dup: {
             // For Pi language, check if the stack is empty first
-            if (_data->Empty()) {
+            if (data_->Empty()) {
                 KAI_TRACE_WARN() << "Pi Dup: Stack is empty, nothing to duplicate";
                 // No-op for empty stack in Pi
             } else {
                 // Don't pop the value - just peek it with Top() and push a duplicate
                 // This keeps the original value on the stack
-                Object Q = _data->Top();
+                Object Q = data_->Top();
                 KAI_TRACE() << "Pi Dup: Duplicating value: " << Q.ToString();
                 
                 // Create a duplicate (clone) of the value
                 Object duplicate = Q.Duplicate();
                 
                 // Debug stack size before pushing
-                KAI_TRACE() << "Pi Dup: Stack size before push: " << _data->Size();
+                KAI_TRACE() << "Pi Dup: Stack size before push: " << data_->Size();
                 
                 // First push the original value back (unnecessary since Top() doesn't pop)
                 // Push(Q); - this line was causing the stack size to grow incorrectly
@@ -1917,16 +1917,16 @@ void Executor::Perform(Operation::Type op) {
                 Push(duplicate);
                 
                 KAI_TRACE() << "Pi Dup: Original value still on stack, duplicated value pushed";
-                KAI_TRACE() << "Pi Dup: Stack size after push: " << _data->Size();
+                KAI_TRACE() << "Pi Dup: Stack size after push: " << data_->Size();
                 
                 // Stack should now have two copies of the same value
-                // KAI_ASSERT(_data->Size() >= 2); - Using trace instead
+                // KAI_ASSERT(data_->Size() >= 2); - Using trace instead
                 
                 // Additional debug logging to verify stack state
-                if (_data->Size() >= 2) {
+                if (data_->Size() >= 2) {
                     KAI_TRACE() << "Pi Dup: Top two elements:";
-                    KAI_TRACE() << "  [0]: " << _data->At(0).ToString();
-                    KAI_TRACE() << "  [1]: " << _data->At(1).ToString();
+                    KAI_TRACE() << "  [0]: " << data_->At(0).ToString();
+                    KAI_TRACE() << "  [1]: " << data_->At(1).ToString();
                 }
             }
             break;
@@ -1944,11 +1944,11 @@ void Executor::Perform(Operation::Type op) {
         }
 
         case Operation::Clear:
-            _data->Clear();
+            data_->Clear();
             break;
 
         case Operation::Depth:
-            Push(New(_data->Size()));
+            Push(New(data_->Size()));
             break;
 
         case Operation::ToPair: {
@@ -1964,11 +1964,11 @@ void Executor::Perform(Operation::Type op) {
             break;
 
         case Operation::Self:
-            Push(_tree->GetScope());
+            Push(tree_->GetScope());
             break;
 
         case Operation::This:
-            Push(_continuation);
+            Push(continuation_);
             break;
 
         case Operation::Expand:
@@ -1984,7 +1984,7 @@ void Executor::Perform(Operation::Type op) {
             break;
 
         case Operation::Contents:
-            Push(_tree->GetScope());
+            Push(tree_->GetScope());
             GetChildren();
             break;
 
@@ -1995,10 +1995,10 @@ void Executor::Perform(Operation::Type op) {
         case Operation::ChangeScope: {
             Object id = Pop();
             if (GetTypeNumber(id) == Type::Number::Label)
-                _tree->SetScope(GetStorageBase(_tree->GetScope())
+                tree_->SetScope(GetStorageBase(tree_->GetScope())
                                     .Get(ConstDeref<Label>(id)));
             else
-                _tree->SetScope(ConstDeref<Pathname>(id));
+                tree_->SetScope(ConstDeref<Pathname>(id));
 
             break;
         }
@@ -2059,8 +2059,8 @@ void Executor::Perform(Operation::Type op) {
 
         case Operation::Plus: {
             // Make sure we have at least two items on the stack
-            if (_data->Size() < 2) {
-                KAI_TRACE_ERROR() << "Pi Plus: Not enough items on stack (need 2, have " << _data->Size() << ")";
+            if (data_->Size() < 2) {
+                KAI_TRACE_ERROR() << "Pi Plus: Not enough items on stack (need 2, have " << data_->Size() << ")";
                 KAI_THROW_1(Base, "Not enough items on stack for Plus operation");
             }
             
@@ -2102,8 +2102,8 @@ void Executor::Perform(Operation::Type op) {
 
         case Operation::Minus: {
             // Make sure we have at least two items on the stack
-            if (_data->Size() < 2) {
-                KAI_TRACE_ERROR() << "Pi Minus: Not enough items on stack (need 2, have " << _data->Size() << ")";
+            if (data_->Size() < 2) {
+                KAI_TRACE_ERROR() << "Pi Minus: Not enough items on stack (need 2, have " << data_->Size() << ")";
                 KAI_THROW_1(Base, "Not enough items on stack for Minus operation");
             }
             
@@ -2139,8 +2139,8 @@ void Executor::Perform(Operation::Type op) {
 
         case Operation::Multiply: {
             // Make sure we have at least two items on the stack
-            if (_data->Size() < 2) {
-                KAI_TRACE_ERROR() << "Pi Multiply: Not enough items on stack (need 2, have " << _data->Size() << ")";
+            if (data_->Size() < 2) {
+                KAI_TRACE_ERROR() << "Pi Multiply: Not enough items on stack (need 2, have " << data_->Size() << ")";
                 KAI_THROW_1(Base, "Not enough items on stack for Multiply operation");
             }
             
@@ -2176,8 +2176,8 @@ void Executor::Perform(Operation::Type op) {
 
         case Operation::Divide: {
             // Make sure we have at least two items on the stack
-            if (_data->Size() < 2) {
-                KAI_TRACE_ERROR() << "Pi Divide: Not enough items on stack (need 2, have " << _data->Size() << ")";
+            if (data_->Size() < 2) {
+                KAI_TRACE_ERROR() << "Pi Divide: Not enough items on stack (need 2, have " << data_->Size() << ")";
                 KAI_THROW_1(Base, "Not enough items on stack for Divide operation");
             }
             
@@ -2267,7 +2267,7 @@ void Executor::Perform(Operation::Type op) {
                     value.IsType<bool>() || value.IsType<String>()) {
                     // Store primitive types directly to preserve exact type
                     Object labelObj = New<Label>(nameLabel);
-                    Set(_tree->GetRoot(), _continuation->GetScope(), labelObj, value);
+                    Set(tree_->GetRoot(), continuation_->GetScope(), labelObj, value);
                     
                     // Push the value back onto the stack as Pi expects
                     Push(value);
@@ -2276,7 +2276,7 @@ void Executor::Perform(Operation::Type op) {
                     // For complex types, we need to clone to ensure type information is preserved
                     Object clonedValue = value.Clone();
                     Object labelObj = New<Label>(nameLabel);
-                    Set(_tree->GetRoot(), _continuation->GetScope(), labelObj, clonedValue);
+                    Set(tree_->GetRoot(), continuation_->GetScope(), labelObj, clonedValue);
                     
                     // Push the original value back onto the stack as Pi expects
                     Push(value);
@@ -2290,7 +2290,7 @@ void Executor::Perform(Operation::Type op) {
                 if (value.IsType<int>() || value.IsType<float>() || 
                     value.IsType<bool>() || value.IsType<String>()) {
                     // Store primitive types directly
-                    Set(_continuation->GetScope(), path, value);
+                    Set(continuation_->GetScope(), path, value);
                     
                     // Push the value back onto the stack as Pi expects
                     Push(value);
@@ -2298,7 +2298,7 @@ void Executor::Perform(Operation::Type op) {
                 else {
                     // Clone complex types
                     Object clonedValue = value.Clone();
-                    Set(_continuation->GetScope(), path, clonedValue);
+                    Set(continuation_->GetScope(), path, clonedValue);
                     
                     // Push the original value back onto the stack as Pi expects
                     Push(value);
@@ -2307,7 +2307,7 @@ void Executor::Perform(Operation::Type op) {
                 // Fallback for other types of identifiers
                 KAI_TRACE() << "Storing with generic identifier type: " 
                            << (ident.GetClass() ? ident.GetClass()->GetName().ToString() : "<No class>");
-                Set(_tree->GetRoot(), _continuation->GetScope(), ident, value);
+                Set(tree_->GetRoot(), continuation_->GetScope(), ident, value);
                 
                 // Push the value back onto the stack as Pi expects
                 Push(value);
@@ -2389,11 +2389,11 @@ void Executor::Perform(Operation::Type op) {
             }
             
             // Add extra debug info about what we pushed
-            if (_data->Size() > 0) {
+            if (data_->Size() > 0) {
                 KAI_TRACE() << "Pi Retreive: Pushed value: " 
-                          << (_data->Top().GetClass() ? _data->Top().ToString() : "<No class>")
+                          << (data_->Top().GetClass() ? data_->Top().ToString() : "<No class>")
                           << " (type: " 
-                          << (_data->Top().GetClass() ? _data->Top().GetClass()->GetName().ToString() : "<No class>")
+                          << (data_->Top().GetClass() ? data_->Top().GetClass()->GetName().ToString() : "<No class>")
                           << ")";
             }
             
@@ -2569,14 +2569,14 @@ void Executor::Perform(Operation::Type op) {
                 KAI_THROW_2(UnknownMethod, method_name.ToString(),
                             klass->GetName().ToString());
 
-            method->Invoke(object, *_data);
+            method->Invoke(object, *data_);
 
             break;
         }
 
         case Operation::LogicalNot: {
             // Make sure we have at least one item on the stack
-            if (_data->Empty()) {
+            if (data_->Empty()) {
                 KAI_TRACE_ERROR() << "Pi LogicalNot: Empty stack, nothing to negate";
                 KAI_THROW_1(Base, "Empty stack for LogicalNot operation");
             }
@@ -2610,8 +2610,8 @@ void Executor::Perform(Operation::Type op) {
 
         case Operation::LogicalXor: {
             // Make sure we have at least two items on the stack
-            if (_data->Size() < 2) {
-                KAI_TRACE_ERROR() << "Pi LogicalXor: Not enough items on stack (need 2, have " << _data->Size() << ")";
+            if (data_->Size() < 2) {
+                KAI_TRACE_ERROR() << "Pi LogicalXor: Not enough items on stack (need 2, have " << data_->Size() << ")";
                 KAI_THROW_1(Base, "Not enough items on stack for LogicalXor operation");
             }
             
@@ -2658,8 +2658,8 @@ void Executor::Perform(Operation::Type op) {
 
         case Operation::LogicalAnd: {
             // Make sure we have at least two items on the stack
-            if (_data->Size() < 2) {
-                KAI_TRACE_ERROR() << "Pi LogicalAnd: Not enough items on stack (need 2, have " << _data->Size() << ")";
+            if (data_->Size() < 2) {
+                KAI_TRACE_ERROR() << "Pi LogicalAnd: Not enough items on stack (need 2, have " << data_->Size() << ")";
                 KAI_THROW_1(Base, "Not enough items on stack for LogicalAnd operation");
             }
             
@@ -2706,8 +2706,8 @@ void Executor::Perform(Operation::Type op) {
 
         case Operation::LogicalOr: {
             // Make sure we have at least two items on the stack
-            if (_data->Size() < 2) {
-                KAI_TRACE_ERROR() << "Pi LogicalOr: Not enough items on stack (need 2, have " << _data->Size() << ")";
+            if (data_->Size() < 2) {
+                KAI_TRACE_ERROR() << "Pi LogicalOr: Not enough items on stack (need 2, have " << data_->Size() << ")";
                 KAI_THROW_1(Base, "Not enough items on stack for LogicalOr operation");
             }
             
@@ -2754,7 +2754,7 @@ void Executor::Perform(Operation::Type op) {
 
         case Operation::Pick: {
             int n = ConstDeref<int>(Pop());
-            Push(Duplicate(_data->At(n)));
+            Push(Duplicate(data_->At(n)));
 
             break;
         }

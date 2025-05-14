@@ -16,8 +16,8 @@ class Logger {
    public:
     enum class Level { Debug, Info, Warning, Error, Fatal };
 
-    static void Init(
-        const std::string& logDirectory = "/home/xian/local/KAI/Logs");
+    // Uses the KAI_LOG_DIR define from CMake if available
+    static void Init(const std::string& logDirectory = "");
     static bool IsInitialized();
 
     static void SetLevel(Level level);

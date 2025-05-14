@@ -54,8 +54,8 @@ class Class : public ClassBase {
     }
 
     void Delete(StorageBase &storage) const {
-        if (!_properties.empty()) {
-            for (auto X : _properties) {
+        if (!properties_.empty()) {
+            for (auto X : properties_) {
                 PropertyBase const &prop = *X.second;
                 if (!prop.IsSystemType()) continue;
 
@@ -73,7 +73,7 @@ class Class : public ClassBase {
     }
 
     void CreateProperties(StorageBase &object) const {
-        for (auto property : _properties) {
+        for (auto property : properties_) {
             PropertyBase const &prop = *property.second;
             if (!prop.IsSystemType()) continue;
 
@@ -92,8 +92,8 @@ class Class : public ClassBase {
     Object Duplicate(StorageBase const &parent) const {
         Storage<T> *result = parent.GetRegistry()->NewStorage<T>();
         Traits::Assign::Perform(result->GetReference(), ConstDeref<T>(parent));
-        // foreach (Properties::value_type const &property, _properties)
-        for (auto property : _properties) {
+        // foreach (Properties::value_type const &property, properties_)
+        for (auto property : properties_) {
             PropertyBase const &prop = *property.second;
             // if it is a system-type property, clone it, else just store the
             // value

@@ -151,7 +151,7 @@ StringStream &operator<<(StringStream &S, Type::Number T) {
 }
 
 StringStream &operator<<(StringStream &S, BasePointer<PropertyBase> const &P) {
-    return S << "Property: _name=" << P->GetFieldName()
+    return S << "Property: name_=" << P->GetFieldName()
              << ", type=" << P->GetFieldTypeNumber().value
              << ", class=" << P->GetClassTypeNumber().value;
 }

@@ -24,7 +24,7 @@ struct ExecutorWindow {
     vector<string> History;
 
     Console _console;
-    Tree* _tree;
+    Tree* tree_;
     Executor* _exec;
     Registry* _reg;
 

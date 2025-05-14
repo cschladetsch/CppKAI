@@ -213,29 +213,29 @@ Label GetName(const Object &object) {
 
 void Tree::SetScope(const Object &object) {
     Pathname path = GetFullname(object);
-    if (!Exists(_root, _scope, path)) KAI_THROW_1(Base, "ObjectNotInTree");
+    if (!Exists(root_, scope_, path)) KAI_THROW_1(Base, "ObjectNotInTree");
 
-    _scope = object;
+    scope_ = object;
 }
 
 void Tree::SetScope(const Pathname &path) {
-    if (!Exists(_root, _scope, path)) KAI_THROW_0(ObjectNotFound);
+    if (!Exists(root_, scope_, path)) KAI_THROW_0(ObjectNotFound);
 
-    _scope = Get(_root, _scope, path);
+    scope_ = Get(root_, scope_, path);
 }
 
-void Tree::AddSearchPath(const Object &path) { _path.push_back(path); }
+void Tree::AddSearchPath(const Object &path) { path_.push_back(path); }
 
 void Tree::AddSearchPath(const Pathname &path) {
-    _path.push_back(Get(_root, _scope, path));
+    path_.push_back(Get(root_, scope_, path));
 }
 
 Object Tree::Resolve(const Label &label) const {
-    if (_scope.Exists()) {
-        if (Object found = _scope.Get(label); found.Exists()) return found;
+    if (scope_.Exists()) {
+        if (Object found = scope_.Get(label); found.Exists()) return found;
     }
 
-    for (Object const &object : _path) {
+    for (Object const &object : path_) {
         if (!object.Exists()) continue;
 
         if (Object found = object.Get(label); found.Exists()) return found;
@@ -245,13 +245,13 @@ Object Tree::Resolve(const Label &label) const {
 }
 
 Object Tree::Resolve(const Pathname &pathName) const {
-    if (Object found = Get(_root, _scope, pathName); found.Exists())
+    if (Object found = Get(root_, scope_, pathName); found.Exists())
         return found;
 
     if (pathName.Absolute()) return Object();
 
-    for (auto const &scope : _path) {
-        if (Object found = Get(_root, scope, pathName); found.Exists())
+    for (auto const &scope : path_) {
+        if (Object found = Get(root_, scope, pathName); found.Exists())
             return found;
     }
 

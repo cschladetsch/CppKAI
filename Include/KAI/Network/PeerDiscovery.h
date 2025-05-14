@@ -47,11 +47,11 @@ class PeerDiscovery {
     void ClearDiscoveredPeers();
 
    private:
-    RakNet::RakPeerInterface* _peer;
-    DiscoveryCallback _callback;
-    std::vector<RakNet::SystemAddress> _discoveredPeers;
-    bool _isDiscovering;
-    int _discoveryPort;
+    RakNet::RakPeerInterface* peer_;
+    DiscoveryCallback callback_;
+    std::vector<RakNet::SystemAddress> discoveredPeers_;
+    bool isDiscovering_;
+    int discoveryPort_;
 
     // Process a discovery response packet
     void ProcessDiscoveryResponse(RakNet::Packet* packet);

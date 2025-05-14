@@ -11,7 +11,7 @@ TEST_F(PiAssertTest, TestSimpleAssert) {
     _console.SetLanguage(Language::Pi);
     
     // Clear data stack
-    _data->Clear();
+    data_->Clear();
     
     // Execute the Pi code "1 1 + 2 assert"
     // This should execute: push 1, push 1, add them (result 2), push 2, assert 2 == 2

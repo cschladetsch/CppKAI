@@ -11,7 +11,7 @@ struct Trace;
 
 // Seems like a boring and unnecessary replication of std::stringstream.
 // Rather, it allows insertion and extration of arbitrary registered objects
-// from a string. It's probably one of the more interesting _classes in the
+// from a string. It's probably one of the more interesting classes_ in the
 // entire KAI system - by the mere fact that it works.
 //
 // A StringStream is itself a registered object, so they can act recursively

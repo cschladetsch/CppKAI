@@ -9,7 +9,7 @@
 
 KAI_BEGIN
 
-// Base for all object _instances. The value stored with an object is placed
+// Base for all object instances_. The value stored with an object is placed
 // contiguously in memory with the object.
 struct StorageBase : public Object {
    public:

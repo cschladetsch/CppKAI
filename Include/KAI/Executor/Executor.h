@@ -28,8 +28,8 @@ struct Executor : Reflected {
     void Continue();
     // No need for language-specific methods - Executor only executes Pi
 
-    Object GetCompiler() const { return _compiler; }
-    void SetCompiler(Object c) { _compiler = c; }
+    Object GetCompiler() const { return compiler_; }
+    void SetCompiler(Object c) { compiler_ = c; }
 
     void Eval(Object const &Q);
     void Dump(Object const &Q);
@@ -47,8 +47,8 @@ struct Executor : Reflected {
         return Reg().New(X);
     }
 
-    void SetTree(Tree *T) { _tree = T; }
-    Tree *GetTree() const { return _tree; }
+    void SetTree(Tree *T) { tree_ = T; }
+    Tree *GetTree() const { return tree_; }
 
     void SetTraceLevel(int);
     int GetTraceLevel() const;
@@ -83,7 +83,7 @@ struct Executor : Reflected {
 
     Value<Stack> GetDataStack();
     Value<const Stack> GetDataStack() const {
-        return Value<const Stack>(_data.GetConstObject());
+        return Value<const Stack>(data_.GetConstObject());
     }
 
     // could be const, but more fun to mess with the context stack as needed
@@ -93,8 +93,8 @@ struct Executor : Reflected {
     // This resets the entire process, other than static state stored
     // in referenced objects
     void ClearStacks() {
-        _data->Clear();
-        _context->Clear();
+        data_->Clear();
+        context_->Clear();
     }
 
     static void Register(Registry &, const char * = "Executor");
@@ -159,14 +159,14 @@ struct Executor : Reflected {
     Object TryResolve(Pathname const &label) const;
 
    private:
-    Value<Continuation> _continuation;
-    Value<Stack> _context;
-    Value<Stack> _data;
-    Object _compiler;
-    bool _break;
-    Tree *_tree;
-    int _traceLevel;
-    int _stepNumber;
+    Value<Continuation> continuation_;
+    Value<Stack> context_;
+    Value<Stack> data_;
+    Object compiler_;
+    bool break_;
+    Tree *tree_;
+    int traceLevel_;
+    int stepNumber_;
     // Executor only handles Pi language operations
 };
 

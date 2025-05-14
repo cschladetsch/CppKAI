@@ -21,7 +21,7 @@ StringStream &operator>>(StringStream &S, String &T) {
 }
 
 bool operator>(const String &A, const String &B) {
-    return A._string > B._string;
+    return A.string_ > B.string_;
 }
 
 KAI_END

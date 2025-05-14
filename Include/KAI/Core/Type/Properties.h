@@ -4,7 +4,7 @@
 
 KAI_TYPE_BEGIN
 
-// Describes the _properties of a promoted type
+// Describes the properties_ of a promoted type
 struct Properties {
     enum Type : int {
         Nothing = 0,

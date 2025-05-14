@@ -17,7 +17,7 @@ struct ExecutorWindow {
     std::vector<std::string> History;
 
     Console _console;
-    Tree* _tree;
+    Tree* tree_;
     Executor* _exec;
     Registry* _reg;
 
@@ -28,7 +28,7 @@ struct ExecutorWindow {
         _console.SetLanguage(Language::Pi);
         _exec = &*_console.GetExecutor();
         _reg = &_console.GetRegistry();
-        _tree = &_console.GetTree();
+        tree_ = &_console.GetTree();
 
         ClearLog()
     }

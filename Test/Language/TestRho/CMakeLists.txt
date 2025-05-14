@@ -8,6 +8,7 @@ add_library(TestRhoFiles OBJECT
     SimpleRhoPiTests.cpp
     AdvancedRhoPiTests.cpp
     SimpleRho.cpp
+    MinimalRhoTest.cpp
     # Note: DoWhile tests are disabled pending implementation completion
     # See /home/xian/local/KAI/Todo-DoWhile.md for details
 )

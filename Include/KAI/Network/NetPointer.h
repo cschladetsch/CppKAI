@@ -7,7 +7,7 @@ KAI_NET_BEGIN
 template <class T>
 struct NetPointer : Pointer<T> {
    private:
-    NetHandle _netHandle;
+    NetHandle netHandle_;
     Domain *_domain;
 
    public:

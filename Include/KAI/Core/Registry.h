@@ -41,33 +41,33 @@ struct Registry {
     typedef int Percentage;
 
     typedef std::list<Object> Roots;
-    Roots _roots;
+    Roots roots_;
 
    private:
     friend struct StorageBase;
-    ColoredSet _white;  /// condemned set. may be referenced by objects in the
-                        /// _white or _grey sets
-    ColoredSet _grey;   /// may or may not have refernces to objects in the
-                        /// _white, _black or _grey sets
-    ColoredSet _black;  /// has no references to objects in the _white set
+    ColoredSet white_;  /// condemned set. may be referenced by objects in the
+                        /// white_ or grey_ sets
+    ColoredSet grey_;   /// may or may not have refernces to objects in the
+                        /// white_, black_ or grey_ sets
+    ColoredSet black_;  /// has no references to objects in the white_ set
 
-    Classes _classes;
-    Instances _instances;
-    Handles _retained;
-    DeathRow _deathRow;
-    Handle _nextHandle{0};
-    Tree *_tree{nullptr};
-    RetainedObjects _retainedObjects;
-    Pools _pools;
-    std::shared_ptr<Memory::IAllocator> _allocator;
-    bool _ownsAllocator{false};
+    Classes classes_;
+    Instances instances_;
+    Handles retained_;
+    DeathRow deathRow_;
+    Handle nextHandle_{0};
+    Tree *tree_{nullptr};
+    RetainedObjects retainedObjects_;
+    Pools pools_;
+    std::shared_ptr<Memory::IAllocator> allocator_;
+    bool ownsAllocator_{false};
 
    public:
     Registry();
     Registry(std::shared_ptr<Memory::IAllocator>);
     ~Registry();
 
-    Memory::IAllocator &GetMemorySystem() const { return *_allocator; }
+    Memory::IAllocator &GetMemorySystem() const { return *allocator_; }
 
     template <class T>
     Pointer<ClassBase const *> AddClass() {
@@ -100,7 +100,7 @@ struct Registry {
         Object retained = New<T>();
         retained.SetManaged(false);
         retained.SetBlack();
-        _retainedObjects.insert(retained.GetHandle());
+        retainedObjects_.insert(retained.GetHandle());
         return retained;
     }
 
@@ -118,7 +118,7 @@ struct Registry {
     }
 
     RetainedObjects const &GetRetainedObjects() const {
-        return _retainedObjects;
+        return retainedObjects_;
     }
     void PruneRetained();
     const ClassBase *GetClass(Type::Number);
@@ -144,7 +144,7 @@ struct Registry {
 
     template <class T>
     void FreeResources(T *p) {
-        _allocator->DeAllocate(p);
+        allocator_->DeAllocate(p);
     }
 
     template <class T>
@@ -155,12 +155,12 @@ struct Registry {
     Pointer<ClassBase const *> AddClass(Type::Number, ClassBase const *);
     void Clear();
     void ClearInstances();
-    const Instances &GetInstances() const { return _instances; }
-    const Classes &GetClasses() const { return _classes; }
+    const Instances &GetInstances() const { return instances_; }
+    const Classes &GetClasses() const { return classes_; }
     Percentage CalcMemoryUsage() const;
     Percentage CalcMemoryFragmentationPercentage() const;
     void DefragmentMemory();
-    Tree *GetTree() const { return _tree; }
+    Tree *GetTree() const { return tree_; }
     void SetTree(Tree &);
     bool Pin(Handle);
     bool Unpin(Handle);
@@ -229,7 +229,7 @@ struct Registry {
     void TraceGrey() const;
     void TraceWhite() const;
 
-    void TraceSet(Registry::ColoredSet const &set, const char *_name) const;
+    void TraceSet(Registry::ColoredSet const &set, const char *name_) const;
     void TraceTriColor() const;
     /// @endgroup debugging
     String Trace() const;
@@ -240,7 +240,7 @@ struct Registry {
 
     void NominateAll();
     void DestroyNominated();
-    int GetDeathrowSize() const { return (int)_deathRow.size(); }
+    int GetDeathrowSize() const { return (int)deathRow_.size(); }
 };
 
 template <class T>

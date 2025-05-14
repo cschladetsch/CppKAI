@@ -23,7 +23,7 @@ class Continuation : public Reflected {
     Pointer<bool> entered;
 
     // if true, this is a 'top-level' continuation, so
-    // _name resolution should stop here
+    // name_ resolution should stop here
     //
     // I hate this idea. needs to be re-thought through clearly.
     Pointer<bool> scopeBreak;

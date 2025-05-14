@@ -47,8 +47,7 @@ bool RhoLexer::NextToken() {
         return false;
     }
 
-    std::cout << "RhoLexer::NextToken() - Current char: '" << current
-              << "' (ASCII " << (int)current << ")" << std::endl;
+    // Debug output removed
 
     // Allow identifiers to start with either a letter or an underscore
     if (isalpha(current) || current == '_') {

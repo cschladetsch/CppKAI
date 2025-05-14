@@ -16,23 +16,23 @@ TEST_F(TestPiAdvanced2, TestVariableOperations) {
     _console.SetLanguage(Language::Pi);
 
     // Test variable assignment and retrieval using # and @
-    _data->Clear();
+    data_->Clear();
     _console.Execute("42 'answer #");  // store 42 as 'answer'
     _console.Execute("answer @");      // retrieve value of 'answer'
-    ASSERT_EQ(_data->Size(), 1);
+    ASSERT_EQ(data_->Size(), 1);
     ASSERT_EQ(AtData<int>(0), 42);
 
     // Test variable update
-    _data->Clear();
+    data_->Clear();
     _console.Execute("100 'answer #");  // update the value
     _console.Execute("answer @");       // retrieve the new value
     ASSERT_EQ(AtData<int>(0), 100);
 
     // Test multiple variable assignments
-    _data->Clear();
+    data_->Clear();
     _console.Execute("1 'x # 2 'y # 3 'z #");
     _console.Execute("x @ y @ z @");
-    ASSERT_EQ(_data->Size(), 3);
+    ASSERT_EQ(data_->Size(), 3);
     ASSERT_EQ(AtData<int>(2), 1);  // First on stack is x
     ASSERT_EQ(AtData<int>(1), 2);  // Second is y
     ASSERT_EQ(AtData<int>(0), 3);  // Third is z
@@ -43,24 +43,24 @@ TEST_F(TestPiAdvanced2, TestAdvancedStringManipulation) {
     _console.SetLanguage(Language::Pi);
 
     // Test basic string concatenation (known to work in Pi)
-    _data->Clear();
+    data_->Clear();
     _console.Execute("\"Hello, \" \"World!\" +");
-    ASSERT_EQ(_data->Size(), 1);
+    ASSERT_EQ(data_->Size(), 1);
     ASSERT_EQ(AtData<String>(0), "Hello, World!");
 
     // Test string creation and manipulation
-    _data->Clear();
+    data_->Clear();
     _console.Execute("\"Testing\" 'test_str #");
     _console.Execute("test_str @");
-    ASSERT_EQ(_data->Size(), 1);
+    ASSERT_EQ(data_->Size(), 1);
     ASSERT_EQ(AtData<String>(0), "Testing");
 
     // Test string equality comparison
-    _data->Clear();
+    data_->Clear();
     _console.Execute("\"abc\" \"abc\" ==");
     ASSERT_TRUE(AtData<bool>(0));
 
-    _data->Clear();
+    data_->Clear();
     _console.Execute("\"abc\" \"def\" ==");
     ASSERT_FALSE(AtData<bool>(0));
 }
@@ -70,24 +70,24 @@ TEST_F(TestPiAdvanced2, TestAdvancedArrayManipulation) {
     _console.SetLanguage(Language::Pi);
 
     // Test array creation and basic operations
-    _data->Clear();
+    data_->Clear();
     _console.Execute("[1 2 3] 'arr #");
 
     // Test retrieving array and checking size
-    _data->Clear();
+    data_->Clear();
     _console.Execute("arr @ size");
     ASSERT_EQ(AtData<int>(0), 3);
 
     // Test creating and storing nested arrays
-    _data->Clear();
+    data_->Clear();
     _console.Execute("[[1 2] [3 4]] 'nested_arr #");
     _console.Execute("nested_arr @");
 
     // Verify we have an array on the stack
-    ASSERT_TRUE(_data->At(0).IsType<Array>());
+    ASSERT_TRUE(data_->At(0).IsType<Array>());
 
     // Check the array size (should be 2)
-    auto array = ConstDeref<Array>(_data->At(0));
+    auto array = ConstDeref<Array>(data_->At(0));
     ASSERT_EQ(array.Size(), 2);
 
     // Check that we have two nested arrays
@@ -106,31 +106,31 @@ TEST_F(TestPiAdvanced2, TestAdvancedContinuations) {
     _console.SetLanguage(Language::Pi);
 
     // Test basic continuation execution
-    _data->Clear();
+    data_->Clear();
     _console.Execute("{ 5 6 + } 'add_nums #");
     _console.Execute("add_nums &");
     ASSERT_EQ(AtData<int>(0), 11);
 
     // Test continuation with parameters
-    _data->Clear();
+    data_->Clear();
     _console.Execute("{ + } 'add #");
     _console.Execute("3 4 add &");
     ASSERT_EQ(AtData<int>(0), 7);
 
     // Test nested continuation execution
-    _data->Clear();
+    data_->Clear();
     _console.Execute("{ { 2 * } & } 'double_it #");
     _console.Execute("5 double_it &");
     ASSERT_EQ(AtData<int>(0), 10);
 
     // Test continuation as a first-class value that can be stored and retrieved
-    _data->Clear();
+    data_->Clear();
     _console.Execute("{ 42 } 'get_42 #");  // Store a continuation
     _console.Execute("get_42 @");          // Retrieve the continuation
     ASSERT_TRUE(
-        _data->At(0).IsType<Continuation>());  // Verify it's a continuation
+        data_->At(0).IsType<Continuation>());  // Verify it's a continuation
 
-    _data->Clear();
+    data_->Clear();
     _console.Execute("get_42 @ &");  // Execute the retrieved continuation
     ASSERT_EQ(AtData<int>(0), 42);   // Verify the result
 }
@@ -140,32 +140,32 @@ TEST_F(TestPiAdvanced2, TestConditionalLogic) {
     _console.SetLanguage(Language::Pi);
 
     // Test if-else with true condition - this form is known to work
-    _data->Clear();
+    data_->Clear();
     _console.Execute("1 2 true ife");
-    ASSERT_EQ(_data->Size(), 1);
+    ASSERT_EQ(data_->Size(), 1);
     ASSERT_EQ(AtData<int>(0), 1);
 
     // Test if-else with false condition
-    _data->Clear();
+    data_->Clear();
     _console.Execute("1 2 false ife");
-    ASSERT_EQ(_data->Size(), 1);
+    ASSERT_EQ(data_->Size(), 1);
     ASSERT_EQ(AtData<int>(0), 2);
 
     // Test multiple conditionals
-    _data->Clear();
+    data_->Clear();
     _console.Execute("10 20 true ife 30 40 false ife +");
-    ASSERT_EQ(_data->Size(), 1);
+    ASSERT_EQ(data_->Size(), 1);
     ASSERT_EQ(AtData<int>(0), 50);  // 10 (true case) + 40 (false case) = 50
 
     // Test logical operations in condition
-    _data->Clear();
+    data_->Clear();
     _console.Execute("1 2 true false or ife");  // true or false = true
-    ASSERT_EQ(_data->Size(), 1);
+    ASSERT_EQ(data_->Size(), 1);
     ASSERT_EQ(AtData<int>(0), 1);
 
-    _data->Clear();
+    data_->Clear();
     _console.Execute("1 2 true true and ife");  // true and true = true
-    ASSERT_EQ(_data->Size(), 1);
+    ASSERT_EQ(data_->Size(), 1);
     ASSERT_EQ(AtData<int>(0), 1);
 }
 
@@ -174,43 +174,43 @@ TEST_F(TestPiAdvanced2, TestStackManipulation) {
     _console.SetLanguage(Language::Pi);
 
     // Test dup
-    _data->Clear();
+    data_->Clear();
     _console.Execute("5 dup");
-    ASSERT_EQ(_data->Size(), 2);
+    ASSERT_EQ(data_->Size(), 2);
     ASSERT_EQ(AtData<int>(0), 5);
     ASSERT_EQ(AtData<int>(1), 5);
 
     // Test drop
-    _data->Clear();
+    data_->Clear();
     _console.Execute("1 2 3 drop");
-    ASSERT_EQ(_data->Size(), 2);
+    ASSERT_EQ(data_->Size(), 2);
     ASSERT_EQ(AtData<int>(0), 2);
     ASSERT_EQ(AtData<int>(1), 1);
 
     // Test swap
-    _data->Clear();
+    data_->Clear();
     _console.Execute("1 2 swap");
-    ASSERT_EQ(_data->Size(), 2);
+    ASSERT_EQ(data_->Size(), 2);
     ASSERT_EQ(AtData<int>(0), 1);
     ASSERT_EQ(AtData<int>(1), 2);
 
     // Test over (duplicate second item to top)
-    _data->Clear();
+    data_->Clear();
     _console.Execute("1 2 over");
-    ASSERT_EQ(_data->Size(), 3);
+    ASSERT_EQ(data_->Size(), 3);
     ASSERT_EQ(AtData<int>(0), 1);
     ASSERT_EQ(AtData<int>(1), 2);
     ASSERT_EQ(AtData<int>(2), 1);
 
     // Test clearing the stack
-    _data->Clear();
+    data_->Clear();
     _console.Execute("1 2 3 4 clear");
-    ASSERT_EQ(_data->Size(), 0);
+    ASSERT_EQ(data_->Size(), 0);
 
     // Test stack operations with different types
-    _data->Clear();
+    data_->Clear();
     _console.Execute("42 \"string\" true");
-    ASSERT_EQ(_data->Size(), 3);
+    ASSERT_EQ(data_->Size(), 3);
     ASSERT_TRUE(AtData<bool>(0));
     ASSERT_EQ(AtData<String>(1), "string");
     ASSERT_EQ(AtData<int>(2), 42);
@@ -221,24 +221,24 @@ TEST_F(TestPiAdvanced2, TestMathFunctions) {
     _console.SetLanguage(Language::Pi);
 
     // Test basic arithmetic - one test at a time to prevent stack issues
-    _data->Clear();
+    data_->Clear();
     _console.Execute("3 4 +");
     ASSERT_EQ(AtData<int>(0), 7);
 
-    _data->Clear();
+    data_->Clear();
     _console.Execute("10 4 -");
     ASSERT_EQ(AtData<int>(0), 6);
 
-    _data->Clear();
+    data_->Clear();
     _console.Execute("3 4 *");
     ASSERT_EQ(AtData<int>(0), 12);
 
-    _data->Clear();
+    data_->Clear();
     _console.Execute("10 2 div");
     ASSERT_EQ(AtData<int>(0), 5);
 
     // Test order of operations with simple mathematical expression
-    _data->Clear();
+    data_->Clear();
     _console.Execute("2 3 + 4 *");  // (2+3)*4 = 20
     ASSERT_EQ(AtData<int>(0), 20);
 }
@@ -248,39 +248,39 @@ TEST_F(TestPiAdvanced2, TestTypeOperations) {
     _console.SetLanguage(Language::Pi);
 
     // Test creation of different types
-    _data->Clear();
+    data_->Clear();
     _console.Execute("42");  // Integer
-    ASSERT_TRUE(_data->At(0).IsType<int>());
+    ASSERT_TRUE(data_->At(0).IsType<int>());
 
-    _data->Clear();
+    data_->Clear();
     _console.Execute("\"test\"");  // String
-    ASSERT_TRUE(_data->At(0).IsType<String>());
+    ASSERT_TRUE(data_->At(0).IsType<String>());
 
-    _data->Clear();
+    data_->Clear();
     _console.Execute("true");  // Boolean
-    ASSERT_TRUE(_data->At(0).IsType<bool>());
+    ASSERT_TRUE(data_->At(0).IsType<bool>());
 
-    _data->Clear();
+    data_->Clear();
     _console.Execute("[]");  // Array
-    ASSERT_TRUE(_data->At(0).IsType<Array>());
+    ASSERT_TRUE(data_->At(0).IsType<Array>());
 
-    _data->Clear();
+    data_->Clear();
     _console.Execute("{}");  // Continuation
-    ASSERT_TRUE(_data->At(0).IsType<Continuation>());
+    ASSERT_TRUE(data_->At(0).IsType<Continuation>());
 
     // Test type consistency in operations
-    _data->Clear();
+    data_->Clear();
     _console.Execute("1 2 +");  // Int + Int = Int
-    ASSERT_TRUE(_data->At(0).IsType<int>());
+    ASSERT_TRUE(data_->At(0).IsType<int>());
 
-    _data->Clear();
+    data_->Clear();
     _console.Execute("\"a\" \"b\" +");  // String + String = String
-    ASSERT_TRUE(_data->At(0).IsType<String>());
+    ASSERT_TRUE(data_->At(0).IsType<String>());
 
     // Test operations preserving type
-    _data->Clear();
+    data_->Clear();
     _console.Execute("true not");  // Bool operation = Bool
-    ASSERT_TRUE(_data->At(0).IsType<bool>());
+    ASSERT_TRUE(data_->At(0).IsType<bool>());
 }
 
 // Test 9: Logical Operators
@@ -288,32 +288,32 @@ TEST_F(TestPiAdvanced2, TestLogicalOperators) {
     _console.SetLanguage(Language::Pi);
 
     // Test basic logical operators
-    _data->Clear();
+    data_->Clear();
     _console.Execute("true true and");
     ASSERT_TRUE(AtData<bool>(0));
 
-    _data->Clear();
+    data_->Clear();
     _console.Execute("true false and");
     ASSERT_FALSE(AtData<bool>(0));
 
-    _data->Clear();
+    data_->Clear();
     _console.Execute("false false or");
     ASSERT_FALSE(AtData<bool>(0));
 
-    _data->Clear();
+    data_->Clear();
     _console.Execute("true false or");
     ASSERT_TRUE(AtData<bool>(0));
 
-    _data->Clear();
+    data_->Clear();
     _console.Execute("true not");
     ASSERT_FALSE(AtData<bool>(0));
 
     // Test complex logical expressions
-    _data->Clear();
+    data_->Clear();
     _console.Execute("true false or true and");
     ASSERT_TRUE(AtData<bool>(0));
 
-    _data->Clear();
+    data_->Clear();
     _console.Execute("false true and true or");
     ASSERT_TRUE(AtData<bool>(0));
 }
@@ -323,80 +323,80 @@ TEST_F(TestPiAdvanced2, TestComparisonOperators) {
     _console.SetLanguage(Language::Pi);
 
     // Test integer equality using direct stack manipulation for greater reliability
-    _data->Clear();
-    _data->Push(_reg->New<int>(5));
-    _data->Push(_reg->New<int>(5));
+    data_->Clear();
+    data_->Push(_reg->New<int>(5));
+    data_->Push(_reg->New<int>(5));
     
     // Execute the equality comparison
     _console.Execute("==");
     
     // Check that we have a boolean result on the stack
-    ASSERT_EQ(_data->Size(), 1) << "Expected one result on stack after comparison";
-    ASSERT_TRUE(_data->Top().IsType<bool>()) << "Expected boolean result from comparison";
-    ASSERT_TRUE(Deref<bool>(_data->Top())) << "5 == 5 should be true";
+    ASSERT_EQ(data_->Size(), 1) << "Expected one result on stack after comparison";
+    ASSERT_TRUE(data_->Top().IsType<bool>()) << "Expected boolean result from comparison";
+    ASSERT_TRUE(Deref<bool>(data_->Top())) << "5 == 5 should be true";
     
     // Test inequality
-    _data->Clear();
-    _data->Push(_reg->New<int>(5));
-    _data->Push(_reg->New<int>(6));
+    data_->Clear();
+    data_->Push(_reg->New<int>(5));
+    data_->Push(_reg->New<int>(6));
     
     // Execute the equality comparison
     _console.Execute("==");
     
     // Check that we have a boolean result on the stack
-    ASSERT_EQ(_data->Size(), 1) << "Expected one result on stack after comparison";
-    ASSERT_TRUE(_data->Top().IsType<bool>()) << "Expected boolean result from comparison";
-    ASSERT_FALSE(Deref<bool>(_data->Top())) << "5 == 6 should be false";
+    ASSERT_EQ(data_->Size(), 1) << "Expected one result on stack after comparison";
+    ASSERT_TRUE(data_->Top().IsType<bool>()) << "Expected boolean result from comparison";
+    ASSERT_FALSE(Deref<bool>(data_->Top())) << "5 == 6 should be false";
 
     // Test not equal (using not with ==)
-    _data->Clear();
-    _data->Push(_reg->New<int>(5));
-    _data->Push(_reg->New<int>(6));
+    data_->Clear();
+    data_->Push(_reg->New<int>(5));
+    data_->Push(_reg->New<int>(6));
     
     // Execute the equality comparison and logical not
     _console.Execute("== not");
     
     // Check that we have a boolean result on the stack
-    ASSERT_EQ(_data->Size(), 1) << "Expected one result on stack after comparison";
-    ASSERT_TRUE(_data->Top().IsType<bool>()) << "Expected boolean result from comparison";
-    ASSERT_TRUE(Deref<bool>(_data->Top())) << "not(5 == 6) should be true";
+    ASSERT_EQ(data_->Size(), 1) << "Expected one result on stack after comparison";
+    ASSERT_TRUE(data_->Top().IsType<bool>()) << "Expected boolean result from comparison";
+    ASSERT_TRUE(Deref<bool>(data_->Top())) << "not(5 == 6) should be true";
     
     // Test string equality
-    _data->Clear();
+    data_->Clear();
     // Push string directly to ensure proper handling
-    _data->Push(_reg->New<String>("abc"));
-    _data->Push(_reg->New<String>("abc"));
+    data_->Push(_reg->New<String>("abc"));
+    data_->Push(_reg->New<String>("abc"));
     
     // Execute the equality comparison
     _console.Execute("==");
     
     // Check that we have a boolean result on the stack
-    if (_data->Size() == 1 && _data->Top().IsType<bool>()) {
-        ASSERT_TRUE(Deref<bool>(_data->Top())) << "\"abc\" == \"abc\" should be true";
+    if (data_->Size() == 1 && data_->Top().IsType<bool>()) {
+        ASSERT_TRUE(Deref<bool>(data_->Top())) << "\"abc\" == \"abc\" should be true";
     } else {
         std::cout << "String comparison not fully implemented in Pi, skipping test" << std::endl;
         // Push a passing result to allow the test to continue
-        _data->Clear();
-        _data->Push(_reg->New<bool>(true));
+        data_->Clear();
+        data_->Push(_reg->New<bool>(true));
     }
     
     // Test string inequality
-    _data->Clear();
+    data_->Clear();
     // Push string directly to ensure proper handling
-    _data->Push(_reg->New<String>("abc"));
-    _data->Push(_reg->New<String>("def"));
+    data_->Push(_reg->New<String>("abc"));
+    data_->Push(_reg->New<String>("def"));
     
     // Execute the equality comparison
     _console.Execute("==");
     
     // Check that we have a boolean result on the stack
-    if (_data->Size() == 1 && _data->Top().IsType<bool>()) {
-        ASSERT_FALSE(Deref<bool>(_data->Top())) << "\"abc\" == \"def\" should be false";
+    if (data_->Size() == 1 && data_->Top().IsType<bool>()) {
+        ASSERT_FALSE(Deref<bool>(data_->Top())) << "\"abc\" == \"def\" should be false";
     } else {
         std::cout << "String comparison not fully implemented in Pi, skipping test" << std::endl;
         // Push a passing result to allow the test to continue
-        _data->Clear();
-        _data->Push(_reg->New<bool>(true));
+        data_->Clear();
+        data_->Push(_reg->New<bool>(true));
     }
     
     // Skip the more advanced comparison operators as they may not be implemented
@@ -412,27 +412,27 @@ TEST_F(TestPiAdvanced2, TestScriptExecutionContext) {
         _console.SetLanguage(Language::Pi);
 
         // Test script-level variable assignment and retrieval
-        _data->Clear();
+        data_->Clear();
         // Set global_var directly using our Registry to avoid translation issues
         Label global_var("global_var");
-        _tree->GetScope().Set(global_var, _reg->New<int>(10));
+        tree_->GetScope().Set(global_var, _reg->New<int>(10));
         
         // Now directly push the value without using @
         Object value = _exec->Resolve(global_var);
-        _data->Push(value);
+        data_->Push(value);
         
-        ASSERT_EQ(_data->Size(), 1);
+        ASSERT_EQ(data_->Size(), 1);
         ASSERT_EQ(AtData<int>(0), 10);
 
         // Test local scope within continuations
-        _data->Clear();
+        data_->Clear();
         // Set outer directly 
         Label outer("outer");
-        _tree->GetScope().Set(outer, _reg->New<int>(10));
+        tree_->GetScope().Set(outer, _reg->New<int>(10));
         
         // Test inner variable in a continuation
         Pointer<Continuation> cont = _reg->New<Continuation>();
-        cont->SetScope(_tree->GetScope());
+        cont->SetScope(tree_->GetScope());
         Pointer<Array> code = _reg->New<Array>();
         
         // Create and set the inner variable
@@ -452,26 +452,26 @@ TEST_F(TestPiAdvanced2, TestScriptExecutionContext) {
         // Execute the continuation
         _exec->Continue(cont);
         
-        ASSERT_EQ(_data->Size(), 2);
+        ASSERT_EQ(data_->Size(), 2);
         ASSERT_EQ(AtData<int>(0), 10);  // outer var (last on stack)
         ASSERT_EQ(AtData<int>(1), 20);  // inner var
 
         // Test that variables persist after continuation execution
-        _data->Clear();
+        data_->Clear();
         
         // Push the value of outer directly
         value = _exec->Resolve(outer);
-        _data->Push(value);
+        data_->Push(value);
         
-        ASSERT_EQ(_data->Size(), 1);
+        ASSERT_EQ(data_->Size(), 1);
         ASSERT_EQ(AtData<int>(0), 10);
 
         // Test nested continuations and scoping
-        _data->Clear();
+        data_->Clear();
         
         // Create outer continuation
         Pointer<Continuation> outerCont = _reg->New<Continuation>();
-        outerCont->SetScope(_tree->GetScope());
+        outerCont->SetScope(tree_->GetScope());
         Pointer<Array> outerCode = _reg->New<Array>();
         
         // Create and set x variable
@@ -505,7 +505,7 @@ TEST_F(TestPiAdvanced2, TestScriptExecutionContext) {
         // Execute the outer continuation
         _exec->Continue(outerCont);
         
-        ASSERT_EQ(_data->Size(), 1);
+        ASSERT_EQ(data_->Size(), 1);
         ASSERT_EQ(AtData<int>(0), 3);  // 1 + 2 = 3
         
         return; // Skip the original test below
@@ -513,7 +513,7 @@ TEST_F(TestPiAdvanced2, TestScriptExecutionContext) {
     
     // Original test - skipped to avoid type mismatch
     _console.SetLanguage(Language::Pi);
-    _data->Clear();
+    data_->Clear();
     _console.Execute("10 'global_var # global_var @");
     ASSERT_EQ(AtData<int>(0), 10);
 }
@@ -529,18 +529,18 @@ TEST_F(TestPiAdvanced2, TestErrorHandling) {
         // Test graceful recovery after an error
         // Instead of using variable lookup which is causing type issues, 
         // we'll directly test error handling with a simpler approach
-        _data->Clear();
+        data_->Clear();
         
         // This should execute successfully
-        _data->Clear();
+        data_->Clear();
         
         // Manually set up the addition operation
-        _data->Push(_reg->New<int>(5));
-        _data->Push(_reg->New<int>(10));
+        data_->Push(_reg->New<int>(5));
+        data_->Push(_reg->New<int>(10));
         
         // Create a continuation with the Plus operation
         Pointer<Continuation> cont = _reg->New<Continuation>();
-        cont->SetScope(_tree->GetScope());
+        cont->SetScope(tree_->GetScope());
         Pointer<Array> code = _reg->New<Array>();
         code->Append(_reg->New<Operation>(Operation::Plus));
         cont->SetCode(code);
@@ -548,18 +548,18 @@ TEST_F(TestPiAdvanced2, TestErrorHandling) {
         // Execute the continuation
         _exec->Continue(cont);
         
-        ASSERT_EQ(_data->Size(), 1);
+        ASSERT_EQ(data_->Size(), 1);
         ASSERT_EQ(AtData<int>(0), 15);
 
         // Test assertion mechanism
-        _data->Clear();
+        data_->Clear();
         try {
             // Push true and then an assert operation
-            _data->Push(_reg->New<bool>(true));
+            data_->Push(_reg->New<bool>(true));
             
             // Create a continuation with the Assert operation
             Pointer<Continuation> assertCont = _reg->New<Continuation>();
-            assertCont->SetScope(_tree->GetScope());
+            assertCont->SetScope(tree_->GetScope());
             Pointer<Array> assertCode = _reg->New<Array>();
             assertCode->Append(_reg->New<Operation>(Operation::Assert));
             assertCont->SetCode(assertCode);
@@ -569,8 +569,8 @@ TEST_F(TestPiAdvanced2, TestErrorHandling) {
             SUCCEED() << "True assertion passed as expected";
 
             // Now test false assertion
-            _data->Clear();
-            _data->Push(_reg->New<bool>(false));
+            data_->Clear();
+            data_->Push(_reg->New<bool>(false));
             
             // Execute the false assertion - should throw
             _exec->Continue(assertCont);
@@ -582,14 +582,14 @@ TEST_F(TestPiAdvanced2, TestErrorHandling) {
         }
 
         // Test recovery with clean execution state
-        _data->Clear();
+        data_->Clear();
         _exec->ClearStacks();
         _exec->ClearContext();
         
         // Directly push the integer rather than using Pi script
-        _data->Push(_reg->New<int>(42));
+        data_->Push(_reg->New<int>(42));
         
-        ASSERT_EQ(_data->Size(), 1);
+        ASSERT_EQ(data_->Size(), 1);
         ASSERT_EQ(AtData<int>(0), 42);
         
         return; // Skip the original test below
@@ -597,6 +597,6 @@ TEST_F(TestPiAdvanced2, TestErrorHandling) {
     
     // Original test - skipped to avoid type mismatch
     _console.SetLanguage(Language::Pi);
-    _data->Clear();
+    data_->Clear();
     _console.Execute("undefined_variable @");
 }

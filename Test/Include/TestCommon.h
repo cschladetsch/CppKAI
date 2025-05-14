@@ -24,7 +24,7 @@ std::string LoadScriptText(const char *filename);
 class TestCommon : public ::testing::Test {
    protected:
     Registry *_reg = nullptr;
-    Tree *_tree = nullptr;
+    Tree *tree_ = nullptr;
     Object _root;
 
     ~TestCommon() {}

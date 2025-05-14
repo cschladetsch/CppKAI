@@ -15,7 +15,7 @@ enum class Structure {
     Function,    // a thing that gives output given some or no input
     Program,     // deprecated. to be replaced by module/namespace
     Namespace,   // a scoped collection of things
-    Class,       // a collection of _properties, events, and _methods
+    Class,       // a collection of properties_, events, and methods_
 };
 
 StringStream &operator<<(StringStream &S, const Structure &T);

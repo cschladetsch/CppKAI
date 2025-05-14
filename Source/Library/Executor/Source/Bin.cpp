@@ -137,7 +137,7 @@ void ExitToOS(int N) { exit(N); }
         type_number.GetRegistry()->GetClass(*type_number));
 }
 
-/// returns a pair containing the _methods and _properties of a class
+/// returns a pair containing the methods_ and properties_ of a class
 /*Pointer<Pair>*/ Object Describe(Object Q) {
     Pointer<Pair> P = Q.GetRegistry()->New<Pair>();
     P->first = GetMethods(Q);
@@ -165,7 +165,7 @@ void AddFunctions(Object Q) {
     ADD_FUN(GetProperties,
             "Returns an Array of all Properties for a given Object");
     ADD_FUN(Describe, "Returns Methods and Properties for a given Object");
-    ADD_FUN(info, "Prints the _methods and _properties");
+    ADD_FUN(info, "Prints the methods_ and properties_");
     AddFunction(Q, ExitToOS, Label("Exit"), "Ends the Session");
     ADD_FUN(Assert, "Throws AssertionFailed if Object equates to False");
     ADD_FUN(Freeze, "Inserts Object into a BinaryStream");

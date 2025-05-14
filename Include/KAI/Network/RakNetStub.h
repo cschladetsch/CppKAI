@@ -94,10 +94,10 @@ class BitStream {
     BitStream() : readPos(0) {}
 
     // Constructor taking pointer to data and length
-    BitStream(unsigned char* _data, size_t length, bool copyData) : readPos(0) {
-        if (copyData && _data != nullptr && length > 0) {
+    BitStream(unsigned char* data_, size_t length, bool copyData) : readPos(0) {
+        if (copyData && data_ != nullptr && length > 0) {
             data.resize(length);
-            memcpy(data.data(), _data, length);
+            memcpy(data.data(), data_, length);
         }
     }
 

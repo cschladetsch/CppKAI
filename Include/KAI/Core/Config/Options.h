@@ -3,7 +3,7 @@
 // defined to place the system into a single namespace
 #define KAI_OPTION_USE_NAMESPACES
 
-// if KAI_OPTION_USE_NAMESPACES is defined, this is the namespace _name to use
+// if KAI_OPTION_USE_NAMESPACES is defined, this is the namespace name_ to use
 // #define KAI_NAMESPACE_NAME kai
 #ifndef KAI_NAMESPACE_NAME
 // Namespace defaults to 'kai' if not defined elsewhere (e.g. in CMakeLists.txt)
@@ -39,7 +39,7 @@
 
 #ifdef KAI_DEBUG
 // if KAI_OBJECT_HAS_STORAGEBASE is defined, a pointer to the value of the
-// stored inside it with the _name 'storage'. this is entirely for debugging
+// stored inside it with the name_ 'storage'. this is entirely for debugging
 // purposes.
 #define KAI_OBJECT_HAS_STORAGEBASE
 #define KAI_POINTER_HAS_STORAGEBASE

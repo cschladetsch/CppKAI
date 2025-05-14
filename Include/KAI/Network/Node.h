@@ -19,7 +19,7 @@ class PeerDiscovery;
 struct Node {
    private:
     RakNet::RakPeerInterface *_peer;
-    bool _isRunning;
+    bool isRunning_;
     std::unique_ptr<ConnectionManager> _connectionManager;
     std::unique_ptr<PeerDiscovery> _peerDiscovery;
 
@@ -35,7 +35,7 @@ struct Node {
     void Disconnect();
     void Shutdown();
 
-    bool IsRunning() const { return _isRunning; }
+    bool IsRunning() const { return isRunning_; }
     bool Update();  // Process incoming messages, returns true if messages were
                     // processed
 
@@ -91,8 +91,8 @@ struct Node {
                                HashNetHandle>
         Agents;
 
-    Agents _agents;
-    Proxies _proxies;
+    Agents agents_;
+    Proxies proxies_;
 };
 
 KAI_NET_END

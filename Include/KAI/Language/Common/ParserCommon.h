@@ -9,7 +9,7 @@
 KAI_BEGIN
 
 // common for all parsers.
-// iterate over a stream of tokens to produce an abstract syntax _tree
+// iterate over a stream of tokens to produce an abstract syntax tree_
 template <class ELexer, class AstEnumStruct>
 class ParserCommon : public ProcessCommon {
    public:

@@ -21,7 +21,7 @@ class TokenBase;
 template <class Token>
 class LexerCommon;
 
-// a node in the AST _tree given the AST type
+// a node in the AST tree_ given the AST type
 // TODO: rename to AstCommon. Current tools make this hard.
 template <class AstEnum>
 class NodeBase;

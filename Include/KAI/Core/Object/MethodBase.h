@@ -8,7 +8,7 @@
 
 KAI_BEGIN
 
-/// Common for all _methods that return void or not, and are const or not
+/// Common for all methods_ that return void or not, and are const or not
 class MethodBase : public CallableBase<MethodBase> {
    public:
     Type::Number class_type;

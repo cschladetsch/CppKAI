@@ -36,7 +36,7 @@ bool GenerateProcess::Generate(TauParser const &p, string &output) {
     if (!Module(p)) return false;
 
     stringstream str;
-    str << CommonPrepend() << Prepend() << _str.str() << ends;
+    str << CommonPrepend() << Prepend() << str_.str() << ends;
     output = str.str();
     return !Failed;
 }
@@ -115,10 +115,10 @@ bool GenerateProcess::Method(Node const &method) { return true; }
 string GenerateProcess::Prepend() const { return ""; }
 
 stringstream &GenerateProcess::StartBlock(const string &name) {
-    _str << name << EndLine() << '{';
+    str_ << name << EndLine() << '{';
     _indentation++;
-    _str << EndLine();
-    return _str;
+    str_ << EndLine();
+    return str_;
 }
 
 string GenerateProcess::EndLine() const {
@@ -129,7 +129,7 @@ string GenerateProcess::EndLine() const {
 
 void GenerateProcess::EndBlock() {
     _indentation--;
-    _str << EndLine() << '}';
+    str_ << EndLine() << '}';
 }
 }  // namespace Generate
 

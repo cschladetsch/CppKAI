@@ -9,7 +9,7 @@
 
 KAI_BEGIN
 
-/// A Pathname represents a qualified _name for an Object
+/// A Pathname represents a qualified name_ for an Object
 class Pathname {
    public:
     struct Literals {

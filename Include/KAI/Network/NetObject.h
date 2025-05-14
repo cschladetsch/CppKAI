@@ -6,7 +6,7 @@
 KAI_NET_BEGIN
 
 struct NetObject : Object {
-    NetHandle _netHandle;
+    NetHandle netHandle_;
     Domain *_domain;
 
    public:

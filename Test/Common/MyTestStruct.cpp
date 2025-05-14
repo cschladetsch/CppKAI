@@ -5,7 +5,7 @@
 KAI_BEGIN
 
 // this is a C++ struct that we will reflect to access at runtime via scripting
-// note that we do not have to derive from any magic base _classes
+// note that we do not have to derive from any magic base classes_
 // note as well that there is no need for magic macros in the class definition
 // this also means that we can reflect any C++ class, even if we do not
 // have access to its source code. no recompile is needed.
