@@ -4,22 +4,43 @@
 
 #include <string>
 #include <vector>
+#include <map>
+#include <sstream>
+#include <iomanip>
 
 using namespace std;
 
 KAI_BEGIN
 
-// TODO: it's pretty old-school to not have a header and just use a single
-// static instance via ShowExecutorWindow()....
+// Enum for the available tabs in the console window
+enum class ConsoleTab {
+    Pi,
+    Rho,
+    Debugger
+};
+
+// A tabbed console with Pi, Rho, and Debugger tabs
 struct ExecutorWindow {
-    // deprecating...
+    // Input and history state
     char InputBuf[256];
     int HistoryPos;  // -1: new line, 0..History.Size-1 browsing history.
     bool ScrollToBottom;
 
-    vector<string> Items;
-    vector<string> History;
-
+    // Output for each language
+    map<Language, vector<string>> Items;
+    map<Language, vector<string>> History;
+    
+    // Current active language and tab
+    Language CurrentLanguage;
+    ConsoleTab CurrentTab;
+    
+    // Debugger state
+    bool IsDebugging = false;
+    int DebugStepCount = 0;
+    vector<string> DebugLog;
+    int WatchIndex = 0;
+    
+    // KAI console objects
     Console _console;
     Tree* _tree;
     Executor* _exec;
@@ -27,17 +48,46 @@ struct ExecutorWindow {
 
     ExecutorWindow() {
         HistoryPos = -1;
+        CurrentLanguage = Language::Pi;
+        CurrentTab = ConsoleTab::Pi;
 
-        _console.SetLanguage(Language::Pi);
+        // Initialize console with Pi language by default
+        _console.SetLanguage(CurrentLanguage);
         _exec = &*_console.GetExecutor();
         _reg = &_console.GetRegistry();
         _tree = &_console.GetTree();
 
-        ClearLog();
+        // Initialize language-specific logs
+        Items[Language::Pi] = vector<string>();
+        Items[Language::Rho] = vector<string>();
+        
+        // Initialize language-specific history
+        History[Language::Pi] = vector<string>();
+        History[Language::Rho] = vector<string>();
+        
+        // Initialize debugger log
+        DebugLog.push_back("Debugger initialized");
+        
+        // Register core types
+        _reg->AddClass<int>(Label("int"));
+        _reg->AddClass<bool>(Label("bool"));
+        _reg->AddClass<String>(Label("String"));
     }
 
-    void ClearLog() {
-        Items.clear();
+    void ClearLog(Language lang = Language::None) {
+        if (lang == Language::None) {
+            lang = CurrentLanguage;
+        }
+        
+        Items[lang].clear();
+        ScrollToBottom = true;
+    }
+
+    void ClearAllLogs() {
+        Items[Language::Pi].clear();
+        Items[Language::Rho].clear();
+        DebugLog.clear();
+        DebugLog.push_back("Debugger reset");
         ScrollToBottom = true;
     }
 
@@ -49,261 +99,343 @@ struct ExecutorWindow {
         buf[strlen(buf)] = 0;
         va_end(args);
 
-        Items.push_back(buf);
+        if (CurrentTab == ConsoleTab::Debugger) {
+            DebugLog.push_back(buf);
+        } else {
+            Items[CurrentLanguage].push_back(buf);
+        }
+        
         ScrollToBottom = true;
     }
 
+    void SwitchLanguage(Language lang) {
+        if (CurrentLanguage != lang) {
+            CurrentLanguage = lang;
+            _console.SetLanguage(CurrentLanguage);
+            _exec = &*_console.GetExecutor();
+            
+            // Clear the input buffer when switching languages
+            InputBuf[0] = '\0';
+        }
+    }
+    
+    void SwitchTab(ConsoleTab tab) {
+        if (CurrentTab != tab) {
+            CurrentTab = tab;
+            
+            // If switching to a language tab, ensure the corresponding language is set
+            if (tab == ConsoleTab::Pi) {
+                SwitchLanguage(Language::Pi);
+            } 
+            else if (tab == ConsoleTab::Rho) {
+                SwitchLanguage(Language::Rho);
+            }
+            
+            // Clear the input buffer when switching tabs
+            InputBuf[0] = '\0';
+        }
+    }
+
     void Draw(const char* title, bool* p_open) {
-        ImGui::SetNextWindowSize(ImVec2(520, 600), ImGuiSetCond_FirstUseEver);
+        ImGui::SetNextWindowSize(ImVec2(700, 600), ImGuiCond_FirstUseEver);
         if (!ImGui::Begin(title, p_open)) {
             ImGui::End();
             return;
         }
 
-        // TODO: display items starting from the bottom
+        // Create tab selection buttons
+        if (ImGui::Button("Pi")) {
+            SwitchTab(ConsoleTab::Pi);
+        }
+        ImGui::SameLine();
+        
+        if (ImGui::Button("Rho")) {
+            SwitchTab(ConsoleTab::Rho);
+        }
+        ImGui::SameLine();
+        
+        if (ImGui::Button("Debugger")) {
+            SwitchTab(ConsoleTab::Debugger);
+        }
+        
+        // Show current tab
+        ImGui::SameLine();
+        std::string currentTabName;
+        switch (CurrentTab) {
+            case ConsoleTab::Pi: currentTabName = "Pi"; break;
+            case ConsoleTab::Rho: currentTabName = "Rho"; break;
+            case ConsoleTab::Debugger: currentTabName = "Debugger"; break;
+        }
+        ImGui::Text("Current: %s", currentTabName.c_str());
+        
+        ImGui::Separator();
+        
+        // Draw content based on current tab
+        if (CurrentTab == ConsoleTab::Debugger) {
+            DrawDebuggerContent();
+        } else {
+            DrawConsoleContent();
+        }
 
-        if (ImGui::SmallButton("Clear")) ClearLog();
-
-        // ImGui::SameLine();
-        // if (ImGui::SmallButton("Scroll to bottom")) ScrollToBottom = true;
+        ImGui::End();
+    }
+    
+    void DrawConsoleContent() {
+        // Control buttons
+        if (ImGui::SmallButton("Clear")) {
+            ClearLog();
+        }
+        ImGui::SameLine();
+        if (ImGui::SmallButton("Clear Stack")) {
+            _exec->ClearStacks();
+            AddLog("Stack cleared");
+        }
 
         ImGui::Separator();
 
-        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-        ImGui::PopStyleVar();
-        ImGui::Separator();
-
+        // Output region
         ImGui::BeginChild("ScrollingRegion",
-                          ImVec2(0, -ImGui::GetItemsLineHeightWithSpacing()),
-                          false, ImGuiWindowFlags_HorizontalScrollbar);
+                        ImVec2(0, -ImGui::GetItemsLineHeightWithSpacing()),
+                        false, ImGuiWindowFlags_HorizontalScrollbar);
+        
         if (ImGui::BeginPopupContextWindow()) {
             if (ImGui::Selectable("Clear")) ClearLog();
             ImGui::EndPopup();
         }
 
-        // Display every line as a separate entry so we can change their color
-        // or add custom widgets. If you only want raw text you can use
-        // ImGui::TextUnformatted(log.begin(), log.end()); NB- if you have
-        // thousands of entries this approach may be too inefficient and may
-        // require user-side clipping to only process visible items. You can
-        // seek and display only the lines that are visible using the
-        // ImGuiListClipper helper, if your elements are evenly spaced and you
-        // have cheap random access to the elements. To use the clipper we could
-        // replace the 'for (int i = 0; i < Items.Size; i++)' loop with:
-        //     ImGuiListClipper clipper(Items.Size);
-        //     while (clipper.Step())
-        //         for (int i = clipper.DisplayStart; i < clipper.DisplayEnd;
-        //         i++)
-        // However take note that you can not use this code as is if a filter is
-        // active because it breaks the 'cheap random-access' property. We would
-        // need random-access on the post-filtered list. A typical application
-        // wanting coarse clipping and filtering may want to pre-compute an
-        // array of indices that passed the filtering test, recomputing this
-        // array when user changes the filter, and appending newly elements as
-        // they are inserted. This is left as a task to the user until we can
-        // manage to improve this example code! If your items are of variable
-        // size you may want to implement code similar to what ImGuiListClipper
-        // does. Or split your data into fixed height items to allow
-        // random-seeking into your list.
-        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing,
-                            ImVec2(4, 1));  // Tighten spacing
-        for (size_t i = 0; i < Items.size(); i++) {
-            const string& item = Items[i];
-            // if (!filter.PassFilter(item))
-            //     continue;
-            // ImVec4 col = ImVec4(1.0f,1.0f,1.0f,1.0f); // A better
-            // implementation may store a type per-item. For the sample let's
-            // just parse the text. if (strstr(item, "[error]")) col =
-            // ImColor(1.0f,0.4f,0.4f,1.0f); else if (strncmp(item, "# ", 2) ==
-            // 0) col = ImColor(1.0f,0.78f,0.58f,1.0f);
-            // ImGui::PushStyleColor(ImGuiCol_Text, col);
+        // Display every line as a separate entry
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 1));  // Tighten spacing
+        
+        const auto& currentItems = Items[CurrentLanguage];
+        for (size_t i = 0; i < currentItems.size(); i++) {
+            const string& item = currentItems[i];
             ImGui::TextUnformatted(item.c_str());
-            // ImGui::PopStyleColor();
         }
 
-        if (ScrollToBottom) ImGui::SetScrollHere();
+        if (ScrollToBottom) ImGui::SetScrollHereY(1.0f);
         ScrollToBottom = false;
 
         ImGui::PopStyleVar();
         ImGui::EndChild();
         ImGui::Separator();
 
-        // Prompt
-        // ImGui::BeginChild("Prompt");
-        // ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0,0));
-        // ImGui::PopStyleVar();
-        // ImGui::LabelText("> ", "%s", _console.GetPrompt().c_str());
-        // ImGui::EndChild();
-        // ImGui::Separator();
-
         // Command-line
-        if (ImGui::InputText("Input", InputBuf, sizeof(InputBuf),
-                             ImGuiInputTextFlags_EnterReturnsTrue |
-                                 ImGuiInputTextFlags_CallbackCompletion |
-                                 ImGuiInputTextFlags_CallbackHistory,
-                             &TextEditCallbackStub, (void*)this)) {
+        bool reclaim_focus = false;
+        ImGuiInputTextFlags input_text_flags = ImGuiInputTextFlags_EnterReturnsTrue;
+        
+        // Show language indicator in the input field
+        string inputLabel = (CurrentLanguage == Language::Pi) ? "Pi>" : "Rho>";
+        
+        if (ImGui::InputText(inputLabel.c_str(), InputBuf, sizeof(InputBuf), input_text_flags)) {
             char* input_end = InputBuf + strlen(InputBuf);
             while (input_end > InputBuf && input_end[-1] == ' ') input_end--;
 
             *input_end = 0;
 
-            if (InputBuf[0]) ExecCommand(InputBuf);
+            if (InputBuf[0]) {
+                // Add to history
+                History[CurrentLanguage].push_back(InputBuf);
+                
+                // Execute the command
+                ExecCommand(InputBuf);
+            }
+            
             strcpy(InputBuf, "");
+            reclaim_focus = true;
         }
 
-        // Demonstrate keeping auto focus on the input box
-        if (ImGui::IsItemHovered() ||
-            (ImGui::IsRootWindowOrAnyChildFocused() &&
-             !ImGui::IsAnyItemActive() && !ImGui::IsMouseClicked(0))) {
-            ImGui::SetKeyboardFocusHere(-1);  // Auto focus previous widget
+        // Auto-focus on window apparition
+        ImGui::SetItemDefaultFocus();
+        if (reclaim_focus)
+            ImGui::SetKeyboardFocusHere(-1); // Auto focus previous widget
+    }
+    
+    void DrawDebuggerContent() {
+        ImGui::BeginChild("DebuggerControls", ImVec2(0, 50), true);
+        
+        if (ImGui::Button(IsDebugging ? "Stop" : "Start Debugging")) {
+            IsDebugging = !IsDebugging;
+            if (IsDebugging) {
+                AddLog("Debugging started");
+            } else {
+                AddLog("Debugging stopped");
+            }
         }
-
-        ImGui::End();
+        
+        ImGui::SameLine();
+        
+        if (ImGui::Button("Step") && IsDebugging) {
+            ExecuteDebugStep();
+        }
+        
+        ImGui::SameLine();
+        
+        if (ImGui::Button("Clear")) {
+            DebugLog.clear();
+            DebugLog.push_back("Debugger log cleared");
+        }
+        
+        ImGui::EndChild();
+        
+        // Split view with stack/context view on the left, log on the right
+        ImGui::Columns(2, "debugger_columns");
+        
+        // Left column - Stack & Context
+        ImGui::BeginChild("StackView", ImVec2(0, 200), true);
+        ImGui::Text("Data Stack");
+        
+        if (_exec->GetDataStack()->Size() > 0) {
+            for (int i = 0; i < _exec->GetDataStack()->Size(); i++) {
+                auto obj = _exec->GetDataStack()->At(i);
+                StringStream st;
+                st << i << ": " << obj;
+                
+                if (ImGui::Selectable(st.ToString().c_str(), WatchIndex == i)) {
+                    WatchIndex = i;
+                }
+            }
+        } else {
+            ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "Stack is empty");
+        }
+        
+        ImGui::EndChild();
+        
+        ImGui::BeginChild("ContextView", ImVec2(0, 0), true);
+        ImGui::Text("Context");
+        
+        // Show information about the currently selected variable if available
+        if (_exec->GetDataStack()->Size() > 0 && WatchIndex >= 0 && WatchIndex < _exec->GetDataStack()->Size()) {
+            auto obj = _exec->GetDataStack()->At(WatchIndex);
+            
+            ImGui::Separator();
+            ImGui::Text("Watch - Stack Item %d", WatchIndex);
+            
+            // Display type information safely
+            int typeNum = obj.GetTypeNumber().ToInt();
+            ImGui::Text("Type: %d", typeNum);
+            
+            // Show string representation
+            StringStream st;
+            st << obj;
+            ImGui::TextWrapped("Value: %s", st.ToString().c_str());
+            
+            // Show object information
+            ImGui::Text("Valid: %s", obj.Exists() ? "Yes" : "No");
+        }
+        
+        ImGui::EndChild();
+        
+        ImGui::NextColumn();
+        
+        // Right column - Debug Log
+        ImGui::BeginChild("DebugLog", ImVec2(0, 0), true, ImGuiWindowFlags_HorizontalScrollbar);
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 1));
+        
+        for (const auto& log : DebugLog) {
+            ImGui::TextUnformatted(log.c_str());
+        }
+        
+        if (ScrollToBottom) ImGui::SetScrollHereY(1.0f);
+        
+        ImGui::PopStyleVar();
+        ImGui::EndChild();
+        
+        ImGui::Columns(1);
+    }
+    
+    void ExecuteDebugStep() {
+        DebugStepCount++;
+        AddLog("Step %d", DebugStepCount);
+        
+        // Show current executor state
+        StringStream st;
+        st << "Data Stack Size: " << _exec->GetDataStack()->Size();
+        AddLog("%s", st.ToString().c_str());
+        
+        // Show all stack items
+        if (_exec->GetDataStack()->Size() > 0) {
+            AddLog("Stack:");
+            for (int i = 0; i < _exec->GetDataStack()->Size(); i++) {
+                auto obj = _exec->GetDataStack()->At(i);
+                StringStream itemSt;
+                itemSt << "  " << i << ": " << obj;
+                AddLog("%s", itemSt.ToString().c_str());
+            }
+        }
+        
+        // Execute a simple operation to see the result (increment step counter)
+        try {
+            // Try to execute a simple Pi operation to see stack changes
+            if (CurrentLanguage == Language::Pi) {
+                _console.Execute("dup", Structure::Expression);
+                AddLog("Executed 'dup' operation");
+            }
+            else {
+                // For Rho, show scope information instead
+                AddLog("Current scope information:");
+                Object scope = _exec->GetScope();
+                if (scope.Exists()) {
+                    StringStream scopeSt;
+                    scopeSt << scope;
+                    AddLog("%s", scopeSt.ToString().c_str());
+                }
+                else {
+                    AddLog("No active scope");
+                }
+            }
+        }
+        catch (Exception::Base& e) {
+            AddLog("Debug operation failed: %s", e.ToString().c_str());
+        }
     }
 
     void ExecCommand(const char* command_line) {
+        // Add the command to the log first
+        string cmdWithPrompt = (CurrentLanguage == Language::Pi) ? "Pi> " : "Rho> ";
+        cmdWithPrompt += command_line;
+        AddLog("%s", cmdWithPrompt.c_str());
+        
+        // If in debugger tab, automatically switch to the corresponding language tab
+        if (CurrentTab == ConsoleTab::Debugger) {
+            CurrentTab = (CurrentLanguage == Language::Pi) ? ConsoleTab::Pi : ConsoleTab::Rho;
+        }
+        
+        // Execute the command
         try {
-            _console.Execute(command_line, Structure::Expression);
-        } catch (Exception::Base& e) {
+            Structure structure = (CurrentLanguage == Language::Pi) 
+                ? Structure::Expression 
+                : Structure::Statement;
+                
+            _console.Execute(command_line, structure);
+            
+            // Report stack contents
+            if (_exec->GetDataStack()->Size() > 0) {
+                AddLog("Stack:");
+                for (auto obj : *_exec->GetDataStack()) {
+                    StringStream st;
+                    st << "  " << obj;
+                    AddLog("%s", st.ToString().c_str());
+                }
+            }
+            else {
+                AddLog("Stack is empty");
+            }
+        } 
+        catch (Exception::Base& e) {
             StringStream st;
-            st << e.ToString() << "\n";
+            st << "Error: " << e.ToString();
+            
             ImVec4 color(1, 0, 0, 1);
             ImGui::PushStyleColor(ImGuiCol_Text, color);
-            AddLog(st.ToString().c_str());
+            AddLog("%s", st.ToString().c_str());
             ImGui::PopStyleColor();
-            return;
         }
-
-        ClearLog();
-
-        // draw executor data stack
-        for (auto obj : *_exec->GetDataStack()) {
-            StringStream st;
-            st << obj << "\n";
-            AddLog(st.ToString().c_str());
-        }
-    }
-
-    static int TextEditCallbackStub(ImGuiTextEditCallbackData* data) {
-        ExecutorWindow* console = (ExecutorWindow*)data->UserData;
-        return console->TextEditCallback(data);
-    }
-
-    int TextEditCallback(ImGuiTextEditCallbackData* data) {
-        // //AddLog("cursor: %d, selection: %d-%d", data->CursorPos,
-        // data->SelectionStart, data->SelectionEnd); switch (data->EventFlag)
-        // {
-        // case ImGuiInputTextFlags_CallbackCompletion:
-        //     {
-        //         // Example of TEXT COMPLETION
-
-        //         // Locate beginning of current word
-        //         const char* word_end = data->Buf + data->CursorPos;
-        //         const char* word_start = word_end;
-        //         while (word_start > data->Buf)
-        //         {
-        //             const char c = word_start[-1];
-        //             if (c == ' ' || c == '\t' || c == ',' || c == ';')
-        //                 break;
-        //             word_start--;
-        //         }
-
-        //         // Build a list of candidates
-        //         ImVector<const char*> candidates;
-        //         for (int i = 0; i < Commands.Size; i++)
-        //             if (Strnicmp(Commands[i], word_start,
-        //             (int)(word_end-word_start)) == 0)
-        //                 candidates.push_back(Commands[i]);
-
-        //         if (candidates.Size == 0)
-        //         {
-        //             // No match
-        //             AddLog("No match for \"%.*s\"!\n",
-        //             (int)(word_end-word_start), word_start);
-        //         }
-        //         else if (candidates.Size == 1)
-        //         {
-        //             // Single match. Delete the beginning of the word and
-        //             replace it entirely so we've got nice casing
-        //             data->DeleteChars((int)(word_start-data->Buf),
-        //             (int)(word_end-word_start));
-        //             data->InsertChars(data->CursorPos, candidates[0]);
-        //             data->InsertChars(data->CursorPos, " ");
-        //         }
-        //         else
-        //         {
-        //             // Multiple matches. Complete as much as we can, so
-        //             inputing "C" will complete to "CL" and display "CLEAR"
-        //             and "CLASSIFY" int match_len = (int)(word_end -
-        //             word_start); for (;;)
-        //             {
-        //                 int c = 0;
-        //                 bool all_candidates_matches = true;
-        //                 for (int i = 0; i < candidates.Size &&
-        //                 all_candidates_matches; i++)
-        //                     if (i == 0)
-        //                         c = toupper(candidates[i][match_len]);
-        //                     else if (c == 0 || c !=
-        //                     toupper(candidates[i][match_len]))
-        //                         all_candidates_matches = false;
-        //                 if (!all_candidates_matches)
-        //                     break;
-        //                 match_len++;
-        //             }
-
-        //             if (match_len > 0)
-        //             {
-        //                 data->DeleteChars((int)(word_start - data->Buf),
-        //                 (int)(word_end-word_start));
-        //                 data->InsertChars(data->CursorPos, candidates[0],
-        //                 candidates[0] + match_len);
-        //             }
-
-        //             // List matches
-        //             AddLog("Possible matches:\n");
-        //             for (int i = 0; i < candidates.Size; i++)
-        //                 AddLog("- %s\n", candidates[i]);
-        //         }
-
-        //         break;
-        //     }
-        // case ImGuiInputTextFlags_CallbackHistory:
-        //     {
-        //         // Example of HISTORY
-        //         const int prev_history_pos = HistoryPos;
-        //         if (data->EventKey == ImGuiKey_UpArrow)
-        //         {
-        //             if (HistoryPos == -1)
-        //                 HistoryPos = History.Size - 1;
-        //             else if (HistoryPos > 0)
-        //                 HistoryPos--;
-        //         }
-        //         else if (data->EventKey == ImGuiKey_DownArrow)
-        //         {
-        //             if (HistoryPos != -1)
-        //                 if (++HistoryPos >= History.Size)
-        //                     HistoryPos = -1;
-        //         }
-
-        //         // A better implementation would preserve the data on the
-        //         current input line along with cursor position. if
-        //         (prev_history_pos != HistoryPos)
-        //         {
-        //             data->CursorPos = data->SelectionStart =
-        //             data->SelectionEnd = data->BufTextLen =
-        //             (int)snprintf(data->Buf, (size_t)data->BufSize, "%s",
-        //             (HistoryPos >= 0) ? History[HistoryPos] : "");
-        //             data->BufDirty = true;
-        //         }
-        //     }
-        // }
-        return 0;
     }
 };
 
 void ShowExecutorWindow(bool* p_open) {
     static ExecutorWindow console;
-    console.Draw("KAI Executor", p_open);
+    console.Draw("KAI Languages Console", p_open);
 }
 
 KAI_END

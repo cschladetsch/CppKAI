@@ -15,3 +15,6 @@ endif()
 # language libs are a bit different
 include_directories(${LIBRARY_HOME}/Language/Include)
 add_subdirectory(${LIBRARY_HOME}/Language)
+
+# Add ImGui library
+add_subdirectory(${LIBRARY_HOME}/ImGui)

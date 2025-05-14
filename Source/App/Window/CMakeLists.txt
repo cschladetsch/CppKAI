@@ -15,14 +15,21 @@ endforeach()
 include_directories(/opt/local/include ${KAI_HOME}/Include/Imgui)
 link_directories(/opt/local/lib)
 
-set(SOURCE_ROOT ${SOURCE_HOME}/App/${name}/Source/*.cpp)
-file(GLOB_RECURSE SOURCE_FILES ${SOURCE_ROOT})
+# Only include ExecutorWindow.cpp and Main.cpp
+set(SOURCE_FILES
+    ${SOURCE_HOME}/App/${name}/Source/ExecutorWindow.cpp
+    ${SOURCE_HOME}/App/${name}/Source/Main.cpp
+)
 
 link_libraries(Executor Core PiLang RhoLang ImGui)
 
 add_executable(${name} ${SOURCE_FILES})
 
-# OpenGl
-target_link_libraries(${name} glfw)
+# Find GLFW3
+find_package(glfw3 REQUIRED)
 
-cotire(${name})
+# OpenGL
+find_package(OpenGL REQUIRED)
+
+# Link libraries
+target_link_libraries(${name} glfw OpenGL::GL)
