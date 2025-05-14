@@ -45,11 +45,36 @@ TEST_F(TestPiAdvanced, TestStringOperations) {
     }
 }
 
-// TestArrayOperations has been modified to be direct array operations instead of Pi arrays
-// The original test had issues with the Pi interpreter's handling of array literals
-TEST_F(TestPiAdvanced, DISABLED_TestArrayOperations) {
-    // This test is disabled - the replacement is below
-    GTEST_SKIP() << "This test is disabled and has been replaced by TestArrayOperationsDirect";
+// Now we're restoring the Pi language array operations test with our fixed implementation
+TEST_F(TestPiAdvanced, TestArrayOperations) {
+    console_.SetLanguage(Language::Pi);
+    
+    // Test 1: Create an empty array and check size
+    data_->Clear();
+    console_.Execute("[] size");
+    ASSERT_EQ(data_->Size(), 1);
+    ASSERT_TRUE(data_->Top().IsType<int>());
+    ASSERT_EQ(AtData<int>(0), 0);
+    
+    // Test 2: Create a populated array and check size
+    data_->Clear();
+    console_.Execute("[1 2 3] size");
+    ASSERT_EQ(data_->Size(), 1);
+    ASSERT_TRUE(data_->Top().IsType<int>());
+    ASSERT_EQ(AtData<int>(0), 3);
+    
+    // Test 3: Create a populated array and verify it exists
+    data_->Clear();
+    console_.Execute("[10 20 30]");
+    ASSERT_EQ(data_->Size(), 1);
+    ASSERT_TRUE(data_->Top().IsType<Array>());
+    
+    // Verify array contents
+    Array& arr = Deref<Array>(data_->Top());
+    ASSERT_EQ(arr.Size(), 3);
+    ASSERT_EQ(Deref<int>(arr.At(0)), 10);
+    ASSERT_EQ(Deref<int>(arr.At(1)), 20);
+    ASSERT_EQ(Deref<int>(arr.At(2)), 30);
 }
 
 // This test directly tests array functionality without using Pi interpreter
