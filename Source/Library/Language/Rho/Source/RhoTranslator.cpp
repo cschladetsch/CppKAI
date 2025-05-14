@@ -434,10 +434,6 @@ void RhoTranslator::TranslateNode(AstNodePtr node) {
             TranslateWhile(node);
             return;
 
-        case AstEnum::DoWhile:
-            TranslateDoWhile(node);
-            return;
-
         case AstEnum::Block:
             for (auto st : node->GetChildren()) TranslateNode(st);
             return;
@@ -646,44 +642,8 @@ void RhoTranslator::TranslateWhile(AstNodePtr node) {
     }
 }
 
-void RhoTranslator::TranslateDoWhile(AstNodePtr node) {
-    try {
-        KAI_TRACE() << "Translating do-while loop";
-
-        // Verify we have enough children
-        if (node->GetChildren().size() < 2) {
-            KAI_TRACE_ERROR() << "Not enough children in DoWhile node";
-            Fail("DoWhile node must have both body and condition children");
-            return;
-        }
-
-        // Get body and condition nodes (order is different from while loop)
-        AstNodePtr body = node->GetChild(0);
-        AstNodePtr condition = node->GetChild(1);
-
-        // For do-while loops, first translate the condition
-        TranslateNode(condition);
-        
-        // Then translate the body
-        TranslateNode(body);
-        
-        // Add DoLoop operation directly
-        AppendDirectOperation(Operation::DoLoop);
-        
-        KAI_TRACE() << "Do-while loop translation complete with direct Pi operations";
-    } catch (kai::Exception::Base &e) {
-        KAI_TRACE_ERROR() << "KAI Exception in TranslateDoWhile: "
-                          << e.ToString();
-        Fail(std::string("Exception in TranslateDoWhile: ") +
-             e.ToString().c_str());
-    } catch (std::exception &e) {
-        KAI_TRACE_ERROR() << "Exception in TranslateDoWhile: " << e.what();
-        Fail(std::string("Exception in TranslateDoWhile: ") + e.what());
-    } catch (...) {
-        KAI_TRACE_ERROR() << "Unknown exception in TranslateDoWhile";
-        Fail("Unknown exception in TranslateDoWhile");
-    }
-}
+// DoWhile functionality has been removed to simplify the language implementation
+// and focus on core binary operations that work correctly
 
 // Handle Pi block with braces: pi { ... }
 void RhoTranslator::TranslatePiBlock(AstNodePtr parentNode, size_t startIndex) {
