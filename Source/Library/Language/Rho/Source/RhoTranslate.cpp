@@ -44,10 +44,11 @@ Pointer<Continuation> RhoTranslator::Translate(const char *text, Structure st) {
 
     if (trace > 1) KAI_TRACE_1(parse->PrintTree());
 
+    // Create a new continuation to hold the translated code
     PushNew();
 
-    // This part is the crucial difference - we translate the AST node
-    // and ensure it's not unnecessarily wrapped in continuations
+    // Translate the AST node
+    KAI_TRACE() << "Starting to process tokens";
     TranslateNode(parse->GetRoot());
 
     if (stack.empty()) {
@@ -55,11 +56,32 @@ Pointer<Continuation> RhoTranslator::Translate(const char *text, Structure st) {
         return Object(); // Return empty object instead of throwing
     }
 
+    // Get the resulting continuation
     auto cont = Pop();
     
-    // Note: We're not setting Language properties anymore since they're not registered
-    // in the Continuation class. Language context is now handled in Console.cpp.
-    // cont.SetPropertyValue(Label("Language"), _reg->New<String>("Rho"));
+    // Handle the special case where we have a simple binary operation
+    // that has been translated into literal values followed by an operation
+    // For example: "2 + 3" -> [2, 3, Plus]
+    if (cont->GetCode().Exists() && (cont->GetCode()->Size() == 3)) {
+        Object first = cont->GetCode()->At(0);
+        Object second = cont->GetCode()->At(1);
+        Object third = cont->GetCode()->At(2);
+        
+        // Check if this is a binary operation pattern: value value operation
+        if (third.GetTypeNumber() == Type::Number::Operation) {
+            // Check if the values are direct numbers (not complex expressions)
+            if ((first.GetTypeNumber() == Type::Number::Signed32 || 
+                 first.GetTypeNumber() == Type::Number::Single) &&
+                (second.GetTypeNumber() == Type::Number::Signed32 || 
+                 second.GetTypeNumber() == Type::Number::Single)) {
+                
+                // We have a simple binary operation with direct values
+                // This is already in the correct format for direct execution
+                // No need to modify it
+                KAI_TRACE() << "Detected simple binary operation pattern in Rho translation";
+            }
+        }
+    }
     
     return cont;
 }
