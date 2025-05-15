@@ -217,6 +217,30 @@ TauLang/fast:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/TauLang.dir/build.make Source/Library/Language/CMakeFiles/TauLang.dir/build
 .PHONY : TauLang/fast
 
+Common/Source/Language.o: Common/Source/Language.cpp.o
+.PHONY : Common/Source/Language.o
+
+# target to build an object file
+Common/Source/Language.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/CommonLang.dir/build.make Source/Library/Language/CMakeFiles/CommonLang.dir/Common/Source/Language.cpp.o
+.PHONY : Common/Source/Language.cpp.o
+
+Common/Source/Language.i: Common/Source/Language.cpp.i
+.PHONY : Common/Source/Language.i
+
+# target to preprocess a source file
+Common/Source/Language.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/CommonLang.dir/build.make Source/Library/Language/CMakeFiles/CommonLang.dir/Common/Source/Language.cpp.i
+.PHONY : Common/Source/Language.cpp.i
+
+Common/Source/Language.s: Common/Source/Language.cpp.s
+.PHONY : Common/Source/Language.s
+
+# target to generate assembly for a file
+Common/Source/Language.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/CommonLang.dir/build.make Source/Library/Language/CMakeFiles/CommonLang.dir/Common/Source/Language.cpp.s
+.PHONY : Common/Source/Language.cpp.s
+
 Common/Source/Structure.o: Common/Source/Structure.cpp.o
 .PHONY : Common/Source/Structure.o
 
@@ -713,6 +737,9 @@ help:
 	@echo "... PiLang"
 	@echo "... RhoLang"
 	@echo "... TauLang"
+	@echo "... Common/Source/Language.o"
+	@echo "... Common/Source/Language.i"
+	@echo "... Common/Source/Language.s"
 	@echo "... Common/Source/Structure.o"
 	@echo "... Common/Source/Structure.i"
 	@echo "... Common/Source/Structure.s"

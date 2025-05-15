@@ -1,0 +1,2 @@
+/usr/bin/ar qc /home/xian/local/KAI/Bin/libCommonLang.a CMakeFiles/CommonLang.dir/Common/Source/Structure.cpp.o
+/usr/bin/ranlib /home/xian/local/KAI/Bin/libCommonLang.a

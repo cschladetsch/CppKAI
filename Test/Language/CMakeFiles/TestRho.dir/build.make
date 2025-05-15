@@ -445,6 +445,7 @@ Bin/Test/TestRho: /usr/lib/x86_64-linux-gnu/libboost_filesystem.so.1.83.0
 Bin/Test/TestRho: /usr/lib/x86_64-linux-gnu/libboost_program_options.so.1.83.0
 Bin/Test/TestRho: /usr/lib/x86_64-linux-gnu/libboost_date_time.so.1.83.0
 Bin/Test/TestRho: /usr/lib/x86_64-linux-gnu/libboost_regex.so.1.83.0
+Bin/Test/TestRho: Bin/libCommonLang.a
 Bin/Test/TestRho: /usr/lib/x86_64-linux-gnu/libgtest.a
 Bin/Test/TestRho: /usr/lib/x86_64-linux-gnu/libboost_atomic.so.1.83.0
 Bin/Test/TestRho: Test/Language/CMakeFiles/TestRho.dir/link.txt

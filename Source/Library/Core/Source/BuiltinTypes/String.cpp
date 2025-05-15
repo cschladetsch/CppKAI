@@ -96,4 +96,9 @@ void String::Register(Registry &R) {
     // KAI_TYPE_TRAITS in TraitMacros.h
 }
 
+// Add the missing ostream operator for String
+std::ostream &operator<<(std::ostream &stream, const String &str) {
+    return stream << str.StdString();
+}
+
 KAI_END

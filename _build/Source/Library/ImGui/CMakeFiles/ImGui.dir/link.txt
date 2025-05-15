@@ -1,0 +1,2 @@
+/usr/bin/ar qc /home/xian/local/KAI/Bin/libImGui.a CMakeFiles/ImGui.dir/__/__/__/Ext/imgui/imgui.cpp.o CMakeFiles/ImGui.dir/__/__/__/Ext/imgui/imgui_demo.cpp.o CMakeFiles/ImGui.dir/__/__/__/Ext/imgui/imgui_draw.cpp.o CMakeFiles/ImGui.dir/__/__/__/Ext/imgui/imgui_widgets.cpp.o
+/usr/bin/ranlib /home/xian/local/KAI/Bin/libImGui.a

@@ -1,0 +1,2 @@
+/usr/bin/ar qc /home/xian/local/KAI/Bin/libTauLang.a CMakeFiles/TauLang.dir/Tau/Source/Generate/GenerateAgent.cpp.o CMakeFiles/TauLang.dir/Tau/Source/Generate/GenerateProcess.cpp.o CMakeFiles/TauLang.dir/Tau/Source/Generate/GenerateProxy.cpp.o CMakeFiles/TauLang.dir/Tau/Source/Tau/TauAstNode.cpp.o CMakeFiles/TauLang.dir/Tau/Source/Tau/TauLexer.cpp.o CMakeFiles/TauLang.dir/Tau/Source/Tau/TauParser.cpp.o CMakeFiles/TauLang.dir/Tau/Source/Tau/TauToken.cpp.o
+/usr/bin/ranlib /home/xian/local/KAI/Bin/libTauLang.a

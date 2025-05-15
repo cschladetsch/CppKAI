@@ -29,6 +29,14 @@ void TranslatorCommon::Append(Object const &ob) {
             KAI_THROW_0(NullObject);
         }
 
+        // Before appending, set the specialHandling flag on continuations
+        if (ob.IsType<Continuation>()) {
+            Pointer<Continuation> cont = ob;
+            if (!cont->GetSpecialHandling()) {
+                cont->SetSpecialHandling(true);
+            }
+        }
+        
         KAI_TRACE() << "TranslatorCommon::Append: " << ob.ToString();
         code->Append(ob);
     } catch (kai::Exception::Base &e) {

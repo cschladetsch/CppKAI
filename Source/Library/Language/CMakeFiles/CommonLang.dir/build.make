@@ -69,10 +69,24 @@ include Source/Library/Language/CMakeFiles/CommonLang.dir/progress.make
 # Include the compile flags for this target's objects.
 include Source/Library/Language/CMakeFiles/CommonLang.dir/flags.make
 
+Source/Library/Language/CMakeFiles/CommonLang.dir/Common/Source/Language.cpp.o: Source/Library/Language/CMakeFiles/CommonLang.dir/flags.make
+Source/Library/Language/CMakeFiles/CommonLang.dir/Common/Source/Language.cpp.o: Source/Library/Language/Common/Source/Language.cpp
+Source/Library/Language/CMakeFiles/CommonLang.dir/Common/Source/Language.cpp.o: Source/Library/Language/CMakeFiles/CommonLang.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object Source/Library/Language/CMakeFiles/CommonLang.dir/Common/Source/Language.cpp.o"
+	cd /home/xian/local/KAI/Source/Library/Language && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT Source/Library/Language/CMakeFiles/CommonLang.dir/Common/Source/Language.cpp.o -MF CMakeFiles/CommonLang.dir/Common/Source/Language.cpp.o.d -o CMakeFiles/CommonLang.dir/Common/Source/Language.cpp.o -c /home/xian/local/KAI/Source/Library/Language/Common/Source/Language.cpp
+
+Source/Library/Language/CMakeFiles/CommonLang.dir/Common/Source/Language.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/CommonLang.dir/Common/Source/Language.cpp.i"
+	cd /home/xian/local/KAI/Source/Library/Language && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/xian/local/KAI/Source/Library/Language/Common/Source/Language.cpp > CMakeFiles/CommonLang.dir/Common/Source/Language.cpp.i
+
+Source/Library/Language/CMakeFiles/CommonLang.dir/Common/Source/Language.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/CommonLang.dir/Common/Source/Language.cpp.s"
+	cd /home/xian/local/KAI/Source/Library/Language && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/xian/local/KAI/Source/Library/Language/Common/Source/Language.cpp -o CMakeFiles/CommonLang.dir/Common/Source/Language.cpp.s
+
 Source/Library/Language/CMakeFiles/CommonLang.dir/Common/Source/Structure.cpp.o: Source/Library/Language/CMakeFiles/CommonLang.dir/flags.make
 Source/Library/Language/CMakeFiles/CommonLang.dir/Common/Source/Structure.cpp.o: Source/Library/Language/Common/Source/Structure.cpp
 Source/Library/Language/CMakeFiles/CommonLang.dir/Common/Source/Structure.cpp.o: Source/Library/Language/CMakeFiles/CommonLang.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object Source/Library/Language/CMakeFiles/CommonLang.dir/Common/Source/Structure.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object Source/Library/Language/CMakeFiles/CommonLang.dir/Common/Source/Structure.cpp.o"
 	cd /home/xian/local/KAI/Source/Library/Language && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT Source/Library/Language/CMakeFiles/CommonLang.dir/Common/Source/Structure.cpp.o -MF CMakeFiles/CommonLang.dir/Common/Source/Structure.cpp.o.d -o CMakeFiles/CommonLang.dir/Common/Source/Structure.cpp.o -c /home/xian/local/KAI/Source/Library/Language/Common/Source/Structure.cpp
 
 Source/Library/Language/CMakeFiles/CommonLang.dir/Common/Source/Structure.cpp.i: cmake_force
@@ -85,15 +99,17 @@ Source/Library/Language/CMakeFiles/CommonLang.dir/Common/Source/Structure.cpp.s:
 
 # Object files for target CommonLang
 CommonLang_OBJECTS = \
+"CMakeFiles/CommonLang.dir/Common/Source/Language.cpp.o" \
 "CMakeFiles/CommonLang.dir/Common/Source/Structure.cpp.o"
 
 # External object files for target CommonLang
 CommonLang_EXTERNAL_OBJECTS =
 
+Bin/libCommonLang.a: Source/Library/Language/CMakeFiles/CommonLang.dir/Common/Source/Language.cpp.o
 Bin/libCommonLang.a: Source/Library/Language/CMakeFiles/CommonLang.dir/Common/Source/Structure.cpp.o
 Bin/libCommonLang.a: Source/Library/Language/CMakeFiles/CommonLang.dir/build.make
 Bin/libCommonLang.a: Source/Library/Language/CMakeFiles/CommonLang.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX static library ../../../Bin/libCommonLang.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX static library ../../../Bin/libCommonLang.a"
 	cd /home/xian/local/KAI/Source/Library/Language && $(CMAKE_COMMAND) -P CMakeFiles/CommonLang.dir/cmake_clean_target.cmake
 	cd /home/xian/local/KAI/Source/Library/Language && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/CommonLang.dir/link.txt --verbose=$(VERBOSE)
 

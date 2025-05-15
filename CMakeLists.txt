@@ -182,6 +182,9 @@ foreach(top ${TopLevels})
     include(${SOURCE_HOME}/${top}/CMakeLists.txt)
 endforeach()
 
+# Link libraries with their dependencies
+target_link_libraries(Executor CommonLang)
+
 # Find or download Google Test if needed for tests
 if(KAI_BUILD_TEST_ALL OR KAI_BUILD_CORE_TEST OR KAI_BUILD_TEST_LANG)
   # First try to find the system's gtest

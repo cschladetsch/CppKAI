@@ -452,6 +452,7 @@ Bin/Test/TestCore: /usr/lib/x86_64-linux-gnu/libboost_filesystem.so.1.83.0
 Bin/Test/TestCore: /usr/lib/x86_64-linux-gnu/libboost_program_options.so.1.83.0
 Bin/Test/TestCore: /usr/lib/x86_64-linux-gnu/libboost_date_time.so.1.83.0
 Bin/Test/TestCore: /usr/lib/x86_64-linux-gnu/libboost_regex.so.1.83.0
+Bin/Test/TestCore: Bin/libCommonLang.a
 Bin/Test/TestCore: /usr/lib/x86_64-linux-gnu/libgtest.a
 Bin/Test/TestCore: /usr/lib/x86_64-linux-gnu/libboost_atomic.so.1.83.0
 Bin/Test/TestCore: Test/Source/CMakeFiles/TestCore.dir/link.txt

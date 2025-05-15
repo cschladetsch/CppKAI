@@ -347,142 +347,70 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
         return;
     }
     
-    // First attempt: Check if both children are simple literals that can be evaluated directly
+    // Create temporary objects to capture the results of translating the children
+    // We'll need to translate first to handle variable references, expressions, etc.
     
-    // Variables to store immediate values if available
-    bool canEvaluateNow = false;
+    // Create new code array to capture left operand translation
+    // This will let us execute and extract the result at translation time
+    PushNew();
+    TranslateNode(leftChild);
+    Pointer<Continuation> leftCont = Pop();
+    
+    // Create new code array to capture right operand translation
+    PushNew();
+    TranslateNode(rightChild);
+    Pointer<Continuation> rightCont = Pop();
+    
+    // Now evaluate the left and right continuations to get their actual values
+    // Create an executor to evaluate the continuations
+    Pointer<Executor> executor = reg_->New<Executor>();
+    executor->Create();
+    
+    // Set up a temporary data stack for evaluation
+    Pointer<Stack> tempStack = reg_->New<Stack>();
+    executor->SetDataStack(tempStack);
+    
+    // Execute left continuation and get result
+    executor->Continue(leftCont);
     Object leftObj;
+    if (!tempStack->Empty()) {
+        leftObj = tempStack->Pop();
+    }
+    
+    // Execute right continuation and get result
+    tempStack->Clear();
+    executor->Continue(rightCont);
     Object rightObj;
-    
-    // First, check if we can evaluate the left side directly
-    if (leftChild->GetType() == AstNodeEnum::TokenType) {
-        const auto& leftToken = leftChild->GetToken();
-        
-        switch (leftToken.type) {
-            case TokenEnum::Int:
-                try {
-                    int value = std::stoi(leftChild->GetTokenText());
-                    leftObj = reg_->New<int>(value);
-                    canEvaluateNow = true;
-                } catch (...) {
-                    canEvaluateNow = false;
-                }
-                break;
-                
-            case TokenEnum::Float:
-                try {
-                    float value = std::stof(leftChild->GetTokenText());
-                    leftObj = reg_->New<float>(value);
-                    canEvaluateNow = true;
-                } catch (...) {
-                    canEvaluateNow = false;
-                }
-                break;
-                
-            case TokenEnum::String:
-                // String literals come with quotes that need to be removed
-                {
-                    std::string text = leftChild->GetTokenText();
-                    // Remove quotes if present
-                    if (text.size() >= 2 && text.front() == '"' && text.back() == '"') {
-                        text = text.substr(1, text.size() - 2);
-                    }
-                    leftObj = reg_->New<String>(text);
-                    canEvaluateNow = true;
-                }
-                break;
-                
-            case TokenEnum::True:
-                leftObj = reg_->New<bool>(true);
-                canEvaluateNow = true;
-                break;
-                
-            case TokenEnum::False:
-                leftObj = reg_->New<bool>(false);
-                canEvaluateNow = true;
-                break;
-                
-            default:
-                // Cannot evaluate other token types directly
-                canEvaluateNow = false;
-                break;
-        }
+    if (!tempStack->Empty()) {
+        rightObj = tempStack->Pop();
     }
     
-    // If we could evaluate the left side, try the right side too
-    if (canEvaluateNow && rightChild->GetType() == AstNodeEnum::TokenType) {
-        const auto& rightToken = rightChild->GetToken();
-        
-        switch (rightToken.type) {
-            case TokenEnum::Int:
-                try {
-                    int value = std::stoi(rightChild->GetTokenText());
-                    rightObj = reg_->New<int>(value);
-                } catch (...) {
-                    canEvaluateNow = false;
-                }
-                break;
-                
-            case TokenEnum::Float:
-                try {
-                    float value = std::stof(rightChild->GetTokenText());
-                    rightObj = reg_->New<float>(value);
-                } catch (...) {
-                    canEvaluateNow = false;
-                }
-                break;
-                
-            case TokenEnum::String:
-                // String literals come with quotes that need to be removed
-                {
-                    std::string text = rightChild->GetTokenText();
-                    // Remove quotes if present
-                    if (text.size() >= 2 && text.front() == '"' && text.back() == '"') {
-                        text = text.substr(1, text.size() - 2);
-                    }
-                    rightObj = reg_->New<String>(text);
-                }
-                break;
-                
-            case TokenEnum::True:
-                rightObj = reg_->New<bool>(true);
-                break;
-                
-            case TokenEnum::False:
-                rightObj = reg_->New<bool>(false);
-                break;
-                
-            default:
-                // Cannot evaluate other token types directly
-                canEvaluateNow = false;
-                break;
-        }
-    } else {
-        // If the left side wasn't a literal, we can't evaluate directly
-        canEvaluateNow = false;
-    }
-    
-    // If we have both operands as literals, we can evaluate the operation directly
-    if (canEvaluateNow && leftObj.Exists() && rightObj.Exists()) {
-        // Create an executor to evaluate the operation
-        Pointer<Executor> executor = reg_->New<Executor>();
-        executor->Create();
+    // If we have both operands, we can evaluate the operation directly
+    if (leftObj.Exists() && rightObj.Exists()) {
+        // Create a clean executor for the binary operation
+        Pointer<Executor> opExecutor = reg_->New<Executor>();
+        opExecutor->Create();
         
         // Use the PerformBinaryOp helper to handle the operation
-        Object result = executor->PerformBinaryOp(leftObj, rightObj, op);
+        Object result = opExecutor->PerformBinaryOp(leftObj, rightObj, op);
         
         if (result.Exists()) {
             // Log the direct evaluation
             KAI_TRACE() << "Direct evaluation of binary op: " << leftObj.ToString() << " " 
                         << Operation::ToString(op) << " " << rightObj.ToString() << " = " << result.ToString();
             
-            // Append the result directly
+            // Append the result directly - this is key for proper type preservation
             Append(result);
             return;
         }
     }
-
-    // If we couldn't evaluate directly, create a continuation that does the operation
+    
+    // Fallback to creating a continuation with the operation
+    // This should rarely be needed since we're evaluating at translation time
+    KAI_TRACE() << "Fallback to continuation-based binary operation";
+    
+    // Since we've already translated and evaluated the operands above,
+    // we need to translate them again to add them to the code stream
     
     // First translate the left operand
     TranslateNode(leftChild);

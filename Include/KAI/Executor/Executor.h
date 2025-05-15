@@ -86,7 +86,9 @@ struct Executor : Reflected {
         return Value<const Stack>(data_.GetConstObject());
     }
     
-
+    // Add setter for data stack to support RhoTranslator
+    void SetDataStack(Value<Stack> stack) { data_ = stack; }
+    
     // could be const, but more fun to mess with the context stack as needed
     // elsewhere
     Value</*const*/ Stack> GetContextStack() const;
