@@ -12,6 +12,27 @@ KAI_BEGIN
 // Note: The RhoTranslator::Translate method is now implemented in RhoTranslate.cpp
 // to avoid duplicate implementation errors
 
+// Helper method to convert token types to operation types
+Operation::Type RhoTranslator::TokenToOperation(TokenEnum::Type tokenType) {
+    switch (tokenType) {
+        case TokenEnum::Plus: return Operation::Plus;
+        case TokenEnum::Minus: return Operation::Minus;
+        case TokenEnum::Mul: return Operation::Multiply;
+        case TokenEnum::Divide: return Operation::Divide;
+        case TokenEnum::Mod: return Operation::Modulo;
+        case TokenEnum::Equiv: return Operation::Equiv;
+        case TokenEnum::NotEquiv: return Operation::NotEquiv;
+        case TokenEnum::Less: return Operation::Less;
+        case TokenEnum::Greater: return Operation::Greater;
+        case TokenEnum::LessEquiv: return Operation::LessOrEquiv;
+        case TokenEnum::GreaterEquiv: return Operation::GreaterOrEquiv;
+        case TokenEnum::And: return Operation::LogicalAnd;
+        case TokenEnum::Or: return Operation::LogicalOr;
+        // Add other mappings as needed
+        default: return Operation::None;
+    }
+}
+
 void RhoTranslator::TranslateToken(AstNodePtr node) {
     KAI_TRACE() << std::format("TranslateToken: {}", 
                 RhoTokenEnumType::ToString(node->GetToken().type));
@@ -220,35 +241,38 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
         {
             KAI_TRACE() << std::format("Translating PiSequence: {}", node->Text());
             
-            // Attempt to optimize simple Pi expressions by evaluating them directly
-            bool canOptimize = false;
+            // We're going to directly evaluate the Pi expression during translation
+            // This avoids the need for special handling flags and ensures proper types
             
-            // Look at the children nodes to see if this is a simple expression
-            // like "2 3 + " that we can evaluate directly
+            // For binary operations, check for common patterns:
+            // - Two operands followed by an operator: [operand1] [operand2] [operator]
             if (node->GetChildren().size() == 3) {
                 auto it = node->GetChildren().begin();
                 auto first = *it++;
                 auto second = *it++;
                 auto op = *it;
                 
-                // Check if first and second are integer literals
-                if (first->GetType() == AstEnum::TokenType && second->GetType() == AstEnum::TokenType &&
+                // Only proceed if all are token types
+                if (first->GetType() == AstEnum::TokenType && 
+                    second->GetType() == AstEnum::TokenType &&
                     op->GetType() == AstEnum::TokenType) {
                     
+                    // Handle integer operations
                     if (first->GetToken().type == TokenEnum::Int && 
                         second->GetToken().type == TokenEnum::Int &&
                         (op->GetToken().type == TokenEnum::Plus || 
                          op->GetToken().type == TokenEnum::Minus || 
                          op->GetToken().type == TokenEnum::Mul || 
-                         op->GetToken().type == TokenEnum::Divide)) {
+                         op->GetToken().type == TokenEnum::Divide ||
+                         op->GetToken().type == TokenEnum::Mod)) {
                         
                         try {
-                            // Parse the integer literals
+                            // Parse integer values
                             int firstValue = std::stoi(first->GetTokenText());
                             int secondValue = std::stoi(second->GetTokenText());
                             int result = 0;
                             
-                            // Calculate the result based on the operation
+                            // Calculate the result
                             switch (op->GetToken().type) {
                                 case TokenEnum::Plus:
                                     result = firstValue + secondValue;
@@ -264,54 +288,272 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
                                         result = firstValue / secondValue;
                                     }
                                     else {
-                                        // Division by zero - revert to normal handling
-                                        canOptimize = false;
+                                        throw std::runtime_error("Division by zero");
+                                    }
+                                    break;
+                                case TokenEnum::Mod:
+                                    if (secondValue != 0) {
+                                        result = firstValue % secondValue;
+                                    }
+                                    else {
+                                        throw std::runtime_error("Modulo by zero");
                                     }
                                     break;
                                 default:
-                                    // Should not get here
-                                    canOptimize = false;
-                                    break;
+                                    throw std::runtime_error("Unsupported integer operation");
                             }
                             
-                            // Direct evaluation successful - create integer result
-                            if (canOptimize) {
-                                KAI_TRACE() << "Direct evaluation of Pi expression: result = " << result;
-                                // Create a properly typed integer object
-                                Object resultObj = reg_->New<int>(result);
-                                // Append directly to the parent
-                                Append(resultObj);
-                                return;
-                            }
+                            // Create a properly typed int object
+                            Object resultObj = reg_->New<int>(result);
+                            KAI_TRACE() << "Direct evaluation of Pi expression: " << firstValue
+                                      << " " << Operation::ToString(TokenToOperation(op->GetToken().type))
+                                      << " " << secondValue << " = " << result
+                                      << " (type: int)";
+                            Append(resultObj);
+                            return;
                         }
                         catch (const std::exception& e) {
-                            // Parse error - fallback to normal handling
-                            KAI_TRACE_ERROR() << "Error optimizing Pi expression: " << e.what();
-                            canOptimize = false;
+                            KAI_TRACE_ERROR() << "Error evaluating integer Pi expression: " << e.what();
+                            // Continue with standard approach below
+                        }
+                    }
+                    
+                    // Handle float operations
+                    else if ((first->GetToken().type == TokenEnum::Float || first->GetToken().type == TokenEnum::Int) && 
+                             (second->GetToken().type == TokenEnum::Float || second->GetToken().type == TokenEnum::Int) &&
+                             (op->GetToken().type == TokenEnum::Plus || 
+                              op->GetToken().type == TokenEnum::Minus || 
+                              op->GetToken().type == TokenEnum::Mul || 
+                              op->GetToken().type == TokenEnum::Divide)) {
+                        
+                        try {
+                            // Parse float values
+                            float firstValue, secondValue;
+                            
+                            // Convert each value to float based on its token type
+                            if (first->GetToken().type == TokenEnum::Float) {
+                                firstValue = std::stof(first->GetTokenText());
+                            } else {
+                                firstValue = static_cast<float>(std::stoi(first->GetTokenText()));
+                            }
+                            
+                            if (second->GetToken().type == TokenEnum::Float) {
+                                secondValue = std::stof(second->GetTokenText());
+                            } else {
+                                secondValue = static_cast<float>(std::stoi(second->GetTokenText()));
+                            }
+                            
+                            float result = 0.0f;
+                            
+                            // Calculate the result
+                            switch (op->GetToken().type) {
+                                case TokenEnum::Plus:
+                                    result = firstValue + secondValue;
+                                    break;
+                                case TokenEnum::Minus:
+                                    result = firstValue - secondValue;
+                                    break;
+                                case TokenEnum::Mul:
+                                    result = firstValue * secondValue;
+                                    break;
+                                case TokenEnum::Divide:
+                                    if (secondValue != 0.0f) {
+                                        result = firstValue / secondValue;
+                                    }
+                                    else {
+                                        throw std::runtime_error("Division by zero");
+                                    }
+                                    break;
+                                default:
+                                    throw std::runtime_error("Unsupported float operation");
+                            }
+                            
+                            // Create a properly typed float object
+                            Object resultObj = reg_->New<float>(result);
+                            KAI_TRACE() << "Direct evaluation of Pi expression: " << firstValue
+                                      << " " << Operation::ToString(TokenToOperation(op->GetToken().type))
+                                      << " " << secondValue << " = " << result
+                                      << " (type: float)";
+                            Append(resultObj);
+                            return;
+                        }
+                        catch (const std::exception& e) {
+                            KAI_TRACE_ERROR() << "Error evaluating float Pi expression: " << e.what();
+                            // Continue with standard approach below
+                        }
+                    }
+                    
+                    // Handle boolean operations
+                    else if (first->GetToken().type == TokenEnum::True || first->GetToken().type == TokenEnum::False || 
+                             (first->GetToken().type == TokenEnum::Int && (std::stoi(first->GetTokenText()) == 0 || std::stoi(first->GetTokenText()) == 1)) &&
+                             (second->GetToken().type == TokenEnum::True || second->GetToken().type == TokenEnum::False || 
+                              (second->GetToken().type == TokenEnum::Int && (std::stoi(second->GetTokenText()) == 0 || std::stoi(second->GetTokenText()) == 1))) &&
+                             (op->GetToken().type == TokenEnum::And || 
+                              op->GetToken().type == TokenEnum::Or || 
+                              op->GetToken().type == TokenEnum::Equiv || 
+                              op->GetToken().type == TokenEnum::NotEquiv)) {
+                        
+                        try {
+                            // Parse boolean values
+                            bool firstValue, secondValue;
+                            
+                            // Convert each value to bool based on its token type
+                            if (first->GetToken().type == TokenEnum::True) {
+                                firstValue = true;
+                            } else if (first->GetToken().type == TokenEnum::False) {
+                                firstValue = false;
+                            } else {
+                                firstValue = std::stoi(first->GetTokenText()) != 0;
+                            }
+                            
+                            if (second->GetToken().type == TokenEnum::True) {
+                                secondValue = true;
+                            } else if (second->GetToken().type == TokenEnum::False) {
+                                secondValue = false;
+                            } else {
+                                secondValue = std::stoi(second->GetTokenText()) != 0;
+                            }
+                            
+                            bool result = false;
+                            
+                            // Calculate the result
+                            switch (op->GetToken().type) {
+                                case TokenEnum::And:
+                                    result = firstValue && secondValue;
+                                    break;
+                                case TokenEnum::Or:
+                                    result = firstValue || secondValue;
+                                    break;
+                                case TokenEnum::Equiv:
+                                    result = firstValue == secondValue;
+                                    break;
+                                case TokenEnum::NotEquiv:
+                                    result = firstValue != secondValue;
+                                    break;
+                                default:
+                                    throw std::runtime_error("Unsupported boolean operation");
+                            }
+                            
+                            // Create a properly typed bool object
+                            Object resultObj = reg_->New<bool>(result);
+                            KAI_TRACE() << "Direct evaluation of Pi expression: " << (firstValue ? "true" : "false")
+                                      << " " << RhoTokenEnumType::ToString(op->GetToken().type)
+                                      << " " << (secondValue ? "true" : "false") << " = " << (result ? "true" : "false")
+                                      << " (type: bool)";
+                            Append(resultObj);
+                            return;
+                        }
+                        catch (const std::exception& e) {
+                            KAI_TRACE_ERROR() << "Error evaluating boolean Pi expression: " << e.what();
+                            // Continue with standard approach below
+                        }
+                    }
+                    
+                    // Handle comparison operations on integers
+                    else if (first->GetToken().type == TokenEnum::Int && 
+                             second->GetToken().type == TokenEnum::Int &&
+                             (op->GetToken().type == TokenEnum::Less || 
+                              op->GetToken().type == TokenEnum::Greater || 
+                              op->GetToken().type == TokenEnum::LessEquiv || 
+                              op->GetToken().type == TokenEnum::GreaterEquiv || 
+                              op->GetToken().type == TokenEnum::Equiv || 
+                              op->GetToken().type == TokenEnum::NotEquiv)) {
+                        
+                        try {
+                            // Parse integer values
+                            int firstValue = std::stoi(first->GetTokenText());
+                            int secondValue = std::stoi(second->GetTokenText());
+                            bool result = false;
+                            
+                            // Calculate the result
+                            switch (op->GetToken().type) {
+                                case TokenEnum::Less:
+                                    result = firstValue < secondValue;
+                                    break;
+                                case TokenEnum::Greater:
+                                    result = firstValue > secondValue;
+                                    break;
+                                case TokenEnum::LessEquiv:
+                                    result = firstValue <= secondValue;
+                                    break;
+                                case TokenEnum::GreaterEquiv:
+                                    result = firstValue >= secondValue;
+                                    break;
+                                case TokenEnum::Equiv:
+                                    result = firstValue == secondValue;
+                                    break;
+                                case TokenEnum::NotEquiv:
+                                    result = firstValue != secondValue;
+                                    break;
+                                default:
+                                    throw std::runtime_error("Unsupported comparison operation");
+                            }
+                            
+                            // Create a properly typed bool object
+                            Object resultObj = reg_->New<bool>(result);
+                            KAI_TRACE() << "Direct evaluation of Pi comparison: " << firstValue
+                                      << " " << RhoTokenEnumType::ToString(op->GetToken().type)
+                                      << " " << secondValue << " = " << (result ? "true" : "false")
+                                      << " (type: bool)";
+                            Append(resultObj);
+                            return;
+                        }
+                        catch (const std::exception& e) {
+                            KAI_TRACE_ERROR() << "Error evaluating comparison Pi expression: " << e.what();
+                            // Continue with standard approach below
+                        }
+                    }
+                    
+                    // Handle string operations
+                    else if (first->GetToken().type == TokenEnum::String && 
+                             second->GetToken().type == TokenEnum::String &&
+                             op->GetToken().type == TokenEnum::Plus) {
+                        
+                        try {
+                            // Get string values (removing quotes if present)
+                            std::string firstText = first->GetTokenText();
+                            std::string secondText = second->GetTokenText();
+                            
+                            // If strings are quoted, remove the quotes
+                            if (firstText.size() >= 2 && firstText.front() == '"' && firstText.back() == '"') {
+                                firstText = firstText.substr(1, firstText.size() - 2);
+                            }
+                            
+                            if (secondText.size() >= 2 && secondText.front() == '"' && secondText.back() == '"') {
+                                secondText = secondText.substr(1, secondText.size() - 2);
+                            }
+                            
+                            // Concatenate strings
+                            std::string result = firstText + secondText;
+                            
+                            // Create a properly typed String object
+                            Object resultObj = reg_->New<String>(result);
+                            KAI_TRACE() << "Direct evaluation of string concatenation: "
+                                      << "\"" << firstText << "\" + \"" << secondText << "\" = \"" << result << "\""
+                                      << " (type: String)";
+                            Append(resultObj);
+                            return;
+                        }
+                        catch (const std::exception& e) {
+                            KAI_TRACE_ERROR() << "Error evaluating string concatenation: " << e.what();
+                            // Continue with standard approach below
                         }
                     }
                 }
             }
             
-            // If optimization failed, use normal approach: create a continuation
-            PushNew();
+            // If all the optimizations above failed or don't apply, 
+            // translate each child individually and expand in order
+            KAI_TRACE() << "Using direct translation for Pi sequence";
             
-            // Translate all the children nodes
+            // Translate each element of the Pi sequence directly
             for (const auto& child : node->GetChildren()) {
                 TranslateNode(child);
             }
             
-            // Pop the continuation
-            auto piCont = Pop();
+            // Since Pi is stack-based, the operations should naturally be in the right order
+            // Instead of wrapping in a continuation, we let the operations remain in the parent code stream
             
-            // Mark it with a special flag to indicate it's a Pi continuation
-            // that should be automatically resolved when evaluated
-            // This will be used by the PerformBinaryOp and friends in Executor
-            piCont->SetSpecialHandling(true);
-            
-            // Add the continuation to the parent
-            KAI_TRACE() << "Using continuation for Pi sequence (with special handling)";
-            Append(piCont);
             return;
         }
 

@@ -1,3 +1,5 @@
+*.make
+*.d
 /ninja_build
 /test*
 /build*
@@ -25,6 +27,7 @@ CMake/CMakeCache.txt
 CMakeSettings.json
 
 /Doc/html
+
 /tmp/
 b/
 

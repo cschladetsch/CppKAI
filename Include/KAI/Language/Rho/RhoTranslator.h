@@ -56,6 +56,9 @@ class RhoTranslator : public TranslatorBase<RhoParser> {
     // DoWhile functionality has been removed
     void TranslatePiBlock(AstNodePtr parentNode, size_t startIndex);
     void TranslateList(AstNodePtr node);
+    
+    // Helper method to convert token types to operation types
+    Operation::Type TokenToOperation(TokenEnum::Type tokenType);
 };
 
 KAI_END

@@ -140,16 +140,17 @@ TEST(RhoPiBasic, Addition) {
     Object two = reg.New<int>(2);
     Object three = reg.New<int>(3);
     
-    // Directly evaluate the operation
-    Object result = EvaluateOperation(reg, {two, three}, Operation::Plus);
+    // Create an executor and directly use the PerformBinaryOp method
+    Pointer<Executor> executor = reg.New<Executor>();
+    executor->Create();
+    Object result = executor->PerformBinaryOp(two, three, Operation::Plus);
     
-    // Check the result - type should be int
-    ASSERT_TRUE(result.IsType<int>());
-    ASSERT_EQ(ConstDeref<int>(result), 5);
+    // Verify the result has the correct type and value
+    ASSERT_TRUE(result.IsType<int>()) << "Expected int type for 2+3 but got " << result.GetClass()->GetName();
+    ASSERT_EQ(ConstDeref<int>(result), 5) << "Expected value 5 for 2+3 but got " << result.ToString();
     
-    // Set up the executor and stack for the test assertion
-    auto exec = console.GetExecutor();
-    auto stack = exec->GetDataStack();
+    // Now test using the standard test approach with a stack
+    auto stack = executor->GetDataStack();
     stack->Clear();
     
     // Push the result onto the stack
@@ -174,16 +175,17 @@ TEST(RhoPiBasic, Subtraction) {
     Object ten = reg.New<int>(10);
     Object four = reg.New<int>(4);
     
-    // Directly evaluate the operation
-    Object result = EvaluateOperation(reg, {ten, four}, Operation::Minus);
+    // Create an executor and directly use the PerformBinaryOp method
+    Pointer<Executor> executor = reg.New<Executor>();
+    executor->Create();
+    Object result = executor->PerformBinaryOp(ten, four, Operation::Minus);
     
-    // Check the result - type should be int
-    ASSERT_TRUE(result.IsType<int>());
-    ASSERT_EQ(ConstDeref<int>(result), 6);
+    // Verify the result has the correct type and value
+    ASSERT_TRUE(result.IsType<int>()) << "Expected int type for 10-4 but got " << result.GetClass()->GetName();
+    ASSERT_EQ(ConstDeref<int>(result), 6) << "Expected value 6 for 10-4 but got " << result.ToString();
     
-    // Set up the executor and stack for the test assertion
-    auto exec = console.GetExecutor();
-    auto stack = exec->GetDataStack();
+    // Now test using the standard test approach with a stack
+    auto stack = executor->GetDataStack();
     stack->Clear();
     
     // Push the result onto the stack
@@ -207,16 +209,17 @@ TEST(RhoPiBasic, Multiplication) {
     Object six = reg.New<int>(6);
     Object seven = reg.New<int>(7);
     
-    // Directly evaluate the operation
-    Object result = EvaluateOperation(reg, {six, seven}, Operation::Multiply);
+    // Create an executor and directly use the PerformBinaryOp method
+    Pointer<Executor> executor = reg.New<Executor>();
+    executor->Create();
+    Object result = executor->PerformBinaryOp(six, seven, Operation::Multiply);
     
-    // Check the result - type should be int
-    ASSERT_TRUE(result.IsType<int>());
-    ASSERT_EQ(ConstDeref<int>(result), 42);
+    // Verify the result has the correct type and value
+    ASSERT_TRUE(result.IsType<int>()) << "Expected int type for 6*7 but got " << result.GetClass()->GetName();
+    ASSERT_EQ(ConstDeref<int>(result), 42) << "Expected value 42 for 6*7 but got " << result.ToString();
     
-    // Set up the executor and stack for the test assertion
-    auto exec = console.GetExecutor();
-    auto stack = exec->GetDataStack();
+    // Now test using the standard test approach with a stack
+    auto stack = executor->GetDataStack();
     stack->Clear();
     
     // Push the result onto the stack

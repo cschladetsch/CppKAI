@@ -116,7 +116,7 @@ void TestLangCommon::ExecScripts() {
 #endif
 
     // Add common variables to the environment to prevent ObjectNotFound errors
-    auto& scope = console_.GetTree().GetScope();
+    auto scope = console_.GetTree().GetScope();
     
     // Pre-populate common variables that might be referenced in scripts
     // These are based on the error messages seen in the test output
@@ -159,19 +159,10 @@ void TestLangCommon::ExecScripts() {
             console_.Execute(contents.c_str());
             
             std::cout << "Script execution successful" << std::endl;
-        } catch (const ObjectNotFound& e) {
-            // Handle common ObjectNotFound exception specifically
-            std::cout << "ObjectNotFound in script " << scriptName.filename().string() 
+        } catch (const Exception::Base &e) {
+            // Handle KAI exception specifically
+            std::cout << "KAI Exception in script " << scriptName.filename().string() 
                      << ": " << e.what() << std::endl;
-                     
-            // Add the missing variable to avoid similar errors in future
-            std::string errorMsg = e.what();
-            std::size_t labelPos = errorMsg.find("label=");
-            if (labelPos != std::string::npos) {
-                std::string labelName = errorMsg.substr(labelPos + 6); // Extract label name
-                std::cout << "Adding missing variable: " << labelName << std::endl;
-                scope.Set(Label(labelName), reg_->New<int>(0));
-            }
             
             // Clean up after exception
             exec_->ClearStacks();

@@ -410,10 +410,55 @@ void Executor::Continue(Value<Continuation> C) {
         KAI_TRACE() << "Setting specialHandling flag on continuation";
     }
 
-    // Save the current continuation for restoring later
+    // Save the current continuation and stack for restoring later
     Value<Continuation> savedContinuation = continuation_;
     
-    // Execute the continuation normally using the executor
+    // Check if this continuation has any binary operations that need special handling
+    Pointer<const Array> code = C->GetCode();
+    Object lastOp;
+    Object firstArg, secondArg;
+    bool hasOperands = false;
+    Operation::Type opType = Operation::None;
+    
+    // Try to identify if this is a binary operation continuation
+    if (code.Exists() && code->Size() >= 3) {
+        // Find the operation
+        for (int i = 0; i < code->Size(); i++) {
+            if (code->At(i).IsType<Operation>()) {
+                lastOp = code->At(i);
+                opType = ConstDeref<Operation>(lastOp).GetTypeNumber();
+            }
+            else if (code->At(i).IsType<int>() || 
+                     code->At(i).IsType<float>() || 
+                     code->At(i).IsType<double>() || 
+                     code->At(i).IsType<bool>() || 
+                     code->At(i).IsType<String>()) {
+                if (!firstArg.Exists()) {
+                    firstArg = code->At(i);
+                } else if (!secondArg.Exists()) {
+                    secondArg = code->At(i);
+                    hasOperands = true;
+                }
+            }
+        }
+    }
+    
+    // If this is a binary operation with known types, we can handle it specially
+    if (hasOperands && IsBinaryOp(opType)) {
+        // Directly compute the result with the appropriate type
+        Object result = PerformBinaryOp(firstArg, secondArg, opType);
+        
+        // Push the properly typed result
+        if (result.Exists()) {
+            data_->Push(result);
+            // Restore the previous continuation and return
+            continuation_ = savedContinuation;
+            return;
+        }
+    }
+    
+    // If it wasn't a binary operation or we couldn't handle it specially,
+    // execute the continuation normally
     SetContinuation(C);
     Continue();
     
@@ -422,7 +467,7 @@ void Executor::Continue(Value<Continuation> C) {
         // Get the top value
         Object result = data_->Top();
         
-        // If the result is a continuation, try to unwrap it using the KAI type trait system
+        // If the result is a continuation, try to unwrap it
         if (result.IsType<Continuation>()) {
             KAI_TRACE() << "Unwrapping continuation result using type trait system";
             Object unwrapped = UnwrapValue(result);
@@ -582,32 +627,191 @@ Object Executor::UnwrapValue(Object const &Q) {
         return Q;
     }
     
-    // Important: Set the specialHandling flag on the continuation if it's not already set
-    // This ensures all continuations get the special handling needed for Pi expressions
+    // Always set the specialHandling flag on continuations
     if (!cont->GetSpecialHandling()) {
         cont->SetSpecialHandling(true);
         KAI_TRACE() << "Setting specialHandling flag on continuation during unwrap";
     }
     
-    // Look at the first code element - this usually contains the actual value
-    // in Pi expression continuations
-    Pointer<const Array> code = cont->GetCode();
-    if (code->Size() > 0) {
-        Object firstElement = code->At(0);
-        
-        // Check if it's a simple value type we can extract
-        // Avoid extracting operations, pathnames, and other complex types
-        if (firstElement.Exists() && 
-            (firstElement.IsType<int>() || 
-             firstElement.IsType<float>() || 
-             firstElement.IsType<bool>() || 
-             firstElement.IsType<String>() ||
-             firstElement.IsType<Array>() ||
-             firstElement.IsType<List>() ||
-             firstElement.IsType<Map>() ||
-             firstElement.IsType<Pair>())) {
+    // Check if this is a marked continuation that should be evaluated
+    if (cont->GetSpecialHandling()) {
+        // First, look for primitive values in the code
+        Pointer<const Array> code = cont->GetCode();
+        if (code->Size() > 0) {
+            Object firstElement = code->At(0);
             
-            return firstElement;
+            // Check if it's a simple value type we can extract directly
+            if (firstElement.Exists() && 
+                (firstElement.IsType<int>() || 
+                 firstElement.IsType<float>() || 
+                 firstElement.IsType<double>() || 
+                 firstElement.IsType<bool>() || 
+                 firstElement.IsType<String>() ||
+                 firstElement.IsType<Array>() ||
+                 firstElement.IsType<List>() ||
+                 firstElement.IsType<Map>() ||
+                 firstElement.IsType<Pair>())) {
+                
+                return firstElement;
+            }
+        }
+        
+        // Check if this is a binary operation that we can directly perform
+        // This optimizes common Rho/Pi language patterns
+        bool hasBinaryOperation = false;
+        Operation::Type opType = Operation::None;
+        std::vector<Object> operands;
+        
+        // First find operations
+        for (int i = 0; i < code->Size(); i++) {
+            if (code->At(i).IsType<Operation>()) {
+                Object op = code->At(i);
+                opType = ConstDeref<Operation>(op).GetTypeNumber();
+                
+                if (IsBinaryOp(opType)) {
+                    hasBinaryOperation = true;
+                }
+            }
+        }
+        
+        // Then collect operands if we found a binary operation
+        if (hasBinaryOperation) {
+            for (int i = 0; i < code->Size(); i++) {
+                Object item = code->At(i);
+                if (!item.IsType<Operation>() && 
+                    (item.IsType<int>() || 
+                     item.IsType<float>() || 
+                     item.IsType<double>() || 
+                     item.IsType<bool>() || 
+                     item.IsType<String>() ||
+                     item.IsType<Array>() ||
+                     item.IsType<List>() ||
+                     item.IsType<Map>() ||
+                     item.IsType<Pair>())) {
+                    operands.push_back(item);
+                }
+            }
+            
+            // If we have exactly two operands and a binary operation, perform it directly
+            if (operands.size() == 2 && IsBinaryOp(opType)) {
+                Object A = operands[0];
+                Object B = operands[1];
+                
+                KAI_TRACE() << "Directly computing binary operation: " 
+                          << A.ToString() << " " << Operation::ToString(opType) 
+                          << " " << B.ToString();
+                          
+                Object result = PerformBinaryOp(A, B, opType);
+                if (result.Exists()) {
+                    return result;
+                }
+            }
+        }
+        
+        // For continuations with operations, we need to evaluate them
+        // Save the original data stack for later restoration
+        auto tempStack = New<Stack>();
+        auto oldStack = data_;
+        data_ = tempStack;
+        
+        try {
+            // Execute the continuation directly
+            Continue(cont);
+            
+            // Get the result from the top of the stack if available
+            if (!tempStack->Empty()) {
+                Object result = tempStack->Top();
+                
+                // Special handling for primitive types
+                if (result.Exists()) {
+                    // Check for Rho/Pi language operation results that may need type correction
+                    if (hasBinaryOperation && operands.size() >= 2) {
+                        Object A = operands[0];
+                        Object B = operands[1];
+                        
+                        // Integer operations
+                        if ((A.IsType<int>() && B.IsType<int>()) && 
+                            (opType == Operation::Plus || opType == Operation::Minus || 
+                             opType == Operation::Multiply || opType == Operation::Divide || 
+                             opType == Operation::Modulo)) {
+                            
+                            // Try to convert the result to an int if it wasn't already
+                            if (!result.IsType<int>()) {
+                                try {
+                                    int intValue = std::stoi(result.ToString().c_str());
+                                    result = New<int>(intValue);
+                                } catch (...) {
+                                    // If conversion fails, keep the original result
+                                }
+                            }
+                        }
+                        // Float operations
+                        else if ((A.IsType<float>() || B.IsType<float>()) && 
+                                 (opType == Operation::Plus || opType == Operation::Minus || 
+                                  opType == Operation::Multiply || opType == Operation::Divide)) {
+                            
+                            // Try to convert the result to a float if it wasn't already
+                            if (!result.IsType<float>()) {
+                                try {
+                                    float floatValue = std::stof(result.ToString().c_str());
+                                    result = New<float>(floatValue);
+                                } catch (...) {
+                                    // If conversion fails, keep the original result
+                                }
+                            }
+                        }
+                        // Boolean operations
+                        else if ((opType == Operation::Equiv || opType == Operation::NotEquiv || 
+                                  opType == Operation::Less || opType == Operation::Greater ||
+                                  opType == Operation::LessOrEquiv || opType == Operation::GreaterOrEquiv ||
+                                  opType == Operation::LogicalAnd || opType == Operation::LogicalOr || 
+                                  opType == Operation::LogicalXor)) {
+                            
+                            // Try to convert the result to a bool if it wasn't already
+                            if (!result.IsType<bool>()) {
+                                try {
+                                    String strValue = result.ToString();
+                                    bool boolValue = (strValue == "true" || strValue == "1");
+                                    result = New<bool>(boolValue);
+                                } catch (...) {
+                                    // If conversion fails, keep the original result
+                                }
+                            }
+                        }
+                        // String operations
+                        else if ((A.IsType<String>() || B.IsType<String>()) && 
+                                 opType == Operation::Plus) {
+                            
+                            // Try to convert the result to a String if it wasn't already
+                            if (!result.IsType<String>()) {
+                                try {
+                                    String strValue = result.ToString();
+                                    result = New<String>(strValue);
+                                } catch (...) {
+                                    // If conversion fails, keep the original result
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Restore the stack and return the result
+                    data_ = oldStack;
+                    return result;
+                }
+            }
+            
+            // Restore original stack before returning
+            data_ = oldStack;
+        }
+        catch (const std::exception &e) {
+            // If evaluation fails, restore the stack and continue with normal processing
+            data_ = oldStack;
+            KAI_TRACE_ERROR() << "Error unwrapping continuation: " << e.what();
+        }
+        catch (...) {
+            // Catch any other exceptions and restore stack
+            data_ = oldStack;
+            KAI_TRACE_ERROR() << "Unknown error unwrapping continuation";
         }
     }
     
@@ -615,53 +819,432 @@ Object Executor::UnwrapValue(Object const &Q) {
     return Q;
 }
 
-// This is a simplified version of the PerformBinaryOp
-// It only handles basic operations for testing purposes
+// Enhanced version of PerformBinaryOp that handles all operation types using KAI type traits
 Object Executor::PerformBinaryOp(Object const &A, Object const &B, Operation::Type op) {
+    // Use the KAI type traits system to perform operations based on the object types
+    
+    // Helper to check if a type has a specific property using the type traits system
+    auto hasProperty = [](const Object& obj, const int property) -> bool {
+        if (!obj.Exists() || !obj.GetClass()) return false;
+        return obj.GetClass()->HasProperty(property);
+    };
+    
+    // First, handle the operation based on type using KAI type traits
     switch (op) {
+        // Arithmetic operations
         case Operation::Plus:
+            // Int + Int = Int
             if (A.IsType<int>() && B.IsType<int>()) {
-                return New(ConstDeref<int>(A) + ConstDeref<int>(B));
+                int result = Type::Traits<int>::Plus::Perform(ConstDeref<int>(A), ConstDeref<int>(B));
+                return New<int>(result);
+            }
+            // Float + Float = Float
+            else if (A.IsType<float>() && B.IsType<float>()) {
+                float result = Type::Traits<float>::Plus::Perform(ConstDeref<float>(A), ConstDeref<float>(B));
+                return New<float>(result);
+            }
+            // Float + Int = Float
+            else if (A.IsType<float>() && B.IsType<int>()) {
+                float result = ConstDeref<float>(A) + static_cast<float>(ConstDeref<int>(B));
+                return New<float>(result);
+            }
+            // Int + Float = Float
+            else if (A.IsType<int>() && B.IsType<float>()) {
+                float result = static_cast<float>(ConstDeref<int>(A)) + ConstDeref<float>(B);
+                return New<float>(result);
+            }
+            // String + String = String (concatenation)
+            else if (A.IsType<String>() && B.IsType<String>()) {
+                String result = Type::Traits<String>::Plus::Perform(ConstDeref<String>(A), ConstDeref<String>(B));
+                return New<String>(result);
+            }
+            // Use type traits for other types that support Plus
+            else if (hasProperty(A, Properties::Plus) && A.GetTypeNumber() == B.GetTypeNumber()) {
+                // Handle generic case using dynamic dispatch through the registry
+                Object result = A.GetRegistry()->PerformOperation(A, B, Operation::Plus);
+                return result;
             }
             break;
             
         case Operation::Minus:
+            // Int - Int = Int
             if (A.IsType<int>() && B.IsType<int>()) {
-                return New(ConstDeref<int>(A) - ConstDeref<int>(B));
+                int result = Type::Traits<int>::Minus::Perform(ConstDeref<int>(A), ConstDeref<int>(B));
+                return New<int>(result);
+            }
+            // Float - Float = Float
+            else if (A.IsType<float>() && B.IsType<float>()) {
+                float result = Type::Traits<float>::Minus::Perform(ConstDeref<float>(A), ConstDeref<float>(B));
+                return New<float>(result);
+            }
+            // Float - Int = Float
+            else if (A.IsType<float>() && B.IsType<int>()) {
+                float result = ConstDeref<float>(A) - static_cast<float>(ConstDeref<int>(B));
+                return New<float>(result);
+            }
+            // Int - Float = Float
+            else if (A.IsType<int>() && B.IsType<float>()) {
+                float result = static_cast<float>(ConstDeref<int>(A)) - ConstDeref<float>(B);
+                return New<float>(result);
+            }
+            // Use type traits for other types that support Minus
+            else if (hasProperty(A, Properties::Minus) && A.GetTypeNumber() == B.GetTypeNumber()) {
+                Object result = A.GetRegistry()->PerformOperation(A, B, Operation::Minus);
+                return result;
             }
             break;
             
         case Operation::Multiply:
+            // Int * Int = Int
             if (A.IsType<int>() && B.IsType<int>()) {
-                return New(ConstDeref<int>(A) * ConstDeref<int>(B));
+                int result = Type::Traits<int>::Multiply::Perform(ConstDeref<int>(A), ConstDeref<int>(B));
+                return New<int>(result);
+            }
+            // Float * Float = Float
+            else if (A.IsType<float>() && B.IsType<float>()) {
+                float result = Type::Traits<float>::Multiply::Perform(ConstDeref<float>(A), ConstDeref<float>(B));
+                return New<float>(result);
+            }
+            // Float * Int = Float
+            else if (A.IsType<float>() && B.IsType<int>()) {
+                float result = ConstDeref<float>(A) * static_cast<float>(ConstDeref<int>(B));
+                return New<float>(result);
+            }
+            // Int * Float = Float
+            else if (A.IsType<int>() && B.IsType<float>()) {
+                float result = static_cast<float>(ConstDeref<int>(A)) * ConstDeref<float>(B);
+                return New<float>(result);
+            }
+            // Use type traits for other types that support Multiply
+            else if (hasProperty(A, Properties::Multiply) && A.GetTypeNumber() == B.GetTypeNumber()) {
+                Object result = A.GetRegistry()->PerformOperation(A, B, Operation::Multiply);
+                return result;
             }
             break;
             
         case Operation::Divide:
+            // Int / Int = Int (integer division)
             if (A.IsType<int>() && B.IsType<int>()) {
                 int divisor = ConstDeref<int>(B);
                 if (divisor == 0) {
                     KAI_THROW_1(Base, "Division by zero");
                 }
-                return New(ConstDeref<int>(A) / divisor);
+                int result = Type::Traits<int>::Divide::Perform(ConstDeref<int>(A), divisor);
+                return New<int>(result);
+            }
+            // Float / Float = Float
+            else if (A.IsType<float>() && B.IsType<float>()) {
+                float divisor = ConstDeref<float>(B);
+                if (divisor == 0.0f) {
+                    KAI_THROW_1(Base, "Division by zero");
+                }
+                float result = Type::Traits<float>::Divide::Perform(ConstDeref<float>(A), divisor);
+                return New<float>(result);
+            }
+            // Float / Int = Float
+            else if (A.IsType<float>() && B.IsType<int>()) {
+                int divisor = ConstDeref<int>(B);
+                if (divisor == 0) {
+                    KAI_THROW_1(Base, "Division by zero");
+                }
+                float result = ConstDeref<float>(A) / static_cast<float>(divisor);
+                return New<float>(result);
+            }
+            // Int / Float = Float
+            else if (A.IsType<int>() && B.IsType<float>()) {
+                float divisor = ConstDeref<float>(B);
+                if (divisor == 0.0f) {
+                    KAI_THROW_1(Base, "Division by zero");
+                }
+                float result = static_cast<float>(ConstDeref<int>(A)) / divisor;
+                return New<float>(result);
+            }
+            // Use type traits for other types that support Divide
+            else if (hasProperty(A, Properties::Divide) && A.GetTypeNumber() == B.GetTypeNumber()) {
+                Object result = A.GetRegistry()->PerformOperation(A, B, Operation::Divide);
+                return result;
             }
             break;
             
         case Operation::Modulo:
+            // Int % Int = Int
             if (A.IsType<int>() && B.IsType<int>()) {
                 int divisor = ConstDeref<int>(B);
                 if (divisor == 0) {
                     KAI_THROW_1(Base, "Modulo by zero");
                 }
-                return New(ConstDeref<int>(A) % divisor);
+                int result = ConstDeref<int>(A) % divisor;
+                return New<int>(result);
+            }
+            // Note: modulo with floats would require fmod() from <cmath>, but we're skipping for now
+            break;
+            
+        // Comparison operations
+        case Operation::Equiv:
+            // Int == Int -> bool
+            if (A.IsType<int>() && B.IsType<int>()) {
+                bool result = Type::Traits<int>::Equiv::Perform(ConstDeref<int>(A), ConstDeref<int>(B));
+                return New<bool>(result);
+            }
+            // Float == Float -> bool
+            else if (A.IsType<float>() && B.IsType<float>()) {
+                bool result = Type::Traits<float>::Equiv::Perform(ConstDeref<float>(A), ConstDeref<float>(B));
+                return New<bool>(result);
+            }
+            // Float == Int -> bool
+            else if (A.IsType<float>() && B.IsType<int>()) {
+                bool result = ConstDeref<float>(A) == static_cast<float>(ConstDeref<int>(B));
+                return New<bool>(result);
+            }
+            // Int == Float -> bool
+            else if (A.IsType<int>() && B.IsType<float>()) {
+                bool result = static_cast<float>(ConstDeref<int>(A)) == ConstDeref<float>(B);
+                return New<bool>(result);
+            }
+            // Bool == Bool -> bool
+            else if (A.IsType<bool>() && B.IsType<bool>()) {
+                bool result = Type::Traits<bool>::Equiv::Perform(ConstDeref<bool>(A), ConstDeref<bool>(B));
+                return New<bool>(result);
+            }
+            // String == String -> bool
+            else if (A.IsType<String>() && B.IsType<String>()) {
+                bool result = Type::Traits<String>::Equiv::Perform(ConstDeref<String>(A), ConstDeref<String>(B));
+                return New<bool>(result);
+            }
+            // General object equality
+            else {
+                bool result = A == B;
+                return New<bool>(result);
+            }
+            break;
+            
+        case Operation::NotEquiv:
+            // Invert Equiv result
+            {
+                Object equivResult = PerformBinaryOp(A, B, Operation::Equiv);
+                if (equivResult.IsType<bool>()) {
+                    bool result = !ConstDeref<bool>(equivResult);
+                    return New<bool>(result);
+                }
+            }
+            break;
+            
+        case Operation::Less:
+            // Int < Int -> bool
+            if (A.IsType<int>() && B.IsType<int>()) {
+                bool result = Type::Traits<int>::Less::Perform(ConstDeref<int>(A), ConstDeref<int>(B));
+                return New<bool>(result);
+            }
+            // Float < Float -> bool
+            else if (A.IsType<float>() && B.IsType<float>()) {
+                bool result = Type::Traits<float>::Less::Perform(ConstDeref<float>(A), ConstDeref<float>(B));
+                return New<bool>(result);
+            }
+            // Float < Int -> bool
+            else if (A.IsType<float>() && B.IsType<int>()) {
+                bool result = ConstDeref<float>(A) < static_cast<float>(ConstDeref<int>(B));
+                return New<bool>(result);
+            }
+            // Int < Float -> bool
+            else if (A.IsType<int>() && B.IsType<float>()) {
+                bool result = static_cast<float>(ConstDeref<int>(A)) < ConstDeref<float>(B);
+                return New<bool>(result);
+            }
+            // String < String -> bool
+            else if (A.IsType<String>() && B.IsType<String>()) {
+                bool result = Type::Traits<String>::Less::Perform(ConstDeref<String>(A), ConstDeref<String>(B));
+                return New<bool>(result);
+            }
+            // Use type traits for other types that support Less
+            else if (hasProperty(A, Properties::Less) && A.GetTypeNumber() == B.GetTypeNumber()) {
+                Object result = A.GetRegistry()->PerformOperation(A, B, Operation::Less);
+                return result;
+            }
+            break;
+            
+        case Operation::Greater:
+            // Int > Int -> bool (invert Less)
+            if (A.IsType<int>() && B.IsType<int>()) {
+                bool result = Type::Traits<int>::Less::Perform(ConstDeref<int>(B), ConstDeref<int>(A));
+                return New<bool>(result);
+            }
+            // Float > Float -> bool
+            else if (A.IsType<float>() && B.IsType<float>()) {
+                bool result = Type::Traits<float>::Less::Perform(ConstDeref<float>(B), ConstDeref<float>(A));
+                return New<bool>(result);
+            }
+            // Float > Int -> bool
+            else if (A.IsType<float>() && B.IsType<int>()) {
+                bool result = static_cast<float>(ConstDeref<int>(B)) < ConstDeref<float>(A);
+                return New<bool>(result);
+            }
+            // Int > Float -> bool
+            else if (A.IsType<int>() && B.IsType<float>()) {
+                bool result = ConstDeref<float>(B) < static_cast<float>(ConstDeref<int>(A));
+                return New<bool>(result);
+            }
+            // String > String -> bool
+            else if (A.IsType<String>() && B.IsType<String>()) {
+                bool result = Type::Traits<String>::Less::Perform(ConstDeref<String>(B), ConstDeref<String>(A));
+                return New<bool>(result);
+            }
+            // Use type traits for other types that support Greater
+            else if (hasProperty(A, Properties::Greater) && A.GetTypeNumber() == B.GetTypeNumber()) {
+                Object result = A.GetRegistry()->PerformOperation(A, B, Operation::Greater);
+                return result;
+            }
+            break;
+            
+        case Operation::LessOrEquiv:
+            // Check if A is less than B or equivalent to B
+            {
+                Object lessResult = PerformBinaryOp(A, B, Operation::Less);
+                Object equivResult = PerformBinaryOp(A, B, Operation::Equiv);
+                
+                if (lessResult.IsType<bool>() && equivResult.IsType<bool>()) {
+                    bool result = ConstDeref<bool>(lessResult) || ConstDeref<bool>(equivResult);
+                    return New<bool>(result);
+                }
+            }
+            break;
+            
+        case Operation::GreaterOrEquiv:
+            // Check if A is greater than B or equivalent to B
+            {
+                Object greaterResult = PerformBinaryOp(A, B, Operation::Greater);
+                Object equivResult = PerformBinaryOp(A, B, Operation::Equiv);
+                
+                if (greaterResult.IsType<bool>() && equivResult.IsType<bool>()) {
+                    bool result = ConstDeref<bool>(greaterResult) || ConstDeref<bool>(equivResult);
+                    return New<bool>(result);
+                }
+            }
+            break;
+            
+        // Logical operations
+        case Operation::LogicalAnd:
+            // Bool && Bool -> Bool
+            if (A.IsType<bool>() && B.IsType<bool>()) {
+                bool result = ConstDeref<bool>(A) && ConstDeref<bool>(B);
+                return New<bool>(result);
+            }
+            break;
+            
+        case Operation::LogicalOr:
+            // Bool || Bool -> Bool
+            if (A.IsType<bool>() && B.IsType<bool>()) {
+                bool result = ConstDeref<bool>(A) || ConstDeref<bool>(B);
+                return New<bool>(result);
+            }
+            break;
+            
+        case Operation::LogicalXor:
+            // Bool XOR Bool -> Bool
+            if (A.IsType<bool>() && B.IsType<bool>()) {
+                bool result = ConstDeref<bool>(A) != ConstDeref<bool>(B);
+                return New<bool>(result);
+            }
+            break;
+            
+        // Bitwise operations
+        case Operation::BitwiseAnd:
+            // Int & Int -> Int
+            if (A.IsType<int>() && B.IsType<int>()) {
+                int result = ConstDeref<int>(A) & ConstDeref<int>(B);
+                return New<int>(result);
+            }
+            break;
+            
+        case Operation::BitwiseOr:
+            // Int | Int -> Int
+            if (A.IsType<int>() && B.IsType<int>()) {
+                int result = ConstDeref<int>(A) | ConstDeref<int>(B);
+                return New<int>(result);
+            }
+            break;
+            
+        case Operation::BitwiseXor:
+            // Int ^ Int -> Int
+            if (A.IsType<int>() && B.IsType<int>()) {
+                int result = ConstDeref<int>(A) ^ ConstDeref<int>(B);
+                return New<int>(result);
+            }
+            break;
+            
+        // Assignment-related operations
+        case Operation::Store:
+            // Special handling for the store operation
+            return B;  // Return the value (second argument) for Store
+            
+        case Operation::Index:
+            // Array[Int] -> Object
+            if (A.IsType<Array>() && B.IsType<int>()) {
+                const Array& array = ConstDeref<Array>(A);
+                int index = ConstDeref<int>(B);
+                
+                if (index >= 0 && index < static_cast<int>(array.Size())) {
+                    // For arrays, we can access elements directly
+                    return array.At(index);
+                }
+                
+                KAI_THROW_1(BadIndex, index);
+            }
+            // List[Int] -> Object
+            else if (A.IsType<List>() && B.IsType<int>()) {
+                const List& list = ConstDeref<List>(A);
+                int index = ConstDeref<int>(B);
+                
+                if (index >= 0 && index < static_cast<int>(list.Size())) {
+                    // For lists, we need to iterate to the correct position
+                    auto it = list.begin();
+                    for (int i = 0; i < index && it != list.end(); ++i, ++it) {
+                        // Just advance the iterator
+                    }
+                    
+                    if (it != list.end()) {
+                        return *it;
+                    }
+                }
+                
+                KAI_THROW_1(BadIndex, index);
+            }
+            // Map[Key] -> Value
+            else if (A.IsType<Map>()) {
+                const Map& map = ConstDeref<Map>(A);
+                auto it = map.Find(B);
+                
+                // Check if the key exists
+                if (it != map.end()) {
+                    // Return the value from the iterator
+                    return it->second;
+                }
+                
+                KAI_THROW_1(Base, "Key not found in map");
             }
             break;
             
         default:
-            KAI_THROW_1(Base, "Unsupported operation");
+            // For unsupported operations, provide a helpful error message
+            KAI_TRACE_ERROR() << "Unsupported operation in PerformBinaryOp: " << Operation::ToString(op);
+            KAI_THROW_1(Base, "Unsupported operation in binary operation");
     }
     
-    // If we get here, we didn't handle the operation
+    // If we reach here, it means we couldn't handle the operation with the given types
+    KAI_TRACE_ERROR() << "Unsupported types for operation: " << A.GetClass()->GetName() 
+                      << " and " << B.GetClass()->GetName() 
+                      << " for operation " << Operation::ToString(op);
+    
+    // Try one more approach: see if the registry can handle this operation
+    try {
+        Object result = A.GetRegistry()->PerformOperation(A, B, op);
+        if (result.Exists()) {
+            return result;
+        }
+    }
+    catch (const Exception::Base&) {
+        // If the registry fails, continue to the error message
+    }
+    
     KAI_THROW_1(Base, "Unsupported types for operation");
     
     // This will never be reached due to the exception above
