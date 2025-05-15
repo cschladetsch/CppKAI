@@ -27,6 +27,11 @@ class Continuation : public Reflected {
     //
     // I hate this idea. needs to be re-thought through clearly.
     Pointer<bool> scopeBreak;
+    
+    // if true, this continuation should be automatically unwrapped when used
+    // in binary operations. Used for Pi expressions in Rho language that should
+    // return primitives not continuations
+    Pointer<bool> specialHandling;
 
    public:
     void Create();
@@ -59,6 +64,20 @@ class Continuation : public Reflected {
     bool HasScope() const { return scope.Exists(); }
 
     bool HasCode() const { return code.Exists(); }
+    
+    // Special handling flag for continuations used in Pi expressions in Rho
+    void SetSpecialHandling(bool special) {
+        if (!specialHandling.Exists()) {
+            specialHandling = New<bool>(special);
+        }
+        else {
+            *specialHandling = special;
+        }
+    }
+    
+    bool GetSpecialHandling() const {
+        return specialHandling.Exists() && *specialHandling;
+    }
 
     int InitialStackDepth;
 

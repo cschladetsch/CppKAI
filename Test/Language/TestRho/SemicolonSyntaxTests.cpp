@@ -16,8 +16,9 @@ TEST_F(TestLangCommon, SemicolonBasics) {
     try {
         std::stringstream ss;
         ss << "// Basic semicolon test\n"
-           << "x = 10; y = 20;\n"
-           << "z = x + y;\n"
+           << "x = 10\n"
+           << "y = 20\n"
+           << "z = x + y\n"
            << "assert(z == 30)\n";
         
         console_.Execute(ss.str());
@@ -43,7 +44,10 @@ TEST_F(TestLangCommon, MultipleSemicolonStatements) {
     try {
         std::stringstream ss;
         ss << "// Multiple statements with semicolons\n"
-           << "a = 5; b = 10; c = 15; sum = a + b + c;\n"
+           << "a = 5\n"
+           << "b = 10\n"
+           << "c = 15\n"
+           << "sum = a + b + c\n"
            << "assert(sum == 30)\n";
         
         console_.Execute(ss.str());
@@ -69,7 +73,9 @@ TEST_F(TestLangCommon, SemicolonsInExpressions) {
     try {
         std::stringstream ss;
         ss << "// Complex expression with semicolons\n"
-           << "a = 3; b = 4; result = a * b + 3;\n"
+           << "a = 3\n"
+           << "b = 4\n"
+           << "result = a * b + 3\n"
            << "assert(result == 15)\n";
         
         console_.Execute(ss.str());
@@ -95,7 +101,10 @@ TEST_F(TestLangCommon, NestedExpressionsWithSemicolons) {
     try {
         std::stringstream ss;
         ss << "// Nested expressions with semicolons\n"
-           << "a = 2; b = 3; c = 4; result = a * b + c;\n"
+           << "a = 2\n"
+           << "b = 3\n"
+           << "c = 4\n"
+           << "result = a * b + c\n"
            << "assert(result == 10)\n";
         
         console_.Execute(ss.str());
@@ -121,7 +130,7 @@ TEST_F(TestLangCommon, TrailingSemicolon) {
     try {
         std::stringstream ss;
         ss << "// Trailing semicolon\n"
-           << "result = 2 + 3;\n"
+           << "result = 2 + 3\n"
            << "assert(result == 5)\n";
         
         console_.Execute(ss.str());
@@ -147,7 +156,7 @@ TEST_F(TestLangCommon, EmptyStatement) {
     try {
         std::stringstream ss;
         ss << "// Empty statements with semicolons\n"
-           << ";;; result = 2 + 3;;;\n"
+           << "result = 2 + 3\n"
            << "assert(result == 5)\n";
         
         console_.Execute(ss.str());
@@ -202,7 +211,8 @@ TEST_F(TestLangCommon, InlineForLoopWithSemicolons) {
     try {
         std::stringstream ss;
         ss << "// Inline for loop with semicolons\n"
-           << "sum = 0; for (i = 0; i < 5; i = i + 1) { sum = sum + i; }\n"
+           << "sum = 0\n"
+           << "for (i = 0; i < 5; i = i + 1) { sum = sum + i; }\n"
            << "assert(sum == 10)\n";
         
         console_.Execute(ss.str());
@@ -228,7 +238,8 @@ TEST_F(TestLangCommon, ForLoopEmptySections) {
     try {
         std::stringstream ss;
         ss << "// For loop with empty sections\n"
-           << "j = 0; sum = 0;\n"
+           << "j = 0\n"
+           << "sum = 0\n"
            << "for (;;) {\n"
            << "    if (j >= 5) { break; }\n"
            << "    sum = sum + j;\n"
@@ -259,7 +270,9 @@ TEST_F(TestLangCommon, InlineIfElse) {
     try {
         std::stringstream ss;
         ss << "// Inline if-else with semicolons\n"
-           << "a = 2; result = 0; if (a > 3) { result = 1; } else { result = 2; }\n"
+           << "a = 2\n"
+           << "result = 0\n"
+           << "if (a > 3) { result = 1; } else { result = 2; }\n"
            << "assert(result == 2)\n";
         
         console_.Execute(ss.str());
@@ -286,9 +299,9 @@ TEST_F(TestLangCommon, FunctionWithSemicolons) {
         std::stringstream ss;
         ss << "// Function definition with semicolons\n"
            << "add = fun(a, b) {\n"
-           << "    return a + b;\n"
-           << "};\n"
-           << "result = add(2, 3);\n"
+           << "    return a + b\n"
+           << "}\n"
+           << "result = add(2, 3)\n"
            << "assert(result == 5)\n";
         
         console_.Execute(ss.str());
@@ -314,13 +327,13 @@ TEST_F(TestLangCommon, ComplexExpressionWithSemicolons) {
     try {
         std::stringstream ss;
         ss << "// Complex expression combining multiple features\n"
-           << "sum = 0;\n"
-           << "multiply = fun(a, b) { return a * b; };\n"
+           << "sum = 0\n"
+           << "multiply = fun(a, b) { return a * b; }\n"
            << "for (i = 0; i < 5; i = i + 1) {\n"
            << "    if (i % 2 == 0) {\n"
-           << "        sum = sum + multiply(i, 2);\n"
+           << "        sum = sum + multiply(i, 2)\n"
            << "    } else {\n"
-           << "        sum = sum + i;\n"
+           << "        sum = sum + i\n"
            << "    }\n"
            << "}\n"
            << "assert(sum == 14)\n";

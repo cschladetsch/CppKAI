@@ -219,7 +219,81 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
         case TokenEnum::PiSequence:
         {
             KAI_TRACE() << std::format("Translating PiSequence: {}", node->Text());
-            // Create a continuation for the Pi code block
+            
+            // Attempt to optimize simple Pi expressions by evaluating them directly
+            bool canOptimize = false;
+            
+            // Look at the children nodes to see if this is a simple expression
+            // like "2 3 + " that we can evaluate directly
+            if (node->GetChildren().size() == 3) {
+                auto it = node->GetChildren().begin();
+                auto first = *it++;
+                auto second = *it++;
+                auto op = *it;
+                
+                // Check if first and second are integer literals
+                if (first->GetType() == AstEnum::TokenType && second->GetType() == AstEnum::TokenType &&
+                    op->GetType() == AstEnum::TokenType) {
+                    
+                    if (first->GetToken().type == TokenEnum::Int && 
+                        second->GetToken().type == TokenEnum::Int &&
+                        (op->GetToken().type == TokenEnum::Plus || 
+                         op->GetToken().type == TokenEnum::Minus || 
+                         op->GetToken().type == TokenEnum::Mul || 
+                         op->GetToken().type == TokenEnum::Divide)) {
+                        
+                        try {
+                            // Parse the integer literals
+                            int firstValue = std::stoi(first->GetTokenText());
+                            int secondValue = std::stoi(second->GetTokenText());
+                            int result = 0;
+                            
+                            // Calculate the result based on the operation
+                            switch (op->GetToken().type) {
+                                case TokenEnum::Plus:
+                                    result = firstValue + secondValue;
+                                    break;
+                                case TokenEnum::Minus:
+                                    result = firstValue - secondValue;
+                                    break;
+                                case TokenEnum::Mul:
+                                    result = firstValue * secondValue;
+                                    break;
+                                case TokenEnum::Divide:
+                                    if (secondValue != 0) {
+                                        result = firstValue / secondValue;
+                                    }
+                                    else {
+                                        // Division by zero - revert to normal handling
+                                        canOptimize = false;
+                                    }
+                                    break;
+                                default:
+                                    // Should not get here
+                                    canOptimize = false;
+                                    break;
+                            }
+                            
+                            // Direct evaluation successful - create integer result
+                            if (canOptimize) {
+                                KAI_TRACE() << "Direct evaluation of Pi expression: result = " << result;
+                                // Create a properly typed integer object
+                                Object resultObj = reg_->New<int>(result);
+                                // Append directly to the parent
+                                Append(resultObj);
+                                return;
+                            }
+                        }
+                        catch (const std::exception& e) {
+                            // Parse error - fallback to normal handling
+                            KAI_TRACE_ERROR() << "Error optimizing Pi expression: " << e.what();
+                            canOptimize = false;
+                        }
+                    }
+                }
+            }
+            
+            // If optimization failed, use normal approach: create a continuation
             PushNew();
             
             // Translate all the children nodes
@@ -227,12 +301,16 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
                 TranslateNode(child);
             }
             
-            // Get the continuation and convert it to Pi
+            // Pop the continuation
             auto piCont = Pop();
-            // Note: We're not setting a Language property anymore since it's not registered
-            // in the Continuation class. Language context is now handled in Console.cpp.
+            
+            // Mark it with a special flag to indicate it's a Pi continuation
+            // that should be automatically resolved when evaluated
+            // This will be used by the PerformBinaryOp and friends in Executor
+            piCont->SetSpecialHandling(true);
             
             // Add the continuation to the parent
+            KAI_TRACE() << "Using continuation for Pi sequence (with special handling)";
             Append(piCont);
             return;
         }

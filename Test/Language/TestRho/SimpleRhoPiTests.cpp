@@ -42,6 +42,45 @@ using namespace std;
  * or execution process.
  */
 
+// Helper method to create a Pi continuation with special handling enabled
+Pointer<Continuation> CreateTestContinuation(Registry& reg, const std::vector<Object>& objects, Operation::Type op) {
+    // Create a continuation
+    Pointer<Continuation> cont = reg.New<Continuation>();
+    cont->Create();
+    
+    // Create a code array
+    Pointer<Array> code = reg.New<Array>();
+    
+    // Add a ContinuationBegin marker for proper nesting (this is important)
+    Object beginMarker = reg.New<Operation>(Operation::ContinuationBegin);
+    code->Append(beginMarker);
+    
+    // Add all objects to the code array
+    for (const auto& obj : objects) {
+        code->Append(obj);
+    }
+    
+    // Add the operation
+    if (op != Operation::None) {
+        code->Append(reg.New<Operation>(op));
+    }
+    
+    // Add a ContinuationEnd marker for proper nesting (this is important)
+    Object endMarker = reg.New<Operation>(Operation::ContinuationEnd);
+    code->Append(endMarker);
+    
+    // Set the code array on the continuation
+    cont->SetCode(code);
+    
+    // Mark it for special handling
+    cont->SetSpecialHandling(true);
+    
+    // This ensures the same format as RhoTranslator.cpp's PiSequence method creates
+    KAI_TRACE() << "Created test continuation with special handling and proper nesting markers";
+    
+    return cont;
+}
+
 // Test 1: Basic arithmetic with Pi
 // This test should now work with the fixed PerformBinaryOp implementation
 TEST(RhoPiBasic, Addition) {
@@ -60,19 +99,15 @@ TEST(RhoPiBasic, Addition) {
     // Execute manual Pi code directly without relying on the translator
     exec->ClearContext();
     
-    // Create objects directly in the registry with specific types
+    // Create a Pi continuation with special handling
     Object two = reg.New<int>(2);
     Object three = reg.New<int>(3);
     
-    // Push directly onto stack
-    stack->Push(two);
-    stack->Push(three);
+    // Create a continuation with 2, 3, and Plus operation
+    Object continuation = CreateTestContinuation(reg, {two, three}, Operation::Plus);
     
-    // Perform addition directly with explicit operation
-    Object result = exec->PerformBinaryOp(three, two, Operation::Plus);
-    stack->Pop(); // Remove the 3
-    stack->Pop(); // Remove the 2
-    stack->Push(result); // Push the result
+    // Execute the continuation directly
+    exec->Continue(continuation);
     
     // Now the stack should have one item: the result (5)
     ASSERT_FALSE(stack->Empty());
@@ -83,8 +118,11 @@ TEST(RhoPiBasic, Addition) {
     // Check the value regardless of exact type
     ASSERT_EQ(stack->Top().ToString(), "5");
     
-    // Less strict type assertion - ensure it's a numeric type
+    // The type should be int
     ASSERT_TRUE(stack->Top().IsType<int>());
+    
+    // Check the value
+    ASSERT_EQ(ConstDeref<int>(stack->Top()), 5);
 }
 
 // Test 2: Subtraction with Pi 
@@ -108,15 +146,11 @@ TEST(RhoPiBasic, Subtraction) {
     Object ten = reg.New<int>(10);
     Object four = reg.New<int>(4);
     
-    // Push values onto stack
-    stack->Push(ten);
-    stack->Push(four);
+    // Create a continuation with 10, 4, and Minus operation
+    Object continuation = CreateTestContinuation(reg, {ten, four}, Operation::Minus);
     
-    // Perform subtraction directly
-    Object result = exec->PerformBinaryOp(four, ten, Operation::Minus);
-    stack->Pop(); // Remove the 4
-    stack->Pop(); // Remove the 10
-    stack->Push(result); // Push the result
+    // Execute the continuation directly
+    exec->Continue(continuation);
     
     // Now the stack should have one item: the result (6)
     ASSERT_FALSE(stack->Empty());
@@ -127,8 +161,11 @@ TEST(RhoPiBasic, Subtraction) {
     // Check the value regardless of exact type
     ASSERT_EQ(stack->Top().ToString(), "6");
     
-    // Less strict type assertion
+    // The type should be int
     ASSERT_TRUE(stack->Top().IsType<int>());
+    
+    // Check the value
+    ASSERT_EQ(ConstDeref<int>(stack->Top()), 6);
 }
 
 // Test 3: Multiplication with Pi
@@ -151,15 +188,11 @@ TEST(RhoPiBasic, Multiplication) {
     Object six = reg.New<int>(6);
     Object seven = reg.New<int>(7);
     
-    // Push values onto stack
-    stack->Push(six);
-    stack->Push(seven);
+    // Create a continuation with 6, 7, and Multiply operation
+    Object continuation = CreateTestContinuation(reg, {six, seven}, Operation::Multiply);
     
-    // Perform multiplication directly
-    Object result = exec->PerformBinaryOp(seven, six, Operation::Multiply);
-    stack->Pop(); // Remove the 7
-    stack->Pop(); // Remove the 6
-    stack->Push(result); // Push the result
+    // Execute the continuation directly
+    exec->Continue(continuation);
     
     // Now the stack should have one item: the result (42)
     ASSERT_FALSE(stack->Empty());
@@ -170,8 +203,11 @@ TEST(RhoPiBasic, Multiplication) {
     // Check the value regardless of exact type
     ASSERT_EQ(stack->Top().ToString(), "42");
     
-    // Less strict type assertion
+    // Check the type - should be int
     ASSERT_TRUE(stack->Top().IsType<int>());
+    
+    // Check the value
+    ASSERT_EQ(ConstDeref<int>(stack->Top()), 42);
 }
 
 // Test 4: Addition again with Pi
@@ -194,15 +230,11 @@ TEST(RhoPiBasic, AnotherAddition) {
     Object fifteen = reg.New<int>(15);
     Object five = reg.New<int>(5);
     
-    // Push values onto stack
-    stack->Push(fifteen);
-    stack->Push(five);
+    // Create a continuation with 15, 5, and Plus operation
+    Object continuation = CreateTestContinuation(reg, {fifteen, five}, Operation::Plus);
     
-    // Perform addition directly
-    Object result = exec->PerformBinaryOp(five, fifteen, Operation::Plus);
-    stack->Pop(); // Remove the 5
-    stack->Pop(); // Remove the 15
-    stack->Push(result); // Push the result
+    // Execute the continuation directly
+    exec->Continue(continuation);
     
     // Now the stack should have one item: the result (20)
     ASSERT_FALSE(stack->Empty());
@@ -213,8 +245,11 @@ TEST(RhoPiBasic, AnotherAddition) {
     // Check the value regardless of exact type
     ASSERT_EQ(stack->Top().ToString(), "20");
     
-    // Less strict type assertion
+    // Check the type - should be int
     ASSERT_TRUE(stack->Top().IsType<int>());
+    
+    // Check the value
+    ASSERT_EQ(ConstDeref<int>(stack->Top()), 20);
 }
 
 // Test 5: Complex Expression with Pi
@@ -239,12 +274,23 @@ TEST(RhoPiBasic, ComplexExpression) {
     Object four = reg.New<int>(4);
     Object two = reg.New<int>(2);
     
-    // Manually execute the equation (6 + 4) * 2
-    Object sumResult = exec->PerformBinaryOp(four, six, Operation::Plus); // 6 + 4 = 10
-    Object finalResult = exec->PerformBinaryOp(two, sumResult, Operation::Multiply); // 10 * 2 = 20
+    // Create a continuation that executes: 6 4 + 2 *
+    // This is a more complex case where we chain operations:
+    // 1. Add 6 and 4
+    // 2. Multiply the result by 2
     
-    // Push the final result
-    stack->Push(finalResult);
+    // Create an array of operations to perform: 6 4 + 2 *
+    std::vector<Object> elements;
+    elements.push_back(six);   // Push 6
+    elements.push_back(four);  // Push 4
+    elements.push_back(reg.New<Operation>(Operation::Plus));  // Add: 6 + 4 = 10
+    elements.push_back(two);   // Push 2
+    
+    // Create a continuation with these operations and a multiply at the end
+    Pointer<Continuation> cont = CreateTestContinuation(reg, elements, Operation::Multiply);
+    
+    // Execute the continuation directly
+    exec->Continue(cont);
     
     // Now the stack should have one item: the result (20)
     ASSERT_FALSE(stack->Empty());
@@ -255,12 +301,15 @@ TEST(RhoPiBasic, ComplexExpression) {
     // Check the value regardless of exact type
     ASSERT_EQ(stack->Top().ToString(), "20");
     
-    // Less strict type assertion
+    // Check the type - should be int
     ASSERT_TRUE(stack->Top().IsType<int>());
+    
+    // Check the value
+    ASSERT_EQ(ConstDeref<int>(stack->Top()), 20);
 }
 
 // Test 6: Stack Operations with Pi
-// This test is temporarily disabled due to type handling issues
+// This test has been updated to use continuations with special handling
 TEST(RhoPiBasic, StackOperations) {
     Console console;
     console.SetLanguage(Language::Pi); // Explicitly set Pi language
@@ -272,26 +321,37 @@ TEST(RhoPiBasic, StackOperations) {
     auto stack = exec->GetDataStack();
     stack->Clear();
     
-    // Push 5 onto the stack
+    // Create a value
     Object five = reg.New<int>(5);
-    stack->Push(five);
     
-    // Duplicate it
-    Object dup = reg.New<Operation>(Operation::Dup);
-    exec->Eval(dup);
+    // Create a continuation that: pushes 5, duplicates it (Dup), and adds them (Plus)
     
-    // Add the two 5s
-    Object plus = reg.New<Operation>(Operation::Plus);
-    exec->Eval(plus);
+    // Create an array of operations to perform
+    std::vector<Object> elements;
+    elements.push_back(five);      // Push 5
+    elements.push_back(reg.New<Operation>(Operation::Dup));   // Duplicate it: 5 5
+    
+    // Create a continuation with these operations and a Plus at the end
+    Pointer<Continuation> cont = CreateTestContinuation(reg, elements, Operation::Plus);
+    
+    // Execute the continuation directly
+    exec->Continue(cont);
     
     // Now the stack should have one item: the result (10)
     ASSERT_FALSE(stack->Empty());
+    
+    // Debug the type
+    std::cout << "Stack operations result type: " << stack->Top().GetClass()->GetName() << std::endl;
+    
+    // Check the type - should be int
     ASSERT_TRUE(stack->Top().IsType<int>());
+    
+    // Check the value
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 10);
 }
 
 // Test 7: Stack Manipulation with Pi
-// This test is temporarily disabled due to type handling issues
+// This test has been updated to use continuations with special handling
 TEST(RhoPiBasic, StackManipulation) {
     Console console;
     console.SetLanguage(Language::Pi); // Explicitly set Pi language
@@ -303,28 +363,39 @@ TEST(RhoPiBasic, StackManipulation) {
     auto stack = exec->GetDataStack();
     stack->Clear();
     
-    // Push 3 and 4 onto the stack
+    // Create our values
     Object three = reg.New<int>(3);
     Object four = reg.New<int>(4);
-    stack->Push(three);
-    stack->Push(four);
     
-    // Swap them (now have 4, 3)
-    Object swap = reg.New<Operation>(Operation::Swap);
-    exec->Eval(swap);
+    // Create a continuation that: pushes 4, pushes 3, swaps them, and subtracts
     
-    // Subtract (4 - 3 = 1)
-    Object minus = reg.New<Operation>(Operation::Minus);
-    exec->Eval(minus);
+    // Create an array of operations to perform
+    std::vector<Object> elements;
+    elements.push_back(four);      // Push 4
+    elements.push_back(three);     // Push 3
+    elements.push_back(reg.New<Operation>(Operation::Swap));  // Swap them: 3 4
     
-    // Verify the result
+    // Create a continuation with these operations and a Minus at the end
+    Pointer<Continuation> cont = CreateTestContinuation(reg, elements, Operation::Minus);
+    
+    // Execute the continuation directly
+    exec->Continue(cont);
+    
+    // Now the stack should have one item: the result (-1)
     ASSERT_FALSE(stack->Empty());
+    
+    // Debug the type
+    std::cout << "Stack manipulation result type: " << stack->Top().GetClass()->GetName() << std::endl;
+    
+    // Check the type - should be int
     ASSERT_TRUE(stack->Top().IsType<int>());
-    ASSERT_EQ(ConstDeref<int>(stack->Top()), 1);
+    
+    // Check the value - note that the order is 3-4 = -1 because we swap them in the code
+    ASSERT_EQ(ConstDeref<int>(stack->Top()), -1);
 }
 
 // Test 8: Comparison Operations with Pi
-// This test is temporarily disabled due to type handling issues
+// This test has been updated to use continuations with special handling
 TEST(RhoPiBasic, ComparisonOperations) {
     Console console;
     console.SetLanguage(Language::Pi); // Explicitly set Pi language
@@ -337,19 +408,26 @@ TEST(RhoPiBasic, ComparisonOperations) {
     auto stack = exec->GetDataStack();
     stack->Clear();
     
-    // Push 10 and 5 onto the stack
+    // Create our values
     Object ten = reg.New<int>(10);
     Object five = reg.New<int>(5);
-    stack->Push(ten);
-    stack->Push(five);
     
-    // Greater than operation (10 > 5 = true)
-    Object greaterThan = reg.New<Operation>(Operation::Greater);
-    exec->Eval(greaterThan);
+    // Create a continuation with 10, 5, and Greater operation
+    Object continuation = CreateTestContinuation(reg, {ten, five}, Operation::Greater);
     
-    // Verify the result
+    // Execute the continuation directly
+    exec->Continue(continuation);
+    
+    // Now the stack should have one item: the result (true)
     ASSERT_FALSE(stack->Empty());
+    
+    // Debug the type
+    std::cout << "Comparison result type: " << stack->Top().GetClass()->GetName() << std::endl;
+    
+    // Check the type - should be bool
     ASSERT_TRUE(stack->Top().IsType<bool>());
+    
+    // Check the value - 10 > 5 should be true
     ASSERT_TRUE(ConstDeref<bool>(stack->Top()));
 }
 
@@ -362,37 +440,43 @@ TEST(RhoPiBasic, FunctionCompilation) {
     reg.AddClass<int>(Label("int"));
     reg.AddClass<Continuation>(Label("Continuation"));
 
-    // Define a simple function that duplicates a value and adds it to itself
-    // First, create a continuation object
-    Pointer<Continuation> cont = reg.New<Continuation>();
-    cont->SetCode(reg.New<Array>());
+    // Use a simpler approach to function creation and execution
+    // Create a function that duplicates a value and adds the duplicates
+    std::vector<Object> functionBody;
+    functionBody.push_back(reg.New<Operation>(Operation::Dup));  // Duplicate top of stack
+    functionBody.push_back(reg.New<Operation>(Operation::Plus)); // Add them together
     
-    // Fill its code array with our operations
-    cont->GetCode()->Append(reg.New<Operation>(Operation::Dup));
-    cont->GetCode()->Append(reg.New<Operation>(Operation::Plus));
+    // Create a direct test that pushes a value and executes the operations
+    std::vector<Object> testSequence;
+    testSequence.push_back(reg.New<int>(5));        // Push 5 on the stack
+    testSequence.push_back(reg.New<Operation>(Operation::Dup));  // Duplicate: 5 5
+    testSequence.push_back(reg.New<Operation>(Operation::Plus)); // Add: 5 + 5 = 10
     
-    // Verify the result is a continuation 
-    ASSERT_TRUE(cont.IsType<Continuation>());
+    // Create a continuation with the test sequence
+    Pointer<Continuation> testCont = CreateTestContinuation(reg, testSequence, Operation::None);
     
-    // Execute the function with an argument of 5 to verify it works
-    // Clear the stack first
-    auto stack = console.GetExecutor()->GetDataStack();
+    // Execute the test continuation
+    auto exec = console.GetExecutor();
+    auto stack = exec->GetDataStack();
     stack->Clear();
     
-    // Push the argument onto the stack
-    stack->Push(reg.New<int>(5));
-    
-    // Execute the continuation
-    console.GetExecutor()->Continue(cont);
+    // Execute the test sequence
+    exec->Continue(testCont);
     
     // Verify the result is 10
     ASSERT_FALSE(stack->Empty());
+    
+    // Debug the type
+    std::cout << "Function result type: " << stack->Top().GetClass()->GetName() << std::endl;
+    
+    // Check the type - should be int
     ASSERT_TRUE(stack->Top().IsType<int>());
+    
+    // Check the value
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 10);
 }
 
 // Test 10: String Support with Pi
-// This test is temporarily disabled due to type handling issues
 TEST(RhoPiBasic, StringSupport) {
     Console console;
     console.SetLanguage(Language::Pi); // Explicitly set Pi language
@@ -404,11 +488,45 @@ TEST(RhoPiBasic, StringSupport) {
     auto stack = exec->GetDataStack();
     stack->Clear();
     
-    // Create a string and push it directly onto the stack
+    // Create a string
     Object helloWorld = reg.New<String>("Hello World");
-    stack->Push(helloWorld);
+    
+    // Create a continuation that simply pushes the string
+    std::vector<Object> elements;
+    elements.push_back(helloWorld);  // Push "Hello World" string
+    
+    // Create a continuation with just the string and no operation
+    Pointer<Continuation> cont = CreateTestContinuation(reg, elements, Operation::None);
+    
+    // Execute the continuation
+    exec->Continue(cont);
     
     // Check the stack for result
+    ASSERT_FALSE(stack->Empty());
+    
+    // Debug the type
+    std::cout << "String result type: " << stack->Top().GetClass()->GetName() << std::endl;
+    
+    // Check the type - should be String
+    ASSERT_TRUE(stack->Top().IsType<String>());
+    
+    // Check the value
+    ASSERT_EQ(ConstDeref<String>(stack->Top()), "Hello World");
+    
+    // Now let's try string concatenation
+    stack->Clear();
+    
+    // Create two strings
+    Object hello = reg.New<String>("Hello");
+    Object world = reg.New<String>(" World");
+    
+    // Create a continuation for string concatenation
+    Object concatCont = CreateTestContinuation(reg, {hello, world}, Operation::Plus);
+    
+    // Execute the continuation
+    exec->Continue(concatCont);
+    
+    // Check the result of concatenation
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<String>());
     ASSERT_EQ(ConstDeref<String>(stack->Top()), "Hello World");
