@@ -6,6 +6,7 @@
 KAI_BEGIN
 
 // Extended tests for the semicolon syntax in Rho language
+// NOTE: Semicolons are now supported in Rho language for separating statements
 TEST_F(TestLangCommon, SemicolonBasics) {
     console_.SetLanguage(Language::Rho);
     exec_->ClearStacks();
@@ -14,9 +15,10 @@ TEST_F(TestLangCommon, SemicolonBasics) {
     
     try {
         std::stringstream ss;
-        ss << "// Basic semicolon usage\n"
-           << "a = 3;\n"
-           << "assert(a == 3)\n";
+        ss << "// Basic semicolon test\n"
+           << "x = 10; y = 20;\n"
+           << "z = x + y;\n"
+           << "assert(z == 30)\n";
         
         console_.Execute(ss.str());
         std::cout << "SemicolonBasics test passed!" << std::endl;
@@ -41,8 +43,8 @@ TEST_F(TestLangCommon, MultipleSemicolonStatements) {
     try {
         std::stringstream ss;
         ss << "// Multiple statements with semicolons\n"
-           << "a = 3; b = 2; sum = a + b;\n"
-           << "assert(sum == 5)\n";
+           << "a = 5; b = 10; c = 15; sum = a + b + c;\n"
+           << "assert(sum == 30)\n";
         
         console_.Execute(ss.str());
         std::cout << "MultipleSemicolonStatements test passed!" << std::endl;

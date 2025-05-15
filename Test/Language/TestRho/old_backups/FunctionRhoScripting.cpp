@@ -165,7 +165,7 @@ TEST_F(TestLangCommon, TestForLoop) {
         // Test for loop
         std::cout << "Testing for loop..." << std::endl;
         _console.Execute(
-            "sum = 0; for (i = 0; i < 5; i = i + 1) { sum = sum + i; }");
+            "sum = 0\r\t for (i = 0; i < 5; i = i + 1) { sum = sum + i; }");
     } catch (const std::exception& e) {
         std::cerr << "Exception in for loop test: " << e.what() << std::endl;
     } catch (...) {

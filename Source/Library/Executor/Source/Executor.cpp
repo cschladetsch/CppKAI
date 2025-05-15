@@ -2964,192 +2964,201 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B, Operation::Ty
         
         case Operation::Minus: {
             // Handle integer subtraction
-            if (A.IsType<int>() && B.IsType<int>()) {
-                int intB = ConstDeref<int>(B);
-                int intA = ConstDeref<int>(A);
+            if (unwrappedA.IsType<int>() && unwrappedB.IsType<int>()) {
+                int intB = ConstDeref<int>(unwrappedB);
+                int intA = ConstDeref<int>(unwrappedA);
                 return New<int>(intB - intA); // Note the order is reversed compared to stack operation
             }
             
             // Handle float subtraction
-            if (A.IsType<float>() && B.IsType<float>()) {
-                float floatB = ConstDeref<float>(B);
-                float floatA = ConstDeref<float>(A);
+            if (unwrappedA.IsType<float>() && unwrappedB.IsType<float>()) {
+                float floatB = ConstDeref<float>(unwrappedB);
+                float floatA = ConstDeref<float>(unwrappedA);
                 return New<float>(floatB - floatA);
             }
             
             // Handle mixed integer and float
-            if (A.IsType<int>() && B.IsType<float>()) {
-                int intA = ConstDeref<int>(A);
-                float floatB = ConstDeref<float>(B);
+            if (unwrappedA.IsType<int>() && unwrappedB.IsType<float>()) {
+                int intA = ConstDeref<int>(unwrappedA);
+                float floatB = ConstDeref<float>(unwrappedB);
                 return New<float>(floatB - intA);
             }
             
-            if (A.IsType<float>() && B.IsType<int>()) {
-                float floatA = ConstDeref<float>(A);
-                int intB = ConstDeref<int>(B);
+            if (unwrappedA.IsType<float>() && unwrappedB.IsType<int>()) {
+                float floatA = ConstDeref<float>(unwrappedA);
+                int intB = ConstDeref<int>(unwrappedB);
                 return New<float>(intB - floatA);
             }
             
             // Try using the class's Minus operation
-            return B.GetClass()->Minus(B, A);
+            return unwrappedB.GetClass()->Minus(unwrappedB, unwrappedA);
         }
         
         case Operation::Multiply: {
             // Handle integer multiplication
-            if (A.IsType<int>() && B.IsType<int>()) {
-                int intA = ConstDeref<int>(A);
-                int intB = ConstDeref<int>(B);
+            if (unwrappedA.IsType<int>() && unwrappedB.IsType<int>()) {
+                int intA = ConstDeref<int>(unwrappedA);
+                int intB = ConstDeref<int>(unwrappedB);
                 return New<int>(intA * intB);
             }
             
             // Handle float multiplication
-            if (A.IsType<float>() && B.IsType<float>()) {
-                float floatA = ConstDeref<float>(A);
-                float floatB = ConstDeref<float>(B);
+            if (unwrappedA.IsType<float>() && unwrappedB.IsType<float>()) {
+                float floatA = ConstDeref<float>(unwrappedA);
+                float floatB = ConstDeref<float>(unwrappedB);
                 return New<float>(floatA * floatB);
             }
             
             // Handle mixed integer and float
-            if (A.IsType<int>() && B.IsType<float>()) {
-                int intA = ConstDeref<int>(A);
-                float floatB = ConstDeref<float>(B);
+            if (unwrappedA.IsType<int>() && unwrappedB.IsType<float>()) {
+                int intA = ConstDeref<int>(unwrappedA);
+                float floatB = ConstDeref<float>(unwrappedB);
                 return New<float>(intA * floatB);
             }
             
-            if (A.IsType<float>() && B.IsType<int>()) {
-                float floatA = ConstDeref<float>(A);
-                int intB = ConstDeref<int>(B);
+            if (unwrappedA.IsType<float>() && unwrappedB.IsType<int>()) {
+                float floatA = ConstDeref<float>(unwrappedA);
+                int intB = ConstDeref<int>(unwrappedB);
                 return New<float>(floatA * intB);
             }
             
             // Try using the class's Multiply operation
-            return A.GetClass()->Multiply(A, B);
+            return unwrappedA.GetClass()->Multiply(unwrappedA, unwrappedB);
         }
         
         case Operation::Divide: {
             // Handle integer division with division by zero protection
-            if (A.IsType<int>() && B.IsType<int>()) {
-                int intA = ConstDeref<int>(A);
-                int intB = ConstDeref<int>(B);
+            if (unwrappedA.IsType<int>() && unwrappedB.IsType<int>()) {
+                int intA = ConstDeref<int>(unwrappedA);
+                int intB = ConstDeref<int>(unwrappedB);
                 
                 if (intA == 0) {
-                    KAI_THROW_1(DivideByZero, "Integer division by zero");
+                    KAI_THROW_1(Base, "Integer division by zero");
                 }
                 
                 return New<int>(intB / intA);
             }
             
             // Handle float division with division by zero protection
-            if (A.IsType<float>() && B.IsType<float>()) {
-                float floatA = ConstDeref<float>(A);
-                float floatB = ConstDeref<float>(B);
+            if (unwrappedA.IsType<float>() && unwrappedB.IsType<float>()) {
+                float floatA = ConstDeref<float>(unwrappedA);
+                float floatB = ConstDeref<float>(unwrappedB);
                 
                 if (floatA == 0.0f) {
-                    KAI_THROW_1(DivideByZero, "Float division by zero");
+                    KAI_THROW_1(Base, "Float division by zero");
                 }
                 
                 return New<float>(floatB / floatA);
             }
             
             // Handle mixed integer and float with division by zero protection
-            if (A.IsType<int>() && B.IsType<float>()) {
-                int intA = ConstDeref<int>(A);
-                float floatB = ConstDeref<float>(B);
+            if (unwrappedA.IsType<int>() && unwrappedB.IsType<float>()) {
+                int intA = ConstDeref<int>(unwrappedA);
+                float floatB = ConstDeref<float>(unwrappedB);
                 
                 if (intA == 0) {
-                    KAI_THROW_1(DivideByZero, "Division by zero");
+                    KAI_THROW_1(Base, "Division by zero");
                 }
                 
                 return New<float>(floatB / intA);
             }
             
-            if (A.IsType<float>() && B.IsType<int>()) {
-                float floatA = ConstDeref<float>(A);
-                int intB = ConstDeref<int>(B);
+            if (unwrappedA.IsType<float>() && unwrappedB.IsType<int>()) {
+                float floatA = ConstDeref<float>(unwrappedA);
+                int intB = ConstDeref<int>(unwrappedB);
                 
                 if (floatA == 0.0f) {
-                    KAI_THROW_1(DivideByZero, "Division by zero");
+                    KAI_THROW_1(Base, "Division by zero");
                 }
                 
                 return New<float>(intB / floatA);
             }
             
             // Try using the class's Divide operation
-            return B.GetClass()->Divide(B, A);
+            return unwrappedB.GetClass()->Divide(unwrappedB, unwrappedA);
         }
         
         case Operation::Greater: {
             // Direct comparison of numbers
-            if (A.IsType<int>() && B.IsType<int>()) {
-                return New<bool>(ConstDeref<int>(B) > ConstDeref<int>(A));
+            if (unwrappedA.IsType<int>() && unwrappedB.IsType<int>()) {
+                return New<bool>(ConstDeref<int>(unwrappedB) > ConstDeref<int>(unwrappedA));
             }
-            if (A.IsType<float>() && B.IsType<float>()) {
-                return New<bool>(ConstDeref<float>(B) > ConstDeref<float>(A));
+            if (unwrappedA.IsType<float>() && unwrappedB.IsType<float>()) {
+                return New<bool>(ConstDeref<float>(unwrappedB) > ConstDeref<float>(unwrappedA));
             }
             
             // Use the class's comparison method
-            return B.GetClass()->Greater2(B, A);
+            bool result = unwrappedB.GetClass()->Greater2(unwrappedB, unwrappedA);
+            return New<bool>(result);
         }
         
         case Operation::Less: {
             // Direct comparison of numbers
-            if (A.IsType<int>() && B.IsType<int>()) {
-                return New<bool>(ConstDeref<int>(B) < ConstDeref<int>(A));
+            if (unwrappedA.IsType<int>() && unwrappedB.IsType<int>()) {
+                return New<bool>(ConstDeref<int>(unwrappedB) < ConstDeref<int>(unwrappedA));
             }
-            if (A.IsType<float>() && B.IsType<float>()) {
-                return New<bool>(ConstDeref<float>(B) < ConstDeref<float>(A));
+            if (unwrappedA.IsType<float>() && unwrappedB.IsType<float>()) {
+                return New<bool>(ConstDeref<float>(unwrappedB) < ConstDeref<float>(unwrappedA));
             }
             
             // Use the class's comparison method
-            return B.GetClass()->Less2(B, A);
+            bool result = unwrappedB.GetClass()->Less2(unwrappedB, unwrappedA);
+            return New<bool>(result);
         }
         
         case Operation::Equiv: {
             // Direct comparison for equivalence
-            if (A.IsType<int>() && B.IsType<int>()) {
-                return New<bool>(ConstDeref<int>(A) == ConstDeref<int>(B));
+            if (unwrappedA.IsType<int>() && unwrappedB.IsType<int>()) {
+                return New<bool>(ConstDeref<int>(unwrappedA) == ConstDeref<int>(unwrappedB));
             }
-            if (A.IsType<float>() && B.IsType<float>()) {
-                return New<bool>(ConstDeref<float>(A) == ConstDeref<float>(B));
+            if (unwrappedA.IsType<float>() && unwrappedB.IsType<float>()) {
+                return New<bool>(ConstDeref<float>(unwrappedA) == ConstDeref<float>(unwrappedB));
             }
-            if (A.IsType<bool>() && B.IsType<bool>()) {
-                return New<bool>(ConstDeref<bool>(A) == ConstDeref<bool>(B));
+            if (unwrappedA.IsType<bool>() && unwrappedB.IsType<bool>()) {
+                return New<bool>(ConstDeref<bool>(unwrappedA) == ConstDeref<bool>(unwrappedB));
             }
-            if (A.IsType<String>() && B.IsType<String>()) {
-                return New<bool>(ConstDeref<String>(A) == ConstDeref<String>(B));
+            if (unwrappedA.IsType<String>() && unwrappedB.IsType<String>()) {
+                return New<bool>(ConstDeref<String>(unwrappedA) == ConstDeref<String>(unwrappedB));
             }
             
             // Use the class's equivalence method
-            return A.GetClass()->Equiv2(A, B);
+            bool result = unwrappedA.GetClass()->Equiv2(unwrappedA, unwrappedB);
+            return New<bool>(result);
         }
         
         case Operation::NotEquiv: {
             // Invert the result of Equiv
-            Object equivResult = PerformBinaryOp(A, B, Operation::Equiv);
+            Object equivResult = PerformBinaryOp(unwrappedA, unwrappedB, Operation::Equiv);
             return New<bool>(!ConstDeref<bool>(equivResult));
         }
         
         case Operation::Modulo: {
             // Only implemented for integers
-            if (A.IsType<int>() && B.IsType<int>()) {
-                int denominator = ConstDeref<int>(A);
+            if (unwrappedA.IsType<int>() && unwrappedB.IsType<int>()) {
+                int denominator = ConstDeref<int>(unwrappedA);
                 
                 if (denominator == 0) {
-                    KAI_THROW_1(DivideByZero, "Modulo by zero");
+                    KAI_THROW_1(Base, "Modulo by zero");
                 }
                 
-                int numerator = ConstDeref<int>(B);
+                int numerator = ConstDeref<int>(unwrappedB);
                 return New<int>(numerator % denominator);
             }
             
-            KAI_THROW_1(TypeMismatch, "Modulo operation only supported for integers");
+            KAI_THROW_1(Base, "Modulo operation only supported for integers");
         }
         
         // Handle additional binary operations as needed
         
         default:
-            KAI_THROW_1(UnimplementedOperation, 
-                        String("Binary operation ") + Operation::ToString(op) + " not implemented in PerformBinaryOp");
+            // Convert the string to a C-string for the exception
+            std::string errorMsg = "Binary operation " + 
+                std::string(Operation::ToString(op)) +
+                " not implemented in PerformBinaryOp";
+            KAI_THROW_1(Base, errorMsg.c_str());
+            
+            // Default return to avoid warning, though this code is unreachable
+            return Object();
     }
 }
 
