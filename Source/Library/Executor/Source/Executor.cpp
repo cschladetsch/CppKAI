@@ -398,11 +398,12 @@ void Executor::Continue(Value<Continuation> C) {
     // Save the current continuation and stack for restoring later
     Value<Continuation> savedContinuation = continuation_;
     
+    // Check if this continuation has the special handling flag for Pi expressions
+    bool hasSpecialHandling = C->GetSpecialHandling();
+    
     // Check if this continuation has any binary operations we can directly evaluate
-    // This is a direct optimization, not relying on specialHandling flags
     Pointer<const Array> code = C->GetCode();
     Operation::Type opType = Operation::None;
-    std::vector<Object> operands;
     
     // Try to identify direct operations we can evaluate
     if (code.Exists()) {
@@ -421,6 +422,27 @@ void Executor::Continue(Value<Continuation> C) {
                           << " (type: " << singleItem.GetClass()->GetName() << ")";
                 
                 data_->Push(singleItem);
+                // Restore the previous continuation and return
+                continuation_ = savedContinuation;
+                return;
+            }
+            
+            // If it's a nested continuation with the special handling flag, execute it directly
+            if (hasSpecialHandling && singleItem.IsType<Continuation>()) {
+                // Recursively execute the inner continuation
+                Continuation &innerCont = Deref<Continuation>(singleItem);
+                
+                // Transfer special handling flag to the inner continuation
+                innerCont.SetSpecialHandling(true);
+                
+                // Reuse the existing continuation object rather than creating a new one
+                Pointer<Continuation> innerContPtr(C); // Use the existing Continuation object
+                innerContPtr->SetCode(innerCont.GetCode());
+                innerContPtr->SetSpecialHandling(true);
+                
+                // Execute inner continuation, which will properly extract primitive values
+                Continue(innerContPtr);
+                
                 // Restore the previous continuation and return
                 continuation_ = savedContinuation;
                 return;
@@ -466,6 +488,33 @@ void Executor::Continue(Value<Continuation> C) {
     // execute the continuation normally
     SetContinuation(C);
     Continue();
+    
+    // Always try to extract primitive values from the result, not just for special handling
+    // This ensures that every operation produces the correct primitive type
+    if (!data_->Empty()) {
+        Object result = data_->Top();
+        
+        // If the result is a continuation, try to extract primitive values from it
+        if (result.IsType<Continuation>()) {
+            // Use UnwrapValue to get the proper primitive value regardless of special handling flag
+            // This ensures consistent behavior for all continuations
+            Object unwrapped = UnwrapValue(result);
+            
+            // If we got a different value, replace the continuation with the primitive value
+            if (unwrapped != result) {
+                data_->Pop(); // Remove the continuation
+                data_->Push(unwrapped); // Push the extracted value
+                KAI_TRACE() << "Extracted primitive value from continuation: " 
+                          << unwrapped.ToString() << " (type: " 
+                          << unwrapped.GetClass()->GetName() << ")";
+            }
+            // If we couldn't unwrap but have special handling flag, log a warning
+            else if (hasSpecialHandling) {
+                KAI_TRACE_WARN() << "Could not extract primitive value from continuation with special handling: "
+                              << result.ToString();
+            }
+        }
+    }
     
     // Restore the previous continuation
     continuation_ = savedContinuation;
@@ -640,33 +689,110 @@ Object Executor::UnwrapValue(Object const &Q) {
                       << firstElement.GetClass()->GetName() << ")";
             return firstElement;
         }
+        
+        // If it's a nested continuation, recursively unwrap it
+        if (firstElement.IsType<Continuation>()) {
+            return UnwrapValue(firstElement);
+        }
+    }
+    
+    // Check if this is a nested continuation with continuation markers
+    // Look for (ContinuationBegin X X X ContinuationEnd) pattern
+    if (code->Size() >= 4) {
+        // Check if first and last elements are continuation markers
+        if (code->At(0).IsType<Operation>() && code->At(code->Size()-1).IsType<Operation>()) {
+            Operation::Type firstOp = ConstDeref<Operation>(code->At(0)).GetTypeNumber();
+            Operation::Type lastOp = ConstDeref<Operation>(code->At(code->Size()-1)).GetTypeNumber();
+            
+            if (firstOp == Operation::ContinuationBegin && lastOp == Operation::ContinuationEnd) {
+                // Extract just the inner elements
+                Pointer<Array> innerCode = Self->GetRegistry()->New<Array>();
+                for (int i = 1; i < code->Size() - 1; i++) {
+                    innerCode->Append(code->At(i));
+                }
+                
+                // Create a new continuation with just the inner elements
+                Pointer<Continuation> innerCont = Self->GetRegistry()->New<Continuation>();
+                innerCont->Create();
+                innerCont->SetCode(innerCode);
+                
+                // Set the special handling flag
+                innerCont->SetSpecialHandling(true);
+                
+                // Try to unwrap the inner continuation
+                return UnwrapValue(innerCont);
+            }
+        }
     }
     
     // Check if this is a Pi-style operation: [operand1] [operand2] [operator]
-    if (code->Size() == 3) {
-        Object first = code->At(0);
-        Object second = code->At(1);
-        Object op = code->At(2);
-        
-        // If the pattern matches [value] [value] [operation], handle it directly
-        if (!first.IsType<Operation>() && !second.IsType<Operation>() && 
-            op.IsType<Operation>()) {
+    // This is the most common pattern in Pi language code
+    if (code->Size() >= 3) {
+        // For standard 3-element Pi code with binary op at the end: [operand1] [operand2] [operator]
+        if (code->Size() == 3) {
+            Object first = code->At(0);
+            Object second = code->At(1);
+            Object op = code->At(2);
             
-            Operation::Type opType = ConstDeref<Operation>(op).GetTypeNumber();
-            
-            // Only handle binary operations
-            if (IsBinaryOp(opType)) {
-                // Directly compute the result with the appropriate type
-                Object result = PerformBinaryOp(first, second, opType);
+            // If the pattern matches [value] [value] [operation], handle it directly
+            if (!first.IsType<Operation>() && !second.IsType<Operation>() && 
+                op.IsType<Operation>()) {
                 
-                // Return the properly typed result
-                if (result.Exists()) {
-                    KAI_TRACE() << "Direct Pi-style binary operation: " << first.ToString() 
-                              << " " << second.ToString() << " " 
-                              << Operation::ToString(opType) << " = " 
-                              << result.ToString() << " (type: " 
-                              << result.GetClass()->GetName() << ")";
-                    return result;
+                Operation::Type opType = ConstDeref<Operation>(op).GetTypeNumber();
+                
+                // Only handle binary operations
+                if (IsBinaryOp(opType)) {
+                    // Directly compute the result with the appropriate type
+                    Object result = PerformBinaryOp(first, second, opType);
+                    
+                    // Return the properly typed result
+                    if (result.Exists()) {
+                        KAI_TRACE() << "Direct Pi-style binary operation: " << first.ToString() 
+                                  << " " << second.ToString() << " " 
+                                  << Operation::ToString(opType) << " = " 
+                                  << result.ToString() << " (type: " 
+                                  << result.GetClass()->GetName() << ")";
+                        return result;
+                    }
+                }
+            }
+        }
+        
+        // Handle Pi-style binary operations with continuation markers:
+        // [ContinuationBegin] [operand1] [operand2] [operator] [ContinuationEnd]
+        if (code->Size() == 5 && 
+            code->At(0).IsType<Operation>() && 
+            code->At(4).IsType<Operation>()) {
+            
+            Operation::Type firstOp = ConstDeref<Operation>(code->At(0)).GetTypeNumber();
+            Operation::Type lastOp = ConstDeref<Operation>(code->At(4)).GetTypeNumber();
+            
+            if (firstOp == Operation::ContinuationBegin && lastOp == Operation::ContinuationEnd) {
+                Object first = code->At(1);
+                Object second = code->At(2);
+                Object op = code->At(3);
+                
+                // If the pattern matches [ContinuationBegin] [value] [value] [operation] [ContinuationEnd]
+                if (!first.IsType<Operation>() && !second.IsType<Operation>() && 
+                    op.IsType<Operation>()) {
+                    
+                    Operation::Type opType = ConstDeref<Operation>(op).GetTypeNumber();
+                    
+                    // Only handle binary operations
+                    if (IsBinaryOp(opType)) {
+                        // Directly compute the result with the appropriate type
+                        Object result = PerformBinaryOp(first, second, opType);
+                        
+                        // Return the properly typed result
+                        if (result.Exists()) {
+                            KAI_TRACE() << "Direct Pi-style binary operation with continuation markers: " 
+                                      << first.ToString() << " " << second.ToString() << " " 
+                                      << Operation::ToString(opType) << " = " 
+                                      << result.ToString() << " (type: " 
+                                      << result.GetClass()->GetName() << ")";
+                            return result;
+                        }
+                    }
                 }
             }
         }
@@ -678,6 +804,9 @@ Object Executor::UnwrapValue(Object const &Q) {
     data_ = tempStack;
     
     try {
+        // Make sure continuation has special handling flag
+        cont->SetSpecialHandling(true);
+        
         // Execute the continuation directly
         Continue(cont);
         
@@ -686,6 +815,14 @@ Object Executor::UnwrapValue(Object const &Q) {
             Object result = tempStack->Top();
             
             if (result.Exists()) {
+                // Check if the result is another continuation
+                if (result.IsType<Continuation>()) {
+                    // Restore the stack 
+                    data_ = oldStack;
+                    // Recursively unwrap this continuation
+                    return UnwrapValue(result);
+                }
+                
                 // Restore the stack and return the result
                 data_ = oldStack;
                 return result;

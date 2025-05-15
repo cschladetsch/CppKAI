@@ -593,6 +593,54 @@ TestRho/DirectBinaryOpTest.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/DirectBinaryOpTest.cpp.s
 .PHONY : TestRho/DirectBinaryOpTest.cpp.s
 
+TestRho/ExtendedBinaryOpTests.o: TestRho/ExtendedBinaryOpTests.cpp.o
+.PHONY : TestRho/ExtendedBinaryOpTests.o
+
+# target to build an object file
+TestRho/ExtendedBinaryOpTests.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/ExtendedBinaryOpTests.cpp.o
+.PHONY : TestRho/ExtendedBinaryOpTests.cpp.o
+
+TestRho/ExtendedBinaryOpTests.i: TestRho/ExtendedBinaryOpTests.cpp.i
+.PHONY : TestRho/ExtendedBinaryOpTests.i
+
+# target to preprocess a source file
+TestRho/ExtendedBinaryOpTests.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/ExtendedBinaryOpTests.cpp.i
+.PHONY : TestRho/ExtendedBinaryOpTests.cpp.i
+
+TestRho/ExtendedBinaryOpTests.s: TestRho/ExtendedBinaryOpTests.cpp.s
+.PHONY : TestRho/ExtendedBinaryOpTests.s
+
+# target to generate assembly for a file
+TestRho/ExtendedBinaryOpTests.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/ExtendedBinaryOpTests.cpp.s
+.PHONY : TestRho/ExtendedBinaryOpTests.cpp.s
+
+TestRho/ForLoopTests.o: TestRho/ForLoopTests.cpp.o
+.PHONY : TestRho/ForLoopTests.o
+
+# target to build an object file
+TestRho/ForLoopTests.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/ForLoopTests.cpp.o
+.PHONY : TestRho/ForLoopTests.cpp.o
+
+TestRho/ForLoopTests.i: TestRho/ForLoopTests.cpp.i
+.PHONY : TestRho/ForLoopTests.i
+
+# target to preprocess a source file
+TestRho/ForLoopTests.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/ForLoopTests.cpp.i
+.PHONY : TestRho/ForLoopTests.cpp.i
+
+TestRho/ForLoopTests.s: TestRho/ForLoopTests.cpp.s
+.PHONY : TestRho/ForLoopTests.s
+
+# target to generate assembly for a file
+TestRho/ForLoopTests.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/ForLoopTests.cpp.s
+.PHONY : TestRho/ForLoopTests.cpp.s
+
 TestRho/FunctionRhoScripting.o: TestRho/FunctionRhoScripting.cpp.o
 .PHONY : TestRho/FunctionRhoScripting.o
 
@@ -1106,6 +1154,12 @@ help:
 	@echo "... TestRho/DirectBinaryOpTest.o"
 	@echo "... TestRho/DirectBinaryOpTest.i"
 	@echo "... TestRho/DirectBinaryOpTest.s"
+	@echo "... TestRho/ExtendedBinaryOpTests.o"
+	@echo "... TestRho/ExtendedBinaryOpTests.i"
+	@echo "... TestRho/ExtendedBinaryOpTests.s"
+	@echo "... TestRho/ForLoopTests.o"
+	@echo "... TestRho/ForLoopTests.i"
+	@echo "... TestRho/ForLoopTests.s"
 	@echo "... TestRho/FunctionRhoScripting.o"
 	@echo "... TestRho/FunctionRhoScripting.i"
 	@echo "... TestRho/FunctionRhoScripting.s"

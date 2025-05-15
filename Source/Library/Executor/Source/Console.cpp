@@ -117,674 +117,133 @@ void Console::Execute(Pointer<Continuation> cont) {
             KAI_TRACE_1(cont->GetCode()->Size()) << "Executing continuation with size";
         }
         
-        // Use a direct execution approach for Pi language to solve the Type Mismatch issues
-        if (language == Language::Pi) {
-            // For null or empty continuations, nothing to do
-            if (!cont.Exists() || !cont->GetCode().Exists() || cont->GetCode()->Size() == 0) {
-                return;
-            }
+        // For all languages, use a direct evaluation approach to solve the Type Mismatch issues
+        // For null or empty continuations, nothing to do
+        if (!cont.Exists() || !cont->GetCode().Exists() || cont->GetCode()->Size() == 0) {
+            return;
+        }
+        
+        // Get the data stack for easier access
+        Value<Stack> dataStack = executor->GetDataStack();
+        
+        // If we have special handling flag set, directly evaluate the continuation without creating surrogate continuations
+        if (cont->GetSpecialHandling()) {
+            KAI_TRACE() << "Using special handling for continuation with direct evaluation";
             
-            // Get the data stack for easier access
-            Value<Stack> dataStack = executor->GetDataStack();
-            
-            // Debug output to check what we're working with
-            KAI_TRACE_1(cont->GetCode()->Size()) << "Pi continuation size:";
-            
-            // Instead of looking at individual operations, execute the entire block
-            // Most Pi blocks come as a single continuation object in an array
+            // Check for nested continuations (most Pi blocks come as a single continuation object in an array)
             if (cont->GetCode()->Size() == 1) {
                 Object firstItem = cont->GetCode()->At(0);
                 
                 // Check if the first item is a continuation (which contains the actual code)
                 if (firstItem.IsType<Continuation>()) {
-                    KAI_TRACE_1("Found inner continuation, executing it directly");
+                    KAI_TRACE_1("Found inner continuation with special handling, executing it directly");
                     Continuation& innerCont = Deref<Continuation>(firstItem);
                     
                     // Create a temporary continuation to execute
                     Pointer<Continuation> innerContPtr = reg_->New<Continuation>();
                     innerContPtr->SetCode(innerCont.GetCode());
+                    innerContPtr->SetSpecialHandling(true); // Ensure we keep the special handling flag
                     
-                    // Print the content of the inner continuation for debugging
-                    if (innerContPtr->GetCode().Exists()) {
-                        KAI_TRACE_1(innerContPtr->GetCode()->Size()) << "Inner continuation size:";
-                        for (int i = 0; i < innerContPtr->GetCode()->Size(); i++) {
-                            Object item = innerContPtr->GetCode()->At(i);
-                            KAI_TRACE_1(item.ToString()) << "Item " << i << ":";
-                        }
-                    }
-                    
-                    // Now process the inner continuation
-                    for (int i = 0; i < innerContPtr->GetCode()->Size(); i++) {
-                        Object item = innerContPtr->GetCode()->At(i);
-                        
-                        KAI_TRACE_1(item.ToString()) << "Processing item " << i << ":";
-                        
-                        // Skip the ContinuationBegin and ContinuationEnd operations
-                        if (item.IsType<Operation>()) {
-                            Operation::Type opType = Deref<Operation>(item).GetTypeNumber();
-                            if (opType == Operation::ContinuationBegin || opType == Operation::ContinuationEnd) {
-                                KAI_TRACE_1("Skipping continuation marker");
-                                continue;
-                            }
-                        }
-                        
-                        // Process each item specially based on type
-                        if (item.IsType<Operation>()) {
-                            // Special handling for operations
-                            Operation::Type opType = Deref<Operation>(item).GetTypeNumber();
-                            
-                            // Handle simple stack operations directly
-                            if (opType == Operation::Dup) {
-                                if (dataStack->Size() > 0) {
-                                    Object toCopy = dataStack->Top();
-                                    Object copy = toCopy.Duplicate();
-                                    dataStack->Push(copy);
-                                }
-                                continue;
-                            }
-                            
-                            // Handle arithmetic operations directly
-                            if (opType == Operation::Plus) {
-                                if (dataStack->Size() >= 2) {
-                                    Object b = dataStack->Pop();
-                                    Object a = dataStack->Pop();
-                                    
-                                    // Handle different type combinations
-                                    if (a.IsType<int>() && b.IsType<int>()) {
-                                        int result = Deref<int>(a) + Deref<int>(b);
-                                        dataStack->Push(reg_->New<int>(result));
-                                    }
-                                    else if (a.IsType<String>() && b.IsType<String>()) {
-                                        String result = Deref<String>(a) + Deref<String>(b);
-                                        dataStack->Push(reg_->New<String>(result));
-                                    }
-                                    else if (a.IsType<String>()) {
-                                        String result = Deref<String>(a) + b.ToString();
-                                        dataStack->Push(reg_->New<String>(result));
-                                    }
-                                    else if (b.IsType<String>()) {
-                                        String result = a.ToString() + Deref<String>(b);
-                                        dataStack->Push(reg_->New<String>(result));
-                                    }
-                                    else if (a.IsType<float>() || b.IsType<float>()) {
-                                        float valA = a.IsType<float>() ? Deref<float>(a) : (float)Deref<int>(a);
-                                        float valB = b.IsType<float>() ? Deref<float>(b) : (float)Deref<int>(b);
-                                        dataStack->Push(reg_->New<float>(valA + valB));
-                                    }
-                                    else {
-                                        // For unknown types, try generic approach
-                                        dataStack->Push(a);
-                                        dataStack->Push(b);
-                                        Object op = reg_->New<Operation>(opType);
-                                        executor->Eval(op);
-                                    }
-                                }
-                                continue;
-                            }
-                            
-                            if (opType == Operation::Minus) {
-                                if (dataStack->Size() >= 2) {
-                                    Object b = dataStack->Pop();
-                                    Object a = dataStack->Pop();
-                                    
-                                    if (a.IsType<int>() && b.IsType<int>()) {
-                                        int result = Deref<int>(a) - Deref<int>(b);
-                                        dataStack->Push(reg_->New<int>(result));
-                                    }
-                                    else if (a.IsType<float>() || b.IsType<float>()) {
-                                        float valA = a.IsType<float>() ? Deref<float>(a) : (float)Deref<int>(a);
-                                        float valB = b.IsType<float>() ? Deref<float>(b) : (float)Deref<int>(b);
-                                        dataStack->Push(reg_->New<float>(valA - valB));
-                                    }
-                                    else {
-                                        // For unknown types, try generic approach
-                                        dataStack->Push(a);
-                                        dataStack->Push(b);
-                                        Object op = reg_->New<Operation>(opType);
-                                        executor->Eval(op);
-                                    }
-                                }
-                                continue;
-                            }
-                            
-                            if (opType == Operation::Multiply) {
-                                if (dataStack->Size() >= 2) {
-                                    Object b = dataStack->Pop();
-                                    Object a = dataStack->Pop();
-                                    
-                                    if (a.IsType<int>() && b.IsType<int>()) {
-                                        int result = Deref<int>(a) * Deref<int>(b);
-                                        dataStack->Push(reg_->New<int>(result));
-                                    }
-                                    else if (a.IsType<float>() || b.IsType<float>()) {
-                                        float valA = a.IsType<float>() ? Deref<float>(a) : (float)Deref<int>(a);
-                                        float valB = b.IsType<float>() ? Deref<float>(b) : (float)Deref<int>(b);
-                                        dataStack->Push(reg_->New<float>(valA * valB));
-                                    }
-                                    else {
-                                        // For unknown types, try generic approach
-                                        dataStack->Push(a);
-                                        dataStack->Push(b);
-                                        Object op = reg_->New<Operation>(opType);
-                                        executor->Eval(op);
-                                    }
-                                }
-                                continue;
-                            }
-                            
-                            if (opType == Operation::Divide) {
-                                if (dataStack->Size() >= 2) {
-                                    Object b = dataStack->Pop();
-                                    Object a = dataStack->Pop();
-                                    
-                                    if (a.IsType<int>() && b.IsType<int>()) {
-                                        int divisor = Deref<int>(b);
-                                        if (divisor == 0) {
-                                            dataStack->Push(reg_->New<String>("Division by zero error"));
-                                        } else {
-                                            int result = Deref<int>(a) / divisor;
-                                            dataStack->Push(reg_->New<int>(result));
-                                        }
-                                    }
-                                    else if (a.IsType<float>() || b.IsType<float>()) {
-                                        float valA = a.IsType<float>() ? Deref<float>(a) : (float)Deref<int>(a);
-                                        float valB = b.IsType<float>() ? Deref<float>(b) : (float)Deref<int>(b);
-                                        
-                                        if (valB == 0.0f) {
-                                            dataStack->Push(reg_->New<String>("Division by zero error"));
-                                        } else {
-                                            dataStack->Push(reg_->New<float>(valA / valB));
-                                        }
-                                    }
-                                    else {
-                                        // For unknown types, try generic approach
-                                        dataStack->Push(a);
-                                        dataStack->Push(b);
-                                        Object op = reg_->New<Operation>(opType);
-                                        executor->Eval(op);
-                                    }
-                                }
-                                continue;
-                            }
-                            
-                            if (opType == Operation::Equiv) {
-                                if (dataStack->Size() >= 2) {
-                                    Object b = dataStack->Pop();
-                                    Object a = dataStack->Pop();
-                                    
-                                    if (a.IsType<int>() && b.IsType<int>()) {
-                                        bool result = Deref<int>(a) == Deref<int>(b);
-                                        dataStack->Push(reg_->New<bool>(result));
-                                    }
-                                    else if (a.IsType<String>() && b.IsType<String>()) {
-                                        bool result = Deref<String>(a) == Deref<String>(b);
-                                        dataStack->Push(reg_->New<bool>(result));
-                                    }
-                                    else if (a.IsType<bool>() && b.IsType<bool>()) {
-                                        bool result = Deref<bool>(a) == Deref<bool>(b);
-                                        dataStack->Push(reg_->New<bool>(result));
-                                    }
-                                    else {
-                                        // For unknown types, try generic approach
-                                        dataStack->Push(a);
-                                        dataStack->Push(b);
-                                        Object op = reg_->New<Operation>(opType);
-                                        executor->Eval(op);
-                                    }
-                                }
-                                continue;
-                            }
-                            
-                            if (opType == Operation::Store || opType == Operation::Replace) {
-                                // Store/Replace operations (! in Pi)
-                                if (dataStack->Size() >= 2) {
-                                    Object value = dataStack->Pop();
-                                    Object name = dataStack->Pop();
-                                    
-                                    // Ensure we have a valid name
-                                    if (name.IsType<Label>()) {
-                                        Label& label = Deref<Label>(name);
-                                        
-                                        // Store in the global scope
-                                        tree.GetRoot().Set(label, value);
-                                    }
-                                }
-                                continue;
-                            }
-                            
-                            if (opType == Operation::Retreive) {
-                                // Retrieve operation (@ in Pi)
-                                if (dataStack->Size() >= 1) {
-                                    Object name = dataStack->Pop();
-                                    
-                                    // Handle different name types
-                                    if (name.IsType<Label>()) {
-                                        Label& label = Deref<Label>(name);
-                                        
-                                        // Try to find in the global scope
-                                        if (tree.GetRoot().Has(label)) {
-                                            Object value = tree.GetRoot().Get(label);
-                                            dataStack->Push(value);
-                                        }
-                                        else {
-                                            // Variable not found - push default value
-                                            dataStack->Push(reg_->New<int>(0));
-                                        }
-                                    }
-                                }
-                                continue;
-                            }
-                        }
-                        
-                        // For other items, use regular evaluation
-                        executor->Eval(item);
-                    }
-                    
+                    // Execute the inner continuation directly
+                    Execute(innerContPtr);
                     return;
                 }
             }
             
-            // If not a special case, process the continuation normally item by item
-            KAI_TRACE_1("Processing regular continuation item by item");
+            // Process each operation directly using proper type handling
             for (int i = 0; i < cont->GetCode()->Size(); i++) {
                 Object item = cont->GetCode()->At(i);
                 
-                // Check for special operations
-                if (item.GetTypeNumber() == Type::Number::Operation) {
+                // Skip the ContinuationBegin and ContinuationEnd operations
+                if (item.IsType<Operation>()) {
+                    Operation::Type opType = Deref<Operation>(item).GetTypeNumber();
+                    if (opType == Operation::ContinuationBegin || opType == Operation::ContinuationEnd) {
+                        KAI_TRACE_1("Skipping continuation marker");
+                        continue;
+                    }
+                }
+                
+                // For basic operations, handle them directly to ensure type preservation
+                if (item.IsType<Operation>()) {
                     Operation::Type opType = Deref<Operation>(item).GetTypeNumber();
                     
-                    // Skip ContinuationBegin and ContinuationEnd operations
-                    if (opType == Operation::ContinuationBegin || opType == Operation::ContinuationEnd) {
-                        continue;
+                    // Handle all arithmetic operations
+                    if (opType == Operation::Plus || opType == Operation::Minus || 
+                        opType == Operation::Multiply || opType == Operation::Divide || 
+                        opType == Operation::Modulo) {
+                        if (dataStack->Size() >= 2) {
+                            Object b = dataStack->Pop();
+                            Object a = dataStack->Pop();
+                            
+                            // Use PerformBinaryOp for standard binary operations
+                            Object result = executor->PerformBinaryOp(a, b, opType);
+                            dataStack->Push(result);
+                            continue;
+                        }
                     }
                     
-                    // For Dup, manually duplicate the top item
+                    // Handle all comparison operations
+                    if (opType == Operation::Equiv || opType == Operation::NotEquiv || 
+                        opType == Operation::Less || opType == Operation::Greater || 
+                        opType == Operation::LessOrEquiv || opType == Operation::GreaterOrEquiv) {
+                        if (dataStack->Size() >= 2) {
+                            Object b = dataStack->Pop();
+                            Object a = dataStack->Pop();
+                            
+                            // Use PerformBinaryOp for comparison operations
+                            Object result = executor->PerformBinaryOp(a, b, opType);
+                            dataStack->Push(result);
+                            continue;
+                        }
+                    }
+                    
+                    // Handle logical operations
+                    if (opType == Operation::LogicalAnd || opType == Operation::LogicalOr || 
+                        opType == Operation::LogicalXor) {
+                        if (dataStack->Size() >= 2) {
+                            Object b = dataStack->Pop();
+                            Object a = dataStack->Pop();
+                            
+                            // Use PerformBinaryOp for logical operations
+                            Object result = executor->PerformBinaryOp(a, b, opType);
+                            dataStack->Push(result);
+                            continue;
+                        }
+                    }
+                    
+                    // Handle all stack operations directly
                     if (opType == Operation::Dup) {
                         if (dataStack->Size() > 0) {
-                            Object toCopy = dataStack->Top();
-                            Object copy = toCopy.Duplicate();
-                            dataStack->Push(copy);
+                            dataStack->Push(dataStack->Top());
+                            continue;
                         }
-                        continue;
                     }
-                    
-                    // For Plus, manually check operands and handle type conversion
-                    if (opType == Operation::Plus) {
-                        if (dataStack->Size() >= 2) {
-                            Object b = dataStack->Pop();
-                            Object a = dataStack->Pop();
-                            
-                            // Handle different type combinations
-                            if (a.IsType<int>() && b.IsType<int>()) {
-                                // Integer addition
-                                int result = Deref<int>(a) + Deref<int>(b);
-                                dataStack->Push(reg_->New<int>(result));
-                            }
-                            else if (a.IsType<String>() && b.IsType<String>()) {
-                                // String concatenation
-                                String result = Deref<String>(a) + Deref<String>(b);
-                                dataStack->Push(reg_->New<String>(result));
-                            }
-                            else if (a.IsType<String>()) {
-                                // String + other
-                                String result = Deref<String>(a) + b.ToString();
-                                dataStack->Push(reg_->New<String>(result));
-                            }
-                            else if (b.IsType<String>()) {
-                                // Other + string
-                                String result = a.ToString() + Deref<String>(b);
-                                dataStack->Push(reg_->New<String>(result));
-                            }
-                            else if (a.IsType<float>() || b.IsType<float>()) {
-                                // Float addition with potential type conversion
-                                float valA = a.IsType<float>() ? Deref<float>(a) : (float)Deref<int>(a);
-                                float valB = b.IsType<float>() ? Deref<float>(b) : (float)Deref<int>(b);
-                                dataStack->Push(reg_->New<float>(valA + valB));
-                            }
-                            else {
-                                // Since we can't directly use Perform, push the items and evaluate using an Operation object
-                                dataStack->Push(a);
-                                dataStack->Push(b);
-                                Object op = reg_->New<Operation>(opType);
-                                executor->Eval(op);
-                            }
-                        }
-                        continue;
-                    }
-                    
-                    // For Minus, manually check operands and handle type conversion
-                    if (opType == Operation::Minus) {
-                        if (dataStack->Size() >= 2) {
-                            Object b = dataStack->Pop();
-                            Object a = dataStack->Pop();
-                            
-                            if (a.IsType<int>() && b.IsType<int>()) {
-                                // Integer subtraction
-                                int result = Deref<int>(a) - Deref<int>(b);
-                                dataStack->Push(reg_->New<int>(result));
-                            }
-                            else if (a.IsType<float>() || b.IsType<float>()) {
-                                // Float subtraction with potential type conversion
-                                float valA = a.IsType<float>() ? Deref<float>(a) : (float)Deref<int>(a);
-                                float valB = b.IsType<float>() ? Deref<float>(b) : (float)Deref<int>(b);
-                                dataStack->Push(reg_->New<float>(valA - valB));
-                            }
-                            else {
-                                // Since we can't directly use Perform, push the items and evaluate using an Operation object
-                                dataStack->Push(a);
-                                dataStack->Push(b);
-                                Object op = reg_->New<Operation>(opType);
-                                executor->Eval(op);
-                            }
-                        }
-                        continue;
-                    }
-                    
-                    // For Multiply, manually check operands and handle type conversion
-                    if (opType == Operation::Multiply) {
-                        if (dataStack->Size() >= 2) {
-                            Object b = dataStack->Pop();
-                            Object a = dataStack->Pop();
-                            
-                            if (a.IsType<int>() && b.IsType<int>()) {
-                                // Integer multiplication
-                                int result = Deref<int>(a) * Deref<int>(b);
-                                dataStack->Push(reg_->New<int>(result));
-                            }
-                            else if (a.IsType<float>() || b.IsType<float>()) {
-                                // Float multiplication with potential type conversion
-                                float valA = a.IsType<float>() ? Deref<float>(a) : (float)Deref<int>(a);
-                                float valB = b.IsType<float>() ? Deref<float>(b) : (float)Deref<int>(b);
-                                dataStack->Push(reg_->New<float>(valA * valB));
-                            }
-                            else {
-                                // Since we can't directly use Perform, push the items and evaluate using an Operation object
-                                dataStack->Push(a);
-                                dataStack->Push(b);
-                                Object op = reg_->New<Operation>(opType);
-                                executor->Eval(op);
-                            }
-                        }
-                        continue;
-                    }
-                    
-                    // For Equiv (== operator), manually check operands
-                    if (opType == Operation::Equiv) {
-                        if (dataStack->Size() >= 2) {
-                            Object b = dataStack->Pop();
-                            Object a = dataStack->Pop();
-                            
-                            // Handle different type combinations
-                            if (a.IsType<int>() && b.IsType<int>()) {
-                                // Integer comparison
-                                bool result = Deref<int>(a) == Deref<int>(b);
-                                dataStack->Push(reg_->New<bool>(result));
-                            }
-                            else if (a.IsType<String>() && b.IsType<String>()) {
-                                // String comparison
-                                bool result = Deref<String>(a) == Deref<String>(b);
-                                dataStack->Push(reg_->New<bool>(result));
-                            }
-                            else if (a.IsType<bool>() && b.IsType<bool>()) {
-                                // Boolean comparison
-                                bool result = Deref<bool>(a) == Deref<bool>(b);
-                                dataStack->Push(reg_->New<bool>(result));
-                            }
-                            else {
-                                // Since we can't directly use Perform, push the items and evaluate using an Operation object
-                                dataStack->Push(a);
-                                dataStack->Push(b);
-                                Object op = reg_->New<Operation>(opType);
-                                executor->Eval(op);
-                            }
-                        }
-                        continue;
-                    }
-                    
-                    // For IfElse, manually handle condition and branches
-                    if (opType == Operation::IfElse) {
-                        if (dataStack->Size() >= 3) {
-                            Object condition = dataStack->Pop();
-                            Object falseCase = dataStack->Pop();
-                            Object trueCase = dataStack->Pop();
-                            
-                            // Convert condition to boolean
-                            bool condValue = false;
-                            if (condition.IsType<bool>()) {
-                                condValue = Deref<bool>(condition);
-                            }
-                            else if (condition.IsType<int>()) {
-                                condValue = Deref<int>(condition) != 0;
-                            }
-                            
-                            // Push result based on condition
-                            if (condValue) {
-                                dataStack->Push(trueCase);
-                            }
-                            else {
-                                dataStack->Push(falseCase);
-                            }
-                        }
-                        continue;
-                    }
-                    
-                    // For Divide, manually check operands and handle type conversion
-                    if (opType == Operation::Divide) {
-                        if (dataStack->Size() >= 2) {
-                            Object b = dataStack->Pop();
-                            Object a = dataStack->Pop();
-                            
-                            if (a.IsType<int>() && b.IsType<int>()) {
-                                // Integer division
-                                int divisor = Deref<int>(b);
-                                if (divisor == 0) {
-                                    // Handle division by zero
-                                    dataStack->Push(reg_->New<String>("Division by zero error"));
-                                } else {
-                                    int result = Deref<int>(a) / divisor;
-                                    dataStack->Push(reg_->New<int>(result));
-                                }
-                            }
-                            else if (a.IsType<float>() || b.IsType<float>()) {
-                                // Float division with potential type conversion
-                                float valA = a.IsType<float>() ? Deref<float>(a) : (float)Deref<int>(a);
-                                float valB = b.IsType<float>() ? Deref<float>(b) : (float)Deref<int>(b);
-                                
-                                if (valB == 0.0f) {
-                                    // Handle division by zero
-                                    dataStack->Push(reg_->New<String>("Division by zero error"));
-                                } else {
-                                    dataStack->Push(reg_->New<float>(valA / valB));
-                                }
-                            }
-                            else {
-                                // Since we can't directly use Perform, push the items and evaluate using an Operation object
-                                dataStack->Push(a);
-                                dataStack->Push(b);
-                                Object op = reg_->New<Operation>(opType);
-                                executor->Eval(op);
-                            }
-                        }
-                        continue;
-                    }
-                    
-                    // For Swap, manually swap the top two stack items
-                    if (opType == Operation::Swap) {
+                    else if (opType == Operation::Swap) {
                         if (dataStack->Size() >= 2) {
                             Object b = dataStack->Pop();
                             Object a = dataStack->Pop();
                             dataStack->Push(b);
                             dataStack->Push(a);
+                            continue;
                         }
-                        continue;
                     }
-                    
-                    // For Drop, remove the top item
-                    if (opType == Operation::Drop) {
+                    else if (opType == Operation::Drop) {
                         if (dataStack->Size() >= 1) {
                             dataStack->Pop();
+                            continue;
                         }
-                        continue;
                     }
-                    
-                    // For Over, duplicate the second item to the top
-                    if (opType == Operation::Over) {
+                    else if (opType == Operation::Over) {
                         if (dataStack->Size() >= 2) {
                             Object b = dataStack->Pop();
                             Object a = dataStack->Pop();
                             dataStack->Push(a);
                             dataStack->Push(b);
-                            dataStack->Push(a.Duplicate());
+                            dataStack->Push(a);
+                            continue;
                         }
-                        continue;
                     }
-                    
-                    // For IfElse, manually handle if-else condition
-                    if (opType == Operation::IfElse) {
-                        if (dataStack->Size() >= 3) {
-                            Object cond = dataStack->Pop();
-                            Object falseVal = dataStack->Pop();
-                            Object trueVal = dataStack->Pop();
-                            
-                            bool condition = false;
-                            // Convert to boolean if needed
-                            if (cond.IsType<bool>()) {
-                                condition = Deref<bool>(cond);
-                            }
-                            else if (cond.IsType<int>()) {
-                                condition = Deref<int>(cond) != 0;
-                            }
-                            
-                            if (condition) {
-                                dataStack->Push(trueVal);
-                            }
-                            else {
-                                dataStack->Push(falseVal);
-                            }
-                        }
-                        continue;
-                    }
-                    
-                    // For LogicalAnd, manually handle boolean AND operation
-                    if (opType == Operation::LogicalAnd) {
-                        if (dataStack->Size() >= 2) {
-                            Object b = dataStack->Pop();
-                            Object a = dataStack->Pop();
-                            
-                            bool valA = false;
-                            bool valB = false;
-                            
-                            // Convert to boolean if needed
-                            if (a.IsType<bool>()) {
-                                valA = Deref<bool>(a);
-                            }
-                            else if (a.IsType<int>()) {
-                                valA = Deref<int>(a) != 0;
-                            }
-                            
-                            if (b.IsType<bool>()) {
-                                valB = Deref<bool>(b);
-                            }
-                            else if (b.IsType<int>()) {
-                                valB = Deref<int>(b) != 0;
-                            }
-                            
-                            // Perform logical AND and push result
-                            dataStack->Push(reg_->New<bool>(valA && valB));
-                        }
-                        continue;
-                    }
-                    
-                    // For LogicalOr, manually handle boolean OR operation
-                    if (opType == Operation::LogicalOr) {
-                        if (dataStack->Size() >= 2) {
-                            Object b = dataStack->Pop();
-                            Object a = dataStack->Pop();
-                            
-                            bool valA = false;
-                            bool valB = false;
-                            
-                            // Convert to boolean if needed
-                            if (a.IsType<bool>()) {
-                                valA = Deref<bool>(a);
-                            }
-                            else if (a.IsType<int>()) {
-                                valA = Deref<int>(a) != 0;
-                            }
-                            
-                            if (b.IsType<bool>()) {
-                                valB = Deref<bool>(b);
-                            }
-                            else if (b.IsType<int>()) {
-                                valB = Deref<int>(b) != 0;
-                            }
-                            
-                            // Perform logical OR and push result
-                            dataStack->Push(reg_->New<bool>(valA || valB));
-                        }
-                        continue;
-                    }
-                    
-                    // For LogicalNot, manually handle boolean NOT operation
-                    if (opType == Operation::LogicalNot) {
-                        if (dataStack->Size() >= 1) {
-                            Object a = dataStack->Pop();
-                            
-                            bool valA = false;
-                            
-                            // Convert to boolean if needed
-                            if (a.IsType<bool>()) {
-                                valA = Deref<bool>(a);
-                            }
-                            else if (a.IsType<int>()) {
-                                valA = Deref<int>(a) != 0;
-                            }
-                            
-                            // Perform logical NOT and push result
-                            dataStack->Push(reg_->New<bool>(!valA));
-                        }
-                        continue;
-                    }
-                    
-                    // For Less, handle comparison
-                    if (opType == Operation::Less) {
-                        if (dataStack->Size() >= 2) {
-                            Object b = dataStack->Pop();
-                            Object a = dataStack->Pop();
-                            
-                            if (a.IsType<int>() && b.IsType<int>()) {
-                                bool result = Deref<int>(a) < Deref<int>(b);
-                                dataStack->Push(reg_->New<bool>(result));
-                            }
-                            else if (a.IsType<float>() && b.IsType<float>()) {
-                                bool result = Deref<float>(a) < Deref<float>(b);
-                                dataStack->Push(reg_->New<bool>(result));
-                            }
-                            else if (a.IsType<float>() && b.IsType<int>()) {
-                                bool result = Deref<float>(a) < (float)Deref<int>(b);
-                                dataStack->Push(reg_->New<bool>(result));
-                            }
-                            else if (a.IsType<int>() && b.IsType<float>()) {
-                                bool result = (float)Deref<int>(a) < Deref<float>(b);
-                                dataStack->Push(reg_->New<bool>(result));
-                            }
-                            else if (a.IsType<String>() && b.IsType<String>()) {
-                                bool result = Deref<String>(a) < Deref<String>(b);
-                                dataStack->Push(reg_->New<bool>(result));
-                            }
-                            else {
-                                // For unknown types, try generic approach
-                                dataStack->Push(a);
-                                dataStack->Push(b);
-                                Object op = reg_->New<Operation>(opType);
-                                executor->Eval(op);
-                            }
-                        }
-                        continue;
-                    }
-                    
-                    // For Store or Replace, handle variable assignment
-                    if (opType == Operation::Store || opType == Operation::Replace) {
+                    else if (opType == Operation::Store || opType == Operation::Replace) {
                         if (dataStack->Size() >= 2) {
                             Object value = dataStack->Pop();
                             Object name = dataStack->Pop();
@@ -796,12 +255,10 @@ void Console::Execute(Pointer<Continuation> cont) {
                                 // Store in scope
                                 tree.GetScope().Set(label, value);
                             }
+                            continue;
                         }
-                        continue;
                     }
-                    
-                    // For Retreive, handle variable lookup
-                    if (opType == Operation::Retreive) {
+                    else if (opType == Operation::Retreive) {
                         if (dataStack->Size() >= 1) {
                             Object name = dataStack->Pop();
                             
@@ -825,87 +282,9 @@ void Console::Execute(Pointer<Continuation> cont) {
                                         dataStack->Push(reg_->New<int>(0));
                                     }
                                 }
+                                continue;
                             }
                         }
-                        continue;
-                    }
-                    
-                    // For DoLoop, handle do-while loop
-                    if (opType == Operation::DoLoop) {
-                        if (dataStack->Size() >= 1) {
-                            Object condition = dataStack->Pop();
-                            
-                            // Check if the condition is a continuation
-                            if (condition.IsType<Continuation>()) {
-                                // Create a new continuation with the same code
-                                Pointer<Continuation> contPtr = reg_->New<Continuation>();
-                                
-                                // Copy code from the original continuation
-                                Continuation& origCont = Deref<Continuation>(condition);
-                                contPtr->SetCode(origCont.GetCode());
-                                contPtr->SetScope(tree.GetScope()); // Ensure it uses our scope
-                                
-                                // Print the content of the loop's continuation for debugging
-                                if (contPtr->GetCode().Exists()) {
-                                    KAI_TRACE_1(contPtr->GetCode()->Size()) << "DoLoop continuation size:";
-                                    for (int i = 0; i < contPtr->GetCode()->Size(); i++) {
-                                        Object item = contPtr->GetCode()->At(i);
-                                        KAI_TRACE_1(item.ToString()) << "Condition item " << i << ":";
-                                    }
-                                }
-                                
-                                // Ensure the "count" variable exists in the current scope before looping
-                                Label countLabel("count");
-                                if (!tree.GetScope().Has(countLabel)) {
-                                    tree.GetScope().Set(countLabel, reg_->New<int>(0));
-                                }
-                                
-                                // Ensure the "i" variable exists in the current scope before looping
-                                Label iLabel("i");
-                                if (!tree.GetScope().Has(iLabel)) {
-                                    tree.GetScope().Set(iLabel, reg_->New<int>(0));
-                                }
-                                
-                                // Keep executing the continuation until it evaluates to false
-                                bool keepLooping = true;
-                                while (keepLooping) {
-                                    // Execute the condition continuation
-                                    Execute(contPtr);
-                                    
-                                    // Check the result on the stack
-                                    if (dataStack->Size() >= 1) {
-                                        Object result = dataStack->Pop();
-                                        
-                                        // Convert to boolean if needed
-                                        if (result.IsType<bool>()) {
-                                            keepLooping = Deref<bool>(result);
-                                        }
-                                        else if (result.IsType<int>()) {
-                                            keepLooping = Deref<int>(result) != 0;
-                                        }
-                                        else {
-                                            // If not a boolean or int, assume false
-                                            keepLooping = false;
-                                        }
-                                    }
-                                    else {
-                                        // No result on stack, stop looping
-                                        keepLooping = false;
-                                    }
-                                }
-                                
-                                // After loop, push the current value of "count" to the stack
-                                if (tree.GetScope().Has(countLabel)) {
-                                    Object countValue = tree.GetScope().Get(countLabel);
-                                    dataStack->Push(countValue);
-                                }
-                                else {
-                                    // Default to 0 if not found
-                                    dataStack->Push(reg_->New<int>(0));
-                                }
-                            }
-                        }
-                        continue;
                     }
                 }
                 
@@ -916,8 +295,34 @@ void Console::Execute(Pointer<Continuation> cont) {
             return;
         }
         
-        // Delegate to the Executor for non-Pi languages
+        // For regular continuations (without special handling), execute them normally
+        // but extract primitive result types after execution
         executor->Continue(cont);
+        
+        // After execution, always try to extract primitive values from continuations
+        if (dataStack->Size() > 0) {
+            Object result = dataStack->Top();
+            
+            // Check if we need to unwrap the value
+            if (result.IsType<Continuation>()) {
+                // Use the enhanced UnwrapValue method to extract primitive types
+                Object unwrapped = executor->UnwrapValue(result);
+                
+                // If unwrapping produced a different value, replace the stack top
+                if (unwrapped != result) {
+                    if (unwrapped.Exists()) {
+                        KAI_TRACE() << "Unwrapped continuation to primitive type: " 
+                                  << unwrapped.GetClass()->GetName();
+                    } else {
+                        KAI_TRACE() << "Unwrapped continuation to null object";
+                    }
+                    
+                    // Replace the continuation with the unwrapped value
+                    dataStack->Pop(); // Remove the continuation
+                    dataStack->Push(unwrapped); // Push the unwrapped value
+                }
+            }
+        }
     }
     KAI_CATCH(Exception::Base, E) { KAI_TRACE_ERROR_1(E); }
     KAI_CATCH(exception, E) { KAI_TRACE_ERROR_2("StdException: ", E.what()); }
@@ -930,10 +335,13 @@ void Console::Execute(String const &text, Structure st) {
     if (!cont.Exists()) return;
 
     // Log what we're about to execute for debugging purposes
-    KAI_TRACE() << "Executing text: " << text;
+    KAI_TRACE() << "Executing text: " << text << " (with specialHandling=true)";
     
-    // Execute the continuation using the standard path - the Executor now 
-    // properly handles Pi language operations without special cases
+    // Mark the continuation for special handling for all languages
+    // This ensures proper type handling for all operations
+    cont->SetSpecialHandling(true);
+    
+    // Execute the continuation
     Execute(cont);
 }
 

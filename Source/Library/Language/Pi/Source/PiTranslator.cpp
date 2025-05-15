@@ -11,6 +11,20 @@ using namespace std;
 
 KAI_BEGIN
 
+// Implementation of the Translate method for Pi, setting special handling flag
+Pointer<Continuation> PiTranslator::Translate(const char* text, Structure st) {
+    // Call the parent implementation first
+    Pointer<Continuation> cont = Parent::Translate(text, st);
+    
+    // Set special handling flag for all Pi continuations to ensure type preservation
+    if (cont.Exists()) {
+        cont->SetSpecialHandling(true);
+        KAI_TRACE() << "Set special handling flag for Pi continuation";
+    }
+    
+    return cont;
+}
+
 void PiTranslator::TranslateNode(AstNodePtr node) {
     if (!node) {
         Fail("Empty input");

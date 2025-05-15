@@ -18,7 +18,13 @@ class PiTranslator : public TranslatorBase<PiParser> {
 
     PiTranslator() = delete;
     PiTranslator(Registry& r) : Parent(r) {}
+    
+    // Override base class methods to improve type handling
     virtual Pointer<Continuation> Result() override { return stack.front(); }
+    
+    // Override to make Pi handle direct evaluation of expressions
+    // This addresses the issue where expressions lose type information
+    [[nodiscard]] Pointer<Continuation> Translate(const char* text, Structure st) override;
 
    protected:
     virtual void TranslateNode(AstNodePtr node) override;
