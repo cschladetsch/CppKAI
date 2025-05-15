@@ -6,5 +6,5 @@ CXX_DEFINES = -DBOOST_ATOMIC_DYN_LINK -DBOOST_ATOMIC_NO_LIB -DBOOST_DATE_TIME_DY
 
 CXX_INCLUDES = -I/home/xian/local/KAI/Include -I/home/xian/local/KAI/Ext/rang/include -I/home/xian/local/KAI/Include/KAI/Core -I/home/xian/local/KAI/Include/KAI/Executor -I/home/xian/local/KAI/Source/Library/Language/Include -I/opt/local/include -I/home/xian/local/KAI/Include/Imgui -I/home/xian/local/KAI/Test/Include} -I/home/xian/local/KAI/Test/Language/TestTau/Include -I/home/xian/local/KAI/Test/Include -I/home/xian/local/KAI/Test/Language/TestRho/Include -I/home/xian/local/KAI/Test/Language/TestPi/Include
 
-CXX_FLAGS =  -g -Wall -Wno-deprecated -Wno-switch -Wno-comment -Wno-reorder -Wno-unused-parameter -Wno-missing-field-initializers -Wno-unknown-pragmas -Wno-unused-value -Wno-unused-but-set-variable -fconcepts-diagnostics-depth=3 -g -std=c++23 -DGTEST_HAS_PTHREAD=1
+CXX_FLAGS =  -g -Wall -Wno-deprecated -Wno-switch -Wno-comment -Wno-reorder -Wno-unused-parameter -Wno-missing-field-initializers -Wno-unknown-pragmas -Wno-unused-value -Wno-unused-but-set-variable -fconcepts-diagnostics-depth=3 -std=c++23 -DGTEST_HAS_PTHREAD=1
 

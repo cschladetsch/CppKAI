@@ -321,8 +321,10 @@ finis:
             Consume();
             
             // After a semicolon, there may be another statement on the same line
-            // which should be handled by calling Statement again
-            if (!Try(TokenType::NewLine) && !Try(TokenType::None)) {
+            // which should be handled by calling Statement again, but only if we're
+            // not in a context where semicolons are part of syntax (like for loops)
+            if (!Try(TokenType::NewLine) && !Try(TokenType::None) && 
+                !Try(TokenType::CloseBrace) && !Try(TokenType::CloseParan)) {
                 return Statement(block);
             }
         }
@@ -784,15 +786,17 @@ bool RhoParser::ForLoop(AstNodePtr block) {
     KAI_TRACE() << "RhoParser::ForLoop - Found 'for' token";
     Consume();
 
-    // Unlike the previous Rho syntax, we will support 
-    // for (init; condition; increment) { body }
+    // We now support both styles:
+    // 1. for init; condition; increment { body }
+    // 2. for (init; condition; increment) { body }
     // where semicolons separate the parts
 
-    // Expect an opening parenthesis
-    if (!Try(TokenType::OpenParan)) {
-        return CreateError("Expected opening parenthesis after 'for'");
+    // Check for optional opening parenthesis
+    bool hasParentheses = false;
+    if (Try(TokenType::OpenParan)) {
+        hasParentheses = true;
+        Consume();
     }
-    Consume();
     
     // Parse the initialization expression
     KAI_TRACE() << "RhoParser::ForLoop - Parsing initialization";
@@ -839,24 +843,53 @@ bool RhoParser::ForLoop(AstNodePtr block) {
         incrExpr = Pop();
     }
 
-    // Expect the closing parenthesis
-    if (!Try(TokenType::CloseParan)) {
-        return CreateError("Expected closing parenthesis after for loop declarations");
+    // Check for optional closing parenthesis
+    if (hasParentheses) {
+        if (!Try(TokenType::CloseParan)) {
+            return CreateError("Expected closing parenthesis after for loop declarations");
+        }
+        Consume();
     }
-    Consume();
 
-    // Expect newline after for declarations
-    if (!Try(TokenType::NewLine)) {
-        return CreateError("Expected newline after for loop declarations");
-    }
-    Consume();
-
-    // Parse the body of the for loop
+    // Check if this is an inline for loop with braces
+    // After the closing parenthesis, we may have:
+    // 1. A newline (traditional Rho style with indentation)
+    // 2. An opening brace (inline style with braces)
+    // We'll support both formats for flexibility
+    
     auto bodyClause = NewNode(NodeType::Block);
     KAI_TRACE() << "RhoParser::ForLoop - Parsing body block";
-    if (!Block(bodyClause)) {
-        return CreateError("Block Expected for for loop body");
+    
+    if (Try(TokenType::OpenBrace)) {
+        // This is an inline for loop with braces
+        KAI_TRACE() << "RhoParser::ForLoop - Found inline for loop with braces";
+        Consume(); // Consume the opening brace
+        
+        // Parse statements inside the braces
+        while (!Try(TokenType::CloseBrace) && !Try(TokenType::None) && !Failed) {
+            if (!Statement(bodyClause)) {
+                return CreateError("Statement expected in inline for loop body");
+            }
+        }
+        
+        // Expect closing brace
+        if (!Try(TokenType::CloseBrace)) {
+            return CreateError("Expected closing brace for inline for loop");
+        }
+        Consume(); // Consume the closing brace
+    } else {
+        // Traditional style with newline and indentation
+        if (!Try(TokenType::NewLine)) {
+            return CreateError("Expected newline or opening brace after for loop declarations");
+        }
+        Consume();
+        
+        // Use the Block method for indented code blocks
+        if (!Block(bodyClause)) {
+            return CreateError("Block Expected for for loop body");
+        }
     }
+    
     KAI_TRACE() << "RhoParser::ForLoop - Parsed body block";
 
     // Create the for loop AST node structure
