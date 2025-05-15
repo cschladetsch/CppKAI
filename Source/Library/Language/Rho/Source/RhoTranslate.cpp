@@ -20,7 +20,9 @@ Pointer<Continuation> RhoTranslator::Translate(const char* text, Structure st) {
         return Object();  // Return empty Object for consistency with base implementation
     }
 
-    trace = 0;
+    trace = 5;  // Increase trace level for debugging
+
+    KAI_TRACE() << "Executing text: " << text;
 
     // Use modern shared_ptr for lexical analysis
     auto lex = std::make_shared<Lexer>(text, *reg_);
@@ -81,15 +83,6 @@ Pointer<Continuation> RhoTranslator::Translate(const char* text, Structure st) {
         // Use a named constant for clarity
         const int codeSize = static_cast<int>(cont->GetCode()->Size());
         KAI_TRACE() << std::format("Rho translated code has {} elements", codeSize);
-        
-        // Check for binary operation pattern (value value operation)
-        if (codeSize == 3) {
-            Object third = cont->GetCode()->At(2);
-            if (third.GetTypeNumber() == Type::Number::Operation) {
-                // Use string concatenation instead of std::format for compatibility
-                KAI_TRACE() << "Detected binary operation pattern: " << third.ToString();
-            }
-        }
     }
     
     return cont;

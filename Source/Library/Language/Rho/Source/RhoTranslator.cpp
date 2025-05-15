@@ -153,7 +153,13 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
             KAI_TRACE() << std::format("Translating Int: {}", node->GetTokenText());
             try {
                 const auto value = std::stoi(node->GetTokenText());
-                Append(reg_->New<int>(value));
+                // Create a properly typed integer value
+                auto intObj = reg_->New<int>(value);
+                
+                // Append the integer directly
+                Append(intObj);
+                
+                KAI_TRACE() << "Translated integer: " << intObj.ToString();
             } catch (const std::exception& e) {
                 Fail(std::format("Failed to parse integer: {}", e.what()));
             }
@@ -164,24 +170,42 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
             KAI_TRACE() << std::format("Translating Float: {}", node->GetTokenText());
             try {
                 const auto value = std::stof(node->GetTokenText());
-                Append(reg_->New<float>(value));
+                // Create a properly typed float value
+                auto floatObj = reg_->New<float>(value);
+                
+                // Append the float directly
+                Append(floatObj);
+                
+                KAI_TRACE() << "Translated float: " << floatObj.ToString();
             } catch (const std::exception& e) {
                 Fail(std::format("Failed to parse float: {}", e.what()));
             }
             return;
         }
 
-        case TokenEnum::String:
+        case TokenEnum::String: {
             KAI_TRACE() << std::format("Translating String: {}", node->Text());
-            Append(reg_->New<String>(String(node->Text())));
-            KAI_TRACE() << "String translation complete";
+            // Create a properly typed string
+            auto strObj = reg_->New<String>(String(node->Text()));
+            
+            // Append the string directly
+            Append(strObj);
+            
+            KAI_TRACE() << "Translated string: " << strObj.ToString();
             return;
+        }
 
-        case TokenEnum::Ident:
+        case TokenEnum::Ident: {
             KAI_TRACE() << std::format("Translating Ident: {}", node->Text());
-            Append(reg_->New<Label>(Label(node->Text())));
-            KAI_TRACE() << "Ident translation complete";
+            // Create a properly typed label
+            auto labelObj = reg_->New<Label>(Label(node->Text()));
+            
+            // Append the label directly
+            Append(labelObj);
+            
+            KAI_TRACE() << "Translated identifier: " << labelObj.ToString();
             return;
+        }
 
         case TokenEnum::Pathname:
             KAI_TRACE() << std::format("Translating Pathname: {}", node->Text());
@@ -234,9 +258,6 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
 void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
     KAI_TRACE() << std::format("TranslateBinaryOp: Operation={}", 
                  Operation::ToString(op));
-
-    // For binary operations, we need to ensure we're translating directly to Pi streams
-    // without introducing unnecessary continuations
     
     // First, check if both children are simple integer literals
     // In such case, we could evaluate the operation at translation time
@@ -303,13 +324,14 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
             // Push the result directly as an integer
             KAI_TRACE() << std::format("Direct evaluation of binary op: {} {} {} = {}", 
                          leftValue, Operation::ToString(op), rightValue, result);
+            
+            // Create an integer with the correct type and append it directly
             Append(reg_->New<int>(result));
             return;
         }
     }
-    
-    // Translate directly to Pi stream without creating a continuation
-    // This is the key change - we want to directly translate binary operations to Pi
+
+    // Simple and direct translation without excessive wrapping
     // First translate the left operand
     TranslateNode(node->GetChild(0));
     
