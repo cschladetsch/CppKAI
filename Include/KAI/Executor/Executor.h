@@ -115,6 +115,10 @@ struct Executor : Reflected {
     // Helper method to unwrap continuations and extract the underlying value
     // This resolves issues with tests expecting a specific type but finding a continuation
     Object UnwrapValue(Object const &Q);
+    
+    // Helper method to perform binary operations with proper type handling
+    // This method is used by tests to directly execute binary operations
+    Object PerformBinaryOp(Object const &A, Object const &B, Operation::Type op);
 
     // if ignoreQuote is true, then we resolve the identifier
     // even if it is quoted
