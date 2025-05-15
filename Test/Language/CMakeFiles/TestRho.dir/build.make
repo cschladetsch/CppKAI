@@ -83,10 +83,24 @@ Test/Language/CMakeFiles/TestRho.dir/TestRho/AdditionalBinaryOpTests.cpp.s: cmak
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/TestRho.dir/TestRho/AdditionalBinaryOpTests.cpp.s"
 	cd /home/xian/local/KAI/Test/Language && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/xian/local/KAI/Test/Language/TestRho/AdditionalBinaryOpTests.cpp -o CMakeFiles/TestRho.dir/TestRho/AdditionalBinaryOpTests.cpp.s
 
+Test/Language/CMakeFiles/TestRho.dir/TestRho/AdvancedBinaryOpTests.cpp.o: Test/Language/CMakeFiles/TestRho.dir/flags.make
+Test/Language/CMakeFiles/TestRho.dir/TestRho/AdvancedBinaryOpTests.cpp.o: Test/Language/TestRho/AdvancedBinaryOpTests.cpp
+Test/Language/CMakeFiles/TestRho.dir/TestRho/AdvancedBinaryOpTests.cpp.o: Test/Language/CMakeFiles/TestRho.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/TestRho/AdvancedBinaryOpTests.cpp.o"
+	cd /home/xian/local/KAI/Test/Language && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT Test/Language/CMakeFiles/TestRho.dir/TestRho/AdvancedBinaryOpTests.cpp.o -MF CMakeFiles/TestRho.dir/TestRho/AdvancedBinaryOpTests.cpp.o.d -o CMakeFiles/TestRho.dir/TestRho/AdvancedBinaryOpTests.cpp.o -c /home/xian/local/KAI/Test/Language/TestRho/AdvancedBinaryOpTests.cpp
+
+Test/Language/CMakeFiles/TestRho.dir/TestRho/AdvancedBinaryOpTests.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/TestRho.dir/TestRho/AdvancedBinaryOpTests.cpp.i"
+	cd /home/xian/local/KAI/Test/Language && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/xian/local/KAI/Test/Language/TestRho/AdvancedBinaryOpTests.cpp > CMakeFiles/TestRho.dir/TestRho/AdvancedBinaryOpTests.cpp.i
+
+Test/Language/CMakeFiles/TestRho.dir/TestRho/AdvancedBinaryOpTests.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/TestRho.dir/TestRho/AdvancedBinaryOpTests.cpp.s"
+	cd /home/xian/local/KAI/Test/Language && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/xian/local/KAI/Test/Language/TestRho/AdvancedBinaryOpTests.cpp -o CMakeFiles/TestRho.dir/TestRho/AdvancedBinaryOpTests.cpp.s
+
 Test/Language/CMakeFiles/TestRho.dir/TestRho/AdvancedRhoPiTests.cpp.o: Test/Language/CMakeFiles/TestRho.dir/flags.make
 Test/Language/CMakeFiles/TestRho.dir/TestRho/AdvancedRhoPiTests.cpp.o: Test/Language/TestRho/AdvancedRhoPiTests.cpp
 Test/Language/CMakeFiles/TestRho.dir/TestRho/AdvancedRhoPiTests.cpp.o: Test/Language/CMakeFiles/TestRho.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/TestRho/AdvancedRhoPiTests.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/TestRho/AdvancedRhoPiTests.cpp.o"
 	cd /home/xian/local/KAI/Test/Language && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT Test/Language/CMakeFiles/TestRho.dir/TestRho/AdvancedRhoPiTests.cpp.o -MF CMakeFiles/TestRho.dir/TestRho/AdvancedRhoPiTests.cpp.o.d -o CMakeFiles/TestRho.dir/TestRho/AdvancedRhoPiTests.cpp.o -c /home/xian/local/KAI/Test/Language/TestRho/AdvancedRhoPiTests.cpp
 
 Test/Language/CMakeFiles/TestRho.dir/TestRho/AdvancedRhoPiTests.cpp.i: cmake_force
@@ -100,7 +114,7 @@ Test/Language/CMakeFiles/TestRho.dir/TestRho/AdvancedRhoPiTests.cpp.s: cmake_for
 Test/Language/CMakeFiles/TestRho.dir/TestRho/CompareLanguagesTest.cpp.o: Test/Language/CMakeFiles/TestRho.dir/flags.make
 Test/Language/CMakeFiles/TestRho.dir/TestRho/CompareLanguagesTest.cpp.o: Test/Language/TestRho/CompareLanguagesTest.cpp
 Test/Language/CMakeFiles/TestRho.dir/TestRho/CompareLanguagesTest.cpp.o: Test/Language/CMakeFiles/TestRho.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/TestRho/CompareLanguagesTest.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/TestRho/CompareLanguagesTest.cpp.o"
 	cd /home/xian/local/KAI/Test/Language && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT Test/Language/CMakeFiles/TestRho.dir/TestRho/CompareLanguagesTest.cpp.o -MF CMakeFiles/TestRho.dir/TestRho/CompareLanguagesTest.cpp.o.d -o CMakeFiles/TestRho.dir/TestRho/CompareLanguagesTest.cpp.o -c /home/xian/local/KAI/Test/Language/TestRho/CompareLanguagesTest.cpp
 
 Test/Language/CMakeFiles/TestRho.dir/TestRho/CompareLanguagesTest.cpp.i: cmake_force
@@ -114,7 +128,7 @@ Test/Language/CMakeFiles/TestRho.dir/TestRho/CompareLanguagesTest.cpp.s: cmake_f
 Test/Language/CMakeFiles/TestRho.dir/TestRho/FunctionRhoScripting.cpp.o: Test/Language/CMakeFiles/TestRho.dir/flags.make
 Test/Language/CMakeFiles/TestRho.dir/TestRho/FunctionRhoScripting.cpp.o: Test/Language/TestRho/FunctionRhoScripting.cpp
 Test/Language/CMakeFiles/TestRho.dir/TestRho/FunctionRhoScripting.cpp.o: Test/Language/CMakeFiles/TestRho.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/TestRho/FunctionRhoScripting.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/TestRho/FunctionRhoScripting.cpp.o"
 	cd /home/xian/local/KAI/Test/Language && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT Test/Language/CMakeFiles/TestRho.dir/TestRho/FunctionRhoScripting.cpp.o -MF CMakeFiles/TestRho.dir/TestRho/FunctionRhoScripting.cpp.o.d -o CMakeFiles/TestRho.dir/TestRho/FunctionRhoScripting.cpp.o -c /home/xian/local/KAI/Test/Language/TestRho/FunctionRhoScripting.cpp
 
 Test/Language/CMakeFiles/TestRho.dir/TestRho/FunctionRhoScripting.cpp.i: cmake_force
@@ -128,7 +142,7 @@ Test/Language/CMakeFiles/TestRho.dir/TestRho/FunctionRhoScripting.cpp.s: cmake_f
 Test/Language/CMakeFiles/TestRho.dir/TestRho/HelloWorld.cpp.o: Test/Language/CMakeFiles/TestRho.dir/flags.make
 Test/Language/CMakeFiles/TestRho.dir/TestRho/HelloWorld.cpp.o: Test/Language/TestRho/HelloWorld.cpp
 Test/Language/CMakeFiles/TestRho.dir/TestRho/HelloWorld.cpp.o: Test/Language/CMakeFiles/TestRho.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/TestRho/HelloWorld.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/TestRho/HelloWorld.cpp.o"
 	cd /home/xian/local/KAI/Test/Language && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT Test/Language/CMakeFiles/TestRho.dir/TestRho/HelloWorld.cpp.o -MF CMakeFiles/TestRho.dir/TestRho/HelloWorld.cpp.o.d -o CMakeFiles/TestRho.dir/TestRho/HelloWorld.cpp.o -c /home/xian/local/KAI/Test/Language/TestRho/HelloWorld.cpp
 
 Test/Language/CMakeFiles/TestRho.dir/TestRho/HelloWorld.cpp.i: cmake_force
@@ -142,7 +156,7 @@ Test/Language/CMakeFiles/TestRho.dir/TestRho/HelloWorld.cpp.s: cmake_force
 Test/Language/CMakeFiles/TestRho.dir/TestRho/MinimalRhoTest.cpp.o: Test/Language/CMakeFiles/TestRho.dir/flags.make
 Test/Language/CMakeFiles/TestRho.dir/TestRho/MinimalRhoTest.cpp.o: Test/Language/TestRho/MinimalRhoTest.cpp
 Test/Language/CMakeFiles/TestRho.dir/TestRho/MinimalRhoTest.cpp.o: Test/Language/CMakeFiles/TestRho.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/TestRho/MinimalRhoTest.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/TestRho/MinimalRhoTest.cpp.o"
 	cd /home/xian/local/KAI/Test/Language && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT Test/Language/CMakeFiles/TestRho.dir/TestRho/MinimalRhoTest.cpp.o -MF CMakeFiles/TestRho.dir/TestRho/MinimalRhoTest.cpp.o.d -o CMakeFiles/TestRho.dir/TestRho/MinimalRhoTest.cpp.o -c /home/xian/local/KAI/Test/Language/TestRho/MinimalRhoTest.cpp
 
 Test/Language/CMakeFiles/TestRho.dir/TestRho/MinimalRhoTest.cpp.i: cmake_force
@@ -156,7 +170,7 @@ Test/Language/CMakeFiles/TestRho.dir/TestRho/MinimalRhoTest.cpp.s: cmake_force
 Test/Language/CMakeFiles/TestRho.dir/TestRho/PiAssertInRhoTest.cpp.o: Test/Language/CMakeFiles/TestRho.dir/flags.make
 Test/Language/CMakeFiles/TestRho.dir/TestRho/PiAssertInRhoTest.cpp.o: Test/Language/TestRho/PiAssertInRhoTest.cpp
 Test/Language/CMakeFiles/TestRho.dir/TestRho/PiAssertInRhoTest.cpp.o: Test/Language/CMakeFiles/TestRho.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/TestRho/PiAssertInRhoTest.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/TestRho/PiAssertInRhoTest.cpp.o"
 	cd /home/xian/local/KAI/Test/Language && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT Test/Language/CMakeFiles/TestRho.dir/TestRho/PiAssertInRhoTest.cpp.o -MF CMakeFiles/TestRho.dir/TestRho/PiAssertInRhoTest.cpp.o.d -o CMakeFiles/TestRho.dir/TestRho/PiAssertInRhoTest.cpp.o -c /home/xian/local/KAI/Test/Language/TestRho/PiAssertInRhoTest.cpp
 
 Test/Language/CMakeFiles/TestRho.dir/TestRho/PiAssertInRhoTest.cpp.i: cmake_force
@@ -170,7 +184,7 @@ Test/Language/CMakeFiles/TestRho.dir/TestRho/PiAssertInRhoTest.cpp.s: cmake_forc
 Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoAssertTest.cpp.o: Test/Language/CMakeFiles/TestRho.dir/flags.make
 Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoAssertTest.cpp.o: Test/Language/TestRho/RhoAssertTest.cpp
 Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoAssertTest.cpp.o: Test/Language/CMakeFiles/TestRho.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoAssertTest.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoAssertTest.cpp.o"
 	cd /home/xian/local/KAI/Test/Language && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoAssertTest.cpp.o -MF CMakeFiles/TestRho.dir/TestRho/RhoAssertTest.cpp.o.d -o CMakeFiles/TestRho.dir/TestRho/RhoAssertTest.cpp.o -c /home/xian/local/KAI/Test/Language/TestRho/RhoAssertTest.cpp
 
 Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoAssertTest.cpp.i: cmake_force
@@ -184,7 +198,7 @@ Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoAssertTest.cpp.s: cmake_force
 Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoWithPiTests.cpp.o: Test/Language/CMakeFiles/TestRho.dir/flags.make
 Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoWithPiTests.cpp.o: Test/Language/TestRho/RhoWithPiTests.cpp
 Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoWithPiTests.cpp.o: Test/Language/CMakeFiles/TestRho.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoWithPiTests.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoWithPiTests.cpp.o"
 	cd /home/xian/local/KAI/Test/Language && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoWithPiTests.cpp.o -MF CMakeFiles/TestRho.dir/TestRho/RhoWithPiTests.cpp.o.d -o CMakeFiles/TestRho.dir/TestRho/RhoWithPiTests.cpp.o -c /home/xian/local/KAI/Test/Language/TestRho/RhoWithPiTests.cpp
 
 Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoWithPiTests.cpp.i: cmake_force
@@ -198,7 +212,7 @@ Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoWithPiTests.cpp.s: cmake_force
 Test/Language/CMakeFiles/TestRho.dir/TestRho/SemicolonSyntaxTests.cpp.o: Test/Language/CMakeFiles/TestRho.dir/flags.make
 Test/Language/CMakeFiles/TestRho.dir/TestRho/SemicolonSyntaxTests.cpp.o: Test/Language/TestRho/SemicolonSyntaxTests.cpp
 Test/Language/CMakeFiles/TestRho.dir/TestRho/SemicolonSyntaxTests.cpp.o: Test/Language/CMakeFiles/TestRho.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/TestRho/SemicolonSyntaxTests.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/TestRho/SemicolonSyntaxTests.cpp.o"
 	cd /home/xian/local/KAI/Test/Language && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT Test/Language/CMakeFiles/TestRho.dir/TestRho/SemicolonSyntaxTests.cpp.o -MF CMakeFiles/TestRho.dir/TestRho/SemicolonSyntaxTests.cpp.o.d -o CMakeFiles/TestRho.dir/TestRho/SemicolonSyntaxTests.cpp.o -c /home/xian/local/KAI/Test/Language/TestRho/SemicolonSyntaxTests.cpp
 
 Test/Language/CMakeFiles/TestRho.dir/TestRho/SemicolonSyntaxTests.cpp.i: cmake_force
@@ -212,7 +226,7 @@ Test/Language/CMakeFiles/TestRho.dir/TestRho/SemicolonSyntaxTests.cpp.s: cmake_f
 Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleArithmeticTest.cpp.o: Test/Language/CMakeFiles/TestRho.dir/flags.make
 Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleArithmeticTest.cpp.o: Test/Language/TestRho/SimpleArithmeticTest.cpp
 Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleArithmeticTest.cpp.o: Test/Language/CMakeFiles/TestRho.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleArithmeticTest.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleArithmeticTest.cpp.o"
 	cd /home/xian/local/KAI/Test/Language && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleArithmeticTest.cpp.o -MF CMakeFiles/TestRho.dir/TestRho/SimpleArithmeticTest.cpp.o.d -o CMakeFiles/TestRho.dir/TestRho/SimpleArithmeticTest.cpp.o -c /home/xian/local/KAI/Test/Language/TestRho/SimpleArithmeticTest.cpp
 
 Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleArithmeticTest.cpp.i: cmake_force
@@ -226,7 +240,7 @@ Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleArithmeticTest.cpp.s: cmake_f
 Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleRho.cpp.o: Test/Language/CMakeFiles/TestRho.dir/flags.make
 Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleRho.cpp.o: Test/Language/TestRho/SimpleRho.cpp
 Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleRho.cpp.o: Test/Language/CMakeFiles/TestRho.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleRho.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleRho.cpp.o"
 	cd /home/xian/local/KAI/Test/Language && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleRho.cpp.o -MF CMakeFiles/TestRho.dir/TestRho/SimpleRho.cpp.o.d -o CMakeFiles/TestRho.dir/TestRho/SimpleRho.cpp.o -c /home/xian/local/KAI/Test/Language/TestRho/SimpleRho.cpp
 
 Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleRho.cpp.i: cmake_force
@@ -240,7 +254,7 @@ Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleRho.cpp.s: cmake_force
 Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleRhoPiTests.cpp.o: Test/Language/CMakeFiles/TestRho.dir/flags.make
 Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleRhoPiTests.cpp.o: Test/Language/TestRho/SimpleRhoPiTests.cpp
 Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleRhoPiTests.cpp.o: Test/Language/CMakeFiles/TestRho.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleRhoPiTests.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleRhoPiTests.cpp.o"
 	cd /home/xian/local/KAI/Test/Language && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleRhoPiTests.cpp.o -MF CMakeFiles/TestRho.dir/TestRho/SimpleRhoPiTests.cpp.o.d -o CMakeFiles/TestRho.dir/TestRho/SimpleRhoPiTests.cpp.o -c /home/xian/local/KAI/Test/Language/TestRho/SimpleRhoPiTests.cpp
 
 Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleRhoPiTests.cpp.i: cmake_force
@@ -254,7 +268,7 @@ Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleRhoPiTests.cpp.s: cmake_force
 Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleRhoTest.cpp.o: Test/Language/CMakeFiles/TestRho.dir/flags.make
 Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleRhoTest.cpp.o: Test/Language/TestRho/SimpleRhoTest.cpp
 Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleRhoTest.cpp.o: Test/Language/CMakeFiles/TestRho.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleRhoTest.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleRhoTest.cpp.o"
 	cd /home/xian/local/KAI/Test/Language && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleRhoTest.cpp.o -MF CMakeFiles/TestRho.dir/TestRho/SimpleRhoTest.cpp.o.d -o CMakeFiles/TestRho.dir/TestRho/SimpleRhoTest.cpp.o -c /home/xian/local/KAI/Test/Language/TestRho/SimpleRhoTest.cpp
 
 Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleRhoTest.cpp.i: cmake_force
@@ -268,7 +282,7 @@ Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleRhoTest.cpp.s: cmake_force
 Test/Language/CMakeFiles/TestRho.dir/TestRho/TestDoWhile.cpp.o: Test/Language/CMakeFiles/TestRho.dir/flags.make
 Test/Language/CMakeFiles/TestRho.dir/TestRho/TestDoWhile.cpp.o: Test/Language/TestRho/TestDoWhile.cpp
 Test/Language/CMakeFiles/TestRho.dir/TestRho/TestDoWhile.cpp.o: Test/Language/CMakeFiles/TestRho.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/TestRho/TestDoWhile.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/TestRho/TestDoWhile.cpp.o"
 	cd /home/xian/local/KAI/Test/Language && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT Test/Language/CMakeFiles/TestRho.dir/TestRho/TestDoWhile.cpp.o -MF CMakeFiles/TestRho.dir/TestRho/TestDoWhile.cpp.o.d -o CMakeFiles/TestRho.dir/TestRho/TestDoWhile.cpp.o -c /home/xian/local/KAI/Test/Language/TestRho/TestDoWhile.cpp
 
 Test/Language/CMakeFiles/TestRho.dir/TestRho/TestDoWhile.cpp.i: cmake_force
@@ -282,7 +296,7 @@ Test/Language/CMakeFiles/TestRho.dir/TestRho/TestDoWhile.cpp.s: cmake_force
 Test/Language/CMakeFiles/TestRho.dir/TestRho/TestForLoopSemicolons.cpp.o: Test/Language/CMakeFiles/TestRho.dir/flags.make
 Test/Language/CMakeFiles/TestRho.dir/TestRho/TestForLoopSemicolons.cpp.o: Test/Language/TestRho/TestForLoopSemicolons.cpp
 Test/Language/CMakeFiles/TestRho.dir/TestRho/TestForLoopSemicolons.cpp.o: Test/Language/CMakeFiles/TestRho.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/TestRho/TestForLoopSemicolons.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/TestRho/TestForLoopSemicolons.cpp.o"
 	cd /home/xian/local/KAI/Test/Language && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT Test/Language/CMakeFiles/TestRho.dir/TestRho/TestForLoopSemicolons.cpp.o -MF CMakeFiles/TestRho.dir/TestRho/TestForLoopSemicolons.cpp.o.d -o CMakeFiles/TestRho.dir/TestRho/TestForLoopSemicolons.cpp.o -c /home/xian/local/KAI/Test/Language/TestRho/TestForLoopSemicolons.cpp
 
 Test/Language/CMakeFiles/TestRho.dir/TestRho/TestForLoopSemicolons.cpp.i: cmake_force
@@ -296,7 +310,7 @@ Test/Language/CMakeFiles/TestRho.dir/TestRho/TestForLoopSemicolons.cpp.s: cmake_
 Test/Language/CMakeFiles/TestRho.dir/TestRho/TestRho.cpp.o: Test/Language/CMakeFiles/TestRho.dir/flags.make
 Test/Language/CMakeFiles/TestRho.dir/TestRho/TestRho.cpp.o: Test/Language/TestRho/TestRho.cpp
 Test/Language/CMakeFiles/TestRho.dir/TestRho/TestRho.cpp.o: Test/Language/CMakeFiles/TestRho.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/TestRho/TestRho.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/TestRho/TestRho.cpp.o"
 	cd /home/xian/local/KAI/Test/Language && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT Test/Language/CMakeFiles/TestRho.dir/TestRho/TestRho.cpp.o -MF CMakeFiles/TestRho.dir/TestRho/TestRho.cpp.o.d -o CMakeFiles/TestRho.dir/TestRho/TestRho.cpp.o -c /home/xian/local/KAI/Test/Language/TestRho/TestRho.cpp
 
 Test/Language/CMakeFiles/TestRho.dir/TestRho/TestRho.cpp.i: cmake_force
@@ -310,7 +324,7 @@ Test/Language/CMakeFiles/TestRho.dir/TestRho/TestRho.cpp.s: cmake_force
 Test/Language/CMakeFiles/TestRho.dir/TestLangCommon.cpp.o: Test/Language/CMakeFiles/TestRho.dir/flags.make
 Test/Language/CMakeFiles/TestRho.dir/TestLangCommon.cpp.o: Test/Language/TestLangCommon.cpp
 Test/Language/CMakeFiles/TestRho.dir/TestLangCommon.cpp.o: Test/Language/CMakeFiles/TestRho.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/TestLangCommon.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/TestLangCommon.cpp.o"
 	cd /home/xian/local/KAI/Test/Language && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT Test/Language/CMakeFiles/TestRho.dir/TestLangCommon.cpp.o -MF CMakeFiles/TestRho.dir/TestLangCommon.cpp.o.d -o CMakeFiles/TestRho.dir/TestLangCommon.cpp.o -c /home/xian/local/KAI/Test/Language/TestLangCommon.cpp
 
 Test/Language/CMakeFiles/TestRho.dir/TestLangCommon.cpp.i: cmake_force
@@ -324,7 +338,7 @@ Test/Language/CMakeFiles/TestRho.dir/TestLangCommon.cpp.s: cmake_force
 Test/Language/CMakeFiles/TestRho.dir/__/Common/TestCommon.cpp.o: Test/Language/CMakeFiles/TestRho.dir/flags.make
 Test/Language/CMakeFiles/TestRho.dir/__/Common/TestCommon.cpp.o: Test/Common/TestCommon.cpp
 Test/Language/CMakeFiles/TestRho.dir/__/Common/TestCommon.cpp.o: Test/Language/CMakeFiles/TestRho.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/__/Common/TestCommon.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/__/Common/TestCommon.cpp.o"
 	cd /home/xian/local/KAI/Test/Language && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT Test/Language/CMakeFiles/TestRho.dir/__/Common/TestCommon.cpp.o -MF CMakeFiles/TestRho.dir/__/Common/TestCommon.cpp.o.d -o CMakeFiles/TestRho.dir/__/Common/TestCommon.cpp.o -c /home/xian/local/KAI/Test/Common/TestCommon.cpp
 
 Test/Language/CMakeFiles/TestRho.dir/__/Common/TestCommon.cpp.i: cmake_force
@@ -338,7 +352,7 @@ Test/Language/CMakeFiles/TestRho.dir/__/Common/TestCommon.cpp.s: cmake_force
 Test/Language/CMakeFiles/TestRho.dir/__/Common/MyTestStruct.cpp.o: Test/Language/CMakeFiles/TestRho.dir/flags.make
 Test/Language/CMakeFiles/TestRho.dir/__/Common/MyTestStruct.cpp.o: Test/Common/MyTestStruct.cpp
 Test/Language/CMakeFiles/TestRho.dir/__/Common/MyTestStruct.cpp.o: Test/Language/CMakeFiles/TestRho.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/__/Common/MyTestStruct.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/__/Common/MyTestStruct.cpp.o"
 	cd /home/xian/local/KAI/Test/Language && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT Test/Language/CMakeFiles/TestRho.dir/__/Common/MyTestStruct.cpp.o -MF CMakeFiles/TestRho.dir/__/Common/MyTestStruct.cpp.o.d -o CMakeFiles/TestRho.dir/__/Common/MyTestStruct.cpp.o -c /home/xian/local/KAI/Test/Common/MyTestStruct.cpp
 
 Test/Language/CMakeFiles/TestRho.dir/__/Common/MyTestStruct.cpp.i: cmake_force
@@ -352,7 +366,7 @@ Test/Language/CMakeFiles/TestRho.dir/__/Common/MyTestStruct.cpp.s: cmake_force
 Test/Language/CMakeFiles/TestRho.dir/__/Source/Main.cpp.o: Test/Language/CMakeFiles/TestRho.dir/flags.make
 Test/Language/CMakeFiles/TestRho.dir/__/Source/Main.cpp.o: Test/Source/Main.cpp
 Test/Language/CMakeFiles/TestRho.dir/__/Source/Main.cpp.o: Test/Language/CMakeFiles/TestRho.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/__/Source/Main.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building CXX object Test/Language/CMakeFiles/TestRho.dir/__/Source/Main.cpp.o"
 	cd /home/xian/local/KAI/Test/Language && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT Test/Language/CMakeFiles/TestRho.dir/__/Source/Main.cpp.o -MF CMakeFiles/TestRho.dir/__/Source/Main.cpp.o.d -o CMakeFiles/TestRho.dir/__/Source/Main.cpp.o -c /home/xian/local/KAI/Test/Source/Main.cpp
 
 Test/Language/CMakeFiles/TestRho.dir/__/Source/Main.cpp.i: cmake_force
@@ -366,6 +380,7 @@ Test/Language/CMakeFiles/TestRho.dir/__/Source/Main.cpp.s: cmake_force
 # Object files for target TestRho
 TestRho_OBJECTS = \
 "CMakeFiles/TestRho.dir/TestRho/AdditionalBinaryOpTests.cpp.o" \
+"CMakeFiles/TestRho.dir/TestRho/AdvancedBinaryOpTests.cpp.o" \
 "CMakeFiles/TestRho.dir/TestRho/AdvancedRhoPiTests.cpp.o" \
 "CMakeFiles/TestRho.dir/TestRho/CompareLanguagesTest.cpp.o" \
 "CMakeFiles/TestRho.dir/TestRho/FunctionRhoScripting.cpp.o" \
@@ -391,6 +406,7 @@ TestRho_OBJECTS = \
 TestRho_EXTERNAL_OBJECTS =
 
 Bin/Test/TestRho: Test/Language/CMakeFiles/TestRho.dir/TestRho/AdditionalBinaryOpTests.cpp.o
+Bin/Test/TestRho: Test/Language/CMakeFiles/TestRho.dir/TestRho/AdvancedBinaryOpTests.cpp.o
 Bin/Test/TestRho: Test/Language/CMakeFiles/TestRho.dir/TestRho/AdvancedRhoPiTests.cpp.o
 Bin/Test/TestRho: Test/Language/CMakeFiles/TestRho.dir/TestRho/CompareLanguagesTest.cpp.o
 Bin/Test/TestRho: Test/Language/CMakeFiles/TestRho.dir/TestRho/FunctionRhoScripting.cpp.o
@@ -432,7 +448,7 @@ Bin/Test/TestRho: /usr/lib/x86_64-linux-gnu/libboost_regex.so.1.83.0
 Bin/Test/TestRho: /usr/lib/x86_64-linux-gnu/libgtest.a
 Bin/Test/TestRho: /usr/lib/x86_64-linux-gnu/libboost_atomic.so.1.83.0
 Bin/Test/TestRho: Test/Language/CMakeFiles/TestRho.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Linking CXX executable ../../Bin/Test/TestRho"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/xian/local/KAI/CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Linking CXX executable ../../Bin/Test/TestRho"
 	cd /home/xian/local/KAI/Test/Language && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/TestRho.dir/link.txt --verbose=$(VERBOSE)
 	cd /home/xian/local/KAI/Test/Language && /usr/bin/cmake -D TEST_TARGET=TestRho -D TEST_EXECUTABLE=/home/xian/local/KAI/Bin/Test/TestRho -D TEST_EXECUTOR= -D TEST_WORKING_DIR=/home/xian/local/KAI/Test/Language -D TEST_EXTRA_ARGS= -D TEST_PROPERTIES= -D TEST_PREFIX= -D TEST_SUFFIX= -D TEST_FILTER= -D NO_PRETTY_TYPES=FALSE -D NO_PRETTY_VALUES=FALSE -D TEST_LIST=TestRho_TESTS -D CTEST_FILE=/home/xian/local/KAI/Test/Language/TestRho[1]_tests.cmake -D TEST_DISCOVERY_TIMEOUT=5 -D TEST_XML_OUTPUT_DIR= -P /usr/share/cmake-3.28/Modules/GoogleTestAddTests.cmake
 

@@ -120,6 +120,9 @@ struct Executor : Reflected {
     // Helper method to perform binary operations with proper type handling
     // This method is used by tests to directly execute binary operations
     Object PerformBinaryOp(Object const &A, Object const &B, Operation::Type op);
+    
+    // Helper method to determine if an operation is a binary operation
+    bool IsBinaryOp(Operation::Type op);
 
     // if ignoreQuote is true, then we resolve the identifier
     // even if it is quoted

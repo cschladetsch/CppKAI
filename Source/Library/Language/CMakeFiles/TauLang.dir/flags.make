@@ -6,5 +6,5 @@ CXX_DEFINES = -DKAI_BOOST_UNORDERED_REGISTRY -DKAI_DEBUG -DKAI_DEBUG_TRACE -DKAI
 
 CXX_INCLUDES = -I/home/xian/local/KAI/Include -I/home/xian/local/KAI/Ext/rang/include -I/home/xian/local/KAI/Include/KAI/Core -I/home/xian/local/KAI/Include/KAI/Executor -I/home/xian/local/KAI/Source/Library/Language/Include -I/home/xian/local/KAI/Include/KAI/Language/Common -I/home/xian/local/KAI/Source/Library/Language/Common/Include -I/home/xian/local/KAI/Include/KAI/Language/Pi -I/home/xian/local/KAI/Source/Library/Language/Pi/Include -I/home/xian/local/KAI/Include/KAI/Language/Rho -I/home/xian/local/KAI/Source/Library/Language/Rho/Include -I/home/xian/local/KAI/Include/KAI/Language/Tau -I/home/xian/local/KAI/Source/Library/Language/Tau/Include
 
-CXX_FLAGS =  -g -Wall -Wno-deprecated -Wno-switch -Wno-comment -Wno-reorder -Wno-unused-parameter -Wno-missing-field-initializers -Wno-unknown-pragmas -Wno-unused-value -Wno-unused-but-set-variable -fconcepts-diagnostics-depth=3 -std=c++23
+CXX_FLAGS =  -g -Wall -Wno-deprecated -Wno-switch -Wno-comment -Wno-reorder -Wno-unused-parameter -Wno-missing-field-initializers -Wno-unknown-pragmas -Wno-unused-value -Wno-unused-but-set-variable -fconcepts-diagnostics-depth=3 -g -std=c++23
 

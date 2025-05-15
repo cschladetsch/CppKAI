@@ -497,6 +497,30 @@ TestRho/AdditionalBinaryOpTests.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/AdditionalBinaryOpTests.cpp.s
 .PHONY : TestRho/AdditionalBinaryOpTests.cpp.s
 
+TestRho/AdvancedBinaryOpTests.o: TestRho/AdvancedBinaryOpTests.cpp.o
+.PHONY : TestRho/AdvancedBinaryOpTests.o
+
+# target to build an object file
+TestRho/AdvancedBinaryOpTests.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/AdvancedBinaryOpTests.cpp.o
+.PHONY : TestRho/AdvancedBinaryOpTests.cpp.o
+
+TestRho/AdvancedBinaryOpTests.i: TestRho/AdvancedBinaryOpTests.cpp.i
+.PHONY : TestRho/AdvancedBinaryOpTests.i
+
+# target to preprocess a source file
+TestRho/AdvancedBinaryOpTests.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/AdvancedBinaryOpTests.cpp.i
+.PHONY : TestRho/AdvancedBinaryOpTests.cpp.i
+
+TestRho/AdvancedBinaryOpTests.s: TestRho/AdvancedBinaryOpTests.cpp.s
+.PHONY : TestRho/AdvancedBinaryOpTests.s
+
+# target to generate assembly for a file
+TestRho/AdvancedBinaryOpTests.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/AdvancedBinaryOpTests.cpp.s
+.PHONY : TestRho/AdvancedBinaryOpTests.cpp.s
+
 TestRho/AdvancedRhoPiTests.o: TestRho/AdvancedRhoPiTests.cpp.o
 .PHONY : TestRho/AdvancedRhoPiTests.o
 
@@ -1046,6 +1070,9 @@ help:
 	@echo "... TestRho/AdditionalBinaryOpTests.o"
 	@echo "... TestRho/AdditionalBinaryOpTests.i"
 	@echo "... TestRho/AdditionalBinaryOpTests.s"
+	@echo "... TestRho/AdvancedBinaryOpTests.o"
+	@echo "... TestRho/AdvancedBinaryOpTests.i"
+	@echo "... TestRho/AdvancedBinaryOpTests.s"
 	@echo "... TestRho/AdvancedRhoPiTests.o"
 	@echo "... TestRho/AdvancedRhoPiTests.i"
 	@echo "... TestRho/AdvancedRhoPiTests.s"

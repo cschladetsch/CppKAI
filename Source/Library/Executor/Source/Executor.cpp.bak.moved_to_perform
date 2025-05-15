@@ -2920,32 +2920,6 @@ void Executor::Perform(Operation::Type op) {
     }
 }
 
-// Helper method to determine if an operation is a binary operation
-bool Executor::IsBinaryOp(Operation::Type op) {
-    switch (op) {
-        case Operation::Plus:
-        case Operation::Minus:
-        case Operation::Multiply:
-        case Operation::Divide:
-        case Operation::Modulo:
-        case Operation::Greater:
-        case Operation::Less:
-        case Operation::GreaterOrEquiv:
-        case Operation::LessOrEquiv:
-        case Operation::Equiv:
-        case Operation::NotEquiv:
-        case Operation::LogicalAnd:
-        case Operation::LogicalOr:
-        case Operation::BitwiseAnd:
-        case Operation::BitwiseOr:
-        case Operation::BitwiseXor:
-            return true;
-            
-        default:
-            return false;
-    }
-}
-
 // Helper method to unwrap continuations and extract the underlying value
 Object Executor::UnwrapValue(Object const &Q) {
     // If not a continuation, just return the object as is
@@ -3150,6 +3124,32 @@ Object Executor::UnwrapValue(Object const &Q) {
     
     // Return the result or the original object if no result
     return result.Exists() ? result : Q;
+}
+
+// Helper method to determine if an operation is a binary operation
+bool Executor::IsBinaryOp(Operation::Type op) {
+    switch (op) {
+        case Operation::Plus:
+        case Operation::Minus:
+        case Operation::Multiply:
+        case Operation::Divide:
+        case Operation::Modulo:
+        case Operation::Greater:
+        case Operation::Less:
+        case Operation::LessOrEquiv:     // LessEqual
+        case Operation::GreaterOrEquiv:  // GreaterEqual
+        case Operation::Equiv:
+        case Operation::NotEquiv:
+        case Operation::LogicalAnd:
+        case Operation::LogicalOr:
+        case Operation::BitwiseAnd:
+        case Operation::BitwiseOr:
+        case Operation::BitwiseXor:
+            return true;
+            
+        default:
+            return false;
+    }
 }
 
 // Implementation of PerformBinaryOp to directly execute binary operations
