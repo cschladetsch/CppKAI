@@ -115,6 +115,11 @@ Pointer<Continuation> TranslatorCommon::Top() { return stack.back(); }
 void TranslatorCommon::PushNew() {
     Pointer<Continuation> c = reg_->New<Continuation>();
     c->SetCode(reg_->New<Array>());
+    
+    // Set the specialHandling flag to ensure proper type handling
+    // This ensures continuations are properly unwrapped when evaluated
+    c->SetSpecialHandling(true);
+    
     stack.push_back(c);
 }
 

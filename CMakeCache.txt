@@ -370,6 +370,15 @@ PiLang_IS_TOP_LEVEL:STATIC=OFF
 PiLang_SOURCE_DIR:STATIC=/home/xian/local/KAI/Source/Library/Language
 
 //Value Computed by CMake
+Project_BINARY_DIR:STATIC=/home/xian/local/KAI
+
+//Value Computed by CMake
+Project_IS_TOP_LEVEL:STATIC=ON
+
+//Value Computed by CMake
+Project_SOURCE_DIR:STATIC=/home/xian/local/KAI
+
+//Value Computed by CMake
 RhoLang_BINARY_DIR:STATIC=/home/xian/local/KAI/Source/Library/Language
 
 //Value Computed by CMake

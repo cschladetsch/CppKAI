@@ -100,6 +100,10 @@ Pointer<Continuation> CreateTestContinuation(Registry& reg, const std::vector<Ob
     // Create a new array for the code
     Pointer<Array> code = reg.New<Array>();
     
+    // Start with a ContinuationBegin marker for nesting
+    Object beginMarker = reg.New<Operation>(Operation::ContinuationBegin);
+    code->Append(beginMarker);
+    
     // Add all objects to the code
     for (const auto& obj : objects) {
         code->Append(obj);
@@ -109,6 +113,10 @@ Pointer<Continuation> CreateTestContinuation(Registry& reg, const std::vector<Ob
     if (finalOp != Operation::None) {
         code->Append(reg.New<Operation>(finalOp));
     }
+    
+    // End with a ContinuationEnd marker for proper nesting
+    Object endMarker = reg.New<Operation>(Operation::ContinuationEnd);
+    code->Append(endMarker);
     
     // Set the code on the continuation
     cont->SetCode(code);

@@ -1,7 +1,7 @@
 /ninja_build
 /test*
 /build*
-/Logs
+/Logs/*
 /test-out
 /build_warnings
 /CMakeFiles
