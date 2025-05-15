@@ -1,0 +1,2 @@
+/usr/bin/ar qc ../../../Bin/libRhoLang.a CMakeFiles/RhoLang.dir/Rho/Source/RhoAstNode.cpp.o CMakeFiles/RhoLang.dir/Rho/Source/RhoLang.cpp.o CMakeFiles/RhoLang.dir/Rho/Source/RhoLexer.cpp.o CMakeFiles/RhoLang.dir/Rho/Source/RhoParser.cpp.o CMakeFiles/RhoLang.dir/Rho/Source/RhoToken.cpp.o CMakeFiles/RhoLang.dir/Rho/Source/RhoTranslate.cpp.o CMakeFiles/RhoLang.dir/Rho/Source/RhoTranslator.cpp.o
+/usr/bin/ranlib ../../../Bin/libRhoLang.a

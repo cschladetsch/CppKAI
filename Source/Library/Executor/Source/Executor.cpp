@@ -2947,7 +2947,7 @@ Object Executor::UnwrapValue(Object const &Q) {
         data_ = New<Stack>(); // Use a temporary stack for execution
         
         // Debug the continuation
-        KAI_TRACE() << "Unwrapping continuation: " << cont->ToString();
+        KAI_TRACE() << "Unwrapping continuation";
         for (int i = 0; i < cont->GetCode()->Size(); ++i) {
             KAI_TRACE() << "  Item " << i << ": " << cont->GetCode()->At(i).ToString();
         }
