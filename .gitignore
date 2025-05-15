@@ -1,4 +1,6 @@
-/**.internel
+*.d
+*.o
+*.internal
 /_build
 *.make
 *.d

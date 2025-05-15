@@ -109,217 +109,92 @@ void Console::CreateTree() {
 
 void Console::Execute(Pointer<Continuation> cont) {
     KAI_TRY {
-        // Set the scope for the continuation
-        cont->SetScope(executor->GetTree()->GetScope());
+        // Extra defensive check for necessary objects
+        if (!executor.Exists()) {
+            KAI_TRACE_ERROR() << "Execute: Null executor - skipping execution";
+            return;
+        }
+        
+        if (!executor->GetDataStack().Exists()) {
+            KAI_TRACE_ERROR() << "Execute: Null data stack - skipping execution";
+            return;
+        }
+    
+        // Check for null continuation
+        if (!cont.Exists()) {
+            KAI_TRACE() << "Execute: Null continuation - skipping execution";
+            return;
+        }
+        
+        // Check if the continuation has valid code
+        if (!cont->GetCode().Exists()) {
+            KAI_TRACE() << "Execute: Continuation has no code - skipping execution";
+            return;
+        }
         
         // Debug the continuation code to help with diagnosing any issues
-        if (cont->GetCode().Exists()) {
-            KAI_TRACE_1(cont->GetCode()->Size()) << "Executing continuation with size";
-        }
+        KAI_TRACE_1(cont->GetCode()->Size()) << "Executing continuation with size";
         
-        // For all languages, use a direct evaluation approach to solve the Type Mismatch issues
         // For null or empty continuations, nothing to do
-        if (!cont.Exists() || !cont->GetCode().Exists() || cont->GetCode()->Size() == 0) {
+        if (cont->GetCode()->Size() == 0) {
+            KAI_TRACE() << "Execute: Continuation has empty code array - skipping execution";
             return;
         }
         
-        // Get the data stack for easier access
-        Value<Stack> dataStack = executor->GetDataStack();
-        
-        // If we have special handling flag set, directly evaluate the continuation without creating surrogate continuations
-        if (cont->GetSpecialHandling()) {
-            KAI_TRACE() << "Using special handling for continuation with direct evaluation";
-            
-            // Check for nested continuations (most Pi blocks come as a single continuation object in an array)
-            if (cont->GetCode()->Size() == 1) {
-                Object firstItem = cont->GetCode()->At(0);
-                
-                // Check if the first item is a continuation (which contains the actual code)
-                if (firstItem.IsType<Continuation>()) {
-                    KAI_TRACE_1("Found inner continuation with special handling, executing it directly");
-                    Continuation& innerCont = Deref<Continuation>(firstItem);
-                    
-                    // Create a temporary continuation to execute
-                    Pointer<Continuation> innerContPtr = reg_->New<Continuation>();
-                    innerContPtr->SetCode(innerCont.GetCode());
-                    innerContPtr->SetSpecialHandling(true); // Ensure we keep the special handling flag
-                    
-                    // Execute the inner continuation directly
-                    Execute(innerContPtr);
-                    return;
-                }
-            }
-            
-            // Process each operation directly using proper type handling
-            for (int i = 0; i < cont->GetCode()->Size(); i++) {
-                Object item = cont->GetCode()->At(i);
-                
-                // Skip the ContinuationBegin and ContinuationEnd operations
-                if (item.IsType<Operation>()) {
-                    Operation::Type opType = Deref<Operation>(item).GetTypeNumber();
-                    if (opType == Operation::ContinuationBegin || opType == Operation::ContinuationEnd) {
-                        KAI_TRACE_1("Skipping continuation marker");
-                        continue;
-                    }
-                }
-                
-                // For basic operations, handle them directly to ensure type preservation
-                if (item.IsType<Operation>()) {
-                    Operation::Type opType = Deref<Operation>(item).GetTypeNumber();
-                    
-                    // Handle all arithmetic operations
-                    if (opType == Operation::Plus || opType == Operation::Minus || 
-                        opType == Operation::Multiply || opType == Operation::Divide || 
-                        opType == Operation::Modulo) {
-                        if (dataStack->Size() >= 2) {
-                            Object b = dataStack->Pop();
-                            Object a = dataStack->Pop();
-                            
-                            // Use PerformBinaryOp for standard binary operations
-                            Object result = executor->PerformBinaryOp(a, b, opType);
-                            dataStack->Push(result);
-                            continue;
-                        }
-                    }
-                    
-                    // Handle all comparison operations
-                    if (opType == Operation::Equiv || opType == Operation::NotEquiv || 
-                        opType == Operation::Less || opType == Operation::Greater || 
-                        opType == Operation::LessOrEquiv || opType == Operation::GreaterOrEquiv) {
-                        if (dataStack->Size() >= 2) {
-                            Object b = dataStack->Pop();
-                            Object a = dataStack->Pop();
-                            
-                            // Use PerformBinaryOp for comparison operations
-                            Object result = executor->PerformBinaryOp(a, b, opType);
-                            dataStack->Push(result);
-                            continue;
-                        }
-                    }
-                    
-                    // Handle logical operations
-                    if (opType == Operation::LogicalAnd || opType == Operation::LogicalOr || 
-                        opType == Operation::LogicalXor) {
-                        if (dataStack->Size() >= 2) {
-                            Object b = dataStack->Pop();
-                            Object a = dataStack->Pop();
-                            
-                            // Use PerformBinaryOp for logical operations
-                            Object result = executor->PerformBinaryOp(a, b, opType);
-                            dataStack->Push(result);
-                            continue;
-                        }
-                    }
-                    
-                    // Handle all stack operations directly
-                    if (opType == Operation::Dup) {
-                        if (dataStack->Size() > 0) {
-                            dataStack->Push(dataStack->Top());
-                            continue;
-                        }
-                    }
-                    else if (opType == Operation::Swap) {
-                        if (dataStack->Size() >= 2) {
-                            Object b = dataStack->Pop();
-                            Object a = dataStack->Pop();
-                            dataStack->Push(b);
-                            dataStack->Push(a);
-                            continue;
-                        }
-                    }
-                    else if (opType == Operation::Drop) {
-                        if (dataStack->Size() >= 1) {
-                            dataStack->Pop();
-                            continue;
-                        }
-                    }
-                    else if (opType == Operation::Over) {
-                        if (dataStack->Size() >= 2) {
-                            Object b = dataStack->Pop();
-                            Object a = dataStack->Pop();
-                            dataStack->Push(a);
-                            dataStack->Push(b);
-                            dataStack->Push(a);
-                            continue;
-                        }
-                    }
-                    else if (opType == Operation::Store || opType == Operation::Replace) {
-                        if (dataStack->Size() >= 2) {
-                            Object value = dataStack->Pop();
-                            Object name = dataStack->Pop();
-                            
-                            // Handle different name types
-                            if (name.IsType<Label>()) {
-                                Label& label = Deref<Label>(name);
-                                
-                                // Store in scope
-                                tree.GetScope().Set(label, value);
-                            }
-                            continue;
-                        }
-                    }
-                    else if (opType == Operation::Retreive) {
-                        if (dataStack->Size() >= 1) {
-                            Object name = dataStack->Pop();
-                            
-                            // Handle different name types
-                            if (name.IsType<Label>()) {
-                                Label& label = Deref<Label>(name);
-                                
-                                // Try to find in scope
-                                if (tree.GetScope().Has(label)) {
-                                    Object value = tree.GetScope().Get(label);
-                                    dataStack->Push(value);
-                                }
-                                else {
-                                    // Try to find in global scope
-                                    if (tree.GetRoot().Has(label)) {
-                                        Object value = tree.GetRoot().Get(label);
-                                        dataStack->Push(value);
-                                    }
-                                    else {
-                                        // Not found, default to 0
-                                        dataStack->Push(reg_->New<int>(0));
-                                    }
-                                }
-                                continue;
-                            }
-                        }
-                    }
-                }
-                
-                // For other items, use regular evaluation
-                executor->Eval(item);
-            }
-            
-            return;
+        // Set the scope for the continuation if possible
+        if (executor->GetTree() != nullptr) {
+            cont->SetScope(executor->GetTree()->GetScope());
         }
         
-        // For regular continuations (without special handling), execute them normally
-        // but extract primitive result types after execution
+        // Option 1: Execute the continuation using the standard executor
         executor->Continue(cont);
         
-        // After execution, always try to extract primitive values from continuations
-        if (dataStack->Size() > 0) {
-            Object result = dataStack->Top();
+        // After execution, process the stack to ensure proper type extraction
+        Value<Stack> dataStack = executor->GetDataStack();
+        
+        // Process each stack item to extract primitive values from continuations
+        int stackSize = dataStack->Size();
+        for (int i = 0; i < stackSize; i++) {
+            // Get the object at the current position (from the bottom)
+            // We want to preserve the original stack order
+            int currentIndex = stackSize - i - 1;
+            Object item = dataStack->At(currentIndex);
             
-            // Check if we need to unwrap the value
-            if (result.IsType<Continuation>()) {
-                // Use the enhanced UnwrapValue method to extract primitive types
-                Object unwrapped = executor->UnwrapValue(result);
+            // If it's a continuation, extract its primitive value
+            if (item.IsType<Continuation>()) {
+                Object unwrapped = executor->UnwrapValue(item);
                 
-                // If unwrapping produced a different value, replace the stack top
-                if (unwrapped != result) {
-                    if (unwrapped.Exists()) {
-                        KAI_TRACE() << "Unwrapped continuation to primitive type: " 
-                                  << unwrapped.GetClass()->GetName();
-                    } else {
-                        KAI_TRACE() << "Unwrapped continuation to null object";
+                // If we got a different object, replace it in the stack
+                if (unwrapped != item && unwrapped.Exists()) {
+                    KAI_TRACE() << "Extracted primitive value at position " << currentIndex 
+                             << " from type: " << item.GetClass()->GetName() 
+                             << " to type: " << unwrapped.GetClass()->GetName();
+                    
+                    // Create a new stack with extracted values
+                    Pointer<Stack> newStack = reg_->New<Stack>();
+                    
+                    // Preserve items below the one we're replacing
+                    for (int j = 0; j < currentIndex; j++) {
+                        newStack->Push(dataStack->At(j));
                     }
                     
-                    // Replace the continuation with the unwrapped value
-                    dataStack->Pop(); // Remove the continuation
-                    dataStack->Push(unwrapped); // Push the unwrapped value
+                    // Add the extracted primitive value
+                    newStack->Push(unwrapped);
+                    
+                    // Preserve items above the one we're replacing
+                    for (int j = currentIndex + 1; j < stackSize; j++) {
+                        newStack->Push(dataStack->At(j));
+                    }
+                    
+                    // Replace the stack
+                    executor->ClearStacks();
+                    for (int j = 0; j < newStack->Size(); j++) {
+                        executor->Push(newStack->At(j));
+                    }
+                    
+                    // Update our reference to the stack and its size
+                    dataStack = executor->GetDataStack();
+                    stackSize = dataStack->Size();
                 }
             }
         }
@@ -335,11 +210,7 @@ void Console::Execute(String const &text, Structure st) {
     if (!cont.Exists()) return;
 
     // Log what we're about to execute for debugging purposes
-    KAI_TRACE() << "Executing text: " << text << " (with specialHandling=true)";
-    
-    // Mark the continuation for special handling for all languages
-    // This ensures proper type handling for all operations
-    cont->SetSpecialHandling(true);
+    KAI_TRACE() << "Executing text: " << text;
     
     // Execute the continuation
     Execute(cont);

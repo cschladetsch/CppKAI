@@ -84,10 +84,8 @@ Pointer<Continuation> RhoTranslator::Translate(const char* text, Structure st) {
         const int codeSize = static_cast<int>(cont->GetCode()->Size());
         KAI_TRACE() << std::format("Rho translated code has {} elements", codeSize);
         
-        // Set the special handling flag to ensure proper type resolution
-        // This is critical for proper handling of operations and maintaining type information
-        cont->SetSpecialHandling(true);
-        KAI_TRACE() << "Set special handling flag for Rho continuation";
+        // We always extract primitive types during execution rather than using flags
+        KAI_TRACE() << "Created Rho continuation";
     }
     
     return cont;

@@ -12,6 +12,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/xian/local/KAI/Test/Language/TestPi/ArrayOpTest.cpp" "Test/Language/CMakeFiles/TestPi.dir/TestPi/ArrayOpTest.cpp.o" "gcc" "Test/Language/CMakeFiles/TestPi.dir/TestPi/ArrayOpTest.cpp.o.d"
   "/home/xian/local/KAI/Test/Language/TestPi/PiAssertTest.cpp" "Test/Language/CMakeFiles/TestPi.dir/TestPi/PiAssertTest.cpp.o" "gcc" "Test/Language/CMakeFiles/TestPi.dir/TestPi/PiAssertTest.cpp.o.d"
   "/home/xian/local/KAI/Test/Language/TestPi/PiBinaryOpTests.cpp" "Test/Language/CMakeFiles/TestPi.dir/TestPi/PiBinaryOpTests.cpp.o" "gcc" "Test/Language/CMakeFiles/TestPi.dir/TestPi/PiBinaryOpTests.cpp.o.d"
+  "/home/xian/local/KAI/Test/Language/TestPi/SimpleTest.cpp" "Test/Language/CMakeFiles/TestPi.dir/TestPi/SimpleTest.cpp.o" "gcc" "Test/Language/CMakeFiles/TestPi.dir/TestPi/SimpleTest.cpp.o.d"
   "/home/xian/local/KAI/Test/Language/TestPi/StandalonePiTest.cpp" "Test/Language/CMakeFiles/TestPi.dir/TestPi/StandalonePiTest.cpp.o" "gcc" "Test/Language/CMakeFiles/TestPi.dir/TestPi/StandalonePiTest.cpp.o.d"
   "/home/xian/local/KAI/Test/Language/TestPi/StandalonePiVectorsTest.cpp" "Test/Language/CMakeFiles/TestPi.dir/TestPi/StandalonePiVectorsTest.cpp.o" "gcc" "Test/Language/CMakeFiles/TestPi.dir/TestPi/StandalonePiVectorsTest.cpp.o.d"
   "/home/xian/local/KAI/Test/Language/TestPi/TestPi.cpp" "Test/Language/CMakeFiles/TestPi.dir/TestPi/TestPi.cpp.o" "gcc" "Test/Language/CMakeFiles/TestPi.dir/TestPi/TestPi.cpp.o.d"

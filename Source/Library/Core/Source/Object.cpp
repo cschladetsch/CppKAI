@@ -126,12 +126,25 @@ Type::Number Object::GetTypeNumber() const {
 }
 
 bool Object::Valid() const {
-    if (registry == 0) return false;
+    // Check registry first, this is the most common issue
+    if (registry == 0) {
+        KAI_TRACE() << "Object::Valid failed: Null registry";
+        return false;
+    }
 
-    if (handle.GetValue() == 0) return false;
+    // Check handle next
+    if (handle.GetValue() == 0) {
+        KAI_TRACE() << "Object::Valid failed: Null handle";
+        return false;
+    }
 
-    if (class_base == 0) return false;
+    // Check class last
+    if (class_base == 0) {
+        KAI_TRACE() << "Object::Valid failed: Null class_base";
+        return false;
+    }
 
+    // All checks passed, object is valid
     return true;
 }
 
@@ -172,15 +185,50 @@ Type::Number GetTypeNumber(Object const &Q) {
 }
 
 StorageBase &GetStorageBase_(Object const &Q) {
-    StorageBase *base = Q.GetRegistry()->GetStorageBase(Q.GetHandle());
-    if (base == 0) KAI_THROW_0(NullObject);
+    // Additional safety checks
+    if (!Q.Exists()) {
+        KAI_TRACE() << "GetStorageBase_: Object does not exist";
+        KAI_THROW_0(NullObject);
+    }
+    
+    Registry* registry = Q.GetRegistry();
+    if (registry == 0) {
+        KAI_TRACE() << "GetStorageBase_: Null registry";
+        KAI_THROW_0(NullObject);
+    }
+    
+    Handle handle = Q.GetHandle();
+    if (handle.GetValue() == 0) {
+        KAI_TRACE() << "GetStorageBase_: Null handle";
+        KAI_THROW_0(NullObject);
+    }
+    
+    StorageBase *base = registry->GetStorageBase(handle);
+    if (base == 0) {
+        KAI_TRACE() << "GetStorageBase_: Null storage base for handle " << handle.GetValue();
+        KAI_THROW_0(NullObject);
+    }
 
     return *base;
 }
 
 StorageBase &GetStorageBase(Object const &Q) {
-    if (!Q.Valid()) KAI_THROW_0(NullObject);
-
+    // Enhanced validation with detailed error information
+    if (!Q.Exists()) {
+        KAI_TRACE() << "GetStorageBase: Object does not exist";
+        KAI_THROW_0(NullObject);
+    }
+    
+    if (!Q.Valid()) {
+        KAI_TRACE() << "GetStorageBase: Object is not valid";
+        KAI_THROW_0(NullObject);
+    }
+    
+    if (Q.GetRegistry() == 0) {
+        KAI_TRACE() << "GetStorageBase: Object has null registry";
+        KAI_THROW_0(NullObject);
+    }
+    
     return GetStorageBase_(Q);
 }
 

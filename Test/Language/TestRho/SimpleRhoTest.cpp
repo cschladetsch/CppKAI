@@ -39,8 +39,7 @@ using namespace std;
  */
 
 // Using direct value creation for testing
-// This test is also disabled temporarily due to similar type handling issues
-TEST(RhoMinimal, DISABLED_BasicOperations) {
+TEST(RhoMinimal, BasicOperations) {
     Console console;
 
     // Register basic types
@@ -49,20 +48,60 @@ TEST(RhoMinimal, DISABLED_BasicOperations) {
     reg.AddClass<String>(Label("String"));
     reg.AddClass<bool>(Label("bool"));
 
-    auto stack = console.GetExecutor()->GetDataStack();
-    auto executor = console.GetExecutor();
+    auto exec = console.GetExecutor();
+    auto stack = exec->GetDataStack();
 
     // Test 1: Basic arithmetic (2 + 3 = 5)
     stack->Clear();
-    Object intValue = reg.New<int>(5);
-    stack->Push(intValue);
-    ASSERT_TRUE(stack->Top().IsType<int>());
-    ASSERT_EQ(ConstDeref<int>(stack->Top()), 5);
+    
+    // Direct binary operation
+    Object a = reg.New<int>(2);
+    Object b = reg.New<int>(3);
+    Object result = exec->PerformBinaryOp(a, b, Operation::Plus);
+    
+    // Check the result of direct binary operation
+    ASSERT_TRUE(result.IsType<int>()) << "Direct binary op didn't return int";
+    ASSERT_EQ(ConstDeref<int>(result), 5) << "Direct binary op gave wrong result";
+    
+    // Now try using a continuation
+    stack->Clear();
+    
+    // Create a continuation to do 2 + 3
+    Pointer<Array> code = reg.New<Array>();
+    code->Append(reg.New<Operation>(Operation::ContinuationBegin));
+    code->Append(reg.New<int>(2));
+    code->Append(reg.New<int>(3));
+    code->Append(reg.New<Operation>(Operation::Plus));
+    code->Append(reg.New<Operation>(Operation::ContinuationEnd));
+    
+    Pointer<Continuation> cont = reg.New<Continuation>();
+    cont->Create();
+    cont->SetCode(code);
+    
+    // Execute the continuation
+    exec->Continue(cont);
+    
+    // Ensure we got a result
+    ASSERT_FALSE(stack->Empty()) << "Stack is empty after continuation execution";
+    
+    // Unwrap the result
+    Object unwrapped = exec->UnwrapValue(stack->Top());
+    stack->Pop();
+    stack->Push(unwrapped);
+    
+    // Check the unwrapped result
+    ASSERT_TRUE(stack->Top().IsType<int>()) << "Unwrapped result isn't an int";
+    ASSERT_EQ(ConstDeref<int>(stack->Top()), 5) << "Unwrapped result has wrong value";
 
     // Test 2: Subtraction (10 - 4 = 6)
     stack->Clear();
-    intValue = reg.New<int>(6);
-    stack->Push(intValue);
+    
+    // Direct binary subtraction
+    a = reg.New<int>(10);
+    b = reg.New<int>(4);
+    result = exec->PerformBinaryOp(a, b, Operation::Minus);
+    stack->Push(result);
+    
     ASSERT_TRUE(stack->Top().IsType<int>());
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 6);
 
@@ -70,7 +109,7 @@ TEST(RhoMinimal, DISABLED_BasicOperations) {
     stack->Clear();
     // First, create a value and store it in a variable
     Object varValue = reg.New<int>(42);
-    Object scope = executor->GetTree()->GetScope();
+    Object scope = exec->GetTree()->GetScope();
     scope.Set(Label("x"), varValue);
     
     // Now retrieve the value from the variable and push it to the stack
@@ -82,8 +121,7 @@ TEST(RhoMinimal, DISABLED_BasicOperations) {
 }
 
 // Using direct value creation for Pi language simulation
-// This test is temporarily disabled due to type handling issues
-TEST(PiMinimal, DISABLED_BasicOperations) {
+TEST(PiMinimal, BasicOperations) {
     Console console;
 
     // Register basic types
@@ -92,21 +130,61 @@ TEST(PiMinimal, DISABLED_BasicOperations) {
     reg.AddClass<String>(Label("String"));
     reg.AddClass<bool>(Label("bool"));
 
-    auto stack = console.GetExecutor()->GetDataStack();
-    auto executor = console.GetExecutor();
+    auto exec = console.GetExecutor();
+    auto stack = exec->GetDataStack();
 
-    // Test 1: Basic arithmetic (2 3 + = 5)
+    cout << "Test 1: Basic arithmetic in Pi..." << endl;
+    
+    // Create a continuation to do 2 + 3
     stack->Clear();
-    Object intValue = reg.New<int>(5);
-    stack->Push(intValue);
-    ASSERT_TRUE(stack->Top().IsType<int>());
-    ASSERT_EQ(ConstDeref<int>(stack->Top()), 5);
+    
+    // Create operations
+    // ContinuationBegin 2 3 + ContinuationEnd
+    Pointer<Array> code = reg.New<Array>();
+    
+    // Start with a ContinuationBegin marker
+    code->Append(reg.New<Operation>(Operation::ContinuationBegin));
+    
+    // Add operands and the addition operation
+    code->Append(reg.New<int>(2));
+    code->Append(reg.New<int>(3));
+    code->Append(reg.New<Operation>(Operation::Plus));
+    
+    // End with ContinuationEnd marker
+    code->Append(reg.New<Operation>(Operation::ContinuationEnd));
+    
+    // Create a continuation 
+    Pointer<Continuation> cont = reg.New<Continuation>();
+    cont->Create();
+    cont->SetCode(code);
+    
+    // Execute the continuation
+    exec->Continue(cont);
+    
+    // Make sure there's a result
+    ASSERT_FALSE(stack->Empty()) << "Stack is empty after addition operation";
+    
+    // Now unwrap the result
+    Object result = stack->Top();
+    
+    // Always unwrap the result 
+    Object unwrapped = exec->UnwrapValue(result);
+    
+    // Replace with unwrapped result
+    stack->Pop();
+    stack->Push(unwrapped);
+    
+    // Verify type and value of the result
+    ASSERT_TRUE(stack->Top().IsType<int>()) << "Result is not an int, but: " 
+                                         << stack->Top().GetClass()->GetName();
+    ASSERT_EQ(ConstDeref<int>(stack->Top()), 5) << "Result is not 5, but: " 
+                                            << stack->Top().ToString();
 
     // Test 2: Variable assignment and access
     stack->Clear();
     // Create a value and store it in the variable
     Object varValue = reg.New<int>(10);
-    Object scope = executor->GetTree()->GetScope();
+    Object scope = exec->GetTree()->GetScope();
     scope.Set(Label("x"), varValue);
     
     // Retrieve the value and push it to stack

@@ -29,7 +29,7 @@ void TranslatorCommon::Append(Object const &ob) {
             KAI_THROW_0(NullObject);
         }
 
-        // No special handling needed for continuations anymore
+        // The executor will extract primitive values from continuations
         // Translators will directly evaluate expressions and create properly typed objects
         
         KAI_TRACE() << "TranslatorCommon::Append: " << ob.ToString();
@@ -119,7 +119,7 @@ void TranslatorCommon::PushNew() {
     Pointer<Continuation> c = reg_->New<Continuation>();
     c->SetCode(reg_->New<Array>());
     
-    // No special handling flag needed - we'll directly evaluate in translators
+    // The executor will handle primitive type extraction during execution
     
     stack.push_back(c);
 }

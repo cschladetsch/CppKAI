@@ -241,8 +241,8 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
         {
             KAI_TRACE() << std::format("Translating PiSequence: {}", node->Text());
             
-            // Always directly evaluate the Pi expression during translation instead of
-            // relying on continuation special handling flags
+            // Always directly evaluate the Pi expression during translation
+            // for consistent behavior and primitive type extraction
             
             // For each sequence of operations, check if we can directly evaluate it
             // First, collect the structure of the Pi sequence
@@ -768,28 +768,100 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
     TranslateNode(rightChild);
     Pointer<Continuation> rightCont = Pop();
     
+    // Protect against invalid objects
+    if (!leftCont.Exists() || !rightCont.Exists()) {
+        KAI_TRACE_ERROR() << "Invalid continuations for binary operation";
+        // Fallback to standard approach
+        TranslateNode(leftChild);
+        TranslateNode(rightChild);
+        AppendDirectOperation(op);
+        return;
+    }
+    
+    // Make sure the continuations have code
+    if (!leftCont->GetCode().Exists() || !rightCont->GetCode().Exists()) {
+        KAI_TRACE_ERROR() << "Continuations missing code for binary operation";
+        // Fallback to standard approach
+        TranslateNode(leftChild);
+        TranslateNode(rightChild);
+        AppendDirectOperation(op);
+        return;
+    }
+    
     // Now evaluate the left and right continuations to get their actual values
     // Create an executor to evaluate the continuations
     Pointer<Executor> executor = reg_->New<Executor>();
+    if (!executor.Exists()) {
+        KAI_TRACE_ERROR() << "Failed to create executor for binary operation";
+        // Fallback to standard approach
+        TranslateNode(leftChild);
+        TranslateNode(rightChild);
+        AppendDirectOperation(op);
+        return;
+    }
     executor->Create();
     
     // Set up a temporary data stack for evaluation
     Pointer<Stack> tempStack = reg_->New<Stack>();
+    if (!tempStack.Exists()) {
+        KAI_TRACE_ERROR() << "Failed to create stack for binary operation";
+        // Fallback to standard approach
+        TranslateNode(leftChild);
+        TranslateNode(rightChild);
+        AppendDirectOperation(op);
+        return;
+    }
     executor->SetDataStack(tempStack);
     
-    // Execute left continuation and get result
-    executor->Continue(leftCont);
+    // Execute left continuation and get result (with defensive checks)
     Object leftObj;
-    if (!tempStack->Empty()) {
-        leftObj = tempStack->Pop();
+    try {
+        executor->Continue(leftCont);
+        if (!tempStack->Empty()) {
+            leftObj = tempStack->Pop();
+        }
+    }
+    catch (const std::exception& e) {
+        KAI_TRACE_ERROR() << "Exception evaluating left operand: " << e.what();
+        // Fallback to standard approach
+        TranslateNode(leftChild);
+        TranslateNode(rightChild);
+        AppendDirectOperation(op);
+        return;
+    }
+    catch (...) {
+        KAI_TRACE_ERROR() << "Unknown exception evaluating left operand";
+        // Fallback to standard approach
+        TranslateNode(leftChild);
+        TranslateNode(rightChild);
+        AppendDirectOperation(op);
+        return;
     }
     
-    // Execute right continuation and get result
-    tempStack->Clear();
-    executor->Continue(rightCont);
+    // Execute right continuation and get result (with defensive checks)
     Object rightObj;
-    if (!tempStack->Empty()) {
-        rightObj = tempStack->Pop();
+    try {
+        tempStack->Clear();
+        executor->Continue(rightCont);
+        if (!tempStack->Empty()) {
+            rightObj = tempStack->Pop();
+        }
+    }
+    catch (const std::exception& e) {
+        KAI_TRACE_ERROR() << "Exception evaluating right operand: " << e.what();
+        // Fallback to standard approach
+        TranslateNode(leftChild);
+        TranslateNode(rightChild);
+        AppendDirectOperation(op);
+        return;
+    }
+    catch (...) {
+        KAI_TRACE_ERROR() << "Unknown exception evaluating right operand";
+        // Fallback to standard approach
+        TranslateNode(leftChild);
+        TranslateNode(rightChild);
+        AppendDirectOperation(op);
+        return;
     }
     
     // If we have both operands, we can evaluate the operation directly

@@ -305,6 +305,30 @@ TestPi/PiBinaryOpTests.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/TestPi/PiBinaryOpTests.cpp.s
 .PHONY : TestPi/PiBinaryOpTests.cpp.s
 
+TestPi/SimpleTest.o: TestPi/SimpleTest.cpp.o
+.PHONY : TestPi/SimpleTest.o
+
+# target to build an object file
+TestPi/SimpleTest.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/TestPi/SimpleTest.cpp.o
+.PHONY : TestPi/SimpleTest.cpp.o
+
+TestPi/SimpleTest.i: TestPi/SimpleTest.cpp.i
+.PHONY : TestPi/SimpleTest.i
+
+# target to preprocess a source file
+TestPi/SimpleTest.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/TestPi/SimpleTest.cpp.i
+.PHONY : TestPi/SimpleTest.cpp.i
+
+TestPi/SimpleTest.s: TestPi/SimpleTest.cpp.s
+.PHONY : TestPi/SimpleTest.s
+
+# target to generate assembly for a file
+TestPi/SimpleTest.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/TestPi/SimpleTest.cpp.s
+.PHONY : TestPi/SimpleTest.cpp.s
+
 TestPi/StandalonePiTest.o: TestPi/StandalonePiTest.cpp.o
 .PHONY : TestPi/StandalonePiTest.o
 
@@ -544,6 +568,30 @@ TestRho/AdvancedRhoPiTests.s: TestRho/AdvancedRhoPiTests.cpp.s
 TestRho/AdvancedRhoPiTests.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/AdvancedRhoPiTests.cpp.s
 .PHONY : TestRho/AdvancedRhoPiTests.cpp.s
+
+TestRho/BasicTests.o: TestRho/BasicTests.cpp.o
+.PHONY : TestRho/BasicTests.o
+
+# target to build an object file
+TestRho/BasicTests.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/BasicTests.cpp.o
+.PHONY : TestRho/BasicTests.cpp.o
+
+TestRho/BasicTests.i: TestRho/BasicTests.cpp.i
+.PHONY : TestRho/BasicTests.i
+
+# target to preprocess a source file
+TestRho/BasicTests.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/BasicTests.cpp.i
+.PHONY : TestRho/BasicTests.cpp.i
+
+TestRho/BasicTests.s: TestRho/BasicTests.cpp.s
+.PHONY : TestRho/BasicTests.s
+
+# target to generate assembly for a file
+TestRho/BasicTests.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/BasicTests.cpp.s
+.PHONY : TestRho/BasicTests.cpp.s
 
 TestRho/CompareLanguagesTest.o: TestRho/CompareLanguagesTest.cpp.o
 .PHONY : TestRho/CompareLanguagesTest.o
@@ -905,6 +953,30 @@ TestRho/SimpleRhoTest.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleRhoTest.cpp.s
 .PHONY : TestRho/SimpleRhoTest.cpp.s
 
+TestRho/SimpleTest.o: TestRho/SimpleTest.cpp.o
+.PHONY : TestRho/SimpleTest.o
+
+# target to build an object file
+TestRho/SimpleTest.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleTest.cpp.o
+.PHONY : TestRho/SimpleTest.cpp.o
+
+TestRho/SimpleTest.i: TestRho/SimpleTest.cpp.i
+.PHONY : TestRho/SimpleTest.i
+
+# target to preprocess a source file
+TestRho/SimpleTest.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleTest.cpp.i
+.PHONY : TestRho/SimpleTest.cpp.i
+
+TestRho/SimpleTest.s: TestRho/SimpleTest.cpp.s
+.PHONY : TestRho/SimpleTest.s
+
+# target to generate assembly for a file
+TestRho/SimpleTest.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleTest.cpp.s
+.PHONY : TestRho/SimpleTest.cpp.s
+
 TestRho/TestDoWhile.o: TestRho/TestDoWhile.cpp.o
 .PHONY : TestRho/TestDoWhile.o
 
@@ -976,6 +1048,30 @@ TestRho/TestRho.s: TestRho/TestRho.cpp.s
 TestRho/TestRho.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/TestRho.cpp.s
 .PHONY : TestRho/TestRho.cpp.s
+
+TestRho/TypeTest.o: TestRho/TypeTest.cpp.o
+.PHONY : TestRho/TypeTest.o
+
+# target to build an object file
+TestRho/TypeTest.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/TypeTest.cpp.o
+.PHONY : TestRho/TypeTest.cpp.o
+
+TestRho/TypeTest.i: TestRho/TypeTest.cpp.i
+.PHONY : TestRho/TypeTest.i
+
+# target to preprocess a source file
+TestRho/TypeTest.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/TypeTest.cpp.i
+.PHONY : TestRho/TypeTest.cpp.i
+
+TestRho/TypeTest.s: TestRho/TypeTest.cpp.s
+.PHONY : TestRho/TypeTest.s
+
+# target to generate assembly for a file
+TestRho/TypeTest.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/TypeTest.cpp.s
+.PHONY : TestRho/TypeTest.cpp.s
 
 TestTau/TestTau.o: TestTau/TestTau.cpp.o
 .PHONY : TestTau/TestTau.o
@@ -1118,6 +1214,9 @@ help:
 	@echo "... TestPi/PiBinaryOpTests.o"
 	@echo "... TestPi/PiBinaryOpTests.i"
 	@echo "... TestPi/PiBinaryOpTests.s"
+	@echo "... TestPi/SimpleTest.o"
+	@echo "... TestPi/SimpleTest.i"
+	@echo "... TestPi/SimpleTest.s"
 	@echo "... TestPi/StandalonePiTest.o"
 	@echo "... TestPi/StandalonePiTest.i"
 	@echo "... TestPi/StandalonePiTest.s"
@@ -1148,6 +1247,9 @@ help:
 	@echo "... TestRho/AdvancedRhoPiTests.o"
 	@echo "... TestRho/AdvancedRhoPiTests.i"
 	@echo "... TestRho/AdvancedRhoPiTests.s"
+	@echo "... TestRho/BasicTests.o"
+	@echo "... TestRho/BasicTests.i"
+	@echo "... TestRho/BasicTests.s"
 	@echo "... TestRho/CompareLanguagesTest.o"
 	@echo "... TestRho/CompareLanguagesTest.i"
 	@echo "... TestRho/CompareLanguagesTest.s"
@@ -1193,6 +1295,9 @@ help:
 	@echo "... TestRho/SimpleRhoTest.o"
 	@echo "... TestRho/SimpleRhoTest.i"
 	@echo "... TestRho/SimpleRhoTest.s"
+	@echo "... TestRho/SimpleTest.o"
+	@echo "... TestRho/SimpleTest.i"
+	@echo "... TestRho/SimpleTest.s"
 	@echo "... TestRho/TestDoWhile.o"
 	@echo "... TestRho/TestDoWhile.i"
 	@echo "... TestRho/TestDoWhile.s"
@@ -1202,6 +1307,9 @@ help:
 	@echo "... TestRho/TestRho.o"
 	@echo "... TestRho/TestRho.i"
 	@echo "... TestRho/TestRho.s"
+	@echo "... TestRho/TypeTest.o"
+	@echo "... TestRho/TypeTest.i"
+	@echo "... TestRho/TypeTest.s"
 	@echo "... TestTau/TestTau.o"
 	@echo "... TestTau/TestTau.i"
 	@echo "... TestTau/TestTau.s"
