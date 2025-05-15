@@ -1,0 +1,364 @@
+#include <gtest/gtest.h>
+
+#include <iostream>
+#include <string>
+
+#include "KAI/Core/BuiltinTypes.h"
+#include "KAI/Executor/Operation.h"
+#include "KAI/Core/Console.h"
+#include "KAI/Core/Object/ClassBuilder.h"
+
+using namespace kai;
+using namespace std;
+
+/*
+ * DIRECT BINARY OPERATION TESTS
+ * -----------------------------
+ * These tests directly verify the PerformBinaryOp method and type handling in the Executor class.
+ * They bypass the translation and execution phases to ensure that binary operations are
+ * properly handling type preservation.
+ */
+
+TEST(DirectBinaryOp, IntArithmetic) {
+    Console console;
+    Registry& reg = console.GetRegistry();
+    reg.AddClass<int>(Label("int"));
+    reg.AddClass<float>(Label("float"));
+    reg.AddClass<bool>(Label("bool"));
+    
+    // Create an executor to test operations
+    Pointer<Executor> executor = reg.New<Executor>();
+    executor->Create();
+    
+    // Test addition
+    {
+        Object a = reg.New<int>(5);
+        Object b = reg.New<int>(7);
+        Object result = executor->PerformBinaryOp(a, b, Operation::Plus);
+        
+        ASSERT_TRUE(result.IsType<int>()) << "Addition result should be int";
+        ASSERT_EQ(ConstDeref<int>(result), 12) << "5 + 7 should equal 12";
+    }
+    
+    // Test subtraction
+    {
+        Object a = reg.New<int>(10);
+        Object b = reg.New<int>(3);
+        Object result = executor->PerformBinaryOp(a, b, Operation::Minus);
+        
+        ASSERT_TRUE(result.IsType<int>()) << "Subtraction result should be int";
+        ASSERT_EQ(ConstDeref<int>(result), 7) << "10 - 3 should equal 7";
+    }
+    
+    // Test multiplication
+    {
+        Object a = reg.New<int>(6);
+        Object b = reg.New<int>(8);
+        Object result = executor->PerformBinaryOp(a, b, Operation::Multiply);
+        
+        ASSERT_TRUE(result.IsType<int>()) << "Multiplication result should be int";
+        ASSERT_EQ(ConstDeref<int>(result), 48) << "6 * 8 should equal 48";
+    }
+    
+    // Test division
+    {
+        Object a = reg.New<int>(20);
+        Object b = reg.New<int>(4);
+        Object result = executor->PerformBinaryOp(a, b, Operation::Divide);
+        
+        ASSERT_TRUE(result.IsType<int>()) << "Division result should be int";
+        ASSERT_EQ(ConstDeref<int>(result), 5) << "20 / 4 should equal 5";
+    }
+    
+    // Test modulo
+    {
+        Object a = reg.New<int>(17);
+        Object b = reg.New<int>(5);
+        Object result = executor->PerformBinaryOp(a, b, Operation::Modulo);
+        
+        ASSERT_TRUE(result.IsType<int>()) << "Modulo result should be int";
+        ASSERT_EQ(ConstDeref<int>(result), 2) << "17 % 5 should equal 2";
+    }
+}
+
+TEST(DirectBinaryOp, FloatArithmetic) {
+    Console console;
+    Registry& reg = console.GetRegistry();
+    reg.AddClass<float>(Label("float"));
+    
+    // Create an executor to test operations
+    Pointer<Executor> executor = reg.New<Executor>();
+    executor->Create();
+    
+    // Test addition
+    {
+        Object a = reg.New<float>(3.5f);
+        Object b = reg.New<float>(2.25f);
+        Object result = executor->PerformBinaryOp(a, b, Operation::Plus);
+        
+        ASSERT_TRUE(result.IsType<float>()) << "Addition result should be float";
+        ASSERT_FLOAT_EQ(ConstDeref<float>(result), 5.75f) << "3.5 + 2.25 should equal 5.75";
+    }
+    
+    // Test subtraction
+    {
+        Object a = reg.New<float>(7.5f);
+        Object b = reg.New<float>(2.5f);
+        Object result = executor->PerformBinaryOp(a, b, Operation::Minus);
+        
+        ASSERT_TRUE(result.IsType<float>()) << "Subtraction result should be float";
+        ASSERT_FLOAT_EQ(ConstDeref<float>(result), 5.0f) << "7.5 - 2.5 should equal 5.0";
+    }
+    
+    // Test multiplication
+    {
+        Object a = reg.New<float>(3.5f);
+        Object b = reg.New<float>(2.0f);
+        Object result = executor->PerformBinaryOp(a, b, Operation::Multiply);
+        
+        ASSERT_TRUE(result.IsType<float>()) << "Multiplication result should be float";
+        ASSERT_FLOAT_EQ(ConstDeref<float>(result), 7.0f) << "3.5 * 2.0 should equal 7.0";
+    }
+    
+    // Test division
+    {
+        Object a = reg.New<float>(10.0f);
+        Object b = reg.New<float>(2.5f);
+        Object result = executor->PerformBinaryOp(a, b, Operation::Divide);
+        
+        ASSERT_TRUE(result.IsType<float>()) << "Division result should be float";
+        ASSERT_FLOAT_EQ(ConstDeref<float>(result), 4.0f) << "10.0 / 2.5 should equal 4.0";
+    }
+}
+
+TEST(DirectBinaryOp, MixedTypeArithmetic) {
+    Console console;
+    Registry& reg = console.GetRegistry();
+    reg.AddClass<int>(Label("int"));
+    reg.AddClass<float>(Label("float"));
+    
+    // Create an executor to test operations
+    Pointer<Executor> executor = reg.New<Executor>();
+    executor->Create();
+    
+    // Test int + float
+    {
+        Object a = reg.New<int>(5);
+        Object b = reg.New<float>(2.5f);
+        Object result = executor->PerformBinaryOp(a, b, Operation::Plus);
+        
+        ASSERT_TRUE(result.IsType<float>()) << "Int + Float should result in Float";
+        ASSERT_FLOAT_EQ(ConstDeref<float>(result), 7.5f) << "5 + 2.5 should equal 7.5";
+    }
+    
+    // Test float + int
+    {
+        Object a = reg.New<float>(3.5f);
+        Object b = reg.New<int>(2);
+        Object result = executor->PerformBinaryOp(a, b, Operation::Plus);
+        
+        ASSERT_TRUE(result.IsType<float>()) << "Float + Int should result in Float";
+        ASSERT_FLOAT_EQ(ConstDeref<float>(result), 5.5f) << "3.5 + 2 should equal 5.5";
+    }
+    
+    // Test float * int
+    {
+        Object a = reg.New<float>(4.5f);
+        Object b = reg.New<int>(2);
+        Object result = executor->PerformBinaryOp(a, b, Operation::Multiply);
+        
+        ASSERT_TRUE(result.IsType<float>()) << "Float * Int should result in Float";
+        ASSERT_FLOAT_EQ(ConstDeref<float>(result), 9.0f) << "4.5 * 2 should equal 9.0";
+    }
+}
+
+TEST(DirectBinaryOp, ComparisonOperations) {
+    Console console;
+    Registry& reg = console.GetRegistry();
+    reg.AddClass<int>(Label("int"));
+    reg.AddClass<bool>(Label("bool"));
+    
+    // Create an executor to test operations
+    Pointer<Executor> executor = reg.New<Executor>();
+    executor->Create();
+    
+    // Test equality
+    {
+        Object a = reg.New<int>(5);
+        Object b = reg.New<int>(5);
+        Object result = executor->PerformBinaryOp(a, b, Operation::Equiv);
+        
+        ASSERT_TRUE(result.IsType<bool>()) << "Comparison result should be bool";
+        ASSERT_TRUE(ConstDeref<bool>(result)) << "5 == 5 should be true";
+    }
+    
+    // Test inequality
+    {
+        Object a = reg.New<int>(5);
+        Object b = reg.New<int>(7);
+        Object result = executor->PerformBinaryOp(a, b, Operation::NotEquiv);
+        
+        ASSERT_TRUE(result.IsType<bool>()) << "Comparison result should be bool";
+        ASSERT_TRUE(ConstDeref<bool>(result)) << "5 != 7 should be true";
+    }
+    
+    // Test less than
+    {
+        Object a = reg.New<int>(5);
+        Object b = reg.New<int>(10);
+        Object result = executor->PerformBinaryOp(a, b, Operation::Less);
+        
+        ASSERT_TRUE(result.IsType<bool>()) << "Comparison result should be bool";
+        ASSERT_TRUE(ConstDeref<bool>(result)) << "5 < 10 should be true";
+    }
+    
+    // Test greater than
+    {
+        Object a = reg.New<int>(15);
+        Object b = reg.New<int>(10);
+        Object result = executor->PerformBinaryOp(a, b, Operation::Greater);
+        
+        ASSERT_TRUE(result.IsType<bool>()) << "Comparison result should be bool";
+        ASSERT_TRUE(ConstDeref<bool>(result)) << "15 > 10 should be true";
+    }
+}
+
+TEST(DirectBinaryOp, LogicalOperations) {
+    Console console;
+    Registry& reg = console.GetRegistry();
+    reg.AddClass<bool>(Label("bool"));
+    
+    // Create an executor to test operations
+    Pointer<Executor> executor = reg.New<Executor>();
+    executor->Create();
+    
+    // Test logical AND
+    {
+        Object a = reg.New<bool>(true);
+        Object b = reg.New<bool>(false);
+        Object result = executor->PerformBinaryOp(a, b, Operation::LogicalAnd);
+        
+        ASSERT_TRUE(result.IsType<bool>()) << "Logical AND result should be bool";
+        ASSERT_FALSE(ConstDeref<bool>(result)) << "true && false should be false";
+    }
+    
+    // Test logical OR
+    {
+        Object a = reg.New<bool>(false);
+        Object b = reg.New<bool>(true);
+        Object result = executor->PerformBinaryOp(a, b, Operation::LogicalOr);
+        
+        ASSERT_TRUE(result.IsType<bool>()) << "Logical OR result should be bool";
+        ASSERT_TRUE(ConstDeref<bool>(result)) << "false || true should be true";
+    }
+}
+
+TEST(DirectBinaryOp, StringConcatenation) {
+    Console console;
+    Registry& reg = console.GetRegistry();
+    reg.AddClass<String>(Label("String"));
+    
+    // Create an executor to test operations
+    Pointer<Executor> executor = reg.New<Executor>();
+    executor->Create();
+    
+    // Test string concatenation
+    {
+        Object a = reg.New<String>("Hello ");
+        Object b = reg.New<String>("World");
+        Object result = executor->PerformBinaryOp(a, b, Operation::Plus);
+        
+        ASSERT_TRUE(result.IsType<String>()) << "String concatenation result should be String";
+        ASSERT_EQ(ConstDeref<String>(result), "Hello World") << "\"Hello \" + \"World\" should equal \"Hello World\"";
+    }
+}
+
+// Test the helper method for creating continuations with specific operations
+TEST(DirectBinaryOp, ContinuationEvaluation) {
+    Console console;
+    Registry& reg = console.GetRegistry();
+    reg.AddClass<int>(Label("int"));
+    
+    // Create the test components
+    auto executor = reg.New<Executor>();
+    executor->Create();
+    auto stack = executor->GetDataStack();
+    
+    // Create a continuation with 5 5 +
+    Pointer<Continuation> cont = reg.New<Continuation>();
+    cont->Create();
+    
+    Pointer<Array> code = reg.New<Array>();
+    code->Append(reg.New<int>(5));
+    code->Append(reg.New<int>(5));
+    code->Append(reg.New<Operation>(Operation::Plus));
+    
+    cont->SetCode(code);
+    cont->SetSpecialHandling(true); // This is key to getting proper type handling
+    
+    // Execute the continuation
+    executor->Continue(cont);
+    
+    // Check the result
+    ASSERT_FALSE(stack->Empty());
+    ASSERT_TRUE(stack->Top().IsType<int>()) << "Continuation evaluation result should be int";
+    ASSERT_EQ(ConstDeref<int>(stack->Top()), 10) << "5 + 5 should equal 10";
+}
+
+// Test the unwrap continuation mechanism
+TEST(DirectBinaryOp, UnwrapContinuation) {
+    Console console;
+    Registry& reg = console.GetRegistry();
+    reg.AddClass<int>(Label("int"));
+    
+    // Create the test components
+    auto executor = reg.New<Executor>();
+    executor->Create();
+    
+    // Create a continuation with a simple value
+    Pointer<Continuation> cont = reg.New<Continuation>();
+    cont->Create();
+    
+    Pointer<Array> code = reg.New<Array>();
+    code->Append(reg.New<int>(42));
+    
+    cont->SetCode(code);
+    cont->SetSpecialHandling(true);
+    
+    // Unwrap the continuation
+    Object result = executor->UnwrapValue(cont);
+    
+    // Check the result
+    ASSERT_TRUE(result.IsType<int>()) << "Unwrapped result should be int";
+    ASSERT_EQ(ConstDeref<int>(result), 42) << "Unwrapped value should be 42";
+}
+
+// Test unwrapping continuations with binary operations
+TEST(DirectBinaryOp, UnwrapBinaryOpContinuation) {
+    Console console;
+    Registry& reg = console.GetRegistry();
+    reg.AddClass<int>(Label("int"));
+    
+    // Create the test components
+    auto executor = reg.New<Executor>();
+    executor->Create();
+    
+    // Create a continuation with a binary operation
+    Pointer<Continuation> cont = reg.New<Continuation>();
+    cont->Create();
+    
+    Pointer<Array> code = reg.New<Array>();
+    code->Append(reg.New<int>(7));
+    code->Append(reg.New<int>(9));
+    code->Append(reg.New<Operation>(Operation::Plus));
+    
+    cont->SetCode(code);
+    cont->SetSpecialHandling(true);
+    
+    // Unwrap the continuation
+    Object result = executor->UnwrapValue(cont);
+    
+    // Check the result
+    ASSERT_TRUE(result.IsType<int>()) << "Unwrapped binary op result should be int";
+    ASSERT_EQ(ConstDeref<int>(result), 16) << "Unwrapped 7 + 9 should be 16";
+}

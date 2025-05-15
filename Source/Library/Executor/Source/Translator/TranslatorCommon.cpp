@@ -29,13 +29,8 @@ void TranslatorCommon::Append(Object const &ob) {
             KAI_THROW_0(NullObject);
         }
 
-        // Before appending, set the specialHandling flag on continuations
-        if (ob.IsType<Continuation>()) {
-            Pointer<Continuation> cont = ob;
-            if (!cont->GetSpecialHandling()) {
-                cont->SetSpecialHandling(true);
-            }
-        }
+        // No special handling needed for continuations anymore
+        // Translators will directly evaluate expressions and create properly typed objects
         
         KAI_TRACE() << "TranslatorCommon::Append: " << ob.ToString();
         code->Append(ob);
@@ -124,9 +119,7 @@ void TranslatorCommon::PushNew() {
     Pointer<Continuation> c = reg_->New<Continuation>();
     c->SetCode(reg_->New<Array>());
     
-    // Set the specialHandling flag to ensure proper type handling
-    // This ensures continuations are properly unwrapped when evaluated
-    c->SetSpecialHandling(true);
+    // No special handling flag needed - we'll directly evaluate in translators
     
     stack.push_back(c);
 }

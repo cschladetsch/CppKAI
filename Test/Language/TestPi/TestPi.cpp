@@ -26,8 +26,9 @@ TEST_F(TestPi, RunScripts) {
     console_.SetLanguage(Language::Pi);
 
     // Pre-populate known variables to prevent ObjectNotFound errors
-    auto& scope = console_.GetTree().GetScope();
-    scope.Set(Label("toa"), reg_->New<int>(0));
+    auto scope = console_.GetTree().GetScope();
+    Object toa = reg_->New<int>(0);
+    scope.Set(Label("toa"), toa);
     scope.Set(Label("int_val"), reg_->New<int>(0));
     scope.Set(Label("mod"), reg_->New<int>(0));
     scope.Set(Label("z"), reg_->New<int>(0));

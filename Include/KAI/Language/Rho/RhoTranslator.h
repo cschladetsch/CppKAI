@@ -58,7 +58,7 @@ class RhoTranslator : public TranslatorBase<RhoParser> {
     void TranslateList(AstNodePtr node);
     
     // Helper method to convert token types to operation types
-    Operation::Type TokenToOperation(TokenEnum::Type tokenType);
+    Operation::Type TokenToOperation(RhoTokenEnumType::Enum tokenType);
 };
 
 KAI_END
