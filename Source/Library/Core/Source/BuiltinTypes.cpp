@@ -53,8 +53,10 @@ void FileLocation::AddLocation(StringStream &str) const {
 
     if (!loc.empty()) {
 #ifdef __MSVC__
+        // Format is [filename(line)] for MSVC
         str << "[" << loc.c_str() << "(" << line << ")] ";
 #else
+        // Format is [filename:line] for other compilers
         str << "[" << loc.c_str() << ":" << line << "] ";
 #endif
     }

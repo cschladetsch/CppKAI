@@ -369,6 +369,19 @@ TestPi/fast:
 	$(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/build
 .PHONY : TestPi/fast
 
+#=============================================================================
+# Target rules for targets named LogTest
+
+# Build rule for target.
+LogTest: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 LogTest
+.PHONY : LogTest
+
+# fast build rule for target.
+LogTest/fast:
+	$(MAKE) $(MAKESILENT) -f Test/LogTest/CMakeFiles/LogTest.dir/build.make Test/LogTest/CMakeFiles/LogTest.dir/build
+.PHONY : LogTest/fast
+
 Source/App/Console/Source/Main.o: Source/App/Console/Source/Main.cpp.o
 .PHONY : Source/App/Console/Source/Main.o
 
@@ -1515,6 +1528,7 @@ help:
 	@echo "... Executor"
 	@echo "... ImGui"
 	@echo "... KaiTest"
+	@echo "... LogTest"
 	@echo "... MinimalClient"
 	@echo "... MinimalServer"
 	@echo "... PiLang"

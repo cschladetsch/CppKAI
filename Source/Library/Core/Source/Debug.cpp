@@ -74,8 +74,6 @@ Logger::Level TraceTypeToLoggerLevel(Trace::Type type) {
 }
 
 Trace::~Trace() {
-    const auto filelocCol = rang::fg::gray;
-    const auto textCol = rang::fg::yellow;
     const auto val = ToString();
 
     // Ensure Logger is initialized
@@ -94,15 +92,37 @@ Trace::~Trace() {
     // Log using the centralized Logger
     Logger::Log(TraceTypeToLoggerLevel(type), logMessage);
 
+    // Get appropriate colors based on trace type
+    rang::fg typeColor;
+    switch (type) {
+        case Information:
+            typeColor = rang::fg::green;
+            break;
+        case Warn:
+            typeColor = rang::fg::yellow;
+            break;
+        case Error:
+            typeColor = rang::fg::red;
+            break;
+        case Fatal:
+            typeColor = rang::fg::red;
+            break;
+        default:
+            typeColor = rang::fg::reset;
+    }
+    
+    // Style for file location
+    const auto filelocColor = rang::fg::gray;
+    
     // Also output to console with colors (for terminal output)
-    if (TraceFileLocation)
-        cout << rang::style::bold << filelocCol
-             << file_location.ToString().c_str();
+    if (TraceFileLocation) {
+        cout << filelocColor
+             << file_location.ToString().c_str() << " ";
+    }
 
-    cout << rang::style::bold << TypeToString(type) << ": " << textCol
-         << val.c_str() << "\n";
-    // Reapply bold style instead of using endl which resets formatting
-    cout << rang::style::bold;
+    cout << rang::style::bold << typeColor << "[" << TypeToString(type) << "] " 
+         << rang::style::reset << rang::fg::reset << val.c_str() 
+         << std::endl;
 }
 
 }  // namespace debug

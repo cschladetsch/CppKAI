@@ -4,6 +4,9 @@
 #include <thread>
 #include <sstream>
 
+// Include the rang.hpp header for colored output
+#include "rang.hpp"
+
 // Choose the appropriate format implementation
 #ifdef KAI_FORMAT_COMPATIBLE
   #include <format>
@@ -57,6 +60,35 @@ std::string FormatTimestamp(const std::tm& time_info) {
 #endif
 }
 
+// Get the appropriate color for a log level
+rang::fg GetColorForLevel(Logger::Level level) {
+    switch (level) {
+        case Logger::Level::Debug:
+            return rang::fg::cyan;
+        case Logger::Level::Info:
+            return rang::fg::green;
+        case Logger::Level::Warning:
+            return rang::fg::yellow;
+        case Logger::Level::Error:
+            return rang::fg::red;
+        case Logger::Level::Fatal:
+            return rang::fg::red;
+        default:
+            return rang::fg::reset;
+    }
+}
+
+// Get the appropriate style for a log level
+rang::style GetStyleForLevel(Logger::Level level) {
+    if (level == Logger::Level::Fatal) {
+        return rang::style::bold;
+    }
+    if (level == Logger::Level::Error) {
+        return rang::style::bold;
+    }
+    return rang::style::reset;
+}
+
 void Logger::Init(const std::string& logDirectory) {
     // If a specific directory is provided, use it
     // Otherwise keep using the default from KAI_LOG_DIR
@@ -90,8 +122,8 @@ void Logger::Init(const std::string& logDirectory) {
             logFile.close();
         }
     } catch (const std::exception& e) {
-        std::cerr << "Failed to create log directory: " << e.what()
-                  << std::endl;
+        std::cerr << rang::fg::red << "Failed to create log directory: " << e.what()
+                  << rang::fg::reset << std::endl;
         s_initialized = false;
     }
 }
@@ -142,11 +174,15 @@ void Logger::Log(Level level, const std::string& message) {
     ss << "[" << timestamp << "] [" << levelStr << "] " << message;
     std::string formattedMessage = ss.str();
 
-    // Print to console with color based on level
+    // Get color and style for this log level
+    rang::fg color = GetColorForLevel(level);
+    rang::style style = GetStyleForLevel(level);
+
+    // Print to console with color and style based on level
     if (level == Level::Error || level == Level::Fatal) {
-        std::cerr << formattedMessage << std::endl;
+        std::cerr << style << color << formattedMessage << rang::style::reset << rang::fg::reset << std::endl;
     } else {
-        std::cout << formattedMessage << std::endl;
+        std::cout << style << color << formattedMessage << rang::style::reset << rang::fg::reset << std::endl;
     }
 
     // Ensure the log directory exists
@@ -156,7 +192,7 @@ void Logger::Log(Level level, const std::string& message) {
 
     // Write to appropriate log files
     if (IsInitialized()) {
-        // Write to main log file
+        // Write to main log file (without colors)
         std::string mainLogFilename = s_logDirectory + "/kai.log";
         std::ofstream mainLogFile(mainLogFilename, std::ios_base::app);
         if (mainLogFile) {
@@ -205,7 +241,11 @@ std::string ExtractFilename(const char* fullPath) {
 
 // Enhanced versions with file and line information
 void Logger::LogWithLocation(Level level, const std::string& message, const char* file, int line) {
-    std::string locationInfo = "[" + ExtractFilename(file) + ":" + std::to_string(line) + "] ";
+    // Create location string with highlighted filename and line number
+    std::string filename = ExtractFilename(file);
+    std::string locationInfo = "[" + filename + ":" + std::to_string(line) + "] ";
+    
+    // Log with location information
     Log(level, locationInfo + message);
 }
 

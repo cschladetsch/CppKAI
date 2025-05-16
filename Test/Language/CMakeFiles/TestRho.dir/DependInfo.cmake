@@ -12,6 +12,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/xian/local/KAI/Test/Language/TestRho/AdditionalBinaryOpTests.cpp" "Test/Language/CMakeFiles/TestRho.dir/TestRho/AdditionalBinaryOpTests.cpp.o" "gcc" "Test/Language/CMakeFiles/TestRho.dir/TestRho/AdditionalBinaryOpTests.cpp.o.d"
   "/home/xian/local/KAI/Test/Language/TestRho/AdvancedBinaryOpTests.cpp" "Test/Language/CMakeFiles/TestRho.dir/TestRho/AdvancedBinaryOpTests.cpp.o" "gcc" "Test/Language/CMakeFiles/TestRho.dir/TestRho/AdvancedBinaryOpTests.cpp.o.d"
   "/home/xian/local/KAI/Test/Language/TestRho/AdvancedRhoPiTests.cpp" "Test/Language/CMakeFiles/TestRho.dir/TestRho/AdvancedRhoPiTests.cpp.o" "gcc" "Test/Language/CMakeFiles/TestRho.dir/TestRho/AdvancedRhoPiTests.cpp.o.d"
+  "/home/xian/local/KAI/Test/Language/TestRho/BasicTest.cpp" "Test/Language/CMakeFiles/TestRho.dir/TestRho/BasicTest.cpp.o" "gcc" "Test/Language/CMakeFiles/TestRho.dir/TestRho/BasicTest.cpp.o.d"
   "/home/xian/local/KAI/Test/Language/TestRho/BasicTests.cpp" "Test/Language/CMakeFiles/TestRho.dir/TestRho/BasicTests.cpp.o" "gcc" "Test/Language/CMakeFiles/TestRho.dir/TestRho/BasicTests.cpp.o.d"
   "/home/xian/local/KAI/Test/Language/TestRho/CompareLanguagesTest.cpp" "Test/Language/CMakeFiles/TestRho.dir/TestRho/CompareLanguagesTest.cpp.o" "gcc" "Test/Language/CMakeFiles/TestRho.dir/TestRho/CompareLanguagesTest.cpp.o.d"
   "/home/xian/local/KAI/Test/Language/TestRho/DirectBinaryOpTest.cpp" "Test/Language/CMakeFiles/TestRho.dir/TestRho/DirectBinaryOpTest.cpp.o" "gcc" "Test/Language/CMakeFiles/TestRho.dir/TestRho/DirectBinaryOpTest.cpp.o.d"

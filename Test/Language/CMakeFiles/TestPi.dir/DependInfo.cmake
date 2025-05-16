@@ -10,6 +10,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/xian/local/KAI/Test/Language/TestLangCommon.cpp" "Test/Language/CMakeFiles/TestPi.dir/TestLangCommon.cpp.o" "gcc" "Test/Language/CMakeFiles/TestPi.dir/TestLangCommon.cpp.o.d"
   "/home/xian/local/KAI/Test/Language/TestPi/ArrayOpTest.cpp" "Test/Language/CMakeFiles/TestPi.dir/TestPi/ArrayOpTest.cpp.o" "gcc" "Test/Language/CMakeFiles/TestPi.dir/TestPi/ArrayOpTest.cpp.o.d"
+  "/home/xian/local/KAI/Test/Language/TestPi/BasicTest.cpp" "Test/Language/CMakeFiles/TestPi.dir/TestPi/BasicTest.cpp.o" "gcc" "Test/Language/CMakeFiles/TestPi.dir/TestPi/BasicTest.cpp.o.d"
   "/home/xian/local/KAI/Test/Language/TestPi/PiAssertTest.cpp" "Test/Language/CMakeFiles/TestPi.dir/TestPi/PiAssertTest.cpp.o" "gcc" "Test/Language/CMakeFiles/TestPi.dir/TestPi/PiAssertTest.cpp.o.d"
   "/home/xian/local/KAI/Test/Language/TestPi/PiBinaryOpTests.cpp" "Test/Language/CMakeFiles/TestPi.dir/TestPi/PiBinaryOpTests.cpp.o" "gcc" "Test/Language/CMakeFiles/TestPi.dir/TestPi/PiBinaryOpTests.cpp.o.d"
   "/home/xian/local/KAI/Test/Language/TestPi/SimpleTest.cpp" "Test/Language/CMakeFiles/TestPi.dir/TestPi/SimpleTest.cpp.o" "gcc" "Test/Language/CMakeFiles/TestPi.dir/TestPi/SimpleTest.cpp.o.d"

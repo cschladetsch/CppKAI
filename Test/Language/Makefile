@@ -257,6 +257,30 @@ TestPi/ArrayOpTest.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/TestPi/ArrayOpTest.cpp.s
 .PHONY : TestPi/ArrayOpTest.cpp.s
 
+TestPi/BasicTest.o: TestPi/BasicTest.cpp.o
+.PHONY : TestPi/BasicTest.o
+
+# target to build an object file
+TestPi/BasicTest.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/TestPi/BasicTest.cpp.o
+.PHONY : TestPi/BasicTest.cpp.o
+
+TestPi/BasicTest.i: TestPi/BasicTest.cpp.i
+.PHONY : TestPi/BasicTest.i
+
+# target to preprocess a source file
+TestPi/BasicTest.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/TestPi/BasicTest.cpp.i
+.PHONY : TestPi/BasicTest.cpp.i
+
+TestPi/BasicTest.s: TestPi/BasicTest.cpp.s
+.PHONY : TestPi/BasicTest.s
+
+# target to generate assembly for a file
+TestPi/BasicTest.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/TestPi/BasicTest.cpp.s
+.PHONY : TestPi/BasicTest.cpp.s
+
 TestPi/PiAssertTest.o: TestPi/PiAssertTest.cpp.o
 .PHONY : TestPi/PiAssertTest.o
 
@@ -568,6 +592,30 @@ TestRho/AdvancedRhoPiTests.s: TestRho/AdvancedRhoPiTests.cpp.s
 TestRho/AdvancedRhoPiTests.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/AdvancedRhoPiTests.cpp.s
 .PHONY : TestRho/AdvancedRhoPiTests.cpp.s
+
+TestRho/BasicTest.o: TestRho/BasicTest.cpp.o
+.PHONY : TestRho/BasicTest.o
+
+# target to build an object file
+TestRho/BasicTest.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/BasicTest.cpp.o
+.PHONY : TestRho/BasicTest.cpp.o
+
+TestRho/BasicTest.i: TestRho/BasicTest.cpp.i
+.PHONY : TestRho/BasicTest.i
+
+# target to preprocess a source file
+TestRho/BasicTest.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/BasicTest.cpp.i
+.PHONY : TestRho/BasicTest.cpp.i
+
+TestRho/BasicTest.s: TestRho/BasicTest.cpp.s
+.PHONY : TestRho/BasicTest.s
+
+# target to generate assembly for a file
+TestRho/BasicTest.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/BasicTest.cpp.s
+.PHONY : TestRho/BasicTest.cpp.s
 
 TestRho/BasicTests.o: TestRho/BasicTests.cpp.o
 .PHONY : TestRho/BasicTests.o
@@ -1208,6 +1256,9 @@ help:
 	@echo "... TestPi/ArrayOpTest.o"
 	@echo "... TestPi/ArrayOpTest.i"
 	@echo "... TestPi/ArrayOpTest.s"
+	@echo "... TestPi/BasicTest.o"
+	@echo "... TestPi/BasicTest.i"
+	@echo "... TestPi/BasicTest.s"
 	@echo "... TestPi/PiAssertTest.o"
 	@echo "... TestPi/PiAssertTest.i"
 	@echo "... TestPi/PiAssertTest.s"
@@ -1247,6 +1298,9 @@ help:
 	@echo "... TestRho/AdvancedRhoPiTests.o"
 	@echo "... TestRho/AdvancedRhoPiTests.i"
 	@echo "... TestRho/AdvancedRhoPiTests.s"
+	@echo "... TestRho/BasicTest.o"
+	@echo "... TestRho/BasicTest.i"
+	@echo "... TestRho/BasicTest.s"
 	@echo "... TestRho/BasicTests.o"
 	@echo "... TestRho/BasicTests.i"
 	@echo "... TestRho/BasicTests.s"
