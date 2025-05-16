@@ -165,7 +165,7 @@ struct Executor : Reflected {
     void Trace(const Label &, const StorageBase &, StringStream &);
     void Trace(const Object &, StringStream &);
     void ConditionalContextSwitch(Operation::Type);
-    Value<Continuation> NewContinuation(Value<Continuation> P);
+    Pointer<Continuation> NewContinuation(Value<Continuation> P);
 
     Object TryResolve(Object const &) const;
     Object TryResolve(Label const &label) const;

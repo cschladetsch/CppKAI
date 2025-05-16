@@ -792,11 +792,11 @@ void Executor::NextContinuation() {
     }
 }
 
-Value<Continuation> Executor::NewContinuation(Value<Continuation> orig) {
+Pointer<Continuation> Executor::NewContinuation(Value<Continuation> orig) {
     // Validate input continuation
     if (!orig.Valid() || !orig.Exists()) {
         KAI_TRACE_ERROR() << "NewContinuation: Invalid or non-existent source continuation";
-        return Value<Continuation>(); // Return empty continuation
+        return Pointer<Continuation>(); // Return empty continuation
     }
     
     // Check if we have a valid registry
@@ -806,17 +806,18 @@ Value<Continuation> Executor::NewContinuation(Value<Continuation> orig) {
     }
     else {
         KAI_TRACE_ERROR() << "NewContinuation: No valid registry available";
-        return Value<Continuation>(); // Return empty continuation
+        return Pointer<Continuation>(); // Return empty continuation
     }
     
     try {
         // Create a new continuation
-        Value<Continuation> cont = New<Continuation>();
+        Value<Continuation> val = New<Continuation>();
+        Pointer<Continuation> cont = val.GetObject();
         
         // Validate the new continuation
         if (!cont.Valid() || !cont.Exists()) {
             KAI_TRACE_ERROR() << "NewContinuation: Failed to create new continuation";
-            return Value<Continuation>(); // Return empty continuation
+            return Pointer<Continuation>(); // Return empty continuation
         }
         
         // Initialize the new continuation from the original
@@ -837,11 +838,11 @@ Value<Continuation> Executor::NewContinuation(Value<Continuation> orig) {
     }
     catch (const std::exception& e) {
         KAI_TRACE_ERROR() << "NewContinuation: Exception: " << e.what();
-        return Value<Continuation>(); // Return empty continuation in case of exception
+        return Pointer<Continuation>(); // Return empty continuation in case of exception
     }
     catch (...) {
         KAI_TRACE_ERROR() << "NewContinuation: Unknown exception";
-        return Value<Continuation>(); // Return empty continuation in case of exception
+        return Pointer<Continuation>(); // Return empty continuation in case of exception
     }
 }
 
@@ -969,6 +970,9 @@ Object Executor::UnwrapValue(Object const &Q) {
     else if (Self && Self->GetRegistry() != nullptr) {
         registry = Self->GetRegistry();
     }
+    else if (data_.Exists() && data_.GetRegistry() != nullptr) {
+        registry = data_.GetRegistry();
+    }
     
     // Check if the input object exists
     if (!Q.Valid() || !Q.Exists()) {
@@ -1033,6 +1037,135 @@ Object Executor::UnwrapValue(Object const &Q) {
                       << firstElement.GetClass()->GetName() << ")";
             return firstElement;
         }
+    }
+    
+    // Handle common pattern: binary operations [val1, val2, op]
+    if (code->Size() == 3 && code->At(2).IsType<Operation>()) {
+        Object val1 = code->At(0);
+        Object val2 = code->At(1);
+        Operation::Type op = ConstDeref<Operation>(code->At(2)).GetTypeNumber();
+        
+        // Check if we have primitive values for operands
+        if (val1.IsType<int>() && val2.IsType<int>() && registry != nullptr) {
+            // Calculate result for integer operations
+            int num1 = ConstDeref<int>(val1);
+            int num2 = ConstDeref<int>(val2);
+            int result = 0;
+            bool validOp = true;
+            
+            // Perform the operation directly
+            switch (op) {
+                case Operation::Plus:
+                    result = num1 + num2;
+                    break;
+                case Operation::Minus:
+                    result = num1 - num2;
+                    break;
+                case Operation::Multiply:
+                    result = num1 * num2;
+                    break;
+                case Operation::Divide:
+                    if (num2 != 0) {
+                        result = num1 / num2;
+                    } else {
+                        validOp = false;
+                        KAI_TRACE_ERROR() << "Division by zero";
+                    }
+                    break;
+                default:
+                    validOp = false;
+                    break;
+            }
+            
+            if (validOp) {
+                KAI_TRACE() << "Directly computed int operation: " << num1 << " op " << num2 << " = " << result;
+                return registry->New<int>(result);
+            }
+        }
+        
+        // Handle boolean comparison operations
+        if (val1.IsType<int>() && val2.IsType<int>() && registry != nullptr &&
+            (op == Operation::Less || op == Operation::Greater || 
+             op == Operation::LessOrEquiv || op == Operation::GreaterOrEquiv || 
+             op == Operation::Equiv || op == Operation::NotEquiv)) {
+            
+            int num1 = ConstDeref<int>(val1);
+            int num2 = ConstDeref<int>(val2);
+            bool result = false;
+            
+            switch (op) {
+                case Operation::Less:
+                    result = num1 < num2;
+                    break;
+                case Operation::Greater:
+                    result = num1 > num2;
+                    break;
+                case Operation::LessOrEquiv:
+                    result = num1 <= num2;
+                    break;
+                case Operation::GreaterOrEquiv:
+                    result = num1 >= num2;
+                    break;
+                case Operation::Equiv:
+                    result = num1 == num2;
+                    break;
+                case Operation::NotEquiv:
+                    result = num1 != num2;
+                    break;
+                default:
+                    break;
+            }
+            
+            KAI_TRACE() << "Directly computed comparison: " << num1 << " op " << num2 << " = " << (result ? "true" : "false");
+            return registry->New<bool>(result);
+        }
+        
+        // Handle boolean logical operations
+        if (val1.IsType<bool>() && val2.IsType<bool>() && registry != nullptr) {
+            bool b1 = ConstDeref<bool>(val1);
+            bool b2 = ConstDeref<bool>(val2);
+            bool result = false;
+            bool validOp = true;
+            
+            switch (op) {
+                case Operation::LogicalAnd:
+                    result = b1 && b2;
+                    break;
+                case Operation::LogicalOr:
+                    result = b1 || b2;
+                    break;
+                case Operation::Equiv:
+                    result = b1 == b2;
+                    break;
+                case Operation::NotEquiv:
+                    result = b1 != b2;
+                    break;
+                default:
+                    validOp = false;
+                    break;
+            }
+            
+            if (validOp) {
+                KAI_TRACE() << "Directly computed boolean operation: " << (b1 ? "true" : "false") 
+                          << " op " << (b2 ? "true" : "false") << " = " << (result ? "true" : "false");
+                return registry->New<bool>(result);
+            }
+        }
+        
+        // Handle string operations
+        if (val1.IsType<String>() && val2.IsType<String>() && op == Operation::Plus && registry != nullptr) {
+            String str1 = ConstDeref<String>(val1);
+            String str2 = ConstDeref<String>(val2);
+            String result = str1 + str2;
+            
+            KAI_TRACE() << "Directly computed string concatenation: \"" << str1 << "\" + \"" << str2 << "\" = \"" << result << "\"";
+            return registry->New<String>(result);
+        }
+    }
+    
+    // Check if the first element is a continuation (for nested continuations)
+    if (code->Size() > 0) {
+        Object firstElement = code->At(0);
         
         // If it's a nested continuation, recursively unwrap it
         if (firstElement.IsType<Continuation>()) {
@@ -1267,8 +1400,14 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B, Operation::Ty
     if (!registry) {
         registry = B.GetRegistry();
         if (!registry) {
-            KAI_TRACE_ERROR() << "PerformBinaryOp: No valid registry found";
-            return Object();
+            // Try to use the executor's registry if available through data stack
+            if (data_.Exists() && data_.GetRegistry() != nullptr) {
+                registry = data_.GetRegistry();
+            }
+            else {
+                KAI_TRACE_ERROR() << "PerformBinaryOp: No valid registry found";
+                return Object();
+            }
         }
     }
     

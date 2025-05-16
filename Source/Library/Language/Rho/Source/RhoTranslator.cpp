@@ -935,12 +935,99 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
             
             // IMPORTANT: Check if the result is a Continuation and unwrap it to a primitive value
             if (result.IsType<Continuation>()) {
-                // Use the executor to unwrap the continuation
+                // Try different methods to get a primitive value
+                
+                // Method 1: Use the executor's UnwrapValue method
                 Object unwrapped = opExecutor->UnwrapValue(result);
-                if (unwrapped != result) {
+                if (unwrapped.Valid() && unwrapped != result && 
+                   (unwrapped.IsType<int>() || unwrapped.IsType<float>() || 
+                    unwrapped.IsType<bool>() || unwrapped.IsType<String>())) {
                     KAI_TRACE() << "Unwrapped continuation result to " << unwrapped.ToString()
                               << " (type: " << unwrapped.GetClass()->GetName() << ")";
-                    result = unwrapped; 
+                    result = unwrapped;
+                }
+                // Method 2: For basic binary operations with primitive operands, directly compute result
+                else {
+                    // Handle common binary operations on common types
+                    Pointer<Continuation> cont = result;
+                    if (cont->GetCode().Valid() && cont->GetCode()->Size() == 3) {
+                        auto code = cont->GetCode();
+                        Object val1 = code->At(0);
+                        Object val2 = code->At(1);
+                        
+                        if (val1.Valid() && val2.Valid() && 
+                            code->At(2).Valid() && code->At(2).IsType<Operation>()) {
+                            
+                            Operation::Type contOp = ConstDeref<Operation>(code->At(2)).GetTypeNumber();
+                            
+                            // Handle integer math
+                            if (val1.IsType<int>() && val2.IsType<int>() && 
+                                (contOp == Operation::Plus || contOp == Operation::Minus || 
+                                 contOp == Operation::Multiply || contOp == Operation::Divide)) {
+                                
+                                int num1 = ConstDeref<int>(val1);
+                                int num2 = ConstDeref<int>(val2);
+                                int directResult = 0;
+                                
+                                switch (contOp) {
+                                    case Operation::Plus: directResult = num1 + num2; break;
+                                    case Operation::Minus: directResult = num1 - num2; break;
+                                    case Operation::Multiply: directResult = num1 * num2; break;
+                                    case Operation::Divide: 
+                                        if (num2 != 0) directResult = num1 / num2;
+                                        break;
+                                    default: break;
+                                }
+                                
+                                // Create a new int with the calculated value
+                                if (reg_) {
+                                    result = reg_->New<int>(directResult);
+                                    KAI_TRACE() << "Direct calculation of integer operation: " << num1 
+                                              << " " << Operation::ToString(contOp) 
+                                              << " " << num2 << " = " << directResult;
+                                }
+                            }
+                            // Handle boolean operations
+                            else if (val1.IsType<bool>() && val2.IsType<bool>() &&
+                                    (contOp == Operation::LogicalAnd || contOp == Operation::LogicalOr)) {
+                                
+                                bool b1 = ConstDeref<bool>(val1);
+                                bool b2 = ConstDeref<bool>(val2);
+                                bool directResult = false;
+                                
+                                switch (contOp) {
+                                    case Operation::LogicalAnd: directResult = b1 && b2; break;
+                                    case Operation::LogicalOr: directResult = b1 || b2; break;
+                                    default: break;
+                                }
+                                
+                                // Create a new bool with the calculated value
+                                if (reg_) {
+                                    result = reg_->New<bool>(directResult);
+                                    KAI_TRACE() << "Direct calculation of boolean operation: " 
+                                              << (b1 ? "true" : "false")
+                                              << " " << Operation::ToString(contOp) 
+                                              << " " << (b2 ? "true" : "false") 
+                                              << " = " << (directResult ? "true" : "false");
+                                }
+                            }
+                            // Handle string concatenation
+                            else if (val1.IsType<String>() && val2.IsType<String>() && 
+                                     contOp == Operation::Plus) {
+                                
+                                String s1 = ConstDeref<String>(val1);
+                                String s2 = ConstDeref<String>(val2);
+                                String directResult = s1 + s2;
+                                
+                                // Create a new String with the calculated value
+                                if (reg_) {
+                                    result = reg_->New<String>(directResult);
+                                    KAI_TRACE() << "Direct calculation of string concatenation: " 
+                                              << s1 << " + " << s2 << " = " << directResult;
+                                }
+                            }
+                        }
+                    }
                 }
             }
             
@@ -972,11 +1059,102 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
     
     // Ensure we have a primitive value, not a continuation
     if (result.IsType<Continuation>()) {
-        result = evalExec->UnwrapValue(result);
+        // Try different methods to get a primitive value
+        // Method 1: Use the executor's UnwrapValue method
+        Object unwrapped = evalExec->UnwrapValue(result);
+        if (unwrapped.Valid() && unwrapped != result && 
+           (unwrapped.IsType<int>() || unwrapped.IsType<float>() || 
+            unwrapped.IsType<bool>() || unwrapped.IsType<String>())) {
+            KAI_TRACE() << "Unwrapped continuation result to " << unwrapped.ToString()
+                      << " (type: " << unwrapped.GetClass()->GetName() << ")";
+            result = unwrapped;
+        }
+        // Method 2: For basic binary operations with primitive operands, directly compute result
+        else {
+            // Handle common binary operations on common types
+            Pointer<Continuation> cont = result;
+            if (cont->GetCode().Valid() && cont->GetCode()->Size() == 3) {
+                auto code = cont->GetCode();
+                Object val1 = code->At(0);
+                Object val2 = code->At(1);
+                
+                if (val1.Valid() && val2.Valid() && 
+                    code->At(2).Valid() && code->At(2).IsType<Operation>()) {
+                    
+                    Operation::Type contOp = ConstDeref<Operation>(code->At(2)).GetTypeNumber();
+                    
+                    // Handle integer math
+                    if (val1.IsType<int>() && val2.IsType<int>() && 
+                        (contOp == Operation::Plus || contOp == Operation::Minus || 
+                         contOp == Operation::Multiply || contOp == Operation::Divide)) {
+                        
+                        int num1 = ConstDeref<int>(val1);
+                        int num2 = ConstDeref<int>(val2);
+                        int directResult = 0;
+                        
+                        switch (contOp) {
+                            case Operation::Plus: directResult = num1 + num2; break;
+                            case Operation::Minus: directResult = num1 - num2; break;
+                            case Operation::Multiply: directResult = num1 * num2; break;
+                            case Operation::Divide: 
+                                if (num2 != 0) directResult = num1 / num2;
+                                break;
+                            default: break;
+                        }
+                        
+                        // Create a new int with the calculated value
+                        if (reg_) {
+                            result = reg_->New<int>(directResult);
+                            KAI_TRACE() << "Direct calculation of integer operation: " << num1 
+                                      << " " << Operation::ToString(contOp) 
+                                      << " " << num2 << " = " << directResult;
+                        }
+                    }
+                    // Handle boolean operations
+                    else if (val1.IsType<bool>() && val2.IsType<bool>() &&
+                            (contOp == Operation::LogicalAnd || contOp == Operation::LogicalOr)) {
+                        
+                        bool b1 = ConstDeref<bool>(val1);
+                        bool b2 = ConstDeref<bool>(val2);
+                        bool directResult = false;
+                        
+                        switch (contOp) {
+                            case Operation::LogicalAnd: directResult = b1 && b2; break;
+                            case Operation::LogicalOr: directResult = b1 || b2; break;
+                            default: break;
+                        }
+                        
+                        // Create a new bool with the calculated value
+                        if (reg_) {
+                            result = reg_->New<bool>(directResult);
+                            KAI_TRACE() << "Direct calculation of boolean operation: " 
+                                      << (b1 ? "true" : "false")
+                                      << " " << Operation::ToString(contOp) 
+                                      << " " << (b2 ? "true" : "false") 
+                                      << " = " << (directResult ? "true" : "false");
+                        }
+                    }
+                    // Handle string concatenation
+                    else if (val1.IsType<String>() && val2.IsType<String>() && 
+                             contOp == Operation::Plus) {
+                        
+                        String s1 = ConstDeref<String>(val1);
+                        String s2 = ConstDeref<String>(val2);
+                        String directResult = s1 + s2;
+                        
+                        // Create a new String with the calculated value
+                        if (reg_) {
+                            result = reg_->New<String>(directResult);
+                            KAI_TRACE() << "Direct calculation of string concatenation: " 
+                                      << s1 << " + " << s2 << " = " << directResult;
+                        }
+                    }
+                }
+            }
+        }
     }
     
-    KAI_TRACE() << "Direct evaluation of binary op result: " << result.ToString() 
-              << " (type: " << result.GetClass()->GetName() << ")";
+    KAI_TRACE() << "Direct evaluation of binary op result: " << result.ToString();
     
     // Append the result directly
     Append(result);
