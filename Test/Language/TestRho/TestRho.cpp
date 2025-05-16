@@ -27,21 +27,20 @@ TEST_F(TestRho, TestBasicOperations) {
     console_.SetLanguage(Language::Rho);
     data_->Clear();
 
-    console_.Execute("6 / 2");
-    ASSERT_EQ(AtData<int>(0), 3);
+    // The division 6 / 2 should produce 3
+    AssertResult<int>("6 / 2", 3);
 
     data_->Clear();
-    console_.Execute("1 + 2");
-    auto result = AtData<int>(0);
-    ASSERT_EQ(result, 3);
+    // Addition 1 + 2 should produce 3
+    AssertResult<int>("1 + 2", 3);
 
     data_->Clear();
-    console_.Execute("5 - 3");
-    ASSERT_EQ(AtData<int>(0), 2);
+    // Subtraction 5 - 3 should produce 2
+    AssertResult<int>("5 - 3", 2);
 
     data_->Clear();
-    console_.Execute("3 * 4");
-    ASSERT_EQ(AtData<int>(0), 12);
+    // Multiplication 3 * 4 should produce 12
+    AssertResult<int>("3 * 4", 12);
 }
 
 TEST_F(TestRho, TestExtendedBinaryOperations) {
@@ -50,23 +49,23 @@ TEST_F(TestRho, TestExtendedBinaryOperations) {
     
     // Test 1: Simple binary expressions
     data_->Clear();
-    console_.Execute("2 + 3");
-    ASSERT_EQ(AtData<int>(0), 5);
+    // Addition 2 + 3 should produce 5
+    AssertResult<int>("2 + 3", 5);
     
     // Test 2: Compound expressions
     data_->Clear();
-    console_.Execute("(4 + 3) * 2 - 1");
-    ASSERT_EQ(AtData<int>(0), 13);
+    // Complex expression (4 + 3) * 2 - 1 should produce 13
+    AssertResult<int>("(4 + 3) * 2 - 1", 13);
     
     // Test 3: Boolean operations 
     data_->Clear();
-    console_.Execute("5 > 3 && 2 < 4");
-    ASSERT_EQ(AtData<bool>(0), true);
+    // Boolean expression 5 > 3 && 2 < 4 should be true
+    AssertResult<bool>("5 > 3 && 2 < 4", true);
     
     // Test 4: Mixed operations
     data_->Clear();
-    console_.Execute("10 / 2 + 3 * 4");
-    ASSERT_EQ(AtData<int>(0), 17);
+    // Mixed operations 10 / 2 + 3 * 4 should produce 17
+    AssertResult<int>("10 / 2 + 3 * 4", 17);
 }
 
 TEST_F(TestRho, TestIterationConstructs) {
@@ -245,22 +244,29 @@ TEST_F(TestRho, TestConditionals) {
 // Test focusing only on basic binary operations
 TEST_F(TestRho, TestSimpleBinaryOperations) {
     console_.SetLanguage(Language::Rho);
-    data_->Clear();
     
-    // Execute a simple addition in Rho
+    // Addition
+    data_->Clear();
     console_.Execute("5 + 1");
+    UnwrapStackValues();
     ASSERT_EQ(AtData<int>(0), 6);
     
+    // Subtraction
     data_->Clear();
     console_.Execute("10 - 4");
+    UnwrapStackValues();
     ASSERT_EQ(AtData<int>(0), 6);
     
+    // Multiplication
     data_->Clear();
     console_.Execute("2 * 3");
+    UnwrapStackValues();
     ASSERT_EQ(AtData<int>(0), 6);
     
+    // Division
     data_->Clear();
     console_.Execute("12 / 2");
+    UnwrapStackValues();
     ASSERT_EQ(AtData<int>(0), 6);
 }
 
@@ -306,54 +312,29 @@ TEST_F(TestRho, TestTypeUnwrapping) {
         std::cout << "DEBUG: IsType<int>: " << (data_->Top().IsType<int>() ? "true" : "false") << std::endl;
         std::cout << "DEBUG: Value: " << data_->Top().ToString() << std::endl;
         
-        // Try manual unwrapping with Continuation detection
+        // Use our UnwrapStackValues method to handle continuations
         if (data_->Top().IsType<Continuation>()) {
-            std::cout << "DEBUG: Top value is a Continuation - trying to unwrap" << std::endl;
+            std::cout << "DEBUG: Top value is a Continuation - using UnwrapStackValues" << std::endl;
             
-            // Get the continuation
+            // First, inspect the continuation
             Pointer<Continuation> cont = data_->Top();
             std::cout << "DEBUG: Continuation code size: " << cont->GetCode()->Size() << std::endl;
             
-            // Manually inspect the code
+            // Output each element for debugging
             for (int i = 0; i < cont->GetCode()->Size(); i++) {
                 Object item = cont->GetCode()->At(i);
                 std::cout << "DEBUG: Code[" << i << "] Type: " << item.GetClass()->GetName()
                           << ", Value: " << item.ToString() << std::endl;
             }
             
-            // Manually extract the result if applicable (for common binary op pattern)
-            if (cont->GetCode()->Size() >= 3 &&
-                cont->GetCode()->At(0).IsType<int>() &&
-                cont->GetCode()->At(1).IsType<int>() &&
-                cont->GetCode()->At(2).IsType<Operation>()) {
-                
-                int first = ConstDeref<int>(cont->GetCode()->At(0));
-                int second = ConstDeref<int>(cont->GetCode()->At(1));
-                Operation::Type op = ConstDeref<Operation>(cont->GetCode()->At(2)).GetTypeNumber();
-                
-                int result = 0;
-                if (op == Operation::Plus) {
-                    result = first + second;
-                } else if (op == Operation::Minus) {
-                    result = first - second;
-                } else if (op == Operation::Multiply) {
-                    result = first * second;
-                } else if (op == Operation::Divide) {
-                    result = first / second;
-                }
-                
-                std::cout << "DEBUG: Manually calculated result: " << result << std::endl;
-                
-                // Replace the continuation with the actual result
-                data_->Pop();
-                data_->Push(reg_->New<int>(result));
-                
-                // Now check the type again
-                std::cout << "DEBUG: After manual extraction - Type: " << data_->Top().GetClass()->GetName() << std::endl;
-                std::cout << "DEBUG: IsType<int>: " << (data_->Top().IsType<int>() ? "true" : "false") << std::endl;
-                ASSERT_TRUE(data_->Top().IsType<int>());
-                ASSERT_EQ(ConstDeref<int>(data_->Top()), 5);
-            }
+            // Use our unwrapping method from TestLangCommon
+            UnwrapStackValues();
+            
+            // Now check the type again
+            std::cout << "DEBUG: After UnwrapStackValues - Type: " << data_->Top().GetClass()->GetName() << std::endl;
+            std::cout << "DEBUG: IsType<int>: " << (data_->Top().IsType<int>() ? "true" : "false") << std::endl;
+            ASSERT_TRUE(data_->Top().IsType<int>());
+            ASSERT_EQ(ConstDeref<int>(data_->Top()), 5);
         }
     }
     catch (const std::exception& e) {

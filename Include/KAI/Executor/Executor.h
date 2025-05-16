@@ -115,9 +115,6 @@ struct Executor : Reflected {
     // Helper method for evaluating continuations
     void EvalContinuation(Object const &Q);
     
-    // Helper method to unwrap continuations and extract the underlying value
-    // This resolves issues with tests expecting a specific type but finding a continuation
-    Object UnwrapValue(Object const &Q);
     
     // Helper method to perform binary operations with proper type handling
     // This method is used by tests to directly execute binary operations

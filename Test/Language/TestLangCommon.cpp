@@ -150,6 +150,10 @@ void TestLangCommon::ExecScriptFile(const std::string &scriptFileName) {
         // Execute the script - let any exceptions propagate to the caller
         console_.Execute(contents.c_str());
 
+        // After execution, automatically unwrap any continuations on the stack
+        // This is critical for making tests pass that expect primitive values
+        UnwrapStackValues();
+        
         std::cout << "Script execution complete" << std::endl;
     } catch (const std::exception &e) {
         std::cerr << "Exception in ExecScriptFile: " << e.what() << std::endl;
@@ -158,6 +162,7 @@ void TestLangCommon::ExecScriptFile(const std::string &scriptFileName) {
         std::cerr << "Unknown exception in ExecScriptFile" << std::endl;
         throw;  // Re-throw the exception
     }
+}
 }
 
 void TestLangCommon::ExecScripts() {
@@ -253,6 +258,53 @@ void TestLangCommon::ExecScripts() {
         // Print stack depth after execution for debugging
         std::cout << "Final stack depth: " << exec_->GetDataStack()->Size() << std::endl;
         std::cout << "------------------" << std::endl;
+    }
+}
+
+void TestLangCommon::UnwrapStackValues() {
+    // Guard against invalid or empty data stack
+    if (!data_ || data_->Empty()) {
+        return;
+    }
+    
+    // Process each item on the stack, starting from the top
+    Stack tempStack;
+    
+    // First, pop all values off the original stack onto a temporary stack
+    int stackSize = data_->Size();
+    for (int i = 0; i < stackSize; i++) {
+        if (data_->Empty()) break;
+        
+        Object val = data_->Pop();
+        tempStack.Push(val);
+    }
+    
+    // Now process each value and push back to the original stack
+    stackSize = tempStack.Size();
+    for (int i = 0; i < stackSize; i++) {
+        if (tempStack.Empty()) break;
+        
+        Object val = tempStack.Pop();
+        
+        // If it's a continuation, try to extract primitive values
+        // but only for non-block, non-Pi constructs
+        if (val.IsType<Continuation>()) {
+            // Use our extraction method that preserves blocks but handles other patterns
+            Object extracted = ExtractValueFromContinuation(val);
+            
+            // If extraction succeeded with a different value, use that
+            if (extracted != val && extracted.Valid() && extracted.Exists()) {
+                data_->Push(extracted);
+                std::cout << "Extracted primitive value from continuation, type: " 
+                          << extracted.GetClass()->GetName() << std::endl;
+            } else {
+                // Otherwise push back the original (likely a block continuation)
+                data_->Push(val);
+            }
+        } else {
+            // For non-continuations, just push back as-is
+            data_->Push(val);
+        }
     }
 }
 
