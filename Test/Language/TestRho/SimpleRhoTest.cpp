@@ -4,6 +4,7 @@
 #include <string>
 
 #include "KAI/Core/Console.h"
+#include "TestLangCommon.h"
 
 using namespace kai;
 using namespace std;
@@ -84,10 +85,10 @@ TEST(RhoMinimal, BasicOperations) {
     // Ensure we got a result
     ASSERT_FALSE(stack->Empty()) << "Stack is empty after continuation execution";
     
-    // Unwrap the result
-    Object unwrapped = exec->UnwrapValue(stack->Top());
-    stack->Pop();
-    stack->Push(unwrapped);
+    // Create a TestLangCommon instance to use UnwrapStackValues
+    TestLangCommon testLang;
+    testLang.SetDataStack(stack);
+    testLang.UnwrapStackValues();
     
     // Check the unwrapped result
     ASSERT_TRUE(stack->Top().IsType<int>()) << "Unwrapped result isn't an int";
@@ -164,15 +165,10 @@ TEST(PiMinimal, BasicOperations) {
     // Make sure there's a result
     ASSERT_FALSE(stack->Empty()) << "Stack is empty after addition operation";
     
-    // Now unwrap the result
-    Object result = stack->Top();
-    
-    // Always unwrap the result 
-    Object unwrapped = exec->UnwrapValue(result);
-    
-    // Replace with unwrapped result
-    stack->Pop();
-    stack->Push(unwrapped);
+    // Use TestLangCommon to unwrap the result
+    TestLangCommon testLang;
+    testLang.SetDataStack(stack);
+    testLang.UnwrapStackValues();
     
     // Verify type and value of the result
     ASSERT_TRUE(stack->Top().IsType<int>()) << "Result is not an int, but: " 

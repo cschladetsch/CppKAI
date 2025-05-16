@@ -39,6 +39,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/TestRho.dir/TestRho/SimpleArithmeticTest.cpp.o.d"
   "CMakeFiles/TestRho.dir/TestRho/SimpleRho.cpp.o"
   "CMakeFiles/TestRho.dir/TestRho/SimpleRho.cpp.o.d"
+  "CMakeFiles/TestRho.dir/TestRho/SimpleRhoPiTests.cpp.o"
+  "CMakeFiles/TestRho.dir/TestRho/SimpleRhoPiTests.cpp.o.d"
   "CMakeFiles/TestRho.dir/TestRho/SimpleRhoTest.cpp.o"
   "CMakeFiles/TestRho.dir/TestRho/SimpleRhoTest.cpp.o.d"
   "CMakeFiles/TestRho.dir/TestRho/SimpleTest.cpp.o"

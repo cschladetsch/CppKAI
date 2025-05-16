@@ -85,8 +85,7 @@ class TestLangCommon : public TestCommon {
             // Check first and last elements for block markers
             if (code->At(0).IsType<Operation>()) {
                 Operation::Type firstOp = ConstDeref<Operation>(code->At(0)).GetTypeNumber();
-                if (firstOp == Operation::ContinuationBegin || 
-                    firstOp == Operation::BlockBegin) {
+                if (firstOp == Operation::ContinuationBegin) {
                     isBlock = true;
                 }
             }
@@ -94,8 +93,7 @@ class TestLangCommon : public TestCommon {
             // Additional check: last element for block end markers
             if (code->At(code->Size()-1).IsType<Operation>()) {
                 Operation::Type lastOp = ConstDeref<Operation>(code->At(code->Size()-1)).GetTypeNumber();
-                if (lastOp == Operation::ContinuationEnd || 
-                    lastOp == Operation::BlockEnd) {
+                if (lastOp == Operation::ContinuationEnd) {
                     isBlock = true;
                 }
             }

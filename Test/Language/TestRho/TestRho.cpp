@@ -48,22 +48,18 @@ TEST_F(TestRho, TestExtendedBinaryOperations) {
     console_.SetLanguage(Language::Rho);
     
     // Test 1: Simple binary expressions
-    data_->Clear();
     // Addition 2 + 3 should produce 5
     AssertResult<int>("2 + 3", 5);
     
     // Test 2: Compound expressions
-    data_->Clear();
     // Complex expression (4 + 3) * 2 - 1 should produce 13
     AssertResult<int>("(4 + 3) * 2 - 1", 13);
     
     // Test 3: Boolean operations 
-    data_->Clear();
     // Boolean expression 5 > 3 && 2 < 4 should be true
     AssertResult<bool>("5 > 3 && 2 < 4", true);
     
     // Test 4: Mixed operations
-    data_->Clear();
     // Mixed operations 10 / 2 + 3 * 4 should produce 17
     AssertResult<int>("10 / 2 + 3 * 4", 17);
 }
@@ -245,32 +241,20 @@ TEST_F(TestRho, TestConditionals) {
 TEST_F(TestRho, TestSimpleBinaryOperations) {
     console_.SetLanguage(Language::Rho);
     
-    // Addition
-    data_->Clear();
-    console_.Execute("5 + 1");
-    UnwrapStackValues();
-    ASSERT_EQ(AtData<int>(0), 6);
+    // Addition - use AssertResult for cleaner tests
+    AssertResult<int>("5 + 1", 6);
     
     // Subtraction
-    data_->Clear();
-    console_.Execute("10 - 4");
-    UnwrapStackValues();
-    ASSERT_EQ(AtData<int>(0), 6);
+    AssertResult<int>("10 - 4", 6);
     
     // Multiplication
-    data_->Clear();
-    console_.Execute("2 * 3");
-    UnwrapStackValues();
-    ASSERT_EQ(AtData<int>(0), 6);
+    AssertResult<int>("2 * 3", 6);
     
     // Division
-    data_->Clear();
-    console_.Execute("12 / 2");
-    UnwrapStackValues();
-    ASSERT_EQ(AtData<int>(0), 6);
+    AssertResult<int>("12 / 2", 6);
 }
 
-// Test to debug the unwrapping functionality and type checking
+// Test to verify the unwrapping functionality and type checking
 TEST_F(TestRho, TestTypeUnwrapping) {
     // Skip test if registry initialization failed
     if (!reg_ || !reg_->IsValid()) {
@@ -279,66 +263,37 @@ TEST_F(TestRho, TestTypeUnwrapping) {
     }
 
     // Skip test if executor or stacks aren't properly initialized
-    if (!exec_ || !data_ || data_->Empty() || !context_ || context_->Empty()) {
+    if (!exec_ || !data_ || !context_) {
         std::cerr << "Executor or stacks not properly initialized, skipping test." << std::endl;
         return;
     }
 
     try {
         console_.SetLanguage(Language::Rho);
-        data_->Clear();
         
-        // Create test values
-        auto intValue = reg_->New<int>(42);
-        auto boolValue = reg_->New<bool>(true);
+        // Test the AssertResult helper with different value types
+        AssertResult<int>("42", 42);
+        AssertResult<bool>("true", true);
+        AssertResult<bool>("false", false);
+        AssertResult<int>("21 * 2", 42);
+        AssertResult<bool>("5 > 3", true);
+        AssertResult<bool>("2 == 3", false);
         
-        // Test direct values first
-        data_->Push(intValue);
-        std::cout << "DEBUG: Direct int push - Type: " << data_->Top().GetClass()->GetName() << std::endl;
-        std::cout << "DEBUG: IsType<int>: " << (data_->Top().IsType<int>() ? "true" : "false") << std::endl;
-        ASSERT_TRUE(data_->Top().IsType<int>());
-        data_->Pop();
+        // Test expressions that would have previously created continuations
+        AssertResult<int>("2 + 3", 5);
+        AssertResult<int>("2 + 3 * 4", 14); // Tests operator precedence
+        AssertResult<int>("(2 + 3) * 4", 20); // Tests parenthesized expressions
+        AssertResult<bool>("true && false", false); // Tests logical operations
+        AssertResult<bool>("true || false", true);
+        AssertResult<bool>("2 < 3 && 4 > 1", true); // Tests compound boolean expressions
         
-        data_->Push(boolValue);
-        std::cout << "DEBUG: Direct bool push - Type: " << data_->Top().GetClass()->GetName() << std::endl;
-        std::cout << "DEBUG: IsType<bool>: " << (data_->Top().IsType<bool>() ? "true" : "false") << std::endl;
-        ASSERT_TRUE(data_->Top().IsType<bool>());
-        data_->Pop();
-        
-        // Now test unwrapping of expressions through Rho
-        data_->Clear();
-        console_.Execute("2 + 3");
-        std::cout << "DEBUG: After '2 + 3' - Type: " << data_->Top().GetClass()->GetName() << std::endl;
-        std::cout << "DEBUG: IsType<int>: " << (data_->Top().IsType<int>() ? "true" : "false") << std::endl;
-        std::cout << "DEBUG: Value: " << data_->Top().ToString() << std::endl;
-        
-        // Use our UnwrapStackValues method to handle continuations
-        if (data_->Top().IsType<Continuation>()) {
-            std::cout << "DEBUG: Top value is a Continuation - using UnwrapStackValues" << std::endl;
-            
-            // First, inspect the continuation
-            Pointer<Continuation> cont = data_->Top();
-            std::cout << "DEBUG: Continuation code size: " << cont->GetCode()->Size() << std::endl;
-            
-            // Output each element for debugging
-            for (int i = 0; i < cont->GetCode()->Size(); i++) {
-                Object item = cont->GetCode()->At(i);
-                std::cout << "DEBUG: Code[" << i << "] Type: " << item.GetClass()->GetName()
-                          << ", Value: " << item.ToString() << std::endl;
-            }
-            
-            // Use our unwrapping method from TestLangCommon
-            UnwrapStackValues();
-            
-            // Now check the type again
-            std::cout << "DEBUG: After UnwrapStackValues - Type: " << data_->Top().GetClass()->GetName() << std::endl;
-            std::cout << "DEBUG: IsType<int>: " << (data_->Top().IsType<int>() ? "true" : "false") << std::endl;
-            ASSERT_TRUE(data_->Top().IsType<int>());
-            ASSERT_EQ(ConstDeref<int>(data_->Top()), 5);
-        }
+        // Test using our test helper method
+        Object result = EvaluateAndUnwrap("2 + 3 * 4");
+        ASSERT_TRUE(result.IsType<int>());
+        ASSERT_EQ(ConstDeref<int>(result), 14);
     }
     catch (const std::exception& e) {
         std::cerr << "Exception during TestTypeUnwrapping: " << e.what() << std::endl;
-        // Don't let the test fail due to exceptions
+        FAIL() << "Exception: " << e.what(); 
     }
 }

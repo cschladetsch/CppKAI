@@ -953,6 +953,30 @@ TestRho/SimpleRho.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleRho.cpp.s
 .PHONY : TestRho/SimpleRho.cpp.s
 
+TestRho/SimpleRhoPiTests.o: TestRho/SimpleRhoPiTests.cpp.o
+.PHONY : TestRho/SimpleRhoPiTests.o
+
+# target to build an object file
+TestRho/SimpleRhoPiTests.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleRhoPiTests.cpp.o
+.PHONY : TestRho/SimpleRhoPiTests.cpp.o
+
+TestRho/SimpleRhoPiTests.i: TestRho/SimpleRhoPiTests.cpp.i
+.PHONY : TestRho/SimpleRhoPiTests.i
+
+# target to preprocess a source file
+TestRho/SimpleRhoPiTests.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleRhoPiTests.cpp.i
+.PHONY : TestRho/SimpleRhoPiTests.cpp.i
+
+TestRho/SimpleRhoPiTests.s: TestRho/SimpleRhoPiTests.cpp.s
+.PHONY : TestRho/SimpleRhoPiTests.s
+
+# target to generate assembly for a file
+TestRho/SimpleRhoPiTests.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleRhoPiTests.cpp.s
+.PHONY : TestRho/SimpleRhoPiTests.cpp.s
+
 TestRho/SimpleRhoTest.o: TestRho/SimpleRhoTest.cpp.o
 .PHONY : TestRho/SimpleRhoTest.o
 
@@ -1319,6 +1343,9 @@ help:
 	@echo "... TestRho/SimpleRho.o"
 	@echo "... TestRho/SimpleRho.i"
 	@echo "... TestRho/SimpleRho.s"
+	@echo "... TestRho/SimpleRhoPiTests.o"
+	@echo "... TestRho/SimpleRhoPiTests.i"
+	@echo "... TestRho/SimpleRhoPiTests.s"
 	@echo "... TestRho/SimpleRhoTest.o"
 	@echo "... TestRho/SimpleRhoTest.i"
 	@echo "... TestRho/SimpleRhoTest.s"

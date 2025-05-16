@@ -1,41 +1,37 @@
 #include <KAI/Core/Base.h>
 #include <KAI/Core/Debug.h>
 #include <KAI/Core/Logger.h>
-#include <KAI/Network/NetworkLogger.h>
 #include <iostream>
-
-using namespace KAI;
-using namespace KAI::Network;
 
 // Simple program to test the logger output
 int main() {
     try {
         // Initialize loggers
         std::cout << "Initializing loggers..." << std::endl;
-        Logger::Init();
-        NetworkLogger::Init();
+        kai::Logger::Init();
+        
+        // Ensure trace settings are set to show file and line info
+        kai::debug::Trace::TraceFileLocation = true;
+        kai::debug::Trace::StripPath = true;
+        kai::debug::Trace::TraceFunction = true;
         
         std::cout << "Testing basic Logger methods..." << std::endl;
         // Test basic Logger methods directly
-        Logger::Info("Direct info message");
-        Logger::Warning("Direct warning message");
-        Logger::Error("Direct error message");
+        kai::Logger::Info("Direct info message");
+        kai::Logger::Warning("Direct warning message");
+        kai::Logger::Error("Direct error message");
         
         std::cout << "Testing location-aware Logger methods..." << std::endl;
         // Test location-aware Logger methods directly
-        Logger::InfoWithLocation("Info message with location", __FILE__, __LINE__);
-        Logger::WarningWithLocation("Warning message with location", __FILE__, __LINE__);
-        Logger::ErrorWithLocation("Error message with location", __FILE__, __LINE__);
+        kai::Logger::InfoWithLocation("Info message with location", __FILE__, __LINE__);
+        kai::Logger::WarningWithLocation("Warning message with location", __FILE__, __LINE__);
+        kai::Logger::ErrorWithLocation("Error message with location", __FILE__, __LINE__);
         
-        std::cout << "Testing NetworkLogger methods..." << std::endl;
-        // Test NetworkLogger methods directly
-        NetworkLogger::LogConnection("Direct connection message");
-        NetworkLogger::LogMessage("Direct network message");
-        
-        std::cout << "Testing location-aware NetworkLogger methods..." << std::endl;
-        // Test location-aware NetworkLogger methods directly
-        NetworkLogger::LogConnectionWithLocation("Connection message with location", __FILE__, __LINE__);
-        NetworkLogger::LogMessageWithLocation("Network message with location", __FILE__, __LINE__);
+        std::cout << "Testing KAI_TRACE macros..." << std::endl;
+        // Test basic KAI_TRACE macros
+        KAI_TRACE() << "This is a basic trace message";
+        KAI_TRACE_WARN() << "This is a warning trace message";
+        KAI_TRACE_ERROR() << "This is an error trace message";
         
         std::cout << "Test completed successfully." << std::endl;
     }

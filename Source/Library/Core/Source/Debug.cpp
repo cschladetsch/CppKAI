@@ -22,7 +22,7 @@ StringStream& operator<<(StringStream& s, const Structure& st) {
 ostream& operator<<(ostream& S, ConsoleColor::EType type) { return S; }
 
 namespace debug {
-bool Trace::TraceFileLocation = false;
+bool Trace::TraceFileLocation = true; // Always show file and line information
 bool Trace::StripPath = true;
 bool Trace::TraceFunction = false;
 

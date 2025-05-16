@@ -758,7 +758,7 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
             
             if (!tempStack->Empty()) {
                 // Get the result and unwrap it to ensure primitive value
-                Object result = tempExec->UnwrapValue(tempStack->Top());
+                Object result = tempStack->Top(); // No longer unwrapping automatically
                 
                 KAI_TRACE() << "Pi sequence evaluation result: " << result.ToString() 
                           << " (type: " << result.GetClass()->GetName() << ")";
@@ -937,14 +937,14 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
             if (result.IsType<Continuation>()) {
                 // Try different methods to get a primitive value
                 
-                // Method 1: Use the executor's UnwrapValue method
-                Object unwrapped = opExecutor->UnwrapValue(result);
-                if (unwrapped.Valid() && unwrapped != result && 
-                   (unwrapped.IsType<int>() || unwrapped.IsType<float>() || 
-                    unwrapped.IsType<bool>() || unwrapped.IsType<String>())) {
-                    KAI_TRACE() << "Unwrapped continuation result to " << unwrapped.ToString()
-                              << " (type: " << unwrapped.GetClass()->GetName() << ")";
-                    result = unwrapped;
+                // We no longer do automatic unwrapping
+                // Instead we rely on the tests to use UnwrapStackValues from TestLangCommon
+                // This preserves continuations that should remain as blocks or pi{} constructs
+                // Method 1: Check for primitive values directly
+                if (result.IsType<int>() || result.IsType<float>() || 
+                    result.IsType<bool>() || result.IsType<String>()) {
+                    KAI_TRACE() << "Result is already a primitive value: " << result.ToString()
+                              << " (type: " << result.GetClass()->GetName() << ")";
                 }
                 // Method 2: For basic binary operations with primitive operands, directly compute result
                 else {
@@ -1060,14 +1060,14 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
     // Ensure we have a primitive value, not a continuation
     if (result.IsType<Continuation>()) {
         // Try different methods to get a primitive value
-        // Method 1: Use the executor's UnwrapValue method
-        Object unwrapped = evalExec->UnwrapValue(result);
-        if (unwrapped.Valid() && unwrapped != result && 
-           (unwrapped.IsType<int>() || unwrapped.IsType<float>() || 
-            unwrapped.IsType<bool>() || unwrapped.IsType<String>())) {
-            KAI_TRACE() << "Unwrapped continuation result to " << unwrapped.ToString()
-                      << " (type: " << unwrapped.GetClass()->GetName() << ")";
-            result = unwrapped;
+        // We no longer do automatic unwrapping 
+        // Instead we rely on the tests to use UnwrapStackValues from TestLangCommon
+        // This preserves continuations that should remain as blocks or pi{} constructs
+        // Check if the result is already a primitive value
+        if (result.IsType<int>() || result.IsType<float>() || 
+            result.IsType<bool>() || result.IsType<String>()) {
+            KAI_TRACE() << "Result is already a primitive value: " << result.ToString()
+                      << " (type: " << result.GetClass()->GetName() << ")";
         }
         // Method 2: For basic binary operations with primitive operands, directly compute result
         else {

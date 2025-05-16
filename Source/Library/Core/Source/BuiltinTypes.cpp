@@ -40,17 +40,27 @@ void FileLocation::AddLocation(StringStream &str) const {
     
     // Only strip path if that setting is enabled
     if (debug::Trace::StripPath) {
+        // Handle both forward and backslashes (Unix and Windows paths)
         size_t lastSlash = loc.find_last_of('/');
-        if (lastSlash != std::string::npos) {
-            loc = loc.substr(lastSlash + 1);
+        size_t lastBackslash = loc.find_last_of('\\');
+        
+        // Find the position of the last separator (whichever was found last)
+        size_t lastSeparator = std::string::npos;
+        if (lastSlash != std::string::npos && lastBackslash != std::string::npos) {
+            lastSeparator = std::max(lastSlash, lastBackslash);
+        } else if (lastSlash != std::string::npos) {
+            lastSeparator = lastSlash;
+        } else if (lastBackslash != std::string::npos) {
+            lastSeparator = lastBackslash;
         }
         
-        size_t lastBackslash = loc.find_last_of('\\');
-        if (lastBackslash != std::string::npos) {
-            loc = loc.substr(lastBackslash + 1);
+        // Extract the filename if a separator was found
+        if (lastSeparator != std::string::npos) {
+            loc = loc.substr(lastSeparator + 1);
         }
     }
 
+    // Always show file and line information regardless of TraceFileLocation setting
     if (!loc.empty()) {
 #ifdef __MSVC__
         // Format is [filename(line)] for MSVC

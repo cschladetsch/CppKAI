@@ -11,8 +11,11 @@ target_include_directories(LogTest PUBLIC
 # Link against the required libraries
 target_link_libraries(LogTest
     Core
-    Network
+    Executor
 )
+
+# Define KAI_DEBUG_TRACE to enable trace macros
+target_compile_definitions(LogTest PRIVATE KAI_DEBUG_TRACE)
 
 # Add the executable to the build
 add_test(NAME LogTest COMMAND LogTest)

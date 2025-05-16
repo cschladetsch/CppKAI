@@ -160,43 +160,9 @@ void Console::Execute(Pointer<Continuation> cont) {
             int currentIndex = stackSize - i - 1;
             Object item = dataStack->At(currentIndex);
             
-            // If it's a continuation, extract its primitive value
-            if (item.IsType<Continuation>()) {
-                Object unwrapped = executor->UnwrapValue(item);
-                
-                // If we got a different object, replace it in the stack
-                if (unwrapped != item && unwrapped.Exists()) {
-                    KAI_TRACE() << "Extracted primitive value at position " << currentIndex 
-                             << " from type: " << item.GetClass()->GetName() 
-                             << " to type: " << unwrapped.GetClass()->GetName();
-                    
-                    // Create a new stack with extracted values
-                    Pointer<Stack> newStack = reg_->New<Stack>();
-                    
-                    // Preserve items below the one we're replacing
-                    for (int j = 0; j < currentIndex; j++) {
-                        newStack->Push(dataStack->At(j));
-                    }
-                    
-                    // Add the extracted primitive value
-                    newStack->Push(unwrapped);
-                    
-                    // Preserve items above the one we're replacing
-                    for (int j = currentIndex + 1; j < stackSize; j++) {
-                        newStack->Push(dataStack->At(j));
-                    }
-                    
-                    // Replace the stack
-                    executor->ClearStacks();
-                    for (int j = 0; j < newStack->Size(); j++) {
-                        executor->Push(newStack->At(j));
-                    }
-                    
-                    // Update our reference to the stack and its size
-                    dataStack = executor->GetDataStack();
-                    stackSize = dataStack->Size();
-                }
-            }
+            // We no longer automatically unwrap continuations here
+            // Continuations are preserved by design for blocks and Pi {} constructs
+            // Test code should use UnwrapStackValues() from TestLangCommon if needed
         }
     }
     KAI_CATCH(Exception::Base, E) { KAI_TRACE_ERROR_1(E); }

@@ -9,6 +9,18 @@ In the Rho language implementation, continuations should only be used for two sp
 
 For all other operations, especially simple expressions like arithmetic and comparisons, the language should directly evaluate to primitive values (int, bool, String).
 
+## Implementation Details
+
+The key changes made to support this design:
+
+1. Removed `UnwrapValue` method from `Executor.h` and `Executor.cpp`
+2. Modified the `Continue` method to no longer automatically unwrap continuations
+3. Implemented the `ExtractValueFromContinuation` method in `TestLangCommon.h` which preserves block continuations
+4. Implemented `UnwrapStackValues` in `TestLangCommon.cpp` to properly handle stack values in tests
+5. Fixed references to the removed `UnwrapValue` method in:
+   - `Console.cpp`
+   - `RhoTranslator.cpp`
+
 ## Test Framework Support
 
 The test framework includes helper methods in `TestLangCommon` to extract values from any continuation objects that might be produced during testing:
@@ -43,7 +55,6 @@ console_.Execute("{ 2 + 3 }");  // Block should remain a continuation
 
 The extraction logic in `TestLangCommon::ExtractValueFromContinuation` checks for:
 
-1. Block markers (ContinuationBegin/End, BlockBegin/End operations)
+1. Block markers (ContinuationBegin/End operations)
 2. Simple expressions that should have been directly evaluated
 3. Binary operations that can be calculated from their operands
-EOL < /dev/null
