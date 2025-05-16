@@ -1,0 +1,24 @@
+Note: Google Test filter = RhoPiBasicFixture.*
+[==========] Running 10 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 10 tests from RhoPiBasicFixture
+[ RUN      ] RhoPiBasicFixture.Addition
+[2025-05-17 05:09:46] [INFO] [TranslatorCommon.cpp:149]  Info: TranslatorCommon::Append: 2
+[TranslatorCommon.cpp:149]  [Info] TranslatorCommon::Append: 2
+[2025-05-17 05:09:46] [INFO] [TranslatorCommon.cpp:149]  Info: TranslatorCommon::Append: 3
+[TranslatorCommon.cpp:149]  [Info] TranslatorCommon::Append: 3
+Appending operation: Plus
+[2025-05-17 05:09:46] [INFO] [TranslatorCommon.cpp:87]  Info: TranslatorCommon::Append: Directly evaluated 2 Plus 3 = 5
+[TranslatorCommon.cpp:87]  [Info] TranslatorCommon::Append: Directly evaluated 2 Plus 3 = 5
+[2025-05-17 05:09:46] [INFO] [TranslatorCommon.cpp:149]  Info: TranslatorCommon::Append: Continuation #59[ContinuationBegin 5 ContinuationEnd ] @0/3
+[TranslatorCommon.cpp:149]  [Info] TranslatorCommon::Append: Continuation #59[ContinuationBegin 5 ContinuationEnd ] @0/3
+[2025-05-17 05:09:46] [INFO] [PiTranslator.cpp:21]  Info: Created Pi continuation
+[PiTranslator.cpp:21]  [Info] Created Pi continuation
+[2025-05-17 05:09:46] [INFO] [Console.cpp:179]  Info: Executing text: 2 3 +
+[Console.cpp:179]  [Info] Executing text: 2 3 +
+[2025-05-17 05:09:46] [INFO] [Console.cpp:136]  Info: cont->GetCode()->Size()='1' Executing continuation with size
+[Console.cpp:136]  [Info] cont->GetCode()->Size()='1' Executing continuation with size
+[2025-05-17 05:09:46] [INFO] [Executor.cpp:823]  Info: Found ContinuationBegin-value-ContinuationEnd pattern with value type: int, value: 5
+[Executor.cpp:823]  [Info] Found ContinuationBegin-value-ContinuationEnd pattern with value type: int, value: 5
+[2025-05-17 05:09:46] [INFO] [Executor.cpp:833]  Info: Pushing primitive type directly from continuation: int
+[Executor.cpp:833]  [Info] Pushing primitive type directly from continuation: int

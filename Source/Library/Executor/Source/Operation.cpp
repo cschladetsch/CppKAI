@@ -132,6 +132,7 @@ const char *Operation::ToString(int value) {
         CASE(StartPiSequence)
         CASE(StartRhoSequence)
         CASE(GarbageCollect)
+        CASE(UnnnamedOp)
     }
 
     return "UnnnamedOp";

@@ -27,9 +27,22 @@ TEST(TestRho, TestTypePreservation) {
         std::cout << "Addition result type: " << result.GetClass()->GetName() << std::endl;
         std::cout << "Addition result value: " << result.ToString() << std::endl;
         
-        // If it's a continuation, unwrap it
+        // If it's a continuation, try to extract the value
         if (result.IsType<Continuation>()) {
-            Object unwrapped = exec->UnwrapValue(result);
+            // Use TestLangCommon helper 
+            Object unwrapped = result;
+            
+            // Manually unwrap from a continuation if needed
+            if (result.IsType<Continuation>()) {
+                Pointer<Continuation> cont = result;
+                if (cont->GetCode().Exists() && cont->GetCode()->Size() > 0) {
+                    // Try to get first element if it's a simple value
+                    if (cont->GetCode()->Size() == 1) {
+                        unwrapped = cont->GetCode()->At(0);
+                    }
+                }
+            }
+            
             std::cout << "Unwrapped result type: " << unwrapped.GetClass()->GetName() << std::endl;
             std::cout << "Unwrapped result value: " << unwrapped.ToString() << std::endl;
             
@@ -59,9 +72,22 @@ TEST(TestRho, TestTypePreservation) {
         std::cout << "Subtraction result type: " << result.GetClass()->GetName() << std::endl;
         std::cout << "Subtraction result value: " << result.ToString() << std::endl;
         
-        // If it's a continuation, unwrap it
+        // If it's a continuation, try to extract the value
         if (result.IsType<Continuation>()) {
-            Object unwrapped = exec->UnwrapValue(result);
+            // Use TestLangCommon helper 
+            Object unwrapped = result;
+            
+            // Manually unwrap from a continuation if needed
+            if (result.IsType<Continuation>()) {
+                Pointer<Continuation> cont = result;
+                if (cont->GetCode().Exists() && cont->GetCode()->Size() > 0) {
+                    // Try to get first element if it's a simple value
+                    if (cont->GetCode()->Size() == 1) {
+                        unwrapped = cont->GetCode()->At(0);
+                    }
+                }
+            }
+            
             std::cout << "Unwrapped result type: " << unwrapped.GetClass()->GetName() << std::endl;
             std::cout << "Unwrapped result value: " << unwrapped.ToString() << std::endl;
             
@@ -91,9 +117,22 @@ TEST(TestRho, TestTypePreservation) {
         std::cout << "Multiplication result type: " << result.GetClass()->GetName() << std::endl;
         std::cout << "Multiplication result value: " << result.ToString() << std::endl;
         
-        // If it's a continuation, unwrap it
+        // If it's a continuation, try to extract the value
         if (result.IsType<Continuation>()) {
-            Object unwrapped = exec->UnwrapValue(result);
+            // Use TestLangCommon helper 
+            Object unwrapped = result;
+            
+            // Manually unwrap from a continuation if needed
+            if (result.IsType<Continuation>()) {
+                Pointer<Continuation> cont = result;
+                if (cont->GetCode().Exists() && cont->GetCode()->Size() > 0) {
+                    // Try to get first element if it's a simple value
+                    if (cont->GetCode()->Size() == 1) {
+                        unwrapped = cont->GetCode()->At(0);
+                    }
+                }
+            }
+            
             std::cout << "Unwrapped result type: " << unwrapped.GetClass()->GetName() << std::endl;
             std::cout << "Unwrapped result value: " << unwrapped.ToString() << std::endl;
             
@@ -123,9 +162,22 @@ TEST(TestRho, TestTypePreservation) {
         std::cout << "Stack operations result type: " << result.GetClass()->GetName() << std::endl;
         std::cout << "Stack operations result value: " << result.ToString() << std::endl;
         
-        // If it's a continuation, unwrap it
+        // If it's a continuation, try to extract the value
         if (result.IsType<Continuation>()) {
-            Object unwrapped = exec->UnwrapValue(result);
+            // Use TestLangCommon helper 
+            Object unwrapped = result;
+            
+            // Manually unwrap from a continuation if needed
+            if (result.IsType<Continuation>()) {
+                Pointer<Continuation> cont = result;
+                if (cont->GetCode().Exists() && cont->GetCode()->Size() > 0) {
+                    // Try to get first element if it's a simple value
+                    if (cont->GetCode()->Size() == 1) {
+                        unwrapped = cont->GetCode()->At(0);
+                    }
+                }
+            }
+            
             std::cout << "Unwrapped result type: " << unwrapped.GetClass()->GetName() << std::endl;
             std::cout << "Unwrapped result value: " << unwrapped.ToString() << std::endl;
             
@@ -155,9 +207,22 @@ TEST(TestRho, TestTypePreservation) {
         std::cout << "Comparison result type: " << result.GetClass()->GetName() << std::endl;
         std::cout << "Comparison result value: " << result.ToString() << std::endl;
         
-        // If it's a continuation, unwrap it
+        // If it's a continuation, try to extract the value
         if (result.IsType<Continuation>()) {
-            Object unwrapped = exec->UnwrapValue(result);
+            // Use TestLangCommon helper 
+            Object unwrapped = result;
+            
+            // Manually unwrap from a continuation if needed
+            if (result.IsType<Continuation>()) {
+                Pointer<Continuation> cont = result;
+                if (cont->GetCode().Exists() && cont->GetCode()->Size() > 0) {
+                    // Try to get first element if it's a simple value
+                    if (cont->GetCode()->Size() == 1) {
+                        unwrapped = cont->GetCode()->At(0);
+                    }
+                }
+            }
+            
             std::cout << "Unwrapped result type: " << unwrapped.GetClass()->GetName() << std::endl;
             std::cout << "Unwrapped result value: " << unwrapped.ToString() << std::endl;
             

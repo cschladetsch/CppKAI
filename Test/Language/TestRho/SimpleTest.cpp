@@ -61,7 +61,19 @@ TEST(SimpleTest, BasicPi) {
     cout << "Pi execution result type: " << execResult.GetClass()->GetName() << endl;
     
     // Unwrap the result if needed
-    Object unwrapped = exec->UnwrapValue(execResult);
+    Object unwrapped = execResult;
+    
+    // If it's a continuation, try to extract the primitive value
+    if (execResult.IsType<Continuation>()) {
+        Pointer<Continuation> cont = execResult;
+        if (cont->GetCode().Exists() && cont->GetCode()->Size() > 0) {
+            // Try to get first element if it's a simple value
+            if (cont->GetCode()->Size() == 1) {
+                unwrapped = cont->GetCode()->At(0);
+            }
+        }
+    }
+    
     cout << "Unwrapped result type: " << unwrapped.GetClass()->GetName() << endl;
     
     // Replace the stack value

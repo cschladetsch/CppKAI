@@ -63,17 +63,58 @@ struct Executor : Reflected {
 
     template <class Ident>
     void EvalIdent(Object const &Q) {
-        Ident const &ident = ConstDeref<Ident>(Q);
-        if (ident.Quoted()) {
-            Push(Q);
-            return;
+        try {
+            // Extract the identifier from the object
+            Ident const &ident = ConstDeref<Ident>(Q);
+            
+            // For quoted identifiers, just push the original object
+            if (ident.Quoted()) {
+                if (traceLevel_ > 3) {
+                    KAI_TRACE() << "EvalIdent: Pushing quoted identifier: " << ident.ToString();
+                }
+                Push(Q);
+                return;
+            }
+            
+            // Try to resolve the identifier
+            auto found = TryResolve(ident);
+            
+            // If found, push it onto the stack
+            if (found.Valid() && found.Exists()) {
+                if (traceLevel_ > 3) {
+                    KAI_TRACE() << "EvalIdent: Resolved identifier " << ident.ToString() 
+                              << " to " << found.ToString();
+                    if (found.GetClass()) {
+                        KAI_TRACE() << "  (Type: " << found.GetClass()->GetName() << ")";
+                    }
+                }
+                
+                // Handle special case of resolved continuation
+                if (found.GetTypeNumber() == Type::Number::Continuation) {
+                    // For continuations, execute them directly
+                    Continue(found);
+                } else {
+                    // For other types, push the resolved object
+                    Push(found);
+                }
+            } else {
+                // If not found, throw an exception
+                KAI_TRACE_ERROR() << "EvalIdent: Object not found: " << ident.ToString();
+                KAI_THROW_1(ObjectNotFound, ident.ToString());
+            }
         }
-
-        auto found = TryResolve(ident);
-        if (found.Exists())
-            Push(found);
-        else
-            KAI_THROW_1(ObjectNotFound, ident.ToString());
+        catch (const Exception::Base& e) {
+            KAI_TRACE_ERROR() << "EvalIdent: KAI exception: " << e.ToString();
+            throw; // Rethrow to let the caller handle it
+        }
+        catch (const std::exception& e) {
+            KAI_TRACE_ERROR() << "EvalIdent: std::exception: " << e.what();
+            throw; // Rethrow to let the caller handle it
+        }
+        catch (...) {
+            KAI_TRACE_ERROR() << "EvalIdent: Unknown exception";
+            throw; // Rethrow to let the caller handle it
+        }
     }
 
     void Push(Object const &);

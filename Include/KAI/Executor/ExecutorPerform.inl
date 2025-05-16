@@ -618,6 +618,69 @@ void Executor::Perform(Operation::Type op) {
             MarkAndSweep();
             break;
         }
+            
+        case Operation::Assert: {
+            // Assert operation pops a value and verifies that it's true
+            // If the value is true, nothing happens
+            // If the value is false, an exception is thrown
+            Object value = Pop();
+            bool condition = false;
+            
+            // Try to convert various types to boolean
+            if (value.IsType<bool>()) {
+                condition = ConstDeref<bool>(value);
+            }
+            else if (value.IsType<int>()) {
+                condition = ConstDeref<int>(value) != 0;
+            }
+            else if (value.IsType<float>() || value.IsType<double>()) {
+                condition = ConstDeref<float>(value) != 0.0f;
+            }
+            else if (value.IsType<String>()) {
+                // Consider empty string as false, non-empty as true
+                condition = !ConstDeref<String>(value).empty();
+            }
+            else {
+                // For object types, consider existence/validity as the condition
+                condition = value.Exists() && value.Valid();
+            }
+            
+            if (!condition) {
+                KAI_THROW_1(Base, "Assertion failed");
+            }
+            
+            break;
+        }
+            
+        case Operation::Size: {
+            // Get the top object from the stack
+            Object obj = Pop();
+            
+            // Handle different container types
+            if (obj.IsType<Array>()) {
+                Push(New<int>(Deref<Array>(obj).Size()));
+            }
+            else if (obj.IsType<List>()) {
+                Push(New<int>(Deref<List>(obj).Size()));
+            }
+            else if (obj.IsType<Map>()) {
+                Push(New<int>(Deref<Map>(obj).Size()));
+            }
+            else if (obj.IsType<String>()) {
+                Push(New<int>(Deref<String>(obj).size()));
+            }
+            else {
+                KAI_THROW_1(Base, "Size operation called on unsupported type");
+            }
+            break;
+        }
+            
+        case Operation::UnnnamedOp: {
+            // UnnnamedOp is a placeholder for operations that don't have a specific implementation
+            // In most cases, we can just ignore it without causing an error
+            KAI_TRACE() << "Ignoring UnnnamedOp operation";
+            break;
+        }
 
         default: {
             // Provide a default implementation for unimplemented operations

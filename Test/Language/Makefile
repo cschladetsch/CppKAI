@@ -545,6 +545,30 @@ TestRho/AdditionalBinaryOpTests.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/AdditionalBinaryOpTests.cpp.s
 .PHONY : TestRho/AdditionalBinaryOpTests.cpp.s
 
+TestRho/AdditionalRhoTests.o: TestRho/AdditionalRhoTests.cpp.o
+.PHONY : TestRho/AdditionalRhoTests.o
+
+# target to build an object file
+TestRho/AdditionalRhoTests.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/AdditionalRhoTests.cpp.o
+.PHONY : TestRho/AdditionalRhoTests.cpp.o
+
+TestRho/AdditionalRhoTests.i: TestRho/AdditionalRhoTests.cpp.i
+.PHONY : TestRho/AdditionalRhoTests.i
+
+# target to preprocess a source file
+TestRho/AdditionalRhoTests.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/AdditionalRhoTests.cpp.i
+.PHONY : TestRho/AdditionalRhoTests.cpp.i
+
+TestRho/AdditionalRhoTests.s: TestRho/AdditionalRhoTests.cpp.s
+.PHONY : TestRho/AdditionalRhoTests.s
+
+# target to generate assembly for a file
+TestRho/AdditionalRhoTests.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/AdditionalRhoTests.cpp.s
+.PHONY : TestRho/AdditionalRhoTests.cpp.s
+
 TestRho/AdvancedBinaryOpTests.o: TestRho/AdvancedBinaryOpTests.cpp.o
 .PHONY : TestRho/AdvancedBinaryOpTests.o
 
@@ -929,6 +953,30 @@ TestRho/SimpleArithmeticTest.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleArithmeticTest.cpp.s
 .PHONY : TestRho/SimpleArithmeticTest.cpp.s
 
+TestRho/SimpleDirectTest.o: TestRho/SimpleDirectTest.cpp.o
+.PHONY : TestRho/SimpleDirectTest.o
+
+# target to build an object file
+TestRho/SimpleDirectTest.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleDirectTest.cpp.o
+.PHONY : TestRho/SimpleDirectTest.cpp.o
+
+TestRho/SimpleDirectTest.i: TestRho/SimpleDirectTest.cpp.i
+.PHONY : TestRho/SimpleDirectTest.i
+
+# target to preprocess a source file
+TestRho/SimpleDirectTest.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleDirectTest.cpp.i
+.PHONY : TestRho/SimpleDirectTest.cpp.i
+
+TestRho/SimpleDirectTest.s: TestRho/SimpleDirectTest.cpp.s
+.PHONY : TestRho/SimpleDirectTest.s
+
+# target to generate assembly for a file
+TestRho/SimpleDirectTest.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleDirectTest.cpp.s
+.PHONY : TestRho/SimpleDirectTest.cpp.s
+
 TestRho/SimpleRho.o: TestRho/SimpleRho.cpp.o
 .PHONY : TestRho/SimpleRho.o
 
@@ -1292,6 +1340,9 @@ help:
 	@echo "... TestRho/AdditionalBinaryOpTests.o"
 	@echo "... TestRho/AdditionalBinaryOpTests.i"
 	@echo "... TestRho/AdditionalBinaryOpTests.s"
+	@echo "... TestRho/AdditionalRhoTests.o"
+	@echo "... TestRho/AdditionalRhoTests.i"
+	@echo "... TestRho/AdditionalRhoTests.s"
 	@echo "... TestRho/AdvancedBinaryOpTests.o"
 	@echo "... TestRho/AdvancedBinaryOpTests.i"
 	@echo "... TestRho/AdvancedBinaryOpTests.s"
@@ -1340,6 +1391,9 @@ help:
 	@echo "... TestRho/SimpleArithmeticTest.o"
 	@echo "... TestRho/SimpleArithmeticTest.i"
 	@echo "... TestRho/SimpleArithmeticTest.s"
+	@echo "... TestRho/SimpleDirectTest.o"
+	@echo "... TestRho/SimpleDirectTest.i"
+	@echo "... TestRho/SimpleDirectTest.s"
 	@echo "... TestRho/SimpleRho.o"
 	@echo "... TestRho/SimpleRho.i"
 	@echo "... TestRho/SimpleRho.s"

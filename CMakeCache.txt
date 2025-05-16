@@ -38,7 +38,7 @@ CMAKE_AR:FILEPATH=/usr/bin/ar
 
 //Choose the type of build, options are: None Debug Release RelWithDebInfo
 // MinSizeRel ...
-CMAKE_BUILD_TYPE:STRING=Debug
+CMAKE_BUILD_TYPE:STRING=
 
 //Enable/Disable color output during build.
 CMAKE_COLOR_MAKEFILE:BOOL=ON
@@ -331,9 +331,6 @@ OPENGL_INCLUDE_DIR:PATH=/usr/include
 OPENGL_egl_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libEGL.so
 
 //Path to a library.
-OPENGL_gl_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libGL.so
-
-//Path to a library.
 OPENGL_gles2_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libGLESv2.so
 
 //Path to a library.
@@ -617,8 +614,6 @@ OPENGL_GLX_INCLUDE_DIR-ADVANCED:INTERNAL=1
 OPENGL_INCLUDE_DIR-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: OPENGL_egl_LIBRARY
 OPENGL_egl_LIBRARY-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: OPENGL_gl_LIBRARY
-OPENGL_gl_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: OPENGL_gles2_LIBRARY
 OPENGL_gles2_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: OPENGL_gles3_LIBRARY

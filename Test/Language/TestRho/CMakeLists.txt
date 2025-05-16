@@ -11,6 +11,9 @@ add_library(TestRhoFiles OBJECT
     SimpleRho.cpp
     MinimalRhoTest.cpp
     TypeTest.cpp
+    SimpleDirectTest.cpp
+    DirectBinaryOpTest.cpp
+    AdditionalRhoTests.cpp
     # Note: DoWhile tests are disabled pending implementation completion
     # See /home/xian/local/KAI/Todo-DoWhile.md for details
 )

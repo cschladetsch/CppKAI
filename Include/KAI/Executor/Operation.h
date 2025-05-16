@@ -159,6 +159,7 @@ struct Operation {
         StartPiSequence,
         StartRhoSequence,
         GarbageCollect,
+        UnnnamedOp,
     };
 
    private:

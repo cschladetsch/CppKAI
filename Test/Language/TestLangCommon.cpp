@@ -163,7 +163,6 @@ void TestLangCommon::ExecScriptFile(const std::string &scriptFileName) {
         throw;  // Re-throw the exception
     }
 }
-}
 
 void TestLangCommon::ExecScripts() {
     const fs::path scriptsRoot(KAI_STRINGISE(KAI_SCRIPT_ROOT));
@@ -264,6 +263,7 @@ void TestLangCommon::ExecScripts() {
 void TestLangCommon::UnwrapStackValues() {
     // Guard against invalid or empty data stack
     if (!data_ || data_->Empty()) {
+        KAI_TRACE() << "UnwrapStackValues: Data stack is empty or invalid";
         return;
     }
     
@@ -272,6 +272,8 @@ void TestLangCommon::UnwrapStackValues() {
     
     // First, pop all values off the original stack onto a temporary stack
     int stackSize = data_->Size();
+    KAI_TRACE() << "UnwrapStackValues: Processing " << stackSize << " items on stack";
+    
     for (int i = 0; i < stackSize; i++) {
         if (data_->Empty()) break;
         
@@ -286,25 +288,235 @@ void TestLangCommon::UnwrapStackValues() {
         
         Object val = tempStack.Pop();
         
+        // Debug the current value
+        if (val.Exists() && val.GetClass()) {
+            KAI_TRACE() << "UnwrapStackValues: Processing stack item of type " << val.GetClass()->GetName();
+        } else {
+            KAI_TRACE() << "UnwrapStackValues: Processing invalid or null stack item";
+        }
+        
         // If it's a continuation, try to extract primitive values
-        // but only for non-block, non-Pi constructs
         if (val.IsType<Continuation>()) {
-            // Use our extraction method that preserves blocks but handles other patterns
+            // Get the continuation and its code
+            Pointer<Continuation> cont = val;
+            
+            // Make sure it has valid code
+            if (!cont->GetCode().Valid() || !cont->GetCode().Exists()) {
+                KAI_TRACE() << "UnwrapStackValues: Continuation has invalid code";
+                data_->Push(val);
+                continue;
+            }
+            
+            // For empty continuations, just push back the original
+            if (cont->GetCode()->Size() == 0) {
+                KAI_TRACE() << "UnwrapStackValues: Continuation has empty code";
+                data_->Push(val);
+                continue;
+            }
+            
+            KAI_TRACE() << "UnwrapStackValues: Analyzing continuation with " << cont->GetCode()->Size() << " elements";
+            
+            // First check for ContinuationBegin/End pattern
+            bool hasContinuationMarkers = false;
+            Operation::Type firstOp = Operation::None;
+            Operation::Type lastOp = Operation::None;
+            
+            // Get the first and last operations if they exist
+            if (cont->GetCode()->Size() >= 2) {
+                // Check first element for ContinuationBegin
+                if (cont->GetCode()->At(0).IsType<Operation>()) {
+                    firstOp = ConstDeref<Operation>(cont->GetCode()->At(0)).GetTypeNumber();
+                    if (firstOp == Operation::ContinuationBegin) {
+                        hasContinuationMarkers = true;
+                    }
+                }
+                
+                // Check last element for ContinuationEnd
+                if (cont->GetCode()->At(cont->GetCode()->Size()-1).IsType<Operation>()) {
+                    lastOp = ConstDeref<Operation>(cont->GetCode()->At(cont->GetCode()->Size()-1)).GetTypeNumber();
+                    if (lastOp == Operation::ContinuationEnd) {
+                        hasContinuationMarkers = true;
+                    }
+                }
+            }
+            
+            // Special case: ContinuationBegin ... value ... ContinuationEnd
+            // This is the most common pattern from Pi operations
+            if (hasContinuationMarkers && cont->GetCode()->Size() == 3 && 
+                firstOp == Operation::ContinuationBegin && lastOp == Operation::ContinuationEnd) {
+                
+                // Middle element is the result value
+                Object middleValue = cont->GetCode()->At(1);
+                
+                // If the middle element is a primitive type, extract it
+                if (middleValue.IsType<int>() || middleValue.IsType<bool>() || 
+                    middleValue.IsType<float>() || middleValue.IsType<double>() || 
+                    middleValue.IsType<String>() || middleValue.IsType<Array>()) {
+                    
+                    KAI_TRACE() << "UnwrapStackValues: Extracted primitive value from continuation markers pattern";
+                    data_->Push(middleValue);
+                    continue;
+                }
+            }
+            
+            // Try our extraction method that handles various patterns
             Object extracted = ExtractValueFromContinuation(val);
             
             // If extraction succeeded with a different value, use that
             if (extracted != val && extracted.Valid() && extracted.Exists()) {
+                KAI_TRACE() << "UnwrapStackValues: Extracted primitive value of type " 
+                          << extracted.GetClass()->GetName();
                 data_->Push(extracted);
-                std::cout << "Extracted primitive value from continuation, type: " 
-                          << extracted.GetClass()->GetName() << std::endl;
             } else {
-                // Otherwise push back the original (likely a block continuation)
+                // Check if the last operation was a binary operation
+                bool isBinaryOpPattern = false;
+                
+                if (cont->GetCode()->Size() >= 3) {
+                    // If the last item is an operation, it might be a binary operation pattern
+                    Object lastItem = cont->GetCode()->At(cont->GetCode()->Size() - 1);
+                    if (lastItem.IsType<Operation>()) {
+                        Operation::Type op = ConstDeref<Operation>(lastItem).GetTypeNumber();
+                        
+                        // Check if this is a binary operation
+                        if (op == Operation::Plus || op == Operation::Minus || 
+                            op == Operation::Multiply || op == Operation::Divide || 
+                            op == Operation::Modulo || op == Operation::LogicalAnd || 
+                            op == Operation::LogicalOr || op == Operation::Equiv || 
+                            op == Operation::NotEquiv || op == Operation::Less || 
+                            op == Operation::Greater || op == Operation::LessOrEquiv || 
+                            op == Operation::GreaterOrEquiv) {
+                            
+                            isBinaryOpPattern = true;
+                            
+                            // If we have exactly 3 elements and the first two are valid types
+                            if (cont->GetCode()->Size() == 3) {
+                                Object val1 = cont->GetCode()->At(0);
+                                Object val2 = cont->GetCode()->At(1);
+                                
+                                // Make sure we have valid operands
+                                if (val1.Valid() && val1.Exists() && val2.Valid() && val2.Exists()) {
+                                    // Handle common binary operation patterns
+                                    // Integer operations
+                                    if (val1.IsType<int>() && val2.IsType<int>()) {
+                                        int num1 = ConstDeref<int>(val1);
+                                        int num2 = ConstDeref<int>(val2);
+                                        Registry* reg = val.GetRegistry();
+                                        
+                                        switch (op) {
+                                            case Operation::Plus:
+                                                data_->Push(reg->New<int>(num1 + num2));
+                                                KAI_TRACE() << "UnwrapStackValues: Manually computed " << num1 << " + " << num2 << " = " << (num1 + num2);
+                                                continue;
+                                            case Operation::Minus:
+                                                data_->Push(reg->New<int>(num1 - num2));
+                                                KAI_TRACE() << "UnwrapStackValues: Manually computed " << num1 << " - " << num2 << " = " << (num1 - num2);
+                                                continue;
+                                            case Operation::Multiply:
+                                                data_->Push(reg->New<int>(num1 * num2));
+                                                KAI_TRACE() << "UnwrapStackValues: Manually computed " << num1 << " * " << num2 << " = " << (num1 * num2);
+                                                continue;
+                                            case Operation::Divide:
+                                                if (num2 != 0) {
+                                                    data_->Push(reg->New<int>(num1 / num2));
+                                                    KAI_TRACE() << "UnwrapStackValues: Manually computed " << num1 << " / " << num2 << " = " << (num1 / num2);
+                                                    continue;
+                                                }
+                                                break;
+                                            case Operation::Modulo:
+                                                if (num2 != 0) {
+                                                    data_->Push(reg->New<int>(num1 % num2));
+                                                    KAI_TRACE() << "UnwrapStackValues: Manually computed " << num1 << " % " << num2 << " = " << (num1 % num2);
+                                                    continue;
+                                                }
+                                                break;
+                                            case Operation::Less:
+                                                data_->Push(reg->New<bool>(num1 < num2));
+                                                KAI_TRACE() << "UnwrapStackValues: Manually computed " << num1 << " < " << num2 << " = " << (num1 < num2);
+                                                continue;
+                                            case Operation::Greater:
+                                                data_->Push(reg->New<bool>(num1 > num2));
+                                                KAI_TRACE() << "UnwrapStackValues: Manually computed " << num1 << " > " << num2 << " = " << (num1 > num2);
+                                                continue;
+                                            case Operation::LessOrEquiv:
+                                                data_->Push(reg->New<bool>(num1 <= num2));
+                                                KAI_TRACE() << "UnwrapStackValues: Manually computed " << num1 << " <= " << num2 << " = " << (num1 <= num2);
+                                                continue;
+                                            case Operation::GreaterOrEquiv:
+                                                data_->Push(reg->New<bool>(num1 >= num2));
+                                                KAI_TRACE() << "UnwrapStackValues: Manually computed " << num1 << " >= " << num2 << " = " << (num1 >= num2);
+                                                continue;
+                                            case Operation::Equiv:
+                                                data_->Push(reg->New<bool>(num1 == num2));
+                                                KAI_TRACE() << "UnwrapStackValues: Manually computed " << num1 << " == " << num2 << " = " << (num1 == num2);
+                                                continue;
+                                            case Operation::NotEquiv:
+                                                data_->Push(reg->New<bool>(num1 != num2));
+                                                KAI_TRACE() << "UnwrapStackValues: Manually computed " << num1 << " != " << num2 << " = " << (num1 != num2);
+                                                continue;
+                                            default:
+                                                break;
+                                        }
+                                    }
+                                    // Boolean operations
+                                    else if (val1.IsType<bool>() && val2.IsType<bool>()) {
+                                        bool b1 = ConstDeref<bool>(val1);
+                                        bool b2 = ConstDeref<bool>(val2);
+                                        Registry* reg = val.GetRegistry();
+                                        
+                                        switch (op) {
+                                            case Operation::LogicalAnd:
+                                                data_->Push(reg->New<bool>(b1 && b2));
+                                                KAI_TRACE() << "UnwrapStackValues: Manually computed " << b1 << " && " << b2 << " = " << (b1 && b2);
+                                                continue;
+                                            case Operation::LogicalOr:
+                                                data_->Push(reg->New<bool>(b1 || b2));
+                                                KAI_TRACE() << "UnwrapStackValues: Manually computed " << b1 << " || " << b2 << " = " << (b1 || b2);
+                                                continue;
+                                            case Operation::Equiv:
+                                                data_->Push(reg->New<bool>(b1 == b2));
+                                                KAI_TRACE() << "UnwrapStackValues: Manually computed " << b1 << " == " << b2 << " = " << (b1 == b2);
+                                                continue;
+                                            case Operation::NotEquiv:
+                                                data_->Push(reg->New<bool>(b1 != b2));
+                                                KAI_TRACE() << "UnwrapStackValues: Manually computed " << b1 << " != " << b2 << " = " << (b1 != b2);
+                                                continue;
+                                            default:
+                                                break;
+                                        }
+                                    }
+                                    // String operations
+                                    else if (val1.IsType<String>() && val2.IsType<String>() && op == Operation::Plus) {
+                                        String str1 = ConstDeref<String>(val1);
+                                        String str2 = ConstDeref<String>(val2);
+                                        Registry* reg = val.GetRegistry();
+                                        
+                                        data_->Push(reg->New<String>(str1 + str2));
+                                        KAI_TRACE() << "UnwrapStackValues: Manually computed string concatenation";
+                                        continue;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                // If we couldn't handle the binary operation pattern, push the original continuation
+                KAI_TRACE() << "UnwrapStackValues: Could not extract, pushing original continuation";
                 data_->Push(val);
             }
         } else {
             // For non-continuations, just push back as-is
+            KAI_TRACE() << "UnwrapStackValues: Not a continuation, pushing as-is";
             data_->Push(val);
         }
+    }
+    
+    // Final log of stack state after unwrapping
+    if (!data_->Empty()) {
+        KAI_TRACE() << "UnwrapStackValues: After unwrapping, top stack item type: " 
+                  << data_->Top().GetClass()->GetName();
+    } else {
+        KAI_TRACE() << "UnwrapStackValues: After unwrapping, stack is empty";
     }
 }
 

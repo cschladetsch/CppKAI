@@ -10,6 +10,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/xian/local/KAI/Test/Language/TestLangCommon.cpp" "Test/Language/CMakeFiles/TestRho.dir/TestLangCommon.cpp.o" "gcc" "Test/Language/CMakeFiles/TestRho.dir/TestLangCommon.cpp.o.d"
   "/home/xian/local/KAI/Test/Language/TestRho/AdditionalBinaryOpTests.cpp" "Test/Language/CMakeFiles/TestRho.dir/TestRho/AdditionalBinaryOpTests.cpp.o" "gcc" "Test/Language/CMakeFiles/TestRho.dir/TestRho/AdditionalBinaryOpTests.cpp.o.d"
+  "/home/xian/local/KAI/Test/Language/TestRho/AdditionalRhoTests.cpp" "Test/Language/CMakeFiles/TestRho.dir/TestRho/AdditionalRhoTests.cpp.o" "gcc" "Test/Language/CMakeFiles/TestRho.dir/TestRho/AdditionalRhoTests.cpp.o.d"
   "/home/xian/local/KAI/Test/Language/TestRho/AdvancedBinaryOpTests.cpp" "Test/Language/CMakeFiles/TestRho.dir/TestRho/AdvancedBinaryOpTests.cpp.o" "gcc" "Test/Language/CMakeFiles/TestRho.dir/TestRho/AdvancedBinaryOpTests.cpp.o.d"
   "/home/xian/local/KAI/Test/Language/TestRho/AdvancedRhoPiTests.cpp" "Test/Language/CMakeFiles/TestRho.dir/TestRho/AdvancedRhoPiTests.cpp.o" "gcc" "Test/Language/CMakeFiles/TestRho.dir/TestRho/AdvancedRhoPiTests.cpp.o.d"
   "/home/xian/local/KAI/Test/Language/TestRho/BasicTest.cpp" "Test/Language/CMakeFiles/TestRho.dir/TestRho/BasicTest.cpp.o" "gcc" "Test/Language/CMakeFiles/TestRho.dir/TestRho/BasicTest.cpp.o.d"
@@ -26,6 +27,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/xian/local/KAI/Test/Language/TestRho/RhoWithPiTests.cpp" "Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoWithPiTests.cpp.o" "gcc" "Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoWithPiTests.cpp.o.d"
   "/home/xian/local/KAI/Test/Language/TestRho/SemicolonSyntaxTests.cpp" "Test/Language/CMakeFiles/TestRho.dir/TestRho/SemicolonSyntaxTests.cpp.o" "gcc" "Test/Language/CMakeFiles/TestRho.dir/TestRho/SemicolonSyntaxTests.cpp.o.d"
   "/home/xian/local/KAI/Test/Language/TestRho/SimpleArithmeticTest.cpp" "Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleArithmeticTest.cpp.o" "gcc" "Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleArithmeticTest.cpp.o.d"
+  "/home/xian/local/KAI/Test/Language/TestRho/SimpleDirectTest.cpp" "Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleDirectTest.cpp.o" "gcc" "Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleDirectTest.cpp.o.d"
   "/home/xian/local/KAI/Test/Language/TestRho/SimpleRho.cpp" "Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleRho.cpp.o" "gcc" "Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleRho.cpp.o.d"
   "/home/xian/local/KAI/Test/Language/TestRho/SimpleRhoPiTests.cpp" "Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleRhoPiTests.cpp.o" "gcc" "Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleRhoPiTests.cpp.o.d"
   "/home/xian/local/KAI/Test/Language/TestRho/SimpleRhoTest.cpp" "Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleRhoTest.cpp.o" "gcc" "Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleRhoTest.cpp.o.d"
