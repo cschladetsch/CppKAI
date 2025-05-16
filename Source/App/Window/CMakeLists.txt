@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.7)
 
+# Set OpenGL policy to NEW to avoid warnings
+if(POLICY CMP0072)
+    cmake_policy(SET CMP0072 NEW)
+endif()
+
 set(name Window)
 project(${name})
 
@@ -29,6 +34,7 @@ add_executable(${name} ${SOURCE_FILES})
 find_package(glfw3 REQUIRED)
 
 # OpenGL
+set(OpenGL_GL_PREFERENCE GLVND)
 find_package(OpenGL REQUIRED)
 
 # Link libraries
