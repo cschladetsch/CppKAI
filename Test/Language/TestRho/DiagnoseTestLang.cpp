@@ -66,63 +66,61 @@ void DumpStack(Stack* stack) {
     }
 }
 
+// Test fixture for diagnosing Pi operations and continuation unwrapping
+class DiagnoseTestLang : public TestLangCommon {
+protected:
+    void SetUp() override {
+        TestLangCommon::SetUp();
+        console_.SetLanguage(Language::Pi);
+        reg_->AddClass<int>(Label("int"));
+        reg_->AddClass<bool>(Label("bool"));
+        reg_->AddClass<String>(Label("String"));
+    }
+};
+
 // Test to diagnose the structure of TestLangCommon and how Pi operations work
-TEST(DiagnoseTest, PiOperation) {
-    // Create a TestLangCommon instance 
-    TestLangCommon testLang;
-    testLang.console_.SetLanguage(Language::Pi);
-
-    // Get the necessary objects
-    Registry& reg = testLang.console_.GetRegistry();
-    reg.AddClass<int>(Label("int"));
-    reg.AddClass<bool>(Label("bool"));
-    reg.AddClass<String>(Label("String"));
-
-    // Set up pointers for convenience
-    auto exec = testLang.console_.GetExecutor();
-    auto stack = testLang.data_;
-
+TEST_F(DiagnoseTestLang, PiOperation) {
     // Test 1: Addition
-    stack->Clear();
+    data_->Clear();
     std::cout << "\n=== Test Addition ===" << std::endl;
-    testLang.console_.Execute("2 3 +");
+    console_.Execute("2 3 +");
     
     std::cout << "Stack after Pi execution:" << std::endl;
-    DumpStack(stack);
+    DumpStack(data_);
     
     // Use UnwrapStackValues to extract primitive values from continuations
-    testLang.UnwrapStackValues();
+    UnwrapStackValues();
     
     std::cout << "Stack after UnwrapStackValues:" << std::endl;
-    DumpStack(stack);
+    DumpStack(data_);
     
     // Test 2: Comparison
-    stack->Clear();
+    data_->Clear();
     std::cout << "\n=== Test Comparison ===" << std::endl;
-    testLang.console_.Execute("10 5 >");
+    console_.Execute("10 5 >");
     
     std::cout << "Stack after Pi execution:" << std::endl;
-    DumpStack(stack);
+    DumpStack(data_);
     
     // Use UnwrapStackValues to extract primitive values from continuations
-    testLang.UnwrapStackValues();
+    UnwrapStackValues();
     
     std::cout << "Stack after UnwrapStackValues:" << std::endl;
-    DumpStack(stack);
+    DumpStack(data_);
     
     // Test 3: String 
-    stack->Clear();
+    data_->Clear();
     std::cout << "\n=== Test String ===" << std::endl;
-    testLang.console_.Execute("\"Hello World\"");
+    console_.Execute("\"Hello World\"");
     
     std::cout << "Stack after Pi execution:" << std::endl;
-    DumpStack(stack);
+    DumpStack(data_);
     
     // Use UnwrapStackValues to extract primitive values from continuations
-    testLang.UnwrapStackValues();
+    UnwrapStackValues();
     
     std::cout << "Stack after UnwrapStackValues:" << std::endl;
-    DumpStack(stack);
+    DumpStack(data_);
     
     // We expect all tests to use UnwrapStackValues to extract primitive types
     // from continuations, and our implementation should handle all the patterns

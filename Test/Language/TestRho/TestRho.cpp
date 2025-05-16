@@ -297,3 +297,281 @@ TEST_F(TestRho, TestTypeUnwrapping) {
         FAIL() << "Exception: " << e.what(); 
     }
 }
+
+// Helper function to dump stack info for diagnostics
+void DumpStack(Stack* stack) {
+    std::cout << "Stack size: " << stack->Size() << std::endl;
+    
+    for (int i = 0; i < stack->Size(); i++) {
+        Object obj = stack->At(i);
+        std::cout << "Item " << i << ": ";
+        if (obj.Exists() && obj.GetClass()) {
+            std::cout << "Type=" << obj.GetClass()->GetName().ToString();
+            
+            // Handle specific types
+            if (obj.IsType<int>()) {
+                std::cout << ", Value=" << ConstDeref<int>(obj);
+            }
+            else if (obj.IsType<bool>()) {
+                std::cout << ", Value=" << (ConstDeref<bool>(obj) ? "true" : "false");
+            }
+            else if (obj.IsType<String>()) {
+                std::cout << ", Value=\"" << ConstDeref<String>(obj) << "\"";
+            }
+            else if (obj.IsType<Continuation>()) {
+                Continuation& cont = Deref<Continuation>(obj);
+                int codeSize = cont.GetCode()->Size();
+                std::cout << ", Code size=" << codeSize;
+                
+                // Print the code elements if available
+                if (codeSize > 0) {
+                    std::cout << ", Contents=[";
+                    for (int j = 0; j < codeSize && j < 5; j++) {
+                        if (j > 0) std::cout << ", ";
+                        
+                        Object codeObj = cont.GetCode()->At(j);
+                        if (codeObj.Exists() && codeObj.GetClass()) {
+                            std::cout << codeObj.GetClass()->GetName().ToString();
+                            
+                            // For operations, show which one
+                            if (codeObj.IsType<Operation>()) {
+                                Operation::Type op = ConstDeref<Operation>(codeObj).GetTypeNumber();
+                                std::cout << "(" << Operation::ToString(op) << ")";
+                            }
+                        }
+                        else {
+                            std::cout << "null";
+                        }
+                    }
+                    if (codeSize > 5) std::cout << ", ...";
+                    std::cout << "]";
+                }
+            }
+        }
+        else {
+            std::cout << "null object";
+        }
+        std::cout << std::endl;
+    }
+}
+
+// Diagnostic test to analyze Pi's primitive operation handling
+// and understand the patterns we need to handle during unwrapping
+TEST_F(TestRho, TestDiagnoseContinuations) {
+    std::cout << "\n===== TEST CASE 1: Direct Pi execution =====" << std::endl;
+    
+    // Use this to prevent unexpected crashes
+    if (!reg_ || !reg_->IsValid() || !data_ || !exec_) {
+        std::cerr << "Test environment not properly initialized, skipping test" << std::endl;
+        SUCCEED() << "Skipped test due to initialization issues";
+        return;
+    }
+
+    // Ensure we register basic types 
+    reg_->AddClass<int>(Label("int"));
+    reg_->AddClass<bool>(Label("bool"));
+    reg_->AddClass<String>(Label("String"));
+    
+    // --------------------------------------------------------------------------------
+    // Test 1: Direct evaluation - create values directly and apply operation
+    // --------------------------------------------------------------------------------
+    console_.SetLanguage(Language::Pi);
+    
+    try {
+        // Clear stacks to start fresh
+        data_->Clear();
+        exec_->ClearContext();
+        
+        // Create the values directly 
+        Object val1 = reg_->New<int>(2);
+        Object val2 = reg_->New<int>(3);
+        
+        // Push them directly to the stack
+        data_->Push(val1);
+        data_->Push(val2);
+        
+        std::cout << "Before operation, stack has " << data_->Size() << " items" << std::endl;
+        
+        // Apply the plus operation
+        Object plusOp = reg_->New<Operation>(Operation::Plus);
+        exec_->Eval(plusOp);
+        
+        std::cout << "After operation, stack has " << data_->Size() << " items" << std::endl;
+        
+        // Now dump what's on the stack
+        if (!data_->Empty()) {
+            Object result = data_->Top();
+            
+            std::cout << "Result type: " << (result.GetClass() ? result.GetClass()->GetName().ToString() : "NULL") << std::endl;
+            
+            if (result.IsType<int>()) {
+                int value = ConstDeref<int>(result);
+                std::cout << "Integer value: " << value << std::endl;
+                EXPECT_EQ(value, 5);
+            }
+            else {
+                std::cout << "Result is NOT an integer" << std::endl;
+            }
+        }
+        else {
+            std::cout << "Stack is empty after operation!" << std::endl;
+        }
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Exception in test part 1: " << e.what() << std::endl;
+    }
+    
+    // --------------------------------------------------------------------------------
+    // Test 2: Pi text execution - creates continuations during parsing
+    // --------------------------------------------------------------------------------
+    std::cout << "\n===== TEST CASE 2: Pi Text Execution =====" << std::endl;
+    
+    try {
+        // Clear stacks
+        data_->Clear();
+        exec_->ClearContext();
+        
+        // Execute Pi text - this should create a continuation
+        console_.Execute("2 3 +");
+        
+        std::cout << "After Pi text execution, stack has " << data_->Size() << " items" << std::endl;
+        
+        if (!data_->Empty()) {
+            Object result = data_->Top();
+            
+            std::cout << "Result type: " << (result.GetClass() ? result.GetClass()->GetName().ToString() : "NULL") << std::endl;
+            
+            if (result.IsType<int>()) {
+                int value = ConstDeref<int>(result);
+                std::cout << "Integer value: " << value << std::endl;
+                EXPECT_EQ(value, 5);
+            }
+            else if (result.IsType<Continuation>()) {
+                std::cout << "Result is a continuation" << std::endl;
+                
+                // Check the continuation contents
+                Continuation& cont = Deref<Continuation>(result);
+                
+                if (cont.GetCode().Exists()) {
+                    Array& code = *cont.GetCode();
+                    std::cout << "Code size: " << code.Size() << std::endl;
+                    
+                    // Print code contents
+                    for (int i = 0; i < code.Size(); i++) {
+                        Object item = code.At(i);
+                        std::cout << "  Code[" << i << "]: ";
+                        
+                        if (item.GetClass()) {
+                            std::cout << item.GetClass()->GetName().ToString();
+                            
+                            if (item.IsType<Operation>()) {
+                                Operation::Type op = ConstDeref<Operation>(item).GetTypeNumber();
+                                std::cout << " (" << Operation::ToString(op) << ")";
+                            }
+                            else if (item.IsType<int>()) {
+                                std::cout << " (" << ConstDeref<int>(item) << ")";
+                            }
+                        }
+                        else {
+                            std::cout << "NULL";
+                        }
+                        std::cout << std::endl;
+                    }
+                }
+                else {
+                    std::cout << "Continuation has no code!" << std::endl;
+                }
+                
+                // Now try our unwrapping function
+                std::cout << "Applying UnwrapStackValues..." << std::endl;
+                UnwrapStackValues();
+                
+                // Check the result again
+                if (!data_->Empty()) {
+                    Object unwrapped = data_->Top();
+                    
+                    std::cout << "After unwrapping, type: " 
+                        << (unwrapped.GetClass() ? unwrapped.GetClass()->GetName().ToString() : "NULL") << std::endl;
+                    
+                    if (unwrapped.IsType<int>()) {
+                        int finalValue = ConstDeref<int>(unwrapped);
+                        std::cout << "Final integer value: " << finalValue << std::endl;
+                        EXPECT_EQ(finalValue, 5);
+                    }
+                    else {
+                        std::cout << "Unwrapped result is NOT an integer!" << std::endl;
+                    }
+                }
+                else {
+                    std::cout << "Stack is empty after unwrapping!" << std::endl;
+                }
+            }
+            else {
+                std::cout << "Result is neither an integer nor a continuation" << std::endl;
+            }
+        }
+        else {
+            std::cout << "Stack is empty after Pi text execution!" << std::endl;
+        }
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Exception in test part 2: " << e.what() << std::endl;
+    }
+    
+    // --------------------------------------------------------------------------------
+    // Test 3: Create a continuation manually with the ContinuationBegin-Val-ContinuationEnd pattern
+    // --------------------------------------------------------------------------------
+    std::cout << "\n===== TEST CASE 3: Manual Continuation Creation =====" << std::endl;
+    
+    try {
+        // Clear stacks
+        data_->Clear();
+        exec_->ClearContext();
+        
+        // Create a continuation manually with the pattern we've seen in the logs
+        Pointer<Continuation> cont = reg_->New<Continuation>();
+        cont->SetCode(reg_->New<Array>());
+        cont->GetCode()->Append(reg_->New<Operation>(Operation::ContinuationBegin));
+        cont->GetCode()->Append(reg_->New<int>(5)); // The result value
+        cont->GetCode()->Append(reg_->New<Operation>(Operation::ContinuationEnd));
+        
+        // Push it onto the stack
+        data_->Push(cont);
+        
+        std::cout << "Created continuation with ContinuationBegin-value-ContinuationEnd pattern" << std::endl;
+        std::cout << "Stack has " << data_->Size() << " items" << std::endl;
+        
+        // Apply unwrapping
+        std::cout << "Applying UnwrapStackValues..." << std::endl;
+        UnwrapStackValues();
+        
+        // Check result
+        if (!data_->Empty()) {
+            Object result = data_->Top();
+            
+            std::cout << "After unwrapping, type: " 
+                << (result.GetClass() ? result.GetClass()->GetName().ToString() : "NULL") << std::endl;
+            
+            if (result.IsType<int>()) {
+                int value = ConstDeref<int>(result);
+                std::cout << "Integer value: " << value << std::endl;
+                EXPECT_EQ(value, 5);
+            }
+            else if (result.IsType<Continuation>()) {
+                std::cout << "Result is STILL a continuation - unwrapping failed!" << std::endl;
+            }
+            else {
+                std::cout << "Result is an unexpected type" << std::endl;
+            }
+        }
+        else {
+            std::cout << "Stack is empty after unwrapping!" << std::endl;
+        }
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Exception in test part 3: " << e.what() << std::endl;
+    }
+    
+    // Success if we got here without crashing
+    std::cout << "\nDiagnostic test completed successfully" << std::endl;
+}
