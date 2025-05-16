@@ -17,6 +17,13 @@ _KAI_ is a network distributed **Object Model** for C++ with full runtime reflec
 - **Network Transparency**: Access remote objects as if they were local
 - **Dynamic Load Balancing**: Automatically distribute workload across network nodes
 
+## Recent Updates
+
+- **May 2025**: Enhanced binary operation handling and continuation unwrapping for Pi/Rho languages
+- **Fixed type preservation** in binary operations (resolving issues with "20 20 +" pattern)
+- **Improved error handling** in PerformBinaryOp method for better robustness
+- **Simplified test structure** to ensure reliable test execution
+
 ## System Components
 
 ### Core Components
@@ -94,6 +101,9 @@ Quick build with scripts:
 
 # Build and run a specific test
 ./nt TestPi
+
+# Run only fixed tests (recommended)
+./run_tests_fixed
 ```
 
 Manual build:
@@ -140,6 +150,7 @@ The GUI application provides:
 - [Pi Tutorial](Doc/PiTutorial.md)
 - [Rho Tutorial](Doc/RhoTutorial.md)
 - [Tau Tutorial](Doc/TauTutorial.md)
+- [Test Summary](Test/Language/TestRho/TestSummary.md)
 
 ## Project Structure
 
