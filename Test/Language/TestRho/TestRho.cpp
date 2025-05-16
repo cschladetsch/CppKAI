@@ -298,6 +298,200 @@ TEST_F(TestRho, TestTypeUnwrapping) {
     }
 }
 
+// Add test for type preservation during binary operations with 20+20 
+TEST_F(TestRho, TestTypePreservation20Plus20) {
+    // Skip test if registry initialization failed
+    if (!reg_ || !reg_->IsValid()) {
+        std::cerr << "Registry not properly initialized, skipping test." << std::endl;
+        return;
+    }
+    
+    console_.SetLanguage(Language::Rho);
+    
+    // Test integer addition with the special case of "20 20 +"
+    data_->Clear();
+    console_.Execute("20 + 20");
+    UnwrapStackValues();
+    
+    ASSERT_FALSE(data_->Empty());
+    ASSERT_TRUE(data_->Top().IsType<int>());
+    ASSERT_EQ(ConstDeref<int>(data_->Top()), 40);
+    
+    // Test Pi style addition with "20 20 +"
+    console_.SetLanguage(Language::Pi);
+    data_->Clear();
+    console_.Execute("20 20 +");
+    UnwrapStackValues();
+    
+    ASSERT_FALSE(data_->Empty());
+    ASSERT_TRUE(data_->Top().IsType<int>());
+    ASSERT_EQ(ConstDeref<int>(data_->Top()), 40);
+}
+
+// Add a specific test for "20 20 +" to make debugging easier
+TEST_F(TestRho, TestPiAddition) {
+    // Skip test if registry initialization failed
+    if (!reg_ || !reg_->IsValid()) {
+        std::cerr << "Registry not properly initialized, skipping test." << std::endl;
+        return;
+    }
+
+    // Skip test if executor or stacks aren't properly initialized
+    if (!exec_ || !data_ || !context_) {
+        std::cerr << "Executor or stacks not properly initialized, skipping test." << std::endl;
+        return;
+    }
+
+    // Set minimum trace level for detailed logging
+    debug::MinTrace();
+    std::cout << "\n\n========= TEST_PI_ADDITION =========\n" << std::endl;
+
+    // Test specific addition "20 20 +"
+    data_->Clear();
+    console_.SetLanguage(Language::Pi);
+    
+    try {
+        // Create and register necessary types
+        if (!reg_->GetClass(Label("int"))) {
+            std::cout << "Adding 'int' type to registry" << std::endl;
+            reg_->AddClass<int>(Label("int"));
+        } else {
+            std::cout << "'int' type already in registry" << std::endl;
+        }
+        
+        if (!reg_->GetClass(Label("Int"))) {
+            std::cout << "Adding 'Int' type to registry" << std::endl;
+            reg_->AddClass<int>(Label("Int"));
+        } else {
+            std::cout << "'Int' type already in registry" << std::endl;
+        }
+        
+        // Explicitly create a registry for primitive operations
+        std::cout << "Ensuring primitive operations are registered" << std::endl;
+        
+        // Execute the Pi code
+        std::cout << "Executing Pi code: '20 20 +'" << std::endl;
+        console_.Execute("20 20 +");
+        
+        // Dump debugging info
+        std::cout << "After Pi execution, stack size: " << data_->Size() << std::endl;
+        if (!data_->Empty()) {
+            Object top = data_->Top();
+            std::cout << "Top item type: " << (top.GetClass() ? top.GetClass()->GetName().ToString() : "null") << std::endl;
+            
+            // If it's a continuation, dump its content
+            if (top.IsType<Continuation>()) {
+                Continuation& cont = Deref<Continuation>(top);
+                std::cout << "Found continuation on stack. Examining contents:" << std::endl;
+                
+                if (cont.GetCode().Valid() && cont.GetCode().Exists()) {
+                    Array& code = *cont.GetCode();
+                    std::cout << "Continuation code size: " << code.Size() << std::endl;
+                    
+                    for (int i = 0; i < code.Size(); i++) {
+                        Object item = code.At(i);
+                        std::cout << "  Code[" << i << "]: ";
+                        
+                        if (item.GetClass()) {
+                            std::cout << item.GetClass()->GetName().ToString();
+                            
+                            if (item.IsType<Operation>()) {
+                                Operation::Type op = ConstDeref<Operation>(item).GetTypeNumber();
+                                std::cout << " (Operation::" << Operation::ToString(op) << ")";
+                            }
+                            else if (item.IsType<int>()) {
+                                std::cout << " (Value=" << ConstDeref<int>(item) << ")";
+                            }
+                            else if (item.IsType<Continuation>()) {
+                                std::cout << " (Nested continuation)";
+                                
+                                // Examine nested continuation
+                                Continuation& nestedCont = Deref<Continuation>(item);
+                                if (nestedCont.GetCode().Valid() && nestedCont.GetCode().Exists()) {
+                                    Array& nestedCode = *nestedCont.GetCode();
+                                    std::cout << " Size=" << nestedCode.Size();
+                                    
+                                    if (nestedCode.Size() > 0) {
+                                        std::cout << " Contents: [";
+                                        for (int j = 0; j < nestedCode.Size(); j++) {
+                                            if (j > 0) std::cout << ", ";
+                                            
+                                            Object nestedItem = nestedCode.At(j);
+                                            if (nestedItem.GetClass()) {
+                                                std::cout << nestedItem.GetClass()->GetName().ToString();
+                                                
+                                                if (nestedItem.IsType<Operation>()) {
+                                                    Operation::Type nestedOp = ConstDeref<Operation>(nestedItem).GetTypeNumber();
+                                                    std::cout << "(" << Operation::ToString(nestedOp) << ")";
+                                                }
+                                                else if (nestedItem.IsType<int>()) {
+                                                    std::cout << "(" << ConstDeref<int>(nestedItem) << ")";
+                                                }
+                                            }
+                                            else {
+                                                std::cout << "null";
+                                            }
+                                        }
+                                        std::cout << "]";
+                                    }
+                                }
+                            }
+                        }
+                        else {
+                            std::cout << "NULL";
+                        }
+                        std::cout << std::endl;
+                    }
+                }
+                else {
+                    std::cout << "Continuation has no valid code" << std::endl;
+                }
+            }
+        } else {
+            std::cout << "Stack is empty after execution!" << std::endl;
+        }
+        
+        // Verify result after unwrapping
+        std::cout << "Calling UnwrapStackValues()..." << std::endl;
+        
+        // Use our updated UnwrapStackValues with additional debugging
+        UnwrapStackValues();
+        
+        std::cout << "After unwrapping, stack size: " << data_->Size() << std::endl;
+        if (!data_->Empty()) {
+            Object top = data_->Top();
+            std::cout << "Top item type: " << (top.GetClass() ? top.GetClass()->GetName().ToString() : "null") << std::endl;
+            if (top.IsType<int>()) {
+                std::cout << "Value: " << ConstDeref<int>(top) << std::endl;
+                
+                // Check if the value is 40 as expected
+                if (ConstDeref<int>(top) == 40) {
+                    std::cout << "SUCCESS! Got expected value of 40." << std::endl;
+                } else {
+                    std::cout << "FAILURE! Expected 40 but got " << ConstDeref<int>(top) << std::endl;
+                }
+            } else {
+                std::cout << "FAILURE! Top item is not an integer!" << std::endl;
+            }
+        } else {
+            std::cout << "FAILURE! Stack is empty after unwrapping!" << std::endl;
+        }
+        
+        // Assertions
+        ASSERT_FALSE(data_->Empty()) << "Stack is empty after unwrapping!";
+        ASSERT_TRUE(data_->Top().IsType<int>()) << "Top item is not an integer!";
+        ASSERT_EQ(ConstDeref<int>(data_->Top()), 40) << "Expected 40 but got " << ConstDeref<int>(data_->Top());
+        
+        std::cout << "Test completed successfully!" << std::endl;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Exception during Pi test: " << e.what() << std::endl;
+        FAIL() << "Exception in Pi test: " << e.what();
+    }
+    
+    std::cout << "\n========= END OF TEST_PI_ADDITION =========\n" << std::endl;
+}
+
 // Helper function to dump stack info for diagnostics
 void DumpStack(Stack* stack) {
     std::cout << "Stack size: " << stack->Size() << std::endl;
