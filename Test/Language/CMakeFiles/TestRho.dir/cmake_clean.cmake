@@ -39,6 +39,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/TestRho.dir/TestRho/RhoWithPiTests.cpp.o.d"
   "CMakeFiles/TestRho.dir/TestRho/SemicolonSyntaxTests.cpp.o"
   "CMakeFiles/TestRho.dir/TestRho/SemicolonSyntaxTests.cpp.o.d"
+  "CMakeFiles/TestRho.dir/TestRho/Simple20Plus20Test.cpp.o"
+  "CMakeFiles/TestRho.dir/TestRho/Simple20Plus20Test.cpp.o.d"
   "CMakeFiles/TestRho.dir/TestRho/SimpleArithmeticTest.cpp.o"
   "CMakeFiles/TestRho.dir/TestRho/SimpleArithmeticTest.cpp.o.d"
   "CMakeFiles/TestRho.dir/TestRho/SimpleDirectTest.cpp.o"

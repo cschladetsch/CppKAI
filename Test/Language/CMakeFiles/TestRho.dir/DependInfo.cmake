@@ -27,6 +27,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/xian/local/KAI/Test/Language/TestRho/RhoAssertTest.cpp" "Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoAssertTest.cpp.o" "gcc" "Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoAssertTest.cpp.o.d"
   "/home/xian/local/KAI/Test/Language/TestRho/RhoWithPiTests.cpp" "Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoWithPiTests.cpp.o" "gcc" "Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoWithPiTests.cpp.o.d"
   "/home/xian/local/KAI/Test/Language/TestRho/SemicolonSyntaxTests.cpp" "Test/Language/CMakeFiles/TestRho.dir/TestRho/SemicolonSyntaxTests.cpp.o" "gcc" "Test/Language/CMakeFiles/TestRho.dir/TestRho/SemicolonSyntaxTests.cpp.o.d"
+  "/home/xian/local/KAI/Test/Language/TestRho/Simple20Plus20Test.cpp" "Test/Language/CMakeFiles/TestRho.dir/TestRho/Simple20Plus20Test.cpp.o" "gcc" "Test/Language/CMakeFiles/TestRho.dir/TestRho/Simple20Plus20Test.cpp.o.d"
   "/home/xian/local/KAI/Test/Language/TestRho/SimpleArithmeticTest.cpp" "Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleArithmeticTest.cpp.o" "gcc" "Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleArithmeticTest.cpp.o.d"
   "/home/xian/local/KAI/Test/Language/TestRho/SimpleDirectTest.cpp" "Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleDirectTest.cpp.o" "gcc" "Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleDirectTest.cpp.o.d"
   "/home/xian/local/KAI/Test/Language/TestRho/SimpleRho.cpp" "Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleRho.cpp.o" "gcc" "Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleRho.cpp.o.d"

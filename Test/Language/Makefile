@@ -953,6 +953,30 @@ TestRho/SemicolonSyntaxTests.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/SemicolonSyntaxTests.cpp.s
 .PHONY : TestRho/SemicolonSyntaxTests.cpp.s
 
+TestRho/Simple20Plus20Test.o: TestRho/Simple20Plus20Test.cpp.o
+.PHONY : TestRho/Simple20Plus20Test.o
+
+# target to build an object file
+TestRho/Simple20Plus20Test.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/Simple20Plus20Test.cpp.o
+.PHONY : TestRho/Simple20Plus20Test.cpp.o
+
+TestRho/Simple20Plus20Test.i: TestRho/Simple20Plus20Test.cpp.i
+.PHONY : TestRho/Simple20Plus20Test.i
+
+# target to preprocess a source file
+TestRho/Simple20Plus20Test.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/Simple20Plus20Test.cpp.i
+.PHONY : TestRho/Simple20Plus20Test.cpp.i
+
+TestRho/Simple20Plus20Test.s: TestRho/Simple20Plus20Test.cpp.s
+.PHONY : TestRho/Simple20Plus20Test.s
+
+# target to generate assembly for a file
+TestRho/Simple20Plus20Test.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/Simple20Plus20Test.cpp.s
+.PHONY : TestRho/Simple20Plus20Test.cpp.s
+
 TestRho/SimpleArithmeticTest.o: TestRho/SimpleArithmeticTest.cpp.o
 .PHONY : TestRho/SimpleArithmeticTest.o
 
@@ -1415,6 +1439,9 @@ help:
 	@echo "... TestRho/SemicolonSyntaxTests.o"
 	@echo "... TestRho/SemicolonSyntaxTests.i"
 	@echo "... TestRho/SemicolonSyntaxTests.s"
+	@echo "... TestRho/Simple20Plus20Test.o"
+	@echo "... TestRho/Simple20Plus20Test.i"
+	@echo "... TestRho/Simple20Plus20Test.s"
 	@echo "... TestRho/SimpleArithmeticTest.o"
 	@echo "... TestRho/SimpleArithmeticTest.i"
 	@echo "... TestRho/SimpleArithmeticTest.s"
