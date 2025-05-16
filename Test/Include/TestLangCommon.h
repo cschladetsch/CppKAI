@@ -144,6 +144,9 @@ class TestLangCommon : public TestCommon {
                     case Operation::Divide:
                         if (num2 != 0) return registry->New<int>(num1 / num2);
                         break;
+                    case Operation::Modulo:
+                        if (num2 != 0) return registry->New<int>(num1 % num2);
+                        break;
                     case Operation::Less:
                         return registry->New<bool>(num1 < num2);
                     case Operation::Greater:
@@ -156,6 +159,76 @@ class TestLangCommon : public TestCommon {
                         return registry->New<bool>(num1 == num2);
                     case Operation::NotEquiv:
                         return registry->New<bool>(num1 != num2);
+                    default:
+                        break;
+                }
+            }
+            
+            // Handle float operations
+            else if (val1.IsType<float>() && val2.IsType<float>()) {
+                float f1 = ConstDeref<float>(val1);
+                float f2 = ConstDeref<float>(val2);
+                
+                switch (op) {
+                    case Operation::Plus:
+                        return registry->New<float>(f1 + f2);
+                    case Operation::Minus:
+                        return registry->New<float>(f1 - f2);
+                    case Operation::Multiply:
+                        return registry->New<float>(f1 * f2);
+                    case Operation::Divide:
+                        if (f2 != 0.0f) return registry->New<float>(f1 / f2);
+                        break;
+                    case Operation::Less:
+                        return registry->New<bool>(f1 < f2);
+                    case Operation::Greater:
+                        return registry->New<bool>(f1 > f2);
+                    case Operation::LessOrEquiv:
+                        return registry->New<bool>(f1 <= f2);
+                    case Operation::GreaterOrEquiv:
+                        return registry->New<bool>(f1 >= f2);
+                    case Operation::Equiv:
+                        return registry->New<bool>(f1 == f2);
+                    case Operation::NotEquiv:
+                        return registry->New<bool>(f1 != f2);
+                    default:
+                        break;
+                }
+            }
+            
+            // Handle mixed int-float operations
+            else if (val1.IsType<int>() && val2.IsType<float>()) {
+                int i1 = ConstDeref<int>(val1);
+                float f2 = ConstDeref<float>(val2);
+                
+                switch (op) {
+                    case Operation::Plus:
+                        return registry->New<float>(i1 + f2);
+                    case Operation::Minus:
+                        return registry->New<float>(i1 - f2);
+                    case Operation::Multiply:
+                        return registry->New<float>(i1 * f2);
+                    case Operation::Divide:
+                        if (f2 != 0.0f) return registry->New<float>(i1 / f2);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else if (val1.IsType<float>() && val2.IsType<int>()) {
+                float f1 = ConstDeref<float>(val1);
+                int i2 = ConstDeref<int>(val2);
+                
+                switch (op) {
+                    case Operation::Plus:
+                        return registry->New<float>(f1 + i2);
+                    case Operation::Minus:
+                        return registry->New<float>(f1 - i2);
+                    case Operation::Multiply:
+                        return registry->New<float>(f1 * i2);
+                    case Operation::Divide:
+                        if (i2 != 0) return registry->New<float>(f1 / i2);
+                        break;
                     default:
                         break;
                 }

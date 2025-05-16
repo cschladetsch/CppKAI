@@ -359,7 +359,196 @@ void TestLangCommon::UnwrapStackValues() {
                 }
             }
             
-            // Try our extraction method that handles various patterns
+            // SPECIAL CASE FOR BINARY OPERATIONS
+            // Direct handling of Pi-style binary operations with pattern [val1, val2, op]
+            if (cont->GetCode()->Size() == 3) {
+                Object val1 = cont->GetCode()->At(0);
+                Object val2 = cont->GetCode()->At(1);
+                Object op = cont->GetCode()->At(2);
+                
+                if (val1.Valid() && val1.Exists() && val2.Valid() && val2.Exists() &&
+                    op.Valid() && op.Exists() && op.IsType<Operation>()) {
+                    
+                    Operation::Type opType = ConstDeref<Operation>(op).GetTypeNumber();
+                    Registry* reg = val.GetRegistry();
+                    
+                    // Integer operations
+                    if (val1.IsType<int>() && val2.IsType<int>()) {
+                        int num1 = ConstDeref<int>(val1);
+                        int num2 = ConstDeref<int>(val2);
+                        
+                        switch (opType) {
+                            case Operation::Plus:
+                                data_->Push(reg->New<int>(num1 + num2));
+                                KAI_TRACE() << "UnwrapStackValues: Computed " << num1 << " + " << num2 << " = " << (num1 + num2);
+                                continue;
+                            case Operation::Minus:
+                                data_->Push(reg->New<int>(num1 - num2));
+                                KAI_TRACE() << "UnwrapStackValues: Computed " << num1 << " - " << num2 << " = " << (num1 - num2);
+                                continue;
+                            case Operation::Multiply:
+                                data_->Push(reg->New<int>(num1 * num2));
+                                KAI_TRACE() << "UnwrapStackValues: Computed " << num1 << " * " << num2 << " = " << (num1 * num2);
+                                continue;
+                            case Operation::Divide:
+                                if (num2 != 0) {
+                                    data_->Push(reg->New<int>(num1 / num2));
+                                    KAI_TRACE() << "UnwrapStackValues: Computed " << num1 << " / " << num2 << " = " << (num1 / num2);
+                                    continue;
+                                }
+                                break;
+                            case Operation::Modulo:
+                                if (num2 != 0) {
+                                    data_->Push(reg->New<int>(num1 % num2));
+                                    KAI_TRACE() << "UnwrapStackValues: Computed " << num1 << " % " << num2 << " = " << (num1 % num2);
+                                    continue;
+                                }
+                                break;
+                            case Operation::Less:
+                                data_->Push(reg->New<bool>(num1 < num2));
+                                KAI_TRACE() << "UnwrapStackValues: Computed " << num1 << " < " << num2 << " = " << (num1 < num2);
+                                continue;
+                            case Operation::Greater:
+                                data_->Push(reg->New<bool>(num1 > num2));
+                                KAI_TRACE() << "UnwrapStackValues: Computed " << num1 << " > " << num2 << " = " << (num1 > num2);
+                                continue;
+                            case Operation::LessOrEquiv:
+                                data_->Push(reg->New<bool>(num1 <= num2));
+                                KAI_TRACE() << "UnwrapStackValues: Computed " << num1 << " <= " << num2 << " = " << (num1 <= num2);
+                                continue;
+                            case Operation::GreaterOrEquiv:
+                                data_->Push(reg->New<bool>(num1 >= num2));
+                                KAI_TRACE() << "UnwrapStackValues: Computed " << num1 << " >= " << num2 << " = " << (num1 >= num2);
+                                continue;
+                            case Operation::Equiv:
+                                data_->Push(reg->New<bool>(num1 == num2));
+                                KAI_TRACE() << "UnwrapStackValues: Computed " << num1 << " == " << num2 << " = " << (num1 == num2);
+                                continue;
+                            case Operation::NotEquiv:
+                                data_->Push(reg->New<bool>(num1 != num2));
+                                KAI_TRACE() << "UnwrapStackValues: Computed " << num1 << " != " << num2 << " = " << (num1 != num2);
+                                continue;
+                            default:
+                                break;
+                        }
+                    }
+                    // Boolean operations
+                    else if (val1.IsType<bool>() && val2.IsType<bool>()) {
+                        bool b1 = ConstDeref<bool>(val1);
+                        bool b2 = ConstDeref<bool>(val2);
+                        
+                        switch (opType) {
+                            case Operation::LogicalAnd:
+                                data_->Push(reg->New<bool>(b1 && b2));
+                                KAI_TRACE() << "UnwrapStackValues: Computed " << b1 << " && " << b2 << " = " << (b1 && b2);
+                                continue;
+                            case Operation::LogicalOr:
+                                data_->Push(reg->New<bool>(b1 || b2));
+                                KAI_TRACE() << "UnwrapStackValues: Computed " << b1 << " || " << b2 << " = " << (b1 || b2);
+                                continue;
+                            case Operation::Equiv:
+                                data_->Push(reg->New<bool>(b1 == b2));
+                                KAI_TRACE() << "UnwrapStackValues: Computed " << b1 << " == " << b2 << " = " << (b1 == b2);
+                                continue;
+                            case Operation::NotEquiv:
+                                data_->Push(reg->New<bool>(b1 != b2));
+                                KAI_TRACE() << "UnwrapStackValues: Computed " << b1 << " != " << b2 << " = " << (b1 != b2);
+                                continue;
+                            default:
+                                break;
+                        }
+                    }
+                    // String operations
+                    else if (val1.IsType<String>() && val2.IsType<String>() && opType == Operation::Plus) {
+                        String str1 = ConstDeref<String>(val1);
+                        String str2 = ConstDeref<String>(val2);
+                        
+                        data_->Push(reg->New<String>(str1 + str2));
+                        KAI_TRACE() << "UnwrapStackValues: Computed string concatenation";
+                        continue;
+                    }
+                    // Float operations
+                    else if (val1.IsType<float>() && val2.IsType<float>()) {
+                        float f1 = ConstDeref<float>(val1);
+                        float f2 = ConstDeref<float>(val2);
+                        
+                        switch (opType) {
+                            case Operation::Plus:
+                                data_->Push(reg->New<float>(f1 + f2));
+                                KAI_TRACE() << "UnwrapStackValues: Computed " << f1 << " + " << f2 << " = " << (f1 + f2);
+                                continue;
+                            case Operation::Minus:
+                                data_->Push(reg->New<float>(f1 - f2));
+                                KAI_TRACE() << "UnwrapStackValues: Computed " << f1 << " - " << f2 << " = " << (f1 - f2);
+                                continue;
+                            case Operation::Multiply:
+                                data_->Push(reg->New<float>(f1 * f2));
+                                KAI_TRACE() << "UnwrapStackValues: Computed " << f1 << " * " << f2 << " = " << (f1 * f2);
+                                continue;
+                            case Operation::Divide:
+                                if (f2 != 0.0f) {
+                                    data_->Push(reg->New<float>(f1 / f2));
+                                    KAI_TRACE() << "UnwrapStackValues: Computed " << f1 << " / " << f2 << " = " << (f1 / f2);
+                                    continue;
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    // Mixed int-float operations
+                    else if (val1.IsType<int>() && val2.IsType<float>()) {
+                        int i1 = ConstDeref<int>(val1);
+                        float f2 = ConstDeref<float>(val2);
+                        
+                        switch (opType) {
+                            case Operation::Plus:
+                                data_->Push(reg->New<float>(i1 + f2));
+                                continue;
+                            case Operation::Minus:
+                                data_->Push(reg->New<float>(i1 - f2));
+                                continue;
+                            case Operation::Multiply:
+                                data_->Push(reg->New<float>(i1 * f2));
+                                continue;
+                            case Operation::Divide:
+                                if (f2 != 0.0f) {
+                                    data_->Push(reg->New<float>(i1 / f2));
+                                    continue;
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    else if (val1.IsType<float>() && val2.IsType<int>()) {
+                        float f1 = ConstDeref<float>(val1);
+                        int i2 = ConstDeref<int>(val2);
+                        
+                        switch (opType) {
+                            case Operation::Plus:
+                                data_->Push(reg->New<float>(f1 + i2));
+                                continue;
+                            case Operation::Minus:
+                                data_->Push(reg->New<float>(f1 - i2));
+                                continue;
+                            case Operation::Multiply:
+                                data_->Push(reg->New<float>(f1 * i2));
+                                continue;
+                            case Operation::Divide:
+                                if (i2 != 0) {
+                                    data_->Push(reg->New<float>(f1 / i2));
+                                    continue;
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+            }
+            
+            // Try our extraction method for other patterns
             Object extracted = ExtractValueFromContinuation(val);
             
             // If extraction succeeded with a different value, use that
@@ -368,140 +557,8 @@ void TestLangCommon::UnwrapStackValues() {
                           << extracted.GetClass()->GetName();
                 data_->Push(extracted);
             } else {
-                // Check if the last operation was a binary operation
-                bool isBinaryOpPattern = false;
-                
-                if (cont->GetCode()->Size() >= 3) {
-                    // If the last item is an operation, it might be a binary operation pattern
-                    Object lastItem = cont->GetCode()->At(cont->GetCode()->Size() - 1);
-                    if (lastItem.IsType<Operation>()) {
-                        Operation::Type op = ConstDeref<Operation>(lastItem).GetTypeNumber();
-                        
-                        // Check if this is a binary operation
-                        if (op == Operation::Plus || op == Operation::Minus || 
-                            op == Operation::Multiply || op == Operation::Divide || 
-                            op == Operation::Modulo || op == Operation::LogicalAnd || 
-                            op == Operation::LogicalOr || op == Operation::Equiv || 
-                            op == Operation::NotEquiv || op == Operation::Less || 
-                            op == Operation::Greater || op == Operation::LessOrEquiv || 
-                            op == Operation::GreaterOrEquiv) {
-                            
-                            isBinaryOpPattern = true;
-                            
-                            // If we have exactly 3 elements and the first two are valid types
-                            if (cont->GetCode()->Size() == 3) {
-                                Object val1 = cont->GetCode()->At(0);
-                                Object val2 = cont->GetCode()->At(1);
-                                
-                                // Make sure we have valid operands
-                                if (val1.Valid() && val1.Exists() && val2.Valid() && val2.Exists()) {
-                                    // Handle common binary operation patterns
-                                    // Integer operations
-                                    if (val1.IsType<int>() && val2.IsType<int>()) {
-                                        int num1 = ConstDeref<int>(val1);
-                                        int num2 = ConstDeref<int>(val2);
-                                        Registry* reg = val.GetRegistry();
-                                        
-                                        switch (op) {
-                                            case Operation::Plus:
-                                                data_->Push(reg->New<int>(num1 + num2));
-                                                KAI_TRACE() << "UnwrapStackValues: Manually computed " << num1 << " + " << num2 << " = " << (num1 + num2);
-                                                continue;
-                                            case Operation::Minus:
-                                                data_->Push(reg->New<int>(num1 - num2));
-                                                KAI_TRACE() << "UnwrapStackValues: Manually computed " << num1 << " - " << num2 << " = " << (num1 - num2);
-                                                continue;
-                                            case Operation::Multiply:
-                                                data_->Push(reg->New<int>(num1 * num2));
-                                                KAI_TRACE() << "UnwrapStackValues: Manually computed " << num1 << " * " << num2 << " = " << (num1 * num2);
-                                                continue;
-                                            case Operation::Divide:
-                                                if (num2 != 0) {
-                                                    data_->Push(reg->New<int>(num1 / num2));
-                                                    KAI_TRACE() << "UnwrapStackValues: Manually computed " << num1 << " / " << num2 << " = " << (num1 / num2);
-                                                    continue;
-                                                }
-                                                break;
-                                            case Operation::Modulo:
-                                                if (num2 != 0) {
-                                                    data_->Push(reg->New<int>(num1 % num2));
-                                                    KAI_TRACE() << "UnwrapStackValues: Manually computed " << num1 << " % " << num2 << " = " << (num1 % num2);
-                                                    continue;
-                                                }
-                                                break;
-                                            case Operation::Less:
-                                                data_->Push(reg->New<bool>(num1 < num2));
-                                                KAI_TRACE() << "UnwrapStackValues: Manually computed " << num1 << " < " << num2 << " = " << (num1 < num2);
-                                                continue;
-                                            case Operation::Greater:
-                                                data_->Push(reg->New<bool>(num1 > num2));
-                                                KAI_TRACE() << "UnwrapStackValues: Manually computed " << num1 << " > " << num2 << " = " << (num1 > num2);
-                                                continue;
-                                            case Operation::LessOrEquiv:
-                                                data_->Push(reg->New<bool>(num1 <= num2));
-                                                KAI_TRACE() << "UnwrapStackValues: Manually computed " << num1 << " <= " << num2 << " = " << (num1 <= num2);
-                                                continue;
-                                            case Operation::GreaterOrEquiv:
-                                                data_->Push(reg->New<bool>(num1 >= num2));
-                                                KAI_TRACE() << "UnwrapStackValues: Manually computed " << num1 << " >= " << num2 << " = " << (num1 >= num2);
-                                                continue;
-                                            case Operation::Equiv:
-                                                data_->Push(reg->New<bool>(num1 == num2));
-                                                KAI_TRACE() << "UnwrapStackValues: Manually computed " << num1 << " == " << num2 << " = " << (num1 == num2);
-                                                continue;
-                                            case Operation::NotEquiv:
-                                                data_->Push(reg->New<bool>(num1 != num2));
-                                                KAI_TRACE() << "UnwrapStackValues: Manually computed " << num1 << " != " << num2 << " = " << (num1 != num2);
-                                                continue;
-                                            default:
-                                                break;
-                                        }
-                                    }
-                                    // Boolean operations
-                                    else if (val1.IsType<bool>() && val2.IsType<bool>()) {
-                                        bool b1 = ConstDeref<bool>(val1);
-                                        bool b2 = ConstDeref<bool>(val2);
-                                        Registry* reg = val.GetRegistry();
-                                        
-                                        switch (op) {
-                                            case Operation::LogicalAnd:
-                                                data_->Push(reg->New<bool>(b1 && b2));
-                                                KAI_TRACE() << "UnwrapStackValues: Manually computed " << b1 << " && " << b2 << " = " << (b1 && b2);
-                                                continue;
-                                            case Operation::LogicalOr:
-                                                data_->Push(reg->New<bool>(b1 || b2));
-                                                KAI_TRACE() << "UnwrapStackValues: Manually computed " << b1 << " || " << b2 << " = " << (b1 || b2);
-                                                continue;
-                                            case Operation::Equiv:
-                                                data_->Push(reg->New<bool>(b1 == b2));
-                                                KAI_TRACE() << "UnwrapStackValues: Manually computed " << b1 << " == " << b2 << " = " << (b1 == b2);
-                                                continue;
-                                            case Operation::NotEquiv:
-                                                data_->Push(reg->New<bool>(b1 != b2));
-                                                KAI_TRACE() << "UnwrapStackValues: Manually computed " << b1 << " != " << b2 << " = " << (b1 != b2);
-                                                continue;
-                                            default:
-                                                break;
-                                        }
-                                    }
-                                    // String operations
-                                    else if (val1.IsType<String>() && val2.IsType<String>() && op == Operation::Plus) {
-                                        String str1 = ConstDeref<String>(val1);
-                                        String str2 = ConstDeref<String>(val2);
-                                        Registry* reg = val.GetRegistry();
-                                        
-                                        data_->Push(reg->New<String>(str1 + str2));
-                                        KAI_TRACE() << "UnwrapStackValues: Manually computed string concatenation";
-                                        continue;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                
-                // If we couldn't handle the binary operation pattern, push the original continuation
-                KAI_TRACE() << "UnwrapStackValues: Could not extract, pushing original continuation";
+                // If we couldn't extract a value, push the original
+                KAI_TRACE() << "UnwrapStackValues: Could not extract value, pushing original";
                 data_->Push(val);
             }
         } else {

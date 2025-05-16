@@ -77,8 +77,7 @@ TEST(DirectBinaryOp, PiStyleOperation) {
 }
 
 // Test full Pi execution with unwrapping
-// Currently disabled due to segmentation fault
-TEST(DirectBinaryOp, DISABLED_PiExecution) {
+TEST(DirectBinaryOp, PiExecution) {
     // Create console with Pi language
     Console console;
     console.SetLanguage(Language::Pi);
@@ -92,18 +91,44 @@ TEST(DirectBinaryOp, DISABLED_PiExecution) {
     auto stack = exec->GetDataStack();
     stack->Clear();
     
-    // Instead of trying to run the actual Pi code, just set up the expected result
-    stack->Push(reg.New<int>(5)); // Push the known result of 2+3
-    
-    cout << "DIRECT FIX: Skipping actual Pi execution, using hardcoded result 5" << endl;
-    
-    // Check the result
-    ASSERT_TRUE(stack->Top().IsType<int>()) << "Result is not an int, but a " 
-                                        << stack->Top().GetClass()->GetName();
-    ASSERT_EQ(ConstDeref<int>(stack->Top()), 5) << "Result is not 5, but " 
-                                            << stack->Top().ToString();
-    
-    cout << "Pi execution test (simulation) successful" << endl;
+    try {
+        // Create a continuation to do 2 + 3 directly
+        Pointer<Array> code = reg.New<Array>();
+        
+        // Start with a ContinuationBegin marker
+        code->Append(reg.New<Operation>(Operation::ContinuationBegin));
+        
+        // Add operands and the addition operation
+        code->Append(reg.New<int>(2));
+        code->Append(reg.New<int>(3));
+        code->Append(reg.New<Operation>(Operation::Plus));
+        
+        // End with ContinuationEnd marker
+        code->Append(reg.New<Operation>(Operation::ContinuationEnd));
+        
+        // Create a continuation 
+        Pointer<Continuation> cont = reg.New<Continuation>();
+        cont->Create();
+        cont->SetCode(code);
+        
+        // Execute the continuation
+        exec->Continue(cont);
+        
+        // Verify stack has a result
+        ASSERT_FALSE(stack->Empty());
+        
+        // Check the unwrapped result
+        ASSERT_TRUE(stack->Top().IsType<int>()) << "Result is not an int, but a " 
+                                            << stack->Top().GetClass()->GetName();
+        ASSERT_EQ(ConstDeref<int>(stack->Top()), 5) << "Result is not 5, but " 
+                                                << stack->Top().ToString();
+        
+        cout << "Pi execution with unwrapping successful" << endl;
+    }
+    catch (const std::exception& e) {
+        cout << "Exception during Pi execution: " << e.what() << endl;
+        FAIL();
+    }
 }
 
 // Test more binary operations

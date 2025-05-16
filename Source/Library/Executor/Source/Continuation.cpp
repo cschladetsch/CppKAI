@@ -20,6 +20,7 @@ const static int MaxLen = 80;
 void Continuation::Create() {
     args = New<Array>();
     index = New(0);
+    specialHandling = New(false);
 }
 
 bool Continuation::Destroy() { return true; }

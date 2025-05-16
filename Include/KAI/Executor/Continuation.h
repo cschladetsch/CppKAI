@@ -27,6 +27,9 @@ class Continuation : public Reflected {
     //
     // I hate this idea. needs to be re-thought through clearly.
     Pointer<bool> scopeBreak;
+    
+    // Flag to indicate this continuation needs special handling
+    Pointer<bool> specialHandling;
 
    public:
     void Create();
@@ -68,6 +71,20 @@ class Continuation : public Reflected {
     // get next object in the continuation
     bool Next() const;
     bool Next(Object &) const;
+    
+    // Set whether this continuation needs special handling
+    void SetSpecialHandling(bool special) { 
+        if (!specialHandling.Exists()) {
+            specialHandling = Self->GetRegistry()->New<bool>(special);
+        } else {
+            *specialHandling = special;
+        }
+    }
+    
+    // Check if this continuation needs special handling
+    bool GetSpecialHandling() const {
+        return specialHandling.Exists() ? *specialHandling : false;
+    }
 
     String Show() const;
     static void Register(Registry &);
