@@ -241,8 +241,9 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
         {
             KAI_TRACE() << std::format("Translating PiSequence: {}", node->Text());
             
-            // Always directly evaluate the Pi expression during translation
-            // for consistent behavior and primitive type extraction
+            // IMMEDIATELY decode and evaluate Pi expressions during translation
+            // instead of creating continuations. This approach ensures consistent behavior
+            // and correct primitive type extraction without relying on specialHandling.
             
             // For each sequence of operations, check if we can directly evaluate it
             // First, collect the structure of the Pi sequence
@@ -338,7 +339,7 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
                         
                         // Create a properly typed int object
                         Object resultObj = reg_->New<int>(result);
-                        KAI_TRACE() << "Direct evaluation of Pi expression: " << firstValue
+                        KAI_TRACE() << "IMMEDIATE direct evaluation of Pi expression: " << firstValue
                                   << " " << Operation::ToString(TokenToOperation(op.tokenType))
                                   << " " << secondValue << " = " << result
                                   << " (type: int)";
@@ -402,7 +403,7 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
                         
                         // Create a properly typed float object
                         Object resultObj = reg_->New<float>(result);
-                        KAI_TRACE() << "Direct evaluation of Pi expression: " << firstValue
+                        KAI_TRACE() << "IMMEDIATE direct evaluation of Pi expression: " << firstValue
                                   << " " << Operation::ToString(TokenToOperation(op.tokenType))
                                   << " " << secondValue << " = " << result
                                   << " (type: float)";
@@ -467,7 +468,7 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
                         
                         // Create a properly typed bool object
                         Object resultObj = reg_->New<bool>(result);
-                        KAI_TRACE() << "Direct evaluation of Pi expression: " << (firstValue ? "true" : "false")
+                        KAI_TRACE() << "IMMEDIATE direct evaluation of Pi expression: " << (firstValue ? "true" : "false")
                                   << " " << RhoTokenEnumType::ToString(op.tokenType)
                                   << " " << (secondValue ? "true" : "false") << " = " << (result ? "true" : "false")
                                   << " (type: bool)";
@@ -521,7 +522,7 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
                         
                         // Create a properly typed bool object
                         Object resultObj = reg_->New<bool>(result);
-                        KAI_TRACE() << "Direct evaluation of Pi comparison: " << firstValue
+                        KAI_TRACE() << "IMMEDIATE direct evaluation of Pi comparison: " << firstValue
                                   << " " << RhoTokenEnumType::ToString(op.tokenType)
                                   << " " << secondValue << " = " << (result ? "true" : "false")
                                   << " (type: bool)";
@@ -557,7 +558,7 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
                         
                         // Create a properly typed String object
                         Object resultObj = reg_->New<String>(result);
-                        KAI_TRACE() << "Direct evaluation of string concatenation: "
+                        KAI_TRACE() << "IMMEDIATE direct evaluation of string concatenation: "
                                   << "\"" << firstText << "\" + \"" << secondText << "\" = \"" << result << "\""
                                   << " (type: String)";
                         Append(resultObj);
@@ -642,13 +643,20 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
                 }
             }
             
-            // If we couldn't handle the expression with direct evaluation,
-            // translate each child individually and expand directly
-            KAI_TRACE() << "Using direct translation for Pi sequence";
+            // Instead of creating a continuation for the Pi sequence, we'll evaluate it immediately
+            // Create a temporary executor to evaluate the sequence
+            KAI_TRACE() << "Creating temporary executor to directly evaluate Pi sequence";
             
-            // Process each operation by translating its components directly
+            // Create a new executor
+            Pointer<Executor> tempExec = reg_->New<Executor>();
+            tempExec->Create();
+            
+            // Create a temporary stack to collect the sequence components
+            Pointer<Array> tempCode = reg_->New<Array>();
+            
+            // First pass: collect all components without executing yet
             for (const auto& child : node->GetChildren()) {
-                // For numeric literals, string literals, and basic values, directly append
+                // For numeric literals, string literals, and basic values, add directly to code
                 if (child->GetType() == AstEnum::TokenType) {
                     auto tokenType = child->GetToken().type;
                     
@@ -656,16 +664,16 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
                         // Directly create an int value
                         try {
                             int value = std::stoi(child->GetTokenText());
-                            Append(reg_->New<int>(value));
-                            continue; // Skip standard translation for this node
+                            tempCode->Append(reg_->New<int>(value));
+                            continue;
                         } catch (...) {}
                     }
                     else if (tokenType == RhoTokenEnumType::Float) {
                         // Directly create a float value
                         try {
                             float value = std::stof(child->GetTokenText());
-                            Append(reg_->New<float>(value));
-                            continue; // Skip standard translation for this node
+                            tempCode->Append(reg_->New<float>(value));
+                            continue;
                         } catch (...) {}
                     }
                     else if (tokenType == RhoTokenEnumType::String) {
@@ -674,18 +682,18 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
                         if (text.size() >= 2 && text.front() == '"' && text.back() == '"') {
                             text = text.substr(1, text.size() - 2);
                         }
-                        Append(reg_->New<String>(text));
-                        continue; // Skip standard translation for this node
+                        tempCode->Append(reg_->New<String>(text));
+                        continue;
                     }
                     else if (tokenType == RhoTokenEnumType::True) {
                         // Directly create a true boolean value
-                        Append(reg_->New<bool>(true));
-                        continue; // Skip standard translation for this node
+                        tempCode->Append(reg_->New<bool>(true));
+                        continue;
                     }
                     else if (tokenType == RhoTokenEnumType::False) {
                         // Directly create a false boolean value
-                        Append(reg_->New<bool>(false));
-                        continue; // Skip standard translation for this node
+                        tempCode->Append(reg_->New<bool>(false));
+                        continue;
                     }
                     else if (tokenType == RhoTokenEnumType::Plus || tokenType == RhoTokenEnumType::Minus || 
                              tokenType == RhoTokenEnumType::Mul || tokenType == RhoTokenEnumType::Divide || 
@@ -698,25 +706,71 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
                         Operation::Type opType = TokenToOperation(tokenType);
                         if (opType != Operation::None) {
                             // Convert token to operation
-                            AppendDirectOperation(opType);
-                            continue; // Skip standard translation for this node
+                            tempCode->Append(reg_->New<Operation>(opType));
+                            continue;
                         }
                     }
                     // Handle stack operations like Dup and Swap
                     else if (child->GetTokenText() == "Dup" || child->GetTokenText() == "dup") {
                         // Direct Dup operation
-                        AppendDirectOperation(Operation::Dup);
-                        continue; // Skip standard translation
+                        tempCode->Append(reg_->New<Operation>(Operation::Dup));
+                        continue;
                     }
                     else if (child->GetTokenText() == "Swap" || child->GetTokenText() == "swap") {
                         // Direct Swap operation
-                        AppendDirectOperation(Operation::Swap);
-                        continue; // Skip standard translation
+                        tempCode->Append(reg_->New<Operation>(Operation::Swap));
+                        continue;
                     }
                 }
                 
-                // For everything else, use the standard translation process
+                // For more complex elements, translate them and add their result
+                // (this branch should rarely be used)
+                PushNew();
                 TranslateNode(child);
+                Object result = Pop();
+                
+                if (result.IsType<Continuation>()) {
+                    // If we got a continuation, extract its code and add directly
+                    Pointer<Continuation> childCont = result;
+                    if (childCont->GetCode().Exists()) {
+                        for (int i = 0; i < childCont->GetCode()->Size(); i++) {
+                            tempCode->Append(childCont->GetCode()->At(i));
+                        }
+                    }
+                } else {
+                    // Otherwise add the result directly
+                    tempCode->Append(result);
+                }
+            }
+            
+            // Now create a continuation with all the collected code
+            Pointer<Continuation> piCont = reg_->New<Continuation>();
+            piCont->Create();
+            piCont->SetCode(tempCode);
+            
+            KAI_TRACE() << "Created Pi continuation with " << tempCode->Size() << " elements";
+            
+            // Execute the Pi continuation to get the result
+            tempExec->Continue(piCont);
+            
+            // Get the result from the stack
+            auto tempStack = tempExec->GetDataStack();
+            
+            if (!tempStack->Empty()) {
+                // Get the result and unwrap it to ensure primitive value
+                Object result = tempExec->UnwrapValue(tempStack->Top());
+                
+                KAI_TRACE() << "Pi sequence evaluation result: " << result.ToString() 
+                          << " (type: " << result.GetClass()->GetName() << ")";
+                
+                // Append the result directly - this is the key change!
+                Append(result);
+            } else {
+                KAI_TRACE_ERROR() << "Pi sequence evaluation produced empty stack";
+                // Create an empty continuation as fallback
+                Pointer<Continuation> emptyCont = reg_->New<Continuation>();
+                emptyCont->Create();
+                Append(emptyCont);
             }
             
             return;
@@ -876,7 +930,19 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
         if (result.Exists()) {
             // Log the direct evaluation
             KAI_TRACE() << "Direct evaluation of binary op: " << leftObj.ToString() << " " 
-                        << Operation::ToString(op) << " " << rightObj.ToString() << " = " << result.ToString();
+                        << Operation::ToString(op) << " " << rightObj.ToString() << " = " << result.ToString()
+                        << " (type: " << result.GetClass()->GetName() << ")";
+            
+            // IMPORTANT: Check if the result is a Continuation and unwrap it to a primitive value
+            if (result.IsType<Continuation>()) {
+                // Use the executor to unwrap the continuation
+                Object unwrapped = opExecutor->UnwrapValue(result);
+                if (unwrapped != result) {
+                    KAI_TRACE() << "Unwrapped continuation result to " << unwrapped.ToString()
+                              << " (type: " << unwrapped.GetClass()->GetName() << ")";
+                    result = unwrapped; 
+                }
+            }
             
             // Append the result directly - this is key for proper type preservation
             Append(result);
@@ -884,23 +950,38 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
         }
     }
     
-    // Fallback to creating a continuation with the operation
-    // This should rarely be needed since we're evaluating at translation time
-    KAI_TRACE() << "Fallback to continuation-based binary operation";
+    // Use a simpler approach - directly evaluate the binary operation
+    // with the PerfformBinaryOp method
+    KAI_TRACE() << "Directly evaluating binary operation at translation time";
     
-    // Since we've already translated and evaluated the operands above,
-    // we need to translate them again to add them to the code stream
-    
-    // First translate the left operand
+    // First translate both operands
+    PushNew();
     TranslateNode(leftChild);
+    Object leftResult = Pop();
     
-    // Then translate the right operand
+    PushNew();
     TranslateNode(rightChild);
+    Object rightResult = Pop();
     
-    // Finally, add the operation directly
-    AppendDirectOperation(op);
+    // Create a temporary executor for evaluation
+    Pointer<Executor> evalExec = reg_->New<Executor>();
+    evalExec->Create();
     
-    KAI_TRACE() << "Binary operation translated to Pi stream";
+    // Use PerformBinaryOp to handle the operation
+    Object result = evalExec->PerformBinaryOp(leftResult, rightResult, op);
+    
+    // Ensure we have a primitive value, not a continuation
+    if (result.IsType<Continuation>()) {
+        result = evalExec->UnwrapValue(result);
+    }
+    
+    KAI_TRACE() << "Direct evaluation of binary op result: " << result.ToString() 
+              << " (type: " << result.GetClass()->GetName() << ")";
+    
+    // Append the result directly
+    Append(result);
+    
+    KAI_TRACE() << "Binary operation directly evaluated at translation time";
 }
 
 void RhoTranslator::TranslateNode(AstNodePtr node) {

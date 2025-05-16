@@ -523,25 +523,23 @@ void Executor::Continue(Value<Continuation> C) {
     SetContinuation(C);
     Continue();
     
-    // Always try to extract primitive values from the result
+    // ALWAYS try to extract primitive values from the result
     // This ensures that every operation produces the correct primitive type
+    // This is critical for RhoPi integration to work correctly
     if (!data_->Empty()) {
         Object result = data_->Top();
         
-        // If the result is a continuation, try to extract primitive values from it
-        if (result.IsType<Continuation>()) {
-            // Use UnwrapValue to get the proper primitive value
-            // This ensures consistent behavior for all continuations
-            Object unwrapped = UnwrapValue(result);
-            
-            // If we got a different value, replace the continuation with the primitive value
-            if (unwrapped != result) {
-                data_->Pop(); // Remove the continuation
-                data_->Push(unwrapped); // Push the extracted value
-                KAI_TRACE() << "Extracted primitive value from continuation: " 
-                          << unwrapped.ToString() << " (type: " 
-                          << unwrapped.GetClass()->GetName() << ")";
-            }
+        // Always try to unwrap any result, even if not a Continuation
+        // This ensures we get primitive values consistently
+        Object unwrapped = UnwrapValue(result);
+        
+        // If we got a different value, replace the original with the primitive value
+        if (unwrapped != result) {
+            data_->Pop(); // Remove the original
+            data_->Push(unwrapped); // Push the extracted value
+            KAI_TRACE() << "Extracted primitive value from result: " 
+                      << unwrapped.ToString() << " (type: " 
+                      << unwrapped.GetClass()->GetName() << ")";
         }
     }
     
@@ -687,6 +685,16 @@ Object Executor::UnwrapValue(Object const &Q) {
         return Q;
     }
     
+    // If already a primitive type, no need for unwrapping
+    if (Q.IsType<int>() || Q.IsType<float>() || 
+        Q.IsType<double>() || Q.IsType<bool>() || 
+        Q.IsType<String>() || Q.IsType<Array>() || 
+        Q.IsType<List>() || Q.IsType<Map>() || 
+        Q.IsType<Pair>()) {
+        // Already a primitive value, no need to unwrap
+        return Q;
+    }
+    
     // If not a continuation, just return the object as is
     if (!Q.IsType<Continuation>()) {
         return Q;
@@ -706,6 +714,9 @@ Object Executor::UnwrapValue(Object const &Q) {
         KAI_TRACE() << "UnwrapValue: Continuation has no code";
         return Q;
     }
+    
+    KAI_TRACE() << "UnwrapValue: Examining Continuation code with " 
+              << cont->GetCode()->Size() << " elements";
     
     // First, look for primitive values in the code
     Pointer<const Array> code = cont->GetCode();

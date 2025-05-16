@@ -1,12 +1,13 @@
 *.d
 *.o
 *.internal
-/_build
+/_build*
+/build*
+/ninja_build*
+
 *.make
 *.d
-/ninja_build
 /test*
-/build*
 /Logs/*
 /test-out
 /build_warnings

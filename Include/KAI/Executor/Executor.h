@@ -132,10 +132,13 @@ struct Executor : Reflected {
     Object Resolve(const Label &) const;
     Object Resolve(const Pathname &) const;
 
+   public:
+    // Execute a Pi operation directly (moved from protected to support tests)
+    void Perform(Operation::Type op);
+    
    protected:
     bool PopBool();
 
-    void Perform(Operation::Type op);
     void ToArray();
     void ProcessToArray(int len); // Helper method for ToArray
 
