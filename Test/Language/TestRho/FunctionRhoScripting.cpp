@@ -29,7 +29,7 @@ Object Function_3(Object object) {
     return object["num"];
 }
 
-TEST_F(TestLangCommon, DISABLED_TestRhoReflection) {
+TEST_F(TestLangCommon, TestRhoReflection) {
     Registry& reg = *reg_;
     
     // Register MyStruct using the proper registration method

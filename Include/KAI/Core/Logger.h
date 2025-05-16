@@ -23,12 +23,21 @@ class Logger {
     static void SetLevel(Level level);
     static Level GetLevel();
 
+    // Standard logging methods
     static void Log(Level level, const std::string& message);
     static void Debug(const std::string& message);
     static void Info(const std::string& message);
     static void Warning(const std::string& message);
     static void Error(const std::string& message);
     static void Fatal(const std::string& message);
+    
+    // Enhanced logging with file and line information
+    static void LogWithLocation(Level level, const std::string& message, const char* file, int line);
+    static void DebugWithLocation(const std::string& message, const char* file, int line);
+    static void InfoWithLocation(const std::string& message, const char* file, int line);
+    static void WarningWithLocation(const std::string& message, const char* file, int line);
+    static void ErrorWithLocation(const std::string& message, const char* file, int line);
+    static void FatalWithLocation(const std::string& message, const char* file, int line);
 
     // Helper to get a filename for a specific module
     static std::string GetLogFilename(const std::string& module);

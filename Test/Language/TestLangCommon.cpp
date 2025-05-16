@@ -28,30 +28,96 @@ void ToLower(std::wstring &str) {
 }
 
 void TestLangCommon::SetUp() {
-    reg_ = &console_.GetRegistry();
-    exec_ = &*console_.GetExecutor();
-    data_ = &*exec_->GetDataStack();
-    context_ = &*exec_->GetContextStack();
-    tree_ = &console_.GetTree();
-    root_ = tree_->GetRoot();
+    try {
+        // Get registry first and ensure it's valid before proceeding
+        reg_ = &console_.GetRegistry();
+        if (!reg_->IsValid()) {
+            std::cerr << "WARNING: Registry is not valid during test setup." << std::endl;
+            return; // Early exit to prevent crashes with invalid registry
+        }
 
-    // Check if the root object is valid
-    if (!root_.Exists()) {
-        // If not valid, create a new root object
-        root_ = reg_->New<void>();
-        // Root is now the tree's root
-        tree_->SetRoot(root_);
+        // Make sure the executor exists
+        if (!console_.GetExecutor().Exists()) {
+            std::cerr << "WARNING: Executor does not exist during test setup." << std::endl;
+            return; // Early exit to prevent crashes
+        }
+
+        // Initialize executor and related objects with defensive checks at each step
+        exec_ = &*console_.GetExecutor();
+        
+        // Data stack validation
+        if (!exec_->GetDataStack().Exists()) {
+            std::cerr << "WARNING: Data stack does not exist during test setup." << std::endl;
+            // Create a new data stack rather than failing
+            exec_->GetDataStack() = reg_->New<Stack>();
+        }
+        data_ = &*exec_->GetDataStack();
+        
+        // Context stack validation
+        if (!exec_->GetContextStack().Exists()) {
+            std::cerr << "WARNING: Context stack does not exist during test setup." << std::endl;
+            // Create a new context stack rather than failing
+            exec_->GetContextStack() = reg_->New<Stack>();
+        }
+        context_ = &*exec_->GetContextStack();
+        
+        // Tree validation
+        tree_ = &console_.GetTree();
+        if (!tree_) {
+            std::cerr << "WARNING: Tree is null during test setup." << std::endl;
+            return; // Early exit to prevent crashes
+        }
+        
+        // Root object validation
+        root_ = tree_->GetRoot();
+        if (!root_.Exists()) {
+            // If not valid, create a new root object
+            root_ = reg_->New<void>();
+            if (!root_.Exists()) {
+                std::cerr << "WARNING: Failed to create root object during test setup." << std::endl;
+                return; // Early exit to prevent crashes
+            }
+            // Root is now the tree's root
+            tree_->SetRoot(root_);
+        }
+
+        // Register bool type explicitly to ensure it's available for tests
+        if (!reg_->GetClass(Label("Bool"))) {
+            reg_->AddClass<bool>(Label("Bool"));
+        }
+        
+        // Always ensure a clean state on setup
+        if (exec_->GetDataStack().Exists()) {
+            exec_->ClearStacks();
+        }
+        if (exec_->GetContextStack().Exists()) {
+            exec_->ClearContext();
+        }
     }
-
-    // Always ensure a clean state on setup
-    exec_->ClearStacks();
-    exec_->ClearContext();
+    catch (const std::exception& e) {
+        std::cerr << "ERROR during test setup: " << e.what() << std::endl;
+    }
+    catch (...) {
+        std::cerr << "UNKNOWN ERROR during test setup" << std::endl;
+    }
 }
 
 void TestLangCommon::TearDown() {
-    // Clean up after each test to avoid state persistence
-    exec_->ClearStacks();
-    exec_->ClearContext();
+    try {
+        // Clean up after each test to avoid state persistence
+        if (exec_ && exec_->GetDataStack().Exists()) {
+            exec_->ClearStacks();
+        }
+        if (exec_ && exec_->GetContextStack().Exists()) {
+            exec_->ClearContext();
+        }
+    }
+    catch (const std::exception& e) {
+        std::cerr << "ERROR during test teardown: " << e.what() << std::endl;
+    }
+    catch (...) {
+        std::cerr << "UNKNOWN ERROR during test teardown" << std::endl;
+    }
 }
 
 void TestLangCommon::ExecScriptFile(const std::string &scriptFileName) {

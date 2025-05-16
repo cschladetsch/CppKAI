@@ -370,6 +370,144 @@ void Executor::Perform(Operation::Type op) {
         case Operation::IfThenResume:
             ConditionalContextSwitch(op);
             break;
+            
+        case Operation::IfThenSuspendElseSuspend: {
+            // ( condition then-cont else-cont -- )
+            // Run then-cont if condition is true, else run else-cont
+            
+            try {
+                // Check for valid data stack first
+                if (!data_.Valid() || !data_.Exists()) {
+                    KAI_TRACE_ERROR() << "IfThenSuspendElseSuspend: Invalid data stack";
+                    break;
+                }
+                
+                // Check if we have enough items on the stack
+                if (data_->Size() < 2) { // We need at least the condition and one continuation
+                    KAI_TRACE_ERROR() << "IfThenSuspendElseSuspend: Not enough items on stack (need at least 2)";
+                    break;
+                }
+                
+                // Verify the stack has the required items
+                KAI_TRACE() << "IfThenSuspendElseSuspend: Stack size is " << data_->Size();
+                
+                // First check if we have at least one continuation on the stack
+                if (data_->Empty()) {
+                    KAI_TRACE_ERROR() << "IfThenSuspendElseSuspend: Empty stack";
+                    break;
+                }
+                
+                // Try to retrieve the else continuation first (it was pushed last)
+                Object elseCont = Object();
+                if (data_->Size() >= 1) {
+                    elseCont = data_->Top();
+                    data_->Pop();
+                    
+                    // Check validity of the else continuation
+                    if (!elseCont.Valid() || !elseCont.Exists()) {
+                        KAI_TRACE_ERROR() << "IfThenSuspendElseSuspend: Invalid else continuation";
+                        // Push a default continuation as fallback
+                        elseCont = NewContinuation(continuation_);
+                    }
+                } else {
+                    // Create a default empty continuation if missing
+                    KAI_TRACE_ERROR() << "IfThenSuspendElseSuspend: Missing else continuation, creating default";
+                    elseCont = NewContinuation(continuation_);
+                }
+                
+                // Try to retrieve the then continuation
+                Object thenCont = Object();
+                if (data_->Size() >= 1) {
+                    thenCont = data_->Top();
+                    data_->Pop();
+                    
+                    // Check validity of the then continuation
+                    if (!thenCont.Valid() || !thenCont.Exists()) {
+                        KAI_TRACE_ERROR() << "IfThenSuspendElseSuspend: Invalid then continuation";
+                        // Push a default continuation as fallback
+                        thenCont = NewContinuation(continuation_);
+                    }
+                } else {
+                    // Create a default empty continuation if missing
+                    KAI_TRACE_ERROR() << "IfThenSuspendElseSuspend: Missing then continuation, creating default";
+                    thenCont = NewContinuation(continuation_);
+                }
+                
+                // Try to retrieve the condition value
+                bool condition = false; // Default if missing
+                if (data_->Size() >= 1) {
+                    // Use the robust version of PopBool to handle any type safely
+                    condition = PopBool();
+                } else {
+                    KAI_TRACE_ERROR() << "IfThenSuspendElseSuspend: Missing condition value, defaulting to false";
+                }
+                
+                KAI_TRACE() << "IfThenSuspendElseSuspend: Condition evaluated to " << (condition ? "true" : "false");
+                
+                // Determine which continuation to execute based on condition
+                Object contToExecute = condition ? thenCont : elseCont;
+                
+                // Make sure we have a valid continuation object for current context
+                if (!continuation_.Valid() || !continuation_.Exists()) {
+                    KAI_TRACE_ERROR() << "IfThenSuspendElseSuspend: Current continuation is invalid";
+                    
+                    // Try to directly execute the branch continuation as a fallback
+                    if (contToExecute.Valid() && contToExecute.Exists()) {
+                        Continue(contToExecute);
+                    }
+                    break;
+                }
+                
+                // Make sure context stack is valid
+                if (!context_.Valid() || !context_.Exists()) {
+                    KAI_TRACE_ERROR() << "IfThenSuspendElseSuspend: Context stack is invalid";
+                    break;
+                }
+                
+                // Attempt to move current continuation past this operation
+                bool success = continuation_->Next();
+                if (!success) {
+                    KAI_TRACE() << "IfThenSuspendElseSuspend: Current continuation cannot advance, using fallback";
+                }
+                
+                // Save current continuation to return to after branch regardless
+                context_->Push(continuation_);
+                
+                // Try to create a new continuation for the branch or use directly if already a continuation
+                Pointer<Continuation> newCont;
+                if (contToExecute.IsType<Continuation>()) {
+                    // Convert to proper type
+                    newCont = contToExecute;
+                } else {
+                    // Attempt to create a new continuation
+                    newCont = NewContinuation(contToExecute);
+                }
+                
+                // Validate the continuation before pushing
+                if (!newCont.Valid() || !newCont.Exists()) {
+                    KAI_TRACE_ERROR() << "IfThenSuspendElseSuspend: Failed to create valid continuation";
+                    break;
+                }
+                
+                // Push the selected continuation onto the context stack and break
+                // to force execution to switch to it
+                context_->Push(newCont);
+                break_ = true;
+                
+                KAI_TRACE() << "IfThenSuspendElseSuspend: Successfully set up branch execution";
+            }
+            catch (const Exception::Base& e) {
+                KAI_TRACE_ERROR() << "IfThenSuspendElseSuspend: KAI exception: " << e.ToString();
+            }
+            catch (const std::exception& e) {
+                KAI_TRACE_ERROR() << "IfThenSuspendElseSuspend: std::exception: " << e.what();
+            }
+            catch (...) {
+                KAI_TRACE_ERROR() << "IfThenSuspendElseSuspend: Unknown exception";
+            }
+            
+            break;
+        }
 
         case Operation::Plus: {
             // Pop the two arguments

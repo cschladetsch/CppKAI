@@ -196,4 +196,37 @@ void Logger::Error(const std::string& message) { Log(Level::Error, message); }
 
 void Logger::Fatal(const std::string& message) { Log(Level::Fatal, message); }
 
+// Helper function to extract filename from path
+std::string ExtractFilename(const char* fullPath) {
+    std::string path(fullPath);
+    size_t lastSlash = path.find_last_of("/\\");
+    return lastSlash != std::string::npos ? path.substr(lastSlash + 1) : path;
+}
+
+// Enhanced versions with file and line information
+void Logger::LogWithLocation(Level level, const std::string& message, const char* file, int line) {
+    std::string locationInfo = "[" + ExtractFilename(file) + ":" + std::to_string(line) + "] ";
+    Log(level, locationInfo + message);
+}
+
+void Logger::DebugWithLocation(const std::string& message, const char* file, int line) {
+    LogWithLocation(Level::Debug, message, file, line);
+}
+
+void Logger::InfoWithLocation(const std::string& message, const char* file, int line) {
+    LogWithLocation(Level::Info, message, file, line);
+}
+
+void Logger::WarningWithLocation(const std::string& message, const char* file, int line) {
+    LogWithLocation(Level::Warning, message, file, line);
+}
+
+void Logger::ErrorWithLocation(const std::string& message, const char* file, int line) {
+    LogWithLocation(Level::Error, message, file, line);
+}
+
+void Logger::FatalWithLocation(const std::string& message, const char* file, int line) {
+    LogWithLocation(Level::Fatal, message, file, line);
+}
+
 KAI_END

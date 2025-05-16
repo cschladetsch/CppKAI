@@ -34,18 +34,28 @@ void Pair::Register(Registry &R) {
 }
 
 void FileLocation::AddLocation(StringStream &str) const {
-    if (debug::Trace::TraceFileLocation) {
-        std::string loc = file.c_str();
-        if (debug::Trace::StripPath) {
-            loc = loc.substr(loc.find_last_of('/') + 1);
-            loc = loc.substr(loc.find_last_of('\\') + 1);
+    // Always include file location information, regardless of TraceFileLocation setting
+    // This ensures __FILE__ and __LINE__ always appear in log messages
+    std::string loc = file.c_str();
+    
+    // Only strip path if that setting is enabled
+    if (debug::Trace::StripPath) {
+        size_t lastSlash = loc.find_last_of('/');
+        if (lastSlash != std::string::npos) {
+            loc = loc.substr(lastSlash + 1);
         }
+        
+        size_t lastBackslash = loc.find_last_of('\\');
+        if (lastBackslash != std::string::npos) {
+            loc = loc.substr(lastBackslash + 1);
+        }
+    }
 
-        if (!loc.empty())
+    if (!loc.empty()) {
 #ifdef __MSVC__
-            S << loc.c_str() << "(" << line << "): ";
+        str << "[" << loc.c_str() << "(" << line << ")] ";
 #else
-            str << loc.c_str() << ":" << line << ": ";
+        str << "[" << loc.c_str() << ":" << line << "] ";
 #endif
     }
 }

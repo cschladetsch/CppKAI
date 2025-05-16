@@ -20,9 +20,26 @@ ObjectConstructParams::ObjectConstructParams(StorageBase *Q) {
 Object::Object(const ObjectConstructParams &P)
     : registry(P.registry), class_base(P.class_base), handle(P.handle) {}
 
-Object::Object(Object const &Q) { *this = Q; }
+Object::Object(Object const &Q) {
+    // Use a more robust copy constructor that validates the source
+    if (Q.Valid()) {
+        registry = Q.registry;
+        class_base = Q.class_base;
+        handle = Q.handle;
+    }
+    else {
+        registry = nullptr;
+        class_base = nullptr;
+        handle = Handle();
+        KAI_TRACE() << "Object copy constructor: Invalid source object";
+    }
+}
 
 void Object::Assign(StorageBase &A, StorageBase const &B) {
+    if (GetClass() == nullptr) {
+        KAI_TRACE_ERROR() << "Object::Assign: Null class_base";
+        return;
+    }
     GetClass()->Assign(A, B);
 }
 
@@ -34,9 +51,25 @@ Object &Object::operator=(Object const &Q) {
         if (base) base->DetermineNewColor();
     }
 
-    class_base = Q.class_base;
-    registry = Q.registry;
-    handle = Q.handle;
+    // Validate source object before assignment
+    if (Q.Valid()) {
+        class_base = Q.class_base;
+        registry = Q.registry; 
+        handle = Q.handle;
+    }
+    else {
+        // Source object is invalid, log a warning but don't nullify this object if it's valid
+        if (Valid()) {
+            KAI_TRACE_ERROR() << "Object::operator=: Assigning from invalid object, preserving current state";
+        }
+        else {
+            // Both are invalid, clear everything
+            class_base = nullptr;
+            registry = nullptr;
+            handle = Handle();
+            KAI_TRACE() << "Object::operator=: Both source and destination objects are invalid";
+        }
+    }
 
     return *this;
 }
@@ -185,27 +218,32 @@ Type::Number GetTypeNumber(Object const &Q) {
 }
 
 StorageBase &GetStorageBase_(Object const &Q) {
-    // Additional safety checks
+    // Comprehensive safety checks with more detailed logging
+    if (!Q.Valid()) {
+        KAI_TRACE_ERROR() << "GetStorageBase_: Object is not valid";
+        KAI_THROW_0(NullObject);
+    }
+    
     if (!Q.Exists()) {
-        KAI_TRACE() << "GetStorageBase_: Object does not exist";
+        KAI_TRACE_ERROR() << "GetStorageBase_: Object does not exist";
         KAI_THROW_0(NullObject);
     }
     
     Registry* registry = Q.GetRegistry();
-    if (registry == 0) {
-        KAI_TRACE() << "GetStorageBase_: Null registry";
+    if (registry == nullptr) {
+        KAI_TRACE_ERROR() << "GetStorageBase_: Null registry";
         KAI_THROW_0(NullObject);
     }
     
     Handle handle = Q.GetHandle();
     if (handle.GetValue() == 0) {
-        KAI_TRACE() << "GetStorageBase_: Null handle";
+        KAI_TRACE_ERROR() << "GetStorageBase_: Null handle";
         KAI_THROW_0(NullObject);
     }
     
     StorageBase *base = registry->GetStorageBase(handle);
-    if (base == 0) {
-        KAI_TRACE() << "GetStorageBase_: Null storage base for handle " << handle.GetValue();
+    if (base == nullptr) {
+        KAI_TRACE_ERROR() << "GetStorageBase_: Null storage base for handle " << handle.GetValue();
         KAI_THROW_0(NullObject);
     }
 
@@ -213,23 +251,38 @@ StorageBase &GetStorageBase_(Object const &Q) {
 }
 
 StorageBase &GetStorageBase(Object const &Q) {
-    // Enhanced validation with detailed error information
-    if (!Q.Exists()) {
-        KAI_TRACE() << "GetStorageBase: Object does not exist";
+    try {
+        // Enhanced validation with detailed error information
+        if (!Q.Valid()) {
+            KAI_TRACE_ERROR() << "GetStorageBase: Object is not valid";
+            KAI_THROW_0(NullObject);
+        }
+        
+        if (!Q.Exists()) {
+            KAI_TRACE_ERROR() << "GetStorageBase: Object does not exist";
+            KAI_THROW_0(NullObject);
+        }
+        
+        Registry* registry = Q.GetRegistry();
+        if (registry == nullptr) {
+            KAI_TRACE_ERROR() << "GetStorageBase: Object has null registry";
+            KAI_THROW_0(NullObject);
+        }
+        
+        return GetStorageBase_(Q);
+    }
+    catch (const Exception::Base& e) {
+        KAI_TRACE_ERROR() << "GetStorageBase: Exception: " << e.ToString();
         KAI_THROW_0(NullObject);
     }
-    
-    if (!Q.Valid()) {
-        KAI_TRACE() << "GetStorageBase: Object is not valid";
+    catch (const std::exception& e) {
+        KAI_TRACE_ERROR() << "GetStorageBase: std::exception: " << e.what();
         KAI_THROW_0(NullObject);
     }
-    
-    if (Q.GetRegistry() == 0) {
-        KAI_TRACE() << "GetStorageBase: Object has null registry";
+    catch (...) {
+        KAI_TRACE_ERROR() << "GetStorageBase: Unknown exception";
         KAI_THROW_0(NullObject);
     }
-    
-    return GetStorageBase_(Q);
 }
 
 StringStream &operator>>(StringStream &S, Object &Q) {

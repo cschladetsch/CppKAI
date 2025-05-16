@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="1" failures="1" disabled="0" errors="0" time="0.009" timestamp="2025-05-16T12:54:53.050" name="AllTests">
+  <testsuite name="TestRho" tests="1" failures="1" disabled="0" skipped="0" errors="0" time="0.009" timestamp="2025-05-16T12:54:53.050">
+    <testcase name="TestConditionals" file="/home/xian/local/KAI/Test/Language/TestRho/TestRho.cpp" line="194" status="run" result="completed" time="0.009" timestamp="2025-05-16T12:54:53.050" classname="TestRho">
+      <failure message="unknown file&#x0A;C++ exception with description &quot;Unimplemented operation&quot; thrown in the test body.&#x0A;" type=""><![CDATA[unknown file
+C++ exception with description "Unimplemented operation" thrown in the test body.
+]]></failure>
+    </testcase>
+  </testsuite>
+</testsuites>

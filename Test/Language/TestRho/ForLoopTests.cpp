@@ -120,7 +120,7 @@ Object ExecuteRhoCode(const std::string& code) {
 /* Tests for Rho 'for' statement */
 
 // Test 1: Basic for loop with integer increment
-TEST(RhoForLoop, DISABLED_BasicIntegerIncrement) {
+TEST(RhoForLoop, BasicIntegerIncrement) {
     const std::string code = R"(
         // Basic for loop that increments a counter
         sum = 0;
@@ -138,7 +138,7 @@ TEST(RhoForLoop, DISABLED_BasicIntegerIncrement) {
 }
 
 // Test 2: For loop with a complex condition
-TEST(RhoForLoop, DISABLED_ComplexCondition) {
+TEST(RhoForLoop, ComplexCondition) {
     const std::string code = R"(
         // For loop with a more complex condition
         result = 0;
@@ -163,7 +163,7 @@ TEST(RhoForLoop, DISABLED_ComplexCondition) {
 }
 
 // Test 3: For loop with early exit using break
-TEST(RhoForLoop, DISABLED_EarlyExitWithBreak) {
+TEST(RhoForLoop, EarlyExitWithBreak) {
     // Code that breaks out of a for loop early
     const std::string code = R"(
         // For loop with an early break
@@ -186,7 +186,7 @@ TEST(RhoForLoop, DISABLED_EarlyExitWithBreak) {
 }
 
 // Test 4: Nested for loops
-TEST(RhoForLoop, DISABLED_NestedLoops) {
+TEST(RhoForLoop, NestedLoops) {
     const std::string code = R"(
         // Nested for loops
         sum = 0;
@@ -210,7 +210,7 @@ TEST(RhoForLoop, DISABLED_NestedLoops) {
 }
 
 // Test 5: For loop with function calls in the body
-TEST(RhoForLoop, DISABLED_FunctionCallsInBody) {
+TEST(RhoForLoop, FunctionCallsInBody) {
     // First define a function that squares its input
     const std::string setupCode = R"(
         // Define a square function
@@ -236,7 +236,7 @@ TEST(RhoForLoop, DISABLED_FunctionCallsInBody) {
 }
 
 // Test 6: For loop that builds an array
-TEST(RhoForLoop, DISABLED_BuildingAnArray) {
+TEST(RhoForLoop, BuildingAnArray) {
     const std::string code = R"(
         // Create an array and add values in a for loop
         arr = [];
@@ -264,7 +264,7 @@ TEST(RhoForLoop, DISABLED_BuildingAnArray) {
 }
 
 // Test 7: For loop with complex update expression
-TEST(RhoForLoop, DISABLED_ComplexUpdateExpression) {
+TEST(RhoForLoop, ComplexUpdateExpression) {
     const std::string code = R"(
         // For loop with a more complex update expression
         result = 0;
@@ -284,7 +284,7 @@ TEST(RhoForLoop, DISABLED_ComplexUpdateExpression) {
 }
 
 // Test 8: Fibonacci sequence using a for loop
-TEST(RhoForLoop, DISABLED_FibonacciSequence) {
+TEST(RhoForLoop, FibonacciSequence) {
     const std::string code = R"(
         // Calculate the 10th Fibonacci number using a for loop
         a = 0;
@@ -308,7 +308,7 @@ TEST(RhoForLoop, DISABLED_FibonacciSequence) {
 }
 
 // Test 9: For loop with string operations
-TEST(RhoForLoop, DISABLED_StringOperations) {
+TEST(RhoForLoop, StringOperations) {
     const std::string code = R"(
         // For loop that builds a string
         result = "";
@@ -329,7 +329,7 @@ TEST(RhoForLoop, DISABLED_StringOperations) {
 }
 
 // Test 10: For loop with function that contains a for loop (nested continuations)
-TEST(RhoForLoop, DISABLED_NestedContinuations) {
+TEST(RhoForLoop, NestedContinuations) {
     const std::string code = R"(
         // Define a function that calculates the sum of numbers from 1 to n
         fun sumToN(n) {
@@ -364,7 +364,7 @@ TEST(RhoForLoop, DISABLED_NestedContinuations) {
 }
 
 // Test 11: Using a for loop inside a function that's called multiple times
-TEST(RhoForLoop, DISABLED_FunctionWithForLoop) {
+TEST(RhoForLoop, FunctionWithForLoop) {
     const std::string code = R"(
         // Define a function to calculate the factorial of a number using a for loop
         fun factorial(n) {
@@ -390,7 +390,7 @@ TEST(RhoForLoop, DISABLED_FunctionWithForLoop) {
 }
 
 // Test 12: For loop with Pi block embedded inside
-TEST(RhoForLoop, DISABLED_WithEmbeddedPiBlock) {
+TEST(RhoForLoop, WithEmbeddedPiBlock) {
     const std::string code = R"(
         // For loop that uses Pi sequences inside
         sum = 0;

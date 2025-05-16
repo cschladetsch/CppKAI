@@ -376,14 +376,29 @@ Pointer<Continuation> Console::Compile(const char *text, Structure st) {
 void Console::Register(Registry &) {}
 
 bool Console::ExecuteFile(const char *fileName) {
-    Pointer<Continuation> c =
-        compiler->CompileFile(fileName, Structure::Program);
-    if (c.Exists()) {
-        executor->Continue(c);
-        return true;
+    // Validate inputs first
+    if (fileName == nullptr || strlen(fileName) == 0) {
+        KAI_TRACE_ERROR() << "ExecuteFile: Null or empty filename";
+        return false;
     }
-
-    return false;
+    
+    if (!compiler.Exists()) {
+        KAI_TRACE_ERROR() << "ExecuteFile: Null compiler";
+        return false;
+    }
+    
+    // Compile the file
+    Pointer<Continuation> c = compiler->CompileFile(fileName, Structure::Program);
+    
+    if (!c.Exists()) {
+        KAI_TRACE_ERROR() << "ExecuteFile: Failed to compile " << fileName;
+        return false;
+    }
+    
+    // Execute the continuation using our improved method
+    // This is safer than directly calling executor->Continue
+    Execute(c);
+    return true;
 }
 
 KAI_END

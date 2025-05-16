@@ -70,28 +70,39 @@ struct EmptySink {
 }  // namespace debug
 
 #ifdef KAI_DEBUG_TRACE
+// Base macros with file and line information
 #define KAI_TRACE() KAI_TRACER(__FILE__, __LINE__, __FUNCTION__, Information)
 
 #define KAI_TRACER(F, L, N, T)  \
     KAI_NAMESPACE(debug::Trace) \
     (FileLocation(F, L, N), KAI_NAMESPACE(debug::Trace::T))
 
+// Use our enhanced logger with file and line information for key log macros
+#define KAI_LOG_INFO(msg) KAI_NAMESPACE(Logger::InfoWithLocation)(msg, __FILE__, __LINE__)
+#define KAI_LOG_WARNING(msg) KAI_NAMESPACE(Logger::WarningWithLocation)(msg, __FILE__, __LINE__)
+#define KAI_LOG_ERROR(msg) KAI_NAMESPACE(Logger::ErrorWithLocation)(msg, __FILE__, __LINE__)
+#define KAI_LOG_FATAL(msg) KAI_NAMESPACE(Logger::FatalWithLocation)(msg, __FILE__, __LINE__)
+
+// Standard trace macros enhanced with file and line information
 #define KAI_TRACE_WARN() KAI_TRACER(__FILE__, __LINE__, __FUNCTION__, Warn)
 #define KAI_TRACE_ERROR() KAI_TRACER(__FILE__, __LINE__, __FUNCTION__, Error)
 #define KAI_TRACE_FATAL() KAI_TRACER(__FILE__, __LINE__, __FUNCTION__, Fatal)
 
+// Parameterized trace macros that show the file and line
 #define KAI_TRACE_0() KAI_TRACE()
 #define KAI_TRACE_1(A) KAI_TRACE().Write(#A, A)
 #define KAI_TRACE_2(A, B) KAI_TRACE_1(A).Write(#B, B)
 #define KAI_TRACE_3(A, B, C) KAI_TRACE_2(A, B).Write(#C, C)
 #define KAI_TRACE_4(A, B, C, D) KAI_TRACE_3(A, B, C).Write(#D, D)
 
+// Warning traces with file and line
 #define KAI_TRACE_WARN_0() KAI_TRACE_WARN()
 #define KAI_TRACE_WARN_1(A) KAI_TRACE_WARN().Write(#A, A)
 #define KAI_TRACE_WARN_2(A, B) KAI_TRACE_WARN_1(A).Write(#B, B)
 #define KAI_TRACE_WARN_3(A, B, C) KAI_TRACE_WARN_2(A, B).Write(#C, C)
 #define KAI_TRACE_WARN_4(A, B, C, D) KAI_TRACE_WARN_3(A, B, C).Write(#D, D)
 
+// Error traces with file and line
 #define KAI_TRACE_ERROR_0() KAI_TRACE_ERROR()
 #define KAI_TRACE_ERROR_1(A) KAI_TRACE_ERROR().Write(#A, A)
 #define KAI_TRACE_ERROR_2(A, B) KAI_TRACE_ERROR_1(A).Write(#B, B)
@@ -99,27 +110,48 @@ struct EmptySink {
 #define KAI_TRACE_ERROR_4(A, B, C, D) KAI_TRACE_ERROR_3(A, B, C).Write(#D, D)
 
 #else
+// Empty sink definitions for when tracing is disabled
 #define KAI_EMPTY_TRACE_SINK debug::EmptySink()
 #define KAI_EMPTY_TRACE_SINK_1(A) debug::EmptySink()
 #define KAI_EMPTY_TRACE_SINK_2(A, B) debug::EmptySink()
 #define KAI_EMPTY_TRACE_SINK_3(A, B, C) debug::EmptySink()
+#define KAI_EMPTY_TRACE_SINK_4(A, B, C, D) debug::EmptySink()
 
+// Define empty versions of all macros
 #define KAI_TRACER(F, L, N) KAI_EMPTY_TRACE_SINK
 #define KAI_TRACE() KAI_EMPTY_TRACE_SINK
 #define KAI_TRACE_0() KAI_EMPTY_TRACE_SINK
 #define KAI_TRACE_1(A) KAI_EMPTY_TRACE_SINK_1(A)
 #define KAI_TRACE_2(A, B) KAI_EMPTY_TRACE_SINK_2(A, B)
 #define KAI_TRACE_3(A, B, C) KAI_EMPTY_TRACE_SINK_3(A, B, C)
+#define KAI_TRACE_4(A, B, C, D) KAI_EMPTY_TRACE_SINK_4(A, B, C, D)
+
 #define KAI_TRACE_WARN() KAI_EMPTY_TRACE_SINK
 #define KAI_TRACE_WARN_0() KAI_EMPTY_TRACE_SINK
 #define KAI_TRACE_WARN_1(A) KAI_EMPTY_TRACE_SINK_1(A)
 #define KAI_TRACE_WARN_2(A, B) KAI_EMPTY_TRACE_SINK_2(A, B)
 #define KAI_TRACE_WARN_3(A, B, C) KAI_EMPTY_TRACE_SINK_3(A, B, C)
+#define KAI_TRACE_WARN_4(A, B, C, D) KAI_EMPTY_TRACE_SINK_4(A, B, C, D)
+
 #define KAI_TRACE_ERROR() KAI_EMPTY_TRACE_SINK
 #define KAI_TRACE_ERROR_0() KAI_EMPTY_TRACE_SINK
 #define KAI_TRACE_ERROR_1(A) KAI_EMPTY_TRACE_SINK_1(A)
 #define KAI_TRACE_ERROR_2(A, B) KAI_EMPTY_TRACE_SINK_2(A, B)
 #define KAI_TRACE_ERROR_3(A, B, C) KAI_EMPTY_TRACE_SINK_3(A, B, C)
+#define KAI_TRACE_ERROR_4(A, B, C, D) KAI_EMPTY_TRACE_SINK_4(A, B, C, D)
+
+#define KAI_TRACE_FATAL() KAI_EMPTY_TRACE_SINK
+#define KAI_TRACE_FATAL_0() KAI_EMPTY_TRACE_SINK
+#define KAI_TRACE_FATAL_1(A) KAI_EMPTY_TRACE_SINK_1(A)
+#define KAI_TRACE_FATAL_2(A, B) KAI_EMPTY_TRACE_SINK_2(A, B)
+#define KAI_TRACE_FATAL_3(A, B, C) KAI_EMPTY_TRACE_SINK_3(A, B, C)
+#define KAI_TRACE_FATAL_4(A, B, C, D) KAI_EMPTY_TRACE_SINK_4(A, B, C, D)
+
+// Also define the empty versions of the new logger macros
+#define KAI_LOG_INFO(msg) ((void)0)
+#define KAI_LOG_WARNING(msg) ((void)0)
+#define KAI_LOG_ERROR(msg) ((void)0)
+#define KAI_LOG_FATAL(msg) ((void)0)
 #endif
 
 KAI_END
