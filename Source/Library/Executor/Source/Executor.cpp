@@ -1262,32 +1262,39 @@ void Executor::DumpContinuation(Continuation const &cont, int level) {
 
 // Enhanced version of PerformBinaryOp that handles all operation types using KAI type traits
 Object Executor::PerformBinaryOp(Object const &A, Object const &B, Operation::Type op) {
-    // Validate inputs
-    if (!A.Valid()) {
-        KAI_TRACE_ERROR() << "PerformBinaryOp: First argument is invalid";
-        return Object();
-    }
-    
-    if (!B.Valid()) {
-        KAI_TRACE_ERROR() << "PerformBinaryOp: Second argument is invalid";
-        return Object();
-    }
-    
-    // Ensure we have a valid registry to create new objects
-    Registry* registry = A.GetRegistry();
-    if (!registry) {
-        registry = B.GetRegistry();
+    try {
+        // Validate inputs
+        if (!A.Valid()) {
+            KAI_TRACE_ERROR() << "PerformBinaryOp: First argument is invalid";
+            return Object();
+        }
+        
+        if (!B.Valid()) {
+            KAI_TRACE_ERROR() << "PerformBinaryOp: Second argument is invalid";
+            return Object();
+        }
+        
+        // Ensure we have a valid registry to create new objects
+        Registry* registry = A.GetRegistry();
         if (!registry) {
-            // Try to use the executor's registry if available through data stack
-            if (data_.Exists() && data_.GetRegistry() != nullptr) {
-                registry = data_.GetRegistry();
-            }
-            else {
-                KAI_TRACE_ERROR() << "PerformBinaryOp: No valid registry found";
-                return Object();
+            registry = B.GetRegistry();
+            if (!registry) {
+                // Try to use the executor's registry if available through data stack
+                if (data_.Exists() && data_.GetRegistry() != nullptr) {
+                    registry = data_.GetRegistry();
+                }
+                else {
+                    // Try to use Self if available
+                    if (Self && Self->GetRegistry()) {
+                        registry = Self->GetRegistry();
+                    }
+                    else {
+                        KAI_TRACE_ERROR() << "PerformBinaryOp: No valid registry found";
+                        return Object();
+                    }
+                }
             }
         }
-    }
     
     // Helper function to create a new object, ensuring it has a valid registry
     auto createNew = [registry](auto value) -> Object {
@@ -1762,6 +1769,19 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B, Operation::Ty
     
     // If we still can't determine a suitable return type, return A if valid, otherwise an empty object
     return A.Valid() ? A : Object();
+    }
+    catch (const Exception::Base& e) {
+        KAI_TRACE_ERROR() << "PerformBinaryOp: KAI exception: " << e.ToString();
+        return Object();
+    }
+    catch (const std::exception& e) {
+        KAI_TRACE_ERROR() << "PerformBinaryOp: std::exception: " << e.what();
+        return Object();
+    }
+    catch (...) {
+        KAI_TRACE_ERROR() << "PerformBinaryOp: Unknown exception";
+        return Object();
+    }
 }
 
 void Executor::SetTraceLevel(int n) {

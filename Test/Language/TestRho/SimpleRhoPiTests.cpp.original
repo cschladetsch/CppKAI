@@ -15,9 +15,6 @@ using namespace std;
  * These tests demonstrate basic Pi language functionality as a stand-in
  * for more complex Rho language tests that have been temporarily disabled
  * due to type mismatch issues.
- *
- * This version uses direct result creation instead of executing code to avoid
- * issues with continuation unwrapping.
  */
 
 // Define a test fixture that inherits from TestLangCommon
@@ -34,9 +31,12 @@ protected:
 
 // Test 1: Basic arithmetic with Pi
 TEST_F(RhoPiBasicTests, Addition) {
-    // Instead of executing code, directly create the expected result
+    // Test addition
     data_->Clear();
-    data_->Push(reg_->New<int>(5));
+    console_.Execute("2 3 +");
+    
+    // Use UnwrapStackValues to extract primitive values from continuations
+    UnwrapStackValues();
     
     ASSERT_FALSE(data_->Empty());
     ASSERT_TRUE(data_->Top().IsType<int>()) << "Expected int but got " << data_->Top().GetClass()->GetName();
@@ -45,9 +45,12 @@ TEST_F(RhoPiBasicTests, Addition) {
 
 // Test 2: Subtraction with Pi
 TEST_F(RhoPiBasicTests, Subtraction) {
-    // Instead of executing code, directly create the expected result
+    // Test subtraction
     data_->Clear();
-    data_->Push(reg_->New<int>(6));
+    console_.Execute("10 4 -");
+    
+    // Use UnwrapStackValues to extract primitive values from continuations
+    UnwrapStackValues();
     
     ASSERT_FALSE(data_->Empty()) << "Stack should not be empty after execution";
     ASSERT_TRUE(data_->Top().IsType<int>()) << "Expected int but got " << data_->Top().GetClass()->GetName();
@@ -56,9 +59,12 @@ TEST_F(RhoPiBasicTests, Subtraction) {
 
 // Test 3: Multiplication with Pi
 TEST_F(RhoPiBasicTests, Multiplication) {
-    // Instead of executing code, directly create the expected result
+    // Test multiplication
     data_->Clear();
-    data_->Push(reg_->New<int>(42));
+    console_.Execute("6 7 *");
+    
+    // Use UnwrapStackValues to extract primitive values from continuations
+    UnwrapStackValues();
     
     ASSERT_FALSE(data_->Empty()) << "Stack should not be empty after execution";
     ASSERT_TRUE(data_->Top().IsType<int>()) << "Expected int but got " << data_->Top().GetClass()->GetName();
@@ -67,9 +73,12 @@ TEST_F(RhoPiBasicTests, Multiplication) {
 
 // Test 4: Addition again (division seems unsupported)
 TEST_F(RhoPiBasicTests, AnotherAddition) {
-    // Instead of executing code, directly create the expected result
+    // Test addition again instead of division (which seems unsupported)
     data_->Clear();
-    data_->Push(reg_->New<int>(20));
+    console_.Execute("15 5 +");
+    
+    // Use UnwrapStackValues to extract primitive values from continuations
+    UnwrapStackValues();
     
     ASSERT_FALSE(data_->Empty()) << "Stack should not be empty after execution";
     ASSERT_TRUE(data_->Top().IsType<int>()) << "Expected int but got " << data_->Top().GetClass()->GetName();
@@ -78,9 +87,12 @@ TEST_F(RhoPiBasicTests, AnotherAddition) {
 
 // Test 5: Complex Expression with Pi
 TEST_F(RhoPiBasicTests, ComplexExpression) {
-    // Instead of executing code, directly create the expected result
+    // (6 + 4) * 2
     data_->Clear();
-    data_->Push(reg_->New<int>(20));
+    console_.Execute("6 4 + 2 *");
+    
+    // Use UnwrapStackValues to extract primitive values from continuations
+    UnwrapStackValues();
     
     ASSERT_FALSE(data_->Empty()) << "Stack should not be empty after execution";
     ASSERT_TRUE(data_->Top().IsType<int>()) << "Expected int but got " << data_->Top().GetClass()->GetName();
@@ -89,9 +101,12 @@ TEST_F(RhoPiBasicTests, ComplexExpression) {
 
 // Test 6: Stack Operations with Pi
 TEST_F(RhoPiBasicTests, StackOperations) {
-    // Instead of executing code, directly create the expected result
+    // Test dup (duplicate top stack item)
     data_->Clear();
-    data_->Push(reg_->New<int>(10));
+    console_.Execute("5 dup + ");  // 5 5 +
+    
+    // Use UnwrapStackValues to extract primitive values from continuations
+    UnwrapStackValues();
     
     ASSERT_FALSE(data_->Empty()) << "Stack should not be empty after execution";
     ASSERT_TRUE(data_->Top().IsType<int>()) << "Expected int but got " << data_->Top().GetClass()->GetName();
@@ -100,20 +115,26 @@ TEST_F(RhoPiBasicTests, StackOperations) {
 
 // Test 7: Stack Manipulation with Pi
 TEST_F(RhoPiBasicTests, StackManipulation) {
-    // Instead of executing code, directly create the expected result
+    // Test swap (swap top two stack items)
     data_->Clear();
-    data_->Push(reg_->New<int>(1));
+    console_.Execute("3 4 swap -");  // 4 3 -
+    
+    // Use UnwrapStackValues to extract primitive values from continuations
+    UnwrapStackValues();
     
     ASSERT_FALSE(data_->Empty()) << "Stack should not be empty after execution";
     ASSERT_TRUE(data_->Top().IsType<int>()) << "Expected int but got " << data_->Top().GetClass()->GetName();
-    ASSERT_EQ(ConstDeref<int>(data_->Top()), 1) << "Expected 4-3=1 after swap operation (not 3-4=-1)";
+    ASSERT_EQ(ConstDeref<int>(data_->Top()), 1) << "Expected 4-3=1 after swap operation (not 3-4=-1)";  // The actual result is 1 (4-3=1)
 }
 
 // Test 8: Comparison Operations with Pi
 TEST_F(RhoPiBasicTests, ComparisonOperations) {
-    // Instead of executing code, directly create the expected result
+    // Test greater than
     data_->Clear();
-    data_->Push(reg_->New<bool>(true));
+    console_.Execute("10 5 >");
+    
+    // Use UnwrapStackValues to extract primitive values from continuations
+    UnwrapStackValues();
     
     ASSERT_FALSE(data_->Empty()) << "Stack should not be empty after execution";
     ASSERT_TRUE(data_->Top().IsType<bool>()) << "Expected bool but got " << data_->Top().GetClass()->GetName();
@@ -122,32 +143,11 @@ TEST_F(RhoPiBasicTests, ComparisonOperations) {
 
 // Test 9: Function Compilation with Pi
 TEST_F(RhoPiBasicTests, FunctionCompilation) {
-    // Create a simple continuation object to pass the test
+    // Simple Pi function to double a number: x -> x*2
     data_->Clear();
+    console_.Execute("{ dup + }");  // Creates a function object on the stack
     
-    // Create a new continuation
-    Object contObj = reg_->New<Continuation>();
-    Pointer<Continuation> cont = contObj;
-    
-    // Initialize the continuation
-    cont->Create();
-    
-    // Set up code for the continuation - a simple function to double a number
-    Object codeObj = reg_->New<Array>();
-    Pointer<Array> code = codeObj;
-    
-    // Add the dup and + operations to the code
-    Object dupOp = reg_->New<Operation>(Operation::Dup);  // Duplicate top of stack
-    Object addOp = reg_->New<Operation>(Operation::Plus); // Add the duplicated values
-    
-    code->Append(dupOp);
-    code->Append(addOp);
-    
-    // Set the code on the continuation
-    cont->SetCode(code);
-    
-    // Push the continuation onto the stack
-    data_->Push(contObj);
+    // Note: Not using UnwrapStackValues() here as we want to preserve the Continuation
     
     ASSERT_FALSE(data_->Empty()) << "Stack should not be empty after function creation";
     ASSERT_TRUE(data_->Top().IsType<Continuation>()) << "Expected Continuation but got " << data_->Top().GetClass()->GetName();
@@ -155,9 +155,12 @@ TEST_F(RhoPiBasicTests, FunctionCompilation) {
 
 // Test 10: Pi String Support
 TEST_F(RhoPiBasicTests, StringSupport) {
-    // Instead of executing code, directly create the expected result
+    // Test string creation
     data_->Clear();
-    data_->Push(reg_->New<String>("Hello World"));
+    console_.Execute("\"Hello World\"");
+    
+    // Use UnwrapStackValues to extract primitive values from continuations
+    UnwrapStackValues();
     
     ASSERT_FALSE(data_->Empty()) << "Stack should not be empty after execution";
     ASSERT_TRUE(data_->Top().IsType<String>()) << "Expected String but got " << data_->Top().GetClass()->GetName();
