@@ -17,6 +17,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/TestRho.dir/TestRho/BasicTests.cpp.o.d"
   "CMakeFiles/TestRho.dir/TestRho/CompareLanguagesTest.cpp.o"
   "CMakeFiles/TestRho.dir/TestRho/CompareLanguagesTest.cpp.o.d"
+  "CMakeFiles/TestRho.dir/TestRho/DiagnoseTestLang.cpp.o"
+  "CMakeFiles/TestRho.dir/TestRho/DiagnoseTestLang.cpp.o.d"
   "CMakeFiles/TestRho.dir/TestRho/DirectBinaryOpTest.cpp.o"
   "CMakeFiles/TestRho.dir/TestRho/DirectBinaryOpTest.cpp.o.d"
   "CMakeFiles/TestRho.dir/TestRho/ExtendedBinaryOpTests.cpp.o"

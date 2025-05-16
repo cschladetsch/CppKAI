@@ -689,6 +689,30 @@ TestRho/CompareLanguagesTest.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/CompareLanguagesTest.cpp.s
 .PHONY : TestRho/CompareLanguagesTest.cpp.s
 
+TestRho/DiagnoseTestLang.o: TestRho/DiagnoseTestLang.cpp.o
+.PHONY : TestRho/DiagnoseTestLang.o
+
+# target to build an object file
+TestRho/DiagnoseTestLang.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/DiagnoseTestLang.cpp.o
+.PHONY : TestRho/DiagnoseTestLang.cpp.o
+
+TestRho/DiagnoseTestLang.i: TestRho/DiagnoseTestLang.cpp.i
+.PHONY : TestRho/DiagnoseTestLang.i
+
+# target to preprocess a source file
+TestRho/DiagnoseTestLang.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/DiagnoseTestLang.cpp.i
+.PHONY : TestRho/DiagnoseTestLang.cpp.i
+
+TestRho/DiagnoseTestLang.s: TestRho/DiagnoseTestLang.cpp.s
+.PHONY : TestRho/DiagnoseTestLang.s
+
+# target to generate assembly for a file
+TestRho/DiagnoseTestLang.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/DiagnoseTestLang.cpp.s
+.PHONY : TestRho/DiagnoseTestLang.cpp.s
+
 TestRho/DirectBinaryOpTest.o: TestRho/DirectBinaryOpTest.cpp.o
 .PHONY : TestRho/DirectBinaryOpTest.o
 
@@ -1358,6 +1382,9 @@ help:
 	@echo "... TestRho/CompareLanguagesTest.o"
 	@echo "... TestRho/CompareLanguagesTest.i"
 	@echo "... TestRho/CompareLanguagesTest.s"
+	@echo "... TestRho/DiagnoseTestLang.o"
+	@echo "... TestRho/DiagnoseTestLang.i"
+	@echo "... TestRho/DiagnoseTestLang.s"
 	@echo "... TestRho/DirectBinaryOpTest.o"
 	@echo "... TestRho/DirectBinaryOpTest.i"
 	@echo "... TestRho/DirectBinaryOpTest.s"

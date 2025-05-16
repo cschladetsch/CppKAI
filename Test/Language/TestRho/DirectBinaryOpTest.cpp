@@ -183,3 +183,58 @@ TEST(DirectBinaryOp, MoreOperations) {
     
     cout << "More binary operations successful" << endl;
 }
+
+// Test specifically for the "20 20 +" case that we fixed
+TEST(DirectBinaryOp, TestPiPattern20Plus20) {
+    // Create console with Pi language
+    Console console;
+    console.SetLanguage(Language::Pi);
+    
+    // Register basic types
+    Registry& reg = console.GetRegistry();
+    reg.AddClass<int>(Label("int"));
+    
+    // Get executor and stack
+    auto exec = console.GetExecutor();
+    auto stack = exec->GetDataStack();
+    stack->Clear();
+    
+    try {
+        // Execute Pi text directly: "20 20 +"
+        console.Execute("20 20 +");
+        
+        // Log the stack status for debugging
+        cout << "After Pi execution, stack size: " << stack->Size() << endl;
+        
+        if (!stack->Empty()) {
+            Object top = stack->Top();
+            
+            if (top.IsType<Continuation>()) {
+                cout << "Found continuation on stack - unwrapping needed" << endl;
+                
+                // Execute the continuation to get the actual result
+                exec->Continue(Deref<Continuation>(top));
+                
+                // Now check if we got a direct result
+                if (!stack->Empty() && stack->Top().IsType<int>()) {
+                    cout << "Successfully unwrapped to int value: " << ConstDeref<int>(stack->Top()) << endl;
+                }
+            }
+            else if (top.IsType<int>()) {
+                cout << "Direct int result: " << ConstDeref<int>(top) << endl;
+            }
+        }
+        
+        // Verify result
+        ASSERT_FALSE(stack->Empty()) << "Stack is empty after execution!";
+        ASSERT_TRUE(stack->Top().IsType<int>()) << "Top item is not an integer!";
+        ASSERT_EQ(ConstDeref<int>(stack->Top()), 40) << "Expected 40 but got " << 
+                                                  ConstDeref<int>(stack->Top());
+        
+        cout << "Pi pattern '20 20 +' test successful" << endl;
+    }
+    catch (const std::exception& e) {
+        cout << "Exception during Pi execution: " << e.what() << endl;
+        FAIL();
+    }
+}
