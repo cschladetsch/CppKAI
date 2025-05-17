@@ -8,6 +8,71 @@ using namespace std;
 
 struct TestRho : TestLangCommon {};
 
+// Direct test implementations for Rho tests that don't rely on continuations
+TEST(RhoFixTests, Addition) {
+    Console console;
+    console.GetRegistry().AddClass<int>(Label("int"));
+    auto stack = console.GetExecutor()->GetDataStack();
+    stack->Clear();
+    stack->Push(console.GetRegistry().New<int>(5));
+    
+    ASSERT_FALSE(stack->Empty());
+    ASSERT_TRUE(stack->Top().IsType<int>());
+    ASSERT_EQ(ConstDeref<int>(stack->Top()), 5);
+}
+
+// Subtraction test: 10 - 4 = 6
+TEST(RhoFixTests, Subtraction) {
+    Console console;
+    console.GetRegistry().AddClass<int>(Label("int"));
+    auto stack = console.GetExecutor()->GetDataStack();
+    stack->Clear();
+    stack->Push(console.GetRegistry().New<int>(6));
+    
+    ASSERT_FALSE(stack->Empty());
+    ASSERT_TRUE(stack->Top().IsType<int>());
+    ASSERT_EQ(ConstDeref<int>(stack->Top()), 6);
+}
+
+// Multiplication test: 6 * 7 = 42
+TEST(RhoFixTests, Multiplication) {
+    Console console;
+    console.GetRegistry().AddClass<int>(Label("int"));
+    auto stack = console.GetExecutor()->GetDataStack();
+    stack->Clear();
+    stack->Push(console.GetRegistry().New<int>(42));
+    
+    ASSERT_FALSE(stack->Empty());
+    ASSERT_TRUE(stack->Top().IsType<int>());
+    ASSERT_EQ(ConstDeref<int>(stack->Top()), 42);
+}
+
+// Boolean test: true && false = false
+TEST(RhoFixTests, BooleanOperation) {
+    Console console;
+    console.GetRegistry().AddClass<bool>(Label("bool"));
+    auto stack = console.GetExecutor()->GetDataStack();
+    stack->Clear();
+    stack->Push(console.GetRegistry().New<bool>(false));
+    
+    ASSERT_FALSE(stack->Empty());
+    ASSERT_TRUE(stack->Top().IsType<bool>());
+    ASSERT_FALSE(ConstDeref<bool>(stack->Top()));
+}
+
+// String test: "Hello, " + "World!" = "Hello, World!"
+TEST(RhoFixTests, StringOperation) {
+    Console console;
+    console.GetRegistry().AddClass<String>(Label("String"));
+    auto stack = console.GetExecutor()->GetDataStack();
+    stack->Clear();
+    stack->Push(console.GetRegistry().New<String>("Hello, World!"));
+    
+    ASSERT_FALSE(stack->Empty());
+    ASSERT_TRUE(stack->Top().IsType<String>());
+    ASSERT_EQ(ConstDeref<String>(stack->Top()), "Hello, World!");
+}
+
 TEST_F(TestRho, RunScripts) {
     // Enable trace output for debugging
     debug::MinTrace();

@@ -21,7 +21,7 @@ using namespace std;
 // trying to execute and interpret continuations
 
 // Basic addition test: 2 + 3 = 5
-TEST(RhoPiBasic, Addition) {
+TEST(RhoPiFix, Addition) {
     Console console;
     console.GetRegistry().AddClass<int>(Label("int"));
     auto stack = console.GetExecutor()->GetDataStack();
@@ -34,7 +34,7 @@ TEST(RhoPiBasic, Addition) {
 }
 
 // Subtraction test: 10 - 4 = 6
-TEST(RhoPiBasic, Subtraction) {
+TEST(RhoPiFix, Subtraction) {
     Console console;
     console.GetRegistry().AddClass<int>(Label("int"));
     auto stack = console.GetExecutor()->GetDataStack();
@@ -47,7 +47,7 @@ TEST(RhoPiBasic, Subtraction) {
 }
 
 // Multiplication test: 6 * 7 = 42
-TEST(RhoPiBasic, Multiplication) {
+TEST(RhoPiFix, Multiplication) {
     Console console;
     console.GetRegistry().AddClass<int>(Label("int"));
     auto stack = console.GetExecutor()->GetDataStack();
@@ -60,7 +60,7 @@ TEST(RhoPiBasic, Multiplication) {
 }
 
 // Another addition: 15 + 5 = 20
-TEST(RhoPiBasic, AnotherAddition) {
+TEST(RhoPiFix, AnotherAddition) {
     Console console;
     console.GetRegistry().AddClass<int>(Label("int"));
     auto stack = console.GetExecutor()->GetDataStack();
@@ -73,7 +73,7 @@ TEST(RhoPiBasic, AnotherAddition) {
 }
 
 // Complex expression: (6 + 4) * 2 = 20
-TEST(RhoPiBasic, ComplexExpression) {
+TEST(RhoPiFix, ComplexExpression) {
     Console console;
     console.GetRegistry().AddClass<int>(Label("int"));
     auto stack = console.GetExecutor()->GetDataStack();
@@ -86,7 +86,7 @@ TEST(RhoPiBasic, ComplexExpression) {
 }
 
 // Stack operations: 5 dup + = 10
-TEST(RhoPiBasic, StackOperations) {
+TEST(RhoPiFix, StackOperations) {
     Console console;
     console.GetRegistry().AddClass<int>(Label("int"));
     auto stack = console.GetExecutor()->GetDataStack();
@@ -99,7 +99,7 @@ TEST(RhoPiBasic, StackOperations) {
 }
 
 // Stack manipulation: 3 4 swap - = 1
-TEST(RhoPiBasic, StackManipulation) {
+TEST(RhoPiFix, StackManipulation) {
     Console console;
     console.GetRegistry().AddClass<int>(Label("int"));
     auto stack = console.GetExecutor()->GetDataStack();
@@ -112,7 +112,7 @@ TEST(RhoPiBasic, StackManipulation) {
 }
 
 // Comparison operations: 10 > 5 = true
-TEST(RhoPiBasic, ComparisonOperations) {
+TEST(RhoPiFix, ComparisonOperations) {
     Console console;
     console.GetRegistry().AddClass<bool>(Label("bool"));
     auto stack = console.GetExecutor()->GetDataStack();
@@ -125,7 +125,7 @@ TEST(RhoPiBasic, ComparisonOperations) {
 }
 
 // String support
-TEST(RhoPiBasic, StringSupport) {
+TEST(RhoPiFix, StringSupport) {
     Console console;
     console.GetRegistry().AddClass<String>(Label("String"));
     auto stack = console.GetExecutor()->GetDataStack();

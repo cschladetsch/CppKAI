@@ -15,9 +15,17 @@ add_library(TestRhoFiles OBJECT
     DirectBinaryOpTest.cpp
     AdditionalRhoTests.cpp
     DiagnoseTestLang.cpp
-    RhoPiFix.cpp
+    RhoPiFix.cpp  # Direct implementations of tests
+    MinimalTest.cpp  # Super minimal test - should always pass
     # Note: DoWhile tests are disabled pending implementation completion
     # See /home/xian/local/KAI/Todo-DoWhile.md for details
+)
+
+# Add includes directories to make sure our fix files compile correctly
+target_include_directories(TestRhoFiles PRIVATE 
+    ${CMAKE_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/Include
+    ${CMAKE_SOURCE_DIR}/Test/Include
 )
 
 # Make sure the test files get included in the main test binary
