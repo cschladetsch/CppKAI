@@ -296,8 +296,8 @@ do
     
     # Special case - run TestRho tests with focused test filters
     if [[ $(basename $test) == "TestRho" ]]; then
-        # Run only the tests that we know work with our direct evaluation approach
-        $test --gtest_filter="LanguageComparison.*:TestRho.RunScripts:RhoPiBasic.Addition:RhoPiBasic.Subtraction:RhoPiBasic.Multiplication:RhoPiBasic.FunctionCompilation" 2>&1 | tee -a $log_file
+        # Run all TestRho tests now that we've fixed the direct evaluation approach
+        $test --gtest_filter="LanguageComparison.*:TestRho.*:RhoPiBasic.*:DirectBinaryOp.*:RhoPiTests.*" 2>&1 | tee -a $log_file
     else
         $test 2>&1 | tee -a $log_file
     fi
