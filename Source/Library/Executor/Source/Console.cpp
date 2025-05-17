@@ -147,7 +147,22 @@ void Console::Execute(Pointer<Continuation> cont) {
         }
         
         // Option 1: Execute the continuation using the standard executor
-        executor->Continue(cont);
+        try {
+            if (!cont.Exists()) {
+                KAI_TRACE_ERROR() << "Execute: Continuation is invalid - skipping execution";
+                return;
+            }
+            
+            executor->Continue(cont);
+        }
+        catch (const std::exception& e) {
+            KAI_TRACE_ERROR() << "Exception during continuation execution: " << e.what();
+            // Continue processing since we've already pushed values to the stack
+        }
+        catch (...) {
+            KAI_TRACE_ERROR() << "Unknown exception during continuation execution";
+            // Continue processing since we've already pushed values to the stack
+        }
         
         // After execution, process the stack to ensure proper type extraction
         Value<Stack> dataStack = executor->GetDataStack();
@@ -171,15 +186,29 @@ void Console::Execute(Pointer<Continuation> cont) {
 }
 
 void Console::Execute(String const &text, Structure st) {
-    // Translate the text into a continuation
-    Pointer<Continuation> cont = compiler->Translate(text.c_str(), st);
-    if (!cont.Exists()) return;
+    KAI_TRY {
+        // Translate the text into a continuation
+        Pointer<Continuation> cont = compiler->Translate(text.c_str(), st);
+        if (!cont.Exists()) {
+            KAI_TRACE_WARN() << "Translation of '" << text << "' yielded invalid continuation";
+            return;
+        }
 
-    // Log what we're about to execute for debugging purposes
-    KAI_TRACE() << "Executing text: " << text;
-    
-    // Execute the continuation
-    Execute(cont);
+        // Log what we're about to execute for debugging purposes
+        KAI_TRACE() << "Executing text: " << text;
+        
+        // Execute the continuation
+        Execute(cont);
+    }
+    KAI_CATCH(Exception::Base, E) { 
+        KAI_TRACE_ERROR() << "KAI exception during Execute(text): " << E.ToString(); 
+    }
+    KAI_CATCH(exception, E) { 
+        KAI_TRACE_ERROR() << "Std exception during Execute(text): " << E.what(); 
+    }
+    KAI_CATCH_ALL() { 
+        KAI_TRACE_ERROR() << "Unknown exception during Execute(text)"; 
+    }
 }
 
 String Console::Process(const String &text) {

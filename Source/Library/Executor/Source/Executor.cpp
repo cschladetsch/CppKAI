@@ -681,12 +681,22 @@ void Executor::Continue(Value<Continuation> C) {
                         Continue(innerContPtr);
                         
                         // Restore the previous continuation and return
-                        continuation_ = savedContinuation;
+                        if (savedContinuation.Exists()) {
+                            continuation_ = savedContinuation;
+                        } else {
+                            KAI_TRACE_WARN() << "Saved continuation is not valid in recursive call, setting to empty continuation";
+                            continuation_ = Object();
+                        }
                         return;
                     }
                     catch (const std::exception& e) {
                         KAI_TRACE_ERROR() << "Exception handling nested continuation: " << e.what();
-                        continuation_ = savedContinuation;
+                        if (savedContinuation.Exists()) {
+                            continuation_ = savedContinuation;
+                        } else {
+                            KAI_TRACE_WARN() << "Saved continuation is not valid in exception handler, setting to empty continuation";
+                            continuation_ = Object();
+                        }
                         return;
                     }
                 }
@@ -833,7 +843,12 @@ void Executor::Continue(Value<Continuation> C) {
                                 KAI_TRACE() << "Pushing primitive type directly from continuation: " 
                                           << value.GetClass()->GetName().ToString();
                                 data_->Push(value);
-                                continuation_ = savedContinuation;
+                                if (savedContinuation.Exists()) {
+                                    continuation_ = savedContinuation;
+                                } else {
+                                    KAI_TRACE_WARN() << "Saved continuation is not valid, setting to empty continuation";
+                                    continuation_ = Object();
+                                }
                                 return;
                             }
                             // Even for non-primitive types, just push them directly in this pattern
@@ -842,7 +857,12 @@ void Executor::Continue(Value<Continuation> C) {
                                 KAI_TRACE() << "Pushing non-primitive type directly from continuation: " 
                                           << value.GetClass()->GetName().ToString();
                                 data_->Push(value);
-                                continuation_ = savedContinuation;
+                                if (savedContinuation.Exists()) {
+                                    continuation_ = savedContinuation;
+                                } else {
+                                    KAI_TRACE_WARN() << "Saved continuation is not valid, setting to empty continuation";
+                                    continuation_ = Object();
+                                }
                                 return;
                             }
                         }
