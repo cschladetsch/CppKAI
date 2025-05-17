@@ -15,6 +15,7 @@ add_library(TestRhoFiles OBJECT
     DirectBinaryOpTest.cpp
     AdditionalRhoTests.cpp
     DiagnoseTestLang.cpp
+    RhoPiFix.cpp
     # Note: DoWhile tests are disabled pending implementation completion
     # See /home/xian/local/KAI/Todo-DoWhile.md for details
 )
