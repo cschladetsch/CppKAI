@@ -23,7 +23,7 @@ TEST_F(TestRho, RunScripts) {
     ExecScripts();
 }
 
-TEST_F(TestRho, DISABLED_TestBasicOperations) {
+TEST_F(TestRho, TestBasicOperations) {
     console_.SetLanguage(Language::Rho);
     data_->Clear();
 

@@ -675,6 +675,353 @@ void Executor::Perform(Operation::Type op) {
             break;
         }
             
+        case Operation::WhileLoop: {
+            // ( condition body -- )
+            // While condition is true, run body.
+            try {
+                // Check for valid data stack first
+                if (!data_.Valid() || !data_.Exists()) {
+                    KAI_TRACE_ERROR() << "WhileLoop: Invalid data stack";
+                    break;
+                }
+                
+                // Check if we have enough items on the stack
+                if (data_->Size() < 2) {
+                    KAI_TRACE_ERROR() << "WhileLoop: Not enough items on stack (need at least 2)";
+                    break;
+                }
+                
+                // Get the body continuation
+                Object bodyCont = Object();
+                if (data_->Size() >= 1) {
+                    bodyCont = data_->Top();
+                    data_->Pop();
+                    
+                    // Check validity of the body continuation
+                    if (!bodyCont.Valid() || !bodyCont.Exists()) {
+                        KAI_TRACE_ERROR() << "WhileLoop: Invalid body continuation";
+                        break;
+                    }
+                } else {
+                    KAI_TRACE_ERROR() << "WhileLoop: Missing body continuation";
+                    break;
+                }
+                
+                // Get the condition continuation
+                Object condCont = Object();
+                if (data_->Size() >= 1) {
+                    condCont = data_->Top();
+                    data_->Pop();
+                    
+                    // Check validity of the condition continuation
+                    if (!condCont.Valid() || !condCont.Exists()) {
+                        KAI_TRACE_ERROR() << "WhileLoop: Invalid condition continuation";
+                        break;
+                    }
+                } else {
+                    KAI_TRACE_ERROR() << "WhileLoop: Missing condition continuation";
+                    break;
+                }
+                
+                // Save the current continuation to return to after the loop
+                Object savedContinuation = continuation_;
+                
+                // Loop execution
+                while (true) {
+                    // Run the condition
+                    Continue(condCont);
+                    
+                    // Convert the top of the stack to a boolean
+                    bool condition = false;
+                    if (!data_->Empty()) {
+                        condition = PopBool();
+                    } else {
+                        KAI_TRACE_ERROR() << "WhileLoop: Condition did not leave a value on the stack";
+                        break;
+                    }
+                    
+                    // Exit if condition is false
+                    if (!condition) {
+                        break;
+                    }
+                    
+                    // Run the body
+                    Continue(bodyCont);
+                    
+                    // Break early if break_ flag was set
+                    if (break_) {
+                        break_ = false; // Reset the flag
+                        break;
+                    }
+                }
+                
+                // Restore the original continuation
+                if (savedContinuation.Exists()) {
+                    continuation_ = savedContinuation;
+                } else {
+                    KAI_TRACE_WARN() << "WhileLoop: Saved continuation is not valid, setting to empty continuation";
+                    continuation_ = Object();
+                }
+            }
+            catch (const Exception::Base& e) {
+                KAI_TRACE_ERROR() << "WhileLoop: KAI exception: " << e.ToString();
+            }
+            catch (const std::exception& e) {
+                KAI_TRACE_ERROR() << "WhileLoop: std::exception: " << e.what();
+            }
+            catch (...) {
+                KAI_TRACE_ERROR() << "WhileLoop: Unknown exception";
+            }
+            
+            break;
+        }
+        
+        case Operation::ForLoop: {
+            // ( init cond incr body -- )
+            // For loop with initialization, condition, increment, and body
+            try {
+                // Check for valid data stack first
+                if (!data_.Valid() || !data_.Exists()) {
+                    KAI_TRACE_ERROR() << "ForLoop: Invalid data stack";
+                    break;
+                }
+                
+                // Check if we have enough items on the stack
+                if (data_->Size() < 4) {
+                    KAI_TRACE_ERROR() << "ForLoop: Not enough items on stack (need at least 4)";
+                    break;
+                }
+                
+                // Get continuations in reverse order of pushing (last in, first out)
+                // Get the body continuation
+                Object bodyCont = Object();
+                if (data_->Size() >= 1) {
+                    bodyCont = data_->Top();
+                    data_->Pop();
+                    
+                    // Check validity of the body continuation
+                    if (!bodyCont.Valid() || !bodyCont.Exists()) {
+                        KAI_TRACE_ERROR() << "ForLoop: Invalid body continuation";
+                        break;
+                    }
+                } else {
+                    KAI_TRACE_ERROR() << "ForLoop: Missing body continuation";
+                    break;
+                }
+                
+                // Get the increment continuation
+                Object incrCont = Object();
+                if (data_->Size() >= 1) {
+                    incrCont = data_->Top();
+                    data_->Pop();
+                    
+                    // Check validity of the increment continuation
+                    if (!incrCont.Valid() || !incrCont.Exists()) {
+                        KAI_TRACE_ERROR() << "ForLoop: Invalid increment continuation";
+                        break;
+                    }
+                } else {
+                    KAI_TRACE_ERROR() << "ForLoop: Missing increment continuation";
+                    break;
+                }
+                
+                // Get the condition continuation
+                Object condCont = Object();
+                if (data_->Size() >= 1) {
+                    condCont = data_->Top();
+                    data_->Pop();
+                    
+                    // Check validity of the condition continuation
+                    if (!condCont.Valid() || !condCont.Exists()) {
+                        KAI_TRACE_ERROR() << "ForLoop: Invalid condition continuation";
+                        break;
+                    }
+                } else {
+                    KAI_TRACE_ERROR() << "ForLoop: Missing condition continuation";
+                    break;
+                }
+                
+                // Get the initialization continuation
+                Object initCont = Object();
+                if (data_->Size() >= 1) {
+                    initCont = data_->Top();
+                    data_->Pop();
+                    
+                    // Check validity of the initialization continuation
+                    if (!initCont.Valid() || !initCont.Exists()) {
+                        KAI_TRACE_ERROR() << "ForLoop: Invalid initialization continuation";
+                        break;
+                    }
+                } else {
+                    KAI_TRACE_ERROR() << "ForLoop: Missing initialization continuation";
+                    break;
+                }
+                
+                // Save the current continuation to return to after the loop
+                Object savedContinuation = continuation_;
+                
+                // Run the initialization
+                Continue(initCont);
+                
+                // Loop execution
+                while (true) {
+                    // Run the condition (if it's not empty)
+                    Object condResult = Object();
+                    if (condCont.Exists() && condCont.IsType<Continuation>() && 
+                        ConstDeref<Continuation>(condCont).GetCode()->Size() > 0) {
+                        Continue(condCont);
+                        
+                        // Convert the top of the stack to a boolean
+                        if (!data_->Empty()) {
+                            bool condition = PopBool();
+                            // Exit if condition is false
+                            if (!condition) {
+                                break;
+                            }
+                        } else {
+                            KAI_TRACE_ERROR() << "ForLoop: Condition did not leave a value on the stack";
+                            break;
+                        }
+                    }
+                    
+                    // Run the body
+                    Continue(bodyCont);
+                    
+                    // Break early if break_ flag was set (e.g., by a break statement)
+                    if (break_) {
+                        break_ = false; // Reset the flag
+                        break;
+                    }
+                    
+                    // Run the increment (if it's not empty)
+                    if (incrCont.Exists() && incrCont.IsType<Continuation>() && 
+                        ConstDeref<Continuation>(incrCont).GetCode()->Size() > 0) {
+                        Continue(incrCont);
+                    }
+                }
+                
+                // Restore the original continuation
+                if (savedContinuation.Exists()) {
+                    continuation_ = savedContinuation;
+                } else {
+                    KAI_TRACE_WARN() << "ForLoop: Saved continuation is not valid, setting to empty continuation";
+                    continuation_ = Object();
+                }
+            }
+            catch (const Exception::Base& e) {
+                KAI_TRACE_ERROR() << "ForLoop: KAI exception: " << e.ToString();
+            }
+            catch (const std::exception& e) {
+                KAI_TRACE_ERROR() << "ForLoop: std::exception: " << e.what();
+            }
+            catch (...) {
+                KAI_TRACE_ERROR() << "ForLoop: Unknown exception";
+            }
+            
+            break;
+        }
+        
+        case Operation::DoLoop: {
+            // ( body cond -- )
+            // Do-while loop: execute body first, then check condition
+            try {
+                // Check for valid data stack first
+                if (!data_.Valid() || !data_.Exists()) {
+                    KAI_TRACE_ERROR() << "DoLoop: Invalid data stack";
+                    break;
+                }
+                
+                // Check if we have enough items on the stack
+                if (data_->Size() < 2) {
+                    KAI_TRACE_ERROR() << "DoLoop: Not enough items on stack (need at least 2)";
+                    break;
+                }
+                
+                // Get the condition continuation
+                Object condCont = Object();
+                if (data_->Size() >= 1) {
+                    condCont = data_->Top();
+                    data_->Pop();
+                    
+                    // Check validity of the condition continuation
+                    if (!condCont.Valid() || !condCont.Exists()) {
+                        KAI_TRACE_ERROR() << "DoLoop: Invalid condition continuation";
+                        break;
+                    }
+                } else {
+                    KAI_TRACE_ERROR() << "DoLoop: Missing condition continuation";
+                    break;
+                }
+                
+                // Get the body continuation
+                Object bodyCont = Object();
+                if (data_->Size() >= 1) {
+                    bodyCont = data_->Top();
+                    data_->Pop();
+                    
+                    // Check validity of the body continuation
+                    if (!bodyCont.Valid() || !bodyCont.Exists()) {
+                        KAI_TRACE_ERROR() << "DoLoop: Invalid body continuation";
+                        break;
+                    }
+                } else {
+                    KAI_TRACE_ERROR() << "DoLoop: Missing body continuation";
+                    break;
+                }
+                
+                // Save the current continuation to return to after the loop
+                Object savedContinuation = continuation_;
+                
+                // Loop execution - do-while executes the body at least once
+                do {
+                    // Run the body
+                    Continue(bodyCont);
+                    
+                    // Break early if break_ flag was set
+                    if (break_) {
+                        break_ = false; // Reset the flag
+                        break;
+                    }
+                    
+                    // Run the condition
+                    Continue(condCont);
+                    
+                    // Convert the top of the stack to a boolean
+                    bool condition = false;
+                    if (!data_->Empty()) {
+                        condition = PopBool();
+                    } else {
+                        KAI_TRACE_ERROR() << "DoLoop: Condition did not leave a value on the stack";
+                        break;
+                    }
+                    
+                    // Exit if condition is false
+                    if (!condition) {
+                        break;
+                    }
+                } while (true);
+                
+                // Restore the original continuation
+                if (savedContinuation.Exists()) {
+                    continuation_ = savedContinuation;
+                } else {
+                    KAI_TRACE_WARN() << "DoLoop: Saved continuation is not valid, setting to empty continuation";
+                    continuation_ = Object();
+                }
+            }
+            catch (const Exception::Base& e) {
+                KAI_TRACE_ERROR() << "DoLoop: KAI exception: " << e.ToString();
+            }
+            catch (const std::exception& e) {
+                KAI_TRACE_ERROR() << "DoLoop: std::exception: " << e.what();
+            }
+            catch (...) {
+                KAI_TRACE_ERROR() << "DoLoop: Unknown exception";
+            }
+            
+            break;
+        }
+        
         case Operation::UnnnamedOp: {
             // UnnnamedOp is a placeholder for operations that don't have a specific implementation
             // In most cases, we can just ignore it without causing an error
