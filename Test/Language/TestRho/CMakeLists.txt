@@ -24,6 +24,21 @@ add_library(TestRhoFiles OBJECT
     SimpleRhoPiTests.h
     test_main.cpp
     
+    # New 10 additional tests for RhoPiBasic
+    AdditionalRhoPiTests.cpp  # Added with 10 new tests for RhoPiBasic
+    
+    # New 10 additional tests for DirectBinaryOp
+    ExtendedDirectBinaryOpTests.cpp  # Added with 10 new tests for DirectBinaryOp
+    
+    # New 10 additional tests for RhoExtendedOps
+    AdvancedRhoExtendedOps.cpp  # Added with 10 new tests for RhoExtendedOps
+    
+    # New 10 additional tests for RhoLanguage
+    AdvancedRhoLanguageTests.cpp  # Added with 10 new tests for RhoLanguage
+    
+    # New 10 additional tests for RhoForLoopTestsFixture
+    AdvancedForLoopTests.cpp  # Added with 10 new tests for for loops
+    
     # IMPORTANT: The following files contain duplicate test definitions
     # They MUST remain commented out to avoid linker errors
     # Because RhoPiFix.cpp has implementations for the same test fixtures/names
