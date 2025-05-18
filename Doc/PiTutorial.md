@@ -128,6 +128,23 @@ Continuations are a powerful concept in Pi, representing code to be executed:
 'multiply @ &  // Executes the stored continuation, resulting in 30
 ```
 
+### Continuation Control Operations
+
+Pi provides three powerful operations for controlling the flow of continuations:
+
+```pi
+// Suspend: Temporarily pause current execution and switch to a new continuation
+{ "Side task" trace } suspend  // Will return to the current context later
+
+// Resume: Exit the current continuation and return to the previously suspended one
+{ "Breaking out early" trace resume } &  // Immediate exit
+
+// Replace: Completely substitute the current continuation with a new one
+{ "New execution path" trace } replace  // Permanent transition
+```
+
+These operations form the foundation for advanced control flow patterns in KAI. For detailed explanations and examples, see the [Continuation Control documentation](ContinuationControl.md).
+
 ## Arrays and Collections
 
 Pi supports creating and manipulating arrays:

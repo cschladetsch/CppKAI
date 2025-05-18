@@ -31,6 +31,7 @@ Key characteristics:
 - **Dual stacks**: Data stack for values, context stack for control flow
 - **RPN syntax**: Operations follow their operands
 - **Direct execution**: Efficient runtime evaluation
+- **Continuation control**: Powerful operations like Suspend, Resume, and Replace for advanced flow control
 
 [Learn more in the Pi Tutorial](PiTutorial.md)
 
@@ -42,6 +43,7 @@ Key characteristics:
 - **Familiar syntax**: Infix notation, similar to Python or JavaScript
 - **Pi integration**: Can embed Pi code blocks directly
 - **Native continuations**: First-class support for advanced control flow
+- **Continuation control**: Access to Suspend, Resume, and Replace operations for complex flow control
 - **Translates to Pi**: Compiles to Pi operations for execution
 
 [Learn more in the Rho Tutorial](RhoTutorial.md)
@@ -116,7 +118,8 @@ The best way to get started with KAI's language system is to:
 1. Learn basic Pi operations from the [Pi Tutorial](PiTutorial.md)
 2. Become familiar with Rho syntax using the [Rho Tutorial](RhoTutorial.md)
 3. Understand distributed object modeling with the [Tau Tutorial](TauTutorial.md)
-4. Experiment with the Console application to try examples
+4. Learn about advanced control flow with the [Continuation Control documentation](ContinuationControl.md)
+5. Experiment with the Console application to try examples
 
 ## Conclusion
 
