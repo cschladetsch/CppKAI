@@ -49,6 +49,12 @@ set(core_sources
     ${source_path}/TestAdditionalStringOps.cpp
     ${source_path}/TestRegistryOperations.cpp
     ${source_path}/TestAdditionalCore.cpp
+    # Additional Core tests (50 more tests)
+    ${source_path}/CoreRegistryTests.cpp
+    ${source_path}/CoreObjectTests.cpp
+    ${source_path}/CoreContainerTests.cpp
+    ${source_path}/CoreTypeTests.cpp
+    ${source_path}/CorePointerTests.cpp
 )
 
 # Add common test files
