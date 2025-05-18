@@ -1,0 +1,38 @@
+// Test complex proxy generation
+
+class Connection
+{
+    string host;
+    int port;
+    bool isSecure;
+    
+    bool Connect();
+    void Disconnect();
+    bool IsConnected();
+    
+    int GetLastError();
+}
+
+class DataPacket
+{
+    int packetId;
+    string data;
+    int checksum;
+    
+    bool Validate();
+    string GetData();
+    void SetData(string newData);
+}
+
+class NetworkManager
+{
+    Connection activeConnection;
+    int timeout;
+    
+    Connection CreateConnection(string host, int port, bool secure);
+    bool SendPacket(Connection conn, DataPacket packet);
+    DataPacket ReceivePacket(Connection conn);
+    
+    void SetTimeout(int milliseconds);
+    int GetTimeout();
+}

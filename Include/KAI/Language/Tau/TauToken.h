@@ -35,6 +35,7 @@ struct TauTokenEnumType {
         Tab = 37,
         String = 38,
         Number = 39,
+        Assign = 40,  // For handling '=' assignment and default parameters
     };
 
     struct Type : TokenBase<TauTokenEnumType> {

@@ -1,0 +1,18 @@
+// Test assignment and default parameters in Tau
+
+class AssignmentTest
+{
+    // Field assignments
+    int integerValue = 42;
+    float floatValue = 3.14159;
+    string stringValue = "Hello World";
+    
+    // Method with default parameters
+    void MethodWithDefaults(int param1 = 10, float param2 = 2.5, string param3 = "default");
+    
+    // Method with mixed parameters (some with defaults, some without)
+    int Calculate(int a, int b = 1, int c = 0);
+    
+    // Method with scientific notation defaults
+    float ScientificMethod(float scale = 1.23e-5, float large = 6.02e+23);
+}

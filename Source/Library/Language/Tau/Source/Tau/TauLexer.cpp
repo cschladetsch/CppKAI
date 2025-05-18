@@ -69,6 +69,8 @@ bool TauLexer::NextToken() {
             return Add(Enum::CloseParan);
         case ',':
             return Add(Enum::Comma);
+        case '=':
+            return Add(Enum::Assign);
         case ' ':
             return Add(Enum::Whitespace, Gather(IsSpaceChar));
         case '"':

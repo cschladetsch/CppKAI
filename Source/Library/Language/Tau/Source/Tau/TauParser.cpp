@@ -163,6 +163,26 @@ bool TauParser::Field(AstNodePtr klass, TokenNode const &ty,
     auto field = NewNode(AstEnum::Property);
     field->Add(ty);
     field->Add(id);
+    
+    // Check for assignment (initialization)
+    if (CurrentIs(TauTokenEnumType::Assign)) {
+        Consume(); // consume the '=' token
+        
+        // Add the assigned value
+        if (CurrentIs(TauTokenEnumType::Number)) {
+            auto valueNode = NewNode(AstEnum::Value, Consume());
+            field->Add(valueNode);
+        } else if (CurrentIs(TauTokenEnumType::String)) {
+            auto valueNode = NewNode(AstEnum::Value, Consume());
+            field->Add(valueNode);
+        } else if (CurrentIs(TauTokenEnumType::Ident)) {
+            auto valueNode = NewNode(AstEnum::Value, Consume());
+            field->Add(valueNode);
+        } else {
+            return Fail("Expected value after '='");
+        }
+    }
+    
     Expect(TauTokenEnumType::Semi);
     klass->Add(field);
     return !Failed;
@@ -177,7 +197,28 @@ bool TauParser::Field(AstNodePtr klass, TokenNode const &ty,
 void TauParser::AddArg(AstNodePtr parent) {
     auto arg = NewNode(AstEnum::Argument);
     arg->Add(Consume());  // type
-    arg->Add(Consume());  // name_
+    arg->Add(Consume());  // name
+    
+    // Check for default parameter value
+    if (CurrentIs(TauTokenEnumType::Assign)) {
+        Consume(); // consume the '=' token
+        
+        // Add the default value
+        if (CurrentIs(TauTokenEnumType::Number)) {
+            auto valueNode = NewNode(AstEnum::Value, Consume());
+            arg->Add(valueNode);
+        } else if (CurrentIs(TauTokenEnumType::String)) {
+            auto valueNode = NewNode(AstEnum::Value, Consume());
+            arg->Add(valueNode);
+        } else if (CurrentIs(TauTokenEnumType::Ident)) {
+            auto valueNode = NewNode(AstEnum::Value, Consume());
+            arg->Add(valueNode);
+        } else {
+            Fail("Expected value after '='");
+            return; // Error will be handled by the calling method
+        }
+    }
+    
     parent->Add(arg);
 }
 

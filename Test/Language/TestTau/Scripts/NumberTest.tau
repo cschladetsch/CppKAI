@@ -1,0 +1,27 @@
+// Test number parsing in Tau
+
+class NumberTest
+{
+    // Integer numbers
+    int intVal1 = 42;
+    int intVal2 = 0;
+    int intVal3 = 123456789;
+    
+    // Decimal numbers
+    float floatVal1 = 3.14159;
+    float floatVal2 = 0.0001;
+    float floatVal3 = 999.999;
+    
+    // Scientific notation
+    float sciVal1 = 1.23e5;
+    float sciVal2 = 7.89E-4;
+    float sciVal3 = 6.02e+23;
+    
+    // Methods using numbers
+    float AddNumbers(float a, float b);
+    int MultiplyIntegers(int x, int y);
+    float CalculateExponential(float base, int exponent);
+    
+    // Test method with numeric parameters
+    void TestMethod(int param1 = 42, float param2 = 3.14);
+}

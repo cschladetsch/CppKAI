@@ -50,6 +50,7 @@ const char *TauTokenEnumType::ToString(Enum val) {
             CASE(Tab)
             CASE(String)
             CASE(Number)
+            CASE(Assign)
         default:
             std::cerr << "TauToken: Case not used: " << val << std::endl;
             return "??";

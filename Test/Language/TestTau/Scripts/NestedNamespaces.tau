@@ -1,0 +1,29 @@
+// Test nested namespaces in Tau
+
+class OuterClass
+{
+    int outerValue;
+    
+    void OuterMethod();
+}
+
+class InnerClass
+{
+    float innerValue;
+    
+    float InnerMethod();
+}
+
+class DeepClass
+{
+    string deepValue;
+    
+    string GetDeepValue();
+}
+
+class AnotherOuterClass
+{
+    bool outerFlag;
+    
+    bool ToggleFlag();
+}
