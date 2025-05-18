@@ -61,7 +61,7 @@ struct Registry {
     Pools pools_;
     std::shared_ptr<Memory::IAllocator> allocator_;
     bool ownsAllocator_{false};
-    
+
     // Track handles that couldn't be properly deleted
     std::vector<Handle> failed_deletions_;
 
@@ -164,7 +164,7 @@ struct Registry {
     Percentage CalcMemoryFragmentationPercentage() const;
     void DefragmentMemory();
     Tree *GetTree() const { return tree_; }
-    
+
     // Check if this registry instance is valid and operational
     bool IsValid() const;
     void SetTree(Tree &);
@@ -193,13 +193,14 @@ struct Registry {
 
     int gc_trace_level{};
     void SetGCTraceLevel(int);
-    
+
     // Get a list of handles that failed deletion
-    const std::vector<Handle>& GetFailedDeletions() const { return failed_deletions_; }
-    
+    const std::vector<Handle> &GetFailedDeletions() const {
+        return failed_deletions_;
+    }
+
     // Clear the list of failed deletions
     void ClearFailedDeletions() { failed_deletions_.clear(); }
-    
 
 #ifdef KAI_DEBUG_REGISTRY
     void DeleteRetained();

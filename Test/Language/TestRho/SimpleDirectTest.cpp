@@ -22,10 +22,10 @@ TEST(SimpleDirectTest, BasicArithmetic) {
     ASSERT_TRUE(a.IsType<int>());
     ASSERT_TRUE(b.IsType<int>());
     ASSERT_TRUE(sum.IsType<int>());
-    
+
     ASSERT_EQ(ConstDeref<int>(a), 2);
     ASSERT_EQ(ConstDeref<int>(b), 3);
     ASSERT_EQ(ConstDeref<int>(sum), 5);
-    
+
     std::cout << "Simple direct test passed" << std::endl;
 }

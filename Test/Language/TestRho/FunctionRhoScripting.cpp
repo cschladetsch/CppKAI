@@ -31,7 +31,7 @@ Object Function_3(Object object) {
 
 TEST_F(TestLangCommon, TestRhoReflection) {
     Registry& reg = *reg_;
-    
+
     // Register MyStruct using the proper registration method
     MyStruct::Register(reg);
 
@@ -43,22 +43,22 @@ TEST_F(TestLangCommon, TestRhoReflection) {
     // Set up console for testing
     console_.GetTree().AddSearchPath(root_);
     root_["mystruct"] = mystruct;
-    
+
     // Add test functions
     AddFunction(root_, Function_0, Label("Function0"));
     AddFunction(root_, Function_1, Label("Function1"));
     AddFunction(root_, Function_2, Label("Function2"));
     AddFunction(root_, Function_3, Label("Function3"));
-    
+
     // Run tests
     console_.Execute("Function0()");
     console_.Execute("Function1(42)");
     console_.Execute("Function2(123, 3, \"bar\")");
     console_.Execute("Function3(mystruct)");
-    
+
     // Verify functions were called
     for (int n = 0; n < 2; ++n) ASSERT_TRUE(funCalled[n]);
-    
+
     // Check results
     Value<Stack> stack = console_.GetExecutor()->GetDataStack();
     EXPECT_EQ(stack->Size(), 2);

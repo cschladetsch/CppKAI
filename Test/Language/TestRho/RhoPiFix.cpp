@@ -3,15 +3,15 @@
 #include <iostream>
 #include <string>
 
-#include "KAI/Core/Console.h"
 #include "KAI/Core/BuiltinTypes.h"
+#include "KAI/Core/Console.h"
 #include "KAI/Executor/Operation.h"
 #include "TestCommon.h"
 
 // This file implements direct, standalone fixes for the failing Rho tests
-// Instead of trying to fix the complex continuation handling in TestLangCommon.h,
-// we create direct standalone test implementations that don't rely on the continuation
-// handling logic.
+// Instead of trying to fix the complex continuation handling in
+// TestLangCommon.h, we create direct standalone test implementations that don't
+// rely on the continuation handling logic.
 
 using namespace kai;
 using namespace std;
@@ -27,7 +27,7 @@ TEST(RhoPiFix, Addition) {
     auto stack = console.GetExecutor()->GetDataStack();
     stack->Clear();
     stack->Push(console.GetRegistry().New<int>(5));
-    
+
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 5);
@@ -40,7 +40,7 @@ TEST(RhoPiFix, Subtraction) {
     auto stack = console.GetExecutor()->GetDataStack();
     stack->Clear();
     stack->Push(console.GetRegistry().New<int>(6));
-    
+
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 6);
@@ -53,7 +53,7 @@ TEST(RhoPiFix, Multiplication) {
     auto stack = console.GetExecutor()->GetDataStack();
     stack->Clear();
     stack->Push(console.GetRegistry().New<int>(42));
-    
+
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 42);
@@ -66,7 +66,7 @@ TEST(RhoPiFix, AnotherAddition) {
     auto stack = console.GetExecutor()->GetDataStack();
     stack->Clear();
     stack->Push(console.GetRegistry().New<int>(20));
-    
+
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 20);
@@ -79,7 +79,7 @@ TEST(RhoPiFix, ComplexExpression) {
     auto stack = console.GetExecutor()->GetDataStack();
     stack->Clear();
     stack->Push(console.GetRegistry().New<int>(20));
-    
+
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 20);
@@ -92,7 +92,7 @@ TEST(RhoPiFix, StackOperations) {
     auto stack = console.GetExecutor()->GetDataStack();
     stack->Clear();
     stack->Push(console.GetRegistry().New<int>(10));
-    
+
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 10);
@@ -105,7 +105,7 @@ TEST(RhoPiFix, StackManipulation) {
     auto stack = console.GetExecutor()->GetDataStack();
     stack->Clear();
     stack->Push(console.GetRegistry().New<int>(1));
-    
+
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 1);
@@ -118,7 +118,7 @@ TEST(RhoPiFix, ComparisonOperations) {
     auto stack = console.GetExecutor()->GetDataStack();
     stack->Clear();
     stack->Push(console.GetRegistry().New<bool>(true));
-    
+
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<bool>());
     ASSERT_TRUE(ConstDeref<bool>(stack->Top()));
@@ -131,7 +131,7 @@ TEST(RhoPiFix, StringSupport) {
     auto stack = console.GetExecutor()->GetDataStack();
     stack->Clear();
     stack->Push(console.GetRegistry().New<String>("Hello World"));
-    
+
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<String>());
     ASSERT_EQ(ConstDeref<String>(stack->Top()), "Hello World");
@@ -144,7 +144,7 @@ TEST(PiMinimal, BasicOperations) {
     auto stack = console.GetExecutor()->GetDataStack();
     stack->Clear();
     stack->Push(console.GetRegistry().New<int>(5));
-    
+
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 5);
@@ -157,7 +157,7 @@ TEST(RhoMinimal, HelloWorld) {
     auto stack = console.GetExecutor()->GetDataStack();
     stack->Clear();
     stack->Push(console.GetRegistry().New<String>("Hello, World!"));
-    
+
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<String>());
     ASSERT_EQ(ConstDeref<String>(stack->Top()), "Hello, World!");
@@ -169,7 +169,7 @@ TEST(RhoMinimal, SimplePiArithmetic) {
     auto stack = console.GetExecutor()->GetDataStack();
     stack->Clear();
     stack->Push(console.GetRegistry().New<int>(42));
-    
+
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 42);
@@ -181,7 +181,7 @@ TEST(RhoMinimal, BasicOperations) {
     auto stack = console.GetExecutor()->GetDataStack();
     stack->Clear();
     stack->Push(console.GetRegistry().New<int>(15));
-    
+
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 15);
@@ -194,7 +194,7 @@ TEST(RhoPiWorkaround, BasicMathOperations) {
     auto stack = console.GetExecutor()->GetDataStack();
     stack->Clear();
     stack->Push(console.GetRegistry().New<int>(25));
-    
+
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 25);
@@ -206,7 +206,7 @@ TEST(RhoPiWorkaround, VariableOperations) {
     auto stack = console.GetExecutor()->GetDataStack();
     stack->Clear();
     stack->Push(console.GetRegistry().New<int>(10));
-    
+
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 10);
@@ -218,7 +218,7 @@ TEST(RhoPiWorkaround, StringOperations) {
     auto stack = console.GetExecutor()->GetDataStack();
     stack->Clear();
     stack->Push(console.GetRegistry().New<String>("Combined String"));
-    
+
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<String>());
     ASSERT_EQ(ConstDeref<String>(stack->Top()), "Combined String");
@@ -230,7 +230,7 @@ TEST(RhoPiWorkaround, BooleanOperations) {
     auto stack = console.GetExecutor()->GetDataStack();
     stack->Clear();
     stack->Push(console.GetRegistry().New<bool>(true));
-    
+
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<bool>());
     ASSERT_TRUE(ConstDeref<bool>(stack->Top()));
@@ -242,7 +242,7 @@ TEST(RhoPiWorkaround, ArrayOperations) {
     console.GetRegistry().AddClass<Array>(Label("Array"));
     auto stack = console.GetExecutor()->GetDataStack();
     stack->Clear();
-    
+
     // Create an array with some values
     auto array = console.GetRegistry().New<Array>();
     Pointer<Array> arrayPtr = array;
@@ -250,7 +250,7 @@ TEST(RhoPiWorkaround, ArrayOperations) {
     arrayPtr->Append(console.GetRegistry().New<int>(2));
     arrayPtr->Append(console.GetRegistry().New<int>(3));
     stack->Push(array);
-    
+
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<Array>());
     ASSERT_EQ(ConstDeref<Array>(stack->Top()).Size(), 3);
@@ -262,7 +262,7 @@ TEST(RhoPiWorkaround, ConditionalLogic) {
     auto stack = console.GetExecutor()->GetDataStack();
     stack->Clear();
     stack->Push(console.GetRegistry().New<bool>(true));
-    
+
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<bool>());
     ASSERT_TRUE(ConstDeref<bool>(stack->Top()));
@@ -274,7 +274,7 @@ TEST(RhoPiWorkaround, LoopSimulation) {
     auto stack = console.GetExecutor()->GetDataStack();
     stack->Clear();
     stack->Push(console.GetRegistry().New<int>(55));
-    
+
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 55);
@@ -286,7 +286,7 @@ TEST(RhoPiWorkaround, FunctionOperations) {
     auto stack = console.GetExecutor()->GetDataStack();
     stack->Clear();
     stack->Push(console.GetRegistry().New<int>(12));
-    
+
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 12);
@@ -298,7 +298,7 @@ TEST(RhoPiWorkaround, ScopingAndContext) {
     auto stack = console.GetExecutor()->GetDataStack();
     stack->Clear();
     stack->Push(console.GetRegistry().New<int>(7));
-    
+
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 7);
@@ -310,7 +310,7 @@ TEST(RhoPiWorkaround, ErrorHandlingSimulation) {
     auto stack = console.GetExecutor()->GetDataStack();
     stack->Clear();
     stack->Push(console.GetRegistry().New<String>("Error: Division by zero"));
-    
+
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<String>());
     ASSERT_EQ(ConstDeref<String>(stack->Top()), "Error: Division by zero");

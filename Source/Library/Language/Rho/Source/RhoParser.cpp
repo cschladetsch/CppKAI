@@ -59,8 +59,8 @@ bool RhoParser::Program() {
     // Continue parsing until we reach the end or encounter an error
     while (!Try(TokenType::None) && !Failed) {
         // Skip any newlines and/or semicolons between statements
-        // This allows for Python-like syntax where either newlines or semicolons
-        // can be used as statement separators, and both are optional
+        // This allows for Python-like syntax where either newlines or
+        // semicolons can be used as statement separators, and both are optional
         while (Try(TokenType::NewLine) || Try(TokenType::Semi)) {
             if (Try(TokenType::NewLine)) {
                 KAI_TRACE() << "RhoParser::Program - Skipping newline";
@@ -77,13 +77,13 @@ bool RhoParser::Program() {
 
         // Parse the next statement
         KAI_TRACE() << "RhoParser::Program - Parsing statement: "
-                  << TokenEnumType::ToString(Current().type);
+                    << TokenEnumType::ToString(Current().type);
         if (!Statement(root)) {
             return Fail("Statement expected");
         }
 
         KAI_TRACE() << "RhoParser::Program - Successfully parsed statement";
-        
+
         // Note: We don't need special handling for semicolons here anymore
         // as they are properly consumed in the while loop at the top
         // and Statement() handles its own terminations
@@ -199,7 +199,7 @@ bool RhoParser::Block(AstNodePtr node) {
 
 bool RhoParser::Statement(AstNodePtr block) {
     KAI_TRACE() << "RhoParser::Statement - Current token: "
-              << TokenEnumType::ToString(Current().type);
+                << TokenEnumType::ToString(Current().type);
 
     // Process statement terminators first
     if (Try(TokenType::NewLine)) {
@@ -213,14 +213,15 @@ bool RhoParser::Statement(AstNodePtr block) {
         case TokenType::Assert: {
             KAI_TRACE() << "RhoParser::Statement - Processing Assert";
             auto ass = NewNode(Consume());
-            
-            // Handle parentheses in assert statements (e.g., assert(expression))
+
+            // Handle parentheses in assert statements (e.g.,
+            // assert(expression))
             bool hasParentheses = false;
             if (Try(TokenType::OpenParan)) {
                 hasParentheses = true;
                 Consume();
             }
-            
+
             if (!Expression()) {
                 Fail(Lexer::CreateErrorMessage(
                     Current(), "Assert needs an expression to test"));
@@ -231,7 +232,8 @@ bool RhoParser::Statement(AstNodePtr block) {
             if (hasParentheses) {
                 if (!Try(TokenType::CloseParan)) {
                     Fail(Lexer::CreateErrorMessage(
-                        Current(), "Expected closing parenthesis after assert condition"));
+                        Current(),
+                        "Expected closing parenthesis after assert condition"));
                     return false;
                 }
                 Consume();
@@ -264,7 +266,7 @@ bool RhoParser::Statement(AstNodePtr block) {
             // after handling a while loop, there may be an optional semicolon
             return true;
         }
-            
+
         case TokenType::For: {
             KAI_TRACE() << "RhoParser::Statement - Processing For";
             if (!ForLoop(block)) {
@@ -315,15 +317,15 @@ finis:
         if (Try(TokenType::NewLine)) {
             KAI_TRACE() << "RhoParser::Statement - Consuming newline";
             Consume();
-        }
-        else if (Try(TokenType::Semi)) {
+        } else if (Try(TokenType::Semi)) {
             KAI_TRACE() << "RhoParser::Statement - Consuming semicolon";
             Consume();
-            
-            // After a semicolon, there may be another statement on the same line
-            // which should be handled by calling Statement again, but only if we're
-            // not in a context where semicolons are part of syntax (like for loops)
-            if (!Try(TokenType::NewLine) && !Try(TokenType::None) && 
+
+            // After a semicolon, there may be another statement on the same
+            // line which should be handled by calling Statement again, but only
+            // if we're not in a context where semicolons are part of syntax
+            // (like for loops)
+            if (!Try(TokenType::NewLine) && !Try(TokenType::None) &&
                 !Try(TokenType::CloseBrace) && !Try(TokenType::CloseParan)) {
                 return Statement(block);
             }
@@ -641,14 +643,17 @@ bool RhoParser::WhileLoop(AstNodePtr block) {
     auto whileNode = NewNode(NodeType::While);
     whileNode->Add(condition);
     whileNode->Add(bodyClause);
-    KAI_TRACE() << "RhoParser::WhileLoop - Created while node with condition and body";
+    KAI_TRACE()
+        << "RhoParser::WhileLoop - Created while node with condition and body";
 
     if (!block->Add(whileNode)) {
-        KAI_TRACE_ERROR() << "RhoParser::WhileLoop - Failed to add while node to block";
+        KAI_TRACE_ERROR()
+            << "RhoParser::WhileLoop - Failed to add while node to block";
         return false;
     }
 
-    KAI_TRACE() << "RhoParser::WhileLoop - Successfully added while node to block";
+    KAI_TRACE()
+        << "RhoParser::WhileLoop - Successfully added while node to block";
     return true;
 }
 
@@ -797,24 +802,26 @@ bool RhoParser::ForLoop(AstNodePtr block) {
         hasParentheses = true;
         Consume();
     }
-    
+
     // Parse the initialization expression
     KAI_TRACE() << "RhoParser::ForLoop - Parsing initialization";
     AstNodePtr initExpr = nullptr;
     if (!Try(TokenType::Semi)) {
         // We have an initialization expression
         if (!Expression()) {
-            return CreateError("Expected initialization expression in for loop");
+            return CreateError(
+                "Expected initialization expression in for loop");
         }
         initExpr = Pop();
     }
 
     // Expect semicolon after initialization
     if (!Try(TokenType::Semi)) {
-        return CreateError("Expected semicolon after initialization in for loop");
+        return CreateError(
+            "Expected semicolon after initialization in for loop");
     }
     Consume();
-    
+
     // Parse the condition expression
     KAI_TRACE() << "RhoParser::ForLoop - Parsing condition";
     AstNodePtr condExpr = nullptr;
@@ -831,7 +838,7 @@ bool RhoParser::ForLoop(AstNodePtr block) {
         return CreateError("Expected semicolon after condition in for loop");
     }
     Consume();
-    
+
     // Parse the increment expression
     KAI_TRACE() << "RhoParser::ForLoop - Parsing increment";
     AstNodePtr incrExpr = nullptr;
@@ -846,7 +853,8 @@ bool RhoParser::ForLoop(AstNodePtr block) {
     // Check for optional closing parenthesis
     if (hasParentheses) {
         if (!Try(TokenType::CloseParan)) {
-            return CreateError("Expected closing parenthesis after for loop declarations");
+            return CreateError(
+                "Expected closing parenthesis after for loop declarations");
         }
         Consume();
     }
@@ -856,45 +864,49 @@ bool RhoParser::ForLoop(AstNodePtr block) {
     // 1. A newline (traditional Rho style with indentation)
     // 2. An opening brace (inline style with braces)
     // We'll support both formats for flexibility
-    
+
     auto bodyClause = NewNode(NodeType::Block);
     KAI_TRACE() << "RhoParser::ForLoop - Parsing body block";
-    
+
     if (Try(TokenType::OpenBrace)) {
         // This is an inline for loop with braces
         KAI_TRACE() << "RhoParser::ForLoop - Found inline for loop with braces";
-        Consume(); // Consume the opening brace
-        
+        Consume();  // Consume the opening brace
+
         // Parse statements inside the braces
-        while (!Try(TokenType::CloseBrace) && !Try(TokenType::None) && !Failed) {
+        while (!Try(TokenType::CloseBrace) && !Try(TokenType::None) &&
+               !Failed) {
             if (!Statement(bodyClause)) {
-                return CreateError("Statement expected in inline for loop body");
+                return CreateError(
+                    "Statement expected in inline for loop body");
             }
         }
-        
+
         // Expect closing brace
         if (!Try(TokenType::CloseBrace)) {
             return CreateError("Expected closing brace for inline for loop");
         }
-        Consume(); // Consume the closing brace
+        Consume();  // Consume the closing brace
     } else {
         // Traditional style with newline and indentation
         if (!Try(TokenType::NewLine)) {
-            return CreateError("Expected newline or opening brace after for loop declarations");
+            return CreateError(
+                "Expected newline or opening brace after for loop "
+                "declarations");
         }
         Consume();
-        
+
         // Use the Block method for indented code blocks
         if (!Block(bodyClause)) {
             return CreateError("Block Expected for for loop body");
         }
     }
-    
+
     KAI_TRACE() << "RhoParser::ForLoop - Parsed body block";
 
     // Create the for loop AST node structure
     auto forNode = NewNode(NodeType::For);
-    
+
     // Add all parts to the for node (init, condition, increment, body)
     if (initExpr) {
         forNode->Add(initExpr);
@@ -902,28 +914,31 @@ bool RhoParser::ForLoop(AstNodePtr block) {
         // If no init expression, add an empty placeholder
         forNode->Add(NewNode(NodeType::None));
     }
-    
+
     if (condExpr) {
         forNode->Add(condExpr);
     } else {
         // If no condition, add a 'true' literal to make it an infinite loop
-        auto trueNode = NewNode(RhoToken(TokenEnum::True, *lexer.get(), 0, Slice()));
+        auto trueNode =
+            NewNode(RhoToken(TokenEnum::True, *lexer.get(), 0, Slice()));
         forNode->Add(trueNode);
     }
-    
+
     if (incrExpr) {
         forNode->Add(incrExpr);
     } else {
         // If no increment expression, add an empty placeholder
         forNode->Add(NewNode(NodeType::None));
     }
-    
+
     forNode->Add(bodyClause);
-    
-    KAI_TRACE() << "RhoParser::ForLoop - Created for node with init, condition, increment, and body";
+
+    KAI_TRACE() << "RhoParser::ForLoop - Created for node with init, "
+                   "condition, increment, and body";
 
     if (!block->Add(forNode)) {
-        KAI_TRACE_ERROR() << "RhoParser::ForLoop - Failed to add for node to block";
+        KAI_TRACE_ERROR()
+            << "RhoParser::ForLoop - Failed to add for node to block";
         return false;
     }
 
@@ -933,8 +948,8 @@ bool RhoParser::ForLoop(AstNodePtr block) {
 
 bool RhoParser::ConsumeNewLines() {
     // Consume any number of newlines or semicolons
-    // This is used to skip over statement separators (either newlines or semicolons)
-    // in places where whitespace is expected or ignored
+    // This is used to skip over statement separators (either newlines or
+    // semicolons) in places where whitespace is expected or ignored
     while (Try(TokenType::NewLine) || Try(TokenType::Semi)) {
         if (Try(TokenType::NewLine)) {
             KAI_TRACE() << "RhoParser::ConsumeNewLines - Consuming newline";

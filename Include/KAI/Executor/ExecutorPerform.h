@@ -7,7 +7,8 @@ KAI_BEGIN
 
 struct Executor;
 
-// Functions are declared in ExecutorPerform.h and defined in ExecutorPerform.cpp
+// Functions are declared in ExecutorPerform.h and defined in
+// ExecutorPerform.cpp
 
 // Helper method to convert a stack of objects to an array
 void Executor::ProcessToArray(int len);
@@ -16,7 +17,8 @@ void Executor::ProcessToArray(int len);
 bool Executor::IsBinaryOp(Operation::Type op);
 
 // Implementation of PerformBinaryOp to directly execute binary operations
-Object Executor::PerformBinaryOp(Object const &A, Object const &B, Operation::Type op);
+Object Executor::PerformBinaryOp(Object const &A, Object const &B,
+                                 Operation::Type op);
 
 // Helper method to unwrap continuations and extract the underlying value
 Object Executor::UnwrapValue(Object const &Q);

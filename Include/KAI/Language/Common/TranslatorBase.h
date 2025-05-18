@@ -17,7 +17,8 @@ struct TranslatorBase : TranslatorCommon {
     TranslatorBase(const TranslatorBase &) = delete;
     TranslatorBase(Registry &reg) : TranslatorCommon(reg) {}
 
-    virtual Pointer<Continuation> Translate(const char *text, Structure st) override {
+    virtual Pointer<Continuation> Translate(const char *text,
+                                            Structure st) override {
         if (text == 0 || text[0] == 0) {
             KAI_TRACE_WARN_1("No input");
             return Object();
@@ -59,19 +60,21 @@ struct TranslatorBase : TranslatorCommon {
 
         auto cont = Pop();
 
-        // If the continuation contains a single value that's not a complex type,
-        // we can return it directly for efficiency, but only if the value is valid
-        if (cont.Exists() && cont->GetCode().Exists() && cont->GetCode()->Size() == 1) {
+        // If the continuation contains a single value that's not a complex
+        // type, we can return it directly for efficiency, but only if the value
+        // is valid
+        if (cont.Exists() && cont->GetCode().Exists() &&
+            cont->GetCode()->Size() == 1) {
             Object value = cont->GetCode()->At(0);
-            
+
             // Check if the value is valid and not a complex type
-            if (value.Valid() && value.Exists() && 
+            if (value.Valid() && value.Exists() &&
                 value.GetTypeNumber() != Type::Number::Continuation &&
                 value.GetTypeNumber() != Type::Number::Operation) {
-                
-                KAI_TRACE() << "TranslatorBase: Returning direct single value: " 
-                          << value.ToString() << " (type: " << value.GetClass()->GetName() << ")";
-                
+                KAI_TRACE() << "TranslatorBase: Returning direct single value: "
+                            << value.ToString()
+                            << " (type: " << value.GetClass()->GetName() << ")";
+
                 return value;
             }
         }
@@ -79,15 +82,16 @@ struct TranslatorBase : TranslatorCommon {
         // For more complex cases, return the continuation for evaluation
         return cont;
     }
-    
+
     // Helper method for loop-related continuation creation
-    [[nodiscard]] Pointer<Continuation> CreateContinuationAndTranslate(AstNodePtr node) {
+    [[nodiscard]] Pointer<Continuation> CreateContinuationAndTranslate(
+        AstNodePtr node) {
         // Create a new continuation for the code block
         PushNew();
-        
+
         // Translate the node into the continuation
         TranslateNode(node);
-        
+
         // Get the resulting continuation
         return Pop();
     }

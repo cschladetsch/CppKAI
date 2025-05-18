@@ -22,7 +22,7 @@ StringStream& operator<<(StringStream& s, const Structure& st) {
 ostream& operator<<(ostream& S, ConsoleColor::EType type) { return S; }
 
 namespace debug {
-bool Trace::TraceFileLocation = true; // Always show file and line information
+bool Trace::TraceFileLocation = true;  // Always show file and line information
 bool Trace::StripPath = true;
 bool Trace::TraceFunction = false;
 
@@ -87,7 +87,8 @@ Trace::~Trace() {
         logMessage = file_location.ToString().c_str();
         logMessage += " ";
     }
-    // Don't add the log level to the message as Logger will do this automatically
+    // Don't add the log level to the message as Logger will do this
+    // automatically
     logMessage += val.c_str();
 
     // Log using the centralized Logger
@@ -95,7 +96,7 @@ Trace::~Trace() {
 
     // We removed explicit console output to avoid duplication
     // Logger will handle the coloring based on log level
-    
+
     // We'll let the Logger handle the console output to avoid duplication
     // The Logger already prints to console with appropriate colors
 }

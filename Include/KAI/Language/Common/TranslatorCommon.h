@@ -33,26 +33,29 @@ struct TranslatorCommon : ProcessCommon {
 
     // Append an operation to the current continuation
     void AppendOp(Operation::Type op);
-    
-    // Add operations directly to the continuation without wrapping in another continuation
-    // Used by Rho language to avoid unnecessary nesting and allow proper evaluation
+
+    // Add operations directly to the continuation without wrapping in another
+    // continuation Used by Rho language to avoid unnecessary nesting and allow
+    // proper evaluation
     void AppendDirectOperation(Operation::Type op);
-    
+
     // Mark the current continuation as a Rho expression
     // This helps the executor identify and properly evaluate Rho expressions
     void MarkAsRhoExpression();
-    
+
     // Add literal values directly to the code array
     // This helps avoid unnecessary wrapping in Rho expressions
-    template<typename T>
-    void AppendLiteral(const T& value) {
-        // Use explicit type parameter for New to ensure proper type identification
+    template <typename T>
+    void AppendLiteral(const T &value) {
+        // Use explicit type parameter for New to ensure proper type
+        // identification
         Object obj = reg_->New<T>(value);
-        
+
         // Add debug logging to track type information
-        KAI_TRACE() << "AppendLiteral: Created value of type: " << obj.GetClass()->GetName().ToString()
-                   << ", value: " << obj.ToString();
-        
+        KAI_TRACE() << "AppendLiteral: Created value of type: "
+                    << obj.GetClass()->GetName().ToString()
+                    << ", value: " << obj.ToString();
+
         Append(obj);
     }
 

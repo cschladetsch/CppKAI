@@ -69,23 +69,24 @@ KAI_END
 // https://stackoverflow.com/questions/16491675/how-to-send-custom-message-in-google-c-testing-framework
 /**
  * @brief Custom Google Test output stream with grey formatting
- * 
+ *
  * This defines a custom output stream for Google Test that
  * uses grey text for the console metadata/prefix.
  */
-#define GTEST_COUT std::cerr << rang::fg::gray << "[          ]" << rang::fg::reset
+#define GTEST_COUT \
+    std::cerr << rang::fg::gray << "[          ]" << rang::fg::reset
 
 // Forward declaration of color output function from Main.cpp
 bool IsColorOutputEnabled();
 
 /**
  * @brief Enhanced C++ stream interface for test output with color support
- * 
+ *
  * This class provides:
  * - Color-coded INFO (green) and ERROR (red bold) messages
  * - Integration with the global color setting
  * - Support for the standard C++ stream operators
- * 
+ *
  * Usage:
  *   TEST_COUT << "This is information"; // Green INFO message
  *   TEST_CERR << "This is an error";    // Red ERROR message
@@ -98,15 +99,14 @@ class TestCout : public std::stringstream {
         if (IsColorOutputEnabled()) {
             // Use colored output
             if (isError_) {
-                GTEST_COUT << " " << rang::fg::red << rang::style::bold << "[ERROR]" 
-                           << rang::style::reset << rang::fg::reset << " " << str().c_str();
-            }
-            else {
-                GTEST_COUT << " " << rang::fg::green << "[INFO]" 
+                GTEST_COUT << " " << rang::fg::red << rang::style::bold
+                           << "[ERROR]" << rang::style::reset << rang::fg::reset
+                           << " " << str().c_str();
+            } else {
+                GTEST_COUT << " " << rang::fg::green << "[INFO]"
                            << rang::fg::reset << " " << str().c_str();
             }
-        }
-        else {
+        } else {
             // Use plain output
             if (isError_)
                 GTEST_COUT << " [ERROR] " << str().c_str();

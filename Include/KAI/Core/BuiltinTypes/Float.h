@@ -12,7 +12,8 @@ BinaryStream &operator>>(BinaryStream &, float &);
 
 // Use the macro for float type to ensure consistency with int
 KAI_TYPE_TRAITS(float, Number::Single,
-                Type::Properties::Arithmetic | Type::Properties::Multiplicative |
+                Type::Properties::Arithmetic |
+                    Type::Properties::Multiplicative |
                     Type::Properties::Streaming | Type::Properties::Assign |
                     Type::Properties::Relational | Type::Properties::Absolute |
                     Type::Properties::Boolean);
@@ -24,7 +25,8 @@ BinaryStream &operator>>(BinaryStream &, double &);
 
 // Use the macro for double type to ensure consistency
 KAI_TYPE_TRAITS(double, Number::Double,
-                Type::Properties::Arithmetic | Type::Properties::Multiplicative |
+                Type::Properties::Arithmetic |
+                    Type::Properties::Multiplicative |
                     Type::Properties::Streaming | Type::Properties::Assign |
                     Type::Properties::Relational | Type::Properties::Absolute |
                     Type::Properties::Boolean);

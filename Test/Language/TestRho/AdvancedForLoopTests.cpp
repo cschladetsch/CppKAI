@@ -1,15 +1,15 @@
 #include <gtest/gtest.h>
 
+#include <algorithm>
 #include <iostream>
 #include <string>
 #include <vector>
-#include <algorithm>
 
-#include "KAI/Core/Console.h"
 #include "KAI/Core/BuiltinTypes.h"
+#include "KAI/Core/Console.h"
 #include "KAI/Executor/Operation.h"
-#include "TestLangCommon.h"
 #include "SimpleRhoPiTests.h"
+#include "TestLangCommon.h"
 
 using namespace kai;
 using namespace std;
@@ -17,13 +17,13 @@ using namespace std;
 /*
  * ADVANCED FOR LOOP TESTS
  * -----------------------
- * This file contains advanced tests for for loops in the Rho language, focusing on
- * complex loop structures, edge cases, and real-world usage patterns.
+ * This file contains advanced tests for for loops in the Rho language, focusing
+ * on complex loop structures, edge cases, and real-world usage patterns.
  */
 
 // Advanced test fixture for for loop tests
 class AdvancedForLoopTests : public TestLangCommon {
-protected:
+   protected:
     void SetUp() override {
         TestLangCommon::SetUp();
         console_.SetLanguage(Language::Rho);
@@ -34,59 +34,64 @@ protected:
         reg_->AddClass<Array>(Label("Array"));
         reg_->AddClass<Map>(Label("Map"));
     }
-    
+
     // Helper to execute a Rho script and store the result
     Object ExecuteScript(const std::string& script) {
         data_->Clear();
-        
+
         try {
             KAI_TRACE() << "Executing Rho script:\n" << script;
             bool success = console_.Execute(script);
             ASSERT_TRUE(success) << "Failed to execute Rho script";
-            
+
             // The result should be on top of the stack
             if (!data_->Empty()) {
                 // Unwrap any continuations to get the primitive value
                 UnwrapStackValues(data_, exec_);
                 return data_->Top();
             }
-        }
-        catch (const std::exception& e) {
+        } catch (const std::exception& e) {
             KAI_TRACE_ERROR() << "Error executing Rho script: " << e.what();
             FAIL() << "Exception during Rho execution: " << e.what();
         }
-        
+
         return Object();  // Empty object if no result was produced
     }
-    
+
     // Helper to verify an integer result
     void VerifyIntResult(const Object& result, int expected) {
         ASSERT_TRUE(result.Exists()) << "Result object does not exist";
-        ASSERT_TRUE(result.IsType<int>()) << "Expected int but got " 
-                                    << result.GetClass()->GetName().ToString();
+        ASSERT_TRUE(result.IsType<int>())
+            << "Expected int but got "
+            << result.GetClass()->GetName().ToString();
         ASSERT_EQ(ConstDeref<int>(result), expected) << "Value mismatch";
     }
-    
+
     // Helper to verify a string result
     void VerifyStringResult(const Object& result, const String& expected) {
         ASSERT_TRUE(result.Exists()) << "Result object does not exist";
-        ASSERT_TRUE(result.IsType<String>()) << "Expected String but got " 
-                                      << result.GetClass()->GetName().ToString();
+        ASSERT_TRUE(result.IsType<String>())
+            << "Expected String but got "
+            << result.GetClass()->GetName().ToString();
         ASSERT_EQ(ConstDeref<String>(result), expected) << "Value mismatch";
     }
-    
+
     // Helper to verify an array result
-    void VerifyArrayResult(const Object& result, const std::vector<int>& expected) {
+    void VerifyArrayResult(const Object& result,
+                           const std::vector<int>& expected) {
         ASSERT_TRUE(result.Exists()) << "Result object does not exist";
-        ASSERT_TRUE(result.IsType<Array>()) << "Expected Array but got " 
-                                     << result.GetClass()->GetName().ToString();
-        
+        ASSERT_TRUE(result.IsType<Array>())
+            << "Expected Array but got "
+            << result.GetClass()->GetName().ToString();
+
         Pointer<Array> array = result;
         ASSERT_EQ(array->Size(), expected.size()) << "Array size mismatch";
-        
+
         for (size_t i = 0; i < expected.size(); ++i) {
-            ASSERT_TRUE(array->At(i).IsType<int>()) << "Expected int at index " << i;
-            ASSERT_EQ(ConstDeref<int>(array->At(i)), expected[i]) << "Value mismatch at index " << i;
+            ASSERT_TRUE(array->At(i).IsType<int>())
+                << "Expected int at index " << i;
+            ASSERT_EQ(ConstDeref<int>(array->At(i)), expected[i])
+                << "Value mismatch at index " << i;
         }
     }
 };
@@ -104,9 +109,9 @@ TEST_F(AdvancedForLoopTests, NestedForLoopsWithComplexConditions) {
             }
         }
     )";
-    
+
     Object result = ExecuteScript(script);
-    
+
     // Expected calculation:
     // When i=0, j=0: 0*0 = 0
     // When i=0, j=2: 0*2 = 0
@@ -119,8 +124,9 @@ TEST_F(AdvancedForLoopTests, NestedForLoopsWithComplexConditions) {
     // When i=4, j=4: 4*4 = 16
     // Total: 0+0+0+0+4+8+0+8+16 = 36
     VerifyIntResult(result, 36);
-    
-    std::cout << "Nested for loops with complex conditions test passed" << std::endl;
+
+    std::cout << "Nested for loops with complex conditions test passed"
+              << std::endl;
 }
 
 // Test 2: For Loop with Early Termination (break)
@@ -136,12 +142,12 @@ TEST_F(AdvancedForLoopTests, ForLoopWithBreak) {
             }
         }
     )";
-    
+
     Object result = ExecuteScript(script);
-    
+
     // Expected: 11 (since 11^2 = 121 > 100, but 10^2 = 100 which is not > 100)
     VerifyIntResult(result, 11);
-    
+
     std::cout << "For loop with break test passed" << std::endl;
 }
 
@@ -157,12 +163,12 @@ TEST_F(AdvancedForLoopTests, ForLoopWithContinue) {
             result = result + i
         }
     )";
-    
+
     Object result = ExecuteScript(script);
-    
+
     // Expected: 1+2+4+5+7+8+10 = 37 (skipping 3, 6, 9)
     VerifyIntResult(result, 37);
-    
+
     std::cout << "For loop with continue test passed" << std::endl;
 }
 
@@ -179,12 +185,12 @@ TEST_F(AdvancedForLoopTests, ForLoopBuildingString) {
             }
         }
     )";
-    
+
     Object result = ExecuteScript(script);
-    
+
     // Expected: "ABABA"
     VerifyStringResult(result, "ABABA");
-    
+
     std::cout << "For loop building string test passed" << std::endl;
 }
 
@@ -197,12 +203,12 @@ TEST_F(AdvancedForLoopTests, LoopVariableReuseAfterLoop) {
         }
         result = i  // i should be 5 here
     )";
-    
+
     Object result = ExecuteScript(script);
-    
+
     // Expected: 5 (the value that made the loop condition false)
     VerifyIntResult(result, 5);
-    
+
     std::cout << "Loop variable reuse after loop test passed" << std::endl;
 }
 
@@ -220,12 +226,12 @@ TEST_F(AdvancedForLoopTests, InfiniteLoopDetection) {
             }
         }
     )";
-    
+
     Object result = ExecuteScript(script);
-    
+
     // Expected: 100 (from safety counter)
     VerifyIntResult(result, 100);
-    
+
     std::cout << "Infinite loop detection test passed" << std::endl;
 }
 
@@ -239,12 +245,12 @@ TEST_F(AdvancedForLoopTests, EmptyForLoop) {
         }
         result = result + i
     )";
-    
+
     Object result = ExecuteScript(script);
-    
+
     // Expected: 42 + 10 = 52
     VerifyIntResult(result, 52);
-    
+
     std::cout << "Empty for loop test passed" << std::endl;
 }
 
@@ -272,18 +278,18 @@ TEST_F(AdvancedForLoopTests, GeneratePrimeNumbers) {
         
         result = primes
     )";
-    
+
     try {
         Object result = ExecuteScript(script);
-        
+
         // Expected primes up to 20: [2,3,5,7,11,13,17,19]
         std::vector<int> expectedPrimes = {2, 3, 5, 7, 11, 13, 17, 19};
         VerifyArrayResult(result, expectedPrimes);
-        
+
         std::cout << "Generate prime numbers test passed" << std::endl;
-    }
-    catch (const std::exception& e) {
-        std::cout << "Array operations not fully supported: " << e.what() << std::endl;
+    } catch (const std::exception& e) {
+        std::cout << "Array operations not fully supported: " << e.what()
+                  << std::endl;
         GTEST_SKIP() << "Array operations not supported";
     }
 }
@@ -299,10 +305,10 @@ TEST_F(AdvancedForLoopTests, ComplexInitializationAndUpdate) {
             result = result + (i * j)
         }
     )";
-    
+
     try {
         Object result = ExecuteScript(script);
-        
+
         // Expected calculations:
         // When i=0, j=10: 0*10 = 0
         // When i=1, j=9:  1*9 = 9
@@ -311,11 +317,13 @@ TEST_F(AdvancedForLoopTests, ComplexInitializationAndUpdate) {
         // When i=4, j=6:  4*6 = 24
         // Total: 0+9+16+21+24 = 70
         VerifyIntResult(result, 70);
-        
-        std::cout << "For loop with complex initialization and update test passed" << std::endl;
-    }
-    catch (const std::exception& e) {
-        std::cout << "Complex for loop initialization not supported: " << e.what() << std::endl;
+
+        std::cout
+            << "For loop with complex initialization and update test passed"
+            << std::endl;
+    } catch (const std::exception& e) {
+        std::cout << "Complex for loop initialization not supported: "
+                  << e.what() << std::endl;
         GTEST_SKIP() << "Complex for loop initialization not supported";
     }
 }
@@ -337,25 +345,27 @@ TEST_F(AdvancedForLoopTests, ComputeMathematicalSeries) {
             result = result + term
         }
     )";
-    
+
     try {
         Object result = ExecuteScript(script);
-        
+
         // Expected: 1/2 + 1/4 + 1/8 + 1/16 + ... + 1/1024 ≈ 0.999
         // Actual: 0.5 + 0.25 + 0.125 + 0.0625 + ... = 0.9990234375
-        
-        // Since we're working with floating point, check if the result is close enough
-        ASSERT_TRUE(result.IsType<float>()) << "Expected float but got " 
-                                     << result.GetClass()->GetName().ToString();
-        
+
+        // Since we're working with floating point, check if the result is close
+        // enough
+        ASSERT_TRUE(result.IsType<float>())
+            << "Expected float but got "
+            << result.GetClass()->GetName().ToString();
+
         float value = ConstDeref<float>(result);
         ASSERT_NEAR(value, 0.9990234375f, 0.0001f) << "Value mismatch";
-        
+
         std::cout << "Mathematical series computation test passed" << std::endl;
-    }
-    catch (const std::exception& e) {
-        std::cout << "Float operations not fully supported: " << e.what() << std::endl;
-        
+    } catch (const std::exception& e) {
+        std::cout << "Float operations not fully supported: " << e.what()
+                  << std::endl;
+
         // Try an integer version as a fallback
         const std::string intScript = R"(
             // Integer version as a fallback
@@ -365,12 +375,13 @@ TEST_F(AdvancedForLoopTests, ComputeMathematicalSeries) {
                 result = result + n
             }
         )";
-        
+
         Object intResult = ExecuteScript(intScript);
-        
+
         // Expected: 1+2+3+4+5+6+7+8+9+10 = 55
         VerifyIntResult(intResult, 55);
-        
-        std::cout << "Fallback integer series computation test passed" << std::endl;
+
+        std::cout << "Fallback integer series computation test passed"
+                  << std::endl;
     }
 }

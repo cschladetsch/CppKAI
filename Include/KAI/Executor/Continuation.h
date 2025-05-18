@@ -68,10 +68,10 @@ class Continuation : public Reflected {
     // get next object in the continuation
     bool Next() const;
     bool Next(Object &) const;
-    
+
     // Special handling for direct continuation evaluation
     // Tests use this functionality and expect it to work
-    void SetSpecialHandling(bool v) { 
+    void SetSpecialHandling(bool v) {
         // We store this in the 'entered' field to maintain compatibility
         // without adding extra fields
         if (!entered.Exists())
@@ -79,13 +79,12 @@ class Continuation : public Reflected {
         else
             *entered = v;
     }
-    
-    bool GetSpecialHandling() const { 
-        if (!entered.Exists())
-            return false;
+
+    bool GetSpecialHandling() const {
+        if (!entered.Exists()) return false;
         return *entered;
     }
-    
+
     // Set the instruction pointer (for jump operations)
     void SetInstructionPointer(int pos) {
         if (!index.Exists())
@@ -93,11 +92,10 @@ class Continuation : public Reflected {
         else
             *index = pos;
     }
-    
+
     // Get the current instruction pointer
     int GetInstructionPointer() const {
-        if (!index.Exists())
-            return 0;
+        if (!index.Exists()) return 0;
         return *index;
     }
 

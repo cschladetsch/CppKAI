@@ -114,70 +114,79 @@ void Console::Execute(Pointer<Continuation> cont) {
             KAI_TRACE_ERROR() << "Execute: Null executor - skipping execution";
             return;
         }
-        
+
         if (!executor->GetDataStack().Exists()) {
-            KAI_TRACE_ERROR() << "Execute: Null data stack - skipping execution";
+            KAI_TRACE_ERROR()
+                << "Execute: Null data stack - skipping execution";
             return;
         }
-    
+
         // Check for null continuation
         if (!cont.Exists()) {
             KAI_TRACE() << "Execute: Null continuation - skipping execution";
             return;
         }
-        
+
         // Check if the continuation has valid code
         if (!cont->GetCode().Exists()) {
-            KAI_TRACE() << "Execute: Continuation has no code - skipping execution";
+            KAI_TRACE()
+                << "Execute: Continuation has no code - skipping execution";
             return;
         }
-        
+
         // Debug the continuation code to help with diagnosing any issues
-        KAI_TRACE_1(cont->GetCode()->Size()) << "Executing continuation with size";
-        
+        KAI_TRACE_1(cont->GetCode()->Size())
+            << "Executing continuation with size";
+
         // For null or empty continuations, nothing to do
         if (cont->GetCode()->Size() == 0) {
-            KAI_TRACE() << "Execute: Continuation has empty code array - skipping execution";
+            KAI_TRACE() << "Execute: Continuation has empty code array - "
+                           "skipping execution";
             return;
         }
-        
+
         // Set the scope for the continuation if possible
         if (executor->GetTree() != nullptr) {
             cont->SetScope(executor->GetTree()->GetScope());
         }
-        
+
         // Option 1: Execute the continuation using the standard executor
         try {
             if (!cont.Exists()) {
-                KAI_TRACE_ERROR() << "Execute: Continuation is invalid - skipping execution";
+                KAI_TRACE_ERROR()
+                    << "Execute: Continuation is invalid - skipping execution";
                 return;
             }
-            
+
             executor->Continue(cont);
+        } catch (const std::exception &e) {
+            KAI_TRACE_ERROR()
+                << "Exception during continuation execution: " << e.what();
+            // Continue processing since we've already pushed values to the
+            // stack
+        } catch (...) {
+            KAI_TRACE_ERROR()
+                << "Unknown exception during continuation execution";
+            // Continue processing since we've already pushed values to the
+            // stack
         }
-        catch (const std::exception& e) {
-            KAI_TRACE_ERROR() << "Exception during continuation execution: " << e.what();
-            // Continue processing since we've already pushed values to the stack
-        }
-        catch (...) {
-            KAI_TRACE_ERROR() << "Unknown exception during continuation execution";
-            // Continue processing since we've already pushed values to the stack
-        }
-        
+
         // After execution, process the stack to ensure proper type extraction
         Value<Stack> dataStack = executor->GetDataStack();
-        
-        // Process each stack item to extract primitive values from continuations
+
+        // Process each stack item to extract primitive values from
+        // continuations
         int stackSize = dataStack->Size();
         for (int i = 0; i < stackSize; i++) {
             // Get the object at the current position (from the bottom)
             // We want to preserve the original stack order
             int currentIndex = stackSize - i - 1;
             Object item = dataStack->At(currentIndex);
-            
+
             // We no longer automatically unwrap continuations here
-            // Continuations are preserved by design for blocks and Pi {} constructs
-            // Test code should use UnwrapStackValues() from TestLangCommon if needed
+            // Continuations are preserved by design for blocks and Pi {}
+            // constructs Test code should use UnwrapStackValues() from
+            // TestLangCommon if needed
         }
     }
     KAI_CATCH(Exception::Base, E) { KAI_TRACE_ERROR_1(E); }
@@ -190,24 +199,26 @@ void Console::Execute(String const &text, Structure st) {
         // Translate the text into a continuation
         Pointer<Continuation> cont = compiler->Translate(text.c_str(), st);
         if (!cont.Exists()) {
-            KAI_TRACE_WARN() << "Translation of '" << text << "' yielded invalid continuation";
+            KAI_TRACE_WARN() << "Translation of '" << text
+                             << "' yielded invalid continuation";
             return;
         }
 
         // Log what we're about to execute for debugging purposes
         KAI_TRACE() << "Executing text: " << text;
-        
+
         // Execute the continuation
         Execute(cont);
     }
-    KAI_CATCH(Exception::Base, E) { 
-        KAI_TRACE_ERROR() << "KAI exception during Execute(text): " << E.ToString(); 
+    KAI_CATCH(Exception::Base, E) {
+        KAI_TRACE_ERROR() << "KAI exception during Execute(text): "
+                          << E.ToString();
     }
-    KAI_CATCH(exception, E) { 
-        KAI_TRACE_ERROR() << "Std exception during Execute(text): " << E.what(); 
+    KAI_CATCH(exception, E) {
+        KAI_TRACE_ERROR() << "Std exception during Execute(text): " << E.what();
     }
-    KAI_CATCH_ALL() { 
-        KAI_TRACE_ERROR() << "Unknown exception during Execute(text)"; 
+    KAI_CATCH_ALL() {
+        KAI_TRACE_ERROR() << "Unknown exception during Execute(text)";
     }
 }
 
@@ -376,20 +387,21 @@ bool Console::ExecuteFile(const char *fileName) {
         KAI_TRACE_ERROR() << "ExecuteFile: Null or empty filename";
         return false;
     }
-    
+
     if (!compiler.Exists()) {
         KAI_TRACE_ERROR() << "ExecuteFile: Null compiler";
         return false;
     }
-    
+
     // Compile the file
-    Pointer<Continuation> c = compiler->CompileFile(fileName, Structure::Program);
-    
+    Pointer<Continuation> c =
+        compiler->CompileFile(fileName, Structure::Program);
+
     if (!c.Exists()) {
         KAI_TRACE_ERROR() << "ExecuteFile: Failed to compile " << fileName;
         return false;
     }
-    
+
     // Execute the continuation using our improved method
     // This is safer than directly calling executor->Continue
     Execute(c);

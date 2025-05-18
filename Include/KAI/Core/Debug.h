@@ -78,10 +78,14 @@ struct EmptySink {
     (KAI_NAMESPACE(FileLocation)(F, L, N), KAI_NAMESPACE(debug::Trace::T))
 
 // Use our enhanced logger with file and line information for key log macros
-#define KAI_LOG_INFO(msg) KAI_NAMESPACE(Logger::InfoWithLocation)(msg, __FILE__, __LINE__)
-#define KAI_LOG_WARNING(msg) KAI_NAMESPACE(Logger::WarningWithLocation)(msg, __FILE__, __LINE__)
-#define KAI_LOG_ERROR(msg) KAI_NAMESPACE(Logger::ErrorWithLocation)(msg, __FILE__, __LINE__)
-#define KAI_LOG_FATAL(msg) KAI_NAMESPACE(Logger::FatalWithLocation)(msg, __FILE__, __LINE__)
+#define KAI_LOG_INFO(msg) \
+    KAI_NAMESPACE(Logger::InfoWithLocation)(msg, __FILE__, __LINE__)
+#define KAI_LOG_WARNING(msg) \
+    KAI_NAMESPACE(Logger::WarningWithLocation)(msg, __FILE__, __LINE__)
+#define KAI_LOG_ERROR(msg) \
+    KAI_NAMESPACE(Logger::ErrorWithLocation)(msg, __FILE__, __LINE__)
+#define KAI_LOG_FATAL(msg) \
+    KAI_NAMESPACE(Logger::FatalWithLocation)(msg, __FILE__, __LINE__)
 
 // Standard trace macros enhanced with file and line information
 #define KAI_TRACE_WARN() KAI_TRACER(__FILE__, __LINE__, __FUNCTION__, Warn)

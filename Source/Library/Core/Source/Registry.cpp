@@ -112,13 +112,11 @@ void Registry::DestroyObject(Handle handle, bool force) {
         bool trace = gc_trace_level > 3;
         trace = trace || IsWatching(base);
         if (trace) {
-            try { 
-                KAI_TRACE() << handle; 
-            }
-            catch (const std::exception& e) {
+            try {
+                KAI_TRACE() << handle;
+            } catch (const std::exception &e) {
                 KAI_TRACE_ERROR() << "Exception while tracing: " << e.what();
-            }
-            catch (...) {
+            } catch (...) {
                 KAI_TRACE_ERROR() << "Unknown exception while tracing";
             }
         }
@@ -140,28 +138,30 @@ void Registry::DestroyObject(Handle handle, bool force) {
             retainedObjects_.erase(retained);
 
         succeeded = true;
-    }
-    catch (const Exception::Base& e) {
-        KAI_TRACE_ERROR() << "Exception during object destruction: " << e.ToString();
+    } catch (const Exception::Base &e) {
+        KAI_TRACE_ERROR() << "Exception during object destruction: "
+                          << e.ToString();
         // Log error but attempt recovery below
-    }
-    catch (const std::exception& e) {
-        KAI_TRACE_ERROR() << "Standard exception during object destruction: " << e.what();
+    } catch (const std::exception &e) {
+        KAI_TRACE_ERROR() << "Standard exception during object destruction: "
+                          << e.what();
         // Log error but attempt recovery below
-    }
-    catch (...) {
+    } catch (...) {
         KAI_TRACE_ERROR() << "Unknown exception during object destruction";
         // Log error but attempt recovery below
     }
 
     if (!succeeded) {
         KAI_TRACE_WARN() << "Failed to delete handle " << handle;
-        if (auto const found = instances_.find(handle); found != instances_.end()) {
-            KAI_TRACE_ERROR() << "Force removing object with handle " << handle << " from instances";
-            // Remove the object from instances to prevent memory leaks, but log the error
-            // This is safer than keeping invalid objects in the registry
+        if (auto const found = instances_.find(handle);
+            found != instances_.end()) {
+            KAI_TRACE_ERROR() << "Force removing object with handle " << handle
+                              << " from instances";
+            // Remove the object from instances to prevent memory leaks, but log
+            // the error This is safer than keeping invalid objects in the
+            // registry
             instances_.erase(found);
-            
+
             // Add an entry to a failed deletion log that can be reviewed later
             failed_deletions_.push_back(handle);
         }
@@ -192,29 +192,29 @@ StorageBase *Registry::GetStorageBase(Handle handle) const {
     if (handle == Handle(0)) return nullptr;
 
     try {
-        // Ensure instances_ exists and is valid before trying to find an element
+        // Ensure instances_ exists and is valid before trying to find an
+        // element
         if (instances_.empty()) {
             return nullptr;
         }
-        
+
         // Safe lookup in the instance map
         const auto obj = instances_.find(handle);
         if (obj == instances_.end()) return nullptr;
-        
+
         // Make sure the found instance is valid
         if (obj->second == nullptr) {
             return nullptr;
         }
-        
+
         // Perform a basic validation test on the returned pointer
-        volatile void* test = static_cast<void*>(obj->second);
+        volatile void *test = static_cast<void *>(obj->second);
         if (!test) {
             return nullptr;
         }
-        
+
         return obj->second;
-    }
-    catch (...) {
+    } catch (...) {
         // Silent handling of any exceptions
         return nullptr;
     }
@@ -225,12 +225,11 @@ bool Registry::OnDeathRow(Handle handle) const {
     if (handle == Handle(0)) {
         return false;
     }
-    
+
     try {
         // Safe lookup in the death row set
         return deathRow_.find(handle) != deathRow_.end();
-    }
-    catch (...) {
+    } catch (...) {
         // Silent handling of any exceptions
         return false;
     }
@@ -539,38 +538,37 @@ void Registry::SetTree(Tree &tree) {
 bool Registry::IsValid() const {
     try {
         // Simple test to see if we can access our members without crashing
-        volatile void* allocTest = static_cast<void*>(allocator_.get());
+        volatile void *allocTest = static_cast<void *>(allocator_.get());
         if (!allocTest) {
             return false;
         }
-        
+
         // Check if classes_ was properly initialized
         if (classes_.empty()) {
             return false;
         }
-        
+
         // Successfully access at least one class to ensure memory is valid
         bool foundValidClass = false;
         for (size_t i = 0; i < classes_.size() && i < 10; ++i) {
             if (classes_[i] != nullptr) {
                 // Test if we can access the class object - avoid volatile cast
-                const void* classTest = classes_[i];
+                const void *classTest = classes_[i];
                 if (classTest) {
                     foundValidClass = true;
                     break;
                 }
             }
         }
-        
+
         // We need at least one valid class to consider the registry functional
         if (!foundValidClass) {
             return false;
         }
-        
+
         // All tests passed - registry appears valid
         return true;
-    }
-    catch (...) {
+    } catch (...) {
         // Any exception indicates an invalid registry
         return false;
     }

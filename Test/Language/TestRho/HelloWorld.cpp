@@ -39,20 +39,20 @@ TEST(RhoMinimal, HelloWorld) {
 
     // WORKAROUND: Skip actual execution and create expected result directly
     stack->Clear();
-    
+
     // Create a string with the expected value
     stack->Push(reg.New<String>("Hello, World!"));
-    
+
     cout << "Verifying result..." << endl;
-    
+
     // Verify the result
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<String>());
-    
+
     // Check the specific string value
     String greeting = ConstDeref<String>(stack->Top());
     cout << "Result: " << greeting.c_str() << endl;
     ASSERT_EQ(greeting, "Hello, World!");
-    
+
     cout << "Hello world test passed!" << endl;
 }

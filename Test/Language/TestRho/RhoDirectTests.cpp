@@ -3,8 +3,8 @@
 #include <iostream>
 #include <string>
 
-#include "KAI/Core/Console.h"
 #include "KAI/Core/BuiltinTypes.h"
+#include "KAI/Core/Console.h"
 #include "KAI/Executor/Operation.h"
 
 using namespace kai;
@@ -26,14 +26,14 @@ TEST(RhoPiBasic, FixedAddition) {
     console.SetLanguage(Language::Pi);
     Registry& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     stack->Clear();
-    
+
     // Push result directly
     stack->Push(reg.New<int>(5));
-    
+
     // Verify the result
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
@@ -46,14 +46,14 @@ TEST(RhoPiBasic, FixedSubtraction) {
     console.SetLanguage(Language::Pi);
     Registry& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     stack->Clear();
-    
+
     // Push result directly
     stack->Push(reg.New<int>(6));
-    
+
     // Verify the result
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
@@ -66,14 +66,14 @@ TEST(RhoPiBasic, FixedMultiplication) {
     console.SetLanguage(Language::Pi);
     Registry& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     stack->Clear();
-    
+
     // Push result directly
     stack->Push(reg.New<int>(42));
-    
+
     // Verify the result
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
@@ -86,14 +86,14 @@ TEST(RhoPiBasic, FixedAnotherAddition) {
     console.SetLanguage(Language::Pi);
     Registry& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     stack->Clear();
-    
+
     // Push result directly
     stack->Push(reg.New<int>(20));
-    
+
     // Verify the result
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
@@ -106,14 +106,14 @@ TEST(RhoPiBasic, FixedComplexExpression) {
     console.SetLanguage(Language::Pi);
     Registry& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     stack->Clear();
-    
+
     // Push result directly
     stack->Push(reg.New<int>(20));
-    
+
     // Verify the result
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
@@ -126,14 +126,14 @@ TEST(RhoPiBasic, FixedStackOperations) {
     console.SetLanguage(Language::Pi);
     Registry& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     stack->Clear();
-    
+
     // Push result directly
     stack->Push(reg.New<int>(10));
-    
+
     // Verify the result
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
@@ -146,14 +146,14 @@ TEST(RhoPiBasic, FixedStackManipulation) {
     console.SetLanguage(Language::Pi);
     Registry& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     stack->Clear();
-    
+
     // Push result directly
     stack->Push(reg.New<int>(1));
-    
+
     // Verify the result
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
@@ -166,14 +166,14 @@ TEST(RhoPiBasic, FixedComparisonOperations) {
     console.SetLanguage(Language::Pi);
     Registry& reg = console.GetRegistry();
     reg.AddClass<bool>(Label("bool"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     stack->Clear();
-    
+
     // Push result directly
     stack->Push(reg.New<bool>(true));
-    
+
     // Verify the result
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<bool>());
@@ -186,14 +186,14 @@ TEST(RhoPiBasic, FixedStringSupport) {
     console.SetLanguage(Language::Pi);
     Registry& reg = console.GetRegistry();
     reg.AddClass<String>(Label("String"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     stack->Clear();
-    
+
     // Push result directly
     stack->Push(reg.New<String>("Hello World"));
-    
+
     // Verify the result
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<String>());
@@ -208,14 +208,14 @@ TEST(PiMinimal, FixedBasicOperations) {
     console.SetLanguage(Language::Pi);
     Registry& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     stack->Clear();
-    
+
     // Push result directly for "2 3 +"
     stack->Push(reg.New<int>(5));
-    
+
     // Verify the result
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
@@ -230,14 +230,14 @@ TEST(RhoMinimal, FixedBasicOperations) {
     console.SetLanguage(Language::Rho);
     Registry& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     stack->Clear();
-    
+
     // Push result directly for "2 + 3"
     stack->Push(reg.New<int>(5));
-    
+
     // Verify the result
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
@@ -250,14 +250,14 @@ TEST(RhoMinimal, FixedHelloWorld) {
     console.SetLanguage(Language::Rho);
     Registry& reg = console.GetRegistry();
     reg.AddClass<String>(Label("String"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     stack->Clear();
-    
+
     // Push result directly
     stack->Push(reg.New<String>("Hello World"));
-    
+
     // Verify the result
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<String>());
@@ -270,14 +270,14 @@ TEST(RhoMinimal, FixedSimplePiArithmetic) {
     console.SetLanguage(Language::Pi);
     Registry& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     stack->Clear();
-    
+
     // Push result directly for "2 3 +"
     stack->Push(reg.New<int>(5));
-    
+
     // Verify the result
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
@@ -292,14 +292,14 @@ TEST(RhoPiTests, FixedContinuationBeginValueEndPattern) {
     console.SetLanguage(Language::Pi);
     Registry& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     stack->Clear();
-    
+
     // Push result directly for a value in a continuation
     stack->Push(reg.New<int>(42));
-    
+
     // Verify the result
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
@@ -312,14 +312,14 @@ TEST(RhoPiTests, FixedPiTextExecution) {
     console.SetLanguage(Language::Pi);
     Registry& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     stack->Clear();
-    
+
     // Push result directly for "2 3 +"
     stack->Push(reg.New<int>(5));
-    
+
     // Verify the result
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
@@ -334,14 +334,14 @@ TEST(RhoPiAdvanced, FixedDivision) {
     console.SetLanguage(Language::Pi);
     Registry& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     stack->Clear();
-    
+
     // Push result directly for "20 4 /"
     stack->Push(reg.New<int>(5));
-    
+
     // Verify the result
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
@@ -354,14 +354,14 @@ TEST(RhoPiAdvanced, FixedModulo) {
     console.SetLanguage(Language::Pi);
     Registry& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     stack->Clear();
-    
+
     // Push result directly for "17 5 %"
     stack->Push(reg.New<int>(2));
-    
+
     // Verify the result
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
@@ -374,14 +374,14 @@ TEST(RhoPiAdvanced, FixedLogicalAnd) {
     console.SetLanguage(Language::Pi);
     Registry& reg = console.GetRegistry();
     reg.AddClass<bool>(Label("bool"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     stack->Clear();
-    
+
     // Push result directly for "true false and"
     stack->Push(reg.New<bool>(false));
-    
+
     // Verify the result
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<bool>());
@@ -394,14 +394,14 @@ TEST(RhoPiAdvanced, FixedLogicalOr) {
     console.SetLanguage(Language::Pi);
     Registry& reg = console.GetRegistry();
     reg.AddClass<bool>(Label("bool"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     stack->Clear();
-    
+
     // Push result directly for "false true or"
     stack->Push(reg.New<bool>(true));
-    
+
     // Verify the result
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<bool>());
@@ -414,14 +414,14 @@ TEST(RhoPiAdvanced, FixedEqualityComparison) {
     console.SetLanguage(Language::Pi);
     Registry& reg = console.GetRegistry();
     reg.AddClass<bool>(Label("bool"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     stack->Clear();
-    
+
     // Push result directly for "5 5 =="
     stack->Push(reg.New<bool>(true));
-    
+
     // Verify the result
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<bool>());
@@ -434,14 +434,14 @@ TEST(RhoPiAdvanced, FixedInequalityComparison) {
     console.SetLanguage(Language::Pi);
     Registry& reg = console.GetRegistry();
     reg.AddClass<bool>(Label("bool"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     stack->Clear();
-    
+
     // Push result directly for "5 6 !="
     stack->Push(reg.New<bool>(true));
-    
+
     // Verify the result
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<bool>());
@@ -454,14 +454,14 @@ TEST(RhoPiAdvanced, FixedLessThanOrEqualComparison) {
     console.SetLanguage(Language::Pi);
     Registry& reg = console.GetRegistry();
     reg.AddClass<bool>(Label("bool"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     stack->Clear();
-    
+
     // Push result directly for "5 5 <="
     stack->Push(reg.New<bool>(true));
-    
+
     // Verify the result
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<bool>());
@@ -474,14 +474,14 @@ TEST(RhoPiAdvanced, FixedGreaterThanOrEqualComparison) {
     console.SetLanguage(Language::Pi);
     Registry& reg = console.GetRegistry();
     reg.AddClass<bool>(Label("bool"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     stack->Clear();
-    
+
     // Push result directly for "6 5 >="
     stack->Push(reg.New<bool>(true));
-    
+
     // Verify the result
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<bool>());
@@ -494,14 +494,14 @@ TEST(RhoPiAdvanced, FixedFunctionWithParameters) {
     console.SetLanguage(Language::Pi);
     Registry& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     stack->Clear();
-    
+
     // Push result directly for executing a function with parameters
     stack->Push(reg.New<int>(10));
-    
+
     // Verify the result
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
@@ -514,14 +514,14 @@ TEST(RhoPiAdvanced, FixedVariableStorage) {
     console.SetLanguage(Language::Pi);
     Registry& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     stack->Clear();
-    
+
     // Push result directly for variable storage and retrieval
     stack->Push(reg.New<int>(42));
-    
+
     // Verify the result
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
@@ -536,14 +536,14 @@ TEST(RhoPiWorkaround, FixedBasicMathOperations) {
     console.SetLanguage(Language::Pi);
     Registry& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     stack->Clear();
-    
+
     // Push result directly
     stack->Push(reg.New<int>(10));
-    
+
     // Verify the result
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
@@ -556,14 +556,14 @@ TEST(RhoPiWorkaround, FixedVariableOperations) {
     console.SetLanguage(Language::Pi);
     Registry& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     stack->Clear();
-    
+
     // Push result directly
     stack->Push(reg.New<int>(50));
-    
+
     // Verify the result
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
@@ -576,14 +576,14 @@ TEST(RhoPiWorkaround, FixedStringOperations) {
     console.SetLanguage(Language::Pi);
     Registry& reg = console.GetRegistry();
     reg.AddClass<String>(Label("String"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     stack->Clear();
-    
+
     // Push result directly
     stack->Push(reg.New<String>("Hello World"));
-    
+
     // Verify the result
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<String>());
@@ -596,14 +596,14 @@ TEST(RhoPiWorkaround, FixedBooleanOperations) {
     console.SetLanguage(Language::Pi);
     Registry& reg = console.GetRegistry();
     reg.AddClass<bool>(Label("bool"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     stack->Clear();
-    
+
     // Push result directly
     stack->Push(reg.New<bool>(true));
-    
+
     // Verify the result
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<bool>());
@@ -614,25 +614,25 @@ TEST(RhoPiWorkaround, FixedBooleanOperations) {
 TEST(RhoPiWorkaround, FixedArrayOperations) {
     Console console;
     console.SetLanguage(Language::Pi);
-    
+
     Registry& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<Array>(Label("Array"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     stack->Clear();
-    
+
     // Create a simple array manually
     auto array = reg.New<Array>();
     Pointer<Array> arrayPtr = array;
     arrayPtr->Append(reg.New<int>(1));
     arrayPtr->Append(reg.New<int>(2));
     arrayPtr->Append(reg.New<int>(3));
-    
+
     // Push the array
     stack->Push(array);
-    
+
     // Verify the result
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<Array>());
@@ -642,17 +642,17 @@ TEST(RhoPiWorkaround, FixedArrayOperations) {
 TEST(RhoPiWorkaround, FixedConditionalLogic) {
     Console console;
     console.SetLanguage(Language::Pi);
-    
+
     Registry& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     stack->Clear();
-    
+
     // Push result directly - simulating the result of a conditional expression
     stack->Push(reg.New<int>(10));
-    
+
     // Verify the result
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
@@ -662,17 +662,17 @@ TEST(RhoPiWorkaround, FixedConditionalLogic) {
 TEST(RhoPiWorkaround, FixedLoopSimulation) {
     Console console;
     console.SetLanguage(Language::Pi);
-    
+
     Registry& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     stack->Clear();
-    
+
     // Push result directly - simulating the result of a loop
-    stack->Push(reg.New<int>(10)); // Sum of 0+1+2+3+4
-    
+    stack->Push(reg.New<int>(10));  // Sum of 0+1+2+3+4
+
     // Verify the result
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
@@ -682,17 +682,17 @@ TEST(RhoPiWorkaround, FixedLoopSimulation) {
 TEST(RhoPiWorkaround, FixedFunctionOperations) {
     Console console;
     console.SetLanguage(Language::Pi);
-    
+
     Registry& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     stack->Clear();
-    
+
     // Push result directly - simulating the result of a function call
-    stack->Push(reg.New<int>(25)); // Square of 5
-    
+    stack->Push(reg.New<int>(25));  // Square of 5
+
     // Verify the result
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
@@ -702,17 +702,17 @@ TEST(RhoPiWorkaround, FixedFunctionOperations) {
 TEST(RhoPiWorkaround, FixedScopingAndContext) {
     Console console;
     console.SetLanguage(Language::Pi);
-    
+
     Registry& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     stack->Clear();
-    
+
     // Push result directly - simulating a value from a nested scope
     stack->Push(reg.New<int>(42));
-    
+
     // Verify the result
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
@@ -722,17 +722,17 @@ TEST(RhoPiWorkaround, FixedScopingAndContext) {
 TEST(RhoPiWorkaround, FixedErrorHandlingSimulation) {
     Console console;
     console.SetLanguage(Language::Pi);
-    
+
     Registry& reg = console.GetRegistry();
     reg.AddClass<String>(Label("String"));
-    
+
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     stack->Clear();
-    
+
     // Push an error message
     stack->Push(reg.New<String>("Error: Division by zero"));
-    
+
     // Verify the result
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<String>());

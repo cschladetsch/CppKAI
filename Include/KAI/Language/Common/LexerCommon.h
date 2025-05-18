@@ -147,7 +147,8 @@ class LexerCommon : public LexerBase {
 
         const char *fmt1 = "%s(%d):[%d]: %s\n";
         // Ensure buffer is large enough to handle the maximum size of buff0
-        // plus the format string - doubled the buffer size to prevent truncation warnings
+        // plus the format string - doubled the buffer size to prevent
+        // truncation warnings
         char buff[8192];
 #ifdef WIN32
         sprintf_s(buff, sizeof(buff), fmt1, "", tok.lineNumber, tok.slice.Start,
@@ -198,7 +199,7 @@ class LexerCommon : public LexerBase {
     std::string Print() const {
         std::stringstream str;
         // Print all tokens in the token list
-        for (const auto& tok : tokens) {
+        for (const auto &tok : tokens) {
             str << tok << ", ";
         }
         return str.str();

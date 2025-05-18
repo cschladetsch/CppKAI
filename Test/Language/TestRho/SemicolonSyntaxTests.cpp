@@ -12,7 +12,7 @@ TEST_F(TestLangCommon, SemicolonBasics) {
     exec_->ClearStacks();
     exec_->ClearContext();
     exec_->SetTraceLevel(3);
-    
+
     try {
         std::stringstream ss;
         ss << "// Basic semicolon test\n"
@@ -20,12 +20,13 @@ TEST_F(TestLangCommon, SemicolonBasics) {
            << "y = 20\n"
            << "z = x + y\n"
            << "assert(z == 30)\n";
-        
+
         console_.Execute(ss.str());
         std::cout << "SemicolonBasics test passed!" << std::endl;
     } catch (const Exception::Base& e) {
         std::cerr << "KAI Exception: " << e.ToString() << std::endl;
-        FAIL() << "SemicolonBasics test failed with KAI exception: " << e.ToString();
+        FAIL() << "SemicolonBasics test failed with KAI exception: "
+               << e.ToString();
     } catch (const std::exception& e) {
         std::cerr << "Standard exception: " << e.what() << std::endl;
         FAIL() << "SemicolonBasics test failed with exception: " << e.what();
@@ -40,7 +41,7 @@ TEST_F(TestLangCommon, MultipleSemicolonStatements) {
     exec_->ClearStacks();
     exec_->ClearContext();
     exec_->SetTraceLevel(3);
-    
+
     try {
         std::stringstream ss;
         ss << "// Multiple statements with semicolons\n"
@@ -49,18 +50,21 @@ TEST_F(TestLangCommon, MultipleSemicolonStatements) {
            << "c = 15\n"
            << "sum = a + b + c\n"
            << "assert(sum == 30)\n";
-        
+
         console_.Execute(ss.str());
         std::cout << "MultipleSemicolonStatements test passed!" << std::endl;
     } catch (const Exception::Base& e) {
         std::cerr << "KAI Exception: " << e.ToString() << std::endl;
-        FAIL() << "MultipleSemicolonStatements test failed with KAI exception: " << e.ToString();
+        FAIL() << "MultipleSemicolonStatements test failed with KAI exception: "
+               << e.ToString();
     } catch (const std::exception& e) {
         std::cerr << "Standard exception: " << e.what() << std::endl;
-        FAIL() << "MultipleSemicolonStatements test failed with exception: " << e.what();
+        FAIL() << "MultipleSemicolonStatements test failed with exception: "
+               << e.what();
     } catch (...) {
         std::cerr << "Unknown exception" << std::endl;
-        FAIL() << "MultipleSemicolonStatements test failed with unknown exception";
+        FAIL()
+            << "MultipleSemicolonStatements test failed with unknown exception";
     }
 }
 
@@ -69,7 +73,7 @@ TEST_F(TestLangCommon, SemicolonsInExpressions) {
     exec_->ClearStacks();
     exec_->ClearContext();
     exec_->SetTraceLevel(3);
-    
+
     try {
         std::stringstream ss;
         ss << "// Complex expression with semicolons\n"
@@ -77,15 +81,17 @@ TEST_F(TestLangCommon, SemicolonsInExpressions) {
            << "b = 4\n"
            << "result = a * b + 3\n"
            << "assert(result == 15)\n";
-        
+
         console_.Execute(ss.str());
         std::cout << "SemicolonsInExpressions test passed!" << std::endl;
     } catch (const Exception::Base& e) {
         std::cerr << "KAI Exception: " << e.ToString() << std::endl;
-        FAIL() << "SemicolonsInExpressions test failed with KAI exception: " << e.ToString();
+        FAIL() << "SemicolonsInExpressions test failed with KAI exception: "
+               << e.ToString();
     } catch (const std::exception& e) {
         std::cerr << "Standard exception: " << e.what() << std::endl;
-        FAIL() << "SemicolonsInExpressions test failed with exception: " << e.what();
+        FAIL() << "SemicolonsInExpressions test failed with exception: "
+               << e.what();
     } catch (...) {
         std::cerr << "Unknown exception" << std::endl;
         FAIL() << "SemicolonsInExpressions test failed with unknown exception";
@@ -97,7 +103,7 @@ TEST_F(TestLangCommon, NestedExpressionsWithSemicolons) {
     exec_->ClearStacks();
     exec_->ClearContext();
     exec_->SetTraceLevel(3);
-    
+
     try {
         std::stringstream ss;
         ss << "// Nested expressions with semicolons\n"
@@ -106,18 +112,23 @@ TEST_F(TestLangCommon, NestedExpressionsWithSemicolons) {
            << "c = 4\n"
            << "result = a * b + c\n"
            << "assert(result == 10)\n";
-        
+
         console_.Execute(ss.str());
-        std::cout << "NestedExpressionsWithSemicolons test passed!" << std::endl;
+        std::cout << "NestedExpressionsWithSemicolons test passed!"
+                  << std::endl;
     } catch (const Exception::Base& e) {
         std::cerr << "KAI Exception: " << e.ToString() << std::endl;
-        FAIL() << "NestedExpressionsWithSemicolons test failed with KAI exception: " << e.ToString();
+        FAIL() << "NestedExpressionsWithSemicolons test failed with KAI "
+                  "exception: "
+               << e.ToString();
     } catch (const std::exception& e) {
         std::cerr << "Standard exception: " << e.what() << std::endl;
-        FAIL() << "NestedExpressionsWithSemicolons test failed with exception: " << e.what();
+        FAIL() << "NestedExpressionsWithSemicolons test failed with exception: "
+               << e.what();
     } catch (...) {
         std::cerr << "Unknown exception" << std::endl;
-        FAIL() << "NestedExpressionsWithSemicolons test failed with unknown exception";
+        FAIL() << "NestedExpressionsWithSemicolons test failed with unknown "
+                  "exception";
     }
 }
 
@@ -126,18 +137,19 @@ TEST_F(TestLangCommon, TrailingSemicolon) {
     exec_->ClearStacks();
     exec_->ClearContext();
     exec_->SetTraceLevel(3);
-    
+
     try {
         std::stringstream ss;
         ss << "// Trailing semicolon\n"
            << "result = 2 + 3\n"
            << "assert(result == 5)\n";
-        
+
         console_.Execute(ss.str());
         std::cout << "TrailingSemicolon test passed!" << std::endl;
     } catch (const Exception::Base& e) {
         std::cerr << "KAI Exception: " << e.ToString() << std::endl;
-        FAIL() << "TrailingSemicolon test failed with KAI exception: " << e.ToString();
+        FAIL() << "TrailingSemicolon test failed with KAI exception: "
+               << e.ToString();
     } catch (const std::exception& e) {
         std::cerr << "Standard exception: " << e.what() << std::endl;
         FAIL() << "TrailingSemicolon test failed with exception: " << e.what();
@@ -152,18 +164,19 @@ TEST_F(TestLangCommon, EmptyStatement) {
     exec_->ClearStacks();
     exec_->ClearContext();
     exec_->SetTraceLevel(3);
-    
+
     try {
         std::stringstream ss;
         ss << "// Empty statements with semicolons\n"
            << "result = 2 + 3\n"
            << "assert(result == 5)\n";
-        
+
         console_.Execute(ss.str());
         std::cout << "EmptyStatement test passed!" << std::endl;
     } catch (const Exception::Base& e) {
         std::cerr << "KAI Exception: " << e.ToString() << std::endl;
-        FAIL() << "EmptyStatement test failed with KAI exception: " << e.ToString();
+        FAIL() << "EmptyStatement test failed with KAI exception: "
+               << e.ToString();
     } catch (const std::exception& e) {
         std::cerr << "Standard exception: " << e.what() << std::endl;
         FAIL() << "EmptyStatement test failed with exception: " << e.what();
@@ -178,7 +191,7 @@ TEST_F(TestLangCommon, MixedNewlinesAndSemicolons) {
     exec_->ClearStacks();
     exec_->ClearContext();
     exec_->SetTraceLevel(3);
-    
+
     try {
         std::stringstream ss;
         ss << "// Mixed newlines and semicolons\n"
@@ -187,18 +200,21 @@ TEST_F(TestLangCommon, MixedNewlinesAndSemicolons) {
            << "c = 3;\n"
            << "sum = a + b + c\n"
            << "assert(sum == 6)\n";
-        
+
         console_.Execute(ss.str());
         std::cout << "MixedNewlinesAndSemicolons test passed!" << std::endl;
     } catch (const Exception::Base& e) {
         std::cerr << "KAI Exception: " << e.ToString() << std::endl;
-        FAIL() << "MixedNewlinesAndSemicolons test failed with KAI exception: " << e.ToString();
+        FAIL() << "MixedNewlinesAndSemicolons test failed with KAI exception: "
+               << e.ToString();
     } catch (const std::exception& e) {
         std::cerr << "Standard exception: " << e.what() << std::endl;
-        FAIL() << "MixedNewlinesAndSemicolons test failed with exception: " << e.what();
+        FAIL() << "MixedNewlinesAndSemicolons test failed with exception: "
+               << e.what();
     } catch (...) {
         std::cerr << "Unknown exception" << std::endl;
-        FAIL() << "MixedNewlinesAndSemicolons test failed with unknown exception";
+        FAIL()
+            << "MixedNewlinesAndSemicolons test failed with unknown exception";
     }
 }
 
@@ -207,25 +223,28 @@ TEST_F(TestLangCommon, InlineForLoopWithSemicolons) {
     exec_->ClearStacks();
     exec_->ClearContext();
     exec_->SetTraceLevel(3);
-    
+
     try {
         std::stringstream ss;
         ss << "// Inline for loop with semicolons\n"
            << "sum = 0\n"
            << "for (i = 0; i < 5; i = i + 1) { sum = sum + i; }\n"
            << "assert(sum == 10)\n";
-        
+
         console_.Execute(ss.str());
         std::cout << "InlineForLoopWithSemicolons test passed!" << std::endl;
     } catch (const Exception::Base& e) {
         std::cerr << "KAI Exception: " << e.ToString() << std::endl;
-        FAIL() << "InlineForLoopWithSemicolons test failed with KAI exception: " << e.ToString();
+        FAIL() << "InlineForLoopWithSemicolons test failed with KAI exception: "
+               << e.ToString();
     } catch (const std::exception& e) {
         std::cerr << "Standard exception: " << e.what() << std::endl;
-        FAIL() << "InlineForLoopWithSemicolons test failed with exception: " << e.what();
+        FAIL() << "InlineForLoopWithSemicolons test failed with exception: "
+               << e.what();
     } catch (...) {
         std::cerr << "Unknown exception" << std::endl;
-        FAIL() << "InlineForLoopWithSemicolons test failed with unknown exception";
+        FAIL()
+            << "InlineForLoopWithSemicolons test failed with unknown exception";
     }
 }
 
@@ -234,7 +253,7 @@ TEST_F(TestLangCommon, ForLoopEmptySections) {
     exec_->ClearStacks();
     exec_->ClearContext();
     exec_->SetTraceLevel(3);
-    
+
     try {
         std::stringstream ss;
         ss << "// For loop with empty sections\n"
@@ -246,15 +265,17 @@ TEST_F(TestLangCommon, ForLoopEmptySections) {
            << "    j = j + 1;\n"
            << "}\n"
            << "assert(sum == 10)\n";
-        
+
         console_.Execute(ss.str());
         std::cout << "ForLoopEmptySections test passed!" << std::endl;
     } catch (const Exception::Base& e) {
         std::cerr << "KAI Exception: " << e.ToString() << std::endl;
-        FAIL() << "ForLoopEmptySections test failed with KAI exception: " << e.ToString();
+        FAIL() << "ForLoopEmptySections test failed with KAI exception: "
+               << e.ToString();
     } catch (const std::exception& e) {
         std::cerr << "Standard exception: " << e.what() << std::endl;
-        FAIL() << "ForLoopEmptySections test failed with exception: " << e.what();
+        FAIL() << "ForLoopEmptySections test failed with exception: "
+               << e.what();
     } catch (...) {
         std::cerr << "Unknown exception" << std::endl;
         FAIL() << "ForLoopEmptySections test failed with unknown exception";
@@ -266,7 +287,7 @@ TEST_F(TestLangCommon, InlineIfElse) {
     exec_->ClearStacks();
     exec_->ClearContext();
     exec_->SetTraceLevel(3);
-    
+
     try {
         std::stringstream ss;
         ss << "// Inline if-else with semicolons\n"
@@ -274,12 +295,13 @@ TEST_F(TestLangCommon, InlineIfElse) {
            << "result = 0\n"
            << "if (a > 3) { result = 1; } else { result = 2; }\n"
            << "assert(result == 2)\n";
-        
+
         console_.Execute(ss.str());
         std::cout << "InlineIfElse test passed!" << std::endl;
     } catch (const Exception::Base& e) {
         std::cerr << "KAI Exception: " << e.ToString() << std::endl;
-        FAIL() << "InlineIfElse test failed with KAI exception: " << e.ToString();
+        FAIL() << "InlineIfElse test failed with KAI exception: "
+               << e.ToString();
     } catch (const std::exception& e) {
         std::cerr << "Standard exception: " << e.what() << std::endl;
         FAIL() << "InlineIfElse test failed with exception: " << e.what();
@@ -294,7 +316,7 @@ TEST_F(TestLangCommon, FunctionWithSemicolons) {
     exec_->ClearStacks();
     exec_->ClearContext();
     exec_->SetTraceLevel(3);
-    
+
     try {
         std::stringstream ss;
         ss << "// Function definition with semicolons\n"
@@ -303,15 +325,17 @@ TEST_F(TestLangCommon, FunctionWithSemicolons) {
            << "}\n"
            << "result = add(2, 3)\n"
            << "assert(result == 5)\n";
-        
+
         console_.Execute(ss.str());
         std::cout << "FunctionWithSemicolons test passed!" << std::endl;
     } catch (const Exception::Base& e) {
         std::cerr << "KAI Exception: " << e.ToString() << std::endl;
-        FAIL() << "FunctionWithSemicolons test failed with KAI exception: " << e.ToString();
+        FAIL() << "FunctionWithSemicolons test failed with KAI exception: "
+               << e.ToString();
     } catch (const std::exception& e) {
         std::cerr << "Standard exception: " << e.what() << std::endl;
-        FAIL() << "FunctionWithSemicolons test failed with exception: " << e.what();
+        FAIL() << "FunctionWithSemicolons test failed with exception: "
+               << e.what();
     } catch (...) {
         std::cerr << "Unknown exception" << std::endl;
         FAIL() << "FunctionWithSemicolons test failed with unknown exception";
@@ -323,7 +347,7 @@ TEST_F(TestLangCommon, ComplexExpressionWithSemicolons) {
     exec_->ClearStacks();
     exec_->ClearContext();
     exec_->SetTraceLevel(3);
-    
+
     try {
         std::stringstream ss;
         ss << "// Complex expression combining multiple features\n"
@@ -337,18 +361,23 @@ TEST_F(TestLangCommon, ComplexExpressionWithSemicolons) {
            << "    }\n"
            << "}\n"
            << "assert(sum == 14)\n";
-        
+
         console_.Execute(ss.str());
-        std::cout << "ComplexExpressionWithSemicolons test passed!" << std::endl;
+        std::cout << "ComplexExpressionWithSemicolons test passed!"
+                  << std::endl;
     } catch (const Exception::Base& e) {
         std::cerr << "KAI Exception: " << e.ToString() << std::endl;
-        FAIL() << "ComplexExpressionWithSemicolons test failed with KAI exception: " << e.ToString();
+        FAIL() << "ComplexExpressionWithSemicolons test failed with KAI "
+                  "exception: "
+               << e.ToString();
     } catch (const std::exception& e) {
         std::cerr << "Standard exception: " << e.what() << std::endl;
-        FAIL() << "ComplexExpressionWithSemicolons test failed with exception: " << e.what();
+        FAIL() << "ComplexExpressionWithSemicolons test failed with exception: "
+               << e.what();
     } catch (...) {
         std::cerr << "Unknown exception" << std::endl;
-        FAIL() << "ComplexExpressionWithSemicolons test failed with unknown exception";
+        FAIL() << "ComplexExpressionWithSemicolons test failed with unknown "
+                  "exception";
     }
 }
 

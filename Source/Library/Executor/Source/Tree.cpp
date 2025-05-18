@@ -144,7 +144,8 @@ bool Exists(Object const &scope, const Pathname &path) {
         return Get(scope, path).Exists();
     } catch (const Exception::ObjectNotFound &e) {
         // Object not found is expected and not an error in Exists check
-        KAI_TRACE() << "Path not found: " << path.ToString() << " - " << e.ToString();
+        KAI_TRACE() << "Path not found: " << path.ToString() << " - "
+                    << e.ToString();
     } catch (const std::exception &e) {
         KAI_TRACE_ERROR() << "Error checking existence: " << e.what();
     } catch (...) {
@@ -159,7 +160,8 @@ bool Exists(Object const &root, Object const &scope, const Pathname &path) {
         return Get(root, scope, path).Exists();
     } catch (const Exception::ObjectNotFound &e) {
         // Object not found is expected and not an error in Exists check
-        KAI_TRACE() << "Path not found: " << path.ToString() << " - " << e.ToString();
+        KAI_TRACE() << "Path not found: " << path.ToString() << " - "
+                    << e.ToString();
     } catch (const std::exception &e) {
         KAI_TRACE_ERROR() << "Error checking existence: " << e.what();
     } catch (...) {
@@ -236,12 +238,12 @@ void Tree::SetScope(const Pathname &path) {
     scope_ = Get(root_, scope_, path);
 }
 
-void Tree::AddSearchPath(const Object &path) { 
+void Tree::AddSearchPath(const Object &path) {
     if (!path.Exists()) {
         KAI_TRACE_ERROR() << "AddSearchPath with invalid object";
         return;
     }
-    path_.push_back(path); 
+    path_.push_back(path);
 }
 
 void Tree::AddSearchPath(const Pathname &path) {
@@ -251,7 +253,8 @@ void Tree::AddSearchPath(const Pathname &path) {
     }
     Object found = Get(root_, scope_, path);
     if (!found.Exists()) {
-        KAI_TRACE_ERROR() << "AddSearchPath failed to resolve: " << path.ToString();
+        KAI_TRACE_ERROR() << "AddSearchPath failed to resolve: "
+                          << path.ToString();
         return;
     }
     path_.push_back(found);

@@ -1,6 +1,7 @@
 #include "KAI/Executor/Operation.h"
-#include "KAI/Core/BinaryStream.h" // Include the full implementation of BinaryStream
-#include "KAI/Core/Object/ClassBuilder.h" // Include ClassBuilder for Register function
+
+#include "KAI/Core/BinaryStream.h"  // Include the full implementation of BinaryStream
+#include "KAI/Core/Object/ClassBuilder.h"  // Include ClassBuilder for Register function
 
 KAI_BEGIN
 
@@ -146,7 +147,8 @@ void Operation::Register(Registry &registry) {
 
 KAI_END
 
-// Implement streaming operators for Operation - these must be outside the namespace
+// Implement streaming operators for Operation - these must be outside the
+// namespace
 KAI_BEGIN
 
 BinaryStream &operator<<(BinaryStream &stream, const Operation &op) {
@@ -154,7 +156,8 @@ BinaryStream &operator<<(BinaryStream &stream, const Operation &op) {
 }
 
 BinaryStream &operator>>(BinaryStream &stream, Operation &op) {
-    // Use the template method from BinaryPacket which is inherited by BinaryStream
+    // Use the template method from BinaryPacket which is inherited by
+    // BinaryStream
     int val;
     stream.BinaryPacket::Read(val);
     op.SetType((Operation::Type)val);

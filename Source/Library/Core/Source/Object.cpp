@@ -23,8 +23,8 @@ Object::Object(const ObjectConstructParams &P)
 Object::Object(Object const &Q) {
     // ULTIMATE defensive check - detect if source is not a valid address
     if (reinterpret_cast<uintptr_t>(&Q) < 0x1000) {
-        // This is an invalid pointer - it's pointing to a very low memory address
-        // Initialize to null to avoid propagating bad pointers
+        // This is an invalid pointer - it's pointing to a very low memory
+        // address Initialize to null to avoid propagating bad pointers
         registry = nullptr;
         class_base = nullptr;
         handle = Handle();
@@ -37,16 +37,15 @@ Object::Object(Object const &Q) {
             registry = Q.registry;
             class_base = Q.class_base;
             handle = Q.handle;
-        }
-        else {
-            // Silent initialization for null objects - common in Rho/Pi languages
+        } else {
+            // Silent initialization for null objects - common in Rho/Pi
+            // languages
             registry = nullptr;
             class_base = nullptr;
             handle = Handle();
             // No logging for invalid objects - this is expected behavior
         }
-    }
-    catch (...) {
+    } catch (...) {
         // If any exception occurs, ensure we initialize to null
         registry = nullptr;
         class_base = nullptr;
@@ -74,61 +73,55 @@ Object &Object::operator=(Object const &Q) {
         // determining new color for the assignee
         if (Valid()) {
             StorageBase *base = nullptr;
-            
+
             try {
                 base = GetRegistry()->GetStorageBase(handle);
-            }
-            catch (...) {
+            } catch (...) {
                 // Silent handling if GetStorageBase fails
             }
-            
+
             if (base) {
                 try {
                     base->DetermineNewColor();
-                }
-                catch (...) {
+                } catch (...) {
                     // Silent handling if DetermineNewColor fails
                 }
             }
         }
-    
+
         // Validate source object before assignment
         bool sourceValid = false;
         try {
             sourceValid = Q.Valid();
-        }
-        catch (...) {
+        } catch (...) {
             // If Valid() throws, treat as invalid
             sourceValid = false;
         }
-        
+
         if (sourceValid) {
             class_base = Q.class_base;
-            registry = Q.registry; 
+            registry = Q.registry;
             handle = Q.handle;
-        }
-        else {
-            // Source object is invalid, log a warning but don't nullify this object if it's valid
+        } else {
+            // Source object is invalid, log a warning but don't nullify this
+            // object if it's valid
             bool thisValid = false;
             try {
                 thisValid = Valid();
-            }
-            catch (...) {
+            } catch (...) {
                 thisValid = false;
             }
-            
+
             if (thisValid) {
                 // Silently preserve the current state
-            }
-            else {
+            } else {
                 // Both are invalid, clear everything
                 class_base = nullptr;
                 registry = nullptr;
                 handle = Handle();
             }
         }
-    }
-    catch (...) {
+    } catch (...) {
         // If anything else goes wrong, silently keep current state
     }
 
@@ -221,31 +214,34 @@ Type::Number Object::GetTypeNumber() const {
 
 bool Object::Valid() const {
     // ULTIMATE defensive check - detect if 'this' is not a valid address
-    // This will catch cases where the Object is at an invalid memory address like 0x8
+    // This will catch cases where the Object is at an invalid memory address
+    // like 0x8
     if (reinterpret_cast<uintptr_t>(this) < 0x1000) {
-        // This is an invalid pointer - it's pointing to a very low memory address
-        // such as 0x8, 0x10, etc., which are never valid user-space addresses
+        // This is an invalid pointer - it's pointing to a very low memory
+        // address such as 0x8, 0x10, etc., which are never valid user-space
+        // addresses
         return false;
     }
-    
+
     // IMPORTANT: Defensive check for invalid registry address
     // This handles both nullptr and invalid memory addresses
-    // Using try/catch to prevent segmentation fault if registry is an invalid address
+    // Using try/catch to prevent segmentation fault if registry is an invalid
+    // address
     try {
         // Special case for null registry (most common case)
         if (registry == nullptr) {
-            // Completely silent for null registry - this is expected in the 
-            // Rho/Pi language environment where Continuations use intermediate values
+            // Completely silent for null registry - this is expected in the
+            // Rho/Pi language environment where Continuations use intermediate
+            // values
             return false;
         }
-        
+
         // Test if registry is a valid address by doing a harmless operation
-        volatile void* registryAddr = static_cast<void*>(registry);
+        volatile void *registryAddr = static_cast<void *>(registry);
         if (!registryAddr) {
             return false;
         }
-    }
-    catch (...) {
+    } catch (...) {
         // If we catch any exception, registry is likely an invalid pointer
         // This is completely silent - no logging to avoid console spam
         return false;
@@ -258,8 +254,7 @@ bool Object::Valid() const {
             // Silent for handle check too
             return false;
         }
-    }
-    catch (...) {
+    } catch (...) {
         return false;
     }
 
@@ -269,14 +264,13 @@ bool Object::Valid() const {
             // Silent for class_base check too
             return false;
         }
-        
+
         // Test if class_base is a valid address
-        const void* classAddr = class_base;
+        const void *classAddr = class_base;
         if (!classAddr) {
             return false;
         }
-    }
-    catch (...) {
+    } catch (...) {
         return false;
     }
 
@@ -287,40 +281,39 @@ bool Object::Valid() const {
 bool Object::Exists() const {
     // ULTIMATE defensive check - detect if 'this' is not a valid address
     if (reinterpret_cast<uintptr_t>(this) < 0x1000) {
-        // This is an invalid pointer - it's pointing to a very low memory address
+        // This is an invalid pointer - it's pointing to a very low memory
+        // address
         return false;
     }
-    
+
     // Make sure the object is valid before trying to access the registry
     if (!Valid()) {
         return false;
     }
-    
+
     // Defensive check when accessing the registry
     try {
         // Verify registry is still valid
         if (registry == nullptr) {
             return false;
         }
-        
+
         // Extra validation of registry
-        volatile void* registryAddr = static_cast<void*>(registry);
+        volatile void *registryAddr = static_cast<void *>(registry);
         if (!registryAddr) {
             return false;
         }
-        
+
         // Try to get the storage base
-        StorageBase* storageBase = nullptr;
+        StorageBase *storageBase = nullptr;
         try {
             storageBase = registry->GetStorageBase(handle);
-        }
-        catch (...) {
+        } catch (...) {
             return false;
         }
-        
+
         return storageBase != nullptr;
-    }
-    catch (...) {
+    } catch (...) {
         // Silent handling of any exceptions during registry access
         return false;
     }
@@ -331,11 +324,10 @@ bool Object::OnDeathRow() const {
     if (!Valid()) {
         return false;
     }
-    
+
     try {
         return registry->OnDeathRow(handle);
-    }
-    catch (...) {
+    } catch (...) {
         // Silent handling of any exceptions
         return false;
     }
@@ -346,11 +338,10 @@ StorageBase *Object::GetStorageBase(Handle handle) const {
     if (!Valid()) {
         return nullptr;
     }
-    
+
     try {
         return registry->GetStorageBase(handle);
-    }
-    catch (...) {
+    } catch (...) {
         // Silent handling of any exceptions
         return nullptr;
     }
@@ -388,23 +379,22 @@ StorageBase &GetStorageBase_(Object const &Q) {
         if (!Q.Valid()) {
             KAI_THROW_0(NullObject);
         }
-        
+
         if (!Q.Exists()) {
             KAI_THROW_0(NullObject);
         }
-        
+
         // Extra careful registry access
-        Registry* registry = nullptr;
+        Registry *registry = nullptr;
         try {
             registry = Q.GetRegistry();
             if (registry == nullptr) {
                 KAI_THROW_0(NullObject);
             }
-        }
-        catch (...) {
+        } catch (...) {
             KAI_THROW_0(NullObject);
         }
-        
+
         // Handle checks with safety net
         Handle handle;
         try {
@@ -412,11 +402,10 @@ StorageBase &GetStorageBase_(Object const &Q) {
             if (handle.GetValue() == 0) {
                 KAI_THROW_0(NullObject);
             }
-        }
-        catch (...) {
+        } catch (...) {
             KAI_THROW_0(NullObject);
         }
-        
+
         // Safe storage base access with extra error checking
         StorageBase *base = nullptr;
         try {
@@ -424,20 +413,18 @@ StorageBase &GetStorageBase_(Object const &Q) {
             if (base == nullptr) {
                 KAI_THROW_0(NullObject);
             }
-            
+
             // Quick validation test on the base pointer
-            volatile void* test = static_cast<void*>(base);
+            volatile void *test = static_cast<void *>(base);
             if (!test) {
                 KAI_THROW_0(NullObject);
             }
-        }
-        catch (...) {
+        } catch (...) {
             KAI_THROW_0(NullObject);
         }
 
         return *base;
-    }
-    catch (...) {
+    } catch (...) {
         // Catch any errors we missed and convert to NullObject
         KAI_THROW_0(NullObject);
     }
@@ -447,57 +434,52 @@ StorageBase &GetStorageBase(Object const &Q) {
     try {
         // Enhanced validation with additional safety checks
         // First validate that Q itself is a valid object reference
-        // This uses a try block because Q might be in an invalid memory location
+        // This uses a try block because Q might be in an invalid memory
+        // location
         try {
             volatile bool isValid = Q.Valid();
             if (!isValid) {
                 KAI_THROW_0(NullObject);
             }
-        }
-        catch (...) {
+        } catch (...) {
             // If we get here, Q is likely in an invalid memory location
             KAI_THROW_0(NullObject);
         }
-        
+
         // Now check if the object exists (has valid storage)
         try {
             volatile bool exists = Q.Exists();
             if (!exists) {
                 KAI_THROW_0(NullObject);
             }
-        }
-        catch (...) {
+        } catch (...) {
             KAI_THROW_0(NullObject);
         }
-        
+
         // Check registry safety
-        Registry* registry = nullptr;
+        Registry *registry = nullptr;
         try {
             registry = Q.GetRegistry();
             if (registry == nullptr) {
                 KAI_THROW_0(NullObject);
             }
-            
+
             // Test registry validity with a safe operation
-            volatile void* test = static_cast<void*>(registry);
+            volatile void *test = static_cast<void *>(registry);
             if (!test) {
                 KAI_THROW_0(NullObject);
             }
-        }
-        catch (...) {
+        } catch (...) {
             KAI_THROW_0(NullObject);
         }
-        
+
         // If all checks pass, return the storage base
         return GetStorageBase_(Q);
-    }
-    catch (const Exception::Base&) {
+    } catch (const Exception::Base &) {
         KAI_THROW_0(NullObject);
-    }
-    catch (const std::exception&) {
+    } catch (const std::exception &) {
         KAI_THROW_0(NullObject);
-    }
-    catch (...) {
+    } catch (...) {
         KAI_THROW_0(NullObject);
     }
 }

@@ -18,20 +18,20 @@ using namespace std;
 // Test 1: Basic arithmetic
 TEST(MinimalRho, Addition) {
     Console console;
-    
+
     Registry& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<String>(Label("String"));
-    
+
     auto executor = console.GetExecutor();
     auto stack = executor->GetDataStack();
     stack->Clear();
-    
+
     // Directly create and push the expected result
     Object intValue = reg.New<int>(5);
     stack->Push(intValue);
-    
+
     // Verify the stack has an integer with value 5
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());
@@ -41,19 +41,19 @@ TEST(MinimalRho, Addition) {
 // Test 2: Boolean operations
 TEST(MinimalRho, Boolean) {
     Console console;
-    
+
     Registry& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
-    
+
     auto executor = console.GetExecutor();
     auto stack = executor->GetDataStack();
     stack->Clear();
-    
+
     // Directly create and push the expected result
     Object boolValue = reg.New<bool>(true);
     stack->Push(boolValue);
-    
+
     // Verify the stack has a boolean with value true
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<bool>());
@@ -63,18 +63,18 @@ TEST(MinimalRho, Boolean) {
 // Test 3: String operations
 TEST(MinimalRho, String) {
     Console console;
-    
+
     Registry& reg = console.GetRegistry();
     reg.AddClass<String>(Label("String"));
-    
+
     auto executor = console.GetExecutor();
     auto stack = executor->GetDataStack();
     stack->Clear();
-    
+
     // Directly create and push the expected result
     Object stringValue = reg.New<String>("Hello World");
     stack->Push(stringValue);
-    
+
     // Verify the stack has a string with value "Hello World"
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<String>());

@@ -34,7 +34,7 @@ TEST(RhoPiWorkaround, BasicMathOperations) {
     auto stack = exec->GetDataStack();
 
     // WORKAROUND: Skip actual execution and create expected results directly
-    
+
     // Addition: 5 + 3 = 8
     stack->Clear();
     stack->Push(reg.New(8));
@@ -74,7 +74,7 @@ TEST(RhoPiWorkaround, VariableOperations) {
     auto stack = exec->GetDataStack();
 
     // WORKAROUND: Skip actual execution and create expected results directly
-    
+
     // Value of variable 'x' after assignment: 42
     stack->Clear();
     stack->Push(reg.New(42));
@@ -103,7 +103,7 @@ TEST(RhoPiWorkaround, StringOperations) {
     auto stack = exec->GetDataStack();
 
     // WORKAROUND: Skip actual execution and create expected results directly
-    
+
     // String value after assignment: "Hello"
     stack->Clear();
     stack->Push(reg.New<String>("Hello"));
@@ -128,7 +128,7 @@ TEST(RhoPiWorkaround, BooleanOperations) {
     auto stack = exec->GetDataStack();
 
     // WORKAROUND: Skip actual execution and create expected results directly
-    
+
     // Test equality (true case): 5 = 5
     stack->Clear();
     stack->Push(reg.New<bool>(true));
@@ -183,15 +183,15 @@ TEST(RhoPiWorkaround, ArrayOperations) {
     auto stack = exec->GetDataStack();
 
     // WORKAROUND: Skip actual execution and create expected results directly
-    
+
     // Create an array [1, 2, 3]
     stack->Clear();
     auto array = reg.New<Array>();
-    
+
     // Use GetStorageBase first, then cast appropriately
-    StorageBase &storage = array.GetStorageBase();
-    Array &arrayRef = static_cast<Storage<Array>&>(storage).GetReference();
-    
+    StorageBase& storage = array.GetStorageBase();
+    Array& arrayRef = static_cast<Storage<Array>&>(storage).GetReference();
+
     // Use reference instead of pointer
     arrayRef.Append(reg.New(1));
     arrayRef.Append(reg.New(2));
@@ -223,7 +223,7 @@ TEST(RhoPiWorkaround, ConditionalLogic) {
     auto stack = exec->GetDataStack();
 
     // WORKAROUND: Skip actual execution and create expected results directly
-    
+
     // Test if x > y (true branch): 10 > 5 => 1
     stack->Clear();
     stack->Push(reg.New(1));
@@ -257,7 +257,7 @@ TEST(RhoPiWorkaround, LoopSimulation) {
     auto stack = exec->GetDataStack();
 
     // WORKAROUND: Skip actual execution and create expected results directly
-    
+
     // Counter after 5 iterations
     stack->Clear();
     stack->Push(reg.New(5));
@@ -276,7 +276,7 @@ TEST(RhoPiWorkaround, FunctionOperations) {
     auto stack = exec->GetDataStack();
 
     // WORKAROUND: Skip actual execution and create expected results directly
-    
+
     // Result of add function (3 + 4 = 7)
     stack->Clear();
     stack->Push(reg.New(7));
@@ -305,13 +305,14 @@ TEST(RhoPiWorkaround, ScopingAndContext) {
     auto stack = exec->GetDataStack();
 
     // WORKAROUND: Skip actual execution and create expected results directly
-    
+
     // Result of accessBoth function (local + global = 5 + 10 = 15)
     stack->Clear();
     stack->Push(reg.New(15));
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 15);
 
-    // Verify the local variable is not accessible outside (should be empty stack)
+    // Verify the local variable is not accessible outside (should be empty
+    // stack)
     stack->Clear();
     // Leave stack empty as expected
     ASSERT_TRUE(stack->Empty());
@@ -336,7 +337,7 @@ TEST(RhoPiWorkaround, ErrorHandlingSimulation) {
     auto stack = exec->GetDataStack();
 
     // WORKAROUND: Skip actual execution and create expected results directly
-    
+
     // Result of normal division (10 / 2 = 5)
     stack->Clear();
     stack->Push(reg.New(5));
@@ -356,5 +357,6 @@ TEST(RhoPiWorkaround, ErrorHandlingSimulation) {
     // Result of invalid range check
     stack->Clear();
     stack->Push(reg.New<String>("Error: Value out of range (1-100)"));
-    ASSERT_EQ(ConstDeref<String>(stack->Top()), "Error: Value out of range (1-100)");
+    ASSERT_EQ(ConstDeref<String>(stack->Top()),
+              "Error: Value out of range (1-100)");
 }

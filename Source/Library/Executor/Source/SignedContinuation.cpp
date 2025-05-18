@@ -38,11 +38,13 @@ void SignedContinuation::Leave(Stack &) {
     // TODO check the return types
 }
 
-StringStream &operator<<(StringStream &stream, SignedContinuation const &continuation) {
+StringStream &operator<<(StringStream &stream,
+                         SignedContinuation const &continuation) {
     stream << "SignedContinuation: ";
     String separator = "";
-    SignedContinuation::FormalParameters::const_iterator it = continuation.params.begin(),
-                                                       end = continuation.params.end();
+    SignedContinuation::FormalParameters::const_iterator
+        it = continuation.params.begin(),
+        end = continuation.params.end();
     for (; it != end; ++it) {
         stream << separator << it->type.TypeNumber << String(" ") << it->label;
         separator = ", ";
@@ -50,8 +52,9 @@ StringStream &operator<<(StringStream &stream, SignedContinuation const &continu
 
     stream << " -> ";
     separator = "";
-    SignedContinuation::ReturnTuple::const_iterator returnIt = continuation.return_tuple.begin(),
-                                                    returnEnd = continuation.return_tuple.end();
+    SignedContinuation::ReturnTuple::const_iterator
+        returnIt = continuation.return_tuple.begin(),
+        returnEnd = continuation.return_tuple.end();
     for (; returnIt != returnEnd; ++returnIt) {
         stream << separator << returnIt->GetValue();
         separator = ", ";

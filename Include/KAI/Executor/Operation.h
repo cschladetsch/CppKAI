@@ -159,8 +159,8 @@ struct Operation {
         StartPiSequence,
         StartRhoSequence,
         GarbageCollect,
-        Jump,           // Unconditional jump to a label
-        IfFalseJump,    // Jump to a label if the top of the stack is false
+        Jump,         // Unconditional jump to a label
+        IfFalseJump,  // Jump to a label if the top of the stack is false
         UnnnamedOp,
     };
 

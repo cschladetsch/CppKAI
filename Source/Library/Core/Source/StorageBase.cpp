@@ -124,29 +124,32 @@ void StorageBase::SetColorRecursive(ObjectColor::Color color,
     if (dictionary.empty()) return;
 
     // Use non-recursive iteration with a stack to avoid stack overflow
-    std::vector<StorageBase*> stack;
-    
+    std::vector<StorageBase *> stack;
+
     // First pass: add all direct children to the stack
     for (Dictionary::value_type const &child : dictionary) {
-        StorageBase *sub = GetRegistry()->GetStorageBase(child.second.GetHandle());
+        StorageBase *sub =
+            GetRegistry()->GetStorageBase(child.second.GetHandle());
         if (sub && handles.find(sub->GetHandle()) == handles.end()) {
             stack.push_back(sub);
             handles.insert(sub->GetHandle());
         }
     }
-    
+
     // Process the stack iteratively
     while (!stack.empty()) {
-        StorageBase* current = stack.back();
+        StorageBase *current = stack.back();
         stack.pop_back();
-        
+
         if (!current->SetColor(color)) continue;
-        
-        current->GetClass()->SetReferencedObjectsColor(*current, color, handles);
-        
+
+        current->GetClass()->SetReferencedObjectsColor(*current, color,
+                                                       handles);
+
         // Add all child objects to the stack if not already processed
         for (Dictionary::value_type const &child : current->dictionary) {
-            StorageBase *sub = GetRegistry()->GetStorageBase(child.second.GetHandle());
+            StorageBase *sub =
+                GetRegistry()->GetStorageBase(child.second.GetHandle());
             if (sub && handles.find(sub->GetHandle()) == handles.end()) {
                 stack.push_back(sub);
                 handles.insert(sub->GetHandle());

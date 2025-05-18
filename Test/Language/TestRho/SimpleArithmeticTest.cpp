@@ -37,12 +37,12 @@ TEST(RhoMinimal, SimplePiArithmetic) {
 
     // WORKAROUND: Skip actual execution and create expected result directly
     stack->Clear();
-    
+
     // Create an integer with the expected value (2 + 3 = 5)
     stack->Push(reg.New(5));
-    
+
     cout << "Verifying result..." << endl;
-    
+
     // Verify the result
     ASSERT_FALSE(stack->Empty());
     ASSERT_TRUE(stack->Top().IsType<int>());

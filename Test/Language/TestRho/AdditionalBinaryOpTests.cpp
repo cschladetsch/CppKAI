@@ -25,13 +25,13 @@ TEST(RhoBinaryOps, StringConcatenation) {
     // Create string objects
     Object str1 = reg.New<String>("Hello, ");
     Object str2 = reg.New<String>("World!");
-    
+
     ASSERT_TRUE(str1.IsType<String>());
     ASSERT_TRUE(str2.IsType<String>());
-    
+
     ASSERT_EQ(ConstDeref<String>(str1), "Hello, ");
     ASSERT_EQ(ConstDeref<String>(str2), "World!");
-    
+
     // Verify the string concatenation concept
     String hello = ConstDeref<String>(str1);
     String world = ConstDeref<String>(str2);
@@ -47,18 +47,21 @@ TEST(RhoBinaryOps, LogicalAND) {
     // Create boolean objects
     Object boolTrue = reg.New<bool>(true);
     Object boolFalse = reg.New<bool>(false);
-    
+
     ASSERT_TRUE(boolTrue.IsType<bool>());
     ASSERT_TRUE(boolFalse.IsType<bool>());
-    
+
     ASSERT_TRUE(ConstDeref<bool>(boolTrue));
     ASSERT_FALSE(ConstDeref<bool>(boolFalse));
-    
+
     // Verify AND operation logic
-    bool resultTrueTrue = ConstDeref<bool>(boolTrue) && ConstDeref<bool>(boolTrue);
-    bool resultTrueFalse = ConstDeref<bool>(boolTrue) && ConstDeref<bool>(boolFalse);
-    bool resultFalseFalse = ConstDeref<bool>(boolFalse) && ConstDeref<bool>(boolFalse);
-    
+    bool resultTrueTrue =
+        ConstDeref<bool>(boolTrue) && ConstDeref<bool>(boolTrue);
+    bool resultTrueFalse =
+        ConstDeref<bool>(boolTrue) && ConstDeref<bool>(boolFalse);
+    bool resultFalseFalse =
+        ConstDeref<bool>(boolFalse) && ConstDeref<bool>(boolFalse);
+
     ASSERT_TRUE(resultTrueTrue);
     ASSERT_FALSE(resultTrueFalse);
     ASSERT_FALSE(resultFalseFalse);
@@ -73,15 +76,18 @@ TEST(RhoBinaryOps, LogicalOR) {
     // Create boolean objects
     Object boolTrue = reg.New<bool>(true);
     Object boolFalse = reg.New<bool>(false);
-    
+
     ASSERT_TRUE(boolTrue.IsType<bool>());
     ASSERT_TRUE(boolFalse.IsType<bool>());
-    
+
     // Verify OR operation logic
-    bool resultTrueTrue = ConstDeref<bool>(boolTrue) || ConstDeref<bool>(boolTrue);
-    bool resultTrueFalse = ConstDeref<bool>(boolTrue) || ConstDeref<bool>(boolFalse);
-    bool resultFalseFalse = ConstDeref<bool>(boolFalse) || ConstDeref<bool>(boolFalse);
-    
+    bool resultTrueTrue =
+        ConstDeref<bool>(boolTrue) || ConstDeref<bool>(boolTrue);
+    bool resultTrueFalse =
+        ConstDeref<bool>(boolTrue) || ConstDeref<bool>(boolFalse);
+    bool resultFalseFalse =
+        ConstDeref<bool>(boolFalse) || ConstDeref<bool>(boolFalse);
+
     ASSERT_TRUE(resultTrueTrue);
     ASSERT_TRUE(resultTrueFalse);
     ASSERT_FALSE(resultFalseFalse);
@@ -96,13 +102,13 @@ TEST(RhoBinaryOps, IntegerDivision) {
     // Create integer objects
     Object int1 = reg.New<int>(10);
     Object int2 = reg.New<int>(2);
-    
+
     ASSERT_TRUE(int1.IsType<int>());
     ASSERT_TRUE(int2.IsType<int>());
-    
+
     ASSERT_EQ(ConstDeref<int>(int1), 10);
     ASSERT_EQ(ConstDeref<int>(int2), 2);
-    
+
     // Verify division operation
     int result = ConstDeref<int>(int1) / ConstDeref<int>(int2);
     ASSERT_EQ(result, 5);
@@ -117,13 +123,13 @@ TEST(RhoBinaryOps, ModuloOperation) {
     // Create integer objects
     Object int1 = reg.New<int>(7);
     Object int2 = reg.New<int>(3);
-    
+
     ASSERT_TRUE(int1.IsType<int>());
     ASSERT_TRUE(int2.IsType<int>());
-    
+
     ASSERT_EQ(ConstDeref<int>(int1), 7);
     ASSERT_EQ(ConstDeref<int>(int2), 3);
-    
+
     // Verify modulo operation
     int result = ConstDeref<int>(int1) % ConstDeref<int>(int2);
     ASSERT_EQ(result, 1);
@@ -140,11 +146,11 @@ TEST(RhoBinaryOps, ComparisonOperations) {
     Object five = reg.New<int>(5);
     Object six = reg.New<int>(6);
     Object anotherFive = reg.New<int>(5);
-    
+
     ASSERT_TRUE(five.IsType<int>());
     ASSERT_TRUE(six.IsType<int>());
     ASSERT_TRUE(anotherFive.IsType<int>());
-    
+
     // Verify comparison operations
     bool resultEq = ConstDeref<int>(five) == ConstDeref<int>(anotherFive);
     bool resultNeq = ConstDeref<int>(five) != ConstDeref<int>(six);
@@ -152,7 +158,7 @@ TEST(RhoBinaryOps, ComparisonOperations) {
     bool resultLt = ConstDeref<int>(five) < ConstDeref<int>(six);
     bool resultGte = ConstDeref<int>(five) >= ConstDeref<int>(anotherFive);
     bool resultLte = ConstDeref<int>(five) <= ConstDeref<int>(anotherFive);
-    
+
     ASSERT_TRUE(resultEq);
     ASSERT_TRUE(resultNeq);
     ASSERT_TRUE(resultGt);
@@ -170,13 +176,13 @@ TEST(RhoBinaryOps, DupPlusPattern) {
     // Create objects
     Object val = reg.New<int>(5);
     Object expected = reg.New<int>(10);
-    
+
     ASSERT_TRUE(val.IsType<int>());
     ASSERT_TRUE(expected.IsType<int>());
-    
+
     ASSERT_EQ(ConstDeref<int>(val), 5);
     ASSERT_EQ(ConstDeref<int>(expected), 10);
-    
+
     // Verify that doubling 5 gives 10
     int result = ConstDeref<int>(val) * 2;
     ASSERT_EQ(result, 10);

@@ -33,27 +33,31 @@ void TestLangCommon::SetUp() {
         // It will create its own registry
         reg_ = &console_.GetRegistry();
         if (!reg_->IsValid()) {
-            std::cerr << "WARNING: Registry is not valid during test setup." << std::endl;
+            std::cerr << "WARNING: Registry is not valid during test setup."
+                      << std::endl;
         }
 
         // Get executor
         exec_ = &*console_.GetExecutor();
         if (!exec_) {
-            std::cerr << "CRITICAL: Executor is null in test setup" << std::endl;
+            std::cerr << "CRITICAL: Executor is null in test setup"
+                      << std::endl;
             return;
         }
 
         // Make sure we have a valid data stack
         data_ = &*exec_->GetDataStack();
         if (!data_) {
-            std::cerr << "CRITICAL: Data stack is null in test setup" << std::endl;
+            std::cerr << "CRITICAL: Data stack is null in test setup"
+                      << std::endl;
             return;
         }
 
         // Get context stack
         context_ = &*exec_->GetContextStack();
         if (!context_) {
-            std::cerr << "CRITICAL: Context stack is null in test setup" << std::endl;
+            std::cerr << "CRITICAL: Context stack is null in test setup"
+                      << std::endl;
             return;
         }
 
@@ -67,15 +71,17 @@ void TestLangCommon::SetUp() {
         // Get the root object
         root_ = tree_->GetRoot();
         if (!root_.Exists()) {
-            std::cerr << "WARNING: Root object does not exist in test setup" << std::endl;
-            
+            std::cerr << "WARNING: Root object does not exist in test setup"
+                      << std::endl;
+
             // Create a root object
             root_ = reg_->New<void>();
             if (!root_.Exists()) {
-                std::cerr << "CRITICAL: Failed to create root object" << std::endl;
+                std::cerr << "CRITICAL: Failed to create root object"
+                          << std::endl;
                 return;
             }
-            
+
             // Set it as the tree's root
             tree_->SetRoot(root_);
         }
@@ -93,7 +99,7 @@ void TestLangCommon::SetUp() {
         if (!reg_->GetClass(Label("String"))) {
             reg_->AddClass<String>(Label("String"));
         }
-        
+
         // Clear stacks for a clean state
         if (exec_->GetDataStack().Exists()) {
             exec_->ClearStacks();
@@ -101,11 +107,9 @@ void TestLangCommon::SetUp() {
         if (exec_->GetContextStack().Exists()) {
             exec_->ClearContext();
         }
-    }
-    catch (const std::exception& e) {
+    } catch (const std::exception &e) {
         std::cerr << "ERROR during test setup: " << e.what() << std::endl;
-    }
-    catch (...) {
+    } catch (...) {
         std::cerr << "UNKNOWN ERROR during test setup" << std::endl;
     }
 }
@@ -119,11 +123,9 @@ void TestLangCommon::TearDown() {
         if (exec_ && exec_->GetContextStack().Exists()) {
             exec_->ClearContext();
         }
-    }
-    catch (const std::exception& e) {
+    } catch (const std::exception &e) {
         std::cerr << "ERROR during test teardown: " << e.what() << std::endl;
-    }
-    catch (...) {
+    } catch (...) {
         std::cerr << "UNKNOWN ERROR during test teardown" << std::endl;
     }
 }
@@ -154,61 +156,67 @@ void TestLangCommon::ExecScriptFile(const std::string &scriptFileName) {
     try {
         // Check if script file exists
         if (!fs::exists(scriptPath)) {
-            std::cerr << "ERROR: Script file not found: " << scriptPath.string() << std::endl;
+            std::cerr << "ERROR: Script file not found: " << scriptPath.string()
+                      << std::endl;
             throw std::runtime_error("Script file not found");
         }
-        
+
         // Read file content with error handling
         auto contents = File::ReadAllText(scriptPath);
         if (contents.empty()) {
-            std::cerr << "WARNING: Script file is empty: " << scriptPath.string() << std::endl;
+            std::cerr << "WARNING: Script file is empty: "
+                      << scriptPath.string() << std::endl;
         }
-        
+
         std::cout << "Loaded script file: " << scriptPath.string() << std::endl;
-        std::cout << "Executing script with length: " << contents.size() << " bytes" << std::endl;
+        std::cout << "Executing script with length: " << contents.size()
+                  << " bytes" << std::endl;
 
         // Execute the script with error handling
         try {
             console_.Execute(contents.c_str());
-        } 
-        catch (const Exception::Base &e) {
-            std::cerr << "KAI exception during script execution: " << e.ToString() << std::endl;
-            throw; // Re-throw after logging
+        } catch (const Exception::Base &e) {
+            std::cerr << "KAI exception during script execution: "
+                      << e.ToString() << std::endl;
+            throw;  // Re-throw after logging
         }
 
         // After execution, automatically unwrap any continuations on the stack
         try {
             UnwrapStackValues();
+        } catch (const std::exception &e) {
+            std::cerr << "Exception during stack unwrapping: " << e.what()
+                      << std::endl;
         }
-        catch (const std::exception &e) {
-            std::cerr << "Exception during stack unwrapping: " << e.what() << std::endl;
-        }
-        
+
         // Print final stack state for debugging
         if (data_ && !data_->Empty()) {
-            std::cout << "Final stack has " << data_->Size() << " items" << std::endl;
+            std::cout << "Final stack has " << data_->Size() << " items"
+                      << std::endl;
             Object top = data_->Top();
             if (top.Valid() && top.GetClass()) {
-                std::cout << "Top item type: " << top.GetClass()->GetName().ToString() << std::endl;
-                
+                std::cout << "Top item type: "
+                          << top.GetClass()->GetName().ToString() << std::endl;
+
                 // Print value if it's a primitive type
                 if (top.IsType<int>()) {
-                    std::cout << "Value (int): " << ConstDeref<int>(top) << std::endl;
-                }
-                else if (top.IsType<bool>()) {
-                    std::cout << "Value (bool): " << (ConstDeref<bool>(top) ? "true" : "false") << std::endl;
-                }
-                else if (top.IsType<String>()) {
-                    std::cout << "Value (String): \"" << ConstDeref<String>(top) << "\"" << std::endl;
+                    std::cout << "Value (int): " << ConstDeref<int>(top)
+                              << std::endl;
+                } else if (top.IsType<bool>()) {
+                    std::cout << "Value (bool): "
+                              << (ConstDeref<bool>(top) ? "true" : "false")
+                              << std::endl;
+                } else if (top.IsType<String>()) {
+                    std::cout << "Value (String): \"" << ConstDeref<String>(top)
+                              << "\"" << std::endl;
                 }
             }
         }
-        
+
         std::cout << "Script execution complete" << std::endl;
-    } 
-    catch (const std::exception &e) {
+    } catch (const std::exception &e) {
         std::cerr << "Exception in ExecScriptFile: " << e.what() << std::endl;
-        
+
         // Try to reset state before propagating
         if (exec_) {
             try {
@@ -218,22 +226,22 @@ void TestLangCommon::ExecScriptFile(const std::string &scriptFileName) {
                 std::cerr << "Failed to clean up after exception" << std::endl;
             }
         }
-        
+
         throw;  // Re-throw the exception
-    } 
-    catch (...) {
+    } catch (...) {
         std::cerr << "Unknown exception in ExecScriptFile" << std::endl;
-        
+
         // Try to reset state before propagating
         if (exec_) {
             try {
                 exec_->ClearStacks();
                 exec_->ClearContext();
             } catch (...) {
-                std::cerr << "Failed to clean up after unknown exception" << std::endl;
+                std::cerr << "Failed to clean up after unknown exception"
+                          << std::endl;
             }
         }
-        
+
         throw;  // Re-throw the exception
     }
 }
@@ -243,9 +251,10 @@ void TestLangCommon::ExecScripts() {
 
     // First check if the scripts root directory exists
     if (!fs::exists(scriptsRoot)) {
-        std::cout << "Script root directory not found: " << scriptsRoot.string() << std::endl;
+        std::cout << "Script root directory not found: " << scriptsRoot.string()
+                  << std::endl;
         std::cout << "Skipping script execution tests" << std::endl;
-        return; // Early exit if script directory doesn't exist
+        return;  // Early exit if script directory doesn't exist
     }
 
 // Change this to match the test we're running
@@ -261,7 +270,7 @@ void TestLangCommon::ExecScripts() {
 
     // Add common variables to the environment to prevent ObjectNotFound errors
     auto scope = console_.GetTree().GetScope();
-    
+
     // Pre-populate common variables that might be referenced in scripts
     scope.Set(Label("toa"), reg_->New<int>(0));
     scope.Set(Label("int_val"), reg_->New<int>(0));
@@ -275,20 +284,24 @@ void TestLangCommon::ExecScripts() {
     std::vector<fs::path> scriptFiles;
     try {
         scriptFiles = File::GetFilesWithExtensionRecursively(scriptsRoot, ext);
-    } catch (const std::exception& e) {
-        std::cout << "Error when searching for script files: " << e.what() << std::endl;
-        return; // Early exit if we can't find script files
+    } catch (const std::exception &e) {
+        std::cout << "Error when searching for script files: " << e.what()
+                  << std::endl;
+        return;  // Early exit if we can't find script files
     }
 
     if (scriptFiles.empty()) {
-        std::cout << "No " << ext << " script files found in " << scriptsRoot.string() << std::endl;
-        return; // Early exit if no script files found
+        std::cout << "No " << ext << " script files found in "
+                  << scriptsRoot.string() << std::endl;
+        return;  // Early exit if no script files found
     }
 
-    std::cout << "Found " << scriptFiles.size() << " script files with extension " << ext << std::endl;
+    std::cout << "Found " << scriptFiles.size()
+              << " script files with extension " << ext << std::endl;
 
     for (auto const &scriptName : scriptFiles) {
-        std::cout << "Testing script: " << scriptName.filename().string() << std::endl;
+        std::cout << "Testing script: " << scriptName.filename().string()
+                  << std::endl;
 
         // Clear stacks before each script execution to ensure a clean state
         exec_->ClearStacks();
@@ -296,31 +309,35 @@ void TestLangCommon::ExecScripts() {
 
         try {
             auto contents = File::ReadAllText(scriptName);
-            std::cout << "Script length: " << contents.size() << " bytes" << std::endl;
-            
+            std::cout << "Script length: " << contents.size() << " bytes"
+                      << std::endl;
+
             // Execute the script
             console_.Execute(contents.c_str());
-            
+
             std::cout << "Script execution successful" << std::endl;
         } catch (const Exception::Base &e) {
             // Handle KAI exception specifically
-            std::cout << "KAI Exception in script " << scriptName.filename().string() 
-                     << ": " << e.what() << std::endl;
-            
+            std::cout << "KAI Exception in script "
+                      << scriptName.filename().string() << ": " << e.what()
+                      << std::endl;
+
             // Clean up after exception
             exec_->ClearStacks();
             exec_->ClearContext();
         } catch (const std::exception &e) {
             // Log the exception but continue with the next script
-            std::cout << "Exception in script " << scriptName.filename().string()
-                     << ": " << e.what() << std::endl;
+            std::cout << "Exception in script "
+                      << scriptName.filename().string() << ": " << e.what()
+                      << std::endl;
 
             // Make sure stacks are clean after an exception
             exec_->ClearStacks();
             exec_->ClearContext();
         } catch (...) {
             // Catch any other type of exception
-            std::cout << "Unknown exception in script " << scriptName.filename().string() << std::endl;
+            std::cout << "Unknown exception in script "
+                      << scriptName.filename().string() << std::endl;
 
             // Make sure stacks are clean after an exception
             exec_->ClearStacks();
@@ -328,7 +345,8 @@ void TestLangCommon::ExecScripts() {
         }
 
         // Print stack depth after execution for debugging
-        std::cout << "Final stack depth: " << exec_->GetDataStack()->Size() << std::endl;
+        std::cout << "Final stack depth: " << exec_->GetDataStack()->Size()
+                  << std::endl;
         std::cout << "------------------" << std::endl;
     }
 }
@@ -338,49 +356,55 @@ bool TestLangCommon::IsDirectPiOperation(Object value) {
     if (!value.IsType<Continuation>()) {
         return false;
     }
-    
+
     Pointer<Continuation> cont = value;
     if (!cont->GetCode().Valid() || !cont->GetCode()->Size()) {
         return false;
     }
-    
-    // Try to detect the specific log message that appears for direct Pi operations
-    // "Direct Pi-style binary operation (marked): 5 3 Greater = true (type: bool)"
-    // This is a runtime check that would be logged in the console
-    
-    // For now, check for specific patterns with ContinuationBegin + operation sequence
+
+    // Try to detect the specific log message that appears for direct Pi
+    // operations "Direct Pi-style binary operation (marked): 5 3 Greater = true
+    // (type: bool)" This is a runtime check that would be logged in the console
+
+    // For now, check for specific patterns with ContinuationBegin + operation
+    // sequence
     Pointer<const Array> code = cont->GetCode();
     if (code->Size() >= 4) {
         // Check for markers of Pi-style direct operations
         Object first = code->At(0);
-        
+
         // Look for ContinuationBegin marker as a sign this is a Pi operation
-        if (first.IsType<Operation>() && 
-            ConstDeref<Operation>(first).GetTypeNumber() == Operation::ContinuationBegin) {
-            
+        if (first.IsType<Operation>() &&
+            ConstDeref<Operation>(first).GetTypeNumber() ==
+                Operation::ContinuationBegin) {
             // Look for binary operation pattern with two values and an operator
             if (code->Size() >= 5) {
                 Object val1 = code->At(1);
                 Object val2 = code->At(2);
                 Object op = code->At(3);
-                
-                // If we have two values and an operation, this is likely a Pi binary op
+
+                // If we have two values and an operation, this is likely a Pi
+                // binary op
                 if (op.IsType<Operation>()) {
-                    Operation::Type opType = ConstDeref<Operation>(op).GetTypeNumber();
-                    
+                    Operation::Type opType =
+                        ConstDeref<Operation>(op).GetTypeNumber();
+
                     // These are common binary operations
-                    if (opType == Operation::Plus || opType == Operation::Minus || 
-                        opType == Operation::Multiply || opType == Operation::Divide ||
-                        opType == Operation::Less || opType == Operation::Greater ||
-                        opType == Operation::Equiv || opType == Operation::NotEquiv) {
-                        
+                    if (opType == Operation::Plus ||
+                        opType == Operation::Minus ||
+                        opType == Operation::Multiply ||
+                        opType == Operation::Divide ||
+                        opType == Operation::Less ||
+                        opType == Operation::Greater ||
+                        opType == Operation::Equiv ||
+                        opType == Operation::NotEquiv) {
                         return true;
                     }
                 }
             }
         }
     }
-    
+
     return false;
 }
 
@@ -389,20 +413,20 @@ Object TestLangCommon::ExtractDirectPiBinaryOp(Object value) {
     if (!value.IsType<Continuation>()) {
         return value;
     }
-    
+
     Pointer<Continuation> cont = value;
     Pointer<const Array> code = cont->GetCode();
-    Registry* registry = value.GetRegistry();
-    
+    Registry *registry = value.GetRegistry();
+
     if (!registry || !code.Valid() || !code->Size()) {
         return value;
     }
-    
+
     // Process the binary operation pattern
     if (code->Size() >= 5) {
         Object val1 = code->At(1);
         Object val2 = code->At(2);
-        
+
         // Handle nested continuations
         if (val1.IsType<Continuation>()) {
             val1 = DoExtractValueFromContinuation(val1);
@@ -410,19 +434,19 @@ Object TestLangCommon::ExtractDirectPiBinaryOp(Object value) {
         if (val2.IsType<Continuation>()) {
             val2 = DoExtractValueFromContinuation(val2);
         }
-        
+
         // Skip if we don't have valid operators
         if (!code->At(3).IsType<Operation>()) {
             return value;
         }
-        
+
         Operation::Type op = ConstDeref<Operation>(code->At(3)).GetTypeNumber();
-        
+
         // Handle int operations
         if (val1.IsType<int>() && val2.IsType<int>()) {
             int num1 = ConstDeref<int>(val1);
             int num2 = ConstDeref<int>(val2);
-            
+
             switch (op) {
                 case Operation::Plus:
                     return registry->New<int>(num1 + num2);
@@ -456,12 +480,12 @@ Object TestLangCommon::ExtractDirectPiBinaryOp(Object value) {
                     break;
             }
         }
-        
+
         // Handle boolean operations
         if (val1.IsType<bool>() && val2.IsType<bool>()) {
             bool b1 = ConstDeref<bool>(val1);
             bool b2 = ConstDeref<bool>(val2);
-            
+
             switch (op) {
                 case Operation::LogicalAnd:
                     return registry->New<bool>(b1 && b2);
@@ -475,12 +499,12 @@ Object TestLangCommon::ExtractDirectPiBinaryOp(Object value) {
                     break;
             }
         }
-        
+
         // Handle string operations
         if (val1.IsType<String>() && val2.IsType<String>()) {
             String str1 = ConstDeref<String>(val1);
             String str2 = ConstDeref<String>(val2);
-            
+
             switch (op) {
                 case Operation::Plus:
                     return registry->New<String>(str1 + str2);
@@ -493,7 +517,7 @@ Object TestLangCommon::ExtractDirectPiBinaryOp(Object value) {
             }
         }
     }
-    
+
     // If we couldn't extract a value, return the original
     return value;
 }
@@ -507,32 +531,36 @@ void TestLangCommon::UnwrapStackValues() {
     if (!data_ || data_->Empty()) {
         return;  // Nothing to do
     }
-    
-    // Use the Executor's ExtractValueFromContinuation method first, as it handles more patterns
-    // Check each item on the stack for continuations that need to be unwrapped
+
+    // Use the Executor's ExtractValueFromContinuation method first, as it
+    // handles more patterns Check each item on the stack for continuations that
+    // need to be unwrapped
     for (int i = 0; i < data_->Size(); i++) {
         Object item = data_->At(i);
-        
+
         // Skip if it's not a continuation
         if (!item.IsType<Continuation>()) {
             continue;
         }
-        
-        // First, try using the executor's method which handles specific patterns
+
+        // First, try using the executor's method which handles specific
+        // patterns
         Object result = exec_->ExtractValueFromContinuation(item);
-        
+
         // If that didn't work, fall back to our local implementation
         if (result == item) {
-            // Try to extract a value from the continuation using our local method
+            // Try to extract a value from the continuation using our local
+            // method
             result = DoExtractValueFromContinuation(item);
         }
-        
-        // If we got a different object back, we can't modify the stack in place,
-        // so we'll replace the entire stack with a new version that has the unwrapped values
+
+        // If we got a different object back, we can't modify the stack in
+        // place, so we'll replace the entire stack with a new version that has
+        // the unwrapped values
         if (result != item) {
             // Create a temporary array to hold all stack items
             std::vector<Object> stackItems;
-            
+
             // Copy all stack items to temporary storage
             for (int j = 0; j < data_->Size(); j++) {
                 if (j == i) {
@@ -543,20 +571,21 @@ void TestLangCommon::UnwrapStackValues() {
                     stackItems.push_back(data_->At(j));
                 }
             }
-            
+
             // Clear the stack and push all items back
             data_->Clear();
-            for (const auto& obj : stackItems) {
+            for (const auto &obj : stackItems) {
                 data_->Push(obj);
             }
-            
+
             // Since we modified the stack, we need to restart the loop
             // but be careful not to process the same item again
-            i = -1; // Will be incremented to 0 in the next loop iteration
+            i = -1;  // Will be incremented to 0 in the next loop iteration
         }
     }
-    
-    // Check for the specific "5 dup +" pattern in continuations or as direct stack operations
+
+    // Check for the specific "5 dup +" pattern in continuations or as direct
+    // stack operations
     if (data_->Size() >= 1) {
         // First check for a continuation containing the "val dup +" pattern
         Object topObj = data_->Top();
@@ -564,26 +593,28 @@ void TestLangCommon::UnwrapStackValues() {
             Pointer<Continuation> cont = topObj;
             if (cont->GetCode().Valid() && cont->GetCode().Exists()) {
                 Pointer<const Array> code = cont->GetCode();
-                
-                // Check for a pattern like [ContinuationBegin, val, Dup, Plus, ContinuationEnd]
-                if (code->Size() >= 5 &&
-                    code->At(0).IsType<Operation>() && 
-                    code->At(code->Size()-1).IsType<Operation>() &&
-                    ConstDeref<Operation>(code->At(0)).GetTypeNumber() == Operation::ContinuationBegin &&
-                    ConstDeref<Operation>(code->At(code->Size()-1)).GetTypeNumber() == Operation::ContinuationEnd) {
-                    
+
+                // Check for a pattern like [ContinuationBegin, val, Dup, Plus,
+                // ContinuationEnd]
+                if (code->Size() >= 5 && code->At(0).IsType<Operation>() &&
+                    code->At(code->Size() - 1).IsType<Operation>() &&
+                    ConstDeref<Operation>(code->At(0)).GetTypeNumber() ==
+                        Operation::ContinuationBegin &&
+                    ConstDeref<Operation>(code->At(code->Size() - 1))
+                            .GetTypeNumber() == Operation::ContinuationEnd) {
                     // Check for "val Dup Plus" pattern inside
-                    if (code->Size() == 5 && 
-                        code->At(1).IsType<int>() && 
+                    if (code->Size() == 5 && code->At(1).IsType<int>() &&
                         code->At(2).IsType<Operation>() &&
                         code->At(3).IsType<Operation>() &&
-                        ConstDeref<Operation>(code->At(2)).GetTypeNumber() == Operation::Dup &&
-                        ConstDeref<Operation>(code->At(3)).GetTypeNumber() == Operation::Plus) {
-                        
+                        ConstDeref<Operation>(code->At(2)).GetTypeNumber() ==
+                            Operation::Dup &&
+                        ConstDeref<Operation>(code->At(3)).GetTypeNumber() ==
+                            Operation::Plus) {
                         // Extract the value
                         int val = ConstDeref<int>(code->At(1));
-                        
-                        // Replace the continuation with the result of doubling the value
+
+                        // Replace the continuation with the result of doubling
+                        // the value
                         data_->Pop();
                         data_->Push(reg_->New<int>(val * 2));
                     }
@@ -591,47 +622,46 @@ void TestLangCommon::UnwrapStackValues() {
             }
         }
     }
-    
-    // Also handle the case when the operations are directly on the stack 
-    // (this happens after execution starts but before the operations are processed)
+
+    // Also handle the case when the operations are directly on the stack
+    // (this happens after execution starts but before the operations are
+    // processed)
     if (data_->Size() >= 3) {
         Object op1 = data_->At(data_->Size() - 1);
         Object op2 = data_->At(data_->Size() - 2);
         Object val = data_->At(data_->Size() - 3);
-        
-        if (op1.IsType<Operation>() && 
-            op2.IsType<Operation>() &&
+
+        if (op1.IsType<Operation>() && op2.IsType<Operation>() &&
             (val.IsType<int>() || val.IsType<float>())) {
-            
-            Operation::Type opType1 = ConstDeref<Operation>(op1).GetTypeNumber();
-            Operation::Type opType2 = ConstDeref<Operation>(op2).GetTypeNumber();
-            
+            Operation::Type opType1 =
+                ConstDeref<Operation>(op1).GetTypeNumber();
+            Operation::Type opType2 =
+                ConstDeref<Operation>(op2).GetTypeNumber();
+
             // Handle "val dup +" pattern
             if (opType2 == Operation::Dup && opType1 == Operation::Plus) {
                 // Remove the operations
                 data_->Pop();  // Remove +
                 data_->Pop();  // Remove dup
-                
+
                 // Get the value
                 Object valueObj = data_->Pop();
-                
+
                 // Create a result based on the type
                 Object result;
                 if (valueObj.IsType<int>()) {
                     // Duplicating and adding = multiplying by 2
                     int intVal = ConstDeref<int>(valueObj);
                     result = reg_->New<int>(intVal * 2);
-                }
-                else if (valueObj.IsType<float>()) {
+                } else if (valueObj.IsType<float>()) {
                     // Same for floats
                     float floatVal = ConstDeref<float>(valueObj);
                     result = reg_->New<float>(floatVal * 2.0f);
-                }
-                else {
+                } else {
                     // For other types, just put the original value back
                     result = valueObj;
                 }
-                
+
                 // Push the result
                 data_->Push(result);
             }

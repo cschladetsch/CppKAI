@@ -1,5 +1,6 @@
 #include <KAI/Core/Logger.h>
 #include <KAI/Network/NetworkLogger.h>
+
 #include "rang.hpp"
 
 KAI_NET_BEGIN
@@ -62,40 +63,41 @@ void NetworkLogger::Log(Category category, const std::string& message) {
     // Create formatted message with category prefix
     std::string categoryStr = CategoryToString(category);
     std::string formattedMessage = categoryStr + ": " + message;
-    
+
     // Get color for this category
     rang::fg color = GetColorForCategory(category);
-    
+
     // Log to the console with color
-    std::cout << rang::style::bold << color 
-              << "[NETWORK] " << formattedMessage 
+    std::cout << rang::style::bold << color << "[NETWORK] " << formattedMessage
               << rang::style::reset << rang::fg::reset << std::endl;
 
     // Also log to the main logger (which will handle file output)
     Logger::Info(formattedMessage);
-    
+
     // Category-specific file is handled by the Logger
 }
 
-void NetworkLogger::LogWithLocation(Category category, const std::string& message, const char* file, int line) {
+void NetworkLogger::LogWithLocation(Category category,
+                                    const std::string& message,
+                                    const char* file, int line) {
     if (!s_initialized) {
         Init();
     }
 
     // Create location string
     std::string filename = ExtractFilename(file);
-    std::string locationInfo = "[" + filename + ":" + std::to_string(line) + "] ";
-    
+    std::string locationInfo =
+        "[" + filename + ":" + std::to_string(line) + "] ";
+
     // Create formatted message with category prefix and location
     std::string categoryStr = CategoryToString(category);
     std::string formattedMessage = categoryStr + ": " + locationInfo + message;
-    
+
     // Get color for this category
     rang::fg color = GetColorForCategory(category);
-    
+
     // Log to the console with color
-    std::cout << rang::style::bold << color 
-              << "[NETWORK] " << formattedMessage 
+    std::cout << rang::style::bold << color << "[NETWORK] " << formattedMessage
               << rang::style::reset << rang::fg::reset << std::endl;
 
     // Also log to the main logger (which will handle file output)
@@ -119,19 +121,23 @@ void NetworkLogger::LogStatus(const std::string& message) {
 }
 
 // Location-aware logging methods
-void NetworkLogger::LogConnectionWithLocation(const std::string& message, const char* file, int line) {
+void NetworkLogger::LogConnectionWithLocation(const std::string& message,
+                                              const char* file, int line) {
     LogWithLocation(Category::Connection, message, file, line);
 }
 
-void NetworkLogger::LogMessageWithLocation(const std::string& message, const char* file, int line) {
+void NetworkLogger::LogMessageWithLocation(const std::string& message,
+                                           const char* file, int line) {
     LogWithLocation(Category::Message, message, file, line);
 }
 
-void NetworkLogger::LogDiscoveryWithLocation(const std::string& message, const char* file, int line) {
+void NetworkLogger::LogDiscoveryWithLocation(const std::string& message,
+                                             const char* file, int line) {
     LogWithLocation(Category::Discovery, message, file, line);
 }
 
-void NetworkLogger::LogStatusWithLocation(const std::string& message, const char* file, int line) {
+void NetworkLogger::LogStatusWithLocation(const std::string& message,
+                                          const char* file, int line) {
     LogWithLocation(Category::Status, message, file, line);
 }
 

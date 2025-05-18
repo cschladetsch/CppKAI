@@ -22,7 +22,8 @@ struct ExecutorWindow {
     Registry* reg_;
 
     ExecutorWindow() {
-        ClearLog(); memset(InputBuf, 0, sizeof(InputBuf));
+        ClearLog();
+        memset(InputBuf, 0, sizeof(InputBuf));
         HistoryPos = -1;
 
         console_.SetLanguage(Language::Pi);

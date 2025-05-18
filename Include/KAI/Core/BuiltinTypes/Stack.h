@@ -46,7 +46,6 @@ class Stack : public Container<Stack> {
     iterator Erase(iterator);
     Object Pop();
     Object Top() const;
-    
 
     static void Register(Registry &);
 

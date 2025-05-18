@@ -22,11 +22,11 @@ TEST(AdvancedBinaryOps, BasicDirectTest) {
     ASSERT_TRUE(a.IsType<int>());
     ASSERT_TRUE(b.IsType<int>());
     ASSERT_TRUE(sum.IsType<int>());
-    
+
     ASSERT_EQ(ConstDeref<int>(a), 2);
     ASSERT_EQ(ConstDeref<int>(b), 3);
     ASSERT_EQ(ConstDeref<int>(sum), 5);
-    
+
     std::cout << "Basic direct test passed" << std::endl;
 }
 
@@ -38,14 +38,14 @@ TEST(AdvancedBinaryOps, StringCompare) {
 
     Object str1 = reg.New<String>("Hello");
     Object str2 = reg.New<String>("Hello");
-    
+
     ASSERT_TRUE(str1.IsType<String>());
     ASSERT_TRUE(str2.IsType<String>());
-    
+
     ASSERT_EQ(ConstDeref<String>(str1), "Hello");
     ASSERT_EQ(ConstDeref<String>(str2), "Hello");
     ASSERT_EQ(ConstDeref<String>(str1), ConstDeref<String>(str2));
-    
+
     std::cout << "String comparison test passed" << std::endl;
 }
 
@@ -57,12 +57,12 @@ TEST(AdvancedBinaryOps, DupPlusOptimization) {
 
     Object val = reg.New<int>(5);
     Object result = reg.New<int>(10);  // Expected result of doubling 5
-    
+
     ASSERT_TRUE(val.IsType<int>());
     ASSERT_TRUE(result.IsType<int>());
-    
+
     ASSERT_EQ(ConstDeref<int>(val), 5);
     ASSERT_EQ(ConstDeref<int>(result), 10);
-    
+
     std::cout << "Dup + pattern test passed" << std::endl;
 }

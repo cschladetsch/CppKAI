@@ -1,17 +1,18 @@
 #include "KAI/Core/Logger.h"
-#include <filesystem>
+
 #include <chrono>
-#include <thread>
+#include <filesystem>
 #include <sstream>
+#include <thread>
 
 // Include the rang.hpp header for colored output
 #include "rang.hpp"
 
 // Choose the appropriate format implementation
 #ifdef KAI_FORMAT_COMPATIBLE
-  #include <format>
+#include <format>
 #else
-  #include <iomanip>
+#include <iomanip>
 #endif
 
 KAI_BEGIN
@@ -28,34 +29,32 @@ Logger::Level Logger::s_level = Logger::Level::Info;
 std::string Logger::s_logDirectory = default_log_dir;
 bool Logger::s_initialized = false;
 
-// Helper function to create a formatted timestamp, compatible with older compilers
+// Helper function to create a formatted timestamp, compatible with older
+// compilers
 std::string FormatTimestamp(const std::tm& time_info) {
 #ifdef KAI_FORMAT_COMPATIBLE
     try {
         return std::format("{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}",
-            time_info.tm_year + 1900, time_info.tm_mon + 1, time_info.tm_mday,
-            time_info.tm_hour, time_info.tm_min, time_info.tm_sec);
-    } catch(...) {
+                           time_info.tm_year + 1900, time_info.tm_mon + 1,
+                           time_info.tm_mday, time_info.tm_hour,
+                           time_info.tm_min, time_info.tm_sec);
+    } catch (...) {
         // Fallback if format fails
         std::stringstream ss;
-        ss << std::setfill('0') 
-           << std::setw(4) << (time_info.tm_year + 1900) << "-"
-           << std::setw(2) << (time_info.tm_mon + 1) << "-"
-           << std::setw(2) << time_info.tm_mday << " "
-           << std::setw(2) << time_info.tm_hour << ":"
-           << std::setw(2) << time_info.tm_min << ":"
-           << std::setw(2) << time_info.tm_sec;
+        ss << std::setfill('0') << std::setw(4) << (time_info.tm_year + 1900)
+           << "-" << std::setw(2) << (time_info.tm_mon + 1) << "-"
+           << std::setw(2) << time_info.tm_mday << " " << std::setw(2)
+           << time_info.tm_hour << ":" << std::setw(2) << time_info.tm_min
+           << ":" << std::setw(2) << time_info.tm_sec;
         return ss.str();
     }
 #else
     std::stringstream ss;
-    ss << std::setfill('0') 
-       << std::setw(4) << (time_info.tm_year + 1900) << "-"
-       << std::setw(2) << (time_info.tm_mon + 1) << "-"
-       << std::setw(2) << time_info.tm_mday << " "
-       << std::setw(2) << time_info.tm_hour << ":"
-       << std::setw(2) << time_info.tm_min << ":"
-       << std::setw(2) << time_info.tm_sec;
+    ss << std::setfill('0') << std::setw(4) << (time_info.tm_year + 1900) << "-"
+       << std::setw(2) << (time_info.tm_mon + 1) << "-" << std::setw(2)
+       << time_info.tm_mday << " " << std::setw(2) << time_info.tm_hour << ":"
+       << std::setw(2) << time_info.tm_min << ":" << std::setw(2)
+       << time_info.tm_sec;
     return ss.str();
 #endif
 }
@@ -100,7 +99,7 @@ void Logger::Init(const std::string& logDirectory) {
     try {
         std::filesystem::create_directories(s_logDirectory);
         s_initialized = true;
-        
+
         // Write a startup marker to the log
         std::string startupFile = s_logDirectory + "/kai_startup.log";
         std::ofstream logFile(startupFile, std::ios_base::app);
@@ -109,20 +108,21 @@ void Logger::Init(const std::string& logDirectory) {
             auto time_t_now = std::chrono::system_clock::to_time_t(now);
             auto localtime = *std::localtime(&time_t_now);
             auto threadId = std::this_thread::get_id();
-            
+
             // Format message using compatibility function
             std::string timestamp = FormatTimestamp(localtime);
             std::stringstream ss;
-            ss << "[" << timestamp << "] Logger initialized. Log directory: " 
-               << s_logDirectory << ", Thread ID: " 
-               << std::hex << std::showbase 
+            ss << "[" << timestamp
+               << "] Logger initialized. Log directory: " << s_logDirectory
+               << ", Thread ID: " << std::hex << std::showbase
                << reinterpret_cast<uintptr_t>(&threadId);
-                
+
             logFile << ss.str() << std::endl;
             logFile.close();
         }
     } catch (const std::exception& e) {
-        std::cerr << rang::fg::red << "Failed to create log directory: " << e.what()
+        std::cerr << rang::fg::red
+                  << "Failed to create log directory: " << e.what()
                   << rang::fg::reset << std::endl;
         s_initialized = false;
     }
@@ -164,11 +164,11 @@ void Logger::Log(Level level, const std::string& message) {
     auto now = std::chrono::system_clock::now();
     auto time_t_now = std::chrono::system_clock::to_time_t(now);
     auto localtime = *std::localtime(&time_t_now);
-    
+
     // Use the format helper to ensure compatibility
     std::string timestamp = FormatTimestamp(localtime);
     std::string levelStr = LevelToString(level);
-    
+
     // Create formatted message
     std::stringstream ss;
     ss << "[" << timestamp << "] [" << levelStr << "] " << message;
@@ -180,9 +180,11 @@ void Logger::Log(Level level, const std::string& message) {
 
     // Print to console with color and style based on level
     if (level == Level::Error || level == Level::Fatal) {
-        std::cerr << style << color << formattedMessage << rang::style::reset << rang::fg::reset << std::endl;
+        std::cerr << style << color << formattedMessage << rang::style::reset
+                  << rang::fg::reset << std::endl;
     } else {
-        std::cout << style << color << formattedMessage << rang::style::reset << rang::fg::reset << std::endl;
+        std::cout << style << color << formattedMessage << rang::style::reset
+                  << rang::fg::reset << std::endl;
     }
 
     // Ensure the log directory exists
@@ -199,7 +201,7 @@ void Logger::Log(Level level, const std::string& message) {
             mainLogFile << formattedMessage << std::endl;
             mainLogFile.close();
         }
-        
+
         // Also write to level-specific log file for errors and fatal messages
         if (level == Level::Error || level == Level::Fatal) {
             std::string errorLogFilename = s_logDirectory + "/errors.log";
@@ -240,32 +242,39 @@ std::string ExtractFilename(const char* fullPath) {
 }
 
 // Enhanced versions with file and line information
-void Logger::LogWithLocation(Level level, const std::string& message, const char* file, int line) {
+void Logger::LogWithLocation(Level level, const std::string& message,
+                             const char* file, int line) {
     // Create location string with highlighted filename and line number
     std::string filename = ExtractFilename(file);
-    std::string locationInfo = "[" + filename + ":" + std::to_string(line) + "] ";
-    
+    std::string locationInfo =
+        "[" + filename + ":" + std::to_string(line) + "] ";
+
     // Log with location information
     Log(level, locationInfo + message);
 }
 
-void Logger::DebugWithLocation(const std::string& message, const char* file, int line) {
+void Logger::DebugWithLocation(const std::string& message, const char* file,
+                               int line) {
     LogWithLocation(Level::Debug, message, file, line);
 }
 
-void Logger::InfoWithLocation(const std::string& message, const char* file, int line) {
+void Logger::InfoWithLocation(const std::string& message, const char* file,
+                              int line) {
     LogWithLocation(Level::Info, message, file, line);
 }
 
-void Logger::WarningWithLocation(const std::string& message, const char* file, int line) {
+void Logger::WarningWithLocation(const std::string& message, const char* file,
+                                 int line) {
     LogWithLocation(Level::Warning, message, file, line);
 }
 
-void Logger::ErrorWithLocation(const std::string& message, const char* file, int line) {
+void Logger::ErrorWithLocation(const std::string& message, const char* file,
+                               int line) {
     LogWithLocation(Level::Error, message, file, line);
 }
 
-void Logger::FatalWithLocation(const std::string& message, const char* file, int line) {
+void Logger::FatalWithLocation(const std::string& message, const char* file,
+                               int line) {
     LogWithLocation(Level::Fatal, message, file, line);
 }
 

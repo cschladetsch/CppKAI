@@ -2,14 +2,15 @@
 
 #include <KAI/Language/Common/TranslatorBase.h>
 #include <KAI/Language/Rho/RhoParser.h>
+
 #include <concepts>
-#include <ranges>
 #include <format>
+#include <ranges>
 
 KAI_BEGIN
 
 // Concept to ensure AST node compatibility
-template<typename T>
+template <typename T>
 concept AstNodeCompatible = requires(T node) {
     { node->GetType() } -> std::convertible_to<int>;
     { node->GetChildren() } -> std::ranges::range;
@@ -30,12 +31,14 @@ class RhoTranslator : public TranslatorBase<RhoParser> {
     RhoTranslator& operator=(const RhoTranslator&) = delete;
     RhoTranslator(RhoTranslator&&) = default;
     RhoTranslator& operator=(RhoTranslator&&) = default;
-    
+
     explicit RhoTranslator(Registry& r) : Parent(r) {}
-    
+
     // Override to make Rho handle direct evaluation of expressions
-    // This addresses the issue where expressions are unnecessarily wrapped in continuations
-    [[nodiscard]] Pointer<Continuation> Translate(const char* text, Structure st) override;
+    // This addresses the issue where expressions are unnecessarily wrapped in
+    // continuations
+    [[nodiscard]] Pointer<Continuation> Translate(const char* text,
+                                                  Structure st) override;
 
    protected:
     void TranslateNode(AstNodePtr node) override;
@@ -57,7 +60,7 @@ class RhoTranslator : public TranslatorBase<RhoParser> {
     // DoWhile functionality has been removed
     void TranslatePiBlock(AstNodePtr parentNode, size_t startIndex);
     void TranslateList(AstNodePtr node);
-    
+
     // Helper method to convert token types to operation types
     Operation::Type TokenToOperation(RhoTokenEnumType::Enum tokenType);
 };

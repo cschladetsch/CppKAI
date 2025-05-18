@@ -22,7 +22,7 @@ void Continuation::Create() {
     index = New(0);
     // Initialize other members and ensure they exist
     entered = New(false);
-    
+
     // Make sure code is initialized to prevent null pointer issues
     if (!code.Exists()) {
         code = New<Array>();
