@@ -5,6 +5,7 @@
 
 #include "KAI/Core/Console.h"
 #include "TestLangCommon.h"
+#include "SimpleRhoPiTests.h"
 
 using namespace kai;
 using namespace std;
@@ -84,6 +85,15 @@ TEST(RhoMinimal, BasicOperations) {
     Object b = reg.New<int>(3);
     Object result = exec->PerformBinaryOp(a, b, Operation::Plus);
     
+    // Push to stack to use unwrapping
+    stack->Push(result);
+    
+    // Unwrap any continuations to get primitive values
+    UnwrapStackValues(stack.Get(), exec.Get());
+    
+    // Get result back
+    result = stack->Pop();
+    
     // Check the result of direct binary operation
     ASSERT_TRUE(result.IsType<int>()) << "Direct binary op didn't return int";
     ASSERT_EQ(ConstDeref<int>(result), 5) << "Direct binary op gave wrong result";
@@ -106,6 +116,9 @@ TEST(RhoMinimal, BasicOperations) {
     // Execute the continuation
     exec->Continue(cont);
     
+    // Unwrap any continuations to get primitive values
+    UnwrapStackValues(stack.Get(), exec.Get());
+    
     // Ensure we got a result
     ASSERT_FALSE(stack->Empty()) << "Stack is empty after continuation execution";
     
@@ -123,6 +136,9 @@ TEST(RhoMinimal, BasicOperations) {
     b = reg.New<int>(4);
     result = exec->PerformBinaryOp(a, b, Operation::Minus);
     stack->Push(result);
+    
+    // Unwrap any continuations to get primitive values
+    UnwrapStackValues(stack.Get(), exec.Get());
     
     ASSERT_TRUE(stack->Top().IsType<int>());
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 6);
@@ -185,6 +201,9 @@ TEST(PiMinimal, BasicOperations) {
     
     // Make sure there's a result
     ASSERT_FALSE(stack->Empty()) << "Stack is empty after addition operation";
+    
+    // Unwrap any continuations to get primitive values
+    UnwrapStackValues(stack.Get(), exec.Get());
     
     // Create a test fixture
     PiMinimalTest testFixture;
