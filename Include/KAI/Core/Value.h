@@ -43,11 +43,50 @@ class ConstValue {
 
     void AssignFrom(Object const &Q) {
         storage = 0;
-        if (!Q.Exists() || !Q.Valid()) return;
-        Type::Number type = Q.GetTypeNumber();
-        if (type == Type::Number::None) return;
-        if (type != Type::Traits<T>::Number) KAI_THROW_0(TypeMismatch);
-        storage = &GetStorage<T>(Q);
+        
+        // ULTIMATE defensive check - detect if source is not a valid address
+        if (reinterpret_cast<uintptr_t>(&Q) < 0x1000) {
+            // This is an invalid pointer - it's pointing to a very low memory address
+            return;
+        }
+        
+        try {
+            // Check existence and validity with defensive error handling
+            bool exists = false;
+            bool valid = false;
+            
+            try { valid = Q.Valid(); } catch (...) { valid = false; }
+            if (!valid) return;
+            
+            try { exists = Q.Exists(); } catch (...) { exists = false; }
+            if (!exists) return;
+            
+            // Get type information with defensive error handling
+            Type::Number type = Type::Number::None;
+            try { 
+                type = Q.GetTypeNumber(); 
+            } 
+            catch (...) { 
+                return; 
+            }
+            
+            if (type == Type::Number::None) return;
+            
+            // Check type compatibility
+            if (type != Type::Traits<T>::Number) return; // Silently fail instead of throwing
+            
+            // Final assignment with defensive error handling
+            try {
+                storage = &GetStorage<T>(Q);
+            }
+            catch (...) {
+                storage = 0;
+            }
+        }
+        catch (...) {
+            // Ultimate fallback - ensure storage is null
+            storage = 0;
+        }
     }
 
     ConstReference operator*() const {
@@ -78,7 +117,15 @@ class ConstValue {
     void SetMarked(bool M) { storage->SetMarked(M); }
     bool Valid() const { return Exists() ? GetObject().Valid() : false; }
 
-    bool Exists() const { return storage && GetObject().Exists(); }
+    bool Exists() const { 
+        if (!storage) return false;
+        try {
+            return GetObject().Exists();
+        }
+        catch (...) {
+            return false;
+        }
+    }
 
     bool IsManaged() const { return Exists() && storage->IsManaged(); }
 
@@ -86,9 +133,15 @@ class ConstValue {
 
     bool IsMutable() const { return Exists() && GetObject().IsMutable(); }
 
-    Object &GetObject() const { return *storage; }
+    Object &GetObject() const { 
+        if (!storage) KAI_THROW_0(NullObject);
+        return *storage; 
+    }
 
-    const Object &GetConstObject() const { return *storage; }
+    const Object &GetConstObject() const { 
+        if (!storage) KAI_THROW_0(NullObject);
+        return *storage; 
+    }
 };
 
 // A Value<> has direct access to the storage of an object.

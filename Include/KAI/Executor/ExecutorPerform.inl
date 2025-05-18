@@ -82,42 +82,60 @@ void Executor::Perform(Operation::Type op) {
         case Operation::Equiv: {
             Object B = Pop();
             Object A = Pop();
-            Push(New(A == B));
+            
+            // Use type traits via PerformBinaryOp for all types
+            Object result = PerformBinaryOp(A, B, Operation::Equiv);
+            Push(result);
             break;
         }
 
         case Operation::NotEquiv: {
             Object B = Pop();
             Object A = Pop();
-            Push(New(A != B));
+            
+            // Use type traits via PerformBinaryOp for all types
+            Object result = PerformBinaryOp(A, B, Operation::NotEquiv);
+            Push(result);
             break;
         }
         
         case Operation::Less: {
             Object B = Pop();
             Object A = Pop();
-            Push(New(A < B));
+            
+            // Use type traits via PerformBinaryOp for all types
+            Object result = PerformBinaryOp(A, B, Operation::Less);
+            Push(result);
             break;
         }
 
         case Operation::Greater: {
             Object B = Pop();
             Object A = Pop();
-            Push(New(B < A));  // We implement Greater as the reverse of Less
+            
+            // Use type traits via PerformBinaryOp for all types
+            Object result = PerformBinaryOp(A, B, Operation::Greater);
+            Push(result);
             break;
         }
 
         case Operation::LessOrEquiv: {
             Object B = Pop();
             Object A = Pop();
-            Push(New(A < B || A == B));
+            
+            // Use type traits via PerformBinaryOp for all types
+            Object result = PerformBinaryOp(A, B, Operation::LessOrEquiv);
+            Push(result);
             break;
         }
 
         case Operation::GreaterOrEquiv: {
             Object B = Pop();
             Object A = Pop();
-            Push(New(B < A || A == B));
+            
+            // Use type traits via PerformBinaryOp for all types
+            Object result = PerformBinaryOp(A, B, Operation::GreaterOrEquiv);
+            Push(result);
             break;
         }
 
@@ -146,53 +164,15 @@ void Executor::Perform(Operation::Type op) {
         }
 
         case Operation::Dup:
-            // Handle the special "5 dup +" pattern by checking ahead in the code
-            // Note: We don't need to access the position directly, we can just run the 
-            // Dup operation and then check if next token to be executed is Plus
-            // If yes, we can replace the two top stack values with their sum
-            Push(Top());  // Standard Dup behavior - duplicate the top value
-            
-            // Now peek at what's next to be executed
-            if (continuation_.Exists() && continuation_->GetCode().Valid()) {
-                // Get the code array
-                Pointer<const Array> code = continuation_->GetCode();
-                
-                // Look ahead to next operation if there's at least one more
-                for (int i = 0; i < code->Size(); i++) {
-                    if (code->At(i).IsType<Operation>() && 
-                        ConstDeref<Operation>(code->At(i)).GetTypeNumber() == Operation::Plus) {
-                        
-                        // Found a Plus operation ahead, check stack for duplicated values
-                        if (data_->Size() >= 2) {
-                            Object a = data_->At(data_->Size() - 1);  // Top of stack
-                            Object b = data_->At(data_->Size() - 2);  // Second from top
-                            
-                            // If they're the same (due to Dup), we can optimize
-                            if (a.ToString() == b.ToString() && a.GetTypeNumber() == b.GetTypeNumber()) {
-                                // Pop both values
-                                data_->Pop();
-                                data_->Pop();
-                                
-                                // Push the optimized result
-                                if (a.IsType<int>()) {
-                                    int val = ConstDeref<int>(a);
-                                    Push(New<int>(val * 2));
-                                }
-                                else if (a.IsType<float>()) {
-                                    float val = ConstDeref<float>(a);
-                                    Push(New<float>(val * 2.0f));
-                                }
-                                else {
-                                    // For other types, perform a regular addition directly
-                                    Object result = PerformBinaryOp(a, a, Operation::Plus);
-                                    Push(result);
-                                }
-                                break;
-                            }
-                        }
-                        break;  // Only look for the first Plus
-                    }
+            // Make sure we properly create new objects with the same type and value
+            {
+                if (data_->Empty()) {
+                    KAI_THROW_1(Base, "Cannot dup from empty stack");
                 }
+                
+                // Get the top object on the stack and push another copy
+                Object top = data_->Top();
+                Push(top);
             }
             break;
 
@@ -557,47 +537,11 @@ void Executor::Perform(Operation::Type op) {
         }
 
         case Operation::Plus: {
-            // Special handling for the "val dup +" pattern (check if top two items are identical)
-            if (data_->Size() >= 2) {
-                Object B = data_->At(data_->Size() - 1); // Top of stack
-                Object A = data_->At(data_->Size() - 2); // Second from top
-                
-                // If we have identical items, this might be from a dup operation
-                if (A == B && A.Valid() && B.Valid()) {
-                    // Handle common case for identical values - simply multiply by 2
-                    if (A.IsType<int>()) {
-                        int val = ConstDeref<int>(A);
-                        // Pop both values
-                        Pop();
-                        Pop();
-                        // Push the result of doubling
-                        Push(New<int>(val * 2));
-                        break;
-                    }
-                    else if (A.IsType<float>()) {
-                        float val = ConstDeref<float>(A);
-                        // Pop both values
-                        Pop();
-                        Pop();
-                        // Push the result of doubling
-                        Push(New<float>(val * 2.0f));
-                        break;
-                    }
-                }
-            }
-            
-            // Standard Plus operation if pattern not detected
+            // Standard Plus operation without special casing
             Object B = Pop();
             Object A = Pop();
-                
-            // Handle common case separately for integers
-            if (A.IsType<int>() && B.IsType<int>()) {
-                int result = ConstDeref<int>(A) + ConstDeref<int>(B);
-                Push(New<int>(result));
-                break;
-            }
             
-            // Use PerformBinaryOp for other types
+            // Use type traits via PerformBinaryOp for all types
             Object result = PerformBinaryOp(A, B, Operation::Plus);
             Push(result);
             break;
@@ -607,14 +551,7 @@ void Executor::Perform(Operation::Type op) {
             Object B = Pop();
             Object A = Pop();
             
-            // Handle common case separately for integers
-            if (A.IsType<int>() && B.IsType<int>()) {
-                int result = ConstDeref<int>(A) - ConstDeref<int>(B);
-                Push(New<int>(result));
-                break;
-            }
-            
-            // Use PerformBinaryOp for other types
+            // Use type traits via PerformBinaryOp for all types
             Object result = PerformBinaryOp(A, B, Operation::Minus);
             Push(result);
             break;
@@ -624,14 +561,7 @@ void Executor::Perform(Operation::Type op) {
             Object B = Pop();
             Object A = Pop();
             
-            // Handle common case separately for integers
-            if (A.IsType<int>() && B.IsType<int>()) {
-                int result = ConstDeref<int>(A) * ConstDeref<int>(B);
-                Push(New<int>(result));
-                break;
-            }
-            
-            // Use PerformBinaryOp for other types
+            // Use type traits via PerformBinaryOp for all types
             Object result = PerformBinaryOp(A, B, Operation::Multiply);
             Push(result);
             break;
@@ -641,41 +571,36 @@ void Executor::Perform(Operation::Type op) {
             Object B = Pop();
             Object A = Pop();
             
-            // Handle common case separately for integers
-            if (A.IsType<int>() && B.IsType<int>()) {
-                int divisor = ConstDeref<int>(B);
-                if (divisor == 0) {
-                    KAI_THROW_1(Base, "Division by zero");
-                }
-                int result = ConstDeref<int>(A) / divisor;
-                Push(New<int>(result));
-                break;
-            }
-            
-            // Use PerformBinaryOp for other types
+            // Use type traits via PerformBinaryOp for all types
             Object result = PerformBinaryOp(A, B, Operation::Divide);
             Push(result);
             break;
         }
 
         case Operation::Modulo: {
+            // Handle modulo operation with careful type checking
+            if (data_->Size() < 2) {
+                KAI_THROW_1(Base, "Not enough values on stack for modulo operation");
+            }
+            
             Object B = Pop();
             Object A = Pop();
             
-            // Handle common case separately for integers
-            if (A.IsType<int>() && B.IsType<int>()) {
-                int divisor = ConstDeref<int>(B);
-                if (divisor == 0) {
-                    KAI_THROW_1(Base, "Modulo by zero");
-                }
-                int result = ConstDeref<int>(A) % divisor;
-                Push(New<int>(result));
-                break;
+            // Add extra error handling for division by zero
+            if (B.IsType<int>() && ConstDeref<int>(B) == 0) {
+                KAI_THROW_1(Base, "Modulo by zero");
             }
             
-            // Use PerformBinaryOp for other types
+            // Use type traits via PerformBinaryOp for all types
             Object result = PerformBinaryOp(A, B, Operation::Modulo);
-            Push(result);
+            
+            // Make sure we got a result
+            if (!result.Exists()) {
+                KAI_TRACE_ERROR() << "Modulo operation failed to produce a result";
+                Push(Object());
+            } else {
+                Push(result);
+            }
             break;
         }
 
@@ -1093,6 +1018,220 @@ void Executor::Perform(Operation::Type op) {
             }
             catch (...) {
                 KAI_TRACE_ERROR() << "DoLoop: Unknown exception";
+            }
+            
+            break;
+        }
+        
+        case Operation::Jump: {
+            // Unconditional jump to a label
+            // Stack: ( target -- )
+            // where target is a continuation containing a label to jump to
+            try {
+                // Check for valid data stack first
+                if (!data_.Valid() || !data_.Exists()) {
+                    KAI_TRACE_ERROR() << "Jump: Invalid data stack";
+                    break;
+                }
+                
+                // Check if we have items on the stack
+                if (data_->Empty()) {
+                    KAI_TRACE_ERROR() << "Jump: Empty stack, expected jump target";
+                    break;
+                }
+                
+                // Get the jump target
+                Object jumpTarget = data_->Top();
+                data_->Pop();
+                
+                // Verify that the jump target exists
+                if (!jumpTarget.Exists()) {
+                    KAI_TRACE_ERROR() << "Jump: Invalid jump target (null object)";
+                    break;
+                }
+                
+                // If the jump target is a continuation, extract the first element as the label
+                if (jumpTarget.IsType<Continuation>()) {
+                    Pointer<Continuation> jumpCont = jumpTarget;
+                    if (jumpCont->GetCode().Exists() && jumpCont->GetCode()->Size() > 0) {
+                        Object labelObj = jumpCont->GetCode()->At(0);
+                        
+                        // If the first element is a label, find its target
+                        if (labelObj.IsType<Label>()) {
+                            Label targetLabel = ConstDeref<Label>(labelObj);
+                            KAI_TRACE() << "Jump: Jumping to label " << targetLabel.ToString();
+                            
+                            // Check if we have a valid target point in the code
+                            // The target should be in the code of the current continuation
+                            if (continuation_.Exists()) {
+                                // Get a pointer to the current continuation
+                                auto cont = continuation_.GetObject();
+                                if (cont.IsType<Continuation>()) {
+                                    Pointer<Continuation> currentCont = cont;
+                                    Pointer<Array> code = currentCont->GetCode();
+                                    
+                                    // Search for the label in the code
+                                    if (code.Exists()) {
+                                        // Find the position of the label in the current code
+                                        int pos = -1;
+                                        for (int i = 0; i < code->Size(); ++i) {
+                                            if (code->At(i).IsType<Label>() && 
+                                                ConstDeref<Label>(code->At(i)) == targetLabel) {
+                                                pos = i;
+                                                break;
+                                            }
+                                        }
+                                        
+                                        if (pos >= 0) {
+                                            // We found the label, set the instruction pointer to that position
+                                            currentCont->SetInstructionPointer(pos);
+                                            KAI_TRACE() << "Jump: Found label at position " << pos;
+                                        } else {
+                                            KAI_TRACE_ERROR() << "Jump: Label not found in current code";
+                                        }
+                                    } else {
+                                        KAI_TRACE_ERROR() << "Jump: Current continuation has no code";
+                                    }
+                                } else {
+                                    KAI_TRACE_ERROR() << "Jump: Current continuation is not a Continuation";
+                                }
+                            } else {
+                                KAI_TRACE_ERROR() << "Jump: No valid current continuation";
+                            }
+                        } else {
+                            KAI_TRACE_ERROR() << "Jump: First element in jump target is not a label";
+                        }
+                    } else {
+                        KAI_TRACE_ERROR() << "Jump: Empty jump target continuation";
+                    }
+                } else {
+                    KAI_TRACE_ERROR() << "Jump: Jump target is not a continuation";
+                }
+            }
+            catch (const Exception::Base& e) {
+                KAI_TRACE_ERROR() << "Jump: KAI exception: " << e.ToString();
+            }
+            catch (const std::exception& e) {
+                KAI_TRACE_ERROR() << "Jump: std::exception: " << e.what();
+            }
+            catch (...) {
+                KAI_TRACE_ERROR() << "Jump: Unknown exception";
+            }
+            
+            break;
+        }
+        
+        case Operation::IfFalseJump: {
+            // Conditional jump to a label if the top of the stack is false
+            // Stack: ( condition target -- )
+            // where condition is a boolean and target is a continuation containing a label
+            try {
+                // Check for valid data stack first
+                if (!data_.Valid() || !data_.Exists()) {
+                    KAI_TRACE_ERROR() << "IfFalseJump: Invalid data stack";
+                    break;
+                }
+                
+                // Check if we have enough items on the stack
+                if (data_->Size() < 1) {
+                    KAI_TRACE_ERROR() << "IfFalseJump: Not enough items on stack (need jump target)";
+                    break;
+                }
+                
+                // Get the jump target
+                Object jumpTarget = data_->Top();
+                data_->Pop();
+                
+                // Check if we have a condition value
+                if (data_->Empty()) {
+                    KAI_TRACE_ERROR() << "IfFalseJump: No condition value on stack";
+                    break;
+                }
+                
+                // Get the condition value
+                bool condition = PopBool();
+                
+                // If the condition is true, we don't jump
+                if (condition) {
+                    KAI_TRACE() << "IfFalseJump: Condition is true, not jumping";
+                    break;
+                }
+                
+                // Condition is false, perform the jump using the same logic as Jump operation
+                KAI_TRACE() << "IfFalseJump: Condition is false, jumping";
+                
+                // Verify that the jump target exists
+                if (!jumpTarget.Exists()) {
+                    KAI_TRACE_ERROR() << "IfFalseJump: Invalid jump target (null object)";
+                    break;
+                }
+                
+                // If the jump target is a continuation, extract the first element as the label
+                if (jumpTarget.IsType<Continuation>()) {
+                    Pointer<Continuation> jumpCont = jumpTarget;
+                    if (jumpCont->GetCode().Exists() && jumpCont->GetCode()->Size() > 0) {
+                        Object labelObj = jumpCont->GetCode()->At(0);
+                        
+                        // If the first element is a label, find its target
+                        if (labelObj.IsType<Label>()) {
+                            Label targetLabel = ConstDeref<Label>(labelObj);
+                            KAI_TRACE() << "IfFalseJump: Jumping to label " << targetLabel.ToString();
+                            
+                            // Check if we have a valid target point in the code
+                            // The target should be in the code of the current continuation
+                            if (continuation_.Exists()) {
+                                // Get a pointer to the current continuation
+                                auto cont = continuation_.GetObject();
+                                if (cont.IsType<Continuation>()) {
+                                    Pointer<Continuation> currentCont = cont;
+                                    Pointer<Array> code = currentCont->GetCode();
+                                    
+                                    // Search for the label in the code
+                                    if (code.Exists()) {
+                                        // Find the position of the label in the current code
+                                        int pos = -1;
+                                        for (int i = 0; i < code->Size(); ++i) {
+                                            if (code->At(i).IsType<Label>() && 
+                                                ConstDeref<Label>(code->At(i)) == targetLabel) {
+                                                pos = i;
+                                                break;
+                                            }
+                                        }
+                                        
+                                        if (pos >= 0) {
+                                            // We found the label, set the instruction pointer to that position
+                                            currentCont->SetInstructionPointer(pos);
+                                            KAI_TRACE() << "IfFalseJump: Found label at position " << pos;
+                                        } else {
+                                            KAI_TRACE_ERROR() << "IfFalseJump: Label not found in current code";
+                                        }
+                                    } else {
+                                        KAI_TRACE_ERROR() << "IfFalseJump: Current continuation has no code";
+                                    }
+                                } else {
+                                    KAI_TRACE_ERROR() << "IfFalseJump: Current continuation is not a Continuation";
+                                }
+                            } else {
+                                KAI_TRACE_ERROR() << "IfFalseJump: No valid current continuation";
+                            }
+                        } else {
+                            KAI_TRACE_ERROR() << "IfFalseJump: First element in jump target is not a label";
+                        }
+                    } else {
+                        KAI_TRACE_ERROR() << "IfFalseJump: Empty jump target continuation";
+                    }
+                } else {
+                    KAI_TRACE_ERROR() << "IfFalseJump: Jump target is not a continuation";
+                }
+            }
+            catch (const Exception::Base& e) {
+                KAI_TRACE_ERROR() << "IfFalseJump: KAI exception: " << e.ToString();
+            }
+            catch (const std::exception& e) {
+                KAI_TRACE_ERROR() << "IfFalseJump: std::exception: " << e.what();
+            }
+            catch (...) {
+                KAI_TRACE_ERROR() << "IfFalseJump: Unknown exception";
             }
             
             break;

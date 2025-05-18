@@ -164,6 +164,9 @@ struct Registry {
     Percentage CalcMemoryFragmentationPercentage() const;
     void DefragmentMemory();
     Tree *GetTree() const { return tree_; }
+    
+    // Check if this registry instance is valid and operational
+    bool IsValid() const;
     void SetTree(Tree &);
     bool Pin(Handle);
     bool Unpin(Handle);
@@ -197,10 +200,6 @@ struct Registry {
     // Clear the list of failed deletions
     void ClearFailedDeletions() { failed_deletions_.clear(); }
     
-    // Check if the registry is in a valid state
-    bool IsValid() const { 
-        return allocator_ != nullptr; 
-    }
 
 #ifdef KAI_DEBUG_REGISTRY
     void DeleteRetained();

@@ -59,15 +59,19 @@ struct TranslatorBase : TranslatorCommon {
 
         auto cont = Pop();
 
-        // If the continuation contains a simple code array with a single value
-        // or a simple operation, evaluate it immediately to avoid excessive wrapping
+        // If the continuation contains a single value that's not a complex type,
+        // we can return it directly for efficiency, but only if the value is valid
         if (cont.Exists() && cont->GetCode().Exists() && cont->GetCode()->Size() == 1) {
-            // If the code has only one element, it's likely a direct value
             Object value = cont->GetCode()->At(0);
             
-            // If this is a simple value (int, bool, string), return it directly
-            if (value.GetTypeNumber() != Type::Number::Continuation &&
+            // Check if the value is valid and not a complex type
+            if (value.Valid() && value.Exists() && 
+                value.GetTypeNumber() != Type::Number::Continuation &&
                 value.GetTypeNumber() != Type::Number::Operation) {
+                
+                KAI_TRACE() << "TranslatorBase: Returning direct single value: " 
+                          << value.ToString() << " (type: " << value.GetClass()->GetName() << ")";
+                
                 return value;
             }
         }

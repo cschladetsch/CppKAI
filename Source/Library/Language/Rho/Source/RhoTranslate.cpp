@@ -80,12 +80,8 @@ Pointer<Continuation> RhoTranslator::Translate(const char* text, Structure st) {
     
     // Analyze the continuation if it exists
     if (cont.Exists() && cont->GetCode().Exists()) {
-        // Use a named constant for clarity
-        const int codeSize = static_cast<int>(cont->GetCode()->Size());
-        KAI_TRACE() << std::format("Rho translated code has {} elements", codeSize);
-        
-        // We always extract primitive types during execution rather than using flags
-        KAI_TRACE() << "Created Rho continuation";
+        KAI_TRACE() << std::format("Rho translated code has {} elements", 
+                                static_cast<int>(cont->GetCode()->Size()));
     }
     
     return cont;

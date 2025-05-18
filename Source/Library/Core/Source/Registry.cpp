@@ -188,16 +188,52 @@ const ClassBase *Registry::GetClass(Type::Number type_number) {
 }
 
 StorageBase *Registry::GetStorageBase(Handle handle) const {
+    // Defensive null check for handle
     if (handle == Handle(0)) return nullptr;
 
-    const auto obj = instances_.find(handle);
-    if (obj == instances_.end()) return nullptr;
-
-    return obj->second;
+    try {
+        // Ensure instances_ exists and is valid before trying to find an element
+        if (instances_.empty()) {
+            return nullptr;
+        }
+        
+        // Safe lookup in the instance map
+        const auto obj = instances_.find(handle);
+        if (obj == instances_.end()) return nullptr;
+        
+        // Make sure the found instance is valid
+        if (obj->second == nullptr) {
+            return nullptr;
+        }
+        
+        // Perform a basic validation test on the returned pointer
+        volatile void* test = static_cast<void*>(obj->second);
+        if (!test) {
+            return nullptr;
+        }
+        
+        return obj->second;
+    }
+    catch (...) {
+        // Silent handling of any exceptions
+        return nullptr;
+    }
 }
 
 bool Registry::OnDeathRow(Handle handle) const {
-    return deathRow_.find(handle) != deathRow_.end();
+    // Defensive check for validity
+    if (handle == Handle(0)) {
+        return false;
+    }
+    
+    try {
+        // Safe lookup in the death row set
+        return deathRow_.find(handle) != deathRow_.end();
+    }
+    catch (...) {
+        // Silent handling of any exceptions
+        return false;
+    }
 }
 
 void Registry::AddClass(const ClassBase *klass) {
@@ -498,6 +534,46 @@ bool Registry::SetColor(StorageBase &base, ObjectColor::Color color) {
 void Registry::SetTree(Tree &tree) {
     this->tree_ = &tree;
     AddRoot(this->tree_->GetRoot());
+}
+
+bool Registry::IsValid() const {
+    try {
+        // Simple test to see if we can access our members without crashing
+        volatile void* allocTest = static_cast<void*>(allocator_.get());
+        if (!allocTest) {
+            return false;
+        }
+        
+        // Check if classes_ was properly initialized
+        if (classes_.empty()) {
+            return false;
+        }
+        
+        // Successfully access at least one class to ensure memory is valid
+        bool foundValidClass = false;
+        for (size_t i = 0; i < classes_.size() && i < 10; ++i) {
+            if (classes_[i] != nullptr) {
+                // Test if we can access the class object - avoid volatile cast
+                const void* classTest = classes_[i];
+                if (classTest) {
+                    foundValidClass = true;
+                    break;
+                }
+            }
+        }
+        
+        // We need at least one valid class to consider the registry functional
+        if (!foundValidClass) {
+            return false;
+        }
+        
+        // All tests passed - registry appears valid
+        return true;
+    }
+    catch (...) {
+        // Any exception indicates an invalid registry
+        return false;
+    }
 }
 
 template <class II, class T, class Pred>

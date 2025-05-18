@@ -20,7 +20,13 @@ const static int MaxLen = 80;
 void Continuation::Create() {
     args = New<Array>();
     index = New(0);
-    specialHandling = New(false);
+    // Initialize other members and ensure they exist
+    entered = New(false);
+    
+    // Make sure code is initialized to prevent null pointer issues
+    if (!code.Exists()) {
+        code = New<Array>();
+    }
 }
 
 bool Continuation::Destroy() { return true; }

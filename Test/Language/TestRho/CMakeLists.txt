@@ -13,6 +13,8 @@ add_library(TestRhoFiles OBJECT
     AdditionalRhoTests.cpp
     DiagnoseTestLang.cpp
     MinimalTest.cpp  # Super minimal test - should always pass
+    DupTest.cpp  # Our new test for dup operation
+    ForLoopTests.cpp  # Our for loop implementation tests
     
     # Our fixed implementation tests
     # This has all the basic implementations that we need

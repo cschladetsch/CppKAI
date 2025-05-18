@@ -382,6 +382,19 @@ LogTest/fast:
 	$(MAKE) $(MAKESILENT) -f Test/LogTest/CMakeFiles/LogTest.dir/build.make Test/LogTest/CMakeFiles/LogTest.dir/build
 .PHONY : LogTest/fast
 
+#=============================================================================
+# Target rules for targets named SimpleColorExample
+
+# Build rule for target.
+SimpleColorExample: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 SimpleColorExample
+.PHONY : SimpleColorExample
+
+# fast build rule for target.
+SimpleColorExample/fast:
+	$(MAKE) $(MAKESILENT) -f Test/Examples/CMakeFiles/SimpleColorExample.dir/build.make Test/Examples/CMakeFiles/SimpleColorExample.dir/build
+.PHONY : SimpleColorExample/fast
+
 Source/App/Console/Source/Main.o: Source/App/Console/Source/Main.cpp.o
 .PHONY : Source/App/Console/Source/Main.o
 
@@ -1533,6 +1546,7 @@ help:
 	@echo "... MinimalServer"
 	@echo "... PiLang"
 	@echo "... RhoLang"
+	@echo "... SimpleColorExample"
 	@echo "... TauLang"
 	@echo "... TestCore"
 	@echo "... TestPi"

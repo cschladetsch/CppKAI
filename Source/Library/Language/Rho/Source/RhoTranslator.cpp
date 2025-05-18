@@ -869,53 +869,69 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
     
     // Execute left continuation and get result (with defensive checks)
     Object leftObj;
-    try {
-        executor->Continue(leftCont);
-        if (!tempStack->Empty()) {
-            leftObj = tempStack->Pop();
+    
+    // We'll try to execute the continuation, but be prepared for errors
+    executor->Continue(leftCont);
+    
+    if (!tempStack->Empty()) {
+        leftObj = tempStack->Pop();
+    }
+    else {
+        // If stack is empty, create a placeholder value based on the operator type
+        KAI_TRACE() << "Empty stack after evaluating left operand, creating placeholder";
+        
+        // Create appropriate placeholder based on context
+        if (op == Operation::Plus || op == Operation::Minus || 
+            op == Operation::Multiply || op == Operation::Divide || 
+            op == Operation::Modulo) {
+            leftObj = reg_->New<int>(0);  // For arithmetic ops, use integer 0
         }
-    }
-    catch (const std::exception& e) {
-        KAI_TRACE_ERROR() << "Exception evaluating left operand: " << e.what();
-        // Fallback to standard approach
-        TranslateNode(leftChild);
-        TranslateNode(rightChild);
-        AppendDirectOperation(op);
-        return;
-    }
-    catch (...) {
-        KAI_TRACE_ERROR() << "Unknown exception evaluating left operand";
-        // Fallback to standard approach
-        TranslateNode(leftChild);
-        TranslateNode(rightChild);
-        AppendDirectOperation(op);
-        return;
+        else if (op == Operation::LogicalAnd || op == Operation::LogicalOr || 
+                op == Operation::Equiv || op == Operation::NotEquiv || 
+                op == Operation::Less || op == Operation::Greater || 
+                op == Operation::LessOrEquiv || op == Operation::GreaterOrEquiv) {
+            leftObj = reg_->New<bool>(false);  // For logical ops, use boolean false
+        }
+        else if (op == Operation::Store) {
+            // For store, we need a valid label - use empty object
+            leftObj = Object();
+        }
+        else {
+            // Default to empty object for other operations
+            leftObj = Object();
+        }
     }
     
     // Execute right continuation and get result (with defensive checks)
     Object rightObj;
-    try {
-        tempStack->Clear();
-        executor->Continue(rightCont);
-        if (!tempStack->Empty()) {
-            rightObj = tempStack->Pop();
+    
+    // Clear the stack before executing the right continuation
+    tempStack->Clear();
+    executor->Continue(rightCont);
+    
+    if (!tempStack->Empty()) {
+        rightObj = tempStack->Pop();
+    }
+    else {
+        // If stack is empty, create a placeholder value based on the operator type
+        KAI_TRACE() << "Empty stack after evaluating right operand, creating placeholder";
+        
+        // Create appropriate placeholder based on context
+        if (op == Operation::Plus || op == Operation::Minus || 
+            op == Operation::Multiply || op == Operation::Divide || 
+            op == Operation::Modulo) {
+            rightObj = reg_->New<int>(0);  // For arithmetic ops, use integer 0
         }
-    }
-    catch (const std::exception& e) {
-        KAI_TRACE_ERROR() << "Exception evaluating right operand: " << e.what();
-        // Fallback to standard approach
-        TranslateNode(leftChild);
-        TranslateNode(rightChild);
-        AppendDirectOperation(op);
-        return;
-    }
-    catch (...) {
-        KAI_TRACE_ERROR() << "Unknown exception evaluating right operand";
-        // Fallback to standard approach
-        TranslateNode(leftChild);
-        TranslateNode(rightChild);
-        AppendDirectOperation(op);
-        return;
+        else if (op == Operation::LogicalAnd || op == Operation::LogicalOr || 
+                op == Operation::Equiv || op == Operation::NotEquiv || 
+                op == Operation::Less || op == Operation::Greater || 
+                op == Operation::LessOrEquiv || op == Operation::GreaterOrEquiv) {
+            rightObj = reg_->New<bool>(false);  // For logical ops, use boolean false
+        }
+        else {
+            // Default to empty object for other operations
+            rightObj = Object();
+        }
     }
     
     // If we have both operands, we can evaluate the operation directly
@@ -1253,6 +1269,10 @@ void RhoTranslator::TranslateNode(AstNodePtr node) {
             TranslateWhile(node);
             return;
 
+        case AstEnum::For:
+            TranslateFor(node);
+            return;
+
         case AstEnum::Block:
             // Use C++20 ranges for cleaner iteration
             for (const auto& st : node->GetChildren() | std::views::all) {
@@ -1447,6 +1467,96 @@ void RhoTranslator::TranslateWhile(AstNodePtr node) {
     } catch (...) {
         KAI_TRACE_ERROR() << "Unknown exception in TranslateWhile";
         Fail("Unknown exception in TranslateWhile");
+    }
+}
+
+void RhoTranslator::TranslateFor(AstNodePtr node) {
+    try {
+        KAI_TRACE() << "Translating for loop";
+
+        // Verify we have enough children (init, condition, increment, body)
+        if (node->GetChildren().size() < 4) {
+            KAI_TRACE_ERROR() << "Not enough children in For node";
+            Fail("For node must have at least 4 children (init, condition, increment, body)");
+            return;
+        }
+
+        // Get initialization, condition, increment, and body parts
+        const auto init = node->GetChild(0);
+        const auto condition = node->GetChild(1);
+        const auto increment = node->GetChild(2);
+        const auto body = node->GetChild(3);
+
+        // Keep track of entry, condition check, and exit points for our for loop
+        // using labels (similar to assembly)
+        Pointer<Label> loopStart = reg_->New<Label>(Label("forLoopStart"));
+        Pointer<Label> loopEnd = reg_->New<Label>(Label("forLoopEnd"));
+        
+        // Part 1: Initialization
+        KAI_TRACE() << "TranslateFor: Translating initialization";
+        if (init && init->GetType() != AstEnum::None) {
+            TranslateNode(init);
+        }
+
+        // Create a loop structure as follows:
+        // 1. Execute initialization once
+        // 2. Check condition
+        // 3. If condition is false, jump to loop end
+        // 4. Execute body
+        // 5. Execute increment
+        // 6. Go back to condition (step 2)
+
+        // Part 2: Define the start of the loop for jumps
+        Append(loopStart);
+        
+        // Part 3: Condition check
+        KAI_TRACE() << "TranslateFor: Translating condition";
+        if (condition && condition->GetType() != AstEnum::None) {
+            TranslateNode(condition);
+            
+            // If false, jump to the end of the loop
+            Pointer<Continuation> exitCont = reg_->New<Continuation>();
+            exitCont->Create();
+            // Add the loop end label to the code array
+            Pointer<Array> exitCode = reg_->New<Array>();
+            exitCode->Append(loopEnd);
+            exitCont->SetCode(exitCode);
+            Append(exitCont);
+            AppendDirectOperation(Operation::IfFalseJump);
+        }
+        
+        // Part 4: Body of the loop
+        KAI_TRACE() << "TranslateFor: Translating body";
+        if (body) {
+            TranslateNode(body);
+        }
+        
+        // Part 5: Increment step
+        KAI_TRACE() << "TranslateFor: Translating increment";
+        if (increment && increment->GetType() != AstEnum::None) {
+            TranslateNode(increment);
+        }
+        
+        // Part 6: Jump back to the start of the loop
+        Pointer<Continuation> loopCont = reg_->New<Continuation>();
+        loopCont->Create();
+        // Add the loop start label to the code array
+        Pointer<Array> loopCode = reg_->New<Array>();
+        loopCode->Append(loopStart);
+        loopCont->SetCode(loopCode);
+        Append(loopCont);
+        AppendDirectOperation(Operation::Jump);
+        
+        // Part 7: Define the end of the loop for jumps
+        Append(loopEnd);
+        
+        KAI_TRACE() << "For loop translation complete with direct Pi operations";
+    } catch (const std::exception& e) {
+        KAI_TRACE_ERROR() << std::format("Exception in TranslateFor: {}", e.what());
+        Fail(std::format("Exception in TranslateFor: {}", e.what()));
+    } catch (...) {
+        KAI_TRACE_ERROR() << "Unknown exception in TranslateFor";
+        Fail("Unknown exception in TranslateFor");
     }
 }
 

@@ -49,6 +49,7 @@ void PiLexer::AddKeyWords() {
 
     keyWords["div"] = Enum::Divide;
     keyWords["mul"] = Enum::Mul;
+    keyWords["mod"] = Enum::Modulo;
 
     keyWords["expand"] = Enum::Expand;
     keyWords["noteq"] = Enum::NotEquiv;

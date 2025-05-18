@@ -508,6 +508,7 @@ void TestLangCommon::UnwrapStackValues() {
         return;  // Nothing to do
     }
     
+    // Use the Executor's ExtractValueFromContinuation method first, as it handles more patterns
     // Check each item on the stack for continuations that need to be unwrapped
     for (int i = 0; i < data_->Size(); i++) {
         Object item = data_->At(i);
@@ -517,8 +518,14 @@ void TestLangCommon::UnwrapStackValues() {
             continue;
         }
         
-        // Try to extract a value from the continuation
-        Object result = DoExtractValueFromContinuation(item);
+        // First, try using the executor's method which handles specific patterns
+        Object result = exec_->ExtractValueFromContinuation(item);
+        
+        // If that didn't work, fall back to our local implementation
+        if (result == item) {
+            // Try to extract a value from the continuation using our local method
+            result = DoExtractValueFromContinuation(item);
+        }
         
         // If we got a different object back, we can't modify the stack in place,
         // so we'll replace the entire stack with a new version that has the unwrapped values
