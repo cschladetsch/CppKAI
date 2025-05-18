@@ -46,7 +46,7 @@ String Continuation::Show() const {
     return str.ToString();
 }
 
-void Continuation::SetCode(Code C) { code = C; }
+void Continuation::SetCode(Code c) { code = c; }
 
 void Continuation::Enter(Executor *exec) {
     if (code.Exists() && !code->Empty()) {
@@ -98,7 +98,7 @@ StringStream &InsertContinuation(StringStream &stream, const Array &code,
 
     // print next thing
     if (next.IsType<Continuation>()) {
-        // limit depth of coro pritning
+        // limit depth of coro printing
         if (depth == MaxDepth) return stream << "{...}...";
 
         auto const &coro = ConstDeref<Continuation>(next);
@@ -123,21 +123,21 @@ StringStream &operator>>(StringStream &, Continuation &) {
     KAI_NOT_IMPLEMENTED();
 }
 
-BinaryStream &operator<<(BinaryStream &S, const Continuation &C) {
+BinaryStream &operator<<(BinaryStream &stream, const Continuation &cont) {
     // TODO: instruction pointer and scope!
-    return S << C.GetCode();
+    return stream << cont.GetCode();
 }
 
-BinaryStream &operator>>(BinaryStream &S, Continuation &C) {
+BinaryStream &operator>>(BinaryStream &stream, Continuation &cont) {
     Object code;
     // TODO: instruction pointer and scope!
-    S >> code;
-    C.SetCode(code);
-    return S;
+    stream >> code;
+    cont.SetCode(code);
+    return stream;
 }
 
-void Continuation::Register(Registry &R) {
-    ClassBuilder<Continuation>(R, "Continuation")
+void Continuation::Register(Registry &registry) {
+    ClassBuilder<Continuation>(registry, "Continuation")
         .Methods.Properties("code", &Continuation::code)(
             "args", &Continuation::args)("scope", &Continuation::scope)(
             "source_code", &Continuation::source_code);

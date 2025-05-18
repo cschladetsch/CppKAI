@@ -42,12 +42,12 @@ Pointer<Continuation> Compiler::Translate(const String &text,
     return Object();
 }
 
-void Compiler::AddOperation(int N, const String &S) {
-    Operation T = Operation::Type(N);
-    Pointer<Operation> Q = Self->GetRegistry()->New(T);
-    Q.SetManaged(false);
-    string_to_op[S] = Q;
-    op_to_string[T] = S;
+void Compiler::AddOperation(int id, const String &name) {
+    Operation type = Operation::Type(id);
+    Pointer<Operation> operation = Self->GetRegistry()->New(type);
+    operation.SetManaged(false);
+    string_to_op[name] = operation;
+    op_to_string[type] = name;
 }
 
 Pointer<Continuation> Compiler::CompileFile(const String &fileName,
@@ -56,8 +56,8 @@ Pointer<Continuation> Compiler::CompileFile(const String &fileName,
     return Translate(text.c_str(), st);
 }
 
-void Compiler::Register(Registry &R, const char *name) {
-    ClassBuilder<Compiler>(R, name);
+void Compiler::Register(Registry &registry, const char *name) {
+    ClassBuilder<Compiler>(registry, name);
 }
 
 void Compiler::SetLanguage(int n) { language_ = static_cast<Language>(n); }

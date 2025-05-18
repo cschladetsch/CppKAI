@@ -35,38 +35,38 @@ void Executor::Register(Registry &registry, const char *name) {
     // registry.AddProperty("Trace", &Executor::GetTraceLevel, &Executor::SetTraceLevel);
 }
 
-bool operator<(const Executor &A, const Executor &B) {
-    return A.GetDataStack() < B.GetDataStack();
+bool operator<(const Executor &left, const Executor &right) {
+    return left.GetDataStack() < right.GetDataStack();
 }
 
-bool operator==(const Executor &A, const Executor &B) {
-    return A.GetDataStack() == B.GetDataStack();
+bool operator==(const Executor &left, const Executor &right) {
+    return left.GetDataStack() == right.GetDataStack();
 }
 
-StringStream &operator<<(StringStream &S, Executor const &exec) {
-    S << "Executor: ";
+StringStream &operator<<(StringStream &stream, Executor const &exec) {
+    stream << "Executor: ";
     Value<const Stack> data = exec.GetDataStack();
-    S << "Stack " << (data.Valid() ? "Valid" : "Invalid");
-    if (data.Valid()) S << data;
+    stream << "Stack " << (data.Valid() ? "Valid" : "Invalid");
+    if (data.Valid()) stream << data;
     
     Value<Stack> context = exec.GetContextStack();
-    S << ", Context " << (context.Valid() ? "Valid" : "Invalid");
-    if (context.Valid()) S << context;
+    stream << ", Context " << (context.Valid() ? "Valid" : "Invalid");
+    if (context.Valid()) stream << context;
     
-    return S;
+    return stream;
 }
 
-BinaryStream &operator<<(BinaryStream &S, Executor const &exec) {
-    S << exec.GetDataStack();
-    S << exec.GetContextStack();
+BinaryStream &operator<<(BinaryStream &stream, Executor const &exec) {
+    stream << exec.GetDataStack();
+    stream << exec.GetContextStack();
     // We can't properly serialize continuation, so leave it out
-    return S;
+    return stream;
 }
 
-BinaryPacket &operator>>(BinaryPacket &S, Executor &exec) {
+BinaryPacket &operator>>(BinaryPacket &stream, Executor &exec) {
     // This isn't properly implemented, but we'll leave a stub
     // that doesn't try to access private members
-    return S;
+    return stream;
 }
 
 //
@@ -76,205 +76,8 @@ BinaryPacket &operator>>(BinaryPacket &S, Executor &exec) {
 //
 
 // Helper method to extract values from continuations, handling special patterns
-// Used to support tests requiring specific patterns like [ContinuationBegin, value, ContinuationEnd]
-Object Executor::ExtractValueFromContinuation(Object const &value) {
-    // If it's already a primitive type, no need for extraction
-    if (value.IsType<int>() || value.IsType<bool>() || 
-        value.IsType<float>() || value.IsType<double>() || 
-        value.IsType<String>() || value.IsType<Array>()) {
-        return value;
-    }
-    
-    // If it's not a continuation, return as is
-    if (!value.IsType<Continuation>()) {
-        return value;
-    }
-    
-    // Get the continuation
-    Pointer<Continuation> cont = value;
-    
-    // Make sure the continuation has valid code
-    if (!cont->GetCode().Valid() || !cont->GetCode().Exists() || cont->GetCode()->Size() == 0) {
-        return value;
-    }
-    
-    KAI_TRACE() << "Examining continuation with " << cont->GetCode()->Size() << " operations";
-    
-    // Get the code array for analysis
-    Pointer<const Array> code = cont->GetCode();
-    
-    // If no registry to create new objects, return the original
-    Registry* registry = value.GetRegistry();
-    if (!registry) {
-        return value;
-    }
-    
-    // SPECIAL CASE: [ContinuationBegin, value, ContinuationEnd] pattern
-    // This is used in ContinuationBeginValueEndPattern test
-    if (code->Size() == 3 && 
-        code->At(0).IsType<Operation>() && code->At(2).IsType<Operation>() && 
-        ConstDeref<Operation>(code->At(0)).GetTypeNumber() == Operation::ContinuationBegin && 
-        ConstDeref<Operation>(code->At(2)).GetTypeNumber() == Operation::ContinuationEnd) {
-        
-        Object middleValue = code->At(1);
-        
-        // If the middle value is already a primitive type, return it directly
-        if (middleValue.IsType<int>() || middleValue.IsType<float>() ||
-            middleValue.IsType<bool>() || middleValue.IsType<String>() ||
-            middleValue.IsType<Array>()) {
-            
-            KAI_TRACE() << "Directly extracting single value from [ContinuationBegin, value, ContinuationEnd] pattern: " 
-                       << middleValue.ToString();
-            return middleValue;
-        }
-        
-        // If the middle value is a continuation, try to extract from it
-        if (middleValue.IsType<Continuation>()) {
-            try {
-                // Recursively extract value from inner continuation
-                Object innerResult = ExtractValueFromContinuation(middleValue);
-                if (innerResult != middleValue) {
-                    return innerResult;
-                }
-            }
-            catch (const std::exception& e) {
-                KAI_TRACE_ERROR() << "Exception extracting value from inner continuation: " << e.what();
-            }
-        }
-    }
-    
-    // SPECIAL CASE: Direct Pi binary operations [val1, val2, op]
-    // This handles patterns for binary operations in Pi language
-    if (code->Size() == 3 && code->At(2).IsType<Operation>()) {
-        Object val1 = code->At(0);
-        Object val2 = code->At(1);
-        Operation::Type op = ConstDeref<Operation>(code->At(2)).GetTypeNumber();
-        
-        // Only process if it's a binary operation
-        if (IsBinaryOp(op)) {
-            // Extract values from nested continuations if needed
-            if (val1.IsType<Continuation>()) {
-                val1 = ExtractValueFromContinuation(val1);
-            }
-            if (val2.IsType<Continuation>()) {
-                val2 = ExtractValueFromContinuation(val2);
-            }
-            
-            // Handle integer operations
-            if (val1.IsType<int>() && val2.IsType<int>()) {
-                int num1 = ConstDeref<int>(val1);
-                int num2 = ConstDeref<int>(val2);
-                
-                switch (op) {
-                    case Operation::Plus:
-                        return registry->New<int>(num1 + num2);
-                    case Operation::Minus:
-                        return registry->New<int>(num1 - num2);
-                    case Operation::Multiply:
-                        return registry->New<int>(num1 * num2);
-                    case Operation::Divide:
-                        if (num2 != 0) return registry->New<int>(num1 / num2);
-                        break;
-                    case Operation::Modulo:
-                        if (num2 != 0) return registry->New<int>(num1 % num2);
-                        break;
-                    case Operation::Less:
-                        return registry->New<bool>(num1 < num2);
-                    case Operation::Greater:
-                        return registry->New<bool>(num1 > num2);
-                    case Operation::LessOrEquiv:
-                        return registry->New<bool>(num1 <= num2);
-                    case Operation::GreaterOrEquiv:
-                        return registry->New<bool>(num1 >= num2);
-                    case Operation::Equiv:
-                        return registry->New<bool>(num1 == num2);
-                    case Operation::NotEquiv:
-                        return registry->New<bool>(num1 != num2);
-                    default:
-                        break;
-                }
-            }
-            
-            // Handle boolean operations
-            else if (val1.IsType<bool>() && val2.IsType<bool>()) {
-                bool b1 = ConstDeref<bool>(val1);
-                bool b2 = ConstDeref<bool>(val2);
-                
-                switch (op) {
-                    case Operation::LogicalAnd:
-                        return registry->New<bool>(b1 && b2);
-                    case Operation::LogicalOr:
-                        return registry->New<bool>(b1 || b2);
-                    case Operation::Equiv:
-                        return registry->New<bool>(b1 == b2);
-                    case Operation::NotEquiv:
-                        return registry->New<bool>(b1 != b2);
-                    default:
-                        break;
-                }
-            }
-            
-            // Handle string operations
-            else if (val1.IsType<String>() && val2.IsType<String>()) {
-                String str1 = ConstDeref<String>(val1);
-                String str2 = ConstDeref<String>(val2);
-                
-                switch (op) {
-                    case Operation::Plus:
-                        return registry->New<String>(str1 + str2);
-                    case Operation::Equiv:
-                        return registry->New<bool>(str1 == str2);
-                    case Operation::NotEquiv:
-                        return registry->New<bool>(str1 != str2);
-                    default:
-                        break;
-                }
-            }
-        }
-    }
-    
-    // SPECIAL CASE: The "5 dup +" pattern
-    if (code->Size() == 3 && 
-        code->At(0).IsType<int>() && 
-        code->At(1).IsType<Operation>() && 
-        code->At(2).IsType<Operation>()) {
-        
-        int val = ConstDeref<int>(code->At(0));
-        Operation::Type op1 = ConstDeref<Operation>(code->At(1)).GetTypeNumber();
-        Operation::Type op2 = ConstDeref<Operation>(code->At(2)).GetTypeNumber();
-        
-        // Check if it's the "val dup +" pattern
-        if (op1 == Operation::Dup && op2 == Operation::Plus) {
-            // Duplicating the value and adding it to itself = val * 2
-            return registry->New<int>(val * 2);
-        }
-    }
-    
-    // SPECIAL CASE: [ContinuationBegin, val, op1, op2, ContinuationEnd] patterns
-    if (code->Size() == 5 && 
-        code->At(0).IsType<Operation>() && 
-        code->At(4).IsType<Operation>() &&
-        ConstDeref<Operation>(code->At(0)).GetTypeNumber() == Operation::ContinuationBegin && 
-        ConstDeref<Operation>(code->At(4)).GetTypeNumber() == Operation::ContinuationEnd) {
-        
-        // Check for the specific pattern of [ContinuationBegin, val, Dup, Plus, ContinuationEnd]
-        if (code->At(1).IsType<int>() && 
-            code->At(2).IsType<Operation>() && 
-            code->At(3).IsType<Operation>() && 
-            ConstDeref<Operation>(code->At(2)).GetTypeNumber() == Operation::Dup &&
-            ConstDeref<Operation>(code->At(3)).GetTypeNumber() == Operation::Plus) {
-            
-            // Get the value
-            int val = ConstDeref<int>(code->At(1));
-            
-            // Return double the value
-            return registry->New<int>(val * 2);
-        }
-    }
-    
-    // If no special pattern matched, return the original value
-    return value;
-}
+// Implementation is now in ExtractValueFromContinuation.cpp
+// This is used to support tests requiring specific patterns like [ContinuationBegin, value, ContinuationEnd]
 
 // ======================= Stack Operations ========================
 
@@ -1599,25 +1402,25 @@ void Executor::MarkAndSweep(Object &root) {
 }
 
 template <class Container>
-Value<Array> Executor::ForEach(Container const &cont, Object const &fun) {
+Value<Array> Executor::ForEach(Container const &container, Object const &function) {
     auto array = New<Array>();
-    for (auto const &elem : cont) {
-        Push(elem);
+    for (auto const &element : container) {
+        Push(element);
         context_->Push(Object());
-        Continue(fun);
+        Continue(function);
         array->Append(Pop());
     }
 
     return array;
 }
 
-void Executor::DumpContinuation(Continuation const &cont, int level) {
+void Executor::DumpContinuation(Continuation const &continuation, int level) {
     KAI_UNUSED_1(level);
     KAI_TRACE() << "----- CONTINUATION -------";
-    KAI_TRACE_1(cont.GetScope());
+    KAI_TRACE_1(continuation.GetScope());
     
     // Get the code
-    Pointer<const Array> code = cont.GetCode();
+    Pointer<const Array> code = continuation.GetCode();
     if (!code.Exists()) {
         KAI_TRACE() << "No code.";
         return;
@@ -1630,9 +1433,9 @@ void Executor::DumpContinuation(Continuation const &cont, int level) {
 
     // Don't access the position, just show the code
     KAI_TRACE() << "Code size: " << code->Size();
-    for (int N = 0; N < code->Size(); ++N) {
+    for (int index = 0; index < code->Size(); ++index) {
         StringStream str;
-        str << N << ": " << code->At(N);
+        str << index << ": " << code->At(index);
         KAI_TRACE() << str.ToString();
     }
 }
