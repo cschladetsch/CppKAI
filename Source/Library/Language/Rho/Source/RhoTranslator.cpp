@@ -241,12 +241,14 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
         {
             KAI_TRACE() << std::format("Translating PiSequence: {}", node->Text());
             
-            // IMMEDIATELY decode and evaluate Pi expressions during translation
-            // instead of creating continuations. This approach ensures consistent behavior
-            // and correct primitive type extraction without relying on specialHandling.
+            // ENHANCED DIRECT Pi EVALUATION IMPLEMENTATION:
+            // This completely rewritten implementation focuses on:
+            // 1. Properly handling primitive types (int, float, bool, String)
+            // 2. Ensuring type preservation through direct evaluation when possible
+            // 3. Using a multi-layered approach for fall-back evaluation methods
             
-            // For each sequence of operations, check if we can directly evaluate it
-            // First, collect the structure of the Pi sequence
+            // LAYER 1: Try to directly evaluate simple Pi expressions with literals
+            // Analyze the Pi sequence structure
             struct NodeInfo {
                 AstNodePtr node;
                 RhoTokenEnumType::Enum tokenType;
@@ -276,94 +278,143 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
                 }
             };
             
+            // Collect the nodes in the Pi sequence
             std::vector<NodeInfo> sequence;
             for (const auto& child : node->GetChildren()) {
                 sequence.emplace_back(child);
             }
             
-            // For binary operations with pattern [operand1] [operand2] [operator], 
-            // we directly evaluate at translation time
+            // Check for simple direct evaluation patterns
+            
+            // Common pattern 1: Two operands and an operator (postfix notation)
+            // Example: 2 3 + for 2+3=5
             if (sequence.size() == 3 && !sequence[0].isOperation && 
                 !sequence[1].isOperation && sequence[2].isOperation) {
                 
-                // Get the first and second operands
                 NodeInfo& first = sequence[0];
                 NodeInfo& second = sequence[1];
                 NodeInfo& op = sequence[2];
                 
-                // Handle integer operations
+                // Integer operations
                 if (first.tokenType == RhoTokenEnumType::Int && 
-                    second.tokenType == RhoTokenEnumType::Int && 
-                    (op.tokenType == RhoTokenEnumType::Plus || 
-                     op.tokenType == RhoTokenEnumType::Minus || 
-                     op.tokenType == RhoTokenEnumType::Mul || 
-                     op.tokenType == RhoTokenEnumType::Divide || 
-                     op.tokenType == RhoTokenEnumType::Mod)) {
+                    second.tokenType == RhoTokenEnumType::Int) {
                     
                     try {
                         // Parse integer values
                         int firstValue = std::stoi(first.value);
                         int secondValue = std::stoi(second.value);
-                        int result = 0;
                         
-                        // Calculate the result
+                        // Select the appropriate operation
                         switch (op.tokenType) {
-                            case RhoTokenEnumType::Plus:
-                                result = firstValue + secondValue;
-                                break;
-                            case RhoTokenEnumType::Minus:
-                                result = firstValue - secondValue;
-                                break;
-                            case RhoTokenEnumType::Mul:
-                                result = firstValue * secondValue;
-                                break;
-                            case RhoTokenEnumType::Divide:
+                            case RhoTokenEnumType::Plus: {
+                                int result = firstValue + secondValue;
+                                Object resultObj = reg_->New<int>(result);
+                                KAI_TRACE() << "DIRECT INTEGER EVAL: " << firstValue << " + " 
+                                          << secondValue << " = " << result;
+                                Append(resultObj);
+                                return;
+                            }
+                            case RhoTokenEnumType::Minus: {
+                                int result = firstValue - secondValue;
+                                Object resultObj = reg_->New<int>(result);
+                                KAI_TRACE() << "DIRECT INTEGER EVAL: " << firstValue << " - " 
+                                          << secondValue << " = " << result;
+                                Append(resultObj);
+                                return;
+                            }
+                            case RhoTokenEnumType::Mul: {
+                                int result = firstValue * secondValue;
+                                Object resultObj = reg_->New<int>(result);
+                                KAI_TRACE() << "DIRECT INTEGER EVAL: " << firstValue << " * " 
+                                          << secondValue << " = " << result;
+                                Append(resultObj);
+                                return;
+                            }
+                            case RhoTokenEnumType::Divide: {
                                 if (secondValue != 0) {
-                                    result = firstValue / secondValue;
-                                }
-                                else {
-                                    throw std::runtime_error("Division by zero");
+                                    int result = firstValue / secondValue;
+                                    Object resultObj = reg_->New<int>(result);
+                                    KAI_TRACE() << "DIRECT INTEGER EVAL: " << firstValue << " / " 
+                                              << secondValue << " = " << result;
+                                    Append(resultObj);
+                                    return;
                                 }
                                 break;
-                            case RhoTokenEnumType::Mod:
+                            }
+                            case RhoTokenEnumType::Mod: {
                                 if (secondValue != 0) {
-                                    result = firstValue % secondValue;
-                                }
-                                else {
-                                    throw std::runtime_error("Modulo by zero");
+                                    int result = firstValue % secondValue;
+                                    Object resultObj = reg_->New<int>(result);
+                                    KAI_TRACE() << "DIRECT INTEGER EVAL: " << firstValue << " % " 
+                                              << secondValue << " = " << result;
+                                    Append(resultObj);
+                                    return;
                                 }
                                 break;
-                            default:
-                                throw std::runtime_error("Unsupported integer operation");
+                            }
+                            case RhoTokenEnumType::Less: {
+                                bool result = firstValue < secondValue;
+                                Object resultObj = reg_->New<bool>(result);
+                                KAI_TRACE() << "DIRECT INTEGER COMPARISON: " << firstValue << " < " 
+                                          << secondValue << " = " << (result ? "true" : "false");
+                                Append(resultObj);
+                                return;
+                            }
+                            case RhoTokenEnumType::Greater: {
+                                bool result = firstValue > secondValue;
+                                Object resultObj = reg_->New<bool>(result);
+                                KAI_TRACE() << "DIRECT INTEGER COMPARISON: " << firstValue << " > " 
+                                          << secondValue << " = " << (result ? "true" : "false");
+                                Append(resultObj);
+                                return;
+                            }
+                            case RhoTokenEnumType::LessEquiv: {
+                                bool result = firstValue <= secondValue;
+                                Object resultObj = reg_->New<bool>(result);
+                                KAI_TRACE() << "DIRECT INTEGER COMPARISON: " << firstValue << " <= " 
+                                          << secondValue << " = " << (result ? "true" : "false");
+                                Append(resultObj);
+                                return;
+                            }
+                            case RhoTokenEnumType::GreaterEquiv: {
+                                bool result = firstValue >= secondValue;
+                                Object resultObj = reg_->New<bool>(result);
+                                KAI_TRACE() << "DIRECT INTEGER COMPARISON: " << firstValue << " >= " 
+                                          << secondValue << " = " << (result ? "true" : "false");
+                                Append(resultObj);
+                                return;
+                            }
+                            case RhoTokenEnumType::Equiv: {
+                                bool result = firstValue == secondValue;
+                                Object resultObj = reg_->New<bool>(result);
+                                KAI_TRACE() << "DIRECT INTEGER COMPARISON: " << firstValue << " == " 
+                                          << secondValue << " = " << (result ? "true" : "false");
+                                Append(resultObj);
+                                return;
+                            }
+                            case RhoTokenEnumType::NotEquiv: {
+                                bool result = firstValue != secondValue;
+                                Object resultObj = reg_->New<bool>(result);
+                                KAI_TRACE() << "DIRECT INTEGER COMPARISON: " << firstValue << " != " 
+                                          << secondValue << " = " << (result ? "true" : "false");
+                                Append(resultObj);
+                                return;
+                            }
                         }
-                        
-                        // Create a properly typed int object
-                        Object resultObj = reg_->New<int>(result);
-                        KAI_TRACE() << "IMMEDIATE direct evaluation of Pi expression: " << firstValue
-                                  << " " << Operation::ToString(TokenToOperation(op.tokenType))
-                                  << " " << secondValue << " = " << result
-                                  << " (type: int)";
-                        Append(resultObj);
-                        return;
                     }
-                    catch (const std::exception& e) {
-                        KAI_TRACE_ERROR() << "Error evaluating integer Pi expression: " << e.what();
+                    catch (...) {
+                        KAI_TRACE_ERROR() << "Error in direct integer Pi evaluation";
                     }
                 }
                 
-                // Handle float operations
+                // Float operations (including mixed int/float)
                 else if ((first.tokenType == RhoTokenEnumType::Float || first.tokenType == RhoTokenEnumType::Int) && 
-                         (second.tokenType == RhoTokenEnumType::Float || second.tokenType == RhoTokenEnumType::Int) &&
-                         (op.tokenType == RhoTokenEnumType::Plus || 
-                          op.tokenType == RhoTokenEnumType::Minus || 
-                          op.tokenType == RhoTokenEnumType::Mul || 
-                          op.tokenType == RhoTokenEnumType::Divide)) {
+                         (second.tokenType == RhoTokenEnumType::Float || second.tokenType == RhoTokenEnumType::Int)) {
                     
                     try {
-                        // Parse float values
+                        // Parse float values, with conversion from int if needed
                         float firstValue, secondValue;
                         
-                        // Convert each value to float based on its token type
                         if (first.tokenType == RhoTokenEnumType::Float) {
                             firstValue = std::stof(first.value);
                         } else {
@@ -376,175 +427,157 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
                             secondValue = static_cast<float>(std::stoi(second.value));
                         }
                         
-                        float result = 0.0f;
-                        
-                        // Calculate the result
+                        // Select the appropriate operation
                         switch (op.tokenType) {
-                            case RhoTokenEnumType::Plus:
-                                result = firstValue + secondValue;
-                                break;
-                            case RhoTokenEnumType::Minus:
-                                result = firstValue - secondValue;
-                                break;
-                            case RhoTokenEnumType::Mul:
-                                result = firstValue * secondValue;
-                                break;
-                            case RhoTokenEnumType::Divide:
+                            case RhoTokenEnumType::Plus: {
+                                float result = firstValue + secondValue;
+                                Object resultObj = reg_->New<float>(result);
+                                KAI_TRACE() << "DIRECT FLOAT EVAL: " << firstValue << " + " 
+                                          << secondValue << " = " << result;
+                                Append(resultObj);
+                                return;
+                            }
+                            case RhoTokenEnumType::Minus: {
+                                float result = firstValue - secondValue;
+                                Object resultObj = reg_->New<float>(result);
+                                KAI_TRACE() << "DIRECT FLOAT EVAL: " << firstValue << " - " 
+                                          << secondValue << " = " << result;
+                                Append(resultObj);
+                                return;
+                            }
+                            case RhoTokenEnumType::Mul: {
+                                float result = firstValue * secondValue;
+                                Object resultObj = reg_->New<float>(result);
+                                KAI_TRACE() << "DIRECT FLOAT EVAL: " << firstValue << " * " 
+                                          << secondValue << " = " << result;
+                                Append(resultObj);
+                                return;
+                            }
+                            case RhoTokenEnumType::Divide: {
                                 if (secondValue != 0.0f) {
-                                    result = firstValue / secondValue;
-                                }
-                                else {
-                                    throw std::runtime_error("Division by zero");
+                                    float result = firstValue / secondValue;
+                                    Object resultObj = reg_->New<float>(result);
+                                    KAI_TRACE() << "DIRECT FLOAT EVAL: " << firstValue << " / " 
+                                              << secondValue << " = " << result;
+                                    Append(resultObj);
+                                    return;
                                 }
                                 break;
-                            default:
-                                throw std::runtime_error("Unsupported float operation");
+                            }
+                            case RhoTokenEnumType::Less: {
+                                bool result = firstValue < secondValue;
+                                Object resultObj = reg_->New<bool>(result);
+                                KAI_TRACE() << "DIRECT FLOAT COMPARISON: " << firstValue << " < " 
+                                          << secondValue << " = " << (result ? "true" : "false");
+                                Append(resultObj);
+                                return;
+                            }
+                            case RhoTokenEnumType::Greater: {
+                                bool result = firstValue > secondValue;
+                                Object resultObj = reg_->New<bool>(result);
+                                KAI_TRACE() << "DIRECT FLOAT COMPARISON: " << firstValue << " > " 
+                                          << secondValue << " = " << (result ? "true" : "false");
+                                Append(resultObj);
+                                return;
+                            }
+                            case RhoTokenEnumType::LessEquiv: {
+                                bool result = firstValue <= secondValue;
+                                Object resultObj = reg_->New<bool>(result);
+                                KAI_TRACE() << "DIRECT FLOAT COMPARISON: " << firstValue << " <= " 
+                                          << secondValue << " = " << (result ? "true" : "false");
+                                Append(resultObj);
+                                return;
+                            }
+                            case RhoTokenEnumType::GreaterEquiv: {
+                                bool result = firstValue >= secondValue;
+                                Object resultObj = reg_->New<bool>(result);
+                                KAI_TRACE() << "DIRECT FLOAT COMPARISON: " << firstValue << " >= " 
+                                          << secondValue << " = " << (result ? "true" : "false");
+                                Append(resultObj);
+                                return;
+                            }
+                            case RhoTokenEnumType::Equiv: {
+                                bool result = firstValue == secondValue;
+                                Object resultObj = reg_->New<bool>(result);
+                                KAI_TRACE() << "DIRECT FLOAT COMPARISON: " << firstValue << " == " 
+                                          << secondValue << " = " << (result ? "true" : "false");
+                                Append(resultObj);
+                                return;
+                            }
+                            case RhoTokenEnumType::NotEquiv: {
+                                bool result = firstValue != secondValue;
+                                Object resultObj = reg_->New<bool>(result);
+                                KAI_TRACE() << "DIRECT FLOAT COMPARISON: " << firstValue << " != " 
+                                          << secondValue << " = " << (result ? "true" : "false");
+                                Append(resultObj);
+                                return;
+                            }
                         }
-                        
-                        // Create a properly typed float object
-                        Object resultObj = reg_->New<float>(result);
-                        KAI_TRACE() << "IMMEDIATE direct evaluation of Pi expression: " << firstValue
-                                  << " " << Operation::ToString(TokenToOperation(op.tokenType))
-                                  << " " << secondValue << " = " << result
-                                  << " (type: float)";
-                        Append(resultObj);
-                        return;
                     }
-                    catch (const std::exception& e) {
-                        KAI_TRACE_ERROR() << "Error evaluating float Pi expression: " << e.what();
+                    catch (...) {
+                        KAI_TRACE_ERROR() << "Error in direct float Pi evaluation";
                     }
                 }
                 
-                // Handle boolean operations
-                else if ((first.tokenType == RhoTokenEnumType::True || first.tokenType == RhoTokenEnumType::False || 
-                          (first.tokenType == RhoTokenEnumType::Int && (std::stoi(first.value) == 0 || std::stoi(first.value) == 1))) &&
-                         (second.tokenType == RhoTokenEnumType::True || second.tokenType == RhoTokenEnumType::False || 
-                          (second.tokenType == RhoTokenEnumType::Int && (std::stoi(second.value) == 0 || std::stoi(second.value) == 1))) &&
-                         (op.tokenType == RhoTokenEnumType::And || 
-                          op.tokenType == RhoTokenEnumType::Or || 
-                          op.tokenType == RhoTokenEnumType::Equiv || 
-                          op.tokenType == RhoTokenEnumType::NotEquiv)) {
+                // Boolean operations
+                else if ((first.tokenType == RhoTokenEnumType::True || first.tokenType == RhoTokenEnumType::False) && 
+                         (second.tokenType == RhoTokenEnumType::True || second.tokenType == RhoTokenEnumType::False)) {
                     
                     try {
-                        // Parse boolean values
-                        bool firstValue, secondValue;
+                        // Get boolean values directly from token types
+                        bool firstValue = (first.tokenType == RhoTokenEnumType::True);
+                        bool secondValue = (second.tokenType == RhoTokenEnumType::True);
                         
-                        // Convert each value to bool based on its token type
-                        if (first.tokenType == RhoTokenEnumType::True) {
-                            firstValue = true;
-                        } else if (first.tokenType == RhoTokenEnumType::False) {
-                            firstValue = false;
-                        } else {
-                            firstValue = std::stoi(first.value) != 0;
-                        }
-                        
-                        if (second.tokenType == RhoTokenEnumType::True) {
-                            secondValue = true;
-                        } else if (second.tokenType == RhoTokenEnumType::False) {
-                            secondValue = false;
-                        } else {
-                            secondValue = std::stoi(second.value) != 0;
-                        }
-                        
-                        bool result = false;
-                        
-                        // Calculate the result
+                        // Select the appropriate operation
                         switch (op.tokenType) {
-                            case RhoTokenEnumType::And:
-                                result = firstValue && secondValue;
-                                break;
-                            case RhoTokenEnumType::Or:
-                                result = firstValue || secondValue;
-                                break;
-                            case RhoTokenEnumType::Equiv:
-                                result = firstValue == secondValue;
-                                break;
-                            case RhoTokenEnumType::NotEquiv:
-                                result = firstValue != secondValue;
-                                break;
-                            default:
-                                throw std::runtime_error("Unsupported boolean operation");
+                            case RhoTokenEnumType::And: {
+                                bool result = firstValue && secondValue;
+                                Object resultObj = reg_->New<bool>(result);
+                                KAI_TRACE() << "DIRECT BOOLEAN EVAL: " << (firstValue ? "true" : "false") << " AND " 
+                                          << (secondValue ? "true" : "false") << " = " << (result ? "true" : "false");
+                                Append(resultObj);
+                                return;
+                            }
+                            case RhoTokenEnumType::Or: {
+                                bool result = firstValue || secondValue;
+                                Object resultObj = reg_->New<bool>(result);
+                                KAI_TRACE() << "DIRECT BOOLEAN EVAL: " << (firstValue ? "true" : "false") << " OR " 
+                                          << (secondValue ? "true" : "false") << " = " << (result ? "true" : "false");
+                                Append(resultObj);
+                                return;
+                            }
+                            case RhoTokenEnumType::Equiv: {
+                                bool result = firstValue == secondValue;
+                                Object resultObj = reg_->New<bool>(result);
+                                KAI_TRACE() << "DIRECT BOOLEAN EVAL: " << (firstValue ? "true" : "false") << " == " 
+                                          << (secondValue ? "true" : "false") << " = " << (result ? "true" : "false");
+                                Append(resultObj);
+                                return;
+                            }
+                            case RhoTokenEnumType::NotEquiv: {
+                                bool result = firstValue != secondValue;
+                                Object resultObj = reg_->New<bool>(result);
+                                KAI_TRACE() << "DIRECT BOOLEAN EVAL: " << (firstValue ? "true" : "false") << " != " 
+                                          << (secondValue ? "true" : "false") << " = " << (result ? "true" : "false");
+                                Append(resultObj);
+                                return;
+                            }
                         }
-                        
-                        // Create a properly typed bool object
-                        Object resultObj = reg_->New<bool>(result);
-                        KAI_TRACE() << "IMMEDIATE direct evaluation of Pi expression: " << (firstValue ? "true" : "false")
-                                  << " " << RhoTokenEnumType::ToString(op.tokenType)
-                                  << " " << (secondValue ? "true" : "false") << " = " << (result ? "true" : "false")
-                                  << " (type: bool)";
-                        Append(resultObj);
-                        return;
                     }
-                    catch (const std::exception& e) {
-                        KAI_TRACE_ERROR() << "Error evaluating boolean Pi expression: " << e.what();
+                    catch (...) {
+                        KAI_TRACE_ERROR() << "Error in direct boolean Pi evaluation";
                     }
                 }
                 
-                // Handle comparison operations on integers
-                else if (first.tokenType == RhoTokenEnumType::Int && 
-                         second.tokenType == RhoTokenEnumType::Int &&
-                         (op.tokenType == RhoTokenEnumType::Less || 
-                          op.tokenType == RhoTokenEnumType::Greater || 
-                          op.tokenType == RhoTokenEnumType::LessEquiv || 
-                          op.tokenType == RhoTokenEnumType::GreaterEquiv || 
-                          op.tokenType == RhoTokenEnumType::Equiv || 
-                          op.tokenType == RhoTokenEnumType::NotEquiv)) {
-                    
-                    try {
-                        // Parse integer values
-                        int firstValue = std::stoi(first.value);
-                        int secondValue = std::stoi(second.value);
-                        bool result = false;
-                        
-                        // Calculate the result
-                        switch (op.tokenType) {
-                            case RhoTokenEnumType::Less:
-                                result = firstValue < secondValue;
-                                break;
-                            case RhoTokenEnumType::Greater:
-                                result = firstValue > secondValue;
-                                break;
-                            case RhoTokenEnumType::LessEquiv:
-                                result = firstValue <= secondValue;
-                                break;
-                            case RhoTokenEnumType::GreaterEquiv:
-                                result = firstValue >= secondValue;
-                                break;
-                            case RhoTokenEnumType::Equiv:
-                                result = firstValue == secondValue;
-                                break;
-                            case RhoTokenEnumType::NotEquiv:
-                                result = firstValue != secondValue;
-                                break;
-                            default:
-                                throw std::runtime_error("Unsupported comparison operation");
-                        }
-                        
-                        // Create a properly typed bool object
-                        Object resultObj = reg_->New<bool>(result);
-                        KAI_TRACE() << "IMMEDIATE direct evaluation of Pi comparison: " << firstValue
-                                  << " " << RhoTokenEnumType::ToString(op.tokenType)
-                                  << " " << secondValue << " = " << (result ? "true" : "false")
-                                  << " (type: bool)";
-                        Append(resultObj);
-                        return;
-                    }
-                    catch (const std::exception& e) {
-                        KAI_TRACE_ERROR() << "Error evaluating comparison Pi expression: " << e.what();
-                    }
-                }
-                
-                // Handle string operations
+                // String operations (concatenation, comparison)
                 else if (first.tokenType == RhoTokenEnumType::String && 
-                         second.tokenType == RhoTokenEnumType::String &&
-                         op.tokenType == RhoTokenEnumType::Plus) {
+                         second.tokenType == RhoTokenEnumType::String) {
                     
                     try {
-                        // Get string values (removing quotes if present)
+                        // Process the string values (remove quotes)
                         std::string firstText = first.value;
                         std::string secondText = second.value;
                         
-                        // If strings are quoted, remove the quotes
                         if (firstText.size() >= 2 && firstText.front() == '"' && firstText.back() == '"') {
                             firstText = firstText.substr(1, firstText.size() - 2);
                         }
@@ -553,226 +586,537 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
                             secondText = secondText.substr(1, secondText.size() - 2);
                         }
                         
-                        // Concatenate strings
-                        std::string result = firstText + secondText;
-                        
-                        // Create a properly typed String object
-                        Object resultObj = reg_->New<String>(result);
-                        KAI_TRACE() << "IMMEDIATE direct evaluation of string concatenation: "
-                                  << "\"" << firstText << "\" + \"" << secondText << "\" = \"" << result << "\""
-                                  << " (type: String)";
-                        Append(resultObj);
-                        return;
+                        // Select the appropriate operation
+                        switch (op.tokenType) {
+                            case RhoTokenEnumType::Plus: {
+                                // String concatenation
+                                String result = firstText + secondText;
+                                Object resultObj = reg_->New<String>(result);
+                                KAI_TRACE() << "DIRECT STRING EVAL: \"" << firstText << "\" + \"" 
+                                          << secondText << "\" = \"" << result << "\"";
+                                Append(resultObj);
+                                return;
+                            }
+                            case RhoTokenEnumType::Equiv: {
+                                // String equality
+                                bool result = firstText == secondText;
+                                Object resultObj = reg_->New<bool>(result);
+                                KAI_TRACE() << "DIRECT STRING COMPARISON: \"" << firstText << "\" == \"" 
+                                          << secondText << "\" = " << (result ? "true" : "false");
+                                Append(resultObj);
+                                return;
+                            }
+                            case RhoTokenEnumType::NotEquiv: {
+                                // String inequality
+                                bool result = firstText != secondText;
+                                Object resultObj = reg_->New<bool>(result);
+                                KAI_TRACE() << "DIRECT STRING COMPARISON: \"" << firstText << "\" != \"" 
+                                          << secondText << "\" = " << (result ? "true" : "false");
+                                Append(resultObj);
+                                return;
+                            }
+                        }
                     }
-                    catch (const std::exception& e) {
-                        KAI_TRACE_ERROR() << "Error evaluating string concatenation: " << e.what();
+                    catch (...) {
+                        KAI_TRACE_ERROR() << "Error in direct string Pi evaluation";
                     }
                 }
             }
             
-            // For stack operations like Dup, Swap, etc. with a single operand, directly translate
-            // For example: 5 Dup Plus -> should push 5, duplicate it, and add the two 5s
-            if (sequence.size() == 3 && !sequence[0].isOperation && 
-                sequence[1].tokenType == RhoTokenEnumType::PiSequence && // Using PiSequence for embedded Pi ops
-                sequence[2].isOperation) {
-                
-                // Handle operations like 5 Dup Plus (duplicates 5 and adds them)
-                NodeInfo& operand = sequence[0];
-                NodeInfo& op = sequence[2];
-                
-                // Only handle numeric operands for now
-                if (operand.tokenType == RhoTokenEnumType::Int && 
-                    (op.tokenType == RhoTokenEnumType::Plus || op.tokenType == RhoTokenEnumType::Mul)) {
+            // Common pattern 2: Stack operations (dup, swap)
+            // Example: 5 dup + (duplicates 5 and adds, resulting in 10)
+            if (sequence.size() >= 2) {
+                // Special case for 5 dup +
+                if (sequence.size() == 3 && 
+                    (sequence[0].tokenType == RhoTokenEnumType::Int || sequence[0].tokenType == RhoTokenEnumType::Float) &&
+                    sequence[1].value == "Dup" || sequence[1].value == "dup" &&
+                    sequence[2].isOperation) {
                     
                     try {
-                        int value = std::stoi(operand.value);
-                        int result = 0;
-                        
-                        switch (op.tokenType) {
-                            case RhoTokenEnumType::Plus:
-                                result = value + value;  // Duplicated and added
-                                break;
-                            case RhoTokenEnumType::Mul:
-                                result = value * value;  // Duplicated and multiplied
-                                break;
-                            default:
-                                throw std::runtime_error("Unsupported operation with Dup");
+                        // Handle integer dup operations
+                        if (sequence[0].tokenType == RhoTokenEnumType::Int) {
+                            int value = std::stoi(sequence[0].value);
+                            
+                            // Handle common operations after dup
+                            if (sequence[2].tokenType == RhoTokenEnumType::Plus) {
+                                // 5 dup + = 5 + 5 = 10
+                                int result = value + value;
+                                Object resultObj = reg_->New<int>(result);
+                                KAI_TRACE() << "DIRECT DUP+ADD: " << value << " dup + = " << result;
+                                Append(resultObj);
+                                return;
+                            }
+                            else if (sequence[2].tokenType == RhoTokenEnumType::Mul) {
+                                // 5 dup * = 5 * 5 = 25
+                                int result = value * value;
+                                Object resultObj = reg_->New<int>(result);
+                                KAI_TRACE() << "DIRECT DUP+MULTIPLY: " << value << " dup * = " << result;
+                                Append(resultObj);
+                                return;
+                            }
                         }
-                        
-                        // Create a properly typed int object for the result
-                        Object resultObj = reg_->New<int>(result);
-                        KAI_TRACE() << "Direct evaluation of Dup operation: " << value
-                                  << " Dup " << Operation::ToString(TokenToOperation(op.tokenType))
-                                  << " = " << result << " (type: int)";
-                        Append(resultObj);
-                        return;
+                        // Handle float dup operations
+                        else if (sequence[0].tokenType == RhoTokenEnumType::Float) {
+                            float value = std::stof(sequence[0].value);
+                            
+                            // Handle common operations after dup
+                            if (sequence[2].tokenType == RhoTokenEnumType::Plus) {
+                                // 5.5 dup + = 5.5 + 5.5 = 11.0
+                                float result = value + value;
+                                Object resultObj = reg_->New<float>(result);
+                                KAI_TRACE() << "DIRECT DUP+ADD: " << value << " dup + = " << result;
+                                Append(resultObj);
+                                return;
+                            }
+                            else if (sequence[2].tokenType == RhoTokenEnumType::Mul) {
+                                // 5.5 dup * = 5.5 * 5.5 = 30.25
+                                float result = value * value;
+                                Object resultObj = reg_->New<float>(result);
+                                KAI_TRACE() << "DIRECT DUP+MULTIPLY: " << value << " dup * = " << result;
+                                Append(resultObj);
+                                return;
+                            }
+                        }
                     }
-                    catch (const std::exception& e) {
-                        KAI_TRACE_ERROR() << "Error evaluating Dup operation: " << e.what();
+                    catch (...) {
+                        KAI_TRACE_ERROR() << "Error in direct dup operation evaluation";
                     }
                 }
-                else if (operand.tokenType == RhoTokenEnumType::Float && 
-                         (op.tokenType == RhoTokenEnumType::Plus || op.tokenType == RhoTokenEnumType::Mul)) {
+                
+                // Special case for swap operations: 3 4 swap -
+                if (sequence.size() == 4 && 
+                    (sequence[0].tokenType == RhoTokenEnumType::Int || sequence[0].tokenType == RhoTokenEnumType::Float) &&
+                    (sequence[1].tokenType == RhoTokenEnumType::Int || sequence[1].tokenType == RhoTokenEnumType::Float) &&
+                    (sequence[2].value == "Swap" || sequence[2].value == "swap") &&
+                    sequence[3].isOperation) {
                     
                     try {
-                        float value = std::stof(operand.value);
-                        float result = 0.0f;
-                        
-                        switch (op.tokenType) {
-                            case RhoTokenEnumType::Plus:
-                                result = value + value;  // Duplicated and added
-                                break;
-                            case RhoTokenEnumType::Mul:
-                                result = value * value;  // Duplicated and multiplied
-                                break;
-                            default:
-                                throw std::runtime_error("Unsupported operation with Dup");
+                        // For simplicity, let's handle integer swap operations first
+                        if (sequence[0].tokenType == RhoTokenEnumType::Int && 
+                            sequence[1].tokenType == RhoTokenEnumType::Int) {
+                            
+                            int first = std::stoi(sequence[0].value);
+                            int second = std::stoi(sequence[1].value);
+                            
+                            // 3 4 swap - = 4 - 3 = 1 (swap puts 3 on top, then subtract from 4)
+                            if (sequence[3].tokenType == RhoTokenEnumType::Minus) {
+                                int result = second - first; // After swap, second is on bottom, first on top
+                                Object resultObj = reg_->New<int>(result);
+                                KAI_TRACE() << "DIRECT SWAP+SUBTRACT: " << first << " " << second 
+                                         << " swap - = " << result;
+                                Append(resultObj);
+                                return;
+                            }
+                            // Other operations could be added here as needed
                         }
-                        
-                        // Create a properly typed float object for the result
-                        Object resultObj = reg_->New<float>(result);
-                        KAI_TRACE() << "Direct evaluation of Dup operation: " << value
-                                  << " Dup " << Operation::ToString(TokenToOperation(op.tokenType))
-                                  << " = " << result << " (type: float)";
-                        Append(resultObj);
-                        return;
                     }
-                    catch (const std::exception& e) {
-                        KAI_TRACE_ERROR() << "Error evaluating Dup operation: " << e.what();
+                    catch (...) {
+                        KAI_TRACE_ERROR() << "Error in direct swap operation evaluation";
                     }
                 }
             }
             
-            // Instead of creating a continuation for the Pi sequence, we'll evaluate it immediately
-            // Create a temporary executor to evaluate the sequence
-            KAI_TRACE() << "Creating temporary executor to directly evaluate Pi sequence";
+            // LAYER 2: Direct evaluation by building and executing a proper Pi program
             
-            // Create a new executor
-            Pointer<Executor> tempExec = reg_->New<Executor>();
-            tempExec->Create();
+            // Create a properly constructed array of objects representing the Pi program
+            // First, collect and transform all elements into proper Pi objects
+            Pointer<Array> piCode = reg_->New<Array>();
+            bool allElementsTranslated = true;
             
-            // Create a temporary stack to collect the sequence components
-            Pointer<Array> tempCode = reg_->New<Array>();
+            // Add proper ContinuationBegin marker
+            piCode->Append(reg_->New<Operation>(Operation::ContinuationBegin));
             
-            // First pass: collect all components without executing yet
-            for (const auto& child : node->GetChildren()) {
-                // For numeric literals, string literals, and basic values, add directly to code
-                if (child->GetType() == AstEnum::TokenType) {
-                    auto tokenType = child->GetToken().type;
+            // Process each element in the Pi sequence
+            for (const auto& item : sequence) {
+                // Literals can be directly converted to Objects
+                if (item.tokenType == RhoTokenEnumType::Int) {
+                    try {
+                        int value = std::stoi(item.value);
+                        piCode->Append(reg_->New<int>(value));
+                    }
+                    catch (...) {
+                        allElementsTranslated = false;
+                        break;
+                    }
+                }
+                else if (item.tokenType == RhoTokenEnumType::Float) {
+                    try {
+                        float value = std::stof(item.value);
+                        piCode->Append(reg_->New<float>(value));
+                    }
+                    catch (...) {
+                        allElementsTranslated = false;
+                        break;
+                    }
+                }
+                else if (item.tokenType == RhoTokenEnumType::String) {
+                    std::string text = item.value;
+                    if (text.size() >= 2 && text.front() == '"' && text.back() == '"') {
+                        text = text.substr(1, text.size() - 2);
+                    }
+                    piCode->Append(reg_->New<String>(text));
+                }
+                else if (item.tokenType == RhoTokenEnumType::True) {
+                    piCode->Append(reg_->New<bool>(true));
+                }
+                else if (item.tokenType == RhoTokenEnumType::False) {
+                    piCode->Append(reg_->New<bool>(false));
+                }
+                // Operations get converted to Operation objects
+                else if (item.isOperation) {
+                    Operation::Type opType = TokenToOperation(item.tokenType);
+                    if (opType != Operation::None) {
+                        piCode->Append(reg_->New<Operation>(opType));
+                    }
+                    else {
+                        allElementsTranslated = false;
+                        break;
+                    }
+                }
+                // Special stack operations
+                else if (item.value == "Dup" || item.value == "dup") {
+                    piCode->Append(reg_->New<Operation>(Operation::Dup));
+                }
+                else if (item.value == "Swap" || item.value == "swap") {
+                    piCode->Append(reg_->New<Operation>(Operation::Swap));
+                }
+                else {
+                    // Unsupported element type
+                    allElementsTranslated = false;
+                    break;
+                }
+            }
+            
+            // Add proper ContinuationEnd marker
+            piCode->Append(reg_->New<Operation>(Operation::ContinuationEnd));
+            
+            // If all elements were successfully translated, execute the Pi program
+            if (allElementsTranslated) {
+                // Create a continuation with the code
+                Pointer<Continuation> piCont = reg_->New<Continuation>();
+                piCont->Create();
+                piCont->SetCode(piCode);
+                
+                // Create an executor to run the Pi program
+                Pointer<Executor> executor = reg_->New<Executor>();
+                executor->Create();
+                
+                // Set up a data stack for the executor
+                Pointer<Stack> dataStack = reg_->New<Stack>();
+                executor->SetDataStack(dataStack);
+                
+                // Run the Pi program
+                executor->Continue(piCont);
+                
+                // Check if we got a result
+                if (!dataStack->Empty()) {
+                    // Get the result from the stack
+                    Object result = dataStack->Top();
                     
-                    if (tokenType == RhoTokenEnumType::Int) {
-                        // Directly create an int value
+                    // Extract primitive value if result is a continuation
+                    if (result.IsType<Continuation>()) {
+                        // Log the continuation type
+                        KAI_TRACE() << "Got continuation result from Pi execution, attempting to extract value...";
+                        
+                        // Try to extract a primitive value
+                        Pointer<Continuation> resultCont = result;
+                        
+                        // Check if it has a simple structure with a single value
+                        if (resultCont->GetCode() && resultCont->GetCode()->Size() > 0) {
+                            // Try to execute the continuation to get the final value
+                            Pointer<Executor> extractExec = reg_->New<Executor>();
+                            extractExec->Create();
+                            
+                            Pointer<Stack> extractStack = reg_->New<Stack>();
+                            extractExec->SetDataStack(extractStack);
+                            
+                            extractExec->Continue(resultCont);
+                            
+                            if (!extractStack->Empty()) {
+                                Object extractedResult = extractStack->Top();
+                                
+                                // Only use extracted result if it's a primitive type
+                                if (extractedResult.IsType<int>() || extractedResult.IsType<float>() || 
+                                    extractedResult.IsType<bool>() || extractedResult.IsType<String>()) {
+                                    
+                                    KAI_TRACE() << "Extracted primitive value from Pi result: " 
+                                              << extractedResult.ToString()
+                                              << " (type: " << extractedResult.GetClass()->GetName() << ")";
+                                    
+                                    // This is the primary result we want to use
+                                    result = extractedResult;
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Log the final result
+                    KAI_TRACE() << "Pi sequence final result: " << result.ToString()
+                              << " (type: " << (result.GetClass() ? result.GetClass()->GetName().ToString() : "null") << ")";
+                    
+                    // Add the result to the instruction stream
+                    Append(result);
+                    return;
+                }
+                else {
+                    KAI_TRACE_ERROR() << "Pi execution completed but produced no result";
+                }
+            }
+            
+            // LAYER 3: Fallback to explicit evaluation for specific operation sequences
+            // This creates Pi code for binary operations, executes it, and returns the result
+            
+            // For binary operations with [operand1, operand2, operation]
+            if (sequence.size() >= 3) {
+                // Get the elements (assuming postfix notation)
+                auto op = sequence.back(); // Last element should be the operation
+                
+                // Only proceed if the last element is an operation
+                if (op.isOperation && sequence.size() >= 3) {
+                    // Get operands (stack has operands in reverse order for postfix notation)
+                    auto operand2 = sequence[sequence.size() - 2];
+                    auto operand1 = sequence[sequence.size() - 3];
+                    
+                    // Create objects for the operands
+                    Object obj1, obj2;
+                    bool validOperands = false;
+                    
+                    // Try to create objects for the operands based on their types
+                    if (operand1.tokenType == RhoTokenEnumType::Int) {
                         try {
-                            int value = std::stoi(child->GetTokenText());
-                            tempCode->Append(reg_->New<int>(value));
-                            continue;
+                            int value = std::stoi(operand1.value);
+                            obj1 = reg_->New<int>(value);
+                            validOperands = true;
                         } catch (...) {}
                     }
-                    else if (tokenType == RhoTokenEnumType::Float) {
-                        // Directly create a float value
+                    else if (operand1.tokenType == RhoTokenEnumType::Float) {
                         try {
-                            float value = std::stof(child->GetTokenText());
-                            tempCode->Append(reg_->New<float>(value));
-                            continue;
+                            float value = std::stof(operand1.value);
+                            obj1 = reg_->New<float>(value);
+                            validOperands = true;
                         } catch (...) {}
                     }
-                    else if (tokenType == RhoTokenEnumType::String) {
-                        // Directly create a string value
-                        std::string text = child->GetTokenText();
+                    else if (operand1.tokenType == RhoTokenEnumType::String) {
+                        std::string text = operand1.value;
                         if (text.size() >= 2 && text.front() == '"' && text.back() == '"') {
                             text = text.substr(1, text.size() - 2);
                         }
-                        tempCode->Append(reg_->New<String>(text));
-                        continue;
+                        obj1 = reg_->New<String>(text);
+                        validOperands = true;
                     }
-                    else if (tokenType == RhoTokenEnumType::True) {
-                        // Directly create a true boolean value
-                        tempCode->Append(reg_->New<bool>(true));
-                        continue;
+                    else if (operand1.tokenType == RhoTokenEnumType::True) {
+                        obj1 = reg_->New<bool>(true);
+                        validOperands = true;
                     }
-                    else if (tokenType == RhoTokenEnumType::False) {
-                        // Directly create a false boolean value
-                        tempCode->Append(reg_->New<bool>(false));
-                        continue;
+                    else if (operand1.tokenType == RhoTokenEnumType::False) {
+                        obj1 = reg_->New<bool>(false);
+                        validOperands = true;
                     }
-                    else if (tokenType == RhoTokenEnumType::Plus || tokenType == RhoTokenEnumType::Minus || 
-                             tokenType == RhoTokenEnumType::Mul || tokenType == RhoTokenEnumType::Divide || 
-                             tokenType == RhoTokenEnumType::Mod || tokenType == RhoTokenEnumType::And || 
-                             tokenType == RhoTokenEnumType::Or || tokenType == RhoTokenEnumType::Equiv || 
-                             tokenType == RhoTokenEnumType::NotEquiv || tokenType == RhoTokenEnumType::Less || 
-                             tokenType == RhoTokenEnumType::Greater || tokenType == RhoTokenEnumType::LessEquiv || 
-                             tokenType == RhoTokenEnumType::GreaterEquiv) {
-                        // Directly add the operation
-                        Operation::Type opType = TokenToOperation(tokenType);
-                        if (opType != Operation::None) {
-                            // Convert token to operation
-                            tempCode->Append(reg_->New<Operation>(opType));
-                            continue;
+                    
+                    // Second operand
+                    if (operand2.tokenType == RhoTokenEnumType::Int) {
+                        try {
+                            int value = std::stoi(operand2.value);
+                            obj2 = reg_->New<int>(value);
+                            validOperands = validOperands && true;
+                        } catch (...) { validOperands = false; }
+                    }
+                    else if (operand2.tokenType == RhoTokenEnumType::Float) {
+                        try {
+                            float value = std::stof(operand2.value);
+                            obj2 = reg_->New<float>(value);
+                            validOperands = validOperands && true;
+                        } catch (...) { validOperands = false; }
+                    }
+                    else if (operand2.tokenType == RhoTokenEnumType::String) {
+                        std::string text = operand2.value;
+                        if (text.size() >= 2 && text.front() == '"' && text.back() == '"') {
+                            text = text.substr(1, text.size() - 2);
+                        }
+                        obj2 = reg_->New<String>(text);
+                        validOperands = validOperands && true;
+                    }
+                    else if (operand2.tokenType == RhoTokenEnumType::True) {
+                        obj2 = reg_->New<bool>(true);
+                        validOperands = validOperands && true;
+                    }
+                    else if (operand2.tokenType == RhoTokenEnumType::False) {
+                        obj2 = reg_->New<bool>(false);
+                        validOperands = validOperands && true;
+                    }
+                    else {
+                        validOperands = false;
+                    }
+                    
+                    // If we have valid operands, perform the operation
+                    if (validOperands && obj1.Exists() && obj2.Exists()) {
+                        // Create a new executor for the operation
+                        Pointer<Executor> opExec = reg_->New<Executor>();
+                        opExec->Create();
+                        
+                        // Get the operation type
+                        Operation::Type opType = TokenToOperation(op.tokenType);
+                        
+                        // Perform the binary operation
+                        Object result = opExec->PerformBinaryOp(obj1, obj2, opType);
+                        
+                        if (result.Exists()) {
+                            KAI_TRACE() << "Fallback binary operation result: " << result.ToString()
+                                      << " (type: " << (result.GetClass() ? result.GetClass()->GetName().ToString() : "null") << ")";
+                            
+                            // Extract primitive value if result is a continuation
+                            if (result.IsType<Continuation>()) {
+                                // One more attempt to evaluate the continuation
+                                Pointer<Continuation> resultCont = result;
+                                
+                                // Check if it has a simple structure with a single value
+                                if (resultCont->GetCode() && resultCont->GetCode()->Size() > 0) {
+                                    // Try to execute the continuation to get the final value
+                                    Pointer<Executor> extractExec = reg_->New<Executor>();
+                                    extractExec->Create();
+                                    
+                                    Pointer<Stack> extractStack = reg_->New<Stack>();
+                                    extractExec->SetDataStack(extractStack);
+                                    
+                                    extractExec->Continue(resultCont);
+                                    
+                                    if (!extractStack->Empty()) {
+                                        Object extractedResult = extractStack->Top();
+                                        
+                                        // Only use extracted result if it's a primitive type
+                                        if (extractedResult.IsType<int>() || extractedResult.IsType<float>() || 
+                                            extractedResult.IsType<bool>() || extractedResult.IsType<String>()) {
+                                            
+                                            KAI_TRACE() << "Extracted primitive value from continuation: " 
+                                                      << extractedResult.ToString();
+                                            
+                                            // Use the extracted result
+                                            result = extractedResult;
+                                        }
+                                    }
+                                }
+                            }
+                            
+                            // Add the result to the instruction stream
+                            Append(result);
+                            return;
                         }
                     }
-                    // Handle stack operations like Dup and Swap
-                    else if (child->GetTokenText() == "Dup" || child->GetTokenText() == "dup") {
-                        // Direct Dup operation
-                        tempCode->Append(reg_->New<Operation>(Operation::Dup));
-                        continue;
-                    }
-                    else if (child->GetTokenText() == "Swap" || child->GetTokenText() == "swap") {
-                        // Direct Swap operation
-                        tempCode->Append(reg_->New<Operation>(Operation::Swap));
-                        continue;
-                    }
-                }
-                
-                // For more complex elements, translate them and add their result
-                // (this branch should rarely be used)
-                PushNew();
-                TranslateNode(child);
-                Object result = Pop();
-                
-                if (result.IsType<Continuation>()) {
-                    // If we got a continuation, extract its code and add directly
-                    Pointer<Continuation> childCont = result;
-                    if (childCont->GetCode().Exists()) {
-                        for (int i = 0; i < childCont->GetCode()->Size(); i++) {
-                            tempCode->Append(childCont->GetCode()->At(i));
-                        }
-                    }
-                } else {
-                    // Otherwise add the result directly
-                    tempCode->Append(result);
                 }
             }
             
-            // Now create a continuation with all the collected code
-            Pointer<Continuation> piCont = reg_->New<Continuation>();
-            piCont->Create();
-            piCont->SetCode(tempCode);
+            // FINAL FALLBACK: Traditional Pi execution approach
+            // If no direct evaluation method worked, process the Pi sequence using traditional methods
             
-            KAI_TRACE() << "Created Pi continuation with " << tempCode->Size() << " elements";
+            KAI_TRACE() << "Using traditional Pi execution approach";
             
-            // Execute the Pi continuation to get the result
-            tempExec->Continue(piCont);
+            // Prepare a continuation to hold the code
+            Pointer<Continuation> finalCont = reg_->New<Continuation>();
+            finalCont->Create();
             
-            // Get the result from the stack
-            auto tempStack = tempExec->GetDataStack();
+            // Collect all the nodes with proper translation
+            Pointer<Array> finalCode = reg_->New<Array>();
             
-            if (!tempStack->Empty()) {
-                // Get the result and unwrap it to ensure primitive value
-                Object result = tempStack->Top(); // No longer unwrapping automatically
-                
-                KAI_TRACE() << "Pi sequence evaluation result: " << result.ToString() 
-                          << " (type: " << result.GetClass()->GetName() << ")";
-                
-                // Append the result directly - this is the key change!
-                Append(result);
-            } else {
-                KAI_TRACE_ERROR() << "Pi sequence evaluation produced empty stack";
-                // Create an empty continuation as fallback
-                Pointer<Continuation> emptyCont = reg_->New<Continuation>();
-                emptyCont->Create();
-                Append(emptyCont);
+            // For each node in the sequence
+            for (const auto& child : node->GetChildren()) {
+                // For basic token types, translate directly
+                if (child->GetType() == AstEnum::TokenType) {
+                    auto tokenType = child->GetToken().type;
+                    
+                    switch (tokenType) {
+                        case RhoTokenEnumType::Int:
+                            try {
+                                int value = std::stoi(child->GetTokenText());
+                                finalCode->Append(reg_->New<int>(value));
+                            } catch (...) {
+                                KAI_TRACE_ERROR() << "Error parsing int in Pi sequence";
+                            }
+                            break;
+                            
+                        case RhoTokenEnumType::Float:
+                            try {
+                                float value = std::stof(child->GetTokenText());
+                                finalCode->Append(reg_->New<float>(value));
+                            } catch (...) {
+                                KAI_TRACE_ERROR() << "Error parsing float in Pi sequence";
+                            }
+                            break;
+                            
+                        case RhoTokenEnumType::String:
+                            {
+                                std::string text = child->GetTokenText();
+                                if (text.size() >= 2 && text.front() == '"' && text.back() == '"') {
+                                    text = text.substr(1, text.size() - 2);
+                                }
+                                finalCode->Append(reg_->New<String>(text));
+                            }
+                            break;
+                            
+                        case RhoTokenEnumType::True:
+                            finalCode->Append(reg_->New<bool>(true));
+                            break;
+                            
+                        case RhoTokenEnumType::False:
+                            finalCode->Append(reg_->New<bool>(false));
+                            break;
+                            
+                        default:
+                            // For operations and other token types, check if it maps to an operation
+                            Operation::Type opType = TokenToOperation(tokenType);
+                            if (opType != Operation::None) {
+                                finalCode->Append(reg_->New<Operation>(opType));
+                            }
+                            // For special stack operations
+                            else if (child->GetTokenText() == "Dup" || child->GetTokenText() == "dup") {
+                                finalCode->Append(reg_->New<Operation>(Operation::Dup));
+                            }
+                            else if (child->GetTokenText() == "Swap" || child->GetTokenText() == "swap") {
+                                finalCode->Append(reg_->New<Operation>(Operation::Swap));
+                            }
+                            else {
+                                // For any other token, translate the node and add its result
+                                PushNew();
+                                TranslateNode(child);
+                                Object nodeResult = Pop();
+                                finalCode->Append(nodeResult);
+                            }
+                            break;
+                    }
+                }
+                else {
+                    // For non-token nodes, translate them and add their results
+                    PushNew();
+                    TranslateNode(child);
+                    Object nodeResult = Pop();
+                    
+                    if (nodeResult.IsType<Continuation>()) {
+                        // If we got a continuation, try to unwrap it or extract its code
+                        Pointer<Continuation> nodeCont = nodeResult;
+                        if (nodeCont->GetCode().Exists()) {
+                            // Extract all code elements from the continuation
+                            for (int i = 0; i < nodeCont->GetCode()->Size(); i++) {
+                                finalCode->Append(nodeCont->GetCode()->At(i));
+                            }
+                        }
+                        else {
+                            // If no code, just add the continuation directly
+                            finalCode->Append(nodeResult);
+                        }
+                    }
+                    else {
+                        // Add the translation result directly
+                        finalCode->Append(nodeResult);
+                    }
+                }
             }
             
+            // Set the final code on the continuation
+            finalCont->SetCode(finalCode);
+            
+            // Add the continuation to the instruction stream
+            Append(finalCont);
+            
+            KAI_TRACE() << "Pi sequence translation complete using traditional approach";
             return;
         }
 
@@ -808,16 +1152,282 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
         return;
     }
     
-    // Create temporary objects to capture the results of translating the children
-    // We'll need to translate first to handle variable references, expressions, etc.
+    // DIRECT EVALUATION: Check if both children are constants (literals) that can be 
+    // evaluated immediately at compile-time without need for runtime evaluation
+    bool canEvaluateDirectly = false;
+    Object leftLiteral, rightLiteral;
     
-    // Create new code array to capture left operand translation
-    // This will let us execute and extract the result at translation time
+    // Check if left child is a constant literal
+    if (leftChild->GetType() == AstEnum::TokenType) {
+        auto tokenType = leftChild->GetToken().type;
+        if (tokenType == RhoTokenEnumType::Int) {
+            try {
+                int value = std::stoi(leftChild->GetTokenText());
+                leftLiteral = reg_->New<int>(value);
+                KAI_TRACE() << "Found integer literal on left side: " << value;
+            } catch (...) {}
+        }
+        else if (tokenType == RhoTokenEnumType::Float) {
+            try {
+                float value = std::stof(leftChild->GetTokenText());
+                leftLiteral = reg_->New<float>(value);
+                KAI_TRACE() << "Found float literal on left side: " << value;
+            } catch (...) {}
+        }
+        else if (tokenType == RhoTokenEnumType::String) {
+            std::string text = leftChild->GetTokenText();
+            if (text.size() >= 2 && text.front() == '"' && text.back() == '"') {
+                text = text.substr(1, text.size() - 2);
+            }
+            leftLiteral = reg_->New<String>(text);
+            KAI_TRACE() << "Found string literal on left side: " << text;
+        }
+        else if (tokenType == RhoTokenEnumType::True) {
+            leftLiteral = reg_->New<bool>(true);
+            KAI_TRACE() << "Found boolean literal (true) on left side";
+        }
+        else if (tokenType == RhoTokenEnumType::False) {
+            leftLiteral = reg_->New<bool>(false);
+            KAI_TRACE() << "Found boolean literal (false) on left side";
+        }
+    }
+    
+    // Check if right child is a constant literal
+    if (rightChild->GetType() == AstEnum::TokenType) {
+        auto tokenType = rightChild->GetToken().type;
+        if (tokenType == RhoTokenEnumType::Int) {
+            try {
+                int value = std::stoi(rightChild->GetTokenText());
+                rightLiteral = reg_->New<int>(value);
+                KAI_TRACE() << "Found integer literal on right side: " << value;
+            } catch (...) {}
+        }
+        else if (tokenType == RhoTokenEnumType::Float) {
+            try {
+                float value = std::stof(rightChild->GetTokenText());
+                rightLiteral = reg_->New<float>(value);
+                KAI_TRACE() << "Found float literal on right side: " << value;
+            } catch (...) {}
+        }
+        else if (tokenType == RhoTokenEnumType::String) {
+            std::string text = rightChild->GetTokenText();
+            if (text.size() >= 2 && text.front() == '"' && text.back() == '"') {
+                text = text.substr(1, text.size() - 2);
+            }
+            rightLiteral = reg_->New<String>(text);
+            KAI_TRACE() << "Found string literal on right side: " << text;
+        }
+        else if (tokenType == RhoTokenEnumType::True) {
+            rightLiteral = reg_->New<bool>(true);
+            KAI_TRACE() << "Found boolean literal (true) on right side";
+        }
+        else if (tokenType == RhoTokenEnumType::False) {
+            rightLiteral = reg_->New<bool>(false);
+            KAI_TRACE() << "Found boolean literal (false) on right side";
+        }
+    }
+    
+    // If both sides are constant literals, evaluate directly at compile time
+    if (leftLiteral.Exists() && rightLiteral.Exists()) {
+        canEvaluateDirectly = true;
+        KAI_TRACE() << "Both operands are literals - will perform direct compile-time evaluation";
+        
+        // Evaluate the operation directly without creating continuations
+        Object result;
+        
+        // Handle integer operations
+        if (leftLiteral.IsType<int>() && rightLiteral.IsType<int>()) {
+            int left = ConstDeref<int>(leftLiteral);
+            int right = ConstDeref<int>(rightLiteral);
+            
+            switch (op) {
+                case Operation::Plus:
+                    result = reg_->New<int>(left + right);
+                    break;
+                case Operation::Minus:
+                    result = reg_->New<int>(left - right);
+                    break;
+                case Operation::Multiply:
+                    result = reg_->New<int>(left * right);
+                    break;
+                case Operation::Divide:
+                    if (right != 0) {
+                        result = reg_->New<int>(left / right);
+                    } else {
+                        KAI_TRACE_ERROR() << "Division by zero detected during compile-time evaluation";
+                        result = reg_->New<int>(0); // Fallback value
+                    }
+                    break;
+                case Operation::Modulo:
+                    if (right != 0) {
+                        result = reg_->New<int>(left % right);
+                    } else {
+                        KAI_TRACE_ERROR() << "Modulo by zero detected during compile-time evaluation";
+                        result = reg_->New<int>(0); // Fallback value
+                    }
+                    break;
+                case Operation::Less:
+                    result = reg_->New<bool>(left < right);
+                    break;
+                case Operation::Greater:
+                    result = reg_->New<bool>(left > right);
+                    break;
+                case Operation::LessOrEquiv:
+                    result = reg_->New<bool>(left <= right);
+                    break;
+                case Operation::GreaterOrEquiv:
+                    result = reg_->New<bool>(left >= right);
+                    break;
+                case Operation::Equiv:
+                    result = reg_->New<bool>(left == right);
+                    break;
+                case Operation::NotEquiv:
+                    result = reg_->New<bool>(left != right);
+                    break;
+                case Operation::LogicalAnd:
+                    result = reg_->New<bool>(left && right);
+                    break;
+                case Operation::LogicalOr:
+                    result = reg_->New<bool>(left || right);
+                    break;
+                default:
+                    canEvaluateDirectly = false; // Can't evaluate this operation directly
+                    KAI_TRACE() << "Operation not supported for direct evaluation: " << Operation::ToString(op);
+                    break;
+            }
+        }
+        // Handle float operations
+        else if ((leftLiteral.IsType<float>() || leftLiteral.IsType<int>()) && 
+                (rightLiteral.IsType<float>() || rightLiteral.IsType<int>())) {
+            
+            // Convert both operands to float
+            float left, right;
+            if (leftLiteral.IsType<float>()) {
+                left = ConstDeref<float>(leftLiteral);
+            } else {
+                left = static_cast<float>(ConstDeref<int>(leftLiteral));
+            }
+            
+            if (rightLiteral.IsType<float>()) {
+                right = ConstDeref<float>(rightLiteral);
+            } else {
+                right = static_cast<float>(ConstDeref<int>(rightLiteral));
+            }
+            
+            switch (op) {
+                case Operation::Plus:
+                    result = reg_->New<float>(left + right);
+                    break;
+                case Operation::Minus:
+                    result = reg_->New<float>(left - right);
+                    break;
+                case Operation::Multiply:
+                    result = reg_->New<float>(left * right);
+                    break;
+                case Operation::Divide:
+                    if (right != 0.0f) {
+                        result = reg_->New<float>(left / right);
+                    } else {
+                        KAI_TRACE_ERROR() << "Division by zero detected during compile-time evaluation";
+                        result = reg_->New<float>(0.0f); // Fallback value
+                    }
+                    break;
+                case Operation::Less:
+                    result = reg_->New<bool>(left < right);
+                    break;
+                case Operation::Greater:
+                    result = reg_->New<bool>(left > right);
+                    break;
+                case Operation::LessOrEquiv:
+                    result = reg_->New<bool>(left <= right);
+                    break;
+                case Operation::GreaterOrEquiv:
+                    result = reg_->New<bool>(left >= right);
+                    break;
+                case Operation::Equiv:
+                    result = reg_->New<bool>(left == right);
+                    break;
+                case Operation::NotEquiv:
+                    result = reg_->New<bool>(left != right);
+                    break;
+                default:
+                    canEvaluateDirectly = false; // Can't evaluate this operation directly
+                    KAI_TRACE() << "Operation not supported for direct float evaluation: " << Operation::ToString(op);
+                    break;
+            }
+        }
+        // Handle boolean operations
+        else if (leftLiteral.IsType<bool>() && rightLiteral.IsType<bool>()) {
+            bool left = ConstDeref<bool>(leftLiteral);
+            bool right = ConstDeref<bool>(rightLiteral);
+            
+            switch (op) {
+                case Operation::LogicalAnd:
+                    result = reg_->New<bool>(left && right);
+                    break;
+                case Operation::LogicalOr:
+                    result = reg_->New<bool>(left || right);
+                    break;
+                case Operation::Equiv:
+                    result = reg_->New<bool>(left == right);
+                    break;
+                case Operation::NotEquiv:
+                    result = reg_->New<bool>(left != right);
+                    break;
+                default:
+                    canEvaluateDirectly = false; // Can't evaluate this operation directly
+                    KAI_TRACE() << "Operation not supported for direct boolean evaluation: " << Operation::ToString(op);
+                    break;
+            }
+        }
+        // Handle string operations (just concatenation for now)
+        else if (leftLiteral.IsType<String>() && rightLiteral.IsType<String>()) {
+            String left = ConstDeref<String>(leftLiteral);
+            String right = ConstDeref<String>(rightLiteral);
+            
+            switch (op) {
+                case Operation::Plus:
+                    result = reg_->New<String>(left + right);
+                    break;
+                case Operation::Equiv:
+                    result = reg_->New<bool>(left == right);
+                    break;
+                case Operation::NotEquiv:
+                    result = reg_->New<bool>(left != right);
+                    break;
+                default:
+                    canEvaluateDirectly = false; // Can't evaluate this operation directly
+                    KAI_TRACE() << "Operation not supported for direct string evaluation: " << Operation::ToString(op);
+                    break;
+            }
+        }
+        else {
+            // Types don't match or aren't supported
+            canEvaluateDirectly = false;
+            KAI_TRACE() << "Cannot directly evaluate operation between different types: " 
+                         << (leftLiteral.GetClass() ? leftLiteral.GetClass()->GetName().ToString() : "null") 
+                         << " and " 
+                         << (rightLiteral.GetClass() ? rightLiteral.GetClass()->GetName().ToString() : "null");
+        }
+        
+        // If we successfully evaluated the operation, append the result and return
+        if (canEvaluateDirectly && result.Exists()) {
+            KAI_TRACE() << "Direct compile-time evaluation result: " << result.ToString() 
+                       << " (type: " << (result.GetClass() ? result.GetClass()->GetName().ToString() : "null") << ")";
+            
+            // Add the result directly to the instruction stream
+            Append(result);
+            return;
+        }
+    }
+    
+    // REGULAR APPROACH: If we couldn't evaluate literals directly, proceed with the standard approach
+    
+    // Create temporary objects to capture the results of translating the children
     PushNew();
     TranslateNode(leftChild);
     Pointer<Continuation> leftCont = Pop();
     
-    // Create new code array to capture right operand translation
     PushNew();
     TranslateNode(rightChild);
     Pointer<Continuation> rightCont = Pop();
@@ -842,7 +1452,233 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
         return;
     }
     
-    // Now evaluate the left and right continuations to get their actual values
+    // Check if we can extract simple primitive values from the continuations
+    Object leftValue, rightValue;
+    bool hasDirectValues = false;
+    
+    // Extract values from simple single-value continuations
+    if (leftCont->GetCode()->Size() == 1) {
+        leftValue = leftCont->GetCode()->At(0);
+        
+        // Only consider it a direct value if it's a primitive type
+        if (leftValue.IsType<int>() || leftValue.IsType<float>() || 
+            leftValue.IsType<bool>() || leftValue.IsType<String>()) {
+            KAI_TRACE() << "Extracted direct value from left continuation: " << leftValue.ToString();
+            // Only first part of direct value pair found
+            hasDirectValues = true;
+        }
+    }
+    
+    if (rightCont->GetCode()->Size() == 1) {
+        rightValue = rightCont->GetCode()->At(0);
+        
+        // Only consider it a direct value if it's a primitive type
+        if (rightValue.IsType<int>() || rightValue.IsType<float>() || 
+            rightValue.IsType<bool>() || rightValue.IsType<String>()) {
+            KAI_TRACE() << "Extracted direct value from right continuation: " << rightValue.ToString();
+            // Both parts must be direct values for this approach to work
+            hasDirectValues = hasDirectValues && true;
+        } else {
+            // If right value is not primitive, reset the flag
+            hasDirectValues = false;
+        }
+    } else {
+        // If right continuation has multiple values, reset the flag
+        hasDirectValues = false;
+    }
+    
+    // If we have direct primitive values from both sides, compute directly
+    if (hasDirectValues && leftValue.Exists() && rightValue.Exists()) {
+        // Perform the operation directly with the primitive values
+        
+        Object result;
+        bool computed = false;
+        
+        // Handle integer operations
+        if (leftValue.IsType<int>() && rightValue.IsType<int>()) {
+            int left = ConstDeref<int>(leftValue);
+            int right = ConstDeref<int>(rightValue);
+            
+            switch (op) {
+                case Operation::Plus:
+                    result = reg_->New<int>(left + right);
+                    computed = true;
+                    break;
+                case Operation::Minus:
+                    result = reg_->New<int>(left - right);
+                    computed = true;
+                    break;
+                case Operation::Multiply:
+                    result = reg_->New<int>(left * right);
+                    computed = true;
+                    break;
+                case Operation::Divide:
+                    if (right != 0) {
+                        result = reg_->New<int>(left / right);
+                        computed = true;
+                    }
+                    break;
+                case Operation::Modulo:
+                    if (right != 0) {
+                        result = reg_->New<int>(left % right);
+                        computed = true;
+                    }
+                    break;
+                case Operation::Less:
+                    result = reg_->New<bool>(left < right);
+                    computed = true;
+                    break;
+                case Operation::Greater:
+                    result = reg_->New<bool>(left > right);
+                    computed = true;
+                    break;
+                case Operation::LessOrEquiv:
+                    result = reg_->New<bool>(left <= right);
+                    computed = true;
+                    break;
+                case Operation::GreaterOrEquiv:
+                    result = reg_->New<bool>(left >= right);
+                    computed = true;
+                    break;
+                case Operation::Equiv:
+                    result = reg_->New<bool>(left == right);
+                    computed = true;
+                    break;
+                case Operation::NotEquiv:
+                    result = reg_->New<bool>(left != right);
+                    computed = true;
+                    break;
+                case Operation::LogicalAnd:
+                    result = reg_->New<bool>(left && right);
+                    computed = true;
+                    break;
+                case Operation::LogicalOr:
+                    result = reg_->New<bool>(left || right);
+                    computed = true;
+                    break;
+            }
+        }
+        // Handle float operations (mixed with int)
+        else if ((leftValue.IsType<float>() || leftValue.IsType<int>()) && 
+                (rightValue.IsType<float>() || rightValue.IsType<int>())) {
+                
+            // Convert operands to float as needed
+            float left, right;
+            if (leftValue.IsType<float>()) {
+                left = ConstDeref<float>(leftValue);
+            } else {
+                left = static_cast<float>(ConstDeref<int>(leftValue));
+            }
+            
+            if (rightValue.IsType<float>()) {
+                right = ConstDeref<float>(rightValue);
+            } else {
+                right = static_cast<float>(ConstDeref<int>(rightValue));
+            }
+            
+            switch (op) {
+                case Operation::Plus:
+                    result = reg_->New<float>(left + right);
+                    computed = true;
+                    break;
+                case Operation::Minus:
+                    result = reg_->New<float>(left - right);
+                    computed = true;
+                    break;
+                case Operation::Multiply:
+                    result = reg_->New<float>(left * right);
+                    computed = true;
+                    break;
+                case Operation::Divide:
+                    if (right != 0.0f) {
+                        result = reg_->New<float>(left / right);
+                        computed = true;
+                    }
+                    break;
+                case Operation::Less:
+                    result = reg_->New<bool>(left < right);
+                    computed = true;
+                    break;
+                case Operation::Greater:
+                    result = reg_->New<bool>(left > right);
+                    computed = true;
+                    break;
+                case Operation::LessOrEquiv:
+                    result = reg_->New<bool>(left <= right);
+                    computed = true;
+                    break;
+                case Operation::GreaterOrEquiv:
+                    result = reg_->New<bool>(left >= right);
+                    computed = true;
+                    break;
+                case Operation::Equiv:
+                    result = reg_->New<bool>(left == right);
+                    computed = true;
+                    break;
+                case Operation::NotEquiv:
+                    result = reg_->New<bool>(left != right);
+                    computed = true;
+                    break;
+            }
+        }
+        // Handle boolean operations
+        else if (leftValue.IsType<bool>() && rightValue.IsType<bool>()) {
+            bool left = ConstDeref<bool>(leftValue);
+            bool right = ConstDeref<bool>(rightValue);
+            
+            switch (op) {
+                case Operation::LogicalAnd:
+                    result = reg_->New<bool>(left && right);
+                    computed = true;
+                    break;
+                case Operation::LogicalOr:
+                    result = reg_->New<bool>(left || right);
+                    computed = true;
+                    break;
+                case Operation::Equiv:
+                    result = reg_->New<bool>(left == right);
+                    computed = true;
+                    break;
+                case Operation::NotEquiv:
+                    result = reg_->New<bool>(left != right);
+                    computed = true;
+                    break;
+            }
+        }
+        // Handle string operations
+        else if (leftValue.IsType<String>() && rightValue.IsType<String>()) {
+            String left = ConstDeref<String>(leftValue);
+            String right = ConstDeref<String>(rightValue);
+            
+            switch (op) {
+                case Operation::Plus:
+                    result = reg_->New<String>(left + right);
+                    computed = true;
+                    break;
+                case Operation::Equiv:
+                    result = reg_->New<bool>(left == right);
+                    computed = true;
+                    break;
+                case Operation::NotEquiv:
+                    result = reg_->New<bool>(left != right);
+                    computed = true;
+                    break;
+            }
+        }
+        
+        // If we computed a result directly, append it and return
+        if (computed && result.Exists()) {
+            KAI_TRACE() << "Direct evaluation of extracted primitive values: " << leftValue.ToString() 
+                      << " " << Operation::ToString(op) << " " << rightValue.ToString() << " = " << result.ToString();
+            
+            // Add the result directly to the instruction stream
+            Append(result);
+            return;
+        }
+    }
+    
+    // DYNAMIC EVALUATION: If we couldn't evaluate directly, try dynamic evaluation
+    
     // Create an executor to evaluate the continuations
     Pointer<Executor> executor = reg_->New<Executor>();
     if (!executor.Exists()) {
@@ -867,19 +1703,14 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
     }
     executor->SetDataStack(tempStack);
     
-    // Execute left continuation and get result (with defensive checks)
+    // Execute left continuation and get result
     Object leftObj;
-    
-    // We'll try to execute the continuation, but be prepared for errors
     executor->Continue(leftCont);
     
     if (!tempStack->Empty()) {
         leftObj = tempStack->Pop();
     }
     else {
-        // If stack is empty, create a placeholder value based on the operator type
-        KAI_TRACE() << "Empty stack after evaluating left operand, creating placeholder";
-        
         // Create appropriate placeholder based on context
         if (op == Operation::Plus || op == Operation::Minus || 
             op == Operation::Multiply || op == Operation::Divide || 
@@ -893,19 +1724,15 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
             leftObj = reg_->New<bool>(false);  // For logical ops, use boolean false
         }
         else if (op == Operation::Store) {
-            // For store, we need a valid label - use empty object
             leftObj = Object();
         }
         else {
-            // Default to empty object for other operations
             leftObj = Object();
         }
     }
     
-    // Execute right continuation and get result (with defensive checks)
+    // Execute right continuation and get result
     Object rightObj;
-    
-    // Clear the stack before executing the right continuation
     tempStack->Clear();
     executor->Continue(rightCont);
     
@@ -913,9 +1740,6 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
         rightObj = tempStack->Pop();
     }
     else {
-        // If stack is empty, create a placeholder value based on the operator type
-        KAI_TRACE() << "Empty stack after evaluating right operand, creating placeholder";
-        
         // Create appropriate placeholder based on context
         if (op == Operation::Plus || op == Operation::Minus || 
             op == Operation::Multiply || op == Operation::Divide || 
@@ -929,117 +1753,115 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
             rightObj = reg_->New<bool>(false);  // For logical ops, use boolean false
         }
         else {
-            // Default to empty object for other operations
             rightObj = Object();
         }
     }
     
-    // If we have both operands, we can evaluate the operation directly
+    // DIRECT RESULT CALCULATION: Perform the operation directly to get the final result
     if (leftObj.Exists() && rightObj.Exists()) {
-        // Create a clean executor for the binary operation
+        // Create direct executor for the binary operation
         Pointer<Executor> opExecutor = reg_->New<Executor>();
         opExecutor->Create();
         
-        // Use the PerformBinaryOp helper to handle the operation
+        // Use PerformBinaryOp to execute the operation
         Object result = opExecutor->PerformBinaryOp(leftObj, rightObj, op);
         
         if (result.Exists()) {
-            // Log the direct evaluation
-            KAI_TRACE() << "Direct evaluation of binary op: " << leftObj.ToString() << " " 
-                        << Operation::ToString(op) << " " << rightObj.ToString() << " = " << result.ToString()
-                        << " (type: " << result.GetClass()->GetName() << ")";
+            // Log the evaluation with detailed type information
+            KAI_TRACE() << "Dynamic evaluation of binary op: " << leftObj.ToString() 
+                      << " (" << (leftObj.GetClass() ? leftObj.GetClass()->GetName().ToString() : "null") << ") "  
+                      << Operation::ToString(op) << " " 
+                      << rightObj.ToString() 
+                      << " (" << (rightObj.GetClass() ? rightObj.GetClass()->GetName().ToString() : "null") << ") "
+                      << " = " << result.ToString()
+                      << " (" << (result.GetClass() ? result.GetClass()->GetName().ToString() : "null") << ")";
             
-            // IMPORTANT: Check if the result is a Continuation and unwrap it to a primitive value
+            // EXTRACT PRIMITIVE VALUE FROM RESULT IF NEEDED
+            Object finalResult = result;
+            
+            // If the result is a continuation, try to extract primitive value
             if (result.IsType<Continuation>()) {
-                // Try different methods to get a primitive value
+                Pointer<Continuation> resultCont = result;
                 
-                // We no longer do automatic unwrapping
-                // Instead we rely on the tests to use UnwrapStackValues from TestLangCommon
-                // This preserves continuations that should remain as blocks or pi{} constructs
-                // Method 1: Check for primitive values directly
-                if (result.IsType<int>() || result.IsType<float>() || 
-                    result.IsType<bool>() || result.IsType<String>()) {
-                    KAI_TRACE() << "Result is already a primitive value: " << result.ToString()
-                              << " (type: " << result.GetClass()->GetName() << ")";
-                }
-                // Method 2: For basic binary operations with primitive operands, directly compute result
-                else {
-                    // Handle common binary operations on common types
-                    Pointer<Continuation> cont = result;
-                    if (cont->GetCode().Valid() && cont->GetCode()->Size() == 3) {
-                        auto code = cont->GetCode();
-                        Object val1 = code->At(0);
-                        Object val2 = code->At(1);
+                // Only extract if it seems like a simple operation result (not a block/function)
+                if (resultCont->GetCode() && resultCont->GetCode()->Size() <= 4) {
+                    // Try to evaluate the continuation to get a primitive result
+                    Pointer<Executor> extractExecutor = reg_->New<Executor>();
+                    extractExecutor->Create();
+                    
+                    // Set up temporary stack
+                    Pointer<Stack> extractStack = reg_->New<Stack>();
+                    extractExecutor->SetDataStack(extractStack);
+                    
+                    // Try to evaluate the continuation
+                    extractExecutor->Continue(resultCont);
+                    
+                    // If we got a primitive value, use it
+                    if (!extractStack->Empty()) {
+                        Object extractedResult = extractStack->Top();
                         
-                        if (val1.Valid() && val2.Valid() && 
-                            code->At(2).Valid() && code->At(2).IsType<Operation>()) {
-                            
+                        // Only use if it's a primitive type
+                        if (extractedResult.IsType<int>() || extractedResult.IsType<float>() || 
+                            extractedResult.IsType<bool>() || extractedResult.IsType<String>()) {
+                            KAI_TRACE() << "Extracted primitive value from result continuation: " 
+                                       << extractedResult.ToString();
+                            finalResult = extractedResult;
+                        }
+                    }
+                    
+                    // Direct extraction didn't work, try to calculate directly from continuation code
+                    if (finalResult.IsType<Continuation>()) {
+                        auto code = resultCont->GetCode();
+                        
+                        // Handle [val1, val2, op] pattern
+                        if (code->Size() == 3 && code->At(2).IsType<Operation>()) {
+                            Object val1 = code->At(0);
+                            Object val2 = code->At(1);
                             Operation::Type contOp = ConstDeref<Operation>(code->At(2)).GetTypeNumber();
                             
-                            // Handle integer math
-                            if (val1.IsType<int>() && val2.IsType<int>() && 
-                                (contOp == Operation::Plus || contOp == Operation::Minus || 
-                                 contOp == Operation::Multiply || contOp == Operation::Divide)) {
-                                
+                            // Handle integer operations
+                            if (val1.IsType<int>() && val2.IsType<int>()) {
                                 int num1 = ConstDeref<int>(val1);
                                 int num2 = ConstDeref<int>(val2);
-                                int directResult = 0;
                                 
                                 switch (contOp) {
-                                    case Operation::Plus: directResult = num1 + num2; break;
-                                    case Operation::Minus: directResult = num1 - num2; break;
-                                    case Operation::Multiply: directResult = num1 * num2; break;
-                                    case Operation::Divide: 
-                                        if (num2 != 0) directResult = num1 / num2;
+                                    case Operation::Plus:
+                                        finalResult = reg_->New<int>(num1 + num2);
                                         break;
-                                    default: break;
-                                }
-                                
-                                // Create a new int with the calculated value
-                                if (reg_) {
-                                    result = reg_->New<int>(directResult);
-                                    KAI_TRACE() << "Direct calculation of integer operation: " << num1 
-                                              << " " << Operation::ToString(contOp) 
-                                              << " " << num2 << " = " << directResult;
+                                    case Operation::Minus:
+                                        finalResult = reg_->New<int>(num1 - num2);
+                                        break;
+                                    case Operation::Multiply:
+                                        finalResult = reg_->New<int>(num1 * num2);
+                                        break;
+                                    case Operation::Divide:
+                                        if (num2 != 0) finalResult = reg_->New<int>(num1 / num2);
+                                        break;
+                                    default:
+                                        break;
                                 }
                             }
+                            
                             // Handle boolean operations
-                            else if (val1.IsType<bool>() && val2.IsType<bool>() &&
-                                    (contOp == Operation::LogicalAnd || contOp == Operation::LogicalOr)) {
-                                
+                            if (val1.IsType<bool>() && val2.IsType<bool>()) {
                                 bool b1 = ConstDeref<bool>(val1);
                                 bool b2 = ConstDeref<bool>(val2);
-                                bool directResult = false;
                                 
                                 switch (contOp) {
-                                    case Operation::LogicalAnd: directResult = b1 && b2; break;
-                                    case Operation::LogicalOr: directResult = b1 || b2; break;
-                                    default: break;
-                                }
-                                
-                                // Create a new bool with the calculated value
-                                if (reg_) {
-                                    result = reg_->New<bool>(directResult);
-                                    KAI_TRACE() << "Direct calculation of boolean operation: " 
-                                              << (b1 ? "true" : "false")
-                                              << " " << Operation::ToString(contOp) 
-                                              << " " << (b2 ? "true" : "false") 
-                                              << " = " << (directResult ? "true" : "false");
-                                }
-                            }
-                            // Handle string concatenation
-                            else if (val1.IsType<String>() && val2.IsType<String>() && 
-                                     contOp == Operation::Plus) {
-                                
-                                String s1 = ConstDeref<String>(val1);
-                                String s2 = ConstDeref<String>(val2);
-                                String directResult = s1 + s2;
-                                
-                                // Create a new String with the calculated value
-                                if (reg_) {
-                                    result = reg_->New<String>(directResult);
-                                    KAI_TRACE() << "Direct calculation of string concatenation: " 
-                                              << s1 << " + " << s2 << " = " << directResult;
+                                    case Operation::LogicalAnd:
+                                        finalResult = reg_->New<bool>(b1 && b2);
+                                        break;
+                                    case Operation::LogicalOr:
+                                        finalResult = reg_->New<bool>(b1 || b2);
+                                        break;
+                                    case Operation::Equiv:
+                                        finalResult = reg_->New<bool>(b1 == b2);
+                                        break;
+                                    case Operation::NotEquiv:
+                                        finalResult = reg_->New<bool>(b1 != b2);
+                                        break;
+                                    default:
+                                        break;
                                 }
                             }
                         }
@@ -1047,135 +1869,27 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
                 }
             }
             
-            // Append the result directly - this is key for proper type preservation
-            Append(result);
+            // Log the final result after potential extraction
+            if (finalResult != result) {
+                KAI_TRACE() << "Final extracted primitive result: " << finalResult.ToString() 
+                          << " (" << (finalResult.GetClass() ? finalResult.GetClass()->GetName().ToString() : "null") << ")";
+            }
+            
+            // Append the final result directly - this is the key change for type preservation
+            Append(finalResult);
             return;
         }
     }
     
-    // Use a simpler approach - directly evaluate the binary operation
-    // with the PerfformBinaryOp method
-    KAI_TRACE() << "Directly evaluating binary operation at translation time";
+    // FALLBACK: If all direct evaluation methods failed, use standard Pi approach
+    KAI_TRACE() << "Using standard Pi approach for binary operation";
     
-    // First translate both operands
-    PushNew();
+    // Add each operand and the operation to the stream
     TranslateNode(leftChild);
-    Object leftResult = Pop();
-    
-    PushNew();
     TranslateNode(rightChild);
-    Object rightResult = Pop();
+    AppendDirectOperation(op);
     
-    // Create a temporary executor for evaluation
-    Pointer<Executor> evalExec = reg_->New<Executor>();
-    evalExec->Create();
-    
-    // Use PerformBinaryOp to handle the operation
-    Object result = evalExec->PerformBinaryOp(leftResult, rightResult, op);
-    
-    // Ensure we have a primitive value, not a continuation
-    if (result.IsType<Continuation>()) {
-        // Try different methods to get a primitive value
-        // We no longer do automatic unwrapping 
-        // Instead we rely on the tests to use UnwrapStackValues from TestLangCommon
-        // This preserves continuations that should remain as blocks or pi{} constructs
-        // Check if the result is already a primitive value
-        if (result.IsType<int>() || result.IsType<float>() || 
-            result.IsType<bool>() || result.IsType<String>()) {
-            KAI_TRACE() << "Result is already a primitive value: " << result.ToString()
-                      << " (type: " << result.GetClass()->GetName() << ")";
-        }
-        // Method 2: For basic binary operations with primitive operands, directly compute result
-        else {
-            // Handle common binary operations on common types
-            Pointer<Continuation> cont = result;
-            if (cont->GetCode().Valid() && cont->GetCode()->Size() == 3) {
-                auto code = cont->GetCode();
-                Object val1 = code->At(0);
-                Object val2 = code->At(1);
-                
-                if (val1.Valid() && val2.Valid() && 
-                    code->At(2).Valid() && code->At(2).IsType<Operation>()) {
-                    
-                    Operation::Type contOp = ConstDeref<Operation>(code->At(2)).GetTypeNumber();
-                    
-                    // Handle integer math
-                    if (val1.IsType<int>() && val2.IsType<int>() && 
-                        (contOp == Operation::Plus || contOp == Operation::Minus || 
-                         contOp == Operation::Multiply || contOp == Operation::Divide)) {
-                        
-                        int num1 = ConstDeref<int>(val1);
-                        int num2 = ConstDeref<int>(val2);
-                        int directResult = 0;
-                        
-                        switch (contOp) {
-                            case Operation::Plus: directResult = num1 + num2; break;
-                            case Operation::Minus: directResult = num1 - num2; break;
-                            case Operation::Multiply: directResult = num1 * num2; break;
-                            case Operation::Divide: 
-                                if (num2 != 0) directResult = num1 / num2;
-                                break;
-                            default: break;
-                        }
-                        
-                        // Create a new int with the calculated value
-                        if (reg_) {
-                            result = reg_->New<int>(directResult);
-                            KAI_TRACE() << "Direct calculation of integer operation: " << num1 
-                                      << " " << Operation::ToString(contOp) 
-                                      << " " << num2 << " = " << directResult;
-                        }
-                    }
-                    // Handle boolean operations
-                    else if (val1.IsType<bool>() && val2.IsType<bool>() &&
-                            (contOp == Operation::LogicalAnd || contOp == Operation::LogicalOr)) {
-                        
-                        bool b1 = ConstDeref<bool>(val1);
-                        bool b2 = ConstDeref<bool>(val2);
-                        bool directResult = false;
-                        
-                        switch (contOp) {
-                            case Operation::LogicalAnd: directResult = b1 && b2; break;
-                            case Operation::LogicalOr: directResult = b1 || b2; break;
-                            default: break;
-                        }
-                        
-                        // Create a new bool with the calculated value
-                        if (reg_) {
-                            result = reg_->New<bool>(directResult);
-                            KAI_TRACE() << "Direct calculation of boolean operation: " 
-                                      << (b1 ? "true" : "false")
-                                      << " " << Operation::ToString(contOp) 
-                                      << " " << (b2 ? "true" : "false") 
-                                      << " = " << (directResult ? "true" : "false");
-                        }
-                    }
-                    // Handle string concatenation
-                    else if (val1.IsType<String>() && val2.IsType<String>() && 
-                             contOp == Operation::Plus) {
-                        
-                        String s1 = ConstDeref<String>(val1);
-                        String s2 = ConstDeref<String>(val2);
-                        String directResult = s1 + s2;
-                        
-                        // Create a new String with the calculated value
-                        if (reg_) {
-                            result = reg_->New<String>(directResult);
-                            KAI_TRACE() << "Direct calculation of string concatenation: " 
-                                      << s1 << " + " << s2 << " = " << directResult;
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
-    KAI_TRACE() << "Direct evaluation of binary op result: " << result.ToString();
-    
-    // Append the result directly
-    Append(result);
-    
-    KAI_TRACE() << "Binary operation directly evaluated at translation time";
+    KAI_TRACE() << "Binary operation translated using standard Pi approach";
 }
 
 void RhoTranslator::TranslateNode(AstNodePtr node) {
