@@ -43,6 +43,7 @@ foreach (lang ${langs})
             ${source_path}/Simple20Plus20Test.cpp         # Adding simple 20+20 test
             ${source_path}/SimpleTest.cpp                 # Adding simple test
             ${source_path}/ForLoopTests.cpp               # Adding for loop tests
+            ${source_path}/ExtendedRhoTests.cpp           # Added 20 new test cases for Rho
         )
     elseif(lang STREQUAL "Pi")
         # Explicitly list Pi tests to avoid including unwanted files
@@ -54,6 +55,7 @@ foreach (lang ${langs})
             ${source_path}/ArrayOpTest.cpp
             ${source_path}/PiAssertTest.cpp
             ${source_path}/StandalonePiTest.cpp
+            ${source_path}/ExtendedPiTests.cpp   # Added 20 new test cases for Pi
             # Larger tests to include if needed:
             #${source_path}/TestPiAdvanced.cpp
             #${source_path}/TestPiAdvanced2.cpp
