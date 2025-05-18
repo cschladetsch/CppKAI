@@ -305,6 +305,30 @@ TestPi/PiAssertTest.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/TestPi/PiAssertTest.cpp.s
 .PHONY : TestPi/PiAssertTest.cpp.s
 
+TestPi/PiBinaryOpTests.o: TestPi/PiBinaryOpTests.cpp.o
+.PHONY : TestPi/PiBinaryOpTests.o
+
+# target to build an object file
+TestPi/PiBinaryOpTests.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/TestPi/PiBinaryOpTests.cpp.o
+.PHONY : TestPi/PiBinaryOpTests.cpp.o
+
+TestPi/PiBinaryOpTests.i: TestPi/PiBinaryOpTests.cpp.i
+.PHONY : TestPi/PiBinaryOpTests.i
+
+# target to preprocess a source file
+TestPi/PiBinaryOpTests.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/TestPi/PiBinaryOpTests.cpp.i
+.PHONY : TestPi/PiBinaryOpTests.cpp.i
+
+TestPi/PiBinaryOpTests.s: TestPi/PiBinaryOpTests.cpp.s
+.PHONY : TestPi/PiBinaryOpTests.s
+
+# target to generate assembly for a file
+TestPi/PiBinaryOpTests.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/TestPi/PiBinaryOpTests.cpp.s
+.PHONY : TestPi/PiBinaryOpTests.cpp.s
+
 TestPi/SimpleTest.o: TestPi/SimpleTest.cpp.o
 .PHONY : TestPi/SimpleTest.o
 
@@ -998,6 +1022,9 @@ help:
 	@echo "... TestPi/PiAssertTest.o"
 	@echo "... TestPi/PiAssertTest.i"
 	@echo "... TestPi/PiAssertTest.s"
+	@echo "... TestPi/PiBinaryOpTests.o"
+	@echo "... TestPi/PiBinaryOpTests.i"
+	@echo "... TestPi/PiBinaryOpTests.s"
 	@echo "... TestPi/SimpleTest.o"
 	@echo "... TestPi/SimpleTest.i"
 	@echo "... TestPi/SimpleTest.s"

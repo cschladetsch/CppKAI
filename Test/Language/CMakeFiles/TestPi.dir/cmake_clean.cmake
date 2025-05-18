@@ -9,6 +9,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/TestPi.dir/TestPi/BasicTest.cpp.o.d"
   "CMakeFiles/TestPi.dir/TestPi/PiAssertTest.cpp.o"
   "CMakeFiles/TestPi.dir/TestPi/PiAssertTest.cpp.o.d"
+  "CMakeFiles/TestPi.dir/TestPi/PiBinaryOpTests.cpp.o"
+  "CMakeFiles/TestPi.dir/TestPi/PiBinaryOpTests.cpp.o.d"
   "CMakeFiles/TestPi.dir/TestPi/SimpleTest.cpp.o"
   "CMakeFiles/TestPi.dir/TestPi/SimpleTest.cpp.o.d"
   "CMakeFiles/TestPi.dir/TestPi/StandalonePiTest.cpp.o"

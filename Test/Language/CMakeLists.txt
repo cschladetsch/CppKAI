@@ -47,7 +47,7 @@ foreach (lang ${langs})
     elseif(lang STREQUAL "Pi")
         # Explicitly list Pi tests to avoid including unwanted files
         set(sources
-            # ${source_path}/PiBinaryOpTests.cpp   # Excluded due to boolean operation issues
+            ${source_path}/PiBinaryOpTests.cpp   # Re-enabled with simplified implementation
             ${source_path}/SimpleTest.cpp
             ${source_path}/BasicTest.cpp
             ${source_path}/TestPi.cpp
