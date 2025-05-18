@@ -21,7 +21,40 @@ bool TauLexer::NextToken() {
         return true;  // parser will deal with keywords in wrong places
     }
 
-    if (isdigit(current)) return Fail("Number not expected");
+    if (isdigit(current)) {
+        // Implement number lexing directly here
+        int start = offset;
+        
+        // Consume the number
+        while (isdigit(Current())) {
+            Next();
+        }
+        
+        // Handle decimal point and fractional part
+        if (Current() == '.') {
+            Next();  // consume the dot
+            while (isdigit(Current())) {
+                Next();
+            }
+        }
+        
+        // Handle exponent notation
+        if (Current() == 'e' || Current() == 'E') {
+            Next();  // consume 'e' or 'E'
+            
+            // Handle optional sign
+            if (Current() == '+' || Current() == '-') {
+                Next();
+            }
+            
+            // Parse exponent digits
+            while (isdigit(Current())) {
+                Next();
+            }
+        }
+        
+        return Add(Enum::Number, Slice(start, offset));
+    }
 
     switch (current) {
         case ';':

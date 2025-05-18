@@ -46,7 +46,29 @@ bool TauParser::Run(AstNodePtr root, Structure st) {
     }
 }
 
-bool TauParser::Module(AstNodePtr root) { KAI_NOT_IMPLEMENTED(); }
+bool TauParser::Module(AstNodePtr root) { 
+    auto module = NewNode(TauAstEnumType::Module);
+    
+    while (!Empty()) {
+        switch (Current().type) {
+            case TokenEnum::Namespace:
+                Consume();
+                if (!Namespace(module))
+                    return false;
+                break;
+                
+            default: {
+                auto const &cur = Current();
+                return Fail(Lexer::CreateErrorMessage(
+                    cur, "Unexpected token %s in module scope, expected 'namespace'",
+                    TokenEnumType::ToString(cur.type)));
+            }
+        }
+    }
+    
+    root->Add(module);
+    return true;
+}
 
 bool TauParser::Namespace(AstNodePtr root) {
     auto ns = NewNode(TauAstEnumType::Namespace, Consume());
@@ -56,15 +78,19 @@ bool TauParser::Namespace(AstNodePtr root) {
         switch (Current().type) {
             case TokenEnum::Class:
                 Consume();
-                return Class(ns);
+                if (!Class(ns))
+                    return false;
+                break;
 
             case TokenEnum::Namespace:
                 Consume();
-                return Namespace(ns);
+                if (!Namespace(ns))
+                    return false;
+                break;
 
             default: {
                 auto const &cur = Current();
-                Fail(Lexer::CreateErrorMessage(
+                return Fail(Lexer::CreateErrorMessage(
                     cur, "Unexpected token %s",
                     TokenEnumType::ToString(cur.type)));
             }
@@ -78,19 +104,26 @@ bool TauParser::Namespace(AstNodePtr root) {
 }
 
 bool TauParser::Class(AstNodePtr root) {
-    Next();
-    const auto klass = NewNode(TauAstEnumType::Class, Consume());
+    // The class keyword has already been consumed by Now()
+    // Next token should be the class name
+    const auto className = Consume(); // Class name
+    const auto klass = NewNode(TauAstEnumType::Class, className);
+    
     Expect(TokenEnum::OpenBrace);
+    if (Failed) return false;
 
     while (!Failed && !CurrentIs(TokenEnum::CloseBrace)) {
-        auto ty = Expect(TokenEnum::Ident)->GetToken();
-        auto name = Expect(TokenEnum::Ident)->GetToken();
+        auto ty = Expect(TokenEnum::Ident);
+        if (Failed) return false;
+        
+        auto name = Expect(TokenEnum::Ident);
+        if (Failed) return false;
 
         if (CurrentIs(TokenType::OpenParan)) {
             Consume();
-            if (!Method(klass, ty, name)) return false;
+            if (!Method(klass, ty->GetToken(), name->GetToken())) return false;
         } else {
-            if (!Field(klass, ty, name)) return false;
+            if (!Field(klass, ty->GetToken(), name->GetToken())) return false;
         }
 
         if (Empty()) return Fail("Incomplete Class");

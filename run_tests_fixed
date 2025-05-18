@@ -38,6 +38,16 @@ run_tests() {
       echo -e "${RED}Rho tests: Some FAILED${NC}"
       return 1
     fi
+  elif [ "$1" == "Tau" ]; then
+    # Run Tau tests
+    ./Bin/Test/TestTau
+    if [ $? -eq 0 ]; then
+      echo -e "${GREEN}Tau tests: All PASS${NC}"
+      return 0
+    else
+      echo -e "${RED}Tau tests: Some FAILED${NC}"
+      return 1
+    fi
   fi
 }
 
@@ -53,8 +63,11 @@ pi_result=$?
 run_tests "Rho"
 rho_result=$?
 
+run_tests "Tau"
+tau_result=$?
+
 # Check if all tests passed
-if [ $core_result -eq 0 ] && [ $pi_result -eq 0 ] && [ $rho_result -eq 0 ]; then
+if [ $core_result -eq 0 ] && [ $pi_result -eq 0 ] && [ $rho_result -eq 0 ] && [ $tau_result -eq 0 ]; then
   echo -e "${GREEN}All tests PASSED!${NC}"
   exit 0
 else

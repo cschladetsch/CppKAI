@@ -34,6 +34,7 @@ struct TauTokenEnumType {
         Async = 36,
         Tab = 37,
         String = 38,
+        Number = 39,
     };
 
     struct Type : TokenBase<TauTokenEnumType> {

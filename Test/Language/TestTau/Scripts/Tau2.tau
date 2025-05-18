@@ -14,7 +14,7 @@ namespace MLB
 
 		int M1();
 		int M2(int a0);
-		int M3(int a0, a1);
+		int M3(int a0, int a1);
 		int M4(int a0, int a1, int a2);
 	}
 }

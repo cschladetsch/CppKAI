@@ -24,7 +24,8 @@ shared_ptr<TauParser> GenerateProcess::Parse(const char *input) const {
     KAI_TRACE_1(lex->Print());
 
     auto parser = make_shared<TauParser>(r);
-    if (!parser->Process(lex, Structure::Class)) {
+    // Use Structure::Module for top-level parsing
+    if (!parser->Process(lex, Structure::Module)) {
         Fail(parser->Error);
         return nullptr;
     }
@@ -49,14 +50,54 @@ string GenerateProcess::CommonPrepend() {
 
 bool GenerateProcess::Module(TauParser const &p) {
     auto const &root = p.GetRoot();
-    if (root->GetType() != TauAstEnumType::Module)
-        return Fail("Expected a Module");
-
+    
+    if (root->GetChildren().empty())
+        return Fail("No content found in module");
+    
+    // Start with a default namespace if none exists
+    bool handledAnyNodes = false;
+    
     for (const auto &ch : root->GetChildren()) {
-        if (ch->GetType() != TauAstEnumType::Namespace)
-            return Fail("Namespace expected");
-
-        if (!Namespace(*ch)) return false;
+        if (ch->GetType() == TauAstEnumType::Module) {
+            // Handle module node
+            for (const auto &moduleChild : ch->GetChildren()) {
+                if (moduleChild->GetType() == TauAstEnumType::Namespace) {
+                    if (!Namespace(*moduleChild)) return false;
+                    handledAnyNodes = true;
+                }
+                else if (moduleChild->GetType() == TauAstEnumType::Class) {
+                    // Directly handle class without namespace
+                    StartBlock("namespace Default");
+                    if (!Class(*moduleChild)) return false;
+                    EndBlock();
+                    handledAnyNodes = true;
+                }
+                else {
+                    // Log but continue - be more resilient to errors
+                    KAI_TRACE_ERROR_1("Unexpected node type in module");
+                }
+            }
+        }
+        else if (ch->GetType() == TauAstEnumType::Namespace) {
+            // Directly handle namespace node
+            if (!Namespace(*ch)) return false;
+            handledAnyNodes = true;
+        }
+        else if (ch->GetType() == TauAstEnumType::Class) {
+            // Directly handle class without namespace
+            StartBlock("namespace Default");
+            if (!Class(*ch)) return false;
+            EndBlock();
+            handledAnyNodes = true;
+        }
+        else {
+            // Log but continue - be more resilient to errors
+            KAI_TRACE_ERROR_1("Unexpected node type at root");
+        }
+    }
+    
+    if (!handledAnyNodes) {
+        return Fail("No valid Module, Namespace, or Class nodes found");
     }
 
     return true;
