@@ -27,6 +27,7 @@ _KAI_ is a network distributed **Object Model** for C++ with full runtime reflec
 - **Enhanced binary operation handling** and continuation unwrapping for Pi/Rho languages
 - **Fixed type preservation** in binary operations (resolving issues with "20 20 +" pattern)
 - **Improved error handling** in PerformBinaryOp method for better robustness
+- **Improved build system** with proper out-of-source builds and updated build scripts
 
 ## System Components
 
@@ -80,9 +81,9 @@ print(result)  // [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
 
 ### Prerequisites
 
-- Modern C++ compiler (C++14 or newer)
-- CMake (3.15+)
-- Boost libraries (filesystem, chrono, program_options, date-time, regex)
+- Modern C++ compiler (C++23 compatible)
+- CMake (3.28+)
+- Boost libraries (filesystem, system, program_options, date-time, regex)
 - Ninja (optional but recommended for faster builds)
 
 ### Building
@@ -95,29 +96,41 @@ git submodule init
 git submodule update
 ```
 
-Quick build with scripts:
+#### Using the Build Scripts
+
+We now provide convenient build scripts that follow best practices for out-of-source builds:
+
 ```bash
-# Full clean build with Ninja and runs tests and console
-./r
+# Clean any build artifacts from source tree and set up build directory
+./clean_build.sh  # Linux/macOS
+.\clean_build.bat # Windows
 
-# Incremental build with Ninja
-./n
-
-# Build and run a specific test
-./nt TestPi
-
-# Run only fixed tests (recommended)
-./run_all_tests_fixed
+# Build the project using the build script
+./build.sh        # Linux/macOS
+.\build.bat       # Windows
 ```
 
-Manual build:
-```bash
-# With Make
-mkdir -p build && cd build && cmake .. && make
+#### Manual Build (Out-of-Source)
 
-# With Ninja (recommended for faster builds)
-mkdir -p build_ninja && cd build_ninja && cmake -G Ninja .. && ninja
+For a manual build, always use the `build/` directory:
+
+```bash
+# Create build directory
+mkdir -p build
+cd build
+
+# Configure with CMake
+cmake ..
+
+# Build the project
+cmake --build .   # Cross-platform
+# or
+make              # Unix systems
+# or
+ninja             # If using Ninja generator
 ```
+
+For more detailed build instructions, see [BUILD.md](BUILD.md).
 
 ## Applications
 
@@ -146,6 +159,7 @@ The GUI application provides:
 
 ## Documentation
 
+- [Building Guide](BUILD.md)
 - [Installation Guide](Install.md)
 - [Language System](Languages.md)
 - [Networking](Networking.md)
@@ -162,6 +176,7 @@ The GUI application provides:
 ## Project Structure
 
 - **Bin**: Executable output files
+- **build**: Build directory (for all build artifacts)
 - **CMake**: Auxiliary CMake modules
 - **Doc**: Documentation and tutorials
 - **Ext**: External dependencies (git submodules)

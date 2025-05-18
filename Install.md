@@ -29,9 +29,23 @@ For windows:
 
 The same is true for Linux or macOS, just use `./` instead of `.\`
 
-## Ubuntu
+## Building the Project
 
+Please see [BUILD.md](BUILD.md) for detailed instructions on building KAI.
+
+### Quick Start (Ubuntu/macOS)
+
+```bash
+# Clean any existing CMake artifacts and set up build directory
+./clean_build.sh
+
+# Build the project
+./build.sh
 ```
+
+### Legacy Method (Ubuntu/macOS)
+
+```bash
 > mkdir -p build && cd build
 > cmake ..
 > make
@@ -41,11 +55,24 @@ The same is true for Linux or macOS, just use `./` instead of `.\`
 
 You will need [cmake](https://cmake.org/download/) and [boost](https://sourceforge.net/projects/boost/files/boost-binaries/) installed with at least `chrono`, `system` and `filesystem` libraries. 
 
-Then, from the root of the KAI folder structure enter the following:
+### Quick Start (Windows)
 
+```batch
+:: Clean any existing CMake artifacts and set up build directory
+.\clean_build.bat
+
+:: Build the project
+.\build.bat
 ```
+
+### Legacy Method (Windows)
+
+```batch
 > mkdir build
+> cd build
 > cmake ..
+> cmake --build .
+:: Or open the solution file
 > start *.sln
 ```
 
