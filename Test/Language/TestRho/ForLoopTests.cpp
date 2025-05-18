@@ -19,8 +19,8 @@ using namespace std;
     /* Get the result from executing the code */ \
     Object result = ExecuteRhoCode(code); \
     \
-    /* Pin the result to prevent garbage collection */ \
-    if (result.Exists()) { \
+    /* Pin the result to prevent garbage collection - with additional validation */ \
+    if (result.Exists() && registry.IsValid()) { \
         registry.Pin(result); \
     } \
     \
@@ -46,8 +46,8 @@ using namespace std;
         FAIL() << "Could not safely access value from result"; \
     } \
     \
-    /* Unpin the result when we're done with it */ \
-    if (result.Exists()) { \
+    /* Unpin the result when we're done with it - with additional validation */ \
+    if (result.Exists() && registry.IsValid()) { \
         registry.Unpin(result); \
     }
 
@@ -109,13 +109,19 @@ Registry& GetGlobalRegistry() {
 // Helper to clean up the global registry
 void CleanupGlobalRegistry() {
     if (global_registry != nullptr) {
-        // Create an empty root object for garbage collection
-        Object root;
+        // Create a valid root object for garbage collection
+        Object root = global_registry->New<void>();
         
-        // Perform a mark and sweep to clean up any unreferenced objects
-        // The Object() parameter is required by the MarkAndSweep method
+        // Now perform a mark and sweep with a valid root object
         if (global_registry->IsValid()) {
-            global_registry->MarkAndSweep(Object());
+            // Pin the root object to ensure it's not collected during sweep
+            global_registry->Pin(root);
+            
+            // Mark and sweep with the valid root
+            global_registry->MarkAndSweep(root);
+            
+            // Unpin the root object
+            global_registry->Unpin(root);
         }
         
         delete global_registry;
@@ -132,10 +138,49 @@ protected:
     }
     
     static void TearDownTestCase() {
+        // Clean up the result container first
+        CleanupResultContainer();
+        
         // Clean up after all tests
         CleanupGlobalRegistry();
     }
+    
+    // Also set up per-test cleanup to reset state between tests
+    void TearDown() override {
+        // Clear any temporary pinned objects that aren't needed anymore
+        if (global_registry && global_registry->IsValid()) {
+            // Create a temporary root object that we control
+            Object tempRoot = global_registry->New<void>();
+            global_registry->Pin(tempRoot);
+            
+            // Run a mini-sweep that keeps our persistent container alive
+            // but cleans up any other temporary objects
+            if (resultContainer.Exists()) {
+                global_registry->Pin(resultContainer);
+                Object roots[2] = { tempRoot, resultContainer };
+                global_registry->MarkAndSweep(roots, 2);
+                global_registry->Unpin(resultContainer);
+            } else {
+                global_registry->MarkAndSweep(tempRoot);
+            }
+            
+            // Clean up our temporary root
+            global_registry->Unpin(tempRoot);
+        }
+    }
 };
+
+// Container to hold results between test runs
+static Pointer<Map> resultContainer;
+
+// Helper to clean up the result container
+void CleanupResultContainer() {
+    if (resultContainer.Exists() && global_registry != nullptr && global_registry->IsValid()) {
+        // Unpin the container before cleanup
+        global_registry->Unpin(resultContainer);
+        resultContainer = Pointer<Map>(); // Clear the pointer
+    }
+}
 
 // Helper to execute Rho code directly
 Object ExecuteRhoCode(const std::string& code) {
@@ -145,9 +190,8 @@ Object ExecuteRhoCode(const std::string& code) {
     // Get the global registry
     Registry& registry = GetGlobalRegistry();
     
-    // Create a static container object to hold the result
+    // Create a container object to hold the result if it doesn't exist
     // This prevents garbage collection of the result when the function exits
-    static Pointer<Map> resultContainer;
     if (!resultContainer.Exists()) {
         resultContainer = registry.New<Map>();
         // We'll pin this to prevent garbage collection
@@ -459,8 +503,8 @@ TEST_F(RhoForLoopTestsFixture, StringOperations) {
     // Get the result from executing the code
     Object result = ExecuteRhoCode(code);
     
-    // Pin the result to prevent garbage collection
-    if (result.Exists()) {
+    // Pin the result to prevent garbage collection - with validation
+    if (result.Exists() && registry.IsValid()) {
         registry.Pin(result);
     }
     
@@ -486,8 +530,8 @@ TEST_F(RhoForLoopTestsFixture, StringOperations) {
         FAIL() << "Could not safely access String value from result";
     }
     
-    // Unpin the result when we're done with it
-    if (result.Exists()) {
+    // Unpin the result when we're done with it - with validation
+    if (result.Exists() && registry.IsValid()) {
         registry.Unpin(result);
     }
 }

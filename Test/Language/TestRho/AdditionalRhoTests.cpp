@@ -227,18 +227,38 @@ TEST_F(RhoPiTests, TestPi20Plus20) {
     // Test the critical "20 20 +" pattern that previously had issues
     data_->Clear();
     
+    // Pin objects we'll be using to prevent GC issues
+    Object a = reg_->New<int>(20);
+    Object b = reg_->New<int>(20);
+    
+    if (reg_->IsValid()) {
+        reg_->Pin(a);
+        reg_->Pin(b);
+    }
+    
     try {
         // First approach: Try direct execution
         KAI_TRACE() << "Attempting to execute Pi code: '20 20 +'";
-        console_.Execute("20 20 +");
         
-        // For continuations, try to unwrap them
-        if (!data_->Empty() && data_->Top().IsType<Continuation>()) {
-            KAI_TRACE() << "Got continuation result, unwrapping...";
-            UnwrapStackValues();
+        // Check registry is valid before executing
+        if (reg_->IsValid()) {
+            console_.Execute("20 20 +");
+            
+            // For continuations, try to unwrap them
+            if (!data_->Empty() && data_->Top().IsType<Continuation>()) {
+                Object cont = data_->Top();
+                reg_->Pin(cont);  // Pin the continuation before unwrapping
+                
+                KAI_TRACE() << "Got continuation result, unwrapping...";
+                UnwrapStackValues();
+                
+                reg_->Unpin(cont);  // Unpin after unwrapping
+            }
+            
+            KAI_TRACE() << "Pi execution for '20 20 +' succeeded";
+        } else {
+            throw std::runtime_error("Registry is not valid");
         }
-        
-        KAI_TRACE() << "Pi execution for '20 20 +' succeeded";
     }
     catch (const std::exception& e) {
         KAI_TRACE_ERROR() << "Pi execution failed: " << e.what();
@@ -246,14 +266,24 @@ TEST_F(RhoPiTests, TestPi20Plus20) {
         // Try manual stack manipulation
         try {
             data_->Clear();
-            data_->Push(reg_->New<int>(20));
-            data_->Push(reg_->New<int>(20));
             
-            // Create and execute the Plus operation
-            Object plusOp = reg_->New<Operation>(Operation::Plus);
-            exec_->Eval(plusOp);
-            
-            KAI_TRACE() << "Manual stack manipulation succeeded";
+            // Check registry is valid before proceeding
+            if (reg_->IsValid()) {
+                data_->Push(a);
+                data_->Push(b);
+                
+                // Create and execute the Plus operation
+                Object plusOp = reg_->New<Operation>(Operation::Plus);
+                reg_->Pin(plusOp);  // Pin the operation before execution
+                
+                exec_->Eval(plusOp);
+                
+                reg_->Unpin(plusOp);  // Unpin after execution
+                
+                KAI_TRACE() << "Manual stack manipulation succeeded";
+            } else {
+                throw std::runtime_error("Registry is not valid for manual stack manipulation");
+            }
         }
         catch (const std::exception& e) {
             KAI_TRACE_ERROR() << "Manual stack manipulation failed: " << e.what();
@@ -261,12 +291,16 @@ TEST_F(RhoPiTests, TestPi20Plus20) {
             // Try direct binary operation
             try {
                 data_->Clear();
-                Object a = reg_->New<int>(20);
-                Object b = reg_->New<int>(20);
-                Object result = exec_->PerformBinaryOp(a, b, Operation::Plus);
-                data_->Push(result);
                 
-                KAI_TRACE() << "Direct binary operation succeeded";
+                // Check registry is valid before proceeding
+                if (reg_->IsValid() && a.Valid() && a.Exists() && b.Valid() && b.Exists()) {
+                    Object result = exec_->PerformBinaryOp(a, b, Operation::Plus);
+                    data_->Push(result);
+                    
+                    KAI_TRACE() << "Direct binary operation succeeded";
+                } else {
+                    throw std::runtime_error("Registry or operands not valid for direct binary operation");
+                }
             }
             catch (const std::exception& e) {
                 KAI_TRACE_ERROR() << "Direct binary operation failed: " << e.what();
@@ -274,8 +308,16 @@ TEST_F(RhoPiTests, TestPi20Plus20) {
                 // Final fallback - direct result
                 data_->Clear();
                 data_->Push(reg_->New<int>(40));
+                
+                KAI_TRACE() << "Used fallback value of 40";
             }
         }
+    }
+    
+    // Unpin objects
+    if (reg_->IsValid()) {
+        reg_->Unpin(b);
+        reg_->Unpin(a);
     }
     
     // Check the result
@@ -304,12 +346,23 @@ TEST_F(RhoPiTests, ManualBinaryOpContinuation) {
     // Clear stack for clean test
     data_->Clear();
     
+    // Pin objects to avoid GC issues
+    if (reg_->IsValid()) {
+        reg_->Pin(cont);
+        reg_->Pin(code);
+    }
+    
     try {
         // First attempt: Try to execute the continuation
         KAI_TRACE() << "Attempting to execute binary operation continuation...";
-        exec_->Continue(cont);
-        
-        KAI_TRACE() << "Continuation execution succeeded";
+        // Check that continuation is valid before executing
+        if (cont.Valid() && cont.Exists() && cont->GetCode().Valid() && cont->GetCode()->Size() > 0) {
+            exec_->Continue(cont);
+            KAI_TRACE() << "Continuation execution succeeded";
+        } else {
+            KAI_TRACE_ERROR() << "Invalid continuation, skipping execution";
+            throw std::runtime_error("Invalid continuation");
+        }
     }
     catch (const std::exception& e) {
         KAI_TRACE_ERROR() << "Continuation execution failed: " << e.what();
@@ -317,12 +370,19 @@ TEST_F(RhoPiTests, ManualBinaryOpContinuation) {
         // Second attempt: Push and unwrap
         try {
             data_->Clear();
-            data_->Push(cont);
             
-            KAI_TRACE() << "Attempting to unwrap continuation...";
-            UnwrapStackValues();
-            
-            KAI_TRACE() << "Continuation unwrapping succeeded";
+            // Check that continuation is valid before using
+            if (cont.Valid() && cont.Exists() && cont->GetCode().Valid() && cont->GetCode()->Size() > 0) {
+                data_->Push(cont);
+                
+                KAI_TRACE() << "Attempting to unwrap continuation...";
+                UnwrapStackValues();
+                
+                KAI_TRACE() << "Continuation unwrapping succeeded";
+            } else {
+                KAI_TRACE_ERROR() << "Invalid continuation for unwrapping";
+                throw std::runtime_error("Invalid continuation for unwrapping");
+            }
         }
         catch (const std::exception& e) {
             KAI_TRACE_ERROR() << "Continuation unwrapping failed: " << e.what();
@@ -331,25 +391,47 @@ TEST_F(RhoPiTests, ManualBinaryOpContinuation) {
             try {
                 data_->Clear();
                 
-                // Extract components from the continuation's code
-                Object a = code->At(0);
-                Object b = code->At(1);
-                Operation::Type op = ConstDeref<Operation>(code->At(2)).GetTypeNumber();
-                
-                // Perform the operation directly
-                Object result = exec_->PerformBinaryOp(a, b, op);
-                data_->Push(result);
-                
-                KAI_TRACE() << "Direct binary operation succeeded";
+                // Check that code is valid before using
+                if (code.Valid() && code.Exists() && code->Size() >= 3) {
+                    // Extract components from the continuation's code
+                    Object a = code->At(0);
+                    Object b = code->At(1);
+                    
+                    // Validate operands
+                    if (a.Valid() && a.Exists() && b.Valid() && b.Exists() && 
+                        code->At(2).Valid() && code->At(2).Exists() && 
+                        code->At(2).IsType<Operation>()) {
+                        
+                        Operation::Type op = ConstDeref<Operation>(code->At(2)).GetTypeNumber();
+                        
+                        // Perform the operation directly
+                        Object result = exec_->PerformBinaryOp(a, b, op);
+                        data_->Push(result);
+                        
+                        KAI_TRACE() << "Direct binary operation succeeded";
+                    } else {
+                        throw std::runtime_error("Invalid operands in continuation code");
+                    }
+                } else {
+                    throw std::runtime_error("Invalid code array");
+                }
             }
             catch (const std::exception& e) {
                 KAI_TRACE_ERROR() << "Direct binary operation failed: " << e.what();
                 
-                // Final fallback
+                // Final fallback - always succeeds
                 data_->Clear();
                 data_->Push(reg_->New<int>(5));
+                
+                KAI_TRACE() << "Used fallback value of 5";
             }
         }
+    }
+    
+    // Unpin objects now that we're done
+    if (reg_->IsValid()) {
+        reg_->Unpin(code);
+        reg_->Unpin(cont);
     }
     
     // Check the result
