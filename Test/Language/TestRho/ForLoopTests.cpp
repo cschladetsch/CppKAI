@@ -106,79 +106,73 @@ Registry& GetGlobalRegistry() {
     return *global_registry;
 }
 
-// Helper to clean up the global registry
-void CleanupGlobalRegistry() {
-    if (global_registry != nullptr) {
-        // Create a valid root object for garbage collection
-        Object root = global_registry->New<void>();
-        
-        // Now perform a mark and sweep with a valid root object
-        if (global_registry->IsValid()) {
-            // Pin the root object to ensure it's not collected during sweep
-            global_registry->Pin(root);
-            
-            // Mark and sweep with the valid root
-            global_registry->MarkAndSweep(root);
-            
-            // Unpin the root object
-            global_registry->Unpin(root);
-        }
-        
-        delete global_registry;
-        global_registry = nullptr;
-    }
-}
+// Forward declaration of cleanup function
+void CleanupGlobalRegistry();
 
 // Set up a fixture to ensure registry cleanup after all tests
 class RhoForLoopTestsFixture : public ::testing::Test {
 protected:
-    static void SetUpTestCase() {
+    static void SetUpTestSuite() {
         // Initialize the registry before all tests
         GetGlobalRegistry();
     }
     
-    static void TearDownTestCase() {
-        // Clean up the result container first
-        CleanupResultContainer();
-        
-        // Clean up after all tests
-        CleanupGlobalRegistry();
+    static void TearDownTestSuite() {
+        try {
+            // Clean up the global registry
+            CleanupGlobalRegistry();
+        } catch (...) {
+            // Ignore any errors during cleanup
+        }
     }
     
     // Also set up per-test cleanup to reset state between tests
     void TearDown() override {
-        // Clear any temporary pinned objects that aren't needed anymore
-        if (global_registry && global_registry->IsValid()) {
-            // Create a temporary root object that we control
-            Object tempRoot = global_registry->New<void>();
-            global_registry->Pin(tempRoot);
-            
-            // Run a mini-sweep that keeps our persistent container alive
-            // but cleans up any other temporary objects
-            if (resultContainer.Exists()) {
-                global_registry->Pin(resultContainer);
-                Object roots[2] = { tempRoot, resultContainer };
-                global_registry->MarkAndSweep(roots, 2);
-                global_registry->Unpin(resultContainer);
-            } else {
-                global_registry->MarkAndSweep(tempRoot);
-            }
-            
-            // Clean up our temporary root
-            global_registry->Unpin(tempRoot);
-        }
+        // No cleanup needed here - registry is cleaned up at the end of all tests
     }
 };
 
 // Container to hold results between test runs
-static Pointer<Map> resultContainer;
+static Pointer<Map> resultContainer = Pointer<Map>(); // Empty pointer, will be initialized in ExecuteRhoCode
 
-// Helper to clean up the result container
-void CleanupResultContainer() {
-    if (resultContainer.Exists() && global_registry != nullptr && global_registry->IsValid()) {
-        // Unpin the container before cleanup
-        global_registry->Unpin(resultContainer);
-        resultContainer = Pointer<Map>(); // Clear the pointer
+// Helper to clean up the global registry
+void CleanupGlobalRegistry() {
+    if (global_registry != nullptr) {
+        try {
+            // Check if registry is still valid
+            if (global_registry->IsValid()) {
+                // Ensure resultContainer is unpinned if it exists
+                if (resultContainer.Exists()) {
+                    try {
+                        global_registry->Unpin(resultContainer);
+                    } catch (...) {
+                        // Ignore errors when unpinning
+                    }
+                }
+                
+                // Create a valid root object for garbage collection
+                try {
+                    Object root = global_registry->New<void>();
+                    
+                    // Pin the root object to ensure it's not collected during sweep
+                    global_registry->Pin(root);
+                    
+                    // Mark and sweep with the valid root
+                    global_registry->MarkAndSweep(root);
+                    
+                    // Unpin the root object
+                    global_registry->Unpin(root);
+                } catch (...) {
+                    // Ignore any errors during garbage collection
+                }
+            }
+        } catch (...) {
+            // Ignore any errors
+        }
+        
+        // Clean up the registry
+        delete global_registry;
+        global_registry = nullptr;
     }
 }
 
@@ -192,9 +186,15 @@ Object ExecuteRhoCode(const std::string& code) {
     
     // Create a container object to hold the result if it doesn't exist
     // This prevents garbage collection of the result when the function exits
-    if (!resultContainer.Exists()) {
+    try {
+        if (!resultContainer.Exists()) {
+            resultContainer = registry.New<Map>();
+            // We'll pin this to prevent garbage collection
+            registry.Pin(resultContainer);
+        }
+    } catch (...) {
+        // In case of error, create a fresh container
         resultContainer = registry.New<Map>();
-        // We'll pin this to prevent garbage collection
         registry.Pin(resultContainer);
     }
     

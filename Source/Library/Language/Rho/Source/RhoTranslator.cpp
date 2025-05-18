@@ -822,7 +822,7 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
                         Pointer<Continuation> resultCont = result;
                         
                         // Check if it has a simple structure with a single value
-                        if (resultCont->GetCode() && resultCont->GetCode()->Size() > 0) {
+                        if (resultCont->GetCode().Exists() && resultCont->GetCode()->Size() > 0) {
                             // Try to execute the continuation to get the final value
                             Pointer<Executor> extractExec = reg_->New<Executor>();
                             extractExec->Create();
@@ -970,7 +970,7 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
                                 Pointer<Continuation> resultCont = result;
                                 
                                 // Check if it has a simple structure with a single value
-                                if (resultCont->GetCode() && resultCont->GetCode()->Size() > 0) {
+                                if (resultCont->GetCode().Exists() && resultCont->GetCode()->Size() > 0) {
                                     // Try to execute the continuation to get the final value
                                     Pointer<Executor> extractExec = reg_->New<Executor>();
                                     extractExec->Create();
@@ -1784,7 +1784,7 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
                 Pointer<Continuation> resultCont = result;
                 
                 // Only extract if it seems like a simple operation result (not a block/function)
-                if (resultCont->GetCode() && resultCont->GetCode()->Size() <= 4) {
+                if (resultCont->GetCode().Exists() && resultCont->GetCode()->Size() <= 4) {
                     // Try to evaluate the continuation to get a primitive result
                     Pointer<Executor> extractExecutor = reg_->New<Executor>();
                     extractExecutor->Create();
