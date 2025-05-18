@@ -63,10 +63,11 @@ namespace Common {
     // Primitive types
     struct TypeSamples {
         bool flag;
-        int32 count;
-        int64 bigNumber;
-        float price;
-        double preciseValue;
+        int32 count = 42;                  // Integer literal
+        int64 bigNumber = 123456789;       // Large integer
+        float price = 3.14159;             // Floating point literal
+        double preciseValue = 0.0001;      // Small floating point
+        float scientificValue = 6.02e+23;  // Scientific notation
         string name;
         bytes rawData;
         date timestamp;
@@ -97,6 +98,34 @@ namespace Status {
     }
 }
 ```
+
+### Field Assignment and Default Parameters
+
+Tau allows for field initialization and default parameter values in method declarations:
+
+```tau
+namespace Defaults {
+    // Class with initialized fields
+    class Configuration {
+        // Field assignments
+        string serverName = "default-server";
+        int port = 8080;
+        bool useSsl = true;
+        float timeout = 30.0;
+        
+        // Method with default parameters
+        void Connect(string host = "localhost", int port = 443);
+        
+        // Multiple default parameters with different types
+        bool SendData(bytes data, int retries = 3, float timeout = 5.0, bool compress = true);
+        
+        // Scientific notation in default values
+        float CalculateWithPrecision(float input, float epsilon = 1.0e-6);
+    }
+}
+```
+
+Default parameters make interfaces more flexible, allowing clients to omit parameters when the defaults are acceptable.
 
 ## Advanced Features
 
@@ -311,9 +340,10 @@ namespace Trading {
         string symbol;
         int quantity;
         float price;
-        OrderType type;
-        OrderStatus status;
+        OrderType type = OrderType.Market;  // Default to Market order
+        OrderStatus status = OrderStatus.Pending;  // Default status
         date createdAt;
+        float commission = 0.0025;  // Default commission rate
     }
     
     // Enumerations
@@ -347,15 +377,20 @@ namespace Trading {
     @versioned(1.0)
     interface ITradingService {
         // Order operations
-        @remote Order PlaceOrder(string symbol, int quantity, float price, OrderType type) 
-            throws InsufficientFundsException, InvalidOrderException;
+        @remote Order PlaceOrder(
+            string symbol, 
+            int quantity, 
+            float price, 
+            OrderType type = OrderType.Market,
+            float stopLossPrice = 0.0
+        ) throws InsufficientFundsException, InvalidOrderException;
         
         @remote bool CancelOrder(string orderId) 
             throws OrderNotFoundException;
         
         @remote Order GetOrderById(string orderId);
         
-        @remote Order[] GetOrdersByStatus(OrderStatus status);
+        @remote Order[] GetOrdersByStatus(OrderStatus status = OrderStatus.Pending);
         
         // Account operations
         @remote float GetAccountBalance();

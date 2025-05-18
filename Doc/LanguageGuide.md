@@ -56,6 +56,9 @@ Key characteristics:
 - **Interface definitions**: Clear contracts between components
 - **Code generation**: Creates proxies and agents for network communication
 - **Type safety**: Ensures consistent type handling across the network
+- **Field assignments**: Supports initialization of fields with literals and values
+- **Default parameters**: Methods can have default parameter values
+- **Numeric literals**: Full support for integer, float, and scientific notation
 - **Versioning**: Supports backward compatibility
 
 [Learn more in the Tau Tutorial](TauTutorial.md)
