@@ -39,6 +39,9 @@ add_library(TestRhoFiles OBJECT
     # New 10 additional tests for RhoForLoopTestsFixture
     AdvancedForLoopTests.cpp  # Added with 10 new tests for for loops
     
+    # New 10 tests for Resume, Suspend, Replace operations in For loops
+    ContinuationControlTests.cpp  # Added with tests for continuation control operations
+    
     # IMPORTANT: The following files contain duplicate test definitions
     # They MUST remain commented out to avoid linker errors
     # Because RhoPiFix.cpp has implementations for the same test fixtures/names
