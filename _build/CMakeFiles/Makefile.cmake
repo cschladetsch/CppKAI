@@ -15,7 +15,9 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/home/xian/local/KAI/Source/Library/ImGui/CMakeLists.txt"
   "/home/xian/local/KAI/Source/Library/Language/CMakeLists.txt"
   "/home/xian/local/KAI/Test/CMakeLists.txt"
+  "/home/xian/local/KAI/Test/Examples/CMakeLists.txt"
   "/home/xian/local/KAI/Test/Language/CMakeLists.txt"
+  "/home/xian/local/KAI/Test/LogTest/CMakeLists.txt"
   "/home/xian/local/KAI/Test/Source/CMakeLists.txt"
   "CMakeFiles/3.28.3/CMakeCCompiler.cmake"
   "CMakeFiles/3.28.3/CMakeCXXCompiler.cmake"
@@ -103,6 +105,8 @@ set(CMAKE_MAKEFILE_PRODUCTS
   "Test/CMakeFiles/CMakeDirectoryInformation.cmake"
   "Test/Source/CMakeFiles/CMakeDirectoryInformation.cmake"
   "Test/Language/CMakeFiles/CMakeDirectoryInformation.cmake"
+  "Test/LogTest/CMakeFiles/CMakeDirectoryInformation.cmake"
+  "Test/Examples/CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
 # Dependency information for all targets:
@@ -123,4 +127,6 @@ set(CMAKE_DEPEND_INFO_FILES
   "Test/Language/CMakeFiles/TestTau.dir/DependInfo.cmake"
   "Test/Language/CMakeFiles/TestRho.dir/DependInfo.cmake"
   "Test/Language/CMakeFiles/TestPi.dir/DependInfo.cmake"
+  "Test/LogTest/CMakeFiles/LogTest.dir/DependInfo.cmake"
+  "Test/Examples/CMakeFiles/SimpleColorExample.dir/DependInfo.cmake"
   )

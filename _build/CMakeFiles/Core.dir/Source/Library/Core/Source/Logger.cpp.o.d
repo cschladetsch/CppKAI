@@ -260,4 +260,9 @@ CMakeFiles/Core.dir/Source/Library/Core/Source/Logger.cpp.o: \
  /usr/include/c++/13/bits/atomic_timed_wait.h \
  /usr/include/c++/13/bits/this_thread_sleep.h \
  /usr/include/x86_64-linux-gnu/sys/time.h /usr/include/semaphore.h \
- /usr/include/x86_64-linux-gnu/bits/semaphore.h
+ /usr/include/x86_64-linux-gnu/bits/semaphore.h \
+ /home/xian/local/KAI/Include/rang.hpp /usr/include/c++/13/algorithm \
+ /usr/include/c++/13/bits/ranges_algo.h \
+ /usr/include/c++/13/pstl/glue_algorithm_defs.h \
+ /usr/include/c++/13/pstl/execution_defs.h /usr/include/c++/13/cstring \
+ /usr/include/string.h /usr/include/strings.h

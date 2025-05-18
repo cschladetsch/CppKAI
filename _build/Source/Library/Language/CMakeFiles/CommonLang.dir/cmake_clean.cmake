@@ -1,6 +1,8 @@
 file(REMOVE_RECURSE
   "/home/xian/local/KAI/Bin/libCommonLang.a"
   "/home/xian/local/KAI/Bin/libCommonLang.pdb"
+  "CMakeFiles/CommonLang.dir/Common/Source/Language.cpp.o"
+  "CMakeFiles/CommonLang.dir/Common/Source/Language.cpp.o.d"
   "CMakeFiles/CommonLang.dir/Common/Source/Structure.cpp.o"
   "CMakeFiles/CommonLang.dir/Common/Source/Structure.cpp.o.d"
 )

@@ -19,6 +19,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/TestRho.dir/TestRho/DirectBinaryOpTest.cpp.o.d"
   "CMakeFiles/TestRho.dir/TestRho/ExtendedBinaryOpTests.cpp.o"
   "CMakeFiles/TestRho.dir/TestRho/ExtendedBinaryOpTests.cpp.o.d"
+  "CMakeFiles/TestRho.dir/TestRho/ExtendedRhoTests.cpp.o"
+  "CMakeFiles/TestRho.dir/TestRho/ExtendedRhoTests.cpp.o.d"
   "CMakeFiles/TestRho.dir/TestRho/ForLoopTests.cpp.o"
   "CMakeFiles/TestRho.dir/TestRho/ForLoopTests.cpp.o.d"
   "CMakeFiles/TestRho.dir/TestRho/MinimalTest.cpp.o"

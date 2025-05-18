@@ -134,17 +134,38 @@ Source/Library/Language/clean: Source/Library/Language/CMakeFiles/TauLang.dir/cl
 # Recursive "all" directory target.
 Test/all: Test/Source/all
 Test/all: Test/Language/all
+Test/all: Test/LogTest/all
+Test/all: Test/Examples/all
 .PHONY : Test/all
 
 # Recursive "preinstall" directory target.
 Test/preinstall: Test/Source/preinstall
 Test/preinstall: Test/Language/preinstall
+Test/preinstall: Test/LogTest/preinstall
+Test/preinstall: Test/Examples/preinstall
 .PHONY : Test/preinstall
 
 # Recursive "clean" directory target.
 Test/clean: Test/Source/clean
 Test/clean: Test/Language/clean
+Test/clean: Test/LogTest/clean
+Test/clean: Test/Examples/clean
 .PHONY : Test/clean
+
+#=============================================================================
+# Directory level rules for directory Test/Examples
+
+# Recursive "all" directory target.
+Test/Examples/all: Test/Examples/CMakeFiles/SimpleColorExample.dir/all
+.PHONY : Test/Examples/all
+
+# Recursive "preinstall" directory target.
+Test/Examples/preinstall:
+.PHONY : Test/Examples/preinstall
+
+# Recursive "clean" directory target.
+Test/Examples/clean: Test/Examples/CMakeFiles/SimpleColorExample.dir/clean
+.PHONY : Test/Examples/clean
 
 #=============================================================================
 # Directory level rules for directory Test/Language
@@ -164,6 +185,21 @@ Test/Language/clean: Test/Language/CMakeFiles/TestTau.dir/clean
 Test/Language/clean: Test/Language/CMakeFiles/TestRho.dir/clean
 Test/Language/clean: Test/Language/CMakeFiles/TestPi.dir/clean
 .PHONY : Test/Language/clean
+
+#=============================================================================
+# Directory level rules for directory Test/LogTest
+
+# Recursive "all" directory target.
+Test/LogTest/all: Test/LogTest/CMakeFiles/LogTest.dir/all
+.PHONY : Test/LogTest/all
+
+# Recursive "preinstall" directory target.
+Test/LogTest/preinstall:
+.PHONY : Test/LogTest/preinstall
+
+# Recursive "clean" directory target.
+Test/LogTest/clean: Test/LogTest/CMakeFiles/LogTest.dir/clean
+.PHONY : Test/LogTest/clean
 
 #=============================================================================
 # Directory level rules for directory Test/Source
@@ -212,7 +248,7 @@ CMakeFiles/Core.dir/clean:
 # Target rules for target CMakeFiles/Executor.dir
 
 # All Build rule for target.
-CMakeFiles/Executor.dir/all:
+CMakeFiles/Executor.dir/all: Source/Library/Language/CMakeFiles/CommonLang.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Executor.dir/build.make CMakeFiles/Executor.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Executor.dir/build.make CMakeFiles/Executor.dir/build
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/xian/local/KAI/_build/CMakeFiles --progress-num=20,21,22,23,24,25,26,27 "Built target Executor"
@@ -220,7 +256,7 @@ CMakeFiles/Executor.dir/all:
 
 # Build rule for subdir invocation for target.
 CMakeFiles/Executor.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/_build/CMakeFiles 8
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/_build/CMakeFiles 9
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/Executor.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/_build/CMakeFiles 0
 .PHONY : CMakeFiles/Executor.dir/rule
@@ -240,6 +276,7 @@ CMakeFiles/Executor.dir/clean:
 # All Build rule for target.
 CMakeFiles/Console.dir/all: CMakeFiles/Core.dir/all
 CMakeFiles/Console.dir/all: CMakeFiles/Executor.dir/all
+CMakeFiles/Console.dir/all: Source/Library/Language/CMakeFiles/CommonLang.dir/all
 CMakeFiles/Console.dir/all: Source/Library/Language/CMakeFiles/PiLang.dir/all
 CMakeFiles/Console.dir/all: Source/Library/Language/CMakeFiles/RhoLang.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Console.dir/build.make CMakeFiles/Console.dir/depend
@@ -249,7 +286,7 @@ CMakeFiles/Console.dir/all: Source/Library/Language/CMakeFiles/RhoLang.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/Console.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/_build/CMakeFiles 34
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/_build/CMakeFiles 35
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/Console.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/_build/CMakeFiles 0
 .PHONY : CMakeFiles/Console.dir/rule
@@ -269,6 +306,7 @@ CMakeFiles/Console.dir/clean:
 # All Build rule for target.
 CMakeFiles/MinimalServer.dir/all: CMakeFiles/Core.dir/all
 CMakeFiles/MinimalServer.dir/all: CMakeFiles/Executor.dir/all
+CMakeFiles/MinimalServer.dir/all: Source/Library/Language/CMakeFiles/CommonLang.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/MinimalServer.dir/build.make CMakeFiles/MinimalServer.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/MinimalServer.dir/build.make CMakeFiles/MinimalServer.dir/build
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/xian/local/KAI/_build/CMakeFiles --progress-num=47 "Built target MinimalServer"
@@ -276,7 +314,7 @@ CMakeFiles/MinimalServer.dir/all: CMakeFiles/Executor.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/MinimalServer.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/_build/CMakeFiles 26
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/_build/CMakeFiles 27
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/MinimalServer.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/_build/CMakeFiles 0
 .PHONY : CMakeFiles/MinimalServer.dir/rule
@@ -296,6 +334,7 @@ CMakeFiles/MinimalServer.dir/clean:
 # All Build rule for target.
 CMakeFiles/MinimalClient.dir/all: CMakeFiles/Core.dir/all
 CMakeFiles/MinimalClient.dir/all: CMakeFiles/Executor.dir/all
+CMakeFiles/MinimalClient.dir/all: Source/Library/Language/CMakeFiles/CommonLang.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/MinimalClient.dir/build.make CMakeFiles/MinimalClient.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/MinimalClient.dir/build.make CMakeFiles/MinimalClient.dir/build
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/xian/local/KAI/_build/CMakeFiles --progress-num=46 "Built target MinimalClient"
@@ -303,7 +342,7 @@ CMakeFiles/MinimalClient.dir/all: CMakeFiles/Executor.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/MinimalClient.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/_build/CMakeFiles 26
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/_build/CMakeFiles 27
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/MinimalClient.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/_build/CMakeFiles 0
 .PHONY : CMakeFiles/MinimalClient.dir/rule
@@ -323,6 +362,7 @@ CMakeFiles/MinimalClient.dir/clean:
 # All Build rule for target.
 CMakeFiles/Window.dir/all: CMakeFiles/Core.dir/all
 CMakeFiles/Window.dir/all: CMakeFiles/Executor.dir/all
+CMakeFiles/Window.dir/all: Source/Library/Language/CMakeFiles/CommonLang.dir/all
 CMakeFiles/Window.dir/all: Source/Library/Language/CMakeFiles/PiLang.dir/all
 CMakeFiles/Window.dir/all: Source/Library/Language/CMakeFiles/RhoLang.dir/all
 CMakeFiles/Window.dir/all: Source/Library/ImGui/CMakeFiles/ImGui.dir/all
@@ -333,7 +373,7 @@ CMakeFiles/Window.dir/all: Source/Library/ImGui/CMakeFiles/ImGui.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/Window.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/_build/CMakeFiles 38
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/_build/CMakeFiles 39
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/Window.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/_build/CMakeFiles 0
 .PHONY : CMakeFiles/Window.dir/rule
@@ -377,15 +417,15 @@ Source/Library/Language/CMakeFiles/CommonLang.dir/clean:
 # Target rules for target Source/Library/Language/CMakeFiles/PiLang.dir
 
 # All Build rule for target.
-Source/Library/Language/CMakeFiles/PiLang.dir/all:
+Source/Library/Language/CMakeFiles/PiLang.dir/all: Source/Library/Language/CMakeFiles/CommonLang.dir/all
 	$(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/PiLang.dir/build.make Source/Library/Language/CMakeFiles/PiLang.dir/depend
 	$(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/PiLang.dir/build.make Source/Library/Language/CMakeFiles/PiLang.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/xian/local/KAI/_build/CMakeFiles --progress-num=48,49,50 "Built target PiLang"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/xian/local/KAI/_build/CMakeFiles --progress-num=48,49,50,51 "Built target PiLang"
 .PHONY : Source/Library/Language/CMakeFiles/PiLang.dir/all
 
 # Build rule for subdir invocation for target.
 Source/Library/Language/CMakeFiles/PiLang.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/_build/CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/_build/CMakeFiles 5
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Source/Library/Language/CMakeFiles/PiLang.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/_build/CMakeFiles 0
 .PHONY : Source/Library/Language/CMakeFiles/PiLang.dir/rule
@@ -403,10 +443,10 @@ Source/Library/Language/CMakeFiles/PiLang.dir/clean:
 # Target rules for target Source/Library/Language/CMakeFiles/RhoLang.dir
 
 # All Build rule for target.
-Source/Library/Language/CMakeFiles/RhoLang.dir/all:
+Source/Library/Language/CMakeFiles/RhoLang.dir/all: Source/Library/Language/CMakeFiles/CommonLang.dir/all
 	$(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/RhoLang.dir/build.make Source/Library/Language/CMakeFiles/RhoLang.dir/depend
 	$(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/RhoLang.dir/build.make Source/Library/Language/CMakeFiles/RhoLang.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/xian/local/KAI/_build/CMakeFiles --progress-num=51,52,53,54,55 "Built target RhoLang"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/xian/local/KAI/_build/CMakeFiles --progress-num=52,53,54,55 "Built target RhoLang"
 .PHONY : Source/Library/Language/CMakeFiles/RhoLang.dir/all
 
 # Build rule for subdir invocation for target.
@@ -429,10 +469,10 @@ Source/Library/Language/CMakeFiles/RhoLang.dir/clean:
 # Target rules for target Source/Library/Language/CMakeFiles/TauLang.dir
 
 # All Build rule for target.
-Source/Library/Language/CMakeFiles/TauLang.dir/all:
+Source/Library/Language/CMakeFiles/TauLang.dir/all: Source/Library/Language/CMakeFiles/CommonLang.dir/all
 	$(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/TauLang.dir/build.make Source/Library/Language/CMakeFiles/TauLang.dir/depend
 	$(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/TauLang.dir/build.make Source/Library/Language/CMakeFiles/TauLang.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/xian/local/KAI/_build/CMakeFiles --progress-num=56,57,58,59,60 "Built target TauLang"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/xian/local/KAI/_build/CMakeFiles --progress-num=57,58,59,60 "Built target TauLang"
 .PHONY : Source/Library/Language/CMakeFiles/TauLang.dir/all
 
 # Build rule for subdir invocation for target.
@@ -483,18 +523,19 @@ Source/Library/ImGui/CMakeFiles/ImGui.dir/clean:
 # All Build rule for target.
 Test/Source/CMakeFiles/KaiTest.dir/all: CMakeFiles/Core.dir/all
 Test/Source/CMakeFiles/KaiTest.dir/all: CMakeFiles/Executor.dir/all
+Test/Source/CMakeFiles/KaiTest.dir/all: Source/Library/Language/CMakeFiles/CommonLang.dir/all
 Test/Source/CMakeFiles/KaiTest.dir/all: Source/Library/Language/CMakeFiles/PiLang.dir/all
 Test/Source/CMakeFiles/KaiTest.dir/all: Source/Library/Language/CMakeFiles/RhoLang.dir/all
 Test/Source/CMakeFiles/KaiTest.dir/all: Source/Library/Language/CMakeFiles/TauLang.dir/all
 Test/Source/CMakeFiles/KaiTest.dir/all: Source/Library/ImGui/CMakeFiles/ImGui.dir/all
 	$(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/depend
 	$(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/xian/local/KAI/_build/CMakeFiles --progress-num=31,32,33,34,35,36,37,38,39,40,41,42,43,44,45 "Built target KaiTest"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/xian/local/KAI/_build/CMakeFiles --progress-num=31,32,33,34,35,36,37,38,39,40,41,42,43,44 "Built target KaiTest"
 .PHONY : Test/Source/CMakeFiles/KaiTest.dir/all
 
 # Build rule for subdir invocation for target.
 Test/Source/CMakeFiles/KaiTest.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/_build/CMakeFiles 56
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/_build/CMakeFiles 55
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/Source/CMakeFiles/KaiTest.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/_build/CMakeFiles 0
 .PHONY : Test/Source/CMakeFiles/KaiTest.dir/rule
@@ -514,6 +555,7 @@ Test/Source/CMakeFiles/KaiTest.dir/clean:
 # All Build rule for target.
 Test/Source/CMakeFiles/TestCore.dir/all: CMakeFiles/Core.dir/all
 Test/Source/CMakeFiles/TestCore.dir/all: CMakeFiles/Executor.dir/all
+Test/Source/CMakeFiles/TestCore.dir/all: Source/Library/Language/CMakeFiles/CommonLang.dir/all
 Test/Source/CMakeFiles/TestCore.dir/all: Source/Library/Language/CMakeFiles/PiLang.dir/all
 Test/Source/CMakeFiles/TestCore.dir/all: Source/Library/Language/CMakeFiles/RhoLang.dir/all
 Test/Source/CMakeFiles/TestCore.dir/all: Source/Library/Language/CMakeFiles/TauLang.dir/all
@@ -545,18 +587,19 @@ Test/Source/CMakeFiles/TestCore.dir/clean:
 # All Build rule for target.
 Test/Language/CMakeFiles/TestTau.dir/all: CMakeFiles/Core.dir/all
 Test/Language/CMakeFiles/TestTau.dir/all: CMakeFiles/Executor.dir/all
+Test/Language/CMakeFiles/TestTau.dir/all: Source/Library/Language/CMakeFiles/CommonLang.dir/all
 Test/Language/CMakeFiles/TestTau.dir/all: Source/Library/Language/CMakeFiles/PiLang.dir/all
 Test/Language/CMakeFiles/TestTau.dir/all: Source/Library/Language/CMakeFiles/RhoLang.dir/all
 Test/Language/CMakeFiles/TestTau.dir/all: Source/Library/Language/CMakeFiles/TauLang.dir/all
 Test/Language/CMakeFiles/TestTau.dir/all: Source/Library/ImGui/CMakeFiles/ImGui.dir/all
 	$(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/depend
 	$(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/xian/local/KAI/_build/CMakeFiles --progress-num=95,96,97,98 "Built target TestTau"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/xian/local/KAI/_build/CMakeFiles --progress-num=96,97,98 "Built target TestTau"
 .PHONY : Test/Language/CMakeFiles/TestTau.dir/all
 
 # Build rule for subdir invocation for target.
 Test/Language/CMakeFiles/TestTau.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/_build/CMakeFiles 45
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/_build/CMakeFiles 44
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/Language/CMakeFiles/TestTau.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/_build/CMakeFiles 0
 .PHONY : Test/Language/CMakeFiles/TestTau.dir/rule
@@ -576,18 +619,19 @@ Test/Language/CMakeFiles/TestTau.dir/clean:
 # All Build rule for target.
 Test/Language/CMakeFiles/TestRho.dir/all: CMakeFiles/Core.dir/all
 Test/Language/CMakeFiles/TestRho.dir/all: CMakeFiles/Executor.dir/all
+Test/Language/CMakeFiles/TestRho.dir/all: Source/Library/Language/CMakeFiles/CommonLang.dir/all
 Test/Language/CMakeFiles/TestRho.dir/all: Source/Library/Language/CMakeFiles/PiLang.dir/all
 Test/Language/CMakeFiles/TestRho.dir/all: Source/Library/Language/CMakeFiles/RhoLang.dir/all
 Test/Language/CMakeFiles/TestRho.dir/all: Source/Library/Language/CMakeFiles/TauLang.dir/all
 Test/Language/CMakeFiles/TestRho.dir/all: Source/Library/ImGui/CMakeFiles/ImGui.dir/all
 	$(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/depend
 	$(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/xian/local/KAI/_build/CMakeFiles --progress-num=82,83,84,85,86,87,88,89,90,91,92,93,94 "Built target TestRho"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/xian/local/KAI/_build/CMakeFiles --progress-num=81,82,83,84,85,86,87,88,89,90,91,92,93,94,95 "Built target TestRho"
 .PHONY : Test/Language/CMakeFiles/TestRho.dir/all
 
 # Build rule for subdir invocation for target.
 Test/Language/CMakeFiles/TestRho.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/_build/CMakeFiles 54
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/_build/CMakeFiles 56
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/Language/CMakeFiles/TestRho.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/_build/CMakeFiles 0
 .PHONY : Test/Language/CMakeFiles/TestRho.dir/rule
@@ -607,18 +651,19 @@ Test/Language/CMakeFiles/TestRho.dir/clean:
 # All Build rule for target.
 Test/Language/CMakeFiles/TestPi.dir/all: CMakeFiles/Core.dir/all
 Test/Language/CMakeFiles/TestPi.dir/all: CMakeFiles/Executor.dir/all
+Test/Language/CMakeFiles/TestPi.dir/all: Source/Library/Language/CMakeFiles/CommonLang.dir/all
 Test/Language/CMakeFiles/TestPi.dir/all: Source/Library/Language/CMakeFiles/PiLang.dir/all
 Test/Language/CMakeFiles/TestPi.dir/all: Source/Library/Language/CMakeFiles/RhoLang.dir/all
 Test/Language/CMakeFiles/TestPi.dir/all: Source/Library/Language/CMakeFiles/TauLang.dir/all
 Test/Language/CMakeFiles/TestPi.dir/all: Source/Library/ImGui/CMakeFiles/ImGui.dir/all
 	$(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/depend
 	$(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/xian/local/KAI/_build/CMakeFiles --progress-num=74,75,76,77,78,79,80,81 "Built target TestPi"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/xian/local/KAI/_build/CMakeFiles --progress-num=74,75,76,77,78,79,80 "Built target TestPi"
 .PHONY : Test/Language/CMakeFiles/TestPi.dir/all
 
 # Build rule for subdir invocation for target.
 Test/Language/CMakeFiles/TestPi.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/_build/CMakeFiles 49
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/_build/CMakeFiles 48
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/Language/CMakeFiles/TestPi.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/_build/CMakeFiles 0
 .PHONY : Test/Language/CMakeFiles/TestPi.dir/rule
@@ -631,6 +676,68 @@ TestPi: Test/Language/CMakeFiles/TestPi.dir/rule
 Test/Language/CMakeFiles/TestPi.dir/clean:
 	$(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/clean
 .PHONY : Test/Language/CMakeFiles/TestPi.dir/clean
+
+#=============================================================================
+# Target rules for target Test/LogTest/CMakeFiles/LogTest.dir
+
+# All Build rule for target.
+Test/LogTest/CMakeFiles/LogTest.dir/all: CMakeFiles/Core.dir/all
+Test/LogTest/CMakeFiles/LogTest.dir/all: CMakeFiles/Executor.dir/all
+Test/LogTest/CMakeFiles/LogTest.dir/all: Source/Library/Language/CMakeFiles/CommonLang.dir/all
+Test/LogTest/CMakeFiles/LogTest.dir/all: Source/Library/Language/CMakeFiles/PiLang.dir/all
+Test/LogTest/CMakeFiles/LogTest.dir/all: Source/Library/Language/CMakeFiles/RhoLang.dir/all
+Test/LogTest/CMakeFiles/LogTest.dir/all: Source/Library/ImGui/CMakeFiles/ImGui.dir/all
+	$(MAKE) $(MAKESILENT) -f Test/LogTest/CMakeFiles/LogTest.dir/build.make Test/LogTest/CMakeFiles/LogTest.dir/depend
+	$(MAKE) $(MAKESILENT) -f Test/LogTest/CMakeFiles/LogTest.dir/build.make Test/LogTest/CMakeFiles/LogTest.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/xian/local/KAI/_build/CMakeFiles --progress-num=45 "Built target LogTest"
+.PHONY : Test/LogTest/CMakeFiles/LogTest.dir/all
+
+# Build rule for subdir invocation for target.
+Test/LogTest/CMakeFiles/LogTest.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/_build/CMakeFiles 38
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/LogTest/CMakeFiles/LogTest.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/_build/CMakeFiles 0
+.PHONY : Test/LogTest/CMakeFiles/LogTest.dir/rule
+
+# Convenience name for target.
+LogTest: Test/LogTest/CMakeFiles/LogTest.dir/rule
+.PHONY : LogTest
+
+# clean rule for target.
+Test/LogTest/CMakeFiles/LogTest.dir/clean:
+	$(MAKE) $(MAKESILENT) -f Test/LogTest/CMakeFiles/LogTest.dir/build.make Test/LogTest/CMakeFiles/LogTest.dir/clean
+.PHONY : Test/LogTest/CMakeFiles/LogTest.dir/clean
+
+#=============================================================================
+# Target rules for target Test/Examples/CMakeFiles/SimpleColorExample.dir
+
+# All Build rule for target.
+Test/Examples/CMakeFiles/SimpleColorExample.dir/all: CMakeFiles/Core.dir/all
+Test/Examples/CMakeFiles/SimpleColorExample.dir/all: CMakeFiles/Executor.dir/all
+Test/Examples/CMakeFiles/SimpleColorExample.dir/all: Source/Library/Language/CMakeFiles/CommonLang.dir/all
+Test/Examples/CMakeFiles/SimpleColorExample.dir/all: Source/Library/Language/CMakeFiles/PiLang.dir/all
+Test/Examples/CMakeFiles/SimpleColorExample.dir/all: Source/Library/Language/CMakeFiles/RhoLang.dir/all
+Test/Examples/CMakeFiles/SimpleColorExample.dir/all: Source/Library/ImGui/CMakeFiles/ImGui.dir/all
+	$(MAKE) $(MAKESILENT) -f Test/Examples/CMakeFiles/SimpleColorExample.dir/build.make Test/Examples/CMakeFiles/SimpleColorExample.dir/depend
+	$(MAKE) $(MAKESILENT) -f Test/Examples/CMakeFiles/SimpleColorExample.dir/build.make Test/Examples/CMakeFiles/SimpleColorExample.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/xian/local/KAI/_build/CMakeFiles --progress-num=56 "Built target SimpleColorExample"
+.PHONY : Test/Examples/CMakeFiles/SimpleColorExample.dir/all
+
+# Build rule for subdir invocation for target.
+Test/Examples/CMakeFiles/SimpleColorExample.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/_build/CMakeFiles 38
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/Examples/CMakeFiles/SimpleColorExample.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/_build/CMakeFiles 0
+.PHONY : Test/Examples/CMakeFiles/SimpleColorExample.dir/rule
+
+# Convenience name for target.
+SimpleColorExample: Test/Examples/CMakeFiles/SimpleColorExample.dir/rule
+.PHONY : SimpleColorExample
+
+# clean rule for target.
+Test/Examples/CMakeFiles/SimpleColorExample.dir/clean:
+	$(MAKE) $(MAKESILENT) -f Test/Examples/CMakeFiles/SimpleColorExample.dir/build.make Test/Examples/CMakeFiles/SimpleColorExample.dir/clean
+.PHONY : Test/Examples/CMakeFiles/SimpleColorExample.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

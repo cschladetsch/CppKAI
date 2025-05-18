@@ -281,6 +281,30 @@ TestPi/BasicTest.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/TestPi/BasicTest.cpp.s
 .PHONY : TestPi/BasicTest.cpp.s
 
+TestPi/ExtendedPiTests.o: TestPi/ExtendedPiTests.cpp.o
+.PHONY : TestPi/ExtendedPiTests.o
+
+# target to build an object file
+TestPi/ExtendedPiTests.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/TestPi/ExtendedPiTests.cpp.o
+.PHONY : TestPi/ExtendedPiTests.cpp.o
+
+TestPi/ExtendedPiTests.i: TestPi/ExtendedPiTests.cpp.i
+.PHONY : TestPi/ExtendedPiTests.i
+
+# target to preprocess a source file
+TestPi/ExtendedPiTests.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/TestPi/ExtendedPiTests.cpp.i
+.PHONY : TestPi/ExtendedPiTests.cpp.i
+
+TestPi/ExtendedPiTests.s: TestPi/ExtendedPiTests.cpp.s
+.PHONY : TestPi/ExtendedPiTests.s
+
+# target to generate assembly for a file
+TestPi/ExtendedPiTests.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/TestPi/ExtendedPiTests.cpp.s
+.PHONY : TestPi/ExtendedPiTests.cpp.s
+
 TestPi/PiAssertTest.o: TestPi/PiAssertTest.cpp.o
 .PHONY : TestPi/PiAssertTest.o
 
@@ -592,6 +616,30 @@ TestRho/ExtendedBinaryOpTests.s: TestRho/ExtendedBinaryOpTests.cpp.s
 TestRho/ExtendedBinaryOpTests.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/ExtendedBinaryOpTests.cpp.s
 .PHONY : TestRho/ExtendedBinaryOpTests.cpp.s
+
+TestRho/ExtendedRhoTests.o: TestRho/ExtendedRhoTests.cpp.o
+.PHONY : TestRho/ExtendedRhoTests.o
+
+# target to build an object file
+TestRho/ExtendedRhoTests.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/ExtendedRhoTests.cpp.o
+.PHONY : TestRho/ExtendedRhoTests.cpp.o
+
+TestRho/ExtendedRhoTests.i: TestRho/ExtendedRhoTests.cpp.i
+.PHONY : TestRho/ExtendedRhoTests.i
+
+# target to preprocess a source file
+TestRho/ExtendedRhoTests.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/ExtendedRhoTests.cpp.i
+.PHONY : TestRho/ExtendedRhoTests.cpp.i
+
+TestRho/ExtendedRhoTests.s: TestRho/ExtendedRhoTests.cpp.s
+.PHONY : TestRho/ExtendedRhoTests.s
+
+# target to generate assembly for a file
+TestRho/ExtendedRhoTests.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/ExtendedRhoTests.cpp.s
+.PHONY : TestRho/ExtendedRhoTests.cpp.s
 
 TestRho/ForLoopTests.o: TestRho/ForLoopTests.cpp.o
 .PHONY : TestRho/ForLoopTests.o
@@ -1019,6 +1067,9 @@ help:
 	@echo "... TestPi/BasicTest.o"
 	@echo "... TestPi/BasicTest.i"
 	@echo "... TestPi/BasicTest.s"
+	@echo "... TestPi/ExtendedPiTests.o"
+	@echo "... TestPi/ExtendedPiTests.i"
+	@echo "... TestPi/ExtendedPiTests.s"
 	@echo "... TestPi/PiAssertTest.o"
 	@echo "... TestPi/PiAssertTest.i"
 	@echo "... TestPi/PiAssertTest.s"
@@ -1058,6 +1109,9 @@ help:
 	@echo "... TestRho/ExtendedBinaryOpTests.o"
 	@echo "... TestRho/ExtendedBinaryOpTests.i"
 	@echo "... TestRho/ExtendedBinaryOpTests.s"
+	@echo "... TestRho/ExtendedRhoTests.o"
+	@echo "... TestRho/ExtendedRhoTests.i"
+	@echo "... TestRho/ExtendedRhoTests.s"
 	@echo "... TestRho/ForLoopTests.o"
 	@echo "... TestRho/ForLoopTests.i"
 	@echo "... TestRho/ForLoopTests.s"

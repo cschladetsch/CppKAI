@@ -11,6 +11,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/Executor.dir/Source/Library/Executor/Source/Continuation.cpp.o.d"
   "CMakeFiles/Executor.dir/Source/Library/Executor/Source/Executor.cpp.o"
   "CMakeFiles/Executor.dir/Source/Library/Executor/Source/Executor.cpp.o.d"
+  "CMakeFiles/Executor.dir/Source/Library/Executor/Source/ExtractValueFromContinuation.cpp.o"
+  "CMakeFiles/Executor.dir/Source/Library/Executor/Source/ExtractValueFromContinuation.cpp.o.d"
   "CMakeFiles/Executor.dir/Source/Library/Executor/Source/Operation.cpp.o"
   "CMakeFiles/Executor.dir/Source/Library/Executor/Source/Operation.cpp.o.d"
   "CMakeFiles/Executor.dir/Source/Library/Executor/Source/SignedContinuation.cpp.o"
