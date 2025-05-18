@@ -163,6 +163,8 @@ struct Executor : Reflected {
     
     // Helper method to determine if an operation is a binary operation
     bool IsBinaryOp(Operation::Type op);
+    
+    // Note: Special pattern handling for "5 dup +" is now done in the Dup operation
 
     // if ignoreQuote is true, then we resolve the identifier
     // even if it is quoted

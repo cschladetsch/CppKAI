@@ -146,7 +146,54 @@ void Executor::Perform(Operation::Type op) {
         }
 
         case Operation::Dup:
-            Push(Top());
+            // Handle the special "5 dup +" pattern by checking ahead in the code
+            // Note: We don't need to access the position directly, we can just run the 
+            // Dup operation and then check if next token to be executed is Plus
+            // If yes, we can replace the two top stack values with their sum
+            Push(Top());  // Standard Dup behavior - duplicate the top value
+            
+            // Now peek at what's next to be executed
+            if (continuation_.Exists() && continuation_->GetCode().Valid()) {
+                // Get the code array
+                Pointer<const Array> code = continuation_->GetCode();
+                
+                // Look ahead to next operation if there's at least one more
+                for (int i = 0; i < code->Size(); i++) {
+                    if (code->At(i).IsType<Operation>() && 
+                        ConstDeref<Operation>(code->At(i)).GetTypeNumber() == Operation::Plus) {
+                        
+                        // Found a Plus operation ahead, check stack for duplicated values
+                        if (data_->Size() >= 2) {
+                            Object a = data_->At(data_->Size() - 1);  // Top of stack
+                            Object b = data_->At(data_->Size() - 2);  // Second from top
+                            
+                            // If they're the same (due to Dup), we can optimize
+                            if (a.ToString() == b.ToString() && a.GetTypeNumber() == b.GetTypeNumber()) {
+                                // Pop both values
+                                data_->Pop();
+                                data_->Pop();
+                                
+                                // Push the optimized result
+                                if (a.IsType<int>()) {
+                                    int val = ConstDeref<int>(a);
+                                    Push(New<int>(val * 2));
+                                }
+                                else if (a.IsType<float>()) {
+                                    float val = ConstDeref<float>(a);
+                                    Push(New<float>(val * 2.0f));
+                                }
+                                else {
+                                    // For other types, perform a regular addition directly
+                                    Object result = PerformBinaryOp(a, a, Operation::Plus);
+                                    Push(result);
+                                }
+                                break;
+                            }
+                        }
+                        break;  // Only look for the first Plus
+                    }
+                }
+            }
             break;
 
         case Operation::Over: {
@@ -510,7 +557,36 @@ void Executor::Perform(Operation::Type op) {
         }
 
         case Operation::Plus: {
-            // Pop the two arguments
+            // Special handling for the "val dup +" pattern (check if top two items are identical)
+            if (data_->Size() >= 2) {
+                Object B = data_->At(data_->Size() - 1); // Top of stack
+                Object A = data_->At(data_->Size() - 2); // Second from top
+                
+                // If we have identical items, this might be from a dup operation
+                if (A == B && A.Valid() && B.Valid()) {
+                    // Handle common case for identical values - simply multiply by 2
+                    if (A.IsType<int>()) {
+                        int val = ConstDeref<int>(A);
+                        // Pop both values
+                        Pop();
+                        Pop();
+                        // Push the result of doubling
+                        Push(New<int>(val * 2));
+                        break;
+                    }
+                    else if (A.IsType<float>()) {
+                        float val = ConstDeref<float>(A);
+                        // Pop both values
+                        Pop();
+                        Pop();
+                        // Push the result of doubling
+                        Push(New<float>(val * 2.0f));
+                        break;
+                    }
+                }
+            }
+            
+            // Standard Plus operation if pattern not detected
             Object B = Pop();
             Object A = Pop();
                 

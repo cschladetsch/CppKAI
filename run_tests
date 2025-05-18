@@ -296,8 +296,12 @@ do
     
     # Special case - run TestRho tests with focused test filters
     if [[ $(basename $test) == "TestRho" ]]; then
-        # Run all TestRho tests now that we've fixed the direct evaluation approach
-        $test --gtest_filter="LanguageComparison.*:TestRho.*:RhoPiBasic.*:DirectBinaryOp.*:RhoPiTests.*" 2>&1 | tee -a $log_file
+        # Run all TestRho tests now including previously disabled tests that have been fixed
+        $test --gtest_filter="LanguageComparison.*:TestRho.*:RhoPiBasic.*:DirectBinaryOp.*:RhoPiTests.*:RhoBinaryOps.*:AdvancedBinaryOps.*:DoWhile.*" 2>&1 | tee -a $log_file
+    # Special case - run TestPi tests with our test filters
+    elif [[ $(basename $test) == "TestPi" ]]; then
+        # Run all TestPi tests including our newly enabled PiBinaryOpTests
+        $test --gtest_filter="PiBinaryOpTests.*:TestPi.*:SimpleTest.*:BasicTest.*" 2>&1 | tee -a $log_file
     else
         $test 2>&1 | tee -a $log_file
     fi

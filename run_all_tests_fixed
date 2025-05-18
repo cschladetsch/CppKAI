@@ -20,13 +20,72 @@ echo -e "${BOLD}=====================================================${NC}"
 # Create logs directory if it doesn't exist
 mkdir -p Logs
 
-# Create log files
-> Logs/core_diagnostic.log
-> Logs/pi_diagnostic.log
-> Logs/rho_diagnostic.log
-> Logs/tau_diagnostic.log
-> Logs/network_diagnostic.log
-> Logs/general_diagnostic.log
+# Create log files and add headers
+TIMESTAMP=$(date "+%Y-%m-%d %H:%M:%S")
+
+# Create Core log with header
+cat > Logs/core_diagnostic.log << EOF
+[Core] Diagnostic Log
+Run Date: $TIMESTAMP
+MODULE: CORE
+----------------------------------------
+## TEST: ./Bin/Test/TestCore ##
+## MODULE: CORE ##
+## Begin Output ##
+EOF
+
+# Create Pi log with header
+cat > Logs/pi_diagnostic.log << EOF
+[Pi Language] Diagnostic Log
+Run Date: $TIMESTAMP
+MODULE: PI
+----------------------------------------
+## TEST: ./Bin/Test/TestPi ##
+## MODULE: PI ##
+## Begin Output ##
+EOF
+
+# Create Rho log with header
+cat > Logs/rho_diagnostic.log << EOF
+[Rho Language] Diagnostic Log
+Run Date: $TIMESTAMP
+MODULE: RHO
+----------------------------------------
+## TEST: ./Bin/Test/TestRho ##
+## MODULE: RHO ##
+## Begin Output ##
+EOF
+
+# Create Tau log with header
+cat > Logs/tau_diagnostic.log << EOF
+[Tau Language] Diagnostic Log
+Run Date: $TIMESTAMP
+MODULE: TAU
+----------------------------------------
+## TEST: ./Bin/Test/TestTau ##
+## MODULE: TAU ##
+## Begin Output ##
+EOF
+
+# Create Network log with header
+cat > Logs/network_diagnostic.log << EOF
+[Network] Diagnostic Log
+Run Date: $TIMESTAMP
+MODULE: NETWORK
+----------------------------------------
+## TEST: ./Bin/Test/Test_ProxyGeneration ##
+## MODULE: NETWORK ##
+## Begin Output ##
+EOF
+
+# Create General log with header
+cat > Logs/general_diagnostic.log << EOF
+[General] Diagnostic Log
+Run Date: $TIMESTAMP
+MODULE: GENERAL
+----------------------------------------
+## Begin Output ##
+EOF
 
 # Initialize counters
 TOTAL_TESTS=0
@@ -42,7 +101,11 @@ extract_test_count() {
 echo -e "${YELLOW}Running Core tests...${NC}"
 CORE_OUTPUT=$(./Bin/Test/TestCore 2>&1)
 CORE_STATUS=$?
-echo "$CORE_OUTPUT" > Logs/core_diagnostic.log
+{
+  echo "$CORE_OUTPUT"
+  echo "## End Output ##"
+  echo "----------------------------------------"
+} >> Logs/core_diagnostic.log
 CORE_TEST_COUNT=$(extract_test_count "$CORE_OUTPUT")
 CORE_TEST_COUNT=${CORE_TEST_COUNT:-68}  # Default if extraction fails
 
@@ -61,7 +124,11 @@ echo -e "${YELLOW}Running Pi tests...${NC}"
 echo "Some Pi tests might be skipped to avoid segmentation faults"
 PI_OUTPUT=$(./Bin/Test/TestPi --gtest_filter="ArrayOpTest.*:PiBasicTest.*:PiMinimal.*" 2>&1)
 PI_STATUS=$?
-echo "$PI_OUTPUT" > Logs/pi_diagnostic.log
+{
+  echo "$PI_OUTPUT"
+  echo "## End Output ##"
+  echo "----------------------------------------"
+} >> Logs/pi_diagnostic.log
 PI_TEST_COUNT=$(extract_test_count "$PI_OUTPUT")
 PI_TEST_COUNT=${PI_TEST_COUNT:-3}  # Default if extraction fails
 
@@ -116,7 +183,11 @@ fi
 echo "Running direct Rho tests to verify arithmetic operations..."
 RHO_OUTPUT=$(./Bin/Test/TestRho --gtest_filter="RhoFixTests.*" 2>&1)
 RHO_STATUS=$?
-echo "$RHO_OUTPUT" > Logs/rho_diagnostic.log
+{
+  echo "$RHO_OUTPUT"
+  echo "## End Output ##"
+  echo "----------------------------------------"
+} >> Logs/rho_diagnostic.log
 
 # Update counters
 TOTAL_TESTS=$((TOTAL_TESTS + RHO_TEST_COUNT))
@@ -155,7 +226,11 @@ fi
 echo -e "${YELLOW}Running Tau tests...${NC}"
 TAU_OUTPUT=$(./Bin/Test/TestTau 2>&1)
 TAU_STATUS=$?
-echo "$TAU_OUTPUT" > Logs/tau_diagnostic.log
+{
+  echo "$TAU_OUTPUT"
+  echo "## End Output ##"
+  echo "----------------------------------------"
+} >> Logs/tau_diagnostic.log
 TAU_TEST_COUNT=$(extract_test_count "$TAU_OUTPUT")
 TAU_TEST_COUNT=${TAU_TEST_COUNT:-0}  # Default if extraction fails
 
@@ -175,7 +250,11 @@ fi
 echo -e "${YELLOW}Running General tests...${NC}"
 NETWORK_OUTPUT=$(./Bin/Test/Test_ProxyGeneration 2>&1)
 NETWORK_STATUS=$?
-echo "$NETWORK_OUTPUT" > Logs/network_diagnostic.log
+{
+  echo "$NETWORK_OUTPUT"
+  echo "## End Output ##"
+  echo "----------------------------------------"
+} >> Logs/network_diagnostic.log
 NETWORK_TEST_COUNT=1  # This is usually just 1 test
 
 # Update counters
@@ -202,45 +281,82 @@ GENERAL_TESTS=$((CORE_TESTS + NETWORK_TESTS))
 # Get timestamp for the report
 TIMESTAMP=$(date "+%Y-%m-%d %H:%M:%S")
 
-# Display test summary
+# Calculate the pass percentage with 2 decimal places
+PASS_PERCENTAGE=$(echo "scale=2; ($PASSED_TESTS/$TOTAL_TESTS)*100" | bc)
+
+# Display test summary with enhanced format
 echo -e "${BOLD}=====================================================${NC}"
-echo -e "${GREEN}${BOLD}✓ PASSED: Test suite completed successfully${NC}"
+if [ $FAILED_TESTS -eq 0 ]; then
+    echo -e "${GREEN}${BOLD}✓ PASSED: Test suite completed successfully${NC}"
+else
+    echo -e "${RED}${BOLD}✗ FAILED: Test suite completed with failures${NC}"
+fi
 echo -e "${BOLD}=====================================================${NC}"
 echo -e "${BOLD}Test Suite Summary - ${TIMESTAMP}${NC}"
 echo -e "${BOLD}=====================================================${NC}"
+echo -e
+echo -e "${BOLD}TEST COUNTS${NC}"
+echo -e "${BOLD}----------------------------------------------------${NC}"
 echo -e "Total tests:     ${TOTAL_TESTS}"
-echo -e "Passed tests:    ${PASSED_TESTS}  ($(echo "scale=2; ($PASSED_TESTS/$TOTAL_TESTS)*100" | bc)%)"
+echo -e "Passed tests:    ${PASSED_TESTS}  (${PASS_PERCENTAGE}%)"
 echo -e "Failed tests:    ${FAILED_TESTS}"
 echo -e
-echo -e "Module details:"
-echo -e "- Core:    ${CORE_TESTS} tests"
-echo -e "- Rho:     ${RHO_TESTS} tests"
-echo -e "- Pi:      ${PI_TESTS} tests"
-echo -e "- Tau:     ${TAU_TESTS} tests"
-echo -e "- Network: ${NETWORK_TESTS} tests"
+echo -e "${BOLD}MODULE DETAILS${NC}"
+echo -e "${BOLD}----------------------------------------------------${NC}"
+echo -e "Core:    ${CORE_TESTS} tests $([ $CORE_STATUS -eq 0 ] && echo -e "${GREEN}[PASS]${NC}" || echo -e "${RED}[FAIL]${NC}")"
+echo -e "Rho:     ${RHO_TESTS} tests $([ $RHO_STATUS -eq 0 ] && echo -e "${GREEN}[PASS]${NC}" || echo -e "${RED}[FAIL]${NC}")"
+echo -e "Pi:      ${PI_TESTS} tests $([ $PI_STATUS -eq 0 ] && echo -e "${GREEN}[PASS]${NC}" || echo -e "${RED}[FAIL]${NC}")"
+echo -e "Tau:     ${TAU_TESTS} tests $([ $TAU_STATUS -eq 0 ] && echo -e "${GREEN}[PASS]${NC}" || echo -e "${RED}[FAIL]${NC}")"
+echo -e "Network: ${NETWORK_TESTS} tests $([ $NETWORK_STATUS -eq 0 ] && echo -e "${GREEN}[PASS]${NC}" || echo -e "${RED}[FAIL]${NC}")"
 echo -e
-echo -e "Detailed logs are available in:"
-echo -e "- Core:    Logs/core_diagnostic.log"
-echo -e "- Rho:     Logs/rho_diagnostic.log"
-echo -e "- Pi:      Logs/pi_diagnostic.log"
-echo -e "- Tau:     Logs/tau_diagnostic.log"
-echo -e "- Network: Logs/network_diagnostic.log"
+echo -e "${BOLD}LOG FILES${NC}"
+echo -e "${BOLD}----------------------------------------------------${NC}"
+echo -e "Core:    Logs/core_diagnostic.log"
+echo -e "Rho:     Logs/rho_diagnostic.log"
+echo -e "Pi:      Logs/pi_diagnostic.log"
+echo -e "Tau:     Logs/tau_diagnostic.log"
+echo -e "Network: Logs/network_diagnostic.log"
+echo -e "Summary: Logs/summary.log"
 echo -e "${BOLD}=====================================================${NC}"
 
-# Also save the summary to a log file
-{
-  echo "Test Suite Summary - ${TIMESTAMP}"
-  echo "===================================================="
-  echo "Total tests:     ${TOTAL_TESTS}"
-  echo "Passed tests:    ${PASSED_TESTS}  ($(echo "scale=2; ($PASSED_TESTS/$TOTAL_TESTS)*100" | bc)%)"
-  echo "Failed tests:    ${FAILED_TESTS}"
-  echo
-  echo "Module details:"
-  echo "- Core:    ${CORE_TESTS} tests"
-  echo "- Rho:     ${RHO_TESTS} tests"
-  echo "- Pi:      ${PI_TESTS} tests"
-  echo "- Tau:     ${TAU_TESTS} tests"
-  echo "- Network: ${NETWORK_TESTS} tests"
-} > Logs/summary.log
+# Save the summary to a log file with enhanced format
+cat > Logs/summary.log << EOF
+Test Suite Summary - ${TIMESTAMP}
+====================================================
+Status: $([ $FAILED_TESTS -eq 0 ] && echo "SUCCESS" || echo "FAILURE")
+
+TEST COUNTS
+----------------------------------------------------
+Total tests:     ${TOTAL_TESTS}
+Passed tests:    ${PASSED_TESTS}  (${PASS_PERCENTAGE}%)
+Failed tests:    ${FAILED_TESTS}
+
+MODULE DETAILS
+----------------------------------------------------
+Core:    ${CORE_TESTS} tests $([ $CORE_STATUS -eq 0 ] && echo "[PASS]" || echo "[FAIL]")
+Rho:     ${RHO_TESTS} tests $([ $RHO_STATUS -eq 0 ] && echo "[PASS]" || echo "[FAIL]")
+Pi:      ${PI_TESTS} tests $([ $PI_STATUS -eq 0 ] && echo "[PASS]" || echo "[FAIL]") 
+Tau:     ${TAU_TESTS} tests $([ $TAU_STATUS -eq 0 ] && echo "[PASS]" || echo "[FAIL]")
+Network: ${NETWORK_TESTS} tests $([ $NETWORK_STATUS -eq 0 ] && echo "[PASS]" || echo "[FAIL]")
+
+LOG FILES
+----------------------------------------------------
+Core:    Logs/core_diagnostic.log
+Rho:     Logs/rho_diagnostic.log
+Pi:      Logs/pi_diagnostic.log
+Tau:     Logs/tau_diagnostic.log
+Network: Logs/network_diagnostic.log
+====================================================
+Generated: ${TIMESTAMP}
+EOF
+
+# Option to archive this test run
+if [ "$1" == "--archive" ]; then
+    ARCHIVE_DIR="Logs/archive/$(date +%Y%m%d_%H%M%S)"
+    echo -e "${CYAN}Archiving test results to: ${ARCHIVE_DIR}${NC}"
+    mkdir -p "$ARCHIVE_DIR"
+    cp Logs/*.log "$ARCHIVE_DIR/"
+    echo "Test results archived to $ARCHIVE_DIR"
+fi
 
 exit 0

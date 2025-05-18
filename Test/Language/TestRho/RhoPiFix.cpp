@@ -245,9 +245,10 @@ TEST(RhoPiWorkaround, ArrayOperations) {
     
     // Create an array with some values
     auto array = console.GetRegistry().New<Array>();
-    array->Append(console.GetRegistry().New<int>(1));
-    array->Append(console.GetRegistry().New<int>(2));
-    array->Append(console.GetRegistry().New<int>(3));
+    Pointer<Array> arrayPtr = array;
+    arrayPtr->Append(console.GetRegistry().New<int>(1));
+    arrayPtr->Append(console.GetRegistry().New<int>(2));
+    arrayPtr->Append(console.GetRegistry().New<int>(3));
     stack->Push(array);
     
     ASSERT_FALSE(stack->Empty());

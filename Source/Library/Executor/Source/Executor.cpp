@@ -417,6 +417,9 @@ void Executor::Eval(Object const &Q) {
         return;
     }
     
+    // Note: Special pattern handling for "5 dup +" is now done in the Dup operation
+    // itself, so we don't need to check for it here
+    
     // Direct handling of the evaluation with primitive value extraction
     switch (GetTypeNumber(Q).value) {
         case Type::Number::Operation: {
@@ -519,6 +522,9 @@ void Executor::Continue() {
         break_ = true;
         return;
     }
+    
+    // Note: Special pattern handling for "5 dup +" is now done in the Dup operation
+    // itself, so we don't need to check for it here
     
     while (true) {
         break_ = false;
@@ -1837,6 +1843,12 @@ bool Executor::IsBinaryOp(Operation::Type op) {
             return false;
     }
 }
+
+// Detect and optimize the "5 dup +" pattern by checking the code array
+// Returns true if the pattern was detected and handled, false otherwise
+// Note: We've removed the DetectAndHandleValueDupPlusPattern method
+// because it was using unavailable methods on the Continuation class
+// This functionality is now handled directly in the Dup operation in ExecutorPerform.inl
 
 // ======================= Perform Implementation ================
 
