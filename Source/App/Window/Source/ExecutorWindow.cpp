@@ -143,32 +143,112 @@ struct ExecutorWindow {
             return;
         }
 
-        // Create tab selection buttons
-        if (ImGui::Button("Pi")) {
+        // Create styled tab selection buttons with tab-like appearance
+        float tabWidth = ImGui::GetContentRegionAvailWidth() / 3.0f - 4.0f;
+        float tabHeight = 30.0f;
+        
+        // Style adjustments for all tabs
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 4.0f);  // Rounded corners for tab-like buttons
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 8));  // More padding for better tab appearance
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(1, 0));  // Reduce spacing between tabs
+        
+        // Draw background tab bar
+        ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
+        ImGui::BeginChild("TabBar", ImVec2(ImGui::GetContentRegionAvailWidth(), tabHeight), false, 
+            ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+        
+        // Adjust position to align tabs
+        ImGui::SetCursorPos(ImVec2(2, 2));
+        
+        // Pi Tab Button
+        ImGui::PushStyleColor(ImGuiCol_Button, (CurrentTab == ConsoleTab::Pi) ? 
+            ImVec4(0.3f, 0.6f, 0.8f, 1.0f) : ImVec4(0.2f, 0.2f, 0.2f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (CurrentTab == ConsoleTab::Pi) ? 
+            ImVec4(0.4f, 0.7f, 0.9f, 1.0f) : ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.5f, 0.8f, 1.0f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+        
+        // Custom button styling - only rounded on top for Pi tab
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 4.0f);
+        if (CurrentTab == ConsoleTab::Pi) {
+            // Highlight active tab with bottom border that matches the tab
+            ImGui::GetWindowDrawList()->AddRectFilled(
+                ImGui::GetCursorScreenPos(),
+                ImVec2(ImGui::GetCursorScreenPos().x + tabWidth, ImGui::GetCursorScreenPos().y + tabHeight + 1),
+                ImGui::GetColorU32(ImVec4(0.3f, 0.6f, 0.8f, 1.0f)), 
+                4.0f, ImDrawCornerFlags_TopLeft | ImDrawCornerFlags_TopRight);
+        }
+        
+        if (ImGui::Button("Pi", ImVec2(tabWidth, tabHeight - 4))) {
             SwitchTab(ConsoleTab::Pi);
         }
+        ImGui::PopStyleVar();
+        ImGui::PopStyleColor(4);
         ImGui::SameLine();
         
-        if (ImGui::Button("Rho")) {
+        // Rho Tab Button
+        ImGui::PushStyleColor(ImGuiCol_Button, (CurrentTab == ConsoleTab::Rho) ? 
+            ImVec4(0.3f, 0.6f, 0.8f, 1.0f) : ImVec4(0.2f, 0.2f, 0.2f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (CurrentTab == ConsoleTab::Rho) ? 
+            ImVec4(0.4f, 0.7f, 0.9f, 1.0f) : ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.5f, 0.8f, 1.0f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+        
+        // Custom button styling - only rounded on top for Rho tab
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 4.0f);
+        if (CurrentTab == ConsoleTab::Rho) {
+            // Highlight active tab with bottom border that matches the tab
+            ImGui::GetWindowDrawList()->AddRectFilled(
+                ImGui::GetCursorScreenPos(),
+                ImVec2(ImGui::GetCursorScreenPos().x + tabWidth, ImGui::GetCursorScreenPos().y + tabHeight + 1),
+                ImGui::GetColorU32(ImVec4(0.3f, 0.6f, 0.8f, 1.0f)), 
+                4.0f, ImDrawCornerFlags_TopLeft | ImDrawCornerFlags_TopRight);
+        }
+        
+        if (ImGui::Button("Rho", ImVec2(tabWidth, tabHeight - 4))) {
             SwitchTab(ConsoleTab::Rho);
         }
+        ImGui::PopStyleVar();
+        ImGui::PopStyleColor(4);
         ImGui::SameLine();
         
-        if (ImGui::Button("Debugger")) {
+        // Debugger Tab Button
+        ImGui::PushStyleColor(ImGuiCol_Button, (CurrentTab == ConsoleTab::Debugger) ? 
+            ImVec4(0.3f, 0.6f, 0.8f, 1.0f) : ImVec4(0.2f, 0.2f, 0.2f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (CurrentTab == ConsoleTab::Debugger) ? 
+            ImVec4(0.4f, 0.7f, 0.9f, 1.0f) : ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.5f, 0.8f, 1.0f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+        
+        // Custom button styling - only rounded on top for Debugger tab
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 4.0f);
+        if (CurrentTab == ConsoleTab::Debugger) {
+            // Highlight active tab with bottom border that matches the tab
+            ImGui::GetWindowDrawList()->AddRectFilled(
+                ImGui::GetCursorScreenPos(),
+                ImVec2(ImGui::GetCursorScreenPos().x + tabWidth, ImGui::GetCursorScreenPos().y + tabHeight + 1),
+                ImGui::GetColorU32(ImVec4(0.3f, 0.6f, 0.8f, 1.0f)), 
+                4.0f, ImDrawCornerFlags_TopLeft | ImDrawCornerFlags_TopRight);
+        }
+        
+        if (ImGui::Button("Debugger", ImVec2(tabWidth, tabHeight - 4))) {
             SwitchTab(ConsoleTab::Debugger);
         }
+        ImGui::PopStyleVar();
+        ImGui::PopStyleColor(4);
         
-        // Show current tab
-        ImGui::SameLine();
-        std::string currentTabName;
-        switch (CurrentTab) {
-            case ConsoleTab::Pi: currentTabName = "Pi"; break;
-            case ConsoleTab::Rho: currentTabName = "Rho"; break;
-            case ConsoleTab::Debugger: currentTabName = "Debugger"; break;
-        }
-        ImGui::Text("Current: %s", currentTabName.c_str());
+        ImGui::EndChild();
+        ImGui::PopStyleColor();  // Pop tab bar background color
+        ImGui::PopStyleVar(3);   // Pop style vars for all tabs
         
-        ImGui::Separator();
+        // Draw a separator line below the tabs
+        ImGui::GetWindowDrawList()->AddLine(
+            ImVec2(ImGui::GetCursorScreenPos().x, ImGui::GetCursorScreenPos().y),
+            ImVec2(ImGui::GetCursorScreenPos().x + ImGui::GetContentRegionAvailWidth(), ImGui::GetCursorScreenPos().y),
+            ImGui::GetColorU32(ImVec4(0.3f, 0.6f, 0.8f, 1.0f)), 
+            1.0f);
+            
+        ImGui::Dummy(ImVec2(0, 4));  // Add some space after the tabs
         
         // Draw content based on current tab
         if (CurrentTab == ConsoleTab::Debugger) {
@@ -181,15 +261,47 @@ struct ExecutorWindow {
     }
     
     void DrawConsoleContent() {
-        // Control buttons
-        if (ImGui::SmallButton("Clear")) {
+        // Create a styled header section
+        ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.25f, 0.25f, 0.25f, 1.0f));
+        ImGui::BeginChild("ConsoleHeader", ImVec2(ImGui::GetContentRegionAvailWidth(), 40), true);
+        
+        // Show language name with larger font and better styling
+        ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);
+        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.4f, 0.8f, 1.0f, 1.0f));
+        std::string header = (CurrentLanguage == Language::Pi) ? "Pi Console" : "Rho Console";
+        
+        // Center the header text vertically
+        float headerTextHeight = ImGui::GetTextLineHeightWithSpacing();
+        ImGui::SetCursorPosY((40 - headerTextHeight) * 0.5f);
+        ImGui::SetCursorPosX(10); // Indent from left edge
+        ImGui::Text("%s", header.c_str());
+        ImGui::PopStyleColor();
+        ImGui::PopFont();
+        
+        // Position control buttons on the right side of the header
+        ImGui::SameLine(ImGui::GetContentRegionAvailWidth() - 160); // Position from right edge
+        ImGui::SetCursorPosY((40 - ImGui::GetFrameHeightWithSpacing()) * 0.5f); // Center buttons vertically
+        
+        // Style the control buttons to match the tab theme
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.4f, 0.4f, 0.4f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);
+        
+        if (ImGui::Button("Clear Log", ImVec2(75, 0))) {
             ClearLog();
         }
         ImGui::SameLine();
-        if (ImGui::SmallButton("Clear Stack")) {
+        if (ImGui::Button("Clear Stack", ImVec2(75, 0))) {
             exec_->ClearStacks();
             AddLog("Stack cleared");
         }
+        
+        ImGui::PopStyleVar();
+        ImGui::PopStyleColor(3);
+        
+        ImGui::EndChild();
+        ImGui::PopStyleColor(); // ChildBg
 
         ImGui::Separator();
 
@@ -251,40 +363,119 @@ struct ExecutorWindow {
     }
     
     void DrawDebuggerContent() {
-        ImGui::BeginChild("DebuggerControls", ImVec2(0, 50), true);
+        // Create a styled header section consistent with the console tabs
+        ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.25f, 0.25f, 0.25f, 1.0f));
+        ImGui::BeginChild("DebuggerHeader", ImVec2(ImGui::GetContentRegionAvailWidth(), 40), true);
         
-        if (ImGui::Button(IsDebugging ? "Stop" : "Start Debugging")) {
-            IsDebugging = !IsDebugging;
-            if (IsDebugging) {
-                AddLog("Debugging started");
-            } else {
-                AddLog("Debugging stopped");
-            }
-        }
+        // Show debugger header with matching style
+        ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);
+        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.4f, 0.8f, 1.0f, 1.0f));
         
-        ImGui::SameLine();
-        
-        if (ImGui::Button("Step") && IsDebugging) {
-            ExecuteDebugStep();
-        }
-        
-        ImGui::SameLine();
-        
-        if (ImGui::Button("Clear")) {
-            DebugLog.clear();
-            DebugLog.push_back("Debugger log cleared");
-        }
+        // Center the header text vertically
+        float headerTextHeight = ImGui::GetTextLineHeightWithSpacing();
+        ImGui::SetCursorPosY((40 - headerTextHeight) * 0.5f);
+        ImGui::SetCursorPosX(10); // Indent from left edge
+        ImGui::Text("Debugger Console");
+        ImGui::PopStyleColor();
+        ImGui::PopFont();
         
         ImGui::EndChild();
+        ImGui::PopStyleColor(); // ChildBg
+        
+        // Debugger controls with improved styling
+        ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.2f, 0.2f, 0.2f, 1.0f));
+        ImGui::BeginChild("DebuggerControls", ImVec2(0, 50), true);
+        
+        // Style the control buttons to match the tab theme
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.4f, 0.4f, 0.4f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);
+        
+        // Center buttons vertically
+        ImGui::SetCursorPosY((50 - ImGui::GetFrameHeightWithSpacing()) * 0.5f);
+        ImGui::SetCursorPosX(10); // Indent from left edge
+        
+        // Debugging control button with color indication
+        if (IsDebugging) {
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.2f, 0.2f, 1.0f)); // Red for stop
+            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.9f, 0.3f, 0.3f, 1.0f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(1.0f, 0.4f, 0.4f, 1.0f));
+            if (ImGui::Button("Stop Debugging", ImVec2(120, 0))) {
+                IsDebugging = false;
+                AddLog("Debugging stopped");
+            }
+            ImGui::PopStyleColor(3);
+        } else {
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.7f, 0.2f, 1.0f)); // Green for start
+            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.8f, 0.3f, 1.0f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.4f, 0.9f, 0.4f, 1.0f));
+            if (ImGui::Button("Start Debugging", ImVec2(120, 0))) {
+                IsDebugging = true;
+                AddLog("Debugging started");
+            }
+            ImGui::PopStyleColor(3);
+        }
+        
+        ImGui::SameLine();
+        
+        // Step button - active only when debugging
+        if (IsDebugging) {
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.5f, 0.8f, 1.0f)); // Blue for step
+            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.6f, 0.9f, 1.0f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.4f, 0.7f, 1.0f, 1.0f));
+        } else {
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.5f, 0.5f, 0.5f, 0.5f)); // Gray when inactive
+            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.5f, 0.5f, 0.5f, 0.5f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.5f, 0.5f, 0.5f, 0.5f));
+        }
+        
+        if (ImGui::Button("Step", ImVec2(75, 0)) && IsDebugging) {
+            ExecuteDebugStep();
+        }
+        ImGui::PopStyleColor(3);
+        
+        ImGui::SameLine();
+        
+        if (ImGui::Button("Clear Log", ImVec2(75, 0))) {
+            DebugLog.clear();
+            DebugLog.push_back("Debugger log cleared");
+            ScrollToBottom = true;
+        }
+        
+        ImGui::PopStyleVar();
+        ImGui::PopStyleColor(3); // Button styles
+        
+        ImGui::EndChild();
+        ImGui::PopStyleColor(); // ChildBg
         
         // Split view with stack/context view on the left, log on the right
         ImGui::Columns(2, "debugger_columns");
         
         // Left column - Stack & Context
-        ImGui::BeginChild("StackView", ImVec2(0, 200), true);
+        // Push once for all headers in this section
+        ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.22f, 0.22f, 0.22f, 1.0f));
+        
+        // Stack header
+        ImGui::BeginChild("StackHeader", ImVec2(0, 25), true);
+        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.4f, 0.8f, 1.0f, 1.0f));
+        ImGui::SetCursorPosY((25 - ImGui::GetTextLineHeight()) * 0.5f);
+        ImGui::SetCursorPosX(5);
         ImGui::Text("Data Stack");
+        ImGui::PopStyleColor();
+        ImGui::EndChild();
+        
+        // Stack view with styled selectable items
+        ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.18f, 0.18f, 0.18f, 1.0f));
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 1));
+        ImGui::BeginChild("StackView", ImVec2(0, 180), true);
         
         if (exec_->GetDataStack()->Size() > 0) {
+            // Style for stack items
+            ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.3f, 0.6f, 0.8f, 0.6f));
+            ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.3f, 0.6f, 0.8f, 0.8f));
+            ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0.3f, 0.6f, 0.8f, 1.0f));
+            
             for (int i = 0; i < exec_->GetDataStack()->Size(); i++) {
                 auto obj = exec_->GetDataStack()->At(i);
                 StringStream st;
@@ -293,52 +484,130 @@ struct ExecutorWindow {
                 if (ImGui::Selectable(st.ToString().c_str(), WatchIndex == i)) {
                     WatchIndex = i;
                 }
+                
+                // Draw a thin separator between items
+                if (i < exec_->GetDataStack()->Size() - 1) {
+                    ImGui::Separator();
+                }
             }
+            
+            ImGui::PopStyleColor(3);
         } else {
+            ImGui::SetCursorPosY(ImGui::GetContentRegionAvail().y * 0.5f - ImGui::GetTextLineHeight() * 0.5f);
+            ImGui::SetCursorPosX(ImGui::GetContentRegionAvail().x * 0.5f - ImGui::CalcTextSize("Stack is empty").x * 0.5f);
             ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "Stack is empty");
         }
         
         ImGui::EndChild();
+        ImGui::PopStyleVar();
         
+        // Context header
+        ImGui::BeginChild("ContextHeader", ImVec2(0, 25), true);
+        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.4f, 0.8f, 1.0f, 1.0f));
+        ImGui::SetCursorPosY((25 - ImGui::GetTextLineHeight()) * 0.5f);
+        ImGui::SetCursorPosX(5);
+        ImGui::Text("Context Viewer");
+        ImGui::PopStyleColor();
+        ImGui::EndChild();
+        
+        // Context view
         ImGui::BeginChild("ContextView", ImVec2(0, 0), true);
-        ImGui::Text("Context");
         
         // Show information about the currently selected variable if available
         if (exec_->GetDataStack()->Size() > 0 && WatchIndex >= 0 && WatchIndex < exec_->GetDataStack()->Size()) {
             auto obj = exec_->GetDataStack()->At(WatchIndex);
             
-            ImGui::Separator();
-            ImGui::Text("Watch - Stack Item %d", WatchIndex);
+            // Create a styled header for the watch panel
+            ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.3f, 0.6f, 0.8f, 0.6f));
+            ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.3f, 0.6f, 0.8f, 0.6f));
+            ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0.3f, 0.6f, 0.8f, 0.6f));
+            
+            ImGui::CollapsingHeader("Watch - Stack Item", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Leaf);
+            ImGui::PopStyleColor(3);
+            
+            // Add some padding
+            ImGui::Indent(10);
+            
+            // Object index
+            ImGui::TextColored(ImVec4(0.7f, 0.9f, 1.0f, 1.0f), "Index: %d", WatchIndex);
             
             // Display type information safely
             int typeNum = obj.GetTypeNumber().ToInt();
-            ImGui::Text("Type: %d", typeNum);
+            ImGui::TextColored(ImVec4(0.9f, 0.7f, 1.0f, 1.0f), "Type: %d", typeNum);
             
             // Show string representation
             StringStream st;
             st << obj;
-            ImGui::TextWrapped("Value: %s", st.ToString().c_str());
+            
+            ImGui::BeginChild("ValueView", ImVec2(0, 80), true);
+            ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.7f, 1.0f), "Value:");
+            ImGui::Separator();
+            ImGui::TextWrapped("%s", st.ToString().c_str());
+            ImGui::EndChild();
             
             // Show object information
-            ImGui::Text("Valid: %s", obj.Exists() ? "Yes" : "No");
+            ImGui::TextColored(ImVec4(0.7f, 1.0f, 0.7f, 1.0f), "Valid: %s", obj.Exists() ? "Yes" : "No");
+            
+            ImGui::Unindent(10);
+        } else {
+            // Show a message when no item is selected
+            ImGui::SetCursorPosY(ImGui::GetContentRegionAvail().y * 0.5f - ImGui::GetTextLineHeight() * 0.5f);
+            ImGui::SetCursorPosX(ImGui::GetContentRegionAvail().x * 0.5f - ImGui::CalcTextSize("No item selected").x * 0.5f);
+            ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "No item selected");
         }
         
         ImGui::EndChild();
+        ImGui::PopStyleColor(); // ChildBg for section headers
         
         ImGui::NextColumn();
         
         // Right column - Debug Log
+        // Log header - push a new style color for this column
+        ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.22f, 0.22f, 0.22f, 1.0f));
+        ImGui::BeginChild("LogHeader", ImVec2(0, 25), true);
+        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.4f, 0.8f, 1.0f, 1.0f));
+        ImGui::SetCursorPosY((25 - ImGui::GetTextLineHeight()) * 0.5f);
+        ImGui::SetCursorPosX(5);
+        ImGui::Text("Debug Log");
+        ImGui::PopStyleColor();
+        ImGui::EndChild();
+        
+        // Debug log with syntax highlighting for different message types
+        ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.18f, 0.18f, 0.18f, 1.0f));
         ImGui::BeginChild("DebugLog", ImVec2(0, 0), true, ImGuiWindowFlags_HorizontalScrollbar);
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 1));
         
         for (const auto& log : DebugLog) {
-            ImGui::TextUnformatted(log.c_str());
+            // Simple syntax highlighting based on log content
+            if (log.find("Error") != std::string::npos || log.find("error") != std::string::npos || 
+                log.find("failed") != std::string::npos || log.find("Failed") != std::string::npos) {
+                // Red for errors
+                ImGui::TextColored(ImVec4(1.0f, 0.4f, 0.4f, 1.0f), "%s", log.c_str());
+            } 
+            else if (log.find("Step") != std::string::npos || log.find("stack") != std::string::npos) {
+                // Blue for step operations
+                ImGui::TextColored(ImVec4(0.4f, 0.8f, 1.0f, 1.0f), "%s", log.c_str());
+            }
+            else if (log.find("Debugging started") != std::string::npos) {
+                // Green for start debugging
+                ImGui::TextColored(ImVec4(0.4f, 1.0f, 0.4f, 1.0f), "%s", log.c_str());
+            }
+            else if (log.find("Debugging stopped") != std::string::npos) {
+                // Yellow for stop debugging
+                ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.4f, 1.0f), "%s", log.c_str());
+            }
+            else {
+                // Default text color
+                ImGui::TextUnformatted(log.c_str());
+            }
         }
         
         if (ScrollToBottom) ImGui::SetScrollHereY(1.0f);
         
         ImGui::PopStyleVar();
         ImGui::EndChild();
+        ImGui::PopStyleColor(1); // ChildBg for debug log
+        ImGui::PopStyleColor(1); // ChildBg for headers in this column
         
         ImGui::Columns(1);
     }
