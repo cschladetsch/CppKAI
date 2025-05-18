@@ -56,6 +56,10 @@ struct PiBinaryOpTests : TestLangCommon {
 
 // Test 1: Basic integer addition
 TEST_F(PiBinaryOpTests, IntegerAddition) {
+    // Test our TestCout with colors
+    TEST_COUT << "Testing colored INFO output with TestCout";
+    TEST_CERR << "Testing colored ERROR output with TestCout";
+    
     // Execute Pi code: 2 3 +
     console_.Execute("2 3 +");
     

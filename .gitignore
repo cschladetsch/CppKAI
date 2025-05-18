@@ -2,7 +2,7 @@
 *.o
 *.internal
 /_build*
-/build*
+/[bB]uild*
 /ninja_build*
 
 *.make

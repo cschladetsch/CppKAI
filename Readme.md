@@ -19,7 +19,9 @@ _KAI_ is a network distributed **Object Model** for C++ with full runtime reflec
 
 ## Recent Updates
 
-- **May 2025**: Fixed test suite to pass all tests
+- **May 2025**: Added colored output support for test programs
+- **Colored console output** for better readability with support for green INFO, yellow WARNING, and red ERROR messages
+- **Fixed test suite** to pass all tests with proper color formatting
 - **Direct test implementations** for Rho language to handle continuation issues
 - **Custom test runner** to run tests in a controlled manner
 - **Enhanced binary operation handling** and continuation unwrapping for Pi/Rho languages
@@ -152,6 +154,8 @@ The GUI application provides:
 - [Pi Tutorial](Doc/PiTutorial.md)
 - [Rho Tutorial](Doc/RhoTutorial.md)
 - [Tau Tutorial](Doc/TauTutorial.md)
+- [Test Documentation](Doc/Test.md)
+- [Colored Output](Doc/ColorOutput.md)
 - [Test Summary](Test/Language/TestRho/TestSummary.md)
 - [Test Fixes Summary](Test-Fixes-Summary.md)
 

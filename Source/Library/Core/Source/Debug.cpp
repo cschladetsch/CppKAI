@@ -87,42 +87,17 @@ Trace::~Trace() {
         logMessage = file_location.ToString().c_str();
         logMessage += " ";
     }
-    logMessage += std::string(TypeToString(type)) + ": " + val.c_str();
+    // Don't add the log level to the message as Logger will do this automatically
+    logMessage += val.c_str();
 
     // Log using the centralized Logger
     Logger::Log(TraceTypeToLoggerLevel(type), logMessage);
 
-    // Get appropriate colors based on trace type
-    rang::fg typeColor;
-    switch (type) {
-        case Information:
-            typeColor = rang::fg::green;
-            break;
-        case Warn:
-            typeColor = rang::fg::yellow;
-            break;
-        case Error:
-            typeColor = rang::fg::red;
-            break;
-        case Fatal:
-            typeColor = rang::fg::red;
-            break;
-        default:
-            typeColor = rang::fg::reset;
-    }
+    // We removed explicit console output to avoid duplication
+    // Logger will handle the coloring based on log level
     
-    // Style for file location
-    const auto filelocColor = rang::fg::gray;
-    
-    // Also output to console with colors (for terminal output)
-    if (TraceFileLocation) {
-        cout << filelocColor
-             << file_location.ToString().c_str() << " ";
-    }
-
-    cout << rang::style::bold << typeColor << "[" << TypeToString(type) << "] " 
-         << rang::style::reset << rang::fg::reset << val.c_str() 
-         << std::endl;
+    // We'll let the Logger handle the console output to avoid duplication
+    // The Logger already prints to console with appropriate colors
 }
 
 }  // namespace debug

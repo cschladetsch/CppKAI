@@ -146,7 +146,7 @@ void TranslatorCommon::Append(Object const &ob) {
             }
         }
         
-        KAI_TRACE() << "TranslatorCommon::Append: " << ob.ToString();
+        // Add the object to the code array, with minimal logging
         code->Append(ob);
     } catch (kai::Exception::Base &e) {
         KAI_TRACE_ERROR() << "Exception in TranslatorCommon::Append: "

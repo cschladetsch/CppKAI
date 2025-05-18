@@ -7,6 +7,9 @@ add_subdirectory(Language)
 # Add our logging test
 add_subdirectory(LogTest)
 
+# Add example programs
+add_subdirectory(Examples)
+
 if (KAI_BUILD_TEST_NETWORK)
     add_subdirectory(Network)
     add_subdirectory(Network/ProxyTest)
