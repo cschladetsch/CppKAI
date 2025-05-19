@@ -155,8 +155,10 @@ if (KAI_BUILD_RAKNET)
     add_definitions(-DKAI_USE_RAKNET)
 endif()
 
-# Always use RakNetStub implementation to avoid compilation issues
-add_definitions(-DKAI_USE_RAKNET_STUB)
+# Only use RakNetStub implementation when KAI_BUILD_RAKNET is OFF
+if (NOT KAI_BUILD_RAKNET)
+    add_definitions(-DKAI_USE_RAKNET_STUB)
+endif()
 
 # Add rang external library
 set(EXTERNAL ${KAI_HOME}/Ext)

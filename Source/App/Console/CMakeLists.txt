@@ -20,6 +20,22 @@ endif()
 # Minimal examples that don't require networking
 add_executable(MinimalServer ${source_path}/MinimalServer.cpp)
 target_link_libraries(MinimalServer Executor Core ${Boost_LIBRARIES})
+# Set the output directory explicitly for the MinimalServer
+set_target_properties(MinimalServer PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${SAFER_BIN_HOME}"
+)
 
 add_executable(MinimalClient ${source_path}/MinimalClient.cpp)
 target_link_libraries(MinimalClient Executor Core ${Boost_LIBRARIES})
+# Set the output directory explicitly for the MinimalClient
+set_target_properties(MinimalClient PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${SAFER_BIN_HOME}"
+)
+
+# Peer-to-peer networking implementation with SSH-like semantics
+add_executable(NetworkPeer ${source_path}/NetworkPeer.cpp)
+target_link_libraries(NetworkPeer Executor Core ${Boost_LIBRARIES})
+# Set the output directory explicitly
+set_target_properties(NetworkPeer PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${SAFER_BIN_HOME}"
+)

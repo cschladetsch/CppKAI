@@ -67,6 +67,8 @@ bool TauParser::Module(AstNodePtr root) {
             case TokenEnum::Whitespace:
             case TokenEnum::Tab:
             case TokenEnum::Comment:
+            // Also skip semicolons at module level for more flexibility
+            case TokenEnum::Semi:
                 Consume();
                 break;
 
@@ -186,23 +188,41 @@ bool TauParser::Class(AstNodePtr root) {
     const auto klass = NewNode(TauAstEnumType::Class, className);
 
     // Check for inheritance syntax: class Derived : Base
-    if (CurrentIs(TokenEnum::Semi)) {  // Using :
-        Consume();                     // Consume the : token
+    // In many languages ':' is used for inheritance, check both colon token (Semi) 
+    // and explicit colon character to be more flexible
+    if (CurrentIs(TokenEnum::Semi) || 
+        (CurrentIs(TokenEnum::Ident) && Current().ToString() == ":")) {
+        Consume();  // Consume the : token
 
         // Get base class name
         auto baseClassName = Expect(TokenEnum::Ident);
         if (Failed) return false;
 
-        // Store base class information in the AST (though we may not support
-        // inheritance fully yet)
+        // Store base class information in the AST
         auto baseNode =
             NewNode(TauAstEnumType::Inherits, baseClassName->GetToken());
         klass->Add(baseNode);
     }
 
-    if (!CurrentIs(TokenEnum::OpenBrace)) {
+    // Look for opening brace, allowing for some optional tokens in between
+    while (!CurrentIs(TokenEnum::OpenBrace)) {
+        // Skip any unexpected tokens to be more resilient
+        if (CurrentIs(TokenEnum::Semi) || 
+            CurrentIs(TokenEnum::NewLine) || 
+            CurrentIs(TokenEnum::Whitespace) || 
+            CurrentIs(TokenEnum::Tab) || 
+            CurrentIs(TokenEnum::Comment)) {
+            Consume();
+            continue;
+        }
+
+        if (Empty()) {
+            return Fail("Expected opening brace for class definition");
+        }
+
+        // If we're still here, we haven't found the opening brace
         return Fail(Lexer::CreateErrorMessage(
-            Current(), "Expected OpenBrace after class name, got %s",
+            Current(), "Expected OpenBrace for class definition, got %s",
             TokenEnumType::ToString(Current().type)));
     }
 
@@ -210,6 +230,16 @@ bool TauParser::Class(AstNodePtr root) {
 
     while (!Failed && !CurrentIs(TokenEnum::CloseBrace)) {
         if (Empty()) return Fail("Incomplete Class");
+
+        // Skip over extraneous semicolons, newlines, etc.
+        if (CurrentIs(TokenEnum::Semi) || 
+            CurrentIs(TokenEnum::NewLine) || 
+            CurrentIs(TokenEnum::Whitespace) || 
+            CurrentIs(TokenEnum::Tab) || 
+            CurrentIs(TokenEnum::Comment)) {
+            Consume();
+            continue;
+        }
 
         // Handle nested classes
         if (CurrentIs(TokenEnum::Class)) {
@@ -280,9 +310,20 @@ bool TauParser::Class(AstNodePtr root) {
 
     if (Failed) return false;
 
-    Expect(TokenEnum::CloseBrace);
+    // Try to consume the closing brace, but don't fail hard if it's missing
+    if (CurrentIs(TokenEnum::CloseBrace)) {
+        Consume();
+    } else {
+        // Mark as failed but continue processing
+        Failed = true;
+        Error = "Missing closing brace for class definition";
+        // Return to allow partial parsing
+        root->Add(klass);
+        return false;
+    }
+
     root->Add(klass);
-    return !Failed;
+    return true;
 }
 
 bool TauParser::Method(AstNodePtr klass, TokenNode const &returnType,
@@ -302,6 +343,7 @@ bool TauParser::Method(AstNodePtr klass, TokenNode const &returnType,
     }
 
     Expect(TokenType::CloseParan);
+    if (Failed) return false;
 
     // Check for const modifier
     bool isConst = false;
@@ -315,11 +357,13 @@ bool TauParser::Method(AstNodePtr klass, TokenNode const &returnType,
         }
     }
 
-    Expect(TokenType::Semi);
-    if (Failed) return false;
+    // Allow optional semicolon - more resilient parsing
+    if (CurrentIs(TokenType::Semi)) {
+        Consume();
+    }
 
     klass->Add(method);
-    return !Failed;
+    return true;
 }
 
 bool TauParser::Field(AstNodePtr klass, TokenNode const &ty,
@@ -365,9 +409,13 @@ bool TauParser::Field(AstNodePtr klass, TokenNode const &ty,
         }
     }
 
-    Expect(TauTokenEnumType::Semi);
+    // Allow optional semicolon - more resilient parsing
+    if (CurrentIs(TauTokenEnumType::Semi)) {
+        Consume();
+    }
+    
     klass->Add(field);
-    return !Failed;
+    return true;
 }
 
 // void TauParser::OptionalSemi()

@@ -1,6 +1,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 #include <iostream>
+#include <fstream>
 
 #include "KAI/Language/Tau/Generate/GenerateAgent.h"
 #include "KAI/Language/Tau/Generate/GenerateProxy.h"
@@ -35,9 +36,9 @@ int main(int argc, const char* const argv[]) {
         "Set output dir for proxy")(
         "agent_dir", value<path>(&agent_out_dir)->default_value(agentOutputDir),
         "Set output dir for agent")(
-        "proxy_name", value<path>(&proxy_out_dir)->default_value(proxyName),
+        "proxy_name", value<string>(&proxyName)->default_value("%s.proxy.h"),
         "Set output name for proxy")(
-        "agent_name", value<path>(&agent_out_dir)->default_value(agentName),
+        "agent_name", value<string>(&agentName)->default_value("%s.agent.h"),
         "Set output name for agent")("out",
                                      value<path>(&out_dir)->default_value("."),
                                      "Set output dir for both agent and proxy")(
@@ -60,35 +61,93 @@ int main(int argc, const char* const argv[]) {
     }
 
     auto input = vm["input"].as<path>();
-    string outputProxy =
-        "out.proxy.h";  //(path(proxyOutputDir).append(vm["proxy_dir"]).append(vm["proxy_name"]));
-    string outputAgent =
-        "out.agent.h";  //(path(proxyOutputDir).append(vm["proxy_dir"]).append(vm["proxy_name"]));
+    
+    // Get the filename without extension
+    string filename = input.stem().string();
+    
+    // Format the output filenames using the provided format strings
+    string formattedProxyName = proxyName;
+    string formattedAgentName = agentName;
+    
+    // Replace %s with the filename
+    size_t pos = formattedProxyName.find("%s");
+    if (pos != string::npos) {
+        formattedProxyName.replace(pos, 2, filename);
+    }
+    
+    pos = formattedAgentName.find("%s");
+    if (pos != string::npos) {
+        formattedAgentName.replace(pos, 2, filename);
+    }
+    
+    // Construct full output paths
+    path outputProxyPath = vm.count("out") ? out_dir / formattedProxyName : proxy_out_dir / formattedProxyName;
+    path outputAgentPath = vm.count("out") ? out_dir / formattedAgentName : agent_out_dir / formattedAgentName;
+    
+    // Convert to string for use in the generator functions
+    string outputProxy = outputProxyPath.string();
+    string outputAgent = outputAgentPath.string();
 
-    // Error because boost::path.c_str() return wchar_t *
-#if 0
+    // Use the input file path and the string output paths
+    cout << "Input file: " << input << endl;
+    cout << "Output proxy path: " << outputProxy << endl;
+    cout << "Output agent path: " << outputAgent << endl;
+
     if (!outputProxy.empty())
     {
-        tau::Generate::Proxy proxy(input.c_str(), outputProxy.c_str());
+        cout << "Generating proxy..." << endl;
+        // Convert input path to string and use that for the input file
+        string inputStr = input.string();
+        string proxyOutput;
+        tau::Generate::GenerateProxy proxy(inputStr.c_str(), proxyOutput);
         if (proxy.Failed)
         {
             cerr << "ProxyGenError: " << proxy.Error << endl;
             return 1;
         }
-        cout << "Wrote proxy code to " << outputProxy << endl;
+        
+        // Write output to file
+        ofstream proxyFile(outputProxy);
+        if (proxyFile)
+        {
+            proxyFile << proxyOutput;
+            proxyFile.close();
+            cout << "Wrote proxy code to " << outputProxy << endl;
+        }
+        else
+        {
+            cerr << "Error: Could not open " << outputProxy << " for writing" << endl;
+            return 1;
+        }
     }
 
     if (!outputAgent.empty())
     {
-        tau::Generate::Agent agent(input.c_str(), outputAgent.c_str());
+        cout << "Generating agent..." << endl;
+        // Convert input path to string and use that for the input file
+        string inputStr = input.string();
+        string agentOutput;
+        tau::Generate::GenerateAgent agent(inputStr.c_str(), agentOutput);
         if (agent.Failed)
         {
             cerr << "AgentGenError: " << agent.Error << endl;
             return 1;
         }
-        cout << "Wrote agent code to " << outputAgent << endl;
+        
+        // Write output to file
+        ofstream agentFile(outputAgent);
+        if (agentFile)
+        {
+            agentFile << agentOutput;
+            agentFile.close();
+            cout << "Wrote agent code to " << outputAgent << endl;
+        }
+        else
+        {
+            cerr << "Error: Could not open " << outputAgent << " for writing" << endl;
+            return 1;
+        }
     }
-#endif
 
     return 0;
 }

@@ -3,12 +3,15 @@ cmake_minimum_required(VERSION 3.28...3.30)
 # Network test project
 project(Test_Network)
 
-# Only build if testing is enabled
-if(KAI_BUILD_TEST_NETWORK)
+# Always build network tests
+# if(KAI_BUILD_TEST_NETWORK)
     # Source files
     set(SOURCES
         TestNode.cpp
         TestGenerateProxy.cpp
+        ConsoleConnectionTest.cpp
+        IntegratedConsoleTest.cpp
+        CalculationTest.cpp
     )
 
     # Create the test executable
@@ -36,4 +39,4 @@ if(KAI_BUILD_TEST_NETWORK)
 
     # Add the test to CTest
     add_test(NAME Test_Network COMMAND Test_Network)
-endif()
+# endif()

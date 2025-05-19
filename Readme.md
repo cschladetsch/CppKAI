@@ -20,6 +20,12 @@ _KAI_ is a network distributed **Object Model** for C++ with full runtime reflec
 ## Recent Updates
 
 - **May 2025**: Added comprehensive fixes and improvements to the codebase
+- **Network improvements**:
+  - **Configurable server and client** - JSON-configurable network components
+  - **Remote calculation demo** - Demonstrates distributed calculation with "1+2=3"
+  - **Network test cases** - Comprehensive tests for network functionality
+  - **Tau network interfaces** - Interface definitions for connection handling
+  - **Connection testing** - Scripts to test and verify network connectivity
 - **Build system improvements**:
   - **Default to Clang++** - Now uses Clang++ by default for better C++23 support
   - **Compiler selection flags** - Easily switch between Clang++ and GCC with `--gcc` flag
@@ -31,7 +37,7 @@ _KAI_ is a network distributed **Object Model** for C++ with full runtime reflec
   - **Enhanced control structures** - Properly working if/else, for, while, and do-while loops
   - **Improved function handling** - Support for recursion, nested functions, and proper scoping
 - **Added a comprehensive demo** - Run `./Scripts/run_rho_demo.sh` to see all Rho features in action
-- **Expanded documentation** - New [Rho Language](Doc/RhoLanguage.md) and [Rho Fix Documentation](Doc/Rho-Fix-Documentation.md)
+- **Expanded documentation** - New [Rho Language](Doc/RhoLanguage.md), [Rho Fix Documentation](Doc/Rho-Fix-Documentation.md), and [Networking Changes](Doc/NetworkingChanges.md)
 - **Colored console output** for better readability with support for green INFO, yellow WARNING, and red ERROR messages
 - **Fixed test suite** to pass all tests with proper color formatting
 - **Direct test implementations** for Rho language to handle continuation issues
@@ -181,6 +187,22 @@ Language: Rho> x + y
 30
 ```
 
+### Network Applications
+The system includes several network applications:
+
+```bash
+# Run a configurable calculation server
+./build/Bin/ConfigurableServer server_config.json
+
+# Run a client that sends a calculation request
+./build/Bin/ConfigurableClient client_config.json
+```
+
+Try the calculation test demo:
+```bash
+./Scripts/calc_test.sh
+```
+
 ### GUI Application
 The GUI application provides:
 - Syntax highlighted code editing
@@ -210,11 +232,15 @@ The GUI application provides:
 ### Technical Documentation
 - [Rho Fix Documentation](Doc/Rho-Fix-Documentation.md) - Details of recent Rho language fixes
 - [Networking](Doc/Networking.md) - Distributed computing capabilities
+- [Network Calculation Test](Doc/NetworkCalculationTest.md) - Details of the calculation demo
+- [Connection Testing](Doc/ConnectionTesting.md) - Network connection testing
+- [Networking Changes](Doc/NetworkingChanges.md) - Recent networking improvements
 - [Test Documentation](Doc/Test.md) - How to run and write tests
 - [Colored Output](Doc/ColorOutput.md) - Console color formatting
 
 ### Demo and Examples
 - Run `./Scripts/run_rho_demo.sh` for a comprehensive demo of Rho language features
+- Run `./Scripts/calc_test.sh` for a demonstration of network calculation
 - Example scripts in `Test/Language/*/Scripts` directories
 
 ## Project Structure

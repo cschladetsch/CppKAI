@@ -192,3 +192,67 @@ When using KAI's networking features, consider these performance tips:
 
 For more details on network programming with KAI, see the examples in [Test/Network](/Test/Network/) and the full [API documentation](NetworkIteration.md).
 
+## Peer-to-Peer Networking
+
+KAI's networking architecture is primarily peer-to-peer, with no central server-client distinction. The system allows peers to connect to each other directly, execute commands on remote peers, and share computation.
+
+### NetworkPeer Application
+
+The `NetworkPeer` application provides a complete peer-to-peer implementation with SSH-like command semantics:
+
+```bash
+# Start a peer with default configuration
+./Bin/NetworkPeer
+
+# Start a peer with specific configuration
+./Bin/NetworkPeer my_config.json
+```
+
+From the interactive console, you can execute commands on remote peers:
+
+```
+# List connected peers
+peers
+
+# Execute a calculation on remote peer 0
+@0 calc 1+2
+```
+
+This will execute the calculation on the remote peer and return the result (3) to the local console.
+
+For detailed information about the peer-to-peer system, see the [Peer-to-Peer Networking documentation](PeerToPeerNetworking.md).
+
+### Peer-to-Peer Calculation Demo
+
+To demonstrate the peer-to-peer calculation functionality:
+
+```bash
+./Scripts/p2p_test.sh
+```
+
+This script:
+1. Starts two peer nodes
+2. Connects the second peer to the first
+3. Issues a command from the second peer to execute on the first
+4. Verifies the calculation result (1+2=3) is correctly returned
+
+## Connection Testing
+
+KAI provides several components for testing and demonstrating network connections:
+
+### Basic Connection Examples
+
+- **MinimalServer/MinimalClient**: Simple examples showing basic connection and message passing
+- **NetworkPeer**: Advanced peer-to-peer implementation with SSH-like semantics
+
+### Tau Network Interfaces
+
+KAI uses the Tau Interface Definition Language (IDL) to define network interfaces in a language-neutral way. The connection-related interfaces are defined in:
+
+- **ConnectionBasic.tau**: Basic connection interfaces and structures
+- **NetworkNode.tau**: Node interfaces for peer-to-peer connections
+- **MessageHandling.tau**: Message passing interfaces
+- **NetworkServices.tau**: Higher-level network services
+
+For details on these interfaces, see the [Connection Testing documentation](ConnectionTesting.md).
+

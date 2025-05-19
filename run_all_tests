@@ -9,6 +9,12 @@ NC='\033[0m' # No Color
 echo -e "${YELLOW}Running ALL tests to see how our binary operation fixes hold up${NC}"
 echo
 
+# Test the NetworkGenerate application with a simple TAU file
+echo -e "${YELLOW}Testing NetworkGenerate with a simple TAU file...${NC}"
+./Bin/NetworkGenerate --input=Test/VerySimple.tau --out=Generated --proxy_name="VerySimple.proxy.h" --agent_name="VerySimple.agent.h" 2>&1 | tee network_generate_log.txt
+echo -e "${YELLOW}NetworkGenerate test complete, see network_generate_log.txt for details${NC}"
+echo
+
 # Run Core tests
 echo -e "${YELLOW}Running Core tests...${NC}"
 ./Bin/Test/TestCore

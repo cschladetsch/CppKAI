@@ -221,6 +221,9 @@ struct Executor : Reflected {
     // patterns Used to support tests requiring specific patterns to be
     // recognized
     Object ExtractValueFromContinuation(Object const &value);
+    
+    // Helper method to recursively unwrap continuations and extract primitive values
+    Object UnwrapValue(const Object& value);
 
    public:
     // Execute a Pi operation directly (moved from protected to support tests)

@@ -1,0 +1,7 @@
+{
+    "serverIp": "127.0.0.1",
+    "serverPort": 14591,
+    "autoCalculate": false,
+    "calculationExpression": "1+2",
+    "waitForResult": true
+}

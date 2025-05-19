@@ -1,0 +1,13 @@
+// Very simple test file - only the essential syntax
+
+namespace KAI
+{
+    class SimpleData
+    {
+        int id;
+        string name;
+        
+        int GetId();
+        void SetId(int newId);
+    }
+}

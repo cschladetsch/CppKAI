@@ -1,0 +1,20 @@
+// SimpleNetworkGenerate.tau - Simple test file for NetworkGenerate application
+
+namespace KAI::Test
+{
+    // Simple data structure
+    class TestData
+    {
+        int id;
+        string name;
+        float value;
+        
+        int GetId();
+        string GetName();
+        float GetValue();
+        
+        void SetId(int newId);
+        void SetName(string newName);
+        void SetValue(float newValue);
+    }
+}

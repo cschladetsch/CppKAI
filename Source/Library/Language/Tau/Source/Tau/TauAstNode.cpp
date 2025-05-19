@@ -28,6 +28,7 @@ const char *TauAstEnumType::ToString(Enum ty) {
             CASE(Argument)
             CASE(Arglist)
             CASE(Value)
+            CASE(Inherits)
         default:
             std::cerr << "TauAstNode: Case not used: " << ty << std::endl;
             return "??";

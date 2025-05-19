@@ -21,6 +21,7 @@ struct TauAstEnumType {
         Argument = 7,
         Arglist = 8,
         Value = 9,  // For field assignments and default parameters
+        Inherits = 10, // For inheritance relationships
     };
 
     struct Node : AstNodeBase<TauToken, TauAstEnumType> {

@@ -66,6 +66,15 @@ foreach (lang ${langs})
             #${source_path}/TestPiParser.cpp
             #${source_path}/TutorialTest.cpp
         )
+    elseif(lang STREQUAL "Tau")
+        # Explicitly list Tau tests including our new network connection tests
+        set(sources
+            ${source_path}/TestTau.cpp
+            ${source_path}/TauNamespaceTests.cpp
+            ${source_path}/TauClassTests.cpp
+            ${source_path}/TauCodeGenTests.cpp
+            ${source_path}/NetworkConnectionTests.cpp
+        )
     else()
         # For other languages, use the standard approach
         file(GLOB_RECURSE sources ${source_path}/*.cpp)

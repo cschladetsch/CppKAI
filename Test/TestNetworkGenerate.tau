@@ -1,0 +1,46 @@
+// TestNetworkGenerate.tau - Test file for NetworkGenerate application
+
+namespace KAI::Test
+{
+    // Test data structure
+    class TestData
+    {
+        int id;
+        string name;
+        float value;
+        
+        int GetId();
+        string GetName();
+        float GetValue();
+        
+        void SetId(int newId);
+        void SetName(string newName);
+        void SetValue(float newValue);
+    }
+    
+    // Test service interface
+    interface ITestService
+    {
+        // Constants
+        const int DefaultPort = 15000;
+        
+        // Basic operations
+        void Initialize();
+        void Shutdown();
+        bool IsRunning();
+        
+        // Data operations
+        async TestData GetData(int id);
+        async void UpdateData(TestData data);
+        async int[] GetAllDataIds();
+        
+        // Advanced operations
+        async float CalculateAverage();
+        async int GetCount();
+        async string GetStatus();
+        
+        // Events
+        event DataChanged(int dataId);
+        event ServiceStatusChanged(string newStatus);
+    }
+}

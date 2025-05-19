@@ -49,20 +49,14 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
             return;
 
         case RhoTokenEnumType::Not:
-            // Create a continuation for this unary operation
-            {
-                // Create a new continuation block
-                PushNew();
-
-                // Translate the operand
-                TranslateNode(node->GetChild(0));
-
-                // Add the operation
-                AppendDirectOperation(Operation::LogicalNot);
-
-                // Pop and append to parent
-                Append(Pop());
-            }
+            // Use a linear stream approach for the unary 'not' operation
+            
+            // Translate the operand
+            TranslateNode(node->GetChild(0));
+            
+            // Add the operation directly
+            AppendDirectOperation(Operation::LogicalNot);
+            
             return;
 
         case RhoTokenEnumType::True:
@@ -76,20 +70,14 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
             return;
 
         case RhoTokenEnumType::Assert:
-            // Create a continuation for assert operation
-            {
-                // Create a new continuation block
-                PushNew();
-
-                // Translate the assertion condition
-                TranslateNode(node->GetChild(0));
-
-                // Add the operation
-                AppendDirectOperation(Operation::Assert);
-
-                // Pop and append to parent
-                Append(Pop());
-            }
+            // Use a linear stream approach for the assert operation
+            
+            // Translate the assertion condition
+            TranslateNode(node->GetChild(0));
+            
+            // Add the operation directly
+            AppendDirectOperation(Operation::Assert);
+            
             return;
 
         case RhoTokenEnumType::DivAssign:
@@ -1270,1264 +1258,113 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
     KAI_TRACE() << std::format("TranslateBinaryOp: Operation={}",
                                Operation::ToString(op));
 
-    // Get the left and right children for any operation
-    auto leftChild = node->GetChild(0);
-    auto rightChild = node->GetChild(1);
+    // For binary operations, we want a linear stream of operations
+    // rather than creating nested continuations
 
-    if (!leftChild || !rightChild) {
-        KAI_TRACE_ERROR() << "Binary operation missing children";
-        Fail("Binary operation missing children");
-        return;
+    // Special case for simple literal operations that can be directly evaluated
+    bool directEvaluation = false;
+    if (node->GetChild(0)->GetType() == AstEnum::TokenType &&
+        node->GetChild(1)->GetType() == AstEnum::TokenType) {
+        
+        auto token0 = node->GetChild(0)->GetToken().type;
+        auto token1 = node->GetChild(1)->GetToken().type;
+        
+        // If both are literals (int, float, bool, string)
+        if ((token0 == RhoTokenEnumType::Int || token0 == RhoTokenEnumType::Float || 
+             token0 == RhoTokenEnumType::True || token0 == RhoTokenEnumType::False || 
+             token0 == RhoTokenEnumType::String) &&
+            (token1 == RhoTokenEnumType::Int || token1 == RhoTokenEnumType::Float || 
+             token1 == RhoTokenEnumType::True || token1 == RhoTokenEnumType::False || 
+             token1 == RhoTokenEnumType::String)) {
+            
+            // For known operations that can be directly calculated
+            if (op == Operation::Plus || op == Operation::Minus || 
+                op == Operation::Multiply || op == Operation::Divide || 
+                op == Operation::Modulo || op == Operation::Equiv || 
+                op == Operation::NotEquiv || op == Operation::Less || 
+                op == Operation::Greater || op == Operation::LessOrEquiv || 
+                op == Operation::GreaterOrEquiv) {
+                
+                // We'll handle this with direct evaluation
+                directEvaluation = true;
+            }
+        }
     }
 
-    // DIRECT EVALUATION: Check if both children are constants (literals) that
-    // can be evaluated immediately at compile-time without need for runtime
-    // evaluation
-    bool canEvaluateDirectly = false;
-    Object leftLiteral, rightLiteral;
-
-    // Check if left child is a constant literal
-    if (leftChild->GetType() == AstEnum::TokenType) {
-        auto tokenType = leftChild->GetToken().type;
-        if (tokenType == RhoTokenEnumType::Int) {
-            try {
-                int value = std::stoi(leftChild->GetTokenText());
-                leftLiteral = reg_->New<int>(value);
-                KAI_TRACE() << "Found integer literal on left side: " << value;
-            } catch (...) {
-            }
-        } else if (tokenType == RhoTokenEnumType::Float) {
-            try {
-                float value = std::stof(leftChild->GetTokenText());
-                leftLiteral = reg_->New<float>(value);
-                KAI_TRACE() << "Found float literal on left side: " << value;
-            } catch (...) {
-            }
-        } else if (tokenType == RhoTokenEnumType::String) {
-            std::string text = leftChild->GetTokenText();
+    if (directEvaluation) {
+        // Directly create and add operand objects based on their token types
+        Object left, right;
+        auto leftNode = node->GetChild(0);
+        auto rightNode = node->GetChild(1);
+        
+        // Create left operand
+        auto leftType = leftNode->GetToken().type;
+        if (leftType == RhoTokenEnumType::Int) {
+            left = reg_->New<int>(std::stoi(leftNode->GetTokenText()));
+        } else if (leftType == RhoTokenEnumType::Float) {
+            left = reg_->New<float>(std::stof(leftNode->GetTokenText()));
+        } else if (leftType == RhoTokenEnumType::True) {
+            left = reg_->New<bool>(true);
+        } else if (leftType == RhoTokenEnumType::False) {
+            left = reg_->New<bool>(false);
+        } else if (leftType == RhoTokenEnumType::String) {
+            std::string text = leftNode->GetTokenText();
             if (text.size() >= 2 && text.front() == '"' && text.back() == '"') {
                 text = text.substr(1, text.size() - 2);
             }
-            leftLiteral = reg_->New<String>(text);
-            KAI_TRACE() << "Found string literal on left side: " << text;
-        } else if (tokenType == RhoTokenEnumType::True) {
-            leftLiteral = reg_->New<bool>(true);
-            KAI_TRACE() << "Found boolean literal (true) on left side";
-        } else if (tokenType == RhoTokenEnumType::False) {
-            leftLiteral = reg_->New<bool>(false);
-            KAI_TRACE() << "Found boolean literal (false) on left side";
+            left = reg_->New<String>(text);
         }
-    }
-
-    // Check if right child is a constant literal
-    if (rightChild->GetType() == AstEnum::TokenType) {
-        auto tokenType = rightChild->GetToken().type;
-        if (tokenType == RhoTokenEnumType::Int) {
-            try {
-                int value = std::stoi(rightChild->GetTokenText());
-                rightLiteral = reg_->New<int>(value);
-                KAI_TRACE() << "Found integer literal on right side: " << value;
-            } catch (...) {
-            }
-        } else if (tokenType == RhoTokenEnumType::Float) {
-            try {
-                float value = std::stof(rightChild->GetTokenText());
-                rightLiteral = reg_->New<float>(value);
-                KAI_TRACE() << "Found float literal on right side: " << value;
-            } catch (...) {
-            }
-        } else if (tokenType == RhoTokenEnumType::String) {
-            std::string text = rightChild->GetTokenText();
+        
+        // Create right operand
+        auto rightType = rightNode->GetToken().type;
+        if (rightType == RhoTokenEnumType::Int) {
+            right = reg_->New<int>(std::stoi(rightNode->GetTokenText()));
+        } else if (rightType == RhoTokenEnumType::Float) {
+            right = reg_->New<float>(std::stof(rightNode->GetTokenText()));
+        } else if (rightType == RhoTokenEnumType::True) {
+            right = reg_->New<bool>(true);
+        } else if (rightType == RhoTokenEnumType::False) {
+            right = reg_->New<bool>(false);
+        } else if (rightType == RhoTokenEnumType::String) {
+            std::string text = rightNode->GetTokenText();
             if (text.size() >= 2 && text.front() == '"' && text.back() == '"') {
                 text = text.substr(1, text.size() - 2);
             }
-            rightLiteral = reg_->New<String>(text);
-            KAI_TRACE() << "Found string literal on right side: " << text;
-        } else if (tokenType == RhoTokenEnumType::True) {
-            rightLiteral = reg_->New<bool>(true);
-            KAI_TRACE() << "Found boolean literal (true) on right side";
-        } else if (tokenType == RhoTokenEnumType::False) {
-            rightLiteral = reg_->New<bool>(false);
-            KAI_TRACE() << "Found boolean literal (false) on right side";
+            right = reg_->New<String>(text);
         }
-    }
-
-    // If both sides are constant literals, evaluate directly at compile time
-    if (leftLiteral.Exists() && rightLiteral.Exists()) {
-        canEvaluateDirectly = true;
-        KAI_TRACE() << "Both operands are literals - will perform direct "
-                       "compile-time evaluation";
-
-        // Evaluate the operation directly without creating continuations
-        Object result;
-
-        // Handle integer operations
-        if (leftLiteral.IsType<int>() && rightLiteral.IsType<int>()) {
-            int left = ConstDeref<int>(leftLiteral);
-            int right = ConstDeref<int>(rightLiteral);
-
-            switch (op) {
-                case Operation::Plus:
-                    result = reg_->New<int>(left + right);
-                    break;
-                case Operation::Minus:
-                    result = reg_->New<int>(left - right);
-                    break;
-                case Operation::Multiply:
-                    result = reg_->New<int>(left * right);
-                    break;
-                case Operation::Divide:
-                    if (right != 0) {
-                        result = reg_->New<int>(left / right);
-                    } else {
-                        KAI_TRACE_ERROR() << "Division by zero detected during "
-                                             "compile-time evaluation";
-                        result = reg_->New<int>(0);  // Fallback value
-                    }
-                    break;
-                case Operation::Modulo:
-                    if (right != 0) {
-                        result = reg_->New<int>(left % right);
-                    } else {
-                        KAI_TRACE_ERROR() << "Modulo by zero detected during "
-                                             "compile-time evaluation";
-                        result = reg_->New<int>(0);  // Fallback value
-                    }
-                    break;
-                case Operation::Less:
-                    result = reg_->New<bool>(left < right);
-                    break;
-                case Operation::Greater:
-                    result = reg_->New<bool>(left > right);
-                    break;
-                case Operation::LessOrEquiv:
-                    result = reg_->New<bool>(left <= right);
-                    break;
-                case Operation::GreaterOrEquiv:
-                    result = reg_->New<bool>(left >= right);
-                    break;
-                case Operation::Equiv:
-                    result = reg_->New<bool>(left == right);
-                    break;
-                case Operation::NotEquiv:
-                    result = reg_->New<bool>(left != right);
-                    break;
-                case Operation::LogicalAnd:
-                    result = reg_->New<bool>(left && right);
-                    break;
-                case Operation::LogicalOr:
-                    result = reg_->New<bool>(left || right);
-                    break;
-                default:
-                    canEvaluateDirectly =
-                        false;  // Can't evaluate this operation directly
-                    KAI_TRACE()
-                        << "Operation not supported for direct evaluation: "
-                        << Operation::ToString(op);
-                    break;
-            }
-        }
-        // Handle float operations
-        else if ((leftLiteral.IsType<float>() || leftLiteral.IsType<int>()) &&
-                 (rightLiteral.IsType<float>() || rightLiteral.IsType<int>())) {
-            // Convert both operands to float
-            float left, right;
-            if (leftLiteral.IsType<float>()) {
-                left = ConstDeref<float>(leftLiteral);
-            } else {
-                left = static_cast<float>(ConstDeref<int>(leftLiteral));
-            }
-
-            if (rightLiteral.IsType<float>()) {
-                right = ConstDeref<float>(rightLiteral);
-            } else {
-                right = static_cast<float>(ConstDeref<int>(rightLiteral));
-            }
-
-            switch (op) {
-                case Operation::Plus:
-                    result = reg_->New<float>(left + right);
-                    break;
-                case Operation::Minus:
-                    result = reg_->New<float>(left - right);
-                    break;
-                case Operation::Multiply:
-                    result = reg_->New<float>(left * right);
-                    break;
-                case Operation::Divide:
-                    if (right != 0.0f) {
-                        result = reg_->New<float>(left / right);
-                    } else {
-                        KAI_TRACE_ERROR() << "Division by zero detected during "
-                                             "compile-time evaluation";
-                        result = reg_->New<float>(0.0f);  // Fallback value
-                    }
-                    break;
-                case Operation::Less:
-                    result = reg_->New<bool>(left < right);
-                    break;
-                case Operation::Greater:
-                    result = reg_->New<bool>(left > right);
-                    break;
-                case Operation::LessOrEquiv:
-                    result = reg_->New<bool>(left <= right);
-                    break;
-                case Operation::GreaterOrEquiv:
-                    result = reg_->New<bool>(left >= right);
-                    break;
-                case Operation::Equiv:
-                    result = reg_->New<bool>(left == right);
-                    break;
-                case Operation::NotEquiv:
-                    result = reg_->New<bool>(left != right);
-                    break;
-                default:
-                    canEvaluateDirectly =
-                        false;  // Can't evaluate this operation directly
-                    KAI_TRACE() << "Operation not supported for direct float "
-                                   "evaluation: "
-                                << Operation::ToString(op);
-                    break;
-            }
-        }
-        // Handle boolean operations
-        else if (leftLiteral.IsType<bool>() && rightLiteral.IsType<bool>()) {
-            bool left = ConstDeref<bool>(leftLiteral);
-            bool right = ConstDeref<bool>(rightLiteral);
-
-            switch (op) {
-                case Operation::LogicalAnd:
-                    result = reg_->New<bool>(left && right);
-                    break;
-                case Operation::LogicalOr:
-                    result = reg_->New<bool>(left || right);
-                    break;
-                case Operation::Equiv:
-                    result = reg_->New<bool>(left == right);
-                    break;
-                case Operation::NotEquiv:
-                    result = reg_->New<bool>(left != right);
-                    break;
-                default:
-                    canEvaluateDirectly =
-                        false;  // Can't evaluate this operation directly
-                    KAI_TRACE() << "Operation not supported for direct boolean "
-                                   "evaluation: "
-                                << Operation::ToString(op);
-                    break;
-            }
-        }
-        // Handle string operations (just concatenation for now)
-        else if (leftLiteral.IsType<String>() &&
-                 rightLiteral.IsType<String>()) {
-            String left = ConstDeref<String>(leftLiteral);
-            String right = ConstDeref<String>(rightLiteral);
-
-            switch (op) {
-                case Operation::Plus:
-                    result = reg_->New<String>(left + right);
-                    break;
-                case Operation::Equiv:
-                    result = reg_->New<bool>(left == right);
-                    break;
-                case Operation::NotEquiv:
-                    result = reg_->New<bool>(left != right);
-                    break;
-                default:
-                    canEvaluateDirectly =
-                        false;  // Can't evaluate this operation directly
-                    KAI_TRACE() << "Operation not supported for direct string "
-                                   "evaluation: "
-                                << Operation::ToString(op);
-                    break;
-            }
-        } else {
-            // Types don't match or aren't supported
-            canEvaluateDirectly = false;
-            KAI_TRACE() << "Cannot directly evaluate operation between "
-                           "different types: "
-                        << (leftLiteral.GetClass()
-                                ? leftLiteral.GetClass()->GetName().ToString()
-                                : "null")
-                        << " and "
-                        << (rightLiteral.GetClass()
-                                ? rightLiteral.GetClass()->GetName().ToString()
-                                : "null");
-        }
-
-        // If we successfully evaluated the operation, append the result and
-        // return
-        if (canEvaluateDirectly && result.Exists()) {
-            KAI_TRACE() << "Direct compile-time evaluation result: "
-                        << result.ToString() << " (type: "
-                        << (result.GetClass()
-                                ? result.GetClass()->GetName().ToString()
-                                : "null")
-                        << ")";
-
-            // Add the result directly to the instruction stream
+        
+        // Create executor to perform direct operation
+        Pointer<Executor> executor = reg_->New<Executor>();
+        executor->Create();
+        
+        // Perform operation directly
+        Object result = executor->PerformBinaryOp(left, right, op);
+        
+        // Only use the direct result if it's a primitive type
+        if (result.IsType<int>() || result.IsType<float>() || 
+            result.IsType<bool>() || result.IsType<String>()) {
+            
+            // Append the result directly - this keeps the primitive type
             Append(result);
+            
+            KAI_TRACE() << "Direct evaluation result: " << result.ToString();
             return;
         }
     }
-
-    // REGULAR APPROACH: If we couldn't evaluate literals directly, proceed with
-    // the standard approach
-
-    // Create temporary objects to capture the results of translating the
-    // children
-    PushNew();
-    TranslateNode(leftChild);
-    Pointer<Continuation> leftCont = Pop();
-
-    PushNew();
-    TranslateNode(rightChild);
-    Pointer<Continuation> rightCont = Pop();
-
-    // Protect against invalid objects
-    if (!leftCont.Exists() || !rightCont.Exists()) {
-        KAI_TRACE_ERROR() << "Invalid continuations for binary operation";
-        // Fallback to standard approach
-        TranslateNode(leftChild);
-        TranslateNode(rightChild);
-        AppendDirectOperation(op);
-        return;
-    }
-
-    // Make sure the continuations have code
-    if (!leftCont->GetCode().Exists() || !rightCont->GetCode().Exists()) {
-        KAI_TRACE_ERROR() << "Continuations missing code for binary operation";
-        // Fallback to standard approach
-        TranslateNode(leftChild);
-        TranslateNode(rightChild);
-        AppendDirectOperation(op);
-        return;
-    }
-
-    // Check if we can extract simple primitive values from the continuations
-    Object leftValue, rightValue;
-    bool hasDirectValues = false;
-
-    // Extract values from simple single-value continuations
-    if (leftCont->GetCode()->Size() == 1) {
-        leftValue = leftCont->GetCode()->At(0);
-
-        // Only consider it a direct value if it's a primitive type
-        if (leftValue.IsType<int>() || leftValue.IsType<float>() ||
-            leftValue.IsType<bool>() || leftValue.IsType<String>()) {
-            KAI_TRACE() << "Extracted direct value from left continuation: "
-                        << leftValue.ToString();
-            // Only first part of direct value pair found
-            hasDirectValues = true;
-        }
-    }
-
-    if (rightCont->GetCode()->Size() == 1) {
-        rightValue = rightCont->GetCode()->At(0);
-
-        // Only consider it a direct value if it's a primitive type
-        if (rightValue.IsType<int>() || rightValue.IsType<float>() ||
-            rightValue.IsType<bool>() || rightValue.IsType<String>()) {
-            KAI_TRACE() << "Extracted direct value from right continuation: "
-                        << rightValue.ToString();
-            // Both parts must be direct values for this approach to work
-            hasDirectValues = hasDirectValues && true;
-        } else {
-            // If right value is not primitive, reset the flag
-            hasDirectValues = false;
-        }
-    } else {
-        // If right continuation has multiple values, reset the flag
-        hasDirectValues = false;
-    }
-
-    // If we have direct primitive values from both sides, compute directly
-    if (hasDirectValues && leftValue.Exists() && rightValue.Exists()) {
-        // Perform the operation directly with the primitive values
-
-        Object result;
-        bool computed = false;
-
-        // Handle integer operations
-        if (leftValue.IsType<int>() && rightValue.IsType<int>()) {
-            int left = ConstDeref<int>(leftValue);
-            int right = ConstDeref<int>(rightValue);
-
-            switch (op) {
-                case Operation::Plus:
-                    result = reg_->New<int>(left + right);
-                    computed = true;
-                    break;
-                case Operation::Minus:
-                    result = reg_->New<int>(left - right);
-                    computed = true;
-                    break;
-                case Operation::Multiply:
-                    result = reg_->New<int>(left * right);
-                    computed = true;
-                    break;
-                case Operation::Divide:
-                    if (right != 0) {
-                        result = reg_->New<int>(left / right);
-                        computed = true;
-                    }
-                    break;
-                case Operation::Modulo:
-                    if (right != 0) {
-                        result = reg_->New<int>(left % right);
-                        computed = true;
-                    }
-                    break;
-                case Operation::Less:
-                    result = reg_->New<bool>(left < right);
-                    computed = true;
-                    break;
-                case Operation::Greater:
-                    result = reg_->New<bool>(left > right);
-                    computed = true;
-                    break;
-                case Operation::LessOrEquiv:
-                    result = reg_->New<bool>(left <= right);
-                    computed = true;
-                    break;
-                case Operation::GreaterOrEquiv:
-                    result = reg_->New<bool>(left >= right);
-                    computed = true;
-                    break;
-                case Operation::Equiv:
-                    result = reg_->New<bool>(left == right);
-                    computed = true;
-                    break;
-                case Operation::NotEquiv:
-                    result = reg_->New<bool>(left != right);
-                    computed = true;
-                    break;
-                case Operation::LogicalAnd:
-                    result = reg_->New<bool>(left && right);
-                    computed = true;
-                    break;
-                case Operation::LogicalOr:
-                    result = reg_->New<bool>(left || right);
-                    computed = true;
-                    break;
-            }
-        }
-        // Handle float operations (mixed with int)
-        else if ((leftValue.IsType<float>() || leftValue.IsType<int>()) &&
-                 (rightValue.IsType<float>() || rightValue.IsType<int>())) {
-            // Convert operands to float as needed
-            float left, right;
-            if (leftValue.IsType<float>()) {
-                left = ConstDeref<float>(leftValue);
-            } else {
-                left = static_cast<float>(ConstDeref<int>(leftValue));
-            }
-
-            if (rightValue.IsType<float>()) {
-                right = ConstDeref<float>(rightValue);
-            } else {
-                right = static_cast<float>(ConstDeref<int>(rightValue));
-            }
-
-            switch (op) {
-                case Operation::Plus:
-                    result = reg_->New<float>(left + right);
-                    computed = true;
-                    break;
-                case Operation::Minus:
-                    result = reg_->New<float>(left - right);
-                    computed = true;
-                    break;
-                case Operation::Multiply:
-                    result = reg_->New<float>(left * right);
-                    computed = true;
-                    break;
-                case Operation::Divide:
-                    if (right != 0.0f) {
-                        result = reg_->New<float>(left / right);
-                        computed = true;
-                    }
-                    break;
-                case Operation::Less:
-                    result = reg_->New<bool>(left < right);
-                    computed = true;
-                    break;
-                case Operation::Greater:
-                    result = reg_->New<bool>(left > right);
-                    computed = true;
-                    break;
-                case Operation::LessOrEquiv:
-                    result = reg_->New<bool>(left <= right);
-                    computed = true;
-                    break;
-                case Operation::GreaterOrEquiv:
-                    result = reg_->New<bool>(left >= right);
-                    computed = true;
-                    break;
-                case Operation::Equiv:
-                    result = reg_->New<bool>(left == right);
-                    computed = true;
-                    break;
-                case Operation::NotEquiv:
-                    result = reg_->New<bool>(left != right);
-                    computed = true;
-                    break;
-            }
-        }
-        // Handle boolean operations
-        else if (leftValue.IsType<bool>() && rightValue.IsType<bool>()) {
-            bool left = ConstDeref<bool>(leftValue);
-            bool right = ConstDeref<bool>(rightValue);
-
-            switch (op) {
-                case Operation::LogicalAnd:
-                    result = reg_->New<bool>(left && right);
-                    computed = true;
-                    break;
-                case Operation::LogicalOr:
-                    result = reg_->New<bool>(left || right);
-                    computed = true;
-                    break;
-                case Operation::Equiv:
-                    result = reg_->New<bool>(left == right);
-                    computed = true;
-                    break;
-                case Operation::NotEquiv:
-                    result = reg_->New<bool>(left != right);
-                    computed = true;
-                    break;
-            }
-        }
-        // Handle string operations
-        else if (leftValue.IsType<String>() && rightValue.IsType<String>()) {
-            String left = ConstDeref<String>(leftValue);
-            String right = ConstDeref<String>(rightValue);
-
-            switch (op) {
-                case Operation::Plus:
-                    result = reg_->New<String>(left + right);
-                    computed = true;
-                    break;
-                case Operation::Equiv:
-                    result = reg_->New<bool>(left == right);
-                    computed = true;
-                    break;
-                case Operation::NotEquiv:
-                    result = reg_->New<bool>(left != right);
-                    computed = true;
-                    break;
-            }
-        }
-
-        // If we computed a result directly, append it and return
-        if (computed && result.Exists()) {
-            KAI_TRACE() << "Direct evaluation of extracted primitive values: "
-                        << leftValue.ToString() << " "
-                        << Operation::ToString(op) << " "
-                        << rightValue.ToString() << " = " << result.ToString();
-
-            // Add the result directly to the instruction stream
-            Append(result);
-            return;
-        }
-    }
-
-    // DYNAMIC EVALUATION: If we couldn't evaluate directly, try dynamic
-    // evaluation
-
-    // Create an executor to evaluate the continuations
-    Pointer<Executor> executor = reg_->New<Executor>();
-    if (!executor.Exists()) {
-        KAI_TRACE_ERROR() << "Failed to create executor for binary operation";
-        // Fallback to standard approach
-        TranslateNode(leftChild);
-        TranslateNode(rightChild);
-        AppendDirectOperation(op);
-        return;
-    }
-    executor->Create();
-
-    // Set up a temporary data stack for evaluation
-    Pointer<Stack> tempStack = reg_->New<Stack>();
-    if (!tempStack.Exists()) {
-        KAI_TRACE_ERROR() << "Failed to create stack for binary operation";
-        // Fallback to standard approach
-        TranslateNode(leftChild);
-        TranslateNode(rightChild);
-        AppendDirectOperation(op);
-        return;
-    }
-    executor->SetDataStack(tempStack);
-
-    // Execute left continuation and get result
-    Object leftObj;
-    executor->Continue(leftCont);
-
-    if (!tempStack->Empty()) {
-        leftObj = tempStack->Pop();
-    } else {
-        // Create appropriate placeholder based on context
-        if (op == Operation::Plus || op == Operation::Minus ||
-            op == Operation::Multiply || op == Operation::Divide ||
-            op == Operation::Modulo) {
-            leftObj = reg_->New<int>(0);  // For arithmetic ops, use integer 0
-        } else if (op == Operation::LogicalAnd || op == Operation::LogicalOr ||
-                   op == Operation::Equiv || op == Operation::NotEquiv ||
-                   op == Operation::Less || op == Operation::Greater ||
-                   op == Operation::LessOrEquiv ||
-                   op == Operation::GreaterOrEquiv) {
-            leftObj =
-                reg_->New<bool>(false);  // For logical ops, use boolean false
-        } else if (op == Operation::Store) {
-            leftObj = Object();
-        } else {
-            leftObj = Object();
-        }
-    }
-
-    // Execute right continuation and get result
-    Object rightObj;
-    tempStack->Clear();
-    executor->Continue(rightCont);
-
-    if (!tempStack->Empty()) {
-        rightObj = tempStack->Pop();
-    } else {
-        // Create appropriate placeholder based on context
-        if (op == Operation::Plus || op == Operation::Minus ||
-            op == Operation::Multiply || op == Operation::Divide ||
-            op == Operation::Modulo) {
-            rightObj = reg_->New<int>(0);  // For arithmetic ops, use integer 0
-        } else if (op == Operation::LogicalAnd || op == Operation::LogicalOr ||
-                   op == Operation::Equiv || op == Operation::NotEquiv ||
-                   op == Operation::Less || op == Operation::Greater ||
-                   op == Operation::LessOrEquiv ||
-                   op == Operation::GreaterOrEquiv) {
-            rightObj =
-                reg_->New<bool>(false);  // For logical ops, use boolean false
-        } else {
-            rightObj = Object();
-        }
-    }
-
-    // DIRECT RESULT CALCULATION: Perform the operation directly to get the
-    // final result
-    if (leftObj.Exists() && rightObj.Exists()) {
-        // Create direct executor for the binary operation
-        Pointer<Executor> opExecutor = reg_->New<Executor>();
-        opExecutor->Create();
-
-        // Use PerformBinaryOp to execute the operation
-        Object result = opExecutor->PerformBinaryOp(leftObj, rightObj, op);
-
-        if (result.Exists()) {
-            // Log the evaluation with detailed type information
-            KAI_TRACE() << "Dynamic evaluation of binary op: "
-                        << leftObj.ToString() << " ("
-                        << (leftObj.GetClass()
-                                ? leftObj.GetClass()->GetName().ToString()
-                                : "null")
-                        << ") " << Operation::ToString(op) << " "
-                        << rightObj.ToString() << " ("
-                        << (rightObj.GetClass()
-                                ? rightObj.GetClass()->GetName().ToString()
-                                : "null")
-                        << ") " << " = " << result.ToString() << " ("
-                        << (result.GetClass()
-                                ? result.GetClass()->GetName().ToString()
-                                : "null")
-                        << ")";
-
-            // EXTRACT PRIMITIVE VALUE FROM RESULT IF NEEDED
-            Object finalResult = result;
-
-            // If the result is a continuation, try to extract primitive value
-            if (result.IsType<Continuation>()) {
-                Pointer<Continuation> resultCont = result;
-
-                // Only extract if it seems like a simple operation result (not
-                // a block/function)
-                if (resultCont->GetCode().Exists() &&
-                    resultCont->GetCode()->Size() <= 4) {
-                    // Try to evaluate the continuation to get a primitive
-                    // result
-                    Pointer<Executor> extractExecutor = reg_->New<Executor>();
-                    extractExecutor->Create();
-
-                    // Set up temporary stack
-                    Pointer<Stack> extractStack = reg_->New<Stack>();
-                    extractExecutor->SetDataStack(extractStack);
-
-                    // Try to evaluate the continuation
-                    extractExecutor->Continue(resultCont);
-
-                    // If we got a primitive value, use it
-                    if (!extractStack->Empty()) {
-                        Object extractedResult = extractStack->Top();
-
-                        // Only use if it's a primitive type
-                        if (extractedResult.IsType<int>() ||
-                            extractedResult.IsType<float>() ||
-                            extractedResult.IsType<bool>() ||
-                            extractedResult.IsType<String>()) {
-                            KAI_TRACE() << "Extracted primitive value from "
-                                           "result continuation: "
-                                        << extractedResult.ToString();
-                            finalResult = extractedResult;
-                        }
-                    }
-
-                    // Direct extraction didn't work, try to calculate directly
-                    // from continuation code
-                    if (finalResult.IsType<Continuation>()) {
-                        auto code = resultCont->GetCode();
-
-                        // Handle [val1, val2, op] pattern
-                        if (code->Size() == 3 &&
-                            code->At(2).IsType<Operation>()) {
-                            Object val1 = code->At(0);
-                            Object val2 = code->At(1);
-                            Operation::Type contOp =
-                                ConstDeref<Operation>(code->At(2))
-                                    .GetTypeNumber();
-
-                            // Handle integer operations
-                            if (val1.IsType<int>() && val2.IsType<int>()) {
-                                int num1 = ConstDeref<int>(val1);
-                                int num2 = ConstDeref<int>(val2);
-
-                                switch (contOp) {
-                                    case Operation::Plus:
-                                        finalResult =
-                                            reg_->New<int>(num1 + num2);
-                                        break;
-                                    case Operation::Minus:
-                                        finalResult =
-                                            reg_->New<int>(num1 - num2);
-                                        break;
-                                    case Operation::Multiply:
-                                        finalResult =
-                                            reg_->New<int>(num1 * num2);
-                                        break;
-                                    case Operation::Divide:
-                                        if (num2 != 0)
-                                            finalResult =
-                                                reg_->New<int>(num1 / num2);
-                                        break;
-                                    default:
-                                        break;
-                                }
-                            }
-
-                            // Handle boolean operations
-                            if (val1.IsType<bool>() && val2.IsType<bool>()) {
-                                bool b1 = ConstDeref<bool>(val1);
-                                bool b2 = ConstDeref<bool>(val2);
-
-                                switch (contOp) {
-                                    case Operation::LogicalAnd:
-                                        finalResult = reg_->New<bool>(b1 && b2);
-                                        break;
-                                    case Operation::LogicalOr:
-                                        finalResult = reg_->New<bool>(b1 || b2);
-                                        break;
-                                    case Operation::Equiv:
-                                        finalResult = reg_->New<bool>(b1 == b2);
-                                        break;
-                                    case Operation::NotEquiv:
-                                        finalResult = reg_->New<bool>(b1 != b2);
-                                        break;
-                                    default:
-                                        break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Log the final result after potential extraction
-            if (finalResult != result) {
-                KAI_TRACE()
-                    << "Final extracted primitive result: "
-                    << finalResult.ToString() << " ("
-                    << (finalResult.GetClass()
-                            ? finalResult.GetClass()->GetName().ToString()
-                            : "null")
-                    << ")";
-            }
-
-            // Append the final result directly - this is the key change for
-            // type preservation
-            Append(finalResult);
-            return;
-        }
-    }
-
-    // FALLBACK: If all direct evaluation methods failed, use standard Pi
-    // approach
-    KAI_TRACE() << "Using standard Pi approach for binary operation";
-
-    // Add each operand and the operation to the stream
-    TranslateNode(leftChild);
-    TranslateNode(rightChild);
+    
+    // For complex expressions where direct evaluation isn't possible,
+    // translate operands and add operation in a linear fashion
+    
+    // Translate the left operand
+    TranslateNode(node->GetChild(0));
+    
+    // Translate the right operand
+    TranslateNode(node->GetChild(1));
+    
+    // Add the operation directly to the current continuation
     AppendDirectOperation(op);
-
-    KAI_TRACE() << "Binary operation translated using standard Pi approach";
-}
-
-void RhoTranslator::TranslateNode(AstNodePtr node) {
-    if (!node) {
-        Failed = true;
-        return;
-    }
-
-    KAI_TRACE() << std::format("TranslateNode: Type={} Text={}",
-                               RhoAstNodeEnumType::ToString(node->GetType()),
-                               node->Text());
-
-    switch (node->GetType()) {
-        case AstEnum::Pathname:
-            TranslateToken(node);
-            return;
-
-        case AstEnum::IndexOp:
-            TranslateBinaryOp(node, Operation::Index);
-            return;
-
-        case AstEnum::GetMember:
-            // Translate directly to Pi stream without creating a continuation
-            // First translate the object (pushes it onto the stack)
-            TranslateNode(node->GetChild(0));
-
-            // Then translate the property name (pushes it onto the stack)
-            TranslateNode(node->GetChild(1));
-
-            // Add the GetProperty operation directly
-            AppendDirectOperation(Operation::GetProperty);
-            return;
-
-        case AstEnum::TokenType: {
-            // Special handling for Pi with braces (handle the case where pi + {
-            // are separate tokens)
-            if (node->GetToken().type == RhoTokenEnumType::ToPi) {
-                // Since we can't access the parent directly, we'll handle Pi
-                // blocks by looking at the next token in the parse tree as
-                // needed
-
-                // For Pi blocks, we'll rely on the token sequence during
-                // parsing where we should have already created the appropriate
-                // structure using the PiSequence token type that's generated by
-                // the parser.
-
-                // Just translate the ToPi token as normal
-                AppendDirectOperation(Operation::ToPi);
-            }
-
-            // Regular token handling
-            TranslateToken(node);
-            return;
-        }
-
-        case AstEnum::Assignment:
-            KAI_TRACE() << "Translating Assignment";
-            try {
-                // Basic validation
-                if (node->GetChildren().size() < 2) {
-                    KAI_TRACE_ERROR()
-                        << "Assignment node has fewer than 2 children";
-                    Fail("Assignment node has fewer than 2 children");
-                    return;
-                }
-
-                // Value first (right side)
-                TranslateNode(node->GetChild(1));
-
-                // Then target (left side)
-                TranslateNode(node->GetChild(0));
-
-                // Add the store operation directly
-                AppendDirectOperation(Operation::Store);
-
-                KAI_TRACE()
-                    << "Completed assignment translation without Continuations";
-            } catch (const std::exception& e) {
-                KAI_TRACE_ERROR()
-                    << std::format("Exception in assignment: {}", e.what());
-                Fail(std::format("Assignment failed: {}", e.what()));
-            } catch (...) {
-                KAI_TRACE_ERROR() << "Unknown exception in assignment";
-                Fail("Assignment failed with unknown exception");
-            }
-            return;
-
-        case AstEnum::Call:
-            TranslateCall(node);
-            return;
-
-        case AstEnum::Conditional:
-            TranslateIf(node);
-            return;
-
-        case AstEnum::While:
-            TranslateWhile(node);
-            return;
-
-        case AstEnum::For:
-            TranslateFor(node);
-            return;
-
-        case AstEnum::Block:
-            // Use C++20 ranges for cleaner iteration
-            for (const auto& st : node->GetChildren() | std::views::all) {
-                TranslateNode(st);
-            }
-            return;
-
-        case AstEnum::List:
-            TranslateList(node);
-            return;
-
-        case AstEnum::Function:
-            TranslateFunction(node);
-            return;
-
-        case AstEnum::Program:
-            // Use C++20 ranges for cleaner iteration
-            for (const auto& e : node->GetChildren() | std::views::all) {
-                TranslateNode(e);
-            }
-            return;
-    }
-
-    Fail(std::format("Unsupported node {}", node->ToString()));
-    KAI_NOT_IMPLEMENTED();
-}
-
-void RhoTranslator::TranslateBlock(AstNodePtr node) {
-    // Use C++20 ranges for cleaner iteration
-    for (const auto& st : node->GetChildren() | std::views::all) {
-        TranslateNode(st);
-    }
-}
-
-void RhoTranslator::TranslateFunction(AstNodePtr node) {
-    KAI_TRACE() << "TranslateFunction: Creating function continuation";
-
-    // child 0: ident
-    // child 1: args
-    // child 2: block
-    const auto& ch = node->GetChildren();
-
-    // Create a continuation for the function body
-    PushNew();
-
-    // Get the current continuation (top of stack)
-    Pointer<Continuation> cont = Top();
-
-    // Process the function body (the block)
-    if (ch.size() > 2) {
-        KAI_TRACE() << std::format(
-            "Processing function body with {} statements",
-            static_cast<int>(ch[2]->GetChildren().size()));
-
-        // Process each statement in the block
-        for (const auto& b : ch[2]->GetChildren()) {
-            // Special handling for return statements
-            if (b->GetType() == AstEnum::TokenType &&
-                b->GetToken().type == RhoTokenEnumType::Return) {
-                // Process the return value if it exists
-                if (b->GetChildren().size() > 0) {
-                    TranslateNode(b->GetChild(0));
-                }
-
-                // Add the Return operation directly
-                AppendDirectOperation(Operation::Return);
-            } else {
-                TranslateNode(b);
-            }
-        }
-    }
-
-    // Pop the continuation
-    cont = Pop();
-
-    // Add the arguments to the function using Deref to get a reference
-    Continuation& contRef = Deref<Continuation>(cont);
-    for (const auto& a : ch[1]->GetChildren()) {
-        contRef.AddArg(Label(a->GetTokenText()));
-    }
-
-    // Store the function: push function object, push function name, store
-    Append(cont);
-    Append(New<Label>(Label(ch[0]->Text())));
-    AppendDirectOperation(Operation::Store);
-
-    KAI_TRACE() << "Function translation complete";
-}
-
-void RhoTranslator::TranslateCall(AstNodePtr node) {
-    KAI_TRACE() << "Translating call";
-
-    const auto& children = node->GetChildren();
-
-    // Use C++20 ranges for cleaner iteration
-    for (const auto& a : children[1]->GetChildren() | std::views::all) {
-        TranslateNode(a);
-    }
-
-    TranslateNode(children[0]);
-
-    // Use C++20 if constexpr for more readable code
-    Operation::Type callOp;
-    if (children.size() > 2 &&
-        children[2]->GetToken().type == RhoTokenEnumType::Replace) {
-        callOp = Operation::Replace;
-    } else {
-        callOp = Operation::Suspend;
-    }
-
-    AppendDirectOperation(callOp);
-
-    KAI_TRACE() << "Completed call translation";
-}
-
-void RhoTranslator::TranslateIf(AstNodePtr node) {
-    KAI_TRACE() << "Translating if statement";
-
-    const auto& ch = node->GetChildren();
-    const bool hasElse = ch.size() > 2;
-
-    // First translate the condition
-    TranslateNode(ch[0]);
-
-    // Create and translate the 'then' branch
-    PushNew();
-    TranslateNode(ch[1]);
-    auto thenCont = Pop();
-
-    // Handle optional else branch using C++20 idioms
-    Pointer<Continuation> elseCont;
-    if (hasElse) {
-        PushNew();
-        TranslateNode(ch[2]);
-        elseCont = Pop();
-    }
-
-    // Add continuations and the appropriate if operation
-    Append(thenCont);
-
-    // Use conditional to determine the correct if operation
-    Operation::Type ifOp;
-    if (hasElse) {
-        Append(elseCont);
-        ifOp = Operation::IfThenSuspendElseSuspend;
-    } else {
-        ifOp = Operation::IfThenSuspend;
-    }
-
-    AppendDirectOperation(ifOp);
-
-    KAI_TRACE() << "Completed if statement translation";
-}
-
-void RhoTranslator::TranslateWhile(AstNodePtr node) {
-    try {
-        KAI_TRACE() << "Translating while loop";
-
-        // Verify we have enough children
-        if (node->GetChildren().empty()) {
-            KAI_TRACE_ERROR() << "Not enough children in While node";
-            Fail("While node must have at least a condition child");
-            return;
-        }
-
-        // Get condition and body nodes
-        const auto condition = node->GetChild(0);
-
-        // Define the body node - either use the existing one or create an empty
-        // block
-        AstNodePtr bodyNode;
-        if (node->GetChildren().size() > 1) {
-            bodyNode = node->GetChild(1);
-        } else {
-            // Create an empty body block node using the proper AstNodePtr type
-            // We need to ensure type compatibility
-            auto emptyBlock =
-                std::make_shared<RhoAstNode>(RhoAstNodeEnumType::Block);
-            bodyNode = std::static_pointer_cast<AstNode>(emptyBlock);
-        }
-
-        // First translate the condition
-        TranslateNode(condition);
-
-        // Then translate the body
-        TranslateNode(bodyNode);
-
-        // Add WhileLoop operation directly
-        AppendDirectOperation(Operation::WhileLoop);
-
-        KAI_TRACE()
-            << "While loop translation complete with direct Pi operations";
-    } catch (const std::exception& e) {
-        KAI_TRACE_ERROR() << std::format("Exception in TranslateWhile: {}",
-                                         e.what());
-        Fail(std::format("Exception in TranslateWhile: {}", e.what()));
-    } catch (...) {
-        KAI_TRACE_ERROR() << "Unknown exception in TranslateWhile";
-        Fail("Unknown exception in TranslateWhile");
-    }
-}
-
-void RhoTranslator::TranslateFor(AstNodePtr node) {
-    try {
-        KAI_TRACE() << "Translating for loop";
-
-        // Verify we have enough children (init, condition, increment, body)
-        if (node->GetChildren().size() < 4) {
-            KAI_TRACE_ERROR() << "Not enough children in For node";
-            Fail(
-                "For node must have at least 4 children (init, condition, "
-                "increment, body)");
-            return;
-        }
-
-        // Get initialization, condition, increment, and body parts
-        const auto init = node->GetChild(0);
-        const auto condition = node->GetChild(1);
-        const auto increment = node->GetChild(2);
-        const auto body = node->GetChild(3);
-
-        // Keep track of entry, condition check, and exit points for our for
-        // loop using labels (similar to assembly)
-        Pointer<Label> loopStart = reg_->New<Label>(Label("forLoopStart"));
-        Pointer<Label> loopEnd = reg_->New<Label>(Label("forLoopEnd"));
-
-        // Part 1: Initialization
-        KAI_TRACE() << "TranslateFor: Translating initialization";
-        if (init && init->GetType() != AstEnum::None) {
-            TranslateNode(init);
-        }
-
-        // Create a loop structure as follows:
-        // 1. Execute initialization once
-        // 2. Check condition
-        // 3. If condition is false, jump to loop end
-        // 4. Execute body
-        // 5. Execute increment
-        // 6. Go back to condition (step 2)
-
-        // Part 2: Define the start of the loop for jumps
-        Append(loopStart);
-
-        // Part 3: Condition check
-        KAI_TRACE() << "TranslateFor: Translating condition";
-        if (condition && condition->GetType() != AstEnum::None) {
-            TranslateNode(condition);
-
-            // If false, jump to the end of the loop
-            Pointer<Continuation> exitCont = reg_->New<Continuation>();
-            exitCont->Create();
-            // Add the loop end label to the code array
-            Pointer<Array> exitCode = reg_->New<Array>();
-            exitCode->Append(loopEnd);
-            exitCont->SetCode(exitCode);
-            Append(exitCont);
-            AppendDirectOperation(Operation::IfFalseJump);
-        }
-
-        // Part 4: Body of the loop
-        KAI_TRACE() << "TranslateFor: Translating body";
-        if (body) {
-            TranslateNode(body);
-        }
-
-        // Part 5: Increment step
-        KAI_TRACE() << "TranslateFor: Translating increment";
-        if (increment && increment->GetType() != AstEnum::None) {
-            TranslateNode(increment);
-        }
-
-        // Part 6: Jump back to the start of the loop
-        Pointer<Continuation> loopCont = reg_->New<Continuation>();
-        loopCont->Create();
-        // Add the loop start label to the code array
-        Pointer<Array> loopCode = reg_->New<Array>();
-        loopCode->Append(loopStart);
-        loopCont->SetCode(loopCode);
-        Append(loopCont);
-        AppendDirectOperation(Operation::Jump);
-
-        // Part 7: Define the end of the loop for jumps
-        Append(loopEnd);
-
-        KAI_TRACE()
-            << "For loop translation complete with direct Pi operations";
-    } catch (const std::exception& e) {
-        KAI_TRACE_ERROR() << std::format("Exception in TranslateFor: {}",
-                                         e.what());
-        Fail(std::format("Exception in TranslateFor: {}", e.what()));
-    } catch (...) {
-        KAI_TRACE_ERROR() << "Unknown exception in TranslateFor";
-        Fail("Unknown exception in TranslateFor");
-    }
-}
-
-// DoWhile functionality has been removed to simplify the language
-// implementation and focus on core binary operations that work correctly
-
-// Handle Pi block with braces: pi { ... }
-void RhoTranslator::TranslatePiBlock(AstNodePtr parentNode, size_t startIndex) {
-    KAI_TRACE() << "Translating Pi block (with braces)";
-
-    // Get the children starting from the specified index
-    if (parentNode && startIndex < parentNode->GetChildren().size()) {
-        // Create a temporary vector to hold just the Pi block elements
-        std::vector<AstNodePtr> piElements;
-
-        // Skip the first token if it's ToPi
-        size_t firstElementIndex = startIndex;
-        if (firstElementIndex < parentNode->GetChildren().size() &&
-            parentNode->GetChildren()[firstElementIndex]->GetType() ==
-                AstEnum::TokenType &&
-            parentNode->GetChildren()[firstElementIndex]->GetToken().type ==
-                RhoTokenEnumType::ToPi) {
-            firstElementIndex++;
-        }
-
-        // Collect all elements for the Pi block
-        for (size_t i = firstElementIndex; i < parentNode->GetChildren().size();
-             i++) {
-            piElements.push_back(parentNode->GetChildren()[i]);
-        }
-
-        // Process each element directly
-        for (const auto& element : piElements) {
-            TranslateNode(element);
-        }
-    }
-}
-
-void RhoTranslator::TranslateList(AstNodePtr node) {
-    KAI_TRACE() << std::format("Translating List (array): {}",
-                               node->ToString());
-
-    // Get the number of elements
-    const auto numElements = static_cast<int>(node->GetChildren().size());
-
-    // First translate all elements onto the stack using C++20 ranges
-    for (const auto& element : node->GetChildren() | std::views::all) {
-        TranslateNode(element);
-    }
-
-    // Create a new integer representing the count
-    AppendLiteral(numElements);
-
-    // Now create an array from the top N elements on the stack
-    AppendDirectOperation(Operation::ToArray);
-
-    KAI_TRACE() << std::format("List translation complete with {} elements",
-                               numElements);
+    
+    KAI_TRACE() << "Binary operation successfully translated in linear stream";
 }
 
 KAI_END

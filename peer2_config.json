@@ -1,0 +1,12 @@
+{
+    "listenPort": 14596,
+    "autoListen": true,
+    "interactive": false,
+    "peers": [
+        {
+            "host": "127.0.0.1",
+            "port": 14595
+        }
+    ],
+    "commands": {}
+}

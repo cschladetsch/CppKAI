@@ -1,0 +1,9 @@
+{
+    "listenPort": 14595,
+    "autoListen": true,
+    "interactive": false,
+    "peers": [],
+    "commands": {
+        "add": "calc 1+2"
+    }
+}

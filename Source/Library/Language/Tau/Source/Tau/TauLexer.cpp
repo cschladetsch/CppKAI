@@ -72,15 +72,8 @@ bool TauLexer::NextToken() {
         case ']':
             return Add(Enum::ArrayProxy);  // Reuse ArrayProxy as close bracket
         case ':':
-            // Handle visibility modifiers (public:, private:, protected:)
-            if (Previous().type == Enum::Ident) {
-                std::string prev = Previous().ToString();
-                if (prev == "public" || prev == "private" ||
-                    prev == "protected") {
-                    return Add(Enum::Semi);  // Use the semi token for colons in
-                                             // visibility modifiers
-                }
-            }
+            // Handle visibility modifiers - simplified to avoid using Previous()
+            // Just treat any colon as a semicolon equivalent
             return Add(Enum::Semi);  // Reuse semi token for colons in general
         case ',':
             return Add(Enum::Comma);
@@ -106,26 +99,24 @@ bool TauLexer::NextToken() {
         case '<':
             // Handle template/generic syntax with better token handling
             {
-                // First check for single-character generic (like <T>)
-                if (isalpha(Peek()) && Peek(2) == '>') {
-                    int start = offset;
-                    Next();  // consume '<'
-                    Next();  // consume the type parameter
-                    Next();  // consume '>'
-                    return Add(Enum::Ident, Slice(start, offset));
-                }
-
-                // More complex generic parameter handling
+                // Simplified approach for handling template parameters
+                // Just treat the entire template syntax as an identifier
                 int start = offset;
                 int depth = 1;
                 Next();  // consume '<'
-
+                
+                // Simple implementation that just captures the entire template parameter
+                // and treats it as an identifier - we're not doing full template parsing yet
                 while (depth > 0 && Current() != 0) {
                     if (Current() == '<') depth++;
                     if (Current() == '>') depth--;
-                    Next();
+                    if (depth > 0) Next();
+                    else break;  // Don't consume the final '>'
                 }
-
+                
+                // Consume the final '>'
+                if (Current() == '>') Next();
+                
                 return Add(Enum::Ident, Slice(start, offset));
             }
         case '>':
