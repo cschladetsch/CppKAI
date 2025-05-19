@@ -92,47 +92,75 @@ echo -e "${BOLD}=====================================================${RESET}"
 echo -e "${BOLD}Starting KAI test suite run: $(date)${RESET}"
 echo -e "${BOLD}=====================================================${RESET}"
 
-# Check if tests need to be built
-if [ ! -d "Build" ] || [ ! -f "Bin/Test/KaiTest" ]; then
+# Check for test executables in different possible locations
+TEST_PATHS=(
+    "Bin/Test" 
+    "build_ninja/Bin/Test"
+    "build/Bin/Test"
+    "Build/Bin/Test"
+)
+
+TEST_FOUND=false
+TEST_PATH=""
+
+# Check each possible location
+for path in "${TEST_PATHS[@]}"; do
+    if [ -d "$path" ] && [ -n "$(find "$path" -type f -executable)" ]; then
+        TEST_FOUND=true
+        TEST_PATH="$path"
+        echo "Test executables found in: $TEST_PATH"
+        break
+    fi
+done
+
+if [ "$TEST_FOUND" = false ]; then
     echo "Test executables not found. Building the project first..."
     
-    if [ ! -d "Build" ]; then
-        mkdir -p Build
-    fi
+    # Use out-of-source build
+    BUILD_DIR="build"
+    mkdir -p "$BUILD_DIR"
+    cd "$BUILD_DIR"
     
-    cd Build
     echo "Running CMake..."
     cmake .. -DCMAKE_BUILD_TYPE=Debug
     
     echo "Building project..."
-    make -j$(nproc)
+    cmake --build . -j$(nproc)
     cd ..
     
-    if [ ! -f "Bin/Test/KaiTest" ]; then
+    # Check again for test executables
+    for path in "${TEST_PATHS[@]}"; do
+        if [ -d "$path" ] && [ -n "$(find "$path" -type f -executable)" ]; then
+            TEST_FOUND=true
+            TEST_PATH="$path"
+            echo "Test executables built successfully in: $TEST_PATH"
+            break
+        fi
+    done
+    
+    if [ "$TEST_FOUND" = false ]; then
         echo "Error: Failed to build test executables."
-        echo "Please build the project manually with: mkdir -p Build && cd Build && cmake .. && make"
+        echo "Please build the project manually with: ./r"
         exit 1
     fi
-    
-    echo "Build completed successfully."
 fi
 
 # Find executable test files
-echo "Finding test executables..."
+echo "Finding test executables in $TEST_PATH..."
 if [ "$RUN_RHO_ONLY" = true ]; then
-    tests=`find Bin/Test -executable -type f -name "*Rho*"`
+    tests=`find $TEST_PATH -executable -type f -name "*Rho*"`
     echo -e "${RHO_COLOR}Running only Rho tests (--rho flag specified)${RESET}"
 elif [ "$RUN_PI_ONLY" = true ]; then
-    tests=`find Bin/Test -executable -type f -name "*Pi*"`
+    tests=`find $TEST_PATH -executable -type f -name "*Pi*"`
     echo -e "${PI_COLOR}Running only Pi tests (--pi flag specified)${RESET}"
 elif [ "$RUN_TAU_ONLY" = true ]; then
-    tests=`find Bin/Test -executable -type f -name "*Tau*"`
+    tests=`find $TEST_PATH -executable -type f -name "*Tau*"`
     echo -e "${TAU_COLOR}Running only Tau tests (--tau flag specified)${RESET}"
 elif [ "$RUN_NETWORK_ONLY" = true ]; then
-    tests=`find Bin/Test -executable -type f -name "*Network*"`
+    tests=`find $TEST_PATH -executable -type f -name "*Network*"`
     echo -e "${NETWORK_COLOR}Running only Network tests (--network flag specified)${RESET}"
 else
-    tests=`find Bin/Test -executable -type f`
+    tests=`find $TEST_PATH -executable -type f`
 fi
 num_tests=$(echo $tests | wc -w)
 echo "Found $num_tests test executables"

@@ -1,2 +1,2 @@
-/usr/bin/ar qc ../../../Bin/libImGui.a CMakeFiles/ImGui.dir/__/__/__/Ext/imgui/imgui.cpp.o CMakeFiles/ImGui.dir/__/__/__/Ext/imgui/imgui_demo.cpp.o CMakeFiles/ImGui.dir/__/__/__/Ext/imgui/imgui_draw.cpp.o CMakeFiles/ImGui.dir/__/__/__/Ext/imgui/imgui_widgets.cpp.o
-/usr/bin/ranlib ../../../Bin/libImGui.a
+/usr/bin/ar qc ../../../build/Bin/libImGui.a CMakeFiles/ImGui.dir/__/__/__/Ext/imgui/imgui.cpp.o CMakeFiles/ImGui.dir/__/__/__/Ext/imgui/imgui_demo.cpp.o CMakeFiles/ImGui.dir/__/__/__/Ext/imgui/imgui_draw.cpp.o CMakeFiles/ImGui.dir/__/__/__/Ext/imgui/imgui_widgets.cpp.o
+/usr/bin/ranlib ../../../build/Bin/libImGui.a

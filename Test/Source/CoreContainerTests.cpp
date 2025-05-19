@@ -21,14 +21,28 @@ protected:
 TEST_F(CoreContainerTests, TestArrayBasicOperations) {
     // Create an array
     Pointer<Array> array = Reg().New<Array>();
+    
+    // Store array in root to prevent garbage collection
+    Root().Set(Label("test_array"), array);
+    
+    // Create elements
+    Object elem1 = Reg().New<int>(1);
+    Object elem2 = Reg().New<int>(2);
+    Object elem3 = Reg().New<int>(3);
+    
+    // Store elements in root to prevent garbage collection
+    Root().Set(Label("test_elem1"), elem1);
+    Root().Set(Label("test_elem2"), elem2);
+    Root().Set(Label("test_elem3"), elem3);
+    
     ASSERT_TRUE(array.Exists());
     ASSERT_TRUE(array->Empty());
     ASSERT_EQ(array->Size(), 0);
     
     // Add elements
-    array->PushBack(Reg().New<int>(1));
-    array->PushBack(Reg().New<int>(2));
-    array->PushBack(Reg().New<int>(3));
+    array->PushBack(elem1);
+    array->PushBack(elem2);
+    array->PushBack(elem3);
     
     // Verify size and contents
     ASSERT_EQ(array->Size(), 3);
@@ -37,6 +51,12 @@ TEST_F(CoreContainerTests, TestArrayBasicOperations) {
     ASSERT_EQ(ConstDeref<int>(array->At(0)), 1);
     ASSERT_EQ(ConstDeref<int>(array->At(1)), 2);
     ASSERT_EQ(ConstDeref<int>(array->At(2)), 3);
+    
+    // Clean up
+    Root().Remove(Label("test_array"));
+    Root().Remove(Label("test_elem1"));
+    Root().Remove(Label("test_elem2"));
+    Root().Remove(Label("test_elem3"));
 }
 
 // Test Array container with mixed types
@@ -44,24 +64,54 @@ TEST_F(CoreContainerTests, TestArrayMixedTypes) {
     // Create an array
     Pointer<Array> array = Reg().New<Array>();
     
+    // Store array in root to prevent garbage collection
+    Root().Set(Label("test_mixed_array"), array);
+    
+    // Create elements of different types
+    Object intElem = Reg().New<int>(42);
+    Object floatElem = Reg().New<float>(3.14f);
+    Object strElem = Reg().New<String>("Hello");
+    Object boolElem = Reg().New<bool>(true);
+    
+    // Store elements in root to prevent garbage collection
+    Root().Set(Label("test_mixed_int"), intElem);
+    Root().Set(Label("test_mixed_float"), floatElem);
+    Root().Set(Label("test_mixed_str"), strElem);
+    Root().Set(Label("test_mixed_bool"), boolElem);
+    
     // Add elements of different types
-    array->PushBack(Reg().New<int>(42));
-    array->PushBack(Reg().New<float>(3.14f));
-    array->PushBack(Reg().New<String>("Hello"));
-    array->PushBack(Reg().New<bool>(true));
+    array->PushBack(intElem);
+    array->PushBack(floatElem);
+    array->PushBack(strElem);
+    array->PushBack(boolElem);
     
     // Verify size and contents
     ASSERT_EQ(array->Size(), 4);
     
+    // Use both IsType<T> and IsTypeNumber for type checking
     ASSERT_TRUE(array->At(0).IsType<int>());
+    ASSERT_TRUE(array->At(0).IsTypeNumber(Type::Traits<int>::Number));
+    
     ASSERT_TRUE(array->At(1).IsType<float>());
+    ASSERT_TRUE(array->At(1).IsTypeNumber(Type::Traits<float>::Number));
+    
     ASSERT_TRUE(array->At(2).IsType<String>());
+    ASSERT_TRUE(array->At(2).IsTypeNumber(Type::Traits<String>::Number));
+    
     ASSERT_TRUE(array->At(3).IsType<bool>());
+    ASSERT_TRUE(array->At(3).IsTypeNumber(Type::Traits<bool>::Number));
     
     ASSERT_EQ(ConstDeref<int>(array->At(0)), 42);
     ASSERT_FLOAT_EQ(ConstDeref<float>(array->At(1)), 3.14f);
     ASSERT_EQ(ConstDeref<String>(array->At(2)), "Hello");
     ASSERT_EQ(ConstDeref<bool>(array->At(3)), true);
+    
+    // Clean up
+    Root().Remove(Label("test_mixed_array"));
+    Root().Remove(Label("test_mixed_int"));
+    Root().Remove(Label("test_mixed_float"));
+    Root().Remove(Label("test_mixed_str"));
+    Root().Remove(Label("test_mixed_bool"));
 }
 
 // Test Array Insert and Erase operations
@@ -82,13 +132,19 @@ TEST_F(CoreContainerTests, TestArrayInsertErase) {
     ASSERT_EQ(ConstDeref<int>(array->At(1)), 3);
     ASSERT_EQ(ConstDeref<int>(array->At(2)), 2);
     
-    // Erase an element using object reference
-    array->Erase(array->At(1));
+    // Store the element at index 1 for erasure
+    Object elementToErase = array->At(1);
+    ASSERT_TRUE(elementToErase.Exists());
     
-    // Verify result
+    // Erase the element 
+    array->Erase(elementToErase);
+    
+    // Verify result - we should have 2 elements left
     ASSERT_EQ(array->Size(), 2);
+    
+    // And the elements should be 1 and 2
     ASSERT_EQ(ConstDeref<int>(array->At(0)), 1);
-    ASSERT_EQ(ConstDeref<int>(array->At(1)), 3);
+    ASSERT_EQ(ConstDeref<int>(array->At(1)), 2); // The last element moved up
 }
 
 // Test Array Clear operation
@@ -130,31 +186,65 @@ TEST_F(CoreContainerTests, TestArrayClear) {
 TEST_F(CoreContainerTests, TestMapBasicOperations) {
     // Create a map
     Pointer<Map> map = Reg().New<Map>();
+    
+    // Store in root to prevent garbage collection
+    Root().Set(Label("test_map"), map);
+    
+    // Create keys and values
+    Object keyOne = Reg().New<String>("one");
+    Object keyTwo = Reg().New<String>("two");
+    Object keyThree = Reg().New<String>("three");
+    
+    Object valOne = Reg().New<int>(1);
+    Object valTwo = Reg().New<int>(2);
+    Object valThree = Reg().New<int>(3);
+    
+    // Store keys and values in root to prevent garbage collection
+    Root().Set(Label("test_key_one"), keyOne);
+    Root().Set(Label("test_key_two"), keyTwo);
+    Root().Set(Label("test_key_three"), keyThree);
+    
+    Root().Set(Label("test_val_one"), valOne);
+    Root().Set(Label("test_val_two"), valTwo);
+    Root().Set(Label("test_val_three"), valThree);
+    
     ASSERT_TRUE(map.Exists());
     ASSERT_TRUE(map->Empty());
     ASSERT_EQ(map->Size(), 0);
     
     // Add key-value pairs using Insert
-    map->Insert(Reg().New<String>("one"), Reg().New<int>(1));
-    map->Insert(Reg().New<String>("two"), Reg().New<int>(2));
-    map->Insert(Reg().New<String>("three"), Reg().New<int>(3));
+    map->Insert(keyOne, valOne);
+    map->Insert(keyTwo, valTwo);
+    map->Insert(keyThree, valThree);
     
     // Verify size
     ASSERT_EQ(map->Size(), 3);
     ASSERT_FALSE(map->Empty());
     
     // Get values by key using GetValue
-    Object one = map->GetValue(Reg().New<String>("one"));
-    Object two = map->GetValue(Reg().New<String>("two"));
-    Object three = map->GetValue(Reg().New<String>("three"));
+    Object one = map->GetValue(keyOne);
+    Object two = map->GetValue(keyTwo);
+    Object three = map->GetValue(keyThree);
     
     ASSERT_TRUE(one.Exists());
     ASSERT_TRUE(two.Exists());
     ASSERT_TRUE(three.Exists());
     
+    ASSERT_TRUE(one.IsType<int>());
+    ASSERT_TRUE(one.IsTypeNumber(Type::Traits<int>::Number));
+    
     ASSERT_EQ(ConstDeref<int>(one), 1);
     ASSERT_EQ(ConstDeref<int>(two), 2);
     ASSERT_EQ(ConstDeref<int>(three), 3);
+    
+    // Clean up
+    Root().Remove(Label("test_map"));
+    Root().Remove(Label("test_key_one"));
+    Root().Remove(Label("test_key_two"));
+    Root().Remove(Label("test_key_three"));
+    Root().Remove(Label("test_val_one"));
+    Root().Remove(Label("test_val_two"));
+    Root().Remove(Label("test_val_three"));
 }
 
 // Test Map with different value types
@@ -162,22 +252,65 @@ TEST_F(CoreContainerTests, TestMapMixedValues) {
     // Create a map
     Pointer<Map> map = Reg().New<Map>();
     
+    // Store in root to prevent garbage collection
+    Root().Set(Label("test_mixed_map"), map);
+    
+    // Create keys and values
+    Object keyInt = Reg().New<String>("int");
+    Object keyFloat = Reg().New<String>("float");
+    Object keyString = Reg().New<String>("string");
+    Object keyBool = Reg().New<String>("bool");
+    
+    Object valInt = Reg().New<int>(42);
+    Object valFloat = Reg().New<float>(3.14f);
+    Object valString = Reg().New<String>("Hello");
+    Object valBool = Reg().New<bool>(true);
+    
+    // Store keys and values in root to prevent garbage collection
+    Root().Set(Label("test_key_int"), keyInt);
+    Root().Set(Label("test_key_float"), keyFloat);
+    Root().Set(Label("test_key_string"), keyString);
+    Root().Set(Label("test_key_bool"), keyBool);
+    
+    Root().Set(Label("test_val_int"), valInt);
+    Root().Set(Label("test_val_float"), valFloat);
+    Root().Set(Label("test_val_string"), valString);
+    Root().Set(Label("test_val_bool"), valBool);
+    
     // Add key-value pairs with different value types
-    map->Insert(Reg().New<String>("int"), Reg().New<int>(42));
-    map->Insert(Reg().New<String>("float"), Reg().New<float>(3.14f));
-    map->Insert(Reg().New<String>("string"), Reg().New<String>("Hello"));
-    map->Insert(Reg().New<String>("bool"), Reg().New<bool>(true));
+    map->Insert(keyInt, valInt);
+    map->Insert(keyFloat, valFloat);
+    map->Insert(keyString, valString);
+    map->Insert(keyBool, valBool);
     
-    // Verify retrieval and types
-    ASSERT_TRUE(map->GetValue(Reg().New<String>("int")).IsType<int>());
-    ASSERT_TRUE(map->GetValue(Reg().New<String>("float")).IsType<float>());
-    ASSERT_TRUE(map->GetValue(Reg().New<String>("string")).IsType<String>());
-    ASSERT_TRUE(map->GetValue(Reg().New<String>("bool")).IsType<bool>());
+    // Verify retrieval and types using both methods
+    ASSERT_TRUE(map->GetValue(keyInt).IsType<int>());
+    ASSERT_TRUE(map->GetValue(keyInt).IsTypeNumber(Type::Traits<int>::Number));
     
-    ASSERT_EQ(ConstDeref<int>(map->GetValue(Reg().New<String>("int"))), 42);
-    ASSERT_FLOAT_EQ(ConstDeref<float>(map->GetValue(Reg().New<String>("float"))), 3.14f);
-    ASSERT_EQ(ConstDeref<String>(map->GetValue(Reg().New<String>("string"))), "Hello");
-    ASSERT_EQ(ConstDeref<bool>(map->GetValue(Reg().New<String>("bool"))), true);
+    ASSERT_TRUE(map->GetValue(keyFloat).IsType<float>());
+    ASSERT_TRUE(map->GetValue(keyFloat).IsTypeNumber(Type::Traits<float>::Number));
+    
+    ASSERT_TRUE(map->GetValue(keyString).IsType<String>());
+    ASSERT_TRUE(map->GetValue(keyString).IsTypeNumber(Type::Traits<String>::Number));
+    
+    ASSERT_TRUE(map->GetValue(keyBool).IsType<bool>());
+    ASSERT_TRUE(map->GetValue(keyBool).IsTypeNumber(Type::Traits<bool>::Number));
+    
+    ASSERT_EQ(ConstDeref<int>(map->GetValue(keyInt)), 42);
+    ASSERT_FLOAT_EQ(ConstDeref<float>(map->GetValue(keyFloat)), 3.14f);
+    ASSERT_EQ(ConstDeref<String>(map->GetValue(keyString)), "Hello");
+    ASSERT_EQ(ConstDeref<bool>(map->GetValue(keyBool)), true);
+    
+    // Clean up
+    Root().Remove(Label("test_mixed_map"));
+    Root().Remove(Label("test_key_int"));
+    Root().Remove(Label("test_key_float"));
+    Root().Remove(Label("test_key_string"));
+    Root().Remove(Label("test_key_bool"));
+    Root().Remove(Label("test_val_int"));
+    Root().Remove(Label("test_val_float"));
+    Root().Remove(Label("test_val_string"));
+    Root().Remove(Label("test_val_bool"));
 }
 
 // Test Map key existence check
@@ -185,16 +318,42 @@ TEST_F(CoreContainerTests, TestMapContains) {
     // Create a map
     Pointer<Map> map = Reg().New<Map>();
     
+    // Store in root to prevent garbage collection
+    Root().Set(Label("test_contains_map"), map);
+    
+    // Create keys and values
+    Object keyOne = Reg().New<String>("one");
+    Object keyTwo = Reg().New<String>("two");
+    Object keyThree = Reg().New<String>("three"); // Key that won't be added
+    
+    Object valOne = Reg().New<int>(1);
+    Object valTwo = Reg().New<int>(2);
+    
+    // Store in root to prevent garbage collection
+    Root().Set(Label("test_contains_key_one"), keyOne);
+    Root().Set(Label("test_contains_key_two"), keyTwo);
+    Root().Set(Label("test_contains_key_three"), keyThree);
+    Root().Set(Label("test_contains_val_one"), valOne);
+    Root().Set(Label("test_contains_val_two"), valTwo);
+    
     // Add some entries
-    map->Insert(Reg().New<String>("one"), Reg().New<int>(1));
-    map->Insert(Reg().New<String>("two"), Reg().New<int>(2));
+    map->Insert(keyOne, valOne);
+    map->Insert(keyTwo, valTwo);
     
     // Check existing keys
-    ASSERT_TRUE(map->ContainsKey(Reg().New<String>("one")));
-    ASSERT_TRUE(map->ContainsKey(Reg().New<String>("two")));
+    ASSERT_TRUE(map->ContainsKey(keyOne));
+    ASSERT_TRUE(map->ContainsKey(keyTwo));
     
     // Check non-existing key
-    ASSERT_FALSE(map->ContainsKey(Reg().New<String>("three")));
+    ASSERT_FALSE(map->ContainsKey(keyThree));
+    
+    // Clean up
+    Root().Remove(Label("test_contains_map"));
+    Root().Remove(Label("test_contains_key_one"));
+    Root().Remove(Label("test_contains_key_two"));
+    Root().Remove(Label("test_contains_key_three"));
+    Root().Remove(Label("test_contains_val_one"));
+    Root().Remove(Label("test_contains_val_two"));
 }
 
 // Test Map value replacement
@@ -202,18 +361,41 @@ TEST_F(CoreContainerTests, TestMapValueReplacement) {
     // Create a map
     Pointer<Map> map = Reg().New<Map>();
     
+    // Store in root to prevent garbage collection
+    Root().Set(Label("test_replace_map"), map);
+    
+    // Create key and values
+    Object key = Reg().New<String>("key");
+    Object val1 = Reg().New<int>(1);
+    Object val2 = Reg().New<int>(2);
+    Object val3 = Reg().New<String>("new value");
+    
+    // Store in root to prevent garbage collection
+    Root().Set(Label("test_replace_key"), key);
+    Root().Set(Label("test_replace_val1"), val1);
+    Root().Set(Label("test_replace_val2"), val2);
+    Root().Set(Label("test_replace_val3"), val3);
+    
     // Add an initial key-value pair
-    map->Insert(Reg().New<String>("key"), Reg().New<int>(1));
-    ASSERT_EQ(ConstDeref<int>(map->GetValue(Reg().New<String>("key"))), 1);
+    map->Insert(key, val1);
+    ASSERT_EQ(ConstDeref<int>(map->GetValue(key)), 1);
     
     // Replace the value
-    map->Insert(Reg().New<String>("key"), Reg().New<int>(2));
-    ASSERT_EQ(ConstDeref<int>(map->GetValue(Reg().New<String>("key"))), 2);
+    map->Insert(key, val2);
+    ASSERT_EQ(ConstDeref<int>(map->GetValue(key)), 2);
     
     // Replace with a different type
-    map->Insert(Reg().New<String>("key"), Reg().New<String>("new value"));
-    ASSERT_TRUE(map->GetValue(Reg().New<String>("key")).IsType<String>());
-    ASSERT_EQ(ConstDeref<String>(map->GetValue(Reg().New<String>("key"))), "new value");
+    map->Insert(key, val3);
+    ASSERT_TRUE(map->GetValue(key).IsType<String>());
+    ASSERT_TRUE(map->GetValue(key).IsTypeNumber(Type::Traits<String>::Number));
+    ASSERT_EQ(ConstDeref<String>(map->GetValue(key)), "new value");
+    
+    // Clean up
+    Root().Remove(Label("test_replace_map"));
+    Root().Remove(Label("test_replace_key"));
+    Root().Remove(Label("test_replace_val1"));
+    Root().Remove(Label("test_replace_val2"));
+    Root().Remove(Label("test_replace_val3"));
 }
 
 // Test Map Erase operation

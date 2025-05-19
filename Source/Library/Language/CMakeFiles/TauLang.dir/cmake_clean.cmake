@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "../../../Bin/libTauLang.a"
-  "../../../Bin/libTauLang.pdb"
+  "../../../build/Bin/libTauLang.a"
+  "../../../build/Bin/libTauLang.pdb"
   "CMakeFiles/TauLang.dir/Tau/Source/Generate/GenerateAgent.cpp.o"
   "CMakeFiles/TauLang.dir/Tau/Source/Generate/GenerateAgent.cpp.o.d"
   "CMakeFiles/TauLang.dir/Tau/Source/Generate/GenerateProcess.cpp.o"

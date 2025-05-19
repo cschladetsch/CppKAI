@@ -1,0 +1,22 @@
+// Class demonstrating array properties and parameters
+class ClassWithArrays
+{
+    // Array properties
+    int[] numbers;
+    string[] names;
+    float[] values;
+    
+    // Methods with array parameters
+    void SetNumbers(int[] newNumbers);
+    int[] GetNumbers();
+    
+    // Methods returning arrays
+    string[] GetNames();
+    void SetNames(string[] newNames);
+    
+    // Methods with mixed array and non-array parameters
+    void ProcessData(int id, float[] dataPoints, string label);
+    
+    // Nested arrays (not supported yet, but included for future compatibility)
+    // string[][] multiDimensional;
+}

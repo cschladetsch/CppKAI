@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "../../../Bin/libImGui.a"
-  "../../../Bin/libImGui.pdb"
+  "../../../build/Bin/libImGui.a"
+  "../../../build/Bin/libImGui.pdb"
   "CMakeFiles/ImGui.dir/__/__/__/Ext/imgui/imgui.cpp.o"
   "CMakeFiles/ImGui.dir/__/__/__/Ext/imgui/imgui.cpp.o.d"
   "CMakeFiles/ImGui.dir/__/__/__/Ext/imgui/imgui_demo.cpp.o"

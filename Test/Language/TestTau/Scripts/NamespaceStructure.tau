@@ -1,0 +1,123 @@
+// NamespaceStructure.tau - Testing namespace organization
+
+// Top-level namespace
+namespace System
+{
+    // Basic logging class
+    class Logger
+    {
+        string logLevel = "INFO";
+        string logFile = "system.log";
+        
+        void Log(string message);
+        void SetLogLevel(string level);
+        string GetLogLevel();
+        void SetLogFile(string filename);
+        string GetLogFile();
+    }
+    
+    // Configuration class
+    class Config
+    {
+        int version = 1;
+        bool debugMode = false;
+        
+        int GetVersion();
+        void SetDebugMode(bool enabled);
+        bool IsDebugMode();
+        void LoadConfig(string filename);
+        void SaveConfig(string filename = "config.ini");
+    }
+}
+
+// Another top-level namespace
+namespace Network
+{
+    // Connection class
+    class Connection
+    {
+        string host = "localhost";
+        int port = 8080;
+        bool connected = false;
+        
+        bool Connect();
+        void Disconnect();
+        bool IsConnected();
+        string GetHost();
+        void SetHost(string newHost);
+        int GetPort();
+        void SetPort(int newPort);
+    }
+    
+    // Protocol class
+    class Protocol
+    {
+        string name = "HTTP";
+        int version = 1;
+        
+        string GetName();
+        void SetName(string newName);
+        int GetVersion();
+        void SetVersion(int newVersion);
+        string FormatHeader(string key, string value);
+        string ParseHeader(string header);
+    }
+    
+    // Client class that uses other Network classes
+    class Client
+    {
+        Connection connection;
+        Protocol protocol;
+        int timeout = 30000;
+        
+        bool Initialize();
+        void Shutdown();
+        string SendRequest(string request);
+        string ReceiveResponse();
+        void SetTimeout(int milliseconds);
+        int GetTimeout();
+    }
+}
+
+// Third top-level namespace for data structures
+namespace DataStructures
+{
+    // Simple data point
+    class Point
+    {
+        float x = 0.0;
+        float y = 0.0;
+        
+        void SetPosition(float newX, float newY);
+        float GetX();
+        float GetY();
+        float GetDistance();
+        Point Add(Point other);
+        Point Multiply(float scalar);
+    }
+    
+    // Collection of points
+    class PointList
+    {
+        Point[] points;
+        
+        void AddPoint(Point point);
+        void RemovePoint(int index);
+        Point GetPoint(int index);
+        Point[] GetAllPoints();
+        int GetCount();
+        void Clear();
+    }
+    
+    // Processor that works with data structures
+    class Processor
+    {
+        PointList pointList;
+        
+        void SetPointList(PointList list);
+        PointList GetPointList();
+        Point CalculateCentroid();
+        float CalculateAverageDistance();
+        PointList FilterByDistance(float maxDistance);
+    }
+}

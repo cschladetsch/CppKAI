@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "../../Bin/Test/TestPi"
-  "../../Bin/Test/TestPi.pdb"
+  "../../build/Bin/Test/TestPi"
+  "../../build/Bin/Test/TestPi.pdb"
   "CMakeFiles/TestPi.dir/TestLangCommon.cpp.o"
   "CMakeFiles/TestPi.dir/TestLangCommon.cpp.o.d"
   "CMakeFiles/TestPi.dir/TestPi/ArrayOpTest.cpp.o"

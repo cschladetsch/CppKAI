@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "../../../Bin/libCommonLang.a"
-  "../../../Bin/libCommonLang.pdb"
+  "../../../build/Bin/libCommonLang.a"
+  "../../../build/Bin/libCommonLang.pdb"
   "CMakeFiles/CommonLang.dir/Common/Source/Language.cpp.o"
   "CMakeFiles/CommonLang.dir/Common/Source/Language.cpp.o.d"
   "CMakeFiles/CommonLang.dir/Common/Source/Structure.cpp.o"

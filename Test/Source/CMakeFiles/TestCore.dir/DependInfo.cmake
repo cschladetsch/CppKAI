@@ -8,6 +8,11 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
+  "/home/xian/local/KAI/Test/Source/CoreContainerTests.cpp" "Test/Source/CMakeFiles/TestCore.dir/CoreContainerTests.cpp.o" "gcc" "Test/Source/CMakeFiles/TestCore.dir/CoreContainerTests.cpp.o.d"
+  "/home/xian/local/KAI/Test/Source/CoreObjectTests.cpp" "Test/Source/CMakeFiles/TestCore.dir/CoreObjectTests.cpp.o" "gcc" "Test/Source/CMakeFiles/TestCore.dir/CoreObjectTests.cpp.o.d"
+  "/home/xian/local/KAI/Test/Source/CorePointerTests.cpp" "Test/Source/CMakeFiles/TestCore.dir/CorePointerTests.cpp.o" "gcc" "Test/Source/CMakeFiles/TestCore.dir/CorePointerTests.cpp.o.d"
+  "/home/xian/local/KAI/Test/Source/CoreRegistryTests.cpp" "Test/Source/CMakeFiles/TestCore.dir/CoreRegistryTests.cpp.o" "gcc" "Test/Source/CMakeFiles/TestCore.dir/CoreRegistryTests.cpp.o.d"
+  "/home/xian/local/KAI/Test/Source/CoreTypeTests.cpp" "Test/Source/CMakeFiles/TestCore.dir/CoreTypeTests.cpp.o" "gcc" "Test/Source/CMakeFiles/TestCore.dir/CoreTypeTests.cpp.o.d"
   "/home/xian/local/KAI/Test/Source/Main.cpp" "Test/Source/CMakeFiles/TestCore.dir/Main.cpp.o" "gcc" "Test/Source/CMakeFiles/TestCore.dir/Main.cpp.o.d"
   "/home/xian/local/KAI/Test/Source/TestAdditionalCore.cpp" "Test/Source/CMakeFiles/TestCore.dir/TestAdditionalCore.cpp.o" "gcc" "Test/Source/CMakeFiles/TestCore.dir/TestAdditionalCore.cpp.o.d"
   "/home/xian/local/KAI/Test/Source/TestAdditionalStringOps.cpp" "Test/Source/CMakeFiles/TestCore.dir/TestAdditionalStringOps.cpp.o" "gcc" "Test/Source/CMakeFiles/TestCore.dir/TestAdditionalStringOps.cpp.o.d"

@@ -1,0 +1,33 @@
+// Class demonstrating generic/template syntax
+class Vector<T>
+{
+    // Generic properties
+    T[] items;
+    int size;
+    int capacity;
+    
+    // Generic methods
+    void Add(T item);
+    T Get(int index);
+    void Set(int index, T value);
+    
+    // Methods using the generic type
+    void Clear();
+    bool Contains(T item);
+    
+    // Static methods with generic parameters
+    static Vector<T> Create(int initialCapacity);
+}
+
+// Another generic class with multiple type parameters
+class Dictionary<K, V>
+{
+    // Properties
+    int count;
+    
+    // Methods with generic parameters
+    void Add(K key, V value);
+    V Get(K key);
+    bool ContainsKey(K key);
+    bool Remove(K key);
+}

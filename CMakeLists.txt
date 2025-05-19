@@ -9,7 +9,7 @@ endif()
 # -------------------------------
 # - Uses Ninja by default (override with -DBUILD_GCC=ON)
 # - Defaults to C++23 standard
-# - Outputs all build artifacts to /Bin directory
+# - Supports out-of-source builds with output to build/Bin directory
 
 # Set the default generator to Ninja unless BUILD_GCC is set
 if(NOT DEFINED BUILD_GCC)
@@ -30,7 +30,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Define global log directory relative to KAI_HOME
-set(KAI_LOG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Logs")
+set(KAI_HOME ${CMAKE_CURRENT_SOURCE_DIR})
+set(KAI_LOG_DIR "${KAI_HOME}/Logs")
 # Create the directory at configure time if it doesn't exist
 execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${KAI_LOG_DIR})
 # Define as a compile-time definition with proper escaping for C++23
@@ -51,21 +52,30 @@ find_package(Boost REQUIRED COMPONENTS system filesystem program_options date_ti
 include_directories(${Boost_INCLUDE_DIRS})
 
 # Set the CMake module path
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake;${CMAKE_MODULE_PATH}")
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake;${CMAKE_MODULE_PATH}")
 
 # Set common paths for all other projects to use
 set(HOME $ENV{HOME})
-set(KAI_HOME ${CMAKE_SOURCE_DIR})
+set(KAI_HOME ${CMAKE_CURRENT_SOURCE_DIR})
 set(SOURCE_HOME ${KAI_HOME}/Source)
 set(APP_HOME ${SOURCE_HOME}/App)
 set(LIBRARY_HOME ${SOURCE_HOME}/Library)
 set(TEST_HOME ${KAI_HOME}/Test)
-set(BIN_HOME ${KAI_HOME}/Bin)
-set(INCLUDE_HOME ${KAI_HOME}/Include)
-set(EXTERNAL ${KAI_HOME}/Ext)
-set(dir ${KAI_HOME})
 
-# Set output directories - everything to Bin for simplicity
+# Support both in-source and out-of-source builds
+if(NOT DEFINED BIN_HOME)
+    if(CMAKE_BINARY_DIR STREQUAL CMAKE_SOURCE_DIR)
+        # In-source build
+        set(BIN_HOME ${KAI_HOME}/Bin)
+    else()
+        # Out-of-source build
+        set(BIN_HOME ${CMAKE_BINARY_DIR}/Bin)
+    endif()
+endif()
+
+message(STATUS "Binary output directory: ${BIN_HOME}")
+
+# Set output directories
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${BIN_HOME}")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${BIN_HOME}")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${BIN_HOME}")
@@ -138,13 +148,14 @@ endif()
 add_definitions(-DKAI_USE_RAKNET_STUB)
 
 # Add rang external library
+set(EXTERNAL ${KAI_HOME}/Ext)
 include_directories(${EXTERNAL}/rang/include)
 
 # Macro to define a new library
 macro(def_library name)
     project(${name})
     set(lib_root ${LIBRARY_HOME}/${name})
-    set(kai_includes ${INCLUDE_HOME}/KAI/${name})
+    set(kai_includes ${KAI_HOME}/Include/KAI/${name})
     include_directories(${kai_includes})
     set(sources ${lib_root}/Source/*.cpp)
     set(headers ${kai_includes}/*.h)
@@ -157,7 +168,7 @@ endmacro()
 macro(def_lang_library name)
     project(${name}Lang)
     set(lang_root ${LIBRARY_HOME}/Language/${name})
-    set(kai_includes ${INCLUDE_HOME}/KAI/Language/${name})
+    set(kai_includes ${KAI_HOME}/Include/KAI/Language/${name})
     set(local_includes ${lang_root}/Include)
     include_directories(${kai_includes})
     include_directories(${local_includes})

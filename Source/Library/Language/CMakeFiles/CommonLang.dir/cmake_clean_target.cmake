@@ -1,3 +1,3 @@
 file(REMOVE_RECURSE
-  "../../../Bin/libCommonLang.a"
+  "../../../build/Bin/libCommonLang.a"
 )

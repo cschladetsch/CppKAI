@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "../../../Bin/libRhoLang.a"
-  "../../../Bin/libRhoLang.pdb"
+  "../../../build/Bin/libRhoLang.a"
+  "../../../build/Bin/libRhoLang.pdb"
   "CMakeFiles/RhoLang.dir/Rho/Source/RhoAstNode.cpp.o"
   "CMakeFiles/RhoLang.dir/Rho/Source/RhoAstNode.cpp.o.d"
   "CMakeFiles/RhoLang.dir/Rho/Source/RhoLang.cpp.o"

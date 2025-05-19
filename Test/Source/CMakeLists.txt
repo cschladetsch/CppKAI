@@ -63,3 +63,14 @@ list(APPEND core_sources ${TEST_HOME}/Common/MyTestStruct.cpp)
 
 add_executable(${core_name} ${core_sources})
 target_link_libraries(${core_name} Executor Core PiLang RhoLang TauLang ${GTEST_BOTH_LIBRARIES} ${Boost_LIBRARIES} gtest_main)
+
+# Add our fixed Core test suite
+set(fixed_core_name FixedCoreSuite)
+set(fixed_core_sources
+    ${source_path}/FixedCoreSuite.cpp
+    ${TEST_HOME}/Common/TestCommon.cpp
+    ${TEST_HOME}/Common/MyTestStruct.cpp
+)
+
+add_executable(${fixed_core_name} ${fixed_core_sources})
+target_link_libraries(${fixed_core_name} Core ${GTEST_BOTH_LIBRARIES} ${Boost_LIBRARIES} gtest_main)

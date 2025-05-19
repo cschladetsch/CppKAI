@@ -8,6 +8,12 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
+  "/home/xian/local/KAI/Test/Source/CoreContainerTests.cpp" "Test/Source/CMakeFiles/KaiTest.dir/CoreContainerTests.cpp.o" "gcc" "Test/Source/CMakeFiles/KaiTest.dir/CoreContainerTests.cpp.o.d"
+  "/home/xian/local/KAI/Test/Source/CoreObjectTests.cpp" "Test/Source/CMakeFiles/KaiTest.dir/CoreObjectTests.cpp.o" "gcc" "Test/Source/CMakeFiles/KaiTest.dir/CoreObjectTests.cpp.o.d"
+  "/home/xian/local/KAI/Test/Source/CorePointerTests.cpp" "Test/Source/CMakeFiles/KaiTest.dir/CorePointerTests.cpp.o" "gcc" "Test/Source/CMakeFiles/KaiTest.dir/CorePointerTests.cpp.o.d"
+  "/home/xian/local/KAI/Test/Source/CoreRegistryTests.cpp" "Test/Source/CMakeFiles/KaiTest.dir/CoreRegistryTests.cpp.o" "gcc" "Test/Source/CMakeFiles/KaiTest.dir/CoreRegistryTests.cpp.o.d"
+  "/home/xian/local/KAI/Test/Source/CoreTypeTests.cpp" "Test/Source/CMakeFiles/KaiTest.dir/CoreTypeTests.cpp.o" "gcc" "Test/Source/CMakeFiles/KaiTest.dir/CoreTypeTests.cpp.o.d"
+  "/home/xian/local/KAI/Test/Source/FixedCoreSuite.cpp" "Test/Source/CMakeFiles/KaiTest.dir/FixedCoreSuite.cpp.o" "gcc" "Test/Source/CMakeFiles/KaiTest.dir/FixedCoreSuite.cpp.o.d"
   "/home/xian/local/KAI/Test/Source/Main.cpp" "Test/Source/CMakeFiles/KaiTest.dir/Main.cpp.o" "gcc" "Test/Source/CMakeFiles/KaiTest.dir/Main.cpp.o.d"
   "/home/xian/local/KAI/Test/Source/RakNetStubSimple.cpp" "Test/Source/CMakeFiles/KaiTest.dir/RakNetStubSimple.cpp.o" "gcc" "Test/Source/CMakeFiles/KaiTest.dir/RakNetStubSimple.cpp.o.d"
   "/home/xian/local/KAI/Test/Source/TestAdditionalCore.cpp" "Test/Source/CMakeFiles/KaiTest.dir/TestAdditionalCore.cpp.o" "gcc" "Test/Source/CMakeFiles/KaiTest.dir/TestAdditionalCore.cpp.o.d"

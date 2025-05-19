@@ -1,3 +1,3 @@
 file(REMOVE_RECURSE
-  "../../../Bin/libImGui.a"
+  "../../../build/Bin/libImGui.a"
 )

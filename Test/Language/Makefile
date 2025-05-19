@@ -929,6 +929,78 @@ TestRho/TypeTest.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/TypeTest.cpp.s
 .PHONY : TestRho/TypeTest.cpp.s
 
+TestTau/TauClassTests.o: TestTau/TauClassTests.cpp.o
+.PHONY : TestTau/TauClassTests.o
+
+# target to build an object file
+TestTau/TauClassTests.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauClassTests.cpp.o
+.PHONY : TestTau/TauClassTests.cpp.o
+
+TestTau/TauClassTests.i: TestTau/TauClassTests.cpp.i
+.PHONY : TestTau/TauClassTests.i
+
+# target to preprocess a source file
+TestTau/TauClassTests.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauClassTests.cpp.i
+.PHONY : TestTau/TauClassTests.cpp.i
+
+TestTau/TauClassTests.s: TestTau/TauClassTests.cpp.s
+.PHONY : TestTau/TauClassTests.s
+
+# target to generate assembly for a file
+TestTau/TauClassTests.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauClassTests.cpp.s
+.PHONY : TestTau/TauClassTests.cpp.s
+
+TestTau/TauCodeGenTests.o: TestTau/TauCodeGenTests.cpp.o
+.PHONY : TestTau/TauCodeGenTests.o
+
+# target to build an object file
+TestTau/TauCodeGenTests.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauCodeGenTests.cpp.o
+.PHONY : TestTau/TauCodeGenTests.cpp.o
+
+TestTau/TauCodeGenTests.i: TestTau/TauCodeGenTests.cpp.i
+.PHONY : TestTau/TauCodeGenTests.i
+
+# target to preprocess a source file
+TestTau/TauCodeGenTests.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauCodeGenTests.cpp.i
+.PHONY : TestTau/TauCodeGenTests.cpp.i
+
+TestTau/TauCodeGenTests.s: TestTau/TauCodeGenTests.cpp.s
+.PHONY : TestTau/TauCodeGenTests.s
+
+# target to generate assembly for a file
+TestTau/TauCodeGenTests.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauCodeGenTests.cpp.s
+.PHONY : TestTau/TauCodeGenTests.cpp.s
+
+TestTau/TauNamespaceTests.o: TestTau/TauNamespaceTests.cpp.o
+.PHONY : TestTau/TauNamespaceTests.o
+
+# target to build an object file
+TestTau/TauNamespaceTests.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauNamespaceTests.cpp.o
+.PHONY : TestTau/TauNamespaceTests.cpp.o
+
+TestTau/TauNamespaceTests.i: TestTau/TauNamespaceTests.cpp.i
+.PHONY : TestTau/TauNamespaceTests.i
+
+# target to preprocess a source file
+TestTau/TauNamespaceTests.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauNamespaceTests.cpp.i
+.PHONY : TestTau/TauNamespaceTests.cpp.i
+
+TestTau/TauNamespaceTests.s: TestTau/TauNamespaceTests.cpp.s
+.PHONY : TestTau/TauNamespaceTests.s
+
+# target to generate assembly for a file
+TestTau/TauNamespaceTests.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauNamespaceTests.cpp.s
+.PHONY : TestTau/TauNamespaceTests.cpp.s
+
 TestTau/TestTau.o: TestTau/TestTau.cpp.o
 .PHONY : TestTau/TestTau.o
 
@@ -1148,6 +1220,15 @@ help:
 	@echo "... TestRho/TypeTest.o"
 	@echo "... TestRho/TypeTest.i"
 	@echo "... TestRho/TypeTest.s"
+	@echo "... TestTau/TauClassTests.o"
+	@echo "... TestTau/TauClassTests.i"
+	@echo "... TestTau/TauClassTests.s"
+	@echo "... TestTau/TauCodeGenTests.o"
+	@echo "... TestTau/TauCodeGenTests.i"
+	@echo "... TestTau/TauCodeGenTests.s"
+	@echo "... TestTau/TauNamespaceTests.o"
+	@echo "... TestTau/TauNamespaceTests.i"
+	@echo "... TestTau/TauNamespaceTests.s"
 	@echo "... TestTau/TestTau.o"
 	@echo "... TestTau/TestTau.i"
 	@echo "... TestTau/TestTau.s"

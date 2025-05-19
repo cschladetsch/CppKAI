@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "../../Bin/Test/TestRho"
-  "../../Bin/Test/TestRho.pdb"
+  "../../build/Bin/Test/TestRho"
+  "../../build/Bin/Test/TestRho.pdb"
   "CMakeFiles/TestRho.dir/TestLangCommon.cpp.o"
   "CMakeFiles/TestRho.dir/TestLangCommon.cpp.o.d"
   "CMakeFiles/TestRho.dir/TestRho/AdditionalBinaryOpTests.cpp.o"

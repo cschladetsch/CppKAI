@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "../../../Bin/libPiLang.a"
-  "../../../Bin/libPiLang.pdb"
+  "../../../build/Bin/libPiLang.a"
+  "../../../build/Bin/libPiLang.pdb"
   "CMakeFiles/PiLang.dir/Pi/Source/PiAstNode.cpp.o"
   "CMakeFiles/PiLang.dir/Pi/Source/PiAstNode.cpp.o.d"
   "CMakeFiles/PiLang.dir/Pi/Source/PiLexer.cpp.o"
