@@ -80,7 +80,7 @@ class LexerCommon : public LexerBase {
 
         return tok;
     }
-    
+
     // We implement LexNumber() in each specific lexer class as needed
 
     void AddStringToken(int lineNumber, Slice slice) override {

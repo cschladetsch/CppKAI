@@ -1657,8 +1657,8 @@ struct IMGUI_API ImGuiWindow {
     int FocusIdxTabRequestCurrent;  // Tab-able item being requested for focus
     int FocusIdxAllRequestNext;     // Item being requested for focus, for next
                                     // update (relies on layout to be stable
-                                 // between the frame pressing TAB and the next
-                                 // frame)
+    // between the frame pressing TAB and the next
+    // frame)
     int FocusIdxTabRequestNext;  // "
 
    public:

@@ -37,7 +37,7 @@ class TestLangCommon : public TestCommon {
 
     // Helper to detect direct binary operations in Pi style
     bool IsDirectPiOperation(Object cont);
-    
+
     // Enhanced method for extracting values from continuations for test support
     Object ExtractValueFromContinuationDirect(Object value);
 

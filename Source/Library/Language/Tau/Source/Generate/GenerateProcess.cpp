@@ -50,13 +50,12 @@ string GenerateProcess::CommonPrepend() {
 
 bool GenerateProcess::Module(TauParser const &p) {
     auto const &root = p.GetRoot();
-    
-    if (root->GetChildren().empty())
-        return Fail("No content found in module");
-    
+
+    if (root->GetChildren().empty()) return Fail("No content found in module");
+
     // Start with a default namespace if none exists
     bool handledAnyNodes = false;
-    
+
     for (const auto &ch : root->GetChildren()) {
         if (ch->GetType() == TauAstEnumType::Module) {
             // Handle module node
@@ -64,38 +63,33 @@ bool GenerateProcess::Module(TauParser const &p) {
                 if (moduleChild->GetType() == TauAstEnumType::Namespace) {
                     if (!Namespace(*moduleChild)) return false;
                     handledAnyNodes = true;
-                }
-                else if (moduleChild->GetType() == TauAstEnumType::Class) {
+                } else if (moduleChild->GetType() == TauAstEnumType::Class) {
                     // Directly handle class without namespace
                     StartBlock("namespace Default");
                     if (!Class(*moduleChild)) return false;
                     EndBlock();
                     handledAnyNodes = true;
-                }
-                else {
+                } else {
                     // Log but continue - be more resilient to errors
                     KAI_TRACE_ERROR_1("Unexpected node type in module");
                 }
             }
-        }
-        else if (ch->GetType() == TauAstEnumType::Namespace) {
+        } else if (ch->GetType() == TauAstEnumType::Namespace) {
             // Directly handle namespace node
             if (!Namespace(*ch)) return false;
             handledAnyNodes = true;
-        }
-        else if (ch->GetType() == TauAstEnumType::Class) {
+        } else if (ch->GetType() == TauAstEnumType::Class) {
             // Directly handle class without namespace
             StartBlock("namespace Default");
             if (!Class(*ch)) return false;
             EndBlock();
             handledAnyNodes = true;
-        }
-        else {
+        } else {
             // Log but continue - be more resilient to errors
             KAI_TRACE_ERROR_1("Unexpected node type at root");
         }
     }
-    
+
     if (!handledAnyNodes) {
         return Fail("No valid Module, Namespace, or Class nodes found");
     }

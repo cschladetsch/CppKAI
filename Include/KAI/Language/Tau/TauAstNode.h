@@ -20,7 +20,7 @@ struct TauAstEnumType {
         Module = 6,
         Argument = 7,
         Arglist = 8,
-        Value = 9,    // For field assignments and default parameters
+        Value = 9,  // For field assignments and default parameters
     };
 
     struct Node : AstNodeBase<TauToken, TauAstEnumType> {

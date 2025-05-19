@@ -1,43 +1,43 @@
+#include <gtest/gtest.h>
+
 #include <fstream>
-#include <sstream>
 #include <regex>
+#include <sstream>
 
 #include "KAI/Core/Config/Base.h"
 #include "KAI/Core/Debug.h"
 #include "KAI/Core/Logger.h"
-#include <gtest/gtest.h>
-#include "KAI/Language/Tau/Generate/GenerateProcess.h"
-#include "KAI/Language/Tau/TauParser.h"
 #include "KAI/Language/Tau/Generate/GenerateAgent.h"
+#include "KAI/Language/Tau/Generate/GenerateProcess.h"
 #include "KAI/Language/Tau/Generate/GenerateProxy.h"
+#include "KAI/Language/Tau/TauParser.h"
 #include "TestLangCommon.h"
 
 using namespace kai;
 using namespace std;
 
 // Fixture for Tau code generation tests
-struct TauCodeGenTests : TestLangCommon
-{
+struct TauCodeGenTests : TestLangCommon {
     // Helper method to load a script file
-    std::string LoadScriptText(const char *filename)
-    {
+    std::string LoadScriptText(const char* filename) {
         std::stringstream path;
-        path << "/home/xian/local/KAI/Test/Language/TestTau/Scripts/" << filename;
-        
+        path << "/home/xian/local/KAI/Test/Language/TestTau/Scripts/"
+             << filename;
+
         std::ifstream file(path.str());
-        if (!file.is_open())
-        {
+        if (!file.is_open()) {
             KAI_LOG_ERROR("Failed to open file: " + path.str());
             return "";
         }
-        
+
         std::stringstream buffer;
         buffer << file.rdbuf();
         return buffer.str();
     }
-    
+
     // Helper method to check if a generated output contains expected patterns
-    bool OutputContainsPatterns(const std::string& output, const std::vector<std::string>& patterns) {
+    bool OutputContainsPatterns(const std::string& output,
+                                const std::vector<std::string>& patterns) {
         for (const auto& pattern : patterns) {
             std::regex regex(pattern);
             if (!std::regex_search(output, regex)) {
@@ -47,69 +47,72 @@ struct TauCodeGenTests : TestLangCommon
         }
         return true;
     }
-    
+
     // Helper method to generate proxy code
-    bool GenerateProxy(const std::string& script, std::string& output, const std::string& testName) {
+    bool GenerateProxy(const std::string& script, std::string& output,
+                       const std::string& testName) {
         Registry r;
         auto lex = std::make_shared<tau::TauLexer>(script.c_str(), r);
         if (!lex->Process()) {
             KAI_LOG_ERROR("Lexer failed for " + testName);
             return false;
         }
-        
+
         KAI_LOG_INFO("Lexer output for " + testName + ": " + lex->Print());
-        
+
         auto parser = std::make_shared<tau::TauParser>(r);
         bool parserResult = parser->Process(lex, Structure::Module);
-        
+
         if (!parserResult) {
             KAI_LOG_WARNING("Parser error: " + parser->Error);
         }
-        
+
         tau::Generate::GenerateProxy proxy(script.c_str(), output);
-        
+
         if (proxy.Failed) {
             KAI_LOG_WARNING("Proxy generation failed: " + proxy.Error);
             return false;
         }
-        
-        KAI_LOG_INFO("Proxy generation succeeded, output size: " + std::to_string(output.size()));
+
+        KAI_LOG_INFO("Proxy generation succeeded, output size: " +
+                     std::to_string(output.size()));
         return true;
     }
-    
+
     // Helper method to generate agent code
-    bool GenerateAgent(const std::string& script, std::string& output, const std::string& testName) {
+    bool GenerateAgent(const std::string& script, std::string& output,
+                       const std::string& testName) {
         Registry r;
         auto lex = std::make_shared<tau::TauLexer>(script.c_str(), r);
         if (!lex->Process()) {
             KAI_LOG_ERROR("Lexer failed for " + testName);
             return false;
         }
-        
+
         KAI_LOG_INFO("Lexer output for " + testName + ": " + lex->Print());
-        
+
         auto parser = std::make_shared<tau::TauParser>(r);
         bool parserResult = parser->Process(lex, Structure::Module);
-        
+
         if (!parserResult) {
             KAI_LOG_WARNING("Parser error: " + parser->Error);
         }
-        
+
         tau::Generate::GenerateAgent agent(script.c_str(), output);
-        
+
         if (agent.Failed) {
             KAI_LOG_WARNING("Agent generation failed: " + agent.Error);
             return false;
         }
-        
-        KAI_LOG_INFO("Agent generation succeeded, output size: " + std::to_string(output.size()));
+
+        KAI_LOG_INFO("Agent generation succeeded, output size: " +
+                     std::to_string(output.size()));
         return true;
     }
 };
 
 // Test proxy generation for a basic class
-TEST_F(TauCodeGenTests, TestBasicProxy)
-{
+TEST_F(TauCodeGenTests, TestBasicProxy) {
     std::string script = R"(
     namespace Testing
     {
@@ -125,32 +128,30 @@ TEST_F(TauCodeGenTests, TestBasicProxy)
         }
     }
     )";
-    
+
     string output;
     bool success = GenerateProxy(script, output, "BasicProxy");
-    
+
     // Check if the generation succeeded, but don't fail the test if not
     if (success) {
-        std::vector<std::string> expectedPatterns = {
-            "namespace\\s+Testing",
-            "class\\s+SimpleProxy",
-            "SetValue",
-            "GetValue",
-            "SetName",
-            "GetName"
-        };
-        
+        std::vector<std::string> expectedPatterns = {"namespace\\s+Testing",
+                                                     "class\\s+SimpleProxy",
+                                                     "SetValue",
+                                                     "GetValue",
+                                                     "SetName",
+                                                     "GetName"};
+
         bool patternsFound = OutputContainsPatterns(output, expectedPatterns);
-        EXPECT_TRUE(patternsFound) << "Generated proxy code doesn't contain expected patterns";
+        EXPECT_TRUE(patternsFound)
+            << "Generated proxy code doesn't contain expected patterns";
     }
-    
+
     // The test itself passes as long as it doesn't crash
     SUCCEED() << "Proxy generation test completed";
 }
 
 // Test agent generation for a basic class
-TEST_F(TauCodeGenTests, TestBasicAgent)
-{
+TEST_F(TauCodeGenTests, TestBasicAgent) {
     std::string script = R"(
     namespace Testing
     {
@@ -166,32 +167,30 @@ TEST_F(TauCodeGenTests, TestBasicAgent)
         }
     }
     )";
-    
+
     string output;
     bool success = GenerateAgent(script, output, "BasicAgent");
-    
+
     // Check if the generation succeeded, but don't fail the test if not
     if (success) {
-        std::vector<std::string> expectedPatterns = {
-            "namespace\\s+Testing",
-            "class\\s+SimpleAgent",
-            "SetValue",
-            "GetValue",
-            "SetName",
-            "GetName"
-        };
-        
+        std::vector<std::string> expectedPatterns = {"namespace\\s+Testing",
+                                                     "class\\s+SimpleAgent",
+                                                     "SetValue",
+                                                     "GetValue",
+                                                     "SetName",
+                                                     "GetName"};
+
         bool patternsFound = OutputContainsPatterns(output, expectedPatterns);
-        EXPECT_TRUE(patternsFound) << "Generated agent code doesn't contain expected patterns";
+        EXPECT_TRUE(patternsFound)
+            << "Generated agent code doesn't contain expected patterns";
     }
-    
+
     // The test itself passes as long as it doesn't crash
     SUCCEED() << "Agent generation test completed";
 }
 
 // Test proxy generation with default parameters
-TEST_F(TauCodeGenTests, TestProxyWithDefaults)
-{
+TEST_F(TauCodeGenTests, TestProxyWithDefaults) {
     std::string script = R"(
     namespace Testing
     {
@@ -206,31 +205,27 @@ TEST_F(TauCodeGenTests, TestProxyWithDefaults)
         }
     }
     )";
-    
+
     string output;
     bool success = GenerateProxy(script, output, "ProxyWithDefaults");
-    
+
     // Check if the generation succeeded, but don't fail the test if not
     if (success) {
         std::vector<std::string> expectedPatterns = {
-            "namespace\\s+Testing",
-            "class\\s+WithDefaultsProxy",
-            "Connect",
-            "SendData",
-            "ReceiveData"
-        };
-        
+            "namespace\\s+Testing", "class\\s+WithDefaultsProxy", "Connect",
+            "SendData", "ReceiveData"};
+
         bool patternsFound = OutputContainsPatterns(output, expectedPatterns);
-        EXPECT_TRUE(patternsFound) << "Generated proxy code doesn't contain expected patterns";
+        EXPECT_TRUE(patternsFound)
+            << "Generated proxy code doesn't contain expected patterns";
     }
-    
+
     // The test itself passes as long as it doesn't crash
     SUCCEED() << "Proxy with defaults generation test completed";
 }
 
 // Test proxy generation for multiple classes
-TEST_F(TauCodeGenTests, TestMultiClassProxy)
-{
+TEST_F(TauCodeGenTests, TestMultiClassProxy) {
     std::string script = R"(
     namespace Networking
     {
@@ -265,30 +260,27 @@ TEST_F(TauCodeGenTests, TestMultiClassProxy)
         }
     }
     )";
-    
+
     string output;
     bool success = GenerateProxy(script, output, "MultiClassProxy");
-    
+
     // Check if the generation succeeded, but don't fail the test if not
     if (success) {
         std::vector<std::string> expectedPatterns = {
-            "namespace\\s+Networking",
-            "class\\s+ConnectionProxy",
-            "class\\s+ProtocolProxy",
-            "class\\s+ClientProxy"
-        };
-        
+            "namespace\\s+Networking", "class\\s+ConnectionProxy",
+            "class\\s+ProtocolProxy", "class\\s+ClientProxy"};
+
         bool patternsFound = OutputContainsPatterns(output, expectedPatterns);
-        EXPECT_TRUE(patternsFound) << "Generated proxy code doesn't contain expected patterns";
+        EXPECT_TRUE(patternsFound)
+            << "Generated proxy code doesn't contain expected patterns";
     }
-    
+
     // The test itself passes as long as it doesn't crash
     SUCCEED() << "Multi-class proxy generation test completed";
 }
 
 // Test agent generation for multiple classes
-TEST_F(TauCodeGenTests, TestMultiClassAgent)
-{
+TEST_F(TauCodeGenTests, TestMultiClassAgent) {
     std::string script = R"(
     namespace Networking
     {
@@ -323,30 +315,27 @@ TEST_F(TauCodeGenTests, TestMultiClassAgent)
         }
     }
     )";
-    
+
     string output;
     bool success = GenerateAgent(script, output, "MultiClassAgent");
-    
+
     // Check if the generation succeeded, but don't fail the test if not
     if (success) {
         std::vector<std::string> expectedPatterns = {
-            "namespace\\s+Networking",
-            "class\\s+ConnectionAgent",
-            "class\\s+ProtocolAgent",
-            "class\\s+ClientAgent"
-        };
-        
+            "namespace\\s+Networking", "class\\s+ConnectionAgent",
+            "class\\s+ProtocolAgent", "class\\s+ClientAgent"};
+
         bool patternsFound = OutputContainsPatterns(output, expectedPatterns);
-        EXPECT_TRUE(patternsFound) << "Generated agent code doesn't contain expected patterns";
+        EXPECT_TRUE(patternsFound)
+            << "Generated agent code doesn't contain expected patterns";
     }
-    
+
     // The test itself passes as long as it doesn't crash
     SUCCEED() << "Multi-class agent generation test completed";
 }
 
 // Test proxy generation with complex parameter types
-TEST_F(TauCodeGenTests, TestComplexParamProxy)
-{
+TEST_F(TauCodeGenTests, TestComplexParamProxy) {
     std::string script = R"(
     namespace DataProcessing
     {
@@ -382,10 +371,10 @@ TEST_F(TauCodeGenTests, TestComplexParamProxy)
         }
     }
     )";
-    
+
     string output;
     bool success = GenerateProxy(script, output, "ComplexParamProxy");
-    
+
     // Check if the generation succeeded, but don't fail the test if not
     if (success) {
         std::vector<std::string> expectedPatterns = {
@@ -395,20 +384,19 @@ TEST_F(TauCodeGenTests, TestComplexParamProxy)
             "class\\s+ProcessorProxy",
             "GetAllPoints",
             "FilterOutliers",
-            "SortByDistance"
-        };
-        
+            "SortByDistance"};
+
         bool patternsFound = OutputContainsPatterns(output, expectedPatterns);
-        EXPECT_TRUE(patternsFound) << "Generated proxy code doesn't contain expected patterns";
+        EXPECT_TRUE(patternsFound)
+            << "Generated proxy code doesn't contain expected patterns";
     }
-    
+
     // The test itself passes as long as it doesn't crash
     SUCCEED() << "Complex parameter proxy generation test completed";
 }
 
 // Test multi-namespace proxy generation
-TEST_F(TauCodeGenTests, TestMultiNamespaceProxy)
-{
+TEST_F(TauCodeGenTests, TestMultiNamespaceProxy) {
     std::string script = R"(
     namespace System
     {
@@ -449,32 +437,28 @@ TEST_F(TauCodeGenTests, TestMultiNamespaceProxy)
         }
     }
     )";
-    
+
     string output;
     bool success = GenerateProxy(script, output, "MultiNamespaceProxy");
-    
+
     // Check if the generation succeeded, but don't fail the test if not
     if (success) {
         std::vector<std::string> expectedPatterns = {
-            "namespace\\s+System",
-            "namespace\\s+Application",
-            "namespace\\s+Network",
-            "class\\s+LoggerProxy",
-            "class\\s+ConfigProxy",
-            "class\\s+ServerProxy"
-        };
-        
+            "namespace\\s+System",  "namespace\\s+Application",
+            "namespace\\s+Network", "class\\s+LoggerProxy",
+            "class\\s+ConfigProxy", "class\\s+ServerProxy"};
+
         bool patternsFound = OutputContainsPatterns(output, expectedPatterns);
-        EXPECT_TRUE(patternsFound) << "Generated proxy code doesn't contain expected patterns";
+        EXPECT_TRUE(patternsFound)
+            << "Generated proxy code doesn't contain expected patterns";
     }
-    
+
     // The test itself passes as long as it doesn't crash
     SUCCEED() << "Multi-namespace proxy generation test completed";
 }
 
 // Test proxy generation with numeric literals
-TEST_F(TauCodeGenTests, TestNumericLiteralsProxy)
-{
+TEST_F(TauCodeGenTests, TestNumericLiteralsProxy) {
     std::string script = R"(
     namespace Math
     {
@@ -507,32 +491,28 @@ TEST_F(TauCodeGenTests, TestNumericLiteralsProxy)
         }
     }
     )";
-    
+
     string output;
     bool success = GenerateProxy(script, output, "NumericLiteralsProxy");
-    
+
     // Check if the generation succeeded, but don't fail the test if not
     if (success) {
         std::vector<std::string> expectedPatterns = {
-            "namespace\\s+Math",
-            "class\\s+ConstantsProxy",
-            "class\\s+VectorProxy",
-            "GetPi",
-            "GetAvogadro",
-            "Normalize"
-        };
-        
+            "namespace\\s+Math",    "class\\s+ConstantsProxy",
+            "class\\s+VectorProxy", "GetPi",
+            "GetAvogadro",          "Normalize"};
+
         bool patternsFound = OutputContainsPatterns(output, expectedPatterns);
-        EXPECT_TRUE(patternsFound) << "Generated proxy code doesn't contain expected patterns";
+        EXPECT_TRUE(patternsFound)
+            << "Generated proxy code doesn't contain expected patterns";
     }
-    
+
     // The test itself passes as long as it doesn't crash
     SUCCEED() << "Numeric literals proxy generation test completed";
 }
 
 // Test proxy generation with string literals
-TEST_F(TauCodeGenTests, TestStringLiteralsProxy)
-{
+TEST_F(TauCodeGenTests, TestStringLiteralsProxy) {
     std::string script = R"(
     namespace Text
     {
@@ -560,10 +540,10 @@ TEST_F(TauCodeGenTests, TestStringLiteralsProxy)
         }
     }
     )";
-    
+
     string output;
     bool success = GenerateProxy(script, output, "StringLiteralsProxy");
-    
+
     // Check if the generation succeeded, but don't fail the test if not
     if (success) {
         std::vector<std::string> expectedPatterns = {
@@ -572,20 +552,19 @@ TEST_F(TauCodeGenTests, TestStringLiteralsProxy)
             "class\\s+TextProcessorProxy",
             "Format",
             "Truncate",
-            "Process"
-        };
-        
+            "Process"};
+
         bool patternsFound = OutputContainsPatterns(output, expectedPatterns);
-        EXPECT_TRUE(patternsFound) << "Generated proxy code doesn't contain expected patterns";
+        EXPECT_TRUE(patternsFound)
+            << "Generated proxy code doesn't contain expected patterns";
     }
-    
+
     // The test itself passes as long as it doesn't crash
     SUCCEED() << "String literals proxy generation test completed";
 }
 
 // Test proxy generation with different return types
-TEST_F(TauCodeGenTests, TestReturnTypesProxy)
-{
+TEST_F(TauCodeGenTests, TestReturnTypesProxy) {
     std::string script = R"(
     namespace ReturnTypes
     {
@@ -609,31 +588,30 @@ TEST_F(TauCodeGenTests, TestReturnTypesProxy)
         }
     }
     )";
-    
+
     string output;
     bool success = GenerateProxy(script, output, "ReturnTypesProxy");
-    
+
     // Check if the generation succeeded, but don't fail the test if not
     if (success) {
-        std::vector<std::string> expectedPatterns = {
-            "namespace\\s+ReturnTypes",
-            "class\\s+TypeTesterProxy",
-            "VoidMethod",
-            "BoolMethod",
-            "IntMethod",
-            "FloatMethod",
-            "StringMethod",
-            "GetIntArray",
-            "GetFloatArray",
-            "GetStringArray",
-            "GetSelf",
-            "GetInstances"
-        };
-        
+        std::vector<std::string> expectedPatterns = {"namespace\\s+ReturnTypes",
+                                                     "class\\s+TypeTesterProxy",
+                                                     "VoidMethod",
+                                                     "BoolMethod",
+                                                     "IntMethod",
+                                                     "FloatMethod",
+                                                     "StringMethod",
+                                                     "GetIntArray",
+                                                     "GetFloatArray",
+                                                     "GetStringArray",
+                                                     "GetSelf",
+                                                     "GetInstances"};
+
         bool patternsFound = OutputContainsPatterns(output, expectedPatterns);
-        EXPECT_TRUE(patternsFound) << "Generated proxy code doesn't contain expected patterns";
+        EXPECT_TRUE(patternsFound)
+            << "Generated proxy code doesn't contain expected patterns";
     }
-    
+
     // The test itself passes as long as it doesn't crash
     SUCCEED() << "Return types proxy generation test completed";
 }

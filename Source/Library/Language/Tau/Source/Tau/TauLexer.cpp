@@ -24,12 +24,12 @@ bool TauLexer::NextToken() {
     if (isdigit(current)) {
         // Implement number lexing directly here
         int start = offset;
-        
+
         // Consume the number
         while (isdigit(Current())) {
             Next();
         }
-        
+
         // Handle decimal point and fractional part
         if (Current() == '.') {
             Next();  // consume the dot
@@ -37,22 +37,22 @@ bool TauLexer::NextToken() {
                 Next();
             }
         }
-        
+
         // Handle exponent notation
         if (Current() == 'e' || Current() == 'E') {
             Next();  // consume 'e' or 'E'
-            
+
             // Handle optional sign
             if (Current() == '+' || Current() == '-') {
                 Next();
             }
-            
+
             // Parse exponent digits
             while (isdigit(Current())) {
                 Next();
             }
         }
-        
+
         return Add(Enum::Number, Slice(start, offset));
     }
 
@@ -75,8 +75,10 @@ bool TauLexer::NextToken() {
             // Handle visibility modifiers (public:, private:, protected:)
             if (Previous().type == Enum::Ident) {
                 std::string prev = Previous().ToString();
-                if (prev == "public" || prev == "private" || prev == "protected") {
-                    return Add(Enum::Semi);  // Use the semi token for colons in visibility modifiers
+                if (prev == "public" || prev == "private" ||
+                    prev == "protected") {
+                    return Add(Enum::Semi);  // Use the semi token for colons in
+                                             // visibility modifiers
                 }
             }
             return Add(Enum::Semi);  // Reuse semi token for colons in general
@@ -99,7 +101,7 @@ bool TauLexer::NextToken() {
                 while (Next() != '\n' && Current() != 0);
                 return Add(Enum::Comment, offset - start);
             }
-            
+
             return Fail("Expected comment start");
         case '<':
             // Handle template/generic syntax with better token handling
@@ -107,27 +109,28 @@ bool TauLexer::NextToken() {
                 // First check for single-character generic (like <T>)
                 if (isalpha(Peek()) && Peek(2) == '>') {
                     int start = offset;
-                    Next(); // consume '<'
-                    Next(); // consume the type parameter
-                    Next(); // consume '>'
+                    Next();  // consume '<'
+                    Next();  // consume the type parameter
+                    Next();  // consume '>'
                     return Add(Enum::Ident, Slice(start, offset));
                 }
-                
+
                 // More complex generic parameter handling
                 int start = offset;
                 int depth = 1;
-                Next(); // consume '<'
-                
+                Next();  // consume '<'
+
                 while (depth > 0 && Current() != 0) {
                     if (Current() == '<') depth++;
                     if (Current() == '>') depth--;
                     Next();
                 }
-                
+
                 return Add(Enum::Ident, Slice(start, offset));
             }
         case '>':
-            // This should only happen in isolation if there's a mistake in the input
+            // This should only happen in isolation if there's a mistake in the
+            // input
             return Add(Enum::Ident);
     }
 

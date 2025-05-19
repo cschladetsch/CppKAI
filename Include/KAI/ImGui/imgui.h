@@ -3859,16 +3859,17 @@ struct ImFontAtlas {
         }
         void SetBit(int n) {
             UsedChars[n >> 3] |= 1 << (n & 7);
-        }                                       // Set bit 'c' in the array
+        }  // Set bit 'c' in the array
         void AddChar(ImWchar c) { SetBit(c); }  // Add character
         IMGUI_API void AddText(
             const char* text,
             const char* text_end = NULL);  // Add string (each character of the
                                            // UTF-8 string are added)
         IMGUI_API void AddRanges(
-            const ImWchar* ranges);  // Add ranges, e.g.
-                                     // builder.AddRanges(ImFontAtlas::GetGlyphRangesDefault())
-                                     // to force add all of ASCII/Latin+Ext
+            const ImWchar*
+                ranges);  // Add ranges, e.g.
+                          // builder.AddRanges(ImFontAtlas::GetGlyphRangesDefault())
+                          // to force add all of ASCII/Latin+Ext
         IMGUI_API void BuildRanges(
             ImVector<ImWchar>* out_ranges);  // Output new ranges
     };

@@ -326,10 +326,15 @@ TEST_F(ContinuationControlTests, SuspendWithinForLoop) {
     // Note that 3 appears twice - once before suspension and once after
     // resuming
     expected = {
-        {"int", 0},  {"int", 1}, {"int", 2}, {"int", 3},
-        {"int", 99}, {"int", 3},  // Counter value after resuming (dup was
-                                  // already called for 3)
-        {"int", 4},  {"int", 4}   // Last iteration duplicates 4
+        {"int", 0},
+        {"int", 1},
+        {"int", 2},
+        {"int", 3},
+        {"int", 99},
+        {"int", 3},  // Counter value after resuming (dup was
+                     // already called for 3)
+        {"int", 4},
+        {"int", 4}  // Last iteration duplicates 4
     };
     VerifyStack(expected);
 }

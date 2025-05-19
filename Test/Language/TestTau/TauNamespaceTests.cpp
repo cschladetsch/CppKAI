@@ -1,71 +1,73 @@
+#include <gtest/gtest.h>
+
 #include <fstream>
-#include <sstream>
 #include <regex>
+#include <sstream>
 
 #include "KAI/Core/Config/Base.h"
 #include "KAI/Core/Debug.h"
 #include "KAI/Core/Logger.h"
-#include <gtest/gtest.h>
-#include "KAI/Language/Tau/Generate/GenerateProcess.h"
-#include "KAI/Language/Tau/TauParser.h"
 #include "KAI/Language/Tau/Generate/GenerateAgent.h"
+#include "KAI/Language/Tau/Generate/GenerateProcess.h"
 #include "KAI/Language/Tau/Generate/GenerateProxy.h"
+#include "KAI/Language/Tau/TauParser.h"
 #include "TestLangCommon.h"
 
 using namespace kai;
 using namespace std;
 
 // Fixture for Tau namespace tests
-struct TauNamespaceTests : TestLangCommon
-{
+struct TauNamespaceTests : TestLangCommon {
     // Helper method to load a script file
-    std::string LoadScriptText(const char *filename)
-    {
+    std::string LoadScriptText(const char* filename) {
         std::stringstream path;
-        path << "/home/xian/local/KAI/Test/Language/TestTau/Scripts/" << filename;
-        
+        path << "/home/xian/local/KAI/Test/Language/TestTau/Scripts/"
+             << filename;
+
         std::ifstream file(path.str());
-        if (!file.is_open())
-        {
+        if (!file.is_open()) {
             KAI_LOG_ERROR("Failed to open file: " + path.str());
             return "";
         }
-        
+
         std::stringstream buffer;
         buffer << file.rdbuf();
         return buffer.str();
     }
-    
+
     // Tests that a script can be lexed and parsed
-    void TestLexAndParse(const std::string& script, const std::string& testName, bool expectSuccess = true) {
+    void TestLexAndParse(const std::string& script, const std::string& testName,
+                         bool expectSuccess = true) {
         Registry r;
         auto lex = std::make_shared<tau::TauLexer>(script.c_str(), r);
-        
-        // Temporarily disable strict lexer validation to allow all tests to pass
+
+        // Temporarily disable strict lexer validation to allow all tests to
+        // pass
         if (!lex->Process()) {
-            KAI_LOG_WARNING("Lexer for " + testName + " failed, but continuing anyway");
+            KAI_LOG_WARNING("Lexer for " + testName +
+                            " failed, but continuing anyway");
             SUCCEED() << "Test continuing despite lexer failure";
             return;
         }
-        
+
         KAI_LOG_INFO("Lexer output for " + testName + ": " + lex->Print());
-        
+
         auto parser = std::make_shared<tau::TauParser>(r);
         // Use Module structure for top-level namespace/class declarations
         bool success = parser->Process(lex, Structure::Module);
-        
+
         if (!success) {
-            KAI_LOG_WARNING("Parser for " + testName + " reported failure: " + parser->Error);
+            KAI_LOG_WARNING("Parser for " + testName +
+                            " reported failure: " + parser->Error);
         }
-        
+
         // Always succeed for now while implementation is being fixed
         SUCCEED() << "Test completed";
     }
 };
 
 // Test basic namespace declaration
-TEST_F(TauNamespaceTests, TestBasicNamespace)
-{
+TEST_F(TauNamespaceTests, TestBasicNamespace) {
     std::string script = R"(
     namespace SimpleNamespace
     {
@@ -76,13 +78,12 @@ TEST_F(TauNamespaceTests, TestBasicNamespace)
         }
     }
     )";
-    
+
     TestLexAndParse(script, "BasicNamespace");
 }
 
 // Test multiple namespaces in a module
-TEST_F(TauNamespaceTests, TestMultipleNamespaces)
-{
+TEST_F(TauNamespaceTests, TestMultipleNamespaces) {
     std::string script = R"(
     namespace First
     {
@@ -111,13 +112,12 @@ TEST_F(TauNamespaceTests, TestMultipleNamespaces)
         }
     }
     )";
-    
+
     TestLexAndParse(script, "MultipleNamespaces");
 }
 
 // Test nested namespaces
-TEST_F(TauNamespaceTests, TestNestedNamespaces)
-{
+TEST_F(TauNamespaceTests, TestNestedNamespaces) {
     std::string script = R"(
     namespace Outer
     {
@@ -143,27 +143,25 @@ TEST_F(TauNamespaceTests, TestNestedNamespaces)
         }
     }
     )";
-    
+
     // Nested namespaces might not be supported in current implementation
     TestLexAndParse(script, "NestedNamespaces", false);
 }
 
 // Test empty namespaces
-TEST_F(TauNamespaceTests, TestEmptyNamespace)
-{
+TEST_F(TauNamespaceTests, TestEmptyNamespace) {
     std::string script = R"(
     namespace EmptySpace
     {
         // Nothing here
     }
     )";
-    
+
     TestLexAndParse(script, "EmptyNamespace");
 }
 
 // Test namespace alias declarations
-TEST_F(TauNamespaceTests, TestNamespaceAlias)
-{
+TEST_F(TauNamespaceTests, TestNamespaceAlias) {
     std::string script = R"(
     namespace VeryLongNamespace
     {
@@ -183,14 +181,13 @@ TEST_F(TauNamespaceTests, TestNamespaceAlias)
         }
     }
     )";
-    
+
     // Namespace aliases might not be supported in current implementation
     TestLexAndParse(script, "NamespaceAlias", false);
 }
 
 // Test namespace with mixed declarations
-TEST_F(TauNamespaceTests, TestMixedDeclarations)
-{
+TEST_F(TauNamespaceTests, TestMixedDeclarations) {
     std::string script = R"(
     namespace Mixed
     {
@@ -219,14 +216,13 @@ TEST_F(TauNamespaceTests, TestMixedDeclarations)
         }
     }
     )";
-    
+
     // Mixed declarations might not be fully supported in current implementation
     TestLexAndParse(script, "MixedDeclarations", false);
 }
 
 // Test namespace with different case styles
-TEST_F(TauNamespaceTests, TestCaseStyles)
-{
+TEST_F(TauNamespaceTests, TestCaseStyles) {
     std::string script = R"(
     namespace camelCase
     {
@@ -260,13 +256,12 @@ TEST_F(TauNamespaceTests, TestCaseStyles)
         }
     }
     )";
-    
+
     TestLexAndParse(script, "CaseStyles");
 }
 
 // Test namespace reopening
-TEST_F(TauNamespaceTests, TestNamespaceReopening)
-{
+TEST_F(TauNamespaceTests, TestNamespaceReopening) {
     std::string script = R"(
     namespace Reopened
     {
@@ -292,14 +287,14 @@ TEST_F(TauNamespaceTests, TestNamespaceReopening)
         }
     }
     )";
-    
-    // Namespace reopening might be handled in different ways in the implementation
+
+    // Namespace reopening might be handled in different ways in the
+    // implementation
     TestLexAndParse(script, "NamespaceReopening");
 }
 
 // Test using directive
-TEST_F(TauNamespaceTests, TestUsingDirective)
-{
+TEST_F(TauNamespaceTests, TestUsingDirective) {
     std::string script = R"(
     namespace Utilities
     {
@@ -325,14 +320,13 @@ TEST_F(TauNamespaceTests, TestUsingDirective)
         }
     }
     )";
-    
+
     // Using directives might not be supported in current implementation
     TestLexAndParse(script, "UsingDirective", false);
 }
 
 // Test qualified names in declarations
-TEST_F(TauNamespaceTests, TestQualifiedNames)
-{
+TEST_F(TauNamespaceTests, TestQualifiedNames) {
     std::string script = R"(
     namespace System
     {
@@ -353,7 +347,7 @@ TEST_F(TauNamespaceTests, TestQualifiedNames)
         }
     }
     )";
-    
+
     // Qualified names might not be fully supported in current implementation
     TestLexAndParse(script, "QualifiedNames", false);
 }
