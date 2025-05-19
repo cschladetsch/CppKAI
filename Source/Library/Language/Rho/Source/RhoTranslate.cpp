@@ -11,6 +11,47 @@
 
 KAI_BEGIN
 
+/// Implementation of the TranslateNode method that processes AST nodes
+void RhoTranslator::TranslateNode(AstNodePtr node) {
+    if (!node) {
+        KAI_TRACE_ERROR() << "NULL node in TranslateNode";
+        return;
+    }
+
+    KAI_TRACE() << "Processing node: " << node->ToString();
+
+    // Only handle the minimal necessary cases for the basic functionality
+    switch (node->GetType()) {
+        case AstNodeEnum::None:
+            KAI_TRACE() << "Empty node encountered, skipping";
+            break;
+            
+        case AstNodeEnum::Program:
+            KAI_TRACE() << "Processing Program node";
+            for (const auto& child : node->GetChildren()) {
+                TranslateNode(child);
+            }
+            break;
+            
+        case AstNodeEnum::TokenType:
+            KAI_TRACE() << "Processing token node: " 
+                << RhoTokenEnumType::ToString(node->GetToken().type);
+            TranslateToken(node);
+            break;
+            
+        default:
+            // Log warning about unhandled node type but continue
+            KAI_TRACE() << "Node type not fully implemented: " 
+                << RhoAstNodeEnumType::ToString(node->GetType());
+            
+            // Recursively process child nodes so we don't completely halt
+            for (const auto& child : node->GetChildren()) {
+                TranslateNode(child);
+            }
+            break;
+    }
+}
+
 /// Implementation of the Translate method using C++20/23 features.
 /// This method parses Rho language text and converts it to a Continuation
 /// object.

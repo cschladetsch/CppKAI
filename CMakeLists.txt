@@ -207,7 +207,8 @@ foreach(top ${TopLevels})
 endforeach()
 
 # Link libraries with their dependencies
-target_link_libraries(Executor CommonLang)
+target_link_libraries(Executor CommonLang Core)
+target_link_libraries(Network Core)
 
 # Find or download Google Test if needed for tests
 if(KAI_BUILD_TEST_ALL OR KAI_BUILD_CORE_TEST OR KAI_BUILD_TEST_LANG)

@@ -30,6 +30,11 @@ link_libraries(Executor Core PiLang RhoLang ImGui)
 
 add_executable(${name} ${SOURCE_FILES})
 
+# Set the output directory explicitly
+set_target_properties(${name} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${SAFER_BIN_HOME}"
+)
+
 # Find GLFW3
 find_package(glfw3 REQUIRED)
 
