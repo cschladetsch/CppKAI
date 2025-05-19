@@ -1,5 +1,0 @@
-[1;33mCreating clean build directory (build_ninja)...[0m
-[1;33mCleaning root-level CMake artifacts...[0m
-[1;33mConfiguring with CMake and Ninja generator...[0m
--- The C compiler identification is GNU 13.3.0
--- The CXX compiler identification is GNU 13.3.0
