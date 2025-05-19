@@ -136,7 +136,7 @@ The KAI test suite includes tools for analyzing historical test data. After you'
 
 ```bash
 # Analyze historical test data
-./analyze_test_history.sh
+./Scripts/analyze_test_history.sh
 ```
 
 This script provides:

@@ -2,6 +2,7 @@ CmakeCache.txt
 *.d
 *.o
 *.internal
+/Build
 /_build*
 /[bB]uild*
 /ninja_build*

@@ -25,7 +25,7 @@ The enhanced test suite summary feature provides comprehensive reporting and ana
   - Information about the archive feature
   - Guidance on data analysis
 
-- **`analyze_test_history.sh`** - New tool for analyzing test history:
+- **`Scripts/analyze_test_history.sh`** - New tool for analyzing test history:
   - Lists recent test runs with pass rates
   - Calculates average pass rates
   - Provides trend analysis (improving/declining)
@@ -89,7 +89,7 @@ This preserves all log files in a timestamped directory for historical analysis.
 
 ### Test History Analysis
 
-The new `analyze_test_history.sh` script provides insights into test suite health over time:
+The new `Scripts/analyze_test_history.sh` script provides insights into test suite health over time:
 
 - Recent test runs with pass/fail status
 - Average pass rates across all runs
@@ -105,7 +105,7 @@ The new `analyze_test_history.sh` script provides insights into test suite healt
 
 2. Analyze historical test data:
    ```bash
-   ./analyze_test_history.sh
+   ./Scripts/analyze_test_history.sh
    ```
 
 ## Benefits

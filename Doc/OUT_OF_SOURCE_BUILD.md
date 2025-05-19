@@ -78,7 +78,7 @@ The `run_tests` script will automatically find test executables in either the ro
 
 If you see an error like `ninja: error: mkdir(/Bin): Permission denied`, it means CMake is trying to create an absolute path at the root of your filesystem.
 
-Solution: Use the `build.sh` script which correctly specifies all output paths with absolute paths relative to the build directory.
+Solution: Use the `Scripts/build.sh` script which correctly specifies all output paths with absolute paths relative to the build directory.
 
 ### CMake Cache Conflicts
 

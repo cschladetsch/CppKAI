@@ -37,10 +37,10 @@ Please see [BUILD.md](./BUILD.md) for detailed instructions on building KAI.
 
 ```bash
 # Clean any existing CMake artifacts and set up build directory
-./clean_build.sh
+./Scripts/clean_build.sh
 
 # Build the project
-./build.sh
+./Scripts/build.sh
 ```
 
 ### Legacy Method (Ubuntu/macOS)

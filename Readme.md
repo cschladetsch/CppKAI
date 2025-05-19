@@ -23,7 +23,7 @@ _KAI_ is a network distributed **Object Model** for C++ with full runtime reflec
 - **Fixed binary operations** - Full support for arithmetic, logical, comparison, and bitwise operations
 - **Enhanced control structures** - Properly working if/else, for, while, and do-while loops
 - **Improved function handling** - Support for recursion, nested functions, and proper scoping
-- **Added a comprehensive demo** - Run `./run_rho_demo.sh` to see all Rho features in action
+- **Added a comprehensive demo** - Run `./Scripts/run_rho_demo.sh` to see all Rho features in action
 - **Expanded documentation** - New [Rho Language](Doc/RhoLanguage.md) and [Rho Fix Documentation](Doc/Rho-Fix-Documentation.md)
 - **Colored console output** for better readability with support for green INFO, yellow WARNING, and red ERROR messages
 - **Fixed test suite** to pass all tests with proper color formatting
@@ -107,11 +107,11 @@ We now provide convenient build scripts that follow best practices for out-of-so
 
 ```bash
 # Clean any build artifacts from source tree and set up build directory
-./clean_build.sh  # Linux/macOS
+./Scripts/clean_build.sh  # Linux/macOS
 .\clean_build.bat # Windows
 
 # Build the project using the build script
-./build.sh        # Linux/macOS
+./Scripts/build.sh        # Linux/macOS
 .\build.bat       # Windows
 ```
 
@@ -187,7 +187,7 @@ The GUI application provides:
 - [Colored Output](Doc/ColorOutput.md) - Console color formatting
 
 ### Demo and Examples
-- Run `./run_rho_demo.sh` for a comprehensive demo of Rho language features
+- Run `./Scripts/run_rho_demo.sh` for a comprehensive demo of Rho language features
 - Example scripts in `Test/Language/*/Scripts` directories
 
 ## Project Structure

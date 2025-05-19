@@ -80,4 +80,4 @@ For each fix:
 3. Add instrumentation around the failing code points
 4. Verify fixes incrementally rather than trying to fix everything at once
 
-The run_rho_tests.sh script provides a good foundation for iterative testing and development.
+The Scripts/run_rho_tests.sh script provides a good foundation for iterative testing and development.
