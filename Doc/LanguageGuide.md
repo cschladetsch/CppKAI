@@ -21,6 +21,8 @@ All three languages in the KAI system share several important characteristics:
 3. **Reflection**: Full runtime reflection capabilities
 4. **Integration**: Seamless interoperability between languages
 5. **Extensibility**: Easy to extend with new types and operations
+6. **Binary Operations**: Strong support for arithmetic, logical, and bitwise operations 
+7. **Control Structures**: Comprehensive control flow with proper nesting and scoping
 
 ## Pi: The Foundation
 
@@ -43,7 +45,10 @@ Key characteristics:
 - **Familiar syntax**: Infix notation, similar to Python or JavaScript
 - **Pi integration**: Can embed Pi code blocks directly
 - **Native continuations**: First-class support for advanced control flow
-- **Continuation control**: Access to Suspend, Resume, and Replace operations for complex flow control
+- **Comprehensive operators**: Full support for arithmetic, logical, comparison, and bitwise operations
+- **Strong typing**: Type-safe operations with automatic conversions where appropriate
+- **Control structures**: If/else conditions, for loops, while loops, and do-while loops
+- **Function support**: Function definitions, recursion, and nested scopes
 - **Translates to Pi**: Compiles to Pi operations for execution
 
 [Learn more in the Rho Tutorial](RhoTutorial.md)
@@ -88,6 +93,85 @@ auto userService = kai::Proxy<UserService>("node2:8080");
 auto user = userService->GetUserById("user123");
 ```
 
+## Advanced Rho Language Features
+
+Recent enhancements to the Rho language have improved its capability and reliability:
+
+### Binary Operations with Proper Precedence
+
+Rho now fully supports complex expressions with proper operator precedence:
+
+```rho
+// Arithmetic with precedence
+result = 2 + 3 * 4;  // 14 (multiplication before addition)
+result = (2 + 3) * 4;  // 20 (parentheses override precedence)
+
+// Mixed operations
+result = 2 + 3 * 4 - 6 / 2;  // 11
+```
+
+### Enhanced Control Structures
+
+Rho supports all standard control structures with proper nesting and scoping:
+
+```rho
+// If-else statements
+if (condition) {
+    // true branch
+} else {
+    // false branch
+}
+
+// For loops
+for (i = 0; i < 10; i = i + 1) {
+    // loop body
+}
+
+// While loops
+while (condition) {
+    // loop body
+}
+
+// Do-while loops
+do {
+    // loop body
+} while (condition);
+```
+
+### Functions with Recursion
+
+Rho supports full function definitions with parameters, return values, and recursion:
+
+```rho
+// Recursive function definition
+function factorial(n) {
+    if (n <= 1) {
+        return 1;
+    } else {
+        return n * factorial(n - 1);
+    }
+}
+
+// Function call
+result = factorial(5);  // 120
+```
+
+### Scoping and Variable Management
+
+Rho properly handles variable scoping, including nested scopes and shadowing:
+
+```rho
+// Variable scoping
+x = 10;
+{
+    // New scope
+    x = 20;  // Shadows outer x
+    y = 30;  // Local to this scope
+}
+// x is still 10 here
+// y is not accessible here
+```
+
 ## Choosing the Right Language
 
 When working with KAI, choose the appropriate language based on your needs:
@@ -123,6 +207,17 @@ The best way to get started with KAI's language system is to:
 3. Understand distributed object modeling with the [Tau Tutorial](TauTutorial.md)
 4. Learn about advanced control flow with the [Continuation Control documentation](ContinuationControl.md)
 5. Experiment with the Console application to try examples
+
+## Recent Improvements
+
+Major improvements have recently been made to the Rho language implementation:
+
+- **Binary Operations**: Fixed issues with binary operations and operator precedence
+- **Control Flow**: Enhanced support for all control flow structures
+- **Type Safety**: Improved type checking and conversion
+- **Test Coverage**: Expanded test suite covering all language features
+
+For details on the recent fixes, see the [Rho Fix Documentation](Rho-Fix-Documentation.md).
 
 ## Conclusion
 

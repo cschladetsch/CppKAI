@@ -1,0 +1,243 @@
+// KAI Rho Language Demo
+// This script demonstrates the fixed and enhanced features of the Rho language
+
+// ==========================================
+// PART 1: BASIC ARITHMETIC OPERATIONS
+// ==========================================
+System.Print("===== BASIC ARITHMETIC =====");
+
+// Basic operations
+result1 = 2 + 3;
+System.Print("2 + 3 = " + result1);  // 5
+
+result2 = 10 - 4;
+System.Print("10 - 4 = " + result2);  // 6
+
+result3 = 6 * 7;
+System.Print("6 * 7 = " + result3);  // 42
+
+result4 = 20 / 5;
+System.Print("20 / 5 = " + result4);  // 4
+
+result5 = 10 % 3;
+System.Print("10 % 3 = " + result5);  // 1
+
+// ==========================================
+// PART 2: OPERATOR PRECEDENCE
+// ==========================================
+System.Print("\n===== OPERATOR PRECEDENCE =====");
+
+// Operation precedence
+result6 = 2 + 3 * 4;
+System.Print("2 + 3 * 4 = " + result6);  // 14 (multiplication before addition)
+
+result7 = (2 + 3) * 4;
+System.Print("(2 + 3) * 4 = " + result7);  // 20 (parentheses override precedence)
+
+result8 = 2 + 3 * 4 - 6 / 2;
+System.Print("2 + 3 * 4 - 6 / 2 = " + result8);  // 11
+
+result9 = 8 - 4 + 2 * 5;
+System.Print("8 - 4 + 2 * 5 = " + result9);  // 14
+
+// ==========================================
+// PART 3: CONTROL STRUCTURES
+// ==========================================
+System.Print("\n===== CONTROL STRUCTURES =====");
+
+// If-else statement
+x = 10;
+if (x > 5) {
+    System.Print("x is greater than 5");
+} else {
+    System.Print("x is not greater than 5");
+}
+
+// If-else if-else statement
+y = 15;
+if (y < 10) {
+    System.Print("y is less than 10");
+} else if (y < 20) {
+    System.Print("y is between 10 and 20");
+} else {
+    System.Print("y is 20 or greater");
+}
+
+// While loop
+System.Print("\nWhile loop counting from 1 to 5:");
+counter = 1;
+while (counter <= 5) {
+    System.Print("Counter: " + counter);
+    counter = counter + 1;
+}
+
+// For loop
+System.Print("\nFor loop counting from 1 to 5:");
+for (i = 1; i <= 5; i = i + 1) {
+    System.Print("i: " + i);
+}
+
+// Do-while loop
+System.Print("\nDo-while loop counting from 1 to 5:");
+j = 1;
+do {
+    System.Print("j: " + j);
+    j = j + 1;
+} while (j <= 5);
+
+// ==========================================
+// PART 4: FUNCTIONS
+// ==========================================
+System.Print("\n===== FUNCTIONS =====");
+
+// Basic function
+function add(a, b) {
+    return a + b;
+}
+
+// Function with multiple statements
+function calculateAverage(numbers) {
+    sum = 0;
+    count = numbers.Count;
+    
+    for (i = 0; i < count; i = i + 1) {
+        sum = sum + numbers[i];
+    }
+    
+    if (count > 0) {
+        return sum / count;
+    } else {
+        return 0;
+    }
+}
+
+// Recursive function
+function factorial(n) {
+    if (n <= 1) {
+        return 1;
+    } else {
+        return n * factorial(n - 1);
+    }
+}
+
+// Function with nested function
+function outerFunction(x) {
+    function innerFunction(y) {
+        return y * 2;
+    }
+    
+    return innerFunction(x) + 5;
+}
+
+// Test function calls
+System.Print("add(3, 4) = " + add(3, 4));  // 7
+System.Print("factorial(5) = " + factorial(5));  // 120
+System.Print("outerFunction(3) = " + outerFunction(3));  // 11
+
+numbers = [1, 2, 3, 4, 5];
+System.Print("calculateAverage([1, 2, 3, 4, 5]) = " + calculateAverage(numbers));  // 3
+
+// ==========================================
+// PART 5: ADVANCED OPERATIONS
+// ==========================================
+System.Print("\n===== ADVANCED OPERATIONS =====");
+
+// Boolean operations
+bool1 = true && false;
+bool2 = true || false;
+bool3 = !true;
+
+System.Print("true && false = " + bool1);  // false
+System.Print("true || false = " + bool2);  // true
+System.Print("!true = " + bool3);  // false
+
+// Comparison operations
+comp1 = 5 > 3;
+comp2 = 5 == 5;
+comp3 = 5 != 10;
+
+System.Print("5 > 3 = " + comp1);  // true
+System.Print("5 == 5 = " + comp2);  // true
+System.Print("5 != 10 = " + comp3);  // true
+
+// Bitwise operations
+bit1 = 5 & 3;  // 101 & 011 = 001
+bit2 = 5 | 3;  // 101 | 011 = 111
+bit3 = 5 ^ 3;  // 101 ^ 011 = 110
+
+System.Print("5 & 3 = " + bit1);  // 1
+System.Print("5 | 3 = " + bit2);  // 7
+System.Print("5 ^ 3 = " + bit3);  // 6
+
+// String operations
+str1 = "Hello" + " " + "World";
+str2 = "Prefix-" + (10 + 5);
+
+System.Print("String concatenation: " + str1);  // Hello World
+System.Print("String with number: " + str2);  // Prefix-15
+
+// ==========================================
+// PART 6: PI INTEGRATION
+// ==========================================
+System.Print("\n===== PI INTEGRATION =====");
+
+// Embedded Pi
+pi_result = pi{ 2 3 + };
+System.Print("Result from Pi{2 3 +}: " + pi_result);  // 5
+
+// Rho and Pi interaction
+rho_value = 42;
+pi_with_rho = pi{ rho_value @ 10 + };
+System.Print("Pi using Rho value: " + pi_with_rho);  // 52
+
+// Complex example
+complex_result = 5 + pi{ 3 4 * } - 2;
+System.Print("5 + pi{3 4 *} - 2 = " + complex_result);  // 15
+
+// ==========================================
+// PART 7: ADVANCED ALGORITHM EXAMPLE
+// ==========================================
+System.Print("\n===== ADVANCED ALGORITHM EXAMPLE =====");
+
+// Fibonacci calculator with memoization
+function efficientFibonacci(n) {
+    // Create a memoization cache
+    cache = [];
+    
+    function fib(k) {
+        // Base cases
+        if (k <= 1) {
+            return k;
+        }
+        
+        // Check if we have already calculated this value
+        if (k < cache.Count && cache[k] != 0) {
+            return cache[k];
+        }
+        
+        // Calculate the value
+        result = fib(k-1) + fib(k-2);
+        
+        // Ensure the cache is large enough
+        while (cache.Count <= k) {
+            cache.Push(0);
+        }
+        
+        // Store in cache
+        cache[k] = result;
+        
+        return result;
+    }
+    
+    return fib(n);
+}
+
+// Print first 10 Fibonacci numbers
+System.Print("First 10 Fibonacci numbers:");
+for (i = 0; i < 10; i = i + 1) {
+    System.Print("Fibonacci(" + i + ") = " + efficientFibonacci(i));
+}
+
+// Final message
+System.Print("\n===== DEMO COMPLETE =====");
+System.Print("All features demonstrated successfully!");

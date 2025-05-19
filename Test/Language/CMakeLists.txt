@@ -44,6 +44,10 @@ foreach (lang ${langs})
             ${source_path}/SimpleTest.cpp                 # Adding simple test
             ${source_path}/ForLoopTests.cpp               # Adding for loop tests
             ${source_path}/ExtendedRhoTests.cpp           # Added 20 new test cases for Rho
+            ${source_path}/RhoAdvancedOperationsTests.cpp  # Advanced operations tests
+            ${source_path}/RhoControlStructuresTests.cpp   # Control structures tests
+            ${source_path}/RhoFunctionAndScopeTests.cpp    # Function and scope tests
+            ${source_path}/RhoDemo.cpp                    # Demo runner for showcasing features
         )
     elseif(lang STREQUAL "Pi")
         # Explicitly list Pi tests to avoid including unwanted files

@@ -1,5 +1,0 @@
-if(EXISTS "/home/xian/local/KAI/_build/Test/Language/TestTau[1]_tests.cmake")
-  include("/home/xian/local/KAI/_build/Test/Language/TestTau[1]_tests.cmake")
-else()
-  add_test(TestTau_NOT_BUILT TestTau_NOT_BUILT)
-endif()
