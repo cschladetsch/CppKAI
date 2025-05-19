@@ -229,7 +229,8 @@ TEST_F(TestNetworkConnection, TestChatApplication) {
     TestAgentGen(chatServiceScript, "ChatService");
 }
 
-int main(int argc, char** argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}
+// We don't need a main function here - it's provided by the test framework
+// int main(int argc, char** argv) {
+//     ::testing::InitGoogleTest(&argc, argv);
+//     return RUN_ALL_TESTS();
+// }

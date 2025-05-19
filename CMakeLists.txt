@@ -175,6 +175,12 @@ macro(def_library name)
     file(GLOB_RECURSE srcs ${sources})
     file(GLOB_RECURSE hdrs ${headers})
     add_library(${name} ${srcs} ${hdrs})
+    
+    # Ensure output directory is correct
+    set_target_properties(${name} PROPERTIES
+        ARCHIVE_OUTPUT_DIRECTORY "${SAFER_BIN_HOME}"
+        LIBRARY_OUTPUT_DIRECTORY "${SAFER_BIN_HOME}"
+    )
 endmacro()
 
 # Macro to define a new language library
@@ -190,6 +196,12 @@ macro(def_lang_library name)
     file(GLOB_RECURSE src ${sources})
     file(GLOB_RECURSE hdrs ${headers})
     add_library(${name}Lang ${src} ${hdrs})
+    
+    # Ensure output directory is correct
+    set_target_properties(${name}Lang PROPERTIES
+        ARCHIVE_OUTPUT_DIRECTORY "${SAFER_BIN_HOME}"
+        LIBRARY_OUTPUT_DIRECTORY "${SAFER_BIN_HOME}"
+    )
 endmacro()
 
 # Macro to define a platform-specific library
@@ -198,6 +210,12 @@ macro(def_platform_library name)
     set(SOURCE_ROOT ${LIBRARY_HOME}/Platform/${name}/*.cpp)
     file(GLOB_RECURSE SOURCE_FILES ${SOURCE_ROOT})
     add_library(platform-${name} SHARED ${SOURCE_FILES})
+    
+    # Ensure output directory is correct
+    set_target_properties(platform-${name} PROPERTIES
+        ARCHIVE_OUTPUT_DIRECTORY "${SAFER_BIN_HOME}"
+        LIBRARY_OUTPUT_DIRECTORY "${SAFER_BIN_HOME}"
+    )
 endmacro()
 
 # Loop through top-level directories and include their CMakeLists.txt
@@ -206,9 +224,30 @@ foreach(top ${TopLevels})
     include(${SOURCE_HOME}/${top}/CMakeLists.txt)
 endforeach()
 
-# Link libraries with their dependencies
-target_link_libraries(Executor CommonLang Core)
-target_link_libraries(Network Core)
+# Set up main library dependencies
+if(TARGET Executor)
+    target_link_libraries(Executor CommonLang Core)
+endif()
+
+if(TARGET CommonLang)
+    target_link_libraries(CommonLang Core)
+endif()
+
+if(TARGET Network)
+    target_link_libraries(Network Core)
+endif()
+
+if(TARGET PiLang)
+    target_link_libraries(PiLang Core Executor)
+endif()
+
+if(TARGET RhoLang)
+    target_link_libraries(RhoLang Core Executor PiLang)
+endif()
+
+if(TARGET TauLang)
+    target_link_libraries(TauLang Core Executor)
+endif()
 
 # Find or download Google Test if needed for tests
 if(KAI_BUILD_TEST_ALL OR KAI_BUILD_CORE_TEST OR KAI_BUILD_TEST_LANG)
