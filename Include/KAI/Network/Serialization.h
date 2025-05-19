@@ -16,67 +16,107 @@ class NetworkSerializer {
     // Serialize an object to a BitStream using KAI's serialization system
     static void SerializeObject(RakNet::BitStream &bitStream,
                                 const Object &object) {
-        // In a full implementation, we would:
-        // 1. Create a BinaryStream with the object's registry
-        // 2. Serialize the object to the BinaryStream
-        // 3. Get the data from the BinaryStream and write it to the BitStream
-
         try {
-            // Create a placeholder for serialized data
-            // In a real implementation, we would use:
-            // BinaryStream stream(object.GetRegistry());
-            // stream << object;
+            if (!object.Exists()) {
+                // Write a size of 0 for null objects
+                unsigned int size = 0;
+                bitStream.Write(size);
+                return;
+            }
 
-            // For now, just write a placeholder size and data
-            // This can be replaced with real serialization when BinaryStream is
-            // fully implemented
-            unsigned int size = sizeof(int);
+            // Create a BinaryStream with the object's registry
+            BinaryStream stream(object.GetRegistry());
+            
+            // Write the object type number for type checking on deserialization
+            Type::Number typeNumber = object.GetTypeNumber();
+            stream.Write(sizeof(typeNumber), reinterpret_cast<const char*>(&typeNumber));
+            
+            // Serialize the object to the BinaryStream
+            stream << object;
+            
+            // Write the size of the serialized data
+            unsigned int size = stream.Size();
             bitStream.Write(size);
-
-            // Write some metadata that could identify our object type
-            int objectTypeId = 1;  // Placeholder value
-            bitStream.Write(objectTypeId);
-        } catch (...) {
-            // Handle serialization errors
-            // In a production system, you might want to log this error
-            // For now, write a zero-size packet to indicate an error
+            
+            // Write the serialized data
+            if (size > 0) {
+                bitStream.Write((const char*)stream.Begin(), size);
+            }
+        } catch (const Exception::Base& e) {
+            // Handle KAI serialization errors
             unsigned int size = 0;
             bitStream.Write(size);
+            
+            // Optionally, log the error
+            KAI_TRACE_ERROR() << "Error serializing object: " << e.ToString();
+        } catch (const std::exception& e) {
+            // Handle standard exceptions
+            unsigned int size = 0;
+            bitStream.Write(size);
+            
+            // Optionally, log the error
+            KAI_TRACE_ERROR() << "Error serializing object: " << e.what();
+        } catch (...) {
+            // Handle unknown serialization errors
+            unsigned int size = 0;
+            bitStream.Write(size);
+            
+            // Optionally, log the error
+            KAI_TRACE_ERROR() << "Unknown error serializing object";
         }
     }
 
     // Deserialize an object from a BitStream using KAI's serialization system
     static Object DeserializeObject(RakNet::BitStream &bitStream,
                                     Registry &registry) {
-        // In a full implementation, we would:
-        // 1. Read the serialized data from the BitStream
-        // 2. Create a BinaryPacket with that data
-        // 3. Deserialize the object from the BinaryPacket using the registry
-
         try {
             // Read the size
             unsigned int size = 0;
             bitStream.Read(size);
-            if (size == 0)
+            if (size == 0) {
                 return Object();  // Return empty object on read failure
+            }
 
-            // In a real implementation, we would read the data and deserialize
-            // it: std::vector<char> buffer(size);
-            // bitStream.Read((char*)buffer.data(), size);
-            // BinaryPacket packet(buffer.data(), buffer.data() + size,
-            // &registry); Object result; packet >> result; return result;
-
-            // For now, just read the placeholder data and return an empty
-            // object
-            unsigned int objectTypeId = 0;
-            bitStream.Read(objectTypeId);
-
-            // Create a new object of the appropriate type based on objectTypeId
-            // For now, just return an empty object
+            // Read the serialized data into a buffer
+            std::vector<char> buffer(size);
+            if (!bitStream.Read((char*)buffer.data(), size)) {
+                KAI_TRACE_ERROR() << "Failed to read data from BitStream";
+                return Object();
+            }
+            
+            // Create a BinaryPacket with the buffer data
+            BinaryPacket packet(buffer.data(), buffer.data() + size, &registry);
+            
+            // First read the type number
+            Type::Number typeNumber;
+            if (!packet.Read(typeNumber)) {
+                KAI_TRACE_ERROR() << "Failed to read type number from packet";
+                return Object();
+            }
+            
+            // Create a new object of the appropriate type
+            Object result = registry.NewFromTypeNumber(typeNumber);
+            if (!result.Exists()) {
+                KAI_TRACE_ERROR() << "Failed to create object of type " << typeNumber;
+                return Object();
+            }
+            
+            // Deserialize the object data
+            packet >> result;
+            
+            return result;
+        } catch (const Exception::Base& e) {
+            // Handle KAI deserialization errors
+            KAI_TRACE_ERROR() << "Error deserializing object: " << e.ToString();
+            return Object();
+        } catch (const std::exception& e) {
+            // Handle standard deserialization errors
+            KAI_TRACE_ERROR() << "Error deserializing object: " << e.what();
             return Object();
         } catch (...) {
-            // Handle deserialization errors
-            return Object();  // Return empty object on error
+            // Handle unknown deserialization errors
+            KAI_TRACE_ERROR() << "Unknown error deserializing object";
+            return Object();
         }
     }
 
