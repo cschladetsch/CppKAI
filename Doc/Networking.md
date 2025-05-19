@@ -59,7 +59,7 @@ result = acrossAllNodes(node, data, process)
 // across all available network nodes
 ```
 
-For more details on the AcrossAllNodes operation, see the [Network Iteration documentation](Doc/NetworkIteration.md).
+For more details on the AcrossAllNodes operation, see the [Network Iteration documentation](NetworkIteration.md).
 
 ## Background and Development
 
@@ -190,5 +190,5 @@ When using KAI's networking features, consider these performance tips:
 
 5. **Workload Distribution**: For optimal performance, distribute work evenly across nodes with similar capabilities.
 
-For more details on network programming with KAI, see the examples in [Test/Network](Test/Network/) and the full [API documentation](Doc/NetworkIteration.md).
+For more details on network programming with KAI, see the examples in [Test/Network](/Test/Network/) and the full [API documentation](NetworkIteration.md).
 

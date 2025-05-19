@@ -1,12 +1,12 @@
 # Building KAI
 
-KAI uses CMake as its build system and follows modern out-of-source build practices. All build artifacts should be kept in a `build/` directory, separate from source code.
+KAI uses CMake as its build system and follows modern out-of-source build practices. All build artifacts are kept in a `build/` directory, separate from source code.
 
 ## Prerequisites
 
 - CMake 3.28 or higher
 - C++23 compatible compiler (GCC 13+, Clang 16+, or MSVC 2022+)
-- Boost 1.72 (newer versions may work but haven't been tested)
+- Boost 1.72 or higher
   - Required components: system, filesystem, program_options, date_time, regex
 
 ### Installing Boost
@@ -20,6 +20,38 @@ For all platforms:
 
 ## Building the Project
 
+### Quick Start with Helper Scripts
+
+KAI provides convenient scripts for building:
+
+```bash
+# Build with Clang++ (default)
+./b
+
+# Build with GCC
+./b --gcc
+
+# Build without using Ninja
+./b --no-ninja
+```
+
+### Using the Makefile
+
+A Makefile is provided for simpler builds:
+
+```bash
+# Build with Clang++ (default)
+make
+# or
+make clang
+
+# Build with GCC
+make gcc
+
+# Clean the build directory
+make clean
+```
+
 ### Standard Out-of-Source Build
 
 Always build from a separate `build` directory to keep your source tree clean:
@@ -29,8 +61,11 @@ Always build from a separate `build` directory to keep your source tree clean:
 mkdir -p build
 cd build
 
-# Generate build files
+# Generate build files with Clang++ (default)
 cmake ..
+
+# Generate build files with GCC
+cmake .. -DCMAKE_CXX_COMPILER=g++ -DBUILD_GCC=ON
 
 # Build the project
 cmake --build .  # Use this on all platforms
@@ -43,8 +78,12 @@ make             # On Unix-like systems
 KAI provides several build options that can be configured with CMake:
 
 ```bash
-# Use GCC instead of Ninja (default)
+# Use GCC instead of Clang++ (default)
 cmake .. -DBUILD_GCC=ON
+
+# Explicitly set compiler
+cmake .. -DCMAKE_CXX_COMPILER=clang++  # Default
+cmake .. -DCMAKE_CXX_COMPILER=g++      # Use GCC
 
 # Configure build types
 cmake .. -DCMAKE_BUILD_TYPE=Debug   # Default
@@ -63,9 +102,13 @@ cmake .. -DKAI_BUILD_RAKNET=OFF           # Build with RakNet (default: OFF)
 #### Linux/macOS
 
 ```bash
+# Using helper script (recommended)
+./b
+
+# Manual build
 mkdir -p build && cd build
 cmake ..
-make
+cmake --build .
 ```
 
 #### Windows

@@ -18,9 +18,9 @@ Currently the list of external `git` repos are:
 
 ## Boost
 
-Install --latest Boost 1.73-- boost 1.72. CMake doesn't yet support 1.73.
+Install Boost 1.72 or higher.
 
-For windows:
+For Windows:
 
 ```bash
 > .\bootstrap.bat
@@ -36,19 +36,25 @@ Please see [BUILD.md](./BUILD.md) for detailed instructions on building KAI.
 ### Quick Start (Ubuntu/macOS)
 
 ```bash
-# Clean any existing CMake artifacts and set up build directory
-./Scripts/clean_build.sh
+# Using helper script (recommended)
+./b    # Build with Clang++ (default)
+# or
+./b --gcc  # Build with GCC
 
-# Build the project
-./Scripts/build.sh
+# Alternative: Use the Makefile
+make       # Build with Clang++ (default)
+# or
+make gcc   # Build with GCC
 ```
 
 ### Legacy Method (Ubuntu/macOS)
 
 ```bash
 > mkdir -p build && cd build
-> cmake ..
-> make
+> cmake ..                        # Uses Clang++ by default
+# or
+> cmake .. -DBUILD_GCC=ON         # Use GCC
+> cmake --build .
 ```
 
 ## Windows

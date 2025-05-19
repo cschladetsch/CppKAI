@@ -19,10 +19,17 @@ _KAI_ is a network distributed **Object Model** for C++ with full runtime reflec
 
 ## Recent Updates
 
-- **May 2025**: Added comprehensive fixes for the Rho language implementation
-- **Fixed binary operations** - Full support for arithmetic, logical, comparison, and bitwise operations
-- **Enhanced control structures** - Properly working if/else, for, while, and do-while loops
-- **Improved function handling** - Support for recursion, nested functions, and proper scoping
+- **May 2025**: Added comprehensive fixes and improvements to the codebase
+- **Build system improvements**:
+  - **Default to Clang++** - Now uses Clang++ by default for better C++23 support
+  - **Compiler selection flags** - Easily switch between Clang++ and GCC with `--gcc` flag
+  - **New Makefile** - Added top-level Makefile for simpler builds
+  - **Updated scripts** - Enhanced `b` script with more options and better defaults
+  - **Fixed output paths** - Corrected build paths to avoid permission issues
+- **Language implementation fixes**:
+  - **Fixed binary operations** - Full support for arithmetic, logical, comparison, and bitwise operations
+  - **Enhanced control structures** - Properly working if/else, for, while, and do-while loops
+  - **Improved function handling** - Support for recursion, nested functions, and proper scoping
 - **Added a comprehensive demo** - Run `./Scripts/run_rho_demo.sh` to see all Rho features in action
 - **Expanded documentation** - New [Rho Language](Doc/RhoLanguage.md) and [Rho Fix Documentation](Doc/Rho-Fix-Documentation.md)
 - **Colored console output** for better readability with support for green INFO, yellow WARNING, and red ERROR messages
@@ -31,8 +38,12 @@ _KAI_ is a network distributed **Object Model** for C++ with full runtime reflec
 - **Custom test runner** to run tests in a controlled manner
 - **Enhanced binary operation handling** and continuation unwrapping for Pi/Rho languages
 - **Fixed type preservation** in binary operations (resolving issues with "20 20 +" pattern)
-- **Improved error handling** in PerformBinaryOp method for better robustness
-- **Improved build system** with proper out-of-source builds and updated build scripts
+- **Code quality improvements**:
+  - **Fixed move constructor issues** in RhoTranslator
+  - **Removed pessimizing moves** in LexerBase
+  - **Improved code syntax** with proper parentheses in conditional statements
+  - **Fixed macro issues** in Float.h type traits
+  - **Eliminated unused variables** across the codebase
 
 ## System Components
 
@@ -87,6 +98,9 @@ print(result)  // [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
 ### Prerequisites
 
 - Modern C++ compiler (C++23 compatible)
+  - Clang 16+ (default, recommended)
+  - GCC 13+
+  - MSVC 2022+
 - CMake (3.28+)
 - Boost libraries (filesystem, system, program_options, date-time, regex)
 - Ninja (optional but recommended for faster builds)
@@ -103,16 +117,26 @@ git submodule update
 
 #### Using the Build Scripts
 
-We now provide convenient build scripts that follow best practices for out-of-source builds:
+We provide convenient build scripts that follow best practices for out-of-source builds:
 
 ```bash
-# Clean any build artifacts from source tree and set up build directory
-./Scripts/clean_build.sh  # Linux/macOS
-.\clean_build.bat # Windows
+# Quick build (using Clang++ by default)
+./b
 
-# Build the project using the build script
-./Scripts/build.sh        # Linux/macOS
-.\build.bat       # Windows
+# Build with GCC
+./b --gcc
+
+# Build without Ninja
+./b --no-ninja
+
+# Using Makefile (Clang++ by default)
+make
+
+# Using Makefile with GCC
+make gcc
+
+# Clean build directory
+make clean
 ```
 
 #### Manual Build (Out-of-Source)
@@ -124,8 +148,11 @@ For a manual build, always use the `build/` directory:
 mkdir -p build
 cd build
 
-# Configure with CMake
+# Configure with CMake (Clang++ by default)
 cmake ..
+
+# Configure with GCC
+cmake .. -DBUILD_GCC=ON
 
 # Build the project
 cmake --build .   # Cross-platform

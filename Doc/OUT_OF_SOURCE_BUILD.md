@@ -20,31 +20,47 @@ We provide several scripts to help with out-of-source builds:
 This is the recommended build script for most users. It:
 
 - Creates a clean build directory named `build`
-- Configures CMake with absolute paths to ensure correct output locations
+- Uses Clang++ as the default compiler (can be overridden with `--gcc`)
+- Uses Ninja as the default build system (can be overridden with `--no-ninja`)
+- Configures CMake with correct paths to ensure proper output locations
 - Builds the project using all available cores
 
 Usage:
 ```bash
+# Build with Clang++ (default)
 ./b
+
+# Build with GCC
+./b --gcc
+
+# Build without Ninja
+./b --no-ninja
+
+# Combined options
+./b --gcc --no-ninja
 ```
 
-The executables will be available in `$HOME/Bin/`.
+The executables will be available in `build/Bin/`.
 
-### 2. `r` - Ninja Build Script
+### 2. `r` - Test Runner Script
 
-This alternative script uses the Ninja build system for faster builds:
+This script is designed to run the Rho language tests one by one to help isolate any issues:
 
-- Creates a build directory named `build_ninja`
-- Uses Ninja generator for CMake
-- Creates a custom toolchain file to fix path issues
-- Also runs the KAI Console after building
+- Uses Clang++ as the default compiler (can be overridden with `--gcc`)
+- Can disable colored output with `--no-color`
+- Runs each test individually and reports success/failure
 
 Usage:
 ```bash
+# Run tests with Clang++ (default)
 ./r
-```
 
-The executables will be available in `$HOME/Bin/`.
+# Run tests with GCC
+./r --gcc
+
+# Run tests without colored output
+./r --no-color
+```
 
 ## Manual Out-of-Source Build
 
