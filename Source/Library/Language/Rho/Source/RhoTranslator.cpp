@@ -701,11 +701,11 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
             // Example: 5 dup + (duplicates 5 and adds, resulting in 10)
             if (sequence.size() >= 2) {
                 // Special case for 5 dup +
-                if (sequence.size() == 3 &&
+                if ((sequence.size() == 3 &&
                         (sequence[0].tokenType == RhoTokenEnumType::Int ||
                          sequence[0].tokenType == RhoTokenEnumType::Float) &&
-                        sequence[1].value == "Dup" ||
-                    sequence[1].value == "dup" && sequence[2].isOperation) {
+                        sequence[1].value == "Dup") ||
+                    (sequence[1].value == "dup" && sequence[2].isOperation)) {
                     try {
                         // Handle integer dup operations
                         if (sequence[0].tokenType == RhoTokenEnumType::Int) {

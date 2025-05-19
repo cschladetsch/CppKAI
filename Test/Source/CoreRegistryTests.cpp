@@ -78,10 +78,11 @@ TEST_F(CoreRegistryTests, TestClassPropertyAccess) {
 
     // Properties are implementation-dependent, so just verify the class exists
     // and the HasProperty method works with no exceptions
-    bool hasToString = stringClass->HasProperty(Label("ToString"));
-    bool hasType = stringClass->HasProperty(Label("Type"));
-    bool hasSize = stringClass->HasProperty(Label("Size"));
-    bool hasEmpty = stringClass->HasProperty(Label("Empty"));
+    // Check that HasProperty doesn't throw exceptions, ignoring return values
+    stringClass->HasProperty(Label("ToString"));
+    stringClass->HasProperty(Label("Type"));
+    stringClass->HasProperty(Label("Size"));
+    stringClass->HasProperty(Label("Empty"));
 
     // We don't assert on the property existence, just that the method completed
     // successfully Specific property names vary by implementation

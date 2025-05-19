@@ -276,13 +276,15 @@ GLFWwindow* SetupGui() {
 }
 
 void LoadFont() {
-    ImGuiIO& io = ImGui::GetIO();
+    // Get IO but don't save reference to avoid unused variable warning
+    ImGui::GetIO();
+    
     ImFontConfig config;
     config.OversampleH = 3;
     config.OversampleV = 1;
     config.GlyphExtraSpacing.x = 1.0f;
     // Use default font instead of loading from file
-    // io.Fonts->AddFontFromFileTTF("CourierNew.ttf", 20, &config);
+    // ImGui::GetIO().Fonts->AddFontFromFileTTF("CourierNew.ttf", 20, &config);
 }
 
 int main(int argc, char** argv) {
@@ -291,7 +293,6 @@ int main(int argc, char** argv) {
 
     LoadFont();
 
-    bool show_test_window = true;
     bool show_demo_window = true;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 

@@ -8,6 +8,7 @@ endif()
 # KAI Project Build Configuration
 # -------------------------------
 # - Uses Ninja by default (override with -DBUILD_GCC=ON)
+# - Uses Clang++ by default (override with -DBUILD_GCC=ON)
 # - Defaults to C++23 standard
 # - Supports out-of-source builds with output to build/Bin directory
 
@@ -18,8 +19,16 @@ if(NOT DEFINED BUILD_GCC)
         set(CMAKE_GENERATOR "Ninja" CACHE INTERNAL "Generator used by CMake")
         message(STATUS "Using Ninja generator by default (override with -DBUILD_GCC=ON)")
     endif()
+    
+    # Set default compiler to Clang++ if not explicitly set and not using GCC
+    if(NOT CMAKE_CXX_COMPILER)
+        set(CMAKE_CXX_COMPILER "clang++" CACHE STRING "C++ compiler" FORCE)
+        message(STATUS "Using Clang++ compiler by default (override with -DBUILD_GCC=ON)")
+    endif()
 else()
-    message(STATUS "Using default generator (BUILD_GCC is set)")
+    message(STATUS "Using default generator and compiler (BUILD_GCC is set)")
+    # Mark BUILD_GCC as used
+    option(BUILD_GCC "Use GCC compiler instead of Clang++" ${BUILD_GCC})
 endif()
 
 project(KAI)
@@ -75,24 +84,26 @@ endif()
 
 message(STATUS "Binary output directory: ${BIN_HOME}")
 
-# Set output directories
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${BIN_HOME}")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${BIN_HOME}")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${BIN_HOME}")
+# Set output directories - ensure they're relative to build directory for safety
+set(SAFER_BIN_HOME "${CMAKE_BINARY_DIR}/Bin")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${SAFER_BIN_HOME}")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${SAFER_BIN_HOME}") 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${SAFER_BIN_HOME}")
 
 # Also set per-configuration output directories
 foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
     string(TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} "${BIN_HOME}")
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG} "${BIN_HOME}")
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} "${BIN_HOME}")
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} "${SAFER_BIN_HOME}")
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG} "${SAFER_BIN_HOME}")
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} "${SAFER_BIN_HOME}")
 endforeach()
 
 include_directories(${KAI_HOME}/Include)
 
 # Link directories for external libraries
-link_directories(${HOME}/lib /usr/local/lib)
 link_directories(${KAI_HOME}/Lib/Debug)
+link_directories(/usr/local/lib)
+# Don't use HOME/lib, it might not exist or have permission issues
 
 # Modern C++23 compiler flags
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")

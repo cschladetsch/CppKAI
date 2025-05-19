@@ -241,9 +241,9 @@ TEST_F(CoreTypeTests, TestClassProperties) {
 
     // Property names are implementation-dependent
     // Just check that the HasProperty method works without exceptions
-    bool hasSize = stringClass->HasProperty(Label("Size"));
-    bool hasEmpty = stringClass->HasProperty(Label("Empty"));
-    bool hasToString = stringClass->HasProperty(Label("ToString"));
+    stringClass->HasProperty(Label("Size"));
+    stringClass->HasProperty(Label("Empty"));
+    stringClass->HasProperty(Label("ToString"));
 
     // Create a String object
     Object stringObj = Reg().New<String>("Hello World");
@@ -292,9 +292,10 @@ TEST_F(CoreTypeTests, TestTypeSafeMethodCalls) {
 
     // Method availability is implementation-dependent
     // Just check that the GetMethod function works without throwing
-    auto pushBackMethod = arrayClass->GetMethod(Label("PushBack"));
-    auto popBackMethod = arrayClass->GetMethod(Label("PopBack"));
-    auto atMethod = arrayClass->GetMethod(Label("At"));
+    // We don't store the results to avoid unused variable warnings
+    arrayClass->GetMethod(Label("PushBack"));
+    arrayClass->GetMethod(Label("PopBack"));
+    arrayClass->GetMethod(Label("At"));
 
     // Call methods directly
     Object obj = array;
@@ -410,11 +411,12 @@ TEST_F(CoreTypeTests, TestClassMethodIntrospection) {
 
     // Method availability is implementation-dependent
     // Just check that the GetMethod function works without throwing
-    auto pushBackMethod = arrayClass->GetMethod(Label("PushBack"));
-    auto atMethod = arrayClass->GetMethod(Label("At"));
+    // We don't store the results to avoid unused variable warnings
+    arrayClass->GetMethod(Label("PushBack"));
+    arrayClass->GetMethod(Label("At"));
 
     // Check non-existent method - should not throw but may return null
-    auto nonExistentMethod = arrayClass->GetMethod(Label("NonExistentMethod"));
+    arrayClass->GetMethod(Label("NonExistentMethod"));
 
     // Clean up
     Root().Remove(Label("test_method_array"));

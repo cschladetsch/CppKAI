@@ -10,25 +10,65 @@ StringStream &operator>>(StringStream &, float &);
 BinaryStream &operator<<(BinaryStream &, float);
 BinaryStream &operator>>(BinaryStream &, float &);
 
-// Use the macro for float type to ensure consistency with int
-KAI_TYPE_TRAITS(float, Number::Single,
-                Type::Properties::Arithmetic |
-                    Type::Properties::Multiplicative |
-                    Type::Properties::Streaming | Type::Properties::Assign |
-                    Type::Properties::Relational | Type::Properties::Absolute |
-                    Type::Properties::Boolean);
+namespace Type {
+    // Custom traits for float to avoid macro issues
+    template <>
+    struct Traits<float> : TraitsBase<float, Number::Single, 
+                                     Properties::Arithmetic |
+                                     Properties::Multiplicative |
+                                     Properties::Streaming | 
+                                     Properties::Assign |
+                                     Properties::Relational | 
+                                     Properties::Absolute |
+                                     Properties::Boolean> {
+        typedef TraitsBase<float, Number::Single, 
+                          Properties::Arithmetic |
+                          Properties::Multiplicative |
+                          Properties::Streaming | 
+                          Properties::Assign |
+                          Properties::Relational | 
+                          Properties::Absolute |
+                          Properties::Boolean> Tr;
+        using typename Tr::Store;
+        using typename Tr::Reference;
+        using typename Tr::ConstReference;
+        static std::string Name() {
+            return Tr::Name();
+        }
+    };
+}
 
 StringStream &operator<<(StringStream &, double);
 StringStream &operator>>(StringStream &, double &);
 BinaryStream &operator<<(BinaryStream &, double);
 BinaryStream &operator>>(BinaryStream &, double &);
 
-// Use the macro for double type to ensure consistency
-KAI_TYPE_TRAITS(double, Number::Double,
-                Type::Properties::Arithmetic |
-                    Type::Properties::Multiplicative |
-                    Type::Properties::Streaming | Type::Properties::Assign |
-                    Type::Properties::Relational | Type::Properties::Absolute |
-                    Type::Properties::Boolean);
+namespace Type {
+    // Custom traits for double to avoid macro issues
+    template <>
+    struct Traits<double> : TraitsBase<double, Number::Double, 
+                                     Properties::Arithmetic |
+                                     Properties::Multiplicative |
+                                     Properties::Streaming | 
+                                     Properties::Assign |
+                                     Properties::Relational | 
+                                     Properties::Absolute |
+                                     Properties::Boolean> {
+        typedef TraitsBase<double, Number::Double, 
+                          Properties::Arithmetic |
+                          Properties::Multiplicative |
+                          Properties::Streaming | 
+                          Properties::Assign |
+                          Properties::Relational | 
+                          Properties::Absolute |
+                          Properties::Boolean> Tr;
+        using typename Tr::Store;
+        using typename Tr::Reference;
+        using typename Tr::ConstReference;
+        static std::string Name() {
+            return Tr::Name();
+        }
+    };
+}
 
 KAI_END

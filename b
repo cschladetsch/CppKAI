@@ -3,6 +3,7 @@
 # Check if --no-color flag is provided
 USE_COLOR=true
 USE_NINJA=true
+USE_GCC=false
 
 for arg in "$@"; do
   if [ "$arg" == "--no-color" ]; then
@@ -10,6 +11,9 @@ for arg in "$@"; do
   fi
   if [ "$arg" == "--no-ninja" ]; then
     USE_NINJA=false
+  fi
+  if [ "$arg" == "--gcc" ]; then
+    USE_GCC=true
   fi
 done
 
@@ -48,8 +52,19 @@ CMAKE_ARGS="-DCMAKE_BUILD_TYPE=Debug \
       -DCMAKE_RUNTIME_OUTPUT_DIRECTORY="$(pwd)/Bin" \
       -DCMAKE_LIBRARY_OUTPUT_DIRECTORY="$(pwd)/Bin" \
       -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY="$(pwd)/Bin" \
-      -DBIN_HOME="${HOME}/Bin" \
+      -DBIN_HOME="$(pwd)/Bin" \
       -DINCLUDE_HOME="${SRC_DIR}/Include/KAI""
+
+# Set compiler to clang++ by default unless --gcc flag was provided
+if [ "$USE_GCC" = false ]; then
+  echo -e "${BLUE}Using Clang++ compiler${NC}"
+  export CXX=clang++
+  CMAKE_ARGS="$CMAKE_ARGS"
+else
+  echo -e "${BLUE}Using GCC compiler${NC}"
+  export CXX=g++
+  CMAKE_ARGS="$CMAKE_ARGS -DBUILD_GCC=ON"
+fi
 
 if [ "$USE_NINJA" = true ]; then
   which ninja > /dev/null 2>&1

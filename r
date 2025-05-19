@@ -2,10 +2,13 @@
 
 # Check if --no-color flag is provided
 USE_COLOR=true
+# Check if --gcc flag is provided (otherwise use clang++ by default)
+USE_GCC=false
 for arg in "$@"; do
   if [ "$arg" == "--no-color" ]; then
     USE_COLOR=false
-    break
+  elif [ "$arg" == "--gcc" ]; then
+    USE_GCC=true
   fi
 done
 
@@ -26,6 +29,16 @@ fi
 
 echo -e "${YELLOW}Running Rho tests one by one to isolate segmentation faults${NC}"
 cd $(dirname "$0")
+
+# Use the appropriate compiler based on the flag
+COMPILER_FLAG=""
+if [ "$USE_GCC" = false ]; then
+  echo -e "${BLUE}Using Clang++ compiler${NC}"
+  export CXX=clang++
+else
+  echo -e "${BLUE}Using GCC compiler${NC}"
+  export CXX=g++
+fi
 
 # Get all the tests and test suites
 TESTS=$(./Bin/Test/TestRho --gtest_list_tests)

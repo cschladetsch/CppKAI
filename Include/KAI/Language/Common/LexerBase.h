@@ -26,7 +26,7 @@ class LexerBase : public ProcessCommon {
     const std::string &Line() const;
     std::string GetString(Slice const &slice) const {
         int length = slice.Length();
-        return length == 0 ? "" : std::move(input.substr(slice.Start, length));
+        return length == 0 ? "" : input.substr(slice.Start, length);
     }
 
    protected:
