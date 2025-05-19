@@ -2,10 +2,14 @@
 
 # Check if --no-color flag is provided
 USE_COLOR=true
+USE_NINJA=true
+
 for arg in "$@"; do
   if [ "$arg" == "--no-color" ]; then
     USE_COLOR=false
-    break
+  fi
+  if [ "$arg" == "--no-ninja" ]; then
+    USE_NINJA=false
   fi
 done
 
@@ -36,16 +40,29 @@ cd "$BUILD_DIR" || { echo -e "${RED}Failed to enter build directory${NC}"; exit 
 # Create bin directories
 mkdir -p Bin/Test
 
-# Run CMake with simple, direct configuration focused on fixing the path issue
+# Run CMake with Ninja by default
 echo -e "${YELLOW}Configuring with CMake...${NC}"
 SRC_DIR=$(dirname $(pwd))
-cmake .. \
-      -DCMAKE_BUILD_TYPE=Debug \
+
+CMAKE_ARGS="-DCMAKE_BUILD_TYPE=Debug \
       -DCMAKE_RUNTIME_OUTPUT_DIRECTORY="$(pwd)/Bin" \
       -DCMAKE_LIBRARY_OUTPUT_DIRECTORY="$(pwd)/Bin" \
       -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY="$(pwd)/Bin" \
       -DBIN_HOME="${HOME}/Bin" \
-      -DINCLUDE_HOME="${SRC_DIR}/Include/KAI"
+      -DINCLUDE_HOME="${SRC_DIR}/Include/KAI""
+
+if [ "$USE_NINJA" = true ]; then
+  which ninja > /dev/null 2>&1
+  if [ $? -eq 0 ]; then
+    echo -e "${BLUE}Using Ninja build system${NC}"
+    cmake .. -G Ninja $CMAKE_ARGS
+  else
+    echo -e "${YELLOW}Ninja not found, falling back to default generator${NC}"
+    cmake .. $CMAKE_ARGS
+  fi
+else
+  cmake .. $CMAKE_ARGS
+fi
 
 if [ $? -ne 0 ]; then
     echo -e "${RED}CMake configuration failed!${NC}"
