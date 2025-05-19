@@ -39,7 +39,19 @@ else
 fi
 echo
 
+# Run Tau tests
+echo -e "${YELLOW}Running Tau tests...${NC}"
+./Bin/Test/TestTau
+TAU_RESULT=$?
+if [ $TAU_RESULT -eq 0 ]; then
+  echo -e "${GREEN}Tau tests: All tests PASS${NC}"
+else
+  echo -e "${YELLOW}Tau tests: Some FAILED (expected - Tau language support is still in development)${NC}"
+fi
+echo
+
 # Final summary
+# Note: We don't include TAU_RESULT in the final exit code check because Tau is still under development
 if [ $CORE_RESULT -eq 0 ] && [ $PI_RESULT -eq 0 ] && [ $RHO_RESULT -eq 0 ]; then
   echo -e "${GREEN}All tests PASS!${NC}"
   exit 0

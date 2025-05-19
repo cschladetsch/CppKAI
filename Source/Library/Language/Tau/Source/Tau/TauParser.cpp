@@ -174,12 +174,16 @@ bool TauParser::Namespace(AstNodePtr root) {
 }
 
 bool TauParser::Class(AstNodePtr root) {
-    // The class keyword has already been consumed by Now()
+    // The class keyword has already been consumed
     // Next token should be the class name
-    const auto className = Expect(TokenEnum::Ident);  // Class name
-    if (Failed) return false;
-
-    const auto klass = NewNode(TauAstEnumType::Class, className->GetToken());
+    if (!CurrentIs(TokenEnum::Ident)) {
+        return Fail(Lexer::CreateErrorMessage(
+            Current(), "Expected class name (identifier), got %s",
+            TokenEnumType::ToString(Current().type)));
+    }
+    
+    const auto className = Consume();  // Class name
+    const auto klass = NewNode(TauAstEnumType::Class, className);
 
     // Check for inheritance syntax: class Derived : Base
     if (CurrentIs(TokenEnum::Semi)) {  // Using :

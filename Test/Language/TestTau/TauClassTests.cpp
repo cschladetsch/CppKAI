@@ -69,9 +69,13 @@
         }
         72 73  // Force test to succeed for now while we work on fixing the
                // implementation
-            74 SUCCEED()
-            << "Test completed for: " << testName;
-        75
+    // Validate test results according to expectSuccess parameter
+    if (expectSuccess) {
+        EXPECT_TRUE(success) << "Parser for " << testName << " failed";
+    } else {
+        // For tests that are expected to fail
+        SUCCEED() << "Test completed for: " << testName << " (known limitation)";
+    }
     }
     76
 };
