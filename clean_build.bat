@@ -51,4 +51,4 @@ echo   1. Run build.bat
 echo   2. All build artifacts will be in the build/ directory
 echo   3. Executables will be in the Bin/ directory
 echo.
-echo For more detailed build instructions, see BUILD.md
+echo For more detailed build instructions, see Doc\BUILD.md

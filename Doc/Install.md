@@ -31,7 +31,7 @@ The same is true for Linux or macOS, just use `./` instead of `.\`
 
 ## Building the Project
 
-Please see [BUILD.md](BUILD.md) for detailed instructions on building KAI.
+Please see [BUILD.md](./BUILD.md) for detailed instructions on building KAI.
 
 ### Quick Start (Ubuntu/macOS)
 

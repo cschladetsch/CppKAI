@@ -78,4 +78,4 @@ echo -e "  1. Run ${GREEN}./build.sh${NC}"
 echo -e "  2. All build artifacts will be in the ${GREEN}build/${NC} directory"
 echo -e "  3. Executables will be in the ${GREEN}Bin/${NC} directory"
 echo
-echo -e "${YELLOW}For more detailed build instructions, see BUILD.md${NC}"
+echo -e "${YELLOW}For more detailed build instructions, see Doc/BUILD.md${NC}"

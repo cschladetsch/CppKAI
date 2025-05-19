@@ -8,7 +8,7 @@ The KAI documentation is organized into the following main categories:
 
 ### 1. Project Overview
 - [Architecture](Architecure.md) - System architecture overview
-- [OUT_OF_SOURCE_BUILD](OUT_OF_SOURCE_BUILD.md) - Build instructions and best practices
+- [OUT_OF_SOURCE_BUILD](./OUT_OF_SOURCE_BUILD.md) - Build instructions and best practices
 
 ### 2. Language System
 - [Language Guide](LanguageGuide.md) - Overview of the KAI language system
@@ -33,7 +33,7 @@ The KAI documentation is organized into the following main categories:
 
 New users should start with the following documents in order:
 
-1. **Project Setup**: [OUT_OF_SOURCE_BUILD](OUT_OF_SOURCE_BUILD.md)
+1. **Project Setup**: [OUT_OF_SOURCE_BUILD](./OUT_OF_SOURCE_BUILD.md)
 2. **System Overview**: [Architecture](Architecure.md)
 3. **Language Introduction**: [Language Guide](LanguageGuide.md)
 4. **Main Language**: [Rho Language](RhoLanguage.md) and [Rho Tutorial](RhoTutorial.md)

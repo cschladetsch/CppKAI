@@ -94,6 +94,6 @@ See [Todo-Rho.md](Todo-Rho.md) for a detailed analysis of the Rho language issue
 
 ## References
 
-- [Test-Fixes-Summary.md](../../../Test-Fixes-Summary.md): Comprehensive documentation of the fixes
-- [KAI Languages](../../Languages.md): Overview of all languages in KAI
+- [Test-Fixes-Summary.md](../../../Doc/Test-Fixes-Summary.md): Comprehensive documentation of the fixes
+- [KAI Languages](../../../Doc/Languages.md): Overview of all languages in KAI
 - [Todo-Rho.md](Todo-Rho.md): Detailed analysis of Rho language issues

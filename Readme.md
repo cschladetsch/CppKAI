@@ -135,7 +135,7 @@ make              # Unix systems
 ninja             # If using Ninja generator
 ```
 
-For more detailed build instructions, see [BUILD.md](BUILD.md).
+For more detailed build instructions, see [BUILD.md](Doc/BUILD.md).
 
 ## Applications
 
@@ -166,11 +166,11 @@ The GUI application provides:
 
 ### Main Documentation Entry Points
 - [Documentation Guide](Doc/Documentation.md) - Central entry point to all documentation
-- [Building Guide](OUT_OF_SOURCE_BUILD.md) - How to build the project correctly
-- [Installation Guide](Install.md) - Installation instructions
+- [Building Guide](Doc/OUT_OF_SOURCE_BUILD.md) - How to build the project correctly
+- [Installation Guide](Doc/Install.md) - Installation instructions
 
 ### Language Documentation
-- [Language System Overview](Languages.md) - Brief overview of the language system
+- [Language System Overview](Doc/Languages.md) - Brief overview of the language system
 - [Language Guide](Doc/LanguageGuide.md) - Comprehensive language system guide
 - [Common Language System](Doc/CommonLanguageSystem.md) - Shared architecture
 
@@ -182,7 +182,7 @@ The GUI application provides:
 
 ### Technical Documentation
 - [Rho Fix Documentation](Doc/Rho-Fix-Documentation.md) - Details of recent Rho language fixes
-- [Networking](Networking.md) - Distributed computing capabilities
+- [Networking](Doc/Networking.md) - Distributed computing capabilities
 - [Test Documentation](Doc/Test.md) - How to run and write tests
 - [Colored Output](Doc/ColorOutput.md) - Console color formatting
 

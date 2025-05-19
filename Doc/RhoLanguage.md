@@ -10,7 +10,7 @@ Rho serves as the primary application language in the KAI system, complementing 
 
 To get started with Rho:
 
-1. **Build the KAI System**: Use the [out-of-source build approach](OUT_OF_SOURCE_BUILD.md)
+1. **Build the KAI System**: Use the [out-of-source build approach](./OUT_OF_SOURCE_BUILD.md)
    ```bash
    # Create build directory and build the project
    mkdir -p build && cd build
