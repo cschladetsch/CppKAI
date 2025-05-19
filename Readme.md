@@ -19,7 +19,12 @@ _KAI_ is a network distributed **Object Model** for C++ with full runtime reflec
 
 ## Recent Updates
 
-- **May 2025**: Added colored output support for test programs
+- **May 2025**: Added comprehensive fixes for the Rho language implementation
+- **Fixed binary operations** - Full support for arithmetic, logical, comparison, and bitwise operations
+- **Enhanced control structures** - Properly working if/else, for, while, and do-while loops
+- **Improved function handling** - Support for recursion, nested functions, and proper scoping
+- **Added a comprehensive demo** - Run `./run_rho_demo.sh` to see all Rho features in action
+- **Expanded documentation** - New [Rho Language](Doc/RhoLanguage.md) and [Rho Fix Documentation](Doc/Rho-Fix-Documentation.md)
 - **Colored console output** for better readability with support for green INFO, yellow WARNING, and red ERROR messages
 - **Fixed test suite** to pass all tests with proper color formatting
 - **Direct test implementations** for Rho language to handle continuation issues
@@ -159,19 +164,31 @@ The GUI application provides:
 
 ## Documentation
 
-- [Building Guide](BUILD.md)
-- [Installation Guide](Install.md)
-- [Language System](Languages.md)
-- [Networking](Networking.md)
-- [Common Language System](Doc/CommonLanguageSystem.md)
-- [Language Guide](Doc/LanguageGuide.md)
-- [Pi Tutorial](Doc/PiTutorial.md)
-- [Rho Tutorial](Doc/RhoTutorial.md)
-- [Tau Tutorial](Doc/TauTutorial.md)
-- [Test Documentation](Doc/Test.md)
-- [Colored Output](Doc/ColorOutput.md)
-- [Test Summary](Test/Language/TestRho/TestSummary.md)
-- [Test Fixes Summary](Test-Fixes-Summary.md)
+### Main Documentation Entry Points
+- [Documentation Guide](Doc/Documentation.md) - Central entry point to all documentation
+- [Building Guide](OUT_OF_SOURCE_BUILD.md) - How to build the project correctly
+- [Installation Guide](Install.md) - Installation instructions
+
+### Language Documentation
+- [Language System Overview](Languages.md) - Brief overview of the language system
+- [Language Guide](Doc/LanguageGuide.md) - Comprehensive language system guide
+- [Common Language System](Doc/CommonLanguageSystem.md) - Shared architecture
+
+#### Individual Languages
+- [Pi Tutorial](Doc/PiTutorial.md) - Stack-based foundation language
+- [Rho Language](Doc/RhoLanguage.md) - Application-level language with infix notation
+- [Rho Tutorial](Doc/RhoTutorial.md) - Detailed Rho language tutorial
+- [Tau Tutorial](Doc/TauTutorial.md) - Interface definition language
+
+### Technical Documentation
+- [Rho Fix Documentation](Doc/Rho-Fix-Documentation.md) - Details of recent Rho language fixes
+- [Networking](Networking.md) - Distributed computing capabilities
+- [Test Documentation](Doc/Test.md) - How to run and write tests
+- [Colored Output](Doc/ColorOutput.md) - Console color formatting
+
+### Demo and Examples
+- Run `./run_rho_demo.sh` for a comprehensive demo of Rho language features
+- Example scripts in `Test/Language/*/Scripts` directories
 
 ## Project Structure
 

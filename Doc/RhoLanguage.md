@@ -4,13 +4,31 @@
 
 Rho is an infix-notation language in the KAI system, designed to provide a familiar syntax for developers accustomed to languages like Python, JavaScript, or C++. While offering a comfortable programming experience, Rho maintains full access to KAI's powerful capabilities through its seamless integration with Pi and its native support for continuations.
 
+Rho serves as the primary application language in the KAI system, complementing Pi (the foundation language) and Tau (the interface definition language).
+
 ## Getting Started
 
 To get started with Rho:
 
-1. Read the [Rho Tutorial](RhoTutorial.md) for a comprehensive introduction
-2. Explore the [example scripts](../Test/Language/TestRho/Scripts/) for working code samples
-3. Run the demo with `./run_rho_demo.sh` to see Rho in action
+1. **Build the KAI System**: Use the [out-of-source build approach](OUT_OF_SOURCE_BUILD.md)
+   ```bash
+   # Create build directory and build the project
+   mkdir -p build && cd build
+   cmake ..
+   cmake --build .
+   ```
+   
+2. **Read the Documentation**: Start with the [Rho Tutorial](RhoTutorial.md) for a comprehensive introduction
+
+3. **Explore Examples**: Look through the [example scripts](../Test/Language/TestRho/Scripts/) for working code samples
+
+4. **Run the Demo**: Execute `./run_rho_demo.sh` to see Rho in action with a comprehensive demo
+
+5. **Try It Yourself**: Use the KAI Console application to write and execute your own Rho code
+   ```bash
+   # After building, run the console
+   ./bin/Console
+   ```
 
 ## Key Features
 
