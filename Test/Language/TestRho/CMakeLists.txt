@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.10)
 
+# Add subdirectory for new tests
+add_subdirectory(NewTests)
+
 # Add the new test file to the build
 # IMPORTANT: We need to be careful to avoid duplicate test definitions
 # Use either the original implementation files OR our fixed implementations, not both
@@ -15,6 +18,9 @@ add_library(TestRhoFiles OBJECT
     MinimalTest.cpp  # Super minimal test - should always pass
     DupTest.cpp  # Our new test for dup operation
     # ForLoopTests.cpp  # Temporarily disabled due to compilation errors
+    
+    # New tests with 20 additional test cases
+    NewTests/NewRhoTests.cpp
     
     # Our fixed implementation tests
     # This has all the basic implementations that we need
