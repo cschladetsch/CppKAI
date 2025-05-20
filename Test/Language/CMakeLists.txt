@@ -76,6 +76,8 @@ foreach (lang ${langs})
             ${source_path}/TauClassTests.cpp
             ${source_path}/TauCodeGenTests.cpp
             ${source_path}/NetworkConnectionTests.cpp
+            ${source_path}/TauAdvancedTypeTests.cpp        # Advanced type system tests
+            ${source_path}/TauCodeGenerationTests.cpp      # Code generation tests
         )
     else()
         # For other languages, use the standard approach
