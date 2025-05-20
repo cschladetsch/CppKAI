@@ -60,11 +60,12 @@
 
   Several sophisticated design patterns are evident:
 
-  1. Visitor Pattern: Used extensively in AST traversal and translation
-  2. Factory Pattern: Used for object creation through the Registry
-  3. Command Pattern: Operations are first-class objects
-  4. Composite Pattern: AST nodes form a tree structure
-  5. Interpreter Pattern: The core execution model
+  1. Observer Pattern: Implemented via the modern Event system, allowing objects to subscribe to and react to events
+  2. Visitor Pattern: Used extensively in AST traversal and translation
+  3. Factory Pattern: Used for object creation through the Registry
+  4. Command Pattern: Operations are first-class objects
+  5. Composite Pattern: AST nodes form a tree structure
+  6. Interpreter Pattern: The core execution model
 
   Testing Philosophy
 

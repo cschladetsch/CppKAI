@@ -20,6 +20,7 @@ The KAI documentation is organized into the following main categories:
 - [Tau Language](TauTutorial.md) - Interface definition language
 
 ### 3. Advanced Topics
+- [Event System](EventSystem.md) - Modern C++23 multi-cast event implementation with variadic templates
 - [Continuation Control](ContinuationControl.md) - Advanced control flow
 - [Network Iteration](NetworkIteration.md) - Distributed computing patterns
 - [Meaning](Meaning.md) - Philosophical foundations of KAI
@@ -76,6 +77,7 @@ When contributing to the documentation:
 
 Recent documentation improvements include:
 
+- **Modern Event System**: New C++23 implementation of the multi-cast event system
 - **Enhanced Rho Documentation**: Comprehensive coverage of the fixed binary operations
 - **New Demo Script**: Interactive demonstration of all Rho language features
 - **Build Documentation**: Improved guidance on building and testing the system

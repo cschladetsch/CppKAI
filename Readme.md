@@ -20,6 +20,10 @@ _KAI_ is a network distributed **Object Model** for C++ with full runtime reflec
 ## Recent Updates
 
 - **May 2025**: Added comprehensive fixes and improvements to the codebase
+- **Core system improvements**:
+  - **Modern Event System** - Completely rewritten Event implementation using C++23 features including variadic templates, concepts, and smart pointers
+  - **Enhanced type safety** - Strong type checking throughout the system
+  - **Memory safety improvements** - Reduced manual memory management
 - **Network improvements**:
   - **Configurable server and client** - JSON-configurable network components
   - **Remote calculation demo** - Demonstrates distributed calculation with "1+2=3"
@@ -37,7 +41,7 @@ _KAI_ is a network distributed **Object Model** for C++ with full runtime reflec
   - **Enhanced control structures** - Properly working if/else, for, while, and do-while loops
   - **Improved function handling** - Support for recursion, nested functions, and proper scoping
 - **Added a comprehensive demo** - Run `./Scripts/run_rho_demo.sh` to see all Rho features in action
-- **Expanded documentation** - New [Rho Language](Doc/RhoLanguage.md), [Rho Fix Documentation](Doc/Rho-Fix-Documentation.md), and [Networking Changes](Doc/NetworkingChanges.md)
+- **Expanded documentation** - New [Event System](Doc/EventSystem.md), [Rho Language](Doc/RhoLanguage.md), [Rho Fix Documentation](Doc/Rho-Fix-Documentation.md), and [Networking Changes](Doc/NetworkingChanges.md)
 - **Colored console output** for better readability with support for green INFO, yellow WARNING, and red ERROR messages
 - **Fixed test suite** to pass all tests with proper color formatting
 - **Direct test implementations** for Rho language to handle continuation issues
@@ -230,6 +234,7 @@ The GUI application provides:
 - [Tau Tutorial](Doc/TauTutorial.md) - Interface definition language
 
 ### Technical Documentation
+- [Event System](Doc/EventSystem.md) - Modern C++23 multi-cast event implementation
 - [Rho Fix Documentation](Doc/Rho-Fix-Documentation.md) - Details of recent Rho language fixes
 - [Networking](Doc/Networking.md) - Distributed computing capabilities
 - [Network Calculation Test](Doc/NetworkCalculationTest.md) - Details of the calculation demo

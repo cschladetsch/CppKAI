@@ -142,6 +142,29 @@ pi{
 total = sum @    // Retrieves the value stored in 'sum'
 ```
 
+### Event System
+
+```rho
+// Create an event
+onScoreChanged = CreateEvent()
+
+// Add event handlers
+onScoreChanged.addHandler(function(newScore) {
+    console.log("Score changed to: " + newScore)
+})
+
+// Add another handler
+onScoreChanged.addHandler(function(newScore) {
+    if (newScore > highScore) {
+        highScore = newScore
+    }
+})
+
+// Trigger the event
+score = 100
+onScoreChanged(score)  // Calls all registered handlers
+```
+
 ## Demo Script
 
 A comprehensive demo script is available at `Test/Language/TestRho/Scripts/Demo.rho`. This script showcases all the major features of Rho and can be run using the provided `Scripts/run_rho_demo.sh` script.
@@ -153,6 +176,7 @@ For more advanced usage of Rho, refer to these specialized documents:
 - [Continuations in Rho](ContinuationControl.md): Advanced control flow
 - [Rho-Pi Integration](CommonLanguageSystem.md): Working across language boundaries
 - [Type System](TypeSystem.md): Understanding type handling in Rho
+- [Event System](EventSystem.md): Using the modern C++23 event system from Rho
 
 ## Contributing
 
