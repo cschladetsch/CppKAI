@@ -2,6 +2,11 @@
 
 #include <KAI/Core/Config/Base.h>
 #include <KAI/Core/Debug.h>
+#include <concepts>
+#include <memory>
+#include <expected>
+#include <span>
+#include <system_error>
 
 KAI_BEGIN
 
@@ -39,32 +44,38 @@ struct IAllocator {
         if (ptr) ptr->~T();
     }
 
-    template <class T>
-    T *Allocate() {
+    template <typename T>
+        requires std::default_initializable<T>
+    std::expected<T*, std::error_code> Allocate() {
         size_t num_bytes = sizeof(T);
         VoidPtr bytes = AllocateBytes(num_bytes);
-        if (!bytes) return 0;
+        if (!bytes) 
+            return std::unexpected(std::make_error_code(std::errc::not_enough_memory));
+            
         T *ptr = reinterpret_cast<T *>(bytes);
         try {
             Construct(ptr);
         } catch (...) {
             DeAllocateBytes(bytes, num_bytes);
-            ptr = 0;
+            return std::unexpected(std::make_error_code(std::errc::invalid_argument));
         }
         return ptr;
     }
 
-    template <class T, class U>
-    T *Allocate(U const &val) {
+    template <typename T, typename U>
+        requires std::constructible_from<T, U>
+    std::expected<T*, std::error_code> Allocate(U const &val) {
         size_t num_bytes = sizeof(T);
         VoidPtr bytes = AllocateBytes(num_bytes);
-        if (!bytes) return 0;
+        if (!bytes) 
+            return std::unexpected(std::make_error_code(std::errc::not_enough_memory));
+            
         T *ptr = reinterpret_cast<T *>(bytes);
         try {
             Construct(ptr, val);
         } catch (...) {
             DeAllocateBytes(bytes, num_bytes);
-            ptr = 0;
+            return std::unexpected(std::make_error_code(std::errc::invalid_argument));
         }
         return ptr;
     }
@@ -84,20 +95,32 @@ struct IAllocator {
         DeAllocateBytes(reinterpret_cast<VoidPtr>(ptr), sizeof(T));
     }
 
-    template <class T>
-    T **AllocateArray(size_t N) {
+    template <typename T>
+        requires std::default_initializable<T>
+    std::expected<std::span<T>, std::error_code> AllocateArray(size_t N) {
         size_t num_bytes = sizeof(T) * N;
         VoidPtr base = AllocateBytes(num_bytes);
+        if (!base)
+            return std::unexpected(std::make_error_code(std::errc::not_enough_memory));
+            
+        T* typed_base = reinterpret_cast<T*>(base);
         try {
-            for (BytePtr ptr = reinterpret_cast<BytePtr>(base); N > 0; --N) {
-                Construct(reinterpret_cast<T *>(ptr));
-                ptr += sizeof(T);
+            for (size_t i = 0; i < N; ++i) {
+                Construct(typed_base + i);
             }
         } catch (...) {
+            // Clean up any constructed elements
+            for (size_t i = 0; i < N; ++i) {
+                try {
+                    Destruct(typed_base + i);
+                } catch (...) {
+                    // Ignore nested exceptions during cleanup
+                }
+            }
             DeAllocateBytes(base, num_bytes);
-            base = 0;
+            return std::unexpected(std::make_error_code(std::errc::invalid_argument));
         }
-        return base;
+        return std::span<T>(typed_base, N);
     }
 
     template <class T>

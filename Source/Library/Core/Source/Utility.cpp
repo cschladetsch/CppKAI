@@ -5,6 +5,10 @@
 
 #include <fstream>
 #include <iostream>
+#include <algorithm>
+#include <ranges>
+#include <string>
+#include <string_view>
 
 #include "KAI/Core/BuiltinTypes.h"
 #include "KAI/Core/Object/Reflected.h"
@@ -14,12 +18,11 @@
 
 KAI_BEGIN
 
-const char *ToLower(const char *text) {
-    char *out = (char *)(malloc(strlen(text) + 1));
-    size_t n;
-    for (n = 0; n < strlen(text); ++n) out[n] = (char)tolower(text[n]);
-
-    out[n] = 0;
+std::string ToLower(std::string_view text) {
+    std::string out;
+    out.reserve(text.size());
+    std::ranges::transform(text, std::back_inserter(out), 
+                          [](unsigned char c){ return std::tolower(c); });
     return out;
 }
 

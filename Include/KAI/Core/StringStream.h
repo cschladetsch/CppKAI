@@ -4,6 +4,8 @@
 #include <KAI/Core/Config/Base.h>
 
 #include <vector>
+#include <string_view>
+#include <compare>
 
 KAI_BEGIN
 
@@ -41,8 +43,8 @@ class StringStream {
 
     void SetRegistry(Registry *R) { registry = R; }
     void Append(Char);
-    void Append(const Char *);
-    void Append(const Char *A, const Char *B);
+    void Append(std::string_view);
+    void Append(std::string_view A, std::string_view B);
     void Append(const String &);
 
     bool Extract(int length, String &);
@@ -51,9 +53,8 @@ class StringStream {
 
     static void Register(Registry &);
 
-    friend bool operator==(StringStream const &, StringStream const &);
-    friend bool operator!=(StringStream const &, StringStream const &);
-    friend bool operator<(StringStream const &, StringStream const &);
+    friend auto operator<=>(StringStream const &, StringStream const &) = default;
+    friend bool operator==(StringStream const &, StringStream const &) = default;
 };
 
 struct EndsArgument {};

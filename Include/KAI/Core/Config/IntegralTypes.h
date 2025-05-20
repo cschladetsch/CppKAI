@@ -2,18 +2,18 @@
 
 #include <KAI/Core/Config/Base.h>
 
-#include <boost/integer.hpp>
+#include <cstdint>
 
 KAI_BEGIN
 
-typedef boost::int_t<8> int8;
-typedef boost::int_t<16> int16;
-typedef boost::int_t<32> int32;
-typedef boost::int_t<64> int64;
+using int8 = std::int8_t;
+using int16 = std::int16_t;
+using int32 = std::int32_t;
+using int64 = std::int64_t;
 
-typedef boost::uint_t<8> uint8;
-typedef boost::uint_t<16> uint16;
-typedef boost::uint_t<32> uint32;
-typedef boost::uint_t<64> uint64;
+using uint8 = std::uint8_t;
+using uint16 = std::uint16_t;
+using uint32 = std::uint32_t;
+using uint64 = std::uint64_t;
 
 KAI_END
