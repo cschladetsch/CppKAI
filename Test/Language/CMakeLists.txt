@@ -47,6 +47,7 @@ foreach (lang ${langs})
             ${source_path}/RhoAdvancedOperationsTests.cpp  # Advanced operations tests
             ${source_path}/RhoControlStructuresTests.cpp   # Control structures tests
             ${source_path}/RhoFunctionAndScopeTests.cpp    # Function and scope tests
+            ${source_path}/RhoAdvancedDataTests.cpp        # Advanced data structure tests
             ${source_path}/RhoDemo.cpp                    # Demo runner for showcasing features
         )
     elseif(lang STREQUAL "Pi")
