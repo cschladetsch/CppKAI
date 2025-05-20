@@ -3,14 +3,14 @@
 #include <fstream>
 #include <sstream>
 
-#include "KAI/Core/BuiltinTypes/Stack.h"
-#include "KAI/Core/BuiltinTypes/Map.h"
 #include "KAI/Core/BuiltinTypes/Array.h"
+#include "KAI/Core/BuiltinTypes/Map.h"
+#include "KAI/Core/BuiltinTypes/Stack.h"
 #include "KAI/Core/BuiltinTypes/String.h"
 #include "KAI/Core/Config/Base.h"
-#include "KAI/Core/Logger.h"
 #include "KAI/Core/Debug.h"
 #include "KAI/Core/Exception/Exception.h"
+#include "KAI/Core/Logger.h"
 #include "TestLangCommon.h"
 
 using namespace kai;
@@ -21,7 +21,7 @@ struct RhoAdvancedDataTests : TestLangCommon {
     void SetUp() override {
         TestLangCommon::SetUp();
         console_.SetLanguage(Language::Rho);
-        
+
         // Register additional types needed for tests
         reg_->AddClass<Map>(Label("Map"));
         reg_->AddClass<Array>(Label("Array"));
@@ -29,105 +29,118 @@ struct RhoAdvancedDataTests : TestLangCommon {
         reg_->AddClass<int>(Label("int"));
         reg_->AddClass<float>(Label("float"));
         reg_->AddClass<bool>(Label("bool"));
-        
+
         // Clear stacks to start fresh
         exec_->ClearStacks();
         exec_->ClearContext();
     }
-    
+
     // Helper method to execute Rho code and verify the result
     template <typename T>
     void ExecuteRhoAndVerify(const std::string& code, const T& expected) {
         // Clear the stack first
         exec_->ClearStacks();
-        
+
         // Execute the Rho code
         console_.Execute(code);
-        
+
         // Process the stack to extract values from continuations
         UnwrapStackValues();
-        
+
         // Verify the result
-        ASSERT_FALSE(data_->Empty()) << "Stack should not be empty after operation";
-        ASSERT_TRUE(data_->Top().IsType<T>()) 
-            << "Expected result type " << typeid(T).name() 
-            << " but got " << (data_->Top().Exists() 
-                             ? data_->Top().GetClass()->GetName().ToString() 
-                             : "null");
-        ASSERT_EQ(ConstDeref<T>(data_->Top()), expected) 
-            << "Expected value " << expected << " but got " << ConstDeref<T>(data_->Top());
+        ASSERT_FALSE(data_->Empty())
+            << "Stack should not be empty after operation";
+        ASSERT_TRUE(data_->Top().IsType<T>())
+            << "Expected result type " << typeid(T).name() << " but got "
+            << (data_->Top().Exists()
+                    ? data_->Top().GetClass()->GetName().ToString()
+                    : "null");
+        ASSERT_EQ(ConstDeref<T>(data_->Top()), expected)
+            << "Expected value " << expected << " but got "
+            << ConstDeref<T>(data_->Top());
     }
-    
+
     // Helper to verify string results
-    void ExecuteRhoAndVerifyString(const std::string& code, const std::string& expected) {
+    void ExecuteRhoAndVerifyString(const std::string& code,
+                                   const std::string& expected) {
         ExecuteRhoAndVerify<String>(code, String(expected));
     }
-    
+
     // Helper to verify array operations
     void VerifyArrayResult(const std::string& code, std::vector<int> expected) {
         // Clear the stack first
         exec_->ClearStacks();
-        
+
         // Execute the Rho code
         console_.Execute(code);
-        
+
         // Process the stack
         UnwrapStackValues();
-        
+
         // Verify the result is an array
-        ASSERT_FALSE(data_->Empty()) << "Stack should not be empty after operation";
-        ASSERT_TRUE(data_->Top().IsType<Array>()) 
-            << "Expected Array type but got " 
-            << (data_->Top().Exists() ? data_->Top().GetClass()->GetName().ToString() : "null");
-        
+        ASSERT_FALSE(data_->Empty())
+            << "Stack should not be empty after operation";
+        ASSERT_TRUE(data_->Top().IsType<Array>())
+            << "Expected Array type but got "
+            << (data_->Top().Exists()
+                    ? data_->Top().GetClass()->GetName().ToString()
+                    : "null");
+
         Pointer<Array> arr = data_->Top();
-        
+
         // Verify array size
-        ASSERT_EQ(arr->Size(), expected.size()) << "Array size doesn't match expected size";
-        
+        ASSERT_EQ(arr->Size(), expected.size())
+            << "Array size doesn't match expected size";
+
         // Verify array elements
         for (size_t i = 0; i < expected.size() && i < arr->Size(); i++) {
-            ASSERT_TRUE(arr->At(i).IsType<int>()) 
+            ASSERT_TRUE(arr->At(i).IsType<int>())
                 << "Array element " << i << " is not an integer";
-            ASSERT_EQ(ConstDeref<int>(arr->At(i)), expected[i]) 
+            ASSERT_EQ(ConstDeref<int>(arr->At(i)), expected[i])
                 << "Array element " << i << " doesn't match expected value";
         }
     }
-    
+
     // Helper to verify map operations
-    void VerifyMapKeyValues(const std::string& code, std::vector<std::pair<String, int>> expected) {
+    void VerifyMapKeyValues(const std::string& code,
+                            std::vector<std::pair<String, int>> expected) {
         // Clear the stack first
         exec_->ClearStacks();
-        
+
         // Execute the Rho code
         console_.Execute(code);
-        
+
         // Process the stack
         UnwrapStackValues();
-        
+
         // Verify the result is a map
-        ASSERT_FALSE(data_->Empty()) << "Stack should not be empty after operation";
-        ASSERT_TRUE(data_->Top().IsType<Map>()) 
-            << "Expected Map type but got " 
-            << (data_->Top().Exists() ? data_->Top().GetClass()->GetName().ToString() : "null");
-        
+        ASSERT_FALSE(data_->Empty())
+            << "Stack should not be empty after operation";
+        ASSERT_TRUE(data_->Top().IsType<Map>())
+            << "Expected Map type but got "
+            << (data_->Top().Exists()
+                    ? data_->Top().GetClass()->GetName().ToString()
+                    : "null");
+
         Pointer<Map> map = data_->Top();
-        
+
         // Verify map size
-        ASSERT_EQ(map->Size(), expected.size()) << "Map size doesn't match expected size";
-        
+        ASSERT_EQ(map->Size(), expected.size())
+            << "Map size doesn't match expected size";
+
         // Verify map entries
         for (const auto& [key, expectedValue] : expected) {
             Object keyObj = reg_->New<String>(key);
-            ASSERT_TRUE(map->Contains(keyObj)) 
+            ASSERT_TRUE(map->Contains(keyObj))
                 << "Map does not contain expected key: " << key;
-            
+
             Object valueObj = map->Get(keyObj);
-            ASSERT_TRUE(valueObj.IsType<int>()) 
+            ASSERT_TRUE(valueObj.IsType<int>())
                 << "Map value for key " << key << " is not an integer";
-            
-            ASSERT_EQ(ConstDeref<int>(valueObj), expectedValue) 
-                << "Map value for key " << key << " doesn't match expected value";
+
+            ASSERT_EQ(ConstDeref<int>(valueObj), expectedValue)
+                << "Map value for key " << key
+                << " doesn't match expected value";
         }
     }
 };
@@ -137,8 +150,7 @@ TEST_F(RhoAdvancedDataTests, ArrayCreationAndAccess) {
     VerifyArrayResult(
         "arr = [10, 20, 30, 40, 50];\n"
         "arr;",
-        {10, 20, 30, 40, 50}
-    );
+        {10, 20, 30, 40, 50});
 }
 
 // 2. Test array element modification
@@ -147,8 +159,7 @@ TEST_F(RhoAdvancedDataTests, ArrayElementModification) {
         "arr = [10, 20, 30, 40, 50];\n"
         "arr[2] = 99;\n"
         "arr;",
-        {10, 20, 99, 40, 50}
-    );
+        {10, 20, 99, 40, 50});
 }
 
 // 3. Test array concatenation
@@ -157,8 +168,7 @@ TEST_F(RhoAdvancedDataTests, ArrayConcatenation) {
         "arr1 = [1, 2, 3];\n"
         "arr2 = [4, 5, 6];\n"
         "arr1 + arr2;",
-        {1, 2, 3, 4, 5, 6}
-    );
+        {1, 2, 3, 4, 5, 6});
 }
 
 // 4. Test array slicing
@@ -166,8 +176,7 @@ TEST_F(RhoAdvancedDataTests, ArraySlicing) {
     VerifyArrayResult(
         "arr = [10, 20, 30, 40, 50];\n"
         "arr.slice(1, 4);",  // Elements at index 1, 2, 3
-        {20, 30, 40}
-    );
+        {20, 30, 40});
 }
 
 // 5. Test array iteration with map-like operation
@@ -179,8 +188,7 @@ TEST_F(RhoAdvancedDataTests, ArrayMapOperation) {
         "    result.push(arr[i] * 2);\n"
         "}\n"
         "result;",
-        {2, 4, 6, 8, 10}
-    );
+        {2, 4, 6, 8, 10});
 }
 
 // 6. Test array filtering
@@ -194,8 +202,7 @@ TEST_F(RhoAdvancedDataTests, ArrayFilterOperation) {
         "    }\n"
         "}\n"
         "result;",
-        {2, 4, 6, 8, 10}
-    );
+        {2, 4, 6, 8, 10});
 }
 
 // 7. Test array reduction (sum)
@@ -207,8 +214,7 @@ TEST_F(RhoAdvancedDataTests, ArrayReduceSum) {
         "    sum = sum + arr[i];\n"
         "}\n"
         "sum;",
-        15
-    );
+        15);
 }
 
 // 8. Test nested arrays
@@ -216,8 +222,7 @@ TEST_F(RhoAdvancedDataTests, NestedArrays) {
     ExecuteRhoAndVerify<int>(
         "matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];\n"
         "matrix[1][1];",  // Access element at row 1, column 1 (5)
-        5
-    );
+        5);
 }
 
 // 9. Test map creation and access
@@ -228,8 +233,7 @@ TEST_F(RhoAdvancedDataTests, MapCreationAndAccess) {
         "map['two'] = 2;\n"
         "map['three'] = 3;\n"
         "map;",
-        {{"one", 1}, {"two", 2}, {"three", 3}}
-    );
+        {{"one", 1}, {"two", 2}, {"three", 3}});
 }
 
 // 10. Test map value update
@@ -240,8 +244,7 @@ TEST_F(RhoAdvancedDataTests, MapValueUpdate) {
         "map['two'] = 2;\n"
         "map['one'] = 10;\n"  // Update value
         "map;",
-        {{"one", 10}, {"two", 2}}
-    );
+        {{"one", 10}, {"two", 2}});
 }
 
 // 11. Test map iteration
@@ -258,8 +261,7 @@ TEST_F(RhoAdvancedDataTests, MapIteration) {
         "    sum = sum + map[key];\n"
         "}\n"
         "sum;",
-        30
-    );
+        30);
 }
 
 // 12. Test complex data structure (array of maps)
@@ -271,8 +273,7 @@ TEST_F(RhoAdvancedDataTests, ArrayOfMaps) {
         "    { 'name': 'Charlie', 'age': 35, 'score': 78 }\n"
         "];\n"
         "users[1]['score'];",  // Access Bob's score
-        92
-    );
+        92);
 }
 
 // 13. Test complex data structure manipulation
@@ -302,8 +303,7 @@ TEST_F(RhoAdvancedDataTests, StringArrayOperations) {
         "    message = message + words[i];\n"
         "}\n"
         "message;",
-        "Hello World!"
-    );
+        "Hello World!");
 }
 
 // 15. Test higher order function simulation (passing functions as values)
@@ -322,8 +322,7 @@ TEST_F(RhoAdvancedDataTests, HigherOrderFunctions) {
         "}\n"
         "result = applyOperation(10, 5, 'multiply');\n"
         "result;",
-        50
-    );
+        50);
 }
 
 // 16. Test closures simulation
@@ -341,8 +340,7 @@ TEST_F(RhoAdvancedDataTests, ClosureSimulation) {
         "counter();\n"  // Returns 11
         "counter();\n"  // Returns 12
         "counter();",   // Returns 13
-        13
-    );
+        13);
 }
 
 // 17. Test advanced map manipulations
@@ -356,11 +354,11 @@ TEST_F(RhoAdvancedDataTests, AdvancedMapManipulations) {
         "};\n"
         "function buildConnectionString(config) {\n"
         "    protocol = config['secure'] ? 'https' : 'http';\n"
-        "    return protocol + '://' + config['server'] + ':' + config['port'];\n"
+        "    return protocol + '://' + config['server'] + ':' + "
+        "config['port'];\n"
         "}\n"
         "buildConnectionString(config);",
-        "https://api.example.com:8080"
-    );
+        "https://api.example.com:8080");
 }
 
 // 18. Test array sorting algorithm
@@ -382,8 +380,7 @@ TEST_F(RhoAdvancedDataTests, ArraySorting) {
         "}\n"
         "unsortedArray = [64, 34, 25, 12, 22, 11, 90];\n"
         "bubbleSort(unsortedArray);",
-        {11, 12, 22, 25, 34, 64, 90}
-    );
+        {11, 12, 22, 25, 34, 64, 90});
 }
 
 // 19. Test complex return value from function
@@ -415,8 +412,7 @@ TEST_F(RhoAdvancedDataTests, ComplexReturnValue) {
         "data = [4, 7, 2, 9, 3];\n"
         "result = processData(data);\n"
         "result['max'];",
-        9
-    );
+        9);
 }
 
 // 20. Test data transformation pipeline
@@ -453,6 +449,5 @@ TEST_F(RhoAdvancedDataTests, DataTransformationPipeline) {
         "step2 = doubleValues(step1);        // [4, 8, 12, 16, 20]\n"
         "step3 = addOffset(step2, 5);        // [9, 13, 17, 21, 25]\n"
         "step3;",
-        {9, 13, 17, 21, 25}
-    );
+        {9, 13, 17, 21, 25});
 }

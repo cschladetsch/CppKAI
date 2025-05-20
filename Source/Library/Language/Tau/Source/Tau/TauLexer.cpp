@@ -77,8 +77,8 @@ bool TauLexer::NextToken() {
         case ']':
             return Add(Enum::ArrayProxy);  // Reuse ArrayProxy as close bracket
         case ':':
-            // Handle visibility modifiers - simplified to avoid using Previous()
-            // Just treat any colon as a semicolon equivalent
+            // Handle visibility modifiers - simplified to avoid using
+            // Previous() Just treat any colon as a semicolon equivalent
             return Add(Enum::Semi);  // Reuse semi token for colons in general
         case ',':
             return Add(Enum::Comma);
@@ -111,19 +111,22 @@ bool TauLexer::NextToken() {
                 int start = offset;
                 int depth = 1;
                 Next();  // consume '<'
-                
-                // Simple implementation that just captures the entire template parameter
-                // and treats it as an identifier - we're not doing full template parsing yet
+
+                // Simple implementation that just captures the entire template
+                // parameter and treats it as an identifier - we're not doing
+                // full template parsing yet
                 while (depth > 0 && Current() != 0) {
                     if (Current() == '<') depth++;
                     if (Current() == '>') depth--;
-                    if (depth > 0) Next();
-                    else break;  // Don't consume the final '>'
+                    if (depth > 0)
+                        Next();
+                    else
+                        break;  // Don't consume the final '>'
                 }
-                
+
                 // Consume the final '>'
                 if (Current() == '>') Next();
-                
+
                 return Add(Enum::Ident, Slice(start, offset));
             }
         case '>':

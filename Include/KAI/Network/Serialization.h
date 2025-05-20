@@ -25,50 +25,50 @@ class NetworkSerializer {
             }
 
             // Create a BinaryStream with the object's registry
-            Registry* reg = object.GetRegistry();
-            if (!reg)
-            {
+            Registry *reg = object.GetRegistry();
+            if (!reg) {
                 // Handle null registry
                 unsigned int size = 0;
                 bitStream.Write(size);
                 return;
             }
             BinaryStream stream(*reg);
-            
+
             // Write the object type number for type checking on deserialization
             Type::Number typeNumber = object.GetTypeNumber();
-            stream.Write(sizeof(typeNumber), reinterpret_cast<const char*>(&typeNumber));
-            
+            stream.Write(sizeof(typeNumber),
+                         reinterpret_cast<const char *>(&typeNumber));
+
             // Serialize the object to the BinaryStream
             stream << object;
-            
+
             // Write the size of the serialized data
             unsigned int size = stream.Size();
             bitStream.Write(size);
-            
+
             // Write the serialized data
             if (size > 0) {
-                bitStream.Write((const char*)stream.Begin(), size);
+                bitStream.Write((const char *)stream.Begin(), size);
             }
-        } catch (const Exception::Base& e) {
+        } catch (const Exception::Base &e) {
             // Handle KAI serialization errors
             unsigned int size = 0;
             bitStream.Write(size);
-            
+
             // Optionally, log the error
             KAI_TRACE_ERROR() << "Error serializing object: " << e.ToString();
-        } catch (const std::exception& e) {
+        } catch (const std::exception &e) {
             // Handle standard exceptions
             unsigned int size = 0;
             bitStream.Write(size);
-            
+
             // Optionally, log the error
             KAI_TRACE_ERROR() << "Error serializing object: " << e.what();
         } catch (...) {
             // Handle unknown serialization errors
             unsigned int size = 0;
             bitStream.Write(size);
-            
+
             // Optionally, log the error
             KAI_TRACE_ERROR() << "Unknown error serializing object";
         }

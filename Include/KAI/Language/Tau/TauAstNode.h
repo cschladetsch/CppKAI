@@ -20,13 +20,14 @@ struct TauAstEnumType {
         Module = 6,
         Argument = 7,
         Arglist = 8,
-        Value = 9,  // For field assignments and default parameters
-        Inherits = 10, // For inheritance relationships
-        Interface = 11, // For interface declarations
-        Event = 12,     // For event declarations
-        Struct = 13,    // For struct declarations
-        EnumType = 14,  // For enum declarations
-        MemberAccess = 15, // For member access expressions like ConnectionState.Disconnected
+        Value = 9,          // For field assignments and default parameters
+        Inherits = 10,      // For inheritance relationships
+        Interface = 11,     // For interface declarations
+        Event = 12,         // For event declarations
+        Struct = 13,        // For struct declarations
+        EnumType = 14,      // For enum declarations
+        MemberAccess = 15,  // For member access expressions like
+                            // ConnectionState.Disconnected
     };
 
     struct Node : AstNodeBase<TauToken, TauAstEnumType> {

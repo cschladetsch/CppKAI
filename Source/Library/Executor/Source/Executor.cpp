@@ -83,8 +83,9 @@ BinaryPacket &operator>>(BinaryPacket &stream, Executor &exec) {
 
 // ======================= Stack Operations ========================
 
-// Helper method to recursively unwrap continuations and extract primitive values
-Object Executor::UnwrapValue(const Object& value) {
+// Helper method to recursively unwrap continuations and extract primitive
+// values
+Object Executor::UnwrapValue(const Object &value) {
     // Base case: If the value is not a continuation, return it directly
     if (!value.IsType<Continuation>()) {
         return value;
@@ -92,7 +93,7 @@ Object Executor::UnwrapValue(const Object& value) {
 
     // Get the continuation
     Pointer<const Continuation> cont = value;
-    
+
     // Check for invalid continuations
     if (!cont.Exists() || !cont->GetCode().Exists()) {
         return value;
@@ -100,17 +101,17 @@ Object Executor::UnwrapValue(const Object& value) {
 
     // Get the code
     Pointer<const Array> code = cont->GetCode();
-    
+
     // Empty continuations can't be unwrapped
     if (code->Size() == 0) {
         return value;
     }
-    
+
     // Case 1: Single value in the continuation
     if (code->Size() == 1) {
         Object singleValue = code->At(0);
         // If it's a primitive type, return it directly
-        if (singleValue.IsType<int>() || singleValue.IsType<float>() || 
+        if (singleValue.IsType<int>() || singleValue.IsType<float>() ||
             singleValue.IsType<bool>() || singleValue.IsType<String>()) {
             return singleValue;
         }
@@ -120,36 +121,41 @@ Object Executor::UnwrapValue(const Object& value) {
         }
         return singleValue;
     }
-    
+
     // Case 2: ContinuationBegin, value, ContinuationEnd pattern
     if (code->Size() == 3) {
         Object first = code->At(0);
         Object middle = code->At(1);
         Object last = code->At(2);
-        
+
         // Check for ContinuationBegin/End markers
         if (first.IsType<Operation>() && last.IsType<Operation>()) {
-            Operation::Type firstOp = ConstDeref<Operation>(first).GetTypeNumber();
-            Operation::Type lastOp = ConstDeref<Operation>(last).GetTypeNumber();
-            
-            if (firstOp == Operation::ContinuationBegin && lastOp == Operation::ContinuationEnd) {
+            Operation::Type firstOp =
+                ConstDeref<Operation>(first).GetTypeNumber();
+            Operation::Type lastOp =
+                ConstDeref<Operation>(last).GetTypeNumber();
+
+            if (firstOp == Operation::ContinuationBegin &&
+                lastOp == Operation::ContinuationEnd) {
                 // If the middle value is a primitive type, return it directly
-                if (middle.IsType<int>() || middle.IsType<float>() || 
+                if (middle.IsType<int>() || middle.IsType<float>() ||
                     middle.IsType<bool>() || middle.IsType<String>()) {
                     return middle;
                 }
-                // If the middle value is another continuation, recursively unwrap it
+                // If the middle value is another continuation, recursively
+                // unwrap it
                 if (middle.IsType<Continuation>()) {
                     return UnwrapValue(middle);
                 }
                 return middle;
             }
         }
-        
+
         // Check for binary operation pattern: value, value, operation
-        if (!first.IsType<Operation>() && !middle.IsType<Operation>() && last.IsType<Operation>()) {
+        if (!first.IsType<Operation>() && !middle.IsType<Operation>() &&
+            last.IsType<Operation>()) {
             Operation::Type op = ConstDeref<Operation>(last).GetTypeNumber();
-            
+
             // Only handle binary operations
             if (IsBinaryOp(op)) {
                 // Directly compute the result with the appropriate type
@@ -157,25 +163,31 @@ Object Executor::UnwrapValue(const Object& value) {
             }
         }
     }
-    
-    // Case 3: ContinuationBegin, value1, value2, operation, ContinuationEnd pattern
+
+    // Case 3: ContinuationBegin, value1, value2, operation, ContinuationEnd
+    // pattern
     if (code->Size() == 5) {
         Object first = code->At(0);
         Object val1 = code->At(1);
         Object val2 = code->At(2);
         Object op = code->At(3);
         Object last = code->At(4);
-        
+
         // Check for ContinuationBegin/End markers
         if (first.IsType<Operation>() && last.IsType<Operation>()) {
-            Operation::Type firstOp = ConstDeref<Operation>(first).GetTypeNumber();
-            Operation::Type lastOp = ConstDeref<Operation>(last).GetTypeNumber();
-            
-            if (firstOp == Operation::ContinuationBegin && lastOp == Operation::ContinuationEnd) {
+            Operation::Type firstOp =
+                ConstDeref<Operation>(first).GetTypeNumber();
+            Operation::Type lastOp =
+                ConstDeref<Operation>(last).GetTypeNumber();
+
+            if (firstOp == Operation::ContinuationBegin &&
+                lastOp == Operation::ContinuationEnd) {
                 // Check for binary operation pattern: value, value, operation
-                if (!val1.IsType<Operation>() && !val2.IsType<Operation>() && op.IsType<Operation>()) {
-                    Operation::Type opType = ConstDeref<Operation>(op).GetTypeNumber();
-                    
+                if (!val1.IsType<Operation>() && !val2.IsType<Operation>() &&
+                    op.IsType<Operation>()) {
+                    Operation::Type opType =
+                        ConstDeref<Operation>(op).GetTypeNumber();
+
                     // Only handle binary operations
                     if (IsBinaryOp(opType)) {
                         // Directly compute the result with the appropriate type
@@ -185,7 +197,7 @@ Object Executor::UnwrapValue(const Object& value) {
             }
         }
     }
-    
+
     // If we can't unwrap it, return the original value
     return value;
 }
@@ -194,27 +206,24 @@ void Executor::Push(Object const &Q) {
     // If it's a continuation, try to unwrap it before pushing
     if (Q.IsType<Continuation>()) {
         Object unwrapped = UnwrapValue(Q);
-        
-        // Push the unwrapped value if it's different, otherwise push the original
+
+        // Push the unwrapped value if it's different, otherwise push the
+        // original
         if (unwrapped != Q) {
             // Push the referenced object if needed.
             if (unwrapped.GetTypeNumber() == Type::Number::Object) {
                 Push(*data_, ConstDeref<Object>(unwrapped));
-            }
-            else {
+            } else {
                 Push(*data_, unwrapped);
             }
-        }
-        else {
+        } else {
             Push(*data_, Q);
         }
-    }
-    else {
+    } else {
         // Push the referenced object if needed.
         if (Q.GetTypeNumber() == Type::Number::Object) {
             Push(*data_, ConstDeref<Object>(Q));
-        }
-        else {
+        } else {
             Push(*data_, Q);
         }
     }

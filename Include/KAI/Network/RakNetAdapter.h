@@ -27,8 +27,8 @@ inline void Shutdown() {
 
 // This function creates a real packet that we can use with our custom
 // NetworkPeer implementation
-inline RakNet::Packet* CreatePacket(RakNet::MessageID msgId, 
-                                  const RakNet::SystemAddress& addr) {
+inline RakNet::Packet* CreatePacket(RakNet::MessageID msgId,
+                                    const RakNet::SystemAddress& addr) {
     RakNet::Packet* packet = new RakNet::Packet();
     packet->systemAddress = addr;
     packet->length = sizeof(RakNet::MessageID);
@@ -37,8 +37,8 @@ inline RakNet::Packet* CreatePacket(RakNet::MessageID msgId,
     return packet;
 }
 
-} // namespace RakNetAdapter
-} // namespace Network
-} // namespace KAI
+}  // namespace RakNetAdapter
+}  // namespace Network
+}  // namespace KAI
 
-#endif // KAI_USE_RAKNET_STUB
+#endif  // KAI_USE_RAKNET_STUB

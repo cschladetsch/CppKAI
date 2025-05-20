@@ -5,9 +5,9 @@
 
 #include "KAI/Core/BuiltinTypes/Stack.h"
 #include "KAI/Core/Config/Base.h"
-#include "KAI/Core/Logger.h" 
 #include "KAI/Core/Debug.h"
 #include "KAI/Core/Exception.h"
+#include "KAI/Core/Logger.h"
 #include "KAI/Language/Rho/RhoParser.h"
 #include "KAI/Language/Rho/RhoTranslator.h"
 #include "TestLangCommon.h"
@@ -20,43 +20,46 @@ struct RhoAdvancedTests : TestLangCommon {
     void SetUp() override {
         TestLangCommon::SetUp();
         console_.SetLanguage(Language::Rho);
-        
+
         // Register basic types needed for tests
         reg_->AddClass<int>(Label("int"));
         reg_->AddClass<float>(Label("float"));
         reg_->AddClass<bool>(Label("bool"));
         reg_->AddClass<String>(Label("String"));
-        
+
         // Clear stacks to start fresh
         exec_->ClearStacks();
         exec_->ClearContext();
     }
-    
+
     // Helper method to execute Rho code and verify the result
     template <typename T>
     void ExecuteRhoAndVerify(const std::string& code, const T& expected) {
         // Clear the stack first
         exec_->ClearStacks();
-        
+
         // Execute the Rho code
         console_.Execute(code);
-        
+
         // Process the stack to extract values from continuations
         UnwrapStackValues();
-        
+
         // Verify the result
-        ASSERT_FALSE(data_->Empty()) << "Stack should not be empty after operation";
-        ASSERT_TRUE(data_->Top().IsType<T>()) 
-            << "Expected result type " << typeid(T).name() 
-            << " but got " << (data_->Top().Exists() 
-                             ? data_->Top().GetClass()->GetName().ToString() 
-                             : "null");
-        ASSERT_EQ(ConstDeref<T>(data_->Top()), expected) 
-            << "Expected value " << expected << " but got " << ConstDeref<T>(data_->Top());
+        ASSERT_FALSE(data_->Empty())
+            << "Stack should not be empty after operation";
+        ASSERT_TRUE(data_->Top().IsType<T>())
+            << "Expected result type " << typeid(T).name() << " but got "
+            << (data_->Top().Exists()
+                    ? data_->Top().GetClass()->GetName().ToString()
+                    : "null");
+        ASSERT_EQ(ConstDeref<T>(data_->Top()), expected)
+            << "Expected value " << expected << " but got "
+            << ConstDeref<T>(data_->Top());
     }
-    
+
     // Helper to verify string results
-    void ExecuteRhoAndVerifyString(const std::string& code, const std::string& expected) {
+    void ExecuteRhoAndVerifyString(const std::string& code,
+                                   const std::string& expected) {
         ExecuteRhoAndVerify<String>(code, String(expected));
     }
 };
@@ -116,7 +119,8 @@ TEST_F(RhoAdvancedTests, BitwiseOperations) {
     ExecuteRhoAndVerify<int>("~5 & 15", 10);  // ~101 & 1111 = 1010
     ExecuteRhoAndVerify<int>("1 << 3", 8);    // 1 << 3 = 1000
     ExecuteRhoAndVerify<int>("8 >> 2", 2);    // 1000 >> 2 = 10
-    ExecuteRhoAndVerify<int>("(5 & 3) | (4 & 2)", 1);  // (101 & 011) | (100 & 010) = 001 | 000 = 001
+    ExecuteRhoAndVerify<int>("(5 & 3) | (4 & 2)",
+                             1);  // (101 & 011) | (100 & 010) = 001 | 000 = 001
 }
 
 // Boolean logic operations
@@ -179,7 +183,8 @@ TEST_F(RhoAdvancedTests, StringOperations) {
 
 // Complex string operations
 TEST_F(RhoAdvancedTests, ComplexStringOperations) {
-    ExecuteRhoAndVerifyString("\"prefix-\" + (\"middle\" + \"-suffix\")", "prefix-middle-suffix");
+    ExecuteRhoAndVerifyString("\"prefix-\" + (\"middle\" + \"-suffix\")",
+                              "prefix-middle-suffix");
     ExecuteRhoAndVerify<bool>("(\"a\" + \"b\") == (\"a\" + \"b\")", true);
     ExecuteRhoAndVerify<bool>("(\"a\" + \"b\") != (\"a\" + \"c\")", true);
     ExecuteRhoAndVerify<bool>("\"a\" + \"b\" < \"a\" + \"c\"", true);
@@ -189,7 +194,8 @@ TEST_F(RhoAdvancedTests, ComplexStringOperations) {
 
 // String and number operations
 TEST_F(RhoAdvancedTests, StringNumberOperations) {
-    ExecuteRhoAndVerifyString("\"The answer is: \" + (40 + 2)", "The answer is: 42");
+    ExecuteRhoAndVerifyString("\"The answer is: \" + (40 + 2)",
+                              "The answer is: 42");
     ExecuteRhoAndVerifyString("\"Pi: \" + 3.14159", "Pi: 3.14159");
     ExecuteRhoAndVerifyString("\"Count: \" + 10", "Count: 10");
     ExecuteRhoAndVerifyString("\"Bool: \" + true", "Bool: true");

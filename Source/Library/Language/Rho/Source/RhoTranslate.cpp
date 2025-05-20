@@ -25,25 +25,25 @@ void RhoTranslator::TranslateNode(AstNodePtr node) {
         case AstNodeEnum::None:
             KAI_TRACE() << "Empty node encountered, skipping";
             break;
-            
+
         case AstNodeEnum::Program:
             KAI_TRACE() << "Processing Program node";
             for (const auto& child : node->GetChildren()) {
                 TranslateNode(child);
             }
             break;
-            
+
         case AstNodeEnum::TokenType:
-            KAI_TRACE() << "Processing token node: " 
-                << RhoTokenEnumType::ToString(node->GetToken().type);
+            KAI_TRACE() << "Processing token node: "
+                        << RhoTokenEnumType::ToString(node->GetToken().type);
             TranslateToken(node);
             break;
-            
+
         default:
             // Log warning about unhandled node type but continue
-            KAI_TRACE() << "Node type not fully implemented: " 
-                << RhoAstNodeEnumType::ToString(node->GetType());
-            
+            KAI_TRACE() << "Node type not fully implemented: "
+                        << RhoAstNodeEnumType::ToString(node->GetType());
+
             // Recursively process child nodes so we don't completely halt
             for (const auto& child : node->GetChildren()) {
                 TranslateNode(child);

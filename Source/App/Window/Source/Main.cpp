@@ -278,7 +278,7 @@ GLFWwindow* SetupGui() {
 void LoadFont() {
     // Get IO but don't save reference to avoid unused variable warning
     ImGui::GetIO();
-    
+
     ImFontConfig config;
     config.OversampleH = 3;
     config.OversampleV = 1;

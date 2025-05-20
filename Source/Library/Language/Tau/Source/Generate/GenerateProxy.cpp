@@ -100,11 +100,11 @@ bool GenerateProxy::Class(Node const &cl) {
             case TauAstEnumType::Method:
                 if (!Method(*member)) return false;
                 break;
-                
+
             case TauAstEnumType::Event:
                 if (!Event(*member)) return false;
                 break;
-                
+
             case TauAstEnumType::Interface:
                 if (!Interface(*member)) return false;
                 break;
@@ -133,41 +133,41 @@ bool GenerateProxy::Interface(Node const &interface) {
 bool GenerateProxy::Event(Node const &event) {
     const auto name = event.GetTokenText();
     const auto args = event.GetChild(0)->GetChildren();
-    
+
     // Generate event registration method
     Output() << "void Register" << name << "Handler(std::function<void(";
-    
+
     // Generate parameter list for event handler
     bool first = true;
     for (auto const &a : args) {
         if (!first) Output() << ", ";
-        
+
         auto &ty = a->GetChild(0);
         Output() << ty->GetTokenText();
-        
+
         first = false;
     }
-    
+
     Output() << ")> handler)";
     StartBlock();
     Output() << "RegisterEventHandler(\"" << name << "\", handler);";
     EndBlock();
     Output() << EndLine();
-    
+
     // Generate event unregistration method
     Output() << "void Unregister" << name << "Handler()";
     StartBlock();
     Output() << "UnregisterEventHandler(\"" << name << "\");";
     EndBlock();
     Output() << EndLine();
-    
+
     return true;
 }
 
 bool GenerateProxy::Property(Node const &prop) {
     auto type = prop.GetChild(0)->GetTokenText();
     auto name = prop.GetChild(1)->GetTokenText();
-    
+
     // Generate property getter
     Output() << ReturnType(type);
     Output() << " " << name << "()";
@@ -175,14 +175,14 @@ bool GenerateProxy::Property(Node const &prop) {
     Output() << "return Fetch<" << type << ">(\"" << name << "\");";
     EndBlock();
     Output() << EndLine();
-    
+
     // Generate property setter
     Output() << "void Set" << name << "(" << type << " value)";
     StartBlock();
     Output() << "Store(\"" << name << "\", value);";
     EndBlock();
     Output() << EndLine();
-    
+
     return true;
 }
 

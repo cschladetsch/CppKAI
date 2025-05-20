@@ -3,8 +3,8 @@
 #include <iostream>
 #include <string>
 
-#include "KAI/Core/BuiltinTypes.h"
 #include "KAI/Console/Console.h"
+#include "KAI/Core/BuiltinTypes.h"
 #include "KAI/Core/Object/ClassBuilder.h"
 #include "KAI/Executor/Operation.h"
 #include "TestLangCommon.h"
@@ -14,20 +14,21 @@ using namespace std;
 
 // Class for running Rho scripts in our test environment
 class RhoScriptTest : public TestLangCommon {
-protected:
+   protected:
     bool RunRhoScript(const std::string& script) {
         console_.SetLanguage(Language::Rho);
         data_->Clear();
-        
+
         try {
             console_.Execute(script.c_str());
-            
+
             // Process the stack after execution to extract values
             UnwrapStackValues();
-            
+
             return true;
         } catch (const Exception::Base& e) {
-            std::cerr << "Exception running script: " << e.ToString() << std::endl;
+            std::cerr << "Exception running script: " << e.ToString()
+                      << std::endl;
             return false;
         } catch (const std::exception& e) {
             std::cerr << "std::exception: " << e.what() << std::endl;

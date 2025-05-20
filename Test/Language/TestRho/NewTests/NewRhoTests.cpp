@@ -1,16 +1,17 @@
 #include <gtest/gtest.h>
+
 #include <iostream>
 #include <string>
 
-#include "KAI/Language/Rho/RhoParser.h"
 #include "../TestLangCommon.h"
+#include "KAI/Language/Rho/RhoParser.h"
 
 using namespace kai;
 using namespace std;
 
 // Test fixture for additional Rho tests
 class NewRhoTests : public TestLangCommon {
-protected:
+   protected:
     void SetUp() override {
         TestLangCommon::SetUp();
         // Set up for Rho language
@@ -22,7 +23,7 @@ protected:
 TEST_F(NewRhoTests, FactorialRecursive) {
     // Expected factorial of 5 is 120
     const int expected = 120;
-    
+
     // Execute factorial function
     console_.Execute(R"(
         function factorial(n) {
@@ -31,7 +32,7 @@ TEST_F(NewRhoTests, FactorialRecursive) {
         }
         factorial(5);
     )");
-    
+
     // Verify result
     ASSERT_FALSE(data_->Empty());
     ASSERT_TRUE(data_->Top().IsType<int>());
@@ -42,7 +43,7 @@ TEST_F(NewRhoTests, FactorialRecursive) {
 TEST_F(NewRhoTests, FibonacciLoop) {
     // Expected Fibonacci number at position 10 is 55
     const int expected = 55;
-    
+
     // Execute Fibonacci function
     console_.Execute(R"(
         function fibonacci(n) {
@@ -62,7 +63,7 @@ TEST_F(NewRhoTests, FibonacciLoop) {
         }
         fibonacci(10);
     )");
-    
+
     // Verify result
     ASSERT_FALSE(data_->Empty());
     ASSERT_TRUE(data_->Top().IsType<int>());
@@ -73,7 +74,7 @@ TEST_F(NewRhoTests, FibonacciLoop) {
 TEST_F(NewRhoTests, GCD) {
     // Expected GCD of 48 and 18 is 6
     const int expected = 6;
-    
+
     // Execute GCD function
     console_.Execute(R"(
         function gcd(a, b) {
@@ -86,7 +87,7 @@ TEST_F(NewRhoTests, GCD) {
         }
         gcd(48, 18);
     )");
-    
+
     // Verify result
     ASSERT_FALSE(data_->Empty());
     ASSERT_TRUE(data_->Top().IsType<int>());
@@ -106,7 +107,7 @@ TEST_F(NewRhoTests, StringConcatenation) {
         }
         testString();
     )");
-    
+
     // Verify result
     ASSERT_FALSE(data_->Empty());
     ASSERT_TRUE(data_->Top().IsType<int>());
@@ -117,7 +118,7 @@ TEST_F(NewRhoTests, StringConcatenation) {
 TEST_F(NewRhoTests, ArrayOperations) {
     // Expected sum is 15 (1+2+3+4+5)
     const int expected = 15;
-    
+
     // Execute array operations
     console_.Execute(R"(
         var arr = [1, 2, 3, 4, 5];
@@ -129,7 +130,7 @@ TEST_F(NewRhoTests, ArrayOperations) {
         
         sum;
     )");
-    
+
     // Verify result
     ASSERT_FALSE(data_->Empty());
     ASSERT_TRUE(data_->Top().IsType<int>());
@@ -140,7 +141,7 @@ TEST_F(NewRhoTests, ArrayOperations) {
 TEST_F(NewRhoTests, DefaultParameters) {
     // Expected sum is 22 (7+5+10)
     const int expected = 22;
-    
+
     // Execute function with default parameters
     console_.Execute(R"(
         function addValues(a, b, c) {
@@ -151,7 +152,7 @@ TEST_F(NewRhoTests, DefaultParameters) {
         
         addValues(7);
     )");
-    
+
     // Verify result
     ASSERT_FALSE(data_->Empty());
     ASSERT_TRUE(data_->Top().IsType<int>());
@@ -162,7 +163,7 @@ TEST_F(NewRhoTests, DefaultParameters) {
 TEST_F(NewRhoTests, FunctionComposition) {
     // Expected result is 12 (2*(5+1))
     const int expected = 12;
-    
+
     // Execute function composition
     console_.Execute(R"(
         function double(x) { return x * 2; }
@@ -177,7 +178,7 @@ TEST_F(NewRhoTests, FunctionComposition) {
         var incrementThenDouble = compose(double, increment);
         incrementThenDouble(5);
     )");
-    
+
     // Verify result
     ASSERT_FALSE(data_->Empty());
     ASSERT_TRUE(data_->Top().IsType<int>());
@@ -198,7 +199,7 @@ TEST_F(NewRhoTests, NestedLoops) {
         }
         result;
     )");
-    
+
     // Verify result - should be 5 diagonal matches
     ASSERT_FALSE(data_->Empty());
     ASSERT_TRUE(data_->Top().IsType<int>());
@@ -220,7 +221,7 @@ TEST_F(NewRhoTests, ObjectProperties) {
         
         person.address.zip;
     )");
-    
+
     // Verify result
     ASSERT_FALSE(data_->Empty());
     ASSERT_TRUE(data_->Top().IsType<int>());
@@ -244,7 +245,7 @@ TEST_F(NewRhoTests, ConditionalLogic) {
         
         result;
     )");
-    
+
     // Verify result
     ASSERT_FALSE(data_->Empty());
     ASSERT_TRUE(data_->Top().IsType<int>());
@@ -266,7 +267,7 @@ TEST_F(NewRhoTests, ArrayFiltering) {
         
         evens.length();
     )");
-    
+
     // Verify result - should be 5 even numbers
     ASSERT_FALSE(data_->Empty());
     ASSERT_TRUE(data_->Top().IsType<int>());
@@ -284,7 +285,7 @@ TEST_F(NewRhoTests, PowerFunction) {
         
         power(2, 8);
     )");
-    
+
     // Verify result - 2^8 = 256
     ASSERT_FALSE(data_->Empty());
     ASSERT_TRUE(data_->Top().IsType<int>());
@@ -307,7 +308,7 @@ TEST_F(NewRhoTests, WhileLoopWithBreak) {
         
         sum;
     )");
-    
+
     // Verify result - sum of 1 to 10 is 55
     ASSERT_FALSE(data_->Empty());
     ASSERT_TRUE(data_->Top().IsType<int>());
@@ -329,7 +330,7 @@ TEST_F(NewRhoTests, ForLoopWithContinue) {
         
         sum;
     )");
-    
+
     // Verify result - sum of even numbers from 1 to 10 is 30 (2+4+6+8+10)
     ASSERT_FALSE(data_->Empty());
     ASSERT_TRUE(data_->Top().IsType<int>());
@@ -360,7 +361,7 @@ TEST_F(NewRhoTests, BubbleSort) {
         var sorted = bubbleSort(arr);
         sorted[2]; // Middle element should be 4
     )");
-    
+
     // Verify result
     ASSERT_FALSE(data_->Empty());
     ASSERT_TRUE(data_->Top().IsType<int>());
@@ -382,7 +383,7 @@ TEST_F(NewRhoTests, CallbackPattern) {
         
         processData(10, addFive);
     )");
-    
+
     // Verify result - (10*2)+5 = 25
     ASSERT_FALSE(data_->Empty());
     ASSERT_TRUE(data_->Top().IsType<int>());
@@ -400,7 +401,7 @@ TEST_F(NewRhoTests, RecursiveCalculation) {
         
         sumToN(10);
     )");
-    
+
     // Verify result - sum from 1 to 10 is 55
     ASSERT_FALSE(data_->Empty());
     ASSERT_TRUE(data_->Top().IsType<int>());
@@ -418,7 +419,7 @@ TEST_F(NewRhoTests, TernaryOperation) {
         
         ternary(5 > 3, 10, 20);
     )");
-    
+
     // Verify result - condition is true, so result should be 10
     ASSERT_FALSE(data_->Empty());
     ASSERT_TRUE(data_->Top().IsType<int>());
@@ -444,7 +445,7 @@ TEST_F(NewRhoTests, ArrayTransformation) {
         
         sum;
     )");
-    
+
     // Verify result - sum of squares from 1 to 5 is 55
     ASSERT_FALSE(data_->Empty());
     ASSERT_TRUE(data_->Top().IsType<int>());
@@ -478,7 +479,7 @@ TEST_F(NewRhoTests, PrimeNumberChecker) {
         
         countPrimesUpTo(20);
     )");
-    
+
     // Verify result - 8 primes up to 20: 2, 3, 5, 7, 11, 13, 17, 19
     ASSERT_FALSE(data_->Empty());
     ASSERT_TRUE(data_->Top().IsType<int>());

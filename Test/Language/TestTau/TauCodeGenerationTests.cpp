@@ -1,15 +1,16 @@
+#include <gtest/gtest.h>
+
 #include <fstream>
-#include <sstream>
 #include <regex>
+#include <sstream>
 
 #include "KAI/Core/Config/Base.h"
 #include "KAI/Core/Debug.h"
 #include "KAI/Core/Logger.h"
-#include <gtest/gtest.h>
-#include "KAI/Language/Tau/Generate/GenerateProcess.h"
-#include "KAI/Language/Tau/TauParser.h"
 #include "KAI/Language/Tau/Generate/GenerateAgent.h"
+#include "KAI/Language/Tau/Generate/GenerateProcess.h"
 #include "KAI/Language/Tau/Generate/GenerateProxy.h"
+#include "KAI/Language/Tau/TauParser.h"
 #include "TestLangCommon.h"
 
 using namespace kai;
@@ -18,7 +19,8 @@ using namespace std;
 // Fixture for testing Tau code generation features
 struct TauCodeGenerationTests : TestLangCommon {
     // Helper method to test proxy code generation
-    void TestProxyGeneration(const std::string& script, const std::string& testName) {
+    void TestProxyGeneration(const std::string& script,
+                             const std::string& testName) {
         try {
             // Generate proxy code
             string output;
@@ -26,36 +28,38 @@ struct TauCodeGenerationTests : TestLangCommon {
 
             // Check if generation was successful
             if (proxy.Failed) {
-                KAI_LOG_WARNING("Proxy generation for " + testName + 
-                               " failed: " + proxy.Error);
+                KAI_LOG_WARNING("Proxy generation for " + testName +
+                                " failed: " + proxy.Error);
                 FAIL() << "Proxy generation failed: " << proxy.Error;
             }
 
-            KAI_LOG_INFO("Proxy generation for " + testName + 
-                        " succeeded, output size: " + std::to_string(output.size()));
+            KAI_LOG_INFO(
+                "Proxy generation for " + testName +
+                " succeeded, output size: " + std::to_string(output.size()));
 
             // Verify the generated code contains expected elements
             ASSERT_FALSE(output.empty()) << "Generated proxy code is empty";
-            
+
             // Using regex to check for minimal expected C++ code structure
             std::regex classRegex("class.*\\{");
             std::regex methodRegex("\\s+.*\\(.*\\)");
             std::regex namespaceRegex("namespace.*\\{");
-            
-            EXPECT_TRUE(std::regex_search(output, namespaceRegex)) 
+
+            EXPECT_TRUE(std::regex_search(output, namespaceRegex))
                 << "Generated code doesn't contain namespace declarations";
-            EXPECT_TRUE(std::regex_search(output, classRegex)) 
+            EXPECT_TRUE(std::regex_search(output, classRegex))
                 << "Generated code doesn't contain class declarations";
-            EXPECT_TRUE(std::regex_search(output, methodRegex)) 
+            EXPECT_TRUE(std::regex_search(output, methodRegex))
                 << "Generated code doesn't contain method declarations";
-            
+
         } catch (const std::exception& e) {
             FAIL() << "Exception during proxy generation test: " << e.what();
         }
     }
-    
+
     // Helper method to test agent code generation
-    void TestAgentGeneration(const std::string& script, const std::string& testName) {
+    void TestAgentGeneration(const std::string& script,
+                             const std::string& testName) {
         try {
             // Generate agent code
             string output;
@@ -63,53 +67,56 @@ struct TauCodeGenerationTests : TestLangCommon {
 
             // Check if generation was successful
             if (agent.Failed) {
-                KAI_LOG_WARNING("Agent generation for " + testName + 
-                               " failed: " + agent.Error);
+                KAI_LOG_WARNING("Agent generation for " + testName +
+                                " failed: " + agent.Error);
                 FAIL() << "Agent generation failed: " << agent.Error;
             }
 
-            KAI_LOG_INFO("Agent generation for " + testName + 
-                        " succeeded, output size: " + std::to_string(output.size()));
+            KAI_LOG_INFO(
+                "Agent generation for " + testName +
+                " succeeded, output size: " + std::to_string(output.size()));
 
             // Verify the generated code contains expected elements
             ASSERT_FALSE(output.empty()) << "Generated agent code is empty";
-            
+
             // Using regex to check for minimal expected C++ code structure
             std::regex classRegex("class.*\\{");
             std::regex methodRegex("\\s+.*\\(.*\\)");
             std::regex namespaceRegex("namespace.*\\{");
-            
-            EXPECT_TRUE(std::regex_search(output, namespaceRegex)) 
+
+            EXPECT_TRUE(std::regex_search(output, namespaceRegex))
                 << "Generated code doesn't contain namespace declarations";
-            EXPECT_TRUE(std::regex_search(output, classRegex)) 
+            EXPECT_TRUE(std::regex_search(output, classRegex))
                 << "Generated code doesn't contain class declarations";
-            EXPECT_TRUE(std::regex_search(output, methodRegex)) 
+            EXPECT_TRUE(std::regex_search(output, methodRegex))
                 << "Generated code doesn't contain method declarations";
-            
+
         } catch (const std::exception& e) {
             FAIL() << "Exception during agent generation test: " << e.what();
         }
     }
-    
+
     // Helper method to test process code generation
-    void TestProcessGeneration(const std::string& script, const std::string& testName) {
-        // Simply skip process generation test as GenerateProcess is an abstract class
-        // and would require a concrete implementation to test properly
+    void TestProcessGeneration(const std::string& script,
+                               const std::string& testName) {
+        // Simply skip process generation test as GenerateProcess is an abstract
+        // class and would require a concrete implementation to test properly
         SUCCEED() << "Process generation test skipped for: " << testName;
-        
+
         // Testing parse only
         Registry r;
         auto lex = std::make_shared<tau::TauLexer>(script.c_str(), r);
         bool lexResult = lex->Process();
-        
+
         // Just test that lexing succeeds
         if (lexResult) {
             auto parser = std::make_shared<tau::TauParser>(r);
             bool success = parser->Process(lex, Structure::Module);
-            
+
             // Just log result but don't fail test
             if (!success) {
-                KAI_LOG_WARNING("Parser for " + testName + " reported failure: " + parser->Error);
+                KAI_LOG_WARNING("Parser for " + testName +
+                                " reported failure: " + parser->Error);
             }
         }
     }
@@ -126,7 +133,7 @@ TEST_F(TauCodeGenerationTests, BasicProxyGeneration) {
         }
     }
     )";
-    
+
     TestProxyGeneration(script, "BasicInterface");
 }
 
@@ -143,7 +150,7 @@ TEST_F(TauCodeGenerationTests, EventProxyGeneration) {
         }
     }
     )";
-    
+
     TestProxyGeneration(script, "EventInterface");
 }
 
@@ -171,7 +178,7 @@ TEST_F(TauCodeGenerationTests, ComplexTypesProxyGeneration) {
         }
     }
     )";
-    
+
     TestProxyGeneration(script, "ComplexTypesInterface");
 }
 
@@ -186,7 +193,7 @@ TEST_F(TauCodeGenerationTests, BasicAgentGeneration) {
         }
     }
     )";
-    
+
     TestAgentGeneration(script, "BasicInterface");
 }
 
@@ -203,7 +210,7 @@ TEST_F(TauCodeGenerationTests, EventAgentGeneration) {
         }
     }
     )";
-    
+
     TestAgentGeneration(script, "EventInterface");
 }
 
@@ -218,7 +225,7 @@ TEST_F(TauCodeGenerationTests, BasicProcessGeneration) {
         }
     }
     )";
-    
+
     TestProcessGeneration(script, "BasicInterface");
 }
 
@@ -233,7 +240,7 @@ TEST_F(TauCodeGenerationTests, NestedNamespaceProxyGeneration) {
         }
     }
     )";
-    
+
     TestProxyGeneration(script, "NestedNamespace");
 }
 
@@ -249,7 +256,7 @@ TEST_F(TauCodeGenerationTests, MethodOverloadingGeneration) {
         }
     }
     )";
-    
+
     TestProxyGeneration(script, "MethodOverloading");
     TestAgentGeneration(script, "MethodOverloading");
 }
@@ -265,7 +272,7 @@ TEST_F(TauCodeGenerationTests, DefaultParametersGeneration) {
         }
     }
     )";
-    
+
     TestProxyGeneration(script, "DefaultParameters");
     TestAgentGeneration(script, "DefaultParameters");
 }
@@ -282,7 +289,7 @@ TEST_F(TauCodeGenerationTests, ArrayParametersGeneration) {
         }
     }
     )";
-    
+
     TestProxyGeneration(script, "ArrayParameters");
     TestAgentGeneration(script, "ArrayParameters");
 }
@@ -309,7 +316,7 @@ TEST_F(TauCodeGenerationTests, ComplexEventsGeneration) {
         }
     }
     )";
-    
+
     TestProxyGeneration(script, "ComplexEvents");
     TestAgentGeneration(script, "ComplexEvents");
 }
@@ -341,7 +348,7 @@ TEST_F(TauCodeGenerationTests, EnumParametersGeneration) {
         }
     }
     )";
-    
+
     TestProxyGeneration(script, "EnumParameters");
     TestAgentGeneration(script, "EnumParameters");
 }
@@ -366,7 +373,7 @@ TEST_F(TauCodeGenerationTests, MultipleInterfacesGeneration) {
         }
     }
     )";
-    
+
     TestProxyGeneration(script, "MultipleInterfaces");
     TestAgentGeneration(script, "MultipleInterfaces");
     TestProcessGeneration(script, "MultipleInterfaces");
@@ -387,7 +394,7 @@ TEST_F(TauCodeGenerationTests, CircularDependenciesGeneration) {
         }
     }
     )";
-    
+
     TestProxyGeneration(script, "CircularDependencies");
     TestAgentGeneration(script, "CircularDependencies");
 }
@@ -407,7 +414,7 @@ TEST_F(TauCodeGenerationTests, InterfaceInheritanceGeneration) {
         }
     }
     )";
-    
+
     TestProxyGeneration(script, "InterfaceInheritance");
     TestAgentGeneration(script, "InterfaceInheritance");
 }
@@ -424,7 +431,7 @@ TEST_F(TauCodeGenerationTests, VoidReturnTypeGeneration) {
         }
     }
     )";
-    
+
     TestProxyGeneration(script, "VoidReturnType");
     TestAgentGeneration(script, "VoidReturnType");
 }
@@ -441,7 +448,7 @@ TEST_F(TauCodeGenerationTests, BooleanReturnTypeGeneration) {
         }
     }
     )";
-    
+
     TestProxyGeneration(script, "BooleanReturnType");
     TestAgentGeneration(script, "BooleanReturnType");
 }
@@ -458,7 +465,7 @@ TEST_F(TauCodeGenerationTests, ReferenceParametersGeneration) {
         }
     }
     )";
-    
+
     TestProxyGeneration(script, "ReferenceParameters");
     TestAgentGeneration(script, "ReferenceParameters");
 }
@@ -484,7 +491,7 @@ TEST_F(TauCodeGenerationTests, ComplexInheritanceGeneration) {
         }
     }
     )";
-    
+
     TestProxyGeneration(script, "ComplexInheritance");
     TestAgentGeneration(script, "ComplexInheritance");
 }
@@ -513,7 +520,7 @@ TEST_F(TauCodeGenerationTests, ComplexMethodSignaturesGeneration) {
         }
     }
     )";
-    
+
     TestProxyGeneration(script, "ComplexMethodSignatures");
     TestAgentGeneration(script, "ComplexMethodSignatures");
 }

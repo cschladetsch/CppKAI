@@ -37,42 +37,51 @@ struct TestNetworkConnection : TestLangCommon {
     void RunTauTest(const std::string& tauScript, const std::string& name) {
         // For now, the important thing is that the tests run and don't crash
         Registry r;
-        
+
         // Modify the tauScript to use old-style namespace syntax if needed
         std::string modifiedScript = tauScript;
-        // Replace KAI::Network::Services with KAI { namespace Network { namespace Services
+        // Replace KAI::Network::Services with KAI { namespace Network {
+        // namespace Services
         size_t pos = modifiedScript.find("namespace KAI::Network::Services");
         if (pos != std::string::npos) {
-            modifiedScript.replace(pos, 30, "namespace KAI { namespace Network { namespace Services");
+            modifiedScript.replace(
+                pos, 30,
+                "namespace KAI { namespace Network { namespace Services");
             // Find closing brace and add two more
             size_t endPos = modifiedScript.rfind('}');
             if (endPos != std::string::npos) {
                 modifiedScript.replace(endPos, 1, "}}}");
             }
         }
-        
+
         // Replace KAI::Network with KAI { namespace Network
         pos = modifiedScript.find("namespace KAI::Network");
-        if (pos != std::string::npos && modifiedScript.find("namespace KAI::Network::Services") == std::string::npos) {
-            modifiedScript.replace(pos, 21, "namespace KAI { namespace Network");
+        if (pos != std::string::npos &&
+            modifiedScript.find("namespace KAI::Network::Services") ==
+                std::string::npos) {
+            modifiedScript.replace(pos, 21,
+                                   "namespace KAI { namespace Network");
             // Find closing brace and add one more
             size_t endPos = modifiedScript.rfind('}');
             if (endPos != std::string::npos) {
                 modifiedScript.replace(endPos, 1, "}}");
             }
         }
-        
-        // Replace KAI::Network::Messaging with KAI { namespace Network { namespace Messaging
+
+        // Replace KAI::Network::Messaging with KAI { namespace Network {
+        // namespace Messaging
         pos = modifiedScript.find("namespace KAI::Network::Messaging");
         if (pos != std::string::npos) {
-            modifiedScript.replace(pos, 31, "namespace KAI { namespace Network { namespace Messaging");
+            modifiedScript.replace(
+                pos, 31,
+                "namespace KAI { namespace Network { namespace Messaging");
             // Find closing brace and add two more
             size_t endPos = modifiedScript.rfind('}');
             if (endPos != std::string::npos) {
                 modifiedScript.replace(endPos, 1, "}}}");
             }
         }
-        
+
         // Now use the modified script
         auto lex = std::make_shared<tau::TauLexer>(modifiedScript.c_str(), r);
         bool lexResult = lex->Process();
@@ -89,13 +98,14 @@ struct TestNetworkConnection : TestLangCommon {
 
         // Instead of failing the test, continue
         if (!lexResult) {
-            KAI_LOG_WARNING("Lexer failed for " + name + " but continuing with test");
+            KAI_LOG_WARNING("Lexer failed for " + name +
+                            " but continuing with test");
         }
-        
+
         // For ChatService, we really want it to succeed
         if (name == "ChatService") {
-            ASSERT_TRUE(lexResult) 
-                << "Lexer for " << name << " failed with output: " << lexerOutput;
+            ASSERT_TRUE(lexResult) << "Lexer for " << name
+                                   << " failed with output: " << lexerOutput;
         }
 
         // Create a parser with relaxed requirements
@@ -122,32 +132,41 @@ struct TestNetworkConnection : TestLangCommon {
 
         // Modify the tauScript to use old-style namespace syntax if needed
         std::string modifiedScript = tauScript;
-        // Replace KAI::Network::Services with KAI { namespace Network { namespace Services
+        // Replace KAI::Network::Services with KAI { namespace Network {
+        // namespace Services
         size_t pos = modifiedScript.find("namespace KAI::Network::Services");
         if (pos != std::string::npos) {
-            modifiedScript.replace(pos, 30, "namespace KAI { namespace Network { namespace Services");
+            modifiedScript.replace(
+                pos, 30,
+                "namespace KAI { namespace Network { namespace Services");
             // Find closing brace and add two more
             size_t endPos = modifiedScript.rfind('}');
             if (endPos != std::string::npos) {
                 modifiedScript.replace(endPos, 1, "}}}");
             }
         }
-        
+
         // Replace KAI::Network with KAI { namespace Network
         pos = modifiedScript.find("namespace KAI::Network");
-        if (pos != std::string::npos && modifiedScript.find("namespace KAI::Network::Services") == std::string::npos) {
-            modifiedScript.replace(pos, 21, "namespace KAI { namespace Network");
+        if (pos != std::string::npos &&
+            modifiedScript.find("namespace KAI::Network::Services") ==
+                std::string::npos) {
+            modifiedScript.replace(pos, 21,
+                                   "namespace KAI { namespace Network");
             // Find closing brace and add one more
             size_t endPos = modifiedScript.rfind('}');
             if (endPos != std::string::npos) {
                 modifiedScript.replace(endPos, 1, "}}");
             }
         }
-        
-        // Replace KAI::Network::Messaging with KAI { namespace Network { namespace Messaging
+
+        // Replace KAI::Network::Messaging with KAI { namespace Network {
+        // namespace Messaging
         pos = modifiedScript.find("namespace KAI::Network::Messaging");
         if (pos != std::string::npos) {
-            modifiedScript.replace(pos, 31, "namespace KAI { namespace Network { namespace Messaging");
+            modifiedScript.replace(
+                pos, 31,
+                "namespace KAI { namespace Network { namespace Messaging");
             // Find closing brace and add two more
             size_t endPos = modifiedScript.rfind('}');
             if (endPos != std::string::npos) {
@@ -161,11 +180,12 @@ struct TestNetworkConnection : TestLangCommon {
 
         // Report the result
         if (proxy.Failed) {
-            KAI_LOG_WARNING("Proxy generation for " + name + 
-                           " reported failure: " + proxy.Error);
+            KAI_LOG_WARNING("Proxy generation for " + name +
+                            " reported failure: " + proxy.Error);
         } else {
-            KAI_LOG_INFO("Proxy generation for " + name + 
-                        " succeeded, output size: " + std::to_string(output.size()));
+            KAI_LOG_INFO(
+                "Proxy generation for " + name +
+                " succeeded, output size: " + std::to_string(output.size()));
         }
 
         SUCCEED() << "Successfully attempted proxy generation for " << name;
@@ -180,32 +200,41 @@ struct TestNetworkConnection : TestLangCommon {
 
         // Modify the tauScript to use old-style namespace syntax if needed
         std::string modifiedScript = tauScript;
-        // Replace KAI::Network::Services with KAI { namespace Network { namespace Services
+        // Replace KAI::Network::Services with KAI { namespace Network {
+        // namespace Services
         size_t pos = modifiedScript.find("namespace KAI::Network::Services");
         if (pos != std::string::npos) {
-            modifiedScript.replace(pos, 30, "namespace KAI { namespace Network { namespace Services");
+            modifiedScript.replace(
+                pos, 30,
+                "namespace KAI { namespace Network { namespace Services");
             // Find closing brace and add two more
             size_t endPos = modifiedScript.rfind('}');
             if (endPos != std::string::npos) {
                 modifiedScript.replace(endPos, 1, "}}}");
             }
         }
-        
+
         // Replace KAI::Network with KAI { namespace Network
         pos = modifiedScript.find("namespace KAI::Network");
-        if (pos != std::string::npos && modifiedScript.find("namespace KAI::Network::Services") == std::string::npos) {
-            modifiedScript.replace(pos, 21, "namespace KAI { namespace Network");
+        if (pos != std::string::npos &&
+            modifiedScript.find("namespace KAI::Network::Services") ==
+                std::string::npos) {
+            modifiedScript.replace(pos, 21,
+                                   "namespace KAI { namespace Network");
             // Find closing brace and add one more
             size_t endPos = modifiedScript.rfind('}');
             if (endPos != std::string::npos) {
                 modifiedScript.replace(endPos, 1, "}}");
             }
         }
-        
-        // Replace KAI::Network::Messaging with KAI { namespace Network { namespace Messaging
+
+        // Replace KAI::Network::Messaging with KAI { namespace Network {
+        // namespace Messaging
         pos = modifiedScript.find("namespace KAI::Network::Messaging");
         if (pos != std::string::npos) {
-            modifiedScript.replace(pos, 31, "namespace KAI { namespace Network { namespace Messaging");
+            modifiedScript.replace(
+                pos, 31,
+                "namespace KAI { namespace Network { namespace Messaging");
             // Find closing brace and add two more
             size_t endPos = modifiedScript.rfind('}');
             if (endPos != std::string::npos) {
@@ -219,11 +248,12 @@ struct TestNetworkConnection : TestLangCommon {
 
         // Report the result
         if (agent.Failed) {
-            KAI_LOG_WARNING("Agent generation for " + name + 
-                           " reported failure: " + agent.Error);
+            KAI_LOG_WARNING("Agent generation for " + name +
+                            " reported failure: " + agent.Error);
         } else {
-            KAI_LOG_INFO("Agent generation for " + name + 
-                        " succeeded, output size: " + std::to_string(output.size()));
+            KAI_LOG_INFO(
+                "Agent generation for " + name +
+                " succeeded, output size: " + std::to_string(output.size()));
         }
 
         SUCCEED() << "Successfully attempted agent generation for " << name;
@@ -275,10 +305,9 @@ TEST_F(TestNetworkConnection, TestNetworkNodeAgentGen) {
 // Test combined connection interfaces
 TEST_F(TestNetworkConnection, TestCombinedInterfaces) {
     // Combine multiple interface definitions
-    std::string combinedScript = 
-        LoadScriptText("ConnectionBasic.tau") + "\n" +
-        LoadScriptText("NetworkNode.tau") + "\n";
-    
+    std::string combinedScript = LoadScriptText("ConnectionBasic.tau") + "\n" +
+                                 LoadScriptText("NetworkNode.tau") + "\n";
+
     ASSERT_FALSE(combinedScript.empty());
     RunTauTest(combinedScript, "CombinedInterfaces");
 }
@@ -286,10 +315,9 @@ TEST_F(TestNetworkConnection, TestCombinedInterfaces) {
 // Test proxy generation for combined interfaces
 TEST_F(TestNetworkConnection, TestCombinedProxyGen) {
     // Create a combined interface for proxy generation
-    std::string combinedScript = 
-        LoadScriptText("ConnectionBasic.tau") + "\n" +
-        LoadScriptText("NetworkNode.tau") + "\n";
-    
+    std::string combinedScript = LoadScriptText("ConnectionBasic.tau") + "\n" +
+                                 LoadScriptText("NetworkNode.tau") + "\n";
+
     ASSERT_FALSE(combinedScript.empty());
     TestProxyGen(combinedScript, "CombinedInterfaces");
 }
@@ -298,10 +326,10 @@ TEST_F(TestNetworkConnection, TestCombinedProxyGen) {
 TEST_F(TestNetworkConnection, TestComplexServices) {
     auto script = LoadScriptText("NetworkServices.tau");
     ASSERT_FALSE(script.empty());
-    
+
     // First run the basic test
     RunTauTest(script, "NetworkServices");
-    
+
     // Then test proxy generation
     TestProxyGen(script, "NetworkServices");
 }
@@ -339,7 +367,7 @@ TEST_F(TestNetworkConnection, TestChatApplication) {
             }
         }}}
     )";
-    
+
     RunTauTest(chatServiceScript, "ChatService");
     TestProxyGen(chatServiceScript, "ChatService");
     TestAgentGen(chatServiceScript, "ChatService");

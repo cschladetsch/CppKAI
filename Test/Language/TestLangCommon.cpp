@@ -1,6 +1,7 @@
 #include "TestLangCommon.h"
 
 #include <KAI/Core/Exception.h>
+
 #include <boost/algorithm/string/predicate.hpp>
 #include <cwctype>
 #include <filesystem>
@@ -123,8 +124,7 @@ void TestLangCommon::TearDown() {
             exec_->ClearContext();
         }
     } catch (const std::exception &e) {
-        std::cerr << "ERROR during test teardown: " << e.what()
-                  << std::endl;
+        std::cerr << "ERROR during test teardown: " << e.what() << std::endl;
     } catch (...) {
         std::cerr << "UNKNOWN ERROR during test teardown" << std::endl;
     }
@@ -137,13 +137,11 @@ void TestLangCommon::ExecScriptFile(const std::string &scriptFileName) {
     // Set the language based on file extension
     if (scriptFileName.find(".pi") != std::string::npos) {
         console_.SetLanguage(Language::Pi);
-    }
-    else if (scriptFileName.find(".rho") != std::string::npos) {
+    } else if (scriptFileName.find(".rho") != std::string::npos) {
         console_.SetLanguage(Language::Rho);
-        std::cout << "Setting language to Rho for script: "
-                  << scriptFileName << std::endl;
-    }
-    else if (scriptFileName.find(".tau") != std::string::npos) {
+        std::cout << "Setting language to Rho for script: " << scriptFileName
+                  << std::endl;
+    } else if (scriptFileName.find(".tau") != std::string::npos) {
         console_.SetLanguage(Language::Tau);
     }
 
@@ -158,8 +156,8 @@ void TestLangCommon::ExecScriptFile(const std::string &scriptFileName) {
     try {
         // Check if script file exists
         if (!fs::exists(scriptPath)) {
-            std::cerr << "ERROR: Script file not found: "
-                      << scriptPath.string() << std::endl;
+            std::cerr << "ERROR: Script file not found: " << scriptPath.string()
+                      << std::endl;
             throw std::runtime_error("Script file not found");
         }
 
@@ -170,8 +168,7 @@ void TestLangCommon::ExecScriptFile(const std::string &scriptFileName) {
                       << scriptPath.string() << std::endl;
         }
 
-        std::cout << "Loaded script file: " << scriptPath.string()
-                  << std::endl;
+        std::cout << "Loaded script file: " << scriptPath.string() << std::endl;
         std::cout << "Executing script with length: " << contents.size()
                   << " bytes" << std::endl;
 
@@ -188,8 +185,8 @@ void TestLangCommon::ExecScriptFile(const std::string &scriptFileName) {
         try {
             UnwrapStackValues();
         } catch (const std::exception &e) {
-            std::cerr << "Exception during stack unwrapping: "
-                      << e.what() << std::endl;
+            std::cerr << "Exception during stack unwrapping: " << e.what()
+                      << std::endl;
         }
 
         // Print final stack state for debugging
@@ -199,32 +196,26 @@ void TestLangCommon::ExecScriptFile(const std::string &scriptFileName) {
             Object top = data_->Top();
             if (top.Valid() && top.GetClass()) {
                 std::cout << "Top item type: "
-                          << top.GetClass()->GetName().ToString()
-                          << std::endl;
+                          << top.GetClass()->GetName().ToString() << std::endl;
 
                 // Print value if it's a primitive type
                 if (top.IsType<int>()) {
                     std::cout << "Value (int): " << ConstDeref<int>(top)
                               << std::endl;
-                }
-                else if (top.IsType<bool>()) {
-                    std::cout
-                        << "Value (bool): "
-                        << (ConstDeref<bool>(top) ? "true" : "false")
-                        << std::endl;
-                }
-                else if (top.IsType<String>()) {
-                    std::cout << "Value (String): \""
-                              << ConstDeref<String>(top) << "\""
+                } else if (top.IsType<bool>()) {
+                    std::cout << "Value (bool): "
+                              << (ConstDeref<bool>(top) ? "true" : "false")
                               << std::endl;
+                } else if (top.IsType<String>()) {
+                    std::cout << "Value (String): \"" << ConstDeref<String>(top)
+                              << "\"" << std::endl;
                 }
             }
         }
 
         std::cout << "Script execution complete" << std::endl;
     } catch (const std::exception &e) {
-        std::cerr << "Exception in ExecScriptFile: " << e.what()
-                  << std::endl;
+        std::cerr << "Exception in ExecScriptFile: " << e.what() << std::endl;
 
         // Try to reset state before propagating
         if (exec_) {
@@ -232,8 +223,7 @@ void TestLangCommon::ExecScriptFile(const std::string &scriptFileName) {
                 exec_->ClearStacks();
                 exec_->ClearContext();
             } catch (...) {
-                std::cerr << "Failed to clean up after exception"
-                          << std::endl;
+                std::cerr << "Failed to clean up after exception" << std::endl;
             }
         }
 
@@ -261,22 +251,22 @@ void TestLangCommon::ExecScripts() {
 
     // First check if the scripts root directory exists
     if (!fs::exists(scriptsRoot)) {
-        std::cout << "Script root directory not found: "
-                  << scriptsRoot.string() << std::endl;
+        std::cout << "Script root directory not found: " << scriptsRoot.string()
+                  << std::endl;
         std::cout << "Skipping script execution tests" << std::endl;
         return;  // Early exit if script directory doesn't exist
     }
 
-    // Change this to match the test we're running
-    #ifdef KAI_LANG_NAME
+// Change this to match the test we're running
+#ifdef KAI_LANG_NAME
     const auto ext = File::Extension(".pi");
     console_.SetLanguage(Language::KAI_LANG_NAME);
-    #else
+#else
     // Default to the current test language
     const auto ext = File::Extension(".rho");
     console_.SetLanguage(Language::Rho);
     std::cout << "Testing Rho language scripts" << std::endl;
-    #endif
+#endif
 
     // Add common variables to the environment to prevent ObjectNotFound errors
     auto scope = console_.GetTree().GetScope();
@@ -295,8 +285,8 @@ void TestLangCommon::ExecScripts() {
     try {
         scriptFiles = File::GetFilesWithExtensionRecursively(scriptsRoot, ext);
     } catch (const std::exception &e) {
-        std::cout << "Error when searching for script files: "
-                  << e.what() << std::endl;
+        std::cout << "Error when searching for script files: " << e.what()
+                  << std::endl;
         return;  // Early exit if we can't find script files
     }
 
@@ -310,8 +300,8 @@ void TestLangCommon::ExecScripts() {
               << " script files with extension " << ext << std::endl;
 
     for (auto const &scriptName : scriptFiles) {
-        std::cout << "Testing script: "
-                  << scriptName.filename().string() << std::endl;
+        std::cout << "Testing script: " << scriptName.filename().string()
+                  << std::endl;
 
         // Clear stacks before each script execution to ensure a clean state
         exec_->ClearStacks();
@@ -319,8 +309,8 @@ void TestLangCommon::ExecScripts() {
 
         try {
             auto contents = File::ReadAllText(scriptName);
-            std::cout << "Script length: " << contents.size()
-                      << " bytes" << std::endl;
+            std::cout << "Script length: " << contents.size() << " bytes"
+                      << std::endl;
 
             // Execute the script
             console_.Execute(contents.c_str());
@@ -389,7 +379,8 @@ bool TestLangCommon::IsDirectPiOperation(Object value) {
                 Operation::ContinuationBegin) {
             // Look for binary operation pattern with two values and an operator
             if (code->Size() >= 5) {
-                // Check the operator first to determine if we have a binary operation
+                // Check the operator first to determine if we have a binary
+                // operation
                 Object op = code->At(3);
 
                 // If we have two values and an operation, this is likely a Pi
@@ -535,9 +526,9 @@ Object TestLangCommon::ExtractDirectPiBinaryOp(Object value) {
 // Enhanced implementation for extracting values from continuations
 Object TestLangCommon::ExtractValueFromContinuationDirect(Object value) {
     // If it's already a primitive type, no need for extraction
-    if (value.IsType<int>() || value.IsType<bool>() ||
-        value.IsType<float>() || value.IsType<double>() ||
-        value.IsType<String>() || value.IsType<Array>()) {
+    if (value.IsType<int>() || value.IsType<bool>() || value.IsType<float>() ||
+        value.IsType<double>() || value.IsType<String>() ||
+        value.IsType<Array>()) {
         return value;
     }
 
@@ -584,7 +575,8 @@ Object TestLangCommon::ExtractValueFromContinuationDirect(Object value) {
 
             // If it's a nested continuation, try to extract a value from it
             if (singleItem.IsType<Continuation>()) {
-                Object extracted = ExtractValueFromContinuationDirect(singleItem);
+                Object extracted =
+                    ExtractValueFromContinuationDirect(singleItem);
                 if (extracted != singleItem) {
                     return extracted;
                 }
@@ -593,14 +585,12 @@ Object TestLangCommon::ExtractValueFromContinuationDirect(Object value) {
     }
 
     // Pattern 2: ContinuationBegin, single value, ContinuationEnd
-    if (code->Size() == 3 &&
-        code->At(0).IsType<Operation>() &&
+    if (code->Size() == 3 && code->At(0).IsType<Operation>() &&
         code->At(2).IsType<Operation>() &&
         ConstDeref<Operation>(code->At(0)).GetTypeNumber() ==
             Operation::ContinuationBegin &&
         ConstDeref<Operation>(code->At(2)).GetTypeNumber() ==
             Operation::ContinuationEnd) {
-
         Object middleItem = code->At(1);
         if (middleItem.Valid() && middleItem.Exists()) {
             // If it's a primitive type, extract it directly
@@ -612,7 +602,8 @@ Object TestLangCommon::ExtractValueFromContinuationDirect(Object value) {
 
             // If it's a nested continuation, try to extract a value from it
             if (middleItem.IsType<Continuation>()) {
-                Object extracted = ExtractValueFromContinuationDirect(middleItem);
+                Object extracted =
+                    ExtractValueFromContinuationDirect(middleItem);
                 if (extracted != middleItem) {
                     return extracted;
                 }
@@ -739,8 +730,7 @@ Object TestLangCommon::ExtractValueFromContinuationDirect(Object value) {
                 default:
                     break;
             }
-        }
-        else if (val1.IsType<float>() && val2.IsType<int>()) {
+        } else if (val1.IsType<float>() && val2.IsType<int>()) {
             float f1 = ConstDeref<float>(val1);
             int i2 = ConstDeref<int>(val2);
 
@@ -809,15 +799,12 @@ Object TestLangCommon::ExtractValueFromContinuationDirect(Object value) {
     }
 
     // Pattern 4: ContinuationBegin, val1, val2, op, ContinuationEnd
-    if (code->Size() == 5 &&
-        code->At(0).IsType<Operation>() &&
-        code->At(4).IsType<Operation>() &&
-        code->At(3).IsType<Operation>() &&
+    if (code->Size() == 5 && code->At(0).IsType<Operation>() &&
+        code->At(4).IsType<Operation>() && code->At(3).IsType<Operation>() &&
         ConstDeref<Operation>(code->At(0)).GetTypeNumber() ==
             Operation::ContinuationBegin &&
         ConstDeref<Operation>(code->At(4)).GetTypeNumber() ==
             Operation::ContinuationEnd) {
-
         Object val1 = code->At(1);
         Object val2 = code->At(2);
         Operation::Type op = ConstDeref<Operation>(code->At(3)).GetTypeNumber();
@@ -905,10 +892,11 @@ Object TestLangCommon::ExtractValueFromContinuationDirect(Object value) {
     // Pattern 5: Special stack operations (dup, swap, etc.)
     if (code->Size() >= 3 && code->At(0).IsType<int>() &&
         code->At(1).IsType<Operation>() && code->At(2).IsType<Operation>()) {
-
         int val = ConstDeref<int>(code->At(0));
-        Operation::Type op1 = ConstDeref<Operation>(code->At(1)).GetTypeNumber();
-        Operation::Type op2 = ConstDeref<Operation>(code->At(2)).GetTypeNumber();
+        Operation::Type op1 =
+            ConstDeref<Operation>(code->At(1)).GetTypeNumber();
+        Operation::Type op2 =
+            ConstDeref<Operation>(code->At(2)).GetTypeNumber();
 
         // "val dup +" pattern: duplicates value and adds (val * 2)
         if (op1 == Operation::Dup && op2 == Operation::Plus) {
@@ -926,11 +914,13 @@ Object TestLangCommon::ExtractValueFromContinuationDirect(Object value) {
 }
 
 Object TestLangCommon::ExtractValueFromContinuation(Object value) {
-    // This is the public implementation that delegates to the enhanced direct implementation
+    // This is the public implementation that delegates to the enhanced direct
+    // implementation
     return ExtractValueFromContinuationDirect(value);
 }
 
-// Main helper method for DoExtractValueFromContinuation is now in the header file
+// Main helper method for DoExtractValueFromContinuation is now in the header
+// file
 
 void TestLangCommon::UnwrapStackValues() {
     if (!data_ || data_->Empty()) {
@@ -971,8 +961,7 @@ void TestLangCommon::UnwrapStackValues() {
                 if (j == i) {
                     // Replace the unwrapped item
                     stackItems.push_back(result);
-                }
-                else {
+                } else {
                     // Keep the original item
                     stackItems.push_back(data_->At(j));
                 }
@@ -1007,7 +996,7 @@ void TestLangCommon::UnwrapStackValues() {
                     ConstDeref<Operation>(code->At(0)).GetTypeNumber() ==
                         Operation::ContinuationBegin &&
                     ConstDeref<Operation>(code->At(code->Size() - 1))
-                        .GetTypeNumber() == Operation::ContinuationEnd) {
+                            .GetTypeNumber() == Operation::ContinuationEnd) {
                     // Check for "val Dup Plus" pattern inside
                     if (code->Size() == 5 && code->At(1).IsType<int>() &&
                         code->At(2).IsType<Operation>() &&
@@ -1038,9 +1027,11 @@ void TestLangCommon::UnwrapStackValues() {
         Object val = data_->At(data_->Size() - 3);
 
         if (op1.IsType<Operation>() && op2.IsType<Operation>() &&
-           (val.IsType<int>() || val.IsType<float>())) {
-            Operation::Type opType1 = ConstDeref<Operation>(op1).GetTypeNumber();
-            Operation::Type opType2 = ConstDeref<Operation>(op2).GetTypeNumber();
+            (val.IsType<int>() || val.IsType<float>())) {
+            Operation::Type opType1 =
+                ConstDeref<Operation>(op1).GetTypeNumber();
+            Operation::Type opType2 =
+                ConstDeref<Operation>(op2).GetTypeNumber();
 
             // Handle "val dup +" pattern
             if (opType2 == Operation::Dup && opType1 == Operation::Plus) {
@@ -1057,13 +1048,11 @@ void TestLangCommon::UnwrapStackValues() {
                     // Duplicating and adding = multiplying by 2
                     int intVal = ConstDeref<int>(valueObj);
                     result = reg_->New<int>(intVal * 2);
-                }
-                else if (valueObj.IsType<float>()) {
+                } else if (valueObj.IsType<float>()) {
                     // Same for floats
                     float floatVal = ConstDeref<float>(valueObj);
                     result = reg_->New<float>(floatVal * 2.0f);
-                }
-                else {
+                } else {
                     // For other types, just put the original value back
                     result = valueObj;
                 }
@@ -1074,8 +1063,8 @@ void TestLangCommon::UnwrapStackValues() {
         }
     }
 
-    // Add additional unwrapping for Pi style binary operations directly on the stack
-    // This is needed for the binary operation tests
+    // Add additional unwrapping for Pi style binary operations directly on the
+    // stack This is needed for the binary operation tests
     if (data_->Size() >= 3) {
         Object opObj = data_->At(data_->Size() - 1);
         Object b = data_->At(data_->Size() - 2);
@@ -1092,7 +1081,6 @@ void TestLangCommon::UnwrapStackValues() {
                 op == Operation::Greater || op == Operation::Equiv ||
                 op == Operation::NotEquiv || op == Operation::LogicalAnd ||
                 op == Operation::LogicalOr) {
-
                 // Process nested continuations if needed
                 if (a.IsType<Continuation>()) {
                     a = ExtractValueFromContinuationDirect(a);
@@ -1121,10 +1109,12 @@ void TestLangCommon::UnwrapStackValues() {
                                 result = reg_->New<int>(aVal * bVal);
                                 break;
                             case Operation::Divide:
-                                if (bVal != 0) result = reg_->New<int>(aVal / bVal);
+                                if (bVal != 0)
+                                    result = reg_->New<int>(aVal / bVal);
                                 break;
                             case Operation::Modulo:
-                                if (bVal != 0) result = reg_->New<int>(aVal % bVal);
+                                if (bVal != 0)
+                                    result = reg_->New<int>(aVal % bVal);
                                 break;
                             case Operation::Less:
                                 result = reg_->New<bool>(aVal < bVal);
@@ -1141,8 +1131,7 @@ void TestLangCommon::UnwrapStackValues() {
                             default:  // Leave result as Object()
                                 break;
                         }
-                    }
-                    else if (a.IsType<bool>() && b.IsType<bool>()) {
+                    } else if (a.IsType<bool>() && b.IsType<bool>()) {
                         bool aVal = ConstDeref<bool>(a);
                         bool bVal = ConstDeref<bool>(b);
 
@@ -1162,8 +1151,7 @@ void TestLangCommon::UnwrapStackValues() {
                             default:  // Leave result as Object()
                                 break;
                         }
-                    }
-                    else if (a.IsType<String>() && b.IsType<String>()) {
+                    } else if (a.IsType<String>() && b.IsType<String>()) {
                         String aVal = ConstDeref<String>(a);
                         String bVal = ConstDeref<String>(b);
 
@@ -1182,7 +1170,8 @@ void TestLangCommon::UnwrapStackValues() {
                         }
                     }
 
-                    // If we computed a result, replace the three stack items with it
+                    // If we computed a result, replace the three stack items
+                    // with it
                     if (result.Exists()) {
                         // Remove the three items
                         data_->Pop();  // operation
@@ -1192,8 +1181,9 @@ void TestLangCommon::UnwrapStackValues() {
                         // Push the result
                         data_->Push(result);
 
-                        // Since we modified the stack, we need to restart the unwrapping
-                        // process in case there are more patterns to unwrap
+                        // Since we modified the stack, we need to restart the
+                        // unwrapping process in case there are more patterns to
+                        // unwrap
                         UnwrapStackValues();
                         return;
                     }

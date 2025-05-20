@@ -50,13 +50,13 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
 
         case RhoTokenEnumType::Not:
             // Use a linear stream approach for the unary 'not' operation
-            
+
             // Translate the operand
             TranslateNode(node->GetChild(0));
-            
+
             // Add the operation directly
             AppendDirectOperation(Operation::LogicalNot);
-            
+
             return;
 
         case RhoTokenEnumType::True:
@@ -71,13 +71,13 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
 
         case RhoTokenEnumType::Assert:
             // Use a linear stream approach for the assert operation
-            
+
             // Translate the assertion condition
             TranslateNode(node->GetChild(0));
-            
+
             // Add the operation directly
             AppendDirectOperation(Operation::Assert);
-            
+
             return;
 
         case RhoTokenEnumType::DivAssign:
@@ -690,9 +690,9 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
             if (sequence.size() >= 2) {
                 // Special case for 5 dup +
                 if ((sequence.size() == 3 &&
-                        (sequence[0].tokenType == RhoTokenEnumType::Int ||
-                         sequence[0].tokenType == RhoTokenEnumType::Float) &&
-                        sequence[1].value == "Dup") ||
+                     (sequence[0].tokenType == RhoTokenEnumType::Int ||
+                      sequence[0].tokenType == RhoTokenEnumType::Float) &&
+                     sequence[1].value == "Dup") ||
                     (sequence[1].value == "dup" && sequence[2].isOperation)) {
                     try {
                         // Handle integer dup operations
@@ -1265,26 +1265,27 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
     bool directEvaluation = false;
     if (node->GetChild(0)->GetType() == AstEnum::TokenType &&
         node->GetChild(1)->GetType() == AstEnum::TokenType) {
-        
         auto token0 = node->GetChild(0)->GetToken().type;
         auto token1 = node->GetChild(1)->GetToken().type;
-        
+
         // If both are literals (int, float, bool, string)
-        if ((token0 == RhoTokenEnumType::Int || token0 == RhoTokenEnumType::Float || 
-             token0 == RhoTokenEnumType::True || token0 == RhoTokenEnumType::False || 
+        if ((token0 == RhoTokenEnumType::Int ||
+             token0 == RhoTokenEnumType::Float ||
+             token0 == RhoTokenEnumType::True ||
+             token0 == RhoTokenEnumType::False ||
              token0 == RhoTokenEnumType::String) &&
-            (token1 == RhoTokenEnumType::Int || token1 == RhoTokenEnumType::Float || 
-             token1 == RhoTokenEnumType::True || token1 == RhoTokenEnumType::False || 
+            (token1 == RhoTokenEnumType::Int ||
+             token1 == RhoTokenEnumType::Float ||
+             token1 == RhoTokenEnumType::True ||
+             token1 == RhoTokenEnumType::False ||
              token1 == RhoTokenEnumType::String)) {
-            
             // For known operations that can be directly calculated
-            if (op == Operation::Plus || op == Operation::Minus || 
-                op == Operation::Multiply || op == Operation::Divide || 
-                op == Operation::Modulo || op == Operation::Equiv || 
-                op == Operation::NotEquiv || op == Operation::Less || 
-                op == Operation::Greater || op == Operation::LessOrEquiv || 
+            if (op == Operation::Plus || op == Operation::Minus ||
+                op == Operation::Multiply || op == Operation::Divide ||
+                op == Operation::Modulo || op == Operation::Equiv ||
+                op == Operation::NotEquiv || op == Operation::Less ||
+                op == Operation::Greater || op == Operation::LessOrEquiv ||
                 op == Operation::GreaterOrEquiv) {
-                
                 // We'll handle this with direct evaluation
                 directEvaluation = true;
             }
@@ -1296,7 +1297,7 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
         Object left, right;
         auto leftNode = node->GetChild(0);
         auto rightNode = node->GetChild(1);
-        
+
         // Create left operand
         auto leftType = leftNode->GetToken().type;
         if (leftType == RhoTokenEnumType::Int) {
@@ -1314,7 +1315,7 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
             }
             left = reg_->New<String>(text);
         }
-        
+
         // Create right operand
         auto rightType = rightNode->GetToken().type;
         if (rightType == RhoTokenEnumType::Int) {
@@ -1332,38 +1333,37 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
             }
             right = reg_->New<String>(text);
         }
-        
+
         // Create executor to perform direct operation
         Pointer<Executor> executor = reg_->New<Executor>();
         executor->Create();
-        
+
         // Perform operation directly
         Object result = executor->PerformBinaryOp(left, right, op);
-        
+
         // Only use the direct result if it's a primitive type
-        if (result.IsType<int>() || result.IsType<float>() || 
+        if (result.IsType<int>() || result.IsType<float>() ||
             result.IsType<bool>() || result.IsType<String>()) {
-            
             // Append the result directly - this keeps the primitive type
             Append(result);
-            
+
             KAI_TRACE() << "Direct evaluation result: " << result.ToString();
             return;
         }
     }
-    
+
     // For complex expressions where direct evaluation isn't possible,
     // translate operands and add operation in a linear fashion
-    
+
     // Translate the left operand
     TranslateNode(node->GetChild(0));
-    
+
     // Translate the right operand
     TranslateNode(node->GetChild(1));
-    
+
     // Add the operation directly to the current continuation
     AppendDirectOperation(op);
-    
+
     KAI_TRACE() << "Binary operation successfully translated in linear stream";
 }
 

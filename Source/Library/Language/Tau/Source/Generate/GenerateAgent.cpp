@@ -45,7 +45,7 @@ bool GenerateAgent::Class(TauParser::AstNode const &cl) {
 bool GenerateAgent::Property(TauParser::AstNode const &prop) {
     auto type = prop.GetChild(0)->GetTokenText();
     auto name = prop.GetChild(1)->GetTokenText();
-    
+
     // Generate getter
     Output() << ReturnType(type);
     Output() << " " << name << "()";
@@ -53,14 +53,14 @@ bool GenerateAgent::Property(TauParser::AstNode const &prop) {
     Output() << "return GetLocalValue<" << type << ">(\"" << name << "\");";
     EndBlock();
     Output() << EndLine();
-    
+
     // Generate setter
     Output() << "void Set" << name << "(" << type << " value)";
     StartBlock();
     Output() << "SetLocalValue(\"" << name << "\", value);";
     EndBlock();
     Output() << EndLine();
-    
+
     return true;
 }
 
@@ -92,8 +92,9 @@ void GenerateAgent::AddAgentBoilerplate(Decl const &agent) {
     Output() << EndLine();
 }
 
-void GenerateAgent::MethodDecl(const string &returnType, const Node::ChildrenType &args,
-                  const string &name) {
+void GenerateAgent::MethodDecl(const string &returnType,
+                               const Node::ChildrenType &args,
+                               const string &name) {
     Output() << ReturnType(returnType) << " " << name << "(";
     bool first = true;
     for (auto const &a : args) {
@@ -108,10 +109,11 @@ void GenerateAgent::MethodDecl(const string &returnType, const Node::ChildrenTyp
     Output() << ")";
 }
 
-void GenerateAgent::MethodBody(const string &returnType, const Node::ChildrenType &args,
-                  const string &name) {
+void GenerateAgent::MethodBody(const string &returnType,
+                               const Node::ChildrenType &args,
+                               const string &name) {
     StartBlock();
-    
+
     // Build arguments for the call
     if (!args.empty()) {
         Output() << "// Process method arguments" << EndLine();
@@ -120,15 +122,15 @@ void GenerateAgent::MethodBody(const string &returnType, const Node::ChildrenTyp
             Output() << "// Validate " << id->GetTokenText() << EndLine();
         }
     }
-    
+
     // Execute local method implementation
     Output() << "// Execute local method implementation" << EndLine();
     if (returnType != "void") {
-        Output() << returnType << " result = "; 
+        Output() << returnType << " result = ";
     }
-    
+
     Output() << "LocalCall_" << name << "(";
-    
+
     // Pass arguments
     bool first = true;
     for (auto const &a : args) {
@@ -138,12 +140,12 @@ void GenerateAgent::MethodBody(const string &returnType, const Node::ChildrenTyp
         first = false;
     }
     Output() << ");" << EndLine();
-    
+
     // Return result if needed
     if (returnType != "void") {
         Output() << "return result;" << EndLine();
     }
-    
+
     EndBlock();
 }
 }  // namespace Generate

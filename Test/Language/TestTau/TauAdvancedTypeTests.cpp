@@ -1,15 +1,16 @@
+#include <gtest/gtest.h>
+
 #include <fstream>
-#include <sstream>
 #include <regex>
+#include <sstream>
 
 #include "KAI/Core/Config/Base.h"
 #include "KAI/Core/Debug.h"
 #include "KAI/Core/Logger.h"
-#include <gtest/gtest.h>
-#include "KAI/Language/Tau/Generate/GenerateProcess.h"
-#include "KAI/Language/Tau/TauParser.h"
 #include "KAI/Language/Tau/Generate/GenerateAgent.h"
+#include "KAI/Language/Tau/Generate/GenerateProcess.h"
 #include "KAI/Language/Tau/Generate/GenerateProxy.h"
+#include "KAI/Language/Tau/TauParser.h"
 #include "TestLangCommon.h"
 
 using namespace kai;
@@ -18,7 +19,8 @@ using namespace std;
 // Fixture for advanced Tau type system tests
 struct TauAdvancedTypeTests : TestLangCommon {
     // Helper method to run a Tau test script
-    void RunTauTest(const std::string& script, const std::string& testName, bool expectSuccess = true) {
+    void RunTauTest(const std::string& script, const std::string& testName,
+                    bool expectSuccess = true) {
         // For now, the important thing is that the tests run and don't crash
         Registry r;
         auto lex = std::make_shared<tau::TauLexer>(script.c_str(), r);
@@ -39,8 +41,8 @@ struct TauAdvancedTypeTests : TestLangCommon {
         }
 
         if (expectSuccess) {
-            ASSERT_TRUE(lexResult)
-                << "Lexer for " << testName << " failed with output: " << lexerOutput;
+            ASSERT_TRUE(lexResult) << "Lexer for " << testName
+                                   << " failed with output: " << lexerOutput;
         }
 
         // Create a parser with relaxed requirements
@@ -59,64 +61,76 @@ struct TauAdvancedTypeTests : TestLangCommon {
 
         // Check result based on expectSuccess parameter
         if (expectSuccess) {
-            EXPECT_TRUE(success) << "Parser for " << testName << " failed: " << parser->Error;
+            EXPECT_TRUE(success)
+                << "Parser for " << testName << " failed: " << parser->Error;
         } else {
             // For tests that are expected to fail
-            SUCCEED() << "Test completed for: " << testName << " (known limitation)";
+            SUCCEED() << "Test completed for: " << testName
+                      << " (known limitation)";
         }
     }
 
     // Helper method to test proxy code generation
-    void TestProxyGen(const std::string& script, const std::string& testName, bool expectSuccess = true) {
+    void TestProxyGen(const std::string& script, const std::string& testName,
+                      bool expectSuccess = true) {
         // Generate proxy code
         string output;
         tau::Generate::GenerateProxy proxy(script.c_str(), output);
 
         // Report the result
         if (proxy.Failed) {
-            KAI_LOG_WARNING("Proxy generation for " + testName + 
-                           " reported failure: " + proxy.Error);
+            KAI_LOG_WARNING("Proxy generation for " + testName +
+                            " reported failure: " + proxy.Error);
             if (!expectSuccess) {
-                SUCCEED() << "Proxy generation failed as expected for test: " << testName;
+                SUCCEED() << "Proxy generation failed as expected for test: "
+                          << testName;
                 return;
             }
         } else {
-            KAI_LOG_INFO("Proxy generation for " + testName + 
-                        " succeeded, output size: " + std::to_string(output.size()));
+            KAI_LOG_INFO(
+                "Proxy generation for " + testName +
+                " succeeded, output size: " + std::to_string(output.size()));
         }
 
         // Check results based on expectSuccess parameter
         if (expectSuccess) {
-            EXPECT_FALSE(proxy.Failed) << "Proxy generation for " << testName << " failed: " << proxy.Error;
-            EXPECT_FALSE(output.empty()) << "Proxy generation for " << testName << " produced empty output";
+            EXPECT_FALSE(proxy.Failed) << "Proxy generation for " << testName
+                                       << " failed: " << proxy.Error;
+            EXPECT_FALSE(output.empty()) << "Proxy generation for " << testName
+                                         << " produced empty output";
         } else {
             SUCCEED() << "Proxy generation test completed for: " << testName;
         }
     }
 
     // Helper method to test agent code generation
-    void TestAgentGen(const std::string& script, const std::string& testName, bool expectSuccess = true) {
+    void TestAgentGen(const std::string& script, const std::string& testName,
+                      bool expectSuccess = true) {
         // Generate agent code
         string output;
         tau::Generate::GenerateAgent agent(script.c_str(), output);
 
         // Report the result
         if (agent.Failed) {
-            KAI_LOG_WARNING("Agent generation for " + testName + 
-                           " reported failure: " + agent.Error);
+            KAI_LOG_WARNING("Agent generation for " + testName +
+                            " reported failure: " + agent.Error);
             if (!expectSuccess) {
-                SUCCEED() << "Agent generation failed as expected for test: " << testName;
+                SUCCEED() << "Agent generation failed as expected for test: "
+                          << testName;
                 return;
             }
         } else {
-            KAI_LOG_INFO("Agent generation for " + testName + 
-                        " succeeded, output size: " + std::to_string(output.size()));
+            KAI_LOG_INFO(
+                "Agent generation for " + testName +
+                " succeeded, output size: " + std::to_string(output.size()));
         }
 
         // Check results based on expectSuccess parameter
         if (expectSuccess) {
-            EXPECT_FALSE(agent.Failed) << "Agent generation for " << testName << " failed: " << agent.Error;
-            EXPECT_FALSE(output.empty()) << "Agent generation for " << testName << " produced empty output";
+            EXPECT_FALSE(agent.Failed) << "Agent generation for " << testName
+                                       << " failed: " << agent.Error;
+            EXPECT_FALSE(output.empty()) << "Agent generation for " << testName
+                                         << " produced empty output";
         } else {
             SUCCEED() << "Agent generation test completed for: " << testName;
         }
@@ -150,7 +164,7 @@ TEST_F(TauAdvancedTypeTests, TestInterfaceInheritance) {
         }
     }
     )";
-    
+
     RunTauTest(script, "InterfaceInheritance");
     TestProxyGen(script, "InterfaceInheritance");
     TestAgentGen(script, "InterfaceInheritance");
@@ -194,7 +208,7 @@ TEST_F(TauAdvancedTypeTests, TestAdvancedEvents) {
         }
     }
     )";
-    
+
     RunTauTest(script, "AdvancedEvents");
     TestProxyGen(script, "AdvancedEvents");
     TestAgentGen(script, "AdvancedEvents");
@@ -260,7 +274,7 @@ TEST_F(TauAdvancedTypeTests, TestComplexTypes) {
         }
     }
     )";
-    
+
     RunTauTest(script, "ComplexTypes");
     TestProxyGen(script, "ComplexTypes");
     TestAgentGen(script, "ComplexTypes");
@@ -300,7 +314,7 @@ TEST_F(TauAdvancedTypeTests, TestGenericInterfaces) {
         }
     }
     )";
-    
+
     // Generic interfaces might not be fully supported
     RunTauTest(script, "GenericInterfaces", false);
     TestProxyGen(script, "GenericInterfaces", false);
@@ -337,7 +351,7 @@ TEST_F(TauAdvancedTypeTests, TestFunctionCallbacks) {
         }
     }
     )";
-    
+
     // Function pointers might not be fully supported
     RunTauTest(script, "FunctionCallbacks", false);
     TestProxyGen(script, "FunctionCallbacks", false);
@@ -403,7 +417,7 @@ TEST_F(TauAdvancedTypeTests, TestProtocolDefinition) {
         }
     }
     )";
-    
+
     RunTauTest(script, "ProtocolDefinition");
     TestProxyGen(script, "ProtocolDefinition");
     TestAgentGen(script, "ProtocolDefinition");
@@ -475,7 +489,7 @@ TEST_F(TauAdvancedTypeTests, TestNetworkConfiguration) {
         }
     }
     )";
-    
+
     RunTauTest(script, "NetworkConfiguration");
     TestProxyGen(script, "NetworkConfiguration");
     TestAgentGen(script, "NetworkConfiguration");
@@ -527,7 +541,7 @@ TEST_F(TauAdvancedTypeTests, TestSerializationInterfaces) {
         }
     }
     )";
-    
+
     // Generic methods might not be fully supported
     RunTauTest(script, "SerializationInterfaces", false);
     TestProxyGen(script, "SerializationInterfaces", false);
@@ -589,7 +603,7 @@ TEST_F(TauAdvancedTypeTests, TestLoggingInterfaces) {
         }
     }
     )";
-    
+
     RunTauTest(script, "LoggingInterfaces");
     TestProxyGen(script, "LoggingInterfaces");
     TestAgentGen(script, "LoggingInterfaces");
@@ -678,7 +692,7 @@ TEST_F(TauAdvancedTypeTests, TestDistributedTaskSystem) {
         }
     }
     )";
-    
+
     RunTauTest(script, "DistributedTaskSystem");
     TestProxyGen(script, "DistributedTaskSystem");
     TestAgentGen(script, "DistributedTaskSystem");
@@ -740,7 +754,7 @@ TEST_F(TauAdvancedTypeTests, TestDataValidation) {
         }
     }
     )";
-    
+
     // Generic interfaces might not be fully supported
     RunTauTest(script, "DataValidation", false);
     TestProxyGen(script, "DataValidation", false);
@@ -817,7 +831,7 @@ TEST_F(TauAdvancedTypeTests, TestCachingInterfaces) {
         }
     }
     )";
-    
+
     // Generic methods and out parameters might not be fully supported
     RunTauTest(script, "CachingInterfaces", false);
     TestProxyGen(script, "CachingInterfaces", false);
@@ -927,7 +941,7 @@ TEST_F(TauAdvancedTypeTests, TestMessagingSystem) {
         }
     }
     )";
-    
+
     RunTauTest(script, "MessagingSystem");
     TestProxyGen(script, "MessagingSystem");
     TestAgentGen(script, "MessagingSystem");
@@ -1003,7 +1017,7 @@ TEST_F(TauAdvancedTypeTests, TestConfigurationSystem) {
         }
     }
     )";
-    
+
     // Generic methods and out parameters might not be fully supported
     RunTauTest(script, "ConfigurationSystem", false);
     TestProxyGen(script, "ConfigurationSystem", false);
@@ -1080,7 +1094,7 @@ TEST_F(TauAdvancedTypeTests, TestDependencyInjection) {
         }
     }
     )";
-    
+
     // Generic methods might not be fully supported
     RunTauTest(script, "DependencyInjection", false);
     TestProxyGen(script, "DependencyInjection", false);
@@ -1163,7 +1177,7 @@ TEST_F(TauAdvancedTypeTests, TestDistributedLockSystem) {
         }
     }
     )";
-    
+
     RunTauTest(script, "DistributedLockSystem");
     TestProxyGen(script, "DistributedLockSystem");
     TestAgentGen(script, "DistributedLockSystem");
@@ -1239,7 +1253,7 @@ TEST_F(TauAdvancedTypeTests, TestCircuitBreakerPattern) {
         }
     }
     )";
-    
+
     // Generic methods might not be fully supported
     RunTauTest(script, "CircuitBreakerPattern", false);
     TestProxyGen(script, "CircuitBreakerPattern", false);
@@ -1333,7 +1347,7 @@ TEST_F(TauAdvancedTypeTests, TestCommandPattern) {
         }
     }
     )";
-    
+
     // Generic methods might not be fully supported
     RunTauTest(script, "CommandPattern", false);
     TestProxyGen(script, "CommandPattern", false);
@@ -1424,7 +1438,7 @@ TEST_F(TauAdvancedTypeTests, TestEventSourcingPattern) {
         }
     }
     )";
-    
+
     // Generic methods might not be fully supported
     RunTauTest(script, "EventSourcingPattern", false);
     TestProxyGen(script, "EventSourcingPattern", false);
@@ -1496,7 +1510,7 @@ TEST_F(TauAdvancedTypeTests, TestReactiveInterfaces) {
         }
     }
     )";
-    
+
     // Generic interfaces might not be fully supported
     RunTauTest(script, "ReactiveInterfaces", false);
     TestProxyGen(script, "ReactiveInterfaces", false);

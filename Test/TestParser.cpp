@@ -24,19 +24,21 @@ int main(int argc, char *argv[]) {
     kai::Registry r;
     auto lexer = std::make_shared<kai::tau::TauLexer>(content.c_str(), r);
     bool lexerResult = lexer->Process();
-    
-    std::cout << "Lexer result: " << (lexerResult ? "SUCCESS" : "FAILED") << std::endl;
+
+    std::cout << "Lexer result: " << (lexerResult ? "SUCCESS" : "FAILED")
+              << std::endl;
     if (!lexerResult) {
         std::cout << "Lexer error: " << lexer->Error << std::endl;
         return 1;
     }
-    
+
     std::cout << "Lexer tokens:\n" << lexer->Print() << std::endl;
 
     auto parser = std::make_shared<kai::tau::TauParser>(r);
     bool parserResult = parser->Process(lexer, kai::Structure::Module);
-    
-    std::cout << "Parser result: " << (parserResult ? "SUCCESS" : "FAILED") << std::endl;
+
+    std::cout << "Parser result: " << (parserResult ? "SUCCESS" : "FAILED")
+              << std::endl;
     if (!parserResult) {
         std::cout << "Parser error: " << parser->Error << std::endl;
         return 1;

@@ -29,7 +29,8 @@ class RhoTranslator : public TranslatorBase<RhoParser> {
 
     RhoTranslator(const RhoTranslator&) = delete;
     RhoTranslator& operator=(const RhoTranslator&) = delete;
-    RhoTranslator(RhoTranslator&&) = delete;  // Base class move constructor is deleted
+    RhoTranslator(RhoTranslator&&) =
+        delete;  // Base class move constructor is deleted
     RhoTranslator& operator=(RhoTranslator&&) = default;
 
     explicit RhoTranslator(Registry& r) : Parent(r) {}
