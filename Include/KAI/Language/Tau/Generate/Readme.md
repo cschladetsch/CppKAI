@@ -66,6 +66,6 @@ The generator will produce:
 - Better support for complex type hierarchies and inheritance
 
 For practical examples, see:
-1. [NetworkGenerate application](/Source/App/NetworkGenerate)
-2. [Tau Tutorial](/Doc/TauTutorial.md)
-3. [Tau code generation tests](/Test/Language/TestTau)
+1. [NetworkGenerate application](../../../../Source/App/NetworkGenerate)
+2. [Tau Tutorial](../../../../Doc/TauTutorial.md)
+3. [Tau code generation tests](../../../../Test/Language/TestTau)

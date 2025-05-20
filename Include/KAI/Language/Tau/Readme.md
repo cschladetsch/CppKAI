@@ -49,8 +49,8 @@ NetworkGenerate --input=MyInterface.tau --output=GeneratedCode --proxy --agent
 ```
 
 For detailed usage instructions and syntax guide, see:
-1. [Tau Tutorial](/Doc/TauTutorial.md) for comprehensive documentation
-2. [App/NetworkGenerate](/Source/App/NetworkGenerate) for the code generation tool
+1. [Tau Tutorial](../../../Doc/TauTutorial.md) for comprehensive documentation
+2. [App/NetworkGenerate](../../../Source/App/NetworkGenerate) for the code generation tool
 
 ## Testing
 

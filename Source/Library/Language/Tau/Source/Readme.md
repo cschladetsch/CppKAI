@@ -42,6 +42,6 @@ The Tau implementation includes comprehensive test suites:
 - Integration tests with the networking infrastructure
 
 For practical examples and documentation, see:
-1. [Tau Tutorial](/Doc/TauTutorial.md)
-2. [NetworkGenerate application](/Source/App/NetworkGenerate)
-3. [Test suites](/Test/Language/TestTau)
+1. [Tau Tutorial](../../../../../Doc/TauTutorial.md)
+2. [NetworkGenerate application](../../../../../Source/App/NetworkGenerate)
+3. [Test suites](../../../../../Test/Language/TestTau)
