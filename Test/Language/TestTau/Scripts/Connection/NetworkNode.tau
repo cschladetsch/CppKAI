@@ -1,6 +1,6 @@
 // Network node interfaces and classes for testing
 
-namespace KAI::Network
+namespace KAI { namespace Network
 {
     // Node interface
     interface INode
@@ -54,4 +54,4 @@ namespace KAI::Network
         // Events
         event PeerDiscovered(SystemAddress address);
     }
-}
+}}

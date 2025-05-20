@@ -7,7 +7,7 @@
 #include "KAI/Core/Config/Base.h"
 #include "KAI/Core/Logger.h" 
 #include "KAI/Core/Debug.h"
-#include "KAI/Core/Exception/Exception.h"
+#include "KAI/Core/Exception.h"
 #include "KAI/Language/Rho/RhoParser.h"
 #include "KAI/Language/Rho/RhoTranslator.h"
 #include "TestLangCommon.h"

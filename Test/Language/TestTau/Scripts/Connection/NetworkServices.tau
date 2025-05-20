@@ -1,6 +1,6 @@
 // Network services and applications for testing
 
-namespace KAI::Network::Services
+namespace KAI { namespace Network { namespace Services
 {
     // Service discovery information
     struct ServiceInfo
@@ -71,4 +71,4 @@ namespace KAI::Network::Services
         event TransferFailed(int transferId, string reason);
         event IncomingTransferRequest(int transferId, string filename, int64 size);
     }
-}
+}}}

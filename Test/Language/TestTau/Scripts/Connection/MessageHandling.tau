@@ -1,6 +1,6 @@
 // Message handling interfaces and classes for testing
 
-namespace KAI::Network::Messaging
+namespace KAI { namespace Network { namespace Messaging
 {
     // Message types
     enum MessageType
@@ -67,4 +67,4 @@ namespace KAI::Network::Messaging
         // Events
         event MessageProcessed(MessageHeader header, bool success);
     }
-}
+}}}

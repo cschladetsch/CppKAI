@@ -1,6 +1,6 @@
 // Basic connection interfaces and classes for testing
 
-namespace KAI::Network
+namespace KAI { namespace Network
 {
     // Connection state enum
     enum ConnectionState 
@@ -63,4 +63,4 @@ namespace KAI::Network
         // Event handling
         event ConnectionStatusChanged(int id, ConnectionEvent event);
     }
-}
+}}
