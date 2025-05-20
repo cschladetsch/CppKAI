@@ -8,9 +8,9 @@
 #include "KAI/Core/BuiltinTypes/Array.h"
 #include "KAI/Core/BuiltinTypes/String.h"
 #include "KAI/Core/Config/Base.h"
+#include "KAI/Core/Logger.h"
 #include "KAI/Core/Debug.h"
-#include "KAI/Language/Rho/RhoParser.h"
-#include "KAI/Language/Rho/RhoTranslator.h"
+#include "KAI/Core/Exception/Exception.h"
 #include "TestLangCommon.h"
 
 using namespace kai;
@@ -18,195 +18,116 @@ using namespace std;
 
 // Fixture for testing advanced Rho data structure operations
 struct RhoAdvancedDataTests : TestLangCommon {
-    // Helper method to execute a Rho script and verify the value on top of stack
-    template <class T>
-    void AssertResult(const char *script, T expected, bool verbose = false) {
-        if (verbose) {
-            KAI_LOG_INFO(std::string("Testing script: ") + script);
-        }
-
-        try {
-            Registry reg;
-            Console console(reg);
-            console.SetScope(reg.GetGlobalScope());
-
-            // Register map, array and other complex types
-            reg.AddClass<Map>(Label("Map"));
-            reg.AddClass<Array>(Label("Array"));
-            reg.AddClass<String>(Label("String"));
-            reg.AddClass<int>(Label("int"));
-            reg.AddClass<float>(Label("float"));
-            reg.AddClass<bool>(Label("bool"));
-
-            auto result = console.Execute(script);
-
-            if (result.Failed) {
-                if (verbose) {
-                    KAI_LOG_ERROR("Execution failed: " + result.Error);
-                }
-                FAIL() << "Error executing script: " << result.Error;
-                return;
-            }
-
-            if (console.GetExecutor().GetStack().Size() == 0) {
-                if (verbose) {
-                    KAI_LOG_WARNING("Stack is empty, cannot verify result");
-                }
-                FAIL() << "Stack is empty, cannot verify result";
-                return;
-            }
-
-            auto val = console.GetExecutor().GetStack().Top();
-            if (val.GetType() != Type::Traits<T>::TypeNumber) {
-                if (verbose) {
-                    KAI_LOG_ERROR("Type mismatch. Expected: " +
-                                  std::to_string(Type::Traits<T>::TypeNumber) +
-                                  ", Got: " + std::to_string(val.GetType()));
-                }
-                FAIL() << "Type mismatch. Expected: "
-                       << Type::Traits<T>::TypeNumber
-                       << ", Got: " << val.GetType();
-                return;
-            }
-
-            T actual = kai_cast<T>(val);
-            if (verbose) {
-                KAI_LOG_INFO("Result: " + std::to_string(actual));
-            }
-            ASSERT_EQ(expected, actual)
-                << "Result doesn't match expected value";
-        } catch (const Exception &e) {
-            if (verbose) {
-                KAI_LOG_ERROR("Exception: " + std::string(e.ToString()));
-            }
-            FAIL() << "Exception: " << e.ToString();
-        } catch (const std::exception &e) {
-            if (verbose) {
-                KAI_LOG_ERROR("std::exception: " + std::string(e.what()));
-            }
-            FAIL() << "std::exception: " << e.what();
-        } catch (...) {
-            if (verbose) {
-                KAI_LOG_ERROR("Unknown exception");
-            }
-            FAIL() << "Unknown exception";
-        }
+    void SetUp() override {
+        TestLangCommon::SetUp();
+        console_.SetLanguage(Language::Rho);
+        
+        // Register additional types needed for tests
+        reg_->AddClass<Map>(Label("Map"));
+        reg_->AddClass<Array>(Label("Array"));
+        reg_->AddClass<String>(Label("String"));
+        reg_->AddClass<int>(Label("int"));
+        reg_->AddClass<float>(Label("float"));
+        reg_->AddClass<bool>(Label("bool"));
+        
+        // Clear stacks to start fresh
+        exec_->ClearStacks();
+        exec_->ClearContext();
     }
-
-    // Helper to assert a string result
-    void AssertStringResult(const char *script, const char* expected, bool verbose = false) {
-        AssertResult<String>(script, String(expected), verbose);
+    
+    // Helper method to execute Rho code and verify the result
+    template <typename T>
+    void ExecuteRhoAndVerify(const std::string& code, const T& expected) {
+        // Clear the stack first
+        exec_->ClearStacks();
+        
+        // Execute the Rho code
+        console_.Execute(code);
+        
+        // Process the stack to extract values from continuations
+        UnwrapStackValues();
+        
+        // Verify the result
+        ASSERT_FALSE(data_->Empty()) << "Stack should not be empty after operation";
+        ASSERT_TRUE(data_->Top().IsType<T>()) 
+            << "Expected result type " << typeid(T).name() 
+            << " but got " << (data_->Top().Exists() 
+                             ? data_->Top().GetClass()->GetName().ToString() 
+                             : "null");
+        ASSERT_EQ(ConstDeref<T>(data_->Top()), expected) 
+            << "Expected value " << expected << " but got " << ConstDeref<T>(data_->Top());
     }
-
+    
+    // Helper to verify string results
+    void ExecuteRhoAndVerifyString(const std::string& code, const std::string& expected) {
+        ExecuteRhoAndVerify<String>(code, String(expected));
+    }
+    
     // Helper to verify array operations
-    void VerifyArrayResult(const char *script, std::vector<int> expected, bool verbose = false) {
-        try {
-            Registry reg;
-            Console console(reg);
-            console.SetScope(reg.GetGlobalScope());
-
-            // Register necessary types
-            reg.AddClass<Map>(Label("Map"));
-            reg.AddClass<Array>(Label("Array"));
-            reg.AddClass<String>(Label("String"));
-            reg.AddClass<int>(Label("int"));
-            reg.AddClass<float>(Label("float"));
-            reg.AddClass<bool>(Label("bool"));
-
-            auto result = console.Execute(script);
-
-            if (result.Failed) {
-                FAIL() << "Error executing script: " << result.Error;
-                return;
-            }
-
-            if (console.GetExecutor().GetStack().Size() == 0) {
-                FAIL() << "Stack is empty, cannot verify result";
-                return;
-            }
-
-            auto val = console.GetExecutor().GetStack().Top();
-            if (!val.IsType<Array>()) {
-                FAIL() << "Expected Array type on stack, got: " 
-                      << (val.Exists() ? val.GetClass()->GetName().ToString() : "null");
-                return;
-            }
-
-            Pointer<Array> arr = val;
-            ASSERT_EQ(arr->Size(), expected.size())
-                << "Array size doesn't match expected size";
-
-            for (size_t i = 0; i < expected.size() && i < arr->Size(); i++) {
-                ASSERT_TRUE(arr->At(i).IsType<int>())
-                    << "Array element " << i << " is not an integer";
-                ASSERT_EQ(ConstDeref<int>(arr->At(i)), expected[i])
-                    << "Array element " << i << " doesn't match expected value";
-            }
-        } catch (const Exception &e) {
-            FAIL() << "Exception: " << e.ToString();
-        } catch (const std::exception &e) {
-            FAIL() << "std::exception: " << e.what();
-        } catch (...) {
-            FAIL() << "Unknown exception";
+    void VerifyArrayResult(const std::string& code, std::vector<int> expected) {
+        // Clear the stack first
+        exec_->ClearStacks();
+        
+        // Execute the Rho code
+        console_.Execute(code);
+        
+        // Process the stack
+        UnwrapStackValues();
+        
+        // Verify the result is an array
+        ASSERT_FALSE(data_->Empty()) << "Stack should not be empty after operation";
+        ASSERT_TRUE(data_->Top().IsType<Array>()) 
+            << "Expected Array type but got " 
+            << (data_->Top().Exists() ? data_->Top().GetClass()->GetName().ToString() : "null");
+        
+        Pointer<Array> arr = data_->Top();
+        
+        // Verify array size
+        ASSERT_EQ(arr->Size(), expected.size()) << "Array size doesn't match expected size";
+        
+        // Verify array elements
+        for (size_t i = 0; i < expected.size() && i < arr->Size(); i++) {
+            ASSERT_TRUE(arr->At(i).IsType<int>()) 
+                << "Array element " << i << " is not an integer";
+            ASSERT_EQ(ConstDeref<int>(arr->At(i)), expected[i]) 
+                << "Array element " << i << " doesn't match expected value";
         }
     }
-
+    
     // Helper to verify map operations
-    void VerifyMapKeyValues(const char* script, std::vector<std::pair<String, int>> expected, bool verbose = false) {
-        try {
-            Registry reg;
-            Console console(reg);
-            console.SetScope(reg.GetGlobalScope());
-
-            // Register necessary types
-            reg.AddClass<Map>(Label("Map"));
-            reg.AddClass<Array>(Label("Array"));
-            reg.AddClass<String>(Label("String"));
-            reg.AddClass<int>(Label("int"));
-            reg.AddClass<float>(Label("float"));
-            reg.AddClass<bool>(Label("bool"));
-
-            auto result = console.Execute(script);
-
-            if (result.Failed) {
-                FAIL() << "Error executing script: " << result.Error;
-                return;
-            }
-
-            if (console.GetExecutor().GetStack().Size() == 0) {
-                FAIL() << "Stack is empty, cannot verify result";
-                return;
-            }
-
-            auto val = console.GetExecutor().GetStack().Top();
-            if (!val.IsType<Map>()) {
-                FAIL() << "Expected Map type on stack, got: " 
-                      << (val.Exists() ? val.GetClass()->GetName().ToString() : "null");
-                return;
-            }
-
-            Pointer<Map> map = val;
-            ASSERT_EQ(map->Size(), expected.size())
-                << "Map size doesn't match expected size";
-
-            for (const auto& [key, expectedValue] : expected) {
-                Object keyObj = reg.New<String>(key);
-                ASSERT_TRUE(map->Contains(keyObj))
-                    << "Map does not contain expected key: " << key;
-                    
-                Object valueObj = map->Get(keyObj);
-                ASSERT_TRUE(valueObj.IsType<int>())
-                    << "Map value for key " << key << " is not an integer";
-                    
-                ASSERT_EQ(ConstDeref<int>(valueObj), expectedValue)
-                    << "Map value for key " << key << " doesn't match expected value";
-            }
-        } catch (const Exception &e) {
-            FAIL() << "Exception: " << e.ToString();
-        } catch (const std::exception &e) {
-            FAIL() << "std::exception: " << e.what();
-        } catch (...) {
-            FAIL() << "Unknown exception";
+    void VerifyMapKeyValues(const std::string& code, std::vector<std::pair<String, int>> expected) {
+        // Clear the stack first
+        exec_->ClearStacks();
+        
+        // Execute the Rho code
+        console_.Execute(code);
+        
+        // Process the stack
+        UnwrapStackValues();
+        
+        // Verify the result is a map
+        ASSERT_FALSE(data_->Empty()) << "Stack should not be empty after operation";
+        ASSERT_TRUE(data_->Top().IsType<Map>()) 
+            << "Expected Map type but got " 
+            << (data_->Top().Exists() ? data_->Top().GetClass()->GetName().ToString() : "null");
+        
+        Pointer<Map> map = data_->Top();
+        
+        // Verify map size
+        ASSERT_EQ(map->Size(), expected.size()) << "Map size doesn't match expected size";
+        
+        // Verify map entries
+        for (const auto& [key, expectedValue] : expected) {
+            Object keyObj = reg_->New<String>(key);
+            ASSERT_TRUE(map->Contains(keyObj)) 
+                << "Map does not contain expected key: " << key;
+            
+            Object valueObj = map->Get(keyObj);
+            ASSERT_TRUE(valueObj.IsType<int>()) 
+                << "Map value for key " << key << " is not an integer";
+            
+            ASSERT_EQ(ConstDeref<int>(valueObj), expectedValue) 
+                << "Map value for key " << key << " doesn't match expected value";
         }
     }
 };
@@ -279,7 +200,7 @@ TEST_F(RhoAdvancedDataTests, ArrayFilterOperation) {
 
 // 7. Test array reduction (sum)
 TEST_F(RhoAdvancedDataTests, ArrayReduceSum) {
-    AssertResult<int>(
+    ExecuteRhoAndVerify<int>(
         "arr = [1, 2, 3, 4, 5];\n"
         "sum = 0;\n"
         "for (i = 0; i < arr.size(); i = i + 1) {\n"
@@ -292,7 +213,7 @@ TEST_F(RhoAdvancedDataTests, ArrayReduceSum) {
 
 // 8. Test nested arrays
 TEST_F(RhoAdvancedDataTests, NestedArrays) {
-    AssertResult<int>(
+    ExecuteRhoAndVerify<int>(
         "matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];\n"
         "matrix[1][1];",  // Access element at row 1, column 1 (5)
         5
@@ -325,7 +246,7 @@ TEST_F(RhoAdvancedDataTests, MapValueUpdate) {
 
 // 11. Test map iteration
 TEST_F(RhoAdvancedDataTests, MapIteration) {
-    AssertResult<int>(
+    ExecuteRhoAndVerify<int>(
         "map = {};\n"
         "map['a'] = 5;\n"
         "map['b'] = 10;\n"
@@ -343,7 +264,7 @@ TEST_F(RhoAdvancedDataTests, MapIteration) {
 
 // 12. Test complex data structure (array of maps)
 TEST_F(RhoAdvancedDataTests, ArrayOfMaps) {
-    AssertResult<int>(
+    ExecuteRhoAndVerify<int>(
         "users = [\n"
         "    { 'name': 'Alice', 'age': 30, 'score': 85 },\n"
         "    { 'name': 'Bob', 'age': 25, 'score': 92 },\n"
@@ -356,7 +277,7 @@ TEST_F(RhoAdvancedDataTests, ArrayOfMaps) {
 
 // 13. Test complex data structure manipulation
 TEST_F(RhoAdvancedDataTests, ComplexDataManipulation) {
-    AssertResult<int>(
+    ExecuteRhoAndVerify<int>(
         "users = [\n"
         "    { 'name': 'Alice', 'age': 30, 'score': 85 },\n"
         "    { 'name': 'Bob', 'age': 25, 'score': 92 },\n"
@@ -374,7 +295,7 @@ TEST_F(RhoAdvancedDataTests, ComplexDataManipulation) {
 
 // 14. Test string operations with arrays
 TEST_F(RhoAdvancedDataTests, StringArrayOperations) {
-    AssertStringResult(
+    ExecuteRhoAndVerifyString(
         "words = ['Hello', ' ', 'World', '!'];\n"
         "message = '';\n"
         "for (i = 0; i < words.size(); i = i + 1) {\n"
@@ -387,7 +308,7 @@ TEST_F(RhoAdvancedDataTests, StringArrayOperations) {
 
 // 15. Test higher order function simulation (passing functions as values)
 TEST_F(RhoAdvancedDataTests, HigherOrderFunctions) {
-    AssertResult<int>(
+    ExecuteRhoAndVerify<int>(
         "function applyOperation(a, b, operation) {\n"
         "    if (operation == 'add') {\n"
         "        return a + b;\n"
@@ -407,7 +328,7 @@ TEST_F(RhoAdvancedDataTests, HigherOrderFunctions) {
 
 // 16. Test closures simulation
 TEST_F(RhoAdvancedDataTests, ClosureSimulation) {
-    AssertResult<int>(
+    ExecuteRhoAndVerify<int>(
         "function makeCounter(start) {\n"
         "    count = start;\n"
         "    function increment() {\n"
@@ -426,7 +347,7 @@ TEST_F(RhoAdvancedDataTests, ClosureSimulation) {
 
 // 17. Test advanced map manipulations
 TEST_F(RhoAdvancedDataTests, AdvancedMapManipulations) {
-    AssertStringResult(
+    ExecuteRhoAndVerifyString(
         "config = {\n"
         "    'server': 'api.example.com',\n"
         "    'port': 8080,\n"
@@ -467,7 +388,7 @@ TEST_F(RhoAdvancedDataTests, ArraySorting) {
 
 // 19. Test complex return value from function
 TEST_F(RhoAdvancedDataTests, ComplexReturnValue) {
-    AssertResult<int>(
+    ExecuteRhoAndVerify<int>(
         "function processData(data) {\n"
         "    result = {\n"
         "        'min': data[0],\n"
