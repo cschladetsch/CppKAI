@@ -68,11 +68,19 @@ int main(int argc, char** argv) {
     if (argc > 1) {
         config.loadFromFile(argv[1]);
     } else {
-        // Try default config location
-        std::ifstream configFile("client_config.json");
-        if (configFile.good()) {
-            configFile.close();
-            config.loadFromFile("client_config.json");
+        // Try default config locations
+        // First check config directory
+        std::ifstream configFileInConfigDir("config/client_config.json");
+        if (configFileInConfigDir.good()) {
+            configFileInConfigDir.close();
+            config.loadFromFile("config/client_config.json");
+        } else {
+            // Then try root directory for backward compatibility
+            std::ifstream configFile("client_config.json");
+            if (configFile.good()) {
+                configFile.close();
+                config.loadFromFile("client_config.json");
+            }
         }
     }
     

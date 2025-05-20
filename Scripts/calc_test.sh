@@ -18,7 +18,8 @@ else
 fi
 
 # Create test configs with specific parameters
-cat > "$ROOT_DIR/server_test_config.json" << EOF
+mkdir -p "$ROOT_DIR/config"
+cat > "$ROOT_DIR/config/server_test_config.json" << EOF
 {
     "port": 14595,
     "maxClients": 4,
@@ -27,7 +28,7 @@ cat > "$ROOT_DIR/server_test_config.json" << EOF
 }
 EOF
 
-cat > "$ROOT_DIR/client_test_config.json" << EOF
+cat > "$ROOT_DIR/config/client_test_config.json" << EOF
 {
     "serverIp": "127.0.0.1",
     "serverPort": 14595,
@@ -52,7 +53,7 @@ echo "Build successful!"
 
 # Start the server process in the background
 echo "Starting calculation server..."
-"$BUILD_DIR/Bin/ConfigurableServer" "$ROOT_DIR/server_test_config.json" &
+"$BUILD_DIR/Bin/ConfigurableServer" "$ROOT_DIR/config/server_test_config.json" &
 SERVER_PID=$!
 
 # Give the server time to start up
@@ -69,7 +70,7 @@ echo "Server started with PID $SERVER_PID"
 
 # Run the client with the test config
 echo "Running client with calculation request '1+2'..."
-"$BUILD_DIR/Bin/ConfigurableClient" "$ROOT_DIR/client_test_config.json"
+"$BUILD_DIR/Bin/ConfigurableClient" "$ROOT_DIR/config/client_test_config.json"
 CLIENT_EXIT=$?
 
 # Kill the server process
@@ -85,6 +86,6 @@ else
 fi
 
 # Clean up test config files
-rm -f "$ROOT_DIR/server_test_config.json" "$ROOT_DIR/client_test_config.json"
+rm -f "$ROOT_DIR/config/server_test_config.json" "$ROOT_DIR/config/client_test_config.json"
 
 echo "Test complete."

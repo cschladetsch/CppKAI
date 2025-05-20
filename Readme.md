@@ -192,10 +192,10 @@ The system includes several network applications:
 
 ```bash
 # Run a configurable calculation server
-./build/Bin/ConfigurableServer server_config.json
+./build/Bin/ConfigurableServer config/server_config.json
 
 # Run a client that sends a calculation request
-./build/Bin/ConfigurableClient client_config.json
+./build/Bin/ConfigurableClient config/client_config.json
 ```
 
 Try the calculation test demo:
