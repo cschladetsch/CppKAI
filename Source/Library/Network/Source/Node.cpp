@@ -46,13 +46,40 @@ void Node::Listen(int port) { Listen(IpAddress("0.0.0.0"), port); }
 void Node::Listen(IpAddress const &address, int port) {
     if (!peer_) return;
 
+    // Check if we're already running
+    if (isRunning_) {
+        std::string errorMsg = "Node is already running, cannot listen on " + 
+                               address.ToString() + ":" + std::to_string(port);
+        std::cerr << errorMsg << std::endl;
+        NetworkLogger::LogStatus(errorMsg);
+        return;
+    }
+
     // Max 32 connections, use all available network interfaces
     RakNet::SocketDescriptor sd(port, address.ToString().c_str());
     RakNet::StartupResult result = peer_->Startup(32, &sd, 1);
 
     if (result != RakNet::RAKNET_STARTED) {
-        std::string errorMsg = "Failed to start RakNet server, error code: " +
-                               std::to_string(result);
+        std::string errorMsg;
+        
+        // Provide more specific error messages for common issues
+        switch (result) {
+            case RakNet::SOCKET_PORT_ALREADY_IN_USE:
+                errorMsg = "Failed to start RakNet server: Port " + std::to_string(port) + 
+                           " is already in use. Try a different port.";
+                break;
+            case RakNet::SOCKET_FAILED_TO_BIND:
+                errorMsg = "Failed to start RakNet server: Could not bind to address " + 
+                           address.ToString() + ":" + std::to_string(port);
+                break;
+            case RakNet::SOCKET_FAILED_TEST_SEND:
+                errorMsg = "Failed to start RakNet server: Test send failed, network may be unavailable";
+                break;
+            default:
+                errorMsg = "Failed to start RakNet server, error code: " + std::to_string(result);
+                break;
+        }
+        
         std::cerr << errorMsg << std::endl;
         NetworkLogger::LogStatus(errorMsg);
         return;
@@ -71,21 +98,61 @@ void Node::Listen(IpAddress const &address, int port) {
 void Node::Connect(IpAddress const &ip, int port) {
     if (!peer_) return;
 
+    // Check if we're already connected to this address
+    if (IsConnectedTo(ip, port)) {
+        std::string logMessage = "Already connected to " + ip.ToString() + ":" + std::to_string(port);
+        std::cout << logMessage << std::endl;
+        NetworkLogger::LogConnection(logMessage);
+        return;
+    }
+
     // If not started yet, start with any available port
     if (!isRunning_) {
-        RakNet::SocketDescriptor sd(0, nullptr);  // Use any available port
+        // For loopback connections, it's better to explicitly bind to loopback
+        RakNet::SocketDescriptor sd;
+        
+        // When connecting to loopback, bind on loopback interface
+        if (ip.ToString() == "127.0.0.1" || ip.ToString() == "localhost") {
+            sd.port = 0;  // Use any available port
+            sd.hostAddress = "127.0.0.1";
+        } else {
+            sd.port = 0;  // Use any available port
+            sd.hostAddress = nullptr;  // Use any available interface
+        }
+        
         RakNet::StartupResult result = peer_->Startup(32, &sd, 1);
 
         if (result != RakNet::RAKNET_STARTED) {
-            std::string errorMsg =
-                "Failed to start RakNet client, error code: " +
-                std::to_string(result);
+            std::string errorMsg;
+            
+            // Provide more specific error messages for common issues
+            switch (result) {
+                case RakNet::SOCKET_PORT_ALREADY_IN_USE:
+                    errorMsg = "Failed to start RakNet client: Port is already in use";
+                    break;
+                case RakNet::SOCKET_FAILED_TO_BIND:
+                    errorMsg = "Failed to start RakNet client: Could not bind to address";
+                    break;
+                case RakNet::SOCKET_FAILED_TEST_SEND:
+                    errorMsg = "Failed to start RakNet client: Test send failed, network may be unavailable";
+                    break;
+                default:
+                    errorMsg = "Failed to start RakNet client, error code: " + std::to_string(result);
+                    break;
+            }
+            
             std::cerr << errorMsg << std::endl;
             NetworkLogger::LogStatus(errorMsg);
             return;
         }
 
         isRunning_ = true;
+        
+        // Log the port we're using
+        int usedPort = peer_->GetInternalID().GetPort();
+        std::string startupMsg = "Node started and bound to port " + std::to_string(usedPort);
+        std::cout << startupMsg << std::endl;
+        NetworkLogger::LogStatus(startupMsg);
     }
 
     // Connect to remote peer
@@ -93,9 +160,34 @@ void Node::Connect(IpAddress const &ip, int port) {
         peer_->Connect(ip.ToString().c_str(), port, nullptr, 0);
 
     if (result != RakNet::CONNECTION_ATTEMPT_STARTED) {
-        std::string errorMsg = "Failed to connect to " + ip.ToString() + ":" +
-                               std::to_string(port) +
-                               ", error code: " + std::to_string(result);
+        std::string errorMsg;
+        
+        // Provide more specific error messages
+        switch (result) {
+            case RakNet::CONNECTION_ATTEMPT_ALREADY_IN_PROGRESS:
+                errorMsg = "Connection attempt to " + ip.ToString() + ":" + 
+                          std::to_string(port) + " already in progress";
+                break;
+            case RakNet::ALREADY_CONNECTED_TO_ENDPOINT:
+                errorMsg = "Already connected to " + ip.ToString() + ":" + 
+                          std::to_string(port);
+                break;
+            case RakNet::CONNECTION_ATTEMPT_STARTED:
+                errorMsg = "Connection attempt started";
+                break;
+            case RakNet::CANNOT_RESOLVE_DOMAIN_NAME:
+                errorMsg = "Cannot resolve domain name: " + ip.ToString();
+                break;
+            case RakNet::INVALID_PARAMETER:
+                errorMsg = "Invalid parameter when connecting to " + ip.ToString() + 
+                          ":" + std::to_string(port);
+                break;
+            default:
+                errorMsg = "Failed to connect to " + ip.ToString() + ":" +
+                          std::to_string(port) + ", error code: " + std::to_string(result);
+                break;
+        }
+        
         std::cerr << errorMsg << std::endl;
         NetworkLogger::LogStatus(errorMsg);
         return;
@@ -206,10 +298,15 @@ std::vector<RakNet::SystemAddress> Node::GetConnections() const {
 
 bool Node::IsConnectedTo(const IpAddress &address, int port) const {
     if (!connectionManager_) return false;
-
-    std::string addrStr = address.ToString() + ":" + std::to_string(port);
+    
+    // Create a proper SystemAddress for comparison
+    RakNet::SystemAddress targetAddr(address.ToString().c_str(), port);
+    
+    // Get all connections and check each one
     for (auto conn : GetConnections()) {
-        if (conn.ToString() == addrStr) {
+        // Compare IPs and ports separately to handle different string representations
+        if (conn.GetPort() == targetAddr.GetPort() && 
+            strcmp(conn.ToString(false), targetAddr.ToString(false)) == 0) {
             return true;
         }
     }

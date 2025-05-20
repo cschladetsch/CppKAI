@@ -1,14 +1,29 @@
-# Networking
+# KAI Networking System
 
-The main reason for the development of this system was to allow for fast and efficient distributed computation.
+The KAI networking system provides peer-to-peer communication capabilities, allowing for fast and efficient distributed computation, object synchronization, and remote command execution across networked nodes.
 
-* Object -> Registry (local)
-* NetObject -> Domain (shared)
-* Domain -> System (shared across multiple Domains)
+## Network Documentation Structure
 
-A *Registry* is a local set of unique well-known *Objects*. A *Domain* is a set of unique well-known objects within a set of network *Nodes*. 
+KAI's network documentation is organized into these main documents:
 
-A *System* is a set of well-known Domains - The top-level System network does not generally deal with specific NetObjects, although it can.
+* **Networking.md** (this document): Overview of the networking system
+* **[NetworkArchitecture.md](NetworkArchitecture.md)**: Detailed architecture of the networking system
+* **[PeerToPeerSummary.md](PeerToPeerSummary.md)**: Concise summary of the peer-to-peer implementation
+* **[PeerToPeerNetworking.md](PeerToPeerNetworking.md)**: Detailed documentation of the peer-to-peer system
+* **[NetworkPerformance.md](NetworkPerformance.md)**: Performance considerations and optimization
+* **[NetworkSecurity.md](NetworkSecurity.md)**: Security features and best practices
+* **[ConnectionTesting.md](ConnectionTesting.md)**: Procedures for testing network connections
+* **[NetworkIteration.md](NetworkIteration.md)**: Distributed iteration using across-node operations
+
+## Core Concepts
+
+* **Object → Registry (local)**: Objects belong to a local Registry
+* **NetObject → Domain (shared)**: Network objects exist within a shared Domain
+* **Domain → System (shared across multiple Domains)**: Domains form a distributed System
+
+A **Registry** is a local set of unique well-known **Objects**. A **Domain** is a set of unique well-known objects within a set of network **Nodes**. 
+
+A **System** is a set of well-known Domains - The top-level System network does not generally deal with specific NetObjects, although it can.
 
 Rather, a network System is a collection of distributed Domains, each such unique Domain with a unique shared Registry.
 
@@ -198,15 +213,46 @@ KAI's networking architecture is primarily peer-to-peer, with no central server-
 
 ### NetworkPeer Application
 
-The `NetworkPeer` application provides a complete peer-to-peer implementation with SSH-like command semantics:
+The `NetworkPeer` application provides a complete peer-to-peer implementation with SSH-like command semantics for remote command execution.
+
+#### Running NetworkPeer
 
 ```bash
 # Start a peer with default configuration
 ./Bin/NetworkPeer
 
 # Start a peer with specific configuration
-./Bin/NetworkPeer my_config.json
+./Bin/NetworkPeer /path/to/config.json
 ```
+
+#### Configuration Files
+
+The NetworkPeer can be configured using JSON configuration files:
+
+```json
+{
+    "listenPort": 14595,
+    "autoListen": true,
+    "interactive": true,
+    "peers": [
+        {
+            "host": "127.0.0.1",
+            "port": 14596
+        }
+    ],
+    "commands": {
+        "add": "calc 1+2",
+        "hello": "echo Hello from peer"
+    }
+}
+```
+
+Sample configuration files are provided in the `config/` directory:
+- `peer1_config.json`: Example configuration for a listening peer
+- `peer2_config.json`: Example configuration for a connecting peer
+- `minimal_config.json`: Minimal configuration for basic testing
+
+#### Remote Command Execution
 
 From the interactive console, you can execute commands on remote peers:
 
@@ -215,16 +261,37 @@ From the interactive console, you can execute commands on remote peers:
 peers
 
 # Execute a calculation on remote peer 0
-@0 calc 1+2
+@0 add
+
+# Execute a custom command on peer 1
+@1 hello
 ```
 
-This will execute the calculation on the remote peer and return the result (3) to the local console.
+This will execute the defined command on the remote peer and return the result to the local console.
 
 For detailed information about the peer-to-peer system, see the [Peer-to-Peer Networking documentation](PeerToPeerNetworking.md).
 
-### Peer-to-Peer Calculation Demo
+### Testing Peer-to-Peer Functionality
 
-To demonstrate the peer-to-peer calculation functionality:
+KAI provides several scripts to test the peer-to-peer functionality:
+
+#### Interactive Testing
+
+```bash
+./Scripts/network/run_peers.sh
+```
+
+This script provides instructions for running two peers in separate terminals and testing the peer-to-peer communication.
+
+#### Automated Testing
+
+```bash
+./Scripts/network/automated_demo.sh
+```
+
+This script builds the NetworkPeer and verifies it's ready for use.
+
+You can also run the legacy test script:
 
 ```bash
 ./Scripts/p2p_test.sh
@@ -236,23 +303,86 @@ This script:
 3. Issues a command from the second peer to execute on the first
 4. Verifies the calculation result (1+2=3) is correctly returned
 
-## Connection Testing
+#### Peer-to-Peer Test Walkthrough
 
-KAI provides several components for testing and demonstrating network connections:
+1. Start a peer in server mode:
+   ```bash
+   cd /path/to/KAI/build && ./Bin/NetworkPeer ../config/peer1_config.json
+   ```
 
-### Basic Connection Examples
+2. Start another peer in client mode:
+   ```bash
+   cd /path/to/KAI/build && ./Bin/NetworkPeer ../config/peer2_config.json
+   ```
 
+3. In the client terminal:
+   - Type `peers` to list connected peers
+   - Type `@0 add` to execute the "add" command on the server peer
+   - You should see the result `3` returned from the calculation
+
+## Network Components
+
+KAI provides several components for implementing and testing network connections:
+
+### Core Network Components
+
+- **Node**: The primary network entity (in `/Include/KAI/Network/Node.h`)
+- **ConnectionManager**: Handles connection states and timeouts (`/Include/KAI/Network/ConnectionManager.h`)
+- **PeerDiscovery**: Provides automatic peer discovery on the network (`/Include/KAI/Network/PeerDiscovery.h`)
+- **NetworkSerializer**: Handles object serialization (`/Include/KAI/Network/Serialization.h`)
+
+### Network Applications
+
+- **NetworkTest**: Demonstrates basic peer discovery and connection (`/Source/App/NetworkTest/`)
+- **NetworkPeer**: Advanced peer-to-peer implementation with SSH-like command execution (`/Source/App/NetworkPeer/`)
 - **MinimalServer/MinimalClient**: Simple examples showing basic connection and message passing
-- **NetworkPeer**: Advanced peer-to-peer implementation with SSH-like semantics
+
+### RakNet Integration
+
+The KAI network system is built on top of RakNet (available in `/Ext/RakNet/`), which provides:
+
+- Reliable UDP communication
+- Peer discovery through pings
+- Automatic connection management
+- Packet serialization and transmission
 
 ### Tau Network Interfaces
 
 KAI uses the Tau Interface Definition Language (IDL) to define network interfaces in a language-neutral way. The connection-related interfaces are defined in:
 
-- **ConnectionBasic.tau**: Basic connection interfaces and structures
-- **NetworkNode.tau**: Node interfaces for peer-to-peer connections
-- **MessageHandling.tau**: Message passing interfaces
-- **NetworkServices.tau**: Higher-level network services
+- **ConnectionBasic.tau**: Basic connection interfaces and structures (enums, structs, connection management)
+- **NetworkNode.tau**: Node interfaces for peer-to-peer connections (peer discovery, connection methods)
+- **MessageHandling.tau**: Message passing interfaces (object serialization, RPC)
+- **NetworkServices.tau**: Higher-level network services (service registry, chat interfaces)
 
-For details on these interfaces, see the [Connection Testing documentation](ConnectionTesting.md).
+These interfaces can be found in `/Test/Language/TestTau/Scripts/Connection/`.
+
+### Code Generation
+
+The Tau interfaces can be used to generate code for network communication:
+
+- **Proxies**: Client-side code that forwards calls to the network
+- **Agents**: Server-side code that receives calls and executes them locally
+
+This allows for transparent remote procedure calls across the network.
+
+For details on connection testing and examples, see the [Connection Testing documentation](ConnectionTesting.md).
+
+## Related Documentation
+
+### Core Network Documentation
+- [NetworkArchitecture.md](NetworkArchitecture.md): Detailed architecture of the networking components
+- [PeerToPeerSummary.md](PeerToPeerSummary.md): Concise summary of the peer-to-peer implementation
+- [PeerToPeerNetworking.md](PeerToPeerNetworking.md): Detailed documentation of the peer-to-peer system
+- [NetworkPerformance.md](NetworkPerformance.md): Performance considerations and optimization
+- [NetworkSecurity.md](NetworkSecurity.md): Security features and best practices
+
+### Component Documentation
+- [ConnectionTesting.md](ConnectionTesting.md): Procedures for testing network connections
+- [NetworkIteration.md](NetworkIteration.md): Distributed iteration using across-node operations
+- [NetworkCalculationTest.md](NetworkCalculationTest.md): Examples of distributed calculations
+
+### Implementation Documentation
+- [NetworkTest README](../Source/App/NetworkTest/Readme.md): Network test application details
+- [Scripts/network README](../Scripts/network/Readme.md): Network test scripts documentation
 

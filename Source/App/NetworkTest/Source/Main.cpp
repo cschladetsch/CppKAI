@@ -121,13 +121,23 @@ int main(int argc, char** argv) {
     }
 
     std::string mode = argv[1];
-
-    if (mode == "server") {
-        RunServer();
-    } else if (mode == "client") {
-        RunClient();
-    } else {
-        std::cout << "Invalid mode. Use 'server' or 'client'.\n";
+    
+    try {
+        if (mode == "server") {
+            RunServer();
+        } else if (mode == "client") {
+            RunClient();
+        } else {
+            std::cout << "Invalid mode. Use 'server' or 'client'.\n";
+            return 1;
+        }
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return 1;
+    }
+    catch (...) {
+        std::cerr << "Unknown error occurred" << std::endl;
         return 1;
     }
 
