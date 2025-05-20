@@ -37,9 +37,13 @@ class Class : public ClassBase {
 
     // Lifetime management
     StorageBase *NewStorage(Registry *registry, Handle handle) const {
-        auto born = registry->GetMemorySystem().Allocate<Storage<T> >(
+        auto result = registry->GetMemorySystem().Allocate<Storage<T> >(
             ObjectConstructParams(registry, this, handle));
 
+        if (!result.has_value())
+            return nullptr;
+            
+        Storage<T>* born = result.value();
         born->SetClean();
         return born;
     }

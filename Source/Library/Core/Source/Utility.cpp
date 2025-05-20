@@ -62,7 +62,7 @@ std::string CreateIndent(int level) {
 
 void ToXmlStream(const Object &Q, StringStream &S, int level) {
     StringStream indent;
-    indent.Append(CreateIndent(level));
+    indent.Append(std::string_view(CreateIndent(level)));
 
     if (!Q.Valid()) return;
 
@@ -84,7 +84,7 @@ void ToXmlStream(const Object &Q, StringStream &S, int level) {
     const auto& properties = klass.GetProperties();
     for (const auto& [index, prop_pair] : std::views::enumerate(properties)) {
         PropertyBase const &property = *prop_pair.second;
-        S << indent.ToString() << "<Property index='" << index << "' name='" << property.GetFieldName()
+        S << indent.ToString() << "<Property index='" << static_cast<int>(index) << "' name='" << property.GetFieldName()
           << "'>";
         // ToXmlStream(child.second, S, level + 1);
         S << property.GetValue(base);

@@ -16,6 +16,9 @@ inline StringStream &operator<<(StringStream &S, ObjectColor::Color c) {
     return S << "ObjColor(" << (int)c << ')';
 }
 
+// Comparison operators now provided by <=> in StringStream.h
+// We're keeping these for backward compatibility with older compilers
+#if !defined(__cpp_lib_three_way_comparison)
 inline bool operator==(StringStream const &A, StringStream const &B) {
     return A.GetStorage() == B.GetStorage();
 }
@@ -27,6 +30,7 @@ inline bool operator!=(StringStream const &A, StringStream const &B) {
 inline bool operator<(StringStream const &A, StringStream const &B) {
     return A.GetStorage() < B.GetStorage();
 }
+#endif
 
 KAI_TYPE_TRAITS(StringStream, Number::StringStream,
                 Properties::Equiv  // || Properties::StringStreaming

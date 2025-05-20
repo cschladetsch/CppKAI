@@ -56,14 +56,17 @@ String StringStream::ToString() const {
 
 void StringStream::Append(Char C) { stream.push_back(C); }
 
-void StringStream::Append(const Char *C) { Append(C, C + strlen(C)); }
+void StringStream::Append(std::string_view sv) {
+    std::copy(sv.begin(), sv.end(), std::back_inserter(stream));
+}
 
-void StringStream::Append(const Char *A, const Char *B) {
-    std::copy(A, B, std::back_inserter(stream));
+void StringStream::Append(std::string_view A, std::string_view B) {
+    std::copy(A.begin(), A.end(), std::back_inserter(stream));
+    std::copy(B.begin(), B.end(), std::back_inserter(stream));
 }
 
 void StringStream::Append(const String &S) {
-    if (!S.empty()) Append(S.c_str());
+    if (!S.empty()) Append(std::string_view(S.c_str(), S.size()));
 }
 
 bool StringStream::Extract(int, String &) { KAI_NOT_IMPLEMENTED(); }
@@ -83,7 +86,7 @@ bool StringStream::Extract(Char &C) {
 StringStream &operator<<(StringStream &S, void (*)(EndsArgument)) { return S; }
 
 StringStream &operator<<(StringStream &S, const String::Char *P) {
-    S.Append(P);
+    S.Append(std::string_view(P));
     return S;
 }
 
@@ -137,7 +140,7 @@ std::ostream &operator<<(std::ostream &out, const StringStream &ss) {
 std::istream &operator>>(std::istream &in, StringStream &ss) {
     std::string str;
     in >> str;
-    ss.Append(str.c_str());
+    ss.Append(std::string_view(str));
     return in;
 }
 

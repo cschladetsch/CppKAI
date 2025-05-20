@@ -26,7 +26,12 @@ Console::~Console() { alloc->DeAllocate(reg_); }
 
 void Console::Create() {
     try {
-        reg_ = alloc->Allocate<Registry>(alloc);
+        auto result = alloc->Allocate<Registry>(alloc);
+        if (!result.has_value()) {
+            KAI_TRACE_ERROR() << "Could not allocate Registry";
+            return;
+        }
+        reg_ = result.value();
 
         RegisterTypes();
 

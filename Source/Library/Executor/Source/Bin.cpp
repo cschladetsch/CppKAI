@@ -63,7 +63,7 @@ String ReadFile(String filename) {
     char line[2000];
     StringStream text;
     while (file.getline(line, 2000)) {
-        text.Append(line);
+        text.Append(std::string_view(line));
         text.Append('\n');
     }
 
