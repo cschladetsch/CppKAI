@@ -1,0 +1,60 @@
+#!/bin/bash
+
+# Set colors
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+BOLD='\033[1m'
+NC='\033[0m' # No Color
+
+echo -e "${BOLD}=============================================${NC}"
+echo -e "${BOLD}Running KAI fixed tests${NC}"
+echo -e "${BOLD}=============================================${NC}"
+
+# Find bin directory
+BIN_DIR="$(pwd)/Bin/Test"
+if [ ! -d "$BIN_DIR" ]; then
+    echo "Error: $BIN_DIR directory not found"
+    exit 1
+fi
+
+# Run Core tests
+echo -e "${YELLOW}Running Core tests...${NC}"
+"$BIN_DIR/TestCore"
+CORE_RESULT=$?
+if [ $CORE_RESULT -eq 0 ]; then
+  echo -e "${GREEN}Core tests: All PASS${NC}"
+else
+  echo -e "${RED}Core tests: FAILED${NC}"
+fi
+echo
+
+# Run specifically the Rho tests that we've fixed
+if [ -f "$BIN_DIR/TestRho" ]; then
+    echo -e "${BLUE}Running Rho Language Tests with our fixes${NC}"
+    "$BIN_DIR/TestRho" --gtest_filter="LanguageComparison.*:TestRho.*:RhoPiBasic.*:DirectBinaryOp.*:RhoPiTests.*:RhoBinaryOps.*:AdvancedBinaryOps.*:DoWhile.*"
+    RHO_RESULT=$?
+    if [ $RHO_RESULT -eq 0 ]; then
+      echo -e "${GREEN}Rho tests: All selected tests PASS${NC}"
+    else
+      echo -e "${RED}Rho tests: Some selected tests FAILED${NC}"
+    fi
+else
+    echo "Error: TestRho executable not found in $BIN_DIR"
+    echo "Did you build the tests? Try: mkdir -p Build && cd Build && cmake .. && make"
+    exit 1
+fi
+
+echo -e "${BOLD}=============================================${NC}"
+echo -e "${BOLD}Test run complete${NC}"
+echo -e "${BOLD}=============================================${NC}"
+
+# Final result
+if [ $CORE_RESULT -eq 0 ] && [ $RHO_RESULT -eq 0 ]; then
+  echo -e "${GREEN}All fixed tests PASS!${NC}"
+  exit 0
+else
+  echo -e "${RED}Some tests FAILED!${NC}"
+  exit 1
+fi

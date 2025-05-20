@@ -15,7 +15,7 @@ We've implemented a comprehensive solution to make the Rho and Pi language tests
    - Runs tests in a controlled manner to avoid segmentation faults
    - Selectively filters problematic tests while maintaining good coverage
 
-For details about the approach, see [CONTINUATIONS_README.md](CONTINUATIONS_README.md) and [TestSummary.md](TestSummary.md).
+For details about the approach, see [CONTINUATIONS_Readme.md](CONTINUATIONS_Readme.md) and [TestSummary.md](TestSummary.md).
 
 ## Key Test Files
 
@@ -36,9 +36,9 @@ For details about the approach, see [CONTINUATIONS_README.md](CONTINUATIONS_READ
 
 ### Documentation Files
 
-- `CONTINUATIONS_README.md`: Details about continuation handling approach
+- `CONTINUATIONS_Readme.md`: Details about continuation handling approach
 - `TestSummary.md`: Overview of the test status and approach
-- `README.md` (this file): General information about the Rho tests
+- `Readme.md` (this file): General information about the Rho tests
 
 ## Test Coverage
 
