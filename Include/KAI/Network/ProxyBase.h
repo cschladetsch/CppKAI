@@ -20,6 +20,19 @@ struct ProxyBase : Representative {
     Future<Ty> Fetch(const char *name) {
         return Future<Ty>();
     }
+    
+    void Store(const char *name, const Object &value) {
+        // Store a property value on the remote object
+    }
+    
+    template <typename HandlerType>
+    void RegisterEventHandler(const char *name, HandlerType handler) {
+        // Register an event handler for the given event
+    }
+    
+    void UnregisterEventHandler(const char *name) {
+        // Unregister an event handler
+    }
 };
 
 KAI_NET_END

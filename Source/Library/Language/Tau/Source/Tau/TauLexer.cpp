@@ -10,6 +10,11 @@ void TauLexer::AddKeyWords() {
     keyWords["sync"] = Enum::Sync;
     keyWords["async"] = Enum::Async;
     keyWords["Proxy"] = Enum::Proxy;
+    keyWords["interface"] = Enum::Interface;
+    keyWords["event"] = Enum::Event;
+    keyWords["struct"] = Enum::Struct;
+    keyWords["enum"] = Enum::EnumKeyword;
+    keyWords["const"] = Enum::ConstKeyword;
 }
 
 bool TauLexer::NextToken() {
@@ -79,6 +84,8 @@ bool TauLexer::NextToken() {
             return Add(Enum::Comma);
         case '=':
             return Add(Enum::Assign);
+        case '.':
+            return Add(Enum::Dot);  // Add dot token for member access
         case ' ':
             return Add(Enum::Whitespace, Gather(IsSpaceChar));
         case '"':

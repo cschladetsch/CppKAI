@@ -36,6 +36,12 @@ struct TauTokenEnumType {
         String = 38,
         Number = 39,
         Assign = 40,  // For handling '=' assignment and default parameters
+        Dot = 41,     // Added for handling member access (e.g., ConnectionState.Disconnected)
+        Interface = 42, // Added for explicit interface keyword
+        Event = 43,     // Added for event declarations
+        Struct = 44,    // Added for struct declarations
+        EnumKeyword = 45,  // Added for enum declarations
+        ConstKeyword = 46, // Added for const keyword
     };
 
     struct Type : TokenBase<TauTokenEnumType> {

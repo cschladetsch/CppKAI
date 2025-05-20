@@ -56,13 +56,57 @@ Tau solves the problem of seamless network communication by:
 3. Ensuring type safety across network boundaries
 4. Supporting versioning for backward compatibility
 
-For example, a Tau file (foo.tau) generates:
+### Key Features
+
+The Tau language has been enhanced with several features to better support network interface definitions:
+
+- **Interface Keyword**: Explicitly define interface contracts with the `interface` keyword
+- **Events**: Define event-based communication with the `event` keyword
+- **Structs**: Create data structures with the `struct` keyword
+- **Enums with Dot Notation**: Access enum values using `EnumType.Value` syntax
+- **Default Values**: Specify initial values for fields and default parameters
+
+Here's a simple example showing these features:
+
+```tau
+namespace KAI { namespace Network 
+{
+    // Define an enum
+    enum ConnectionState {
+        Disconnected = 0,
+        Connecting = 1,
+        Connected = 2,
+        Failed = 3
+    }
+    
+    // Define a struct
+    struct ConnectionInfo {
+        string address;
+        int port;
+        ConnectionState state = ConnectionState.Disconnected;  // Dot notation
+        int timeout = 30;  // Default value
+    }
+    
+    // Define an interface
+    interface IConnection {
+        // Methods
+        bool Connect(string address, int port = 8080);  // Default parameter
+        void Disconnect();
+        ConnectionState GetState();
+        
+        // Events
+        event ConnectionStateChanged(ConnectionState oldState, ConnectionState newState);
+    }
+}}
+```
+
+For a Tau file (foo.tau), the KAI system generates:
 - foo.agent.cpp/h files for hosting a service
 - foo.proxy.cpp/h files for using a service from elsewhere
 
 If you want to host a service, you implement what's required in the agent files. If you want to use a service from elsewhere, you simply use `kai::Proxy<Service>`.
 
-For more details and examples, see the [Tau Language Tutorial](Doc/TauTutorial.md).
+For more details and examples, see the [Tau Language Tutorial](Doc/TauTutorial.md) and [Network Tau Interfaces](Doc/NetworkTauInterfaces.md) documentation.
 
 ## Continuations
 

@@ -18,6 +18,8 @@ struct GenerateProxy : GenerateProcess {
     bool Class(Node const &cl) override;
     bool Property(Node const &prop) override;
     bool Method(Node const &method) override;
+    bool Event(Node const &event);
+    bool Interface(Node const &interface);
     string ArgType(string const &text) const override;
     string ReturnType(string const &text) const override;
 

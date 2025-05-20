@@ -86,21 +86,103 @@ bool GenerateProxy::Class(Node const &cl) {
     StartBlock(decl.ToString());
     AddProxyBoilerplate(decl);
 
-    GenerateProcess::Class(cl);
+    // Handle class members
+    for (const auto &member : cl.GetChildren()) {
+        switch (member->GetType()) {
+            case TauAstEnumType::Class:
+                if (!Class(*member)) return false;
+                break;
+
+            case TauAstEnumType::Property:
+                if (!Property(*member)) return false;
+                break;
+
+            case TauAstEnumType::Method:
+                if (!Method(*member)) return false;
+                break;
+                
+            case TauAstEnumType::Event:
+                if (!Event(*member)) return false;
+                break;
+                
+            case TauAstEnumType::Interface:
+                if (!Interface(*member)) return false;
+                break;
+
+            // Skip special nodes like 'Interface' marker nodes
+            case TauAstEnumType::Struct:
+            case TauAstEnumType::Inherits:
+                // Skip these - they're just markers
+                break;
+
+            default:
+                // Ignore unknown node types for resilience
+                break;
+        }
+    }
 
     EndBlock();
+    return true;
+}
+
+bool GenerateProxy::Interface(Node const &interface) {
+    // Interfaces are handled the same way as classes in proxy generation
+    return Class(interface);
+}
+
+bool GenerateProxy::Event(Node const &event) {
+    const auto name = event.GetTokenText();
+    const auto args = event.GetChild(0)->GetChildren();
+    
+    // Generate event registration method
+    Output() << "void Register" << name << "Handler(std::function<void(";
+    
+    // Generate parameter list for event handler
+    bool first = true;
+    for (auto const &a : args) {
+        if (!first) Output() << ", ";
+        
+        auto &ty = a->GetChild(0);
+        Output() << ty->GetTokenText();
+        
+        first = false;
+    }
+    
+    Output() << ")> handler)";
+    StartBlock();
+    Output() << "RegisterEventHandler(\"" << name << "\", handler);";
+    EndBlock();
+    Output() << EndLine();
+    
+    // Generate event unregistration method
+    Output() << "void Unregister" << name << "Handler()";
+    StartBlock();
+    Output() << "UnregisterEventHandler(\"" << name << "\");";
+    EndBlock();
+    Output() << EndLine();
+    
     return true;
 }
 
 bool GenerateProxy::Property(Node const &prop) {
     auto type = prop.GetChild(0)->GetTokenText();
     auto name = prop.GetChild(1)->GetTokenText();
+    
+    // Generate property getter
     Output() << ReturnType(type);
     Output() << " " << name << "()";
     StartBlock();
     Output() << "return Fetch<" << type << ">(\"" << name << "\");";
     EndBlock();
     Output() << EndLine();
+    
+    // Generate property setter
+    Output() << "void Set" << name << "(" << type << " value)";
+    StartBlock();
+    Output() << "Store(\"" << name << "\", value);";
+    EndBlock();
+    Output() << EndLine();
+    
     return true;
 }
 

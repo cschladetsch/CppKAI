@@ -14,6 +14,7 @@ KAI's network documentation is organized into these main documents:
 * **[NetworkSecurity.md](NetworkSecurity.md)**: Security features and best practices
 * **[ConnectionTesting.md](ConnectionTesting.md)**: Procedures for testing network connections
 * **[NetworkIteration.md](NetworkIteration.md)**: Distributed iteration using across-node operations
+* **[NetworkTauInterfaces.md](NetworkTauInterfaces.md)**: Tau language enhancements for network interfaces
 
 ## Core Concepts
 
@@ -348,7 +349,16 @@ The KAI network system is built on top of RakNet (available in `/Ext/RakNet/`), 
 
 ### Tau Network Interfaces
 
-KAI uses the Tau Interface Definition Language (IDL) to define network interfaces in a language-neutral way. The connection-related interfaces are defined in:
+KAI uses the Tau Interface Definition Language (IDL) to define network interfaces in a language-neutral way. The Tau language has been enhanced to support a rich set of features needed for network communications, including:
+
+- **Interfaces**: Define contracts between distributed components
+- **Events**: Support for event-based communication with callbacks
+- **Enums with dot notation**: Access enum values using `EnumType.Value` syntax
+- **Structs**: Define complex data structures for network transmission
+- **Default values**: Specify default values for method parameters and struct fields
+- **Array types**: Define and use array data for collections
+
+The connection-related interfaces are defined in:
 
 - **ConnectionBasic.tau**: Basic connection interfaces and structures (enums, structs, connection management)
 - **NetworkNode.tau**: Node interfaces for peer-to-peer connections (peer discovery, connection methods)
@@ -364,7 +374,30 @@ The Tau interfaces can be used to generate code for network communication:
 - **Proxies**: Client-side code that forwards calls to the network
 - **Agents**: Server-side code that receives calls and executes them locally
 
-This allows for transparent remote procedure calls across the network.
+This allows for transparent remote procedure calls across the network. For event-based communication, the generated code includes methods for registering event handlers that get called when remote events are triggered.
+
+Example of a network interface with events:
+
+```tau
+namespace KAI { namespace Network
+{
+    // Define an interface with events
+    interface INode
+    {
+        // Network management methods
+        void Connect(SystemAddress address, int port);
+        void Disconnect();
+        bool IsRunning();
+        
+        // Events for connection status changes
+        event ConnectionEstablished(SystemAddress address);
+        event ConnectionLost(SystemAddress address, string reason);
+        event MessageReceived(SystemAddress source, Object data);
+    }
+}}
+```
+
+Generated proxy code will include both the method calls and event registration:
 
 For details on connection testing and examples, see the [Connection Testing documentation](ConnectionTesting.md).
 
@@ -376,6 +409,7 @@ For details on connection testing and examples, see the [Connection Testing docu
 - [PeerToPeerNetworking.md](PeerToPeerNetworking.md): Detailed documentation of the peer-to-peer system
 - [NetworkPerformance.md](NetworkPerformance.md): Performance considerations and optimization
 - [NetworkSecurity.md](NetworkSecurity.md): Security features and best practices
+- [NetworkTauInterfaces.md](NetworkTauInterfaces.md): Tau language enhancements for network interfaces
 
 ### Component Documentation
 - [ConnectionTesting.md](ConnectionTesting.md): Procedures for testing network connections

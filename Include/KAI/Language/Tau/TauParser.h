@@ -30,10 +30,13 @@ class TauParser : public ParserCommon<TauLexer, TauAstEnumType> {
     bool Namespace(AstNodePtr root);
     bool Module(AstNodePtr root);
     bool Class(AstNodePtr root);
+    bool Interface(AstNodePtr root);
+    bool Enum(AstNodePtr root);
+    bool Struct(AstNodePtr root);
+    bool Event(AstNodePtr root);
     bool Method(AstNodePtr klass, TokenNode const &returnType,
                 TokenNode const &name);
     bool Field(AstNodePtr klass, TokenNode const &ty, TokenNode const &id);
-    bool Event(AstNodePtr klass, TokenNode const &ty, TokenNode const &id);
 
     void AddArg(AstNodePtr list);
     // void OptionalSemi();

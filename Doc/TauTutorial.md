@@ -50,8 +50,34 @@ namespace Trading {
         bool PlaceOrder(string symbol, int quantity, float price);
         void CancelOrder(string orderId);
         Money GetBalance();
+        
+        // Define an event
+        event OrderPlaced(string symbol, int quantity, float price);
     }
 }
+```
+
+Interfaces can be used with dot notation for accessing enum values and constants:
+
+```tau
+namespace KAI { namespace Network
+{
+    enum ConnectionState 
+    {
+        Disconnected = 0,
+        Connecting = 1,
+        Connected = 2,
+        Failed = 3
+    }
+    
+    struct ConnectionInfo
+    {
+        SystemAddress address;
+        ConnectionState state = ConnectionState.Disconnected;  // Dot notation for enum access
+        int64 lastActivity = 0;
+        int ping = 0;
+    }
+}}
 ```
 
 ### Data Types
@@ -82,6 +108,36 @@ namespace Common {
 }
 ```
 
+### Structs
+
+Tau supports defining data structures with fields:
+
+```tau
+namespace Data {
+    // Define a simple struct
+    struct Point {
+        float x;
+        float y;
+        float z;
+    }
+    
+    // Struct with default values
+    struct NetworkConfiguration {
+        string hostname = "localhost";
+        int port = 8080;
+        bool useSSL = true;
+        int timeout = 30;
+    }
+    
+    // Struct with nested types
+    struct User {
+        string name;
+        int id;
+        Point[] favoriteLocations;
+    }
+}
+```
+
 ### Enumerations
 
 Tau supports enumerated types for sets of named values:
@@ -95,6 +151,22 @@ namespace Status {
         PartiallyFilled = 2,
         Cancelled = 3,
         Rejected = 4
+    }
+}
+```
+
+Enumerations can be accessed using dot notation:
+
+```tau
+namespace Trading {
+    struct Order {
+        string id;
+        OrderStatus status = OrderStatus.Pending;  // Using dot notation
+    }
+    
+    interface IOrderProcessor {
+        void ProcessOrder(Order order);
+        OrderStatus GetOrderStatus(string orderId);
     }
 }
 ```
@@ -185,7 +257,7 @@ namespace Async {
 
 ### Events
 
-Tau supports defining events that components can publish and subscribe to:
+Tau supports defining events that components can publish and subscribe to. Events are first-class members of interfaces that can be registered for callback notifications:
 
 ```tau
 namespace Notifications {
@@ -197,8 +269,11 @@ namespace Notifications {
     }
     
     interface IMarketDataService {
-        // Define an event
+        // Define an event with parameters
         event PriceChanged(PriceUpdate update);
+        
+        // Multiple parameters in an event
+        event UserNotification(string username, string message, int priority);
         
         // Methods to manage subscriptions
         void SubscribeToSymbol(string symbol);
@@ -206,6 +281,19 @@ namespace Notifications {
     }
 }
 ```
+
+When you generate proxies from interfaces with events, the proxy class will include methods to register and unregister event handlers:
+
+```cpp
+// Generated C++ code for the proxy
+void RegisterPriceChangedHandler(std::function<void(PriceUpdate)> handler);
+void UnregisterPriceChangedHandler();
+
+void RegisterUserNotificationHandler(std::function<void(std::string, std::string, int)> handler);
+void UnregisterUserNotificationHandler();
+```
+
+These methods let you register callback functions that will be invoked when the remote object raises the corresponding event.
 
 ## Network Distribution
 
