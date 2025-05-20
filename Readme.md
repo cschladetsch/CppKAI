@@ -20,6 +20,17 @@ _KAI_ is a network distributed **Object Model** for C++ with full runtime reflec
 ## Recent Updates
 
 - **May 2025**: Added comprehensive fixes and improvements to the codebase
+- **Modern C++23 features**:
+  - **Full C++23 codebase** - Now uses latest C++23 features throughout:
+    - Spaceship operator (`<=>`) for comparisons
+    - `std::string_view` for efficient string handling
+    - `std::span` for safe array views
+    - `std::ranges` and view adapters like `std::views::enumerate` and `std::views::repeat`
+    - Template constraints with `requires` clauses and concepts
+    - Modern type system with `std::optional` for error handling
+    - Using `std::allocator` for memory management
+  - **Enhanced error handling** - Better failure recovery and cleaner code
+  - **Improved compatibility** - Graceful fallbacks for older compilers
 - **Core system improvements**:
   - **Modern Event System** - Completely rewritten Event implementation using C++23 features including variadic templates, concepts, and smart pointers
   - **Enhanced type safety** - Strong type checking throughout the system
@@ -49,6 +60,8 @@ _KAI_ is a network distributed **Object Model** for C++ with full runtime reflec
 - **Enhanced binary operation handling** and continuation unwrapping for Pi/Rho languages
 - **Fixed type preservation** in binary operations (resolving issues with "20 20 +" pattern)
 - **Code quality improvements**:
+  - **Modernized allocator system** with safer memory management
+  - **String handling with std::string_view** for better performance
   - **Fixed move constructor issues** in RhoTranslator
   - **Removed pessimizing moves** in LexerBase
   - **Improved code syntax** with proper parentheses in conditional statements
