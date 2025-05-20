@@ -17,8 +17,9 @@ else
     cd "$BUILD_DIR"
 fi
 
-# Create test configs with specific parameters for two peers
-cat > "$ROOT_DIR/peer1_config.json" << 'EOFMARKER'
+# Create temporary test configs with specific parameters for two peers
+# Use the config directory instead of the root directory
+cat > "$ROOT_DIR/config/temp_peer1_config.json" << 'EOFMARKER'
 {
     "listenPort": 14595,
     "autoListen": true,
@@ -30,7 +31,7 @@ cat > "$ROOT_DIR/peer1_config.json" << 'EOFMARKER'
 }
 EOFMARKER
 
-cat > "$ROOT_DIR/peer2_config.json" << 'EOFMARKER'
+cat > "$ROOT_DIR/config/temp_peer2_config.json" << 'EOFMARKER'
 {
     "listenPort": 14596,
     "autoListen": true,
@@ -60,12 +61,12 @@ echo "Build successful!"
 
 # Start the first peer process in the background
 echo "Starting first peer (listening)..."
-"$BUILD_DIR/Bin/NetworkPeer" "$ROOT_DIR/peer1_config.json" > peer1_output.log 2>&1 &
+"$BUILD_DIR/Bin/NetworkPeer" "$ROOT_DIR/config/temp_peer1_config.json" > peer1_output.log 2>&1 &
 PEER1_PID=$!
 
 # Give the first peer time to start up
 echo "Waiting for first peer to start up..."
-sleep 5  # Increased sleep time
+sleep 10  # Increased sleep time further
 
 # Verify first peer is running
 if ! kill -0 $PEER1_PID 2>/dev/null; then
@@ -82,12 +83,12 @@ mkfifo $FIFO
 
 # Start the second peer with the fifo connected to stdin
 echo "Starting second peer (connecting)..."
-cat $FIFO | "$BUILD_DIR/Bin/NetworkPeer" "$ROOT_DIR/peer2_config.json" > peer2_output.log 2>&1 &
+cat $FIFO | "$BUILD_DIR/Bin/NetworkPeer" "$ROOT_DIR/config/temp_peer2_config.json" > peer2_output.log 2>&1 &
 PEER2_PID=$!
 
 # Give the second peer time to start and connect
 echo "Waiting for second peer to connect to first peer..."
-sleep 10  # Increased sleep time for connection
+sleep 15  # Increased sleep time for connection even more
 
 # Verify second peer is running
 if ! kill -0 $PEER2_PID 2>/dev/null; then
@@ -115,7 +116,7 @@ sleep 2
 echo "@0 add" > $FIFO
 
 # Give time for command to process
-sleep 15  # Increased sleep time to give more time for processing
+sleep 20  # Increased sleep time to give even more time for processing
 
 # Show the contents of the log files for debugging
 echo "Contents of peer1_output.log:"
@@ -144,6 +145,6 @@ echo "Stopping peers..."
 kill $PEER1_PID $PEER2_PID
 
 # Clean up test files
-rm -f "$ROOT_DIR/peer1_config.json" "$ROOT_DIR/peer2_config.json" $FIFO
+rm -f "$ROOT_DIR/config/temp_peer1_config.json" "$ROOT_DIR/config/temp_peer2_config.json" $FIFO
 
 echo "Test complete."
