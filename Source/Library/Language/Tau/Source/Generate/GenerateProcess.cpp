@@ -51,13 +51,13 @@ string GenerateProcess::CommonPrepend() {
 bool GenerateProcess::Module(TauParser const &p) {
     auto const &root = p.GetRoot();
 
-    // Debug: log what we actually got from the parser
-    KAI_TRACE_1(string("Module() received root node type: ") + TauAstEnumType::ToString(root->GetType()));
-    KAI_TRACE_1(string("Module() received root node children count: ") + std::to_string(root->GetChildren().size()));
-    for (size_t i = 0; i < root->GetChildren().size(); ++i) {
-        auto child = root->GetChildren()[i];
-        KAI_TRACE_1(string("Child ") + std::to_string(i) + " type: " + TauAstEnumType::ToString(child->GetType()));
-    }
+    // Debug: log what we actually got from the parser (commented out for cleaner output)
+    // KAI_TRACE_1(string("Module() received root node type: ") + TauAstEnumType::ToString(root->GetType()));
+    // KAI_TRACE_1(string("Module() received root node children count: ") + std::to_string(root->GetChildren().size()));
+    // for (size_t i = 0; i < root->GetChildren().size(); ++i) {
+    //     auto child = root->GetChildren()[i];
+    //     KAI_TRACE_1(string("Child ") + std::to_string(i) + " type: " + TauAstEnumType::ToString(child->GetType()));
+    // }
 
     // Be more resilient with code generation - even if the module is empty
     if (root->GetChildren().empty()) {

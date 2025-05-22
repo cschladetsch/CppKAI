@@ -15,13 +15,13 @@ bool GenerateProxy::Generate(TauParser const &p, string &output) {
     // Be more resilient to parsing errors for code generation
     auto const &root = p.GetRoot();
     
-    // Debug: log what we actually got from the parser
-    KAI_TRACE_1(string("GenerateProxy received root node type: ") + TauAstEnumType::ToString(root->GetType()));
-    KAI_TRACE_1(string("GenerateProxy received root node children count: ") + std::to_string(root->GetChildren().size()));
-    for (size_t i = 0; i < root->GetChildren().size(); ++i) {
-        auto child = root->GetChildren()[i];
-        KAI_TRACE_1(string("Child ") + std::to_string(i) + " type: " + TauAstEnumType::ToString(child->GetType()));
-    }
+    // Debug: log what we actually got from the parser (commented out for cleaner output)
+    // KAI_TRACE_1(string("GenerateProxy received root node type: ") + TauAstEnumType::ToString(root->GetType()));
+    // KAI_TRACE_1(string("GenerateProxy received root node children count: ") + std::to_string(root->GetChildren().size()));
+    // for (size_t i = 0; i < root->GetChildren().size(); ++i) {
+    //     auto child = root->GetChildren()[i];
+    //     KAI_TRACE_1(string("Child ") + std::to_string(i) + " type: " + TauAstEnumType::ToString(child->GetType()));
+    // }
     
     if (root->GetType() != TauAstEnumType::Module) {
         KAI_TRACE_WARN_1("Expected a Module but continuing anyway");
@@ -114,6 +114,10 @@ bool GenerateProxy::Namespace(Node const &ns) {
 
             case TauAstEnumType::Class:
                 if (!Class(*ch)) return false;
+                break;
+
+            case TauAstEnumType::Interface:
+                if (!Interface(*ch)) return false;
                 break;
 
             default:

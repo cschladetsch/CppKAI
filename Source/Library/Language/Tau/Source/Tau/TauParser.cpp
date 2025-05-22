@@ -138,6 +138,7 @@ bool TauParser::Namespace(AstNodePtr root) {
 
     auto nameToken = Consume();
     auto ns = NewNode(TauAstEnumType::Namespace, nameToken);
+    auto rootNs = ns; // Keep track of the root namespace to add to the tree
 
     // Check for namespace alias (namespace Alias = Original;)
     if (CurrentIs(TokenEnum::Assign)) {
@@ -157,7 +158,7 @@ bool TauParser::Namespace(AstNodePtr root) {
             NewNode(TauAstEnumType::TokenType, originalName->GetToken());
         ns->Add(aliasNode);
 
-        root->Add(ns);
+        root->Add(rootNs);
         return true;
     }
 
@@ -183,9 +184,9 @@ bool TauParser::Namespace(AstNodePtr root) {
             auto nestedNameToken = Consume();
             auto nestedNs = NewNode(TauAstEnumType::Namespace, nestedNameToken);
 
-            // Set this as the current namespace and continue
+            // Add the nested namespace to the current namespace and continue with nested ns
             ns->Add(nestedNs);
-            ns = nestedNs;
+            ns = nestedNs; // ns now points to the deepest namespace for adding content
         }
     }
 
@@ -203,7 +204,7 @@ bool TauParser::Namespace(AstNodePtr root) {
         if (Empty()) {
             // For error resilience in testing, add the namespace to the AST
             // anyway
-            root->Add(ns);
+            root->Add(rootNs);
             return true;
         }
 
@@ -214,13 +215,13 @@ bool TauParser::Namespace(AstNodePtr root) {
             CurrentIs(TokenEnum::Interface) || CurrentIs(TokenEnum::Struct) ||
             CurrentIs(TokenEnum::EnumKeyword)) {
             // Add the namespace and proceed
-            root->Add(ns);
+            root->Add(rootNs);
             return true;
         }
 
         // If we're still here, we haven't found the opening brace
         // But for test resilience, return true anyway
-        root->Add(ns);
+        root->Add(rootNs);
         return true;
     }
 
@@ -231,6 +232,11 @@ bool TauParser::Namespace(AstNodePtr root) {
             case TokenEnum::Class:
                 Consume();
                 if (!Class(ns)) return false;
+                break;
+
+            case TokenEnum::Interface:
+                Consume();
+                if (!Interface(ns)) return false;
                 break;
 
             case TokenEnum::Namespace:
@@ -304,7 +310,7 @@ bool TauParser::Namespace(AstNodePtr root) {
 
     Expect(TokenEnumType::CloseBrace);
     if (Failed) return false;
-    root->Add(ns);
+    root->Add(rootNs);
     return true;
 }
 
@@ -645,7 +651,7 @@ bool TauParser::Interface(AstNodePtr root) {
     }
 
     const auto interfaceName = Consume();  // Interface name
-    const auto klass = NewNode(TauAstEnumType::Class, interfaceName);
+    const auto klass = NewNode(TauAstEnumType::Interface, interfaceName);
 
     // Interfaces are basically classes with a special flag
     // Add a node to denote this is an interface

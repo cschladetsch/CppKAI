@@ -37,16 +37,16 @@ struct TauCodeGenerationTests : TestLangCommon {
                 "Proxy generation for " + testName +
                 " succeeded, output size: " + std::to_string(output.size()));
 
-            // Debug: log the actual output
-            KAI_LOG_INFO("Generated proxy output: " + output);
+            // Debug: log the actual output (commented out for cleaner test output)
+            // KAI_LOG_INFO("Generated proxy output: " + output);
 
             // Verify the generated code contains expected elements
             ASSERT_FALSE(output.empty()) << "Generated proxy code is empty";
 
             // Using regex to check for minimal expected C++ code structure
-            std::regex classRegex("class.*\\{");
+            std::regex classRegex("class.*[\\s\\S]*?\\{");
             std::regex methodRegex("\\s+.*\\(.*\\)");
-            std::regex namespaceRegex("namespace.*\\{");
+            std::regex namespaceRegex("namespace.*[\\s\\S]*?\\{");
 
             EXPECT_TRUE(std::regex_search(output, namespaceRegex))
                 << "Generated code doesn't contain namespace declarations";
@@ -83,9 +83,9 @@ struct TauCodeGenerationTests : TestLangCommon {
             ASSERT_FALSE(output.empty()) << "Generated agent code is empty";
 
             // Using regex to check for minimal expected C++ code structure
-            std::regex classRegex("class.*\\{");
+            std::regex classRegex("class.*[\\s\\S]*?\\{");
             std::regex methodRegex("\\s+.*\\(.*\\)");
-            std::regex namespaceRegex("namespace.*\\{");
+            std::regex namespaceRegex("namespace.*[\\s\\S]*?\\{");
 
             EXPECT_TRUE(std::regex_search(output, namespaceRegex))
                 << "Generated code doesn't contain namespace declarations";

@@ -577,3 +577,423 @@ TEST_F(TestTau, TestAssignmentsAndDefaults) {
     // default values
     SUCCEED() << "Successfully tested assignments and default parameters";
 }
+
+TEST_F(TestTau, TestNamespaceWithColonSyntax) {
+    std::string script = R"(
+    namespace KAI::Test {
+        interface ISimpleInterface {
+            int Add(int a, int b);
+        }
+    }
+    )";
+    
+    // Parse and test the AST structure
+    Registry r;
+    auto lex = make_shared<tau::TauLexer>(script.c_str(), r);
+    ASSERT_TRUE(lex->Process()) << "Lexer failed: " << lex->Error;
+    
+    KAI_LOG_INFO("Lexer output for namespace with :: syntax: " + lex->Print());
+    
+    auto parser = make_shared<tau::TauParser>(r);
+    bool parserSuccess = parser->Process(lex, Structure::Module);
+    ASSERT_TRUE(parserSuccess) << "Parser failed: " << parser->Error;
+    
+    // Check AST structure
+    auto root = parser->GetRoot();
+    EXPECT_GT(root->GetChildren().size(), 0) << "Root should have children";
+    
+    // Find the module node
+    tau::TauParser::AstNodePtr moduleNode = nullptr;
+    for (const auto& child : root->GetChildren()) {
+        if (child->GetType() == tau::TauAstEnumType::Module) {
+            moduleNode = child;
+            break;
+        }
+    }
+    ASSERT_NE(moduleNode, nullptr) << "Should have a Module node";
+    
+    // Check for namespace structure
+    EXPECT_GT(moduleNode->GetChildren().size(), 0) << "Module should have children";
+    
+    // Find the first namespace (should be "KAI")
+    tau::TauParser::AstNodePtr kaiNamespace = nullptr;
+    for (const auto& child : moduleNode->GetChildren()) {
+        if (child->GetType() == tau::TauAstEnumType::Namespace) {
+            kaiNamespace = child;
+            break;
+        }
+    }
+    ASSERT_NE(kaiNamespace, nullptr) << "Should have a KAI namespace";
+    EXPECT_EQ(kaiNamespace->GetToken().Text(), "KAI") << "First namespace should be KAI";
+    
+    // Debug: print children of KAI namespace
+    KAI_LOG_INFO("KAI namespace has " + std::to_string(kaiNamespace->GetChildren().size()) + " children");
+    for (size_t i = 0; i < kaiNamespace->GetChildren().size(); ++i) {
+        auto child = kaiNamespace->GetChildren()[i];
+        KAI_LOG_INFO("KAI child " + std::to_string(i) + " type: " + tau::TauAstEnumType::ToString(child->GetType()) + ", token: " + child->GetToken().Text());
+    }
+    
+    // Check for nested "Test" namespace
+    tau::TauParser::AstNodePtr testNamespace = nullptr;
+    for (const auto& child : kaiNamespace->GetChildren()) {
+        if (child->GetType() == tau::TauAstEnumType::Namespace) {
+            testNamespace = child;
+            break;
+        }
+    }
+    ASSERT_NE(testNamespace, nullptr) << "Should have nested Test namespace";
+    EXPECT_EQ(testNamespace->GetToken().Text(), "Test") << "Nested namespace should be Test";
+    
+    // Debug: print children of Test namespace
+    KAI_LOG_INFO("Test namespace has " + std::to_string(testNamespace->GetChildren().size()) + " children");
+    for (size_t i = 0; i < testNamespace->GetChildren().size(); ++i) {
+        auto child = testNamespace->GetChildren()[i];
+        KAI_LOG_INFO("Test child " + std::to_string(i) + " type: " + tau::TauAstEnumType::ToString(child->GetType()) + ", token: " + child->GetToken().Text());
+    }
+    
+    // Check for interface in the Test namespace
+    tau::TauParser::AstNodePtr interfaceNode = nullptr;
+    for (const auto& child : testNamespace->GetChildren()) {
+        if (child->GetType() == tau::TauAstEnumType::Interface) {
+            interfaceNode = child;
+            break;
+        }
+    }
+    ASSERT_NE(interfaceNode, nullptr) << "Should have an interface in Test namespace";
+    EXPECT_EQ(interfaceNode->GetToken().Text(), "ISimpleInterface") << "Interface should be ISimpleInterface";
+}
+
+TEST_F(TestTau, TestTripleNestedNamespace) {
+    std::string script = R"(
+    namespace A::B::C {
+        interface IDeepInterface {
+            void DeepMethod();
+        }
+    }
+    )";
+    
+    Registry r;
+    auto lex = make_shared<tau::TauLexer>(script.c_str(), r);
+    ASSERT_TRUE(lex->Process()) << "Lexer failed: " << lex->Error;
+    
+    auto parser = make_shared<tau::TauParser>(r);
+    bool parserSuccess = parser->Process(lex, Structure::Module);
+    ASSERT_TRUE(parserSuccess) << "Parser failed: " << parser->Error;
+    
+    // Navigate through: Root -> Module -> A -> B -> C -> Interface
+    auto root = parser->GetRoot();
+    auto moduleNode = root->GetChildren()[0];
+    auto aNamespace = moduleNode->GetChildren()[0];
+    EXPECT_EQ(aNamespace->GetToken().Text(), "A");
+    
+    auto bNamespace = aNamespace->GetChildren()[0];
+    EXPECT_EQ(bNamespace->GetToken().Text(), "B");
+    
+    auto cNamespace = bNamespace->GetChildren()[0];
+    EXPECT_EQ(cNamespace->GetToken().Text(), "C");
+    
+    auto interfaceNode = cNamespace->GetChildren()[0];
+    EXPECT_EQ(interfaceNode->GetType(), tau::TauAstEnumType::Interface);
+    EXPECT_EQ(interfaceNode->GetToken().Text(), "IDeepInterface");
+}
+
+TEST_F(TestTau, TestMultipleNamespacesWithInterfaces) {
+    std::string script = R"(
+    namespace Graphics::Rendering {
+        interface IRenderer {
+            void Render();
+        }
+    }
+    
+    namespace Audio::Processing {
+        interface IAudioProcessor {
+            void ProcessAudio();
+        }
+    }
+    )";
+    
+    Registry r;
+    auto lex = make_shared<tau::TauLexer>(script.c_str(), r);
+    ASSERT_TRUE(lex->Process()) << "Lexer failed: " << lex->Error;
+    
+    auto parser = make_shared<tau::TauParser>(r);
+    bool parserSuccess = parser->Process(lex, Structure::Module);
+    ASSERT_TRUE(parserSuccess) << "Parser failed: " << parser->Error;
+    
+    auto root = parser->GetRoot();
+    auto moduleNode = root->GetChildren()[0];
+    
+    // Should have two top-level namespaces
+    EXPECT_EQ(moduleNode->GetChildren().size(), 2);
+    
+    // Check Graphics::Rendering namespace
+    auto graphicsNs = moduleNode->GetChildren()[0];
+    EXPECT_EQ(graphicsNs->GetToken().Text(), "Graphics");
+    auto renderingNs = graphicsNs->GetChildren()[0];
+    EXPECT_EQ(renderingNs->GetToken().Text(), "Rendering");
+    auto rendererInterface = renderingNs->GetChildren()[0];
+    EXPECT_EQ(rendererInterface->GetToken().Text(), "IRenderer");
+    
+    // Check Audio::Processing namespace
+    auto audioNs = moduleNode->GetChildren()[1];
+    EXPECT_EQ(audioNs->GetToken().Text(), "Audio");
+    auto processingNs = audioNs->GetChildren()[0];
+    EXPECT_EQ(processingNs->GetToken().Text(), "Processing");
+    auto processorInterface = processingNs->GetChildren()[0];
+    EXPECT_EQ(processorInterface->GetToken().Text(), "IAudioProcessor");
+}
+
+TEST_F(TestTau, TestInterfaceWithComplexMethods) {
+    std::string script = R"(
+    namespace Data::Storage {
+        interface IDataStore {
+            void Store(string key, object value);
+            object Retrieve(string key);
+            bool Contains(string key);
+            void Delete(string key);
+            int Count();
+            string[] GetAllKeys();
+        }
+    }
+    )";
+    
+    Registry r;
+    auto lex = make_shared<tau::TauLexer>(script.c_str(), r);
+    ASSERT_TRUE(lex->Process()) << "Lexer failed: " << lex->Error;
+    
+    auto parser = make_shared<tau::TauParser>(r);
+    bool parserSuccess = parser->Process(lex, Structure::Module);
+    ASSERT_TRUE(parserSuccess) << "Parser failed: " << parser->Error;
+    
+    // Navigate to interface
+    auto root = parser->GetRoot();
+    auto moduleNode = root->GetChildren()[0];
+    auto dataNs = moduleNode->GetChildren()[0];
+    auto storageNs = dataNs->GetChildren()[0];
+    auto interfaceNode = storageNs->GetChildren()[0];
+    
+    EXPECT_EQ(interfaceNode->GetToken().Text(), "IDataStore");
+    EXPECT_EQ(interfaceNode->GetType(), tau::TauAstEnumType::Interface);
+    
+    // Check that the interface has methods
+    EXPECT_GT(interfaceNode->GetChildren().size(), 0) << "Interface should have methods";
+}
+
+TEST_F(TestTau, TestEmptyNamespace) {
+    std::string script = R"(
+    namespace Empty::Namespace {
+    }
+    )";
+    
+    Registry r;
+    auto lex = make_shared<tau::TauLexer>(script.c_str(), r);
+    ASSERT_TRUE(lex->Process()) << "Lexer failed: " << lex->Error;
+    
+    auto parser = make_shared<tau::TauParser>(r);
+    bool parserSuccess = parser->Process(lex, Structure::Module);
+    ASSERT_TRUE(parserSuccess) << "Parser failed: " << parser->Error;
+    
+    // Should still create the namespace structure even if empty
+    auto root = parser->GetRoot();
+    auto moduleNode = root->GetChildren()[0];
+    auto emptyNs = moduleNode->GetChildren()[0];
+    EXPECT_EQ(emptyNs->GetToken().Text(), "Empty");
+    
+    auto namespaceNs = emptyNs->GetChildren()[0];
+    EXPECT_EQ(namespaceNs->GetToken().Text(), "Namespace");
+    
+    // Empty namespace should have no children
+    EXPECT_EQ(namespaceNs->GetChildren().size(), 0);
+}
+
+TEST_F(TestTau, TestClassInNestedNamespace) {
+    std::string script = R"(
+    namespace Models::Data {
+        class Person {
+            string name;
+            int age;
+            
+            void SetName(string newName);
+            string GetName();
+        }
+    }
+    )";
+    
+    Registry r;
+    auto lex = make_shared<tau::TauLexer>(script.c_str(), r);
+    ASSERT_TRUE(lex->Process()) << "Lexer failed: " << lex->Error;
+    
+    auto parser = make_shared<tau::TauParser>(r);
+    bool parserSuccess = parser->Process(lex, Structure::Module);
+    ASSERT_TRUE(parserSuccess) << "Parser failed: " << parser->Error;
+    
+    // Navigate to class
+    auto root = parser->GetRoot();
+    auto moduleNode = root->GetChildren()[0];
+    auto modelsNs = moduleNode->GetChildren()[0];
+    auto dataNs = modelsNs->GetChildren()[0];
+    auto classNode = dataNs->GetChildren()[0];
+    
+    EXPECT_EQ(classNode->GetToken().Text(), "Person");
+    EXPECT_EQ(classNode->GetType(), tau::TauAstEnumType::Class);
+    
+    // Class should have properties and methods
+    EXPECT_GT(classNode->GetChildren().size(), 0) << "Class should have members";
+}
+
+TEST_F(TestTau, TestMixedInterfaceAndClass) {
+    std::string script = R"(
+    namespace Services::Auth {
+        interface IAuthService {
+            bool Login(string username, string password);
+            void Logout();
+        }
+        
+        class AuthManager {
+            bool isLoggedIn;
+            
+            void Initialize();
+            void Cleanup();
+        }
+    }
+    )";
+    
+    Registry r;
+    auto lex = make_shared<tau::TauLexer>(script.c_str(), r);
+    ASSERT_TRUE(lex->Process()) << "Lexer failed: " << lex->Error;
+    
+    auto parser = make_shared<tau::TauParser>(r);
+    bool parserSuccess = parser->Process(lex, Structure::Module);
+    ASSERT_TRUE(parserSuccess) << "Parser failed: " << parser->Error;
+    
+    // Navigate to namespace
+    auto root = parser->GetRoot();
+    auto moduleNode = root->GetChildren()[0];
+    auto servicesNs = moduleNode->GetChildren()[0];
+    auto authNs = servicesNs->GetChildren()[0];
+    
+    // Should have both interface and class
+    EXPECT_EQ(authNs->GetChildren().size(), 2);
+    
+    auto firstChild = authNs->GetChildren()[0];
+    auto secondChild = authNs->GetChildren()[1];
+    
+    // Check that we have one interface and one class (order may vary)
+    bool hasInterface = (firstChild->GetType() == tau::TauAstEnumType::Interface) || 
+                       (secondChild->GetType() == tau::TauAstEnumType::Interface);
+    bool hasClass = (firstChild->GetType() == tau::TauAstEnumType::Class) || 
+                   (secondChild->GetType() == tau::TauAstEnumType::Class);
+    
+    EXPECT_TRUE(hasInterface) << "Should have an interface";
+    EXPECT_TRUE(hasClass) << "Should have a class";
+}
+
+TEST_F(TestTau, TestNamespaceWithSpecialCharacters) {
+    std::string script = R"(
+    namespace System_Core::Network_Utils {
+        interface IConnectionManager {
+            bool Connect();
+            void Disconnect();
+        }
+    }
+    )";
+    
+    Registry r;
+    auto lex = make_shared<tau::TauLexer>(script.c_str(), r);
+    ASSERT_TRUE(lex->Process()) << "Lexer failed: " << lex->Error;
+    
+    auto parser = make_shared<tau::TauParser>(r);
+    bool parserSuccess = parser->Process(lex, Structure::Module);
+    ASSERT_TRUE(parserSuccess) << "Parser failed: " << parser->Error;
+    
+    // Navigate to nested namespace
+    auto root = parser->GetRoot();
+    auto moduleNode = root->GetChildren()[0];
+    auto systemNs = moduleNode->GetChildren()[0];
+    EXPECT_EQ(systemNs->GetToken().Text(), "System_Core");
+    
+    auto networkNs = systemNs->GetChildren()[0];
+    EXPECT_EQ(networkNs->GetToken().Text(), "Network_Utils");
+}
+
+TEST_F(TestTau, TestSingleLevelNamespace) {
+    std::string script = R"(
+    namespace Utils {
+        interface IUtility {
+            void DoSomething();
+        }
+    }
+    )";
+    
+    Registry r;
+    auto lex = make_shared<tau::TauLexer>(script.c_str(), r);
+    ASSERT_TRUE(lex->Process()) << "Lexer failed: " << lex->Error;
+    
+    auto parser = make_shared<tau::TauParser>(r);
+    bool parserSuccess = parser->Process(lex, Structure::Module);
+    ASSERT_TRUE(parserSuccess) << "Parser failed: " << parser->Error;
+    
+    // Check single-level namespace parsing
+    auto root = parser->GetRoot();
+    auto moduleNode = root->GetChildren()[0];
+    auto utilsNs = moduleNode->GetChildren()[0];
+    EXPECT_EQ(utilsNs->GetToken().Text(), "Utils");
+    
+    auto interfaceNode = utilsNs->GetChildren()[0];
+    EXPECT_EQ(interfaceNode->GetToken().Text(), "IUtility");
+    EXPECT_EQ(interfaceNode->GetType(), tau::TauAstEnumType::Interface);
+}
+
+TEST_F(TestTau, TestNamespaceResilienceWithSyntaxErrors) {
+    std::string script = R"(
+    namespace Broken::Syntax {
+        interface IBroken {
+            void Method(invalid syntax here);
+            int AnotherMethod();
+        }
+    }
+    )";
+    
+    Registry r;
+    auto lex = make_shared<tau::TauLexer>(script.c_str(), r);
+    ASSERT_TRUE(lex->Process()) << "Lexer failed: " << lex->Error;
+    
+    auto parser = make_shared<tau::TauParser>(r);
+    bool parserSuccess = parser->Process(lex, Structure::Module);
+    // Parser should still succeed due to resilience
+    ASSERT_TRUE(parserSuccess) << "Parser should be resilient to syntax errors";
+    
+    // Should still create the namespace structure
+    auto root = parser->GetRoot();
+    auto moduleNode = root->GetChildren()[0];
+    auto brokenNs = moduleNode->GetChildren()[0];
+    EXPECT_EQ(brokenNs->GetToken().Text(), "Broken");
+    
+    auto syntaxNs = brokenNs->GetChildren()[0];
+    EXPECT_EQ(syntaxNs->GetToken().Text(), "Syntax");
+}
+
+TEST_F(TestTau, TestCodeGenerationWithNestedNamespaces) {
+    std::string script = R"(
+    namespace Game::Engine::Graphics {
+        interface IRenderer {
+            void RenderFrame();
+            void SetViewport(int width, int height);
+        }
+    }
+    )";
+    
+    // Test that code generation works with the nested namespace
+    string output;
+    tau::Generate::GenerateProxy proxy(script.c_str(), output);
+    
+    EXPECT_FALSE(proxy.Failed) << "Proxy generation should succeed: " << proxy.Error;
+    EXPECT_FALSE(output.empty()) << "Generated code should not be empty";
+    
+    // Check that nested namespaces are generated correctly
+    EXPECT_NE(output.find("namespace Game"), string::npos) << "Should contain Game namespace";
+    EXPECT_NE(output.find("namespace Engine"), string::npos) << "Should contain Engine namespace";
+    EXPECT_NE(output.find("namespace Graphics"), string::npos) << "Should contain Graphics namespace";
+    EXPECT_NE(output.find("IRendererProxy"), string::npos) << "Should contain proxy class";
+    EXPECT_NE(output.find("IRendererAgent"), string::npos) << "Should contain agent class";
+}
