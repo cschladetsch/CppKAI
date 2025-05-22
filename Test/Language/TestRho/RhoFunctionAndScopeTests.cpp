@@ -6,6 +6,8 @@
 #include "KAI/Core/BuiltinTypes/Stack.h"
 #include "KAI/Core/Config/Base.h"
 #include "KAI/Core/Debug.h"
+#include "KAI/Core/Logger.h"
+#include "KAI/Console/Console.h"
 #include "KAI/Language/Rho/RhoParser.h"
 #include "KAI/Language/Rho/RhoTranslator.h"
 #include "TestLangCommon.h"
@@ -23,37 +25,45 @@ struct RhoFunctionTests : TestLangCommon {
         }
 
         try {
-            Registry reg;
-            Console console(reg);
-            console.SetScope(reg.GetGlobalScope());
+            Console console;
+            Registry &reg = console.GetRegistry();
 
-            auto result = console.Execute(script);
+            console.Execute(script);
 
-            if (result.Failed) {
-                KAI_LOG_ERROR("Execution failed: " + result.Error);
-                FAIL() << "Error executing script: " << result.Error;
+            // Get the result from the data stack after execution
+            auto executor = console.GetExecutor();
+            auto dataStack = executor->GetDataStack();
+            
+            if (dataStack->Empty()) {
+                FAIL() << "No result on stack after script execution";
                 return;
             }
 
-            // Use a return value mechanism for more reliable extraction
-            auto val = result.Value;
-            if (val.GetType() != Type::Traits<T>::TypeNumber) {
-                KAI_LOG_ERROR("Type mismatch. Expected: " +
-                              std::to_string(Type::Traits<T>::TypeNumber) +
-                              ", Got: " + std::to_string(val.GetType()));
-                FAIL() << "Type mismatch. Expected: "
-                       << Type::Traits<T>::TypeNumber
-                       << ", Got: " << val.GetType();
+            auto val = dataStack->Top();
+            if (!val.IsType<T>()) {
+                std::string expectedTypeName = typeid(T).name();
+                std::string actualTypeName = val.GetClass() ? std::string(val.GetClass()->GetName().ToString().c_str()) : "unknown";
+                KAI_LOG_ERROR("Type mismatch. Expected: " + expectedTypeName + ", Got: " + actualTypeName);
+                FAIL() << "Type mismatch. Expected: " << expectedTypeName << ", Got: " << actualTypeName;
                 return;
             }
 
-            T actual = kai_cast<T>(val);
+            T actual = ConstDeref<T>(val);
             if (verbose) {
-                KAI_LOG_INFO("Result: " + std::to_string(actual));
+                // Convert result to string for logging (handle different types)
+                std::string resultStr;
+                if constexpr (std::is_same_v<T, String>) {
+                    resultStr = actual.StdString();
+                } else if constexpr (std::is_arithmetic_v<T>) {
+                    resultStr = std::to_string(actual);
+                } else {
+                    resultStr = "(complex type)";
+                }
+                KAI_LOG_INFO("Result: " + resultStr);
             }
             ASSERT_EQ(expected, actual)
                 << "Result doesn't match expected value";
-        } catch (const Exception &e) {
+        } catch (const Exception::Base &e) {
             KAI_LOG_ERROR("Exception: " + std::string(e.ToString()));
             FAIL() << "Exception: " << e.ToString();
         } catch (const std::exception &e) {

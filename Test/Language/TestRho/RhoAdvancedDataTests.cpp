@@ -9,7 +9,7 @@
 #include "KAI/Core/BuiltinTypes/String.h"
 #include "KAI/Core/Config/Base.h"
 #include "KAI/Core/Debug.h"
-#include "KAI/Core/Exception/Exception.h"
+#include "KAI/Core/Exception.h"
 #include "KAI/Core/Logger.h"
 #include "TestLangCommon.h"
 
@@ -131,10 +131,10 @@ struct RhoAdvancedDataTests : TestLangCommon {
         // Verify map entries
         for (const auto& [key, expectedValue] : expected) {
             Object keyObj = reg_->New<String>(key);
-            ASSERT_TRUE(map->Contains(keyObj))
+            ASSERT_TRUE(map->ContainsKey(keyObj))
                 << "Map does not contain expected key: " << key;
 
-            Object valueObj = map->Get(keyObj);
+            Object valueObj = map->GetValue(keyObj);
             ASSERT_TRUE(valueObj.IsType<int>())
                 << "Map value for key " << key << " is not an integer";
 
