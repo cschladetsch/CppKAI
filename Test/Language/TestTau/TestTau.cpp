@@ -56,16 +56,18 @@ struct TestTau : TestLangCommon {
         // Create a parser with relaxed requirements
         auto parser = std::make_shared<tau::TauParser>(r);
 
-        // Make a best effort to parse - don't assert on success
-        bool success = parser->Process(lex, Structure::Class);
-        if (!success) {
+        // Parse with our resilient parser - which always returns true now
+        bool parserSuccess = parser->Process(lex, Structure::Class);
+        
+        // Log any parser issues for diagnostic purposes
+        if (!parser->Error.empty()) {
             KAI_LOG_WARNING("Parser for " + name +
-                            " reported failure: " + parser->Error);
+                            " reported issue (but continuing): " + parser->Error);
         }
 
         // Since we're just testing that the files can be loaded, we'll succeed
         // regardless
-        SUCCEED() << "Successfully processed " << name;
+        SUCCEED() << "Successfully processed " << name << " (Tau support is in development)";
     }
 
     // Helper method to check if a generated output contains expected patterns
@@ -427,22 +429,19 @@ TEST_F(TestTau, TestErrorHandling) {
                      "should tolerate syntax errors)";
     }
 
-    // Create a parser and attempt to parse - we expect this to fail
+    // Create a parser and attempt to parse
     auto parser = std::make_shared<tau::TauParser>(r);
     bool success = parser->Process(lex, Structure::Module);
 
-    // This test has intentional errors, but we'll make it more resilient
-    if (success) {
+    // With our resilient parser, we expect it to continue despite errors
+    if (parser->Error.empty()) {
         KAI_LOG_WARNING(
-            "Parser unexpectedly succeeded on error test file, but we'll still "
-            "pass the test");
+            "Expected parser errors but none were reported. This might indicate "
+            "the test file no longer contains useful error cases.");
     } else {
-        KAI_LOG_INFO("Parser error (expected): " + parser->Error);
-
-        // Check that the parser error message is meaningful
-        if (parser->Error.empty()) {
-            KAI_LOG_WARNING("Parser should have provided an error message");
-        }
+        KAI_LOG_INFO("Parser reported issues as expected: " + parser->Error);
+        // Since our parser is now resilient, it should have managed to do some parsing
+        // despite the errors, which is exactly what we want for this test
     }
 
     SUCCEED() << "Successfully tested error handling";
@@ -481,10 +480,11 @@ TEST_F(TestTau, TestComplexProxyGen) {
 
     // Create a parser and attempt to parse
     auto parser = std::make_shared<tau::TauParser>(r);
-    bool parserResult = parser->Process(lex, Structure::Module);
+    parser->Process(lex, Structure::Module);
 
-    if (!parserResult) {
-        KAI_LOG_WARNING("Parser error: " + parser->Error);
+    // Log any parser issues for diagnostic purposes
+    if (!parser->Error.empty()) {
+        KAI_LOG_WARNING("Parser reported issues (but continuing): " + parser->Error);
     }
 
     // Attempt to generate proxy code
@@ -558,19 +558,20 @@ TEST_F(TestTau, TestAssignmentsAndDefaults) {
 
     // Create a parser and attempt to parse
     auto parser = std::make_shared<tau::TauParser>(r);
-    bool success = parser->Process(lex, Structure::Class);
+    parser->Process(lex, Structure::Class);
 
-    if (!success) {
-        KAI_LOG_WARNING("Parser error: " + parser->Error);
+    if (!parser->Error.empty()) {
+        KAI_LOG_WARNING("Parser reported issues (but continuing): " + parser->Error);
     } else {
         KAI_LOG_INFO(
             "Successfully parsed AssignmentTest with assignments and defaults");
-
-        // Examine the AST structure (simplified - just log it for now)
-        KAI_LOG_INFO("Parser root type: " +
-                     std::string(tau::TauAstEnumType::ToString(
-                         parser->GetRoot()->GetType())));
     }
+    
+    // Examine the AST structure regardless of parser errors - our resilient parser
+    // will still have created a partial AST
+    KAI_LOG_INFO("Parser root type: " +
+                 std::string(tau::TauAstEnumType::ToString(
+                     parser->GetRoot()->GetType())));
 
     // Even if parsing failed, we've validated the lexing of assignments and
     // default values

@@ -28,6 +28,7 @@ struct GenerateAgent : GenerateProcess {
                     const string &name);
     void MethodDecl(const string &returnType, const Node::ChildrenType &args,
                     const string &name);
+    void GenerateHandlerMethod(Node const &method);
 };
 }  // namespace Generate
 

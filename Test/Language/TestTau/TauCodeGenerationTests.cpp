@@ -37,6 +37,9 @@ struct TauCodeGenerationTests : TestLangCommon {
                 "Proxy generation for " + testName +
                 " succeeded, output size: " + std::to_string(output.size()));
 
+            // Debug: log the actual output
+            KAI_LOG_INFO("Generated proxy output: " + output);
+
             // Verify the generated code contains expected elements
             ASSERT_FALSE(output.empty()) << "Generated proxy code is empty";
 

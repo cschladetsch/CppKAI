@@ -25,11 +25,14 @@ struct GenerateProxy : GenerateProcess {
 
    private:
     struct ProxyDecl;
+    struct AgentDecl;
     void AddProxyBoilerplate(ProxyDecl const &);
+    void AddAgentBoilerplate(AgentDecl const &);
     void MethodBody(const string &returnType, const Node::ChildrenType &args,
                     const string &name);
     void MethodDecl(const string &returnType, const Node::ChildrenType &args,
                     const string &name);
+    void GenerateHandlerMethod(Node const &method);
 };
 }  // namespace Generate
 
