@@ -106,7 +106,7 @@ class ContinuationControlTests : public TestLangCommon {
     }
 };
 
-// Test 1: Basic Resume Operation
+// Basic Resume Operation
 TEST_F(ContinuationControlTests, BasicResumeOperation) {
     // The Resume operation should exit the current continuation and return to
     // the calling context
@@ -147,7 +147,7 @@ TEST_F(ContinuationControlTests, BasicResumeOperation) {
     VerifyStack(expected);
 }
 
-// Test 2: Basic Suspend Operation
+// Basic Suspend Operation
 TEST_F(ContinuationControlTests, BasicSuspendOperation) {
     // The Suspend operation should suspend the current continuation and start
     // executing a new one
@@ -193,7 +193,7 @@ TEST_F(ContinuationControlTests, BasicSuspendOperation) {
     VerifyStack(expected);
 }
 
-// Test 3: Basic Replace Operation
+// Basic Replace Operation
 TEST_F(ContinuationControlTests, BasicReplaceOperation) {
     // The Replace operation should replace the current continuation with a new
     // one
@@ -248,7 +248,7 @@ TEST_F(ContinuationControlTests, BasicReplaceOperation) {
     VerifyStack(expected);
 }
 
-// Test 4: Resume Within a For Loop
+// Resume Within a For Loop
 TEST_F(ContinuationControlTests, ResumeWithinForLoop) {
     // Test using Resume to break out of a For loop early
     data_->Clear();
@@ -281,7 +281,7 @@ TEST_F(ContinuationControlTests, ResumeWithinForLoop) {
     VerifyStack(expected);
 }
 
-// Test 5: Suspend Within a For Loop
+// Suspend Within a For Loop
 TEST_F(ContinuationControlTests, SuspendWithinForLoop) {
     // Test suspending execution within a for loop and resuming it later
     data_->Clear();
@@ -339,7 +339,7 @@ TEST_F(ContinuationControlTests, SuspendWithinForLoop) {
     VerifyStack(expected);
 }
 
-// Test 6: Replace Within a For Loop
+// Replace Within a For Loop
 TEST_F(ContinuationControlTests, ReplaceWithinForLoop) {
     // Test replacing execution within a for loop
     data_->Clear();
@@ -395,7 +395,7 @@ TEST_F(ContinuationControlTests, ReplaceWithinForLoop) {
     VerifyStack(expected);
 }
 
-// Test 7: Nested For Loops with Resume
+// Nested For Loops with Resume
 TEST_F(ContinuationControlTests, NestedForLoopsWithResume) {
     // Test using Resume to break out of nested for loops
     data_->Clear();
@@ -433,7 +433,7 @@ TEST_F(ContinuationControlTests, NestedForLoopsWithResume) {
     VerifyStack(expected);
 }
 
-// Test 8: Conditional Suspend in a For Loop
+// Conditional Suspend in a For Loop
 TEST_F(ContinuationControlTests, ConditionalSuspendInForLoop) {
     // Test conditionally suspending execution within a for loop
     data_->Clear();
@@ -496,7 +496,7 @@ TEST_F(ContinuationControlTests, ConditionalSuspendInForLoop) {
     VerifyStack(expected);
 }
 
-// Test 9: Mixing Suspend and Replace in a For Loop
+// Mixing Suspend and Replace in a For Loop
 TEST_F(ContinuationControlTests, MixingSuspendAndReplaceInForLoop) {
     // Test mixing Suspend and Replace operations within a for loop
     data_->Clear();
@@ -557,7 +557,7 @@ TEST_F(ContinuationControlTests, MixingSuspendAndReplaceInForLoop) {
     VerifyStack(expected);
 }
 
-// Test 10: Resume for Early Loop Termination with Result
+// Resume for Early Loop Termination with Result
 TEST_F(ContinuationControlTests, ResumeForEarlyLoopTerminationWithResult) {
     // Test using Resume to exit a loop early while still capturing a result
     data_->Clear();

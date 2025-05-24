@@ -54,7 +54,7 @@ TEST_F(TestPiAdvanced, TestStringOperations) {
 TEST_F(TestPiAdvanced, TestArrayOperations) {
     console_.SetLanguage(Language::Pi);
 
-    // Test 1: Create an empty array and check size
+    // Create an empty array and check size
     data_->Clear();
 
     // Alternative: Just directly push an array and check its size
@@ -78,7 +78,7 @@ TEST_F(TestPiAdvanced, TestArrayOperations) {
     ASSERT_TRUE(data_->Top().IsType<int>()) << "Top item should be an int";
     ASSERT_EQ(AtData<int>(0), 0) << "Size of empty array should be 0";
 
-    // Test 2: Create a populated array and check size
+    // Create a populated array and check size
     data_->Clear();
 
     // Create a populated array directly
@@ -106,7 +106,7 @@ TEST_F(TestPiAdvanced, TestArrayOperations) {
     ASSERT_TRUE(data_->Top().IsType<int>()) << "Top item should be an int";
     ASSERT_EQ(AtData<int>(0), 3) << "Size of array [1 2 3] should be 3";
 
-    // Test 3: Create a populated array and verify it exists - this time
+    // Create a populated array and verify it exists - this time
     // directly
     data_->Clear();
 
@@ -154,7 +154,7 @@ TEST_F(TestPiAdvanced, TestArrayOperations) {
 TEST_F(TestPiAdvanced, TestArrayOperationsDirect) {
     // No need to set any language, we're directly testing the Array object
 
-    // Test 1: Create an empty array
+    // Create an empty array
     data_->Clear();
 
     // Directly create an array object
@@ -165,7 +165,7 @@ TEST_F(TestPiAdvanced, TestArrayOperationsDirect) {
     ASSERT_EQ(data_->Size(), 1);
     ASSERT_TRUE(data_->At(0).IsType<Array>());
 
-    // Test 2: Check empty array size
+    // Check empty array size
     data_->Clear();
 
     // Directly create an empty array
@@ -178,7 +178,7 @@ TEST_F(TestPiAdvanced, TestArrayOperationsDirect) {
     // Verify the size is 0
     ASSERT_EQ(AtData<int>(0), 0);
 
-    // Test 3: Create an array with values and check size
+    // Create an array with values and check size
     data_->Clear();
 
     // Directly create and populate array
@@ -197,7 +197,7 @@ TEST_F(TestPiAdvanced, TestArrayOperationsDirect) {
     // Verify the size is 3
     ASSERT_EQ(AtData<int>(0), 3);
 
-    // Test 4: Test array creation with elements
+    // Test array creation with elements
     data_->Clear();
 
     // Directly create and populate array

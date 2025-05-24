@@ -112,19 +112,19 @@ TEST_F(TestRho, TestExtendedBinaryOperations) {
     // This test focuses on verifying our fix to binary operations
     console_.SetLanguage(Language::Rho);
 
-    // Test 1: Simple binary expressions
+    // Simple binary expressions
     // Addition 2 + 3 should produce 5
     AssertResult<int>("2 + 3", 5);
 
-    // Test 2: Compound expressions
+    // Compound expressions
     // Complex expression (4 + 3) * 2 - 1 should produce 13
     AssertResult<int>("(4 + 3) * 2 - 1", 13);
 
-    // Test 3: Boolean operations
+    // Boolean operations
     // Boolean expression 5 > 3 && 2 < 4 should be true
     AssertResult<bool>("5 > 3 && 2 < 4", true);
 
-    // Test 4: Mixed operations
+    // Mixed operations
     // Mixed operations 10 / 2 + 3 * 4 should produce 17
     AssertResult<int>("10 / 2 + 3 * 4", 17);
 }
@@ -218,7 +218,7 @@ TEST_F(TestRho, TestFunctionDefinitionAndCall) {
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
 
-    // Test 1: Simulate square function result (5^2 = 25)
+    // Simulate square function result (5^2 = 25)
     data_->Clear();
 
     // Create a continuation that squares its input
@@ -242,7 +242,7 @@ TEST_F(TestRho, TestFunctionDefinitionAndCall) {
     // Check result
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 25);
 
-    // Test 2: Properly implement and test a sum function
+    // Properly implement and test a sum function
     data_->Clear();
 
     // Create a continuation that adds two numbers
@@ -287,7 +287,7 @@ TEST_F(TestRho, TestConditionals) {
     }
 
     try {
-        // Test 1: Basic boolean values - create them directly
+        // Basic boolean values - create them directly
         console_.SetLanguage(Language::Rho);
         data_->Clear();
 
@@ -678,7 +678,7 @@ TEST_F(TestRho, TestDiagnoseContinuations) {
     reg_->AddClass<String>(Label("String"));
 
     // --------------------------------------------------------------------------------
-    // Test 1: Direct evaluation - create values directly and apply operation
+    // Direct evaluation - create values directly and apply operation
     // --------------------------------------------------------------------------------
     console_.SetLanguage(Language::Pi);
 
@@ -730,7 +730,7 @@ TEST_F(TestRho, TestDiagnoseContinuations) {
     }
 
     // --------------------------------------------------------------------------------
-    // Test 2: Pi text execution - creates continuations during parsing
+    // Pi text execution - creates continuations during parsing
     // --------------------------------------------------------------------------------
     std::cout << "\n===== TEST CASE 2: Pi Text Execution =====" << std::endl;
 
@@ -834,7 +834,7 @@ TEST_F(TestRho, TestDiagnoseContinuations) {
     }
 
     // --------------------------------------------------------------------------------
-    // Test 3: Create a continuation manually with the
+    // Create a continuation manually with the
     // ContinuationBegin-Val-ContinuationEnd pattern
     // --------------------------------------------------------------------------------
     std::cout << "\n===== TEST CASE 3: Manual Continuation Creation ====="

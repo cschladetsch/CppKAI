@@ -153,7 +153,7 @@ TEST_F(TestPi, TestVectors) {
     // let's implement the test with better debugging
     console_.SetLanguage(Language::Pi);
 
-    // Test 1: Create an array with one element and check operation result
+    // Create an array with one element and check operation result
     data_->Clear();
     console_.Execute("1 1 toarray");
 
@@ -179,13 +179,13 @@ TEST_F(TestPi, TestVectors) {
     ASSERT_TRUE(data_->Top().IsType<Array>());
     ASSERT_EQ(testArray->Size(), 1);
 
-    // Test 2: Empty array
+    // Empty array
     data_->Clear();
     Pointer<Array> emptyArray = reg_->New<Array>();
     data_->Push(emptyArray);
     ASSERT_TRUE(emptyArray->Empty());
 
-    // Test 3: Array with multiple elements
+    // Array with multiple elements
     data_->Clear();
     Pointer<Array> array = reg_->New<Array>();
     array->Append(reg_->New<int>(1));

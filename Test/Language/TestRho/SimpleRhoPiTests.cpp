@@ -185,7 +185,7 @@
     }
     190
 };
-191 192  // Test 1: Basic Addition using direct operation evaluation instead of
+191 192  // Basic Addition using direct operation evaluation instead of
     193  // continuations
     194 TEST_F(RhoPiBasicTests, Addition) {
     195 data_->Clear();
@@ -214,7 +214,7 @@
     220 221 cout << "Pi addition test successful" << endl;
     222
 }
-223 224  // Test 2: Subtraction using direct operation evaluation
+223 224  // Subtraction using direct operation evaluation
     225 TEST_F(RhoPiBasicTests, Subtraction) {
     226 data_->Clear();
     227 228  // Create operands and use direct binary operation
@@ -242,7 +242,7 @@
     251 252 cout << "Pi subtraction test successful" << endl;
     253
 }
-254 255  // Test 3: Multiplication using direct operation evaluation
+254 255  // Multiplication using direct operation evaluation
     256 TEST_F(RhoPiBasicTests, Multiplication) {
     257 data_->Clear();
     258 259  // Create operands and use direct binary operation
@@ -270,7 +270,7 @@
     282 283 cout << "Pi multiplication test successful" << endl;
     284
 }
-285 286  // Test 4: Division using direct operation evaluation
+285 286  // Division using direct operation evaluation
     287 TEST_F(RhoPiBasicTests, Division) {
     288 data_->Clear();
     289 290  // Create operands and push directly to stack
@@ -298,7 +298,7 @@
     313 314 cout << "Pi division test successful" << endl;
     315
 }
-316 317  // Test 5: Complex Pi Expression with step-by-step execution
+316 317  // Complex Pi Expression with step-by-step execution
     318 TEST_F(RhoPiBasicTests, ComplexExpression) {
     319  // Execute (6 + 4) * 2 = 20
         320 data_->Clear();
@@ -337,7 +337,7 @@
     355 356 cout << "Complex Pi expression test successful" << endl;
     357
 }
-358 359  // Test 6: Stack Operations with manual implementation
+358 359  // Stack Operations with manual implementation
     360 TEST_F(RhoPiBasicTests, StackOperations) {
     361  // Implement "5 dup +" meaning 5+5=10
         362 data_->Clear();
@@ -380,7 +380,7 @@
     402 403 cout << "Pi stack operations test successful" << endl;
     404
 }
-405 406  // Test 7: Stack Manipulation with manual implementation
+405 406  // Stack Manipulation with manual implementation
     407 TEST_F(RhoPiBasicTests, StackManipulation) {
     408  // Implement "3 4 swap -" manually for 4-3=1
         409 data_->Clear();
@@ -435,7 +435,7 @@
     461 462 cout << "Pi stack manipulation test successful" << endl;
     463
 }
-464 465  // Test 8: Comparison Operations using actual execution
+464 465  // Comparison Operations using actual execution
     466 TEST_F(RhoPiBasicTests, ComparisonOperations) {
     467 data_->Clear();
     468 469  // Create operands and push directly to stack
@@ -474,7 +474,7 @@
     501 502 cout << "Pi comparison operations test successful" << endl;
     503
 }
-504 505  // Test 9: Function Compilation with manual creation
+504 505  // Function Compilation with manual creation
     506 TEST_F(RhoPiBasicTests, FunctionCompilation) {
     507  // Manually create a function that doubles its input: "{ dup + }"
         508 data_->Clear();
@@ -533,7 +533,7 @@
     564 565 cout << "Pi function compilation test successful" << endl;
     566
 }
-567 568  // Test 10: String Support with direct manipulation
+567 568  // String Support with direct manipulation
     569 TEST_F(RhoPiBasicTests, StringSupport) {
     570  // Create strings directly
         571 data_->Clear();
@@ -593,7 +593,7 @@
     628 629 cout << "Pi string support test successful" << endl;
     630
 }
-631 632  // Test 11: Rho Conversion - Basic Addition
+631 632  // Rho Conversion - Basic Addition
     633 TEST_F(RhoPiBasicTests, RhoAddition) {
     634  // Set to Rho language
         635 console_.SetLanguage(Language::Rho);
@@ -613,7 +613,7 @@
     650 651 cout << "Rho addition test successful" << endl;
     652
 }
-653 654  // Test 12: Rho Conversion - Complex Expression
+653 654  // Rho Conversion - Complex Expression
     655 TEST_F(RhoPiBasicTests, RhoComplexExpression) {
     656  // Set to Rho language
         657 console_.SetLanguage(Language::Rho);
@@ -639,7 +639,7 @@
     681 682 cout << "Rho complex expression test successful" << endl;
     683
 }
-684 685  // Test 13: Rho Conversion - Special 20 + 20 Test
+684 685  // Rho Conversion - Special 20 + 20 Test
     686 TEST_F(RhoPiBasicTests, RhoSpecial20Plus20) {
     687  // Set to Rho language
         688 console_.SetLanguage(Language::Rho);
@@ -660,7 +660,7 @@
     705 706 cout << "Rho special 20+20 test successful" << endl;
     707
 }
-708 709  // Test 14: Rho Conversion - Parenthesized Expression
+708 709  // Rho Conversion - Parenthesized Expression
     710 TEST_F(RhoPiBasicTests, RhoParenthesizedExpression) {
     711  // Set to Rho language
         712 console_.SetLanguage(Language::Rho);

@@ -336,7 +336,7 @@ Object ExecuteRhoCode(const std::string& code) {
 
 /* Tests for Rho 'for' statement */
 
-// Test 1: Basic for loop with integer increment
+// Basic for loop with integer increment
 TEST_F(RhoForLoopTestsFixture, BasicIntegerIncrement) {
     const std::string code = R"(
         // Basic for loop that increments a counter
@@ -353,7 +353,7 @@ TEST_F(RhoForLoopTestsFixture, BasicIntegerIncrement) {
     RUN_FOR_LOOP_TEST(code, int, 10);
 }
 
-// Test 2: For loop with a complex condition
+// For loop with a complex condition
 TEST_F(RhoForLoopTestsFixture, ComplexCondition) {
     const std::string code = R"(
         // For loop with a more complex condition
@@ -374,7 +374,7 @@ TEST_F(RhoForLoopTestsFixture, ComplexCondition) {
     RUN_FOR_LOOP_TEST(code, int, 20);
 }
 
-// Test 3: For loop with early exit using break
+// For loop with early exit using break
 TEST_F(RhoForLoopTestsFixture, EarlyExitWithBreak) {
     // Code that breaks out of a for loop early
     const std::string code = R"(
@@ -392,7 +392,7 @@ TEST_F(RhoForLoopTestsFixture, EarlyExitWithBreak) {
     RUN_FOR_LOOP_TEST(code, int, 15);
 }
 
-// Test 4: Nested for loops
+// Nested for loops
 TEST_F(RhoForLoopTestsFixture, NestedLoops) {
     const std::string code = R"(
         // Nested for loops
@@ -412,7 +412,7 @@ TEST_F(RhoForLoopTestsFixture, NestedLoops) {
     RUN_FOR_LOOP_TEST(code, int, 63);
 }
 
-// Test 5: For loop with function calls in the body
+// For loop with function calls in the body
 TEST_F(RhoForLoopTestsFixture, FunctionCallsInBody) {
     // First define a function that squares its input
     const std::string setupCode = R"(
@@ -440,7 +440,7 @@ TEST_F(RhoForLoopTestsFixture, FunctionCallsInBody) {
         << "Expected sum to be 30 but got " << result.ToString();
 }
 
-// Test 6: For loop that builds an array
+// For loop that builds an array
 TEST_F(RhoForLoopTestsFixture, BuildingAnArray) {
     const std::string code = R"(
         // Create an array and add values in a for loop
@@ -470,7 +470,7 @@ TEST_F(RhoForLoopTestsFixture, BuildingAnArray) {
         << "Expected sum to be 30 but got " << result.ToString();
 }
 
-// Test 7: For loop with complex update expression
+// For loop with complex update expression
 TEST_F(RhoForLoopTestsFixture, ComplexUpdateExpression) {
     const std::string code = R"(
         // For loop with a more complex update expression
@@ -492,7 +492,7 @@ TEST_F(RhoForLoopTestsFixture, ComplexUpdateExpression) {
         << "Expected result to be 15 but got " << result.ToString();
 }
 
-// Test 8: Fibonacci sequence using a for loop
+// Fibonacci sequence using a for loop
 TEST_F(RhoForLoopTestsFixture, FibonacciSequence) {
     const std::string code = R"(
         // Calculate the 10th Fibonacci number using a for loop
@@ -519,7 +519,7 @@ TEST_F(RhoForLoopTestsFixture, FibonacciSequence) {
         << result.ToString();
 }
 
-// Test 9: For loop with string operations
+// For loop with string operations
 TEST_F(RhoForLoopTestsFixture, StringOperations) {
     const std::string code = R"(
         // For loop that builds a string
@@ -580,7 +580,7 @@ TEST_F(RhoForLoopTestsFixture, StringOperations) {
     }
 }
 
-// Test 10: For loop with function that contains a for loop (nested
+// For loop with function that contains a for loop (nested
 // continuations)
 TEST_F(RhoForLoopTestsFixture, NestedContinuations) {
     const std::string code = R"(
@@ -618,7 +618,7 @@ TEST_F(RhoForLoopTestsFixture, NestedContinuations) {
         << "Expected total sum to be 35 but got " << result.ToString();
 }
 
-// Test 11: Using a for loop inside a function that's called multiple times
+// Using a for loop inside a function that's called multiple times
 TEST_F(RhoForLoopTestsFixture, FunctionWithForLoop) {
     const std::string code = R"(
         // Define a function to calculate the factorial of a number using a for loop
@@ -646,7 +646,7 @@ TEST_F(RhoForLoopTestsFixture, FunctionWithForLoop) {
         << "Expected sum of factorials to be 150 but got " << result.ToString();
 }
 
-// Test 12: For loop with Pi block embedded inside
+// For loop with Pi block embedded inside
 TEST_F(RhoForLoopTestsFixture, WithEmbeddedPiBlock) {
     const std::string code = R"(
         // For loop that uses Pi sequences inside

@@ -80,7 +80,7 @@ class DiagnoseTestLang : public TestLangCommon {
 
 // Test to diagnose the structure of TestLangCommon and how Pi operations work
 TEST_F(DiagnoseTestLang, PiOperation) {
-    // Test 1: Addition
+    // Addition
     data_->Clear();
     std::cout << "\n=== Test Addition ===" << std::endl;
     console_.Execute("2 3 +");
@@ -94,7 +94,7 @@ TEST_F(DiagnoseTestLang, PiOperation) {
     std::cout << "Stack after UnwrapStackValues:" << std::endl;
     DumpStack(data_);
 
-    // Test 2: Comparison
+    // Comparison
     data_->Clear();
     std::cout << "\n=== Test Comparison ===" << std::endl;
     console_.Execute("10 5 >");
@@ -108,7 +108,7 @@ TEST_F(DiagnoseTestLang, PiOperation) {
     std::cout << "Stack after UnwrapStackValues:" << std::endl;
     DumpStack(data_);
 
-    // Test 3: String
+    // String
     data_->Clear();
     std::cout << "\n=== Test String ===" << std::endl;
     console_.Execute("\"Hello World\"");

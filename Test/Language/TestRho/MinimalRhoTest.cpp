@@ -15,7 +15,7 @@ using namespace std;
  * to avoid issues with continuations and type checking.
  */
 
-// Test 1: Basic arithmetic
+// Basic arithmetic
 TEST(MinimalRho, Addition) {
     Console console;
 
@@ -38,7 +38,7 @@ TEST(MinimalRho, Addition) {
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 5);
 }
 
-// Test 2: Boolean operations
+// Boolean operations
 TEST(MinimalRho, Boolean) {
     Console console;
 
@@ -60,7 +60,7 @@ TEST(MinimalRho, Boolean) {
     ASSERT_TRUE(ConstDeref<bool>(stack->Top()));
 }
 
-// Test 3: String operations
+// String operations
 TEST(MinimalRho, String) {
     Console console;
 

@@ -137,7 +137,7 @@ class AdvancedRhoPiTests : public TestLangCommon {
     }
 };
 
-// Test 1: Nested Stack Operations - Rotate (3 element rotation)
+// Nested Stack Operations - Rotate (3 element rotation)
 TEST_F(AdvancedRhoPiTests, NestedStackRotate) {
     data_->Clear();
 
@@ -176,7 +176,7 @@ TEST_F(AdvancedRhoPiTests, NestedStackRotate) {
     cout << "Nested stack rotation test successful" << endl;
 }
 
-// Test 2: Array Operations
+// Array Operations
 TEST_F(AdvancedRhoPiTests, ArrayOperations) {
     data_->Clear();
 
@@ -216,7 +216,7 @@ TEST_F(AdvancedRhoPiTests, ArrayOperations) {
     cout << "Array operations test successful" << endl;
 }
 
-// Test 3: Variable Operations
+// Variable Operations
 TEST_F(AdvancedRhoPiTests, VariableOperations) {
     data_->Clear();
 
@@ -239,7 +239,7 @@ TEST_F(AdvancedRhoPiTests, VariableOperations) {
     cout << "Variable operations test successful" << endl;
 }
 
-// Test 4: Mixed Type Operations
+// Mixed Type Operations
 TEST_F(AdvancedRhoPiTests, MixedTypeOperations) {
     data_->Clear();
 
@@ -273,7 +273,7 @@ TEST_F(AdvancedRhoPiTests, MixedTypeOperations) {
     cout << "Mixed type operations test successful" << endl;
 }
 
-// Test 5: Multiple Operation Sequence
+// Multiple Operation Sequence
 TEST_F(AdvancedRhoPiTests, MultipleOperationSequence) {
     // Test a sequence of operations: (10 + 5) * 2 - 8 / 2 = 26
     data_->Clear();
@@ -316,7 +316,7 @@ TEST_F(AdvancedRhoPiTests, MultipleOperationSequence) {
     cout << "Multiple operation sequence test successful" << endl;
 }
 
-// Test 6: Error Handling (Division by Zero)
+// Error Handling (Division by Zero)
 TEST_F(AdvancedRhoPiTests, ErrorHandling) {
     data_->Clear();
 
@@ -343,7 +343,7 @@ TEST_F(AdvancedRhoPiTests, ErrorHandling) {
     cout << "Error handling test successful" << endl;
 }
 
-// Test 7: Boolean Logic Operations
+// Boolean Logic Operations
 TEST_F(AdvancedRhoPiTests, BooleanLogicOperations) {
     data_->Clear();
 
@@ -386,7 +386,7 @@ TEST_F(AdvancedRhoPiTests, BooleanLogicOperations) {
     cout << "Boolean logic operations test successful" << endl;
 }
 
-// Test 8: Function Application
+// Function Application
 TEST_F(AdvancedRhoPiTests, FunctionApplication) {
     data_->Clear();
 
@@ -430,7 +430,7 @@ TEST_F(AdvancedRhoPiTests, FunctionApplication) {
     cout << "Function application test successful" << endl;
 }
 
-// Test 9: Dictionary/Map Operations
+// Dictionary/Map Operations
 TEST_F(AdvancedRhoPiTests, DictionaryOperations) {
     data_->Clear();
 
@@ -462,7 +462,7 @@ TEST_F(AdvancedRhoPiTests, DictionaryOperations) {
     cout << "Dictionary operations test successful" << endl;
 }
 
-// Test 10: Conditional Operations
+// Conditional Operations
 TEST_F(AdvancedRhoPiTests, ConditionalOperations) {
     data_->Clear();
 

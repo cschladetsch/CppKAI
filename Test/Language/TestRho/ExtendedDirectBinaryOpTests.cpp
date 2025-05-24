@@ -131,7 +131,7 @@ class ExtendedBinaryOpTests : public TestLangCommon {
     }
 };
 
-// Test 1: Bitwise Operations
+// Bitwise Operations
 TEST_F(ExtendedBinaryOpTests, BitwiseOperations) {
     // Create operands
     Object a = reg_->New<int>(0b1010);  // 10 in decimal
@@ -189,7 +189,7 @@ TEST_F(ExtendedBinaryOpTests, BitwiseOperations) {
     }
 }
 
-// Test 2: Complex Mixed Type Operations - String + Number Conversion
+// Complex Mixed Type Operations - String + Number Conversion
 TEST_F(ExtendedBinaryOpTests, StringNumberConversion) {
     // Create operands
     Object strObj = reg_->New<String>("Value: ");
@@ -220,7 +220,7 @@ TEST_F(ExtendedBinaryOpTests, StringNumberConversion) {
     }
 }
 
-// Test 3: Negative Number Operations
+// Negative Number Operations
 TEST_F(ExtendedBinaryOpTests, NegativeNumberOperations) {
     // Test negative number arithmetic
     Object negA = reg_->New<int>(-10);
@@ -246,7 +246,7 @@ TEST_F(ExtendedBinaryOpTests, NegativeNumberOperations) {
     VerifyIntOperation(negA, posC, Operation::Multiply, -30);
 }
 
-// Test 4: Division by Zero Handling
+// Division by Zero Handling
 TEST_F(ExtendedBinaryOpTests, DivisionByZeroHandling) {
     Object a = reg_->New<int>(10);
     Object zero = reg_->New<int>(0);
@@ -289,7 +289,7 @@ TEST_F(ExtendedBinaryOpTests, DivisionByZeroHandling) {
         << "Float division by zero should throw an exception";
 }
 
-// Test 5: Large Number Operations
+// Large Number Operations
 TEST_F(ExtendedBinaryOpTests, LargeNumberOperations) {
     // Test with very large integers (close to limits)
     int largeValue1 = std::numeric_limits<int>::max() / 2;
@@ -311,7 +311,7 @@ TEST_F(ExtendedBinaryOpTests, LargeNumberOperations) {
     VerifyIntOperation(large1, negLarge, Operation::Plus, 0);
 }
 
-// Test 6: Chained Binary Operations
+// Chained Binary Operations
 TEST_F(ExtendedBinaryOpTests, ChainedBinaryOperations) {
     // Test results of multiple operations applied in sequence
     // (10 + 5) * 2 - 3 = 27
@@ -341,7 +341,7 @@ TEST_F(ExtendedBinaryOpTests, ChainedBinaryOperations) {
     ASSERT_EQ(ConstDeref<int>(data_->Top()), 27) << "Expected (10+5)*2-3=27";
 }
 
-// Test 7: Floating Point Special Values
+// Floating Point Special Values
 TEST_F(ExtendedBinaryOpTests, FloatingPointSpecialValues) {
     if (!reg_->HasClass(Label("float"))) {
         GTEST_SKIP() << "Float class not registered, skipping test";
@@ -399,7 +399,7 @@ TEST_F(ExtendedBinaryOpTests, FloatingPointSpecialValues) {
     }
 }
 
-// Test 8: String Comparison Operations
+// String Comparison Operations
 TEST_F(ExtendedBinaryOpTests, StringComparisonOperations) {
     Object strA = reg_->New<String>("apple");
     Object strB = reg_->New<String>("banana");
@@ -423,7 +423,7 @@ TEST_F(ExtendedBinaryOpTests, StringComparisonOperations) {
     }
 }
 
-// Test 9: Operator Precedence Handling
+// Operator Precedence Handling
 TEST_F(ExtendedBinaryOpTests, OperatorPrecedenceHandling) {
     // Test operator precedence handling for complex expressions
     // Verify: 2 + 3 * 4 = 14 (multiplication before addition)
@@ -469,7 +469,7 @@ TEST_F(ExtendedBinaryOpTests, OperatorPrecedenceHandling) {
     ASSERT_EQ(ConstDeref<int>(data_->Top()), 20) << "Expected (2+3)*4=20";
 }
 
-// Test 10: Edge Cases and Boundary Values
+// Edge Cases and Boundary Values
 TEST_F(ExtendedBinaryOpTests, EdgeCasesAndBoundaryValues) {
     // Test with edge cases and boundary values
 

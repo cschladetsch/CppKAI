@@ -21,7 +21,7 @@ Object EvaluateOperation(Registry& reg, Object first, Object second,
 
 /* Extended set of tests for Rho binary operations */
 
-// Test 1: Direct integer addition
+// Direct integer addition
 TEST(RhoExtendedOps, IntegerAddition) {
     Console console;
     Registry& reg = console.GetRegistry();
@@ -38,7 +38,7 @@ TEST(RhoExtendedOps, IntegerAddition) {
         << "Expected value 35 for 10+25 but got " << result.ToString();
 }
 
-// Test 2: Direct integer subtraction
+// Direct integer subtraction
 TEST(RhoExtendedOps, IntegerSubtraction) {
     Console console;
     Registry& reg = console.GetRegistry();
@@ -55,7 +55,7 @@ TEST(RhoExtendedOps, IntegerSubtraction) {
         << "Expected value 58 for 100-42 but got " << result.ToString();
 }
 
-// Test 3: Direct integer multiplication
+// Direct integer multiplication
 TEST(RhoExtendedOps, IntegerMultiplication) {
     Console console;
     Registry& reg = console.GetRegistry();
@@ -72,7 +72,7 @@ TEST(RhoExtendedOps, IntegerMultiplication) {
         << "Expected value 60 for 12*5 but got " << result.ToString();
 }
 
-// Test 4: Integer division
+// Integer division
 TEST(RhoExtendedOps, IntegerDivision) {
     Console console;
     Registry& reg = console.GetRegistry();
@@ -89,7 +89,7 @@ TEST(RhoExtendedOps, IntegerDivision) {
         << "Expected value 5 for 100/20 but got " << result.ToString();
 }
 
-// Test 5: Modulo operation
+// Modulo operation
 TEST(RhoExtendedOps, IntegerModulo) {
     Console console;
     Registry& reg = console.GetRegistry();
@@ -106,7 +106,7 @@ TEST(RhoExtendedOps, IntegerModulo) {
         << "Expected value 2 for 17%5 but got " << result.ToString();
 }
 
-// Test 6: Boolean AND operation
+// Boolean AND operation
 TEST(RhoExtendedOps, BooleanAnd) {
     Console console;
     Registry& reg = console.GetRegistry();
@@ -124,7 +124,7 @@ TEST(RhoExtendedOps, BooleanAnd) {
         << "Expected false for true&&false but got " << result.ToString();
 }
 
-// Test 7: Boolean OR operation
+// Boolean OR operation
 TEST(RhoExtendedOps, BooleanOr) {
     Console console;
     Registry& reg = console.GetRegistry();
@@ -142,7 +142,7 @@ TEST(RhoExtendedOps, BooleanOr) {
         << "Expected true for true||false but got " << result.ToString();
 }
 
-// Test 8: Equality comparison
+// Equality comparison
 TEST(RhoExtendedOps, EqualityComparison) {
     Console console;
     Registry& reg = console.GetRegistry();
@@ -170,7 +170,7 @@ TEST(RhoExtendedOps, EqualityComparison) {
         << "Expected false for 42==100 but got " << resultNotEqual.ToString();
 }
 
-// Test 9: Inequality comparison
+// Inequality comparison
 TEST(RhoExtendedOps, InequalityComparison) {
     Console console;
     Registry& reg = console.GetRegistry();
@@ -198,7 +198,7 @@ TEST(RhoExtendedOps, InequalityComparison) {
         << "Expected true for 42!=100 but got " << resultNotEqual.ToString();
 }
 
-// Test 10: String concatenation
+// String concatenation
 TEST(RhoExtendedOps, StringConcatenation) {
     Console console;
     Registry& reg = console.GetRegistry();
@@ -216,7 +216,7 @@ TEST(RhoExtendedOps, StringConcatenation) {
         << "Expected 'Hello, World!' but got " << result.ToString();
 }
 
-// Test 11: Less than comparison
+// Less than comparison
 TEST(RhoExtendedOps, LessThanComparison) {
     Console console;
     Registry& reg = console.GetRegistry();
@@ -245,7 +245,7 @@ TEST(RhoExtendedOps, LessThanComparison) {
         << "Expected false for 20<10 but got " << resultNotLess.ToString();
 }
 
-// Test 12: Greater than comparison
+// Greater than comparison
 TEST(RhoExtendedOps, GreaterThanComparison) {
     Console console;
     Registry& reg = console.GetRegistry();

@@ -57,7 +57,7 @@ struct PiBinaryOpTests : TestLangCommon {
     }
 };
 
-// Test 1: Basic integer addition
+// Basic integer addition
 TEST_F(PiBinaryOpTests, IntegerAddition) {
     // Test our TestCout with colors
     TEST_COUT << "Testing colored INFO output with TestCout";
@@ -71,7 +71,7 @@ TEST_F(PiBinaryOpTests, IntegerAddition) {
     ASSERT_EQ(ConstDeref<int>(data_->Top()), 5) << "2 + 3 should equal 5";
 }
 
-// Test 2: String concatenation
+// String concatenation
 TEST_F(PiBinaryOpTests, StringConcatenation) {
     // Execute Pi code: "Hello, " "World!" +
     console_.Execute("\"Hello, \" \"World!\" +");
@@ -82,7 +82,7 @@ TEST_F(PiBinaryOpTests, StringConcatenation) {
         << "String concatenation should work";
 }
 
-// Test 3: Comparison operations
+// Comparison operations
 TEST_F(PiBinaryOpTests, ComparisonOperations) {
     // Completely clear stacks and registry references at the start
     exec_->ClearStacks();
@@ -142,7 +142,7 @@ TEST_F(PiBinaryOpTests, ComparisonOperations) {
     }
 }
 
-// Test 4: Logical operations
+// Logical operations
 TEST_F(PiBinaryOpTests, LogicalOperations) {
     // Test logical AND
     console_.Execute("true true and");
@@ -175,7 +175,7 @@ TEST_F(PiBinaryOpTests, LogicalOperations) {
         << "true XOR false should be true";
 }
 
-// Test 5: Division and modulo
+// Division and modulo
 TEST_F(PiBinaryOpTests, DivisionAndModulo) {
     // Clear stacks first
     exec_->ClearStacks();
@@ -227,7 +227,7 @@ TEST_F(PiBinaryOpTests, DivisionAndModulo) {
     ASSERT_EQ(ConstDeref<int>(data_->Top()), 1) << "10 mod 3 should equal 1";
 }
 
-// Test 6: Complex expressions with multiple operations
+// Complex expressions with multiple operations
 TEST_F(PiBinaryOpTests, ComplexExpressions) {
     // Test: (2 + 3) * 4
     console_.Execute("2 3 + 4 *");
@@ -245,7 +245,7 @@ TEST_F(PiBinaryOpTests, ComplexExpressions) {
         << "10 / 2 + 3 * 4 should equal 17";
 }
 
-// Test 7: Stack operations preserving types
+// Stack operations preserving types
 TEST_F(PiBinaryOpTests, StackOperationsWithTypes) {
     // Clear stacks completely first
     exec_->ClearStacks();
@@ -323,7 +323,7 @@ TEST_F(PiBinaryOpTests, StackOperationsWithTypes) {
     }
 }
 
-// Test 8: The special "5 dup +" pattern that was causing issues
+// The special "5 dup +" pattern that was causing issues
 TEST_F(PiBinaryOpTests, DupPlusPattern) {
     // Clear stacks first to ensure clean state
     exec_->ClearStacks();

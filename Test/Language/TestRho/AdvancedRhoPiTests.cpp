@@ -22,7 +22,7 @@ using namespace std;
  * and how these continuations are processed.
  */
 
-// Test 1: Division operation
+// Division operation
 TEST(RhoPiAdvanced, Division) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -58,7 +58,7 @@ TEST(RhoPiAdvanced, Division) {
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 5);
 }
 
-// Test 2: Modulo operation
+// Modulo operation
 TEST(RhoPiAdvanced, Modulo) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -94,7 +94,7 @@ TEST(RhoPiAdvanced, Modulo) {
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 2);
 }
 
-// Test 3: Logical operations (AND)
+// Logical operations (AND)
 TEST(RhoPiAdvanced, LogicalAnd) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -145,7 +145,7 @@ TEST(RhoPiAdvanced, LogicalAnd) {
     ASSERT_TRUE(ConstDeref<bool>(stack->Top()));
 }
 
-// Test 4: Logical operations (OR)
+// Logical operations (OR)
 TEST(RhoPiAdvanced, LogicalOr) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -196,7 +196,7 @@ TEST(RhoPiAdvanced, LogicalOr) {
     ASSERT_FALSE(ConstDeref<bool>(stack->Top()));
 }
 
-// Test 5: Equality comparison
+// Equality comparison
 TEST(RhoPiAdvanced, EqualityComparison) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -245,7 +245,7 @@ TEST(RhoPiAdvanced, EqualityComparison) {
     ASSERT_FALSE(ConstDeref<bool>(stack->Top()));
 }
 
-// Test 6: Inequality comparison
+// Inequality comparison
 TEST(RhoPiAdvanced, InequalityComparison) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -294,7 +294,7 @@ TEST(RhoPiAdvanced, InequalityComparison) {
     ASSERT_FALSE(ConstDeref<bool>(stack->Top()));
 }
 
-// Test 7: Less than or equal to comparison
+// Less than or equal to comparison
 TEST(RhoPiAdvanced, LessThanOrEqualComparison) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -361,7 +361,7 @@ TEST(RhoPiAdvanced, LessThanOrEqualComparison) {
     ASSERT_FALSE(ConstDeref<bool>(stack->Top()));
 }
 
-// Test 8: Greater than or equal to comparison
+// Greater than or equal to comparison
 TEST(RhoPiAdvanced, GreaterThanOrEqualComparison) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -431,7 +431,7 @@ TEST(RhoPiAdvanced, GreaterThanOrEqualComparison) {
     ASSERT_FALSE(ConstDeref<bool>(stack->Top()));
 }
 
-// Test 9: Using functions with parameters
+// Using functions with parameters
 TEST(RhoPiAdvanced, FunctionWithParameters) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -453,7 +453,7 @@ TEST(RhoPiAdvanced, FunctionWithParameters) {
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 25);  // 5 squared = 25
 }
 
-// Test 10: Store and retrieve variable
+// Store and retrieve variable
 TEST(RhoPiAdvanced, VariableStorage) {
     Console console;
     console.SetLanguage(Language::Pi);

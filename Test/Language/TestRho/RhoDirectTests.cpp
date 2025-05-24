@@ -20,7 +20,7 @@ using namespace std;
 
 // ===== RhoPiBasic Tests =====
 
-// Test 1: Addition (2 + 3 = 5)
+// Addition (2 + 3 = 5)
 TEST(RhoPiBasic, FixedAddition) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -40,7 +40,7 @@ TEST(RhoPiBasic, FixedAddition) {
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 5);
 }
 
-// Test 2: Subtraction (10 - 4 = 6)
+// Subtraction (10 - 4 = 6)
 TEST(RhoPiBasic, FixedSubtraction) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -60,7 +60,7 @@ TEST(RhoPiBasic, FixedSubtraction) {
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 6);
 }
 
-// Test 3: Multiplication (6 * 7 = 42)
+// Multiplication (6 * 7 = 42)
 TEST(RhoPiBasic, FixedMultiplication) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -80,7 +80,7 @@ TEST(RhoPiBasic, FixedMultiplication) {
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 42);
 }
 
-// Test 4: Another Addition (15 + 5 = 20)
+// Another Addition (15 + 5 = 20)
 TEST(RhoPiBasic, FixedAnotherAddition) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -100,7 +100,7 @@ TEST(RhoPiBasic, FixedAnotherAddition) {
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 20);
 }
 
-// Test 5: Complex Expression ((6 + 4) * 2 = 20)
+// Complex Expression ((6 + 4) * 2 = 20)
 TEST(RhoPiBasic, FixedComplexExpression) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -120,7 +120,7 @@ TEST(RhoPiBasic, FixedComplexExpression) {
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 20);
 }
 
-// Test 6: Stack Operations (5 dup + = 10)
+// Stack Operations (5 dup + = 10)
 TEST(RhoPiBasic, FixedStackOperations) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -140,7 +140,7 @@ TEST(RhoPiBasic, FixedStackOperations) {
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 10);
 }
 
-// Test 7: Stack Manipulation (3 4 swap - = 1)
+// Stack Manipulation (3 4 swap - = 1)
 TEST(RhoPiBasic, FixedStackManipulation) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -160,7 +160,7 @@ TEST(RhoPiBasic, FixedStackManipulation) {
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 1);
 }
 
-// Test 8: Comparison Operations (10 > 5 = true)
+// Comparison Operations (10 > 5 = true)
 TEST(RhoPiBasic, FixedComparisonOperations) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -180,7 +180,7 @@ TEST(RhoPiBasic, FixedComparisonOperations) {
     ASSERT_TRUE(ConstDeref<bool>(stack->Top()));
 }
 
-// Test 9: String Support ("Hello World")
+// String Support ("Hello World")
 TEST(RhoPiBasic, FixedStringSupport) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -202,7 +202,7 @@ TEST(RhoPiBasic, FixedStringSupport) {
 
 // ===== PiMinimal Tests =====
 
-// Test 1: Basic Operations
+// Basic Operations
 TEST(PiMinimal, FixedBasicOperations) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -224,7 +224,7 @@ TEST(PiMinimal, FixedBasicOperations) {
 
 // ===== RhoMinimal Tests =====
 
-// Test 1: Basic Operations
+// Basic Operations
 TEST(RhoMinimal, FixedBasicOperations) {
     Console console;
     console.SetLanguage(Language::Rho);
@@ -244,7 +244,7 @@ TEST(RhoMinimal, FixedBasicOperations) {
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 5);
 }
 
-// Test 2: Hello World
+// Hello World
 TEST(RhoMinimal, FixedHelloWorld) {
     Console console;
     console.SetLanguage(Language::Rho);
@@ -264,7 +264,7 @@ TEST(RhoMinimal, FixedHelloWorld) {
     ASSERT_EQ(ConstDeref<String>(stack->Top()), "Hello World");
 }
 
-// Test 3: Simple Pi Arithmetic
+// Simple Pi Arithmetic
 TEST(RhoMinimal, FixedSimplePiArithmetic) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -286,7 +286,7 @@ TEST(RhoMinimal, FixedSimplePiArithmetic) {
 
 // ===== RhoPiTests Tests =====
 
-// Test 1: ContinuationBeginValueEndPattern
+// ContinuationBeginValueEndPattern
 TEST(RhoPiTests, FixedContinuationBeginValueEndPattern) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -306,7 +306,7 @@ TEST(RhoPiTests, FixedContinuationBeginValueEndPattern) {
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 42);
 }
 
-// Test 2: Pi Text Execution
+// Pi Text Execution
 TEST(RhoPiTests, FixedPiTextExecution) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -328,7 +328,7 @@ TEST(RhoPiTests, FixedPiTextExecution) {
 
 // ===== RhoPiAdvanced Tests =====
 
-// Test 1: Division
+// Division
 TEST(RhoPiAdvanced, FixedDivision) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -348,7 +348,7 @@ TEST(RhoPiAdvanced, FixedDivision) {
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 5);
 }
 
-// Test 2: Modulo
+// Modulo
 TEST(RhoPiAdvanced, FixedModulo) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -368,7 +368,7 @@ TEST(RhoPiAdvanced, FixedModulo) {
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 2);
 }
 
-// Test 3: LogicalAnd
+// LogicalAnd
 TEST(RhoPiAdvanced, FixedLogicalAnd) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -388,7 +388,7 @@ TEST(RhoPiAdvanced, FixedLogicalAnd) {
     ASSERT_FALSE(ConstDeref<bool>(stack->Top()));
 }
 
-// Test 4: LogicalOr
+// LogicalOr
 TEST(RhoPiAdvanced, FixedLogicalOr) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -408,7 +408,7 @@ TEST(RhoPiAdvanced, FixedLogicalOr) {
     ASSERT_TRUE(ConstDeref<bool>(stack->Top()));
 }
 
-// Test 5: EqualityComparison
+// EqualityComparison
 TEST(RhoPiAdvanced, FixedEqualityComparison) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -428,7 +428,7 @@ TEST(RhoPiAdvanced, FixedEqualityComparison) {
     ASSERT_TRUE(ConstDeref<bool>(stack->Top()));
 }
 
-// Test 6: InequalityComparison
+// InequalityComparison
 TEST(RhoPiAdvanced, FixedInequalityComparison) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -448,7 +448,7 @@ TEST(RhoPiAdvanced, FixedInequalityComparison) {
     ASSERT_TRUE(ConstDeref<bool>(stack->Top()));
 }
 
-// Test 7: LessThanOrEqualComparison
+// LessThanOrEqualComparison
 TEST(RhoPiAdvanced, FixedLessThanOrEqualComparison) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -468,7 +468,7 @@ TEST(RhoPiAdvanced, FixedLessThanOrEqualComparison) {
     ASSERT_TRUE(ConstDeref<bool>(stack->Top()));
 }
 
-// Test 8: GreaterThanOrEqualComparison
+// GreaterThanOrEqualComparison
 TEST(RhoPiAdvanced, FixedGreaterThanOrEqualComparison) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -488,7 +488,7 @@ TEST(RhoPiAdvanced, FixedGreaterThanOrEqualComparison) {
     ASSERT_TRUE(ConstDeref<bool>(stack->Top()));
 }
 
-// Test 9: FunctionWithParameters
+// FunctionWithParameters
 TEST(RhoPiAdvanced, FixedFunctionWithParameters) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -508,7 +508,7 @@ TEST(RhoPiAdvanced, FixedFunctionWithParameters) {
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 10);
 }
 
-// Test 10: VariableStorage
+// VariableStorage
 TEST(RhoPiAdvanced, FixedVariableStorage) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -530,7 +530,7 @@ TEST(RhoPiAdvanced, FixedVariableStorage) {
 
 // ===== RhoPiWorkaround Tests =====
 
-// Test 1: BasicMathOperations
+// BasicMathOperations
 TEST(RhoPiWorkaround, FixedBasicMathOperations) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -550,7 +550,7 @@ TEST(RhoPiWorkaround, FixedBasicMathOperations) {
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 10);
 }
 
-// Test 2: VariableOperations
+// VariableOperations
 TEST(RhoPiWorkaround, FixedVariableOperations) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -570,7 +570,7 @@ TEST(RhoPiWorkaround, FixedVariableOperations) {
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 50);
 }
 
-// Test 3: StringOperations
+// StringOperations
 TEST(RhoPiWorkaround, FixedStringOperations) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -590,7 +590,7 @@ TEST(RhoPiWorkaround, FixedStringOperations) {
     ASSERT_EQ(ConstDeref<String>(stack->Top()), "Hello World");
 }
 
-// Test 4: BooleanOperations
+// BooleanOperations
 TEST(RhoPiWorkaround, FixedBooleanOperations) {
     Console console;
     console.SetLanguage(Language::Pi);

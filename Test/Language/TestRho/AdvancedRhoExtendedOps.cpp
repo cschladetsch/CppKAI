@@ -71,7 +71,7 @@ class AdvancedRhoExtendedOps : public TestLangCommon {
     }
 };
 
-// Test 1: Complex Arithmetic Expressions
+// Complex Arithmetic Expressions
 TEST_F(AdvancedRhoExtendedOps, ComplexArithmeticExpressions) {
     // Test complex arithmetic with multiple operations and precedence
     ExecuteAndVerify<int>("2 + 3 * 4", 14);    // Multiplication before addition
@@ -85,7 +85,7 @@ TEST_F(AdvancedRhoExtendedOps, ComplexArithmeticExpressions) {
     std::cout << "Complex arithmetic expressions test passed" << std::endl;
 }
 
-// Test 2: Mixed Type Arithmetic
+// Mixed Type Arithmetic
 TEST_F(AdvancedRhoExtendedOps, MixedTypeArithmetic) {
     // Test operations with mixed numeric types (int and float)
     try {
@@ -102,7 +102,7 @@ TEST_F(AdvancedRhoExtendedOps, MixedTypeArithmetic) {
     std::cout << "Mixed type arithmetic test completed" << std::endl;
 }
 
-// Test 3: Compound Assignment Operators
+// Compound Assignment Operators
 TEST_F(AdvancedRhoExtendedOps, CompoundAssignmentOperators) {
     // Test compound assignment operators like +=, -=, etc.
     try {
@@ -131,7 +131,7 @@ TEST_F(AdvancedRhoExtendedOps, CompoundAssignmentOperators) {
     std::cout << "Compound assignment operators test completed" << std::endl;
 }
 
-// Test 4: Complex Boolean Logic
+// Complex Boolean Logic
 TEST_F(AdvancedRhoExtendedOps, ComplexBooleanLogic) {
     // Test complex boolean expressions with multiple operations
     ExecuteAndVerify<bool>("true && true", true);
@@ -146,7 +146,7 @@ TEST_F(AdvancedRhoExtendedOps, ComplexBooleanLogic) {
     std::cout << "Complex boolean logic test passed" << std::endl;
 }
 
-// Test 5: String Operations and Manipulation
+// String Operations and Manipulation
 TEST_F(AdvancedRhoExtendedOps, StringOperations) {
     // Test string operations and manipulations
     ExecuteAndVerify<String>("\"Hello\" + \" \" + \"World\"", "Hello World");
@@ -163,7 +163,7 @@ TEST_F(AdvancedRhoExtendedOps, StringOperations) {
     std::cout << "String operations test completed" << std::endl;
 }
 
-// Test 6: Variable Scoping
+// Variable Scoping
 TEST_F(AdvancedRhoExtendedOps, VariableScoping) {
     // Test variable scoping rules
     console_.Execute("outerVar = 10");
@@ -199,7 +199,7 @@ TEST_F(AdvancedRhoExtendedOps, VariableScoping) {
     std::cout << "Variable scoping test completed" << std::endl;
 }
 
-// Test 7: Function Definition and Calling
+// Function Definition and Calling
 TEST_F(AdvancedRhoExtendedOps, FunctionDefinitionAndCalling) {
     // Test function definition and calling
     try {
@@ -222,7 +222,7 @@ TEST_F(AdvancedRhoExtendedOps, FunctionDefinitionAndCalling) {
     std::cout << "Function definition and calling test completed" << std::endl;
 }
 
-// Test 8: Conditional Expressions
+// Conditional Expressions
 TEST_F(AdvancedRhoExtendedOps, ConditionalExpressions) {
     // Test conditional expressions (if-else)
     try {
@@ -247,7 +247,7 @@ TEST_F(AdvancedRhoExtendedOps, ConditionalExpressions) {
     std::cout << "Conditional expressions test completed" << std::endl;
 }
 
-// Test 9: Unary Operations
+// Unary Operations
 TEST_F(AdvancedRhoExtendedOps, UnaryOperations) {
     // Test unary operations like negation, not, etc.
     ExecuteAndVerify<int>("-5", -5);         // Negative
@@ -261,7 +261,7 @@ TEST_F(AdvancedRhoExtendedOps, UnaryOperations) {
     std::cout << "Unary operations test passed" << std::endl;
 }
 
-// Test 10: Error Handling and Recovery
+// Error Handling and Recovery
 TEST_F(AdvancedRhoExtendedOps, ErrorHandlingAndRecovery) {
     // Test error handling and recovery
 

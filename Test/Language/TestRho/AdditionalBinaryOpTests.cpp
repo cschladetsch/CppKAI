@@ -16,7 +16,7 @@ using namespace std;
  * they return the correct primitive types after our fixes.
  */
 
-// Test 1: Test string concatenation with binary plus
+// Test string concatenation with binary plus
 TEST(RhoBinaryOps, StringConcatenation) {
     Console console;
     Registry& reg = console.GetRegistry();
@@ -38,7 +38,7 @@ TEST(RhoBinaryOps, StringConcatenation) {
     ASSERT_EQ(hello + world, "Hello, World!");
 }
 
-// Test 2: Test boolean logical operations (AND)
+// Test boolean logical operations (AND)
 TEST(RhoBinaryOps, LogicalAND) {
     Console console;
     Registry& reg = console.GetRegistry();
@@ -67,7 +67,7 @@ TEST(RhoBinaryOps, LogicalAND) {
     ASSERT_FALSE(resultFalseFalse);
 }
 
-// Test 3: Test boolean logical operations (OR)
+// Test boolean logical operations (OR)
 TEST(RhoBinaryOps, LogicalOR) {
     Console console;
     Registry& reg = console.GetRegistry();
@@ -93,7 +93,7 @@ TEST(RhoBinaryOps, LogicalOR) {
     ASSERT_FALSE(resultFalseFalse);
 }
 
-// Test 4: Test integer division with exact result
+// Test integer division with exact result
 TEST(RhoBinaryOps, IntegerDivision) {
     Console console;
     Registry& reg = console.GetRegistry();
@@ -114,7 +114,7 @@ TEST(RhoBinaryOps, IntegerDivision) {
     ASSERT_EQ(result, 5);
 }
 
-// Test 5: Test integer modulo operation
+// Test integer modulo operation
 TEST(RhoBinaryOps, ModuloOperation) {
     Console console;
     Registry& reg = console.GetRegistry();
@@ -135,7 +135,7 @@ TEST(RhoBinaryOps, ModuloOperation) {
     ASSERT_EQ(result, 1);
 }
 
-// Test 6: Test comparison operations
+// Test comparison operations
 TEST(RhoBinaryOps, ComparisonOperations) {
     Console console;
     Registry& reg = console.GetRegistry();
@@ -167,7 +167,7 @@ TEST(RhoBinaryOps, ComparisonOperations) {
     ASSERT_TRUE(resultLte);
 }
 
-// Test 7: Test for the "5 dup +" pattern
+// Test for the "5 dup +" pattern
 TEST(RhoBinaryOps, DupPlusPattern) {
     Console console;
     Registry& reg = console.GetRegistry();

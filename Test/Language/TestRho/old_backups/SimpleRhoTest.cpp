@@ -43,7 +43,7 @@ TEST(RhoMinimal, BasicOperations) {
         // Set executor trace level to see what's happening
         exec->SetTraceLevel(3);
 
-        // Test 1: Basic arithmetic - try with Pi first
+        // Basic arithmetic - try with Pi first
         cout << "Test 1: Basic arithmetic in Pi (for reference)..." << endl;
         console.SetLanguage(Language::Pi);
         console.Execute("2 3 +");
@@ -73,7 +73,7 @@ TEST(RhoMinimal, BasicOperations) {
             ASSERT_TRUE(result.IsType<int>());
             ASSERT_EQ(ConstDeref<int>(result), 5);
 
-            // Test 2: Another binary operation (subtraction)
+            // Another binary operation (subtraction)
             cout << "Test 2: Subtraction in Rho..." << endl;
             stack->Clear();
             console.Execute("10 - 4");
@@ -121,7 +121,7 @@ TEST(PiMinimal, BasicOperations) {
     auto exec = console.GetExecutor();
 
     try {
-        // Test 1: Basic arithmetic
+        // Basic arithmetic
         cout << "Test 1: Basic arithmetic in Pi..." << endl;
         console.Execute("2 3 +");
 
@@ -132,7 +132,7 @@ TEST(PiMinimal, BasicOperations) {
         ASSERT_TRUE(result.IsType<int>());
         ASSERT_EQ(ConstDeref<int>(result), 5);
 
-        // Test 2: Variable assignment
+        // Variable assignment
         cout << "Test 2: Variable assignment in Pi..." << endl;
         stack->Clear();
         console.Execute("10 'x' !");
@@ -143,7 +143,7 @@ TEST(PiMinimal, BasicOperations) {
         ASSERT_TRUE(result.IsType<int>());
         ASSERT_EQ(ConstDeref<int>(result), 10);
 
-        // Test 3: String operations
+        // String operations
         cout << "Test 3: String operations in Pi..." << endl;
         stack->Clear();
         console.Execute("\"Hello, Pi!\" 'greeting' !");
@@ -154,7 +154,7 @@ TEST(PiMinimal, BasicOperations) {
         ASSERT_TRUE(result.IsType<String>());
         ASSERT_EQ(ConstDeref<String>(result), "Hello, Pi!");
 
-        // Test 4: Boolean operations
+        // Boolean operations
         cout << "Test 4: Boolean operations in Pi..." << endl;
         stack->Clear();
         console.Execute("5 3 >");

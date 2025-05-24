@@ -21,7 +21,7 @@ using namespace std;
  * being addressed.
  */
 
-// Test 1: Basic arithmetic - Addition
+// Basic arithmetic - Addition
 TEST(SimpleRho, Addition) {
     // Create a console and set up basics
     Console console;
@@ -47,7 +47,7 @@ TEST(SimpleRho, Addition) {
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 5);
 }
 
-// Test 2: Basic arithmetic - Subtraction
+// Basic arithmetic - Subtraction
 TEST(SimpleRho, Subtraction) {
     Console console;
 
@@ -72,7 +72,7 @@ TEST(SimpleRho, Subtraction) {
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 6);
 }
 
-// Test 3: Basic arithmetic - Multiplication
+// Basic arithmetic - Multiplication
 TEST(SimpleRho, Multiplication) {
     Console console;
 
@@ -97,7 +97,7 @@ TEST(SimpleRho, Multiplication) {
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 42);
 }
 
-// Test 4: Basic arithmetic - Division
+// Basic arithmetic - Division
 TEST(SimpleRho, Division) {
     Console console;
 
@@ -122,7 +122,7 @@ TEST(SimpleRho, Division) {
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 5);
 }
 
-// Test 5: Boolean operations
+// Boolean operations
 TEST(SimpleRho, BooleanOperations) {
     Console console;
 
@@ -147,7 +147,7 @@ TEST(SimpleRho, BooleanOperations) {
     ASSERT_TRUE(ConstDeref<bool>(stack->Top()));
 }
 
-// Test 6: String operations
+// String operations
 TEST(SimpleRho, StringOperations) {
     Console console;
 
@@ -172,7 +172,7 @@ TEST(SimpleRho, StringOperations) {
     ASSERT_EQ(ConstDeref<String>(stack->Top()), "Hello, Rho!");
 }
 
-// Test 7: Variable assignment simulation
+// Variable assignment simulation
 TEST(SimpleRho, VariableAssignment) {
     Console console;
 
@@ -197,7 +197,7 @@ TEST(SimpleRho, VariableAssignment) {
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 100);
 }
 
-// Test 8: Complex expression result
+// Complex expression result
 TEST(SimpleRho, ComplexExpression) {
     Console console;
 

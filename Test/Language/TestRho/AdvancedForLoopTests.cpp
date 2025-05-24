@@ -96,7 +96,7 @@ class AdvancedForLoopTests : public TestLangCommon {
     }
 };
 
-// Test 1: Nested For Loops with Complex Conditions
+// Nested For Loops with Complex Conditions
 TEST_F(AdvancedForLoopTests, NestedForLoopsWithComplexConditions) {
     const std::string script = R"(
         // Calculate the sum of products where both indices are even
@@ -129,7 +129,7 @@ TEST_F(AdvancedForLoopTests, NestedForLoopsWithComplexConditions) {
               << std::endl;
 }
 
-// Test 2: For Loop with Early Termination (break)
+// For Loop with Early Termination (break)
 TEST_F(AdvancedForLoopTests, ForLoopWithBreak) {
     const std::string script = R"(
         // Find the first number whose square is greater than 100
@@ -151,7 +151,7 @@ TEST_F(AdvancedForLoopTests, ForLoopWithBreak) {
     std::cout << "For loop with break test passed" << std::endl;
 }
 
-// Test 3: For Loop with Continue Statement
+// For Loop with Continue Statement
 TEST_F(AdvancedForLoopTests, ForLoopWithContinue) {
     const std::string script = R"(
         // Sum all numbers from 1 to 10 except multiples of 3
@@ -172,7 +172,7 @@ TEST_F(AdvancedForLoopTests, ForLoopWithContinue) {
     std::cout << "For loop with continue test passed" << std::endl;
 }
 
-// Test 4: For Loop Building a String
+// For Loop Building a String
 TEST_F(AdvancedForLoopTests, ForLoopBuildingString) {
     const std::string script = R"(
         // Build a string with alternating characters
@@ -194,7 +194,7 @@ TEST_F(AdvancedForLoopTests, ForLoopBuildingString) {
     std::cout << "For loop building string test passed" << std::endl;
 }
 
-// Test 5: Loop Variable Reuse After Loop
+// Loop Variable Reuse After Loop
 TEST_F(AdvancedForLoopTests, LoopVariableReuseAfterLoop) {
     const std::string script = R"(
         // Verify the loop variable has the final value after loop completion
@@ -212,7 +212,7 @@ TEST_F(AdvancedForLoopTests, LoopVariableReuseAfterLoop) {
     std::cout << "Loop variable reuse after loop test passed" << std::endl;
 }
 
-// Test 6: Infinite Loop Detection with Condition Always True
+// Infinite Loop Detection with Condition Always True
 TEST_F(AdvancedForLoopTests, InfiniteLoopDetection) {
     const std::string script = R"(
         // Potentially infinite loop, but we use a safety counter
@@ -235,7 +235,7 @@ TEST_F(AdvancedForLoopTests, InfiniteLoopDetection) {
     std::cout << "Infinite loop detection test passed" << std::endl;
 }
 
-// Test 7: Empty For Loop (No Body)
+// Empty For Loop (No Body)
 TEST_F(AdvancedForLoopTests, EmptyForLoop) {
     const std::string script = R"(
         // For loop with empty body
@@ -254,7 +254,7 @@ TEST_F(AdvancedForLoopTests, EmptyForLoop) {
     std::cout << "Empty for loop test passed" << std::endl;
 }
 
-// Test 8: For Loop to Generate Prime Numbers
+// For Loop to Generate Prime Numbers
 TEST_F(AdvancedForLoopTests, GeneratePrimeNumbers) {
     const std::string script = R"(
         // Find prime numbers up to 20
@@ -294,7 +294,7 @@ TEST_F(AdvancedForLoopTests, GeneratePrimeNumbers) {
     }
 }
 
-// Test 9: For Loop with Complex Initialization and Update
+// For Loop with Complex Initialization and Update
 TEST_F(AdvancedForLoopTests, ComplexInitializationAndUpdate) {
     const std::string script = R"(
         // Complex initialization and update expressions
@@ -328,7 +328,7 @@ TEST_F(AdvancedForLoopTests, ComplexInitializationAndUpdate) {
     }
 }
 
-// Test 10: For Loop to Compute a Mathematical Series
+// For Loop to Compute a Mathematical Series
 TEST_F(AdvancedForLoopTests, ComputeMathematicalSeries) {
     const std::string script = R"(
         // Compute the sum of the first 10 terms of the series: 1/2^n

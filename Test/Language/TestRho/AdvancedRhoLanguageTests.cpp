@@ -121,7 +121,7 @@ class AdvancedRhoLanguage : public TestLangCommon {
     }
 };
 
-// Test 1: Function Definition with Arguments and Return Value
+// Function Definition with Arguments and Return Value
 TEST_F(AdvancedRhoLanguage, FunctionWithArgumentsAndReturn) {
     // Define a function with arguments and return value
     const std::string script = R"(
@@ -140,7 +140,7 @@ TEST_F(AdvancedRhoLanguage, FunctionWithArgumentsAndReturn) {
     std::cout << "Function with arguments and return test passed" << std::endl;
 }
 
-// Test 2: Nested Functions and Closures
+// Nested Functions and Closures
 TEST_F(AdvancedRhoLanguage, NestedFunctionsAndClosures) {
     // Test nested functions and closures
     try {
@@ -172,7 +172,7 @@ TEST_F(AdvancedRhoLanguage, NestedFunctionsAndClosures) {
     std::cout << "Nested functions and closures test completed" << std::endl;
 }
 
-// Test 3: Array Creation and Manipulation
+// Array Creation and Manipulation
 TEST_F(AdvancedRhoLanguage, ArrayCreationAndManipulation) {
     // Test array creation and manipulation
     try {
@@ -217,7 +217,7 @@ TEST_F(AdvancedRhoLanguage, ArrayCreationAndManipulation) {
     std::cout << "Array creation and manipulation test completed" << std::endl;
 }
 
-// Test 4: Object Creation and Property Access
+// Object Creation and Property Access
 TEST_F(AdvancedRhoLanguage, ObjectCreationAndPropertyAccess) {
     // Test object creation and property access
     try {
@@ -261,7 +261,7 @@ TEST_F(AdvancedRhoLanguage, ObjectCreationAndPropertyAccess) {
               << std::endl;
 }
 
-// Test 5: Recursion
+// Recursion
 TEST_F(AdvancedRhoLanguage, Recursion) {
     // Test recursive function calls
     try {
@@ -289,7 +289,7 @@ TEST_F(AdvancedRhoLanguage, Recursion) {
     std::cout << "Recursion test completed" << std::endl;
 }
 
-// Test 6: Pi Integration - Calling Pi Code from Rho
+// Pi Integration - Calling Pi Code from Rho
 TEST_F(AdvancedRhoLanguage, PiIntegration) {
     // Test integrating Pi code within Rho
     try {
@@ -318,7 +318,7 @@ TEST_F(AdvancedRhoLanguage, PiIntegration) {
     std::cout << "Pi integration test completed" << std::endl;
 }
 
-// Test 7: Error Handling with try/catch
+// Error Handling with try/catch
 TEST_F(AdvancedRhoLanguage, ErrorHandlingWithTryCatch) {
     // Test error handling with try/catch if supported
     try {
@@ -343,7 +343,7 @@ TEST_F(AdvancedRhoLanguage, ErrorHandlingWithTryCatch) {
     std::cout << "Error handling with try/catch test completed" << std::endl;
 }
 
-// Test 8: Higher-Order Functions
+// Higher-Order Functions
 TEST_F(AdvancedRhoLanguage, HigherOrderFunctions) {
     // Test higher-order functions (functions that take or return functions)
     try {
@@ -381,7 +381,7 @@ TEST_F(AdvancedRhoLanguage, HigherOrderFunctions) {
     std::cout << "Higher-order functions test completed" << std::endl;
 }
 
-// Test 9: String Manipulation
+// String Manipulation
 TEST_F(AdvancedRhoLanguage, StringManipulation) {
     // Test string manipulation operations
     try {
@@ -437,7 +437,7 @@ TEST_F(AdvancedRhoLanguage, StringManipulation) {
     std::cout << "String manipulation test completed" << std::endl;
 }
 
-// Test 10: Lexical Scoping and Variable Shadowing
+// Lexical Scoping and Variable Shadowing
 TEST_F(AdvancedRhoLanguage, LexicalScopingAndVariableShadowing) {
     // Test lexical scoping and variable shadowing
     try {

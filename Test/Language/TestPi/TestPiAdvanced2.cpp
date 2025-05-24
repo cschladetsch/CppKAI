@@ -11,7 +11,7 @@ using namespace std;
 // to create 12 new advanced tests for the Pi language
 struct TestPiAdvanced2 : TestLangCommon {};
 
-// Test 1: Variable Assignment and Retrieval
+// Variable Assignment and Retrieval
 TEST_F(TestPiAdvanced2, TestVariableOperations) {
     console_.SetLanguage(Language::Pi);
 
@@ -42,7 +42,7 @@ TEST_F(TestPiAdvanced2, TestVariableOperations) {
     ASSERT_EQ(AtData<int>(0), 1);  // Third pushed (top of stack) is x (index 0)
 }
 
-// Test 2: Advanced String Manipulation
+// Advanced String Manipulation
 TEST_F(TestPiAdvanced2, TestAdvancedStringManipulation) {
     console_.SetLanguage(Language::Pi);
 
@@ -74,7 +74,7 @@ TEST_F(TestPiAdvanced2, TestAdvancedStringManipulation) {
     ASSERT_FALSE(AtData<bool>(0));
 }
 
-// Test 3: Advanced Array Manipulation
+// Advanced Array Manipulation
 TEST_F(TestPiAdvanced2, TestAdvancedArrayManipulation) {
     console_.SetLanguage(Language::Pi);
 
@@ -127,7 +127,7 @@ TEST_F(TestPiAdvanced2, TestAdvancedArrayManipulation) {
     ASSERT_EQ(ConstDeref<int>(firstNested.At(1)), 2);
 }
 
-// Test 4: Advanced Continuations
+// Advanced Continuations
 TEST_F(TestPiAdvanced2, TestAdvancedContinuations) {
     console_.SetLanguage(Language::Pi);
 
@@ -169,7 +169,7 @@ TEST_F(TestPiAdvanced2, TestAdvancedContinuations) {
     ASSERT_EQ(AtData<int>(0), 42);
 }
 
-// Test 5: Conditional Logic
+// Conditional Logic
 TEST_F(TestPiAdvanced2, TestConditionalLogic) {
     console_.SetLanguage(Language::Pi);
 
@@ -212,7 +212,7 @@ TEST_F(TestPiAdvanced2, TestConditionalLogic) {
     ASSERT_EQ(AtData<int>(0), 1);
 }
 
-// Test 6: Stack Manipulation
+// Stack Manipulation
 TEST_F(TestPiAdvanced2, TestStackManipulation) {
     console_.SetLanguage(Language::Pi);
 
@@ -273,7 +273,7 @@ TEST_F(TestPiAdvanced2, TestStackManipulation) {
     ASSERT_EQ(AtData<int>(2), 42);
 }
 
-// Test 7: Mathematical Functions
+// Mathematical Functions
 TEST_F(TestPiAdvanced2, TestMathFunctions) {
     console_.SetLanguage(Language::Pi);
 
@@ -310,7 +310,7 @@ TEST_F(TestPiAdvanced2, TestMathFunctions) {
     ASSERT_EQ(AtData<int>(0), 20);
 }
 
-// Test 8: Type Operations
+// Type Operations
 TEST_F(TestPiAdvanced2, TestTypeOperations) {
     console_.SetLanguage(Language::Pi);
 
@@ -357,7 +357,7 @@ TEST_F(TestPiAdvanced2, TestTypeOperations) {
     ASSERT_TRUE(data_->At(0).IsType<bool>());
 }
 
-// Test 9: Logical Operators
+// Logical Operators
 TEST_F(TestPiAdvanced2, TestLogicalOperators) {
     console_.SetLanguage(Language::Pi);
 
@@ -399,7 +399,7 @@ TEST_F(TestPiAdvanced2, TestLogicalOperators) {
     ASSERT_TRUE(AtData<bool>(0));
 }
 
-// Test 10: Comparison Operators
+// Comparison Operators
 TEST_F(TestPiAdvanced2, TestComparisonOperators) {
     console_.SetLanguage(Language::Pi);
 
@@ -468,7 +468,7 @@ TEST_F(TestPiAdvanced2, TestComparisonOperators) {
         << "\"abc\" == \"def\" should be false";
 }
 
-// Test 11: Script Execution Context
+// Script Execution Context
 TEST_F(TestPiAdvanced2, TestScriptExecutionContext) {
     console_.SetLanguage(Language::Pi);
 
@@ -480,7 +480,7 @@ TEST_F(TestPiAdvanced2, TestScriptExecutionContext) {
     ASSERT_EQ(AtData<int>(0), 10);
 }
 
-// Test 12: Error Handling
+// Error Handling
 TEST_F(TestPiAdvanced2, TestErrorHandling) {
     console_.SetLanguage(Language::Pi);
 

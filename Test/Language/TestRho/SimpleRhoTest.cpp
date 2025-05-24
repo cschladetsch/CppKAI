@@ -73,7 +73,7 @@ TEST(RhoMinimal, BasicOperations) {
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
 
-    // Test 1: Basic arithmetic (2 + 3 = 5)
+    // Basic arithmetic (2 + 3 = 5)
     stack->Clear();
 
     // Direct binary operation
@@ -126,7 +126,7 @@ TEST(RhoMinimal, BasicOperations) {
     // Save a copy of the stack contents
     Object stackValue = stack->Top();
 
-    // Test 2: Subtraction (10 - 4 = 6)
+    // Subtraction (10 - 4 = 6)
     stack->Clear();
 
     // Direct binary subtraction
@@ -141,7 +141,7 @@ TEST(RhoMinimal, BasicOperations) {
     ASSERT_TRUE(stack->Top().IsType<int>());
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 6);
 
-    // Test 3: Variable assignment and retrieval (x = 42)
+    // Variable assignment and retrieval (x = 42)
     stack->Clear();
     // First, create a value and store it in a variable
     Object varValue = reg.New<int>(42);
@@ -233,7 +233,7 @@ TEST(PiMinimal, BasicOperations) {
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 5)
         << "Result is not 5, but: " << stack->Top().ToString();
 
-    // Test 2: Variable assignment and access
+    // Variable assignment and access
     stack->Clear();
     // Create a value and store it in the variable
     Object varValue = reg.New<int>(10);
@@ -246,14 +246,14 @@ TEST(PiMinimal, BasicOperations) {
     ASSERT_TRUE(stack->Top().IsType<int>());
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 10);
 
-    // Test 3: String operations
+    // String operations
     stack->Clear();
     Object stringValue = reg.New<String>("Hello, Pi!");
     stack->Push(stringValue);
     ASSERT_TRUE(stack->Top().IsType<String>());
     ASSERT_EQ(ConstDeref<String>(stack->Top()), "Hello, Pi!");
 
-    // Test 4: Boolean operations
+    // Boolean operations
     stack->Clear();
     Object boolValue = reg.New<bool>(true);
     stack->Push(boolValue);

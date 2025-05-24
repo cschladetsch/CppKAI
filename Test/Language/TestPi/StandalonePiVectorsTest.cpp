@@ -21,7 +21,7 @@ TEST(StandalonePiTest, VectorOperations) {
     exec->ClearStacks();
     exec->ClearContext();
 
-    // Test 1: Creating an array with a single element
+    // Creating an array with a single element
     stack->Clear();
     Pointer<Array> singleElementArray = reg.New<Array>();
     singleElementArray->Append(reg.New<int>(1));
@@ -31,7 +31,7 @@ TEST(StandalonePiTest, VectorOperations) {
     ASSERT_EQ(resultArray->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(resultArray->At(0)), 1);
 
-    // Test 2: Creating an empty array
+    // Creating an empty array
     stack->Clear();
     Pointer<Array> emptyArray = reg.New<Array>();
     stack->Push(emptyArray);
@@ -41,7 +41,7 @@ TEST(StandalonePiTest, VectorOperations) {
     ASSERT_TRUE(resultArray->Empty());
     ASSERT_EQ(resultArray->Size(), 0);
 
-    // Test 3: Creating an array with multiple elements
+    // Creating an array with multiple elements
     stack->Clear();
     Pointer<Array> multiArray = reg.New<Array>();
     multiArray->Append(reg.New<int>(1));
@@ -57,7 +57,7 @@ TEST(StandalonePiTest, VectorOperations) {
     ASSERT_EQ(ConstDeref<int>(resultArray->At(1)), 2);
     ASSERT_EQ(ConstDeref<int>(resultArray->At(2)), 3);
 
-    // Test 4: Array size (manual verification)
+    // Array size (manual verification)
     ASSERT_EQ(resultArray->Size(), 3);
 
     std::cout << "Standalone Pi Vectors test complete - manually verified "

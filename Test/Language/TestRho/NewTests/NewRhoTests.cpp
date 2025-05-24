@@ -19,7 +19,7 @@ class NewRhoTests : public TestLangCommon {
     }
 };
 
-// Test 1: Simple recursive factorial function
+// Simple recursive factorial function
 TEST_F(NewRhoTests, FactorialRecursive) {
     // Expected factorial of 5 is 120
     const int expected = 120;
@@ -39,7 +39,7 @@ TEST_F(NewRhoTests, FactorialRecursive) {
     ASSERT_EQ(ConstDeref<int>(data_->Top()), expected);
 }
 
-// Test 2: Fibonacci with loop
+// Fibonacci with loop
 TEST_F(NewRhoTests, FibonacciLoop) {
     // Expected Fibonacci number at position 10 is 55
     const int expected = 55;
@@ -70,7 +70,7 @@ TEST_F(NewRhoTests, FibonacciLoop) {
     ASSERT_EQ(ConstDeref<int>(data_->Top()), expected);
 }
 
-// Test 3: GCD implementation
+// GCD implementation
 TEST_F(NewRhoTests, GCD) {
     // Expected GCD of 48 and 18 is 6
     const int expected = 6;
@@ -94,7 +94,7 @@ TEST_F(NewRhoTests, GCD) {
     ASSERT_EQ(ConstDeref<int>(data_->Top()), expected);
 }
 
-// Test 4: String concatenation
+// String concatenation
 TEST_F(NewRhoTests, StringConcatenation) {
     // Execute string manipulation function
     console_.Execute(R"(
@@ -114,7 +114,7 @@ TEST_F(NewRhoTests, StringConcatenation) {
     ASSERT_EQ(ConstDeref<int>(data_->Top()), 1);
 }
 
-// Test 5: Array operations
+// Array operations
 TEST_F(NewRhoTests, ArrayOperations) {
     // Expected sum is 15 (1+2+3+4+5)
     const int expected = 15;
@@ -137,7 +137,7 @@ TEST_F(NewRhoTests, ArrayOperations) {
     ASSERT_EQ(ConstDeref<int>(data_->Top()), expected);
 }
 
-// Test 6: Function with default parameters
+// Function with default parameters
 TEST_F(NewRhoTests, DefaultParameters) {
     // Expected sum is 22 (7+5+10)
     const int expected = 22;
@@ -159,7 +159,7 @@ TEST_F(NewRhoTests, DefaultParameters) {
     ASSERT_EQ(ConstDeref<int>(data_->Top()), expected);
 }
 
-// Test 7: Function composition
+// Function composition
 TEST_F(NewRhoTests, FunctionComposition) {
     // Expected result is 12 (2*(5+1))
     const int expected = 12;
@@ -185,7 +185,7 @@ TEST_F(NewRhoTests, FunctionComposition) {
     ASSERT_EQ(ConstDeref<int>(data_->Top()), expected);
 }
 
-// Test 8: Nested loops
+// Nested loops
 TEST_F(NewRhoTests, NestedLoops) {
     // Execute nested loops
     console_.Execute(R"(
@@ -206,7 +206,7 @@ TEST_F(NewRhoTests, NestedLoops) {
     ASSERT_EQ(ConstDeref<int>(data_->Top()), 5);
 }
 
-// Test 9: Object properties
+// Object properties
 TEST_F(NewRhoTests, ObjectProperties) {
     // Execute object property access
     console_.Execute(R"(
@@ -228,7 +228,7 @@ TEST_F(NewRhoTests, ObjectProperties) {
     ASSERT_EQ(ConstDeref<int>(data_->Top()), 10001);
 }
 
-// Test 10: Conditional logic
+// Conditional logic
 TEST_F(NewRhoTests, ConditionalLogic) {
     // Execute conditional logic
     console_.Execute(R"(
@@ -252,7 +252,7 @@ TEST_F(NewRhoTests, ConditionalLogic) {
     ASSERT_EQ(ConstDeref<int>(data_->Top()), 1);
 }
 
-// Test 11: Array filtering functionality
+// Array filtering functionality
 TEST_F(NewRhoTests, ArrayFiltering) {
     // Execute array filtering
     console_.Execute(R"(
@@ -274,7 +274,7 @@ TEST_F(NewRhoTests, ArrayFiltering) {
     ASSERT_EQ(ConstDeref<int>(data_->Top()), 5);
 }
 
-// Test 12: Recursive power function
+// Recursive power function
 TEST_F(NewRhoTests, PowerFunction) {
     // Execute power function
     console_.Execute(R"(
@@ -292,7 +292,7 @@ TEST_F(NewRhoTests, PowerFunction) {
     ASSERT_EQ(ConstDeref<int>(data_->Top()), 256);
 }
 
-// Test 13: While loop with break
+// While loop with break
 TEST_F(NewRhoTests, WhileLoopWithBreak) {
     // Execute while loop with break
     console_.Execute(R"(
@@ -315,7 +315,7 @@ TEST_F(NewRhoTests, WhileLoopWithBreak) {
     ASSERT_EQ(ConstDeref<int>(data_->Top()), 55);
 }
 
-// Test 14: For loop with continue
+// For loop with continue
 TEST_F(NewRhoTests, ForLoopWithContinue) {
     // Execute for loop with continue
     console_.Execute(R"(
@@ -337,7 +337,7 @@ TEST_F(NewRhoTests, ForLoopWithContinue) {
     ASSERT_EQ(ConstDeref<int>(data_->Top()), 30);
 }
 
-// Test 15: Bubble sort implementation
+// Bubble sort implementation
 TEST_F(NewRhoTests, BubbleSort) {
     // Execute bubble sort
     console_.Execute(R"(
@@ -368,7 +368,7 @@ TEST_F(NewRhoTests, BubbleSort) {
     ASSERT_EQ(ConstDeref<int>(data_->Top()), 4);
 }
 
-// Test 16: Callback pattern
+// Callback pattern
 TEST_F(NewRhoTests, CallbackPattern) {
     // Execute callback pattern
     console_.Execute(R"(
@@ -390,7 +390,7 @@ TEST_F(NewRhoTests, CallbackPattern) {
     ASSERT_EQ(ConstDeref<int>(data_->Top()), 25);
 }
 
-// Test 17: Recursive calculation
+// Recursive calculation
 TEST_F(NewRhoTests, RecursiveCalculation) {
     // Execute recursive sum calculation
     console_.Execute(R"(
@@ -408,7 +408,7 @@ TEST_F(NewRhoTests, RecursiveCalculation) {
     ASSERT_EQ(ConstDeref<int>(data_->Top()), 55);
 }
 
-// Test 18: Ternary-like operation
+// Ternary-like operation
 TEST_F(NewRhoTests, TernaryOperation) {
     // Execute ternary-like operation using if/else
     console_.Execute(R"(
@@ -426,7 +426,7 @@ TEST_F(NewRhoTests, TernaryOperation) {
     ASSERT_EQ(ConstDeref<int>(data_->Top()), 10);
 }
 
-// Test 19: Array transformation
+// Array transformation
 TEST_F(NewRhoTests, ArrayTransformation) {
     // Execute array transformation (square each element)
     console_.Execute(R"(
@@ -452,7 +452,7 @@ TEST_F(NewRhoTests, ArrayTransformation) {
     ASSERT_EQ(ConstDeref<int>(data_->Top()), 55);
 }
 
-// Test 20: Prime number checker
+// Prime number checker
 TEST_F(NewRhoTests, PrimeNumberChecker) {
     // Execute prime number counter
     console_.Execute(R"(

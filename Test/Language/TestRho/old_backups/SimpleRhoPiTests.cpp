@@ -16,7 +16,7 @@ using namespace std;
  * due to type mismatch issues.
  */
 
-// Test 1: Basic arithmetic with Pi
+// Basic arithmetic with Pi
 TEST(RhoPiBasic, Addition) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -35,7 +35,7 @@ TEST(RhoPiBasic, Addition) {
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 5);
 }
 
-// Test 2: Subtraction with Pi
+// Subtraction with Pi
 TEST(RhoPiBasic, Subtraction) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -54,7 +54,7 @@ TEST(RhoPiBasic, Subtraction) {
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 6);
 }
 
-// Test 3: Multiplication with Pi
+// Multiplication with Pi
 TEST(RhoPiBasic, Multiplication) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -73,7 +73,7 @@ TEST(RhoPiBasic, Multiplication) {
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 42);
 }
 
-// Test 4: Addition again (division seems unsupported)
+// Addition again (division seems unsupported)
 TEST(RhoPiBasic, AnotherAddition) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -92,7 +92,7 @@ TEST(RhoPiBasic, AnotherAddition) {
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 20);
 }
 
-// Test 5: Complex Expression with Pi
+// Complex Expression with Pi
 TEST(RhoPiBasic, ComplexExpression) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -111,7 +111,7 @@ TEST(RhoPiBasic, ComplexExpression) {
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 20);
 }
 
-// Test 6: Stack Operations with Pi
+// Stack Operations with Pi
 TEST(RhoPiBasic, StackOperations) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -130,7 +130,7 @@ TEST(RhoPiBasic, StackOperations) {
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 10);
 }
 
-// Test 7: Stack Manipulation with Pi
+// Stack Manipulation with Pi
 TEST(RhoPiBasic, StackManipulation) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -150,7 +150,7 @@ TEST(RhoPiBasic, StackManipulation) {
               1);  // The actual result is 1 (3-4=-1, but 4-3=1)
 }
 
-// Test 8: Comparison Operations with Pi
+// Comparison Operations with Pi
 TEST(RhoPiBasic, ComparisonOperations) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -170,7 +170,7 @@ TEST(RhoPiBasic, ComparisonOperations) {
     ASSERT_TRUE(ConstDeref<bool>(stack->Top()));
 }
 
-// Test 9: Function Compilation with Pi
+// Function Compilation with Pi
 TEST(RhoPiBasic, FunctionCompilation) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -188,7 +188,7 @@ TEST(RhoPiBasic, FunctionCompilation) {
     ASSERT_TRUE(stack->Top().IsType<Continuation>());
 }
 
-// Test 10: Pi String Support
+// Pi String Support
 TEST(RhoPiBasic, StringSupport) {
     Console console;
     console.SetLanguage(Language::Pi);
