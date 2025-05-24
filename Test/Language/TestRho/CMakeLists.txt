@@ -52,6 +52,9 @@ add_library(TestRhoFiles OBJECT
     ContinuationStateTests.cpp  # Added with tests showing how continuations store state
     ContinuationLoopTests.cpp  # Simple test for continuations in loops
     
+    # Do-while loop implementation tests
+    DoWhileImplementationTest.cpp  # Tests for do-while loop support
+    
     # New 50 tests for RhoLinearStream to test our linear stream implementation
     RhoLinearStreamTests.cpp  # Added with 50 new tests for linear stream approach
     
