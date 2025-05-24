@@ -36,9 +36,9 @@ class ClassBuilder {
                 MemberCreateParams::Enum create_params =
                     MemberCreateParams::Default) {
                 auto label = Label(N);
-                PropertyBase *Q = MakeProperty<T>(P, label, create_params);
+                auto Q = MakeProperty<T>(P, label, create_params);
                 if (!D.empty()) Q->Description = D;
-                builder->klass->AddProperty(label, Q);
+                builder->klass->AddProperty(label, Q.release());
                 return *this;
             }
         };
@@ -52,9 +52,9 @@ class ClassBuilder {
         MethodsCollector &operator()(const char *name, Method method,
                                      String const &D = "") {
             auto label = Label(name);
-            MethodBase *M = MakeMethod(method, label);
+            auto M = MakeMethod(method, label);
             if (!D.empty()) M->Description = D;
-            builder->klass->AddMethod(label, M);
+            builder->klass->AddMethod(label, M.release());
             return *this;
         }
     };

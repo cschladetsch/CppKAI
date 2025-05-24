@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <KAI/Core/Detail/Arity.h>
 #include <KAI/Core/Meta/Base.h>
 
@@ -111,12 +112,25 @@ struct Method : method_detail::Selector<T, R, C, Args...>::Type {
 };
 
 template <class T, class R, class... Args>
-MethodBase *MakeMethod(R (T::*method)(Args...), const Label &N) {
+std::unique_ptr<MethodBase> MakeMethod(R (T::*method)(Args...), const Label &N) {
+    return std::make_unique<Method<T, R, false, Args...>>(method, N);
+}
+
+template <class T, class R, class... Args>
+std::unique_ptr<MethodBase> MakeMethod(R (T::*method)(Args...) const, const Label &N) {
+    return std::make_unique<Method<T, R, true, Args...>>(method, N);
+}
+
+// Deprecated compatibility functions
+template <class T, class R, class... Args>
+[[deprecated("Use MakeMethod returning unique_ptr instead")]]
+MethodBase *MakeMethodRaw(R (T::*method)(Args...), const Label &N) {
     return new Method<T, R, false, Args...>(method, N);
 }
 
 template <class T, class R, class... Args>
-MethodBase *MakeMethod(R (T::*method)(Args...) const, const Label &N) {
+[[deprecated("Use MakeMethod returning unique_ptr instead")]]
+MethodBase *MakeMethodRaw(R (T::*method)(Args...) const, const Label &N) {
     return new Method<T, R, true, Args...>(method, N);
 }
 
