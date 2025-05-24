@@ -5,27 +5,22 @@
 TAU_BEGIN
 
 namespace Generate {
-struct GenerateAgent : GenerateProcess {
+struct GenerateStruct : GenerateProcess {
     using GenerateProcess::Node;
 
-    GenerateAgent(const char *input, string &output);
+    GenerateStruct(const char *input, string &output);
 
    protected:
-    bool Generate(TauParser const &parser, string &output) override;
+    bool Generate(TauParser const &p, string &output) override;
 
     string Prepend() const override;
-    bool Namespace(Node const &cl) override;
+    bool Namespace(Node const &ns) override;
     bool Class(Node const &cl) override;
     bool Property(Node const &prop) override;
     bool Method(Node const &method) override;
-    bool Interface(Node const &interface);
+    bool Struct(Node const &strct);
     string ArgType(string const &text) const override;
     string ReturnType(string const &text) const override;
-
-   private:
-    struct AgentDecl;
-    void AddAgentBoilerplate(AgentDecl const &agent);
-    void GenerateHandlerMethod(Node const &method);
 };
 }  // namespace Generate
 

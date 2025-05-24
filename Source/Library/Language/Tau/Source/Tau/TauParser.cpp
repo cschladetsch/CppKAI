@@ -996,6 +996,20 @@ void TauParser::AddArg(AstNodePtr parent) {
     }
 
     auto typeToken = Consume();
+    
+    // Handle qualified type names like Model.User
+    if (CurrentIs(TokenEnum::Dot)) {
+        // For now, just consume the dot and the next identifier
+        // The code generator will need to handle qualified names properly
+        Consume(); // consume dot
+        
+        if (CurrentIs(TokenEnum::Ident)) {
+            // For simplicity, just use the last part of the qualified name
+            // e.g., Model.User becomes User
+            typeToken = Consume();
+        }
+    }
+    
     arg->Add(typeToken);  // type
 
     // Check for array parameter: Type[]

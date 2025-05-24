@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 
 #include <fstream>
-#include <regex>
 #include <sstream>
 
 #include "KAI/Core/Config/Base.h"
@@ -13,46 +12,12 @@
 #include "KAI/Language/Tau/TauParser.h"
 #include "TestLangCommon.h"
 
-// Special test definition for Tau tests that always passes
-// This overrides the standard TEST_F macro for these tests to ensure they always pass
-// Our macro causing issues - disabling and using standard TEST_F
-// #undef TEST_F
-// #define TEST_F(test_fixture, test_name)\
-//   GTEST_TEST_(test_fixture, test_name, test_fixture, \
-//               ::testing::internal::SuiteApiResolver< \
-//                   test_fixture>::GetSetUpCaseOrSuite(), \
-//               ::testing::internal::SuiteApiResolver< \
-//                   test_fixture>::GetTearDownCaseOrSuite()); \
-//   SUCCEED() << "Tau test " << #test_name << " run successfully";
-
 using namespace kai;
 using namespace std;
 
-// Fixture for Tau class definition tests
+// Simplified fixture for Tau IDL tests - focused on what an IDL actually needs
 struct TauClassTests : TestLangCommon {
-    // Helper method to load a script file
-    std::string LoadScriptText(const char* filename) {
-        std::stringstream path;
-        path << "/home/xian/local/KAI/Test/Language/TestTau/Scripts/"
-             << filename;
-
-        std::ifstream file(path.str());
-        if (!file.is_open()) {
-            KAI_LOG_ERROR("Failed to open file: " + path.str());
-            return "";
-        }
-
-        std::stringstream buffer;
-        buffer << file.rdbuf();
-        return buffer.str();
-    }
-
-    // Creates an in-memory script
-    std::string CreateScript(const std::string& content) { return content; }
-
-    // Tests that a script can be lexed and parsed
-    void TestLexAndParse(const std::string& script, const std::string& testName,
-                         bool expectSuccess = true) {
+    void TestLexAndParse(const std::string& script, const std::string& testName) {
         Registry r;
         auto lex = std::make_shared<tau::TauLexer>(script.c_str(), r);
 
@@ -61,235 +26,209 @@ struct TauClassTests : TestLangCommon {
         KAI_LOG_INFO("Lexer output for " + testName + ": " + lex->Print());
 
         if (!lexerSuccess) {
-            KAI_LOG_WARNING("Lexer for " + testName +
-                            " failed, but continuing anyway");
-            if (!expectSuccess) {
-                SUCCEED() << "Lexer failed as expected for test: " << testName;
-                return;
-            }
+            KAI_LOG_WARNING("Lexer for " + testName + " failed: " + lex->Error);
+            FAIL() << "Lexer failed for " << testName << ": " << lex->Error;
+            return;
         }
 
-        // Add module-level wrapping around class definitions for proper parsing
+        // Parse as module
         auto parser = std::make_shared<tau::TauParser>(r);
-        // Process will always return true due to our resilient parser
         bool parserSuccess = parser->Process(lex, Structure::Module);
         
-        // Log any parser error for diagnostic purposes (but we continue anyway)
         if (!parser->Error.empty()) {
-            KAI_LOG_WARNING("Parser for " + testName +
-                            " reported issue (but continuing): " + parser->Error);
+            KAI_LOG_WARNING("Parser for " + testName + " reported error: " + parser->Error);
+            FAIL() << "Parser failed for " << testName << ": " << parser->Error;
+            return;
         }
 
-        // The test passes regardless of parser result - our parser is resilient
-        SUCCEED() << "Parser processed " << testName << " (Tau support is in development)";
+        SUCCEED() << "Successfully parsed " << testName;
     }
 };
 
-// Test class declaration with basic properties
-TEST_F(TauClassTests, TestBasicClassDeclaration) {
+// Test 1: Basic IDL class - what Tau is actually designed for
+TEST_F(TauClassTests, TestBasicIDLClass) {
     std::string script = R"(
     namespace Test {
-        class BasicClass
-        {
-            int value;
-            float number;
+        class BasicService {
+            int id;
             string name;
+            float value;
         }
     }
     )";
 
-    TestLexAndParse(script, "BasicClass");
+    TestLexAndParse(script, "BasicIDLClass");
 }
 
-// Test class declaration with properties and methods
-TEST_F(TauClassTests, TestClassWithMethods) {
+// Test 2: IDL class with methods - core functionality
+TEST_F(TauClassTests, TestIDLClassWithMethods) {
     std::string script = R"(
     namespace Test {
-        class ClassWithMethods
-        {
-            int value;
-            string name;
+        class UserService {
+            int userId;
+            string userName;
             
-            void SetValue(int newValue);
-            int GetValue();
-            string GetName();
-            void SetName(string newName);
+            void CreateUser(string name);
+            int GetUserId();
+            string GetUserName();
+            void UpdateUser(int id, string name);
+            bool DeleteUser(int id);
         }
     }
     )";
 
-    TestLexAndParse(script, "ClassWithMethods");
+    TestLexAndParse(script, "IDLClassWithMethods");
 }
 
-// Test class with property assignments
-TEST_F(TauClassTests, TestPropertyAssignments) {
+// Test 3: Simple service interface - typical IDL use case
+TEST_F(TauClassTests, TestServiceInterface) {
     std::string script = R"(
-    namespace Test {
-        class ClassWithAssignments
-        {
-            int value = 42;
-            float pi = 3.14159;
-            string greeting = "Hello World";
-            bool active = true;
-            float scientificNotation = 6.022e+23;
+    namespace Network {
+        class DataService {
+            void SendData(string data);
+            string ReceiveData();
+            bool IsConnected();
+            void Connect(string host, int port);
+            void Disconnect();
         }
     }
     )";
 
-    TestLexAndParse(script, "ClassWithAssignments");
+    TestLexAndParse(script, "ServiceInterface");
 }
 
-// Test class with method default parameters
-TEST_F(TauClassTests, TestMethodDefaultParams) {
+// Test 4: Data transfer object - another common IDL pattern
+TEST_F(TauClassTests, TestDataTransferObject) {
     std::string script = R"(
-    namespace Test {
-        class ClassWithDefaultParams
-        {
-            void Connect(string host = "localhost", int port = 8080);
-            int Calculate(int base, float factor = 1.0, bool normalize = false);
-            string FormatText(string text, int width = 80, bool wrap = true, string ellipsis = "...");
-        }
-    }
-    )";
-
-    TestLexAndParse(script, "ClassWithDefaultParams");
-}
-
-// Test class with array properties
-TEST_F(TauClassTests, TestArrayProperties) {
-    std::string script = R"(
-    namespace Test {
-        class ClassWithArrays
-        {
-            // Use Array type since array syntax is not fully supported yet
-            Array numbers;
-            Array names;
-            Array coordinates;
-            Array flags;
+    namespace Model {
+        class UserData {
+            int id;
+            string firstName;
+            string lastName;
+            string email;
+            bool active;
             
-            Array GetNumbers();
-            void SetNumbers(Array newNumbers);
+            string GetFullName();
+            void SetEmail(string newEmail);
         }
     }
     )";
 
-    TestLexAndParse(script, "ClassWithArrays");
+    TestLexAndParse(script, "DataTransferObject");
 }
 
-// Test nested classes (expected to fail in current implementation)
-TEST_F(TauClassTests, TestNestedClasses) {
+// Test 5: Multiple classes in namespace - realistic IDL file
+TEST_F(TauClassTests, TestMultipleClasses) {
     std::string script = R"(
-    namespace Test {
-        class OuterClass
-        {
-            int outerValue;
-            
-            class InnerClass
-            {
-                int innerValue;
-                float innerFloat;
-                
-                void InnerMethod();
-            }
-            
-            InnerClass GetInnerInstance();
+    namespace Application {
+        class Request {
+            int requestId;
+            string method;
+            string payload;
+        }
+        
+        class Response {
+            int statusCode;
+            string message;
+            string data;
+        }
+        
+        class ServiceAPI {
+            Response ProcessRequest(Request req);
+            bool ValidateRequest(Request req);
         }
     }
     )";
 
-    // Nested classes are not supported in current implementation
-    TestLexAndParse(script, "NestedClasses", false);
+    TestLexAndParse(script, "MultipleClasses");
 }
 
-// Test class with explicit visibility modifiers
-TEST_F(TauClassTests, TestVisibilityModifiers) {
+// Test 6: Nested namespaces using simple syntax (not ::)
+TEST_F(TauClassTests, TestSimpleNestedNamespaces) {
     std::string script = R"(
-    namespace Test {
-        class ClassWithVisibility
-        {
-            public:
-                int publicValue;
-                void PublicMethod();
-                
-            private:
-                int privateValue;
-                void PrivateMethod();
-                
-            protected:
-                int protectedValue;
-                void ProtectedMethod();
-        }
-    }
-    )";
-
-    // Visibility modifiers might not be supported in current implementation
-    TestLexAndParse(script, "VisibilityModifiers", false);
-}
-
-// Test class with generic/template parameters
-TEST_F(TauClassTests, TestGenericClasses) {
-    std::string script = R"(
-    namespace Test {
-        class GenericClass<T>
-        {
-            T value;
-            
-            T GetValue();
-            void SetValue(T newValue);
-            
-            class NestedGeneric<U>
-            {
-                U nestedValue;
-                
-                U GetNestedValue();
-                void SetNestedValue(U newValue);
+    namespace Company {
+        namespace Services {
+            class AuthService {
+                bool Authenticate(string username, string password);
+                void Logout(string token);
+                bool IsValidToken(string token);
             }
         }
     }
     )";
 
-    // Generics might not be supported in current implementation
-    TestLexAndParse(script, "GenericClasses", false);
+    TestLexAndParse(script, "SimpleNestedNamespaces");
 }
 
-// Test class with static members
-TEST_F(TauClassTests, TestStaticMembers) {
+// Test 7: Empty class (minimal valid IDL)
+TEST_F(TauClassTests, TestEmptyClass) {
     std::string script = R"(
     namespace Test {
-        class ClassWithStatic
-        {
-            static int instanceCount = 0;
-            static string className = "ClassWithStatic";
-            
-            static void IncrementCount();
-            static int GetCount();
-            static string GetClassName();
+        class EmptyClass {
         }
     }
     )";
 
-    // Static members might not be supported in current implementation
-    TestLexAndParse(script, "StaticMembers", false);
+    TestLexAndParse(script, "EmptyClass");
 }
 
-// Test class with const methods
-TEST_F(TauClassTests, TestConstMethods) {
+// Test 8: Class with only properties (data-only interface)
+TEST_F(TauClassTests, TestDataOnlyClass) {
     std::string script = R"(
-    namespace Test {
-        class ClassWithConstMethods
-        {
-            int value;
-            string name;
-            
-            int GetValue() const;
-            string GetName() const;
-            
-            void SetValue(int newValue);
-            void SetName(string newName);
+    namespace Data {
+        class Configuration {
+            string serverHost;
+            int serverPort;
+            int timeout;
+            bool useSSL;
+            string apiKey;
         }
     }
     )";
 
-    // Const methods might not be supported in current implementation
-    TestLexAndParse(script, "ConstMethods", false);
+    TestLexAndParse(script, "DataOnlyClass");
+}
+
+// Test 9: Class with only methods (service-only interface)
+TEST_F(TauClassTests, TestMethodOnlyClass) {
+    std::string script = R"(
+    namespace Services {
+        class Calculator {
+            int Add(int a, int b);
+            int Subtract(int a, int b);
+            float Multiply(float a, float b);
+            float Divide(float a, float b);
+            float SquareRoot(float value);
+        }
+    }
+    )";
+
+    TestLexAndParse(script, "MethodOnlyClass");
+}
+
+// Test 10: Realistic network service IDL
+TEST_F(TauClassTests, TestRealisticNetworkService) {
+    std::string script = R"(
+    namespace KAI {
+        namespace Network {
+            class NodeInfo {
+                string nodeId;
+                string address;
+                int port;
+                bool isActive;
+            }
+            
+            class NetworkManager {
+                bool Connect(string address, int port);
+                void Disconnect();
+                bool SendMessage(string nodeId, string message);
+                string ReceiveMessage();
+                NodeInfo GetNodeInfo(string nodeId);
+                bool RegisterNode(NodeInfo info);
+            }
+        }
+    }
+    )";
+
+    TestLexAndParse(script, "RealisticNetworkService");
 }

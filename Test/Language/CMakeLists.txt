@@ -78,6 +78,8 @@ foreach (lang ${langs})
             ${source_path}/NetworkConnectionTests.cpp
             ${source_path}/TauAdvancedTypeTests.cpp        # Advanced type system tests
             ${source_path}/TauCodeGenerationTests.cpp      # Code generation tests
+            ${source_path}/TauGenerateStructTests.cpp      # Struct generation tests
+            ${source_path}/TauSeparateGenerationTests.cpp  # Tests for separated proxy/agent generation
         )
     else()
         # For other languages, use the standard approach

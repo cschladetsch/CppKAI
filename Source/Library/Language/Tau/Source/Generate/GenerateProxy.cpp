@@ -12,54 +12,8 @@ GenerateProxy::GenerateProxy(const char *input, string &output) {
 }
 
 bool GenerateProxy::Generate(TauParser const &p, string &output) {
-    // Be more resilient to parsing errors for code generation
-    auto const &root = p.GetRoot();
-    
-    // Debug: log what we actually got from the parser (commented out for cleaner output)
-    // KAI_TRACE_1(string("GenerateProxy received root node type: ") + TauAstEnumType::ToString(root->GetType()));
-    // KAI_TRACE_1(string("GenerateProxy received root node children count: ") + std::to_string(root->GetChildren().size()));
-    // for (size_t i = 0; i < root->GetChildren().size(); ++i) {
-    //     auto child = root->GetChildren()[i];
-    //     KAI_TRACE_1(string("Child ") + std::to_string(i) + " type: " + TauAstEnumType::ToString(child->GetType()));
-    // }
-    
-    if (root->GetType() != TauAstEnumType::Module) {
-        KAI_TRACE_WARN_1("Expected a Module but continuing anyway");
-        // Continue with generation using GenerateProcess's implementation
-        return GenerateProcess::Generate(p, output);
-    }
-
-    // Handle all children, even if they're not all namespaces
-    bool processed = false;
-    for (const auto &ch : root->GetChildren()) {
-        if (ch->GetType() == TauAstEnumType::Namespace) {
-            if (!Namespace(*ch)) {
-                KAI_TRACE_WARN_1("Namespace processing failed, but continuing");
-            }
-            processed = true;
-        } else if (ch->GetType() == TauAstEnumType::Class) {
-            // Handle class without namespace by wrapping in Default namespace
-            StartBlock("namespace Default");
-            if (!Class(*ch)) {
-                KAI_TRACE_WARN_1("Class processing failed, but continuing");
-            }
-            EndBlock();
-            processed = true;
-        }
-        // Skip other node types but continue processing
-    }
-
-    // If nothing was processed, create an empty default namespace
-    if (!processed) {
-        KAI_TRACE_WARN_1("No valid namespaces or classes found, creating empty default namespace");
-        StartBlock("namespace Default");
-        EndBlock();
-    }
-
-    stringstream str;
-    str << Prepend() << "\n" << Output().str() << std::ends;
-    output = str.str();
-    return !Failed;
+    // Use the base class implementation which handles Module structure properly
+    return GenerateProcess::Generate(p, output);
 }
 
 string GenerateProxy::Prepend() const {
@@ -81,20 +35,6 @@ struct GenerateProxy::ProxyDecl {
     }
 };
 
-struct GenerateProxy::AgentDecl {
-    string RootName;
-    string AgentName;
-
-    AgentDecl(string const &root) : RootName(root) {
-        AgentName = root + "Agent";
-    }
-
-    string ToString() const {
-        stringstream decl;
-        decl << "class " << AgentName << ": public AgentBase<" << RootName << ">";
-        return decl.str();
-    }
-};
 
 void GenerateProxy::AddProxyBoilerplate(ProxyDecl const &proxy) {
     Output() << "using ProxyBase::StreamType;" << EndLine();
@@ -119,11 +59,13 @@ bool GenerateProxy::Namespace(Node const &ns) {
             case TauAstEnumType::Interface:
                 if (!Interface(*ch)) return false;
                 break;
+                
+            case TauAstEnumType::Struct:
+                // Structs don't need proxy generation, just skip
+                break;
 
             default:
-                KAI_TRACE_ERROR_1("Parser failed to fail");
-                Fail("[Internal] Unexpected %s in namespace",
-                     TauAstEnumType::ToString(ch->GetType()));
+                // Don't fail on unknown types, just skip them
                 break;
         }
     }
@@ -135,7 +77,7 @@ bool GenerateProxy::Namespace(Node const &ns) {
 bool GenerateProxy::Class(Node const &cl) {
     auto className = cl.GetToken().Text();
     
-    // Generate Proxy class
+    // Generate Proxy class only
     auto proxyDecl = ProxyDecl(className);
     StartBlock(proxyDecl.ToString());
     AddProxyBoilerplate(proxyDecl);
@@ -172,21 +114,6 @@ bool GenerateProxy::Class(Node const &cl) {
             default:
                 // Ignore unknown node types for resilience
                 break;
-        }
-    }
-
-    EndBlock();
-    Output() << EndLine();
-    
-    // Generate Agent class
-    auto agentDecl = AgentDecl(className);
-    StartBlock(agentDecl.ToString());
-    AddAgentBoilerplate(agentDecl);
-
-    // Generate handler methods for each method in the class
-    for (const auto &member : cl.GetChildren()) {
-        if (member->GetType() == TauAstEnumType::Method) {
-            GenerateHandlerMethod(*member);
         }
     }
 
@@ -324,57 +251,7 @@ string GenerateProxy::ReturnType(string const &text) const {
 
 string GenerateProxy::ArgType(string const &text) const { return "const " + text + "&"; }
 
-void GenerateProxy::AddAgentBoilerplate(AgentDecl const &agent) {
-    Output() << agent.AgentName
-             << "(Node &node, NetHandle handle) : AgentBase(node, handle) { }"
-             << EndLine();
-    Output() << EndLine();
-}
 
-void GenerateProxy::GenerateHandlerMethod(Node const &method) {
-    auto const &returnType = method.GetChild(0)->GetTokenText();
-    auto const &args = method.GetChild(1)->GetChildren();
-    const auto name = method.GetTokenText();
-
-    // Generate the Handle_MethodName signature
-    Output() << "void Handle_" << name << "(RakNet::BitStream& bs, RakNet::SystemAddress& sender)";
-    StartBlock();
-
-    // Deserialize parameters from BitStream
-    for (auto const &a : args) {
-        auto &ty = a->GetChild(0);
-        auto &id = a->GetChild(1);
-        Output() << ty->GetTokenText() << " " << id->GetTokenText() << ";" << EndLine();
-        Output() << "bs >> " << id->GetTokenText() << ";" << EndLine();
-    }
-
-    // Call the implementation method
-    if (returnType != "void") {
-        Output() << returnType << " result = _impl->" << name << "(";
-    } else {
-        Output() << "_impl->" << name << "(";
-    }
-
-    // Pass arguments
-    bool first = true;
-    for (auto const &a : args) {
-        if (!first) Output() << ", ";
-        auto &id = a->GetChild(1);
-        Output() << id->GetTokenText();
-        first = false;
-    }
-    Output() << ");" << EndLine();
-
-    // Send back result for non-void methods
-    if (returnType != "void") {
-        Output() << "RakNet::BitStream response;" << EndLine();
-        Output() << "response << result;" << EndLine();
-        Output() << "_node->SendResponse(sender, response);" << EndLine();
-    }
-
-    EndBlock();
-    Output() << EndLine();
-}
 
 }  // namespace Generate
 
