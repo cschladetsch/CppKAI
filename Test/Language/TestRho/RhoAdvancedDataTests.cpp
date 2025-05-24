@@ -145,7 +145,7 @@ struct RhoAdvancedDataTests : TestLangCommon {
     }
 };
 
-// 1. Test array creation and access
+// Test array creation and access
 TEST_F(RhoAdvancedDataTests, ArrayCreationAndAccess) {
     VerifyArrayResult(
         "arr = [10, 20, 30, 40, 50];\n"
@@ -153,7 +153,7 @@ TEST_F(RhoAdvancedDataTests, ArrayCreationAndAccess) {
         {10, 20, 30, 40, 50});
 }
 
-// 2. Test array element modification
+// Test array element modification
 TEST_F(RhoAdvancedDataTests, ArrayElementModification) {
     VerifyArrayResult(
         "arr = [10, 20, 30, 40, 50];\n"
@@ -162,7 +162,7 @@ TEST_F(RhoAdvancedDataTests, ArrayElementModification) {
         {10, 20, 99, 40, 50});
 }
 
-// 3. Test array concatenation
+// Test array concatenation
 TEST_F(RhoAdvancedDataTests, ArrayConcatenation) {
     VerifyArrayResult(
         "arr1 = [1, 2, 3];\n"
@@ -171,7 +171,7 @@ TEST_F(RhoAdvancedDataTests, ArrayConcatenation) {
         {1, 2, 3, 4, 5, 6});
 }
 
-// 4. Test array slicing
+// Test array slicing
 TEST_F(RhoAdvancedDataTests, ArraySlicing) {
     VerifyArrayResult(
         "arr = [10, 20, 30, 40, 50];\n"
@@ -179,7 +179,7 @@ TEST_F(RhoAdvancedDataTests, ArraySlicing) {
         {20, 30, 40});
 }
 
-// 5. Test array iteration with map-like operation
+// Test array iteration with map-like operation
 TEST_F(RhoAdvancedDataTests, ArrayMapOperation) {
     VerifyArrayResult(
         "arr = [1, 2, 3, 4, 5];\n"
@@ -191,7 +191,7 @@ TEST_F(RhoAdvancedDataTests, ArrayMapOperation) {
         {2, 4, 6, 8, 10});
 }
 
-// 6. Test array filtering
+// Test array filtering
 TEST_F(RhoAdvancedDataTests, ArrayFilterOperation) {
     VerifyArrayResult(
         "arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];\n"
@@ -205,7 +205,7 @@ TEST_F(RhoAdvancedDataTests, ArrayFilterOperation) {
         {2, 4, 6, 8, 10});
 }
 
-// 7. Test array reduction (sum)
+// Test array reduction (sum)
 TEST_F(RhoAdvancedDataTests, ArrayReduceSum) {
     ExecuteRhoAndVerify<int>(
         "arr = [1, 2, 3, 4, 5];\n"
@@ -217,7 +217,7 @@ TEST_F(RhoAdvancedDataTests, ArrayReduceSum) {
         15);
 }
 
-// 8. Test nested arrays
+// Test nested arrays
 TEST_F(RhoAdvancedDataTests, NestedArrays) {
     ExecuteRhoAndVerify<int>(
         "matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];\n"
@@ -225,7 +225,7 @@ TEST_F(RhoAdvancedDataTests, NestedArrays) {
         5);
 }
 
-// 9. Test map creation and access
+// Test map creation and access
 TEST_F(RhoAdvancedDataTests, MapCreationAndAccess) {
     VerifyMapKeyValues(
         "map = {};\n"
@@ -236,7 +236,7 @@ TEST_F(RhoAdvancedDataTests, MapCreationAndAccess) {
         {{"one", 1}, {"two", 2}, {"three", 3}});
 }
 
-// 10. Test map value update
+// Test map value update
 TEST_F(RhoAdvancedDataTests, MapValueUpdate) {
     VerifyMapKeyValues(
         "map = {};\n"
@@ -247,7 +247,7 @@ TEST_F(RhoAdvancedDataTests, MapValueUpdate) {
         {{"one", 10}, {"two", 2}});
 }
 
-// 11. Test map iteration
+// Test map iteration
 TEST_F(RhoAdvancedDataTests, MapIteration) {
     ExecuteRhoAndVerify<int>(
         "map = {};\n"
@@ -264,7 +264,7 @@ TEST_F(RhoAdvancedDataTests, MapIteration) {
         30);
 }
 
-// 12. Test complex data structure (array of maps)
+// Test complex data structure (array of maps)
 TEST_F(RhoAdvancedDataTests, ArrayOfMaps) {
     ExecuteRhoAndVerify<int>(
         "users = [\n"
@@ -276,7 +276,7 @@ TEST_F(RhoAdvancedDataTests, ArrayOfMaps) {
         92);
 }
 
-// 13. Test complex data structure manipulation
+// Test complex data structure manipulation
 TEST_F(RhoAdvancedDataTests, ComplexDataManipulation) {
     ExecuteRhoAndVerify<int>(
         "users = [\n"
@@ -294,7 +294,7 @@ TEST_F(RhoAdvancedDataTests, ComplexDataManipulation) {
     );
 }
 
-// 14. Test string operations with arrays
+// Test string operations with arrays
 TEST_F(RhoAdvancedDataTests, StringArrayOperations) {
     ExecuteRhoAndVerifyString(
         "words = ['Hello', ' ', 'World', '!'];\n"
@@ -306,7 +306,7 @@ TEST_F(RhoAdvancedDataTests, StringArrayOperations) {
         "Hello World!");
 }
 
-// 15. Test higher order function simulation (passing functions as values)
+// Test higher order function simulation (passing functions as values)
 TEST_F(RhoAdvancedDataTests, HigherOrderFunctions) {
     ExecuteRhoAndVerify<int>(
         "function applyOperation(a, b, operation) {\n"
@@ -325,7 +325,7 @@ TEST_F(RhoAdvancedDataTests, HigherOrderFunctions) {
         50);
 }
 
-// 16. Test closures simulation
+// Test closures simulation
 TEST_F(RhoAdvancedDataTests, ClosureSimulation) {
     ExecuteRhoAndVerify<int>(
         "function makeCounter(start) {\n"
@@ -343,7 +343,7 @@ TEST_F(RhoAdvancedDataTests, ClosureSimulation) {
         13);
 }
 
-// 17. Test advanced map manipulations
+// Test advanced map manipulations
 TEST_F(RhoAdvancedDataTests, AdvancedMapManipulations) {
     ExecuteRhoAndVerifyString(
         "config = {\n"
@@ -361,7 +361,7 @@ TEST_F(RhoAdvancedDataTests, AdvancedMapManipulations) {
         "https://api.example.com:8080");
 }
 
-// 18. Test array sorting algorithm
+// Test array sorting algorithm
 TEST_F(RhoAdvancedDataTests, ArraySorting) {
     VerifyArrayResult(
         "function bubbleSort(arr) {\n"
@@ -383,7 +383,7 @@ TEST_F(RhoAdvancedDataTests, ArraySorting) {
         {11, 12, 22, 25, 34, 64, 90});
 }
 
-// 19. Test complex return value from function
+// Test complex return value from function
 TEST_F(RhoAdvancedDataTests, ComplexReturnValue) {
     ExecuteRhoAndVerify<int>(
         "function processData(data) {\n"
@@ -415,7 +415,7 @@ TEST_F(RhoAdvancedDataTests, ComplexReturnValue) {
         9);
 }
 
-// 20. Test data transformation pipeline
+// Test data transformation pipeline
 TEST_F(RhoAdvancedDataTests, DataTransformationPipeline) {
     VerifyArrayResult(
         "function filterEven(arr) {\n"

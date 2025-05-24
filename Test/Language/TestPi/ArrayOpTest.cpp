@@ -13,7 +13,7 @@ struct ArrayOpTest : TestLangCommon {};
 TEST_F(ArrayOpTest, DirectArrayTest) {
     // Direct test of array operations without depending on Pi language parsing
 
-    // 1. Test ToArray operation directly
+    // Test ToArray operation directly
     data_->Clear();
 
     // First put a count of 0 on the stack, simulating "[]"
@@ -28,7 +28,7 @@ TEST_F(ArrayOpTest, DirectArrayTest) {
     ASSERT_TRUE(data_->Top().IsType<Array>());
     ASSERT_EQ(Deref<Array>(data_->Top()).Size(), 0);
 
-    // 2. Test Size operation on empty array
+    // Test Size operation on empty array
     data_->Clear();
 
     // Create an empty array
@@ -44,7 +44,7 @@ TEST_F(ArrayOpTest, DirectArrayTest) {
     ASSERT_TRUE(data_->Top().IsType<int>());
     ASSERT_EQ(Deref<int>(data_->Top()), 0);
 
-    // 3. Test size of non-empty array
+    // Test size of non-empty array
     data_->Clear();
 
     // Create array with elements
@@ -63,7 +63,7 @@ TEST_F(ArrayOpTest, DirectArrayTest) {
     ASSERT_TRUE(data_->Top().IsType<int>());
     ASSERT_EQ(Deref<int>(data_->Top()), 3);
 
-    // 4. Test Plus operation with integers
+    // Test Plus operation with integers
     data_->Clear();
 
     // Push two integers
@@ -79,7 +79,7 @@ TEST_F(ArrayOpTest, DirectArrayTest) {
     ASSERT_TRUE(data_->Top().IsType<int>());
     ASSERT_EQ(Deref<int>(data_->Top()), 7);
 
-    // 5. Test Plus operation with strings
+    // Test Plus operation with strings
     data_->Clear();
 
     // Push two strings
@@ -94,7 +94,7 @@ TEST_F(ArrayOpTest, DirectArrayTest) {
     ASSERT_TRUE(data_->Top().IsType<String>());
     ASSERT_EQ(Deref<String>(data_->Top()), "Hello World");
 
-    // 6. Test Minus operation
+    // Test Minus operation
     data_->Clear();
 
     // Push two integers
@@ -110,7 +110,7 @@ TEST_F(ArrayOpTest, DirectArrayTest) {
     ASSERT_TRUE(data_->Top().IsType<int>());
     ASSERT_EQ(Deref<int>(data_->Top()), 7);
 
-    // 7. Test Multiply operation
+    // Test Multiply operation
     data_->Clear();
 
     // Push two integers
@@ -126,7 +126,7 @@ TEST_F(ArrayOpTest, DirectArrayTest) {
     ASSERT_TRUE(data_->Top().IsType<int>());
     ASSERT_EQ(Deref<int>(data_->Top()), 12);
 
-    // 8. Test Divide operation
+    // Test Divide operation
     data_->Clear();
 
     // Push two integers
@@ -142,7 +142,7 @@ TEST_F(ArrayOpTest, DirectArrayTest) {
     ASSERT_TRUE(data_->Top().IsType<int>());
     ASSERT_EQ(Deref<int>(data_->Top()), 4);
 
-    // 9. Test LogicalAnd operation
+    // Test LogicalAnd operation
     data_->Clear();
 
     // Push two booleans
@@ -158,7 +158,7 @@ TEST_F(ArrayOpTest, DirectArrayTest) {
     ASSERT_TRUE(data_->Top().IsType<bool>());
     ASSERT_FALSE(Deref<bool>(data_->Top()));
 
-    // 10. Test LogicalOr operation
+    // Test LogicalOr operation
     data_->Clear();
 
     // Push two booleans

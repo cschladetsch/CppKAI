@@ -137,7 +137,7 @@ struct TauAdvancedTypeTests : TestLangCommon {
     }
 };
 
-// 1. Test interface inheritance
+// Test interface inheritance
 TEST_F(TauAdvancedTypeTests, TestInterfaceInheritance) {
     std::string script = R"(
     namespace KAI::Network
@@ -170,7 +170,7 @@ TEST_F(TauAdvancedTypeTests, TestInterfaceInheritance) {
     TestAgentGen(script, "InterfaceInheritance");
 }
 
-// 2. Test advanced events with custom event arguments
+// Test advanced events with custom event arguments
 TEST_F(TauAdvancedTypeTests, TestAdvancedEvents) {
     std::string script = R"(
     namespace KAI::Network::Events
@@ -214,7 +214,7 @@ TEST_F(TauAdvancedTypeTests, TestAdvancedEvents) {
     TestAgentGen(script, "AdvancedEvents");
 }
 
-// 3. Test complex type definitions including nested structs and arrays
+// Test complex type definitions including nested structs and arrays
 TEST_F(TauAdvancedTypeTests, TestComplexTypes) {
     std::string script = R"(
     namespace KAI::Data
@@ -280,7 +280,7 @@ TEST_F(TauAdvancedTypeTests, TestComplexTypes) {
     TestAgentGen(script, "ComplexTypes");
 }
 
-// 4. Test generic interface definitions
+// Test generic interface definitions
 TEST_F(TauAdvancedTypeTests, TestGenericInterfaces) {
     std::string script = R"(
     namespace KAI::Generic
@@ -321,7 +321,7 @@ TEST_F(TauAdvancedTypeTests, TestGenericInterfaces) {
     TestAgentGen(script, "GenericInterfaces", false);
 }
 
-// 5. Test interface with function pointers / callbacks
+// Test interface with function pointers / callbacks
 TEST_F(TauAdvancedTypeTests, TestFunctionCallbacks) {
     std::string script = R"(
     namespace KAI::Callbacks
@@ -358,7 +358,7 @@ TEST_F(TauAdvancedTypeTests, TestFunctionCallbacks) {
     TestAgentGen(script, "FunctionCallbacks", false);
 }
 
-// 6. Test complex protocol definition with states and transitions
+// Test complex protocol definition with states and transitions
 TEST_F(TauAdvancedTypeTests, TestProtocolDefinition) {
     std::string script = R"(
     namespace KAI::Protocol
@@ -423,7 +423,7 @@ TEST_F(TauAdvancedTypeTests, TestProtocolDefinition) {
     TestAgentGen(script, "ProtocolDefinition");
 }
 
-// 7. Test advanced networking configuration interfaces
+// Test advanced networking configuration interfaces
 TEST_F(TauAdvancedTypeTests, TestNetworkConfiguration) {
     std::string script = R"(
     namespace KAI::Network::Config
@@ -495,7 +495,7 @@ TEST_F(TauAdvancedTypeTests, TestNetworkConfiguration) {
     TestAgentGen(script, "NetworkConfiguration");
 }
 
-// 8. Test advanced data serialization interfaces
+// Test advanced data serialization interfaces
 TEST_F(TauAdvancedTypeTests, TestSerializationInterfaces) {
     std::string script = R"(
     namespace KAI::Serialization
@@ -548,7 +548,7 @@ TEST_F(TauAdvancedTypeTests, TestSerializationInterfaces) {
     TestAgentGen(script, "SerializationInterfaces", false);
 }
 
-// 9. Test advanced logging interface system with multiple loggers
+// Test advanced logging interface system with multiple loggers
 TEST_F(TauAdvancedTypeTests, TestLoggingInterfaces) {
     std::string script = R"(
     namespace KAI::Logging
@@ -609,7 +609,7 @@ TEST_F(TauAdvancedTypeTests, TestLoggingInterfaces) {
     TestAgentGen(script, "LoggingInterfaces");
 }
 
-// 10. Test distributed task processing system
+// Test distributed task processing system
 TEST_F(TauAdvancedTypeTests, TestDistributedTaskSystem) {
     std::string script = R"(
     namespace KAI::Tasks
@@ -698,7 +698,7 @@ TEST_F(TauAdvancedTypeTests, TestDistributedTaskSystem) {
     TestAgentGen(script, "DistributedTaskSystem");
 }
 
-// 11. Test data validation interface system
+// Test data validation interface system
 TEST_F(TauAdvancedTypeTests, TestDataValidation) {
     std::string script = R"(
     namespace KAI::Validation
@@ -761,7 +761,7 @@ TEST_F(TauAdvancedTypeTests, TestDataValidation) {
     TestAgentGen(script, "DataValidation", false);
 }
 
-// 12. Test caching interface system
+// Test caching interface system
 TEST_F(TauAdvancedTypeTests, TestCachingInterfaces) {
     std::string script = R"(
     namespace KAI::Caching
@@ -838,7 +838,7 @@ TEST_F(TauAdvancedTypeTests, TestCachingInterfaces) {
     TestAgentGen(script, "CachingInterfaces", false);
 }
 
-// 13. Test messaging system with queues and topics
+// Test messaging system with queues and topics
 TEST_F(TauAdvancedTypeTests, TestMessagingSystem) {
     std::string script = R"(
     namespace KAI::Messaging
@@ -947,7 +947,7 @@ TEST_F(TauAdvancedTypeTests, TestMessagingSystem) {
     TestAgentGen(script, "MessagingSystem");
 }
 
-// 14. Test configuration management system
+// Test configuration management system
 TEST_F(TauAdvancedTypeTests, TestConfigurationSystem) {
     std::string script = R"(
     namespace KAI::Configuration
@@ -1024,7 +1024,7 @@ TEST_F(TauAdvancedTypeTests, TestConfigurationSystem) {
     TestAgentGen(script, "ConfigurationSystem", false);
 }
 
-// 15. Test dependency injection system
+// Test dependency injection system
 TEST_F(TauAdvancedTypeTests, TestDependencyInjection) {
     std::string script = R"(
     namespace KAI::DependencyInjection
@@ -1101,7 +1101,7 @@ TEST_F(TauAdvancedTypeTests, TestDependencyInjection) {
     TestAgentGen(script, "DependencyInjection", false);
 }
 
-// 16. Test distributed locking system
+// Test distributed locking system
 TEST_F(TauAdvancedTypeTests, TestDistributedLockSystem) {
     std::string script = R"(
     namespace KAI::Locking
@@ -1183,7 +1183,7 @@ TEST_F(TauAdvancedTypeTests, TestDistributedLockSystem) {
     TestAgentGen(script, "DistributedLockSystem");
 }
 
-// 17. Test circuit breaker pattern interfaces
+// Test circuit breaker pattern interfaces
 TEST_F(TauAdvancedTypeTests, TestCircuitBreakerPattern) {
     std::string script = R"(
     namespace KAI::Resilience
@@ -1260,7 +1260,7 @@ TEST_F(TauAdvancedTypeTests, TestCircuitBreakerPattern) {
     TestAgentGen(script, "CircuitBreakerPattern", false);
 }
 
-// 18. Test command pattern interfaces
+// Test command pattern interfaces
 TEST_F(TauAdvancedTypeTests, TestCommandPattern) {
     std::string script = R"(
     namespace KAI::CommandPattern
@@ -1354,7 +1354,7 @@ TEST_F(TauAdvancedTypeTests, TestCommandPattern) {
     TestAgentGen(script, "CommandPattern", false);
 }
 
-// 19. Test event sourcing pattern
+// Test event sourcing pattern
 TEST_F(TauAdvancedTypeTests, TestEventSourcingPattern) {
     std::string script = R"(
     namespace KAI::EventSourcing
@@ -1445,7 +1445,7 @@ TEST_F(TauAdvancedTypeTests, TestEventSourcingPattern) {
     TestAgentGen(script, "EventSourcingPattern", false);
 }
 
-// 20. Test reactive programming interfaces
+// Test reactive programming interfaces
 TEST_F(TauAdvancedTypeTests, TestReactiveInterfaces) {
     std::string script = R"(
     namespace KAI::Reactive

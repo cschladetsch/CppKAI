@@ -2,15 +2,23 @@
 
 ## Current Status
 
-The Rho language implementation currently has several issues that need to be addressed. While basic functionality like arithmetic, variable assignment, and simple expressions work correctly, more complex control structures like `do-while` loops are not functioning properly. The most significant issue is a type mismatch between expected Continuation objects and actual Signed32 values.
+The Rho language implementation has been significantly improved. The major type mismatch issue has been identified and fixed in the RhoTranslator component.
+
+## Fixed Issues
+
+1. **Type Mismatch in Binary Operations - FIXED**
+   - **Root Cause**: The RhoTranslator was performing direct evaluation at translation time, appending computed values (like Signed32) directly to the continuation instead of generating operations for runtime execution.
+   - **Fix Applied**: 
+     - Removed all direct evaluation logic from `TranslateBinaryOp` method
+     - Removed massive direct evaluation logic from `PiSequence` case (lines 234-1223)
+     - Now properly translates operands and appends operations for runtime execution
+   - **Result**: The translator now generates proper operation sequences that the executor can handle correctly
 
 ## Known Issues
 
-1. **Type Mismatch in Binary Operations and Control Structures**
-   - The core issue appears to be related to how types are handled during binary operations and in conditional evaluations.
-   - When translating operations like `2 + 3` or evaluating conditions in `do-while` loops, type mismatches occur between expected and actual types.
-   - This causes tests to fail with errors like: "Type Mismatch: expected=Continuation, got=Signed32"
-   - The issue affects fundamental Rho language operations, making even simple expressions prone to failure.
+1. **Store Operation Ordering**
+   - There may still be issues with the order of operands for the Store operation in assignments
+   - Error "Null Object" suggests the identifier might not be properly handled
 
 2. **Parser and Translator Issues**
    - The parser may be correctly handling the grammar, but the translator component likely has issues with code generation.
@@ -50,10 +58,10 @@ The Rho language implementation currently has several issues that need to be add
 
 ### Short-term
 
-1. **Fix Binary Operation Translation**
-   - Review the RhoTranslator::TranslateBinaryOp method to ensure it correctly generates operation codes.
-   - Debug the TranslatorCommon::Append method to understand why type mismatches occur.
-   - Add proper type checking and conversion in critical paths.
+1. **Fix Store Operation Handling** (Next Priority)
+   - Review how the Store operation handles operands - it may expect them in a different order
+   - Check if identifiers need special handling for assignment operations
+   - Debug why "Null Object" errors occur during assignment
 
 2. **Improved Error Reporting and Debugging**
    - Add more detailed trace logging throughout the translator and executor pipeline.

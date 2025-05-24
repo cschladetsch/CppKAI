@@ -126,8 +126,8 @@ TEST_F(CoreTypeTests, TestObjectTypeChecking) {
     Root().Set(Label("test_string"), stringObj);
 
     // IMPORTANT: KAI has two ways to check object types:
-    // 1. IsType<T>() template method (defined in Object.h line 43)
-    // 2. IsTypeNumber(Type::Number) non-template method (defined in Object.h
+    // IsType<T>() template method (defined in Object.h line 43)
+    // IsTypeNumber(Type::Number) non-template method (defined in Object.h
     // line 127)
 
     // Both methods should work, but IsTypeNumber() is more commonly used in the

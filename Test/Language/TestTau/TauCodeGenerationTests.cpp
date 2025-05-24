@@ -125,7 +125,7 @@ struct TauCodeGenerationTests : TestLangCommon {
     }
 };
 
-// 1. Test basic interface proxy generation
+// Test basic interface proxy generation
 TEST_F(TauCodeGenerationTests, BasicProxyGeneration) {
     std::string script = R"(
     namespace KAI::Test {
@@ -140,7 +140,7 @@ TEST_F(TauCodeGenerationTests, BasicProxyGeneration) {
     TestProxyGeneration(script, "BasicInterface");
 }
 
-// 2. Test interface with events proxy generation
+// Test interface with events proxy generation
 TEST_F(TauCodeGenerationTests, EventProxyGeneration) {
     std::string script = R"(
     namespace KAI::Test {
@@ -157,7 +157,7 @@ TEST_F(TauCodeGenerationTests, EventProxyGeneration) {
     TestProxyGeneration(script, "EventInterface");
 }
 
-// 3. Test interface with complex types proxy generation
+// Test interface with complex types proxy generation
 TEST_F(TauCodeGenerationTests, ComplexTypesProxyGeneration) {
     std::string script = R"(
     namespace KAI::Test {
@@ -185,7 +185,7 @@ TEST_F(TauCodeGenerationTests, ComplexTypesProxyGeneration) {
     TestProxyGeneration(script, "ComplexTypesInterface");
 }
 
-// 4. Test agent generation for basic interface
+// Test agent generation for basic interface
 TEST_F(TauCodeGenerationTests, BasicAgentGeneration) {
     std::string script = R"(
     namespace KAI::Test {
@@ -200,7 +200,7 @@ TEST_F(TauCodeGenerationTests, BasicAgentGeneration) {
     TestAgentGeneration(script, "BasicInterface");
 }
 
-// 5. Test agent generation for interface with events
+// Test agent generation for interface with events
 TEST_F(TauCodeGenerationTests, EventAgentGeneration) {
     std::string script = R"(
     namespace KAI::Test {
@@ -217,7 +217,7 @@ TEST_F(TauCodeGenerationTests, EventAgentGeneration) {
     TestAgentGeneration(script, "EventInterface");
 }
 
-// 6. Test process generation for basic interface
+// Test process generation for basic interface
 TEST_F(TauCodeGenerationTests, BasicProcessGeneration) {
     std::string script = R"(
     namespace KAI::Test {
@@ -232,7 +232,7 @@ TEST_F(TauCodeGenerationTests, BasicProcessGeneration) {
     TestProcessGeneration(script, "BasicInterface");
 }
 
-// 7. Test proxy generation with namespace nesting
+// Test proxy generation with namespace nesting
 TEST_F(TauCodeGenerationTests, NestedNamespaceProxyGeneration) {
     std::string script = R"(
     namespace KAI::Test::Network::Protocol {
@@ -247,7 +247,7 @@ TEST_F(TauCodeGenerationTests, NestedNamespaceProxyGeneration) {
     TestProxyGeneration(script, "NestedNamespace");
 }
 
-// 8. Test generation with method overloading
+// Test generation with method overloading
 TEST_F(TauCodeGenerationTests, MethodOverloadingGeneration) {
     std::string script = R"(
     namespace KAI::Test {
@@ -264,7 +264,7 @@ TEST_F(TauCodeGenerationTests, MethodOverloadingGeneration) {
     TestAgentGeneration(script, "MethodOverloading");
 }
 
-// 9. Test generation with default parameters
+// Test generation with default parameters
 TEST_F(TauCodeGenerationTests, DefaultParametersGeneration) {
     std::string script = R"(
     namespace KAI::Test {
@@ -280,7 +280,7 @@ TEST_F(TauCodeGenerationTests, DefaultParametersGeneration) {
     TestAgentGeneration(script, "DefaultParameters");
 }
 
-// 10. Test generation with array parameters
+// Test generation with array parameters
 TEST_F(TauCodeGenerationTests, ArrayParametersGeneration) {
     std::string script = R"(
     namespace KAI::Test {
@@ -297,7 +297,7 @@ TEST_F(TauCodeGenerationTests, ArrayParametersGeneration) {
     TestAgentGeneration(script, "ArrayParameters");
 }
 
-// 11. Test generation with complex events
+// Test generation with complex events
 TEST_F(TauCodeGenerationTests, ComplexEventsGeneration) {
     std::string script = R"(
     namespace KAI::Test {
@@ -324,7 +324,7 @@ TEST_F(TauCodeGenerationTests, ComplexEventsGeneration) {
     TestAgentGeneration(script, "ComplexEvents");
 }
 
-// 12. Test generation with enum parameters
+// Test generation with enum parameters
 TEST_F(TauCodeGenerationTests, EnumParametersGeneration) {
     std::string script = R"(
     namespace KAI::Test {
@@ -356,7 +356,7 @@ TEST_F(TauCodeGenerationTests, EnumParametersGeneration) {
     TestAgentGeneration(script, "EnumParameters");
 }
 
-// 13. Test generation with multiple interfaces
+// Test generation with multiple interfaces
 TEST_F(TauCodeGenerationTests, MultipleInterfacesGeneration) {
     std::string script = R"(
     namespace KAI::Test {
@@ -382,7 +382,7 @@ TEST_F(TauCodeGenerationTests, MultipleInterfacesGeneration) {
     TestProcessGeneration(script, "MultipleInterfaces");
 }
 
-// 14. Test generation with circular dependencies
+// Test generation with circular dependencies
 TEST_F(TauCodeGenerationTests, CircularDependenciesGeneration) {
     std::string script = R"(
     namespace KAI::Test {
@@ -402,7 +402,7 @@ TEST_F(TauCodeGenerationTests, CircularDependenciesGeneration) {
     TestAgentGeneration(script, "CircularDependencies");
 }
 
-// 15. Test generation with interface inheritance
+// Test generation with interface inheritance
 TEST_F(TauCodeGenerationTests, InterfaceInheritanceGeneration) {
     std::string script = R"(
     namespace KAI::Test {
@@ -422,7 +422,7 @@ TEST_F(TauCodeGenerationTests, InterfaceInheritanceGeneration) {
     TestAgentGeneration(script, "InterfaceInheritance");
 }
 
-// 16. Test generation with void return types
+// Test generation with void return types
 TEST_F(TauCodeGenerationTests, VoidReturnTypeGeneration) {
     std::string script = R"(
     namespace KAI::Test {
@@ -439,7 +439,7 @@ TEST_F(TauCodeGenerationTests, VoidReturnTypeGeneration) {
     TestAgentGeneration(script, "VoidReturnType");
 }
 
-// 17. Test generation with boolean return types
+// Test generation with boolean return types
 TEST_F(TauCodeGenerationTests, BooleanReturnTypeGeneration) {
     std::string script = R"(
     namespace KAI::Test {
@@ -456,7 +456,7 @@ TEST_F(TauCodeGenerationTests, BooleanReturnTypeGeneration) {
     TestAgentGeneration(script, "BooleanReturnType");
 }
 
-// 18. Test generation with reference and out parameters
+// Test generation with reference and out parameters
 TEST_F(TauCodeGenerationTests, ReferenceParametersGeneration) {
     std::string script = R"(
     namespace KAI::Test {
@@ -473,7 +473,7 @@ TEST_F(TauCodeGenerationTests, ReferenceParametersGeneration) {
     TestAgentGeneration(script, "ReferenceParameters");
 }
 
-// 19. Test generation with complex inheritance hierarchy
+// Test generation with complex inheritance hierarchy
 TEST_F(TauCodeGenerationTests, ComplexInheritanceGeneration) {
     std::string script = R"(
     namespace KAI::Test {
@@ -499,7 +499,7 @@ TEST_F(TauCodeGenerationTests, ComplexInheritanceGeneration) {
     TestAgentGeneration(script, "ComplexInheritance");
 }
 
-// 20. Test generation with complex method signatures
+// Test generation with complex method signatures
 TEST_F(TauCodeGenerationTests, ComplexMethodSignaturesGeneration) {
     std::string script = R"(
     namespace KAI::Test {

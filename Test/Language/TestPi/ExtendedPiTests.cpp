@@ -118,32 +118,32 @@ struct ExtendedPiTests : TestLangCommon {
     }
 };
 
-// 1. Basic integer addition
+// Basic integer addition
 TEST_F(ExtendedPiTests, IntegerAddition) {
     DirectExecuteAndVerify<int>(5, 7, Operation::Plus, 12);
 }
 
-// 2. Basic integer subtraction
+// Basic integer subtraction
 TEST_F(ExtendedPiTests, IntegerSubtraction) {
     DirectExecuteAndVerify<int>(10, 3, Operation::Minus, 7);
 }
 
-// 3. Basic integer multiplication
+// Basic integer multiplication
 TEST_F(ExtendedPiTests, IntegerMultiplication) {
     DirectExecuteAndVerify<int>(6, 7, Operation::Multiply, 42);
 }
 
-// 4. Basic integer division
+// Basic integer division
 TEST_F(ExtendedPiTests, IntegerDivision) {
     DirectExecuteAndVerify<int>(20, 4, Operation::Divide, 5);
 }
 
-// 5. Basic modulo operation
+// Basic modulo operation
 TEST_F(ExtendedPiTests, ModuloOperation) {
     DirectExecuteAndVerify<int>(17, 5, Operation::Modulo, 2);
 }
 
-// 6. Stack duplication
+// Stack duplication
 TEST_F(ExtendedPiTests, StackDuplication) {
     // Clear the stack first
     exec_->ClearStacks();
@@ -163,7 +163,7 @@ TEST_F(ExtendedPiTests, StackDuplication) {
     ASSERT_EQ(ConstDeref<int>(data_->At(1)), 5) << "Second value should be 5";
 }
 
-// 7. Stack drop
+// Stack drop
 TEST_F(ExtendedPiTests, StackDrop) {
     // Clear the stack first
     exec_->ClearStacks();
@@ -185,7 +185,7 @@ TEST_F(ExtendedPiTests, StackDrop) {
         << "Remaining value should be 5";
 }
 
-// 8. Stack swap
+// Stack swap
 TEST_F(ExtendedPiTests, StackSwap) {
     // Clear the stack first
     exec_->ClearStacks();
@@ -207,7 +207,7 @@ TEST_F(ExtendedPiTests, StackSwap) {
     ASSERT_EQ(ConstDeref<int>(data_->At(1)), 10) << "Second value should be 10";
 }
 
-// 9. Stack over
+// Stack over
 TEST_F(ExtendedPiTests, StackOver) {
     // Clear the stack first
     exec_->ClearStacks();
@@ -231,7 +231,7 @@ TEST_F(ExtendedPiTests, StackOver) {
     ASSERT_EQ(ConstDeref<int>(data_->At(2)), 5) << "Third value should be 5";
 }
 
-// 10. Stack rotation
+// Stack rotation
 TEST_F(ExtendedPiTests, StackRotation) {
     // Clear the stack first
     exec_->ClearStacks();
@@ -257,45 +257,45 @@ TEST_F(ExtendedPiTests, StackRotation) {
     ASSERT_EQ(ConstDeref<int>(data_->At(2)), 2) << "Third value should be 2";
 }
 
-// 11. Equality comparison
+// Equality comparison
 TEST_F(ExtendedPiTests, EqualityComparison) {
     DirectExecuteAndVerify<bool>(5, 5, Operation::Equiv, true);
     DirectExecuteAndVerify<bool>(5, 6, Operation::Equiv, false);
 }
 
-// 12. Inequality comparison
+// Inequality comparison
 TEST_F(ExtendedPiTests, InequalityComparison) {
     DirectExecuteAndVerify<bool>(5, 6, Operation::NotEquiv, true);
     DirectExecuteAndVerify<bool>(5, 5, Operation::NotEquiv, false);
 }
 
-// 13. Less than comparison
+// Less than comparison
 TEST_F(ExtendedPiTests, LessThanComparison) {
     DirectExecuteAndVerify<bool>(5, 10, Operation::Less, true);
     DirectExecuteAndVerify<bool>(10, 5, Operation::Less, false);
 }
 
-// 14. Greater than comparison
+// Greater than comparison
 TEST_F(ExtendedPiTests, GreaterThanComparison) {
     DirectExecuteAndVerify<bool>(10, 5, Operation::Greater, true);
     DirectExecuteAndVerify<bool>(5, 10, Operation::Greater, false);
 }
 
-// 15. Less than or equal comparison
+// Less than or equal comparison
 TEST_F(ExtendedPiTests, LessThanOrEqualComparison) {
     DirectExecuteAndVerify<bool>(5, 5, Operation::LessOrEquiv, true);
     DirectExecuteAndVerify<bool>(5, 10, Operation::LessOrEquiv, true);
     DirectExecuteAndVerify<bool>(10, 5, Operation::LessOrEquiv, false);
 }
 
-// 16. Greater than or equal comparison
+// Greater than or equal comparison
 TEST_F(ExtendedPiTests, GreaterThanOrEqualComparison) {
     DirectExecuteAndVerify<bool>(5, 5, Operation::GreaterOrEquiv, true);
     DirectExecuteAndVerify<bool>(10, 5, Operation::GreaterOrEquiv, true);
     DirectExecuteAndVerify<bool>(5, 10, Operation::GreaterOrEquiv, false);
 }
 
-// 17. Complex stack manipulation
+// Complex stack manipulation
 TEST_F(ExtendedPiTests, ComplexStackManipulation) {
     // Clear the stack first
     exec_->ClearStacks();
@@ -336,7 +336,7 @@ TEST_F(ExtendedPiTests, ComplexStackManipulation) {
     ASSERT_EQ(ConstDeref<int>(data_->At(3)), 1) << "Bottom value should be 1";
 }
 
-// 18. Boolean NOT operation
+// Boolean NOT operation
 TEST_F(ExtendedPiTests, BooleanNotOperation) {
     // Clear the stack first
     exec_->ClearStacks();
@@ -361,14 +361,14 @@ TEST_F(ExtendedPiTests, BooleanNotOperation) {
     ASSERT_TRUE(ConstDeref<bool>(data_->Top())) << "NOT false should be true";
 }
 
-// 19. Boolean AND operation
+// Boolean AND operation
 TEST_F(ExtendedPiTests, BooleanAndOperation) {
     TestBooleanOperation(true, true, Operation::LogicalAnd, true);
     TestBooleanOperation(true, false, Operation::LogicalAnd, false);
     TestBooleanOperation(false, false, Operation::LogicalAnd, false);
 }
 
-// 20. Boolean OR operation
+// Boolean OR operation
 TEST_F(ExtendedPiTests, BooleanOrOperation) {
     TestBooleanOperation(true, true, Operation::LogicalOr, true);
     TestBooleanOperation(true, false, Operation::LogicalOr, true);

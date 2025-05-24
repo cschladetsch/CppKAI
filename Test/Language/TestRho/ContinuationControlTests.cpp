@@ -113,9 +113,9 @@ TEST_F(ContinuationControlTests, BasicResumeOperation) {
     data_->Clear();
 
     // Create two continuations:
-    // 1. Outer continuation that pushes 1, executes inner continuation, then
+    // Outer continuation that pushes 1, executes inner continuation, then
     // pushes 3
-    // 2. Inner continuation that pushes 2, then calls Resume to exit back to
+    // Inner continuation that pushes 2, then calls Resume to exit back to
     // outer continuation
 
     // Inner continuation: Push 2, then Resume
@@ -154,8 +154,8 @@ TEST_F(ContinuationControlTests, BasicSuspendOperation) {
     data_->Clear();
 
     // Create two continuations:
-    // 1. First continuation that pushes 1, suspends to second continuation
-    // 2. Second continuation that pushes 2
+    // First continuation that pushes 1, suspends to second continuation
+    // Second continuation that pushes 2
 
     // Second continuation: Simply push 2
     std::vector<Object> secondCode = {
@@ -200,9 +200,9 @@ TEST_F(ContinuationControlTests, BasicReplaceOperation) {
     data_->Clear();
 
     // Create two continuations:
-    // 1. First continuation that pushes 1, replaces itself with second
+    // First continuation that pushes 1, replaces itself with second
     // continuation
-    // 2. Second continuation that pushes 2
+    // Second continuation that pushes 2
 
     // Second continuation: Simply push 2
     std::vector<Object> secondCode = {

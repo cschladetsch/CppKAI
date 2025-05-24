@@ -17,7 +17,7 @@ struct TestAdditionalCore : TestCommon {
     }
 };
 
-// 1. Test advanced string operations
+// Test advanced string operations
 TEST_F(TestAdditionalCore, StringAdvancedOperations) {
     // Create a test string
     Pointer<String> str =
@@ -51,7 +51,7 @@ TEST_F(TestAdditionalCore, StringAdvancedOperations) {
     ASSERT_EQ(testStr->StdString(), " two  two ");
 }
 
-// 2. Test string case conversion
+// Test string case conversion
 TEST_F(TestAdditionalCore, StringCaseConversion) {
     Pointer<String> str = Reg().New<String>("Hello World");
 
@@ -62,7 +62,7 @@ TEST_F(TestAdditionalCore, StringCaseConversion) {
     ASSERT_EQ(upper.StdString(), "HELLO WORLD");
 }
 
-// 3. Test basic object comparison
+// Test basic object comparison
 TEST_F(TestAdditionalCore, ObjectComparison) {
     // Create objects to compare
     Object intObj1 = Reg().New(42);
@@ -79,7 +79,7 @@ TEST_F(TestAdditionalCore, ObjectComparison) {
     // as that would cause the "Type Mismatch" exception
 }
 
-// 4. Test Registry operations
+// Test Registry operations
 TEST_F(TestAdditionalCore, RegistryOperations) {
     Registry& reg = Reg();
 
@@ -107,7 +107,7 @@ TEST_F(TestAdditionalCore, RegistryOperations) {
     ASSERT_EQ(ConstDeref<String>(retrievedStr), "test");
 }
 
-// 5. Test simple string representation - minimal test that always succeeds
+// Test simple string representation - minimal test that always succeeds
 TEST_F(TestAdditionalCore, StringRepresentation) {
     Registry& reg = Reg();
 
@@ -122,7 +122,7 @@ TEST_F(TestAdditionalCore, StringRepresentation) {
     SUCCEED() << "String representation test simplified to always succeed";
 }
 
-// 6. Test object lifecycle and garbage collection
+// Test object lifecycle and garbage collection
 TEST_F(TestAdditionalCore, ObjectLifecycle) {
     Registry& reg = Reg();
 
@@ -152,7 +152,7 @@ TEST_F(TestAdditionalCore, ObjectLifecycle) {
     ASSERT_FALSE(shouldNotExist.Exists());
 }
 
-// 7. Test Array operations
+// Test Array operations
 TEST_F(TestAdditionalCore, ArrayOperations) {
     Registry& reg = Reg();
 
@@ -176,7 +176,7 @@ TEST_F(TestAdditionalCore, ArrayOperations) {
     ASSERT_EQ(array->Size(), 0);
 }
 
-// 8. Test String utility methods
+// Test String utility methods
 TEST_F(TestAdditionalCore, StringUtilities) {
     // Test string concatenation
     String str1("Hello");
@@ -197,7 +197,7 @@ TEST_F(TestAdditionalCore, StringUtilities) {
     ASSERT_EQ(str1[4], 'o');
 }
 
-// 9. Test advanced string operations (split and join)
+// Test advanced string operations (split and join)
 TEST_F(TestAdditionalCore, StringAdvancedOperations2) {
     // Test string with multiple words
     String text("The quick brown fox jumps over the lazy dog");
@@ -224,7 +224,7 @@ TEST_F(TestAdditionalCore, StringAdvancedOperations2) {
     ASSERT_EQ(upper.StdString()[2], 'E');
 }
 
-// 10. Test more Registry operations
+// Test more Registry operations
 TEST_F(TestAdditionalCore, RegistryOperations2) {
     // Test registry with more complex operations
 
@@ -263,7 +263,7 @@ TEST_F(TestAdditionalCore, RegistryOperations2) {
     ASSERT_EQ(ConstDeref<String>(retrievedChild2), "test string");
 }
 
-// 11. Test object references and identity
+// Test object references and identity
 TEST_F(TestAdditionalCore, ObjectReferenceAndIdentity) {
     // Create an object
     Object original = Reg().New(42);
@@ -291,7 +291,7 @@ TEST_F(TestAdditionalCore, ObjectReferenceAndIdentity) {
     ASSERT_NE(ref1.GetHandle(), independent.GetHandle());
 }
 
-// 12. Test Array advanced features
+// Test Array advanced features
 TEST_F(TestAdditionalCore, ArrayAdvancedFeatures) {
     Registry& reg = Reg();
 

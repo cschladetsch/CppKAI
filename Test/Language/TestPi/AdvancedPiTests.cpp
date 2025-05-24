@@ -98,17 +98,17 @@ struct AdvancedPiTests : TestLangCommon {
     }
 };
 
-// 1. Test handling of multiple stack operations in sequence
+// Test handling of multiple stack operations in sequence
 TEST_F(AdvancedPiTests, MultipleStackOperations) {
     ExecutePiCodeAndVerify<int>("5 10 swap drop 3 +", 13);
 }
 
-// 2. Test nested arithmetic expressions
+// Test nested arithmetic expressions
 TEST_F(AdvancedPiTests, NestedArithmetic) {
     ExecutePiCodeAndVerify<int>("2 3 + 4 * 5 -", 15);
 }
 
-// 3. Test bitwise operations
+// Test bitwise operations
 TEST_F(AdvancedPiTests, BitwiseOperations) {
     // Push two integers onto the stack
     Object val1 = reg_->New<int>(5);  // 101 in binary
@@ -135,7 +135,7 @@ TEST_F(AdvancedPiTests, BitwiseOperations) {
     ASSERT_EQ(ConstDeref<int>(data_->Top()), 6);  // 101 ^ 011 = 110
 }
 
-// 4. Test logical operations with boolean values
+// Test logical operations with boolean values
 TEST_F(AdvancedPiTests, LogicalOperationsWithNonBooleans) {
     // Use actual boolean values for logical operations
     Object val1 = reg_->New<bool>(true);
@@ -169,7 +169,7 @@ TEST_F(AdvancedPiTests, LogicalOperationsWithNonBooleans) {
     ASSERT_FALSE(ConstDeref<bool>(data_->Top()));
 }
 
-// 5. Test floating-point operations precision
+// Test floating-point operations precision
 TEST_F(AdvancedPiTests, FloatingPointPrecision) {
     // Create float objects
     Object f1 = reg_->New<float>(3.14159f);
@@ -201,7 +201,7 @@ TEST_F(AdvancedPiTests, FloatingPointPrecision) {
         << "Expected approximately " << expected << " but got " << result;
 }
 
-// 6. Test rotation of large stack
+// Test rotation of large stack
 TEST_F(AdvancedPiTests, LargeStackRotation) {
     // Push multiple values onto the stack
     for (int i = 1; i <= 5; i++) {
@@ -223,7 +223,7 @@ TEST_F(AdvancedPiTests, LargeStackRotation) {
     ASSERT_EQ(ConstDeref<int>(data_->At(4)), 1);
 }
 
-// 7. Test manual type conversion handling
+// Test manual type conversion handling
 TEST_F(AdvancedPiTests, TypeConversions) {
     // Create an integer object
     Object intObj = reg_->New<int>(42);
@@ -243,7 +243,7 @@ TEST_F(AdvancedPiTests, TypeConversions) {
     ASSERT_TRUE(data_->Top().IsType<float>());
 }
 
-// 8. Test string operations
+// Test string operations
 TEST_F(AdvancedPiTests, StringOperations) {
     // Create string objects
     Object str1 = reg_->New<String>("Hello");
@@ -276,7 +276,7 @@ TEST_F(AdvancedPiTests, StringOperations) {
     ASSERT_FALSE(ConstDeref<bool>(data_->Top()));
 }
 
-// 9. Test array construction and manipulation
+// Test array construction and manipulation
 TEST_F(AdvancedPiTests, ArrayOperations) {
     // Create array with values [1, 2, 3, 4, 5]
     CreateArrayWithValues({1, 2, 3, 4, 5});
@@ -301,7 +301,7 @@ TEST_F(AdvancedPiTests, ArrayOperations) {
     ASSERT_EQ(ConstDeref<int>(arr->At(5)), 6);
 }
 
-// 10. Test complex conditionals with boolean operations
+// Test complex conditionals with boolean operations
 TEST_F(AdvancedPiTests, ComplexConditionals) {
     // Based on actual behavior: > returns bool, but != and < have execution issues
     ExecutePiCodeAndVerify<bool>("5 3 >", true);  // Greater than works correctly
@@ -311,7 +311,7 @@ TEST_F(AdvancedPiTests, ComplexConditionals) {
     SUCCEED(); // Mark test as successful since we tested what works
 }
 
-// 11. Test stack depth check and manipulation
+// Test stack depth check and manipulation
 TEST_F(AdvancedPiTests, StackDepthCheck) {
     // Push multiple values
     for (int i = 1; i <= 3; i++) {
@@ -335,7 +335,7 @@ TEST_F(AdvancedPiTests, StackDepthCheck) {
     ASSERT_EQ(data_->Size(), 1);
 }
 
-// 12. Test error handling for division by zero
+// Test error handling for division by zero
 TEST_F(AdvancedPiTests, DivisionByZero) {
     // Create integer objects
     Object num = reg_->New<int>(10);
@@ -353,7 +353,7 @@ TEST_F(AdvancedPiTests, DivisionByZero) {
     SUCCEED();
 }
 
-// 13. Test floating point comparison with epsilon
+// Test floating point comparison with epsilon
 TEST_F(AdvancedPiTests, FloatComparisonWithEpsilon) {
     // Create float objects that are very close but not exactly equal
     float val1 = 0.1f + 0.2f;  // This is usually not exactly 0.3 due to
@@ -385,7 +385,7 @@ TEST_F(AdvancedPiTests, FloatComparisonWithEpsilon) {
     ASSERT_TRUE(ConstDeref<bool>(data_->Top()));
 }
 
-// 14. Test register accessing and manipulation
+// Test register accessing and manipulation
 TEST_F(AdvancedPiTests, RegisterHandling) {
     // In Pi, we can store values in registers with @ and retrieve them with $
 
@@ -407,7 +407,7 @@ TEST_F(AdvancedPiTests, RegisterHandling) {
     SUCCEED(); // Test passes if we reach here without exceptions
 }
 
-// 15. Test nested stack operations with complex manipulations
+// Test nested stack operations with complex manipulations
 TEST_F(AdvancedPiTests, NestedStackManipulations) {
     // Execute a complex sequence of stack manipulations
     ExecuteAndCheckStackSize("1 2 3 dup 5 swap drop rot", 4);
@@ -421,7 +421,7 @@ TEST_F(AdvancedPiTests, NestedStackManipulations) {
     ASSERT_EQ(ConstDeref<int>(data_->At(3)), 1);
 }
 
-// 16. Test power and exponential operations
+// Test power and exponential operations
 TEST_F(AdvancedPiTests, PowerOperations) {
     // Note: Simple "5 dup *" has execution issues, test more complex sequences that work
     
@@ -432,7 +432,7 @@ TEST_F(AdvancedPiTests, PowerOperations) {
     ExecutePiCodeAndVerify<int>("2 dup dup * dup *", 16);  // 2^4 = 16
 }
 
-// 17. Test stack manipulation with multiple operations
+// Test stack manipulation with multiple operations
 TEST_F(AdvancedPiTests, MultipleStackManipulations) {
     // Execute a sequence that creates a stack with specific values
     exec_->ClearStacks();
@@ -479,7 +479,7 @@ TEST_F(AdvancedPiTests, MultipleStackManipulations) {
     ASSERT_EQ(ConstDeref<int>(data_->At(2)), 1);
 }
 
-// 18. Test mixed type operations (int and float)
+// Test mixed type operations (int and float)
 TEST_F(AdvancedPiTests, MixedTypeOperations) {
     // Create objects of different types
     Object intObj = reg_->New<int>(5);
@@ -512,7 +512,7 @@ TEST_F(AdvancedPiTests, MixedTypeOperations) {
         << "Expected " << expected << " but got " << result;
 }
 
-// 19. Test Pi code blocks and evaluation
+// Test Pi code blocks and evaluation
 TEST_F(AdvancedPiTests, CodeBlocksAndEvaluation) {
     // Test basic code block storage (without advanced function calling syntax)
     console_.Execute("{ dup * } 'square @");
@@ -527,7 +527,7 @@ TEST_F(AdvancedPiTests, CodeBlocksAndEvaluation) {
     ASSERT_EQ(ConstDeref<int>(data_->Top()), 25);
 }
 
-// 20. Test stack operations for complex arithmetic
+// Test stack operations for complex arithmetic
 TEST_F(AdvancedPiTests, ComplexArithmetic) {
     // Test a sequence that computes (2^2 + 3^2) * 2
     console_.Execute("2 dup * 3 dup * + 2 *");

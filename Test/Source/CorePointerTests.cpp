@@ -125,15 +125,15 @@ TEST_F(CorePointerTests, TestPointerAssignment) {
 
     // The behavior here depends on the specific garbage collection
     // implementation What matters is:
-    // 1. ptr1 was assigned to ptr2, so it now references handle2
-    // 2. handle1 is no longer referenced by any variable
-    // 3. handle2 is still referenced by both ptr1 and ptr2
+    // ptr1 was assigned to ptr2, so it now references handle2
+    // handle1 is no longer referenced by any variable
+    // handle2 is still referenced by both ptr1 and ptr2
 
     // What we can verify for sure:
-    // 1. Original ptr1 object should be gone since nothing references it
+    // Original ptr1 object should be gone since nothing references it
     ASSERT_FALSE(obj1.Exists());
 
-    // 2. ptr1 and ptr2 should now point to the same object
+    // ptr1 and ptr2 should now point to the same object
     ASSERT_EQ(ptr1.GetHandle(), ptr2.GetHandle());
 }
 
@@ -230,8 +230,8 @@ TEST_F(CorePointerTests, TestPointerInvalidTypeCasting) {
     Root().Set(Label("test_ptr_invalid_cast"), obj);
 
     // This test has two valid behaviors depending on the implementation:
-    // 1. For TypeMismatch, it may throw an exception (current behavior)
-    // 2. Or it might return an empty pointer (other possible behavior)
+    // For TypeMismatch, it may throw an exception (current behavior)
+    // Or it might return an empty pointer (other possible behavior)
 
     // First, store the original object's handle to check it later
     Handle originalHandle = obj.GetHandle();
@@ -242,11 +242,11 @@ TEST_F(CorePointerTests, TestPointerInvalidTypeCasting) {
 
     // Regardless of whether it threw or not, the original object should be
     // unaffected
-    // 1. The object should still exist
+    // The object should still exist
     ASSERT_TRUE(obj.Exists());
-    // 2. Its value should be unchanged
+    // Its value should be unchanged
     ASSERT_EQ(ConstDeref<int>(obj), 42);
-    // 3. Its handle should be the same
+    // Its handle should be the same
     ASSERT_EQ(obj.GetHandle(), originalHandle);
 
     // Clean up
@@ -272,8 +272,8 @@ TEST_F(CorePointerTests, TestPointerLifetimeDuringGC) {
     ASSERT_TRUE(tempPtr.Exists());
 
     // Run garbage collection - the object should survive because:
-    // 1. It is referenced by tempPtr
-    // 2. It is stored in the Root tree
+    // It is referenced by tempPtr
+    // It is stored in the Root tree
     Reg().GarbageCollect();
 
     // Verify it still exists
@@ -281,13 +281,13 @@ TEST_F(CorePointerTests, TestPointerLifetimeDuringGC) {
     ASSERT_EQ(*tempPtr, 42);
 
     // Now let's test what happens when we remove it from GC roots:
-    // 1. Remove from Root tree (no longer referenced from GC roots)
+    // Remove from Root tree (no longer referenced from GC roots)
     Root().Remove(Label("tempObject"));
 
-    // 2. Keep reference in tempPtr (keeps it alive for now)
+    // Keep reference in tempPtr (keeps it alive for now)
     ASSERT_TRUE(tempPtr.Exists());
 
-    // 3. Clear tempPtr (no more references to the object)
+    // Clear tempPtr (no more references to the object)
     tempPtr = Pointer<int>();
 
     // Run garbage collection - now the object should be gone since:

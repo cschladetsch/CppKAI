@@ -86,20 +86,20 @@ class ExtendedRhoTests : public ::testing::Test {
     Stack* stack;
 };
 
-// 1. Basic variable assignment (integer)
+// Basic variable assignment (integer)
 TEST_F(ExtendedRhoTests, VariableAssignment) { CreateAndVerify<int>(42); }
 
-// 2. Basic arithmetic operations - Addition
+// Basic arithmetic operations - Addition
 TEST_F(ExtendedRhoTests, BasicArithmetic) {
     TestBinaryOp<int, int, int>(10, 10, Operation::Plus, 20);
 }
 
-// 3. Order of operations simulation (multiplication)
+// Order of operations simulation (multiplication)
 TEST_F(ExtendedRhoTests, OrderOfOperations) {
     TestBinaryOp<int, int, int>(15, 2, Operation::Multiply, 30);
 }
 
-// 4. Compound assignment simulation
+// Compound assignment simulation
 TEST_F(ExtendedRhoTests, CompoundAssignment) {
     // x = 10, x += 5, x *= 2
     Object initial = reg->New<int>(10);
@@ -122,45 +122,45 @@ TEST_F(ExtendedRhoTests, CompoundAssignment) {
         << "Result should be (10 + 5) * 2 = 30";
 }
 
-// 5. String concatenation
+// String concatenation
 TEST_F(ExtendedRhoTests, StringConcatenation) {
     TestBinaryOp<String, String, String>("Hello, ", "World!", Operation::Plus,
                                          "Hello, World!");
 }
 
-// 6. Basic if simulation (direct result)
+// Basic if simulation (direct result)
 TEST_F(ExtendedRhoTests, BasicIfStatement) { CreateAndVerify<int>(1); }
 
-// 7. If-else simulation (direct result)
+// If-else simulation (direct result)
 TEST_F(ExtendedRhoTests, IfElseStatement) { CreateAndVerify<int>(2); }
 
-// 8. Nested if simulation (direct result)
+// Nested if simulation (direct result)
 TEST_F(ExtendedRhoTests, NestedIfStatements) { CreateAndVerify<int>(1); }
 
-// 9. Basic while loop simulation (direct result)
+// Basic while loop simulation (direct result)
 TEST_F(ExtendedRhoTests, BasicWhileLoop) { CreateAndVerify<int>(5); }
 
-// 10. Basic do-while loop simulation (direct result)
+// Basic do-while loop simulation (direct result)
 TEST_F(ExtendedRhoTests, BasicDoWhileLoop) { CreateAndVerify<int>(5); }
 
-// 11. Simple function call simulation
+// Simple function call simulation
 TEST_F(ExtendedRhoTests, SimpleFunctionCall) {
     // Direct operation: 10 + 20
     TestBinaryOp<int, int, int>(10, 20, Operation::Plus, 30);
 }
 
-// 12. Recursive function simulation
+// Recursive function simulation
 TEST_F(ExtendedRhoTests, RecursiveFunction) {
     CreateAndVerify<int>(120);  // factorial(5) = 120
 }
 
-// 13. Function with default parameters simulation
+// Function with default parameters simulation
 TEST_F(ExtendedRhoTests, FunctionWithDefaultParams) {
     // Simulating multiply(5, 2)
     TestBinaryOp<int, int, int>(5, 2, Operation::Multiply, 10);
 }
 
-// 14. Array operations
+// Array operations
 TEST_F(ExtendedRhoTests, ArrayOperations) {
     // Create an array with 5 elements
     Object arr = reg->New<Array>();
@@ -187,7 +187,7 @@ TEST_F(ExtendedRhoTests, ArrayOperations) {
         << "Sum should be 1+2+3+4+5 = 15";
 }
 
-// 15. Array push and pop simulation
+// Array push and pop simulation
 TEST_F(ExtendedRhoTests, ArrayPushPop) {
     // Create an array and add elements
     Object arr = reg->New<Array>();
@@ -216,7 +216,7 @@ TEST_F(ExtendedRhoTests, ArrayPushPop) {
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 6) << "Sum should be 1+2+3 = 6";
 }
 
-// 16. Object properties
+// Object properties
 TEST_F(ExtendedRhoTests, ObjectProperties) {
     // Create a string for "John is 30"
     Object result = reg->New<String>("John is 30");
@@ -228,7 +228,7 @@ TEST_F(ExtendedRhoTests, ObjectProperties) {
         << "String should be 'John is 30'";
 }
 
-// 17. Nested object access
+// Nested object access
 TEST_F(ExtendedRhoTests, NestedObjectAccess) {
     // Create a string "John lives in New York"
     Object result = reg->New<String>("John lives in New York");
@@ -240,7 +240,7 @@ TEST_F(ExtendedRhoTests, NestedObjectAccess) {
         << "String should be 'John lives in New York'";
 }
 
-// 18. Ternary operator simulation (using direct result)
+// Ternary operator simulation (using direct result)
 TEST_F(ExtendedRhoTests, TernaryOperator) {
     Object result = reg->New<String>("adult");
     stack->Push(result);
@@ -251,7 +251,7 @@ TEST_F(ExtendedRhoTests, TernaryOperator) {
         << "String should be 'adult'";
 }
 
-// 19. Switch statement simulation (using direct result)
+// Switch statement simulation (using direct result)
 TEST_F(ExtendedRhoTests, SwitchStatement) {
     Object result = reg->New<String>("Wednesday");
     stack->Push(result);
@@ -262,7 +262,7 @@ TEST_F(ExtendedRhoTests, SwitchStatement) {
         << "String should be 'Wednesday'";
 }
 
-// 20. String operations (final test)
+// String operations (final test)
 TEST_F(ExtendedRhoTests, StringOperations) {
     // Simulate string concatenation: "Hello" + ", " + "World" + "!"
     Object s1 = reg->New<String>("Hello");

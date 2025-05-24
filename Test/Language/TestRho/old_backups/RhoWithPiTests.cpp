@@ -16,7 +16,7 @@ using namespace std;
  * See Todo-Rho.md for details about the issues.
  */
 
-// 1. Test basic mathematical operations using Pi syntax
+// Test basic mathematical operations using Pi syntax
 TEST(RhoPiWorkaround, BasicMathOperations) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -53,7 +53,7 @@ TEST(RhoPiWorkaround, BasicMathOperations) {
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 30);
 }
 
-// 2. Test variable assignment and retrieval
+// Test variable assignment and retrieval
 TEST(RhoPiWorkaround, VariableOperations) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -87,7 +87,7 @@ TEST(RhoPiWorkaround, VariableOperations) {
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 150);
 }
 
-// 3. Test string operations
+// Test string operations
 TEST(RhoPiWorkaround, StringOperations) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -115,7 +115,7 @@ TEST(RhoPiWorkaround, StringOperations) {
     ASSERT_EQ(ConstDeref<String>(stack->Top()), "Hello World");
 }
 
-// 4. Test boolean operations and comparisons
+// Test boolean operations and comparisons
 TEST(RhoPiWorkaround, BooleanOperations) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -168,7 +168,7 @@ TEST(RhoPiWorkaround, BooleanOperations) {
     ASSERT_FALSE(ConstDeref<bool>(stack->Top()));
 }
 
-// 5. Test array creation and manipulation
+// Test array creation and manipulation
 TEST(RhoPiWorkaround, ArrayOperations) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -208,7 +208,7 @@ TEST(RhoPiWorkaround, ArrayOperations) {
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 4);
 }
 
-// 6. Test conditional logic
+// Test conditional logic
 TEST(RhoPiWorkaround, ConditionalLogic) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -246,7 +246,7 @@ TEST(RhoPiWorkaround, ConditionalLogic) {
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 2);
 }
 
-// 7. Test looping with continuations
+// Test looping with continuations
 TEST(RhoPiWorkaround, LoopSimulation) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -279,7 +279,7 @@ TEST(RhoPiWorkaround, LoopSimulation) {
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 5);
 }
 
-// 8. Test function definition and calling
+// Test function definition and calling
 TEST(RhoPiWorkaround, FunctionOperations) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -318,7 +318,7 @@ TEST(RhoPiWorkaround, FunctionOperations) {
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 25);  // 3² + 4² = 9 + 16 = 25
 }
 
-// 9. Test scoping and context
+// Test scoping and context
 TEST(RhoPiWorkaround, ScopingAndContext) {
     Console console;
     console.SetLanguage(Language::Pi);
@@ -356,7 +356,7 @@ TEST(RhoPiWorkaround, ScopingAndContext) {
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 10);
 }
 
-// 10. Test error handling simulation
+// Test error handling simulation
 TEST(RhoPiWorkaround, ErrorHandlingSimulation) {
     Console console;
     console.SetLanguage(Language::Pi);
