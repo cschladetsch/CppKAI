@@ -19,6 +19,12 @@ _KAI_ is a network distributed **Object Model** for C++ with full runtime reflec
 
 ## Recent Updates
 
+- **May 2025**: Refactored Tau code generation architecture
+  - **Separated proxy and agent generation** - GenerateProxy now only creates proxy classes, GenerateAgent only creates agents
+  - **Added GenerateStruct class** - New dedicated class for generating plain struct definitions
+  - **Improved separation of concerns** - Clear distinction between client-side proxies, server-side agents, and data structures
+  - **All generators now properly inherit** from GenerateProcess base class
+  - **Added comprehensive tests** for the refactored generation system
 - **May 2025**: Major fixes to Rho language implementation - all tests now passing
   - **Fixed type mismatch issues** in RhoTranslator that were causing failures
   - **Removed direct evaluation** at translation time (approximately 1000 lines of code)
@@ -275,9 +281,46 @@ The GUI application provides:
 - **Ext**: External dependencies (git submodules)
 - **Include**: Global include path
 - **Lib**: Library files
-- **Logs**: System logs
+- **Logs**: System logs (ignored by git)
 - **Source**: Project source code
 - **Test**: Unit tests
+
+### Tau Language Module Architecture
+
+The Tau language module has a well-organized structure for code generation:
+
+#### Code Generation Classes (`Include/KAI/Language/Tau/Generate/`)
+
+- **GenerateProcess**: Base class for all code generators, providing common functionality
+- **GenerateProxy**: Generates client-side proxy classes for remote procedure calls
+- **GenerateAgent**: Generates server-side agent classes for handling incoming requests  
+- **GenerateStruct**: Generates plain data structure definitions
+
+All generators properly inherit from `GenerateProcess` and have clear separation of concerns:
+
+1. **Proxy Generation** - Creates proxy classes that forward method calls over the network
+2. **Agent Generation** - Creates agent classes that receive and process network requests
+3. **Struct Generation** - Creates plain C++ struct definitions from Tau IDL
+
+#### Source Organization
+
+**Headers** (`Include/KAI/Language/Tau/`):
+- Core components: `Tau.h`, `TauLexer.h`, `TauParser.h`, `TauToken.h`, `TauAstNode.h`
+- Configuration: `Config.h`
+- Code generation: `Generate/` subdirectory
+
+**Implementation** (`Source/Library/Language/Tau/Source/`):
+- `Tau/` - Core language implementation
+- `Generate/` - Code generation implementations
+
+**Tests** (`Test/Language/TestTau/`):
+- Comprehensive test suite including `TauGenerateStructTests.cpp` and `TauSeparateGenerationTests.cpp`
+
+This architecture enables clean separation between:
+- Interface definitions (Tau IDL)
+- Client-side proxy code (for making remote calls)
+- Server-side agent code (for handling remote calls)
+- Plain data structures (for data transfer objects)
 
 ## Platforms
 
