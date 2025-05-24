@@ -48,6 +48,10 @@ add_library(TestRhoFiles OBJECT
     # New 10 tests for Resume, Suspend, Replace operations in For loops
     ContinuationControlTests.cpp  # Added with tests for continuation control operations
     
+    # New tests for continuation state preservation in loops
+    ContinuationStateTests.cpp  # Added with tests showing how continuations store state
+    ContinuationLoopTests.cpp  # Simple test for continuations in loops
+    
     # New 50 tests for RhoLinearStream to test our linear stream implementation
     RhoLinearStreamTests.cpp  # Added with 50 new tests for linear stream approach
     

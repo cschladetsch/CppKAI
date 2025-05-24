@@ -609,5 +609,228 @@ TEST_F(ContinuationControlTests, ResumeForEarlyLoopTerminationWithResult) {
     VerifyStack(expected);
 }
 
+// Test showing that continuations capture and store state from loops
+TEST_F(ContinuationControlTests, ContinuationStateInRhoLoop) {
+    // This test demonstrates that continuations in Rho capture and store
+    // their creation context, including loop variables
+    
+    // Switch to Rho language for this test
+    console_.SetLanguage(Language::Rho);
+    
+    // Clear the stack
+    data_->Clear();
+    
+    // Create a Rho program that:
+    // 1. Creates continuations inside a loop
+    // 2. Each continuation captures the loop variable
+    // 3. Shows that when called later, each continuation remembers its state
+    const std::string rhoCode = R"(
+        // Create an array to store continuations
+        []
+        
+        // Loop from 0 to 4
+        for (i = 0; i < 5; i = i + 1)
+        {
+            // Create a continuation that captures the current value of i
+            // The continuation will push the captured value when called
+            { i } 
+            
+            // Store the continuation in the array
+            swap dup size swap store
+        }
+        
+        // Now we have an array of 5 continuations
+        // Let's execute them to show they preserved their state
+        
+        // Execute continuation 0 (should push 0)
+        dup 0 at '
+        
+        // Execute continuation 2 (should push 2) 
+        dup 2 at '
+        
+        // Execute continuation 4 (should push 4)
+        dup 4 at '
+        
+        // Drop the array
+        drop
+    )";
+    
+    console_.Execute(rhoCode);
+    
+    // Verify stack: Should contain [0, 2, 4]
+    // Each continuation remembered the value of i when it was created
+    std::vector<std::pair<std::string, int>> expected = {
+        {"int", 0}, {"int", 2}, {"int", 4}
+    };
+    VerifyStack(expected);
+}
+
+// Test showing continuation state with nested loops
+TEST_F(ContinuationControlTests, ContinuationStateInNestedRhoLoops) {
+    // This test shows that continuations capture state from nested loops
+    
+    console_.SetLanguage(Language::Rho);
+    data_->Clear();
+    
+    const std::string rhoCode = R"(
+        // Create a 2D array of continuations
+        []
+        
+        // Outer loop
+        for (i = 0; i < 3; i = i + 1)
+        {
+            // Inner loop
+            for (j = 0; j < 3; j = j + 1) 
+            {
+                // Create a continuation that captures both i and j
+                // It will compute i * 10 + j when called
+                { i 10 * j + }
+                
+                // Store in array
+                swap dup size swap store
+            }
+        }
+        
+        // Now we have 9 continuations
+        // Execute some of them to verify state preservation
+        
+        // Execute continuation at index 0 (i=0, j=0): should push 0
+        dup 0 at '
+        
+        // Execute continuation at index 4 (i=1, j=1): should push 11
+        dup 4 at '
+        
+        // Execute continuation at index 8 (i=2, j=2): should push 22
+        dup 8 at '
+        
+        // Drop the array
+        drop
+    )";
+    
+    console_.Execute(rhoCode);
+    
+    // Verify stack: Should contain [0, 11, 22]
+    std::vector<std::pair<std::string, int>> expected = {
+        {"int", 0}, {"int", 11}, {"int", 22}
+    };
+    VerifyStack(expected);
+}
+
+// Test showing continuation state with mutable variables
+TEST_F(ContinuationControlTests, ContinuationStateWithMutableVarsInLoop) {
+    // This test demonstrates that continuations capture references to variables,
+    // not just their values at creation time
+    
+    console_.SetLanguage(Language::Rho);
+    data_->Clear();
+    
+    const std::string rhoCode = R"(
+        // Create a shared counter variable
+        counter = 0
+        
+        // Create an array for continuations
+        []
+        
+        // Create continuations that reference the counter
+        for (i = 0; i < 3; i = i + 1)
+        {
+            // Create a continuation that adds i to counter
+            { counter i + }
+            
+            // Store it
+            swap dup size swap store
+            
+            // Increment counter
+            counter = counter + 10
+        }
+        
+        // counter is now 30
+        
+        // Execute the continuations
+        // Each adds its captured i to the current counter value (30)
+        
+        // Execute continuation 0: 30 + 0 = 30
+        dup 0 at '
+        
+        // Execute continuation 1: 30 + 1 = 31
+        dup 1 at '
+        
+        // Execute continuation 2: 30 + 2 = 32
+        dup 2 at '
+        
+        // Drop the array
+        drop
+    )";
+    
+    console_.Execute(rhoCode);
+    
+    // Verify stack: Should contain [30, 31, 32]
+    std::vector<std::pair<std::string, int>> expected = {
+        {"int", 30}, {"int", 31}, {"int", 32}
+    };
+    VerifyStack(expected);
+}
+
+// Test showing continuation state preservation with loop break/resume
+TEST_F(ContinuationControlTests, ContinuationStateWithLoopControl) {
+    // This test shows continuations created before and after loop control
+    // operations (like break) maintain their distinct states
+    
+    console_.SetLanguage(Language::Rho);
+    data_->Clear();
+    
+    const std::string rhoCode = R"(
+        // Array to store continuations
+        []
+        
+        // First loop - will break early
+        for (i = 0; i < 10; i = i + 1)
+        {
+            // Create continuation with current i value
+            { i 100 + }
+            
+            // Store it
+            swap dup size swap store
+            
+            // Break when i reaches 2
+            if (i == 2) 
+            {
+                break
+            }
+        }
+        
+        // Second loop - normal completion
+        for (j = 0; j < 3; j = j + 1)
+        {
+            // Create continuation with j value
+            { j 200 + }
+            
+            // Store it
+            swap dup size swap store
+        }
+        
+        // We should have 6 continuations total:
+        // 3 from first loop (i = 0, 1, 2)
+        // 3 from second loop (j = 0, 1, 2)
+        
+        // Execute them to verify state
+        dup 0 at '  // i=0: 100
+        dup 2 at '  // i=2: 102
+        dup 3 at '  // j=0: 200
+        dup 5 at '  // j=2: 202
+        
+        // Drop the array
+        drop
+    )";
+    
+    console_.Execute(rhoCode);
+    
+    // Verify stack: Should contain [100, 102, 200, 202]
+    std::vector<std::pair<std::string, int>> expected = {
+        {"int", 100}, {"int", 102}, {"int", 200}, {"int", 202}
+    };
+    VerifyStack(expected);
+}
+
 // Note: If building these tests is encountering errors, you may need to update
 // the CMakeLists.txt file to include this test file in the build process.
