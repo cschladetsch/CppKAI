@@ -63,6 +63,16 @@ bool RhoLexer::NextToken() {
         while (isdigit(Current())) {
             Next();
         }
+        
+        // Check for decimal point (floating point number)
+        if (Current() == '.' && isdigit(Peek())) {
+            Next(); // consume the '.'
+            while (isdigit(Current())) {
+                Next();
+            }
+            return Add(Enum::Float, Slice(start, offset));
+        }
+        
         return Add(Enum::Int, Slice(start, offset));
     }
 
@@ -190,12 +200,12 @@ bool RhoLexer::LexPathname() {
                       << (int)it->second << ")" << std::endl;
 
             // Add the token with the appropriate enum type
-            return Add(it->second, offset - wordStart);
+            return Add(it->second, Slice(wordStart, offset));
         }
 
         // Not a keyword, it's a regular identifier
         std::cout << "Regular identifier: '" << word << "'" << std::endl;
-        return Add(Enum::Ident, offset - wordStart);
+        return Add(Enum::Ident, Slice(wordStart, offset));
     }
 
     // If it's a quoted or rooted path, process it as a pathname
