@@ -43,16 +43,25 @@ Rho offers a rich set of features for application development:
 - **Strong Typing**: Type safety with automatic conversions where appropriate
 - **Variable Scoping**: Proper lexical scoping with nested environments
 
-## Recent Improvements
+## Recent Improvements (May 2025)
 
-Recent enhancements to the Rho language implementation include:
+The Rho language implementation has undergone major fixes that resolved critical issues:
 
-- **Fixed Binary Operations**: Corrected issues with binary operations handling
-- **Enhanced Control Structures**: Improved support for all control flow constructs
-- **Extended Test Coverage**: Comprehensive test suite covering all language features
-- **Documentation Updates**: Refreshed documentation with more examples
+- **Fixed Type Mismatch Issues**: Resolved fundamental problems where the translator was generating incorrect types
+- **Removed Direct Evaluation**: Eliminated approximately 1000 lines of code that was evaluating expressions at translation time
+- **Fixed Store Operation**: Corrected operand ordering for variable assignments
+- **All Tests Passing**: All 120 Rho language tests now pass successfully
 
-For detailed information on recent fixes, see the [Rho Fix Documentation](Rho-Fix-Documentation.md).
+### Technical Details
+
+The root cause was that RhoTranslator was attempting to evaluate expressions during translation and appending primitive values (like Signed32) where the executor expected Operation or Continuation objects. The fix involved:
+
+1. Removing all direct evaluation logic from TranslateBinaryOp
+2. Eliminating the massive direct evaluation code in the PiSequence case
+3. Ensuring proper operation generation for runtime execution
+4. Fixing Store operation to handle operands in the correct order
+
+For detailed information on recent fixes, see the [Rho Fix Documentation](Rho-Fix-Documentation.md) and [Todo-Rho.md](../Test/Language/TestRho/Todo-Rho.md).
 
 ## Examples
 

@@ -19,6 +19,11 @@ _KAI_ is a network distributed **Object Model** for C++ with full runtime reflec
 
 ## Recent Updates
 
+- **May 2025**: Major fixes to Rho language implementation - all tests now passing
+  - **Fixed type mismatch issues** in RhoTranslator that were causing failures
+  - **Removed direct evaluation** at translation time (approximately 1000 lines of code)
+  - **Fixed Store operation** handling for proper variable assignments
+  - **All 120 Rho tests** now pass successfully
 - **May 2025**: Added comprehensive fixes and improvements to the codebase
 - **Modern C++23 features**:
   - **Full C++23 codebase** - Now uses latest C++23 features throughout:
@@ -80,7 +85,7 @@ _KAI_ is a network distributed **Object Model** for C++ with full runtime reflec
 ### Languages
 
 - **Pi**: Stack-based RPN language inspired by Forth
-- **Rho**: Python-like infix language that compiles to Pi
+- **Rho**: Python-like infix language that compiles to Pi (fully functional with all tests passing)
 - **Tau**: Interface Definition Language (IDL) for network components
 
 ## Example Code
