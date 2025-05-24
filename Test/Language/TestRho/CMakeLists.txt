@@ -54,6 +54,7 @@ add_library(TestRhoFiles OBJECT
     
     # Do-while loop implementation tests
     DoWhileImplementationTest.cpp  # Tests for do-while loop support
+    DoWhileCombinedTests.cpp  # 10 tests combining do-while, for loops, and continuations
     
     # New 50 tests for RhoLinearStream to test our linear stream implementation
     RhoLinearStreamTests.cpp  # Added with 50 new tests for linear stream approach
