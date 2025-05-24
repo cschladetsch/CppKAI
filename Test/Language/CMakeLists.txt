@@ -62,6 +62,7 @@ foreach (lang ${langs})
             ${source_path}/StandalonePiTest.cpp
             ${source_path}/ExtendedPiTests.cpp   # Added 20 new test cases for Pi
             ${source_path}/AdvancedPiTests.cpp   # Added 20 more advanced test cases for Pi
+            ${source_path}/TestPiLabels.cpp      # Test for label operations
             # Larger tests to include if needed:
             #${source_path}/TestPiAdvanced.cpp
             #${source_path}/TestPiAdvanced2.cpp

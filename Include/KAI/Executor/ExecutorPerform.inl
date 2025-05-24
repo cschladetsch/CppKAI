@@ -289,11 +289,47 @@ void Executor::Perform(Operation::Type op) {
             break;
 
         case Operation::Store: {
+            // Log stack state before popping
+            KAI_TRACE() << "Store operation - stack size before: " << data_->Size();
+            if (data_->Size() >= 2) {
+                KAI_TRACE() << "Stack[top-1]: " 
+                            << (data_->At(data_->Size()-2).GetClass() ? 
+                                data_->At(data_->Size()-2).GetClass()->GetName().ToString() : "<null>");
+                KAI_TRACE() << "Stack[top]: " 
+                            << (data_->At(data_->Size()-1).GetClass() ? 
+                                data_->At(data_->Size()-1).GetClass()->GetName().ToString() : "<null>");
+            }
+            
             const auto name = Pop();
             Object value = Pop();
             
+            KAI_TRACE() << "Store operation - name type: " 
+                        << (name.GetClass() ? name.GetClass()->GetName().ToString() : "<null>")
+                        << ", value type: "
+                        << (value.GetClass() ? value.GetClass()->GetName().ToString() : "<null>");
+            
             // If the name's already bound in the current scope, just update it.
+            if (!continuation_.Exists()) {
+                KAI_THROW_1(Base, "No continuation exists for Store operation");
+            }
+            
+            KAI_TRACE() << "Store: continuation exists, checking scope...";
             Object scope = continuation_->GetScope();
+            if (!scope.Exists()) {
+                // Try to get scope from executor's tree
+                if (GetTree() != nullptr) {
+                    scope = GetTree()->GetScope();
+                    if (scope.Exists()) {
+                        KAI_TRACE() << "Using scope from executor tree";
+                        continuation_->SetScope(scope);
+                    } else {
+                        KAI_THROW_1(Base, "No scope available in tree for Store operation");
+                    }
+                } else {
+                    KAI_THROW_1(Base, "No scope in continuation and no tree available for Store operation");
+                }
+            }
+            
             Object bound;
             
             if (name.IsType<Label>()) {
@@ -310,17 +346,29 @@ void Executor::Perform(Operation::Type op) {
             } 
             else if (name.IsType<Pathname>()) {
                 Pathname path = ConstDeref<Pathname>(name);
+                KAI_TRACE() << "Store with Pathname: " << path.ToString() 
+                           << ", quoted: " << (path.Quoted() ? "yes" : "no");
                 bound = TryResolve(path);
                 
                 if (bound.Exists()) {
                     // Re-bind it
-                    // We can't easily set by pathname, so just use a warning for now
-                    KAI_TRACE() << "Warning: Re-binding by pathname not fully implemented";
-                    // Just add it again
-                    scope.Add(Label(path.ToString()), value);
+                    // Strip the quote if present
+                    String pathStr = path.ToString();
+                    if (pathStr.Size() > 0 && pathStr[0] == '\'') {
+                        // Create a new string without the first character
+                        pathStr = String(pathStr.begin() + 1, pathStr.end());
+                    }
+                    scope.Set(Label(pathStr), value);
+                    KAI_TRACE() << "Re-bound '" << pathStr << "' in scope";
                 } else {
-                    // Add it
-                    scope.Add(Label(path.ToString()), value);
+                    // Add it - strip the quote if present
+                    String pathStr = path.ToString();
+                    if (pathStr.Size() > 0 && pathStr[0] == '\'') {
+                        // Create a new string without the first character
+                        pathStr = String(pathStr.begin() + 1, pathStr.end());
+                    }
+                    scope.Add(Label(pathStr), value);
+                    KAI_TRACE() << "Added '" << pathStr << "' to scope (from pathname: " << path.ToString() << ")";
                 }
             } 
             else {

@@ -599,6 +599,14 @@ Object Executor::TryResolve(Pathname const &path) const {
     // If it's not an absolute path, search up the continuation scopes.
     if (path.Absolute()) return tree_->Resolve(path);
 
+    // For simple pathnames (no dots), convert to Label for lookup
+    String pathStr = path.ToString();
+    if (!pathStr.Contains(".")) {
+        // Simple identifier - resolve as Label
+        Label label(pathStr);
+        return TryResolve(label);
+    }
+
     // Search in current scope.
     if (continuation_.Exists()) {
         auto found = Get(continuation_->GetScope(), path);
@@ -1211,7 +1219,50 @@ void Executor::Continue(Value<Continuation> C) {
                                     << "Pushing non-primitive type directly "
                                        "from continuation: "
                                     << value.GetClass()->GetName().ToString();
-                                data_->Push(value);
+                                
+                                // Special handling for Pathname - auto-resolve unquoted pathnames
+                                if (value.IsType<Pathname>()) {
+                                    Pathname path = ConstDeref<Pathname>(value);
+                                    KAI_TRACE() << "Pathname in continuation: " << path.ToString() 
+                                               << ", quoted: " << (path.Quoted() ? "yes" : "no");
+                                    // If it's not quoted, resolve it
+                                    if (!path.Quoted()) {
+                                        KAI_TRACE() << "Auto-resolving unquoted pathname: " << path.ToString();
+                                        try {
+                                            // Check current scope
+                                            if (continuation_.Exists()) {
+                                                auto scope = continuation_->GetScope();
+                                                KAI_TRACE() << "Current scope exists: " << (scope.Exists() ? "yes" : "no");
+                                                if (scope.Exists()) {
+                                                    KAI_TRACE() << "Scope type: " << scope.GetClass()->GetName().ToString();
+                                                }
+                                            }
+                                            
+                                            Object resolved = Resolve(Label(path.ToString()));
+                                            if (resolved.Exists()) {
+                                                KAI_TRACE() << "Resolved to: " << resolved.ToString();
+                                                data_->Push(resolved);
+                                            } else {
+                                                KAI_TRACE_WARN() << "Failed to resolve pathname: " << path.ToString();
+                                                data_->Push(Object()); // Push null for undefined variables
+                                            }
+                                        } catch (const Exception::Base &e) {
+                                            KAI_TRACE_WARN() << "Exception resolving pathname " << path.ToString() 
+                                                            << ": " << e.ToString();
+                                            data_->Push(Object());
+                                        } catch (...) {
+                                            KAI_TRACE_WARN() << "Unknown exception resolving pathname: " << path.ToString();
+                                            data_->Push(Object());
+                                        }
+                                    } else {
+                                        // Quoted pathname - push as-is for Store operations
+                                        KAI_TRACE() << "Pushing quoted pathname as-is";
+                                        data_->Push(value);
+                                    }
+                                } else {
+                                    data_->Push(value);
+                                }
+                                
                                 if (savedContinuation.Exists()) {
                                     continuation_ = savedContinuation;
                                 } else {
@@ -1275,184 +1326,6 @@ void Executor::Continue(Value<Continuation> C) {
         // normally
         SetContinuation(C);
         Continue();
-
-        // Unwrapping and type preservation logic
-        // This is crucial for the test cases to work properly
-        if (!data_->Empty()) {
-            // Keep unwrapping until we reach a primitive type or
-            // non-unwrappable object
-            int unwrapAttempts = 0;
-            const int maxUnwrapAttempts = 5;  // Prevent infinite unwrapping
-
-            while (unwrapAttempts < maxUnwrapAttempts && !data_->Empty()) {
-                Object top = data_->Top();
-                bool unwrapped = false;
-
-                KAI_TRACE()
-                    << "Unwrapping attempt " << unwrapAttempts + 1
-                    << " for object of type: "
-                    << (top.GetClass() ? top.GetClass()->GetName().ToString()
-                                       : "<null>");
-
-                // Check if it's a continuation and unwrap it
-                if (top.IsType<Continuation>()) {
-                    try {
-                        // Get the continuation and examine its code
-                        Continuation &origCont = Deref<Continuation>(top);
-                        Pointer<const Array> contCode = origCont.GetCode();
-
-                        // If valid code that looks like a binary operation
-                        // pattern [val1, val2, op]
-                        if (contCode.Valid() && contCode.Exists() &&
-                            contCode->Size() == 3) {
-                            Object val1 = contCode->At(0);
-                            Object val2 = contCode->At(1);
-                            Object op = contCode->At(2);
-
-                            if (val1.Valid() && val1.Exists() && val2.Valid() &&
-                                val2.Exists() && op.Valid() && op.Exists() &&
-                                op.IsType<Operation>()) {
-                                Operation::Type opType =
-                                    ConstDeref<Operation>(op).GetTypeNumber();
-
-                                // If it's a binary operation, handle it
-                                // directly
-                                if (IsBinaryOp(opType)) {
-                                    KAI_TRACE() << "Found binary operation "
-                                                   "pattern in continuation: "
-                                                << val1.ToString() << " "
-                                                << val2.ToString() << " "
-                                                << Operation::ToString(opType);
-
-                                    // Pop the continuation from the stack
-                                    data_->Pop();
-
-                                    // Compute the result directly
-                                    Object result =
-                                        PerformBinaryOp(val1, val2, opType);
-
-                                    if (result.Valid() && result.Exists()) {
-                                        KAI_TRACE()
-                                            << "Directly executed continuation "
-                                               "with binary operation: "
-                                            << val1.ToString() << " "
-                                            << Operation::ToString(opType)
-                                            << " " << val2.ToString() << " = "
-                                            << result.ToString() << " (type: "
-                                            << result.GetClass()->GetName()
-                                            << ")";
-
-                                        // Push the result and continue
-                                        // unwrapping
-                                        data_->Push(result);
-                                        unwrapped = true;
-                                        continue;
-                                    }
-                                }
-                            }
-                        }
-
-                        // If we couldn't handle it as a binary operation, try
-                        // standard unwrapping Create a copy to avoid modifying
-                        // the original
-                        Object contObj = New<Continuation>();
-                        Pointer<Continuation> contCopy = contObj;
-                        contCopy->Create();
-
-                        // Copy the code from the original
-                        contCopy->SetCode(origCont.GetCode());
-
-                        // Replace the old continuation with the copy on the
-                        // stack
-                        data_->Pop();  // Remove the original
-
-                        // Execute the continuation to get the result
-                        Continue(contCopy);
-                        unwrapped = true;
-                    } catch (const std::exception &e) {
-                        KAI_TRACE_ERROR()
-                            << "Exception unwrapping continuation result: "
-                            << e.what();
-                    }
-                }
-                // Check if it's an Object wrapper and unwrap it
-                else if (top.IsType<Object>()) {
-                    Object unwrappedObj = ConstDeref<Object>(top);
-                    if (unwrappedObj.Valid() && unwrappedObj.Exists()) {
-                        // Replace with the unwrapped version
-                        data_->Pop();  // Remove the wrapped version
-                        data_->Push(
-                            unwrappedObj);  // Push the unwrapped version
-                        unwrapped = true;
-                    }
-                }
-
-                // If we couldn't unwrap further, we're done
-                if (!unwrapped) {
-                    break;
-                }
-
-                unwrapAttempts++;
-            }
-
-            // Final check for binary operations and type verification
-            if (!data_->Empty()) {
-                Object result = data_->Top();
-
-                // Special handling for binary operations that might still be
-                // wrapped in continuations
-                if (result.IsType<Continuation>()) {
-                    Continuation &cont = Deref<Continuation>(result);
-                    Pointer<const Array> code = cont.GetCode();
-
-                    if (code.Valid() && code.Exists() && code->Size() == 3) {
-                        Object val1 = code->At(0);
-                        Object val2 = code->At(1);
-                        Object op = code->At(2);
-
-                        if (val1.Valid() && val1.Exists() && val2.Valid() &&
-                            val2.Exists() && op.Valid() && op.Exists() &&
-                            op.IsType<Operation>()) {
-                            Operation::Type opType =
-                                ConstDeref<Operation>(op).GetTypeNumber();
-
-                            // If it's a binary operation, handle it directly as
-                            // a final step
-                            if (IsBinaryOp(opType)) {
-                                // Pop the continuation from the stack
-                                data_->Pop();
-
-                                // Compute the result directly
-                                Object opResult =
-                                    PerformBinaryOp(val1, val2, opType);
-
-                                if (opResult.Valid() && opResult.Exists()) {
-                                    KAI_TRACE()
-                                        << "Final unwrapping: Executing binary "
-                                           "operation in continuation: "
-                                        << val1.ToString() << " "
-                                        << Operation::ToString(opType) << " "
-                                        << val2.ToString() << " = "
-                                        << opResult.ToString() << " (type: "
-                                        << opResult.GetClass()->GetName()
-                                        << ")";
-
-                                    // Push the result
-                                    data_->Push(opResult);
-                                    result = opResult;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                KAI_TRACE() << "Final result after unwrapping: "
-                            << (result.GetClass()
-                                    ? result.GetClass()->GetName().ToString()
-                                    : "<null>")
-                            << ", value: " << result.ToString();
-            }
-        }
     } catch (const Exception::Base &e) {
         KAI_TRACE_ERROR() << "KAI exception in Continue: " << e.ToString();
     } catch (const std::exception &e) {
@@ -1757,6 +1630,12 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
                 else if (A.IsType<String>() && B.IsType<String>()) {
                     String result = Type::Traits<String>::Plus::Perform(
                         ConstDeref<String>(A), ConstDeref<String>(B));
+                    return createNew(result);
+                }
+                // Pathname + Pathname = combined pathname
+                else if (A.IsType<Pathname>() && B.IsType<Pathname>()) {
+                    Pathname result = Type::Traits<Pathname>::Plus::Perform(
+                        ConstDeref<Pathname>(A), ConstDeref<Pathname>(B));
                     return createNew(result);
                 }
                 // Use type traits for other types that support Plus

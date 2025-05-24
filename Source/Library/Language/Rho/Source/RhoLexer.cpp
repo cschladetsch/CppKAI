@@ -205,7 +205,7 @@ bool RhoLexer::LexPathname() {
 
         // Not a keyword, it's a regular identifier
         std::cout << "Regular identifier: '" << word << "'" << std::endl;
-        return Add(Enum::Ident, Slice(wordStart, offset));
+        return Add(Enum::Label, Slice(wordStart, offset));
     }
 
     // If it's a quoted or rooted path, process it as a pathname
@@ -233,7 +233,7 @@ bool RhoLexer::LexPathname() {
     }
 
     // If we get here, it's probably an error or an empty identifier
-    return Add(Enum::Ident, Slice(start, offset));
+    return Add(Enum::Label, Slice(start, offset));
 }
 
 void RhoLexer::Terminate() { Add(Enum::None, 0); }

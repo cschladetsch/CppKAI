@@ -209,15 +209,18 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
             return;
         }
 
-        case RhoTokenEnumType::Ident: {
+        case RhoTokenEnumType::Label: {
             KAI_TRACE() << std::format("Translating Ident: {}", node->Text());
-            // Create a properly typed label
-            auto labelObj = reg_->New<Label>(Label(node->Text()));
+            // In Rho, identifiers in expressions need to be resolved to their values
+            // Create unquoted pathname (will auto-resolve)
+            auto pathObj = reg_->New<Pathname>(Pathname(node->Text()));
 
-            // Append the label directly
-            Append(labelObj);
+            // Append the pathname
+            Append(pathObj);
+            
+            // No need for Retrieve operation - unquoted pathnames auto-resolve
 
-            KAI_TRACE() << "Translated identifier: " << labelObj.ToString();
+            KAI_TRACE() << "Translated identifier as pathname: " << pathObj.ToString();
             return;
         }
 
@@ -271,6 +274,126 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
     KAI_NOT_IMPLEMENTED();
 }
 
+void RhoTranslator::TranslateWhile(AstNodePtr node) {
+    KAI_TRACE() << "Translating while loop";
+
+    // While loops need: condition and body
+    if (node->GetChildren().size() < 2) {
+        KAI_TRACE_ERROR() << "While node needs condition and body";
+        return;
+    }
+
+    // Create continuation for condition
+    PushNew();
+    TranslateNode(node->GetChild(0));
+    auto condCont = Pop();
+    
+    // Create continuation for body
+    PushNew();
+    TranslateNode(node->GetChild(1));
+    auto bodyCont = Pop();
+    
+    // Push continuations on stack for WhileLoop operation
+    Append(condCont);
+    Append(bodyCont);
+    AppendDirectOperation(Operation::WhileLoop);
+}
+
+void RhoTranslator::TranslateFor(AstNodePtr node) {
+    KAI_TRACE() << "Translating for loop";
+    
+    // For loops have: init, condition, update, body
+    if (node->GetChildren().size() < 4) {
+        KAI_TRACE_ERROR() << "For node needs init, condition, update, and body";
+        return;
+    }
+    
+    // Translate initialization directly
+    TranslateNode(node->GetChild(0));
+    
+    // Create continuation for condition
+    PushNew();
+    TranslateNode(node->GetChild(1));
+    auto condCont = Pop();
+    
+    // Create continuation for body
+    PushNew();
+    TranslateNode(node->GetChild(3));
+    auto bodyCont = Pop();
+    
+    // Create continuation for update
+    PushNew();
+    TranslateNode(node->GetChild(2));
+    auto updateCont = Pop();
+    
+    // Push continuations on stack for ForLoop operation
+    Append(condCont);
+    Append(bodyCont);
+    Append(updateCont);
+    AppendDirectOperation(Operation::ForLoop);
+}
+
+void RhoTranslator::TranslateDoWhile(AstNodePtr node) {
+    KAI_TRACE() << "Translating do-while loop";
+    
+    // Do-while loops need: body and condition
+    if (node->GetChildren().size() < 2) {
+        KAI_TRACE_ERROR() << "DoWhile node needs body and condition";
+        return;
+    }
+    
+    // Create continuation for body
+    PushNew();
+    TranslateNode(node->GetChild(0));
+    auto bodyCont = Pop();
+    
+    // Create continuation for condition
+    PushNew();
+    TranslateNode(node->GetChild(1));
+    auto condCont = Pop();
+    
+    // Push continuations on stack for DoLoop operation
+    // Order: body first, then condition
+    Append(bodyCont);
+    Append(condCont);
+    AppendDirectOperation(Operation::DoLoop);
+}
+
+void RhoTranslator::TranslateIf(AstNodePtr node) {
+    KAI_TRACE() << "Translating if statement";
+    
+    // If statements need at least condition and then-block
+    if (node->GetChildren().size() < 2) {
+        KAI_TRACE_ERROR() << "If node needs at least condition and then block";
+        return;
+    }
+    
+    // Translate condition directly (not in a continuation)
+    TranslateNode(node->GetChild(0));
+    
+    // Create continuation for then block
+    PushNew();
+    TranslateNode(node->GetChild(1));
+    auto thenCont = Pop();
+    
+    // Check if there's an else block
+    if (node->GetChildren().size() > 2) {
+        // Create continuation for else block
+        PushNew();
+        TranslateNode(node->GetChild(2));
+        auto elseCont = Pop();
+        
+        // Push continuations and IfElse operation
+        Append(thenCont);
+        Append(elseCont);
+        AppendDirectOperation(Operation::IfElse);
+    } else {
+        // No else block - just then continuation and If operation
+        Append(thenCont);
+        AppendDirectOperation(Operation::If);
+    }
+}
+
 void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
     KAI_TRACE() << std::format("TranslateBinaryOp: Operation={}",
                                Operation::ToString(op));
@@ -288,16 +411,41 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
     // the operation, letting the executor handle the actual computation
     // at runtime.
 
-    // Special handling for Store operation - it expects value first, then identifier
-    if (op == Operation::Store) {
-        // For assignment: identifier = value
-        // Stack needs: [value, identifier] for Store operation
+    // Special handling for assignment operations - they need identifier names, not values
+    if (op == Operation::Store || 
+        op == Operation::PlusEquals || 
+        op == Operation::MinusEquals ||
+        op == Operation::MulEquals ||
+        op == Operation::DivEquals) {
         
-        // Translate the value (right side) first
-        TranslateNode(node->GetChild(1));
+        // For assignment operations: identifier = value (or +=, -=, etc.)
+        // Stack needs: [value, identifier] for Store/assignment operations
         
-        // Then translate the identifier (left side)
-        TranslateNode(node->GetChild(0));
+        // The parser creates: Assign [value, identifier]
+        // So child0 is the value and child1 is the identifier
+        auto valueNode = node->GetChild(0);
+        auto identNode = node->GetChild(1);
+        
+        // Translate the value first
+        TranslateNode(valueNode);
+        
+        // For assignment operations, we need just the identifier name as a Label
+        // The left side should be an identifier node
+        if (identNode->GetToken().type == RhoTokenEnumType::Label) {
+            // Push the identifier name as a quoted Pathname for assignment
+            KAI_TRACE() << "Appending pathname for assignment: " << identNode->Text();
+            // Create a quoted pathname by prepending '
+            String quotedPath = "'" + identNode->Text();
+            auto pathObj = reg_->New<Pathname>(Pathname(quotedPath));
+            KAI_TRACE() << "Created pathname object: " 
+                        << (pathObj.Exists() ? "exists" : "null")
+                        << ", type: " 
+                        << (pathObj.GetClass() ? pathObj.GetClass()->GetName().ToString() : "<null>");
+            Append(pathObj);
+        } else {
+            // If it's not a simple identifier, translate it normally
+            TranslateNode(identNode);
+        }
     } else {
         // For other operations, use standard left-to-right order
         

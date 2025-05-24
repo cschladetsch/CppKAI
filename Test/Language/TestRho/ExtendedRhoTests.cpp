@@ -330,7 +330,7 @@ TEST_F(ExtendedRhoTests, ContinuationStateInLoop) {
         drop
     )";
     
-    console->Execute(rhoCode);
+    console->Execute(rhoCode, Structure::Program);
     
     // Verify stack: Should contain [0, 2, 4]
     // Each continuation remembered the value of i when it was created
@@ -386,7 +386,7 @@ TEST_F(ExtendedRhoTests, ContinuationStateInNestedLoops) {
         drop
     )";
     
-    console->Execute(rhoCode);
+    console->Execute(rhoCode, Structure::Program);
     
     // Verify stack: Should contain [0, 11, 22]
     ASSERT_EQ(stack->Size(), 3) << "Stack should have 3 elements";
@@ -441,7 +441,7 @@ TEST_F(ExtendedRhoTests, ContinuationStateWithMutableVars) {
         drop
     )";
     
-    console->Execute(rhoCode);
+    console->Execute(rhoCode, Structure::Program);
     
     // Verify stack: Should contain [30, 31, 32]
     ASSERT_EQ(stack->Size(), 3) << "Stack should have 3 elements";

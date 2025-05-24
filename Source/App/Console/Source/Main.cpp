@@ -1,4 +1,7 @@
 #include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
 
 #include "KAI/Console/Console.h"
 #include "rang.hpp"
@@ -44,12 +47,8 @@ std::string KaiVersionString() {
 }
 
 int main(int argc, char **argv) {
-    KAI_UNUSED_2(argc, argv);
-
     // Apply bold style from the start
     cout << rang::style::bold << "KAI v" << KaiVersionString() << "\n\n";
-
-    console.SetLanguage(Language::Pi);
 
     // the higher the number, the greater the verbosity of debug output for
     // language systems
@@ -59,6 +58,40 @@ int main(int argc, char **argv) {
     // Executor
     console.GetExecutor()->SetTraceLevel(0);
 
+    // Check if a file argument was provided
+    if (argc > 1) {
+        // Execute file as a program
+        std::string filename = argv[1];
+        
+        // Determine language from file extension
+        if (filename.ends_with(".pi")) {
+            console.SetLanguage(Language::Pi);
+        } else if (filename.ends_with(".rho")) {
+            console.SetLanguage(Language::Rho);
+        } else {
+            std::cerr << "Unknown file extension. Expected .pi or .rho\n";
+            return 1;
+        }
+        
+        // Read the file
+        std::ifstream file(filename);
+        if (!file.is_open()) {
+            std::cerr << "Could not open file: " << filename << "\n";
+            return 1;
+        }
+        
+        std::stringstream buffer;
+        buffer << file.rdbuf();
+        std::string program = buffer.str();
+        
+        // Execute as a complete program (not individual statements)
+        console.Execute(program, Structure::Program);
+        return 0;
+    }
+    
+    // No file argument - start REPL with Pi as default
+    console.SetLanguage(Language::Pi);
+    
     // start the REPL
     return console.Run();
 }

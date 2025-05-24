@@ -16,7 +16,7 @@ struct RhoTokenEnumType {
         True = 6,
         False = 7,
         Return = 8,
-        Ident = 9,
+        Label = 9,  // Renamed from Ident for consistency
         Dot = 10,
         Comma = 11,
         If = 12,

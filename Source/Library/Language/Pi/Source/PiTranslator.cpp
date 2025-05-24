@@ -179,9 +179,8 @@ void PiTranslator::AppendTokenised(const TokenNode &tok) {
             break;
 
         case PiTokenEnumType::QuotedIdent: {
-            auto label = Label(tok.Text().c_str());
-            label.SetQuoted(true);
-            AppendNew(label);
+            // Use Pathname for quoted identifiers
+            AppendNew(Pathname(tok.Text()));
             break;
         }
 
@@ -316,12 +315,14 @@ void PiTranslator::AppendTokenised(const TokenNode &tok) {
             break;
 
         case PiTokenEnumType::Ident:
-            // Fix for variable identifier handling in Pi language
-            // Create a Label with the variable name
-            AppendNew(Label(tok.Text().c_str()));
+            // Unquoted identifiers should resolve automatically
+            // We'll handle this at the executor level
+            AppendNew(Pathname(tok.Text()));
             break;
 
         case PiTokenEnumType::Pathname:
+            // Pathname tokens include the quote if present
+            KAI_TRACE() << "Pathname token text: '" << tok.Text() << "'";
             AppendNew(Pathname(tok.Text()));
             break;
 

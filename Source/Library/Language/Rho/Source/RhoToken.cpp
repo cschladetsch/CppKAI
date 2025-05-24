@@ -27,7 +27,7 @@ const char *RhoTokenEnumType::ToString(Enum val) {
         CASE(True)
         CASE(False)
         CASE(Return)
-        CASE(Ident)
+        CASE(Label)
         CASE(Dot)
         CASE(Comma)
         CASE(If)
@@ -102,7 +102,7 @@ std::ostream &operator<<(std::ostream &out, RhoToken const &node) {
     switch (node.type) {
         case RhoTokenEnumType::Int:
         case RhoTokenEnumType::String:
-        case RhoTokenEnumType::Ident:
+        case RhoTokenEnumType::Label:
             out << "=" << node.Text();
     }
 

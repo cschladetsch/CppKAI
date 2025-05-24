@@ -39,6 +39,26 @@ void RhoTranslator::TranslateNode(AstNodePtr node) {
             TranslateToken(node);
             break;
 
+        case AstNodeEnum::DoWhile:
+            KAI_TRACE() << "Processing DoWhile node";
+            TranslateDoWhile(node);
+            break;
+
+        case AstNodeEnum::While:
+            KAI_TRACE() << "Processing While node";
+            TranslateWhile(node);
+            break;
+
+        case AstNodeEnum::For:
+            KAI_TRACE() << "Processing For node";
+            TranslateFor(node);
+            break;
+
+        case AstNodeEnum::Conditional:
+            KAI_TRACE() << "Processing If node";
+            TranslateIf(node);
+            break;
+
         default:
             // Log warning about unhandled node type but continue
             KAI_TRACE() << "Node type not fully implemented: "

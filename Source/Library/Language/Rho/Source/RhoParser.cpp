@@ -104,7 +104,7 @@ bool RhoParser::Function(AstNodePtr node) {
     Expect(TokenType::Fun);
 
     // Check if this is "fun name(args)" or "fun(args)"
-    bool hasName = Try(TokenType::Ident);
+    bool hasName = Try(TokenType::Label);
     RhoToken name;
 
     if (hasName) {
@@ -119,18 +119,18 @@ bool RhoParser::Function(AstNodePtr node) {
         // If no name is provided, add a temporary placeholder
         // Create a slice for the anonymous identifier
         Slice anonymousSlice;
-        fun->Add(RhoToken(TokenEnum::Ident, *lexer.get(), 0, anonymousSlice));
+        fun->Add(RhoToken(TokenEnum::Label, *lexer.get(), 0, anonymousSlice));
     }
 
     Expect(TokenType::OpenParan);
     std::shared_ptr<AstNode> args = NewNode(AstEnum::None);
     fun->Add(args);
 
-    if (Try(TokenType::Ident)) {
+    if (Try(TokenType::Label)) {
         args->Add(Consume());
         while (Try(TokenType::Comma)) {
             Consume();
-            args->Add(Expect(TokenType::Ident));
+            args->Add(Expect(TokenType::Label));
         }
     }
 
@@ -478,7 +478,7 @@ bool RhoParser::Factor() {
 
     if (Try(TokenType::Self)) return PushConsume();
 
-    if (Try(TokenType::Ident)) return ParseFactorIdent();
+    if (Try(TokenType::Label)) return ParseFactorIdent();
 
     if (Try(TokenType::Pathname)) return ParseFactorIdent();
 
@@ -540,7 +540,7 @@ bool RhoParser::ParseGetMember() {
     Consume();
     auto get = NewNode(NodeType::GetMember);
     get->Add(Pop());
-    get->Add(Expect(TokenType::Ident));
+    get->Add(Expect(TokenType::Label));
     return Push(get);
 }
 

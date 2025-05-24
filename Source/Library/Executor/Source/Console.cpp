@@ -212,6 +212,9 @@ void Console::Execute(String const &text, Structure st) {
         // Log what we're about to execute for debugging purposes
         KAI_TRACE() << "Executing text: " << text;
 
+        // Set the scope on the continuation (important for Store operations)
+        cont->SetScope(tree.GetScope());
+
         // Execute the continuation
         Execute(cont);
     }

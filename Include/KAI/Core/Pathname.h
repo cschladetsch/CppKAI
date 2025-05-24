@@ -60,6 +60,7 @@ class Pathname {
 
     friend bool operator<(const Pathname &A, const Pathname &B);
     friend bool operator==(const Pathname &A, const Pathname &B);
+    friend Pathname operator+(const Pathname &A, const Pathname &B);
 
     static void Register(Registry &);
 
@@ -78,7 +79,7 @@ bool operator>(T const &A, T const &B) {
 }
 
 KAI_TYPE_TRAITS(Pathname, Number::Pathname,
-                Properties::Streaming | Properties::Relational);
+                Properties::Streaming | Properties::Relational | Properties::Plus);
 
 Pathname GetFullname(const StorageBase &);
 Pathname GetFullname(const Object &);
