@@ -8,7 +8,10 @@ The KAI documentation is organized into the following main categories:
 
 ### 1. Project Overview
 - [Architecture](Architecure.md) - System architecture overview
-- [OUT_OF_SOURCE_BUILD](./OUT_OF_SOURCE_BUILD.md) - Build instructions and best practices
+- [Building](BUILD.md) - Build instructions
+- [Out-of-Source Build](OUT_OF_SOURCE_BUILD.md) - Best practices for building
+- [Installation](Install.md) - Installation guide
+- [Style Guide](StyleGuide.md) - Code style conventions
 
 ### 2. Language System
 - [Language Guide](LanguageGuide.md) - Overview of the KAI language system
@@ -18,6 +21,7 @@ The KAI documentation is organized into the following main categories:
 - [Pi Language](PiTutorial.md) - Foundation language (stack-based)
 - [Rho Language](RhoLanguage.md) - Application language (infix notation)
 - [Tau Language](TauTutorial.md) - Interface definition language
+  - [Tau Code Generation](TauCodeGeneration.md) - Code generation architecture and usage
 
 ### 3. Advanced Topics
 - [Event System](EventSystem.md) - Modern C++23 multi-cast event implementation with variadic templates
@@ -25,10 +29,35 @@ The KAI documentation is organized into the following main categories:
 - [Network Iteration](NetworkIteration.md) - Distributed computing patterns
 - [Meaning](Meaning.md) - Philosophical foundations of KAI
 
-### 4. Technical Documentation
+### 4. Networking System
+- [Networking Overview](Networking.md) - Main networking documentation
+  - [Network Architecture](NetworkArchitecture.md) - Detailed architecture
+  - [Peer-to-Peer Summary](PeerToPeerSummary.md) - P2P implementation summary
+  - [Peer-to-Peer Networking](PeerToPeerNetworking.md) - Detailed P2P documentation
+  - [Network Performance](NetworkPerformance.md) - Performance optimization
+  - [Network Security](NetworkSecurity.md) - Security features
+  - [Connection Testing](ConnectionTesting.md) - Testing procedures
+  - [Network Iteration](NetworkIteration.md) - Distributed operations
+  - [Network Tau Interfaces](NetworkTauInterfaces.md) - Tau language network support
+
+### 5. Technical Documentation
 - [Color Output](ColorOutput.md) - Console color formatting
+- [Log Format](LogFormat.md) - Logging format specification
+- [Null Registry Fix](NullRegistryFix.md) - Registry null pointer fix documentation
+
+### 6. Testing
+- [Test Guide](Test.md) - How to run and write tests
+- [Test Fixes Summary](Test-Fixes-Summary.md) - Summary of test fixes
+- [Test Improvements](Test-Improvements.md) - Test suite improvements
+- [Test Summary Report](test_summary_report.md) - Current test status
+
+### 7. Analysis and Fixes
 - [Rho Fix Documentation](Rho-Fix-Documentation.md) - Details on recent Rho language fixes
 - [Rho Analysis](Rho-Analysis.md) - Analysis of Rho language implementation
+- [Rho Issues](Rho-Issues.md) - Known Rho language issues
+- [Rho Regression Analysis](Rho-Regression-Analysis.md) - Regression test analysis
+- [Tau Analysis](Tau-Analysis.md) - Analysis of Tau language implementation
+- [Core Review](core_review_updated.md) - Core system review
 
 ## Getting Started
 

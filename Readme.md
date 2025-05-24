@@ -241,31 +241,23 @@ The GUI application provides:
 
 ## Documentation
 
-### Main Documentation Entry Points
-- [Documentation Guide](Doc/Documentation.md) - Central entry point to all documentation
-- [Building Guide](Doc/OUT_OF_SOURCE_BUILD.md) - How to build the project correctly
-- [Installation Guide](Doc/Install.md) - Installation instructions
+**[📚 Documentation Guide](Doc/Documentation.md)** - Start here for organized navigation of all documentation
 
-### Language Documentation
-- [Language System Overview](Doc/Languages.md) - Brief overview of the language system
-- [Language Guide](Doc/LanguageGuide.md) - Comprehensive language system guide
-- [Common Language System](Doc/CommonLanguageSystem.md) - Shared architecture
+### Quick Links
+- **Building**: [Build Guide](Doc/OUT_OF_SOURCE_BUILD.md) | [Installation](Doc/Install.md)
+- **Languages**: [Pi](Doc/PiTutorial.md) | [Rho](Doc/RhoTutorial.md) | [Tau](Doc/TauTutorial.md)
+- **Networking**: [Overview](Doc/Networking.md) | [Architecture](Doc/NetworkArchitecture.md)
+- **Testing**: [Test Guide](Doc/Test.md) | [Connection Testing](Doc/ConnectionTesting.md)
 
-#### Individual Languages
-- [Pi Tutorial](Doc/PiTutorial.md) - Stack-based foundation language
-- [Rho Language](Doc/RhoLanguage.md) - Application-level language with infix notation
-- [Rho Tutorial](Doc/RhoTutorial.md) - Detailed Rho language tutorial
-- [Tau Tutorial](Doc/TauTutorial.md) - Interface definition language
+### Documentation Organization
+The documentation is hierarchically organized in the [Documentation Guide](Doc/Documentation.md):
 
-### Technical Documentation
-- [Event System](Doc/EventSystem.md) - Modern C++23 multi-cast event implementation
-- [Rho Fix Documentation](Doc/Rho-Fix-Documentation.md) - Details of recent Rho language fixes
-- [Networking](Doc/Networking.md) - Distributed computing capabilities
-- [Network Calculation Test](Doc/NetworkCalculationTest.md) - Details of the calculation demo
-- [Connection Testing](Doc/ConnectionTesting.md) - Network connection testing
-- [Networking Changes](Doc/NetworkingChanges.md) - Recent networking improvements
-- [Test Documentation](Doc/Test.md) - How to run and write tests
-- [Colored Output](Doc/ColorOutput.md) - Console color formatting
+1. **Project Overview** - Architecture and build instructions
+2. **Language System** - Pi, Rho, and Tau language documentation
+   - [Tau Code Generation](Doc/TauCodeGeneration.md) - New detailed guide for code generation
+3. **Networking System** - Comprehensive networking documentation
+4. **Technical Documentation** - Implementation details and analyses
+5. **Advanced Topics** - Event system, continuation control, etc.
 
 ### Demo and Examples
 - Run `./Scripts/run_rho_demo.sh` for a comprehensive demo of Rho language features

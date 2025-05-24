@@ -2,24 +2,41 @@
 
 This module contains the code generation components for the Tau Interface Definition Language (IDL). It transforms Tau AST (Abstract Syntax Tree) into C++ code for distributed networking.
 
-## Code Generation Components
+## Code Generation Architecture
 
-The Tau generator produces C++ code for:
+The Tau code generation system uses a clean, separated architecture:
 
-1. **Proxies** - Client-side interfaces that forward method calls to remote agents
-   - Methods that match interfaces defined in Tau
+### Base Class
+- **GenerateProcess** - Base class providing common functionality for all generators
+  - AST traversal and transformation
+  - Code formatting utilities (StartBlock, EndBlock, etc.)
+  - Common parsing and error handling
+
+### Specialized Generators
+1. **GenerateProxy** - Generates client-side proxy classes
+   - Methods that forward calls over the network
    - Event registration/unregistration handlers
-   - Serialization of parameters and return values
+   - Serialization of parameters using RakNet BitStreams
+   - Future-based return value handling
 
-2. **Agents** - Server-side implementations that receive and handle remote calls
-   - Method handlers that receive remote calls from proxies
-   - Event triggering mechanisms
-   - Deserialization of parameters and serialization of return values
+2. **GenerateAgent** - Generates server-side agent classes
+   - Handler methods for incoming network requests
+   - Deserialization of parameters from BitStreams
+   - Implementation method invocation
+   - Response serialization for non-void methods
 
-3. **Process** - Core generation functionality shared between proxies and agents
-   - AST traversal and transformation
-   - Common code template rendering
-   - Error checking and validation
+3. **GenerateStruct** - Generates plain C++ struct definitions
+   - Simple data structures for DTOs (Data Transfer Objects)
+   - Preserves field ordering and types
+   - Supports nested structures
+   - Can include method declarations
+
+## Key Design Principles
+
+- **Separation of Concerns**: Each generator has a single responsibility
+- **Type Safety**: Generated code maintains full C++ type safety
+- **Network Transparency**: Proxies look and feel like local objects
+- **Clean Inheritance**: All generators properly inherit from GenerateProcess
 
 ## Usage
 
