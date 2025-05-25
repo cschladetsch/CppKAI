@@ -17,5 +17,12 @@ target_link_libraries(LogTest
 # Define KAI_DEBUG_TRACE to enable trace macros
 target_compile_definitions(LogTest PRIVATE KAI_DEBUG_TRACE)
 
+# Set the output directory explicitly for this target
+set_target_properties(LogTest PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/Bin/Test"
+    RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/Bin/Test"
+    RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/Bin/Test"
+)
+
 # Add the executable to the build
 add_test(NAME LogTest COMMAND LogTest)

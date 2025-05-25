@@ -212,15 +212,16 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
         case RhoTokenEnumType::Label: {
             KAI_TRACE() << std::format("Translating Ident: {}", node->Text());
             // In Rho, identifiers in expressions need to be resolved to their values
-            // Create unquoted pathname (will auto-resolve)
-            auto pathObj = reg_->New<Pathname>(Pathname(node->Text()));
+            // For Pi-style execution, push the label and then a Retrieve operation
+            auto labelObj = reg_->New<Label>(Label(node->Text()));
 
-            // Append the pathname
-            Append(pathObj);
+            // Append the label
+            Append(labelObj);
             
-            // No need for Retrieve operation - unquoted pathnames auto-resolve
+            // Add Retrieve operation to resolve the label to its value
+            AppendDirectOperation(Operation::Retreive);
 
-            KAI_TRACE() << "Translated identifier as pathname: " << pathObj.ToString();
+            KAI_TRACE() << "Translated identifier as label with retrieve: " << labelObj.ToString();
             return;
         }
 
@@ -394,6 +395,61 @@ void RhoTranslator::TranslateIf(AstNodePtr node) {
     }
 }
 
+void RhoTranslator::TranslateList(AstNodePtr node) {
+    KAI_TRACE() << "TranslateList - Creating array literal";
+    
+    // Translate all list elements first
+    for (const auto& child : node->GetChildren()) {
+        TranslateNode(child);
+    }
+    
+    // Create the array from the stack elements
+    // The number of elements is the number of children
+    size_t numElements = node->GetChildren().size();
+    
+    // Push the number of elements to create array from
+    AppendNew<int>(numElements);
+    // Use ToArray operation to create array from stack elements
+    AppendDirectOperation(Operation::ToArray);
+    
+    KAI_TRACE() << std::format("Created array with {} elements", numElements);
+}
+
+void RhoTranslator::TranslateMap(AstNodePtr node) {
+    KAI_TRACE() << "TranslateMap - Creating map literal";
+    
+    // For now, we only support empty maps
+    // Push 0 to indicate no elements
+    AppendNew<int>(0);
+    
+    // Use ToMap operation to create empty map
+    AppendDirectOperation(Operation::ToMap);
+    
+    KAI_TRACE() << "Created empty map";
+}
+
+void RhoTranslator::TranslateIndex(AstNodePtr node) {
+    KAI_TRACE() << "TranslateIndex - Array indexing operation";
+    
+    // IndexOp should have 2 children: the array and the index
+    auto children = node->GetChildren();
+    if (children.size() != 2) {
+        KAI_TRACE_ERROR() << "IndexOp should have exactly 2 children, got " << static_cast<int>(children.size());
+        return;
+    }
+    
+    // Translate the array expression
+    TranslateNode(children[0]);
+    
+    // Translate the index expression
+    TranslateNode(children[1]);
+    
+    // Apply the Index operation
+    AppendDirectOperation(Operation::Index);
+    
+    KAI_TRACE() << "Array indexing operation translated";
+}
+
 void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
     KAI_TRACE() << std::format("TranslateBinaryOp: Operation={}",
                                Operation::ToString(op));
@@ -429,9 +485,42 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
         // Translate the value first
         TranslateNode(valueNode);
         
-        // For assignment operations, we need just the identifier name as a Label
-        // The left side should be an identifier node
-        if (identNode->GetToken().type == RhoTokenEnumType::Label) {
+        // Check if the left side is an array indexing operation
+        if (identNode->GetType() == AstNodeEnum::IndexOp) {
+            // Special handling for array element assignment: arr[index] = value
+            KAI_TRACE() << "Handling indexed assignment";
+            
+            // For arr[2] = 99, we need to implement this differently
+            // Since we don't have SetChild operation, we'll use a workaround
+            
+            // Get the array and index from IndexOp
+            auto indexChildren = identNode->GetChildren();
+            if (indexChildren.size() != 2) {
+                KAI_TRACE_ERROR() << "IndexOp should have 2 children for assignment";
+                return;
+            }
+            
+            // Translate the array expression
+            TranslateNode(indexChildren[0]);
+            
+            // Translate the index
+            TranslateNode(indexChildren[1]);
+            
+            // The value is already on the stack from above
+            // Stack now has: [value, array, index]
+            
+            // We need to rearrange to [array, index, value] for SetChild
+            // Use stack manipulation operations: Rot rotates top 3 elements
+            AppendDirectOperation(Operation::Rot);  // Now: [array, index, value]
+            
+            // Apply SetChild operation
+            AppendDirectOperation(Operation::SetChild);
+            
+            // SetChild leaves the modified array on the stack
+            // But Store expects [value, name], so we need to skip the Store operation
+            return;  // Skip the Store operation below
+            
+        } else if (identNode->GetToken().type == RhoTokenEnumType::Label) {
             // Push the identifier name as a quoted Pathname for assignment
             KAI_TRACE() << "Appending pathname for assignment: " << identNode->Text();
             // Create a quoted pathname by prepending '
@@ -443,7 +532,7 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
                         << (pathObj.GetClass() ? pathObj.GetClass()->GetName().ToString() : "<null>");
             Append(pathObj);
         } else {
-            // If it's not a simple identifier, translate it normally
+            // If it's not a simple identifier or index op, translate it normally
             TranslateNode(identNode);
         }
     } else {

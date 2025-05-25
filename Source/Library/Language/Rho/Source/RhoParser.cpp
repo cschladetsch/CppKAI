@@ -472,6 +472,23 @@ bool RhoParser::Factor() {
         return true;
     }
 
+    if (Try(TokenType::OpenBrace)) {
+        auto map = NewNode(NodeType::Map);
+        Consume();
+        
+        // Handle empty map case
+        if (Try(TokenType::CloseBrace)) {
+            Consume();
+            Push(map);
+            return true;
+        }
+        
+        // For now, we don't support map literal syntax with key:value pairs
+        // Just support empty maps {}
+        Fail("Map literals with initial values not yet supported");
+        return false;
+    }
+
     if (Try(TokenType::Int) || Try(TokenType::Float) ||
         Try(TokenType::String) || Try(TokenType::True) || Try(TokenType::False))
         return PushConsume();

@@ -59,6 +59,21 @@ void RhoTranslator::TranslateNode(AstNodePtr node) {
             TranslateIf(node);
             break;
 
+        case AstNodeEnum::List:
+            KAI_TRACE() << "Processing List node";
+            TranslateList(node);
+            break;
+
+        case AstNodeEnum::IndexOp:
+            KAI_TRACE() << "Processing IndexOp node";
+            TranslateIndex(node);
+            break;
+
+        case AstNodeEnum::Map:
+            KAI_TRACE() << "Processing Map node";
+            TranslateMap(node);
+            break;
+
         default:
             // Log warning about unhandled node type but continue
             KAI_TRACE() << "Node type not fully implemented: "

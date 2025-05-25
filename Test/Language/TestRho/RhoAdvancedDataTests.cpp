@@ -42,7 +42,7 @@ struct RhoAdvancedDataTests : TestLangCommon {
         exec_->ClearStacks();
 
         // Execute the Rho code
-        console_.Execute(code);
+        console_.Execute(code, Structure::Program);
 
         // Process the stack to extract values from continuations
         UnwrapStackValues();
@@ -72,7 +72,7 @@ struct RhoAdvancedDataTests : TestLangCommon {
         exec_->ClearStacks();
 
         // Execute the Rho code
-        console_.Execute(code);
+        console_.Execute(code, Structure::Program);
 
         // Process the stack
         UnwrapStackValues();
@@ -108,7 +108,7 @@ struct RhoAdvancedDataTests : TestLangCommon {
         exec_->ClearStacks();
 
         // Execute the Rho code
-        console_.Execute(code);
+        console_.Execute(code, Structure::Program);
 
         // Process the stack
         UnwrapStackValues();

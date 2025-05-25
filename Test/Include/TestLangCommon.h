@@ -55,7 +55,7 @@ class TestLangCommon : public TestCommon {
     template <class T>
     void AssertResult(const char *text, T const &val) {
         data_->Clear();
-        console_.Execute(text);
+        console_.Execute(text, Structure::Program);
 
         // Process the stack to extract values from continuations
         UnwrapStackValues();

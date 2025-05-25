@@ -1292,6 +1292,89 @@ void Executor::Perform(Operation::Type op) {
             break;
         }
 
+        case Operation::Index: {
+            // ( array index -- element )
+            // Get element at index from array/list
+            if (data_->Size() < 2) {
+                KAI_TRACE_ERROR() << "Index: Not enough items on stack";
+                break;
+            }
+            
+            Object index = Pop();
+            Object container = Pop();
+            
+            if (!container.Exists()) {
+                KAI_TRACE_ERROR() << "Index: Container is null";
+                Push(Object());
+                break;
+            }
+            
+            if (!index.IsType<int>()) {
+                KAI_TRACE_ERROR() << "Index: Index must be an integer";
+                Push(Object());
+                break;
+            }
+            
+            int idx = ConstDeref<int>(index);
+            
+            if (container.IsType<Array>()) {
+                Pointer<Array> arr = container;
+                if (idx < 0 || idx >= arr->Size()) {
+                    KAI_TRACE_ERROR() << "Index: Array index out of bounds: " << idx;
+                    Push(Object());
+                    break;
+                }
+                Push(arr->At(idx));
+            } else {
+                KAI_TRACE_ERROR() << "Index: Container type not supported for indexing";
+                Push(Object());
+            }
+            break;
+        }
+
+        case Operation::SetChild: {
+            // ( array index value -- array )
+            // Set element at index in array/list
+            if (data_->Size() < 3) {
+                KAI_TRACE_ERROR() << "SetChild: Not enough items on stack";
+                break;
+            }
+            
+            Object value = Pop();
+            Object index = Pop();
+            Object container = Pop();
+            
+            if (!container.Exists()) {
+                KAI_TRACE_ERROR() << "SetChild: Container is null";
+                Push(container);
+                break;
+            }
+            
+            if (!index.IsType<int>()) {
+                KAI_TRACE_ERROR() << "SetChild: Index must be an integer";
+                Push(container);
+                break;
+            }
+            
+            int idx = ConstDeref<int>(index);
+            
+            if (container.IsType<Array>()) {
+                Pointer<Array> arr = container;
+                if (idx < 0 || idx >= arr->Size()) {
+                    KAI_TRACE_ERROR() << "SetChild: Array index out of bounds: " << idx;
+                    Push(container);
+                    break;
+                }
+                // Use RefAt to get a reference and assign the value
+                arr->RefAt(idx) = value;
+                Push(container);
+            } else {
+                KAI_TRACE_ERROR() << "SetChild: Container type not supported for indexing";
+                Push(container);
+            }
+            break;
+        }
+
         default: {
             // Provide a default implementation for unimplemented operations
             KAI_TRACE_ERROR() << "Unimplemented operation: " << Operation::ToString(op);

@@ -61,6 +61,7 @@ class RhoTranslator : public TranslatorBase<RhoParser> {
     void TranslateDoWhile(AstNodePtr node);
     void TranslatePiBlock(AstNodePtr parentNode, size_t startIndex);
     void TranslateList(AstNodePtr node);
+    void TranslateMap(AstNodePtr node);
 
     // Helper method to convert token types to operation types
     Operation::Type TokenToOperation(RhoTokenEnumType::Enum tokenType);

@@ -59,11 +59,13 @@ CMAKE_ARGS="-DCMAKE_BUILD_TYPE=Debug \
 if [ "$USE_GCC" = false ]; then
   echo -e "${BLUE}Using Clang++ compiler${NC}"
   export CXX=clang++
-  CMAKE_ARGS="$CMAKE_ARGS"
+  export CC=clang
+  CMAKE_ARGS="$CMAKE_ARGS -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang"
 else
   echo -e "${BLUE}Using GCC compiler${NC}"
   export CXX=g++
-  CMAKE_ARGS="$CMAKE_ARGS -DBUILD_GCC=ON"
+  export CC=gcc
+  CMAKE_ARGS="$CMAKE_ARGS -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc"
 fi
 
 if [ "$USE_NINJA" = true ]; then
@@ -86,7 +88,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # Build with the appropriate tool
-echo -e "${YELLOW}Building project...${NC}"
+echo -e "${YELLOW}Building project with $(nproc) parallel jobs...${NC}"
 cmake --build . -j$(nproc)
 
 if [ $? -ne 0 ]; then
@@ -99,3 +101,5 @@ cd ..
 
 echo -e "${GREEN}Build successful!${NC}"
 echo -e "${YELLOW}Executables can be found in ${BUILD_DIR}/Bin${NC}"
+echo -e "${BLUE}Main executables:${NC}"
+ls -la ${BUILD_DIR}/Bin/*.exe 2>/dev/null || ls -la ${BUILD_DIR}/Bin/* 2>/dev/null | grep -E '^-..x' | awk '{print "  - " $9}'

@@ -83,149 +83,20 @@ BinaryPacket &operator>>(BinaryPacket &stream, Executor &exec) {
 
 // ======================= Stack Operations ========================
 
-// Helper method to recursively unwrap continuations and extract primitive
-// values
+// Simplified: No special unwrapping logic - treat continuations as opaque objects
 Object Executor::UnwrapValue(const Object &value) {
-    // Base case: If the value is not a continuation, return it directly
-    if (!value.IsType<Continuation>()) {
-        return value;
-    }
-
-    // Get the continuation
-    Pointer<const Continuation> cont = value;
-
-    // Check for invalid continuations
-    if (!cont.Exists() || !cont->GetCode().Exists()) {
-        return value;
-    }
-
-    // Get the code
-    Pointer<const Array> code = cont->GetCode();
-
-    // Empty continuations can't be unwrapped
-    if (code->Size() == 0) {
-        return value;
-    }
-
-    // Case 1: Single value in the continuation
-    if (code->Size() == 1) {
-        Object singleValue = code->At(0);
-        // If it's a primitive type, return it directly
-        if (singleValue.IsType<int>() || singleValue.IsType<float>() ||
-            singleValue.IsType<bool>() || singleValue.IsType<String>()) {
-            return singleValue;
-        }
-        // If it's another continuation, recursively unwrap it
-        if (singleValue.IsType<Continuation>()) {
-            return UnwrapValue(singleValue);
-        }
-        return singleValue;
-    }
-
-    // Case 2: ContinuationBegin, value, ContinuationEnd pattern
-    if (code->Size() == 3) {
-        Object first = code->At(0);
-        Object middle = code->At(1);
-        Object last = code->At(2);
-
-        // Check for ContinuationBegin/End markers
-        if (first.IsType<Operation>() && last.IsType<Operation>()) {
-            Operation::Type firstOp =
-                ConstDeref<Operation>(first).GetTypeNumber();
-            Operation::Type lastOp =
-                ConstDeref<Operation>(last).GetTypeNumber();
-
-            if (firstOp == Operation::ContinuationBegin &&
-                lastOp == Operation::ContinuationEnd) {
-                // If the middle value is a primitive type, return it directly
-                if (middle.IsType<int>() || middle.IsType<float>() ||
-                    middle.IsType<bool>() || middle.IsType<String>()) {
-                    return middle;
-                }
-                // If the middle value is another continuation, recursively
-                // unwrap it
-                if (middle.IsType<Continuation>()) {
-                    return UnwrapValue(middle);
-                }
-                return middle;
-            }
-        }
-
-        // Check for binary operation pattern: value, value, operation
-        if (!first.IsType<Operation>() && !middle.IsType<Operation>() &&
-            last.IsType<Operation>()) {
-            Operation::Type op = ConstDeref<Operation>(last).GetTypeNumber();
-
-            // Only handle binary operations
-            if (IsBinaryOp(op)) {
-                // Directly compute the result with the appropriate type
-                return PerformBinaryOp(first, middle, op);
-            }
-        }
-    }
-
-    // Case 3: ContinuationBegin, value1, value2, operation, ContinuationEnd
-    // pattern
-    if (code->Size() == 5) {
-        Object first = code->At(0);
-        Object val1 = code->At(1);
-        Object val2 = code->At(2);
-        Object op = code->At(3);
-        Object last = code->At(4);
-
-        // Check for ContinuationBegin/End markers
-        if (first.IsType<Operation>() && last.IsType<Operation>()) {
-            Operation::Type firstOp =
-                ConstDeref<Operation>(first).GetTypeNumber();
-            Operation::Type lastOp =
-                ConstDeref<Operation>(last).GetTypeNumber();
-
-            if (firstOp == Operation::ContinuationBegin &&
-                lastOp == Operation::ContinuationEnd) {
-                // Check for binary operation pattern: value, value, operation
-                if (!val1.IsType<Operation>() && !val2.IsType<Operation>() &&
-                    op.IsType<Operation>()) {
-                    Operation::Type opType =
-                        ConstDeref<Operation>(op).GetTypeNumber();
-
-                    // Only handle binary operations
-                    if (IsBinaryOp(opType)) {
-                        // Directly compute the result with the appropriate type
-                        return PerformBinaryOp(val1, val2, opType);
-                    }
-                }
-            }
-        }
-    }
-
-    // If we can't unwrap it, return the original value
+    // Simply return the value as-is
+    // The Executor should treat Continuations as just another object type
     return value;
 }
 
 void Executor::Push(Object const &Q) {
-    // If it's a continuation, try to unwrap it before pushing
-    if (Q.IsType<Continuation>()) {
-        Object unwrapped = UnwrapValue(Q);
-
-        // Push the unwrapped value if it's different, otherwise push the
-        // original
-        if (unwrapped != Q) {
-            // Push the referenced object if needed.
-            if (unwrapped.GetTypeNumber() == Type::Number::Object) {
-                Push(*data_, ConstDeref<Object>(unwrapped));
-            } else {
-                Push(*data_, unwrapped);
-            }
-        } else {
-            Push(*data_, Q);
-        }
+    // Simplified: Just push the object without special handling
+    // Push the referenced object if needed.
+    if (Q.GetTypeNumber() == Type::Number::Object) {
+        Push(*data_, ConstDeref<Object>(Q));
     } else {
-        // Push the referenced object if needed.
-        if (Q.GetTypeNumber() == Type::Number::Object) {
-            Push(*data_, ConstDeref<Object>(Q));
-        } else {
-            Push(*data_, Q);
-        }
+        Push(*data_, Q);
     }
 }
 
@@ -338,37 +209,18 @@ bool Executor::PopBool() {
 }
 
 void Executor::ToArray() {
-    // For empty arrays, just create and push an empty array
-    if (data_->Size() == 0) {
-        auto emptyArray = New<Array>();
-        Push(emptyArray);
-        return;
-    }
-
-    // Special handling for empty array case "[]"
-    // In this case, the continuation will have pushed a 0 onto the stack
-    if (data_->Size() == 1 && data_->Top().IsType<int>() &&
-        ConstDeref<int>(data_->Top()) == 0) {
-        data_->Pop();  // Remove the 0
-        auto emptyArray = New<Array>();
-        Push(emptyArray);
-        return;
-    }
-
-    // Check if we already have an array on the stack (this can happen with our
-    // PiTranslator changes)
-    if (data_->Size() == 1 && data_->Top().IsType<Array>()) {
-        // An array is already on the stack, leave it there
-        return;
-    }
-
-    // For non-empty arrays, follow the regular pattern
-    // First, get the length
+    // Simplified: Just handle the standard pattern
+    // The stack should contain: [element1, element2, ..., elementN, count]
+    
+    // Get the count from the top of the stack
     auto len = ConstDeref<int>(Pop());
     if (len < 0) KAI_THROW_1(BadIndex, len);
 
+    // Create array and populate it
     auto array = New<Array>();
     array->Resize(len);
+    
+    // Pop elements in reverse order
     while (len--) array->RefAt(len) = Pop();
 
     Push(array);
@@ -649,10 +501,7 @@ void Executor::Eval(Object const &Q) {
         return;
     }
 
-    // Note: Special pattern handling for "5 dup +" is now done in the Dup
-    // operation itself, so we don't need to check for it here
-
-    // Direct handling of the evaluation with primitive value extraction
+    // Simplified: Treat evaluation as a simple dispatch based on type
     switch (GetTypeNumber(Q).value) {
         case Type::Number::Operation: {
             try {
@@ -674,73 +523,8 @@ void Executor::Eval(Object const &Q) {
             break;
 
         case Type::Number::Continuation: {
-            // If we get a Continuation object directly, execute it
+            // Simply execute the continuation without special handling
             try {
-                Pointer<Continuation> cont = Q;
-
-                // Special handling for direct continuation evaluation
-                // This is needed for compatibility with existing tests
-                if (cont->GetSpecialHandling()) {
-                    // Check if this is a binary operation pattern (val1, val2,
-                    // op)
-                    Pointer<const Array> code = cont->GetCode();
-
-                    if (code.Valid() && code.Exists() && code->Size() == 3) {
-                        Object val1 = code->At(0);
-                        Object val2 = code->At(1);
-                        Object op = code->At(2);
-
-                        // Check if this is the binary op pattern
-                        if (val1.Valid() && val1.Exists() && val2.Valid() &&
-                            val2.Exists() && op.Valid() && op.Exists() &&
-                            op.IsType<Operation>()) {
-                            Operation::Type opType =
-                                ConstDeref<Operation>(op).GetTypeNumber();
-
-                            // Only handle binary operations
-                            if (IsBinaryOp(opType)) {
-                                Object result =
-                                    PerformBinaryOp(val1, val2, opType);
-                                KAI_TRACE()
-                                    << "Handling specially-marked continuation "
-                                       "with binary operation: "
-                                    << val1.ToString() << " "
-                                    << Operation::ToString(opType) << " "
-                                    << val2.ToString() << " = "
-                                    << result.ToString();
-
-                                // Push the result directly
-                                Push(result);
-                                return;  // Skip the normal Continue path
-                            }
-                        }
-                        // Handle single value pattern (just a value)
-                        else if (code->Size() == 1) {
-                            Object val = code->At(0);
-                            if (val.Valid() && val.Exists()) {
-                                KAI_TRACE()
-                                    << "Handling specially-marked continuation "
-                                       "with single value: "
-                                    << val.ToString();
-                                Push(val);
-                                return;  // Skip the normal Continue path
-                            }
-                        }
-                    } else if (code.Valid() && code.Exists() &&
-                               code->Size() == 1) {
-                        // Just a single value
-                        Object val = code->At(0);
-                        if (val.Valid() && val.Exists()) {
-                            KAI_TRACE() << "Handling specially-marked "
-                                           "continuation with single value: "
-                                        << val.ToString();
-                            Push(val);
-                            return;  // Skip the normal Continue path
-                        }
-                    }
-                }
-
-                // Regular continuation processing
                 Continue(Q);
             } catch (const std::exception &e) {
                 KAI_TRACE_ERROR()
@@ -750,8 +534,7 @@ void Executor::Eval(Object const &Q) {
         }
 
         case Type::Number::Object: {
-            // Attempt to unwrap the Object if it's wrapping something we can
-            // directly use
+            // Attempt to unwrap the Object if it's wrapping something
             try {
                 Object unwrapped = ConstDeref<Object>(Q);
                 if (unwrapped.Valid() && unwrapped.Exists()) {
@@ -759,7 +542,6 @@ void Executor::Eval(Object const &Q) {
                     Eval(unwrapped);
                     return;
                 }
-                // If unwrapping failed, fall through to default behavior
             } catch (const std::exception &e) {
                 KAI_TRACE_ERROR()
                     << "Eval: Exception unwrapping Object: " << e.what();
@@ -769,14 +551,7 @@ void Executor::Eval(Object const &Q) {
             break;
         }
 
-        // Handle primitive types directly by their type numbers
-        case Type::Number::Signed32:  // int
-        case Type::Number::Single:    // float
-        case Type::Number::Double:    // double
-        case Type::Number::Bool:
-        case Type::Number::String:
-        case Type::Number::Array:
-        // For other data types, clone and push directly
+        // For all other types (primitives, arrays, etc.), just push them
         default:
             if (traceLevel_ > 2) {
                 KAI_TRACE() << "Eval: Pushing direct value: " << Q.ToString();
@@ -786,8 +561,7 @@ void Executor::Eval(Object const &Q) {
                 }
             }
 
-            // Create a proper clone to ensure correct type information is
-            // preserved
+            // Create a proper clone to ensure correct type information is preserved
             Object clone = Q.Clone();
             Push(clone);
             break;
@@ -913,417 +687,32 @@ void Executor::ContinueOnly(Value<Continuation> C) {
 }
 
 void Executor::Continue(Value<Continuation> C) {
+    // Simplified: Just execute the continuation without special cases
+    // Treat the continuation as a linear list of objects to execute
+    
     // Validate input continuation
     if (!C.Valid() || !C.Exists()) {
-        KAI_TRACE_ERROR() << "Continue(Value<Continuation>): Invalid or "
-                             "non-existent continuation";
+        KAI_TRACE_ERROR() << "Continue(Value<Continuation>): Invalid or non-existent continuation";
         return;
     }
 
     // Make sure code field is initialized
     if (!C->GetCode().Valid() || !C->GetCode().Exists()) {
-        KAI_TRACE_ERROR()
-            << "Continue(Value<Continuation>): Continuation has invalid code";
-
-        // Try to initialize the code field if missing
-        if (!C->GetCode().Exists()) {
-            Object codeArray = New<Array>();
-            C->SetCode(codeArray);
-            KAI_TRACE() << "Continue(Value<Continuation>): Created new empty "
-                           "code array";
-        }
+        KAI_TRACE_ERROR() << "Continue(Value<Continuation>): Continuation has invalid code";
+        return;
     }
 
     // Validate data stack
     if (!data_.Valid() || !data_.Exists()) {
-        KAI_TRACE_ERROR() << "Continue(Value<Continuation>): Invalid or "
-                             "non-existent data stack";
+        KAI_TRACE_ERROR() << "Continue(Value<Continuation>): Invalid or non-existent data stack";
         return;
     }
 
-    // Save the current continuation and stack for restoring later
+    // Save the current continuation for restoring later
     Value<Continuation> savedContinuation = continuation_;
 
-    // Check if this continuation has any binary operations we can directly
-    // evaluate
-    Pointer<const Array> code = C->GetCode();
-    Operation::Type opType = Operation::None;
-
-    // Try to identify direct operations we can evaluate only if code is valid
-    if (code.Valid() && code.Exists()) {
-        // Special case for single values - just push them directly
-        if (code->Size() == 1) {
-            Object singleItem = code->At(0);
-
-            // Validate the single item
-            if (singleItem.Valid() && singleItem.Exists()) {
-                // For primitive types, push them directly
-                if (singleItem.IsType<int>() || singleItem.IsType<float>() ||
-                    singleItem.IsType<double>() || singleItem.IsType<bool>() ||
-                    singleItem.IsType<String>()) {
-                    // Just push the value directly
-                    KAI_TRACE()
-                        << "Direct value push: " << singleItem.ToString()
-                        << " (type: " << singleItem.GetClass()->GetName()
-                        << ")";
-
-                    data_->Push(singleItem);
-                    // Restore the previous continuation and return
-                    continuation_ = savedContinuation;
-                    return;
-                }
-
-                // If it's a single integer/float/bool/string but wrapped as a
-                // general Object, unwrap and push it
-                if (singleItem.IsType<Object>()) {
-                    Object unwrappedObj = ConstDeref<Object>(singleItem);
-                    if (unwrappedObj.Valid() && unwrappedObj.Exists()) {
-                        if (unwrappedObj.IsType<int>() ||
-                            unwrappedObj.IsType<float>() ||
-                            unwrappedObj.IsType<double>() ||
-                            unwrappedObj.IsType<bool>() ||
-                            unwrappedObj.IsType<String>()) {
-                            // Push the unwrapped object
-                            KAI_TRACE()
-                                << "Direct push of unwrapped object: "
-                                << unwrappedObj.ToString() << " (type: "
-                                << unwrappedObj.GetClass()->GetName() << ")";
-
-                            data_->Push(unwrappedObj);
-                            continuation_ = savedContinuation;
-                            return;
-                        }
-                    }
-                }
-
-                // If it's a nested continuation, execute it directly
-                if (singleItem.IsType<Continuation>()) {
-                    try {
-                        // Recursively execute the inner continuation
-                        Continuation &innerCont =
-                            Deref<Continuation>(singleItem);
-
-                        // Create a new continuation with the inner code
-                        Object innerContObj = New<Continuation>();
-                        Pointer<Continuation> innerContPtr = innerContObj;
-                        innerContPtr->Create();
-                        innerContPtr->SetCode(innerCont.GetCode());
-
-                        // Execute inner continuation
-                        Continue(innerContPtr);
-
-                        // Restore the previous continuation and return
-                        if (savedContinuation.Exists()) {
-                            continuation_ = savedContinuation;
-                        } else {
-                            KAI_TRACE_WARN() << "Saved continuation is not "
-                                                "valid in recursive call, "
-                                                "setting to empty continuation";
-                            continuation_ = Object();
-                        }
-                        return;
-                    } catch (const std::exception &e) {
-                        KAI_TRACE_ERROR()
-                            << "Exception handling nested continuation: "
-                            << e.what();
-                        if (savedContinuation.Exists()) {
-                            continuation_ = savedContinuation;
-                        } else {
-                            KAI_TRACE_WARN() << "Saved continuation is not "
-                                                "valid in exception handler, "
-                                                "setting to empty continuation";
-                            continuation_ = Object();
-                        }
-                        return;
-                    }
-                }
-            } else {
-                KAI_TRACE_ERROR() << "Invalid single item in continuation";
-            }
-        }
-
-        // Look for Pi-style binary operations: [operand1] [operand2] [operator]
-        // Check for this specific pattern with 3 elements
-        if (code->Size() == 3) {
-            Object first = code->At(0);
-            Object second = code->At(1);
-            Object op = code->At(2);
-
-            // Validate all objects
-            if (first.Valid() && first.Exists() && second.Valid() &&
-                second.Exists() && op.Valid() && op.Exists()) {
-                // If the pattern matches [value] [value] [operation], handle it
-                // directly
-                if (!first.IsType<Operation>() && !second.IsType<Operation>() &&
-                    op.IsType<Operation>()) {
-                    Operation::Type opType =
-                        ConstDeref<Operation>(op).GetTypeNumber();
-
-                    // Only handle binary operations
-                    if (IsBinaryOp(opType)) {
-                        // Directly compute the result with the appropriate type
-                        Object result = PerformBinaryOp(first, second, opType);
-
-                        // Push the properly typed result
-                        if (result.Valid() && result.Exists()) {
-                            KAI_TRACE()
-                                << "Direct Pi-style binary operation: "
-                                << first.ToString() << " " << second.ToString()
-                                << " " << Operation::ToString(opType) << " = "
-                                << result.ToString()
-                                << " (type: " << result.GetClass()->GetName()
-                                << ")";
-
-                            data_->Push(result);
-                            continuation_ = savedContinuation;
-                            return;
-                        }
-                    }
-                }
-            } else {
-                KAI_TRACE_ERROR() << "Invalid objects in Pi-style operation";
-            }
-        }
-
-        // Handle binary operations with continuation markers
-        // Pattern: [ContinuationBegin] [operand1] [operand2] [operator]
-        // [ContinuationEnd]
-        if (code->Size() == 5) {
-            Object op0 = code->At(0);
-            Object op4 = code->At(4);
-
-            if (op0.Valid() && op0.Exists() && op0.IsType<Operation>() &&
-                op4.Valid() && op4.Exists() && op4.IsType<Operation>()) {
-                Operation::Type firstOp =
-                    ConstDeref<Operation>(op0).GetTypeNumber();
-                Operation::Type lastOp =
-                    ConstDeref<Operation>(op4).GetTypeNumber();
-
-                if (firstOp == Operation::ContinuationBegin &&
-                    lastOp == Operation::ContinuationEnd) {
-                    Object first = code->At(1);
-                    Object second = code->At(2);
-                    Object op = code->At(3);
-
-                    // Special case for a direct value
-                    if (op.IsType<Operation>() &&
-                        ConstDeref<Operation>(op).GetTypeNumber() ==
-                            Operation::None) {
-                        // This is just a single value wrapped in a continuation
-                        if (first.Valid() && first.Exists()) {
-                            data_->Push(first);
-                            continuation_ = savedContinuation;
-                            return;
-                        }
-                    }
-
-                    // Validate all objects
-                    if (first.Valid() && first.Exists() && second.Valid() &&
-                        second.Exists() && op.Valid() && op.Exists()) {
-                        // If the pattern matches and it's a binary operation,
-                        // handle it directly
-                        if (!first.IsType<Operation>() &&
-                            !second.IsType<Operation>() &&
-                            op.IsType<Operation>()) {
-                            opType = ConstDeref<Operation>(op).GetTypeNumber();
-
-                            // Only handle binary operations
-                            if (IsBinaryOp(opType)) {
-                                // Directly compute the result with the
-                                // appropriate type
-                                Object result =
-                                    PerformBinaryOp(first, second, opType);
-
-                                // Push the properly typed result
-                                if (result.Valid() && result.Exists()) {
-                                    KAI_TRACE()
-                                        << "Direct Pi-style binary operation "
-                                           "(marked): "
-                                        << first.ToString() << " "
-                                        << second.ToString() << " "
-                                        << Operation::ToString(opType) << " = "
-                                        << result.ToString() << " (type: "
-                                        << result.GetClass()->GetName() << ")";
-
-                                    data_->Push(result);
-                                    continuation_ = savedContinuation;
-                                    return;
-                                }
-                            }
-                        }
-                    } else {
-                        KAI_TRACE_ERROR()
-                            << "Invalid objects in marked Pi-style operation";
-                    }
-                }
-            }
-        }
-
-        // Special case for ContinuationBegin ... ContinuationEnd pattern with
-        // values inside
-        if (code->Size() >= 3) {
-            Object first = code->At(0);
-            Object last = code->At(code->Size() - 1);
-
-            if (first.Valid() && first.Exists() && first.IsType<Operation>() &&
-                last.Valid() && last.Exists() && last.IsType<Operation>()) {
-                Operation::Type firstOp =
-                    ConstDeref<Operation>(first).GetTypeNumber();
-                Operation::Type lastOp =
-                    ConstDeref<Operation>(last).GetTypeNumber();
-
-                if (firstOp == Operation::ContinuationBegin &&
-                    lastOp == Operation::ContinuationEnd) {
-                    // Check if there's only one actual value inside
-                    if (code->Size() == 3) {
-                        Object value = code->At(1);
-                        if (value.Valid() && value.Exists()) {
-                            // Log information about the value
-                            KAI_TRACE()
-                                << "Found "
-                                   "ContinuationBegin-value-ContinuationEnd "
-                                   "pattern with value type: "
-                                << (value.GetClass()
-                                        ? value.GetClass()->GetName().ToString()
-                                        : "<null>")
-                                << ", value: " << value.ToString();
-
-                            // Special handling for primitive types - ALWAYS
-                            // directly push primitive types
-                            if (value.IsType<int>() || value.IsType<float>() ||
-                                value.IsType<double>() ||
-                                value.IsType<bool>() ||
-                                value.IsType<String>() ||
-                                value.IsType<Array>() || value.IsType<List>() ||
-                                value.IsType<Map>()) {
-                                KAI_TRACE()
-                                    << "Pushing primitive type directly from "
-                                       "continuation: "
-                                    << value.GetClass()->GetName().ToString();
-                                data_->Push(value);
-                                if (savedContinuation.Exists()) {
-                                    continuation_ = savedContinuation;
-                                } else {
-                                    KAI_TRACE_WARN()
-                                        << "Saved continuation is not valid, "
-                                           "setting to empty continuation";
-                                    continuation_ = Object();
-                                }
-                                return;
-                            }
-                            // Even for non-primitive types, just push them
-                            // directly in this pattern This avoids unnecessary
-                            // re-evaluation of nested values
-                            else {
-                                KAI_TRACE()
-                                    << "Pushing non-primitive type directly "
-                                       "from continuation: "
-                                    << value.GetClass()->GetName().ToString();
-                                
-                                // Special handling for Pathname - auto-resolve unquoted pathnames
-                                if (value.IsType<Pathname>()) {
-                                    Pathname path = ConstDeref<Pathname>(value);
-                                    KAI_TRACE() << "Pathname in continuation: " << path.ToString() 
-                                               << ", quoted: " << (path.Quoted() ? "yes" : "no");
-                                    // If it's not quoted, resolve it
-                                    if (!path.Quoted()) {
-                                        KAI_TRACE() << "Auto-resolving unquoted pathname: " << path.ToString();
-                                        try {
-                                            // Check current scope
-                                            if (continuation_.Exists()) {
-                                                auto scope = continuation_->GetScope();
-                                                KAI_TRACE() << "Current scope exists: " << (scope.Exists() ? "yes" : "no");
-                                                if (scope.Exists()) {
-                                                    KAI_TRACE() << "Scope type: " << scope.GetClass()->GetName().ToString();
-                                                }
-                                            }
-                                            
-                                            Object resolved = Resolve(Label(path.ToString()));
-                                            if (resolved.Exists()) {
-                                                KAI_TRACE() << "Resolved to: " << resolved.ToString();
-                                                data_->Push(resolved);
-                                            } else {
-                                                KAI_TRACE_WARN() << "Failed to resolve pathname: " << path.ToString();
-                                                data_->Push(Object()); // Push null for undefined variables
-                                            }
-                                        } catch (const Exception::Base &e) {
-                                            KAI_TRACE_WARN() << "Exception resolving pathname " << path.ToString() 
-                                                            << ": " << e.ToString();
-                                            data_->Push(Object());
-                                        } catch (...) {
-                                            KAI_TRACE_WARN() << "Unknown exception resolving pathname: " << path.ToString();
-                                            data_->Push(Object());
-                                        }
-                                    } else {
-                                        // Quoted pathname - push as-is for Store operations
-                                        KAI_TRACE() << "Pushing quoted pathname as-is";
-                                        data_->Push(value);
-                                    }
-                                } else {
-                                    data_->Push(value);
-                                }
-                                
-                                if (savedContinuation.Exists()) {
-                                    continuation_ = savedContinuation;
-                                } else {
-                                    KAI_TRACE_WARN()
-                                        << "Saved continuation is not valid, "
-                                           "setting to empty continuation";
-                                    continuation_ = Object();
-                                }
-                                return;
-                            }
-                        }
-                    }
-                    // Handle binary operations with 3 values (operand1,
-                    // operand2, operator) inside ContinuationBegin/End markers
-                    else if (code->Size() == 5) {
-                        Object operand1 = code->At(1);
-                        Object operand2 = code->At(2);
-                        Object op = code->At(3);
-
-                        // Validate all three objects
-                        if (operand1.Valid() && operand1.Exists() &&
-                            operand2.Valid() && operand2.Exists() &&
-                            op.Valid() && op.Exists() &&
-                            op.IsType<Operation>()) {
-                            // Check if it's a binary operation
-                            Operation::Type opType =
-                                ConstDeref<Operation>(op).GetTypeNumber();
-                            if (IsBinaryOp(opType)) {
-                                // Directly compute the binary operation
-                                Object result =
-                                    PerformBinaryOp(operand1, operand2, opType);
-
-                                if (result.Valid() && result.Exists()) {
-                                    KAI_TRACE()
-                                        << "Executing binary operation "
-                                           "directly from continuation: "
-                                        << operand1.ToString() << " "
-                                        << Operation::ToString(opType) << " "
-                                        << operand2.ToString() << " = "
-                                        << result.ToString() << " (type: "
-                                        << result.GetClass()
-                                               ->GetName()
-                                               .ToString()
-                                        << ")";
-
-                                    // Push the result onto the stack
-                                    data_->Push(result);
-                                    continuation_ = savedContinuation;
-                                    return;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     try {
-        // If we couldn't handle it with special cases, execute the continuation
-        // normally
+        // Execute the continuation normally - no special cases
         SetContinuation(C);
         Continue();
     } catch (const Exception::Base &e) {

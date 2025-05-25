@@ -206,12 +206,12 @@ The basic console supports both Pi and Rho as a REPL shell:
 ```
 $ ./Console
 KAI Console v1.0
-Language: Pi> 2 3 +
+Pi> 2 3 +
 5
-Language: Pi> :rho
-Language: Rho> x = 10
-Language: Rho> y = 20
-Language: Rho> x + y
+Pi> :rho
+Rho> x = 10
+Rho> y = 20
+Rho> x + y
 30
 ```
 
