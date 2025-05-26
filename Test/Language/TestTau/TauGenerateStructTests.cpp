@@ -23,6 +23,9 @@ TEST_F(TauGenerateStructTests, TestBasicStructGeneration) {
     Generate::GenerateStruct generator(input.c_str(), output);
     
     ASSERT_FALSE(output.empty());
+    std::cout << "Generated output:\n" << output << std::endl;
+    std::cout << "Expected to find: 'struct Point', 'int x;', 'int y;'" << std::endl;
+    
     EXPECT_TRUE(output.find("struct Point") != string::npos);
     EXPECT_TRUE(output.find("int x;") != string::npos);
     EXPECT_TRUE(output.find("int y;") != string::npos);

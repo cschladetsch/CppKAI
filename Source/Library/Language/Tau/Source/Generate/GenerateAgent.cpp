@@ -24,9 +24,21 @@ bool GenerateAgent::Namespace(Node const &ns) {
                 if (!Namespace(*ch)) return false;
                 break;
 
-            case TauAstEnumType::Class:
-                if (!Class(*ch)) return false;
+            case TauAstEnumType::Class: {
+                // Check if this is actually a struct
+                bool isStruct = false;
+                for (const auto &child : ch->GetChildren()) {
+                    if (child->GetType() == TauAstEnumType::Struct) {
+                        isStruct = true;
+                        break;
+                    }
+                }
+                // Only process if it's not a struct
+                if (!isStruct) {
+                    if (!Class(*ch)) return false;
+                }
                 break;
+            }
 
             case TauAstEnumType::Interface:
                 if (!Interface(*ch)) return false;
@@ -34,6 +46,10 @@ bool GenerateAgent::Namespace(Node const &ns) {
                 
             case TauAstEnumType::Struct:
                 // Structs don't need agent generation, just skip
+                break;
+                
+            case TauAstEnumType::EnumType:
+                // Enums don't need agent generation, just skip
                 break;
 
             default:
@@ -149,6 +165,11 @@ void GenerateAgent::GenerateHandlerMethod(TauParser::AstNode const &method) {
 bool GenerateAgent::Interface(Node const &interface) {
     // Interfaces are handled the same way as classes in agent generation
     return Class(interface);
+}
+
+bool GenerateAgent::Struct(Node const &strct) {
+    // Structs don't need agent generation - skip them entirely
+    return true;
 }
 
 }  // namespace Generate

@@ -96,10 +96,20 @@ bool TauLexer::NextToken() {
             return Add(Enum::NewLine);
         case '/':
             if (Peek() == '/') {
-                Next();
+                Next();  // consume second '/'
                 int start = offset;
+                // Consume until and including the newline (same as Rho and Pi)
                 while (Next() != '\n' && Current() != 0);
-                return Add(Enum::Comment, offset - start);
+                
+                // Create the comment token
+                Add(Enum::Comment, Slice(start, offset));
+                
+                // If we stopped at a newline, consume it
+                if (Current() == '\n') {
+                    Next();
+                }
+                
+                return true;
             }
 
             return Fail("Expected comment start");

@@ -52,9 +52,21 @@ bool GenerateProxy::Namespace(Node const &ns) {
                 if (!Namespace(*ch)) return false;
                 break;
 
-            case TauAstEnumType::Class:
-                if (!Class(*ch)) return false;
+            case TauAstEnumType::Class: {
+                // Check if this is actually a struct
+                bool isStruct = false;
+                for (const auto &child : ch->GetChildren()) {
+                    if (child->GetType() == TauAstEnumType::Struct) {
+                        isStruct = true;
+                        break;
+                    }
+                }
+                // Only process if it's not a struct
+                if (!isStruct) {
+                    if (!Class(*ch)) return false;
+                }
                 break;
+            }
 
             case TauAstEnumType::Interface:
                 if (!Interface(*ch)) return false;
@@ -62,6 +74,10 @@ bool GenerateProxy::Namespace(Node const &ns) {
                 
             case TauAstEnumType::Struct:
                 // Structs don't need proxy generation, just skip
+                break;
+                
+            case TauAstEnumType::EnumType:
+                // Enums don't need proxy generation, just skip
                 break;
 
             default:
@@ -119,11 +135,6 @@ bool GenerateProxy::Class(Node const &cl) {
 
     EndBlock();
     return true;
-}
-
-bool GenerateProxy::Interface(Node const &interface) {
-    // Interfaces are handled the same way as classes in proxy generation
-    return Class(interface);
 }
 
 bool GenerateProxy::Event(Node const &event) {
@@ -251,7 +262,15 @@ string GenerateProxy::ReturnType(string const &text) const {
 
 string GenerateProxy::ArgType(string const &text) const { return "const " + text + "&"; }
 
+bool GenerateProxy::Interface(Node const &interface) {
+    // Interfaces are treated like classes for proxy generation
+    return Class(interface);
+}
 
+bool GenerateProxy::Struct(Node const &strct) {
+    // Structs don't need proxy generation - skip them entirely
+    return true;
+}
 
 }  // namespace Generate
 

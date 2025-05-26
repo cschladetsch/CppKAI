@@ -18,7 +18,8 @@ struct GenerateAgent : GenerateProcess {
     bool Class(Node const &cl) override;
     bool Property(Node const &prop) override;
     bool Method(Node const &method) override;
-    bool Interface(Node const &interface);
+    bool Interface(Node const &interface) override;
+    bool Struct(Node const &strct) override;
     string ArgType(string const &text) const override;
     string ReturnType(string const &text) const override;
 

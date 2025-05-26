@@ -32,6 +32,7 @@ struct GenerateProcess : Process {
     virtual bool Namespace(Node const &ns);
     virtual bool Class(Node const &cl);
     virtual bool Interface(Node const &interface);
+    virtual bool Struct(Node const &strct);
     virtual bool Property(Node const &prop);
     virtual bool Method(Node const &method);
     virtual string Prepend() const;

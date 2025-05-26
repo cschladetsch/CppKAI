@@ -51,14 +51,6 @@ string GenerateProcess::CommonPrepend() {
 bool GenerateProcess::Module(TauParser const &p) {
     auto const &root = p.GetRoot();
 
-    // Debug: log what we actually got from the parser (commented out for cleaner output)
-    // KAI_TRACE_1(string("Module() received root node type: ") + TauAstEnumType::ToString(root->GetType()));
-    // KAI_TRACE_1(string("Module() received root node children count: ") + std::to_string(root->GetChildren().size()));
-    // for (size_t i = 0; i < root->GetChildren().size(); ++i) {
-    //     auto child = root->GetChildren()[i];
-    //     KAI_TRACE_1(string("Child ") + std::to_string(i) + " type: " + TauAstEnumType::ToString(child->GetType()));
-    // }
-
     // Be more resilient with code generation - even if the module is empty
     if (root->GetChildren().empty()) {
         KAI_TRACE_WARN_1("Empty module found, creating empty default namespace");
@@ -81,11 +73,27 @@ bool GenerateProcess::Module(TauParser const &p) {
                     }
                     handledAnyNodes = true;
                 } else if (moduleChild->GetType() == TauAstEnumType::Class) {
-                    // Directly handle class without namespace
+                    // Check if this is actually a struct (has Struct child node)
+                    bool isStruct = false;
+                    for (const auto &child : moduleChild->GetChildren()) {
+                        if (child->GetType() == TauAstEnumType::Struct) {
+                            isStruct = true;
+                            break;
+                        }
+                    }
+                    
+                    // Directly handle class/struct without namespace
                     StartBlock("namespace Default");
-                    if (!Class(*moduleChild)) {
-                        // Continue even if class processing fails
-                        KAI_TRACE_WARN_1("Class processing failed, but continuing");
+                    if (isStruct) {
+                        if (!Struct(*moduleChild)) {
+                            // Continue even if struct processing fails
+                            KAI_TRACE_WARN_1("Struct processing failed, but continuing");
+                        }
+                    } else {
+                        if (!Class(*moduleChild)) {
+                            // Continue even if class processing fails
+                            KAI_TRACE_WARN_1("Class processing failed, but continuing");
+                        }
                     }
                     EndBlock();
                     handledAnyNodes = true;
@@ -102,11 +110,27 @@ bool GenerateProcess::Module(TauParser const &p) {
             }
             handledAnyNodes = true;
         } else if (ch->GetType() == TauAstEnumType::Class) {
-            // Directly handle class without namespace
+            // Check if this is actually a struct (has Struct child node)
+            bool isStruct = false;
+            for (const auto &child : ch->GetChildren()) {
+                if (child->GetType() == TauAstEnumType::Struct) {
+                    isStruct = true;
+                    break;
+                }
+            }
+            
+            // Directly handle class/struct without namespace
             StartBlock("namespace Default");
-            if (!Class(*ch)) {
-                // Continue even if class processing fails
-                KAI_TRACE_WARN_1("Class processing failed, but continuing");
+            if (isStruct) {
+                if (!Struct(*ch)) {
+                    // Continue even if struct processing fails
+                    KAI_TRACE_WARN_1("Struct processing failed, but continuing");
+                }
+            } else {
+                if (!Class(*ch)) {
+                    // Continue even if class processing fails
+                    KAI_TRACE_WARN_1("Class processing failed, but continuing");
+                }
             }
             EndBlock();
             handledAnyNodes = true;
@@ -212,6 +236,12 @@ bool GenerateProcess::Interface(Node const &interface) {
     // Default implementation - derived classes should override
     // For now, treat interfaces like classes
     return Class(interface);
+}
+
+bool GenerateProcess::Struct(Node const &strct) {
+    // Default implementation - derived classes should override
+    // For now, treat structs like classes
+    return Class(strct);
 }
 
 }  // namespace Generate

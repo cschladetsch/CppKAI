@@ -259,6 +259,11 @@ bool TauParser::Namespace(AstNodePtr root) {
                 if (!Namespace(ns)) return false;
                 break;
 
+            case TokenEnum::Struct:
+                Consume();
+                if (!Struct(ns)) return false;
+                break;
+
             // Handle 'using' directive
             case TokenEnum::Ident:
                 if (Current().ToString() == "using") {

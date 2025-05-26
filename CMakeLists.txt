@@ -12,6 +12,8 @@ endif()
 # - Defaults to C++23 standard
 # - Supports out-of-source builds with output to build/Bin directory
 
+set(CMAKE_CXX_CLANG_TIDY clang-tidy)
+
 # Set the default generator to Ninja unless BUILD_GCC is set
 if(NOT DEFINED BUILD_GCC)
     # Ensure Ninja is used as the default generator
