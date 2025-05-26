@@ -49,6 +49,11 @@ foreach (lang ${langs})
             ${source_path}/RhoFunctionAndScopeTests.cpp    # Function and scope tests
             ${source_path}/RhoAdvancedDataTests.cpp        # Advanced data structure tests
             ${source_path}/RhoDemo.cpp                    # Demo runner for showcasing features
+            # New Rho tests added
+            ${source_path}/RhoPatternMatchingTests.cpp     # Pattern matching tests
+            ${source_path}/RhoLambdaTests.cpp              # Lambda expression tests
+            ${source_path}/RhoErrorHandlingTests.cpp       # Error handling tests
+            ${source_path}/RhoGeneratorTests.cpp           # Generator and lazy evaluation tests
         )
     elseif(lang STREQUAL "Pi")
         # Explicitly list Pi tests to avoid including unwanted files
@@ -63,6 +68,11 @@ foreach (lang ${langs})
             ${source_path}/ExtendedPiTests.cpp   # Added 20 new test cases for Pi
             ${source_path}/AdvancedPiTests.cpp   # Added 20 more advanced test cases for Pi
             ${source_path}/TestPiLabels.cpp      # Test for label operations
+            # New Pi tests added
+            ${source_path}/PiStackManipulationTests.cpp     # Stack manipulation tests
+            ${source_path}/PiControlFlowTests.cpp           # Control flow tests
+            ${source_path}/PiStringOperationsTests.cpp      # String operation tests
+            ${source_path}/PiMathOperationsTests.cpp        # Mathematical operation tests
             # Larger tests to include if needed:
             #${source_path}/TestPiAdvanced.cpp
             #${source_path}/TestPiAdvanced2.cpp
@@ -81,6 +91,11 @@ foreach (lang ${langs})
             ${source_path}/TauCodeGenerationTests.cpp      # Code generation tests
             ${source_path}/TauGenerateStructTests.cpp      # Struct generation tests
             ${source_path}/TauSeparateGenerationTests.cpp  # Tests for separated proxy/agent generation
+            # New Tau tests added
+            ${source_path}/TauTemplateTests.cpp            # Template and generic programming tests
+            ${source_path}/TauAsyncTests.cpp               # Async/await functionality tests
+            ${source_path}/TauInterfaceTests.cpp           # Interface and contract tests
+            ${source_path}/TauAttributeTests.cpp           # Attribute and metadata tests
         )
     else()
         # For other languages, use the standard approach

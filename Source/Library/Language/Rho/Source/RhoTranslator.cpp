@@ -481,6 +481,44 @@ void RhoTranslator::TranslateIndex(AstNodePtr node) {
     KAI_TRACE() << "Array indexing operation translated";
 }
 
+void RhoTranslator::TranslatePiBlock(AstNodePtr node) {
+    KAI_TRACE() << "TranslatePiBlock - Translating embedded Pi code";
+    
+    // The Pi block should have one child containing the list of Pi tokens
+    if (node->GetChildren().empty()) {
+        KAI_TRACE_ERROR() << "Pi block has no content";
+        return;
+    }
+    
+    // Build the Pi code string from the tokens
+    std::string piCode;
+    auto tokenList = node->GetChild(0);
+    
+    for (const auto& tokenNode : tokenList->GetChildren()) {
+        // Add space before each token except the first
+        if (!piCode.empty()) {
+            piCode += " ";
+        }
+        
+        // Special handling for Equiv token - Pi uses == not =
+        if (tokenNode->GetToken().type == RhoTokenEnumType::Equiv) {
+            piCode += "==";
+        } else {
+            piCode += tokenNode->Text();
+        }
+    }
+    
+    KAI_TRACE() << "Pi code to execute: " << piCode;
+    
+    // Push the Pi code string onto the stack
+    Append(reg_->New<String>(piCode));
+    
+    // Use the ToPi operation to execute the Pi code
+    AppendDirectOperation(Operation::ToPi);
+    
+    KAI_TRACE() << "Pi block translation complete";
+}
+
 void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
     KAI_TRACE() << std::format("TranslateBinaryOp: Operation={}",
                                Operation::ToString(op));

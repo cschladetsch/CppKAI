@@ -37,6 +37,7 @@ const char *RhoAstNodes::ToString(Enum ty) {
         CASE(For)
         CASE(DoWhile)
         CASE(ForEach)
+        CASE(ToPiLang)
     }
 
     static char buff[BUFSIZ];

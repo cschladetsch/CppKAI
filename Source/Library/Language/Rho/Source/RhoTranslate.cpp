@@ -74,6 +74,11 @@ void RhoTranslator::TranslateNode(AstNodePtr node) {
             TranslateMap(node);
             break;
 
+        case AstNodeEnum::ToPiLang:
+            KAI_TRACE() << "Processing ToPiLang node";
+            TranslatePiBlock(node);
+            break;
+
         default:
             // Log warning about unhandled node type but continue
             KAI_TRACE() << "Node type not fully implemented: "

@@ -41,6 +41,7 @@ struct RhoAstNodeEnumType {
         For = 33,
         DoWhile = 34,
         ForEach = 35,
+        ToPiLang = 36,
     };
 
     struct Node : AstNodeBase<RhoToken, RhoAstNodeEnumType> {

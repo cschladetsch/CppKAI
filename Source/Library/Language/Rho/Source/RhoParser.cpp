@@ -12,12 +12,18 @@ bool RhoParser::Process(std::shared_ptr<Lexer> lex, Structure st) {
         return Fail(lex->Error);
     }
 
+    // Clear tokens and reset parser state
+    tokens.clear();
+    current = 0;  // Initialize current token index
+    stack.clear();
+    Failed = false;
+    
     KAI_TRACE() << "Starting to process tokens";
     for (auto tok : lexer->GetTokens()) {
         if (tok.type != TokenEnum::Whitespace &&
             tok.type != TokenEnum::Comment) {
             tokens.push_back(tok);
-            KAI_TRACE() << "Token";
+            KAI_TRACE() << "Token: " << TokenEnumType::ToString(tok.type);
         }
     }
 
@@ -338,7 +344,11 @@ finis:
 }
 
 bool RhoParser::Expression() {
-    if (!Logical()) return false;
+    KAI_TRACE() << "RhoParser::Expression - Starting";
+    if (!Logical()) {
+        KAI_TRACE() << "RhoParser::Expression - Logical() failed";
+        return false;
+    }
 
     if (Try(TokenType::Assign) || Try(TokenType::PlusAssign) ||
         Try(TokenType::MinusAssign) || Try(TokenType::MulAssign) ||
@@ -471,6 +481,8 @@ bool RhoParser::Term() {
 }
 
 bool RhoParser::Factor() {
+    KAI_TRACE() << "RhoParser::Factor - Current token: " << TokenEnumType::ToString(Current().type);
+    
     if (Try(TokenType::OpenParan)) {
         auto exp = NewNode(Consume());
         if (!Expression())
@@ -528,6 +540,36 @@ bool RhoParser::Factor() {
     if (Try(TokenType::Label)) return ParseFactorIdent();
 
     if (Try(TokenType::Pathname)) return ParseFactorIdent();
+    
+    // Handle Pi code blocks - pi { ... }
+    if (Try(TokenType::ToPi)) {
+        KAI_TRACE() << "RhoParser::Factor - Found ToPi token";
+        Consume();  // consume 'pi'
+        
+        // Expect opening brace
+        if (!Try(TokenType::OpenBrace)) {
+            return CreateError("Expected '{' after 'pi'");
+        }
+        
+        auto piBlock = NewNode(NodeType::ToPiLang);
+        Consume();  // consume '{'
+        
+        // Collect all tokens until closing brace as Pi code
+        auto piContent = NewNode(NodeType::List);
+        while (!Try(TokenType::CloseBrace) && !Failed) {
+            // Consume tokens as part of the Pi block
+            piContent->Add(NewNode(Consume()));
+        }
+        
+        if (!Try(TokenType::CloseBrace)) {
+            return CreateError("Expected '}' to close Pi block");
+        }
+        Consume();  // consume '}'
+        
+        piBlock->Add(piContent);
+        Push(piBlock);
+        return true;
+    }
 
     return false;
 }

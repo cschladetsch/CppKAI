@@ -55,6 +55,11 @@ set(core_sources
     ${source_path}/CoreContainerTests.cpp
     ${source_path}/CoreTypeTests.cpp
     ${source_path}/CorePointerTests.cpp
+    # New Core tests added
+    ${source_path}/TestMemoryManagement.cpp
+    ${source_path}/TestSmartPointers.cpp
+    ${source_path}/TestReflection.cpp
+    ${source_path}/TestSerialization.cpp
 )
 
 # Add common test files
