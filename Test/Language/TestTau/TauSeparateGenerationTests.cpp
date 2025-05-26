@@ -261,9 +261,9 @@ TEST_F(TauSeparateGenerationTests, TestComplexScenario) {
         EXPECT_TRUE(structOutput.find("int id;") != string::npos);
         EXPECT_TRUE(structOutput.find("string name;") != string::npos);
         
-        // Should treat interface and class as structs (based on implementation)
-        EXPECT_TRUE(structOutput.find("struct IUserService") != string::npos);
+        // Should treat class as struct (but not interface)
         EXPECT_TRUE(structOutput.find("struct UserManager") != string::npos);
+        EXPECT_TRUE(structOutput.find("IUserService") == string::npos);
     }
 }
 

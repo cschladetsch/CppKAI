@@ -21,9 +21,6 @@ string GenerateStruct::Prepend() const {
 }
 
 bool GenerateStruct::Namespace(Node const &ns) {
-    KAI_TRACE_2("GenerateStruct::Namespace called with name: ", ns.GetToken().Text());
-    KAI_TRACE_2("Namespace has children: ", static_cast<int>(ns.GetChildren().size()));
-    
     StartBlock(string("namespace ") + ns.GetToken().Text());
     for (auto const &ch : ns.GetChildren()) {
         switch (ch->GetType()) {
@@ -54,12 +51,17 @@ bool GenerateStruct::Namespace(Node const &ns) {
                 break;
 
             case TauAstEnumType::Interface:
-                // Treat interfaces as structs
-                if (!Interface(*ch)) return false;
+                // Skip interfaces - GenerateStruct only generates actual structs
+                break;
+                
+            case TauAstEnumType::EnumType:
+                // Skip enums - GenerateStruct only generates actual structs
                 break;
 
             default:
-                return Fail(string("Unknown node type in Namespace: ") + TauAstEnumType::ToString(ch->GetType()));
+                // Skip unknown types instead of failing
+                KAI_TRACE_WARN_1("Skipping unknown node type in Namespace: " + string(TauAstEnumType::ToString(ch->GetType())));
+                break;
         }
     }
 
@@ -68,13 +70,13 @@ bool GenerateStruct::Namespace(Node const &ns) {
 }
 
 bool GenerateStruct::Class(Node const &cl) {
-    // Classes in GenerateStruct context are treated as structs
+    // GenerateStruct treats all classes as structs
     return Struct(cl);
 }
 
 bool GenerateStruct::Interface(Node const &interface) {
-    // Interfaces in GenerateStruct context are treated as structs
-    return Struct(interface);
+    // Skip interfaces - GenerateStruct only generates actual structs
+    return true;
 }
 
 bool GenerateStruct::Struct(Node const &strct) {
@@ -82,21 +84,7 @@ bool GenerateStruct::Struct(Node const &strct) {
     
     // Skip empty struct markers
     if (structName.empty()) {
-        KAI_TRACE_1("Skipping empty struct marker node");
         return true;
-    }
-    
-    KAI_TRACE_2("GenerateStruct::Struct called with name: ", structName);
-    KAI_TRACE_2("Struct node has children: ", static_cast<int>(strct.GetChildren().size()));
-    
-    // Debug: dump all children
-    for (size_t i = 0; i < strct.GetChildren().size(); ++i) {
-        auto child = strct.GetChildren()[i];
-        KAI_TRACE_3("Child", static_cast<int>(i), TauAstEnumType::ToString(child->GetType()));
-        KAI_TRACE_2("  Token text: ", child->GetToken().Text());
-        if (child->GetType() == TauAstEnumType::Struct) {
-            KAI_TRACE_2("  Struct child has num children: ", static_cast<int>(child->GetChildren().size()));
-        }
     }
     
     // Generate plain struct
@@ -106,7 +94,6 @@ bool GenerateStruct::Struct(Node const &strct) {
     for (const auto &member : strct.GetChildren()) {
         // Skip the struct marker node
         if (member->GetType() == TauAstEnumType::Struct && member->GetToken().Text().empty()) {
-            KAI_TRACE_1("Skipping struct marker node");
             continue;
         }
         
@@ -183,84 +170,6 @@ string GenerateStruct::ReturnType(string const &text) const {
 
 string GenerateStruct::ArgType(string const &text) const { 
     return text; 
-}
-
-bool GenerateStruct::Module(TauParser const &p) {
-    KAI_TRACE_1("GenerateStruct::Module called");
-    auto const &root = p.GetRoot();
-    
-    KAI_TRACE_2("Root has children: ", static_cast<int>(root->GetChildren().size()));
-
-    if (root->GetChildren().empty()) {
-        return Fail("Module has no children");
-    }
-
-    for (const auto &ch : root->GetChildren()) {
-        KAI_TRACE_2("Processing child type: ", TauAstEnumType::ToString(ch->GetType()));
-        if (ch->GetType() == TauAstEnumType::Module) {
-            // Handle module node
-            for (const auto &moduleChild : ch->GetChildren()) {
-                if (moduleChild->GetType() == TauAstEnumType::Namespace) {
-                    if (!Namespace(*moduleChild)) {
-                        return false;
-                    }
-                } else if (moduleChild->GetType() == TauAstEnumType::Class) {
-                    // Check if this is actually a struct (has Struct child node)
-                    bool isStruct = false;
-                    for (const auto &child : moduleChild->GetChildren()) {
-                        if (child->GetType() == TauAstEnumType::Struct) {
-                            isStruct = true;
-                            break;
-                        }
-                    }
-                    
-                    // Directly handle class/struct without namespace
-                    StartBlock("namespace Default");
-                    if (isStruct) {
-                        if (!Struct(*moduleChild)) {
-                            return false;
-                        }
-                    } else {
-                        if (!Class(*moduleChild)) {
-                            return false;
-                        }
-                    }
-                    EndBlock();
-                }
-            }
-        } else if (ch->GetType() == TauAstEnumType::Namespace) {
-            // Directly handle namespace node
-            if (!Namespace(*ch)) {
-                return false;
-            }
-        } else if (ch->GetType() == TauAstEnumType::Class) {
-            // Check if this is actually a struct (has Struct child node)
-            bool isStruct = false;
-            for (const auto &child : ch->GetChildren()) {
-                if (child->GetType() == TauAstEnumType::Struct) {
-                    isStruct = true;
-                    break;
-                }
-            }
-            
-            // Directly handle class/struct without namespace
-            StartBlock("namespace Default");
-            if (isStruct) {
-                if (!Struct(*ch)) {
-                    return false;
-                }
-            } else {
-                if (!Class(*ch)) {
-                    return false;
-                }
-            }
-            EndBlock();
-        } else {
-            return Fail(string("Unknown node type in Module: ") + TauAstEnumType::ToString(ch->GetType()));
-        }
-    }
-
-    return true;
 }
 
 }  // namespace Generate

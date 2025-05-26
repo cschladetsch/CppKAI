@@ -13,7 +13,6 @@ struct GenerateStruct : GenerateProcess {
    protected:
     bool Generate(TauParser const &p, string &output) override;
     string Prepend() const override;
-    bool Module(TauParser const &) override;
     bool Namespace(Node const &ns) override;
     bool Class(Node const &cl) override;
     bool Interface(Node const &interface) override;

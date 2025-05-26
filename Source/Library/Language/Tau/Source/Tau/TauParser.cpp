@@ -264,6 +264,11 @@ bool TauParser::Namespace(AstNodePtr root) {
                 if (!Struct(ns)) return false;
                 break;
 
+            case TokenEnum::EnumKeyword:
+                Consume();
+                if (!Enum(ns)) return false;
+                break;
+
             // Handle 'using' directive
             case TokenEnum::Ident:
                 if (Current().ToString() == "using") {
@@ -400,6 +405,16 @@ bool TauParser::Class(AstNodePtr root) {
             continue;
         }
 
+        // Handle 'event' keyword
+        if (CurrentIs(TokenEnum::Event)) {
+            Consume();  // Consume 'event'
+            if (!Event(klass)) {
+                // Continue parsing even if event fails
+                Failed = false;
+            }
+            continue;
+        }
+
         // Handle visibility modifiers (public:, private:, protected:)
         if (CurrentIs(TokenEnum::Ident)) {
             auto token = Current();
@@ -412,6 +427,16 @@ bool TauParser::Class(AstNodePtr root) {
                     Consume();  // Consume the colon
                     continue;
                 }
+            }
+            
+            // Handle 'event' keyword as identifier
+            if (text == "event") {
+                Consume();  // Consume 'event'
+                if (!Event(klass)) {
+                    // Continue parsing even if event fails
+                    Failed = false;
+                }
+                continue;
             }
 
             // Handle 'static' keyword
