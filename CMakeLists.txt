@@ -73,29 +73,23 @@ set(TEST_HOME ${KAI_HOME}/Test)
 
 # Support both in-source and out-of-source builds
 if(NOT DEFINED BIN_HOME)
-    if(CMAKE_BINARY_DIR STREQUAL CMAKE_SOURCE_DIR)
-        # In-source build
-        set(BIN_HOME ${KAI_HOME}/Bin)
-    else()
-        # Out-of-source build
-        set(BIN_HOME ${CMAKE_BINARY_DIR}/Bin)
-    endif()
+    # Always use KAI_HOME/Bin for output
+    set(BIN_HOME ${KAI_HOME}/Bin)
 endif()
 
 message(STATUS "Binary output directory: ${BIN_HOME}")
 
-# Set output directories - ensure they're relative to build directory for safety
-set(SAFER_BIN_HOME "${CMAKE_BINARY_DIR}/Bin")
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${SAFER_BIN_HOME}")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${SAFER_BIN_HOME}") 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${SAFER_BIN_HOME}")
+# Set output directories - use BIN_HOME which was set above
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${BIN_HOME}")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${BIN_HOME}") 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${BIN_HOME}")
 
 # Also set per-configuration output directories
 foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
     string(TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} "${SAFER_BIN_HOME}")
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG} "${SAFER_BIN_HOME}")
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} "${SAFER_BIN_HOME}")
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} "${BIN_HOME}")
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG} "${BIN_HOME}")
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} "${BIN_HOME}")
 endforeach()
 
 include_directories(${KAI_HOME}/Include)
@@ -178,8 +172,8 @@ macro(def_library name)
     
     # Ensure output directory is correct
     set_target_properties(${name} PROPERTIES
-        ARCHIVE_OUTPUT_DIRECTORY "${SAFER_BIN_HOME}"
-        LIBRARY_OUTPUT_DIRECTORY "${SAFER_BIN_HOME}"
+        ARCHIVE_OUTPUT_DIRECTORY "${BIN_HOME}"
+        LIBRARY_OUTPUT_DIRECTORY "${BIN_HOME}"
     )
 endmacro()
 
@@ -199,8 +193,8 @@ macro(def_lang_library name)
     
     # Ensure output directory is correct
     set_target_properties(${name}Lang PROPERTIES
-        ARCHIVE_OUTPUT_DIRECTORY "${SAFER_BIN_HOME}"
-        LIBRARY_OUTPUT_DIRECTORY "${SAFER_BIN_HOME}"
+        ARCHIVE_OUTPUT_DIRECTORY "${BIN_HOME}"
+        LIBRARY_OUTPUT_DIRECTORY "${BIN_HOME}"
     )
 endmacro()
 
@@ -213,8 +207,8 @@ macro(def_platform_library name)
     
     # Ensure output directory is correct
     set_target_properties(platform-${name} PROPERTIES
-        ARCHIVE_OUTPUT_DIRECTORY "${SAFER_BIN_HOME}"
-        LIBRARY_OUTPUT_DIRECTORY "${SAFER_BIN_HOME}"
+        ARCHIVE_OUTPUT_DIRECTORY "${BIN_HOME}"
+        LIBRARY_OUTPUT_DIRECTORY "${BIN_HOME}"
     )
 endmacro()
 
