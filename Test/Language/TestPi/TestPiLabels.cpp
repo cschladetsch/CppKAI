@@ -50,20 +50,19 @@ TEST_F(PiLabelTest, MultipleStores) {
 TEST_F(PiLabelTest, StoreRetrieveMultipleTypes) {
     stack()->Clear();
     ExecutePi("42 'intVal #");
-    // Pi doesn't support float literals, so we'll use another int
-    ExecutePi("314 'intVal2 #");
+    ExecutePi("3.14 'floatVal #");
     ExecutePi("\"hello\" 'stringVal #");
     
-    // Retrieve first int
+    // Retrieve int
     ExecutePi("intVal");
     ASSERT_TRUE(stack()->Top().IsType<int>());
     ASSERT_EQ(ConstDeref<int>(stack()->Top()), 42);
     stack()->Pop();
     
-    // Retrieve second int
-    ExecutePi("intVal2");
-    ASSERT_TRUE(stack()->Top().IsType<int>());
-    ASSERT_EQ(ConstDeref<int>(stack()->Top()), 314);
+    // Retrieve float
+    ExecutePi("floatVal");
+    ASSERT_TRUE(stack()->Top().IsType<float>());
+    ASSERT_FLOAT_EQ(ConstDeref<float>(stack()->Top()), 3.14f);
     stack()->Pop();
     
     // Retrieve string
@@ -125,4 +124,25 @@ TEST_F(PiLabelTest, UndefinedLabelHandling) {
     // Should push an empty object
     ASSERT_EQ(stack()->Size(), 1);
     ASSERT_FALSE(stack()->Top().Exists()) << "Undefined label should push empty object";
+}
+
+TEST_F(PiLabelTest, FloatOperations) {
+    stack()->Clear();
+    
+    // Test basic float arithmetic
+    ExecutePi("2.5 3.5 +");
+    ASSERT_TRUE(stack()->Top().IsType<float>());
+    ASSERT_FLOAT_EQ(ConstDeref<float>(stack()->Top()), 6.0f);
+    stack()->Pop();
+    
+    // Test float multiplication
+    ExecutePi("1.5 2.0 *");
+    ASSERT_TRUE(stack()->Top().IsType<float>());
+    ASSERT_FLOAT_EQ(ConstDeref<float>(stack()->Top()), 3.0f);
+    stack()->Pop();
+    
+    // Test float with integer operations (should promote to float)
+    ExecutePi("3.14 2 *");
+    ASSERT_TRUE(stack()->Top().IsType<float>());
+    ASSERT_FLOAT_EQ(ConstDeref<float>(stack()->Top()), 6.28f);
 }

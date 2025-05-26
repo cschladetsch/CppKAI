@@ -3,6 +3,7 @@
 #include <boost/lexical_cast.hpp>
 #include <iostream>
 
+#include "KAI/Core/BuiltinTypes.h"
 #include "KAI/Core/BuiltinTypes/List.h"
 #include "KAI/Core/BuiltinTypes/Map.h"
 #include "KAI/Core/BuiltinTypes/String.h"
@@ -227,6 +228,10 @@ void PiTranslator::AppendTokenised(const TokenNode &tok) {
             AppendNew(boost::lexical_cast<int>(tok.Text()));
             break;
 
+        case PiTokenEnumType::Float:
+            AppendNew(boost::lexical_cast<float>(tok.Text()));
+            break;
+
         case PiTokenEnumType::Replace:
             AppendOp(Operation::Replace);
             break;
@@ -315,9 +320,9 @@ void PiTranslator::AppendTokenised(const TokenNode &tok) {
             break;
 
         case PiTokenEnumType::Ident:
-            // Unquoted identifiers should resolve automatically
-            // We'll handle this at the executor level
-            AppendNew(Pathname(tok.Text()));
+            // Unquoted identifiers need to be looked up
+            AppendNew(Label(tok.Text()));
+            AppendOp(Operation::Lookup);
             break;
 
         case PiTokenEnumType::Pathname:
