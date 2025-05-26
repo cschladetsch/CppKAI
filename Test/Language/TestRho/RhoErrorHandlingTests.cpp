@@ -5,7 +5,7 @@
 TEST(RhoErrorHandling, TryCatchBasic) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     console.Execute(R"(
         result = try
@@ -23,7 +23,7 @@ TEST(RhoErrorHandling, TryCatchBasic) {
 TEST(RhoErrorHandling, TryFinallyBlock) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     console.Execute(R"(
         counter = 0
@@ -43,7 +43,7 @@ TEST(RhoErrorHandling, TryFinallyBlock) {
 TEST(RhoErrorHandling, NestedExceptions) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     console.Execute(R"(
         result = try
@@ -64,7 +64,7 @@ TEST(RhoErrorHandling, NestedExceptions) {
 TEST(RhoErrorHandling, CustomExceptionTypes) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     console.Execute(R"(
         class MyError(message)
@@ -88,7 +88,7 @@ TEST(RhoErrorHandling, CustomExceptionTypes) {
 TEST(RhoErrorHandling, AssertionErrors) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     console.Execute(R"(
         result = try

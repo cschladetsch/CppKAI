@@ -5,7 +5,7 @@
 TEST(RhoPiBlock, BasicPiExpression) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     // Basic Pi arithmetic in a pi block
     console.Execute("result = pi { 2 3 + }; result");
@@ -18,7 +18,7 @@ TEST(RhoPiBlock, BasicPiExpression) {
 TEST(RhoPiBlock, PiBlockAsStatement) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     // Pi block as a standalone statement
     console.Execute("pi { 10 20 + }");
@@ -31,7 +31,7 @@ TEST(RhoPiBlock, PiBlockAsStatement) {
 TEST(RhoPiBlock, PiBlockWithStringOperations) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     // String operations in Pi block
     console.Execute(R"(greeting = pi { "Hello " "World" + }; greeting)");
@@ -44,7 +44,7 @@ TEST(RhoPiBlock, PiBlockWithStringOperations) {
 TEST(RhoPiBlock, PiBlockWithComparison) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     // Comparison operations in Pi block
     console.Execute("result = pi { 5 3 > }; result");
@@ -57,7 +57,7 @@ TEST(RhoPiBlock, PiBlockWithComparison) {
 TEST(RhoPiBlock, PiBlockInCondition) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     // Pi block used in if condition
     console.Execute(R"(
@@ -76,7 +76,7 @@ TEST(RhoPiBlock, PiBlockInCondition) {
 TEST(RhoPiBlock, PiBlockWithStackManipulation) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     // Stack manipulation in Pi block
     console.Execute("result = pi { 1 2 3 rot + + }; result");
@@ -89,7 +89,7 @@ TEST(RhoPiBlock, PiBlockWithStackManipulation) {
 TEST(RhoPiBlock, NestedPiBlocks) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     // Nested pi blocks (pi block result used in another expression)
     console.Execute(R"(
@@ -107,7 +107,7 @@ TEST(RhoPiBlock, NestedPiBlocks) {
 TEST(RhoPiBlock, PiBlockInArray) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     // Pi blocks as array elements
     console.Execute(R"(
@@ -123,7 +123,7 @@ TEST(RhoPiBlock, PiBlockInArray) {
 TEST(RhoPiBlock, PiBlockWithFloats) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     // Float operations in Pi block
     console.Execute("result = pi { 3.14 2.0 * }; result");
@@ -136,7 +136,7 @@ TEST(RhoPiBlock, PiBlockWithFloats) {
 TEST(RhoPiBlock, PiBlockWithLogicalOps) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     // Logical operations in Pi block
     console.Execute("result = pi { true false or }; result");
@@ -149,7 +149,7 @@ TEST(RhoPiBlock, PiBlockWithLogicalOps) {
 TEST(RhoPiBlock, PiBlockInFunctionArgument) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     // Pi block as function argument
     console.Execute(R"(
@@ -168,7 +168,7 @@ TEST(RhoPiBlock, PiBlockInFunctionArgument) {
 TEST(RhoPiBlock, PiBlockWithDup) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     // Dup operation in Pi block
     console.Execute("result = pi { 42 dup * }; result");
@@ -181,7 +181,7 @@ TEST(RhoPiBlock, PiBlockWithDup) {
 TEST(RhoPiBlock, PiBlockWithSwap) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     // Swap operation in Pi block
     console.Execute("result = pi { 10 3 swap / }; result");
@@ -194,7 +194,7 @@ TEST(RhoPiBlock, PiBlockWithSwap) {
 TEST(RhoPiBlock, PiBlockInWhileCondition) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     // Pi block in while loop condition
     console.Execute(R"(
@@ -212,7 +212,7 @@ TEST(RhoPiBlock, PiBlockInWhileCondition) {
 TEST(RhoPiBlock, PiBlockWithModulo) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     // Modulo operation in Pi block
     console.Execute("result = pi { 17 5 % }; result");
@@ -225,7 +225,7 @@ TEST(RhoPiBlock, PiBlockWithModulo) {
 TEST(RhoPiBlock, PiBlockReturnValue) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     // Pi block as return value
     console.Execute(R"(
@@ -244,7 +244,7 @@ TEST(RhoPiBlock, PiBlockReturnValue) {
 TEST(RhoPiBlock, PiBlockWithNegation) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     // Negation in Pi block
     console.Execute("result = pi { 25 neg }; result");
@@ -257,7 +257,7 @@ TEST(RhoPiBlock, PiBlockWithNegation) {
 TEST(RhoPiBlock, PiBlockChainedOperations) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     // Multiple chained operations in Pi block
     console.Execute("result = pi { 2 3 + 4 * 5 - }; result");
@@ -270,7 +270,7 @@ TEST(RhoPiBlock, PiBlockChainedOperations) {
 TEST(RhoPiBlock, PiBlockWithEquality) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     // Equality test in Pi block (verifying == conversion)
     console.Execute("result = pi { 10 10 == }; result");
@@ -283,7 +283,7 @@ TEST(RhoPiBlock, PiBlockWithEquality) {
 TEST(RhoPiBlock, PiBlockComplexExpression) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     // Complex expression mixing Rho and Pi
     console.Execute(R"(

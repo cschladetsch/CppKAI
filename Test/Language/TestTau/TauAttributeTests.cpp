@@ -28,7 +28,7 @@ TEST(TauAttribute, BasicAttributes) {
     )";
     
     console.Execute(code);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     
     ASSERT_EQ(stack->Size(), 1);
@@ -73,7 +73,7 @@ TEST(TauAttribute, CustomAttributes) {
     )";
     
     console.Execute(code);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     
     ASSERT_EQ(stack->Size(), 1);
@@ -115,7 +115,7 @@ TEST(TauAttribute, MethodAttributes) {
     )";
     
     console.Execute(code);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     
     ASSERT_EQ(stack->Size(), 1);
@@ -139,7 +139,7 @@ TEST(TauAttribute, CompileTimeAttributes) {
     )";
     
     console.Execute(code);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     
     ASSERT_EQ(stack->Size(), 1);
@@ -169,7 +169,7 @@ TEST(TauAttribute, ConditionalAttributes) {
     )";
     
     console.Execute(code);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     
     ASSERT_EQ(stack->Size(), 1);

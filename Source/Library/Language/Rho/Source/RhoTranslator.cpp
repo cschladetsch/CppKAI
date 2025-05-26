@@ -500,9 +500,15 @@ void RhoTranslator::TranslatePiBlock(AstNodePtr node) {
             piCode += " ";
         }
         
-        // Special handling for Equiv token - Pi uses == not =
-        if (tokenNode->GetToken().type == RhoTokenEnumType::Equiv) {
+        auto tokenType = tokenNode->GetToken().type;
+        
+        // Special handling for different token types
+        if (tokenType == RhoTokenEnumType::Equiv) {
+            // Pi uses == not = for equality
             piCode += "==";
+        } else if (tokenType == RhoTokenEnumType::String) {
+            // Preserve quotes around strings
+            piCode += "\"" + tokenNode->Text() + "\"";
         } else {
             piCode += tokenNode->Text();
         }

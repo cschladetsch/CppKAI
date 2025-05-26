@@ -5,7 +5,7 @@
 TEST(RhoPatternMatching, BasicPatternMatch) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     // Test basic pattern matching
     console.Execute(R"(
@@ -25,7 +25,7 @@ TEST(RhoPatternMatching, BasicPatternMatch) {
 TEST(RhoPatternMatching, TupleDestructuring) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     console.Execute(R"(
         point = (10, 20)
@@ -41,7 +41,7 @@ TEST(RhoPatternMatching, TupleDestructuring) {
 TEST(RhoPatternMatching, ListPatternMatch) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     console.Execute(R"(
         list = [1, 2, 3, 4]
@@ -60,7 +60,7 @@ TEST(RhoPatternMatching, ListPatternMatch) {
 TEST(RhoPatternMatching, GuardClauses) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     console.Execute(R"(
         age = 25
@@ -79,7 +79,7 @@ TEST(RhoPatternMatching, GuardClauses) {
 TEST(RhoPatternMatching, NestedPatterns) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     console.Execute(R"(
         data = [(1, "a"), (2, "b"), (3, "c")]

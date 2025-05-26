@@ -5,7 +5,7 @@
 TEST(RhoLambda, SimpleLambdaExpression) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     console.Execute(R"(
         double = lambda(x) x * 2
@@ -20,7 +20,7 @@ TEST(RhoLambda, SimpleLambdaExpression) {
 TEST(RhoLambda, LambdaWithMultipleParams) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     console.Execute(R"(
         add = lambda(x, y) x + y
@@ -35,7 +35,7 @@ TEST(RhoLambda, LambdaWithMultipleParams) {
 TEST(RhoLambda, ClosureCapture) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     console.Execute(R"(
         multiplier = 10
@@ -51,7 +51,7 @@ TEST(RhoLambda, ClosureCapture) {
 TEST(RhoLambda, HigherOrderFunctions) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     console.Execute(R"(
         apply_twice = lambda(f, x) f(f(x))
@@ -67,7 +67,7 @@ TEST(RhoLambda, HigherOrderFunctions) {
 TEST(RhoLambda, RecursiveLambda) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     console.Execute(R"(
         factorial = lambda(n) 

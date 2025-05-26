@@ -55,6 +55,7 @@ foreach (lang ${langs})
             ${source_path}/RhoErrorHandlingTests.cpp       # Error handling tests
             ${source_path}/RhoGeneratorTests.cpp           # Generator and lazy evaluation tests
             ${source_path}/RhoPiBlockTests.cpp             # Pi block syntax tests (20 tests)
+            ${source_path}/SimplePiBlockTest.cpp           # Simple pi block tests
         )
     elseif(lang STREQUAL "Pi")
         # Explicitly list Pi tests to avoid including unwanted files

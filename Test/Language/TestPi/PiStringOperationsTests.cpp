@@ -5,7 +5,7 @@
 TEST(PiStringOperations, StringConcatenation) {
     kai::Console console;
     console.SetLanguage(kai::Language::Pi);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     console.Execute("\"Hello \" \"World\" +");
     auto stack = exec->GetDataStack();
@@ -17,7 +17,7 @@ TEST(PiStringOperations, StringConcatenation) {
 TEST(PiStringOperations, StringLength) {
     kai::Console console;
     console.SetLanguage(kai::Language::Pi);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     console.Execute("\"Hello\" size");
     auto stack = exec->GetDataStack();
@@ -29,7 +29,7 @@ TEST(PiStringOperations, StringLength) {
 TEST(PiStringOperations, StringIndexing) {
     kai::Console console;
     console.SetLanguage(kai::Language::Pi);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     console.Execute("\"ABCDE\" 2 at");
     auto stack = exec->GetDataStack();
@@ -41,7 +41,7 @@ TEST(PiStringOperations, StringIndexing) {
 TEST(PiStringOperations, StringSlicing) {
     kai::Console console;
     console.SetLanguage(kai::Language::Pi);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     console.Execute("\"Hello World\" 0 5 slice");
     auto stack = exec->GetDataStack();
@@ -53,7 +53,7 @@ TEST(PiStringOperations, StringSlicing) {
 TEST(PiStringOperations, StringToNumber) {
     kai::Console console;
     console.SetLanguage(kai::Language::Pi);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     console.Execute("\"123\" toint");
     auto stack = exec->GetDataStack();

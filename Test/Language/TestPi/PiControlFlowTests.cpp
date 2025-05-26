@@ -5,7 +5,7 @@
 TEST(PiControlFlow, ConditionalExecution) {
     kai::Console console;
     console.SetLanguage(kai::Language::Pi);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     // Test if-then
     console.Execute("true { 100 } if");
@@ -23,7 +23,7 @@ TEST(PiControlFlow, ConditionalExecution) {
 TEST(PiControlFlow, IfElseExecution) {
     kai::Console console;
     console.SetLanguage(kai::Language::Pi);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     // Test if-then-else with true
     console.Execute("true { 1 } { 2 } ifelse");
@@ -42,7 +42,7 @@ TEST(PiControlFlow, IfElseExecution) {
 TEST(PiControlFlow, WhileLoop) {
     kai::Console console;
     console.SetLanguage(kai::Language::Pi);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     // Count from 1 to 5
     console.Execute("1 { dup 5 <= } { dup 1 + } while drop");
@@ -55,7 +55,7 @@ TEST(PiControlFlow, WhileLoop) {
 TEST(PiControlFlow, ForLoop) {
     kai::Console console;
     console.SetLanguage(kai::Language::Pi);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     // Sum numbers from 1 to 5
     console.Execute("0 1 5 { + } for");
@@ -68,7 +68,7 @@ TEST(PiControlFlow, ForLoop) {
 TEST(PiControlFlow, NestedBlocks) {
     kai::Console console;
     console.SetLanguage(kai::Language::Pi);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     // Nested conditional blocks
     console.Execute("true { false { 1 } { 2 } ifelse } { 3 } ifelse");

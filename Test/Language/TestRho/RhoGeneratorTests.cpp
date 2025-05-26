@@ -5,7 +5,7 @@
 TEST(RhoGenerator, SimpleGenerator) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     console.Execute(R"(
         fun counter(start)
@@ -29,7 +29,7 @@ TEST(RhoGenerator, SimpleGenerator) {
 TEST(RhoGenerator, GeneratorWithCondition) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     console.Execute(R"(
         fun fibonacci()
@@ -57,7 +57,7 @@ TEST(RhoGenerator, GeneratorWithCondition) {
 TEST(RhoGenerator, GeneratorComprehension) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     console.Execute(R"(
         squares = (x * x for x in range(1, 6))
@@ -68,13 +68,13 @@ TEST(RhoGenerator, GeneratorComprehension) {
     ASSERT_EQ(stack->Size(), 1);
     auto& array = kai::Deref<kai::Array>(stack->Top());
     EXPECT_EQ(array.Size(), 5);
-    EXPECT_EQ(kai::ConstDeref<int>(array[4]), 25);
+    EXPECT_EQ(kai::ConstDeref<int>(array.At(4)), 25);
 }
 
 TEST(RhoGenerator, LazyEvaluation) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     console.Execute(R"(
         # Infinite generator that would crash if fully evaluated
@@ -98,7 +98,7 @@ TEST(RhoGenerator, LazyEvaluation) {
 TEST(RhoGenerator, GeneratorChaining) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     console.Execute(R"(
         fun filter_gen(gen, predicate)

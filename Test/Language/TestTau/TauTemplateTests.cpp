@@ -31,7 +31,7 @@ TEST(TauTemplate, BasicTemplateClass) {
     )";
     
     console.Execute(code);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     
     ASSERT_EQ(stack->Size(), 1);
@@ -54,7 +54,7 @@ TEST(TauTemplate, TemplateFunction) {
     )";
     
     console.Execute(code);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     
     ASSERT_EQ(stack->Size(), 1);
@@ -85,7 +85,7 @@ TEST(TauTemplate, TemplateSpecialization) {
     )";
     
     console.Execute(code);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     
     ASSERT_EQ(stack->Size(), 1);
@@ -106,7 +106,7 @@ TEST(TauTemplate, VariadicTemplates) {
     )";
     
     console.Execute(code);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     
     ASSERT_EQ(stack->Size(), 1);
@@ -132,7 +132,7 @@ TEST(TauTemplate, ConceptConstraints) {
     )";
     
     console.Execute(code);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     
     ASSERT_EQ(stack->Size(), 1);

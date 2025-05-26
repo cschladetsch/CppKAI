@@ -17,7 +17,7 @@ TEST(TauAsync, BasicAsyncFunction) {
     )";
     
     console.Execute(code);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     
     ASSERT_EQ(stack->Size(), 1);
@@ -45,7 +45,7 @@ TEST(TauAsync, MultipleAsyncOperations) {
     )";
     
     console.Execute(code);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     
     ASSERT_EQ(stack->Size(), 1);
@@ -73,7 +73,7 @@ TEST(TauAsync, AsyncWithExceptionHandling) {
     )";
     
     console.Execute(code);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     
     ASSERT_EQ(stack->Size(), 1);
@@ -110,7 +110,7 @@ TEST(TauAsync, ParallelExecution) {
     )";
     
     console.Execute(code);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     
     ASSERT_EQ(stack->Size(), 1);
@@ -137,7 +137,7 @@ TEST(TauAsync, AsyncStreams) {
     )";
     
     console.Execute(code);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     
     ASSERT_EQ(stack->Size(), 1);

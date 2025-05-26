@@ -3,10 +3,40 @@
 
 void Executor::Perform(Operation::Type op) {
     switch (op) {
-        case Operation::ToPi:
-            Deref<Compiler>(compiler_).SetLanguage(
-                static_cast<int>(Language::Pi));
+        case Operation::ToPi: {
+            // Execute Pi code from string
+            Object piCode = Pop();
+            if (!piCode.IsType<String>()) {
+                KAI_THROW_1(Base, "ToPi requires a string containing Pi code");
+            }
+            
+            String code = ConstDeref<String>(piCode);
+            KAI_TRACE() << "ToPi: Executing Pi code: " << code;
+            
+            // Get the compiler and save current language
+            auto &compiler = Deref<Compiler>(compiler_);
+            int savedLanguage = compiler.GetLanguage();
+            
+            // Temporarily switch to Pi language
+            compiler.SetLanguage(static_cast<int>(Language::Pi));
+            
+            // Translate the Pi code
+            auto piCont = compiler.Translate(code, Structure::Expression);
+            
+            // Restore original language
+            compiler.SetLanguage(savedLanguage);
+            
+            if (piCont.Exists()) {
+                // Execute the Pi continuation in the current context
+                // The result will be left on the stack
+                Continue(piCont);
+            } else {
+                KAI_TRACE_ERROR() << "ToPi: Failed to translate Pi code";
+                KAI_THROW_1(Base, "Failed to translate Pi code");
+            }
+            
             break;
+        }
 
         case Operation::ToRho:
             Deref<Compiler>(compiler_).SetLanguage(

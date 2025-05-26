@@ -6,7 +6,7 @@
 TEST(PiMathOperations, TrigonometricFunctions) {
     kai::Console console;
     console.SetLanguage(kai::Language::Pi);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     // Test sin
     console.Execute("0.0 sin");
@@ -25,7 +25,7 @@ TEST(PiMathOperations, TrigonometricFunctions) {
 TEST(PiMathOperations, PowerAndSqrt) {
     kai::Console console;
     console.SetLanguage(kai::Language::Pi);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     // Test power
     console.Execute("2 3 pow");
@@ -44,7 +44,7 @@ TEST(PiMathOperations, PowerAndSqrt) {
 TEST(PiMathOperations, MinMaxOperations) {
     kai::Console console;
     console.SetLanguage(kai::Language::Pi);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     // Test min
     console.Execute("5 3 min");
@@ -63,7 +63,7 @@ TEST(PiMathOperations, MinMaxOperations) {
 TEST(PiMathOperations, AbsoluteValue) {
     kai::Console console;
     console.SetLanguage(kai::Language::Pi);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     console.Execute("-42 abs");
     auto stack = exec->GetDataStack();
@@ -75,7 +75,7 @@ TEST(PiMathOperations, AbsoluteValue) {
 TEST(PiMathOperations, ModuloOperation) {
     kai::Console console;
     console.SetLanguage(kai::Language::Pi);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     
     console.Execute("17 5 %");
     auto stack = exec->GetDataStack();

@@ -34,7 +34,7 @@ TEST(TauInterface, BasicInterface) {
     )";
     
     console.Execute(code);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     
     ASSERT_EQ(stack->Size(), 1);
@@ -81,7 +81,7 @@ TEST(TauInterface, MultipleInterfaces) {
     )";
     
     console.Execute(code);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     
     ASSERT_EQ(stack->Size(), 1);
@@ -116,7 +116,7 @@ TEST(TauInterface, InterfaceInheritance) {
     )";
     
     console.Execute(code);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     
     ASSERT_EQ(stack->Size(), 1);
@@ -158,7 +158,7 @@ TEST(TauInterface, DefaultInterfaceMethods) {
     )";
     
     console.Execute(code);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     
     ASSERT_EQ(stack->Size(), 1);
@@ -198,7 +198,7 @@ TEST(TauInterface, GenericInterfaces) {
     )";
     
     console.Execute(code);
-    auto &exec = console.GetExecutor();
+    auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
     
     ASSERT_EQ(stack->Size(), 1);
