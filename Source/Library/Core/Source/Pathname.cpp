@@ -117,6 +117,10 @@ String Pathname::ToString() const {
 
     for (auto element : elements) {
         switch (element.type) {
+            case Element::Quote:
+                str.Append(Literals::Quote);
+                break;
+                
             case Element::Separator:
                 if (!addedRoot) str.Append(Literals::Separator);
                 addedRoot = false;

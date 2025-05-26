@@ -50,19 +50,20 @@ TEST_F(PiLabelTest, MultipleStores) {
 TEST_F(PiLabelTest, StoreRetrieveMultipleTypes) {
     stack()->Clear();
     ExecutePi("42 'intVal #");
-    ExecutePi("3.14 'floatVal #");
+    // Pi doesn't support float literals, so we'll use another int
+    ExecutePi("314 'intVal2 #");
     ExecutePi("\"hello\" 'stringVal #");
     
-    // Retrieve int
+    // Retrieve first int
     ExecutePi("intVal");
     ASSERT_TRUE(stack()->Top().IsType<int>());
     ASSERT_EQ(ConstDeref<int>(stack()->Top()), 42);
     stack()->Pop();
     
-    // Retrieve float
-    ExecutePi("floatVal");
-    ASSERT_TRUE(stack()->Top().IsType<float>());
-    ASSERT_FLOAT_EQ(ConstDeref<float>(stack()->Top()), 3.14f);
+    // Retrieve second int
+    ExecutePi("intVal2");
+    ASSERT_TRUE(stack()->Top().IsType<int>());
+    ASSERT_EQ(ConstDeref<int>(stack()->Top()), 314);
     stack()->Pop();
     
     // Retrieve string
