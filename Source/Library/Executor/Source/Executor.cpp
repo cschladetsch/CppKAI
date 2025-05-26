@@ -1396,6 +1396,22 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
                 }
                 break;
 
+            case Operation::LeftShift:
+                // Int << Int -> Int
+                if (A.IsType<int>() && B.IsType<int>()) {
+                    int result = ConstDeref<int>(A) << ConstDeref<int>(B);
+                    return createNew(result);
+                }
+                break;
+
+            case Operation::RightShift:
+                // Int >> Int -> Int
+                if (A.IsType<int>() && B.IsType<int>()) {
+                    int result = ConstDeref<int>(A) >> ConstDeref<int>(B);
+                    return createNew(result);
+                }
+                break;
+
             // Assignment-related operations
             case Operation::Store:
                 // Special handling for the store operation
@@ -1553,6 +1569,8 @@ bool Executor::IsBinaryOp(Operation::Type op) {
         case Operation::BitwiseAnd:
         case Operation::BitwiseOr:
         case Operation::BitwiseXor:
+        case Operation::LeftShift:
+        case Operation::RightShift:
             return true;
 
         default:

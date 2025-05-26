@@ -27,6 +27,7 @@ struct RhoControlTests : TestLangCommon {
         try {
             Console console;
             Registry &reg = console.GetRegistry();
+            console.SetLanguage(Language::Rho);
 
             console.Execute(script);
 
@@ -80,42 +81,38 @@ struct RhoControlTests : TestLangCommon {
 TEST_F(RhoControlTests, BasicIfStatements) {
     // Using direct simulation to skip exec issues
     AssertDirectSimulation<int>(
-        "int result = 0;\n"
-        "if (true) {\n"
-        "    result = 42;\n"
-        "}\n"
-        "result;",
+        "result = 0\n"
+        "if true\n"
+        "    result = 42\n"
+        "result",
         42);
 
     AssertDirectSimulation<int>(
-        "int result = 0;\n"
-        "if (false) {\n"
-        "    result = 42;\n"
-        "}\n"
-        "result;",
+        "result = 0\n"
+        "if false\n"
+        "    result = 42\n"
+        "result",
         0);
 }
 
 // If-else statements
 TEST_F(RhoControlTests, IfElseStatements) {
     AssertDirectSimulation<int>(
-        "int result = 0;\n"
-        "if (true) {\n"
-        "    result = 42;\n"
-        "} else {\n"
-        "    result = 24;\n"
-        "}\n"
-        "result;",
+        "result = 0\n"
+        "if true\n"
+        "    result = 42\n"
+        "else\n"
+        "    result = 24\n"
+        "result",
         42);
 
     AssertDirectSimulation<int>(
-        "int result = 0;\n"
-        "if (false) {\n"
-        "    result = 42;\n"
-        "} else {\n"
-        "    result = 24;\n"
-        "}\n"
-        "result;",
+        "result = 0\n"
+        "if false\n"
+        "    result = 42\n"
+        "else\n"
+        "    result = 24\n"
+        "result",
         24);
 }
 

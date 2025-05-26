@@ -342,7 +342,7 @@ bool RhoParser::Expression() {
 
     if (Try(TokenType::Assign) || Try(TokenType::PlusAssign) ||
         Try(TokenType::MinusAssign) || Try(TokenType::MulAssign) ||
-        Try(TokenType::DivAssign)) {
+        Try(TokenType::DivAssign) || Try(TokenType::ModAssign)) {
         auto node = NewNode(Consume());
         auto ident = Pop();
         if (!Logical()) {
@@ -360,9 +360,24 @@ bool RhoParser::Expression() {
 }
 
 bool RhoParser::Logical() {
-    if (!Relational()) return false;
+    if (!Bitwise()) return false;
 
     while (Try(TokenType::And) || Try(TokenType::Or)) {
+        auto node = NewNode(Consume());
+        node->Add(Pop());
+        if (!Bitwise()) return CreateError("Bitwise expected");
+
+        node->Add(Pop());
+        Push(node);
+    }
+
+    return true;
+}
+
+bool RhoParser::Bitwise() {
+    if (!Relational()) return false;
+
+    while (Try(TokenType::BitAnd) || Try(TokenType::BitOr) || Try(TokenType::BitXor)) {
         auto node = NewNode(Consume());
         node->Add(Pop());
         if (!Relational()) return CreateError("Relational expected");
@@ -375,11 +390,26 @@ bool RhoParser::Logical() {
 }
 
 bool RhoParser::Relational() {
-    if (!Additive()) return false;
+    if (!Shift()) return false;
 
     while (Try(TokenType::Less) || Try(TokenType::Greater) ||
            Try(TokenType::Equiv) || Try(TokenType::NotEquiv) ||
            Try(TokenType::LessEquiv) || Try(TokenType::GreaterEquiv)) {
+        auto node = NewNode(Consume());
+        node->Add(Pop());
+        if (!Shift()) return CreateError("Shift expected");
+
+        node->Add(Pop());
+        Push(node);
+    }
+
+    return true;
+}
+
+bool RhoParser::Shift() {
+    if (!Additive()) return false;
+
+    while (Try(TokenType::LeftShift) || Try(TokenType::RightShift)) {
         auto node = NewNode(Consume());
         node->Add(Pop());
         if (!Additive()) return CreateError("Additive expected");
@@ -402,7 +432,7 @@ bool RhoParser::Additive() {
         return true;
     }
 
-    if (Try(TokenType::Not)) {
+    if (Try(TokenType::Not) || Try(TokenType::BitNot)) {
         auto negate = NewNode(Consume());
         if (!Additive()) return CreateError("Additive expected");
 
@@ -428,7 +458,7 @@ bool RhoParser::Additive() {
 bool RhoParser::Term() {
     if (!Factor()) return false;
 
-    while (Try(TokenType::Mul) || Try(TokenType::Divide)) {
+    while (Try(TokenType::Mul) || Try(TokenType::Divide) || Try(TokenType::Mod)) {
         auto node = NewNode(Consume());
         node->Add(Pop());
         if (!Factor()) return CreateError("Factor expected with a term");
@@ -808,17 +838,11 @@ bool RhoParser::ForLoop(AstNodePtr block) {
     KAI_TRACE() << "RhoParser::ForLoop - Found 'for' token";
     Consume();
 
-    // We now support both styles:
-    // 1. for init; condition; increment { body }
-    // 2. for (init; condition; increment) { body }
-    // where semicolons separate the parts
-
-    // Check for optional opening parenthesis
-    bool hasParentheses = false;
-    if (Try(TokenType::OpenParan)) {
-        hasParentheses = true;
-        Consume();
-    }
+    // Rho for loops have the syntax:
+    // for init; condition; increment
+    //     body
+    // Semicolons are REQUIRED between the three parts
+    // Parentheses are NOT allowed
 
     // Parse the initialization expression
     KAI_TRACE() << "RhoParser::ForLoop - Parsing initialization";
@@ -859,64 +883,25 @@ bool RhoParser::ForLoop(AstNodePtr block) {
     // Parse the increment expression
     KAI_TRACE() << "RhoParser::ForLoop - Parsing increment";
     AstNodePtr incrExpr = nullptr;
-    if (!Try(TokenType::CloseParan)) {
-        // We have an increment expression
-        if (!Expression()) {
-            return CreateError("Expected increment expression in for loop");
-        }
-        incrExpr = Pop();
+    // Always expect an increment expression (can be empty)
+    if (!Expression()) {
+        return CreateError("Expected increment expression in for loop");
     }
+    incrExpr = Pop();
 
-    // Check for optional closing parenthesis
-    if (hasParentheses) {
-        if (!Try(TokenType::CloseParan)) {
-            return CreateError(
-                "Expected closing parenthesis after for loop declarations");
-        }
-        Consume();
+    // Expect newline after for loop header
+    if (!Try(TokenType::NewLine)) {
+        return CreateError("Expected newline after for loop declaration");
     }
+    Consume();
 
-    // Check if this is an inline for loop with braces
-    // After the closing parenthesis, we may have:
-    // 1. A newline (traditional Rho style with indentation)
-    // 2. An opening brace (inline style with braces)
-    // We'll support both formats for flexibility
-
+    // Parse the body using indentation
     auto bodyClause = NewNode(NodeType::Block);
     KAI_TRACE() << "RhoParser::ForLoop - Parsing body block";
 
-    if (Try(TokenType::OpenBrace)) {
-        // This is an inline for loop with braces
-        KAI_TRACE() << "RhoParser::ForLoop - Found inline for loop with braces";
-        Consume();  // Consume the opening brace
-
-        // Parse statements inside the braces
-        while (!Try(TokenType::CloseBrace) && !Try(TokenType::None) &&
-               !Failed) {
-            if (!Statement(bodyClause)) {
-                return CreateError(
-                    "Statement expected in inline for loop body");
-            }
-        }
-
-        // Expect closing brace
-        if (!Try(TokenType::CloseBrace)) {
-            return CreateError("Expected closing brace for inline for loop");
-        }
-        Consume();  // Consume the closing brace
-    } else {
-        // Traditional style with newline and indentation
-        if (!Try(TokenType::NewLine)) {
-            return CreateError(
-                "Expected newline or opening brace after for loop "
-                "declarations");
-        }
-        Consume();
-
-        // Use the Block method for indented code blocks
-        if (!Block(bodyClause)) {
-            return CreateError("Block Expected for for loop body");
-        }
+    // Use the Block method for indented code blocks
+    if (!Block(bodyClause)) {
+        return CreateError("Block Expected for for loop body");
     }
 
     KAI_TRACE() << "RhoParser::ForLoop - Parsed body block";

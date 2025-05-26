@@ -110,8 +110,10 @@ bool RhoLexer::NextToken() {
         case '|':
             return AddIfNext('|', Enum::Or, Enum::BitOr);
         case '<':
+            if (Peek() == '<') return AddTwoCharOp(Enum::LeftShift);
             return AddIfNext('=', Enum::LessEquiv, Enum::Less);
         case '>':
+            if (Peek() == '>') return AddTwoCharOp(Enum::RightShift);
             return AddIfNext('=', Enum::GreaterEquiv, Enum::Greater);
         case '"':
             return LexString();  // "
@@ -157,6 +159,16 @@ bool RhoLexer::NextToken() {
         case '%':
             if (Peek() == '=') return AddTwoCharOp(Enum::ModAssign);
             return Add(Enum::Mod);
+            
+        case '^':
+            return Add(Enum::BitXor);
+            
+        case '~':
+            return Add(Enum::BitNot);
+            
+        case ':':
+            if (Peek() == ':') return AddTwoCharOp(Enum::DoubleColon);
+            return Add(Enum::Colon);
     }
 
     LexError("Unrecognised %c");

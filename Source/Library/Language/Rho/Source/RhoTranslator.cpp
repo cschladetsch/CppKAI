@@ -161,6 +161,37 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
             TranslateBinaryOp(node, Operation::LogicalAnd);
             return;
 
+        case RhoTokenEnumType::BitAnd:
+            TranslateBinaryOp(node, Operation::BitwiseAnd);
+            return;
+
+        case RhoTokenEnumType::BitOr:
+            TranslateBinaryOp(node, Operation::BitwiseOr);
+            return;
+
+        case RhoTokenEnumType::BitXor:
+            TranslateBinaryOp(node, Operation::BitwiseXor);
+            return;
+
+        case RhoTokenEnumType::LeftShift:
+            TranslateBinaryOp(node, Operation::LeftShift);
+            return;
+
+        case RhoTokenEnumType::RightShift:
+            TranslateBinaryOp(node, Operation::RightShift);
+            return;
+
+        case RhoTokenEnumType::BitNot:
+            // Use a linear stream approach for the unary bitwise not operation
+
+            // Translate the operand
+            TranslateNode(node->GetChild(0));
+
+            // Add the operation directly
+            AppendDirectOperation(Operation::BitwiseNot);
+
+            return;
+
         case RhoTokenEnumType::Int: {
             KAI_TRACE() << std::format("Translating Int: {}",
                                        node->GetTokenText());

@@ -73,6 +73,18 @@ void Executor::Perform(Operation::Type op) {
             break;
         }
 
+        case Operation::LeftShift: {
+            int right = ConstDeref<int>(Pop());
+            Push(New(ConstDeref<int>(Pop()) << right));
+            break;
+        }
+
+        case Operation::RightShift: {
+            int right = ConstDeref<int>(Pop());
+            Push(New(ConstDeref<int>(Pop()) >> right));
+            break;
+        }
+
         case Operation::LogicalXor: {
             bool right = ConstDeref<bool>(Pop());
             Push(New(ConstDeref<bool>(Pop()) != right));

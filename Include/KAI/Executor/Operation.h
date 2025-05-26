@@ -80,6 +80,8 @@ struct Operation {
         BitwiseOr,
         BitwiseXor,
         BitwiseNand,
+        LeftShift,
+        RightShift,
         Lookup,
         TraceAll,
         Trace,

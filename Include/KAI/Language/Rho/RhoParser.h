@@ -33,7 +33,9 @@ class RhoParser : public ParserCommon<RhoLexer, RhoAstNodeEnumType> {
     bool Statement(AstNodePtr);
     bool Expression();
     bool Logical();
+    bool Bitwise();
     bool Relational();
+    bool Shift();
     bool Additive();
     bool Term();
     bool Factor();

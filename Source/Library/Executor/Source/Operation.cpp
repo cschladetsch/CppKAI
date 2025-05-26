@@ -72,6 +72,8 @@ const char *Operation::ToString(int value) {
         CASE(BitwiseOr)
         CASE(BitwiseXor)
         CASE(BitwiseNand)
+        CASE(LeftShift)
+        CASE(RightShift)
         CASE(Lookup)
         CASE(TraceAll)
         CASE(Trace)
