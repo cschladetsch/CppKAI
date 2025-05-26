@@ -108,7 +108,13 @@ Object Executor::Pop() { return Pop(*data_); }
 
 Object Executor::Top() const { return data_->Top(); }
 
-Value<Stack> Executor::GetDataStack() { return data_; }
+Value<Stack> Executor::GetDataStack() { 
+    if (!data_.Valid() || !data_.Exists()) {
+        KAI_TRACE_ERROR() << "GetDataStack: Invalid data stack";
+        return Value<Stack>();
+    }
+    return data_; 
+}
 
 Value<Stack> Executor::GetContextStack() const { return context_; }
 
@@ -579,7 +585,7 @@ void Executor::SetContinuation(Value<Continuation> C) { continuation_ = C; }
 void Executor::Continue() {
     // First, validate that we have a valid continuation
     if (!continuation_.Valid() || !continuation_.Exists()) {
-        KAI_TRACE_ERROR() << "Continue: Invalid or non-existent continuation";
+        // This is normal when execution completes - just return silently
         break_ = true;
         return;
     }

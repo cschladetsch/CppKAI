@@ -178,6 +178,12 @@ void Console::Execute(Pointer<Continuation> cont) {
 
         // After execution, process the stack to ensure proper type extraction
         Value<Stack> dataStack = executor->GetDataStack();
+        
+        // Check if we have a valid stack before processing
+        if (!dataStack.Valid() || !dataStack.Exists()) {
+            KAI_TRACE_WARN() << "Execute: Invalid data stack after execution";
+            return;
+        }
 
         // Process each stack item to extract primitive values from
         // continuations

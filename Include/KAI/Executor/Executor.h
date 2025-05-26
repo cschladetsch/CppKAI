@@ -162,6 +162,10 @@ struct Executor : Reflected {
 
     Value<Stack> GetDataStack();
     Value<const Stack> GetDataStack() const {
+        if (!data_.Valid() || !data_.Exists()) {
+            KAI_TRACE_ERROR() << "GetDataStack: Invalid data stack";
+            return Value<const Stack>();
+        }
         return Value<const Stack>(data_.GetConstObject());
     }
 
