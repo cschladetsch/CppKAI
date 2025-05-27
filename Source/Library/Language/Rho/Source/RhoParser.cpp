@@ -165,9 +165,25 @@ bool RhoParser::Block(AstNodePtr node) {
     ++indent;
     while (!Failed) {
         int level = 0;
-        while (Try(TokenType::Tab)) {
-            ++level;
-            Consume();
+        
+        // Count indentation level - handle both tabs and spaces
+        // Each tab counts as 1 level, every 4 spaces count as 1 level
+        int spaceCount = 0;
+        while (Try(TokenType::Tab) || Try(TokenType::Whitespace)) {
+            if (Try(TokenType::Tab)) {
+                ++level;
+                Consume();
+            } else if (Try(TokenType::Whitespace)) {
+                // Count spaces - assuming whitespace token contains spaces
+                auto token = Current();
+                spaceCount += token.Text().size();
+                Consume();
+                // Convert 4 spaces to 1 indent level
+                while (spaceCount >= 4) {
+                    ++level;
+                    spaceCount -= 4;
+                }
+            }
         }
 
         if (Try(TokenType::NewLine)) {
@@ -179,9 +195,9 @@ bool RhoParser::Block(AstNodePtr node) {
         if (level < indent) {
             --indent;
 
-            // rewind to start of tab sequence to determine next block
+            // rewind to start of indentation sequence to determine next block
             --current;
-            while (Try(TokenType::Tab)) --current;
+            while (Try(TokenType::Tab) || Try(TokenType::Whitespace)) --current;
 
             ++current;
             return true;

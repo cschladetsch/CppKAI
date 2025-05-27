@@ -400,10 +400,7 @@ void RhoTranslator::TranslateIf(AstNodePtr node) {
         return;
     }
     
-    // Translate condition directly (not in a continuation)
-    TranslateNode(node->GetChild(0));
-    
-    // Create continuation for then block
+    // Create continuation for then block first
     PushNew();
     TranslateNode(node->GetChild(1));
     auto thenCont = Pop();
@@ -415,12 +412,20 @@ void RhoTranslator::TranslateIf(AstNodePtr node) {
         TranslateNode(node->GetChild(2));
         auto elseCont = Pop();
         
-        // Push continuations and IfElse operation
+        // Translate condition
+        TranslateNode(node->GetChild(0));
+        
+        // Push continuations in correct order for IfElse
+        // IfElse expects: condition A B -- (runs A if true, B if false)
         Append(thenCont);
         Append(elseCont);
         AppendDirectOperation(Operation::IfElse);
     } else {
-        // No else block - just then continuation and If operation
+        // Translate condition
+        TranslateNode(node->GetChild(0));
+        
+        // Push continuation for If operation
+        // If expects: condition continuation --
         Append(thenCont);
         AppendDirectOperation(Operation::If);
     }

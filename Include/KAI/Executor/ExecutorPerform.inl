@@ -554,7 +554,9 @@ void Executor::Perform(Operation::Type op) {
             // Run A if top of stack is true, else run B.
             auto B = Pop();
             auto A = Pop();
-            Continue(PopBool() ? A : B);
+            bool condition = PopBool();
+            KAI_TRACE() << "IfElse: condition=" << condition << ", choosing " << (condition ? "A" : "B");
+            Continue(condition ? A : B);
             break;
         }
 

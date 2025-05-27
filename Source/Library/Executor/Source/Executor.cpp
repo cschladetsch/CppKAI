@@ -540,10 +540,10 @@ void Executor::Eval(Object const &Q) {
             break;
 
         case Type::Number::Continuation: {
-            // Execute the continuation - let exceptions propagate
-            KAI_TRACE() << "Eval: Executing nested continuation";
-            Continue(Q);
-            KAI_TRACE() << "Eval: Nested continuation finished";
+            // Push continuation to stack instead of executing it
+            // This allows operations like IfElse to use continuations as values
+            KAI_TRACE() << "Eval: Pushing continuation to stack";
+            Push(Q);
             break;
         }
 
