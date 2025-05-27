@@ -812,6 +812,12 @@ Pointer<Continuation> Executor::NewContinuation(Value<Continuation> orig) {
         // Copy arguments
         cont->args = orig->args;
 
+        // IMPORTANT: Inherit the parent's scope for nested continuations
+        // This allows inner continuations to access variables defined in outer scopes
+        if (continuation_.Exists() && continuation_->GetScope().Exists()) {
+            cont->SetScope(continuation_->GetScope());
+        }
+
         return cont;
     } catch (const std::exception &e) {
         KAI_TRACE_ERROR() << "NewContinuation: Exception: " << e.what();

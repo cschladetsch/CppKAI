@@ -228,6 +228,35 @@ void Executor::Perform(Operation::Type op) {
             }
             break;
 
+        case Operation::Dup2:
+            // Duplicate top two elements: a b -- a b a b
+            {
+                if (data_->Size() < 2) {
+                    KAI_THROW_1(Base, "Cannot 2dup with less than 2 items on stack");
+                }
+                
+                // Get the top two objects
+                Object top = data_->At(0);    // top of stack
+                Object second = data_->At(1); // second from top
+                
+                // Push copies in the right order
+                Push(second);
+                Push(top);
+            }
+            break;
+
+        case Operation::Drop2:
+            // Drop top two elements: a b c d -- a b
+            {
+                if (data_->Size() < 2) {
+                    KAI_THROW_1(Base, "Cannot 2drop with less than 2 items on stack");
+                }
+                
+                Pop();
+                Pop();
+            }
+            break;
+
         case Operation::Over: {
             auto a = Pop();
             auto b = Pop();
@@ -249,8 +278,45 @@ void Executor::Perform(Operation::Type op) {
 
         case Operation::Pick: {
             auto N = ConstDeref<int>(Pop());
-            if (N <= 0) KAI_THROW_1(BadIndex, N);
-            Push(data_->At(data_->Size() - N));
+            if (N < 0) KAI_THROW_1(BadIndex, N);
+            // Pick uses 0-based indexing from the top of the stack
+            // 0 pick duplicates the top element
+            // 1 pick gets the second element from top, etc.
+            if (N >= data_->Size()) KAI_THROW_1(BadIndex, N);
+            Push(data_->At(N));
+            break;
+        }
+
+        case Operation::Roll: {
+            auto N = ConstDeref<int>(Pop());
+            if (N < 0) KAI_THROW_1(BadIndex, N);
+            // In Forth: n roll moves the nth item from top to the top
+            // With stack [bottom ... top], At(0) is top
+            // Example: 10 20 30 40 3 roll -> 20 30 40 10
+            if (N >= data_->Size()) KAI_THROW_1(BadIndex, N);
+            if (N == 0) break; // 0 roll does nothing
+            
+            // Use a temporary vector to store N+1 elements
+            std::vector<Object> temp;
+            
+            // Pop N+1 elements from the stack (including the one we want to move)
+            for (int i = 0; i <= N; ++i) {
+                temp.push_back(Pop());
+            }
+            
+            // temp[0] is the top of stack
+            // temp[N] is the element N positions from top (the one we want to move to top)
+            
+            // We need to push back the elements in the correct order
+            // First, push all elements except the Nth one back in reverse order
+            // (since we popped them, we need to reverse to maintain order)
+            for (int i = N-1; i >= 0; --i) {
+                Push(temp[i]);
+            }
+            
+            // Then push the Nth element on top
+            Push(temp[N]);
+            
             break;
         }
 

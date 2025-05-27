@@ -115,12 +115,12 @@ TEST_F(PiContinuationTests, ConditionalExecution) {
     AssertResult<int>("5 false { 2 * } if", 5);
 
     // If-then-else with quotations
-    AssertResult<int>("5 true { 2 * } { 2 + } ifelse", 10);
-    AssertResult<int>("5 false { 2 * } { 2 + } ifelse", 7);
+    AssertResult<int>("5 true { 2 * } { 2 + } ife", 10);
+    AssertResult<int>("5 false { 2 * } { 2 + } ife", 7);
 
     // Dynamic conditions
-    AssertResult<int>("5 7 < { 10 } { 20 } ifelse", 10);
-    AssertResult<int>("5 3 < { 10 } { 20 } ifelse", 20);
+    AssertResult<int>("5 7 < { 10 } { 20 } ife", 10);
+    AssertResult<int>("5 3 < { 10 } { 20 } ife", 20);
 }
 
 // Test loop control with quotations
@@ -225,7 +225,7 @@ TEST_F(PiContinuationTests, RecursiveContinuations) {
         "  { drop 1 } "                        // return 1 for n <= 0
         "  { dup 1 - 'factorial' @ call * } "  // recursive case: n *
                                                // factorial(n-1)
-        "  ifelse "
+        "  ife "
         "} 'factorial' ! "  // store the quotation
 
         "5 'factorial' @ call",  // calculate factorial(5)
@@ -240,7 +240,7 @@ TEST_F(PiContinuationTests, RecursiveContinuations) {
         "    swap 2 - 'fibonacci' @ call "  // fibonacci(n-2)
         "    + "                            // add results
         "  } "
-        "  ifelse "
+        "  ife "
         "} 'fibonacci' ! "  // store the quotation
 
         "7 'fibonacci' @ call",  // calculate fibonacci(7)

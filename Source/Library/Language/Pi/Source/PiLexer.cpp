@@ -25,11 +25,14 @@ void PiLexer::AddKeyWords() {
 
     keyWords["drop"] = Enum::Drop;
     keyWords["dup"] = Enum::Dup;
+    keyWords["dup2"] = Enum::Dup2;
+    keyWords["drop2"] = Enum::Drop2;
     keyWords["pick"] = Enum::PickN;
     keyWords["over"] = Enum::Over;
     keyWords["swap"] = Enum::Swap;
     keyWords["rot"] = Enum::Rot;
     keyWords["rotn"] = Enum::RotN;
+    keyWords["roll"] = Enum::Roll;
     keyWords["toarray"] = Enum::ToArray;
     keyWords["gc"] = Enum::GarbageCollect;
     keyWords["clear"] = Enum::Clear;

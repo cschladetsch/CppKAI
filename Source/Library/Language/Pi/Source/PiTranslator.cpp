@@ -265,6 +265,14 @@ void PiTranslator::AppendTokenised(const TokenNode &tok) {
             AppendOp(Operation::Dup);
             break;
 
+        case PiTokenEnumType::Dup2:
+            AppendOp(Operation::Dup2);
+            break;
+
+        case PiTokenEnumType::Drop2:
+            AppendOp(Operation::Drop2);
+            break;
+
         case PiTokenEnumType::Assign:
             AppendOp(Operation::Assign);
             break;
@@ -314,6 +322,10 @@ void PiTranslator::AppendTokenised(const TokenNode &tok) {
 
         case PiTokenEnumType::Rot:
             AppendOp(Operation::Rot);
+            break;
+
+        case PiTokenEnumType::Roll:
+            AppendOp(Operation::Roll);
             break;
 
         case PiTokenEnumType::Over:
@@ -405,7 +417,6 @@ void PiTranslator::AppendTokenised(const TokenNode &tok) {
 
             // For all other cases, use the Size operation
             std::cout << "Using regular Size operation" << std::endl;
-            AppendNew(Label("size"));
             AppendOp(Operation::Size);
             break;
         }

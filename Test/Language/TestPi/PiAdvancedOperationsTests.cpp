@@ -223,23 +223,23 @@ TEST_F(PiAdvancedTests, ConditionalOperations) {
     AssertResult<int>("10 false { 5 + } if", 10);
 
     // If-then-else (true case)
-    AssertResult<int>("10 true { 5 + } { 5 - } ifelse", 15);
+    AssertResult<int>("10 true { 5 + } { 5 - } ife", 15);
 
     // If-then-else (false case)
-    AssertResult<int>("10 false { 5 + } { 5 - } ifelse", 5);
+    AssertResult<int>("10 false { 5 + } { 5 - } ife", 5);
 
     // Nested conditionals
     AssertResult<int>(
-        "10 true { 5 + true { 2 * } { 2 / } ifelse } { 5 - } ifelse", 30);
+        "10 true { 5 + true { 2 * } { 2 / } ife } { 5 - } ife", 30);
     AssertResult<int>(
-        "10 true { 5 + false { 2 * } { 2 / } ifelse } { 5 - } ifelse", 7);
+        "10 true { 5 + false { 2 * } { 2 / } ife } { 5 - } ife", 7);
     AssertResult<int>(
-        "10 false { 5 + true { 2 * } { 2 / } ifelse } { 5 - true { 2 * } { 2 / "
-        "} ifelse } ifelse",
+        "10 false { 5 + true { 2 * } { 2 / } ife } { 5 - true { 2 * } { 2 / "
+        "} ife } ife",
         10);
     AssertResult<int>(
-        "10 false { 5 + true { 2 * } { 2 / } ifelse } { 5 - false { 2 * } { 2 "
-        "/ } ifelse } ifelse",
+        "10 false { 5 + true { 2 * } { 2 / } ife } { 5 - false { 2 * } { 2 "
+        "/ } ife } ife",
         2);
 }
 
@@ -260,11 +260,11 @@ TEST_F(PiAdvancedTests, StringOperations) {
     // String operations with conditionals
     AssertResult<String>(
         "\"Hello\" \"World\" \"Hello\" \"Goodbye\" == { \" Happy\" } { \" "
-        "Sad\" } ifelse +",
+        "Sad\" } ife +",
         String("Hello Sad"));
     AssertResult<String>(
         "\"Hello\" \"Hello\" \"Hello\" \"Goodbye\" == { \" Happy\" } { \" "
-        "Sad\" } ifelse +",
+        "Sad\" } ife +",
         String("Hello Happy"));
 }
 
@@ -284,10 +284,10 @@ TEST_F(PiAdvancedTests, VariableOperations) {
 
     // Variables with conditionals
     AssertResult<int>(
-        "5 'x' ! 10 'y' ! 'x' @ 'y' @ < { 'x' @ 2 * } { 'y' @ 2 * } ifelse",
+        "5 'x' ! 10 'y' ! 'x' @ 'y' @ < { 'x' @ 2 * } { 'y' @ 2 * } ife",
         20);
     AssertResult<int>(
-        "15 'x' ! 10 'y' ! 'x' @ 'y' @ < { 'x' @ 2 * } { 'y' @ 2 * } ifelse",
+        "15 'x' ! 10 'y' ! 'x' @ 'y' @ < { 'x' @ 2 * } { 'y' @ 2 * } ife",
         30);
 }
 
@@ -322,10 +322,10 @@ TEST_F(PiAdvancedTests, ControlFlowOperations) {
 // Test with mixed operations
 TEST_F(PiAdvancedTests, MixedOperations) {
     // Combining arithmetic, comparison, and conditionals
-    AssertResult<int>("5 3 + 7 < { 10 } { 20 } ifelse", 20);
+    AssertResult<int>("5 3 + 7 < { 10 } { 20 } ife", 20);
 
     // Stack manipulation with arithmetic and conditionals
-    AssertResult<int>("3 4 swap - 0 > { 5 + } { 5 - } ifelse", 6);
+    AssertResult<int>("3 4 swap - 0 > { 5 + } { 5 - } ife", 6);
 
     // Variable usage with mixed operations
     AssertResult<int>(
@@ -333,7 +333,7 @@ TEST_F(PiAdvancedTests, MixedOperations) {
         "10 'y' ! "
         "'x' @ 'y' @ + 'sum' ! "
         "'x' @ 'y' @ * 'product' ! "
-        "'sum' @ 'product' @ < { 'sum' @ } { 'product' @ } ifelse",
+        "'sum' @ 'product' @ < { 'sum' @ } { 'product' @ } ife",
         50);
 
     // Complex calculation
@@ -357,5 +357,5 @@ TEST_F(PiAdvancedTests, ErrorHandlingOperations) {
     // Simple error recovery (division by zero)
     // In Pi, this would use more advanced continuation handling
     // This is a simplified test case
-    AssertResult<int>("5 0 == { 0 } { 5 0 == { 0 } { 10 } ifelse } ifelse", 10);
+    AssertResult<int>("5 0 == { 0 } { 5 0 == { 0 } { 10 } ife } ife", 10);
 }
