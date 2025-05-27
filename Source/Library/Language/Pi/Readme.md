@@ -85,7 +85,7 @@ Elements can be moved between the stacks.
 ## Keywords
 There are a lot of _Pi_ keywords. Think of it as a CISC-like Forth interpreter.
 
-The current _Pi_ command list is:
+The current _Pi_ command list is: [this is out of date]
 
 ```
 true	# insert boolean true
