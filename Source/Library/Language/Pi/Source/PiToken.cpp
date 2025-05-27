@@ -91,6 +91,9 @@ const char *PiTokenEnumType::ToString(Enum t) {
         CASE_LOWER(Pathname)
         CASE_LOWER(Drop)
         CASE_LOWER(Dup)
+        CASE_LOWER(Dup2)
+        CASE_LOWER(Drop2)
+        CASE_LOWER(Roll)
         CASE_LOWER(Over)
         CASE_LOWER(OverM)
         CASE_LOWER(PickN)
@@ -147,6 +150,9 @@ const char *PiTokenEnumType::ToString(Enum t) {
         CASE_LOWER(Store)
         CASE_REPLACE(ToRho, "rho")
         CASE_REPLACE(ToRhoSequence, "rho{")
+        CASE_LOWER(Modulo)
+        CASE_LOWER(Min)
+        CASE_LOWER(Max)
     }
 
     KAI_TRACE() << " PiToken #" << (int)t;

@@ -1497,6 +1497,45 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
                 }
                 break;
 
+            case Operation::Min:
+                // Min returns the smaller of two values using Less comparison
+                // For same types, use PerformBinaryOp to leverage existing Less implementation
+                if (A.GetTypeNumber() == B.GetTypeNumber()) {
+                    Object less_result = PerformBinaryOp(A, B, Operation::Less);
+                    if (less_result.Exists() && less_result.IsType<bool>()) {
+                        return ConstDeref<bool>(less_result) ? A : B;
+                    }
+                }
+                // For mixed numeric types, convert and compare
+                else if ((A.IsType<int>() || A.IsType<float>()) &&
+                         (B.IsType<int>() || B.IsType<float>())) {
+                    // Use Less operation with type conversion handled by PerformBinaryOp
+                    Object less_result = PerformBinaryOp(A, B, Operation::Less);
+                    if (less_result.Exists() && less_result.IsType<bool>()) {
+                        return ConstDeref<bool>(less_result) ? A : B;
+                    }
+                }
+                break;
+
+            case Operation::Max:
+                // Max returns the larger of two values using Less comparison
+                // For same types, use PerformBinaryOp with swapped operands
+                if (A.GetTypeNumber() == B.GetTypeNumber()) {
+                    Object less_result = PerformBinaryOp(B, A, Operation::Less);
+                    if (less_result.Exists() && less_result.IsType<bool>()) {
+                        return ConstDeref<bool>(less_result) ? A : B;
+                    }
+                }
+                // For mixed numeric types, use swapped Less comparison
+                else if ((A.IsType<int>() || A.IsType<float>()) &&
+                         (B.IsType<int>() || B.IsType<float>())) {
+                    Object less_result = PerformBinaryOp(B, A, Operation::Less);
+                    if (less_result.Exists() && less_result.IsType<bool>()) {
+                        return ConstDeref<bool>(less_result) ? A : B;
+                    }
+                }
+                break;
+
             default:
                 // For unsupported operations, provide a helpful error message
                 KAI_TRACE_ERROR()
@@ -1570,6 +1609,8 @@ bool Executor::IsBinaryOp(Operation::Type op) {
         case Operation::Multiply:
         case Operation::Divide:
         case Operation::Modulo:
+        case Operation::Min:
+        case Operation::Max:
         case Operation::Equiv:
         case Operation::NotEquiv:
         case Operation::Less:

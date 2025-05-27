@@ -1493,6 +1493,26 @@ void Executor::Perform(Operation::Type op) {
             break;
         }
 
+        case Operation::Min: {
+            Object B = Pop();
+            Object A = Pop();
+            
+            // Use type traits via PerformBinaryOp for all types
+            Object result = PerformBinaryOp(A, B, Operation::Min);
+            Push(result);
+            break;
+        }
+
+        case Operation::Max: {
+            Object B = Pop();
+            Object A = Pop();
+            
+            // Use type traits via PerformBinaryOp for all types
+            Object result = PerformBinaryOp(A, B, Operation::Max);
+            Push(result);
+            break;
+        }
+
         default: {
             // Provide a default implementation for unimplemented operations
             KAI_TRACE_ERROR() << "Unimplemented operation: " << Operation::ToString(op);

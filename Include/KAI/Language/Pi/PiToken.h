@@ -139,6 +139,8 @@ struct PiTokenEnumType {
         Thaw,
 
         Modulo,  // % operator
+        Min,     // min operator
+        Max,     // max operator
 
         Self,  // current_ continuation 'self'
         This,  // current_ _scope '.'

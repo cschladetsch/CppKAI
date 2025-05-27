@@ -60,6 +60,8 @@ struct Operation {
         Clear,
         Depth,
         Over,
+        Min,
+        Max,
         ToArray,
         ToList,
         ToMap,

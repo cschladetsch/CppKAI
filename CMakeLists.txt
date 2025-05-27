@@ -57,6 +57,7 @@ option(KAI_BUILD_CORE_TEST "Build unit tests" ON)
 option(KAI_BUILD_TEST_LANG "Build language tests" ON)
 option(KAI_BUILD_TEST_NETWORK "Build networking tests" OFF)
 option(KAI_BUILD_RAKNET "Build RakNet" OFF)
+option(KAI_BUILD_NETWORK_APPS "Build network applications" OFF)
 
 # Find and link Boost libraries
 find_package(Boost REQUIRED COMPONENTS system filesystem program_options date_time regex)

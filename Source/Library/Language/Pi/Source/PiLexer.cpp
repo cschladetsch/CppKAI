@@ -33,6 +33,8 @@ void PiLexer::AddKeyWords() {
     keyWords["rot"] = Enum::Rot;
     keyWords["rotn"] = Enum::RotN;
     keyWords["roll"] = Enum::Roll;
+    keyWords["min"] = Enum::Min;
+    keyWords["max"] = Enum::Max;
     keyWords["toarray"] = Enum::ToArray;
     keyWords["gc"] = Enum::GarbageCollect;
     keyWords["clear"] = Enum::Clear;

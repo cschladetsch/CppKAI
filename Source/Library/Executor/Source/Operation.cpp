@@ -31,6 +31,8 @@ const char *Operation::ToString(int value) {
         CASE(Multiply)
         CASE(Divide)
         CASE(Modulo)
+        CASE(Min)
+        CASE(Max)
         CASE(TypeOf)
         CASE(Store)
         CASE(Retreive)
