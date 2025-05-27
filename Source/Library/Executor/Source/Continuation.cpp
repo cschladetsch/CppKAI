@@ -75,6 +75,12 @@ bool Continuation::Next() const {
 
 bool Continuation::Next(Object &next) const {
     if (!code.Exists()) return false;
+    
+    // Check if index exists before dereferencing
+    if (!index.Exists()) {
+        KAI_TRACE_ERROR() << "Continuation::Next: index is null";
+        return false;
+    }
 
     int &n = Deref<int>(index);
     if (n == code->Size()) return false;

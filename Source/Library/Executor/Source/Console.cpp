@@ -163,7 +163,9 @@ void Console::Execute(Pointer<Continuation> cont) {
         }
 
         // Let exceptions propagate so that Process can catch them
-        executor->Continue(cont);
+        // Use ContinueOnly to execute this continuation without saving/restoring state
+        executor->ContinueOnly(cont);
+        KAI_TRACE() << "Execute: Continue returned, checking executor state";
 
         // After execution, process the stack to ensure proper type extraction
         Value<Stack> dataStack = executor->GetDataStack();
@@ -173,6 +175,8 @@ void Console::Execute(Pointer<Continuation> cont) {
             KAI_TRACE_WARN() << "Execute: Invalid data stack after execution";
             return;
         }
+        
+        KAI_TRACE() << "Execute: Stack size after execution: " << dataStack->Size();
 
         // Process each stack item to extract primitive values from
         // continuations
@@ -186,12 +190,20 @@ void Console::Execute(Pointer<Continuation> cont) {
             // constructs Test code should use UnwrapStackValues() from
             // TestLangCommon if needed
         }
+        
+        // The continuation might have finished, which is normal
+        // Don't access continuation properties after execution completes
     }
     KAI_CATCH(Exception::Base, E) { 
         KAI_TRACE_ERROR_1(E);
         // Only re-throw assertion failures and similar errors that should be visible to Process
         if (E.ToString().find("Assertion failed") != std::string::npos) {
             throw;
+        }
+        // For debugging: log stack state when exception occurs
+        KAI_TRACE() << "Exception occurred. Stack state:";
+        if (executor.Exists() && executor->GetDataStack().Exists()) {
+            KAI_TRACE() << "  Stack size: " << executor->GetDataStack()->Size();
         }
     }
     KAI_CATCH(exception, E) { 
@@ -215,6 +227,16 @@ void Console::Execute(String const &text, Structure st) {
 
     // Log what we're about to execute for debugging purposes
     KAI_TRACE() << "Executing text: " << text;
+    
+    // Log the continuation details
+    if (cont->GetCode().Exists()) {
+        KAI_TRACE() << "Continuation code size: " << cont->GetCode()->Size();
+        for (int i = 0; i < cont->GetCode()->Size(); ++i) {
+            auto obj = cont->GetCode()->At(i);
+            KAI_TRACE() << "  Code[" << i << "]: " << obj.ToString() 
+                        << " (type: " << (obj.GetClass() ? obj.GetClass()->GetName().ToString() : "null") << ")";
+        }
+    }
 
     // Set the scope on the continuation (important for Store operations)
     cont->SetScope(tree.GetScope());

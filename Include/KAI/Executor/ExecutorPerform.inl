@@ -198,10 +198,20 @@ void Executor::Perform(Operation::Type op) {
             break;
 
         case Operation::Swap: {
+            KAI_TRACE() << "Swap: Stack before: size=" << data_->Size();
+            if (data_->Size() >= 2) {
+                KAI_TRACE() << "  Bottom: " << data_->At(0).ToString();
+                KAI_TRACE() << "  Top: " << data_->At(data_->Size()-1).ToString();
+            }
             const auto A = Pop();
             const auto B = Pop();
             Push(A);
             Push(B);
+            KAI_TRACE() << "Swap: Stack after: size=" << data_->Size();
+            if (data_->Size() >= 2) {
+                KAI_TRACE() << "  Bottom: " << data_->At(0).ToString();
+                KAI_TRACE() << "  Top: " << data_->At(data_->Size()-1).ToString();
+            }
             break;
         }
 

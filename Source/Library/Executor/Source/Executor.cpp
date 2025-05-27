@@ -506,6 +506,10 @@ void Executor::Eval(Object const &Q) {
         KAI_TRACE_ERROR() << "Eval: Invalid or non-existent object";
         return;
     }
+    
+    KAI_TRACE() << "Eval: object=" << Q.ToString() 
+                << ", type=" << (Q.GetClass() ? Q.GetClass()->GetName().ToString() : "null")
+                << ", typenum=" << GetTypeNumber(Q).value;
 
     // Simplified: Treat evaluation as a simple dispatch based on type
     switch (GetTypeNumber(Q).value) {
@@ -537,7 +541,9 @@ void Executor::Eval(Object const &Q) {
 
         case Type::Number::Continuation: {
             // Execute the continuation - let exceptions propagate
+            KAI_TRACE() << "Eval: Executing nested continuation";
             Continue(Q);
+            KAI_TRACE() << "Eval: Nested continuation finished";
             break;
         }
 
@@ -571,7 +577,9 @@ void Executor::Eval(Object const &Q) {
 
             // Create a proper clone to ensure correct type information is preserved
             Object clone = Q.Clone();
+            KAI_TRACE() << "Eval: Pushing value to stack: " << clone.ToString();
             Push(clone);
+            KAI_TRACE() << "Eval: Stack size after push: " << data_->Size();
             break;
     }
 }
@@ -629,6 +637,7 @@ void Executor::Continue() {
                                          "skipping evaluation";
                 }
             } else {
+                KAI_TRACE() << "Continue: Continuation finished (Next returned false)";
                 break_ = true;
             }
         } catch (const Exception::Base &e) {
@@ -716,6 +725,12 @@ void Executor::Continue(Value<Continuation> C) {
     Continue();
 
     // Restore the previous continuation
+    KAI_TRACE() << "Continue(C): Restoring saved continuation";
+    if (savedContinuation.Valid() && savedContinuation.Exists()) {
+        KAI_TRACE() << "  Saved continuation is valid";
+    } else {
+        KAI_TRACE() << "  Saved continuation is invalid/null";
+    }
     continuation_ = savedContinuation;
 }
 
