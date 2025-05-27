@@ -513,9 +513,16 @@ void Executor::Eval(Object const &Q) {
             try {
                 const auto op = Deref<Operation>(Q).GetTypeNumber();
                 Perform(op);
+            } catch (const Exception::Base &e) {
+                // Re-throw KAI exceptions (like assertion failures) so they can be handled by the caller
+                KAI_TRACE_ERROR()
+                    << "Eval: KAI Exception performing operation: " << e.ToString();
+                throw;
             } catch (const std::exception &e) {
                 KAI_TRACE_ERROR()
                     << "Eval: Exception performing operation: " << e.what();
+                // Re-throw standard exceptions as well
+                throw;
             }
             break;
         }
@@ -529,13 +536,8 @@ void Executor::Eval(Object const &Q) {
             break;
 
         case Type::Number::Continuation: {
-            // Simply execute the continuation without special handling
-            try {
-                Continue(Q);
-            } catch (const std::exception &e) {
-                KAI_TRACE_ERROR()
-                    << "Eval: Exception executing continuation: " << e.what();
-            }
+            // Execute the continuation - let exceptions propagate
+            Continue(Q);
             break;
         }
 
@@ -612,45 +614,37 @@ void Executor::Continue() {
 
         try {
             if (continuation_->Next(next)) {
-                KAI_TRY {
-                    if (traceLevel_ > 10) KAI_TRACE() << "Start step\n";
-                    if (traceLevel_ > 10) KAI_TRACE_1(stepNumber_);
-                    if (traceLevel_ > 10) KAI_TRACE_1(data_);
-                    if (traceLevel_ > 10) KAI_TRACE_1(context_);
-                    if (traceLevel_ > 10) KAI_TRACE_1(next);
+                // Remove try-catch to allow exceptions to propagate
+                if (traceLevel_ > 10) KAI_TRACE() << "Start step\n";
+                if (traceLevel_ > 10) KAI_TRACE_1(stepNumber_);
+                if (traceLevel_ > 10) KAI_TRACE_1(data_);
+                if (traceLevel_ > 10) KAI_TRACE_1(context_);
+                if (traceLevel_ > 10) KAI_TRACE_1(next);
 
-                    // Make sure next is valid before we try to evaluate it
-                    if (next.Valid()) {
-                        Eval(next);
-                    } else {
-                        KAI_TRACE_ERROR() << "Continue: Invalid next object, "
-                                             "skipping evaluation";
-                    }
-                }
-                catch (Exception::Base &E) {
-                    KAI_TRACE_ERROR()
-                        << "Continue: Exception during evaluation: "
-                        << E.ToString();
-                }
-                catch (const std::exception &e) {
-                    KAI_TRACE_ERROR()
-                        << "Continue: std::exception: " << e.what();
-                }
-                catch (...) {
-                    KAI_TRACE_ERROR()
-                        << "Continue: Unknown exception during evaluation";
+                // Make sure next is valid before we try to evaluate it
+                if (next.Valid()) {
+                    Eval(next);
+                } else {
+                    KAI_TRACE_ERROR() << "Continue: Invalid next object, "
+                                         "skipping evaluation";
                 }
             } else {
                 break_ = true;
             }
+        } catch (const Exception::Base &e) {
+            // Re-throw KAI exceptions so they can be handled by Process
+            KAI_TRACE_ERROR()
+                << "Continue: KAI Exception in continuation: " << e.ToString();
+            throw;
         } catch (const std::exception &e) {
+            // Re-throw standard exceptions as well
             KAI_TRACE_ERROR()
                 << "Continue: Exception in continuation->Next(): " << e.what();
-            break_ = true;
+            throw;
         } catch (...) {
             KAI_TRACE_ERROR()
                 << "Continue: Unknown exception in continuation->Next()";
-            break_ = true;
+            throw;
         }
 
         if (break_) {
@@ -717,17 +711,9 @@ void Executor::Continue(Value<Continuation> C) {
     // Save the current continuation for restoring later
     Value<Continuation> savedContinuation = continuation_;
 
-    try {
-        // Execute the continuation normally - no special cases
-        SetContinuation(C);
-        Continue();
-    } catch (const Exception::Base &e) {
-        KAI_TRACE_ERROR() << "KAI exception in Continue: " << e.ToString();
-    } catch (const std::exception &e) {
-        KAI_TRACE_ERROR() << "std::exception in Continue: " << e.what();
-    } catch (...) {
-        KAI_TRACE_ERROR() << "Unknown exception in Continue";
-    }
+    // Execute the continuation normally - let exceptions propagate
+    SetContinuation(C);
+    Continue();
 
     // Restore the previous continuation
     continuation_ = savedContinuation;

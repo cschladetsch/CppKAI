@@ -3,10 +3,8 @@
 #include <fstream>
 #include <sstream>
 
+#include "KAI/Console/Console.h"
 #include "KAI/Core/BuiltinTypes/Stack.h"
-#include "KAI/Core/Config/Base.h"
-#include "KAI/Core/Debug.h"
-#include "KAI/Language/Pi/PiTranslator.h"
 #include "TestLangCommon.h"
 
 using namespace kai;
@@ -18,41 +16,25 @@ struct PiStackTests : TestLangCommon {
     template <typename... Ts>
     void AssertStackResult(const char *script, std::tuple<Ts...> expected,
                            bool verbose = false) {
-        if (verbose) {
-            KAI_LOG_INFO(std::string("Testing script: ") + script);
-        }
-
         try {
-            Registry reg;
-            Console console(reg);
-            console.SetScope(reg.GetGlobalScope());
+            Console console;
+            console.SetLanguage(Language::Pi);
+            console.Execute(script);
 
-            auto result = console.Execute(script);
-
-            if (result.Failed) {
-                if (verbose) {
-                    KAI_LOG_ERROR("Execution failed: " + result.Error);
-                }
-                FAIL() << "Error executing script: " << result.Error;
+            auto executor = console.GetExecutor();
+            auto dataStack = executor->GetDataStack();
+            
+            if (!dataStack.Valid() || !dataStack.Exists()) {
+                FAIL() << "Invalid data stack after execution";
                 return;
             }
 
-            auto &stack = console.GetExecutor().GetStack();
-            VerifyStack(stack, expected, std::index_sequence_for<Ts...>{});
-        } catch (const Exception &e) {
-            if (verbose) {
-                KAI_LOG_ERROR("Exception: " + std::string(e.ToString()));
-            }
+            VerifyStack(*dataStack, expected, std::index_sequence_for<Ts...>{});
+        } catch (const Exception::Base &e) {
             FAIL() << "Exception: " << e.ToString();
         } catch (const std::exception &e) {
-            if (verbose) {
-                KAI_LOG_ERROR("std::exception: " + std::string(e.what()));
-            }
             FAIL() << "std::exception: " << e.what();
         } catch (...) {
-            if (verbose) {
-                KAI_LOG_ERROR("Unknown exception");
-            }
             FAIL() << "Unknown exception";
         }
     }
@@ -65,35 +47,27 @@ struct PiStackTests : TestLangCommon {
 
         // Only proceed with element checks if the sizes match
         if (stack.Size() == sizeof...(Ts)) {
-            // Verify stack values in reverse order (top of stack is last
-            // element)
-            Stack::Container stackValues = stack.GetValues();
-            size_t stackSize = stackValues.size();
-
+            // Verify stack values from bottom to top
             auto checkElement = [&](size_t index, auto expectedValue) {
-                // Calculate index from the top of the stack
-                size_t stackIndex = stackSize - 1 - index;
-
-                if (stackIndex < stackSize) {
+                // Stack::At(0) is bottom, At(Size()-1) is top
+                // We want to check in order from bottom to top
+                if (index < stack.Size()) {
                     using ExpectedType = std::decay_t<decltype(expectedValue)>;
-                    Value val = stackValues[stackIndex];
+                    Object obj = stack.At(index);
 
-                    if (val.GetType() !=
-                        Type::Traits<ExpectedType>::TypeNumber) {
+                    if (!obj.IsType<ExpectedType>()) {
                         ADD_FAILURE() << "Type mismatch at stack position "
-                                      << index << ". Expected: "
-                                      << Type::Traits<ExpectedType>::TypeNumber
-                                      << ", Got: " << val.GetType();
+                                      << index;
                     } else {
-                        ExpectedType actual = kai_cast<ExpectedType>(val);
+                        ExpectedType actual = ConstDeref<ExpectedType>(obj);
                         EXPECT_EQ(actual, expectedValue)
                             << "Value mismatch at stack position " << index;
                     }
                 }
             };
 
-            // Check elements one by one (from top of stack downwards)
-            (checkElement(sizeof...(Ts) - 1 - Is, std::get<Is>(expected)), ...);
+            // Check elements from bottom to top
+            (checkElement(Is, std::get<Is>(expected)), ...);
         }
     }
 

@@ -35,7 +35,8 @@ TEST(PiStringOperations, StringIndexing) {
     auto stack = exec->GetDataStack();
     
     ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<char>(stack->Top()), 'C');
+    // Character operations in Pi return int values
+    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), static_cast<int>('C'));
 }
 
 TEST(PiStringOperations, StringSlicing) {
