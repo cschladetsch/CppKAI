@@ -1,4 +1,4 @@
-# ![Pi](/Images/Pi.png)
+# Pi ![Pi](/Images/Pi.png)
 [![Build status](https://ci.appveyor.com/api/projects/status/github/cschladetsch/kai/Source/Library/Language/Pi/?svg=true)](https://ci.appveyor.com/project/cschladetsch/kai)
 [![CodeFactor](https://www.codefactor.io/repository/github/cschladetsch/kai/badge)](https://www.codefactor.io/repository/github/cschladetsch/kai/Source/Library/Language/Pi/)
 [![License](https://img.shields.io/github/license/cschladetsch/flow.svg?label=License&maxAge=86400)](./LICENSE.txt)
