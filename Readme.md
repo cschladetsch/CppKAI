@@ -1,4 +1,4 @@
-# KAI - Distributed Object Model for C++ ![Image](Images/kai_logo.jpg)
+# KAI - Distributed Object Model for C++ ![Image](Images/kai_logo.png)
 
 [![Build status](https://ci.appveyor.com/api/projects/status/github/cschladetsch/kai?svg=true)](https://ci.appveyor.com/project/cschladetsch/kai)
 [![CodeFactor](https://www.codefactor.io/repository/github/cschladetsch/kai/badge)](https://www.codefactor.io/repository/github/cschladetsch/kai)
