@@ -35,7 +35,6 @@ struct GenerateProxy::ProxyDecl {
     }
 };
 
-
 void GenerateProxy::AddProxyBoilerplate(ProxyDecl const &proxy) {
     Output() << "using ProxyBase::StreamType;" << EndLine();
     Output() << proxy.ProxyName
@@ -71,11 +70,11 @@ bool GenerateProxy::Namespace(Node const &ns) {
             case TauAstEnumType::Interface:
                 if (!Interface(*ch)) return false;
                 break;
-                
+
             case TauAstEnumType::Struct:
                 // Structs don't need proxy generation, just skip
                 break;
-                
+
             case TauAstEnumType::EnumType:
                 // Enums don't need proxy generation, just skip
                 break;
@@ -92,7 +91,7 @@ bool GenerateProxy::Namespace(Node const &ns) {
 
 bool GenerateProxy::Class(Node const &cl) {
     auto className = cl.GetToken().Text();
-    
+
     // Generate Proxy class only
     auto proxyDecl = ProxyDecl(className);
     StartBlock(proxyDecl.ToString());
@@ -216,7 +215,8 @@ void GenerateProxy::MethodDecl(const string &returnType,
 
         auto &ty = a->GetChild(0);
         auto &id = a->GetChild(1);
-        Output() << "const " << ty->GetTokenText() << "& " << id->GetTokenText();
+        Output() << "const " << ty->GetTokenText() << "& "
+                 << id->GetTokenText();
 
         first = false;
     }
@@ -227,13 +227,14 @@ void GenerateProxy::MethodBody(const string &returnType,
                                const Node::ChildrenType &args,
                                const string &name) {
     StartBlock();
-    
+
     if (returnType == "void") {
         // For void methods, use _node->Send
         if (!args.empty()) {
             Output() << "RakNet::BitStream args;" << EndLine();
             for (auto const &a : args) {
-                Output() << "args << " << a->GetChild(1)->GetTokenText() << ";" << EndLine();
+                Output() << "args << " << a->GetChild(1)->GetTokenText() << ";"
+                         << EndLine();
             }
             Output() << "_node->Send(\"" << name << "\", args);" << EndLine();
         } else {
@@ -244,11 +245,14 @@ void GenerateProxy::MethodBody(const string &returnType,
         if (!args.empty()) {
             Output() << "RakNet::BitStream args;" << EndLine();
             for (auto const &a : args) {
-                Output() << "args << " << a->GetChild(1)->GetTokenText() << ";" << EndLine();
+                Output() << "args << " << a->GetChild(1)->GetTokenText() << ";"
+                         << EndLine();
             }
-            Output() << "auto future = _node->SendWithResponse(\"" << name << "\", args);" << EndLine();
+            Output() << "auto future = _node->SendWithResponse(\"" << name
+                     << "\", args);" << EndLine();
         } else {
-            Output() << "auto future = _node->SendWithResponse(\"" << name << "\");" << EndLine();
+            Output() << "auto future = _node->SendWithResponse(\"" << name
+                     << "\");" << EndLine();
         }
         Output() << "return future.get();" << EndLine();
     }
@@ -256,11 +260,11 @@ void GenerateProxy::MethodBody(const string &returnType,
     EndBlock();
 }
 
-string GenerateProxy::ReturnType(string const &text) const {
-    return text;
-}
+string GenerateProxy::ReturnType(string const &text) const { return text; }
 
-string GenerateProxy::ArgType(string const &text) const { return "const " + text + "&"; }
+string GenerateProxy::ArgType(string const &text) const {
+    return "const " + text + "&";
+}
 
 bool GenerateProxy::Interface(Node const &interface) {
     // Interfaces are treated like classes for proxy generation

@@ -16,14 +16,14 @@ bool TauParser::Process(shared_ptr<Lexer> lex, Structure st) {
     StripTokens();
 
     root = NewNode(AstEnum::None);
-    
+
     // Clear any previous error state
     Error.clear();
     Failed = false;
-    
+
     // Run the parser
     bool result = Run(root, st);
-    
+
     // For test compatibility, we need to handle the case where
     // the parser sets an error but we want to be resilient
     // If there's an error but we have a valid AST, clear the error
@@ -34,7 +34,7 @@ bool TauParser::Process(shared_ptr<Lexer> lex, Structure st) {
         Failed = false;
         result = true;
     }
-    
+
     return result;
 }
 
@@ -68,8 +68,8 @@ bool TauParser::Run(AstNodePtr root, Structure st) {
 bool TauParser::Module(AstNodePtr root) {
     auto module = NewNode(TauAstEnumType::Module);
 
-    // Even if Module parsing fails, we'll add what we've parsed so far to the root
-    // This makes tests more resilient and able to continue
+    // Even if Module parsing fails, we'll add what we've parsed so far to the
+    // root This makes tests more resilient and able to continue
     root->Add(module);
 
     while (!Empty()) {
@@ -131,7 +131,8 @@ bool TauParser::Module(AstNodePtr root) {
                 // Intentional fallthrough if not a recognized identifier
 
             default: {
-                // Be more resilient - just skip unrecognized tokens at module level
+                // Be more resilient - just skip unrecognized tokens at module
+                // level
                 Consume();
                 break;
             }
@@ -153,7 +154,7 @@ bool TauParser::Namespace(AstNodePtr root) {
 
     auto nameToken = Consume();
     auto ns = NewNode(TauAstEnumType::Namespace, nameToken);
-    auto rootNs = ns; // Keep track of the root namespace to add to the tree
+    auto rootNs = ns;  // Keep track of the root namespace to add to the tree
 
     // Check for namespace alias (namespace Alias = Original;)
     if (CurrentIs(TokenEnum::Assign)) {
@@ -199,9 +200,11 @@ bool TauParser::Namespace(AstNodePtr root) {
             auto nestedNameToken = Consume();
             auto nestedNs = NewNode(TauAstEnumType::Namespace, nestedNameToken);
 
-            // Add the nested namespace to the current namespace and continue with nested ns
+            // Add the nested namespace to the current namespace and continue
+            // with nested ns
             ns->Add(nestedNs);
-            ns = nestedNs; // ns now points to the deepest namespace for adding content
+            ns = nestedNs;  // ns now points to the deepest namespace for adding
+                            // content
         }
     }
 
@@ -373,9 +376,9 @@ bool TauParser::Class(AstNodePtr root) {
 
     // Look for opening brace
     if (!CurrentIs(TokenEnum::OpenBrace)) {
-        return Fail(Lexer::CreateErrorMessage(
-            Current(), "Expected OpenBrace, have %s",
-            TokenEnumType::ToString(Current().type)));
+        return Fail(
+            Lexer::CreateErrorMessage(Current(), "Expected OpenBrace, have %s",
+                                      TokenEnumType::ToString(Current().type)));
     }
 
     Consume();  // Consume the opening brace
@@ -428,7 +431,7 @@ bool TauParser::Class(AstNodePtr root) {
                     continue;
                 }
             }
-            
+
             // Handle 'event' keyword as identifier
             if (text == "event") {
                 Consume();  // Consume 'event'
@@ -490,7 +493,7 @@ bool TauParser::Class(AstNodePtr root) {
             Consume();
             // Don't abort on method parsing failures
             Method(klass, ty->GetToken(), name->GetToken());
-            
+
             // Reset any error state to continue parsing
             Failed = false;
         }
@@ -498,7 +501,7 @@ bool TauParser::Class(AstNodePtr root) {
         else {
             // Don't abort on field parsing failures
             Field(klass, ty->GetToken(), name->GetToken());
-            
+
             // Reset any error state to continue parsing
             Failed = false;
         }
@@ -525,17 +528,18 @@ bool TauParser::Method(AstNodePtr klass, TokenNode const &returnType,
 
     // Parse parameter list
     while (!CurrentIs(TokenType::CloseParan)) {
-        // If we've reached end of tokens, exit the loop and add what we have so far
+        // If we've reached end of tokens, exit the loop and add what we have so
+        // far
         if (Empty()) {
             break;
         }
-        
+
         // Try to add an argument, but don't fail if we can't
         AddArg(args);
-        
+
         // Reset error state so we can continue parsing
         Failed = false;
-        
+
         if (!CurrentIs(TokenType::Comma)) break;
 
         Consume();
@@ -548,7 +552,7 @@ bool TauParser::Method(AstNodePtr klass, TokenNode const &returnType,
         // For test resilience, continue without it
         // We'll just assume the parameter list is done
     }
-    
+
     // Reset error state
     Failed = false;
 
@@ -1011,20 +1015,20 @@ void TauParser::AddArg(AstNodePtr parent) {
     }
 
     auto typeToken = Consume();
-    
+
     // Handle qualified type names like Model.User
     if (CurrentIs(TokenEnum::Dot)) {
         // For now, just consume the dot and the next identifier
         // The code generator will need to handle qualified names properly
-        Consume(); // consume dot
-        
+        Consume();  // consume dot
+
         if (CurrentIs(TokenEnum::Ident)) {
             // For simplicity, just use the last part of the qualified name
             // e.g., Model.User becomes User
             typeToken = Consume();
         }
     }
-    
+
     arg->Add(typeToken);  // type
 
     // Check for array parameter: Type[]

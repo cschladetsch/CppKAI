@@ -291,10 +291,10 @@ TEST_F(ExtendedRhoTests, StringOperations) {
 TEST_F(ExtendedRhoTests, ContinuationStateInLoop) {
     // Switch to Rho language for this test
     console->SetLanguage(Language::Rho);
-    
+
     // Register Continuation type
     reg->AddClass<Continuation>(Label("Continuation"));
-    
+
     // Create a Rho program that:
     // 1. Creates continuations inside a loop
     // 2. Each continuation captures the loop variable
@@ -329,28 +329,31 @@ TEST_F(ExtendedRhoTests, ContinuationStateInLoop) {
         // Drop the array
         drop
     )";
-    
+
     console->Execute(rhoCode, Structure::Program);
-    
+
     // Verify stack: Should contain [0, 2, 4]
     // Each continuation remembered the value of i when it was created
     ASSERT_EQ(stack->Size(), 3) << "Stack should have 3 elements";
     ASSERT_TRUE(stack->At(0).IsType<int>()) << "First element should be int";
     ASSERT_TRUE(stack->At(1).IsType<int>()) << "Second element should be int";
     ASSERT_TRUE(stack->At(2).IsType<int>()) << "Third element should be int";
-    ASSERT_EQ(ConstDeref<int>(stack->At(0)), 0) << "First continuation should capture i=0";
-    ASSERT_EQ(ConstDeref<int>(stack->At(1)), 2) << "Second continuation should capture i=2";
-    ASSERT_EQ(ConstDeref<int>(stack->At(2)), 4) << "Third continuation should capture i=4";
+    ASSERT_EQ(ConstDeref<int>(stack->At(0)), 0)
+        << "First continuation should capture i=0";
+    ASSERT_EQ(ConstDeref<int>(stack->At(1)), 2)
+        << "Second continuation should capture i=2";
+    ASSERT_EQ(ConstDeref<int>(stack->At(2)), 4)
+        << "Third continuation should capture i=4";
 }
 
 // Test showing continuation state with nested loops
 TEST_F(ExtendedRhoTests, ContinuationStateInNestedLoops) {
     // Switch to Rho language
     console->SetLanguage(Language::Rho);
-    
+
     // Register Continuation type
     reg->AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string rhoCode = R"(
         // Create a 2D array of continuations
         []
@@ -385,13 +388,14 @@ TEST_F(ExtendedRhoTests, ContinuationStateInNestedLoops) {
         // Drop the array
         drop
     )";
-    
+
     console->Execute(rhoCode, Structure::Program);
-    
+
     // Verify stack: Should contain [0, 11, 22]
     ASSERT_EQ(stack->Size(), 3) << "Stack should have 3 elements";
     ASSERT_EQ(ConstDeref<int>(stack->At(0)), 0) << "First result should be 0";
-    ASSERT_EQ(ConstDeref<int>(stack->At(1)), 11) << "Second result should be 11";
+    ASSERT_EQ(ConstDeref<int>(stack->At(1)), 11)
+        << "Second result should be 11";
     ASSERT_EQ(ConstDeref<int>(stack->At(2)), 22) << "Third result should be 22";
 }
 
@@ -399,10 +403,10 @@ TEST_F(ExtendedRhoTests, ContinuationStateInNestedLoops) {
 TEST_F(ExtendedRhoTests, ContinuationStateWithMutableVars) {
     // Switch to Rho language
     console->SetLanguage(Language::Rho);
-    
+
     // Register Continuation type
     reg->AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string rhoCode = R"(
         // Create a shared counter variable
         counter = 0
@@ -440,12 +444,13 @@ TEST_F(ExtendedRhoTests, ContinuationStateWithMutableVars) {
         // Drop the array
         drop
     )";
-    
+
     console->Execute(rhoCode, Structure::Program);
-    
+
     // Verify stack: Should contain [30, 31, 32]
     ASSERT_EQ(stack->Size(), 3) << "Stack should have 3 elements";
     ASSERT_EQ(ConstDeref<int>(stack->At(0)), 30) << "First result should be 30";
-    ASSERT_EQ(ConstDeref<int>(stack->At(1)), 31) << "Second result should be 31";
+    ASSERT_EQ(ConstDeref<int>(stack->At(1)), 31)
+        << "Second result should be 31";
     ASSERT_EQ(ConstDeref<int>(stack->At(2)), 32) << "Third result should be 32";
 }

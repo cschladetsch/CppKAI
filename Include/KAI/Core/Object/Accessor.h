@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+
 #include "KAI/Core/Detail/AccessorDetail.h"
 #include "KAI/Core/Object/Label.h"
 #include "KAI/Core/Object/PropertyBase.h"
@@ -13,7 +14,8 @@ template <class K, class C, class T>
 std::unique_ptr<PropertyBase> MakeProperty(
     T const(C::*F), Label const &N,
     MemberCreateParams::Enum create_params = MemberCreateParams::Default) {
-    return std::make_unique<property_detail::MakeAccessor<K, C, T>>(F, N, create_params);
+    return std::make_unique<property_detail::MakeAccessor<K, C, T>>(
+        F, N, create_params);
 }
 
 /// make a property which can only access the given class member
@@ -21,7 +23,8 @@ template <class K, class C, class T>
 std::unique_ptr<PropertyBase> MakeProperty(
     Pointer<const T> const(C::*F), Label const &N,
     MemberCreateParams::Enum create_params = MemberCreateParams::Default) {
-    return std::make_unique<property_detail::MakeAccessor<K, C, T>>(F, N, create_params);
+    return std::make_unique<property_detail::MakeAccessor<K, C, T>>(
+        F, N, create_params);
 }
 
 /// make a property which can access and change the given class member
@@ -29,7 +32,8 @@ template <class K, class C, class T>
 std::unique_ptr<PropertyBase> MakeProperty(
     T(C::*F), Label const &N,
     MemberCreateParams::Enum create_params = MemberCreateParams::Default) {
-    return std::make_unique<property_detail::MakeMutator<K, C, T>>(F, N, create_params);
+    return std::make_unique<property_detail::MakeMutator<K, C, T>>(
+        F, N, create_params);
 }
 
 // Deprecated compatibility functions

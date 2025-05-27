@@ -40,10 +40,9 @@ class Class : public ClassBase {
         auto result = registry->GetMemorySystem().Allocate<Storage<T> >(
             ObjectConstructParams(registry, this, handle));
 
-        if (!result.has_value())
-            return nullptr;
-            
-        Storage<T>* born = result.value();
+        if (!result.has_value()) return nullptr;
+
+        Storage<T> *born = result.value();
         born->SetClean();
         return born;
     }

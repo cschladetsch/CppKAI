@@ -2,13 +2,14 @@
 
 #include <KAI/Core/Config/Base.h>
 #include <KAI/Core/Debug.h>
+
 #include <concepts>
 #include <memory>
 // Using variant instead of expected which may not be available yet
-#include <variant>
 #include <optional>
 #include <span>
 #include <system_error>
+#include <variant>
 
 KAI_BEGIN
 
@@ -48,12 +49,11 @@ struct IAllocator {
 
     template <typename T>
         requires std::default_initializable<T>
-    std::optional<T*> Allocate() {
+    std::optional<T *> Allocate() {
         size_t num_bytes = sizeof(T);
         VoidPtr bytes = AllocateBytes(num_bytes);
-        if (!bytes) 
-            return std::nullopt;
-            
+        if (!bytes) return std::nullopt;
+
         T *ptr = reinterpret_cast<T *>(bytes);
         try {
             Construct(ptr);
@@ -66,12 +66,11 @@ struct IAllocator {
 
     template <typename T, typename U>
         requires std::constructible_from<T, U>
-    std::optional<T*> Allocate(U const &val) {
+    std::optional<T *> Allocate(U const &val) {
         size_t num_bytes = sizeof(T);
         VoidPtr bytes = AllocateBytes(num_bytes);
-        if (!bytes) 
-            return std::nullopt;
-            
+        if (!bytes) return std::nullopt;
+
         T *ptr = reinterpret_cast<T *>(bytes);
         try {
             Construct(ptr, val);
@@ -102,10 +101,9 @@ struct IAllocator {
     std::optional<std::span<T>> AllocateArray(size_t N) {
         size_t num_bytes = sizeof(T) * N;
         VoidPtr base = AllocateBytes(num_bytes);
-        if (!base)
-            return std::nullopt;
-            
-        T* typed_base = reinterpret_cast<T*>(base);
+        if (!base) return std::nullopt;
+
+        T *typed_base = reinterpret_cast<T *>(base);
         try {
             for (size_t i = 0; i < N; ++i) {
                 Construct(typed_base + i);

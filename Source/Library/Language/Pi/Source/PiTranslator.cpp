@@ -113,8 +113,9 @@ void PiTranslator::TranslateNode(AstNodePtr node) {
         case PiAstNodeEnumType::Continuation: {
             // Check if this is a root-level continuation from the parser
             // (not an explicit {} block in the code)
-            bool isRootContinuation = (node->GetToken().type == PiTokenEnumType::None);
-            
+            bool isRootContinuation =
+                (node->GetToken().type == PiTokenEnumType::None);
+
             if (isRootContinuation) {
                 // This is the root continuation created by the parser
                 // Just translate its children directly without wrapping
@@ -123,9 +124,10 @@ void PiTranslator::TranslateNode(AstNodePtr node) {
                 }
                 break;
             }
-            
+
             // This is an explicit {} block in Pi language
-            // These continuations stay on the stack until explicitly executed with & or !
+            // These continuations stay on the stack until explicitly executed
+            // with & or !
 
             // Create a new continuation for the {} block
             Pointer<Continuation> cont = reg_->New<Continuation>();

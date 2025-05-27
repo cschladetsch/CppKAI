@@ -37,7 +37,7 @@ bool GenerateStruct::Namespace(Node const &ns) {
                         break;
                     }
                 }
-                
+
                 if (isStruct) {
                     if (!Struct(*ch)) return false;
                 } else {
@@ -51,16 +51,19 @@ bool GenerateStruct::Namespace(Node const &ns) {
                 break;
 
             case TauAstEnumType::Interface:
-                // Skip interfaces - GenerateStruct only generates actual structs
+                // Skip interfaces - GenerateStruct only generates actual
+                // structs
                 break;
-                
+
             case TauAstEnumType::EnumType:
                 // Skip enums - GenerateStruct only generates actual structs
                 break;
 
             default:
                 // Skip unknown types instead of failing
-                KAI_TRACE_WARN_1("Skipping unknown node type in Namespace: " + string(TauAstEnumType::ToString(ch->GetType())));
+                KAI_TRACE_WARN_1(
+                    "Skipping unknown node type in Namespace: " +
+                    string(TauAstEnumType::ToString(ch->GetType())));
                 break;
         }
     }
@@ -81,22 +84,23 @@ bool GenerateStruct::Interface(Node const &interface) {
 
 bool GenerateStruct::Struct(Node const &strct) {
     auto structName = strct.GetToken().Text();
-    
+
     // Skip empty struct markers
     if (structName.empty()) {
         return true;
     }
-    
+
     // Generate plain struct
     StartBlock(string("struct ") + structName);
-    
+
     // Handle struct members
     for (const auto &member : strct.GetChildren()) {
         // Skip the struct marker node
-        if (member->GetType() == TauAstEnumType::Struct && member->GetToken().Text().empty()) {
+        if (member->GetType() == TauAstEnumType::Struct &&
+            member->GetToken().Text().empty()) {
             continue;
         }
-        
+
         switch (member->GetType()) {
             case TauAstEnumType::Property:
                 if (!Property(*member)) return false;
@@ -110,7 +114,7 @@ bool GenerateStruct::Struct(Node const &strct) {
                 // Nested struct with a name
                 if (!Struct(*member)) return false;
                 break;
-                
+
             case TauAstEnumType::Class:
                 // Nested class
                 if (!Struct(*member)) return false;
@@ -121,7 +125,8 @@ bool GenerateStruct::Struct(Node const &strct) {
                 continue;
 
             default:
-                return Fail(string("Unknown node type in Struct: ") + TauAstEnumType::ToString(member->GetType()));
+                return Fail(string("Unknown node type in Struct: ") +
+                            TauAstEnumType::ToString(member->GetType()));
         }
     }
 
@@ -136,7 +141,7 @@ bool GenerateStruct::Property(Node const &prop) {
 
     // Generate simple member variable
     Output() << type << " " << name << ";" << EndLine();
-    
+
     return true;
 }
 
@@ -147,7 +152,7 @@ bool GenerateStruct::Method(Node const &method) {
 
     // Generate method declaration
     Output() << returnType << " " << name << "(";
-    
+
     bool first = true;
     for (auto const &a : args) {
         if (!first) Output() << ", ";
@@ -158,19 +163,15 @@ bool GenerateStruct::Method(Node const &method) {
 
         first = false;
     }
-    
+
     Output() << ");" << EndLine();
-    
+
     return true;
 }
 
-string GenerateStruct::ReturnType(string const &text) const {
-    return text;
-}
+string GenerateStruct::ReturnType(string const &text) const { return text; }
 
-string GenerateStruct::ArgType(string const &text) const { 
-    return text; 
-}
+string GenerateStruct::ArgType(string const &text) const { return text; }
 
 }  // namespace Generate
 

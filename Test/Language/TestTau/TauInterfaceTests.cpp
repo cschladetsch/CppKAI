@@ -1,11 +1,12 @@
 #include <gtest/gtest.h>
+
 #include "TestLangCommon.h"
 
 // Test suite for Tau interfaces and contracts
 TEST(TauInterface, BasicInterface) {
     kai::Console console;
     console.SetLanguage(kai::Language::Tau);
-    
+
     const char* code = R"(
         interface IShape {
             float Area();
@@ -32,11 +33,11 @@ TEST(TauInterface, BasicInterface) {
         IShape shape = Rectangle(4.0, 5.0);
         shape.Area();
     )";
-    
+
     console.Execute(code);
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
-    
+
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_FLOAT_EQ(kai::ConstDeref<float>(stack->Top()), 20.0f);
 }
@@ -44,7 +45,7 @@ TEST(TauInterface, BasicInterface) {
 TEST(TauInterface, MultipleInterfaces) {
     kai::Console console;
     console.SetLanguage(kai::Language::Tau);
-    
+
     const char* code = R"(
         interface IDrawable {
             void Draw();
@@ -79,11 +80,11 @@ TEST(TauInterface, MultipleInterfaces) {
         m.Move(10, 20);
         s.GetX();
     )";
-    
+
     console.Execute(code);
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
-    
+
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 10);
 }
@@ -91,7 +92,7 @@ TEST(TauInterface, MultipleInterfaces) {
 TEST(TauInterface, InterfaceInheritance) {
     kai::Console console;
     console.SetLanguage(kai::Language::Tau);
-    
+
     const char* code = R"(
         interface IAnimal {
             string GetSpecies();
@@ -114,11 +115,11 @@ TEST(TauInterface, InterfaceInheritance) {
         IMammal mammal = Dog();
         mammal.GetGestationPeriod();
     )";
-    
+
     console.Execute(code);
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
-    
+
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 63);
 }
@@ -126,7 +127,7 @@ TEST(TauInterface, InterfaceInheritance) {
 TEST(TauInterface, DefaultInterfaceMethods) {
     kai::Console console;
     console.SetLanguage(kai::Language::Tau);
-    
+
     const char* code = R"(
         interface ILogger {
             void Log(string message);
@@ -156,11 +157,11 @@ TEST(TauInterface, DefaultInterfaceMethods) {
         ilog.LogWarning("Test");
         logger.GetLogCount();
     )";
-    
+
     console.Execute(code);
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
-    
+
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 2);
 }
@@ -168,7 +169,7 @@ TEST(TauInterface, DefaultInterfaceMethods) {
 TEST(TauInterface, GenericInterfaces) {
     kai::Console console;
     console.SetLanguage(kai::Language::Tau);
-    
+
     const char* code = R"(
         interface IContainer<T> {
             void Add(T item);
@@ -196,11 +197,11 @@ TEST(TauInterface, GenericInterfaces) {
         container.Add(42);
         container.Get(0);
     )";
-    
+
     console.Execute(code);
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
-    
+
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 42);
 }

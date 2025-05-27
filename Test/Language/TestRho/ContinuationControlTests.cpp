@@ -613,13 +613,13 @@ TEST_F(ContinuationControlTests, ResumeForEarlyLoopTerminationWithResult) {
 TEST_F(ContinuationControlTests, ContinuationStateInRhoLoop) {
     // This test demonstrates that continuations in Rho capture and store
     // their creation context, including loop variables
-    
+
     // Switch to Rho language for this test
     console_.SetLanguage(Language::Rho);
-    
+
     // Clear the stack
     data_->Clear();
-    
+
     // Create a Rho program that:
     // 1. Creates continuations inside a loop
     // 2. Each continuation captures the loop variable
@@ -654,24 +654,23 @@ TEST_F(ContinuationControlTests, ContinuationStateInRhoLoop) {
         // Drop the array
         drop
     )";
-    
+
     console_.Execute(rhoCode);
-    
+
     // Verify stack: Should contain [0, 2, 4]
     // Each continuation remembered the value of i when it was created
     std::vector<std::pair<std::string, int>> expected = {
-        {"int", 0}, {"int", 2}, {"int", 4}
-    };
+        {"int", 0}, {"int", 2}, {"int", 4}};
     VerifyStack(expected);
 }
 
 // Test showing continuation state with nested loops
 TEST_F(ContinuationControlTests, ContinuationStateInNestedRhoLoops) {
     // This test shows that continuations capture state from nested loops
-    
+
     console_.SetLanguage(Language::Rho);
     data_->Clear();
-    
+
     const std::string rhoCode = R"(
         // Create a 2D array of continuations
         []
@@ -706,24 +705,23 @@ TEST_F(ContinuationControlTests, ContinuationStateInNestedRhoLoops) {
         // Drop the array
         drop
     )";
-    
+
     console_.Execute(rhoCode);
-    
+
     // Verify stack: Should contain [0, 11, 22]
     std::vector<std::pair<std::string, int>> expected = {
-        {"int", 0}, {"int", 11}, {"int", 22}
-    };
+        {"int", 0}, {"int", 11}, {"int", 22}};
     VerifyStack(expected);
 }
 
 // Test showing continuation state with mutable variables
 TEST_F(ContinuationControlTests, ContinuationStateWithMutableVarsInLoop) {
-    // This test demonstrates that continuations capture references to variables,
-    // not just their values at creation time
-    
+    // This test demonstrates that continuations capture references to
+    // variables, not just their values at creation time
+
     console_.SetLanguage(Language::Rho);
     data_->Clear();
-    
+
     const std::string rhoCode = R"(
         // Create a shared counter variable
         counter = 0
@@ -761,13 +759,12 @@ TEST_F(ContinuationControlTests, ContinuationStateWithMutableVarsInLoop) {
         // Drop the array
         drop
     )";
-    
+
     console_.Execute(rhoCode);
-    
+
     // Verify stack: Should contain [30, 31, 32]
     std::vector<std::pair<std::string, int>> expected = {
-        {"int", 30}, {"int", 31}, {"int", 32}
-    };
+        {"int", 30}, {"int", 31}, {"int", 32}};
     VerifyStack(expected);
 }
 
@@ -775,10 +772,10 @@ TEST_F(ContinuationControlTests, ContinuationStateWithMutableVarsInLoop) {
 TEST_F(ContinuationControlTests, ContinuationStateWithLoopControl) {
     // This test shows continuations created before and after loop control
     // operations (like break) maintain their distinct states
-    
+
     console_.SetLanguage(Language::Rho);
     data_->Clear();
-    
+
     const std::string rhoCode = R"(
         // Array to store continuations
         []
@@ -822,13 +819,12 @@ TEST_F(ContinuationControlTests, ContinuationStateWithLoopControl) {
         // Drop the array
         drop
     )";
-    
+
     console_.Execute(rhoCode);
-    
+
     // Verify stack: Should contain [100, 102, 200, 202]
     std::vector<std::pair<std::string, int>> expected = {
-        {"int", 100}, {"int", 102}, {"int", 200}, {"int", 202}
-    };
+        {"int", 100}, {"int", 102}, {"int", 200}, {"int", 202}};
     VerifyStack(expected);
 }
 

@@ -4,15 +4,15 @@
 #include <iostream>
 #include <sstream>
 
+#include "KAI/Console/Console.h"
 #include "KAI/Core/BuiltinTypes/Stack.h"
 #include "KAI/Core/Config/Base.h"
 #include "KAI/Core/Debug.h"
+#include "KAI/Core/Exception.h"
+#include "KAI/Core/Logger.h"
 #include "KAI/Language/Rho/RhoParser.h"
 #include "KAI/Language/Rho/RhoTranslator.h"
 #include "TestLangCommon.h"
-#include "KAI/Core/Logger.h"
-#include "KAI/Console/Console.h"
-#include "KAI/Core/Exception.h"
 
 using namespace kai;
 using namespace std;
@@ -25,7 +25,7 @@ class RhoDemo : public TestLangCommon {
         try {
             Registry reg;
             Console console;
-            
+
             // Create a system object with print capability
             Object system = reg.New<Object>();
             auto scope = console.GetTree().GetScope();
@@ -38,7 +38,9 @@ class RhoDemo : public TestLangCommon {
             // Read the file
             std::ifstream file(filename);
             if (!file.is_open()) {
-                Logger::ErrorWithLocation(std::string("Failed to open file: ") + filename, __FILE__, __LINE__);
+                Logger::ErrorWithLocation(
+                    std::string("Failed to open file: ") + filename, __FILE__,
+                    __LINE__);
                 return false;
             }
 
@@ -49,19 +51,23 @@ class RhoDemo : public TestLangCommon {
 
             // Execute the script
             console.Execute(script.c_str());
-            
+
             // Get result from data stack if needed
             auto stack = console.GetExecutor()->GetDataStack();
             if (stack->Empty()) {
-                Logger::InfoWithLocation("Script executed but no result on stack", __FILE__, __LINE__);
+                Logger::InfoWithLocation(
+                    "Script executed but no result on stack", __FILE__,
+                    __LINE__);
             }
 
             return true;
         } catch (const Exception::Base &e) {
-            Logger::ErrorWithLocation("Exception: " + std::string(e.ToString()), __FILE__, __LINE__);
+            Logger::ErrorWithLocation("Exception: " + std::string(e.ToString()),
+                                      __FILE__, __LINE__);
             return false;
         } catch (const std::exception &e) {
-            Logger::ErrorWithLocation("std::exception: " + std::string(e.what()), __FILE__, __LINE__);
+            Logger::ErrorWithLocation(
+                "std::exception: " + std::string(e.what()), __FILE__, __LINE__);
             return false;
         } catch (...) {
             Logger::ErrorWithLocation("Unknown exception", __FILE__, __LINE__);
@@ -103,7 +109,8 @@ TEST_F(RhoDemo, BasicFeatureTests) {
         Object result = stack->Top();
         EXPECT_TRUE(result.IsType<int>()) << "Result is not an integer";
         if (result.IsType<int>()) {
-            EXPECT_EQ(ConstDeref<int>(result), 14) << "Arithmetic result incorrect";
+            EXPECT_EQ(ConstDeref<int>(result), 14)
+                << "Arithmetic result incorrect";
         }
         stack->Pop();
     }
@@ -115,7 +122,8 @@ TEST_F(RhoDemo, BasicFeatureTests) {
         Object result = stack->Top();
         EXPECT_TRUE(result.IsType<int>()) << "Result is not an integer";
         if (result.IsType<int>()) {
-            EXPECT_EQ(ConstDeref<int>(result), 10) << "Control flow result incorrect";
+            EXPECT_EQ(ConstDeref<int>(result), 10)
+                << "Control flow result incorrect";
         }
         stack->Pop();
     }
@@ -127,7 +135,8 @@ TEST_F(RhoDemo, BasicFeatureTests) {
         Object result = stack->Top();
         EXPECT_TRUE(result.IsType<int>()) << "Result is not an integer";
         if (result.IsType<int>()) {
-            EXPECT_EQ(ConstDeref<int>(result), 5) << "Function result incorrect";
+            EXPECT_EQ(ConstDeref<int>(result), 5)
+                << "Function result incorrect";
         }
         stack->Pop();
     }
@@ -139,11 +148,11 @@ TEST_F(RhoDemo, BasicFeatureTests) {
         Object result = stack->Top();
         EXPECT_TRUE(result.IsType<int>()) << "Result is not an integer";
         if (result.IsType<int>()) {
-            EXPECT_EQ(ConstDeref<int>(result), 10) << "Pi integration result incorrect";
+            EXPECT_EQ(ConstDeref<int>(result), 10)
+                << "Pi integration result incorrect";
         }
         stack->Pop();
     }
 
     std::cout << "All basic feature tests passed!" << std::endl;
 }
-

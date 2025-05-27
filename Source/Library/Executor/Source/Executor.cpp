@@ -83,7 +83,8 @@ BinaryPacket &operator>>(BinaryPacket &stream, Executor &exec) {
 
 // ======================= Stack Operations ========================
 
-// Simplified: No special unwrapping logic - treat continuations as opaque objects
+// Simplified: No special unwrapping logic - treat continuations as opaque
+// objects
 Object Executor::UnwrapValue(const Object &value) {
     // Simply return the value as-is
     // The Executor should treat Continuations as just another object type
@@ -108,12 +109,12 @@ Object Executor::Pop() { return Pop(*data_); }
 
 Object Executor::Top() const { return data_->Top(); }
 
-Value<Stack> Executor::GetDataStack() { 
+Value<Stack> Executor::GetDataStack() {
     if (!data_.Valid() || !data_.Exists()) {
         KAI_TRACE_ERROR() << "GetDataStack: Invalid data stack";
         return Value<Stack>();
     }
-    return data_; 
+    return data_;
 }
 
 Value<Stack> Executor::GetContextStack() const { return context_; }
@@ -217,7 +218,7 @@ bool Executor::PopBool() {
 void Executor::ToArray() {
     // Simplified: Just handle the standard pattern
     // The stack should contain: [element1, element2, ..., elementN, count]
-    
+
     // Get the count from the top of the stack
     auto len = ConstDeref<int>(Pop());
     if (len < 0) KAI_THROW_1(BadIndex, len);
@@ -225,7 +226,7 @@ void Executor::ToArray() {
     // Create array and populate it
     auto array = New<Array>();
     array->Resize(len);
-    
+
     // Pop elements in reverse order
     while (len--) array->RefAt(len) = Pop();
 
@@ -506,9 +507,9 @@ void Executor::Eval(Object const &Q) {
         KAI_TRACE_ERROR() << "Eval: Invalid or non-existent object";
         return;
     }
-    
-    KAI_TRACE() << "Eval: object=" << Q.ToString() 
-                << ", type=" << (Q.GetClass() ? Q.GetClass()->GetName().ToString() : "null")
+
+    KAI_TRACE() << "Eval: object=" << Q.ToString() << ", type="
+                << (Q.GetClass() ? Q.GetClass()->GetName().ToString() : "null")
                 << ", typenum=" << GetTypeNumber(Q).value;
 
     // Simplified: Treat evaluation as a simple dispatch based on type
@@ -518,9 +519,11 @@ void Executor::Eval(Object const &Q) {
                 const auto op = Deref<Operation>(Q).GetTypeNumber();
                 Perform(op);
             } catch (const Exception::Base &e) {
-                // Re-throw KAI exceptions (like assertion failures) so they can be handled by the caller
+                // Re-throw KAI exceptions (like assertion failures) so they can
+                // be handled by the caller
                 KAI_TRACE_ERROR()
-                    << "Eval: KAI Exception performing operation: " << e.ToString();
+                    << "Eval: KAI Exception performing operation: "
+                    << e.ToString();
                 throw;
             } catch (const std::exception &e) {
                 KAI_TRACE_ERROR()
@@ -575,7 +578,8 @@ void Executor::Eval(Object const &Q) {
                 }
             }
 
-            // Create a proper clone to ensure correct type information is preserved
+            // Create a proper clone to ensure correct type information is
+            // preserved
             Object clone = Q.Clone();
             KAI_TRACE() << "Eval: Pushing value to stack: " << clone.ToString();
             Push(clone);
@@ -637,7 +641,8 @@ void Executor::Continue() {
                                          "skipping evaluation";
                 }
             } else {
-                KAI_TRACE() << "Continue: Continuation finished (Next returned false)";
+                KAI_TRACE()
+                    << "Continue: Continuation finished (Next returned false)";
                 break_ = true;
             }
         } catch (const Exception::Base &e) {
@@ -698,22 +703,25 @@ void Executor::ContinueOnly(Value<Continuation> C) {
 void Executor::Continue(Value<Continuation> C) {
     // Simplified: Just execute the continuation without special cases
     // Treat the continuation as a linear list of objects to execute
-    
+
     // Validate input continuation
     if (!C.Valid() || !C.Exists()) {
-        KAI_TRACE_ERROR() << "Continue(Value<Continuation>): Invalid or non-existent continuation";
+        KAI_TRACE_ERROR() << "Continue(Value<Continuation>): Invalid or "
+                             "non-existent continuation";
         return;
     }
 
     // Make sure code field is initialized
     if (!C->GetCode().Valid() || !C->GetCode().Exists()) {
-        KAI_TRACE_ERROR() << "Continue(Value<Continuation>): Continuation has invalid code";
+        KAI_TRACE_ERROR()
+            << "Continue(Value<Continuation>): Continuation has invalid code";
         return;
     }
 
     // Validate data stack
     if (!data_.Valid() || !data_.Exists()) {
-        KAI_TRACE_ERROR() << "Continue(Value<Continuation>): Invalid or non-existent data stack";
+        KAI_TRACE_ERROR() << "Continue(Value<Continuation>): Invalid or "
+                             "non-existent data stack";
         return;
     }
 
@@ -813,7 +821,8 @@ Pointer<Continuation> Executor::NewContinuation(Value<Continuation> orig) {
         cont->args = orig->args;
 
         // IMPORTANT: Inherit the parent's scope for nested continuations
-        // This allows inner continuations to access variables defined in outer scopes
+        // This allows inner continuations to access variables defined in outer
+        // scopes
         if (continuation_.Exists() && continuation_->GetScope().Exists()) {
             cont->SetScope(continuation_->GetScope());
         }
@@ -1499,7 +1508,8 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
 
             case Operation::Min:
                 // Min returns the smaller of two values using Less comparison
-                // For same types, use PerformBinaryOp to leverage existing Less implementation
+                // For same types, use PerformBinaryOp to leverage existing Less
+                // implementation
                 if (A.GetTypeNumber() == B.GetTypeNumber()) {
                     Object less_result = PerformBinaryOp(A, B, Operation::Less);
                     if (less_result.Exists() && less_result.IsType<bool>()) {
@@ -1509,7 +1519,8 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
                 // For mixed numeric types, convert and compare
                 else if ((A.IsType<int>() || A.IsType<float>()) &&
                          (B.IsType<int>() || B.IsType<float>())) {
-                    // Use Less operation with type conversion handled by PerformBinaryOp
+                    // Use Less operation with type conversion handled by
+                    // PerformBinaryOp
                     Object less_result = PerformBinaryOp(A, B, Operation::Less);
                     if (less_result.Exists() && less_result.IsType<bool>()) {
                         return ConstDeref<bool>(less_result) ? A : B;

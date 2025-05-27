@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include "KAI/Core/BuiltinTypes.h"
 #include "KAI/Core/Console.h"
 #include "TestLangCommon.h"
@@ -10,13 +11,13 @@ using namespace std;
 TEST(RhoDoWhileCombined, DoWhileWithContinuationCapture) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Create array to store continuations
         continuations = []
@@ -35,9 +36,9 @@ TEST(RhoDoWhileCombined, DoWhileWithContinuationCapture) {
         continuations 1 at '  // Should push 1
         continuations 2 at '  // Should push 2
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 3);
     ASSERT_EQ(ConstDeref<int>(stack->At(0)), 0);
@@ -49,13 +50,13 @@ TEST(RhoDoWhileCombined, DoWhileWithContinuationCapture) {
 TEST(RhoDoWhileCombined, NestedDoWhileForWithSharedContinuations) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         results = []
         outer = 0
@@ -76,9 +77,9 @@ TEST(RhoDoWhileCombined, NestedDoWhileForWithSharedContinuations) {
         results 2 at '
         results 3 at '
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 4);
     ASSERT_EQ(ConstDeref<int>(stack->At(0)), 0);
@@ -91,13 +92,13 @@ TEST(RhoDoWhileCombined, NestedDoWhileForWithSharedContinuations) {
 TEST(RhoDoWhileCombined, DoWhileModifyingForContinuations) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Create continuations in for loop
         funcs = []
@@ -118,9 +119,9 @@ TEST(RhoDoWhileCombined, DoWhileModifyingForContinuations) {
         
         sum  // Should be 0 + 2 + 4 = 6
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 6);
@@ -130,13 +131,13 @@ TEST(RhoDoWhileCombined, DoWhileModifyingForContinuations) {
 TEST(RhoDoWhileCombined, ForInsideDoWhileWithContinuations) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         total = 0
         multiplier = 1
@@ -156,9 +157,9 @@ TEST(RhoDoWhileCombined, ForInsideDoWhileWithContinuations) {
         
         total  // Should be (1*0 + 1*1 + 1*2) + (2*0 + 2*1 + 2*2) = 3 + 6 = 9
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 9);
@@ -168,13 +169,13 @@ TEST(RhoDoWhileCombined, ForInsideDoWhileWithContinuations) {
 TEST(RhoDoWhileCombined, DoWhileConditionalContinuations) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         count = 0
         evens = []
@@ -206,9 +207,9 @@ TEST(RhoDoWhileCombined, DoWhileConditionalContinuations) {
         
         sum  // Should be 0*10 + 2*10 + 4*10 = 60
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 60);
@@ -218,13 +219,13 @@ TEST(RhoDoWhileCombined, DoWhileConditionalContinuations) {
 TEST(RhoDoWhileCombined, ContinuationBreakFromForInDoWhile) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         attempts = 0
         found = false
@@ -255,9 +256,9 @@ TEST(RhoDoWhileCombined, ContinuationBreakFromForInDoWhile) {
         
         attempts  // Should be 2 (because 3*2 = 6)
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 2);
@@ -267,13 +268,13 @@ TEST(RhoDoWhileCombined, ContinuationBreakFromForInDoWhile) {
 TEST(RhoDoWhileCombined, DoWhileGeneratingForLoopContinuations) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         generators = []
         level = 0
@@ -299,9 +300,9 @@ TEST(RhoDoWhileCombined, DoWhileGeneratingForLoopContinuations) {
         generators 1 at '  // Sum 0 to 1 = 1
         generators 2 at '  // Sum 0 to 2 = 3
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 3);
     ASSERT_EQ(ConstDeref<int>(stack->At(0)), 0);
@@ -313,13 +314,13 @@ TEST(RhoDoWhileCombined, DoWhileGeneratingForLoopContinuations) {
 TEST(RhoDoWhileCombined, NestedContinuationsInterleaved) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Create nested continuation structure
         outer_cont = {
@@ -341,9 +342,9 @@ TEST(RhoDoWhileCombined, NestedContinuationsInterleaved) {
         
         // Results should be: 0, 1 (from x=0), then 1, 2 (from x=1)
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 4);
     ASSERT_EQ(ConstDeref<int>(stack->At(0)), 0);
@@ -356,13 +357,13 @@ TEST(RhoDoWhileCombined, NestedContinuationsInterleaved) {
 TEST(RhoDoWhileCombined, DoWhileContinuationAccumulator) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Build a chain of continuations using do-while
         base = { 1 }
@@ -391,9 +392,9 @@ TEST(RhoDoWhileCombined, DoWhileContinuationAccumulator) {
         
         result  // Should be 8 + 8 + 8 = 24
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 2);
     ASSERT_EQ(ConstDeref<int>(stack->At(0)), 8);   // First execution
@@ -404,13 +405,13 @@ TEST(RhoDoWhileCombined, DoWhileContinuationAccumulator) {
 TEST(RhoDoWhileCombined, ComplexControlFlowWithContinuations) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Matrix of continuations created by nested loops
         matrix = []
@@ -449,9 +450,9 @@ TEST(RhoDoWhileCombined, ComplexControlFlowWithContinuations) {
         
         result  // Should be 0 + 11 + 2 = 13
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 13);

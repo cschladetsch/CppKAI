@@ -3,9 +3,9 @@
 #include <KAI/Core/BuiltinTypes/String.h>
 #include <KAI/Core/Config/Base.h>
 
-#include <vector>
-#include <string_view>
 #include <compare>
+#include <string_view>
+#include <vector>
 
 KAI_BEGIN
 
@@ -53,8 +53,10 @@ class StringStream {
 
     static void Register(Registry &);
 
-    friend auto operator<=>(StringStream const &, StringStream const &) = default;
-    friend bool operator==(StringStream const &, StringStream const &) = default;
+    friend auto operator<=>(StringStream const &,
+                            StringStream const &) = default;
+    friend bool operator==(StringStream const &,
+                           StringStream const &) = default;
 };
 
 struct EndsArgument {};

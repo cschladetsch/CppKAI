@@ -3,9 +3,9 @@
 #include <KAI/Core/Object/ClassBase.h>
 #include <KAI/Core/Object/PropertyBase.h>
 
+#include <algorithm>
 #include <fstream>
 #include <iostream>
-#include <algorithm>
 #include <ranges>
 #include <string>
 #include <string_view>
@@ -22,8 +22,8 @@ KAI_BEGIN
 std::string ToLower(std::string_view text) {
     std::string out;
     out.reserve(text.size());
-    std::ranges::transform(text, std::back_inserter(out), 
-                          [](unsigned char c){ return std::tolower(c); });
+    std::ranges::transform(text, std::back_inserter(out),
+                           [](unsigned char c) { return std::tolower(c); });
     return out;
 }
 
@@ -81,11 +81,11 @@ void ToXmlStream(const Object &Q, StringStream &S, int level) {
     }
 
     // Using C++23 views::enumerate to keep track of property index
-    const auto& properties = klass.GetProperties();
-    for (const auto& [index, prop_pair] : std::views::enumerate(properties)) {
+    const auto &properties = klass.GetProperties();
+    for (const auto &[index, prop_pair] : std::views::enumerate(properties)) {
         PropertyBase const &property = *prop_pair.second;
-        S << indent.ToString() << "<Property index='" << static_cast<int>(index) << "' name='" << property.GetFieldName()
-          << "'>";
+        S << indent.ToString() << "<Property index='" << static_cast<int>(index)
+          << "' name='" << property.GetFieldName() << "'>";
         // ToXmlStream(child.second, S, level + 1);
         S << property.GetValue(base);
         S << "</Property>\n";

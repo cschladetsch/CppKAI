@@ -303,12 +303,14 @@ TEST_F(AdvancedPiTests, ArrayOperations) {
 
 // Test complex conditionals with boolean operations
 TEST_F(AdvancedPiTests, ComplexConditionals) {
-    // Based on actual behavior: > returns bool, but != and < have execution issues
-    ExecutePiCodeAndVerify<bool>("5 3 >", true);  // Greater than works correctly
-    
+    // Based on actual behavior: > returns bool, but != and < have execution
+    // issues
+    ExecutePiCodeAndVerify<bool>("5 3 >",
+                                 true);  // Greater than works correctly
+
     // Skip problematic comparison operations for now
     // != and < operators seem to have implementation issues
-    SUCCEED(); // Mark test as successful since we tested what works
+    SUCCEED();  // Mark test as successful since we tested what works
 }
 
 // Test stack depth check and manipulation
@@ -347,9 +349,9 @@ TEST_F(AdvancedPiTests, DivisionByZero) {
 
     // Division by zero behavior may vary - test that operation completes
     exec_->Perform(Operation::Divide);
-    
-    // The operation completed (errors may be logged but not thrown as exceptions)
-    // This is acceptable behavior for this system
+
+    // The operation completed (errors may be logged but not thrown as
+    // exceptions) This is acceptable behavior for this system
     SUCCEED();
 }
 
@@ -393,18 +395,18 @@ TEST_F(AdvancedPiTests, RegisterHandling) {
     exec_->ClearStacks();
     console_.Execute("42 'a @");  // Store 42 in register 'a'
 
-    // Note: Store operation may leave pathname on stack, which is acceptable behavior
-    // We don't require the stack to be empty after store operation
+    // Note: Store operation may leave pathname on stack, which is acceptable
+    // behavior We don't require the stack to be empty after store operation
 
     // Note: $ operator for retrieval is not implemented in this Pi version
     // Just verify that store operation completes successfully
     ASSERT_FALSE(data_->Empty());  // Stack should have the pathname
-    
-    // Test storing another value 
+
+    // Test storing another value
     console_.Execute("99 'b @");
-    
+
     // Both operations should complete successfully
-    SUCCEED(); // Test passes if we reach here without exceptions
+    SUCCEED();  // Test passes if we reach here without exceptions
 }
 
 // Test nested stack operations with complex manipulations
@@ -423,8 +425,9 @@ TEST_F(AdvancedPiTests, NestedStackManipulations) {
 
 // Test power and exponential operations
 TEST_F(AdvancedPiTests, PowerOperations) {
-    // Note: Simple "5 dup *" has execution issues, test more complex sequences that work
-    
+    // Note: Simple "5 dup *" has execution issues, test more complex sequences
+    // that work
+
     // Test cube function (implemented with dup, dup, multiply, multiply)
     ExecutePiCodeAndVerify<int>("3 dup dup * *", 27);
 
@@ -517,7 +520,8 @@ TEST_F(AdvancedPiTests, CodeBlocksAndEvaluation) {
     // Test basic code block storage (without advanced function calling syntax)
     console_.Execute("{ dup * } 'square @");
 
-    // For now, just verify basic operations work without problematic dup * sequence
+    // For now, just verify basic operations work without problematic dup *
+    // sequence
     exec_->ClearStacks();
     console_.Execute("5 5 *");
 

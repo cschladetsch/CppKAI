@@ -53,7 +53,8 @@ bool GenerateProcess::Module(TauParser const &p) {
 
     // Be more resilient with code generation - even if the module is empty
     if (root->GetChildren().empty()) {
-        KAI_TRACE_WARN_1("Empty module found, creating empty default namespace");
+        KAI_TRACE_WARN_1(
+            "Empty module found, creating empty default namespace");
         StartBlock("namespace Default");
         EndBlock();
         return true;
@@ -69,11 +70,13 @@ bool GenerateProcess::Module(TauParser const &p) {
                 if (moduleChild->GetType() == TauAstEnumType::Namespace) {
                     if (!Namespace(*moduleChild)) {
                         // Continue even if namespace processing fails
-                        KAI_TRACE_WARN_1("Namespace processing failed, but continuing");
+                        KAI_TRACE_WARN_1(
+                            "Namespace processing failed, but continuing");
                     }
                     handledAnyNodes = true;
                 } else if (moduleChild->GetType() == TauAstEnumType::Class) {
-                    // Check if this is actually a struct (has Struct child node)
+                    // Check if this is actually a struct (has Struct child
+                    // node)
                     bool isStruct = false;
                     for (const auto &child : moduleChild->GetChildren()) {
                         if (child->GetType() == TauAstEnumType::Struct) {
@@ -81,25 +84,28 @@ bool GenerateProcess::Module(TauParser const &p) {
                             break;
                         }
                     }
-                    
+
                     // Directly handle class/struct without namespace
                     StartBlock("namespace Default");
                     if (isStruct) {
                         if (!Struct(*moduleChild)) {
                             // Continue even if struct processing fails
-                            KAI_TRACE_WARN_1("Struct processing failed, but continuing");
+                            KAI_TRACE_WARN_1(
+                                "Struct processing failed, but continuing");
                         }
                     } else {
                         if (!Class(*moduleChild)) {
                             // Continue even if class processing fails
-                            KAI_TRACE_WARN_1("Class processing failed, but continuing");
+                            KAI_TRACE_WARN_1(
+                                "Class processing failed, but continuing");
                         }
                     }
                     EndBlock();
                     handledAnyNodes = true;
                 } else {
                     // Log but continue - be more resilient to errors
-                    KAI_TRACE_WARN_1("Unexpected node type in module, but continuing");
+                    KAI_TRACE_WARN_1(
+                        "Unexpected node type in module, but continuing");
                 }
             }
         } else if (ch->GetType() == TauAstEnumType::Namespace) {
@@ -118,13 +124,14 @@ bool GenerateProcess::Module(TauParser const &p) {
                     break;
                 }
             }
-            
+
             // Directly handle class/struct without namespace
             StartBlock("namespace Default");
             if (isStruct) {
                 if (!Struct(*ch)) {
                     // Continue even if struct processing fails
-                    KAI_TRACE_WARN_1("Struct processing failed, but continuing");
+                    KAI_TRACE_WARN_1(
+                        "Struct processing failed, but continuing");
                 }
             } else {
                 if (!Class(*ch)) {
@@ -150,7 +157,9 @@ bool GenerateProcess::Module(TauParser const &p) {
     }
 
     if (!handledAnyNodes) {
-        KAI_TRACE_WARN_1("No valid Module, Namespace, or Class nodes found, creating empty default namespace");
+        KAI_TRACE_WARN_1(
+            "No valid Module, Namespace, or Class nodes found, creating empty "
+            "default namespace");
         StartBlock("namespace Default");
         EndBlock();
         return true;
@@ -170,7 +179,7 @@ bool GenerateProcess::Namespace(Node const &ns) {
             case TauAstEnumType::Class:
                 if (!Class(*ch)) return false;
                 break;
-                
+
             case TauAstEnumType::Interface:
                 if (!Interface(*ch)) return false;
                 break;

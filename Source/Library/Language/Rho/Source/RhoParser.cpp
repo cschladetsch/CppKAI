@@ -17,7 +17,7 @@ bool RhoParser::Process(std::shared_ptr<Lexer> lex, Structure st) {
     current = 0;  // Initialize current token index
     stack.clear();
     Failed = false;
-    
+
     KAI_TRACE() << "Starting to process tokens";
     for (auto tok : lexer->GetTokens()) {
         if (tok.type != TokenEnum::Whitespace &&
@@ -165,7 +165,7 @@ bool RhoParser::Block(AstNodePtr node) {
     ++indent;
     while (!Failed) {
         int level = 0;
-        
+
         // Count indentation level - handle both tabs and spaces
         // Each tab counts as 1 level, every 4 spaces count as 1 level
         int spaceCount = 0;
@@ -403,7 +403,8 @@ bool RhoParser::Logical() {
 bool RhoParser::Bitwise() {
     if (!Relational()) return false;
 
-    while (Try(TokenType::BitAnd) || Try(TokenType::BitOr) || Try(TokenType::BitXor)) {
+    while (Try(TokenType::BitAnd) || Try(TokenType::BitOr) ||
+           Try(TokenType::BitXor)) {
         auto node = NewNode(Consume());
         node->Add(Pop());
         if (!Relational()) return CreateError("Relational expected");
@@ -484,7 +485,8 @@ bool RhoParser::Additive() {
 bool RhoParser::Term() {
     if (!Factor()) return false;
 
-    while (Try(TokenType::Mul) || Try(TokenType::Divide) || Try(TokenType::Mod)) {
+    while (Try(TokenType::Mul) || Try(TokenType::Divide) ||
+           Try(TokenType::Mod)) {
         auto node = NewNode(Consume());
         node->Add(Pop());
         if (!Factor()) return CreateError("Factor expected with a term");
@@ -497,8 +499,9 @@ bool RhoParser::Term() {
 }
 
 bool RhoParser::Factor() {
-    KAI_TRACE() << "RhoParser::Factor - Current token: " << TokenEnumType::ToString(Current().type);
-    
+    KAI_TRACE() << "RhoParser::Factor - Current token: "
+                << TokenEnumType::ToString(Current().type);
+
     if (Try(TokenType::OpenParan)) {
         auto exp = NewNode(Consume());
         if (!Expression())
@@ -533,14 +536,14 @@ bool RhoParser::Factor() {
     if (Try(TokenType::OpenBrace)) {
         auto map = NewNode(NodeType::Map);
         Consume();
-        
+
         // Handle empty map case
         if (Try(TokenType::CloseBrace)) {
             Consume();
             Push(map);
             return true;
         }
-        
+
         // For now, we don't support map literal syntax with key:value pairs
         // Just support empty maps {}
         Fail("Map literals with initial values not yet supported");
@@ -556,32 +559,32 @@ bool RhoParser::Factor() {
     if (Try(TokenType::Label)) return ParseFactorIdent();
 
     if (Try(TokenType::Pathname)) return ParseFactorIdent();
-    
+
     // Handle Pi code blocks - pi { ... }
     if (Try(TokenType::ToPi)) {
         KAI_TRACE() << "RhoParser::Factor - Found ToPi token";
         Consume();  // consume 'pi'
-        
+
         // Expect opening brace
         if (!Try(TokenType::OpenBrace)) {
             return CreateError("Expected '{' after 'pi'");
         }
-        
+
         auto piBlock = NewNode(NodeType::ToPiLang);
         Consume();  // consume '{'
-        
+
         // Collect all tokens until closing brace as Pi code
         auto piContent = NewNode(NodeType::List);
         while (!Try(TokenType::CloseBrace) && !Failed) {
             // Consume tokens as part of the Pi block
             piContent->Add(NewNode(Consume()));
         }
-        
+
         if (!Try(TokenType::CloseBrace)) {
             return CreateError("Expected '}' to close Pi block");
         }
         Consume();  // consume '}'
-        
+
         piBlock->Add(piContent);
         Push(piBlock);
         return true;

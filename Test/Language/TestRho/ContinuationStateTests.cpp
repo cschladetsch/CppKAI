@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -14,13 +15,13 @@ using namespace std;
 TEST(ExtendedRhoTests, ContinuationStateInLoop) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     // Register required types
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     // Create a Rho program that:
     // 1. Creates continuations inside a loop
     // 2. Each continuation captures the loop variable
@@ -55,12 +56,12 @@ TEST(ExtendedRhoTests, ContinuationStateInLoop) {
         // Drop the array
         drop
     )";
-    
+
     console.Execute(rhoCode);
-    
+
     // Get the data stack
     auto stack = console.GetExecutor()->GetDataStack();
-    
+
     // Verify stack: Should contain [0, 2, 4]
     // Each continuation remembered the value of i when it was created
     ASSERT_EQ(stack->Size(), 3);
@@ -73,13 +74,13 @@ TEST(ExtendedRhoTests, ContinuationStateInLoop) {
 TEST(ExtendedRhoTests, ContinuationStateInNestedLoops) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     // Register required types
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string rhoCode = R"(
         // Create a 2D array of continuations
         []
@@ -114,12 +115,12 @@ TEST(ExtendedRhoTests, ContinuationStateInNestedLoops) {
         // Drop the array
         drop
     )";
-    
+
     console.Execute(rhoCode);
-    
+
     // Get the data stack
     auto stack = console.GetExecutor()->GetDataStack();
-    
+
     // Verify stack: Should contain [0, 11, 22]
     ASSERT_EQ(stack->Size(), 3);
     ASSERT_EQ(ConstDeref<int>(stack->At(0)), 0);
@@ -131,13 +132,13 @@ TEST(ExtendedRhoTests, ContinuationStateInNestedLoops) {
 TEST(ExtendedRhoTests, ContinuationStateWithMutableVars) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     // Register required types
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string rhoCode = R"(
         // Create a shared counter variable
         counter = 0
@@ -175,12 +176,12 @@ TEST(ExtendedRhoTests, ContinuationStateWithMutableVars) {
         // Drop the array
         drop
     )";
-    
+
     console.Execute(rhoCode);
-    
+
     // Get the data stack
     auto stack = console.GetExecutor()->GetDataStack();
-    
+
     // Verify stack: Should contain [30, 31, 32]
     ASSERT_EQ(stack->Size(), 3);
     ASSERT_EQ(ConstDeref<int>(stack->At(0)), 30);
@@ -192,13 +193,13 @@ TEST(ExtendedRhoTests, ContinuationStateWithMutableVars) {
 TEST(ExtendedRhoTests, ContinuationStateWithLoopBreak) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     // Register required types
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string rhoCode = R"(
         // Array to store continuations
         []
@@ -242,12 +243,12 @@ TEST(ExtendedRhoTests, ContinuationStateWithLoopBreak) {
         // Drop the array
         drop
     )";
-    
+
     console.Execute(rhoCode);
-    
+
     // Get the data stack
     auto stack = console.GetExecutor()->GetDataStack();
-    
+
     // Verify stack: Should contain [100, 102, 200, 202]
     ASSERT_EQ(stack->Size(), 4);
     ASSERT_EQ(ConstDeref<int>(stack->At(0)), 100);

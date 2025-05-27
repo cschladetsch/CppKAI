@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include "TestLangCommon.h"
 
 // Test suite for Rho error handling
@@ -6,7 +7,7 @@ TEST(RhoErrorHandling, TryCatchBasic) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
-    
+
     console.Execute(R"(
         result = try
             10 / 0
@@ -14,7 +15,7 @@ TEST(RhoErrorHandling, TryCatchBasic) {
             "Division by zero"
         result
     )");
-    
+
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<kai::String>(stack->Top()), "Division by zero");
@@ -24,7 +25,7 @@ TEST(RhoErrorHandling, TryFinallyBlock) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
-    
+
     console.Execute(R"(
         counter = 0
         try
@@ -34,7 +35,7 @@ TEST(RhoErrorHandling, TryFinallyBlock) {
             counter = counter + 1
         counter
     )");
-    
+
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 2);
@@ -44,7 +45,7 @@ TEST(RhoErrorHandling, NestedExceptions) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
-    
+
     console.Execute(R"(
         result = try
             try
@@ -55,17 +56,18 @@ TEST(RhoErrorHandling, NestedExceptions) {
             e
         result
     )");
-    
+
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<kai::String>(stack->Top()), "outer error: inner error");
+    EXPECT_EQ(kai::ConstDeref<kai::String>(stack->Top()),
+              "outer error: inner error");
 }
 
 TEST(RhoErrorHandling, CustomExceptionTypes) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
-    
+
     console.Execute(R"(
         class MyError(message)
             self.message = message
@@ -79,17 +81,18 @@ TEST(RhoErrorHandling, CustomExceptionTypes) {
         
         result
     )");
-    
+
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<kai::String>(stack->Top()), "Caught: Custom error");
+    EXPECT_EQ(kai::ConstDeref<kai::String>(stack->Top()),
+              "Caught: Custom error");
 }
 
 TEST(RhoErrorHandling, AssertionErrors) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
-    
+
     console.Execute(R"(
         result = try
             assert(false, "Assertion failed message")
@@ -98,8 +101,9 @@ TEST(RhoErrorHandling, AssertionErrors) {
             e.message
         result
     )");
-    
+
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<kai::String>(stack->Top()), "Assertion failed message");
+    EXPECT_EQ(kai::ConstDeref<kai::String>(stack->Top()),
+              "Assertion failed message");
 }

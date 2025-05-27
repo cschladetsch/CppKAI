@@ -1,11 +1,12 @@
 #include <gtest/gtest.h>
+
 #include "KAI/Core/Console.h"
 
 TEST(RhoDebug, SimpleIf) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
-    
+
     // Test 1: Simple boolean literal
     console.Execute("true");
     auto stack = exec->GetDataStack();
@@ -13,7 +14,7 @@ TEST(RhoDebug, SimpleIf) {
     ASSERT_TRUE(stack->Top().IsType<bool>()) << "Should be bool type";
     EXPECT_TRUE(kai::ConstDeref<bool>(stack->Top())) << "Should be true";
     stack->Clear();
-    
+
     // Test 2: Simple assignment
     console.Execute("x = 42");
     stack->Clear();
@@ -21,7 +22,7 @@ TEST(RhoDebug, SimpleIf) {
     ASSERT_EQ(stack->Size(), 1) << "Stack should have x";
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 42) << "x should be 42";
     stack->Clear();
-    
+
     // Test 3: Simple if with literal condition - using 'then'
     try {
         console.Execute("if true then y = 100");

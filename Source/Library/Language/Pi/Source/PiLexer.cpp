@@ -74,14 +74,14 @@ bool PiLexer::NextToken() {
         // Parse number - could be int or float
         int start = offset;
         Gather(isdigit);  // Collect initial digits
-        
+
         // Check for decimal point followed by digits
         if (Current() == '.' && isdigit(Peek())) {
-            Next();  // Skip '.'
+            Next();           // Skip '.'
             Gather(isdigit);  // Collect fractional digits
             return Add(Enum::Float, Slice(start, offset));
         }
-        
+
         return Add(Enum::Int, Slice(start, offset));
     }
 

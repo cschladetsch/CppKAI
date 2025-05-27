@@ -63,16 +63,16 @@ bool RhoLexer::NextToken() {
         while (isdigit(Current())) {
             Next();
         }
-        
+
         // Check for decimal point (floating point number)
         if (Current() == '.' && isdigit(Peek())) {
-            Next(); // consume the '.'
+            Next();  // consume the '.'
             while (isdigit(Current())) {
                 Next();
             }
             return Add(Enum::Float, Slice(start, offset));
         }
-        
+
         return Add(Enum::Int, Slice(start, offset));
     }
 
@@ -159,13 +159,13 @@ bool RhoLexer::NextToken() {
         case '%':
             if (Peek() == '=') return AddTwoCharOp(Enum::ModAssign);
             return Add(Enum::Mod);
-            
+
         case '^':
             return Add(Enum::BitXor);
-            
+
         case '~':
             return Add(Enum::BitNot);
-            
+
         case ':':
             if (Peek() == ':') return AddTwoCharOp(Enum::DoubleColon);
             return Add(Enum::Colon);

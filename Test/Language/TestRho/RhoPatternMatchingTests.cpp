@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include "TestLangCommon.h"
 
 // Test suite for Rho pattern matching and destructuring
@@ -6,7 +7,7 @@ TEST(RhoPatternMatching, BasicPatternMatch) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
-    
+
     // Test basic pattern matching
     console.Execute(R"(
         value = 42
@@ -16,7 +17,7 @@ TEST(RhoPatternMatching, BasicPatternMatch) {
             _ -> "other"
         result
     )");
-    
+
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<kai::String>(stack->Top()), "forty-two");
@@ -26,13 +27,13 @@ TEST(RhoPatternMatching, TupleDestructuring) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
-    
+
     console.Execute(R"(
         point = (10, 20)
         (x, y) = point
         x + y
     )");
-    
+
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 30);
@@ -42,7 +43,7 @@ TEST(RhoPatternMatching, ListPatternMatch) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
-    
+
     console.Execute(R"(
         list = [1, 2, 3, 4]
         result = match list
@@ -51,7 +52,7 @@ TEST(RhoPatternMatching, ListPatternMatch) {
             [x, y, ...rest] -> "multiple"
         result
     )");
-    
+
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<kai::String>(stack->Top()), "multiple");
@@ -61,7 +62,7 @@ TEST(RhoPatternMatching, GuardClauses) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
-    
+
     console.Execute(R"(
         age = 25
         category = match age
@@ -70,7 +71,7 @@ TEST(RhoPatternMatching, GuardClauses) {
             _ -> "senior"
         category
     )");
-    
+
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<kai::String>(stack->Top()), "adult");
@@ -80,7 +81,7 @@ TEST(RhoPatternMatching, NestedPatterns) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
-    
+
     console.Execute(R"(
         data = [(1, "a"), (2, "b"), (3, "c")]
         result = match data
@@ -88,7 +89,7 @@ TEST(RhoPatternMatching, NestedPatterns) {
             _ -> "not found"
         result
     )");
-    
+
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<kai::String>(stack->Top()), "a");

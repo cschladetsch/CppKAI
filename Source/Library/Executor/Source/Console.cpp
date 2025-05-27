@@ -163,20 +163,22 @@ void Console::Execute(Pointer<Continuation> cont) {
         }
 
         // Let exceptions propagate so that Process can catch them
-        // Use ContinueOnly to execute this continuation without saving/restoring state
+        // Use ContinueOnly to execute this continuation without
+        // saving/restoring state
         executor->ContinueOnly(cont);
         KAI_TRACE() << "Execute: Continue returned, checking executor state";
 
         // After execution, process the stack to ensure proper type extraction
         Value<Stack> dataStack = executor->GetDataStack();
-        
+
         // Check if we have a valid stack before processing
         if (!dataStack.Valid() || !dataStack.Exists()) {
             KAI_TRACE_WARN() << "Execute: Invalid data stack after execution";
             return;
         }
-        
-        KAI_TRACE() << "Execute: Stack size after execution: " << dataStack->Size();
+
+        KAI_TRACE() << "Execute: Stack size after execution: "
+                    << dataStack->Size();
 
         // Process each stack item to extract primitive values from
         // continuations
@@ -190,13 +192,14 @@ void Console::Execute(Pointer<Continuation> cont) {
             // constructs Test code should use UnwrapStackValues() from
             // TestLangCommon if needed
         }
-        
+
         // The continuation might have finished, which is normal
         // Don't access continuation properties after execution completes
     }
-    KAI_CATCH(Exception::Base, E) { 
+    KAI_CATCH(Exception::Base, E) {
         KAI_TRACE_ERROR_1(E);
-        // Only re-throw assertion failures and similar errors that should be visible to Process
+        // Only re-throw assertion failures and similar errors that should be
+        // visible to Process
         if (E.ToString().find("Assertion failed") != std::string::npos) {
             throw;
         }
@@ -206,12 +209,12 @@ void Console::Execute(Pointer<Continuation> cont) {
             KAI_TRACE() << "  Stack size: " << executor->GetDataStack()->Size();
         }
     }
-    KAI_CATCH(exception, E) { 
-        KAI_TRACE_ERROR_2("StdException: ", E.what()); 
+    KAI_CATCH(exception, E) {
+        KAI_TRACE_ERROR_2("StdException: ", E.what());
         // Don't re-throw standard exceptions unless they're assertion-related
     }
-    KAI_CATCH_ALL() { 
-        KAI_TRACE_ERROR_1("UnknownException"); 
+    KAI_CATCH_ALL() {
+        KAI_TRACE_ERROR_1("UnknownException");
         // Don't re-throw unknown exceptions
     }
 }
@@ -227,14 +230,18 @@ void Console::Execute(String const &text, Structure st) {
 
     // Log what we're about to execute for debugging purposes
     KAI_TRACE() << "Executing text: " << text;
-    
+
     // Log the continuation details
     if (cont->GetCode().Exists()) {
         KAI_TRACE() << "Continuation code size: " << cont->GetCode()->Size();
         for (int i = 0; i < cont->GetCode()->Size(); ++i) {
             auto obj = cont->GetCode()->At(i);
-            KAI_TRACE() << "  Code[" << i << "]: " << obj.ToString() 
-                        << " (type: " << (obj.GetClass() ? obj.GetClass()->GetName().ToString() : "null") << ")";
+            KAI_TRACE() << "  Code[" << i << "]: " << obj.ToString()
+                        << " (type: "
+                        << (obj.GetClass()
+                                ? obj.GetClass()->GetName().ToString()
+                                : "null")
+                        << ")";
         }
     }
 

@@ -1,11 +1,12 @@
 #include <gtest/gtest.h>
+
 #include "TestLangCommon.h"
 
 // Test suite for Tau template and generic programming
 TEST(TauTemplate, BasicTemplateClass) {
     kai::Console console;
     console.SetLanguage(kai::Language::Tau);
-    
+
     const char* code = R"(
         template<T>
         class Container {
@@ -29,11 +30,11 @@ TEST(TauTemplate, BasicTemplateClass) {
         intContainer.Add(42);
         intContainer.Get(0);
     )";
-    
+
     console.Execute(code);
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
-    
+
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 42);
 }
@@ -41,7 +42,7 @@ TEST(TauTemplate, BasicTemplateClass) {
 TEST(TauTemplate, TemplateFunction) {
     kai::Console console;
     console.SetLanguage(kai::Language::Tau);
-    
+
     const char* code = R"(
         template<T>
         T Max(T a, T b) {
@@ -52,19 +53,19 @@ TEST(TauTemplate, TemplateFunction) {
         float result2 = Max<float>(3.14, 2.71);
         result1 + (int)result2;
     )";
-    
+
     console.Execute(code);
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
-    
+
     ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 13); // 10 + 3
+    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 13);  // 10 + 3
 }
 
 TEST(TauTemplate, TemplateSpecialization) {
     kai::Console console;
     console.SetLanguage(kai::Language::Tau);
-    
+
     const char* code = R"(
         template<T>
         class TypeInfo {
@@ -83,11 +84,11 @@ TEST(TauTemplate, TemplateSpecialization) {
         
         TypeInfo<int>::GetName();
     )";
-    
+
     console.Execute(code);
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
-    
+
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<kai::String>(stack->Top()), "Integer");
 }
@@ -95,7 +96,7 @@ TEST(TauTemplate, TemplateSpecialization) {
 TEST(TauTemplate, VariadicTemplates) {
     kai::Console console;
     console.SetLanguage(kai::Language::Tau);
-    
+
     const char* code = R"(
         template<typename... Args>
         int Sum(Args... args) {
@@ -104,11 +105,11 @@ TEST(TauTemplate, VariadicTemplates) {
         
         Sum(1, 2, 3, 4, 5);
     )";
-    
+
     console.Execute(code);
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
-    
+
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 15);
 }
@@ -116,7 +117,7 @@ TEST(TauTemplate, VariadicTemplates) {
 TEST(TauTemplate, ConceptConstraints) {
     kai::Console console;
     console.SetLanguage(kai::Language::Tau);
-    
+
     const char* code = R"(
         concept Numeric<T> {
             requires T::operator+(T, T) -> T;
@@ -130,11 +131,11 @@ TEST(TauTemplate, ConceptConstraints) {
         
         Square(7);
     )";
-    
+
     console.Execute(code);
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
-    
+
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 49);
 }

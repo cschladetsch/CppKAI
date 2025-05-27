@@ -22,12 +22,12 @@ struct StandardAllocator : BaseAllocator {
         free = &StandardAllocator::sys_free;
     }
 
-    static void *sys_malloc(std::size_t N) { 
-        return std::allocator<std::byte>{}.allocate(N); 
+    static void *sys_malloc(std::size_t N) {
+        return std::allocator<std::byte>{}.allocate(N);
     }
 
-    static void sys_free(void *P, std::size_t N) { 
-        std::allocator<std::byte>{}.deallocate(static_cast<std::byte*>(P), N); 
+    static void sys_free(void *P, std::size_t N) {
+        std::allocator<std::byte>{}.deallocate(static_cast<std::byte *>(P), N);
     }
 };
 }  // namespace Memory

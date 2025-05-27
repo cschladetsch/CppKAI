@@ -11,9 +11,10 @@ TranslatorCommon::TranslatorCommon(Registry &r) : ProcessCommon(r) {}
 void TranslatorCommon::Append(Object const &ob) {
     try {
         KAI_TRACE() << "TranslatorCommon::Append - object type: "
-                    << (ob.GetClass() ? ob.GetClass()->GetName().ToString() : "<null>")
+                    << (ob.GetClass() ? ob.GetClass()->GetName().ToString()
+                                      : "<null>")
                     << ", exists: " << ob.Exists();
-                    
+
         if (stack.empty()) {
             KAI_TRACE_ERROR() << "TranslatorCommon::Append: Stack is empty";
             KAI_THROW_0(EmptyStack);
@@ -161,8 +162,9 @@ void TranslatorCommon::Append(Object const &ob) {
 
         // Add the object to the code array, with minimal logging
         code->Append(ob);
-        KAI_TRACE() << "TranslatorCommon::Append - appended to code array, new size: " 
-                    << code->Size();
+        KAI_TRACE()
+            << "TranslatorCommon::Append - appended to code array, new size: "
+            << code->Size();
     } catch (kai::Exception::Base &e) {
         KAI_TRACE_ERROR() << "Exception in TranslatorCommon::Append: "
                           << e.ToString();

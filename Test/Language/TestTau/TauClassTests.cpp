@@ -17,7 +17,8 @@ using namespace std;
 
 // Simplified fixture for Tau IDL tests - focused on what an IDL actually needs
 struct TauClassTests : TestLangCommon {
-    void TestLexAndParse(const std::string& script, const std::string& testName) {
+    void TestLexAndParse(const std::string& script,
+                         const std::string& testName) {
         Registry r;
         auto lex = std::make_shared<tau::TauLexer>(script.c_str(), r);
 
@@ -34,9 +35,10 @@ struct TauClassTests : TestLangCommon {
         // Parse as module
         auto parser = std::make_shared<tau::TauParser>(r);
         bool parserSuccess = parser->Process(lex, Structure::Module);
-        
+
         if (!parser->Error.empty()) {
-            KAI_LOG_WARNING("Parser for " + testName + " reported error: " + parser->Error);
+            KAI_LOG_WARNING("Parser for " + testName +
+                            " reported error: " + parser->Error);
             FAIL() << "Parser failed for " << testName << ": " << parser->Error;
             return;
         }

@@ -3,11 +3,11 @@
 #include <fstream>
 #include <sstream>
 
+#include "KAI/Console/Console.h"
 #include "KAI/Core/BuiltinTypes/Stack.h"
 #include "KAI/Core/Config/Base.h"
 #include "KAI/Core/Debug.h"
 #include "KAI/Core/Logger.h"
-#include "KAI/Console/Console.h"
 #include "KAI/Language/Rho/RhoParser.h"
 #include "KAI/Language/Rho/RhoTranslator.h"
 #include "TestLangCommon.h"
@@ -34,7 +34,7 @@ struct RhoControlTests : TestLangCommon {
             // Get the result from the data stack after execution
             auto executor = console.GetExecutor();
             auto dataStack = executor->GetDataStack();
-            
+
             if (dataStack->Empty()) {
                 FAIL() << "No result on stack after script execution";
                 return;
@@ -43,9 +43,15 @@ struct RhoControlTests : TestLangCommon {
             auto val = dataStack->Top();
             if (!val.IsType<T>()) {
                 std::string expectedTypeName = typeid(T).name();
-                std::string actualTypeName = val.GetClass() ? std::string(val.GetClass()->GetName().ToString().c_str()) : "unknown";
-                KAI_LOG_ERROR("Type mismatch. Expected: " + expectedTypeName + ", Got: " + actualTypeName);
-                FAIL() << "Type mismatch. Expected: " << expectedTypeName << ", Got: " << actualTypeName;
+                std::string actualTypeName =
+                    val.GetClass()
+                        ? std::string(
+                              val.GetClass()->GetName().ToString().c_str())
+                        : "unknown";
+                KAI_LOG_ERROR("Type mismatch. Expected: " + expectedTypeName +
+                              ", Got: " + actualTypeName);
+                FAIL() << "Type mismatch. Expected: " << expectedTypeName
+                       << ", Got: " << actualTypeName;
                 return;
             }
 

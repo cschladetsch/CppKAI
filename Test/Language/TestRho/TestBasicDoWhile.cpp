@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include "KAI/Core/BuiltinTypes.h"
 #include "KAI/Core/Console.h"
 #include "TestLangCommon.h"
@@ -10,11 +11,11 @@ using namespace std;
 TEST(BasicDoWhileTest, SimpleDoWhileExecutesOnce) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
-    
+
     // Test with proper Rho syntax
     const std::string code = R"(
         counter = 0
@@ -24,10 +25,10 @@ TEST(BasicDoWhileTest, SimpleDoWhileExecutesOnce) {
         
         counter
     )";
-    
+
     try {
         console.Execute(code);
-        
+
         auto stack = console.GetExecutor()->GetDataStack();
         ASSERT_GE(stack->Size(), 1) << "Stack should have at least one element";
         ASSERT_EQ(ConstDeref<int>(stack->Top()), 3) << "Counter should be 3";
@@ -42,11 +43,11 @@ TEST(BasicDoWhileTest, SimpleDoWhileExecutesOnce) {
 TEST(BasicDoWhileTest, ExecutesAtLeastOnce) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
-    
+
     const std::string code = R"(
         counter = 10
         do {
@@ -55,10 +56,10 @@ TEST(BasicDoWhileTest, ExecutesAtLeastOnce) {
         
         counter
     )";
-    
+
     try {
         console.Execute(code);
-        
+
         auto stack = console.GetExecutor()->GetDataStack();
         ASSERT_GE(stack->Size(), 1) << "Stack should have at least one element";
         ASSERT_EQ(ConstDeref<int>(stack->Top()), 11) << "Counter should be 11";

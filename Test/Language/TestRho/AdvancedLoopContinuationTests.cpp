@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include "KAI/Core/BuiltinTypes.h"
 #include "KAI/Core/Console.h"
 #include "TestLangCommon.h"
@@ -10,13 +11,13 @@ using namespace std;
 TEST(AdvancedLoopContinuations, ContinuationChainFromNestedLoops) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Create a chain of continuations using nested loops
         chain = { 1 }  // Start with identity
@@ -33,12 +34,13 @@ TEST(AdvancedLoopContinuations, ContinuationChainFromNestedLoops) {
         // Execute the chained continuation
         chain '
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
-    // ((((1 + 0) * 0) + 1) * 0) + 0) * 1) + 1) * 1) + 0) * 2) + 1) * 2 = complex
+    // ((((1 + 0) * 0) + 1) * 0) + 0) * 1) + 1) * 1) + 0) * 2) + 1) * 2 =
+    // complex
     ASSERT_GT(ConstDeref<int>(stack->Top()), 0);
 }
 
@@ -46,13 +48,13 @@ TEST(AdvancedLoopContinuations, ContinuationChainFromNestedLoops) {
 TEST(AdvancedLoopContinuations, LoopGeneratorsCreatingLoops) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Create continuations that themselves contain loops
         generators = []
@@ -81,9 +83,9 @@ TEST(AdvancedLoopContinuations, LoopGeneratorsCreatingLoops) {
         
         total  // Should be 3 + 6 + 10 = 19
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 19);
@@ -93,13 +95,13 @@ TEST(AdvancedLoopContinuations, LoopGeneratorsCreatingLoops) {
 TEST(AdvancedLoopContinuations, ContinuationStateMachine) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Create state machine using continuations
         states = []
@@ -128,9 +130,9 @@ TEST(AdvancedLoopContinuations, ContinuationStateMachine) {
         
         state  // Should be ((1+1)*2+10+1)*2 = 28
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 28);
@@ -140,13 +142,13 @@ TEST(AdvancedLoopContinuations, ContinuationStateMachine) {
 TEST(AdvancedLoopContinuations, MutualRecursionWithLoops) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Create mutually recursive continuations using loops
         even_check = {
@@ -191,9 +193,9 @@ TEST(AdvancedLoopContinuations, MutualRecursionWithLoops) {
         
         count  // Should be 3 (0, 2, 4 are even)
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 3);
@@ -203,13 +205,13 @@ TEST(AdvancedLoopContinuations, MutualRecursionWithLoops) {
 TEST(AdvancedLoopContinuations, DynamicContinuationDispatch) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Build dispatch table dynamically
         operations = []
@@ -242,9 +244,9 @@ TEST(AdvancedLoopContinuations, DynamicContinuationDispatch) {
         
         value  // ((10-5)*3+2)/2-5 = 5
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 5);
@@ -254,13 +256,13 @@ TEST(AdvancedLoopContinuations, DynamicContinuationDispatch) {
 TEST(AdvancedLoopContinuations, ContinuationAccumulatorAllLoops) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Build complex accumulator using all loop types
         accumulator = { 0 }
@@ -289,9 +291,9 @@ TEST(AdvancedLoopContinuations, ContinuationAccumulatorAllLoops) {
         
         accumulator '  // (((0+1+2+3)*2*3)-1-2) = 33
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 33);
@@ -301,13 +303,13 @@ TEST(AdvancedLoopContinuations, ContinuationAccumulatorAllLoops) {
 TEST(AdvancedLoopContinuations, ContinuationPipelineRouting) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Create processing pipeline
         processors = []
@@ -340,9 +342,9 @@ TEST(AdvancedLoopContinuations, ContinuationPipelineRouting) {
         
         sum  // 0 + 4 + 4 + 10 + 8 + 16 = 42
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 42);
@@ -352,13 +354,13 @@ TEST(AdvancedLoopContinuations, ContinuationPipelineRouting) {
 TEST(AdvancedLoopContinuations, LazyEvaluationThunks) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Create lazy computations
         lazy_values = []
@@ -392,9 +394,9 @@ TEST(AdvancedLoopContinuations, LazyEvaluationThunks) {
         
         sum  // 2^2 + 4^4 = 4 + 256 = 260
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 260);
@@ -404,13 +406,13 @@ TEST(AdvancedLoopContinuations, LazyEvaluationThunks) {
 TEST(AdvancedLoopContinuations, ContinuationMemoization) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Memoized Fibonacci using continuations
         memo = []
@@ -440,9 +442,9 @@ TEST(AdvancedLoopContinuations, ContinuationMemoization) {
         
         sum  // fib(3) + fib(4) + fib(5) + fib(6) = 2 + 3 + 5 + 8 = 18
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 18);
@@ -452,13 +454,13 @@ TEST(AdvancedLoopContinuations, ContinuationMemoization) {
 TEST(AdvancedLoopContinuations, ContinuationCompositionTransformers) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Create transformation continuations
         transformers = []
@@ -490,9 +492,9 @@ TEST(AdvancedLoopContinuations, ContinuationCompositionTransformers) {
         
         x  // ((3 + 5) * 2)^2 = 16^2 = 256
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 256);
@@ -502,13 +504,13 @@ TEST(AdvancedLoopContinuations, ContinuationCompositionTransformers) {
 TEST(AdvancedLoopContinuations, EventDrivenContinuationDispatch) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Event handlers as continuations
         handlers = []
@@ -537,9 +539,9 @@ TEST(AdvancedLoopContinuations, EventDrivenContinuationDispatch) {
         
         state  // ((0+1+1)*2+1 = 5, reset to 0, +1)*2 = 2
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 2);
@@ -549,13 +551,13 @@ TEST(AdvancedLoopContinuations, EventDrivenContinuationDispatch) {
 TEST(AdvancedLoopContinuations, ContinuationCoroutines) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Producer coroutine
         produced = []
@@ -587,9 +589,9 @@ TEST(AdvancedLoopContinuations, ContinuationCoroutines) {
         
         consumed  // 0 + 1 + 4 + 9 + 16 = 30
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 30);
@@ -599,13 +601,13 @@ TEST(AdvancedLoopContinuations, ContinuationCoroutines) {
 TEST(AdvancedLoopContinuations, MapReduceWithContinuations) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Map function: square and add 1
         mapper = { x x x * 1 + }
@@ -636,9 +638,9 @@ TEST(AdvancedLoopContinuations, MapReduceWithContinuations) {
         
         acc  // (1^2+1) + (2^2+1) + (3^2+1) + (4^2+1) + (5^2+1) = 2+5+10+17+26 = 60
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 60);
@@ -648,13 +650,13 @@ TEST(AdvancedLoopContinuations, MapReduceWithContinuations) {
 TEST(AdvancedLoopContinuations, StreamProcessingContinuations) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Stream filters and transformers
         filters = []
@@ -698,9 +700,9 @@ TEST(AdvancedLoopContinuations, StreamProcessingContinuations) {
         
         sum  // 6 + 8 + 10 = 24 (even AND > 5)
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 24);
@@ -710,13 +712,13 @@ TEST(AdvancedLoopContinuations, StreamProcessingContinuations) {
 TEST(AdvancedLoopContinuations, RecursiveDescentWithLoops) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Simulate recursive descent evaluation
         // Expression: 2 * (3 + 4) - 5
@@ -772,9 +774,9 @@ TEST(AdvancedLoopContinuations, RecursiveDescentWithLoops) {
         
         // Result: 2 * (3 + 4) - 5 = 2 * 7 - 5 = 14 - 5 = 9
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 9);
@@ -784,13 +786,13 @@ TEST(AdvancedLoopContinuations, RecursiveDescentWithLoops) {
 TEST(AdvancedLoopContinuations, ContinuationFiniteStateMachine) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Binary counter state machine
         states = []
@@ -837,9 +839,9 @@ TEST(AdvancedLoopContinuations, ContinuationFiniteStateMachine) {
         
         count0 + count1  // Should count all bits = 10
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 10);
@@ -849,13 +851,13 @@ TEST(AdvancedLoopContinuations, ContinuationFiniteStateMachine) {
 TEST(AdvancedLoopContinuations, ContinuationThreading) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Thread value through continuation transformations
         thread_value = {
@@ -901,9 +903,9 @@ TEST(AdvancedLoopContinuations, ContinuationThreading) {
         
         sum  // Complex calculation
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_GT(ConstDeref<int>(stack->Top()), 0);
@@ -913,13 +915,13 @@ TEST(AdvancedLoopContinuations, ContinuationThreading) {
 TEST(AdvancedLoopContinuations, ContinuationLoopUnrolling) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Create unrolled loop continuations
         unrolled = []
@@ -955,9 +957,9 @@ TEST(AdvancedLoopContinuations, ContinuationLoopUnrolling) {
         
         sum  // 1+2+3+4+5+6+7+8+9+10+11+12 = 78
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 78);
@@ -967,13 +969,13 @@ TEST(AdvancedLoopContinuations, ContinuationLoopUnrolling) {
 TEST(AdvancedLoopContinuations, ParallelReductionPattern) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Simulate parallel reduction with continuations
         // Each continuation processes a chunk
@@ -1013,9 +1015,9 @@ TEST(AdvancedLoopContinuations, ParallelReductionPattern) {
         
         total  // 1+2+3+4+5+6+7+8+9 = 45
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 45);
@@ -1025,13 +1027,13 @@ TEST(AdvancedLoopContinuations, ParallelReductionPattern) {
 TEST(AdvancedLoopContinuations, ComplexContinuationComposition) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Build a complex computation pipeline using continuations
         
@@ -1102,9 +1104,9 @@ TEST(AdvancedLoopContinuations, ComplexContinuationComposition) {
         
         final  // Complex result from multi-stage pipeline
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_GT(ConstDeref<int>(stack->Top()), 0);

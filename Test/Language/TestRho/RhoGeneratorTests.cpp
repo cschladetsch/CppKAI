@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include "TestLangCommon.h"
 
 // Test suite for Rho generators and lazy evaluation
@@ -6,7 +7,7 @@ TEST(RhoGenerator, SimpleGenerator) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
-    
+
     console.Execute(R"(
         fun counter(start)
             current = start
@@ -20,17 +21,17 @@ TEST(RhoGenerator, SimpleGenerator) {
         c = next(gen)
         a + b + c
     )");
-    
+
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 6); // 1 + 2 + 3
+    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 6);  // 1 + 2 + 3
 }
 
 TEST(RhoGenerator, GeneratorWithCondition) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
-    
+
     console.Execute(R"(
         fun fibonacci()
             a = 0
@@ -48,22 +49,22 @@ TEST(RhoGenerator, GeneratorWithCondition) {
             result.push(next(fib))
         result[4]
     )");
-    
+
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 3); // Fifth fibonacci number
+    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 3);  // Fifth fibonacci number
 }
 
 TEST(RhoGenerator, GeneratorComprehension) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
-    
+
     console.Execute(R"(
         squares = (x * x for x in range(1, 6))
         list(squares)
     )");
-    
+
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     auto& array = kai::Deref<kai::Array>(stack->Top());
@@ -75,7 +76,7 @@ TEST(RhoGenerator, LazyEvaluation) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
-    
+
     console.Execute(R"(
         # Infinite generator that would crash if fully evaluated
         fun infinite_ones()
@@ -89,7 +90,7 @@ TEST(RhoGenerator, LazyEvaluation) {
             sum = sum + next(gen)
         sum
     )");
-    
+
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 3);
@@ -99,7 +100,7 @@ TEST(RhoGenerator, GeneratorChaining) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
-    
+
     console.Execute(R"(
         fun filter_gen(gen, predicate)
             for value in gen
@@ -110,8 +111,8 @@ TEST(RhoGenerator, GeneratorChaining) {
         evens = filter_gen(numbers, lambda(x) x % 2 == 0)
         sum(evens)
     )");
-    
+
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 20); // 2+4+6+8
+    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 20);  // 2+4+6+8
 }

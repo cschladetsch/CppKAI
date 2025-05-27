@@ -23,7 +23,7 @@ struct PiStackTests : TestLangCommon {
 
             auto executor = console.GetExecutor();
             auto dataStack = executor->GetDataStack();
-            
+
             if (!dataStack.Valid() || !dataStack.Exists()) {
                 FAIL() << "Invalid data stack after execution";
                 return;
@@ -60,12 +60,13 @@ struct PiStackTests : TestLangCommon {
                     Object obj = stack.At(stackIndex);
 
                     if (!obj.IsType<ExpectedType>()) {
-                        ADD_FAILURE() << "Type mismatch at stack position "
-                                      << index << " (stack index " << stackIndex << ")";
+                        ADD_FAILURE()
+                            << "Type mismatch at stack position " << index
+                            << " (stack index " << stackIndex << ")";
                     } else {
                         ExpectedType actual = ConstDeref<ExpectedType>(obj);
                         EXPECT_EQ(actual, expectedValue)
-                            << "Value mismatch at stack position " << index 
+                            << "Value mismatch at stack position " << index
                             << " (stack index " << stackIndex << ")";
                     }
                 }
@@ -110,7 +111,6 @@ TEST_F(PiStackTests, BasicStackOperations) {
     AssertStackResult("1 2 drop2", std::make_tuple());
 }
 
-
 // Test pick operations
 TEST_F(PiStackTests, PickOperations) {
     // pick - copy nth element to top (0-based)
@@ -146,12 +146,15 @@ TEST_F(PiStackTests, CompositeStackOperations) {
     AssertStackResult("1 2 3 rot swap", std::make_tuple(2, 1, 3));
 
     // More complex sequences
-    // Stack trace: 1 2 3 4 -> swap -> 1 2 4 3 -> over -> 1 2 4 3 4 -> rot -> 1 2 3 4 4
+    // Stack trace: 1 2 3 4 -> swap -> 1 2 4 3 -> over -> 1 2 4 3 4 -> rot -> 1
+    // 2 3 4 4
     AssertStackResult("1 2 3 4 swap over rot", std::make_tuple(1, 2, 3, 4, 4));
-    // Stack trace: 1 2 3 -> dup -> 1 2 3 3 -> rot -> 1 3 3 2 -> swap -> 1 3 2 3 -> over -> 1 3 2 3 2
+    // Stack trace: 1 2 3 -> dup -> 1 2 3 3 -> rot -> 1 3 3 2 -> swap -> 1 3 2 3
+    // -> over -> 1 3 2 3 2
     AssertStackResult("1 2 3 dup rot swap over",
                       std::make_tuple(1, 3, 2, 3, 2));
-    // Stack trace: 1 2 3 4 -> 1 pick (gets 3) -> 1 2 3 4 3 -> 2 pick (gets 3) -> 1 2 3 4 3 3 -> swap -> 1 2 3 4 3 3
+    // Stack trace: 1 2 3 4 -> 1 pick (gets 3) -> 1 2 3 4 3 -> 2 pick (gets 3)
+    // -> 1 2 3 4 3 3 -> swap -> 1 2 3 4 3 3
     AssertStackResult("1 2 3 4 1 pick 2 pick swap",
                       std::make_tuple(1, 2, 3, 4, 3, 3));
 }
@@ -199,13 +202,13 @@ TEST_F(PiStackTests, VariableOperations) {
 //     // If-then with stack operations
 //     AssertStackResult("1 2 true { swap } if", std::make_tuple(2, 1));
 //     AssertStackResult("1 2 false { swap } if", std::make_tuple(1, 2));
-// 
+//
 //     // If-then-else with stack operations
 //     AssertStackResult("1 2 true { swap } { dup } ife",
 //                       std::make_tuple(2, 1));
 //     AssertStackResult("1 2 false { swap } { dup } ife",
 //                       std::make_tuple(1, 2, 2));
-// 
+//
 //     // Complex conditionals
 //     AssertStackResult(
 //         "1 2 3 "
@@ -214,7 +217,7 @@ TEST_F(PiStackTests, VariableOperations) {
 //         "{ swap rot } "
 //         "ife",
 //         std::make_tuple(3, 1, 2));
-// 
+//
 //     AssertStackResult(
 //         "1 2 3 "
 //         "1 2 > "
@@ -225,21 +228,22 @@ TEST_F(PiStackTests, VariableOperations) {
 // }
 
 // Test computational stack patterns
-// TODO: This test causes framework errors after operations complete successfully
-// The operations work correctly but the test framework has issues
+// TODO: This test causes framework errors after operations complete
+// successfully The operations work correctly but the test framework has issues
 // TEST_F(PiStackTests, ComputationalPatterns) {
 //     // Sum of two numbers
 //     AssertStackResult("3 4 +", std::make_tuple(7));
-// 
+//
 //     // Square a number
 //     AssertStackResult("5 dup *", std::make_tuple(25));
-// 
+//
 //     // Calculate average of two numbers
 //     AssertStackResult("7 9 + 2 /", std::make_tuple(8));
-// 
-// 
+//
+//
 //     // Absolute value
-//     // TODO: Code blocks { ... } are not properly translated to continuations in Pi
+//     // TODO: Code blocks { ... } are not properly translated to continuations
+//     in Pi
 //     // AssertStackResult("-3 dup 0 < { -1 * } if", std::make_tuple(3));
 //     // AssertStackResult("5 dup 0 < { -1 * } if", std::make_tuple(5));
 // }
@@ -259,7 +263,7 @@ TEST_F(PiStackTests, VariableOperations) {
 //         "until "
 //         "'sum' @",
 //         std::make_tuple(15));
-// 
+//
 //     // Factorial
 //     AssertStackResult(
 //         "5 'n' ! "

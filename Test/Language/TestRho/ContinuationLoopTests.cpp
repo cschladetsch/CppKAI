@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include "KAI/Core/BuiltinTypes.h"
 #include "KAI/Core/Console.h"
 #include "TestLangCommon.h"
@@ -10,14 +11,15 @@ using namespace std;
 TEST(RhoLoopContinuations, ContinuationCapturesLoopVariable) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     // Register required types
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
-    // Simple test: create 3 continuations in a loop, each captures loop variable
+
+    // Simple test: create 3 continuations in a loop, each captures loop
+    // variable
     const std::string code = R"(
         []  // array to store continuations
         
@@ -34,9 +36,9 @@ TEST(RhoLoopContinuations, ContinuationCapturesLoopVariable) {
         
         drop  // drop the array
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 3);
     ASSERT_EQ(ConstDeref<int>(stack->At(0)), 0);

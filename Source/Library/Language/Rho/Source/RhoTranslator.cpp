@@ -242,17 +242,19 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
 
         case RhoTokenEnumType::Label: {
             KAI_TRACE() << std::format("Translating Ident: {}", node->Text());
-            // In Rho, identifiers in expressions need to be resolved to their values
-            // For Pi-style execution, push the label and then a Retrieve operation
+            // In Rho, identifiers in expressions need to be resolved to their
+            // values For Pi-style execution, push the label and then a Retrieve
+            // operation
             auto labelObj = reg_->New<Label>(Label(node->Text()));
 
             // Append the label
             Append(labelObj);
-            
+
             // Add Retrieve operation to resolve the label to its value
             AppendDirectOperation(Operation::Retreive);
 
-            KAI_TRACE() << "Translated identifier as label with retrieve: " << labelObj.ToString();
+            KAI_TRACE() << "Translated identifier as label with retrieve: "
+                        << labelObj.ToString();
             return;
         }
 
@@ -273,17 +275,17 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
             // IMPORTANT: Do NOT do direct evaluation at translation time!
             // The original implementation had extensive direct evaluation logic
             // that would compute results at translation time and append them
-            // directly. This caused type mismatches because the executor expects
-            // operations to execute, not pre-computed values.
+            // directly. This caused type mismatches because the executor
+            // expects operations to execute, not pre-computed values.
             //
             // Instead, we translate each element of the Pi sequence into
             // operations that can be executed at runtime.
-            
+
             // Simply translate each child node in the sequence
             for (const auto& child : node->GetChildren()) {
                 TranslateNode(child);
             }
-            
+
             KAI_TRACE() << "Pi sequence translation complete";
             return;
         }
@@ -319,12 +321,12 @@ void RhoTranslator::TranslateWhile(AstNodePtr node) {
     PushNew();
     TranslateNode(node->GetChild(0));
     auto condCont = Pop();
-    
+
     // Create continuation for body
     PushNew();
     TranslateNode(node->GetChild(1));
     auto bodyCont = Pop();
-    
+
     // Push continuations on stack for WhileLoop operation
     Append(condCont);
     Append(bodyCont);
@@ -333,31 +335,31 @@ void RhoTranslator::TranslateWhile(AstNodePtr node) {
 
 void RhoTranslator::TranslateFor(AstNodePtr node) {
     KAI_TRACE() << "Translating for loop";
-    
+
     // For loops have: init, condition, update, body
     if (node->GetChildren().size() < 4) {
         KAI_TRACE_ERROR() << "For node needs init, condition, update, and body";
         return;
     }
-    
+
     // Translate initialization directly
     TranslateNode(node->GetChild(0));
-    
+
     // Create continuation for condition
     PushNew();
     TranslateNode(node->GetChild(1));
     auto condCont = Pop();
-    
+
     // Create continuation for body
     PushNew();
     TranslateNode(node->GetChild(3));
     auto bodyCont = Pop();
-    
+
     // Create continuation for update
     PushNew();
     TranslateNode(node->GetChild(2));
     auto updateCont = Pop();
-    
+
     // Push continuations on stack for ForLoop operation
     Append(condCont);
     Append(bodyCont);
@@ -367,23 +369,23 @@ void RhoTranslator::TranslateFor(AstNodePtr node) {
 
 void RhoTranslator::TranslateDoWhile(AstNodePtr node) {
     KAI_TRACE() << "Translating do-while loop";
-    
+
     // Do-while loops need: body and condition
     if (node->GetChildren().size() < 2) {
         KAI_TRACE_ERROR() << "DoWhile node needs body and condition";
         return;
     }
-    
+
     // Create continuation for body
     PushNew();
     TranslateNode(node->GetChild(0));
     auto bodyCont = Pop();
-    
+
     // Create continuation for condition
     PushNew();
     TranslateNode(node->GetChild(1));
     auto condCont = Pop();
-    
+
     // Push continuations on stack for DoLoop operation
     // Order: body first, then condition
     Append(bodyCont);
@@ -393,28 +395,28 @@ void RhoTranslator::TranslateDoWhile(AstNodePtr node) {
 
 void RhoTranslator::TranslateIf(AstNodePtr node) {
     KAI_TRACE() << "Translating if statement";
-    
+
     // If statements need at least condition and then-block
     if (node->GetChildren().size() < 2) {
         KAI_TRACE_ERROR() << "If node needs at least condition and then block";
         return;
     }
-    
+
     // Create continuation for then block first
     PushNew();
     TranslateNode(node->GetChild(1));
     auto thenCont = Pop();
-    
+
     // Check if there's an else block
     if (node->GetChildren().size() > 2) {
         // Create continuation for else block
         PushNew();
         TranslateNode(node->GetChild(2));
         auto elseCont = Pop();
-        
+
         // Translate condition
         TranslateNode(node->GetChild(0));
-        
+
         // Push continuations in correct order for IfElse
         // IfElse expects: condition A B -- (runs A if true, B if false)
         Append(thenCont);
@@ -423,7 +425,7 @@ void RhoTranslator::TranslateIf(AstNodePtr node) {
     } else {
         // Translate condition
         TranslateNode(node->GetChild(0));
-        
+
         // Push continuation for If operation
         // If expects: condition continuation --
         Append(thenCont);
@@ -433,80 +435,81 @@ void RhoTranslator::TranslateIf(AstNodePtr node) {
 
 void RhoTranslator::TranslateList(AstNodePtr node) {
     KAI_TRACE() << "TranslateList - Creating array literal";
-    
+
     // Translate all list elements first
     for (const auto& child : node->GetChildren()) {
         TranslateNode(child);
     }
-    
+
     // Create the array from the stack elements
     // The number of elements is the number of children
     size_t numElements = node->GetChildren().size();
-    
+
     // Push the number of elements to create array from
     AppendNew<int>(numElements);
     // Use ToArray operation to create array from stack elements
     AppendDirectOperation(Operation::ToArray);
-    
+
     KAI_TRACE() << std::format("Created array with {} elements", numElements);
 }
 
 void RhoTranslator::TranslateMap(AstNodePtr node) {
     KAI_TRACE() << "TranslateMap - Creating map literal";
-    
+
     // For now, we only support empty maps
     // Push 0 to indicate no elements
     AppendNew<int>(0);
-    
+
     // Use ToMap operation to create empty map
     AppendDirectOperation(Operation::ToMap);
-    
+
     KAI_TRACE() << "Created empty map";
 }
 
 void RhoTranslator::TranslateIndex(AstNodePtr node) {
     KAI_TRACE() << "TranslateIndex - Array indexing operation";
-    
+
     // IndexOp should have 2 children: the array and the index
     auto children = node->GetChildren();
     if (children.size() != 2) {
-        KAI_TRACE_ERROR() << "IndexOp should have exactly 2 children, got " << static_cast<int>(children.size());
+        KAI_TRACE_ERROR() << "IndexOp should have exactly 2 children, got "
+                          << static_cast<int>(children.size());
         return;
     }
-    
+
     // Translate the array expression
     TranslateNode(children[0]);
-    
+
     // Translate the index expression
     TranslateNode(children[1]);
-    
+
     // Apply the Index operation
     AppendDirectOperation(Operation::Index);
-    
+
     KAI_TRACE() << "Array indexing operation translated";
 }
 
 void RhoTranslator::TranslatePiBlock(AstNodePtr node) {
     KAI_TRACE() << "TranslatePiBlock - Translating embedded Pi code";
-    
+
     // The Pi block should have one child containing the list of Pi tokens
     if (node->GetChildren().empty()) {
         KAI_TRACE_ERROR() << "Pi block has no content";
         return;
     }
-    
+
     // Build the Pi code string from the tokens
     std::string piCode;
     auto tokenList = node->GetChild(0);
-    
+
     for (const auto& tokenNode : tokenList->GetChildren()) {
         // Add space before each token except the first
         if (!piCode.empty()) {
             piCode += " ";
         }
-        
+
         auto tokenType = tokenNode->GetToken().type;
-        
+
         // Special handling for different token types
         if (tokenType == RhoTokenEnumType::Equiv) {
             // Pi uses == not = for equality
@@ -518,15 +521,15 @@ void RhoTranslator::TranslatePiBlock(AstNodePtr node) {
             piCode += tokenNode->Text();
         }
     }
-    
+
     KAI_TRACE() << "Pi code to execute: " << piCode;
-    
+
     // Push the Pi code string onto the stack
     Append(reg_->New<String>(piCode));
-    
+
     // Use the ToPi operation to execute the Pi code
     AppendDirectOperation(Operation::ToPi);
-    
+
     KAI_TRACE() << "Pi block translation complete";
 }
 
@@ -547,77 +550,81 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
     // the operation, letting the executor handle the actual computation
     // at runtime.
 
-    // Special handling for assignment operations - they need identifier names, not values
-    if (op == Operation::Store || 
-        op == Operation::PlusEquals || 
-        op == Operation::MinusEquals ||
-        op == Operation::MulEquals ||
+    // Special handling for assignment operations - they need identifier names,
+    // not values
+    if (op == Operation::Store || op == Operation::PlusEquals ||
+        op == Operation::MinusEquals || op == Operation::MulEquals ||
         op == Operation::DivEquals) {
-        
         // For assignment operations: identifier = value (or +=, -=, etc.)
         // Stack needs: [value, identifier] for Store/assignment operations
-        
+
         // The parser creates: Assign [value, identifier]
         // So child0 is the value and child1 is the identifier
         auto valueNode = node->GetChild(0);
         auto identNode = node->GetChild(1);
-        
+
         // Translate the value first
         TranslateNode(valueNode);
-        
+
         // Check if the left side is an array indexing operation
         if (identNode->GetType() == AstNodeEnum::IndexOp) {
             // Special handling for array element assignment: arr[index] = value
             KAI_TRACE() << "Handling indexed assignment";
-            
+
             // For arr[2] = 99, we need to implement this differently
             // Since we don't have SetChild operation, we'll use a workaround
-            
+
             // Get the array and index from IndexOp
             auto indexChildren = identNode->GetChildren();
             if (indexChildren.size() != 2) {
-                KAI_TRACE_ERROR() << "IndexOp should have 2 children for assignment";
+                KAI_TRACE_ERROR()
+                    << "IndexOp should have 2 children for assignment";
                 return;
             }
-            
+
             // Translate the array expression
             TranslateNode(indexChildren[0]);
-            
+
             // Translate the index
             TranslateNode(indexChildren[1]);
-            
+
             // The value is already on the stack from above
             // Stack now has: [value, array, index]
-            
+
             // We need to rearrange to [array, index, value] for SetChild
             // Use stack manipulation operations: Rot rotates top 3 elements
-            AppendDirectOperation(Operation::Rot);  // Now: [array, index, value]
-            
+            AppendDirectOperation(
+                Operation::Rot);  // Now: [array, index, value]
+
             // Apply SetChild operation
             AppendDirectOperation(Operation::SetChild);
-            
+
             // SetChild leaves the modified array on the stack
-            // But Store expects [value, name], so we need to skip the Store operation
+            // But Store expects [value, name], so we need to skip the Store
+            // operation
             return;  // Skip the Store operation below
-            
+
         } else if (identNode->GetToken().type == RhoTokenEnumType::Label) {
             // Push the identifier name as a quoted Pathname for assignment
-            KAI_TRACE() << "Appending pathname for assignment: " << identNode->Text();
+            KAI_TRACE() << "Appending pathname for assignment: "
+                        << identNode->Text();
             // Create a quoted pathname by prepending '
             String quotedPath = "'" + identNode->Text();
             auto pathObj = reg_->New<Pathname>(Pathname(quotedPath));
-            KAI_TRACE() << "Created pathname object: " 
-                        << (pathObj.Exists() ? "exists" : "null")
-                        << ", type: " 
-                        << (pathObj.GetClass() ? pathObj.GetClass()->GetName().ToString() : "<null>");
+            KAI_TRACE() << "Created pathname object: "
+                        << (pathObj.Exists() ? "exists" : "null") << ", type: "
+                        << (pathObj.GetClass()
+                                ? pathObj.GetClass()->GetName().ToString()
+                                : "<null>");
             Append(pathObj);
         } else {
-            // If it's not a simple identifier or index op, translate it normally
+            // If it's not a simple identifier or index op, translate it
+            // normally
             TranslateNode(identNode);
         }
     } else {
         // For other operations, use standard left-to-right order
-        
+
         // Translate the left operand
         TranslateNode(node->GetChild(0));
 

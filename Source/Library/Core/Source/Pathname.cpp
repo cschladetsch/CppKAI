@@ -120,7 +120,7 @@ String Pathname::ToString() const {
             case Element::Quote:
                 str.Append(Literals::Quote);
                 break;
-                
+
             case Element::Separator:
                 if (!addedRoot) str.Append(Literals::Separator);
                 addedRoot = false;
@@ -178,20 +178,21 @@ StringStream &operator>>(StringStream &, Pathname &) { KAI_NOT_IMPLEMENTED(); }
 // Plus operation for Pathname - creates a combined pathname
 Pathname operator+(const Pathname &A, const Pathname &B) {
     // Only allow addition if BOTH pathnames are quoted
-    // Otherwise it's a type error (unquoted pathnames should resolve to values first)
+    // Otherwise it's a type error (unquoted pathnames should resolve to values
+    // first)
     if (!A.Quoted() || !B.Quoted()) {
         KAI_THROW_1(Base, "Cannot add pathnames unless both are quoted");
     }
-    
+
     // Create a quoted pathname combining both
     // Get the path elements without the quote
     Pathname::Elements elemsA = A.GetElements();
     Pathname::Elements elemsB = B.GetElements();
-    
+
     // Build new elements starting with quote
     Pathname::Elements newElems;
     newElems.push_back(Pathname::Element(Pathname::Element::Quote));
-    
+
     // Add elements from A (skip quote if present)
     for (auto it = elemsA.begin(); it != elemsA.end(); ++it) {
         if (it == elemsA.begin() && it->type == Pathname::Element::Quote) {
@@ -199,12 +200,12 @@ Pathname operator+(const Pathname &A, const Pathname &B) {
         }
         newElems.push_back(*it);
     }
-    
+
     // Add separator if needed
     if (!newElems.empty() && newElems.back().type == Pathname::Element::Name) {
         newElems.push_back(Pathname::Element(Pathname::Element::Separator));
     }
-    
+
     // Add elements from B (skip quote if present)
     for (auto it = elemsB.begin(); it != elemsB.end(); ++it) {
         if (it == elemsB.begin() && it->type == Pathname::Element::Quote) {
@@ -212,7 +213,7 @@ Pathname operator+(const Pathname &A, const Pathname &B) {
         }
         newElems.push_back(*it);
     }
-    
+
     return Pathname(newElems);
 }
 

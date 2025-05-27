@@ -43,11 +43,11 @@ bool GenerateAgent::Namespace(Node const &ns) {
             case TauAstEnumType::Interface:
                 if (!Interface(*ch)) return false;
                 break;
-                
+
             case TauAstEnumType::Struct:
                 // Structs don't need agent generation, just skip
                 break;
-                
+
             case TauAstEnumType::EnumType:
                 // Enums don't need agent generation, just skip
                 break;
@@ -66,11 +66,14 @@ struct GenerateAgent::AgentDecl {
     string RootName;
     string AgentName;
 
-    AgentDecl(string const &root) : RootName(root) { AgentName = root + "Agent"; }
+    AgentDecl(string const &root) : RootName(root) {
+        AgentName = root + "Agent";
+    }
 
     string ToString() const {
         stringstream decl;
-        decl << "class " << AgentName << ": public AgentBase<" << RootName << ">";
+        decl << "class " << AgentName << ": public AgentBase<" << RootName
+             << ">";
         return decl.str();
     }
 };
@@ -93,7 +96,8 @@ bool GenerateAgent::Class(TauParser::AstNode const &cl) {
 }
 
 bool GenerateAgent::Property(TauParser::AstNode const &prop) {
-    // Agents don't need property accessors - they handle properties through messages
+    // Agents don't need property accessors - they handle properties through
+    // messages
     return true;
 }
 
@@ -117,21 +121,22 @@ void GenerateAgent::AddAgentBoilerplate(AgentDecl const &agent) {
     Output() << EndLine();
 }
 
-
 void GenerateAgent::GenerateHandlerMethod(TauParser::AstNode const &method) {
     auto const &returnType = method.GetChild(0)->GetTokenText();
     auto const &args = method.GetChild(1)->GetChildren();
     const auto name = method.GetTokenText();
 
     // Generate the Handle_MethodName signature
-    Output() << "void Handle_" << name << "(RakNet::BitStream& bs, RakNet::SystemAddress& sender)";
+    Output() << "void Handle_" << name
+             << "(RakNet::BitStream& bs, RakNet::SystemAddress& sender)";
     StartBlock();
 
     // Deserialize parameters from BitStream
     for (auto const &a : args) {
         auto &ty = a->GetChild(0);
         auto &id = a->GetChild(1);
-        Output() << ty->GetTokenText() << " " << id->GetTokenText() << ";" << EndLine();
+        Output() << ty->GetTokenText() << " " << id->GetTokenText() << ";"
+                 << EndLine();
         Output() << "bs >> " << id->GetTokenText() << ";" << EndLine();
     }
 

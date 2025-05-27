@@ -1,11 +1,12 @@
 #include <gtest/gtest.h>
+
 #include "TestLangCommon.h"
 
 // Test suite for Tau attributes and metadata
 TEST(TauAttribute, BasicAttributes) {
     kai::Console console;
     console.SetLanguage(kai::Language::Tau);
-    
+
     const char* code = R"(
         [Serializable]
         [Description("A simple point class")]
@@ -26,11 +27,11 @@ TEST(TauAttribute, BasicAttributes) {
         Type pointType = typeof(Point);
         pointType.HasAttribute<Serializable>();
     )";
-    
+
     console.Execute(code);
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
-    
+
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_TRUE(kai::ConstDeref<bool>(stack->Top()));
 }
@@ -38,7 +39,7 @@ TEST(TauAttribute, BasicAttributes) {
 TEST(TauAttribute, CustomAttributes) {
     kai::Console console;
     console.SetLanguage(kai::Language::Tau);
-    
+
     const char* code = R"(
         class ValidateRangeAttribute : Attribute {
             int min, max;
@@ -71,11 +72,11 @@ TEST(TauAttribute, CustomAttributes) {
         p.SetHealth(150); // Should not change
         p.GetHealth();
     )";
-    
+
     console.Execute(code);
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
-    
+
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 100);
 }
@@ -83,7 +84,7 @@ TEST(TauAttribute, CustomAttributes) {
 TEST(TauAttribute, MethodAttributes) {
     kai::Console console;
     console.SetLanguage(kai::Language::Tau);
-    
+
     const char* code = R"(
         class TimingAttribute : Attribute {
             static float lastDuration;
@@ -113,11 +114,11 @@ TEST(TauAttribute, MethodAttributes) {
         calc.SlowCalculation(100);
         TimingAttribute.lastDuration > 0;
     )";
-    
+
     console.Execute(code);
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
-    
+
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_TRUE(kai::ConstDeref<bool>(stack->Top()));
 }
@@ -125,7 +126,7 @@ TEST(TauAttribute, MethodAttributes) {
 TEST(TauAttribute, CompileTimeAttributes) {
     kai::Console console;
     console.SetLanguage(kai::Language::Tau);
-    
+
     const char* code = R"(
         [CompileTime]
         int Factorial(int n) {
@@ -137,11 +138,11 @@ TEST(TauAttribute, CompileTimeAttributes) {
         const int result = Factorial(5);
         result;
     )";
-    
+
     console.Execute(code);
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
-    
+
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 120);
 }
@@ -149,7 +150,7 @@ TEST(TauAttribute, CompileTimeAttributes) {
 TEST(TauAttribute, ConditionalAttributes) {
     kai::Console console;
     console.SetLanguage(kai::Language::Tau);
-    
+
     const char* code = R"(
         [Conditional("DEBUG")]
         void DebugLog(string message) {
@@ -167,11 +168,11 @@ TEST(TauAttribute, ConditionalAttributes) {
         bool hasDebugLog = typeof(Program).HasMethod("DebugLog");
         hasDebugLog;
     )";
-    
+
     console.Execute(code);
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
-    
+
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_TRUE(kai::ConstDeref<bool>(stack->Top()));
 }

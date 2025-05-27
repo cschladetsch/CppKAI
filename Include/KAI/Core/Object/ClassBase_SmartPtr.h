@@ -25,8 +25,12 @@ class PropertyBase;
 class ClassBase {
    public:
     // UPDATED: Use unique_ptr for ownership of methods and properties
-    typedef std::unordered_map<Label, std::unique_ptr<MethodBase>, detail::LabelHash> Methods;
-    typedef std::unordered_map<Label, std::unique_ptr<PropertyBase>, detail::LabelHash> Properties;
+    typedef std::unordered_map<Label, std::unique_ptr<MethodBase>,
+                               detail::LabelHash>
+        Methods;
+    typedef std::unordered_map<Label, std::unique_ptr<PropertyBase>,
+                               detail::LabelHash>
+        Properties;
     typedef std::list<Object> ObjectList;
 
    protected:
@@ -38,7 +42,7 @@ class ClassBase {
    public:
     ClassBase(Label const &name, Type::Number T)
         : name_(name), type_number_(T) {}
-    
+
     // Destructor is now trivial - unique_ptr handles cleanup
     virtual ~ClassBase() = default;
 
@@ -47,40 +51,41 @@ class ClassBase {
     Type::Number GetTypeNumber() const { return type_number_; }
 
     virtual void SetReferencedObjectsColor(StorageBase &base,
-                                          ObjectColor::Color color,
-                                          HandleSet &handles) const;
+                                           ObjectColor::Color color,
+                                           HandleSet &handles) const;
 
     void GetPropertyObjects(StorageBase &object, ObjectList &contained) const;
 
     /// Methods - now with smart pointer management
-    void AddMethod(const Label &L, std::unique_ptr<MethodBase> M) { 
-        methods_[L] = std::move(M); 
+    void AddMethod(const Label &L, std::unique_ptr<MethodBase> M) {
+        methods_[L] = std::move(M);
     }
-    
+
     // Backward compatibility overload - takes ownership
     [[deprecated("Use AddMethod with unique_ptr")]]
-    void AddMethod(const Label &L, MethodBase *M) { 
-        methods_[L] = std::unique_ptr<MethodBase>(M); 
+    void AddMethod(const Label &L, MethodBase *M) {
+        methods_[L] = std::unique_ptr<MethodBase>(M);
     }
-    
+
     const Methods &GetMethods() const { return methods_; }
-    
+
     MethodBase *GetMethod(const Label &L) const {
         const auto found = methods_.find(L);
         return found == methods_.end() ? nullptr : found->second.get();
     }
 
     /// Properties - now with smart pointer management
-    void AddProperty(Label const &label, std::unique_ptr<PropertyBase> property) {
+    void AddProperty(Label const &label,
+                     std::unique_ptr<PropertyBase> property) {
         properties_[label] = std::move(property);
     }
-    
+
     // Backward compatibility overload - takes ownership
     [[deprecated("Use AddProperty with unique_ptr")]]
     void AddProperty(Label const &label, PropertyBase *property) {
         properties_[label] = std::unique_ptr<PropertyBase>(property);
     }
-    
+
     bool HasProperty(Label const &label) const {
         return properties_.find(label) != properties_.end();
     }
@@ -94,7 +99,7 @@ class ClassBase {
             KAI_THROW_2(UnknownProperty, GetName(), L);
         return *found->second;
     }
-    
+
     // Helper method to get property pointer (non-owning)
     PropertyBase *GetPropertyPtr(Label const &L) const {
         auto found = properties_.find(L);
@@ -117,17 +122,20 @@ class ClassBase {
     virtual void SetStringValue(StorageBase &, const String &) const = 0;
     virtual void Insert(StringStream &, StorageBase const &) const = 0;
     virtual StorageBase *Extract(Registry &, StringStream &) const = 0;
-    virtual void ExtractValue(Object &object, StringStream &strstream) const = 0;
+    virtual void ExtractValue(Object &object,
+                              StringStream &strstream) const = 0;
     virtual HashValue GetHashValue(const StorageBase &) const = 0;
 };
 
 // Factory functions that return smart pointers
 template <class Property>
-std::unique_ptr<PropertyBase> MakeProperty(Property prop, const Label &label, 
-                                          MemberCreateParams::Enum create_params = MemberCreateParams::Default) {
+std::unique_ptr<PropertyBase> MakeProperty(
+    Property prop, const Label &label,
+    MemberCreateParams::Enum create_params = MemberCreateParams::Default) {
     // Implementation would create the appropriate property wrapper
     // This is a template - actual implementation depends on property system
-    return std::make_unique<PropertyWrapper<Property>>(prop, label, create_params);
+    return std::make_unique<PropertyWrapper<Property>>(prop, label,
+                                                       create_params);
 }
 
 KAI_END

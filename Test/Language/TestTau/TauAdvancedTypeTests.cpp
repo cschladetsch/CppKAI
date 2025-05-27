@@ -45,7 +45,7 @@ struct TauAdvancedTypeTests : TestLangCommon {
 
         auto parser = std::make_shared<tau::TauParser>(r);
         bool success = parser->Process(lex, Structure::Module);
-        
+
         if (!success) {
             KAI_LOG_WARNING("Parser for " + testName +
                             " reported failure: " + parser->Error);

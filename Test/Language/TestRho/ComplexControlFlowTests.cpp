@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include "KAI/Core/BuiltinTypes.h"
 #include "KAI/Core/Console.h"
 #include "TestLangCommon.h"
@@ -10,13 +11,13 @@ using namespace std;
 TEST(ComplexControlFlow, IfElseContinuationSelection) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Create different continuations for odd/even processing
         even_proc = { n n 2 / }
@@ -43,9 +44,9 @@ TEST(ComplexControlFlow, IfElseContinuationSelection) {
         }
         sum  // 0 + 4 + 1 + 10 + 2 + 16 + 3 + 22 = 58
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 58);
@@ -55,11 +56,11 @@ TEST(ComplexControlFlow, IfElseContinuationSelection) {
 TEST(ComplexControlFlow, NestedIfWithLogicalNot) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
-    
+
     const std::string code = R"(
         count = 0
         
@@ -74,9 +75,9 @@ TEST(ComplexControlFlow, NestedIfWithLogicalNot) {
         
         count  // 1, 5, 7 = 3 numbers
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 3);
@@ -86,13 +87,13 @@ TEST(ComplexControlFlow, NestedIfWithLogicalNot) {
 TEST(ComplexControlFlow, ComplexLogicalConditions) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Continuation that checks complex conditions
         validator = {
@@ -113,9 +114,9 @@ TEST(ComplexControlFlow, ComplexLogicalConditions) {
         
         valid_count  // Count numbers that match condition
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_GT(ConstDeref<int>(stack->Top()), 0);
@@ -125,13 +126,13 @@ TEST(ComplexControlFlow, ComplexLogicalConditions) {
 TEST(ComplexControlFlow, ShortCircuitEvaluation) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Track evaluation count
         eval_count = 0
@@ -154,9 +155,9 @@ TEST(ComplexControlFlow, ShortCircuitEvaluation) {
         
         eval_count  // Should be 10 (only called for n >= 5)
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 10);
@@ -166,13 +167,13 @@ TEST(ComplexControlFlow, ShortCircuitEvaluation) {
 TEST(ComplexControlFlow, ConditionalContinuationChaining) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Build conditional chain
         chain = { x x }  // Identity
@@ -191,9 +192,9 @@ TEST(ComplexControlFlow, ConditionalContinuationChaining) {
         // Execute chain
         5 chain '  // ((((5 + 2) * 3 + 2) * 3) + 2) = 77
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 77);
@@ -203,13 +204,13 @@ TEST(ComplexControlFlow, ConditionalContinuationChaining) {
 TEST(ComplexControlFlow, GuardPatternsWithContinuations) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Guard continuations
         guards = []
@@ -249,9 +250,9 @@ TEST(ComplexControlFlow, GuardPatternsWithContinuations) {
         
         passed  // 2, 4, 6, 8 = 4 numbers
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 4);
@@ -261,13 +262,13 @@ TEST(ComplexControlFlow, GuardPatternsWithContinuations) {
 TEST(ComplexControlFlow, ConditionalBreakContinue) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Continuation that determines break/continue
         should_skip = { n n % 3 == 0 }
@@ -294,9 +295,9 @@ TEST(ComplexControlFlow, ConditionalBreakContinue) {
         
         sum  // Sum of non-multiples of 3 up to 15
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_GT(ConstDeref<int>(stack->Top()), 0);
@@ -306,13 +307,13 @@ TEST(ComplexControlFlow, ConditionalBreakContinue) {
 TEST(ComplexControlFlow, TernaryConditionalContinuations) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Ternary operation using continuations
         true_branch = { a a 2 * }
@@ -341,9 +342,9 @@ TEST(ComplexControlFlow, TernaryConditionalContinuations) {
         
         sum  // 3 + 4 + 5 + 6 + 8 + 10 = 36
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 36);
@@ -353,11 +354,11 @@ TEST(ComplexControlFlow, TernaryConditionalContinuations) {
 TEST(ComplexControlFlow, MultiLevelIfElseWithLoopState) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
-    
+
     const std::string code = R"(
         // Categorize numbers into multiple buckets
         small = 0
@@ -382,9 +383,9 @@ TEST(ComplexControlFlow, MultiLevelIfElseWithLoopState) {
         
         small + medium * 10 + large * 100 + huge * 1000
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_GT(ConstDeref<int>(stack->Top()), 0);
@@ -394,13 +395,13 @@ TEST(ComplexControlFlow, MultiLevelIfElseWithLoopState) {
 TEST(ComplexControlFlow, ContinuationDispatchComplexConditions) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Dispatch table with complex selection logic
         handlers = []
@@ -452,9 +453,9 @@ TEST(ComplexControlFlow, ContinuationDispatchComplexConditions) {
         }
         sum
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_GT(ConstDeref<int>(stack->Top()), 0);
@@ -464,13 +465,13 @@ TEST(ComplexControlFlow, ContinuationDispatchComplexConditions) {
 TEST(ComplexControlFlow, LogicalOperatorPrecedence) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Test AND/OR precedence
         check1 = { n n > 5 }
@@ -488,9 +489,9 @@ TEST(ComplexControlFlow, LogicalOperatorPrecedence) {
         
         matches
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_GT(ConstDeref<int>(stack->Top()), 0);
@@ -500,13 +501,13 @@ TEST(ComplexControlFlow, LogicalOperatorPrecedence) {
 TEST(ComplexControlFlow, NestedLoopControlConditional) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Matrix search with early exit
         found_value = -1
@@ -537,9 +538,9 @@ TEST(ComplexControlFlow, NestedLoopControlConditional) {
         
         found_value  // Should be 11 (row 1, col 1)
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 11);
@@ -549,13 +550,13 @@ TEST(ComplexControlFlow, NestedLoopControlConditional) {
 TEST(ComplexControlFlow, ConditionalAccumulator) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Conditional accumulator continuations
         add_if_even = {
@@ -587,9 +588,9 @@ TEST(ComplexControlFlow, ConditionalAccumulator) {
         
         sum_result + product_result  // (2+4+6) + (1*3*5) = 12 + 15 = 27
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 27);
@@ -599,13 +600,13 @@ TEST(ComplexControlFlow, ConditionalAccumulator) {
 TEST(ComplexControlFlow, ErrorHandlingPattern) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Error handling continuations
         validate = { n n >= 0 && n <= 100 }
@@ -644,9 +645,9 @@ TEST(ComplexControlFlow, ErrorHandlingPattern) {
         
         valid * 1000 + errors  // 4 valid, 3 errors = 4003
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 4003);
@@ -656,13 +657,13 @@ TEST(ComplexControlFlow, ErrorHandlingPattern) {
 TEST(ComplexControlFlow, StateMachineConditionalTransitions) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // State transitions based on input
         state_A = {
@@ -707,25 +708,25 @@ TEST(ComplexControlFlow, StateMachineConditionalTransitions) {
         // Final state
         state
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
-    ASSERT_EQ(ConstDeref<int>(stack->Top()), 2); // Should end in state C
+    ASSERT_EQ(ConstDeref<int>(stack->Top()), 2);  // Should end in state C
 }
 
 // Test 16: Complex filter chain with continuations
 TEST(ComplexControlFlow, ComplexFilterChain) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Multiple filter continuations
         filters = []
@@ -773,9 +774,9 @@ TEST(ComplexControlFlow, ComplexFilterChain) {
         
         count
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_GT(ConstDeref<int>(stack->Top()), 0);
@@ -785,13 +786,13 @@ TEST(ComplexControlFlow, ComplexFilterChain) {
 TEST(ComplexControlFlow, RecursiveContinuationsWithConditionals) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Recursive GCD with continuations
         gcd = {
@@ -827,9 +828,9 @@ TEST(ComplexControlFlow, RecursiveContinuationsWithConditionals) {
         
         sum  // gcd(48,18) + gcd(100,35) + gcd(81,27) = 6 + 5 + 27 = 38
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 38);
@@ -839,13 +840,13 @@ TEST(ComplexControlFlow, RecursiveContinuationsWithConditionals) {
 TEST(ComplexControlFlow, ConditionalPipelineEarlyTermination) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Pipeline stages with conditions
         stages = []
@@ -916,9 +917,9 @@ TEST(ComplexControlFlow, ConditionalPipelineEarlyTermination) {
         
         sum
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_GT(ConstDeref<int>(stack->Top()), 0);
@@ -928,13 +929,13 @@ TEST(ComplexControlFlow, ConditionalPipelineEarlyTermination) {
 TEST(ComplexControlFlow, ConditionalContinuationMemoization) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Memoized computation with conditions
         cache = []
@@ -989,9 +990,9 @@ TEST(ComplexControlFlow, ConditionalContinuationMemoization) {
         
         compute_count  // Should be 4 (unique values: 5, 3, 7)
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 4);
@@ -1001,13 +1002,13 @@ TEST(ComplexControlFlow, ConditionalContinuationMemoization) {
 TEST(ComplexControlFlow, ComplexControlFlowOrchestration) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Complex orchestration of multiple patterns
         
@@ -1067,9 +1068,9 @@ TEST(ComplexControlFlow, ComplexControlFlowOrchestration) {
         
         result
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     // Complex calculation result

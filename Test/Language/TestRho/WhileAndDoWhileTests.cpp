@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include "KAI/Core/BuiltinTypes.h"
 #include "KAI/Core/Console.h"
 #include "TestLangCommon.h"
@@ -10,11 +11,11 @@ using namespace std;
 TEST(WhileAndDoWhileTests, WhileLoopSum) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
-    
+
     const std::string code = R"(
         sum = 0
         i = 1
@@ -24,23 +25,23 @@ TEST(WhileAndDoWhileTests, WhileLoopSum) {
         }
         sum
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
-    ASSERT_EQ(ConstDeref<int>(stack->Top()), 15); // 1+2+3+4+5 = 15
+    ASSERT_EQ(ConstDeref<int>(stack->Top()), 15);  // 1+2+3+4+5 = 15
 }
 
 // Test 2: Do-while loop - sum numbers from 1 to 5
 TEST(WhileAndDoWhileTests, DoWhileLoopSum) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
-    
+
     const std::string code = R"(
         sum = 0
         i = 1
@@ -50,23 +51,23 @@ TEST(WhileAndDoWhileTests, DoWhileLoopSum) {
         } while (i <= 5)
         sum
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
-    ASSERT_EQ(ConstDeref<int>(stack->Top()), 15); // 1+2+3+4+5 = 15
+    ASSERT_EQ(ConstDeref<int>(stack->Top()), 15);  // 1+2+3+4+5 = 15
 }
 
 // Test 3: While loop that never executes (condition false from start)
 TEST(WhileAndDoWhileTests, WhileLoopNeverExecutes) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
-    
+
     const std::string code = R"(
         counter = 0
         while (false) {
@@ -74,23 +75,23 @@ TEST(WhileAndDoWhileTests, WhileLoopNeverExecutes) {
         }
         counter
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
-    ASSERT_EQ(ConstDeref<int>(stack->Top()), 0); // Never incremented
+    ASSERT_EQ(ConstDeref<int>(stack->Top()), 0);  // Never incremented
 }
 
 // Test 4: Do-while executes once even with false condition
 TEST(WhileAndDoWhileTests, DoWhileExecutesOnceWithFalse) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
-    
+
     const std::string code = R"(
         counter = 0
         do {
@@ -98,23 +99,23 @@ TEST(WhileAndDoWhileTests, DoWhileExecutesOnceWithFalse) {
         } while (false)
         counter
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
-    ASSERT_EQ(ConstDeref<int>(stack->Top()), 1); // Executed once
+    ASSERT_EQ(ConstDeref<int>(stack->Top()), 1);  // Executed once
 }
 
 // Test 5: Nested while loops - multiplication table
 TEST(WhileAndDoWhileTests, NestedWhileLoops) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
-    
+
     const std::string code = R"(
         result = 0
         i = 1
@@ -128,9 +129,9 @@ TEST(WhileAndDoWhileTests, NestedWhileLoops) {
         }
         result
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     // (1*1 + 1*2 + 1*3) + (2*1 + 2*2 + 2*3) + (3*1 + 3*2 + 3*3)
@@ -142,11 +143,11 @@ TEST(WhileAndDoWhileTests, NestedWhileLoops) {
 TEST(WhileAndDoWhileTests, NestedDoWhileLoops) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
-    
+
     const std::string code = R"(
         result = 0
         i = 1
@@ -160,23 +161,23 @@ TEST(WhileAndDoWhileTests, NestedDoWhileLoops) {
         } while (i <= 2)
         result
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
-    ASSERT_EQ(ConstDeref<int>(stack->Top()), 4); // 2 outer * 2 inner = 4
+    ASSERT_EQ(ConstDeref<int>(stack->Top()), 4);  // 2 outer * 2 inner = 4
 }
 
 // Test 7: While loop with break
 TEST(WhileAndDoWhileTests, WhileLoopWithBreak) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
-    
+
     const std::string code = R"(
         i = 0
         while (i < 10) {
@@ -187,9 +188,9 @@ TEST(WhileAndDoWhileTests, WhileLoopWithBreak) {
         }
         i
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 5);
@@ -199,11 +200,11 @@ TEST(WhileAndDoWhileTests, WhileLoopWithBreak) {
 TEST(WhileAndDoWhileTests, DoWhileWithContinue) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
-    
+
     const std::string code = R"(
         sum = 0
         i = 0
@@ -216,23 +217,23 @@ TEST(WhileAndDoWhileTests, DoWhileWithContinue) {
         } while (i < 6)
         sum
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
-    ASSERT_EQ(ConstDeref<int>(stack->Top()), 9); // 1 + 3 + 5 = 9
+    ASSERT_EQ(ConstDeref<int>(stack->Top()), 9);  // 1 + 3 + 5 = 9
 }
 
 // Test 9: Mixed while and do-while loops
 TEST(WhileAndDoWhileTests, MixedWhileAndDoWhile) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
-    
+
     const std::string code = R"(
         total = 0
         
@@ -252,23 +253,24 @@ TEST(WhileAndDoWhileTests, MixedWhileAndDoWhile) {
         
         total
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
-    ASSERT_EQ(ConstDeref<int>(stack->Top()), 33); // 30 from while + 3 from do-while
+    ASSERT_EQ(ConstDeref<int>(stack->Top()),
+              33);  // 30 from while + 3 from do-while
 }
 
 // Test 10: Complex condition expressions in loops
 TEST(WhileAndDoWhileTests, ComplexConditionsInLoops) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
-    
+
     const std::string code = R"(
         // While with complex condition
         x = 0
@@ -288,9 +290,9 @@ TEST(WhileAndDoWhileTests, ComplexConditionsInLoops) {
         
         x + y + a + b
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     // x=5, y=5 (loop runs 5 times)
@@ -303,13 +305,13 @@ TEST(WhileAndDoWhileTests, ComplexConditionsInLoops) {
 TEST(WhileAndDoWhileTests, WhileLoopWithContinuations) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Create continuations in a while loop
         funcs = []
@@ -330,25 +332,25 @@ TEST(WhileAndDoWhileTests, WhileLoopWithContinuations) {
         }
         sum
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
-    ASSERT_EQ(ConstDeref<int>(stack->Top()), 6); // 0 + 2 + 4 = 6
+    ASSERT_EQ(ConstDeref<int>(stack->Top()), 6);  // 0 + 2 + 4 = 6
 }
 
 // Test 12: Do-while loop with continuations
 TEST(WhileAndDoWhileTests, DoWhileLoopWithContinuations) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<Array>(Label("Array"));
     reg.AddClass<Continuation>(Label("Continuation"));
-    
+
     const std::string code = R"(
         // Create continuations in a do-while loop
         funcs = []
@@ -369,23 +371,23 @@ TEST(WhileAndDoWhileTests, DoWhileLoopWithContinuations) {
         } while (j < funcs size)
         result
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
-    ASSERT_EQ(ConstDeref<int>(stack->Top()), 14); // 1 + 4 + 9 = 14
+    ASSERT_EQ(ConstDeref<int>(stack->Top()), 14);  // 1 + 4 + 9 = 14
 }
 
 // Test 13: Factorial using while loop
 TEST(WhileAndDoWhileTests, FactorialUsingWhile) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
-    
+
     const std::string code = R"(
         n = 5
         factorial = 1
@@ -396,23 +398,23 @@ TEST(WhileAndDoWhileTests, FactorialUsingWhile) {
         }
         factorial
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
-    ASSERT_EQ(ConstDeref<int>(stack->Top()), 120); // 5! = 120
+    ASSERT_EQ(ConstDeref<int>(stack->Top()), 120);  // 5! = 120
 }
 
 // Test 14: Fibonacci using do-while
 TEST(WhileAndDoWhileTests, FibonacciUsingDoWhile) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
-    
+
     const std::string code = R"(
         // Calculate 8th Fibonacci number
         n = 8
@@ -435,24 +437,24 @@ TEST(WhileAndDoWhileTests, FibonacciUsingDoWhile) {
         }
         result
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
-    ASSERT_EQ(ConstDeref<int>(stack->Top()), 21); // 8th Fibonacci number
+    ASSERT_EQ(ConstDeref<int>(stack->Top()), 21);  // 8th Fibonacci number
 }
 
 // Test 15: String concatenation in loops
 TEST(WhileAndDoWhileTests, StringConcatenationInLoops) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
     reg.AddClass<String>(Label("String"));
-    
+
     const std::string code = R"(
         // Build string with while loop
         s1 = ""
@@ -472,9 +474,9 @@ TEST(WhileAndDoWhileTests, StringConcatenationInLoops) {
         
         s1 + s2
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<String>(stack->Top()), "AAABB");

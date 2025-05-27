@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include "KAI/Core/BuiltinTypes.h"
 #include "KAI/Core/Console.h"
 #include "TestLangCommon.h"
@@ -10,12 +11,12 @@ using namespace std;
 TEST(RhoDoWhileTests, BasicDoWhileLoop) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     // Register required types
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
-    
+
     // Test basic do-while loop that executes at least once
     const std::string code = R"(
         counter = 0
@@ -25,23 +26,24 @@ TEST(RhoDoWhileTests, BasicDoWhileLoop) {
         
         counter  // Push final value to stack
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 3);
 }
 
-// Test do-while that should execute only once (condition false after first iteration)
+// Test do-while that should execute only once (condition false after first
+// iteration)
 TEST(RhoDoWhileTests, DoWhileExecutesOnce) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
-    
+
     const std::string code = R"(
         counter = 10
         do
@@ -50,9 +52,9 @@ TEST(RhoDoWhileTests, DoWhileExecutesOnce) {
         
         counter  // Should be 11
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 11);
@@ -62,11 +64,11 @@ TEST(RhoDoWhileTests, DoWhileExecutesOnce) {
 TEST(RhoDoWhileTests, NestedDoWhileLoops) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
-    
+
     const std::string code = R"(
         outer = 0
         total = 0
@@ -83,9 +85,9 @@ TEST(RhoDoWhileTests, NestedDoWhileLoops) {
         
         total  // Should be 6 (3 outer * 2 inner)
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 6);
@@ -95,11 +97,11 @@ TEST(RhoDoWhileTests, NestedDoWhileLoops) {
 TEST(RhoDoWhileTests, DoWhileWithBreak) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
-    
+
     const std::string code = R"(
         counter = 0
         do
@@ -112,9 +114,9 @@ TEST(RhoDoWhileTests, DoWhileWithBreak) {
         
         counter  // Should be 2
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 2);
@@ -124,11 +126,11 @@ TEST(RhoDoWhileTests, DoWhileWithBreak) {
 TEST(RhoDoWhileTests, DoWhileWithContinue) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     auto& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<bool>(Label("bool"));
-    
+
     const std::string code = R"(
         counter = 0
         sum = 0
@@ -147,9 +149,9 @@ TEST(RhoDoWhileTests, DoWhileWithContinue) {
         
         sum  // Should be 1 + 3 + 5 = 9
     )";
-    
+
     console.Execute(code);
-    
+
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->Top()), 9);

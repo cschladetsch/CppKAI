@@ -229,10 +229,10 @@ TEST_F(PiAdvancedTests, ConditionalOperations) {
     AssertResult<int>("10 false { 5 + } { 5 - } ife", 5);
 
     // Nested conditionals
-    AssertResult<int>(
-        "10 true { 5 + true { 2 * } { 2 / } ife } { 5 - } ife", 30);
-    AssertResult<int>(
-        "10 true { 5 + false { 2 * } { 2 / } ife } { 5 - } ife", 7);
+    AssertResult<int>("10 true { 5 + true { 2 * } { 2 / } ife } { 5 - } ife",
+                      30);
+    AssertResult<int>("10 true { 5 + false { 2 * } { 2 / } ife } { 5 - } ife",
+                      7);
     AssertResult<int>(
         "10 false { 5 + true { 2 * } { 2 / } ife } { 5 - true { 2 * } { 2 / "
         "} ife } ife",
@@ -284,11 +284,9 @@ TEST_F(PiAdvancedTests, VariableOperations) {
 
     // Variables with conditionals
     AssertResult<int>(
-        "5 'x' ! 10 'y' ! 'x' @ 'y' @ < { 'x' @ 2 * } { 'y' @ 2 * } ife",
-        20);
+        "5 'x' ! 10 'y' ! 'x' @ 'y' @ < { 'x' @ 2 * } { 'y' @ 2 * } ife", 20);
     AssertResult<int>(
-        "15 'x' ! 10 'y' ! 'x' @ 'y' @ < { 'x' @ 2 * } { 'y' @ 2 * } ife",
-        30);
+        "15 'x' ! 10 'y' ! 'x' @ 'y' @ < { 'x' @ 2 * } { 'y' @ 2 * } ife", 30);
 }
 
 // Test complex control flow with continuations

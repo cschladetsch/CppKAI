@@ -1,8 +1,9 @@
 #pragma once
 
-#include <memory>
 #include <KAI/Core/Detail/Arity.h>
 #include <KAI/Core/Meta/Base.h>
+
+#include <memory>
 
 #include "KAI/Core/Detail/CallableBase.h"
 #include "MethodBase.h"
@@ -98,7 +99,7 @@ struct Selector {
 
     typedef typename Select<VoidRet, Const, Method<T, R, Args...>,
                             MethodConst<T, R, Args...>, VoidMethod<T, Args...>,
-                            VoidMethodConst<T, Args...> >::Type
+                            VoidMethodConst<T, Args...>>::Type
 
         Type;
 };
@@ -112,12 +113,14 @@ struct Method : method_detail::Selector<T, R, C, Args...>::Type {
 };
 
 template <class T, class R, class... Args>
-std::unique_ptr<MethodBase> MakeMethod(R (T::*method)(Args...), const Label &N) {
+std::unique_ptr<MethodBase> MakeMethod(R (T::*method)(Args...),
+                                       const Label &N) {
     return std::make_unique<Method<T, R, false, Args...>>(method, N);
 }
 
 template <class T, class R, class... Args>
-std::unique_ptr<MethodBase> MakeMethod(R (T::*method)(Args...) const, const Label &N) {
+std::unique_ptr<MethodBase> MakeMethod(R (T::*method)(Args...) const,
+                                       const Label &N) {
     return std::make_unique<Method<T, R, true, Args...>>(method, N);
 }
 

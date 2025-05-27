@@ -20,49 +20,54 @@ struct TestTau : TestLangCommon {
     void TestIDL(const std::string& script, const std::string& testName) {
         Registry r;
         auto lex = std::make_shared<tau::TauLexer>(script.c_str(), r);
-        
+
         bool lexResult = lex->Process();
         KAI_LOG_INFO("Lexer output for " + testName + ": " + lex->Print());
-        
+
         if (!lexResult) {
             FAIL() << "Lexer failed for " << testName << ": " << lex->Error;
             return;
         }
-        
+
         auto parser = std::make_shared<tau::TauParser>(r);
         bool parserSuccess = parser->Process(lex, Structure::Module);
-        
+
         if (!parser->Error.empty()) {
             FAIL() << "Parser failed for " << testName << ": " << parser->Error;
             return;
         }
-        
+
         SUCCEED() << "Successfully parsed " << testName;
     }
-    
-    void TestCodeGeneration(const std::string& script, const std::string& testName) {
+
+    void TestCodeGeneration(const std::string& script,
+                            const std::string& testName) {
         // Test proxy generation
         string proxyOutput;
         tau::Generate::GenerateProxy proxy(script.c_str(), proxyOutput);
-        
+
         if (proxy.Failed) {
-            KAI_LOG_WARNING("Proxy generation for " + testName + " failed: " + proxy.Error);
+            KAI_LOG_WARNING("Proxy generation for " + testName +
+                            " failed: " + proxy.Error);
         } else {
-            KAI_LOG_INFO("Proxy generation for " + testName + " succeeded, size: " + 
-                         std::to_string(proxyOutput.size()));
+            KAI_LOG_INFO(
+                "Proxy generation for " + testName +
+                " succeeded, size: " + std::to_string(proxyOutput.size()));
         }
-        
+
         // Test agent generation
         string agentOutput;
         tau::Generate::GenerateAgent agent(script.c_str(), agentOutput);
-        
+
         if (agent.Failed) {
-            KAI_LOG_WARNING("Agent generation for " + testName + " failed: " + agent.Error);
+            KAI_LOG_WARNING("Agent generation for " + testName +
+                            " failed: " + agent.Error);
         } else {
-            KAI_LOG_INFO("Agent generation for " + testName + " succeeded, size: " + 
-                         std::to_string(agentOutput.size()));
+            KAI_LOG_INFO(
+                "Agent generation for " + testName +
+                " succeeded, size: " + std::to_string(agentOutput.size()));
         }
-        
+
         // Success if at least one generator worked
         if (!proxy.Failed || !agent.Failed) {
             SUCCEED() << "Code generation for " << testName << " completed";
@@ -82,7 +87,7 @@ TEST_F(TestTau, TestBasicIDL) {
         }
     }
     )";
-    
+
     TestIDL(script, "BasicIDL");
 }
 
@@ -100,7 +105,7 @@ TEST_F(TestTau, TestDataService) {
         }
     }
     )";
-    
+
     TestIDL(script, "DataService");
 }
 
@@ -119,7 +124,7 @@ TEST_F(TestTau, TestMultipleServices) {
         }
     }
     )";
-    
+
     TestIDL(script, "MultipleServices");
 }
 
@@ -129,7 +134,7 @@ TEST_F(TestTau, TestEmptyIDL) {
     namespace Empty {
     }
     )";
-    
+
     TestIDL(script, "EmptyIDL");
 }
 
@@ -152,7 +157,7 @@ TEST_F(TestTau, TestNetworkService) {
         }
     }
     )";
-    
+
     TestIDL(script, "NetworkService");
 }
 
@@ -166,7 +171,7 @@ TEST_F(TestTau, TestBasicCodeGen) {
         }
     }
     )";
-    
+
     TestCodeGeneration(script, "BasicCodeGen");
 }
 
@@ -182,7 +187,7 @@ TEST_F(TestTau, TestNestedNamespacesSimple) {
         }
     }
     )";
-    
+
     TestIDL(script, "NestedNamespacesSimple");
 }
 
@@ -198,7 +203,7 @@ TEST_F(TestTau, TestRPCInterface) {
         }
     }
     )";
-    
+
     TestIDL(script, "RPCInterface");
 }
 
@@ -221,6 +226,6 @@ TEST_F(TestTau, TestDataTransferObjects) {
         }
     }
     )";
-    
+
     TestIDL(script, "DataTransferObjects");
 }

@@ -100,15 +100,15 @@ bool TauLexer::NextToken() {
                 int start = offset;
                 // Consume until and including the newline (same as Rho and Pi)
                 while (Next() != '\n' && Current() != 0);
-                
+
                 // Create the comment token
                 Add(Enum::Comment, Slice(start, offset));
-                
+
                 // If we stopped at a newline, consume it
                 if (Current() == '\n') {
                     Next();
                 }
-                
+
                 return true;
             }
 
