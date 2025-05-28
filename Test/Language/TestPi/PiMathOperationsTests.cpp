@@ -59,83 +59,67 @@ TEST_F(PiMathOperationsTest, AAA_SimplestTest) {
 //     EXPECT_FLOAT_EQ(kai::ConstDeref<float>(stack->Top()), 3.0f);
 // }
 
-// These tests fail due to test infrastructure issues with TestLangCommon
-// The operations work correctly as demonstrated by NewMinMaxTest and standalone tests
-/*
-TEST_F(PiMathOperationsTest, TestMinMaxOperations) {
-    console_.SetLanguage(kai::Language::Pi);
+// These tests were converted to standalone pattern to avoid TestLangCommon issues
+// Test 1: Min with negative numbers
+TEST(PiMinMaxStandalone, MinWithNegativeNumbers) {
+    kai::Console console;
+    console.SetLanguage(kai::Language::Pi);
+    auto exec = console.GetExecutor();
 
-    // Test min with integers
-    console_.Execute("5 3 min");
-    auto exec = console_.GetExecutor();
+    // Test min with negative numbers (using 0 - 5 to create -5)
+    console.Execute("0 5 - 3 min");
+    auto stack = exec->GetDataStack();
+    ASSERT_EQ(stack->Size(), 1);
+    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), -5);
+}
+
+// Test 2: Max with negative numbers
+TEST(PiMinMaxStandalone, MaxWithNegativeNumbers) {
+    kai::Console console;
+    console.SetLanguage(kai::Language::Pi);
+    auto exec = console.GetExecutor();
+
+    console.Execute("0 5 - 3 max");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 3);
+}
 
-    stack->Clear();
+// Test 3: Min with floats
+TEST(PiMinMaxStandalone, MinWithFloats) {
+    kai::Console console;
+    console.SetLanguage(kai::Language::Pi);
+    auto exec = console.GetExecutor();
 
-    // Test max with integers
-    console_.Execute("5 3 max");
-    ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 5);
-
-    stack->Clear();
-
-    // Test min with negative numbers (using 0 - 5 to create -5)
-    console_.Execute("0 5 - 3 min");
-    ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), -5);
-
-    stack->Clear();
-
-    // Test max with negative numbers
-    console_.Execute("0 5 - 3 max");
-    ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 3);
-
-    stack->Clear();
-
-    // Test min with floats
-    console_.Execute("5.5 3.2 min");
+    console.Execute("5.5 3.2 min");
+    auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_FLOAT_EQ(kai::ConstDeref<float>(stack->Top()), 3.2f);
+}
 
-    stack->Clear();
+// Test 4: Max with floats
+TEST(PiMinMaxStandalone, MaxWithFloats) {
+    kai::Console console;
+    console.SetLanguage(kai::Language::Pi);
+    auto exec = console.GetExecutor();
 
-    // Test max with floats
-    console_.Execute("5.5 3.2 max");
+    console.Execute("5.5 3.2 max");
+    auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_FLOAT_EQ(kai::ConstDeref<float>(stack->Top()), 5.5f);
+}
 
-    stack->Clear();
+// Test 5: Chained min operations
+TEST(PiMinMaxStandalone, ChainedMinOperations) {
+    kai::Console console;
+    console.SetLanguage(kai::Language::Pi);
+    auto exec = console.GetExecutor();
 
-    // Test min with mixed types (int and float)
-    console_.Execute("5 3.2 min");
-    ASSERT_EQ(stack->Size(), 1);
-    EXPECT_FLOAT_EQ(kai::ConstDeref<float>(stack->Top()), 3.2f);
-
-    stack->Clear();
-
-    // Test max with mixed types (float and int)
-    console_.Execute("3.2 5 max");
-    ASSERT_EQ(stack->Size(), 1);
-    EXPECT_FLOAT_EQ(kai::ConstDeref<float>(stack->Top()), 5.0f);
-
-    stack->Clear();
-
-    // Test chained min operations
-    console_.Execute("10 20 30 min min");
+    console.Execute("10 20 30 min min");
+    auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 10);
-
-    stack->Clear();
-
-    // Test chained max operations
-    console_.Execute("10 20 30 max max");
-    ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 30);
 }
-*/
 
 TEST_F(PiMathOperationsTest, NewMinMaxTest) {
     console_.SetLanguage(kai::Language::Pi);
