@@ -114,8 +114,7 @@ result
 }
 
 // Test nested if statements
-// DISABLED: Nested if with outer else causes parser context issues
-TEST_F(RhoControlFlowFixed, DISABLED_NestedIf) {
+TEST_F(RhoControlFlowFixed, NestedIf) {
     RunAndExpect<int>(R"(
 result = 0
 if true
@@ -125,6 +124,20 @@ if true
         result = 24
 else
     result = 10
+result
+)",
+                      42);
+}
+
+// Test simpler nested if without outer else
+TEST_F(RhoControlFlowFixed, SimpleNestedIf) {
+    RunAndExpect<int>(R"(
+result = 0
+if true
+    if true
+        result = 42
+    else
+        result = 24
 result
 )",
                       42);
@@ -199,7 +212,7 @@ result
 }
 
 // Test multiple if-else if-else
-// DISABLED: Multiple else-if chains require parser fixes for proper token handling
+// DISABLED: Parser doesn't support "else if" syntax
 TEST_F(RhoControlFlowFixed, DISABLED_IfElseIfElse) {
     RunAndExpect<int>(R"(
 x = 2
@@ -211,6 +224,26 @@ else if x == 3
     result = 30
 else
     result = 40
+result
+)",
+                      20);
+}
+
+// Test if-else chain using nested structure
+TEST_F(RhoControlFlowFixed, IfElseChain) {
+    RunAndExpect<int>(R"(
+x = 2
+result = 0
+if x == 1
+    result = 10
+else
+    if x == 2
+        result = 20
+    else
+        if x == 3
+            result = 30
+        else
+            result = 40
 result
 )",
                       20);

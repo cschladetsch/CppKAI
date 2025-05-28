@@ -95,12 +95,14 @@ bool RhoParser::Program() {
 
         // Parse the next statement
         KAI_TRACE() << "RhoParser::Program - Parsing statement: "
-                    << TokenEnumType::ToString(Current().type);
+                    << TokenEnumType::ToString(Current().type) 
+                    << " '" << Current().Text() << "'"
+                    << " at position " << (int)current;
         if (!Statement(root)) {
             return Fail("Statement expected");
         }
 
-        KAI_TRACE() << "RhoParser::Program - Successfully parsed statement";
+        KAI_TRACE() << "RhoParser::Program - Successfully parsed statement, now at position " << (int)current;
 
         // Note: We don't need special handling for semicolons here anymore
         // as they are properly consumed in the while loop at the top
@@ -212,7 +214,7 @@ bool RhoParser::Block(AstNodePtr node) {
     KAI_TRACE() << "Block: Starting with indent level " << indent;
     KAI_TRACE() << "Block: Current token after ConsumeNewLines: "
                 << TokenEnumType::ToString(Current().type) << " '"
-                << Current().Text() << "'";
+                << Current().Text() << "' at position " << (int)current;
 
     while (!Failed) {
         int level = 0;
@@ -225,7 +227,8 @@ bool RhoParser::Block(AstNodePtr node) {
         // Count indentation level - handle both tabs and spaces
         // Each tab counts as 1 level, every 4 spaces count as 1 level
         int spaceCount = 0;
-        KAI_TRACE() << "Block: Checking for indentation, current token: "
+        KAI_TRACE() << "Block: Checking for indentation at position " << (int)current
+                    << ", current token: "
                     << TokenEnumType::ToString(Current().type) << " '"
                     << Current().Text() << "'";
         while (Try(TokenType::Tab) || Try(TokenType::Whitespace)) {
@@ -246,7 +249,7 @@ bool RhoParser::Block(AstNodePtr node) {
         }
 
         KAI_TRACE() << "Block: Found indent level " << level << " (expecting "
-                    << indent << ")";
+                    << indent << ") at position " << (int)current;
 
         if (Try(TokenType::NewLine)) {
             Consume();
@@ -258,16 +261,43 @@ bool RhoParser::Block(AstNodePtr node) {
             --indent;
 
             // rewind to start of indentation sequence to determine next block
+            KAI_TRACE() << "Block: Before rewind, position " << (int)current 
+                        << ", token: " << TokenEnumType::ToString(Current().type)
+                        << " '" << Current().Text() << "'";
+            
+            // Special handling: if we're at an 'else' token, DON'T rewind
+            // This allows the parent IfCondition to see the else
+            if (current < tokens.size() && Current().type == TokenType::Else) {
+                KAI_TRACE() << "Block: Exiting at else token, not rewinding";
+                return true;
+            }
+            
+            // Rewind to start of indentation sequence to determine next block
             --current;
             while (Try(TokenType::Tab) || Try(TokenType::Whitespace)) --current;
 
             ++current;
+            
+            
+            KAI_TRACE() << "Block: After rewind, position " << (int)current 
+                        << ", token: " << TokenEnumType::ToString(Current().type)
+                        << " '" << Current().Text() << "'";
+            
+            // IMPORTANT: When we're exiting a block due to outdenting, we need to
+            // preserve the ability for the parent to check what token caused the outdent.
+            // This is especially important for 'else' tokens in nested if statements.
             return true;
         }
 
         if (level != indent) {
             Fail(Lexer::CreateErrorMessage(Current(), "Mismatch block indent"));
             return false;
+        }
+
+        // Special case: if we see an 'else' token at the current indent level,
+        // it might belong to a parent if statement, not this block
+        if (Try(TokenType::Else)) {
+            return true;
         }
 
         if (!Statement(node)) {
@@ -806,8 +836,13 @@ bool RhoParser::IfCondition(AstNodePtr block) {
     cond->Add(condition);
     cond->Add(trueClause);
 
+    KAI_TRACE() << "IfCondition: Checking for else at position " << (int)current
+                << ", token: " << TokenEnumType::ToString(Current().type);
+    
     if (Try(TokenType::Else)) {
+        KAI_TRACE() << "IfCondition: Found else at position " << (int)current;
         Consume();
+        KAI_TRACE() << "IfCondition: After consuming else, position " << (int)current;
 
         // Expect newline after else
         if (!Try(TokenType::NewLine)) {
@@ -816,7 +851,9 @@ bool RhoParser::IfCondition(AstNodePtr block) {
         Consume();
 
         auto falseClause = NewNode(NodeType::Block);
+        KAI_TRACE() << "IfCondition: Parsing else block";
         Block(falseClause);
+        KAI_TRACE() << "IfCondition: Finished else block, position " << (int)current;
 
         cond->Add(falseClause);
     }
