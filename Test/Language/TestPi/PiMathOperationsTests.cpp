@@ -212,3 +212,59 @@ TEST_F(PiMathOperationsTest, TestBasicArithmetic) {
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 2);
 }
+
+// Test basic arithmetic operations using standalone pattern
+TEST(PiArithmeticStandalone, Addition) {
+    kai::Console console;
+    console.SetLanguage(kai::Language::Pi);
+    auto exec = console.GetExecutor();
+
+    console.Execute("5 3 +");
+    auto stack = exec->GetDataStack();
+    ASSERT_EQ(stack->Size(), 1);
+    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 8);
+}
+
+TEST(PiArithmeticStandalone, Subtraction) {
+    kai::Console console;
+    console.SetLanguage(kai::Language::Pi);
+    auto exec = console.GetExecutor();
+
+    console.Execute("5 3 -");
+    auto stack = exec->GetDataStack();
+    ASSERT_EQ(stack->Size(), 1);
+    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 2);
+}
+
+TEST(PiArithmeticStandalone, Multiplication) {
+    kai::Console console;
+    console.SetLanguage(kai::Language::Pi);
+    auto exec = console.GetExecutor();
+
+    console.Execute("5 3 *");
+    auto stack = exec->GetDataStack();
+    ASSERT_EQ(stack->Size(), 1);
+    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 15);
+}
+
+TEST(PiArithmeticStandalone, Division) {
+    kai::Console console;
+    console.SetLanguage(kai::Language::Pi);
+    auto exec = console.GetExecutor();
+
+    console.Execute("15 3 /");
+    auto stack = exec->GetDataStack();
+    ASSERT_EQ(stack->Size(), 1);
+    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 5);
+}
+
+TEST(PiArithmeticStandalone, Modulo) {
+    kai::Console console;
+    console.SetLanguage(kai::Language::Pi);
+    auto exec = console.GetExecutor();
+
+    console.Execute("17 5 %");
+    auto stack = exec->GetDataStack();
+    ASSERT_EQ(stack->Size(), 1);
+    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 2);
+}
