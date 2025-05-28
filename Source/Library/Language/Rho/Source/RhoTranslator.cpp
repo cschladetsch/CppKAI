@@ -652,9 +652,20 @@ void RhoTranslator::TranslateCall(AstNodePtr node) {
     // Get function name
     auto funcNode = node->GetChild(0);
 
-    // Translate arguments in order (they'll be on stack for the function)
-    for (size_t i = 1; i < node->GetChildren().size(); ++i) {
-        TranslateNode(node->GetChild(i));
+    // Check if we have an ArgList node (parser creates Call with [function, ArgList])
+    if (node->GetChildren().size() >= 2) {
+        auto secondChild = node->GetChild(1);
+        if (secondChild->GetType() == AstNodeEnum::ArgList) {
+            // Translate arguments from the ArgList node
+            for (const auto& arg : secondChild->GetChildren()) {
+                TranslateNode(arg);
+            }
+        } else {
+            // Old style: arguments are direct children starting at index 1
+            for (size_t i = 1; i < node->GetChildren().size(); ++i) {
+                TranslateNode(node->GetChild(i));
+            }
+        }
     }
 
     // Now translate the function identifier (this pushes the continuation)

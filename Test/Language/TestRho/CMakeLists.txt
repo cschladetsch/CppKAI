@@ -79,6 +79,15 @@ add_library(TestRhoFiles OBJECT
     # Debug tests for if-else
     RhoNestedIfDebug.cpp  # Debug nested if-else parsing
     
+    # Debug test for function calls
+    DebugFunctionCall.cpp  # Debug function call parsing
+    DebugNestedFunctionCalls.cpp  # Debug nested function calls
+    DebugFunctionReturn.cpp  # Debug function return values
+    DebugNestedExecution.cpp  # Debug nested function execution
+    DebugParseTree.cpp  # Debug parse tree for nested calls
+    DebugBytecode.cpp  # Debug bytecode generation
+    WorkaroundTest.cpp  # Test workarounds for nested calls
+    
     # IMPORTANT: The following files contain duplicate test definitions
     # They MUST remain commented out to avoid linker errors
     # Because RhoPiFix.cpp has implementations for the same test fixtures/names

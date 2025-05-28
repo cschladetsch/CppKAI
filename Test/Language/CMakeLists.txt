@@ -66,6 +66,13 @@ foreach (lang ${langs})
             ${source_path}/RhoLambdaTestsFixed.cpp         # Fixed lambda tests
             ${source_path}/SimpleFunctionDebug.cpp         # Debug function execution
             ${source_path}/RhoFunctionTestsWorking.cpp     # Working function tests
+            ${source_path}/DebugFunctionCall.cpp           # Debug function call parsing
+            ${source_path}/DebugNestedFunctionCalls.cpp    # Debug nested function calls
+            ${source_path}/DebugFunctionReturn.cpp         # Debug function return values
+            ${source_path}/DebugNestedExecution.cpp        # Debug nested function execution
+            ${source_path}/DebugParseTree.cpp              # Debug parse tree for nested calls
+            ${source_path}/DebugBytecode.cpp               # Debug bytecode generation
+            ${source_path}/WorkaroundTest.cpp              # Test workarounds for nested calls
         )
     elseif(lang STREQUAL "Pi")
         # Explicitly list Pi tests to avoid including unwanted files

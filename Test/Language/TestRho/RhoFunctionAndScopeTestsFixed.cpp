@@ -25,6 +25,7 @@ struct RhoFunctionTestsFixed : TestLangCommon {
 
         try {
             Console console;
+            console.SetLanguage(Language::Rho);  // Critical: Set language to Rho!
             Registry &reg = console.GetRegistry();
 
             // Execute as a complete program
@@ -86,9 +87,9 @@ struct RhoFunctionTestsFixed : TestLangCommon {
 // These tests are disabled until the feature is complete.
 
 // Basic function definition and call
-TEST_F(RhoFunctionTestsFixed, DISABLED_BasicFunction) {
+TEST_F(RhoFunctionTestsFixed, BasicFunction) {
     RunAndExpect<int>(R"(
-fun add = a, b
+fun add(a, b)
     return a + b
 
 add(2, 3)
@@ -96,7 +97,7 @@ add(2, 3)
                       5);
 
     RunAndExpect<int>(R"(
-fun multiply = a, b
+fun multiply(a, b)
     return a * b
 
 multiply(4, 5)
@@ -105,9 +106,9 @@ multiply(4, 5)
 }
 
 // Functions with multiple statements
-TEST_F(RhoFunctionTestsFixed, DISABLED_MultiStatementFunction) {
+TEST_F(RhoFunctionTestsFixed, MultiStatementFunction) {
     RunAndExpect<int>(R"(
-fun computeSum = n
+fun computeSum(n)
     sum = 0
     i = 1
     while i <= n
@@ -120,7 +121,7 @@ computeSum(5)
                       15);
 
     RunAndExpect<int>(R"(
-fun factorial = n
+fun factorial(n)
     result = 1
     i = 2
     while i <= n
@@ -134,9 +135,9 @@ factorial(5)
 }
 
 // Functions with different return types
-TEST_F(RhoFunctionTestsFixed, DISABLED_DifferentReturnTypes) {
+TEST_F(RhoFunctionTestsFixed, DifferentReturnTypes) {
     RunAndExpect<int>(R"(
-fun returnInt = 
+fun returnInt()
     return 42
 
 returnInt()
@@ -144,7 +145,7 @@ returnInt()
                       42);
 
     RunAndExpect<float>(R"(
-fun returnFloat = 
+fun returnFloat()
     return 3.14159
 
 returnFloat()
@@ -152,7 +153,7 @@ returnFloat()
                         3.14159f);
 
     RunAndExpect<bool>(R"(
-fun returnBool = 
+fun returnBool()
     return true
 
 returnBool()
@@ -160,7 +161,7 @@ returnBool()
                        true);
 
     RunAndExpect<String>(R"(
-fun returnString = 
+fun returnString()
     return "Hello World"
 
 returnString()
@@ -169,9 +170,9 @@ returnString()
 }
 
 // Function parameter passing
-TEST_F(RhoFunctionTestsFixed, DISABLED_ParameterPassing) {
+TEST_F(RhoFunctionTestsFixed, ParameterPassing) {
     RunAndExpect<int>(R"(
-fun addThree = a, b, c
+fun addThree(a, b, c)
     return a + b + c
 
 addThree(1, 2, 3)
@@ -179,7 +180,7 @@ addThree(1, 2, 3)
                       6);
 
     RunAndExpect<float>(R"(
-fun averageThree = a, b, c
+fun averageThree(a, b, c)
     return (a + b + c) / 3.0
 
 averageThree(1.0, 2.0, 3.0)
@@ -187,7 +188,7 @@ averageThree(1.0, 2.0, 3.0)
                         2.0f);
 
     RunAndExpect<String>(R"(
-fun joinStrings = a, b
+fun joinStrings(a, b)
     return a + b
 
 joinStrings("Hello ", "World")
@@ -196,12 +197,16 @@ joinStrings("Hello ", "World")
 }
 
 // Nested function calls
+// NOTE: This test is disabled due to a limitation in the executor
+// where function returns don't properly continue execution in the
+// parent continuation. The bytecode is generated correctly but
+// execution stops after the first nested function returns.
 TEST_F(RhoFunctionTestsFixed, DISABLED_NestedFunctionCalls) {
     RunAndExpect<int>(R"(
-fun square = n
+fun square(n)
     return n * n
 
-fun sumOfSquares = a, b
+fun sumOfSquares(a, b)
     return square(a) + square(b)
 
 sumOfSquares(3, 4)
@@ -209,10 +214,10 @@ sumOfSquares(3, 4)
                       25);
 
     RunAndExpect<int>(R"(
-fun increment = n
+fun increment(n)
     return n + 1
 
-fun double = n
+fun double(n)
     return n * 2
 
 double(increment(increment(double(2))))
@@ -221,9 +226,10 @@ double(increment(increment(double(2))))
 }
 
 // Recursion
+// DISABLED: Requires nested function calls which don't work due to executor limitation
 TEST_F(RhoFunctionTestsFixed, DISABLED_Recursion) {
     RunAndExpect<int>(R"(
-fun factorial = n
+fun factorial(n)
     if n <= 1
         return 1
     else
@@ -234,7 +240,7 @@ factorial(5)
                       120);
 
     RunAndExpect<int>(R"(
-fun fibonacci = n
+fun fibonacci(n)
     if n <= 1
         return n
     else
@@ -246,15 +252,16 @@ fibonacci(7)
 }
 
 // Mutual recursion
+// DISABLED: Requires nested function calls which don't work due to executor limitation
 TEST_F(RhoFunctionTestsFixed, DISABLED_MutualRecursion) {
     RunAndExpect<bool>(R"(
-fun isEven = n
+fun isEven(n)
     if n == 0
         return true
     else
         return isOdd(n - 1)
 
-fun isOdd = n
+fun isOdd(n)
     if n == 0
         return false
     else
@@ -265,13 +272,13 @@ isEven(4)
                        true);
 
     RunAndExpect<bool>(R"(
-fun isEven = n
+fun isEven(n)
     if n == 0
         return true
     else
         return isOdd(n - 1)
 
-fun isOdd = n
+fun isOdd(n)
     if n == 0
         return false
     else
@@ -283,7 +290,7 @@ isOdd(5)
 }
 
 // Scoping tests - Rho doesn't have block scoping with braces
-TEST_F(RhoFunctionTestsFixed, DISABLED_BasicScoping) {
+TEST_F(RhoFunctionTestsFixed, BasicScoping) {
     // Test global variable modification
     RunAndExpect<int>(R"(
 x = 10
@@ -294,10 +301,10 @@ x
 }
 
 // Function scoping
-TEST_F(RhoFunctionTestsFixed, DISABLED_FunctionScoping) {
+TEST_F(RhoFunctionTestsFixed, FunctionScoping) {
     RunAndExpect<int>(R"(
 x = 10
-fun mutateX = 
+fun mutateX()
     x = x + 5
 
 mutateX()
@@ -308,7 +315,7 @@ x
     // Functions in Rho share scope with outer context
     RunAndExpect<int>(R"(
 x = 10
-fun updateX = 
+fun updateX()
     x = 20
     x = x + 5
     return x
@@ -320,10 +327,10 @@ x
 }
 
 // Function scoping with parameters
-TEST_F(RhoFunctionTestsFixed, DISABLED_FunctionScopingWithParams) {
+TEST_F(RhoFunctionTestsFixed, FunctionScopingWithParams) {
     RunAndExpect<int>(R"(
 x = 10
-fun updateX = x
+fun updateX(x)
     x = x + 5
     return x
 
@@ -334,7 +341,7 @@ x
 
     RunAndExpect<int>(R"(
 x = 10
-fun updateX = value
+fun updateX(value)
     x = value + 5
     return x
 
@@ -345,10 +352,10 @@ x
 }
 
 // Complex scope testing
-TEST_F(RhoFunctionTestsFixed, DISABLED_ComplexScoping) {
+TEST_F(RhoFunctionTestsFixed, ComplexScoping) {
     RunAndExpect<int>(R"(
 counter = 0
-fun makeCounter = 
+fun makeCounter()
     counter = counter + 1
     return counter
 

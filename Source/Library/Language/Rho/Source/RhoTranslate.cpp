@@ -117,6 +117,14 @@ void RhoTranslator::TranslateNode(AstNodePtr node) {
             }
             break;
 
+        case AstNodeEnum::ArgList:
+            KAI_TRACE() << "Processing ArgList node";
+            // ArgList is just a container for arguments, process all children
+            for (const auto& child : node->GetChildren()) {
+                TranslateNode(child);
+            }
+            break;
+
         default:
             // Log warning about unhandled node type but continue
             KAI_TRACE() << "Node type not fully implemented: "
