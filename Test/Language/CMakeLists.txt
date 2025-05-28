@@ -64,6 +64,8 @@ foreach (lang ${langs})
             ${source_path}/RhoControlFlowFixed.cpp         # Fixed control flow tests
             ${source_path}/RhoFunctionAndScopeTestsFixed.cpp # Fixed function and scope tests
             ${source_path}/RhoLambdaTestsFixed.cpp         # Fixed lambda tests
+            ${source_path}/SimpleFunctionDebug.cpp         # Debug function execution
+            ${source_path}/RhoFunctionTestsWorking.cpp     # Working function tests
         )
     elseif(lang STREQUAL "Pi")
         # Explicitly list Pi tests to avoid including unwanted files
