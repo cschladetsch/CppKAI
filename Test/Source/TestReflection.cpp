@@ -1,8 +1,8 @@
+#include <KAI/ClassBuilder.h>
+#include <KAI/Core/Object.h>
+#include <KAI/Core/Type.h>
 #include <gtest/gtest.h>
 
-#include "KAI/Core/ClassBuilder.h"
-#include "KAI/Core/Object.h"
-#include "KAI/Core/Type.h"
 #include "TestCommon.h"
 
 // Test suite for reflection and type system

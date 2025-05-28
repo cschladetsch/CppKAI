@@ -46,6 +46,8 @@ foreach (lang ${langs})
             ${source_path}/ExtendedRhoTests.cpp           # Added 20 new test cases for Rho
             ${source_path}/RhoAdvancedOperationsTests.cpp  # Advanced operations tests
             ${source_path}/RhoControlStructuresTests.cpp   # Control structures tests
+            ${source_path}/RhoControlStructuresTestsFixed.cpp   # Fixed control structure tests
+            ${source_path}/RhoControlStructuresTestsFixed2.cpp  # Fixed with Structure::Program
             ${source_path}/RhoFunctionAndScopeTests.cpp    # Function and scope tests
             ${source_path}/RhoAdvancedDataTests.cpp        # Advanced data structure tests
             ${source_path}/RhoDemo.cpp                    # Demo runner for showcasing features
@@ -59,6 +61,9 @@ foreach (lang ${langs})
             ${source_path}/SimplePiBlockDebugTest.cpp      # Debug pi block tests
             ${source_path}/DebugIfTest.cpp                 # Debug if statement tests
             ${source_path}/DirectRhoTest.cpp               # Direct Rho execution tests
+            ${source_path}/RhoControlFlowFixed.cpp         # Fixed control flow tests
+            ${source_path}/RhoFunctionAndScopeTestsFixed.cpp # Fixed function and scope tests
+            ${source_path}/RhoLambdaTestsFixed.cpp         # Fixed lambda tests
         )
     elseif(lang STREQUAL "Pi")
         # Explicitly list Pi tests to avoid including unwanted files

@@ -19,11 +19,23 @@ bool RhoParser::Process(std::shared_ptr<Lexer> lex, Structure st) {
     Failed = false;
 
     KAI_TRACE() << "Starting to process tokens";
+    bool atLineStart = true;
     for (auto tok : lexer->GetTokens()) {
-        if (tok.type != TokenEnum::Whitespace &&
-            tok.type != TokenEnum::Comment) {
+        // Keep whitespace at the beginning of lines for indentation
+        if (tok.type == TokenEnum::Whitespace && atLineStart) {
+            tokens.push_back(tok);
+            KAI_TRACE() << "Token: " << TokenEnumType::ToString(tok.type)
+                        << " (line start whitespace)";
+        } else if (tok.type != TokenEnum::Whitespace &&
+                   tok.type != TokenEnum::Comment) {
             tokens.push_back(tok);
             KAI_TRACE() << "Token: " << TokenEnumType::ToString(tok.type);
+            atLineStart = false;
+        }
+
+        // Track when we're at the start of a new line
+        if (tok.type == TokenEnum::NewLine) {
+            atLineStart = true;
         }
     }
 
@@ -142,14 +154,48 @@ bool RhoParser::Function(AstNodePtr node) {
 
     Expect(TokenType::CloseParan);
 
-    // Expect newline after function declaration
-    Expect(TokenType::NewLine);
-
     auto block = NewNode(RhoAstNodeEnumType::Block);
 
-    // Use the Block method for indented code blocks
-    if (!Block(block)) {
-        return CreateError("Block Expected for function body");
+    KAI_TRACE() << "Function: After CloseParan, current token: "
+                << TokenEnumType::ToString(Current().type) << " '"
+                << Current().Text() << "'";
+
+    // Check if we have brace-style or indentation-style
+    if (Try(TokenType::OpenBrace)) {
+        // Brace-style function body
+        Consume();  // consume '{'
+
+        ConsumeNewLines();
+
+        // Parse statements until we hit closing brace
+        while (!Try(TokenType::CloseBrace) && !Failed) {
+            if (!Statement(block)) {
+                if (!Failed) {
+                    return Fail("Statement expected in function body");
+                }
+                break;
+            }
+            ConsumeNewLines();
+        }
+
+        Expect(TokenType::CloseBrace);
+        ConsumeNewLines();  // Allow newlines after closing brace
+    } else {
+        // Indentation-style function body
+        KAI_TRACE()
+            << "Function: Indentation-style, expecting NewLine, current: "
+            << TokenEnumType::ToString(Current().type) << " '"
+            << Current().Text() << "'";
+        Expect(TokenType::NewLine);
+
+        KAI_TRACE() << "Function: After NewLine, current token: "
+                    << TokenEnumType::ToString(Current().type) << " '"
+                    << Current().Text() << "'";
+
+        // Use the Block method for indented code blocks
+        if (!Block(block)) {
+            return CreateError("Block Expected for function body");
+        }
     }
 
     fun->Add(block);
@@ -163,12 +209,25 @@ bool RhoParser::Block(AstNodePtr node) {
     ConsumeNewLines();
 
     ++indent;
+    KAI_TRACE() << "Block: Starting with indent level " << indent;
+    KAI_TRACE() << "Block: Current token after ConsumeNewLines: "
+                << TokenEnumType::ToString(Current().type) << " '"
+                << Current().Text() << "'";
+
     while (!Failed) {
         int level = 0;
+
+        // Skip any newlines at the beginning of the block
+        while (Try(TokenType::NewLine)) {
+            Consume();
+        }
 
         // Count indentation level - handle both tabs and spaces
         // Each tab counts as 1 level, every 4 spaces count as 1 level
         int spaceCount = 0;
+        KAI_TRACE() << "Block: Checking for indentation, current token: "
+                    << TokenEnumType::ToString(Current().type) << " '"
+                    << Current().Text() << "'";
         while (Try(TokenType::Tab) || Try(TokenType::Whitespace)) {
             if (Try(TokenType::Tab)) {
                 ++level;
@@ -185,6 +244,9 @@ bool RhoParser::Block(AstNodePtr node) {
                 }
             }
         }
+
+        KAI_TRACE() << "Block: Found indent level " << level << " (expecting "
+                    << indent << ")";
 
         if (Try(TokenType::NewLine)) {
             Consume();
@@ -559,6 +621,70 @@ bool RhoParser::Factor() {
     if (Try(TokenType::Label)) return ParseFactorIdent();
 
     if (Try(TokenType::Pathname)) return ParseFactorIdent();
+
+    // Handle function expressions - fun(args) { ... }
+    if (Try(TokenType::Fun)) {
+        KAI_TRACE() << "RhoParser::Factor - Found function expression";
+        Consume();  // consume 'fun'
+
+        // Create function node without a name (anonymous function)
+        auto fun = NewNode(AstEnum::Function);
+
+        // Add empty name token for anonymous function
+        Slice anonymousSlice;
+        fun->Add(RhoToken(TokenEnum::Label, *lexer.get(), 0, anonymousSlice));
+
+        // Parse parameters
+        Expect(TokenType::OpenParan);
+        auto args = NewNode(AstEnum::None);
+        fun->Add(args);
+
+        if (Try(TokenType::Label)) {
+            args->Add(Consume());
+            while (Try(TokenType::Comma)) {
+                Consume();
+                args->Add(Expect(TokenType::Label));
+            }
+        }
+
+        Expect(TokenType::CloseParan);
+
+        auto block = NewNode(RhoAstNodeEnumType::Block);
+
+        // Check if we have brace-style or indentation-style
+        if (Try(TokenType::OpenBrace)) {
+            // Brace-style function body
+            Consume();  // consume '{'
+
+            ConsumeNewLines();
+
+            // Parse statements until we hit closing brace
+            while (!Try(TokenType::CloseBrace) && !Failed) {
+                if (!Statement(block)) {
+                    if (!Failed) {
+                        return Fail("Statement expected in function body");
+                    }
+                    break;
+                }
+                ConsumeNewLines();
+            }
+
+            Expect(TokenType::CloseBrace);
+            ConsumeNewLines();  // Allow newlines after closing brace
+        } else {
+            // Indentation-style function body
+            Expect(TokenType::NewLine);
+
+            // Use the Block method for indented code blocks
+            if (!Block(block)) {
+                return CreateError("Block Expected for function body");
+            }
+        }
+
+        fun->Add(block);
+        Push(fun);
+        return true;
+    }
 
     // Handle Pi code blocks - pi { ... }
     if (Try(TokenType::ToPi)) {

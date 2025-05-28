@@ -53,6 +53,13 @@ class Array : public Container<Array> {
     friend bool operator<(const Array &A, const Array &B) {
         return A.objects < B.objects;
     }
+    friend Array operator+(const Array &A, const Array &B) {
+        Array result;
+        result.objects = A.objects;
+        result.objects.insert(result.objects.end(), B.objects.begin(),
+                              B.objects.end());
+        return result;
+    }
 
     // void SetChildSwitch(int N, bool M)
     //{
@@ -71,6 +78,7 @@ HashValue GetHash(const Array &A);
 KAI_TYPE_TRAITS(Array, Number::Array,
                 Properties::StringStreamInsert | Properties::BinaryStreaming |
                     Properties::Less | Properties::Equiv | Properties::Assign |
-                    Properties::Reflected | Properties::Container);
+                    Properties::Reflected | Properties::Container |
+                    Properties::Plus);
 
 KAI_END

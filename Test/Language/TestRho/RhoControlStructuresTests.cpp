@@ -29,7 +29,7 @@ struct RhoControlTests : TestLangCommon {
             Registry &reg = console.GetRegistry();
             console.SetLanguage(Language::Rho);
 
-            console.Execute(script);
+            console.Execute(script, Structure::Program);
 
             // Get the result from the data stack after execution
             auto executor = console.GetExecutor();
@@ -317,77 +317,69 @@ TEST_F(RhoControlTests, ComplexWhileLoops) {
 // Break statements in loops
 TEST_F(RhoControlTests, BreakStatements) {
     AssertDirectSimulation<int>(
-        "int sum = 0;\n"
-        "for (int i = 1; i <= 10; i = i + 1) {\n"
-        "    sum = sum + i;\n"
-        "    if (sum > 10) {\n"
-        "        break;\n"
-        "    }\n"
-        "}\n"
-        "sum;",
+        "sum = 0\n"
+        "for i = 1; i <= 10; i = i + 1\n"
+        "    sum = sum + i\n"
+        "    if sum > 10\n"
+        "        break\n"
+        "sum",
         15);
 
     AssertDirectSimulation<int>(
-        "int sum = 0;\n"
-        "int i = 1;\n"
-        "while (i <= 10) {\n"
-        "    sum = sum + i;\n"
-        "    if (sum > 10) {\n"
-        "        break;\n"
-        "    }\n"
-        "    i = i + 1;\n"
-        "}\n"
-        "sum;",
+        "sum = 0\n"
+        "i = 1\n"
+        "while i <= 10\n"
+        "    sum = sum + i\n"
+        "    if sum > 10\n"
+        "        break\n"
+        "    i = i + 1\n"
+        "sum",
         15);
 }
 
 // Continue statements in loops
 TEST_F(RhoControlTests, ContinueStatements) {
     AssertDirectSimulation<int>(
-        "int sum = 0;\n"
-        "for (int i = 1; i <= 10; i = i + 1) {\n"
-        "    if (i % 2 == 0) {\n"
-        "        continue;\n"
-        "    }\n"
-        "    sum = sum + i;\n"
-        "}\n"
-        "sum;",
+        "sum = 0\n"
+        "for i = 1; i <= 10; i = i + 1\n"
+        "    if i % 2 == 0\n"
+        "        continue\n"
+        "    sum = sum + i\n"
+        "sum",
         25);
 
     AssertDirectSimulation<int>(
-        "int sum = 0;\n"
-        "int i = 0;\n"
-        "while (i < 10) {\n"
-        "    i = i + 1;\n"
-        "    if (i % 2 == 0) {\n"
-        "        continue;\n"
-        "    }\n"
-        "    sum = sum + i;\n"
-        "}\n"
-        "sum;",
+        "sum = 0\n"
+        "i = 0\n"
+        "while i < 10\n"
+        "    i = i + 1\n"
+        "    if i % 2 == 0\n"
+        "        continue\n"
+        "    sum = sum + i\n"
+        "sum",
         25);
 }
 
 // Do-while loops
 TEST_F(RhoControlTests, DoWhileLoops) {
     AssertDirectSimulation<int>(
-        "int sum = 0;\n"
-        "int i = 1;\n"
-        "do {\n"
-        "    sum = sum + i;\n"
-        "    i = i + 1;\n"
-        "} while (i <= 5);\n"
-        "sum;",
+        "sum = 0\n"
+        "i = 1\n"
+        "do\n"
+        "    sum = sum + i\n"
+        "    i = i + 1\n"
+        "while i <= 5\n"
+        "sum",
         15);
 
     AssertDirectSimulation<int>(
-        "int sum = 0;\n"
-        "int i = 1;\n"
-        "do {\n"
-        "    sum = sum + i;\n"
-        "    i = i + 1;\n"
-        "} while (false);\n"
-        "sum;",
+        "sum = 0\n"
+        "i = 1\n"
+        "do\n"
+        "    sum = sum + i\n"
+        "    i = i + 1\n"
+        "while false\n"
+        "sum",
         1);
 }
 
@@ -395,51 +387,46 @@ TEST_F(RhoControlTests, DoWhileLoops) {
 // switch)
 TEST_F(RhoControlTests, SwitchLikeStatements) {
     AssertDirectSimulation<int>(
-        "int value = 2;\n"
-        "int result = 0;\n"
-        "if (value == 1) {\n"
-        "    result = 10;\n"
-        "} else if (value == 2) {\n"
-        "    result = 20;\n"
-        "} else if (value == 3) {\n"
-        "    result = 30;\n"
-        "} else {\n"
-        "    result = 0;\n"
-        "}\n"
-        "result;",
+        "value = 2\n"
+        "result = 0\n"
+        "if value == 1\n"
+        "    result = 10\n"
+        "else if value == 2\n"
+        "    result = 20\n"
+        "else if value == 3\n"
+        "    result = 30\n"
+        "else\n"
+        "    result = 0\n"
+        "result",
         20);
 
     AssertDirectSimulation<int>(
-        "int value = 5;\n"
-        "int result = 0;\n"
-        "if (value == 1) {\n"
-        "    result = 10;\n"
-        "} else if (value == 2) {\n"
-        "    result = 20;\n"
-        "} else if (value == 3) {\n"
-        "    result = 30;\n"
-        "} else {\n"
-        "    result = 0;\n"
-        "}\n"
-        "result;",
+        "value = 5\n"
+        "result = 0\n"
+        "if value == 1\n"
+        "    result = 10\n"
+        "else if value == 2\n"
+        "    result = 20\n"
+        "else if value == 3\n"
+        "    result = 30\n"
+        "else\n"
+        "    result = 0\n"
+        "result",
         0);
 }
 
 // Combining control structures
 TEST_F(RhoControlTests, CombinedControlStructures) {
     AssertDirectSimulation<int>(
-        "int sum = 0;\n"
-        "for (int i = 1; i <= 10; i = i + 1) {\n"
-        "    if (i % 2 == 0) {\n"
-        "        sum = sum + i;\n"
-        "    } else {\n"
-        "        int j = 0;\n"
-        "        while (j < i) {\n"
-        "            sum = sum + 1;\n"
-        "            j = j + 1;\n"
-        "        }\n"
-        "    }\n"
-        "}\n"
-        "sum;",
+        "sum = 0\n"
+        "for i = 1; i <= 10; i = i + 1\n"
+        "    if i % 2 == 0\n"
+        "        sum = sum + i\n"
+        "    else\n"
+        "        j = 0\n"
+        "        while j < i\n"
+        "            sum = sum + 1\n"
+        "            j = j + 1\n"
+        "sum",
         2 + 4 + 6 + 8 + 10 + 1 + 3 + 5 + 7 + 9);
 }

@@ -79,6 +79,44 @@ void RhoTranslator::TranslateNode(AstNodePtr node) {
             TranslatePiBlock(node);
             break;
 
+        case AstNodeEnum::Function:
+            KAI_TRACE() << "Processing Function node";
+            TranslateFunction(node);
+            // Don't process children - they're handled by TranslateFunction
+            return;
+
+        case AstNodeEnum::Call:
+            KAI_TRACE() << "Processing Call node";
+            TranslateCall(node);
+            break;
+
+        case AstNodeEnum::Block:
+            KAI_TRACE() << "Processing Block node";
+            TranslateBlock(node);
+            break;
+
+        case AstNodeEnum::Assignment:
+            KAI_TRACE() << "Processing Assignment node";
+            TranslateNode(node->GetChild(1));  // Value
+            TranslateNode(node->GetChild(0));  // Target
+            AppendDirectOperation(Operation::Store);
+            break;
+
+        case AstNodeEnum::Ident:
+            KAI_TRACE() << "Processing Ident node";
+            TranslateToken(node);
+            break;
+
+        case AstNodeEnum::GetMember:
+            KAI_TRACE() << "Processing GetMember node";
+            // GetMember nodes have: object and member name
+            if (node->GetChildren().size() >= 2) {
+                TranslateNode(node->GetChild(0));  // Object
+                TranslateNode(node->GetChild(1));  // Member name
+                AppendDirectOperation(Operation::GetChild);
+            }
+            break;
+
         default:
             // Log warning about unhandled node type but continue
             KAI_TRACE() << "Node type not fully implemented: "

@@ -61,6 +61,24 @@ add_library(TestRhoFiles OBJECT
     # New 50 tests for RhoLinearStream to test our linear stream implementation
     RhoLinearStreamTests.cpp  # Added with 50 new tests for linear stream approach
     
+    # Control structure tests
+    RhoControlStructuresTests.cpp  # Main control structure tests
+    RhoControlStructuresTestsFixed.cpp  # Fixed control structure tests with correct syntax
+    RhoControlStructuresTestsFixed2.cpp  # Fixed with Structure::Program
+    # RhoControlStructuresTestsWorkaround.cpp  # Alternative workaround implementation
+    
+    # Debug tests
+    DebugMinimalTest.cpp  # Minimal debug test for continuation issues
+    MinimalControlFlowTest.cpp  # Minimal control flow test
+    
+    # Fixed test files
+    RhoControlFlowFixed.cpp  # Fixed control flow tests
+    RhoFunctionAndScopeTestsFixed.cpp  # Fixed function and scope tests
+    RhoLambdaTestsFixed.cpp  # Fixed lambda tests
+    
+    # Debug tests for if-else
+    RhoNestedIfDebug.cpp  # Debug nested if-else parsing
+    
     # IMPORTANT: The following files contain duplicate test definitions
     # They MUST remain commented out to avoid linker errors
     # Because RhoPiFix.cpp has implementations for the same test fixtures/names

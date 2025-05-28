@@ -342,28 +342,32 @@ void RhoTranslator::TranslateFor(AstNodePtr node) {
         return;
     }
 
-    // Translate initialization directly
+    // Create continuation for initialization
+    PushNew();
     TranslateNode(node->GetChild(0));
+    auto initCont = Pop();
 
     // Create continuation for condition
     PushNew();
     TranslateNode(node->GetChild(1));
     auto condCont = Pop();
 
-    // Create continuation for body
-    PushNew();
-    TranslateNode(node->GetChild(3));
-    auto bodyCont = Pop();
-
     // Create continuation for update
     PushNew();
     TranslateNode(node->GetChild(2));
     auto updateCont = Pop();
 
-    // Push continuations on stack for ForLoop operation
+    // Create continuation for body
+    PushNew();
+    TranslateNode(node->GetChild(3));
+    auto bodyCont = Pop();
+
+    // Push continuations on stack for ForLoop operation (init, cond, incr,
+    // body)
+    Append(initCont);
     Append(condCont);
-    Append(bodyCont);
     Append(updateCont);
+    Append(bodyCont);
     AppendDirectOperation(Operation::ForLoop);
 }
 
@@ -394,7 +398,7 @@ void RhoTranslator::TranslateDoWhile(AstNodePtr node) {
 }
 
 void RhoTranslator::TranslateIf(AstNodePtr node) {
-    KAI_TRACE() << "Translating if statement";
+    KAI_TRACE() << "Translating if statement (linear stream version)";
 
     // If statements need at least condition and then-block
     if (node->GetChildren().size() < 2) {
@@ -402,32 +406,30 @@ void RhoTranslator::TranslateIf(AstNodePtr node) {
         return;
     }
 
-    // Create continuation for then block first
+    // For linear stream execution, we'll use a different approach:
+    // Instead of creating separate continuations, we'll inline the if block
+    // but wrap it in a conditional execution marker
+
+    // Translate condition first
+    TranslateNode(node->GetChild(0));
+
+    // Create a continuation for the then block
     PushNew();
     TranslateNode(node->GetChild(1));
     auto thenCont = Pop();
 
-    // Check if there's an else block
     if (node->GetChildren().size() > 2) {
-        // Create continuation for else block
+        // Has else block
         PushNew();
         TranslateNode(node->GetChild(2));
         auto elseCont = Pop();
 
-        // Translate condition
-        TranslateNode(node->GetChild(0));
-
-        // Push continuations in correct order for IfElse
-        // IfElse expects: condition A B -- (runs A if true, B if false)
+        // Use IfElse operation
         Append(thenCont);
         Append(elseCont);
         AppendDirectOperation(Operation::IfElse);
     } else {
-        // Translate condition
-        TranslateNode(node->GetChild(0));
-
-        // Push continuation for If operation
-        // If expects: condition continuation --
+        // No else block - use If operation
         Append(thenCont);
         AppendDirectOperation(Operation::If);
     }
@@ -636,6 +638,135 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
     AppendDirectOperation(op);
 
     KAI_TRACE() << "Binary operation successfully translated in linear stream";
+}
+
+void RhoTranslator::TranslateCall(AstNodePtr node) {
+    KAI_TRACE() << "Translating function call";
+
+    // Call nodes have: function identifier and arguments
+    if (node->GetChildren().empty()) {
+        KAI_TRACE_ERROR() << "Call node needs at least a function identifier";
+        return;
+    }
+
+    // Get function name
+    auto funcNode = node->GetChild(0);
+
+    // Translate arguments in order (they'll be on stack for the function)
+    for (size_t i = 1; i < node->GetChildren().size(); ++i) {
+        TranslateNode(node->GetChild(i));
+    }
+
+    // Now translate the function identifier (this pushes the continuation)
+    TranslateNode(funcNode);
+
+    // Add the call operation - Suspend expects the continuation on top of stack
+    AppendDirectOperation(Operation::Suspend);
+
+    KAI_TRACE() << "Function call successfully translated";
+}
+
+void RhoTranslator::TranslateBlock(AstNodePtr node) {
+    KAI_TRACE() << "Translating block";
+
+    // A block is just a sequence of statements
+    for (const auto& child : node->GetChildren()) {
+        TranslateNode(child);
+    }
+
+    KAI_TRACE() << "Block successfully translated";
+}
+
+void RhoTranslator::TranslateFunction(AstNodePtr node) {
+    KAI_TRACE() << "Translating function definition";
+
+    // Function nodes have: name (or placeholder), args list, body
+    if (node->GetChildren().size() < 3) {
+        KAI_TRACE_ERROR() << "Function node needs name, args, and body";
+        return;
+    }
+
+    // Get function name
+    auto nameNode = node->GetChild(0);
+    String functionName;
+
+    if (nameNode->GetType() == AstNodeEnum::TokenType &&
+        nameNode->GetToken().type == TokenEnum::Label) {
+        functionName = nameNode->Text();
+    } else {
+        // Anonymous function - generate a unique name
+        static int anonCounter = 0;
+        functionName = std::format("_anon_{}", anonCounter++);
+    }
+
+    KAI_TRACE() << "Function name: " << functionName;
+
+    // Get arguments
+    auto argsNode = node->GetChild(1);
+    std::vector<String> argNames;
+
+    for (const auto& arg : argsNode->GetChildren()) {
+        if (arg->GetType() == AstNodeEnum::TokenType &&
+            arg->GetToken().type == TokenEnum::Label) {
+            argNames.push_back(arg->Text());
+            KAI_TRACE() << "  Arg: " << arg->Text();
+        }
+    }
+
+    // Create a new continuation for the function body
+    PushNew();
+
+    // Extract parameters from the stack and store them
+    // When the function is called, arguments are on the stack in the order they
+    // were pushed For add(2, 3): stack has [2, 3] with 3 on top We need to
+    // store them in the correct parameter variables
+
+    // Process parameters from last to first (since last param is on top of
+    // stack)
+    for (int i = static_cast<int>(argNames.size()) - 1; i >= 0; --i) {
+        // Pop the parameter value from stack and store it
+        String quotedPath = "'" + argNames[i];
+        auto pathObj = reg_->New<Pathname>(Pathname(quotedPath));
+        Append(pathObj);
+        AppendDirectOperation(Operation::Store);
+    }
+
+    // Translate the function body
+    auto bodyNode = node->GetChild(2);
+    KAI_TRACE() << "Translating function body into new continuation";
+    TranslateNode(bodyNode);
+    KAI_TRACE() << "Function body translation complete";
+
+    // Ensure functions have a return statement
+    // If the last operation isn't Return, add one
+    auto cont = Top();
+    if (cont.Exists() && cont.Valid()) {
+        // KAI uses Array for the code sequence
+        // We can't easily check the last operation, so just ensure there's a
+        // return Add return with no value (returns null)
+        AppendDirectOperation(Operation::None);
+        AppendDirectOperation(Operation::Return);
+    }
+
+    // Pop the function continuation
+    auto functionCont = Pop();
+
+    // Store the function continuation with its name
+    if (!functionName.empty() && !functionName.StartsWith("_anon_")) {
+        String quotedPath = "'" + functionName;
+        auto pathObj = reg_->New<Pathname>(Pathname(quotedPath));
+
+        // Push the function continuation and pathname
+        Append(functionCont);
+        Append(pathObj);
+        AppendDirectOperation(Operation::Store);
+
+        KAI_TRACE() << "Function " << functionName << " stored";
+    } else {
+        // For anonymous functions, just push the continuation
+        Append(functionCont);
+        KAI_TRACE() << "Anonymous function created";
+    }
 }
 
 KAI_END

@@ -957,6 +957,8 @@ void Executor::DumpContinuation(Continuation const &continuation, int level) {
 // KAI type traits
 Object Executor::PerformBinaryOp(Object const &A, Object const &B,
                                  Operation::Type op) {
+    KAI_TRACE() << "PerformBinaryOp called with operation: "
+                << Operation::ToString(op);
     try {
         // Validate inputs
         if (!A.Valid()) {
@@ -1012,7 +1014,8 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
         // First, handle the operation based on type using KAI type traits
         switch (op) {
             // Arithmetic operations
-            case Operation::Plus:
+            case Operation::Plus: {
+                KAI_TRACE() << "Plus operation";
                 // Int + Int = Int
                 if (A.IsType<int>() && B.IsType<int>()) {
                     int result = Type::Traits<int>::Plus::Perform(
@@ -1049,6 +1052,16 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
                         ConstDeref<Pathname>(A), ConstDeref<Pathname>(B));
                     return createNew(result);
                 }
+                // Array + Array = concatenated array
+                else if (A.IsType<Array>() && B.IsType<Array>()) {
+                    KAI_TRACE() << "Performing Array + Array operation";
+                    // Direct implementation since Type::Traits<Array>::Plus
+                    // isn't instantiated correctly
+                    const Array &arr1 = ConstDeref<Array>(A);
+                    const Array &arr2 = ConstDeref<Array>(B);
+                    Array result = arr1 + arr2;  // Use our operator+
+                    return createNew(result);
+                }
                 // Use type traits for other types that support Plus
                 else if (hasProperty(A, Properties::Plus) &&
                          A.GetTypeNumber() == B.GetTypeNumber()) {
@@ -1059,6 +1072,7 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
                                // implementation
                 }
                 break;
+            }
 
             case Operation::Minus:
                 // Int - Int = Int

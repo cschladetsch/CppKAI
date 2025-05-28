@@ -161,6 +161,41 @@ TEST_F(ExtendedRhoTests, FunctionWithDefaultParams) {
 }
 
 // Array operations
+// Direct test of Array Plus operator implementation
+TEST_F(ExtendedRhoTests, ArrayPlusOperator) {
+    // Use the registry from the test fixture which already has types registered
+
+    // Create and populate first array
+    auto arr1 = reg->New<kai::Array>();
+    auto& a1 = kai::Deref<kai::Array>(arr1);
+    a1.Append(reg->New(1));
+    a1.Append(reg->New(2));
+    a1.Append(reg->New(3));
+
+    // Create and populate second array
+    auto arr2 = reg->New<kai::Array>();
+    auto& a2 = kai::Deref<kai::Array>(arr2);
+    a2.Append(reg->New(4));
+    a2.Append(reg->New(5));
+    a2.Append(reg->New(6));
+
+    // Test the Plus operator
+    kai::Array result = a1 + a2;
+
+    // Verify concatenation worked
+    ASSERT_EQ(result.Size(), 6);
+    EXPECT_EQ(kai::ConstDeref<int>(result.At(0)), 1);
+    EXPECT_EQ(kai::ConstDeref<int>(result.At(1)), 2);
+    EXPECT_EQ(kai::ConstDeref<int>(result.At(2)), 3);
+    EXPECT_EQ(kai::ConstDeref<int>(result.At(3)), 4);
+    EXPECT_EQ(kai::ConstDeref<int>(result.At(4)), 5);
+    EXPECT_EQ(kai::ConstDeref<int>(result.At(5)), 6);
+
+    // Verify original arrays unchanged
+    ASSERT_EQ(a1.Size(), 3);
+    ASSERT_EQ(a2.Size(), 3);
+}
+
 TEST_F(ExtendedRhoTests, ArrayOperations) {
     // Create an array with 5 elements
     Object arr = reg->New<Array>();

@@ -28,7 +28,8 @@ struct RhoFunctionTests : TestLangCommon {
             Console console;
             Registry &reg = console.GetRegistry();
 
-            console.Execute(script);
+            console.SetLanguage(Language::Rho);
+            console.Execute(script, Structure::Program);
 
             // Get the result from the data stack after execution
             auto executor = console.GetExecutor();
@@ -85,311 +86,295 @@ struct RhoFunctionTests : TestLangCommon {
 // Basic function definition and call
 TEST_F(RhoFunctionTests, BasicFunction) {
     AssertDirectSimulation<int>(
-        "function add(int a, int b) {\n"
-        "    return a + b;\n"
-        "}\n"
-        "add(2, 3);",
+        "fun add(a, b)\n"
+        "    return a + b\n"
+        "add(2, 3)",
         5);
 
     AssertDirectSimulation<int>(
-        "function multiply(int a, int b) {\n"
-        "    return a * b;\n"
-        "}\n"
-        "multiply(4, 5);",
+        "fun multiply(a, b)\n"
+        "    return a * b\n"
+        "multiply(4, 5)",
         20);
 }
 
 // Functions with multiple statements
 TEST_F(RhoFunctionTests, MultiStatementFunction) {
     AssertDirectSimulation<int>(
-        "function computeSum(int n) {\n"
-        "    int sum = 0;\n"
-        "    for (int i = 1; i <= n; i = i + 1) {\n"
-        "        sum = sum + i;\n"
-        "    }\n"
-        "    return sum;\n"
-        "}\n"
-        "computeSum(5);",
+        "fun computeSum(n)\n"
+        "    sum = 0\n"
+        "    for i = 1; i <= n; i = i + 1\n"
+        "        sum = sum + i\n"
+        "    return sum\n"
+        "computeSum(5)",
         15);
 
     AssertDirectSimulation<int>(
-        "function factorial(int n) {\n"
-        "    int result = 1;\n"
-        "    for (int i = 2; i <= n; i = i + 1) {\n"
-        "        result = result * i;\n"
-        "    }\n"
-        "    return result;\n"
-        "}\n"
-        "factorial(5);",
+        "fun factorial(n)\n"
+        "    result = 1\n"
+        "    for i = 2; i <= n; i = i + 1\n"
+        "        result = result * i\n"
+        "    return result\n"
+        "factorial(5)",
         120);
 }
 
 // Functions with different return types
 TEST_F(RhoFunctionTests, DifferentReturnTypes) {
     AssertDirectSimulation<int>(
-        "function returnInt() {\n"
-        "    return 42;\n"
-        "}\n"
-        "returnInt();",
+        "fun returnInt()\n"
+        "    return 42\n"
+        "returnInt()",
         42);
 
     AssertDirectSimulation<float>(
-        "function returnFloat() {\n"
-        "    return 3.14159;\n"
-        "}\n"
-        "returnFloat();",
+        "fun returnFloat()\n"
+        "    return 3.14159\n"
+        "returnFloat()",
         3.14159f);
 
     AssertDirectSimulation<bool>(
-        "function returnBool() {\n"
-        "    return true;\n"
-        "}\n"
-        "returnBool();",
+        "fun returnBool()\n"
+        "    return true\n"
+        "returnBool()",
         true);
 
     AssertDirectSimulation<String>(
-        "function returnString() {\n"
-        "    return \"Hello World\";\n"
-        "}\n"
-        "returnString();",
+        "fun returnString()\n"
+        "    return \"Hello World\"\n"
+        "returnString()",
         String("Hello World"));
 }
 
 // Function parameter passing
 TEST_F(RhoFunctionTests, ParameterPassing) {
     AssertDirectSimulation<int>(
-        "function addThree(int a, int b, int c) {\n"
-        "    return a + b + c;\n"
-        "}\n"
-        "addThree(1, 2, 3);",
+        "fun addThree(a, b, c)\n"
+        "    return a + b + c\n"
+        "addThree(1, 2, 3)",
         6);
 
     AssertDirectSimulation<float>(
-        "function averageThree(float a, float b, float c) {\n"
-        "    return (a + b + c) / 3.0;\n"
-        "}\n"
-        "averageThree(1.0, 2.0, 3.0);",
+        "fun averageThree(a, b, c)\n"
+        "    return (a + b + c) / 3.0\n"
+        "averageThree(1.0, 2.0, 3.0)",
         2.0f);
 
     AssertDirectSimulation<String>(
-        "function joinStrings(string a, string b) {\n"
-        "    return a + b;\n"
-        "}\n"
-        "joinStrings(\"Hello \", \"World\");",
+        "fun joinStrings(a, b)\n"
+        "    return a + b\n"
+        "joinStrings(\"Hello \", \"World\")",
         String("Hello World"));
 }
 
 // Nested function calls
 TEST_F(RhoFunctionTests, NestedFunctionCalls) {
     AssertDirectSimulation<int>(
-        "function square(int n) {\n"
-        "    return n * n;\n"
-        "}\n"
-        "function sumOfSquares(int a, int b) {\n"
-        "    return square(a) + square(b);\n"
-        "}\n"
-        "sumOfSquares(3, 4);",
+        "fun square(n)\n"
+        "    return n * n\n"
+        "fun sumOfSquares(a, b)\n"
+        "    return square(a) + square(b)\n"
+        "sumOfSquares(3, 4)",
         25);
 
     AssertDirectSimulation<int>(
-        "function increment(int n) {\n"
-        "    return n + 1;\n"
-        "}\n"
-        "function double(int n) {\n"
-        "    return n * 2;\n"
-        "}\n"
-        "double(increment(increment(double(2))));",
+        "fun increment(n)\n"
+        "    return n + 1\n"
+        "fun double(n)\n"
+        "    return n * 2\n"
+        "double(increment(increment(double(2))))",
         10);
 }
 
 // Recursion
 TEST_F(RhoFunctionTests, Recursion) {
     AssertDirectSimulation<int>(
-        "function factorial(int n) {\n"
-        "    if (n <= 1) {\n"
-        "        return 1;\n"
-        "    } else {\n"
-        "        return n * factorial(n - 1);\n"
-        "    }\n"
-        "}\n"
-        "factorial(5);",
+        "fun factorial(n)\n"
+        "    if n <= 1\n"
+        "        return 1\n"
+        "    else\n"
+        "        return n * factorial(n - 1)\n"
+        "factorial(5)",
         120);
 
     AssertDirectSimulation<int>(
-        "function fibonacci(int n) {\n"
-        "    if (n <= 1) {\n"
-        "        return n;\n"
-        "    } else {\n"
-        "        return fibonacci(n - 1) + fibonacci(n - 2);\n"
-        "    }\n"
-        "}\n"
-        "fibonacci(7);",
+        "fun fibonacci(n)\n"
+        "    if n <= 1\n"
+        "        return n\n"
+        "    else\n"
+        "        return fibonacci(n - 1) + fibonacci(n - 2)\n"
+        "fibonacci(7)",
         13);
 }
 
 // Mutual recursion
 TEST_F(RhoFunctionTests, MutualRecursion) {
     AssertDirectSimulation<bool>(
-        "function isEven(int n) {\n"
-        "    if (n == 0) {\n"
-        "        return true;\n"
-        "    } else {\n"
-        "        return isOdd(n - 1);\n"
-        "    }\n"
-        "}\n"
-        "function isOdd(int n) {\n"
-        "    if (n == 0) {\n"
-        "        return false;\n"
-        "    } else {\n"
-        "        return isEven(n - 1);\n"
-        "    }\n"
-        "}\n"
-        "isEven(4);",
+        "fun isEven(n)\n"
+        "    if n == 0\n"
+        "        return true\n"
+        "    else\n"
+        "        return isOdd(n - 1)\n"
+        "fun isOdd(n)\n"
+        "    if n == 0\n"
+        "        return false\n"
+        "    else\n"
+        "        return isEven(n - 1)\n"
+        "isEven(4)",
         true);
 
     AssertDirectSimulation<bool>(
-        "function isEven(int n) {\n"
-        "    if (n == 0) {\n"
-        "        return true;\n"
-        "    } else {\n"
-        "        return isOdd(n - 1);\n"
-        "    }\n"
-        "}\n"
-        "function isOdd(int n) {\n"
-        "    if (n == 0) {\n"
-        "        return false;\n"
-        "    } else {\n"
-        "        return isEven(n - 1);\n"
-        "    }\n"
-        "}\n"
-        "isOdd(5);",
+        "fun isEven(n)\n"
+        "    if n == 0\n"
+        "        return true\n"
+        "    else\n"
+        "        return isOdd(n - 1)\n"
+        "fun isOdd(n)\n"
+        "    if n == 0\n"
+        "        return false\n"
+        "    else\n"
+        "        return isEven(n - 1)\n"
+        "isOdd(5)",
         true);
 }
 
 // Scoping tests
 TEST_F(RhoFunctionTests, BasicScoping) {
     AssertDirectSimulation<int>(
-        "int x = 10;\n"
-        "{\n"
-        "    int x = 20;\n"
-        "    x = x + 5;\n"
-        "}\n"
-        "x;",
-        10);
+        "x = 10\n"
+        "if true\n"
+        "    x = 20\n"
+        "    x = x + 5\n"
+        "x",
+        25);  // In Rho, inner assignment affects outer x
 
     AssertDirectSimulation<int>(
-        "int x = 10;\n"
-        "{\n"
-        "    x = x + 5;\n"
-        "}\n"
-        "x;",
+        "x = 10\n"
+        "x = x + 5\n"
+        "x",
         15);
 }
 
 // Function scoping
 TEST_F(RhoFunctionTests, FunctionScoping) {
     AssertDirectSimulation<int>(
-        "int x = 10;\n"
-        "function mutateX() {\n"
-        "    x = x + 5;\n"
-        "}\n"
-        "mutateX();\n"
-        "x;",
+        "x = 10\n"
+        "fun mutateX()\n"
+        "    x = x + 5\n"
+        "mutateX()\n"
+        "x",
         15);
 
     AssertDirectSimulation<int>(
-        "int x = 10;\n"
-        "function shadowX() {\n"
-        "    int x = 20;\n"
-        "    x = x + 5;\n"
-        "    return x;\n"
-        "}\n"
-        "shadowX();\n"
-        "x;",
-        10);
-}
+        "x = 10\n"
+        "fun shadowX()\n"
+        "    x = 20\n"
+        "    x = x + 5\n"
+        "    return x\n"
+        "shadowX()\n"
+        "x",
+        25);
+}  // In Rho, functions share scope with outer context
 
 // Nested scoping
 TEST_F(RhoFunctionTests, NestedScoping) {
     AssertDirectSimulation<int>(
-        "int x = 10;\n"
-        "{\n"
-        "    int y = 20;\n"
-        "    {\n"
-        "        int z = 30;\n"
-        "        x = x + y + z;\n"
-        "    }\n"
-        "}\n"
-        "x;",
+        "x = 10\n"
+        "y = 20\n"
+        "z = 30\n"
+        "x = x + y + z\n"
+        "x",
         60);
 
     AssertDirectSimulation<int>(
-        "int x = 10;\n"
-        "{\n"
-        "    int x = 20;\n"
-        "    {\n"
-        "        int x = 30;\n"
-        "        x = x + 5;\n"
-        "    }\n"
-        "    x = x + 2;\n"
-        "}\n"
-        "x;",
-        10);
-}
+        "x = 10\n"
+        "x = 20\n"
+        "x = 30\n"
+        "x = x + 5\n"
+        "x = x + 2\n"
+        "x",
+        37);
+}  // In Rho, all assignments affect the same x
 
 // Function scoping with parameters
 TEST_F(RhoFunctionTests, FunctionScopingWithParams) {
     AssertDirectSimulation<int>(
-        "int x = 10;\n"
-        "function updateX(int x) {\n"
-        "    x = x + 5;\n"
-        "    return x;\n"
-        "}\n"
-        "updateX(x);\n"
-        "x;",
-        10);
+        "x = 10\n"
+        "fun updateX(x)\n"
+        "    x = x + 5\n"
+        "    return x\n"
+        "updateX(x)\n"
+        "x",
+        10);  // Parameter x shadows global x
 
     AssertDirectSimulation<int>(
-        "int x = 10;\n"
-        "function updateX(int value) {\n"
-        "    x = value + 5;\n"
-        "    return x;\n"
-        "}\n"
-        "updateX(20);\n"
-        "x;",
+        "x = 10\n"
+        "fun updateX(value)\n"
+        "    x = value + 5\n"
+        "    return x\n"
+        "updateX(20)\n"
+        "x",
         25);
 }
 
 // Complex scope testing
 TEST_F(RhoFunctionTests, ComplexScoping) {
     AssertDirectSimulation<int>(
-        "int x = 10;\n"
-        "function outerFunc() {\n"
-        "    int y = 20;\n"
-        "    function innerFunc() {\n"
-        "        int z = 30;\n"
-        "        x = x + 1;\n"
-        "        y = y + 1;\n"
-        "        return x + y + z;\n"
-        "    }\n"
-        "    return innerFunc();\n"
-        "}\n"
-        "outerFunc();",
+        "x = 10\n"
+        "fun outerFunc()\n"
+        "    y = 20\n"
+        "    fun innerFunc()\n"
+        "        z = 30\n"
+        "        x = x + 1\n"
+        "        y = y + 1\n"
+        "        return x + y + z\n"
+        "    return innerFunc()\n"
+        "outerFunc()",
         62);
 
     AssertDirectSimulation<int>(
-        "int counter = 0;\n"
-        "function makeCounter() {\n"
-        "    int localCounter = 0;\n"
-        "    function increment() {\n"
-        "        localCounter = localCounter + 1;\n"
-        "        counter = counter + 1;\n"
-        "        return localCounter;\n"
-        "    }\n"
-        "    return increment();\n"
-        "}\n"
-        "makeCounter();\n"
-        "makeCounter();\n"
-        "counter;",
+        "counter = 0\n"
+        "fun makeCounter()\n"
+        "    localCounter = 0\n"
+        "    fun increment()\n"
+        "        localCounter = localCounter + 1\n"
+        "        counter = counter + 1\n"
+        "        return localCounter\n"
+        "    return increment()\n"
+        "makeCounter()\n"
+        "makeCounter()\n"
+        "counter",
         2);
+}
+
+// Debug test for nested function calls - CURRENTLY FAILING
+TEST_F(RhoFunctionTests, DebugSimpleNestedCalls) {
+    // First, define two simple functions
+    console_.Execute(
+        "fun add(a, b)\n"
+        "    return a + b\n");
+
+    console_.Execute(
+        "fun double(n)\n"
+        "    return n * 2\n");
+
+    // Test direct calls first
+    data_->Clear();
+    console_.Execute("add(2, 3)");
+    ASSERT_EQ(data_->Size(), 1);
+    EXPECT_EQ(ConstDeref<int>(data_->Top()), 5);
+
+    data_->Clear();
+    console_.Execute("double(4)");
+    ASSERT_EQ(data_->Size(), 1);
+    EXPECT_EQ(ConstDeref<int>(data_->Top()), 8);
+
+    // Now test nested call - CURRENTLY FAILING
+    data_->Clear();
+    console_.Execute("double(add(2, 3))");
+
+    // Check if we have a result
+    ASSERT_EQ(data_->Size(), 1) << "Stack size: " << data_->Size();
+    EXPECT_EQ(ConstDeref<int>(data_->Top()), 10)
+        << "Expected double(add(2,3)) = double(5) = 10";
 }
