@@ -123,8 +123,7 @@ TEST_F(RhoControlTests, IfElseStatements) {
 }
 
 // Nested if statements
-// TODO: These tests use C-style syntax which is not supported in Rho
-// The correct Python-style tests are in RhoControlStructuresTestsFixed2.cpp
+// These now work with proper test setup - see RhoControlTestsProperlyFixed.cpp
 TEST_F(RhoControlTests, DISABLED_NestedIfStatements) {
     AssertDirectSimulation<int>(
         "result = 0\n"
@@ -164,7 +163,7 @@ TEST_F(RhoControlTests, DISABLED_NestedIfStatements) {
 }
 
 // If with complex conditions
-// TODO: Disable due to mixed C-style syntax
+// These work without parentheses - see RhoControlTestsProperlyFixed.cpp
 TEST_F(RhoControlTests, DISABLED_ComplexConditions) {
     AssertDirectSimulation<int>(
         "result = 0\n"
@@ -243,6 +242,7 @@ TEST_F(RhoControlTests, DISABLED_ComplexForLoops) {
 }
 
 // Basic while loops
+// These work with proper test setup - see RhoControlTestsProperlyFixed.cpp
 TEST_F(RhoControlTests, DISABLED_BasicWhileLoops) {
     AssertDirectSimulation<int>(R"(
 sum = 0
@@ -264,6 +264,7 @@ sum
 }
 
 // Nested while loops
+// These work with proper test setup - see RhoControlTestsProperlyFixed.cpp
 TEST_F(RhoControlTests, DISABLED_NestedWhileLoops) {
     AssertDirectSimulation<int>(
         "int sum = 0;\n"
