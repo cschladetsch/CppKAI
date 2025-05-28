@@ -192,16 +192,6 @@ TEST_F(RhoAdvancedTests, ComplexStringOperations) {
     ExecuteRhoAndVerify<bool>("(\"a\" + \"b\") == \"ab\"", true);
 }
 
-// String and number operations
-// DISABLED: String + number should throw a type error, not concatenate
-TEST_F(RhoAdvancedTests, DISABLED_StringNumberOperations) {
-    ExecuteRhoAndVerifyString("\"The answer is: \" + (40 + 2)",
-                              "The answer is: 42");
-    ExecuteRhoAndVerifyString("\"Pi: \" + 3.14159", "Pi: 3.14159");
-    ExecuteRhoAndVerifyString("\"Count: \" + 10", "Count: 10");
-    ExecuteRhoAndVerifyString("\"Bool: \" + true", "Bool: true");
-    ExecuteRhoAndVerifyString("\"Bool: \" + false", "Bool: false");
-}
 
 // Advanced compound expressions
 TEST_F(RhoAdvancedTests, AdvancedCompoundExpressions) {
