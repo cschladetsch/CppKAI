@@ -227,26 +227,42 @@ TEST_F(PiStackTests, VariableOperations) {
 //         std::make_tuple(2, 3, 1));
 // }
 
-// Test computational stack patterns
-// TODO: This test causes framework errors after operations complete
-// successfully The operations work correctly but the test framework has issues
-// TEST_F(PiStackTests, ComputationalPatterns) {
-//     // Sum of two numbers
-//     AssertStackResult("3 4 +", std::make_tuple(7));
-//
-//     // Square a number
-//     AssertStackResult("5 dup *", std::make_tuple(25));
-//
-//     // Calculate average of two numbers
-//     AssertStackResult("7 9 + 2 /", std::make_tuple(8));
-//
-//
-//     // Absolute value
-//     // TODO: Code blocks { ... } are not properly translated to continuations
-//     in Pi
-//     // AssertStackResult("-3 dup 0 < { -1 * } if", std::make_tuple(3));
-//     // AssertStackResult("5 dup 0 < { -1 * } if", std::make_tuple(5));
-// }
+// Test computational stack patterns - converted to standalone to avoid framework issues
+TEST(PiComputationalStandalone, SquareNumber) {
+    kai::Console console;
+    console.SetLanguage(kai::Language::Pi);
+    auto exec = console.GetExecutor();
+
+    // Square a number: 5 dup * = 25
+    console.Execute("5 dup *");
+    auto stack = exec->GetDataStack();
+    ASSERT_EQ(stack->Size(), 1);
+    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 25);
+}
+
+TEST(PiComputationalStandalone, AverageOfTwo) {
+    kai::Console console;
+    console.SetLanguage(kai::Language::Pi);
+    auto exec = console.GetExecutor();
+
+    // Calculate average of two numbers: (7 + 9) / 2 = 8
+    console.Execute("7 9 + 2 /");
+    auto stack = exec->GetDataStack();
+    ASSERT_EQ(stack->Size(), 1);
+    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 8);
+}
+
+TEST(PiComputationalStandalone, ComplexArithmetic) {
+    kai::Console console;
+    console.SetLanguage(kai::Language::Pi);
+    auto exec = console.GetExecutor();
+
+    // Complex calculation: (3 + 4) * 2 = 14
+    console.Execute("3 4 + 2 *");
+    auto stack = exec->GetDataStack();
+    ASSERT_EQ(stack->Size(), 1);
+    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 14);
+}
 
 // Test more complex computational patterns
 // TODO: begin/until and +! operations not implemented in Pi language yet
