@@ -159,8 +159,7 @@ TEST_F(RhoControlTestsFixed2, DoWhileLoops) {
 }
 
 // Nested if statements with proper indentation
-// DISABLED: Parser has issues with nested if with outer else
-TEST_F(RhoControlTestsFixed2, DISABLED_NestedIfStatements) {
+TEST_F(RhoControlTestsFixed2, NestedIfStatements) {
     AssertDirectSimulation<int>(
         "result = 0\n"
         "if true\n"
@@ -175,8 +174,7 @@ TEST_F(RhoControlTestsFixed2, DISABLED_NestedIfStatements) {
 }
 
 // Simple nested if without problematic outer else
-// DISABLED: This test framework has issues with nested structures
-TEST_F(RhoControlTestsFixed2, DISABLED_SimpleNestedIf) {
+TEST_F(RhoControlTestsFixed2, SimpleNestedIf) {
     AssertDirectSimulation<int>(
         "result = 0\n"
         "if true\n"
