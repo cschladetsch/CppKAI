@@ -50,6 +50,8 @@ foreach (lang ${langs})
             ${source_path}/RhoControlStructuresTestsFixed2.cpp  # Fixed with Structure::Program
             ${source_path}/RhoControlStructuresTestsFixed3.cpp  # Fixed version using proper base class
             ${source_path}/RhoControlTestsProperlyFixed.cpp     # Properly fixed control tests
+            ${source_path}/RhoMoreControlFixedTests.cpp         # More fixed control structure tests
+            ${source_path}/RhoElseIfWorkaround.cpp              # Workaround for else-if issues
             ${source_path}/RhoFunctionAndScopeTests.cpp    # Function and scope tests
             ${source_path}/RhoAdvancedDataTests.cpp        # Advanced data structure tests
             ${source_path}/RhoDemo.cpp                    # Demo runner for showcasing features
