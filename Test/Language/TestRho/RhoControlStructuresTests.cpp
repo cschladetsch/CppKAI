@@ -197,34 +197,30 @@ TEST_F(RhoControlTests, DISABLED_ComplexConditions) {
 
 // Basic for loops
 TEST_F(RhoControlTests, DISABLED_BasicForLoops) {
-    AssertDirectSimulation<int>(
-        "int sum = 0;\n"
-        "for (int i = 1; i <= 5; i = i + 1) {\n"
-        "    sum = sum + i;\n"
-        "}\n"
-        "sum;",
-        15);
+    AssertDirectSimulation<int>(R"(
+sum = 0
+for (i = 1; i <= 5; i = i + 1)
+    sum = sum + i
+sum
+)", 15);
 
-    AssertDirectSimulation<int>(
-        "int sum = 0;\n"
-        "for (int i = 0; i < 10; i = i + 2) {\n"
-        "    sum = sum + i;\n"
-        "}\n"
-        "sum;",
-        20);
+    AssertDirectSimulation<int>(R"(
+sum = 0
+for (i = 0; i < 10; i = i + 2)
+    sum = sum + i
+sum
+)", 20);
 }
 
 // Nested for loops
 TEST_F(RhoControlTests, DISABLED_NestedForLoops) {
-    AssertDirectSimulation<int>(
-        "int sum = 0;\n"
-        "for (int i = 1; i <= 3; i = i + 1) {\n"
-        "    for (int j = 1; j <= 3; j = j + 1) {\n"
-        "        sum = sum + (i * j);\n"
-        "    }\n"
-        "}\n"
-        "sum;",
-        36);
+    AssertDirectSimulation<int>(R"(
+sum = 0
+for (i = 1; i <= 3; i = i + 1)
+    for (j = 1; j <= 3; j = j + 1)
+        sum = sum + (i * j)
+sum
+)", 36);
 }
 
 // For loops with complex conditions
@@ -248,25 +244,23 @@ TEST_F(RhoControlTests, DISABLED_ComplexForLoops) {
 
 // Basic while loops
 TEST_F(RhoControlTests, DISABLED_BasicWhileLoops) {
-    AssertDirectSimulation<int>(
-        "int sum = 0;\n"
-        "int i = 1;\n"
-        "while (i <= 5) {\n"
-        "    sum = sum + i;\n"
-        "    i = i + 1;\n"
-        "}\n"
-        "sum;",
-        15);
+    AssertDirectSimulation<int>(R"(
+sum = 0
+i = 1
+while i <= 5
+    sum = sum + i
+    i = i + 1
+sum
+)", 15);
 
-    AssertDirectSimulation<int>(
-        "int sum = 0;\n"
-        "int i = 0;\n"
-        "while (i < 10) {\n"
-        "    sum = sum + i;\n"
-        "    i = i + 2;\n"
-        "}\n"
-        "sum;",
-        20);
+    AssertDirectSimulation<int>(R"(
+sum = 0
+i = 0
+while i < 10
+    sum = sum + i
+    i = i + 2
+sum
+)", 20);
 }
 
 // Nested while loops
