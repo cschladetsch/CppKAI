@@ -736,10 +736,12 @@ void Executor::Continue(Value<Continuation> C) {
     KAI_TRACE() << "Continue(C): Restoring saved continuation";
     if (savedContinuation.Valid() && savedContinuation.Exists()) {
         KAI_TRACE() << "  Saved continuation is valid";
+        continuation_ = savedContinuation;
     } else {
         KAI_TRACE() << "  Saved continuation is invalid/null";
+        // Don't restore a null continuation - just leave it as null
+        continuation_ = Object();
     }
-    continuation_ = savedContinuation;
 }
 
 void Executor::NextContinuation() {
@@ -760,14 +762,16 @@ void Executor::NextContinuation() {
         // Get next continuation from context stack
         const auto next = context_->Pop();
 
-        // Validate before setting as current continuation
-        if (next.Valid() && next.Exists()) {
-            SetContinuation(next);
-        } else {
-            KAI_TRACE_ERROR()
-                << "NextContinuation: Invalid continuation from context stack";
+        // Check if this is a null sentinel (used by ContinueOnly to stop execution)
+        if (!next.Valid() || !next.Exists()) {
+            // This is expected when ContinueOnly pushed a null object as a sentinel
+            // Just set continuation to null to stop execution
             continuation_ = Object();
+            return;
         }
+
+        // Validate before setting as current continuation
+        SetContinuation(next);
     } catch (const std::exception &e) {
         KAI_TRACE_ERROR() << "NextContinuation: Exception: " << e.what();
         continuation_ = Object();
