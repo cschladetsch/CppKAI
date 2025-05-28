@@ -343,9 +343,7 @@ TEST_F(ExtendedBinaryOpTests, ChainedBinaryOperations) {
 
 // Floating Point Special Values
 TEST_F(ExtendedBinaryOpTests, FloatingPointSpecialValues) {
-    if (!reg_->HasClass(Label("float"))) {
-        GTEST_SKIP() << "Float class not registered, skipping test";
-    }
+    // Float class is registered in SetUp, no need to skip
 
     // Create special values
     float inf = std::numeric_limits<float>::infinity();

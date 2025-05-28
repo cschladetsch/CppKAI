@@ -85,6 +85,7 @@ foreach (lang ${langs})
             ${source_path}/PiMathOperationsTests.cpp        # Mathematical operation tests
             ${source_path}/PiMinMaxTests.cpp                # Min/Max operation tests
             ${source_path}/PiMinMaxSimpleTests.cpp          # Simple Min/Max tests without TestLangCommon
+            ${source_path}/PiMathStandaloneTest.cpp         # Math tests without TestLangCommon
             # Larger tests to include if needed:
             #${source_path}/TestPiAdvanced.cpp
             #${source_path}/TestPiAdvanced2.cpp

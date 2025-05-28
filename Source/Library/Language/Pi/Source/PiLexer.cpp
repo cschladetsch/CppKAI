@@ -166,7 +166,7 @@ bool PiLexer::NextToken() {
                 Next();
                 return true;
             }
-            return PathnameOrKeyword();
+            return Add(Enum::Divide);
     }
 
     LexError("Unrecognised %c");
