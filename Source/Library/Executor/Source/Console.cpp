@@ -285,6 +285,7 @@ void Console::WritePrompt(ostream &out) const {
     out << rang::style::bold << rang::fg::yellow;
     out << pathName.c_str();
     out << "> ";
+    out.flush();  // Ensure prompt is displayed immediately
 }
 
 String Console::GetPrompt() const {
@@ -319,6 +320,7 @@ String Console::WriteStack() const {
 int Console::Run() {
     // Enable bold formatting at the start and maintain it
     cout << rang::style::bold;
+    cout.flush();
 
     for (;;) {
         KAI_TRY {

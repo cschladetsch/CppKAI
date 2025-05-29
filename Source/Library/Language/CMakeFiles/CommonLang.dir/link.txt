@@ -1,2 +1,0 @@
-/usr/bin/ar qc ../../../build/Bin/libCommonLang.a CMakeFiles/CommonLang.dir/Common/Source/Language.cpp.o CMakeFiles/CommonLang.dir/Common/Source/Structure.cpp.o
-/usr/bin/ranlib ../../../build/Bin/libCommonLang.a

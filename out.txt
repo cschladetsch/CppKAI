@@ -1,0 +1,2005 @@
+===============================================
+        Running All KAI Tests
+===============================================
+
+[0;33mRunning run_fixed_tests.sh...[0m
+[1m=============================================[0m
+[1mRunning KAI fixed tests[0m
+[1m=============================================[0m
+[36mRunning Rho Language Tests with our fixes[0m
+Note: Google Test filter = LanguageComparison.*:TestRho.*:RhoPiBasic.*:DirectBinaryOp.*:RhoPiTests.*:RhoBinaryOps.*:AdvancedBinaryOps.*:DoWhile.*:RhoLinearStream.*:RhoScriptTest.*
+[==========] Running 28 tests from 5 test suites.
+[----------] Global test environment set-up.
+[----------] 1 test from TestRho
+[ RUN      ] TestRho.TestTypePreservation
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [TranslatorCommon.cpp:13]  TranslatorCommon::Append - object type: Int, exists: true[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [TranslatorCommon.cpp:165]  TranslatorCommon::Append - appended to code array, new size: 1[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [TranslatorCommon.cpp:13]  TranslatorCommon::Append - object type: Int, exists: true[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [TranslatorCommon.cpp:165]  TranslatorCommon::Append - appended to code array, new size: 2[0m[39m
+Appending operation: Plus
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [TranslatorCommon.cpp:13]  TranslatorCommon::Append - object type: Operation, exists: true[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [TranslatorCommon.cpp:97]  TranslatorCommon::Append: Directly evaluated 2 Plus 3 = 5[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [PiTranslator.cpp:23]  Created Pi continuation[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Console.cpp:232]  Executing text: 2 3 +[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Console.cpp:236]  Continuation code size: 1[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Console.cpp:239]    Code[0]: 5 (type: Int)[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Console.cpp:143]  cont->GetCode()->Size()='1' Executing continuation with size[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:517]  Eval: object=5, type=Int, typenum=22[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:590]  Eval: Pushing value to stack: 5[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:592]  Eval: Stack size after push: 1[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:650]  Continue: Continuation finished (Next returned false)[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:742]  Continue(C): Restoring saved continuation[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:747]    Saved continuation is invalid/null[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Console.cpp:169]  Execute: Continue returned, checking executor state[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Console.cpp:180]  Execute: Stack size after execution: 1[0m[39m
+Addition result type: Int
+Addition result value: 5
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [TranslatorCommon.cpp:13]  TranslatorCommon::Append - object type: Int, exists: true[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [TranslatorCommon.cpp:165]  TranslatorCommon::Append - appended to code array, new size: 1[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [TranslatorCommon.cpp:13]  TranslatorCommon::Append - object type: Int, exists: true[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [TranslatorCommon.cpp:165]  TranslatorCommon::Append - appended to code array, new size: 2[0m[39m
+Appending operation: Minus
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [TranslatorCommon.cpp:13]  TranslatorCommon::Append - object type: Operation, exists: true[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [TranslatorCommon.cpp:97]  TranslatorCommon::Append: Directly evaluated 10 Minus 4 = 6[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [PiTranslator.cpp:23]  Created Pi continuation[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Console.cpp:232]  Executing text: 10 4 -[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Console.cpp:236]  Continuation code size: 1[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Console.cpp:239]    Code[0]: 6 (type: Int)[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Console.cpp:143]  cont->GetCode()->Size()='1' Executing continuation with size[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:517]  Eval: object=6, type=Int, typenum=22[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:590]  Eval: Pushing value to stack: 6[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:592]  Eval: Stack size after push: 1[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:650]  Continue: Continuation finished (Next returned false)[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:742]  Continue(C): Restoring saved continuation[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:747]    Saved continuation is invalid/null[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Console.cpp:169]  Execute: Continue returned, checking executor state[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Console.cpp:180]  Execute: Stack size after execution: 1[0m[39m
+Subtraction result type: Int
+Subtraction result value: 6
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [TranslatorCommon.cpp:13]  TranslatorCommon::Append - object type: Int, exists: true[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [TranslatorCommon.cpp:165]  TranslatorCommon::Append - appended to code array, new size: 1[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [TranslatorCommon.cpp:13]  TranslatorCommon::Append - object type: Int, exists: true[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [TranslatorCommon.cpp:165]  TranslatorCommon::Append - appended to code array, new size: 2[0m[39m
+Appending operation: Multiply
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [TranslatorCommon.cpp:13]  TranslatorCommon::Append - object type: Operation, exists: true[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [TranslatorCommon.cpp:97]  TranslatorCommon::Append: Directly evaluated 6 Multiply 7 = 42[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [PiTranslator.cpp:23]  Created Pi continuation[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Console.cpp:232]  Executing text: 6 7 *[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Console.cpp:236]  Continuation code size: 1[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Console.cpp:239]    Code[0]: 42 (type: Int)[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Console.cpp:143]  cont->GetCode()->Size()='1' Executing continuation with size[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:517]  Eval: object=42, type=Int, typenum=22[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:590]  Eval: Pushing value to stack: 42[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:592]  Eval: Stack size after push: 1[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:650]  Continue: Continuation finished (Next returned false)[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:742]  Continue(C): Restoring saved continuation[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:747]    Saved continuation is invalid/null[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Console.cpp:169]  Execute: Continue returned, checking executor state[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Console.cpp:180]  Execute: Stack size after execution: 1[0m[39m
+Multiplication result type: Int
+Multiplication result value: 42
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [TranslatorCommon.cpp:13]  TranslatorCommon::Append - object type: Int, exists: true[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [TranslatorCommon.cpp:165]  TranslatorCommon::Append - appended to code array, new size: 1[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [TranslatorCommon.cpp:13]  TranslatorCommon::Append - object type: Int, exists: true[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [TranslatorCommon.cpp:165]  TranslatorCommon::Append - appended to code array, new size: 2[0m[39m
+Appending operation: Plus
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [TranslatorCommon.cpp:13]  TranslatorCommon::Append - object type: Operation, exists: true[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [TranslatorCommon.cpp:97]  TranslatorCommon::Append: Directly evaluated 5 Plus 5 = 10[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [PiTranslator.cpp:23]  Created Pi continuation[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Console.cpp:232]  Executing text: 5 5 +[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Console.cpp:236]  Continuation code size: 1[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Console.cpp:239]    Code[0]: 10 (type: Int)[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Console.cpp:143]  cont->GetCode()->Size()='1' Executing continuation with size[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:517]  Eval: object=10, type=Int, typenum=22[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:590]  Eval: Pushing value to stack: 10[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:592]  Eval: Stack size after push: 1[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:650]  Continue: Continuation finished (Next returned false)[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:742]  Continue(C): Restoring saved continuation[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:747]    Saved continuation is invalid/null[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Console.cpp:169]  Execute: Continue returned, checking executor state[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Console.cpp:180]  Execute: Stack size after execution: 1[0m[39m
+Stack operations result type: Int
+Stack operations result value: 10
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [TranslatorCommon.cpp:13]  TranslatorCommon::Append - object type: Int, exists: true[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [TranslatorCommon.cpp:165]  TranslatorCommon::Append - appended to code array, new size: 1[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [TranslatorCommon.cpp:13]  TranslatorCommon::Append - object type: Int, exists: true[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [TranslatorCommon.cpp:165]  TranslatorCommon::Append - appended to code array, new size: 2[0m[39m
+Appending operation: Greater
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [TranslatorCommon.cpp:13]  TranslatorCommon::Append - object type: Operation, exists: true[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [TranslatorCommon.cpp:165]  TranslatorCommon::Append - appended to code array, new size: 3[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [PiTranslator.cpp:23]  Created Pi continuation[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Console.cpp:232]  Executing text: 10 5 >[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Console.cpp:236]  Continuation code size: 3[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Console.cpp:239]    Code[0]: 10 (type: Int)[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Console.cpp:239]    Code[1]: 5 (type: Int)[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Console.cpp:239]    Code[2]: Greater (type: Operation)[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Console.cpp:143]  cont->GetCode()->Size()='3' Executing continuation with size[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:517]  Eval: object=10, type=Int, typenum=22[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:590]  Eval: Pushing value to stack: 10[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:592]  Eval: Stack size after push: 1[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:517]  Eval: object=5, type=Int, typenum=22[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:590]  Eval: Pushing value to stack: 5[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:592]  Eval: Stack size after push: 2[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:517]  Eval: object=Greater, type=Operation, typenum=43[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:970]  PerformBinaryOp called with operation: Greater[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:650]  Continue: Continuation finished (Next returned false)[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:742]  Continue(C): Restoring saved continuation[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:747]    Saved continuation is invalid/null[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Console.cpp:169]  Execute: Continue returned, checking executor state[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Console.cpp:180]  Execute: Stack size after execution: 1[0m[39m
+Comparison result type: Bool
+Comparison result value: true
+[       OK ] TestRho.TestTypePreservation (4 ms)
+[----------] 1 test from TestRho (4 ms total)
+
+[----------] 10 tests from DirectBinaryOp
+[ RUN      ] DirectBinaryOp.IntArithmetic
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:970]  PerformBinaryOp called with operation: Plus[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:1028]  Plus operation[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:970]  PerformBinaryOp called with operation: Minus[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:970]  PerformBinaryOp called with operation: Multiply[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:970]  PerformBinaryOp called with operation: Divide[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:970]  PerformBinaryOp called with operation: Modulo[0m[39m
+[       OK ] DirectBinaryOp.IntArithmetic (0 ms)
+[ RUN      ] DirectBinaryOp.FloatArithmetic
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:970]  PerformBinaryOp called with operation: Plus[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:1028]  Plus operation[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:970]  PerformBinaryOp called with operation: Minus[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:970]  PerformBinaryOp called with operation: Multiply[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:970]  PerformBinaryOp called with operation: Divide[0m[39m
+[       OK ] DirectBinaryOp.FloatArithmetic (0 ms)
+[ RUN      ] DirectBinaryOp.MixedTypeArithmetic
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:970]  PerformBinaryOp called with operation: Plus[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:1028]  Plus operation[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:970]  PerformBinaryOp called with operation: Plus[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:1028]  Plus operation[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:970]  PerformBinaryOp called with operation: Multiply[0m[39m
+[       OK ] DirectBinaryOp.MixedTypeArithmetic (0 ms)
+[ RUN      ] DirectBinaryOp.ComparisonOperations
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:970]  PerformBinaryOp called with operation: Equiv[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:970]  PerformBinaryOp called with operation: NotEquiv[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:970]  PerformBinaryOp called with operation: Equiv[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:970]  PerformBinaryOp called with operation: Less[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:970]  PerformBinaryOp called with operation: Greater[0m[39m
+[       OK ] DirectBinaryOp.ComparisonOperations (0 ms)
+[ RUN      ] DirectBinaryOp.LogicalOperations
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:970]  PerformBinaryOp called with operation: LogicalAnd[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:970]  PerformBinaryOp called with operation: LogicalOr[0m[39m
+[       OK ] DirectBinaryOp.LogicalOperations (0 ms)
+[ RUN      ] DirectBinaryOp.StringConcatenation
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:970]  PerformBinaryOp called with operation: Plus[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:1028]  Plus operation[0m[39m
+[       OK ] DirectBinaryOp.StringConcatenation (0 ms)
+[ RUN      ] DirectBinaryOp.ContinuationEvaluation
+Stack initialized and cleared
+Continuation created
+Code array created
+Values created: 5, 5, Plus
+Values appended to code array
+Code array verified
+Continuation configured
+Continuation ready for execution
+Values pushed directly to stack
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:970]  PerformBinaryOp called with operation: Plus[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:1028]  Plus operation[0m[39m
+Plus operation performed
+Test completed successfully
+[       OK ] DirectBinaryOp.ContinuationEvaluation (0 ms)
+[ RUN      ] DirectBinaryOp.UnwrapContinuation
+Starting UnwrapContinuation test
+Registry initialized
+Executor created
+Continuation created
+Value created: 42
+Code array created
+Value appended to code
+Code array verified
+Continuation configured
+Value pushed to stack manually
+Test completed successfully
+[       OK ] DirectBinaryOp.UnwrapContinuation (0 ms)
+[ RUN      ] DirectBinaryOp.UnwrapBinaryOpContinuation
+[       OK ] DirectBinaryOp.UnwrapBinaryOpContinuation (1 ms)
+[ RUN      ] DirectBinaryOp.ExtractValueFromContinuation
+[       OK ] DirectBinaryOp.ExtractValueFromContinuation (2 ms)
+[----------] 10 tests from DirectBinaryOp (11 ms total)
+
+[----------] 7 tests from RhoBinaryOps
+[ RUN      ] RhoBinaryOps.StringConcatenation
+[       OK ] RhoBinaryOps.StringConcatenation (0 ms)
+[ RUN      ] RhoBinaryOps.LogicalAND
+[       OK ] RhoBinaryOps.LogicalAND (0 ms)
+[ RUN      ] RhoBinaryOps.LogicalOR
+[       OK ] RhoBinaryOps.LogicalOR (0 ms)
+[ RUN      ] RhoBinaryOps.IntegerDivision
+[       OK ] RhoBinaryOps.IntegerDivision (0 ms)
+[ RUN      ] RhoBinaryOps.ModuloOperation
+[       OK ] RhoBinaryOps.ModuloOperation (0 ms)
+[ RUN      ] RhoBinaryOps.ComparisonOperations
+[       OK ] RhoBinaryOps.ComparisonOperations (0 ms)
+[ RUN      ] RhoBinaryOps.DupPlusPattern
+[       OK ] RhoBinaryOps.DupPlusPattern (0 ms)
+[----------] 7 tests from RhoBinaryOps (4 ms total)
+
+[----------] 3 tests from AdvancedBinaryOps
+[ RUN      ] AdvancedBinaryOps.BasicDirectTest
+Basic direct test passed
+[       OK ] AdvancedBinaryOps.BasicDirectTest (0 ms)
+[ RUN      ] AdvancedBinaryOps.StringCompare
+String comparison test passed
+[       OK ] AdvancedBinaryOps.StringCompare (0 ms)
+[ RUN      ] AdvancedBinaryOps.DupPlusOptimization
+Dup + pattern test passed
+[       OK ] AdvancedBinaryOps.DupPlusOptimization (0 ms)
+[----------] 3 tests from AdvancedBinaryOps (2 ms total)
+
+[----------] 7 tests from RhoPiTests
+[ RUN      ] RhoPiTests.ContinuationBeginValueEndPattern
+[       OK ] RhoPiTests.ContinuationBeginValueEndPattern (0 ms)
+[ RUN      ] RhoPiTests.PiBinaryOperations
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:517]  Eval: object=Plus, type=Operation, typenum=43[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:970]  PerformBinaryOp called with operation: Plus[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:1028]  Plus operation[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:517]  Eval: object=Minus, type=Operation, typenum=43[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:970]  PerformBinaryOp called with operation: Minus[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:517]  Eval: object=Multiply, type=Operation, typenum=43[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:970]  PerformBinaryOp called with operation: Multiply[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:517]  Eval: object=Divide, type=Operation, typenum=43[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:970]  PerformBinaryOp called with operation: Divide[0m[39m
+[       OK ] RhoPiTests.PiBinaryOperations (1 ms)
+[ RUN      ] RhoPiTests.PiTextExecution
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:970]  PerformBinaryOp called with operation: Plus[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:1028]  Plus operation[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:970]  PerformBinaryOp called with operation: Divide[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:970]  PerformBinaryOp called with operation: Multiply[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:970]  PerformBinaryOp called with operation: Plus[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:1028]  Plus operation[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:970]  PerformBinaryOp called with operation: Greater[0m[39m
+[       OK ] RhoPiTests.PiTextExecution (0 ms)
+[ RUN      ] RhoPiTests.RhoTextExecution
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:970]  PerformBinaryOp called with operation: Plus[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:1028]  Plus operation[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:970]  PerformBinaryOp called with operation: Divide[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:970]  PerformBinaryOp called with operation: Multiply[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:970]  PerformBinaryOp called with operation: Plus[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:1028]  Plus operation[0m[39m
+[       OK ] RhoPiTests.RhoTextExecution (0 ms)
+[ RUN      ] RhoPiTests.TestPi20Plus20
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [AdditionalRhoTests.cpp:249]  Attempting to execute Pi code: '20 20 +'[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [TranslatorCommon.cpp:13]  TranslatorCommon::Append - object type: int, exists: true[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [TranslatorCommon.cpp:165]  TranslatorCommon::Append - appended to code array, new size: 1[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [TranslatorCommon.cpp:13]  TranslatorCommon::Append - object type: int, exists: true[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [TranslatorCommon.cpp:165]  TranslatorCommon::Append - appended to code array, new size: 2[0m[39m
+Appending operation: Plus
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [TranslatorCommon.cpp:13]  TranslatorCommon::Append - object type: Operation, exists: true[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [TranslatorCommon.cpp:97]  TranslatorCommon::Append: Directly evaluated 20 Plus 20 = 40[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [PiTranslator.cpp:23]  Created Pi continuation[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Console.cpp:232]  Executing text: 20 20 +[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Console.cpp:236]  Continuation code size: 1[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Console.cpp:239]    Code[0]: 40 (type: int)[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Console.cpp:143]  cont->GetCode()->Size()='1' Executing continuation with size[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:517]  Eval: object=40, type=int, typenum=22[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:590]  Eval: Pushing value to stack: 40[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:592]  Eval: Stack size after push: 1[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:650]  Continue: Continuation finished (Next returned false)[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:742]  Continue(C): Restoring saved continuation[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:747]    Saved continuation is invalid/null[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Console.cpp:169]  Execute: Continue returned, checking executor state[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Console.cpp:180]  Execute: Stack size after execution: 1[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [AdditionalRhoTests.cpp:266]  Pi execution for '20 20 +' succeeded[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [AdditionalRhoTests.cpp:341]  Test for '20 20 +' pattern completed successfully with result: 40[0m[39m
+[       OK ] RhoPiTests.TestPi20Plus20 (1 ms)
+[ RUN      ] RhoPiTests.ManualBinaryOpContinuation
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [AdditionalRhoTests.cpp:370]  Attempting to execute binary operation continuation...[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:517]  Eval: object=2, type=int, typenum=22[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:590]  Eval: Pushing value to stack: 2[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:592]  Eval: Stack size after push: 1[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:517]  Eval: object=3, type=int, typenum=22[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:590]  Eval: Pushing value to stack: 3[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:592]  Eval: Stack size after push: 2[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:517]  Eval: object=Plus, type=Operation, typenum=43[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:970]  PerformBinaryOp called with operation: Plus[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:1028]  Plus operation[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:650]  Continue: Continuation finished (Next returned false)[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:742]  Continue(C): Restoring saved continuation[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:747]    Saved continuation is invalid/null[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [AdditionalRhoTests.cpp:375]  Continuation execution succeeded[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [AdditionalRhoTests.cpp:457]  Manual binary operation continuation test completed successfully with result: 5[0m[39m
+[       OK ] RhoPiTests.ManualBinaryOpContinuation (1 ms)
+[ RUN      ] RhoPiTests.ComplexRhoExpression
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:970]  PerformBinaryOp called with operation: Plus[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:1028]  Plus operation[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [Executor.cpp:970]  PerformBinaryOp called with operation: Multiply[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [AdditionalRhoTests.cpp:482]  Direct calculation for (2 + 3) * 4 = 20 succeeded[0m[39m
+[0m[32m[2025-05-29 21:44:02] [INFO   ] [AdditionalRhoTests.cpp:490]  Complex Rho expression test completed successfully with result: 20[0m[39m
+[       OK ] RhoPiTests.ComplexRhoExpression (0 ms)
+[----------] 7 tests from RhoPiTests (7 ms total)
+
+[----------] Global test environment tear-down
+[==========] 28 tests from 5 test suites ran. (29 ms total)
+[  PASSED  ] 28 tests.
+[1m=============================================[0m
+[1mTest run complete[0m
+[1m=============================================[0m
+[0;32m✓ run_fixed_tests.sh completed successfully[0m
+-----------------------------------------------
+
+[0;33mRunning run_rho_tests.sh...[0m
+[1;33mRunning Rho tests one by one to isolate segmentation faults[0m
+Running TestLangCommon.SemicolonBasics... [1;32mPASSED[0m
+Running TestLangCommon.MultipleSemicolonStatements... [1;32mPASSED[0m
+Running TestLangCommon.SemicolonsInExpressions... [1;32mPASSED[0m
+Running TestLangCommon.NestedExpressionsWithSemicolons... [1;32mPASSED[0m
+Running TestLangCommon.TrailingSemicolon... [1;32mPASSED[0m
+Running TestLangCommon.EmptyStatement... [1;32mPASSED[0m
+Running TestLangCommon.MixedNewlinesAndSemicolons... [1;32mPASSED[0m
+Running TestLangCommon.InlineForLoopWithSemicolons... [1;32mPASSED[0m
+Running TestLangCommon.ForLoopEmptySections... [1;32mPASSED[0m
+Running TestLangCommon.InlineIfElse... [1;32mPASSED[0m
+Running TestLangCommon.FunctionWithSemicolons... [1;32mPASSED[0m
+Running TestLangCommon.ComplexExpressionWithSemicolons... [1;32mPASSED[0m
+Running TestLangCommon.ForLoopSemicolonsSyntax... [1;32mPASSED[0m
+Running TestLangCommon.ForLoopFormattingVariations... [1;32mPASSED[0m
+Running TestRho.TestTypePreservation... [1;32mPASSED[0m
+Running SimpleDirectTest.BasicArithmetic... [1;32mPASSED[0m
+Running DirectBinaryOp.IntArithmetic... [1;32mPASSED[0m
+Running DirectBinaryOp.FloatArithmetic... [1;32mPASSED[0m
+Running DirectBinaryOp.MixedTypeArithmetic... [1;32mPASSED[0m
+Running DirectBinaryOp.ComparisonOperations... [1;32mPASSED[0m
+Running DirectBinaryOp.LogicalOperations... [1;32mPASSED[0m
+Running DirectBinaryOp.StringConcatenation... [1;32mPASSED[0m
+Running DirectBinaryOp.ContinuationEvaluation... [1;32mPASSED[0m
+Running DirectBinaryOp.UnwrapContinuation... [1;32mPASSED[0m
+Running DirectBinaryOp.UnwrapBinaryOpContinuation... [1;32mPASSED[0m
+Running DirectBinaryOp.ExtractValueFromContinuation... [1;32mPASSED[0m
+Running RhoBinaryOps.StringConcatenation... [1;32mPASSED[0m
+Running RhoBinaryOps.LogicalAND... [1;32mPASSED[0m
+Running RhoBinaryOps.LogicalOR... [1;32mPASSED[0m
+Running RhoBinaryOps.IntegerDivision... [1;32mPASSED[0m
+Running RhoBinaryOps.ModuloOperation... [1;32mPASSED[0m
+Running RhoBinaryOps.ComparisonOperations... [1;32mPASSED[0m
+Running RhoBinaryOps.DupPlusPattern... [1;32mPASSED[0m
+Running AdvancedBinaryOps.BasicDirectTest... [1;32mPASSED[0m
+Running AdvancedBinaryOps.StringCompare... [1;32mPASSED[0m
+Running AdvancedBinaryOps.DupPlusOptimization... [1;32mPASSED[0m
+Running RhoPiTests.ContinuationBeginValueEndPattern... [1;32mPASSED[0m
+Running RhoPiTests.PiBinaryOperations... [1;32mPASSED[0m
+Running RhoPiTests.PiTextExecution... [1;32mPASSED[0m
+Running RhoPiTests.RhoTextExecution... [1;32mPASSED[0m
+Running RhoPiTests.TestPi20Plus20... [1;32mPASSED[0m
+Running RhoPiTests.ManualBinaryOpContinuation... [1;32mPASSED[0m
+Running RhoPiTests.ComplexRhoExpression... [1;32mPASSED[0m
+Running DiagnoseTestLang.PiOperation... [1;32mPASSED[0m
+Running MinimalTest.AlwaysPass... [1;32mPASSED[0m
+Running RhoPiFix.Addition... [1;32mPASSED[0m
+Running RhoPiFix.Subtraction... [1;32mPASSED[0m
+Running RhoPiFix.Multiplication... [1;32mPASSED[0m
+Running RhoPiFix.AnotherAddition... [1;32mPASSED[0m
+Running RhoPiFix.ComplexExpression... [1;32mPASSED[0m
+Running RhoPiFix.StackOperations... [1;32mPASSED[0m
+Running RhoPiFix.StackManipulation... [1;32mPASSED[0m
+Running RhoPiFix.ComparisonOperations... [1;32mPASSED[0m
+Running RhoPiFix.StringSupport... [1;32mPASSED[0m
+Running PiMinimal.BasicOperations... [1;32mPASSED[0m
+Running RhoMinimal.HelloWorld... [1;32mPASSED[0m
+Running RhoMinimal.SimplePiArithmetic... [1;32mPASSED[0m
+Running RhoMinimal.BasicOperations... [1;32mPASSED[0m
+Running RhoPiWorkaround.BasicMathOperations... [1;32mPASSED[0m
+Running RhoPiWorkaround.VariableOperations... [1;32mPASSED[0m
+Running RhoPiWorkaround.StringOperations... [1;32mPASSED[0m
+Running RhoPiWorkaround.BooleanOperations... [1;32mPASSED[0m
+Running RhoPiWorkaround.ArrayOperations... [1;32mPASSED[0m
+Running RhoPiWorkaround.ConditionalLogic... [1;32mPASSED[0m
+Running RhoPiWorkaround.LoopSimulation... [1;32mPASSED[0m
+Running RhoPiWorkaround.FunctionOperations... [1;32mPASSED[0m
+Running RhoPiWorkaround.ScopingAndContext... [1;32mPASSED[0m
+Running RhoPiWorkaround.ErrorHandlingSimulation... [1;32mPASSED[0m
+Running RhoLanguage.TestDoWhileLoops... [1;32mPASSED[0m
+Running RhoLanguage.AssertTest... [1;32mPASSED[0m
+Running RhoLanguage.PiAssertInRho... [1;32mPASSED[0m
+Running RhoExtendedOps.IntegerAddition... [1;32mPASSED[0m
+Running RhoExtendedOps.IntegerSubtraction... [1;32mPASSED[0m
+Running RhoExtendedOps.IntegerMultiplication... [1;32mPASSED[0m
+Running RhoExtendedOps.IntegerDivision... [1;32mPASSED[0m
+Running RhoExtendedOps.IntegerModulo... [1;32mPASSED[0m
+Running RhoExtendedOps.BooleanAnd... [1;32mPASSED[0m
+Running RhoExtendedOps.BooleanOr... [1;32mPASSED[0m
+Running RhoExtendedOps.EqualityComparison... [1;32mPASSED[0m
+Running RhoExtendedOps.InequalityComparison... [1;32mPASSED[0m
+Running RhoExtendedOps.StringConcatenation... [1;32mPASSED[0m
+Running RhoExtendedOps.LessThanComparison... [1;32mPASSED[0m
+Running RhoExtendedOps.GreaterThanComparison... [1;32mPASSED[0m
+Running RhoBasicTest.SimpleBinaryOps... [1;32mPASSED[0m
+Running RhoBasicTest.SimpleExecution... [1;32mPASSED[0m
+Running RhoBasic.DirectBinaryOps... [1;32mPASSED[0m
+Running Simple20Plus20Test.DirectTest... [1;32mPASSED[0m
+Running SimpleTest.BasicPi... [1;32mPASSED[0m
+Running RhoForLoopTestsFixture.BasicIntegerIncrement... [1;32mPASSED[0m
+Running RhoForLoopTestsFixture.ComplexCondition... [1;32mPASSED[0m
+Running RhoForLoopTestsFixture.DISABLED_EarlyExitWithBreak... [1;32mPASSED[0m
+Running RhoForLoopTestsFixture.NestedLoops... [1;32mPASSED[0m
+Running RhoForLoopTestsFixture.FunctionCallsInBody... [1;32mPASSED[0m
+Running RhoForLoopTestsFixture.BuildingAnArray... [1;32mPASSED[0m
+Running RhoForLoopTestsFixture.ComplexUpdateExpression... [1;32mPASSED[0m
+Running RhoForLoopTestsFixture.FibonacciSequence... [1;32mPASSED[0m
+Running RhoForLoopTestsFixture.StringOperations... [1;32mPASSED[0m
+Running RhoForLoopTestsFixture.NestedContinuations... [1;32mPASSED[0m
+Running RhoForLoopTestsFixture.FunctionWithForLoop... [1;32mPASSED[0m
+Running RhoForLoopTestsFixture.WithEmbeddedPiBlock... [1;32mPASSED[0m
+Running ExtendedRhoTests.VariableAssignment... [1;32mPASSED[0m
+Running ExtendedRhoTests.BasicArithmetic... [1;32mPASSED[0m
+Running ExtendedRhoTests.OrderOfOperations... [1;32mPASSED[0m
+Running ExtendedRhoTests.CompoundAssignment... [1;32mPASSED[0m
+Running ExtendedRhoTests.StringConcatenation... [1;32mPASSED[0m
+Running ExtendedRhoTests.BasicIfStatement... [1;32mPASSED[0m
+Running ExtendedRhoTests.IfElseStatement... [1;32mPASSED[0m
+Running ExtendedRhoTests.NestedIfStatements... [1;32mPASSED[0m
+Running ExtendedRhoTests.BasicWhileLoop... [1;32mPASSED[0m
+Running ExtendedRhoTests.BasicDoWhileLoop... [1;32mPASSED[0m
+Running ExtendedRhoTests.SimpleFunctionCall... [1;32mPASSED[0m
+Running ExtendedRhoTests.RecursiveFunction... [1;32mPASSED[0m
+Running ExtendedRhoTests.FunctionWithDefaultParams... [1;32mPASSED[0m
+Running ExtendedRhoTests.ArrayPlusOperator... [1;32mPASSED[0m
+Running ExtendedRhoTests.ArrayOperations... [1;32mPASSED[0m
+Running ExtendedRhoTests.ArrayPushPop... [1;32mPASSED[0m
+Running ExtendedRhoTests.ObjectProperties... [1;32mPASSED[0m
+Running ExtendedRhoTests.NestedObjectAccess... [1;32mPASSED[0m
+Running ExtendedRhoTests.TernaryOperator... [1;32mPASSED[0m
+Running ExtendedRhoTests.SwitchStatement... [1;32mPASSED[0m
+Running ExtendedRhoTests.StringOperations... [1;32mPASSED[0m
+Running ExtendedRhoTests.DISABLED_ContinuationStateInLoop... [1;32mPASSED[0m
+Running ExtendedRhoTests.DISABLED_ContinuationStateInNestedLoops... [1;32mPASSED[0m
+Running ExtendedRhoTests.DISABLED_ContinuationStateWithMutableVars... [1;32mPASSED[0m
+Running RhoAdvancedTests.AdvancedArithmetic... [1;32mPASSED[0m
+Running RhoAdvancedTests.MixedTypeArithmetic... [1;32mPASSED[0m
+Running RhoAdvancedTests.ComplexExpressions... [1;32mPASSED[0m
+Running RhoAdvancedTests.ModulusOperations... [1;32mPASSED[0m
+Running RhoAdvancedTests.BitwiseOperations... [1;32mPASSED[0m
+Running RhoAdvancedTests.BooleanOperations... [1;32mPASSED[0m
+Running RhoAdvancedTests.ComparisonOperations... [1;32mPASSED[0m
+Running RhoAdvancedTests.MixedBooleanComparison... [1;32mPASSED[0m
+Running RhoAdvancedTests.StringOperations... [1;32mPASSED[0m
+Running RhoAdvancedTests.ComplexStringOperations... [1;32mPASSED[0m
+Running RhoAdvancedTests.AdvancedCompoundExpressions... [1;32mPASSED[0m
+Running RhoControlTests.BasicIfStatements... [1;32mPASSED[0m
+Running RhoControlTests.IfElseStatements... [1;32mPASSED[0m
+Running RhoControlTests.DISABLED_NestedIfStatements... [1;32mPASSED[0m
+Running RhoControlTests.DISABLED_ComplexConditions... [1;32mPASSED[0m
+Running RhoControlTests.BasicForLoops... [1;32mPASSED[0m
+Running RhoControlTests.NestedForLoops... [1;32mPASSED[0m
+Running RhoControlTests.ComplexForLoops... [1;32mPASSED[0m
+Running RhoControlTests.BasicWhileLoops... [1;32mPASSED[0m
+Running RhoControlTests.NestedWhileLoops... [1;32mPASSED[0m
+Running RhoControlTests.ComplexWhileLoops... [1;32mPASSED[0m
+Running RhoControlTests.DISABLED_BreakStatements... [1;32mPASSED[0m
+Running RhoControlTests.DISABLED_ContinueStatements... [1;32mPASSED[0m
+Running RhoControlTests.DoWhileLoops... [1;32mPASSED[0m
+Running RhoControlTests.SwitchLikeStatements... [1;32mPASSED[0m
+Running RhoControlTests.CombinedControlStructures... [1;32mPASSED[0m
+Running RhoControlTestsFixed.BasicIfStatements... [1;32mPASSED[0m
+Running RhoControlTestsFixed.IfElseStatements... [1;32mPASSED[0m
+Running RhoControlTestsFixed.BasicWhileLoops... [1;32mPASSED[0m
+Running RhoControlTestsFixed.BasicForLoops... [1;32mPASSED[0m
+Running RhoControlTestsFixed.DoWhileLoops... [1;32mPASSED[0m
+Running RhoControlTestsFixed.NestedIfStatements... [1;32mPASSED[0m
+Running RhoControlTestsFixed.DebugNestedIfParsing... [1;32mPASSED[0m
+Running RhoControlTestsFixed.DebugNestedIfInnerElse... [1;32mPASSED[0m
+Running RhoControlTestsFixed.ComplexConditions... [1;32mPASSED[0m
+Running RhoControlTestsFixed.ForLoopsWithProperBase... [1;32mPASSED[0m
+Running RhoControlTestsFixed.WhileLoopsWithProperBase... [1;32mPASSED[0m
+Running RhoControlTestsFixed.NestedForLoopsWithProperBase... [1;32mPASSED[0m
+Running RhoControlTestsFixed2.BasicIfStatements... [1;32mPASSED[0m
+Running RhoControlTestsFixed2.IfElseStatements... [1;32mPASSED[0m
+Running RhoControlTestsFixed2.BasicWhileLoops... [1;32mPASSED[0m
+Running RhoControlTestsFixed2.BasicForLoops... [1;32mPASSED[0m
+Running RhoControlTestsFixed2.DoWhileLoops... [1;32mPASSED[0m
+Running RhoControlTestsFixed2.NestedIfStatements... [1;32mPASSED[0m
+Running RhoControlTestsFixed2.SimpleNestedIf... [1;32mPASSED[0m
+Running RhoControlTestsFixed2.ComplexConditions... [1;32mPASSED[0m
+Running RhoControlTestsProperlyFixed.NestedIfStatements... [1;32mPASSED[0m
+Running RhoControlTestsProperlyFixed.ComplexConditions... [1;32mPASSED[0m
+Running RhoControlTestsProperlyFixed.DISABLED_BasicForLoops... [1;32mPASSED[0m
+Running RhoControlTestsProperlyFixed.BasicWhileLoops... [1;32mPASSED[0m
+Running RhoControlTestsProperlyFixed.DISABLED_NestedForLoops... [1;32mPASSED[0m
+Running RhoControlTestsProperlyFixed.NestedWhileLoops... [1;32mPASSED[0m
+Running RhoControlTestsProperlyFixed.DISABLED_SwitchLikeStatements... [1;32mPASSED[0m
+Running RhoControlTestsProperlyFixed.DoWhileLoops... [1;32mPASSED[0m
+Running RhoControlTestsProperlyFixed.DISABLED_CombinedControlStructures... [1;32mPASSED[0m
+Running RhoMoreControlFixedTests.BreakStatement... [1;32mPASSED[0m
+Running RhoMoreControlFixedTests.ContinueStatement... [1;32mPASSED[0m
+Running RhoMoreControlFixedTests.NestedLoopsWithBreakContinue... [1;32mPASSED[0m
+Running RhoMoreControlFixedTests.ComplexNestedConditions... [1;32mPASSED[0m
+Running RhoMoreControlFixedTests.MultipleVariableLoops... [1;32mPASSED[0m
+Running RhoMoreControlFixedTests.DISABLED_EarlyReturnPatterns... [1;32mPASSED[0m
+Running RhoMoreControlFixedTests.ConditionalAssignments... [1;32mPASSED[0m
+Running RhoMoreControlFixedTests.MultipleExitConditions... [1;32mPASSED[0m
+Running RhoElseIfWorkaround.NestedIfInsteadOfElseIf... [1;32mPASSED[0m
+Running RhoElseIfWorkaround.DISABLED_SingleLineIfElse... [1;32mPASSED[0m
+Running RhoElseIfWorkaround.ConditionalAssignment... [1;32mPASSED[0m
+Running RhoFunctionTests.BasicFunction... [1;32mPASSED[0m
+Running RhoFunctionTests.MultiStatementFunction... [1;32mPASSED[0m
+Running RhoFunctionTests.DifferentReturnTypes... [1;32mPASSED[0m
+Running RhoFunctionTests.ParameterPassing... [1;32mPASSED[0m
+Running RhoFunctionTests.DISABLED_NestedFunctionCalls... [1;32mPASSED[0m
+Running RhoFunctionTests.DISABLED_Recursion... [1;32mPASSED[0m
+Running RhoFunctionTests.DISABLED_MutualRecursion... [1;32mPASSED[0m
+Running RhoFunctionTests.BasicScoping... [1;32mPASSED[0m
+Running RhoFunctionTests.DISABLED_FunctionScoping... [1;32mPASSED[0m
+Running RhoFunctionTests.NestedScoping... [1;32mPASSED[0m
+Running RhoFunctionTests.DISABLED_FunctionScopingWithParams... [1;32mPASSED[0m
+Running RhoFunctionTests.DISABLED_ComplexScoping... [1;32mPASSED[0m
+Running RhoFunctionTests.DISABLED_DebugSimpleNestedCalls... [1;32mPASSED[0m
+Running RhoAdvancedDataTests.ArrayCreationAndAccess... [1;32mPASSED[0m
+Running RhoAdvancedDataTests.ArrayElementModification... [1;32mPASSED[0m
+Running RhoAdvancedDataTests.ArrayConcatenation... [1;32mPASSED[0m
+Running RhoAdvancedDataTests.ArrayPlusOperations... [1;32mPASSED[0m
+Running RhoAdvancedDataTests.DISABLED_ArraySlicing... [1;32mPASSED[0m
+Running RhoAdvancedDataTests.DISABLED_ArrayMapOperation... [1;32mPASSED[0m
+Running RhoAdvancedDataTests.DISABLED_ArrayFilterOperation... [1;32mPASSED[0m
+Running RhoAdvancedDataTests.DISABLED_ArrayReduceSum... [1;32mPASSED[0m
+Running RhoAdvancedDataTests.NestedArrays... [1;32mPASSED[0m
+Running RhoAdvancedDataTests.DISABLED_MapCreationAndAccess... [1;32mPASSED[0m
+Running RhoAdvancedDataTests.DISABLED_MapValueUpdate... [1;32mPASSED[0m
+Running RhoAdvancedDataTests.DISABLED_MapIteration... [1;32mPASSED[0m
+Running RhoAdvancedDataTests.DISABLED_ArrayOfMaps... [1;32mPASSED[0m
+Running RhoAdvancedDataTests.DISABLED_ComplexDataManipulation... [1;32mPASSED[0m
+Running RhoAdvancedDataTests.DISABLED_StringArrayOperations... [1;32mPASSED[0m
+Running RhoAdvancedDataTests.DISABLED_HigherOrderFunctions... [1;32mPASSED[0m
+Running RhoAdvancedDataTests.DISABLED_ClosureSimulation... [1;32mPASSED[0m
+Running RhoAdvancedDataTests.DISABLED_AdvancedMapManipulations... [1;32mPASSED[0m
+Running RhoAdvancedDataTests.DISABLED_ArraySorting... [1;32mPASSED[0m
+Running RhoAdvancedDataTests.DISABLED_ComplexReturnValue... [1;32mPASSED[0m
+Running RhoAdvancedDataTests.DISABLED_DataTransformationPipeline... [1;32mPASSED[0m
+Running RhoAdvancedDataTests.DirectArrayPlusOperator... [1;32mPASSED[0m
+Running RhoAdvancedDataTests.EmptyArrayPlusOperator... [1;32mPASSED[0m
+Running RhoDemo.DISABLED_RunDemo... [1;32mPASSED[0m
+Running RhoDemo.DISABLED_BasicFeatureTests... [1;32mPASSED[0m
+Running RhoPatternMatching.DISABLED_BasicPatternMatch... [1;32mPASSED[0m
+Running RhoPatternMatching.DISABLED_TupleDestructuring... [1;32mPASSED[0m
+Running RhoPatternMatching.DISABLED_ListPatternMatch... [1;32mPASSED[0m
+Running RhoPatternMatching.DISABLED_GuardClauses... [1;32mPASSED[0m
+Running RhoPatternMatching.DISABLED_NestedPatterns... [1;32mPASSED[0m
+Running DISABLED_RhoLambda.SimpleLambdaExpression... [1;32mPASSED[0m
+Running DISABLED_RhoLambda.LambdaWithMultipleParams... [1;32mPASSED[0m
+Running DISABLED_RhoLambda.ClosureCapture... [1;32mPASSED[0m
+Running DISABLED_RhoLambda.HigherOrderFunctions... [1;32mPASSED[0m
+Running DISABLED_RhoLambda.RecursiveLambda... [1;32mPASSED[0m
+Running RhoErrorHandling.DISABLED_TryCatchBasic... [1;32mPASSED[0m
+Running RhoErrorHandling.DISABLED_TryFinallyBlock... [1;32mPASSED[0m
+Running RhoErrorHandling.DISABLED_NestedExceptions... [1;32mPASSED[0m
+Running RhoErrorHandling.DISABLED_CustomExceptionTypes... [1;32mPASSED[0m
+Running RhoErrorHandling.DISABLED_AssertionErrors... [1;32mPASSED[0m
+Running DISABLED_RhoGenerator.SimpleGenerator... [1;32mPASSED[0m
+Running DISABLED_RhoGenerator.GeneratorWithCondition... [1;32mPASSED[0m
+Running DISABLED_RhoGenerator.GeneratorComprehension... [1;32mPASSED[0m
+Running DISABLED_RhoGenerator.LazyEvaluation... [1;32mPASSED[0m
+Running DISABLED_RhoGenerator.GeneratorChaining... [1;32mPASSED[0m
+Running RhoPiBlock.BasicPiExpression... [1;32mPASSED[0m
+Running RhoPiBlock.PiBlockAsStatement... [1;32mPASSED[0m
+Running RhoPiBlock.PiBlockWithStringOperations... [1;32mPASSED[0m
+Running RhoPiBlock.PiBlockWithComparison... [1;32mPASSED[0m
+Running RhoPiBlock.DISABLED_PiBlockInCondition... [1;32mPASSED[0m
+Running RhoPiBlock.PiBlockWithStackManipulation... [1;32mPASSED[0m
+Running RhoPiBlock.DISABLED_NestedPiBlocks... [1;32mPASSED[0m
+Running RhoPiBlock.DISABLED_PiBlockInArray... [1;32mPASSED[0m
+Running RhoPiBlock.PiBlockWithFloats... [1;32mPASSED[0m
+Running RhoPiBlock.PiBlockWithLogicalOps... [1;32mPASSED[0m
+Running RhoPiBlock.DISABLED_PiBlockInFunctionArgument... [1;32mPASSED[0m
+Running RhoPiBlock.PiBlockWithDup... [1;32mPASSED[0m
+Running RhoPiBlock.DISABLED_PiBlockWithSwap... [1;32mPASSED[0m
+Running RhoPiBlock.DISABLED_PiBlockInWhileCondition... [1;32mPASSED[0m
+Running RhoPiBlock.PiBlockWithModulo... [1;32mPASSED[0m
+Running RhoPiBlock.DISABLED_PiBlockReturnValue... [1;32mPASSED[0m
+Running RhoPiBlock.DISABLED_PiBlockWithNegation... [1;32mPASSED[0m
+Running RhoPiBlock.PiBlockChainedOperations... [1;32mPASSED[0m
+Running RhoPiBlock.PiBlockWithEquality... [1;32mPASSED[0m
+Running RhoPiBlock.DISABLED_PiBlockComplexExpression... [1;32mPASSED[0m
+Running SimplePiBlock.SingleLineExpression... [1;32mPASSED[0m
+Running SimplePiBlock.SingleLineAssignment... [1;32mPASSED[0m
+Running SimplePiBlock.DirectArithmetic... [1;32mPASSED[0m
+Running PiBlockDebug.DISABLED_SimplePiBlock... [1;32mPASSED[0m
+Running DirectRhoTest.SimpleAssignment... [1;32mPASSED[0m
+Running DirectRhoTest.SimpleArithmetic... [1;32mPASSED[0m
+Running DirectRhoTest.SimpleIfThen... [1;32mPASSED[0m
+Running DirectRhoTest.SimpleIfElse... [1;32mPASSED[0m
+Running RhoControlFlowFixed.BasicAssignment... [1;32mPASSED[0m
+Running RhoControlFlowFixed.MultipleStatements... [1;32mPASSED[0m
+Running RhoControlFlowFixed.IfTrue... [1;32mPASSED[0m
+Running RhoControlFlowFixed.IfFalse... [1;32mPASSED[0m
+Running RhoControlFlowFixed.IfElseTrue... [1;32mPASSED[0m
+Running RhoControlFlowFixed.IfElseFalse... [1;32mPASSED[0m
+Running RhoControlFlowFixed.NestedIf... [1;32mPASSED[0m
+Running RhoControlFlowFixed.SimpleNestedIf... [1;32mPASSED[0m
+Running RhoControlFlowFixed.IfWithExpression... [1;32mPASSED[0m
+Running RhoControlFlowFixed.WhileLoop... [1;32mPASSED[0m
+Running RhoControlFlowFixed.ForLoop... [1;32mPASSED[0m
+Running RhoControlFlowFixed.DoWhileLoop... [1;32mPASSED[0m
+Running RhoControlFlowFixed.ComplexCondition... [1;32mPASSED[0m
+Running RhoControlFlowFixed.DISABLED_IfElseIfElse... [1;32mPASSED[0m
+Running RhoControlFlowFixed.IfElseChain... [1;32mPASSED[0m
+Running RhoControlFlowFixed.WhileWithCondition... [1;32mPASSED[0m
+Running RhoControlFlowFixed.NestedLoops... [1;32mPASSED[0m
+Running RhoFunctionTestsFixed.BasicFunction... [1;32mPASSED[0m
+Running RhoFunctionTestsFixed.MultiStatementFunction... [1;32mPASSED[0m
+Running RhoFunctionTestsFixed.DifferentReturnTypes... [1;32mPASSED[0m
+Running RhoFunctionTestsFixed.ParameterPassing... [1;32mPASSED[0m
+Running RhoFunctionTestsFixed.DISABLED_NestedFunctionCalls... [1;32mPASSED[0m
+Running RhoFunctionTestsFixed.DISABLED_Recursion... [1;32mPASSED[0m
+Running RhoFunctionTestsFixed.DISABLED_MutualRecursion... [1;32mPASSED[0m
+Running RhoFunctionTestsFixed.BasicScoping... [1;32mPASSED[0m
+Running RhoFunctionTestsFixed.DISABLED_FunctionScoping... [1;32mPASSED[0m
+Running RhoFunctionTestsFixed.DISABLED_FunctionScopingWithParams... [1;32mPASSED[0m
+Running RhoFunctionTestsFixed.DISABLED_ComplexScoping... [1;32mPASSED[0m
+Running RhoLambdaTestsFixed.DISABLED_SimpleLambdaExpression... [1;32mPASSED[0m
+Running RhoLambdaTestsFixed.DISABLED_LambdaWithMultipleParams... [1;32mPASSED[0m
+Running RhoLambdaTestsFixed.DISABLED_InlineLambdaCall... [1;32mPASSED[0m
+Running RhoLambdaTestsFixed.DISABLED_ClosureCapture... [1;32mPASSED[0m
+Running RhoLambdaTestsFixed.DISABLED_NestedClosures... [1;32mPASSED[0m
+Running RhoLambdaTestsFixed.DISABLED_HigherOrderFunctions... [1;32mPASSED[0m
+Running RhoLambdaTestsFixed.DISABLED_MapFunction... [1;32mPASSED[0m
+Running RhoLambdaTestsFixed.DISABLED_FilterFunction... [1;32mPASSED[0m
+Running RhoLambdaTestsFixed.DISABLED_ReduceFunction... [1;32mPASSED[0m
+Running RhoLambdaTestsFixed.DISABLED_CurryingExample... [1;32mPASSED[0m
+Running RhoLambdaTestsFixed.DISABLED_ComposeFunctions... [1;32mPASSED[0m
+Running RhoLambdaTestsFixed.DISABLED_RecursiveLambdaFactorial... [1;32mPASSED[0m
+Running RhoLambdaTestsFixed.DISABLED_RecursiveLambdaFibonacci... [1;32mPASSED[0m
+Running RhoLambdaTestsFixed.DISABLED_ConditionalLambda... [1;32mPASSED[0m
+Running RhoLambdaTestsFixed.DISABLED_TernaryInLambda... [1;32mPASSED[0m
+Running RhoLambdaTestsFixed.DISABLED_LambdaListComprehension... [1;32mPASSED[0m
+Running RhoLambdaTestsFixed.DISABLED_SortWithLambda... [1;32mPASSED[0m
+Running RhoLambdaTestsFixed.DISABLED_GroupByLambda... [1;32mPASSED[0m
+Running RhoLambdaTestsFixed.DISABLED_LambdaWithDefaults... [1;32mPASSED[0m
+Running FunctionDebug.SimpleReturn... [1;32mPASSED[0m
+Running FunctionDebug.FunctionWithReturn... [1;32mPASSED[0m
+Running FunctionDebug.FunctionWithParams... [1;32mPASSED[0m
+Running RhoFunctionTestsWorking.BasicFunction... [1;32mPASSED[0m
+Running RhoFunctionTestsWorking.MultiStatementFunction... [1;32mPASSED[0m
+Running RhoFunctionTestsWorking.ImplicitReturn... [1;32mPASSED[0m
+
+[1;34mRho tests completed[0m
+[0;32m✓ run_rho_tests.sh completed successfully[0m
+-----------------------------------------------
+
+[0;33mRunning run_connection_tests.sh...[0m
+Building the minimal console applications...
+gmake: *** No rule to make target 'MinimalServer'.  Stop.
+Building Tau language library...
+[ 52%] Built target Core
+[ 56%] Built target CommonLang
+[ 82%] Built target Executor
+[100%] Built target TauLang
+Building network test executables...
+gmake: *** No rule to make target 'Test_Network'.  Stop.
+Running network tests...
+WARNING: Test_Network executable not found.
+Building Tau connection tests...
+[  5%] Built target ImGui
+[ 37%] Built target Core
+[ 40%] Built target CommonLang
+[ 56%] Built target Executor
+[ 62%] Built target PiLang
+[ 70%] Built target RhoLang
+[ 81%] Built target TauLang
+[ 81%] Building CXX object Test/Language/CMakeFiles/TestTau.dir/TestTau/TauAsyncTests.cpp.o
+[ 83%] Building CXX object Test/Language/CMakeFiles/TestTau.dir/TestTau/TauInterfaceTests.cpp.o
+[ 83%] Building CXX object Test/Language/CMakeFiles/TestTau.dir/TestTau/TauAttributeTests.cpp.o
+[ 86%] Building CXX object Test/Language/CMakeFiles/TestTau.dir/TestLangCommon.cpp.o
+[ 86%] Building CXX object Test/Language/CMakeFiles/TestTau.dir/__/Common/TestCommon.cpp.o
+[ 86%] Building CXX object Test/Language/CMakeFiles/TestTau.dir/__/Common/MyTestStruct.cpp.o
+/home/xian/local/KAI/Include/KAI/Core/Type/Number.h:75:27: warning: The value '555' provided to the cast expression is not in the valid range of values for 'Value' [clang-analyzer-optin.core.EnumCastOutOfRange]
+   75 |     Number(int N) : value(Value(N)) {}
+      |                           ^
+/home/xian/local/KAI/Include/KAI/Core/Type/Number.h:11:10: note: enum declared here
+   11 |     enum Value {
+      |     ~~~~~^~~~~~~
+   12 |         // $BEGIN_TYPE_NUMBER_VALUE_ENUMERATION$
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   13 |         Undefined = 0,
+      |         ~~~~~~~~~~~~~~
+   14 |         None = 1,
+      |         ~~~~~~~~~
+   15 |         Void = 2,
+      |         ~~~~~~~~~
+   16 |         Handle = 11,
+      |         ~~~~~~~~~~~~
+   17 |         Object = 12,
+      |         ~~~~~~~~~~~~
+   18 |         Type = 13,
+      |         ~~~~~~~~~~
+   19 |         TypeNumber = 14,
+      |         ~~~~~~~~~~~~~~~~
+   20 |         BasePointer = 15,
+      |         ~~~~~~~~~~~~~~~~~
+   21 |         Callable = 16,
+      |         ~~~~~~~~~~~~~~
+   22 |         Function = 17,
+      |         ~~~~~~~~~~~~~~
+   23 |         Method = 18,
+      |         ~~~~~~~~~~~~
+   24 |         Property = 19,
+      |         ~~~~~~~~~~~~~~
+   25 |         Class = 20,
+      |         ~~~~~~~~~~~
+   26 |         Bool = 21,
+      |         ~~~~~~~~~~
+/home/xian/local/KAI/Test/Common/MyTestStruct.cpp:14:5: note: Calling constructor for 'ClassBuilder<kai::MyStruct>'
+   14 |     ClassBuilder<MyStruct>(registry, "MyStruct")
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/xian/local/KAI/Include/KAI/Core/Object/ClassBuilder.h:65:35: note: Calling constructor for 'Class<kai::MyStruct>'
+   65 |         : registry(&R), klass(new Class<T>(Label(N))) {
+      |                                   ^~~~~~~~~~~~~~~~~~
+/home/xian/local/KAI/Include/KAI/Core/Object/Class.h:32:48: note: Passing the value 555 via 1st parameter 'N'
+   32 |     Class(Label const &name) : ClassBase(name, Type::Traits<T>::Number) {}
+      |                                                ^~~~~~~~~~~~~~~~~~~~~~~
+/home/xian/local/KAI/Include/KAI/Core/Object/Class.h:32:48: note: Calling constructor for 'Number'
+   32 |     Class(Label const &name) : ClassBase(name, Type::Traits<T>::Number) {}
+      |                                                ^~~~~~~~~~~~~~~~~~~~~~~
+/home/xian/local/KAI/Include/KAI/Core/Type/Number.h:75:27: note: The value '555' provided to the cast expression is not in the valid range of values for 'Value'
+   75 |     Number(int N) : value(Value(N)) {}
+      |                           ^~~~~~~~
+[ 89%] Building CXX object Test/Language/CMakeFiles/TestTau.dir/__/Source/Main.cpp.o
+[ 89%] Linking CXX executable /home/xian/local/KAI/Bin/Test/TestTau
+[100%] Built target TestTau
+Running Tau connection tests...
+WARNING: TestTau executable not found.
+[0;32m✓ run_connection_tests.sh completed successfully[0m
+-----------------------------------------------
+
+[0;33mRunning run_tau_connection_tests.sh...[0m
+Building Tau connection tests...
+[  5%] Built target ImGui
+[ 37%] Built target Core
+[ 40%] Built target CommonLang
+[ 56%] Built target Executor
+[ 67%] Built target TauLang
+[ 72%] Built target PiLang
+[ 81%] Built target RhoLang
+[100%] Built target TestTau
+Running Tau connection tests...
+Found TestTau at: /home/xian/Bin/Test/TestTau
+Note: Google Test filter = TestNetworkConnection.*
+[==========] Running 10 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 10 tests from TestNetworkConnection
+[ RUN      ] TestNetworkConnection.TestConnectionBasic
+[0m[32m[2025-05-29 21:45:09] [INFO] [NetworkConnectionTests.cpp:91] Lexer output for ConnectionBasic: Comment '
+', Ident 'on', Whitespace ' ', Ident 'state', Whitespace ' ', EnumKeyword 'enum', NewLine '
+', Whitespace '    ', EnumKeyword 'enum', Whitespace ' ', Ident 'ConnectionState', Whitespace ' ', NewLine '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Ident 'Disconnected', Whitespace ' ', Assign '=', Whitespace ' ', Number '0', Comma ',', NewLine '
+', Whitespace '        ', Ident 'Connecting', Whitespace ' ', Assign '=', Whitespace ' ', Number '1', Comma ',', NewLine '
+', Whitespace '        ', Ident 'Connected', Whitespace ' ', Assign '=', Whitespace ' ', Number '2', Comma ',', NewLine '
+', Whitespace '        ', Ident 'Failed', Whitespace ' ', Assign '=', Whitespace ' ', Number '3', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Ident 'nt', NewLine '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Ident 'Connected', Whitespace ' ', Assign '=', Whitespace ' ', Number '0', Comma ',', NewLine '
+', Whitespace '        ', Ident 'Disconnected', Whitespace ' ', Assign '=', Whitespace ' ', Number '1', Comma ',', NewLine '
+', Whitespace '        ', Ident 'ConnectionFailed', Whitespace ' ', Assign '=', Whitespace ' ', Number '2', Comma ',', NewLine '
+', Whitespace '        ', Ident 'ConnectionLost', Whitespace ' ', Assign '=', Whitespace ' ', Number '3', Comma ',', NewLine '
+', Whitespace '        ', Ident 'Timeout', Whitespace ' ', Assign '=', Whitespace ' ', Number '4', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', NewLine '
+', Whitespace '        ', Ident 'string', Whitespace ' ', Ident 'ip', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'port', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Semi ';', NewLine '
+', Whitespace '        ', Ident 'ConnectionState', Whitespace ' ', Ident 'state', Whitespace ' ', Assign '=', Whitespace ' ', Ident 'ConnectionState', Dot '.', Ident 'Disconnected', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int64', Whitespace ' ', Ident 'lastActivity', Whitespace ' ', Assign '=', Whitespace ' ', Number '0', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'ping', Whitespace ' ', Assign '=', Whitespace ' ', Number '0', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Ident 'ger', NewLine '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'ystemAddress', Whitespace ' ', Ident 'address', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'RemoveConnection', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'RemoveConnectionByAddress', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'onnectionState', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'SetConnectionState', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', Comma ',', Whitespace ' ', Ident 'ConnectionState', Whitespace ' ', Ident 'state', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'UpdateActivity', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'GetPing', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'SystemAddress', Whitespace ' ', Ident 'GetSystemAddress', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'GetConnectionCount', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'bool', Whitespace ' ', Ident 'IsConnected', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'nectionTimeout', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'timeout', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'onnectionStatusChanged', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', Comma ',', Whitespace ' ', Ident 'ConnectionEvent', Whitespace ' ', Event 'event', CloseParan ')', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', CloseBrace '}', CloseBrace '}', NewLine '
+', , [0m[39m
+[       OK ] TestNetworkConnection.TestConnectionBasic (5 ms)
+[ RUN      ] TestNetworkConnection.TestNetworkNode
+[0m[32m[2025-05-29 21:45:09] [INFO] [NetworkConnectionTests.cpp:91] Lexer output for NetworkNode: Comment '
+', Whitespace ' ', Interface 'interface', NewLine '
+', Whitespace '    ', Interface 'interface', Whitespace ' ', Ident 'INode', NewLine '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'nst', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'DefaultPort', Whitespace ' ', Assign '=', Whitespace ' ', Number '14589', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 't', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Listen', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Comma ',', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Connect', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Comma ',', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Disconnect', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Shutdown', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'Running', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'bool', Whitespace ' ', Ident 'Update', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'artDiscovery', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'discoveryPort', Whitespace ' ', Assign '=', Whitespace ' ', Ident 'DefaultPort', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'StopDiscovery', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'bool', Whitespace ' ', Ident 'IsDiscovering', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'SystemAddress', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetDiscoveredPeers', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'ss', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetConnections', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'bool', Whitespace ' ', Ident 'IsConnectedTo', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Comma ',', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'GetConnectionCount', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'GetPing', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Comma ',', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Whitespace ' ', Ident 'Send', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'handle', Comma ',', Whitespace ' ', Ident 'Object', Whitespace ' ', Ident 'data', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Async 'async', Whitespace ' ', Ident 'Object', Whitespace ' ', Ident 'Receive', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'handle', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Broadcast', OpenParan '(', Ident 'Object', Whitespace ' ', Ident 'data', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Whitespace ' ', Event 'event', Whitespace ' ', Ident 'ConnectionEstablished', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'ConnectionLost', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'reason', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'MessageReceived', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'source', Comma ',', Whitespace ' ', Ident 'Object', Whitespace ' ', Ident 'data', CloseParan ')', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Whitespace '       ', Ident 'void', Whitespace ' ', Ident 'Start', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Stop', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'bool', Whitespace ' ', Ident 'IsDiscovering', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'SystemAddress', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetDiscoveredPeers', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Update', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Whitespace ' ', Event 'event', Whitespace ' ', Ident 'PeerDiscovered', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', CloseParan ')', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', CloseBrace '}', CloseBrace '}', NewLine '
+', , [0m[39m
+[       OK ] TestNetworkConnection.TestNetworkNode (1 ms)
+[ RUN      ] TestNetworkConnection.TestMessageHandling
+[0m[32m[2025-05-29 21:45:09] [INFO] [NetworkConnectionTests.cpp:91] Lexer output for MessageHandling: Comment '
+', Ident 'ging', NewLine '
+', OpenBrace '{', NewLine '
+', Whitespace '    ', Comment '
+', Ident 'geType', NewLine '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Ident 'ObjectMessage', Whitespace ' ', Assign '=', Whitespace ' ', Number '0', Comma ',', NewLine '
+', Whitespace '        ', Ident 'FunctionCall', Whitespace ' ', Assign '=', Whitespace ' ', Number '1', Comma ',', NewLine '
+', Whitespace '        ', Ident 'EventNotification', Whitespace ' ', Assign '=', Whitespace ' ', Number '2', Comma ',', NewLine '
+', Whitespace '        ', Ident 'SystemMessage', Whitespace ' ', Assign '=', Whitespace ' ', Number '3', Comma ',', NewLine '
+', Whitespace '        ', Ident 'CustomMessage', Whitespace ' ', Assign '=', Whitespace ' ', Number '4', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Ident 'ageHeader', Whitespace ' ', NewLine '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Ident 'MessageType', Whitespace ' ', Ident 'type', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'messageId', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'sourceId', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'targetId', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int64', Whitespace ' ', Ident 'timestamp', Semi ';', NewLine '
+', Whitespace '        ', Ident 'bool', Whitespace ' ', Ident 'requiresResponse', Whitespace ' ', Assign '=', Whitespace ' ', Ident 'false', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Ident 'MessageHeader', Whitespace ' ', Ident 'GetHeader', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'bytes', Whitespace ' ', Ident 'Serialize', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Deserialize', OpenParan '(', Ident 'bytes', Whitespace ' ', Ident 'data', CloseParan ')', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Ident 'ctMessage', Whitespace ' ', NewLine '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Ident 'MessageHeader', Whitespace ' ', Ident 'header', Semi ';', NewLine '
+', Whitespace '        ', Ident 'string', Whitespace ' ', Ident 'typeName', Semi ';', NewLine '
+', Whitespace '        ', Ident 'Object', Whitespace ' ', Ident 'data', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Ident 'lMessage', NewLine '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Ident 'MessageHeader', Whitespace ' ', Ident 'header', Semi ';', NewLine '
+', Whitespace '        ', Ident 'string', Whitespace ' ', Ident 'functionName', Semi ';', NewLine '
+', Whitespace '        ', Ident 'Object', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'parameters', Semi ';', NewLine '
+', Whitespace '        ', Ident 'string', Whitespace ' ', Ident 'returnType', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Whitespace ' ', OpenBrace '{', NewLine '
+', Whitespace '        ', Ident 'MessageHeader', Whitespace ' ', Ident 'header', Semi ';', NewLine '
+', Whitespace '        ', Ident 'string', Whitespace ' ', Ident 'eventName', Semi ';', NewLine '
+', Whitespace '        ', Ident 'Object', Whitespace ' ', Ident 'eventData', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Ident 'ler', NewLine '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'RegisterMessageProcessor', OpenParan '(', Ident 'MessageType', Whitespace ' ', Ident 'type', Comma ',', Whitespace ' ', Ident 'callback', Whitespace ' ', Ident 'processor', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'ProcessMessage', OpenParan '(', Ident 'bytes', Whitespace ' ', Ident 'messageData', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'SendMessage', OpenParan '(', Ident 'IMessage', Whitespace ' ', Ident 'message', Comma ',', Whitespace ' ', Ident 'SystemAddress', Whitespace ' ', Ident 'target', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'BroadcastMessage', OpenParan '(', Ident 'IMessage', Whitespace ' ', Ident 'message', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Whitespace ' ', Event 'event', Whitespace ' ', Ident 'MessageProcessed', OpenParan '(', Ident 'MessageHeader', Whitespace ' ', Ident 'header', Comma ',', Whitespace ' ', Ident 'bool', Whitespace ' ', Ident 'success', CloseParan ')', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', CloseBrace '}', CloseBrace '}', CloseBrace '}', NewLine '
+', , [0m[39m
+[       OK ] TestNetworkConnection.TestMessageHandling (1 ms)
+[ RUN      ] TestNetworkConnection.TestNetworkServices
+[0m[32m[2025-05-29 21:45:09] [INFO] [NetworkConnectionTests.cpp:91] Lexer output for NetworkServices: Comment '
+', Whitespace ' ', Ident 'Services', NewLine '
+', OpenBrace '{', NewLine '
+', Whitespace '    ', Comment '
+', Whitespace '       ', Ident 'string', Whitespace ' ', Ident 'name', Semi ';', NewLine '
+', Whitespace '        ', Ident 'string', Whitespace ' ', Ident 'description', Semi ';', NewLine '
+', Whitespace '        ', Ident 'string', Whitespace ' ', Ident 'version', Semi ';', NewLine '
+', Whitespace '        ', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'ports', Semi ';', NewLine '
+', Whitespace '        ', Ident 'string', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'capabilities', Semi ';', NewLine '
+', Whitespace '        ', Ident 'date', Whitespace ' ', Ident 'discoveredAt', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Ident 'try', NewLine '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'RegisterService', OpenParan '(', Ident 'ServiceInfo', Whitespace ' ', Ident 'info', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'UnregisterService', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'name', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'ServiceInfo', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetAvailableServices', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'ServiceInfo', Whitespace ' ', Ident 'FindService', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'name', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'ServiceInfo', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'FindServicesByCapability', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'capability', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Whitespace ' ', Event 'event', Whitespace ' ', Ident 'ServiceRegistered', OpenParan '(', Ident 'ServiceInfo', Whitespace ' ', Ident 'info', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'ServiceUnregistered', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'name', CloseParan ')', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Connect', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'username', Comma ',', Whitespace ' ', Ident 'SystemAddress', Whitespace ' ', Ident 'serverAddress', Comma ',', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Disconnect', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'bool', Whitespace ' ', Ident 'IsConnected', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'SendMessage', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'message', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'channel', Whitespace ' ', Assign '=', Whitespace ' ', String 'general', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'JoinChannel', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'LeaveChannel', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'string', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetChannels', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'string', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetUsersInChannel', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Whitespace ' ', Event 'event', Whitespace ' ', Ident 'MessageReceived', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'sender', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'message', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'UserJoined', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'username', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'UserLeft', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'username', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Ident 'nsferService', NewLine '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Connect', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Comma ',', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Disconnect', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'int', Whitespace ' ', Ident 'SendFile', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'localPath', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'remotePath', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'CancelTransfer', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'transferId', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'eptIncomingTransfer', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'transferId', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'savePath', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'RejectIncomingTransfer', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'transferId', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'etTransferProgress', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'transferId', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetActiveTransfers', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Whitespace ' ', Event 'event', Whitespace ' ', Ident 'TransferStarted', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'transferId', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'filename', Comma ',', Whitespace ' ', Ident 'int64', Whitespace ' ', Ident 'size', Comma ',', Whitespace ' ', Ident 'bool', Whitespace ' ', Ident 'incoming', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'TransferProgress', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'transferId', Comma ',', Whitespace ' ', Ident 'float', Whitespace ' ', Ident 'percentage', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'TransferCompleted', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'transferId', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'TransferFailed', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'transferId', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'reason', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'IncomingTransferRequest', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'transferId', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'filename', Comma ',', Whitespace ' ', Ident 'int64', Whitespace ' ', Ident 'size', CloseParan ')', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', CloseBrace '}', CloseBrace '}', CloseBrace '}', NewLine '
+', , [0m[39m
+[       OK ] TestNetworkConnection.TestNetworkServices (1 ms)
+[ RUN      ] TestNetworkConnection.TestConnectionProxyGen
+[0m[32m[2025-05-29 21:45:09] [INFO] [NetworkConnectionTests.cpp:91] Lexer output for ConnectionBasic: Comment '
+', Ident 'on', Whitespace ' ', Ident 'state', Whitespace ' ', EnumKeyword 'enum', NewLine '
+', Whitespace '    ', EnumKeyword 'enum', Whitespace ' ', Ident 'ConnectionState', Whitespace ' ', NewLine '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Ident 'Disconnected', Whitespace ' ', Assign '=', Whitespace ' ', Number '0', Comma ',', NewLine '
+', Whitespace '        ', Ident 'Connecting', Whitespace ' ', Assign '=', Whitespace ' ', Number '1', Comma ',', NewLine '
+', Whitespace '        ', Ident 'Connected', Whitespace ' ', Assign '=', Whitespace ' ', Number '2', Comma ',', NewLine '
+', Whitespace '        ', Ident 'Failed', Whitespace ' ', Assign '=', Whitespace ' ', Number '3', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Ident 'nt', NewLine '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Ident 'Connected', Whitespace ' ', Assign '=', Whitespace ' ', Number '0', Comma ',', NewLine '
+', Whitespace '        ', Ident 'Disconnected', Whitespace ' ', Assign '=', Whitespace ' ', Number '1', Comma ',', NewLine '
+', Whitespace '        ', Ident 'ConnectionFailed', Whitespace ' ', Assign '=', Whitespace ' ', Number '2', Comma ',', NewLine '
+', Whitespace '        ', Ident 'ConnectionLost', Whitespace ' ', Assign '=', Whitespace ' ', Number '3', Comma ',', NewLine '
+', Whitespace '        ', Ident 'Timeout', Whitespace ' ', Assign '=', Whitespace ' ', Number '4', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', NewLine '
+', Whitespace '        ', Ident 'string', Whitespace ' ', Ident 'ip', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'port', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Semi ';', NewLine '
+', Whitespace '        ', Ident 'ConnectionState', Whitespace ' ', Ident 'state', Whitespace ' ', Assign '=', Whitespace ' ', Ident 'ConnectionState', Dot '.', Ident 'Disconnected', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int64', Whitespace ' ', Ident 'lastActivity', Whitespace ' ', Assign '=', Whitespace ' ', Number '0', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'ping', Whitespace ' ', Assign '=', Whitespace ' ', Number '0', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Ident 'ger', NewLine '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'ystemAddress', Whitespace ' ', Ident 'address', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'RemoveConnection', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'RemoveConnectionByAddress', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'onnectionState', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'SetConnectionState', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', Comma ',', Whitespace ' ', Ident 'ConnectionState', Whitespace ' ', Ident 'state', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'UpdateActivity', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'GetPing', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'SystemAddress', Whitespace ' ', Ident 'GetSystemAddress', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'GetConnectionCount', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'bool', Whitespace ' ', Ident 'IsConnected', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'nectionTimeout', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'timeout', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'onnectionStatusChanged', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', Comma ',', Whitespace ' ', Ident 'ConnectionEvent', Whitespace ' ', Event 'event', CloseParan ')', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', CloseBrace '}', CloseBrace '}', NewLine '
+', , [0m[39m
+[0m[32m[2025-05-29 21:45:09] [INFO] [GenerateProcess.cpp:24]  lex->Print()='Comment '
+', Ident 'on', Whitespace ' ', Ident 'state', Whitespace ' ', EnumKeyword 'enum', NewLine '
+', Whitespace '    ', EnumKeyword 'enum', Whitespace ' ', Ident 'ConnectionState', Whitespace ' ', NewLine '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Ident 'Disconnected', Whitespace ' ', Assign '=', Whitespace ' ', Number '0', Comma ',', NewLine '
+', Whitespace '        ', Ident 'Connecting', Whitespace ' ', Assign '=', Whitespace ' ', Number '1', Comma ',', NewLine '
+', Whitespace '        ', Ident 'Connected', Whitespace ' ', Assign '=', Whitespace ' ', Number '2', Comma ',', NewLine '
+', Whitespace '        ', Ident 'Failed', Whitespace ' ', Assign '=', Whitespace ' ', Number '3', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Ident 'nt', NewLine '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Ident 'Connected', Whitespace ' ', Assign '=', Whitespace ' ', Number '0', Comma ',', NewLine '
+', Whitespace '        ', Ident 'Disconnected', Whitespace ' ', Assign '=', Whitespace ' ', Number '1', Comma ',', NewLine '
+', Whitespace '        ', Ident 'ConnectionFailed', Whitespace ' ', Assign '=', Whitespace ' ', Number '2', Comma ',', NewLine '
+', Whitespace '        ', Ident 'ConnectionLost', Whitespace ' ', Assign '=', Whitespace ' ', Number '3', Comma ',', NewLine '
+', Whitespace '        ', Ident 'Timeout', Whitespace ' ', Assign '=', Whitespace ' ', Number '4', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', NewLine '
+', Whitespace '        ', Ident 'string', Whitespace ' ', Ident 'ip', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'port', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Semi ';', NewLine '
+', Whitespace '        ', Ident 'ConnectionState', Whitespace ' ', Ident 'state', Whitespace ' ', Assign '=', Whitespace ' ', Ident 'ConnectionState', Dot '.', Ident 'Disconnected', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int64', Whitespace ' ', Ident 'lastActivity', Whitespace ' ', Assign '=', Whitespace ' ', Number '0', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'ping', Whitespace ' ', Assign '=', Whitespace ' ', Number '0', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Ident 'ger', NewLine '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'ystemAddress', Whitespace ' ', Ident 'address', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'RemoveConnection', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'RemoveConnectionByAddress', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'onnectionState', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'SetConnectionState', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', Comma ',', Whitespace ' ', Ident 'ConnectionState', Whitespace ' ', Ident 'state', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'UpdateActivity', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'GetPing', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'SystemAddress', Whitespace ' ', Ident 'GetSystemAddress', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'GetConnectionCount', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'bool', Whitespace ' ', Ident 'IsConnected', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'nectionTimeout', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'timeout', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'onnectionStatusChanged', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', Comma ',', Whitespace ' ', Ident 'ConnectionEvent', Whitespace ' ', Event 'event', CloseParan ')', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', CloseBrace '}', CloseBrace '}', NewLine '
+', , ' [0m[39m
+[0m[33m[2025-05-29 21:45:09] [WARNING] [GenerateProxy.cpp:27]  "Expected a Module but continuing anyway"='Expected a Module but continuing anyway' [0m[39m
+[0m[33m[2025-05-29 21:45:09] [WARNING] [GenerateProcess.cpp:120]  "No valid Module, Namespace, or Class nodes found, creating empty default namespace"='No valid Module, Namespace, or Class nodes found, creating empty default namespace' [0m[39m
+[0m[32m[2025-05-29 21:45:09] [INFO] [NetworkConnectionTests.cpp:188] Proxy generation for ConnectionBasic succeeded, output size: 109[0m[39m
+[       OK ] TestNetworkConnection.TestConnectionProxyGen (2 ms)
+[ RUN      ] TestNetworkConnection.TestNetworkNodeAgentGen
+[0m[32m[2025-05-29 21:45:09] [INFO] [NetworkConnectionTests.cpp:91] Lexer output for NetworkNode: Comment '
+', Whitespace ' ', Interface 'interface', NewLine '
+', Whitespace '    ', Interface 'interface', Whitespace ' ', Ident 'INode', NewLine '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'nst', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'DefaultPort', Whitespace ' ', Assign '=', Whitespace ' ', Number '14589', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 't', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Listen', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Comma ',', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Connect', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Comma ',', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Disconnect', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Shutdown', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'Running', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'bool', Whitespace ' ', Ident 'Update', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'artDiscovery', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'discoveryPort', Whitespace ' ', Assign '=', Whitespace ' ', Ident 'DefaultPort', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'StopDiscovery', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'bool', Whitespace ' ', Ident 'IsDiscovering', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'SystemAddress', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetDiscoveredPeers', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'ss', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetConnections', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'bool', Whitespace ' ', Ident 'IsConnectedTo', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Comma ',', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'GetConnectionCount', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'GetPing', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Comma ',', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Whitespace ' ', Ident 'Send', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'handle', Comma ',', Whitespace ' ', Ident 'Object', Whitespace ' ', Ident 'data', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Async 'async', Whitespace ' ', Ident 'Object', Whitespace ' ', Ident 'Receive', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'handle', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Broadcast', OpenParan '(', Ident 'Object', Whitespace ' ', Ident 'data', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Whitespace ' ', Event 'event', Whitespace ' ', Ident 'ConnectionEstablished', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'ConnectionLost', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'reason', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'MessageReceived', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'source', Comma ',', Whitespace ' ', Ident 'Object', Whitespace ' ', Ident 'data', CloseParan ')', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Whitespace '       ', Ident 'void', Whitespace ' ', Ident 'Start', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Stop', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'bool', Whitespace ' ', Ident 'IsDiscovering', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'SystemAddress', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetDiscoveredPeers', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Update', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Whitespace ' ', Event 'event', Whitespace ' ', Ident 'PeerDiscovered', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', CloseParan ')', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', CloseBrace '}', CloseBrace '}', NewLine '
+', , [0m[39m
+[0m[32m[2025-05-29 21:45:09] [INFO] [GenerateProcess.cpp:24]  lex->Print()='Comment '
+', Whitespace ' ', Interface 'interface', NewLine '
+', Whitespace '    ', Interface 'interface', Whitespace ' ', Ident 'INode', NewLine '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'nst', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'DefaultPort', Whitespace ' ', Assign '=', Whitespace ' ', Number '14589', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 't', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Listen', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Comma ',', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Connect', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Comma ',', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Disconnect', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Shutdown', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'Running', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'bool', Whitespace ' ', Ident 'Update', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'artDiscovery', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'discoveryPort', Whitespace ' ', Assign '=', Whitespace ' ', Ident 'DefaultPort', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'StopDiscovery', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'bool', Whitespace ' ', Ident 'IsDiscovering', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'SystemAddress', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetDiscoveredPeers', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'ss', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetConnections', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'bool', Whitespace ' ', Ident 'IsConnectedTo', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Comma ',', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'GetConnectionCount', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'GetPing', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Comma ',', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Whitespace ' ', Ident 'Send', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'handle', Comma ',', Whitespace ' ', Ident 'Object', Whitespace ' ', Ident 'data', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Async 'async', Whitespace ' ', Ident 'Object', Whitespace ' ', Ident 'Receive', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'handle', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Broadcast', OpenParan '(', Ident 'Object', Whitespace ' ', Ident 'data', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Whitespace ' ', Event 'event', Whitespace ' ', Ident 'ConnectionEstablished', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'ConnectionLost', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'reason', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'MessageReceived', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'source', Comma ',', Whitespace ' ', Ident 'Object', Whitespace ' ', Ident 'data', CloseParan ')', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Whitespace '       ', Ident 'void', Whitespace ' ', Ident 'Start', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Stop', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'bool', Whitespace ' ', Ident 'IsDiscovering', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'SystemAddress', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetDiscoveredPeers', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Update', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Whitespace ' ', Event 'event', Whitespace ' ', Ident 'PeerDiscovered', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', CloseParan ')', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', CloseBrace '}', CloseBrace '}', NewLine '
+', , ' [0m[39m
+[0m[33m[2025-05-29 21:45:09] [WARNING] [GenerateAgent.cpp:16]  "Expected a Module but continuing anyway"='Expected a Module but continuing anyway' [0m[39m
+[0m[33m[2025-05-29 21:45:09] [WARNING] [GenerateAgent.cpp:48]  "No valid namespaces or classes found, creating empty default namespace"='No valid namespaces or classes found, creating empty default namespace' [0m[39m
+[0m[32m[2025-05-29 21:45:09] [INFO] [NetworkConnectionTests.cpp:256] Agent generation for NetworkNode succeeded, output size: 61[0m[39m
+[       OK ] TestNetworkConnection.TestNetworkNodeAgentGen (2 ms)
+[ RUN      ] TestNetworkConnection.TestCombinedInterfaces
+[0m[32m[2025-05-29 21:45:09] [INFO] [NetworkConnectionTests.cpp:91] Lexer output for CombinedInterfaces: Comment '
+', Ident 'on', Whitespace ' ', Ident 'state', Whitespace ' ', EnumKeyword 'enum', NewLine '
+', Whitespace '    ', EnumKeyword 'enum', Whitespace ' ', Ident 'ConnectionState', Whitespace ' ', NewLine '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Ident 'Disconnected', Whitespace ' ', Assign '=', Whitespace ' ', Number '0', Comma ',', NewLine '
+', Whitespace '        ', Ident 'Connecting', Whitespace ' ', Assign '=', Whitespace ' ', Number '1', Comma ',', NewLine '
+', Whitespace '        ', Ident 'Connected', Whitespace ' ', Assign '=', Whitespace ' ', Number '2', Comma ',', NewLine '
+', Whitespace '        ', Ident 'Failed', Whitespace ' ', Assign '=', Whitespace ' ', Number '3', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Ident 'nt', NewLine '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Ident 'Connected', Whitespace ' ', Assign '=', Whitespace ' ', Number '0', Comma ',', NewLine '
+', Whitespace '        ', Ident 'Disconnected', Whitespace ' ', Assign '=', Whitespace ' ', Number '1', Comma ',', NewLine '
+', Whitespace '        ', Ident 'ConnectionFailed', Whitespace ' ', Assign '=', Whitespace ' ', Number '2', Comma ',', NewLine '
+', Whitespace '        ', Ident 'ConnectionLost', Whitespace ' ', Assign '=', Whitespace ' ', Number '3', Comma ',', NewLine '
+', Whitespace '        ', Ident 'Timeout', Whitespace ' ', Assign '=', Whitespace ' ', Number '4', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', NewLine '
+', Whitespace '        ', Ident 'string', Whitespace ' ', Ident 'ip', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'port', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Semi ';', NewLine '
+', Whitespace '        ', Ident 'ConnectionState', Whitespace ' ', Ident 'state', Whitespace ' ', Assign '=', Whitespace ' ', Ident 'ConnectionState', Dot '.', Ident 'Disconnected', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int64', Whitespace ' ', Ident 'lastActivity', Whitespace ' ', Assign '=', Whitespace ' ', Number '0', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'ping', Whitespace ' ', Assign '=', Whitespace ' ', Number '0', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Ident 'ger', NewLine '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'ystemAddress', Whitespace ' ', Ident 'address', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'RemoveConnection', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'RemoveConnectionByAddress', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'onnectionState', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'SetConnectionState', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', Comma ',', Whitespace ' ', Ident 'ConnectionState', Whitespace ' ', Ident 'state', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'UpdateActivity', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'GetPing', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'SystemAddress', Whitespace ' ', Ident 'GetSystemAddress', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'GetConnectionCount', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'bool', Whitespace ' ', Ident 'IsConnected', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'nectionTimeout', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'timeout', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'onnectionStatusChanged', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', Comma ',', Whitespace ' ', Ident 'ConnectionEvent', Whitespace ' ', Event 'event', CloseParan ')', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', CloseBrace '}', CloseBrace '}', NewLine '
+', Comment '
+', Whitespace ' ', Interface 'interface', NewLine '
+', Whitespace '    ', Interface 'interface', Whitespace ' ', Ident 'INode', NewLine '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'nst', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'DefaultPort', Whitespace ' ', Assign '=', Whitespace ' ', Number '14589', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 't', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Listen', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Comma ',', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Connect', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Comma ',', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Disconnect', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Shutdown', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'Running', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'bool', Whitespace ' ', Ident 'Update', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'artDiscovery', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'discoveryPort', Whitespace ' ', Assign '=', Whitespace ' ', Ident 'DefaultPort', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'StopDiscovery', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'bool', Whitespace ' ', Ident 'IsDiscovering', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'SystemAddress', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetDiscoveredPeers', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'ss', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetConnections', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'bool', Whitespace ' ', Ident 'IsConnectedTo', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Comma ',', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'GetConnectionCount', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'GetPing', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Comma ',', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Whitespace ' ', Ident 'Send', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'handle', Comma ',', Whitespace ' ', Ident 'Object', Whitespace ' ', Ident 'data', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Async 'async', Whitespace ' ', Ident 'Object', Whitespace ' ', Ident 'Receive', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'handle', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Broadcast', OpenParan '(', Ident 'Object', Whitespace ' ', Ident 'data', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Whitespace ' ', Event 'event', Whitespace ' ', Ident 'ConnectionEstablished', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'ConnectionLost', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'reason', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'MessageReceived', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'source', Comma ',', Whitespace ' ', Ident 'Object', Whitespace ' ', Ident 'data', CloseParan ')', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Whitespace '       ', Ident 'void', Whitespace ' ', Ident 'Start', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Stop', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'bool', Whitespace ' ', Ident 'IsDiscovering', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'SystemAddress', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetDiscoveredPeers', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Update', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Whitespace ' ', Event 'event', Whitespace ' ', Ident 'PeerDiscovered', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', CloseParan ')', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', CloseBrace '}', CloseBrace '}', NewLine '
+', , [0m[39m
+[       OK ] TestNetworkConnection.TestCombinedInterfaces (2 ms)
+[ RUN      ] TestNetworkConnection.TestCombinedProxyGen
+[0m[32m[2025-05-29 21:45:09] [INFO] [NetworkConnectionTests.cpp:91] Lexer output for CombinedInterfaces: Comment '
+', Ident 'on', Whitespace ' ', Ident 'state', Whitespace ' ', EnumKeyword 'enum', NewLine '
+', Whitespace '    ', EnumKeyword 'enum', Whitespace ' ', Ident 'ConnectionState', Whitespace ' ', NewLine '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Ident 'Disconnected', Whitespace ' ', Assign '=', Whitespace ' ', Number '0', Comma ',', NewLine '
+', Whitespace '        ', Ident 'Connecting', Whitespace ' ', Assign '=', Whitespace ' ', Number '1', Comma ',', NewLine '
+', Whitespace '        ', Ident 'Connected', Whitespace ' ', Assign '=', Whitespace ' ', Number '2', Comma ',', NewLine '
+', Whitespace '        ', Ident 'Failed', Whitespace ' ', Assign '=', Whitespace ' ', Number '3', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Ident 'nt', NewLine '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Ident 'Connected', Whitespace ' ', Assign '=', Whitespace ' ', Number '0', Comma ',', NewLine '
+', Whitespace '        ', Ident 'Disconnected', Whitespace ' ', Assign '=', Whitespace ' ', Number '1', Comma ',', NewLine '
+', Whitespace '        ', Ident 'ConnectionFailed', Whitespace ' ', Assign '=', Whitespace ' ', Number '2', Comma ',', NewLine '
+', Whitespace '        ', Ident 'ConnectionLost', Whitespace ' ', Assign '=', Whitespace ' ', Number '3', Comma ',', NewLine '
+', Whitespace '        ', Ident 'Timeout', Whitespace ' ', Assign '=', Whitespace ' ', Number '4', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', NewLine '
+', Whitespace '        ', Ident 'string', Whitespace ' ', Ident 'ip', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'port', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Semi ';', NewLine '
+', Whitespace '        ', Ident 'ConnectionState', Whitespace ' ', Ident 'state', Whitespace ' ', Assign '=', Whitespace ' ', Ident 'ConnectionState', Dot '.', Ident 'Disconnected', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int64', Whitespace ' ', Ident 'lastActivity', Whitespace ' ', Assign '=', Whitespace ' ', Number '0', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'ping', Whitespace ' ', Assign '=', Whitespace ' ', Number '0', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Ident 'ger', NewLine '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'ystemAddress', Whitespace ' ', Ident 'address', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'RemoveConnection', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'RemoveConnectionByAddress', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'onnectionState', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'SetConnectionState', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', Comma ',', Whitespace ' ', Ident 'ConnectionState', Whitespace ' ', Ident 'state', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'UpdateActivity', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'GetPing', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'SystemAddress', Whitespace ' ', Ident 'GetSystemAddress', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'GetConnectionCount', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'bool', Whitespace ' ', Ident 'IsConnected', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'nectionTimeout', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'timeout', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'onnectionStatusChanged', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', Comma ',', Whitespace ' ', Ident 'ConnectionEvent', Whitespace ' ', Event 'event', CloseParan ')', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', CloseBrace '}', CloseBrace '}', NewLine '
+', Comment '
+', Whitespace ' ', Interface 'interface', NewLine '
+', Whitespace '    ', Interface 'interface', Whitespace ' ', Ident 'INode', NewLine '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'nst', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'DefaultPort', Whitespace ' ', Assign '=', Whitespace ' ', Number '14589', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 't', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Listen', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Comma ',', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Connect', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Comma ',', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Disconnect', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Shutdown', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'Running', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'bool', Whitespace ' ', Ident 'Update', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'artDiscovery', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'discoveryPort', Whitespace ' ', Assign '=', Whitespace ' ', Ident 'DefaultPort', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'StopDiscovery', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'bool', Whitespace ' ', Ident 'IsDiscovering', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'SystemAddress', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetDiscoveredPeers', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'ss', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetConnections', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'bool', Whitespace ' ', Ident 'IsConnectedTo', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Comma ',', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'GetConnectionCount', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'GetPing', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Comma ',', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Whitespace ' ', Ident 'Send', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'handle', Comma ',', Whitespace ' ', Ident 'Object', Whitespace ' ', Ident 'data', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Async 'async', Whitespace ' ', Ident 'Object', Whitespace ' ', Ident 'Receive', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'handle', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Broadcast', OpenParan '(', Ident 'Object', Whitespace ' ', Ident 'data', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Whitespace ' ', Event 'event', Whitespace ' ', Ident 'ConnectionEstablished', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'ConnectionLost', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'reason', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'MessageReceived', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'source', Comma ',', Whitespace ' ', Ident 'Object', Whitespace ' ', Ident 'data', CloseParan ')', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Whitespace '       ', Ident 'void', Whitespace ' ', Ident 'Start', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Stop', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'bool', Whitespace ' ', Ident 'IsDiscovering', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'SystemAddress', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetDiscoveredPeers', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Update', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Whitespace ' ', Event 'event', Whitespace ' ', Ident 'PeerDiscovered', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', CloseParan ')', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', CloseBrace '}', CloseBrace '}', NewLine '
+', , [0m[39m
+[0m[32m[2025-05-29 21:45:09] [INFO] [GenerateProcess.cpp:24]  lex->Print()='Comment '
+', Ident 'on', Whitespace ' ', Ident 'state', Whitespace ' ', EnumKeyword 'enum', NewLine '
+', Whitespace '    ', EnumKeyword 'enum', Whitespace ' ', Ident 'ConnectionState', Whitespace ' ', NewLine '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Ident 'Disconnected', Whitespace ' ', Assign '=', Whitespace ' ', Number '0', Comma ',', NewLine '
+', Whitespace '        ', Ident 'Connecting', Whitespace ' ', Assign '=', Whitespace ' ', Number '1', Comma ',', NewLine '
+', Whitespace '        ', Ident 'Connected', Whitespace ' ', Assign '=', Whitespace ' ', Number '2', Comma ',', NewLine '
+', Whitespace '        ', Ident 'Failed', Whitespace ' ', Assign '=', Whitespace ' ', Number '3', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Ident 'nt', NewLine '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Ident 'Connected', Whitespace ' ', Assign '=', Whitespace ' ', Number '0', Comma ',', NewLine '
+', Whitespace '        ', Ident 'Disconnected', Whitespace ' ', Assign '=', Whitespace ' ', Number '1', Comma ',', NewLine '
+', Whitespace '        ', Ident 'ConnectionFailed', Whitespace ' ', Assign '=', Whitespace ' ', Number '2', Comma ',', NewLine '
+', Whitespace '        ', Ident 'ConnectionLost', Whitespace ' ', Assign '=', Whitespace ' ', Number '3', Comma ',', NewLine '
+', Whitespace '        ', Ident 'Timeout', Whitespace ' ', Assign '=', Whitespace ' ', Number '4', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', NewLine '
+', Whitespace '        ', Ident 'string', Whitespace ' ', Ident 'ip', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'port', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Semi ';', NewLine '
+', Whitespace '        ', Ident 'ConnectionState', Whitespace ' ', Ident 'state', Whitespace ' ', Assign '=', Whitespace ' ', Ident 'ConnectionState', Dot '.', Ident 'Disconnected', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int64', Whitespace ' ', Ident 'lastActivity', Whitespace ' ', Assign '=', Whitespace ' ', Number '0', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'ping', Whitespace ' ', Assign '=', Whitespace ' ', Number '0', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Ident 'ger', NewLine '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'ystemAddress', Whitespace ' ', Ident 'address', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'RemoveConnection', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'RemoveConnectionByAddress', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'onnectionState', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'SetConnectionState', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', Comma ',', Whitespace ' ', Ident 'ConnectionState', Whitespace ' ', Ident 'state', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'UpdateActivity', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'GetPing', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'SystemAddress', Whitespace ' ', Ident 'GetSystemAddress', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'GetConnectionCount', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'bool', Whitespace ' ', Ident 'IsConnected', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'nectionTimeout', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'timeout', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'onnectionStatusChanged', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'id', Comma ',', Whitespace ' ', Ident 'ConnectionEvent', Whitespace ' ', Event 'event', CloseParan ')', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', CloseBrace '}', CloseBrace '}', NewLine '
+', Comment '
+', Whitespace ' ', Interface 'interface', NewLine '
+', Whitespace '    ', Interface 'interface', Whitespace ' ', Ident 'INode', NewLine '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'nst', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'DefaultPort', Whitespace ' ', Assign '=', Whitespace ' ', Number '14589', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 't', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Listen', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Comma ',', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Connect', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Comma ',', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Disconnect', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Shutdown', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'Running', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'bool', Whitespace ' ', Ident 'Update', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'artDiscovery', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'discoveryPort', Whitespace ' ', Assign '=', Whitespace ' ', Ident 'DefaultPort', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'StopDiscovery', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'bool', Whitespace ' ', Ident 'IsDiscovering', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'SystemAddress', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetDiscoveredPeers', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'ss', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetConnections', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'bool', Whitespace ' ', Ident 'IsConnectedTo', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Comma ',', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'GetConnectionCount', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Whitespace ' ', Ident 'GetPing', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Comma ',', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Whitespace ' ', Ident 'Send', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'handle', Comma ',', Whitespace ' ', Ident 'Object', Whitespace ' ', Ident 'data', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Async 'async', Whitespace ' ', Ident 'Object', Whitespace ' ', Ident 'Receive', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'handle', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Broadcast', OpenParan '(', Ident 'Object', Whitespace ' ', Ident 'data', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Whitespace ' ', Event 'event', Whitespace ' ', Ident 'ConnectionEstablished', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'ConnectionLost', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'reason', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'MessageReceived', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'source', Comma ',', Whitespace ' ', Ident 'Object', Whitespace ' ', Ident 'data', CloseParan ')', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Whitespace '       ', Ident 'void', Whitespace ' ', Ident 'Start', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Stop', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'bool', Whitespace ' ', Ident 'IsDiscovering', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'SystemAddress', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetDiscoveredPeers', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Update', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Whitespace ' ', Event 'event', Whitespace ' ', Ident 'PeerDiscovered', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', CloseParan ')', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', CloseBrace '}', CloseBrace '}', NewLine '
+', , ' [0m[39m
+[0m[33m[2025-05-29 21:45:09] [WARNING] [GenerateProxy.cpp:27]  "Expected a Module but continuing anyway"='Expected a Module but continuing anyway' [0m[39m
+[0m[33m[2025-05-29 21:45:09] [WARNING] [GenerateProcess.cpp:120]  "No valid Module, Namespace, or Class nodes found, creating empty default namespace"='No valid Module, Namespace, or Class nodes found, creating empty default namespace' [0m[39m
+[0m[32m[2025-05-29 21:45:09] [INFO] [NetworkConnectionTests.cpp:188] Proxy generation for CombinedInterfaces succeeded, output size: 109[0m[39m
+[       OK ] TestNetworkConnection.TestCombinedProxyGen (3 ms)
+[ RUN      ] TestNetworkConnection.TestComplexServices
+[0m[32m[2025-05-29 21:45:09] [INFO] [NetworkConnectionTests.cpp:91] Lexer output for NetworkServices: Comment '
+', Whitespace ' ', Ident 'Services', NewLine '
+', OpenBrace '{', NewLine '
+', Whitespace '    ', Comment '
+', Whitespace '       ', Ident 'string', Whitespace ' ', Ident 'name', Semi ';', NewLine '
+', Whitespace '        ', Ident 'string', Whitespace ' ', Ident 'description', Semi ';', NewLine '
+', Whitespace '        ', Ident 'string', Whitespace ' ', Ident 'version', Semi ';', NewLine '
+', Whitespace '        ', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'ports', Semi ';', NewLine '
+', Whitespace '        ', Ident 'string', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'capabilities', Semi ';', NewLine '
+', Whitespace '        ', Ident 'date', Whitespace ' ', Ident 'discoveredAt', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Ident 'try', NewLine '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'RegisterService', OpenParan '(', Ident 'ServiceInfo', Whitespace ' ', Ident 'info', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'UnregisterService', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'name', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'ServiceInfo', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetAvailableServices', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'ServiceInfo', Whitespace ' ', Ident 'FindService', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'name', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'ServiceInfo', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'FindServicesByCapability', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'capability', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Whitespace ' ', Event 'event', Whitespace ' ', Ident 'ServiceRegistered', OpenParan '(', Ident 'ServiceInfo', Whitespace ' ', Ident 'info', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'ServiceUnregistered', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'name', CloseParan ')', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Connect', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'username', Comma ',', Whitespace ' ', Ident 'SystemAddress', Whitespace ' ', Ident 'serverAddress', Comma ',', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Disconnect', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'bool', Whitespace ' ', Ident 'IsConnected', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'SendMessage', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'message', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'channel', Whitespace ' ', Assign '=', Whitespace ' ', String 'general', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'JoinChannel', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'LeaveChannel', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'string', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetChannels', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'string', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetUsersInChannel', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Whitespace ' ', Event 'event', Whitespace ' ', Ident 'MessageReceived', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'sender', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'message', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'UserJoined', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'username', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'UserLeft', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'username', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Ident 'nsferService', NewLine '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Connect', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Comma ',', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Disconnect', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'int', Whitespace ' ', Ident 'SendFile', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'localPath', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'remotePath', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'CancelTransfer', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'transferId', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'eptIncomingTransfer', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'transferId', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'savePath', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'RejectIncomingTransfer', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'transferId', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'etTransferProgress', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'transferId', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetActiveTransfers', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Whitespace ' ', Event 'event', Whitespace ' ', Ident 'TransferStarted', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'transferId', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'filename', Comma ',', Whitespace ' ', Ident 'int64', Whitespace ' ', Ident 'size', Comma ',', Whitespace ' ', Ident 'bool', Whitespace ' ', Ident 'incoming', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'TransferProgress', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'transferId', Comma ',', Whitespace ' ', Ident 'float', Whitespace ' ', Ident 'percentage', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'TransferCompleted', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'transferId', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'TransferFailed', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'transferId', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'reason', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'IncomingTransferRequest', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'transferId', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'filename', Comma ',', Whitespace ' ', Ident 'int64', Whitespace ' ', Ident 'size', CloseParan ')', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', CloseBrace '}', CloseBrace '}', CloseBrace '}', NewLine '
+', , [0m[39m
+[0m[32m[2025-05-29 21:45:09] [INFO] [NetworkConnectionTests.cpp:91] Lexer output for NetworkServices: Comment '
+', Whitespace ' ', Ident 'Services', NewLine '
+', OpenBrace '{', NewLine '
+', Whitespace '    ', Comment '
+', Whitespace '       ', Ident 'string', Whitespace ' ', Ident 'name', Semi ';', NewLine '
+', Whitespace '        ', Ident 'string', Whitespace ' ', Ident 'description', Semi ';', NewLine '
+', Whitespace '        ', Ident 'string', Whitespace ' ', Ident 'version', Semi ';', NewLine '
+', Whitespace '        ', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'ports', Semi ';', NewLine '
+', Whitespace '        ', Ident 'string', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'capabilities', Semi ';', NewLine '
+', Whitespace '        ', Ident 'date', Whitespace ' ', Ident 'discoveredAt', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Ident 'try', NewLine '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'RegisterService', OpenParan '(', Ident 'ServiceInfo', Whitespace ' ', Ident 'info', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'UnregisterService', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'name', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'ServiceInfo', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetAvailableServices', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'ServiceInfo', Whitespace ' ', Ident 'FindService', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'name', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'ServiceInfo', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'FindServicesByCapability', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'capability', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Whitespace ' ', Event 'event', Whitespace ' ', Ident 'ServiceRegistered', OpenParan '(', Ident 'ServiceInfo', Whitespace ' ', Ident 'info', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'ServiceUnregistered', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'name', CloseParan ')', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Connect', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'username', Comma ',', Whitespace ' ', Ident 'SystemAddress', Whitespace ' ', Ident 'serverAddress', Comma ',', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Disconnect', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'bool', Whitespace ' ', Ident 'IsConnected', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'SendMessage', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'message', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'channel', Whitespace ' ', Assign '=', Whitespace ' ', String 'general', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'JoinChannel', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'LeaveChannel', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'string', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetChannels', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'string', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetUsersInChannel', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Whitespace ' ', Event 'event', Whitespace ' ', Ident 'MessageReceived', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'sender', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'message', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'UserJoined', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'username', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'UserLeft', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'username', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Ident 'nsferService', NewLine '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Connect', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Comma ',', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Disconnect', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'int', Whitespace ' ', Ident 'SendFile', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'localPath', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'remotePath', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'CancelTransfer', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'transferId', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'eptIncomingTransfer', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'transferId', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'savePath', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'RejectIncomingTransfer', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'transferId', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'etTransferProgress', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'transferId', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetActiveTransfers', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Whitespace ' ', Event 'event', Whitespace ' ', Ident 'TransferStarted', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'transferId', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'filename', Comma ',', Whitespace ' ', Ident 'int64', Whitespace ' ', Ident 'size', Comma ',', Whitespace ' ', Ident 'bool', Whitespace ' ', Ident 'incoming', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'TransferProgress', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'transferId', Comma ',', Whitespace ' ', Ident 'float', Whitespace ' ', Ident 'percentage', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'TransferCompleted', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'transferId', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'TransferFailed', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'transferId', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'reason', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'IncomingTransferRequest', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'transferId', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'filename', Comma ',', Whitespace ' ', Ident 'int64', Whitespace ' ', Ident 'size', CloseParan ')', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', CloseBrace '}', CloseBrace '}', CloseBrace '}', NewLine '
+', , [0m[39m
+[0m[32m[2025-05-29 21:45:09] [INFO] [GenerateProcess.cpp:24]  lex->Print()='Comment '
+', Whitespace ' ', Ident 'Services', NewLine '
+', OpenBrace '{', NewLine '
+', Whitespace '    ', Comment '
+', Whitespace '       ', Ident 'string', Whitespace ' ', Ident 'name', Semi ';', NewLine '
+', Whitespace '        ', Ident 'string', Whitespace ' ', Ident 'description', Semi ';', NewLine '
+', Whitespace '        ', Ident 'string', Whitespace ' ', Ident 'version', Semi ';', NewLine '
+', Whitespace '        ', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'ports', Semi ';', NewLine '
+', Whitespace '        ', Ident 'string', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'capabilities', Semi ';', NewLine '
+', Whitespace '        ', Ident 'date', Whitespace ' ', Ident 'discoveredAt', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Ident 'try', NewLine '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'RegisterService', OpenParan '(', Ident 'ServiceInfo', Whitespace ' ', Ident 'info', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'UnregisterService', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'name', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'ServiceInfo', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetAvailableServices', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'ServiceInfo', Whitespace ' ', Ident 'FindService', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'name', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'ServiceInfo', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'FindServicesByCapability', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'capability', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Whitespace ' ', Event 'event', Whitespace ' ', Ident 'ServiceRegistered', OpenParan '(', Ident 'ServiceInfo', Whitespace ' ', Ident 'info', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'ServiceUnregistered', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'name', CloseParan ')', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Connect', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'username', Comma ',', Whitespace ' ', Ident 'SystemAddress', Whitespace ' ', Ident 'serverAddress', Comma ',', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Disconnect', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'bool', Whitespace ' ', Ident 'IsConnected', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'SendMessage', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'message', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'channel', Whitespace ' ', Assign '=', Whitespace ' ', String 'general', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'JoinChannel', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'LeaveChannel', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'string', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetChannels', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'string', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetUsersInChannel', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Whitespace ' ', Event 'event', Whitespace ' ', Ident 'MessageReceived', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'sender', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'message', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'UserJoined', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'username', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'UserLeft', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'username', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', Whitespace '    ', Comment '
+', Ident 'nsferService', NewLine '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Connect', OpenParan '(', Ident 'SystemAddress', Whitespace ' ', Ident 'address', Comma ',', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'Disconnect', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'int', Whitespace ' ', Ident 'SendFile', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'localPath', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'remotePath', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'CancelTransfer', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'transferId', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'eptIncomingTransfer', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'transferId', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'savePath', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'void', Whitespace ' ', Ident 'RejectIncomingTransfer', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'transferId', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Ident 'etTransferProgress', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'transferId', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Ident 'int', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetActiveTransfers', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', NewLine '
+', Whitespace '        ', Comment '
+', Whitespace ' ', Event 'event', Whitespace ' ', Ident 'TransferStarted', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'transferId', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'filename', Comma ',', Whitespace ' ', Ident 'int64', Whitespace ' ', Ident 'size', Comma ',', Whitespace ' ', Ident 'bool', Whitespace ' ', Ident 'incoming', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'TransferProgress', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'transferId', Comma ',', Whitespace ' ', Ident 'float', Whitespace ' ', Ident 'percentage', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'TransferCompleted', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'transferId', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'TransferFailed', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'transferId', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'reason', CloseParan ')', Semi ';', NewLine '
+', Whitespace '        ', Event 'event', Whitespace ' ', Ident 'IncomingTransferRequest', OpenParan '(', Ident 'int', Whitespace ' ', Ident 'transferId', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'filename', Comma ',', Whitespace ' ', Ident 'int64', Whitespace ' ', Ident 'size', CloseParan ')', Semi ';', NewLine '
+', Whitespace '    ', CloseBrace '}', NewLine '
+', CloseBrace '}', CloseBrace '}', CloseBrace '}', NewLine '
+', , ' [0m[39m
+[0m[33m[2025-05-29 21:45:09] [WARNING] [GenerateProxy.cpp:27]  "Expected a Module but continuing anyway"='Expected a Module but continuing anyway' [0m[39m
+[0m[33m[2025-05-29 21:45:09] [WARNING] [GenerateProcess.cpp:120]  "No valid Module, Namespace, or Class nodes found, creating empty default namespace"='No valid Module, Namespace, or Class nodes found, creating empty default namespace' [0m[39m
+[0m[32m[2025-05-29 21:45:09] [INFO] [NetworkConnectionTests.cpp:188] Proxy generation for NetworkServices succeeded, output size: 109[0m[39m
+[       OK ] TestNetworkConnection.TestComplexServices (4 ms)
+[ RUN      ] TestNetworkConnection.TestChatApplication
+[0m[32m[2025-05-29 21:45:09] [INFO] [NetworkConnectionTests.cpp:91] Lexer output for ChatService: NewLine '
+', Whitespace '        ', Namespace 'namespace', Whitespace ' ', Ident 'KAI', Whitespace ' ', OpenBrace '{', Whitespace ' ', Namespace 'namespace', Whitespace ' ', Ident 'Network', Whitespace ' ', OpenBrace '{', Whitespace ' ', Namespace 'namespace', Whitespace ' ', Ident 'Services', NewLine '
+', Whitespace '        ', OpenBrace '{', NewLine '
+', Whitespace '            ', Comment '
+', Ident 'e', NewLine '
+', Whitespace '            ', OpenBrace '{', NewLine '
+', Whitespace '                ', Ident 'void', Whitespace ' ', Ident 'Connect', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'username', Comma ',', Whitespace ' ', Ident 'SystemAddress', Whitespace ' ', Ident 'serverAddress', Comma ',', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Ident 'void', Whitespace ' ', Ident 'Disconnect', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Ident 'bool', Whitespace ' ', Ident 'IsConnected', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Ident 'void', Whitespace ' ', Ident 'SendMessage', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'message', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'channel', Whitespace ' ', Assign '=', Whitespace ' ', String 'general', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Ident 'void', Whitespace ' ', Ident 'JoinChannel', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Ident 'void', Whitespace ' ', Ident 'LeaveChannel', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Ident 'string', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetChannels', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Ident 'string', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetUsersInChannel', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', NewLine '
+', Whitespace '                ', Comment '
+', Whitespace '         ', Event 'event', Whitespace ' ', Ident 'MessageReceived', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'sender', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'message', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Event 'event', Whitespace ' ', Ident 'UserJoined', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'username', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Event 'event', Whitespace ' ', Ident 'UserLeft', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'username', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '            ', CloseBrace '}', NewLine '
+', Whitespace '            ', NewLine '
+', Whitespace '            ', Comment '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '                ', Ident 'string', Whitespace ' ', Ident 'ip', Semi ';', NewLine '
+', Whitespace '                ', Ident 'int', Whitespace ' ', Ident 'port', Semi ';', NewLine '
+', Whitespace '            ', CloseBrace '}', NewLine '
+', Whitespace '        ', CloseBrace '}', CloseBrace '}', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', , [0m[39m
+[0m[32m[2025-05-29 21:45:09] [INFO] [NetworkConnectionTests.cpp:91] Lexer output for ChatService: NewLine '
+', Whitespace '        ', Namespace 'namespace', Whitespace ' ', Ident 'KAI', Whitespace ' ', OpenBrace '{', Whitespace ' ', Namespace 'namespace', Whitespace ' ', Ident 'Network', Whitespace ' ', OpenBrace '{', Whitespace ' ', Namespace 'namespace', Whitespace ' ', Ident 'Services', NewLine '
+', Whitespace '        ', OpenBrace '{', NewLine '
+', Whitespace '            ', Comment '
+', Ident 'e', NewLine '
+', Whitespace '            ', OpenBrace '{', NewLine '
+', Whitespace '                ', Ident 'void', Whitespace ' ', Ident 'Connect', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'username', Comma ',', Whitespace ' ', Ident 'SystemAddress', Whitespace ' ', Ident 'serverAddress', Comma ',', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Ident 'void', Whitespace ' ', Ident 'Disconnect', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Ident 'bool', Whitespace ' ', Ident 'IsConnected', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Ident 'void', Whitespace ' ', Ident 'SendMessage', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'message', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'channel', Whitespace ' ', Assign '=', Whitespace ' ', String 'general', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Ident 'void', Whitespace ' ', Ident 'JoinChannel', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Ident 'void', Whitespace ' ', Ident 'LeaveChannel', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Ident 'string', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetChannels', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Ident 'string', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetUsersInChannel', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', NewLine '
+', Whitespace '                ', Comment '
+', Whitespace '         ', Event 'event', Whitespace ' ', Ident 'MessageReceived', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'sender', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'message', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Event 'event', Whitespace ' ', Ident 'UserJoined', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'username', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Event 'event', Whitespace ' ', Ident 'UserLeft', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'username', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '            ', CloseBrace '}', NewLine '
+', Whitespace '            ', NewLine '
+', Whitespace '            ', Comment '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '                ', Ident 'string', Whitespace ' ', Ident 'ip', Semi ';', NewLine '
+', Whitespace '                ', Ident 'int', Whitespace ' ', Ident 'port', Semi ';', NewLine '
+', Whitespace '            ', CloseBrace '}', NewLine '
+', Whitespace '        ', CloseBrace '}', CloseBrace '}', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', , [0m[39m
+[0m[32m[2025-05-29 21:45:09] [INFO] [GenerateProcess.cpp:24]  lex->Print()='NewLine '
+', Whitespace '        ', Namespace 'namespace', Whitespace ' ', Ident 'KAI', Whitespace ' ', OpenBrace '{', Whitespace ' ', Namespace 'namespace', Whitespace ' ', Ident 'Network', Whitespace ' ', OpenBrace '{', Whitespace ' ', Namespace 'namespace', Whitespace ' ', Ident 'Services', NewLine '
+', Whitespace '        ', OpenBrace '{', NewLine '
+', Whitespace '            ', Comment '
+', Ident 'e', NewLine '
+', Whitespace '            ', OpenBrace '{', NewLine '
+', Whitespace '                ', Ident 'void', Whitespace ' ', Ident 'Connect', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'username', Comma ',', Whitespace ' ', Ident 'SystemAddress', Whitespace ' ', Ident 'serverAddress', Comma ',', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Ident 'void', Whitespace ' ', Ident 'Disconnect', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Ident 'bool', Whitespace ' ', Ident 'IsConnected', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Ident 'void', Whitespace ' ', Ident 'SendMessage', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'message', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'channel', Whitespace ' ', Assign '=', Whitespace ' ', String 'general', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Ident 'void', Whitespace ' ', Ident 'JoinChannel', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Ident 'void', Whitespace ' ', Ident 'LeaveChannel', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Ident 'string', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetChannels', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Ident 'string', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetUsersInChannel', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', NewLine '
+', Whitespace '                ', Comment '
+', Whitespace '         ', Event 'event', Whitespace ' ', Ident 'MessageReceived', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'sender', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'message', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Event 'event', Whitespace ' ', Ident 'UserJoined', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'username', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Event 'event', Whitespace ' ', Ident 'UserLeft', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'username', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '            ', CloseBrace '}', NewLine '
+', Whitespace '            ', NewLine '
+', Whitespace '            ', Comment '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '                ', Ident 'string', Whitespace ' ', Ident 'ip', Semi ';', NewLine '
+', Whitespace '                ', Ident 'int', Whitespace ' ', Ident 'port', Semi ';', NewLine '
+', Whitespace '            ', CloseBrace '}', NewLine '
+', Whitespace '        ', CloseBrace '}', CloseBrace '}', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', , ' [0m[39m
+[0m[33m[2025-05-29 21:45:09] [WARNING] [GenerateProxy.cpp:27]  "Expected a Module but continuing anyway"='Expected a Module but continuing anyway' [0m[39m
+[0m[32m[2025-05-29 21:45:09] [INFO] [NetworkConnectionTests.cpp:188] Proxy generation for ChatService succeeded, output size: 161[0m[39m
+[0m[32m[2025-05-29 21:45:09] [INFO] [NetworkConnectionTests.cpp:91] Lexer output for ChatService: NewLine '
+', Whitespace '        ', Namespace 'namespace', Whitespace ' ', Ident 'KAI', Whitespace ' ', OpenBrace '{', Whitespace ' ', Namespace 'namespace', Whitespace ' ', Ident 'Network', Whitespace ' ', OpenBrace '{', Whitespace ' ', Namespace 'namespace', Whitespace ' ', Ident 'Services', NewLine '
+', Whitespace '        ', OpenBrace '{', NewLine '
+', Whitespace '            ', Comment '
+', Ident 'e', NewLine '
+', Whitespace '            ', OpenBrace '{', NewLine '
+', Whitespace '                ', Ident 'void', Whitespace ' ', Ident 'Connect', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'username', Comma ',', Whitespace ' ', Ident 'SystemAddress', Whitespace ' ', Ident 'serverAddress', Comma ',', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Ident 'void', Whitespace ' ', Ident 'Disconnect', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Ident 'bool', Whitespace ' ', Ident 'IsConnected', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Ident 'void', Whitespace ' ', Ident 'SendMessage', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'message', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'channel', Whitespace ' ', Assign '=', Whitespace ' ', String 'general', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Ident 'void', Whitespace ' ', Ident 'JoinChannel', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Ident 'void', Whitespace ' ', Ident 'LeaveChannel', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Ident 'string', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetChannels', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Ident 'string', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetUsersInChannel', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', NewLine '
+', Whitespace '                ', Comment '
+', Whitespace '         ', Event 'event', Whitespace ' ', Ident 'MessageReceived', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'sender', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'message', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Event 'event', Whitespace ' ', Ident 'UserJoined', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'username', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Event 'event', Whitespace ' ', Ident 'UserLeft', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'username', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '            ', CloseBrace '}', NewLine '
+', Whitespace '            ', NewLine '
+', Whitespace '            ', Comment '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '                ', Ident 'string', Whitespace ' ', Ident 'ip', Semi ';', NewLine '
+', Whitespace '                ', Ident 'int', Whitespace ' ', Ident 'port', Semi ';', NewLine '
+', Whitespace '            ', CloseBrace '}', NewLine '
+', Whitespace '        ', CloseBrace '}', CloseBrace '}', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', , [0m[39m
+[0m[32m[2025-05-29 21:45:09] [INFO] [GenerateProcess.cpp:24]  lex->Print()='NewLine '
+', Whitespace '        ', Namespace 'namespace', Whitespace ' ', Ident 'KAI', Whitespace ' ', OpenBrace '{', Whitespace ' ', Namespace 'namespace', Whitespace ' ', Ident 'Network', Whitespace ' ', OpenBrace '{', Whitespace ' ', Namespace 'namespace', Whitespace ' ', Ident 'Services', NewLine '
+', Whitespace '        ', OpenBrace '{', NewLine '
+', Whitespace '            ', Comment '
+', Ident 'e', NewLine '
+', Whitespace '            ', OpenBrace '{', NewLine '
+', Whitespace '                ', Ident 'void', Whitespace ' ', Ident 'Connect', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'username', Comma ',', Whitespace ' ', Ident 'SystemAddress', Whitespace ' ', Ident 'serverAddress', Comma ',', Whitespace ' ', Ident 'int', Whitespace ' ', Ident 'port', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Ident 'void', Whitespace ' ', Ident 'Disconnect', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Ident 'bool', Whitespace ' ', Ident 'IsConnected', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Ident 'void', Whitespace ' ', Ident 'SendMessage', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'message', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'channel', Whitespace ' ', Assign '=', Whitespace ' ', String 'general', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Ident 'void', Whitespace ' ', Ident 'JoinChannel', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Ident 'void', Whitespace ' ', Ident 'LeaveChannel', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Ident 'string', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetChannels', OpenParan '(', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Ident 'string', Array '[', ArrayProxy ']', Whitespace ' ', Ident 'GetUsersInChannel', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', NewLine '
+', Whitespace '                ', Comment '
+', Whitespace '         ', Event 'event', Whitespace ' ', Ident 'MessageReceived', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'sender', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'message', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Event 'event', Whitespace ' ', Ident 'UserJoined', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'username', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '                ', Event 'event', Whitespace ' ', Ident 'UserLeft', OpenParan '(', Ident 'string', Whitespace ' ', Ident 'username', Comma ',', Whitespace ' ', Ident 'string', Whitespace ' ', Ident 'channel', CloseParan ')', Semi ';', NewLine '
+', Whitespace '            ', CloseBrace '}', NewLine '
+', Whitespace '            ', NewLine '
+', Whitespace '            ', Comment '
+', Whitespace '    ', OpenBrace '{', NewLine '
+', Whitespace '                ', Ident 'string', Whitespace ' ', Ident 'ip', Semi ';', NewLine '
+', Whitespace '                ', Ident 'int', Whitespace ' ', Ident 'port', Semi ';', NewLine '
+', Whitespace '            ', CloseBrace '}', NewLine '
+', Whitespace '        ', CloseBrace '}', CloseBrace '}', CloseBrace '}', NewLine '
+', Whitespace '    ', NewLine '
+', , ' [0m[39m
+[0m[33m[2025-05-29 21:45:09] [WARNING] [GenerateAgent.cpp:16]  "Expected a Module but continuing anyway"='Expected a Module but continuing anyway' [0m[39m
+[0m[33m[2025-05-29 21:45:09] [WARNING] [GenerateAgent.cpp:48]  "No valid namespaces or classes found, creating empty default namespace"='No valid namespaces or classes found, creating empty default namespace' [0m[39m
+[0m[32m[2025-05-29 21:45:09] [INFO] [NetworkConnectionTests.cpp:256] Agent generation for ChatService succeeded, output size: 61[0m[39m
+[       OK ] TestNetworkConnection.TestChatApplication (3 ms)
+[----------] 10 tests from TestNetworkConnection (27 ms total)
+
+[----------] Global test environment tear-down
+[==========] 10 tests from 1 test suite ran. (27 ms total)
+[  PASSED  ] 10 tests.
+Note: Some test failures are expected until lexer issues are fixed.
+[0;32m✓ run_tau_connection_tests.sh completed successfully[0m
+-----------------------------------------------
+
+[0;33mRunning p2p_test_standalone.sh...[0m
+Building NetworkPeer...
+gmake: *** No rule to make target 'NetworkPeer'.  Stop.
+ERROR: Failed to build NetworkPeer
+Cleaning up...
+Cleanup complete.
+[0;31m✗ p2p_test_standalone.sh failed with exit code 1[0m
+-----------------------------------------------
+
+===============================================
+             Test Summary
+===============================================
+Total Tests:  5
+[0;32mPassed Tests: 4[0m
+[0;31mFailed Tests: 1[0m
+[0;31mSome tests failed![0m

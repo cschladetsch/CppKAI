@@ -410,6 +410,97 @@ void Executor::Perform(Operation::Type op) {
             Trace(Pop());
             break;
 
+        case Operation::Assign: {
+            // Assign is the same as Store - both bind a value to a name
+            // Stack: ( name value -- )
+            KAI_TRACE() << "Assign operation - stack size before: " << data_->Size();
+            if (data_->Size() >= 2) {
+                KAI_TRACE() << "Stack[top-1]: " 
+                            << (data_->At(data_->Size()-2).GetClass() ? 
+                                data_->At(data_->Size()-2).GetClass()->GetName().ToString() : "<null>");
+                KAI_TRACE() << "Stack[top]: " 
+                            << (data_->At(data_->Size()-1).GetClass() ? 
+                                data_->At(data_->Size()-1).GetClass()->GetName().ToString() : "<null>");
+            }
+            
+            Object value = Pop();
+            const auto name = Pop();
+            
+            KAI_TRACE() << "Assign operation - name type: " 
+                        << (name.GetClass() ? name.GetClass()->GetName().ToString() : "<null>")
+                        << ", value type: "
+                        << (value.GetClass() ? value.GetClass()->GetName().ToString() : "<null>");
+            
+            // If the name's already bound in the current scope, just update it.
+            if (!continuation_.Exists()) {
+                KAI_THROW_1(Base, "No continuation exists for Assign operation");
+            }
+            
+            KAI_TRACE() << "Assign: continuation exists, checking scope...";
+            Object scope = continuation_->GetScope();
+            if (!scope.Exists()) {
+                // Try to get scope from executor's tree
+                if (GetTree() != nullptr) {
+                    scope = GetTree()->GetScope();
+                    if (scope.Exists()) {
+                        KAI_TRACE() << "Using scope from executor tree";
+                        continuation_->SetScope(scope);
+                    } else {
+                        KAI_THROW_1(Base, "No scope available in tree for Assign operation");
+                    }
+                } else {
+                    KAI_THROW_1(Base, "No scope in continuation and no tree available for Assign operation");
+                }
+            }
+            
+            Object bound;
+            
+            if (name.IsType<Label>()) {
+                Label label = ConstDeref<Label>(name);
+                bound = TryResolve(label);
+                
+                if (bound.Exists()) {
+                    // Re-bind it
+                    scope.Set(label, value);
+                } else {
+                    // Add it
+                    scope.Add(label, value);
+                }
+            } 
+            else if (name.IsType<Pathname>()) {
+                Pathname path = ConstDeref<Pathname>(name);
+                KAI_TRACE() << "Assign with Pathname: " << path.ToString() 
+                           << ", quoted: " << (path.Quoted() ? "yes" : "no");
+                bound = TryResolve(path);
+                
+                if (bound.Exists()) {
+                    // Re-bind it
+                    // Strip the quote if present
+                    String pathStr = path.ToString();
+                    if (pathStr.Size() > 0 && pathStr[0] == '\'') {
+                        // Create a new string without the first character
+                        pathStr = String(pathStr.begin() + 1, pathStr.end());
+                    }
+                    scope.Set(Label(pathStr), value);
+                    KAI_TRACE() << "Re-bound '" << pathStr << "' in scope";
+                } else {
+                    // Add it - strip the quote if present
+                    String pathStr = path.ToString();
+                    if (pathStr.Size() > 0 && pathStr[0] == '\'') {
+                        // Create a new string without the first character
+                        pathStr = String(pathStr.begin() + 1, pathStr.end());
+                    }
+                    scope.Add(Label(pathStr), value);
+                    KAI_TRACE() << "Added '" << pathStr << "' to scope (from pathname: " << path.ToString() << ")";
+                }
+            } 
+            else {
+                KAI_THROW_1(Base, "Invalid name type for Assign operation");
+            }
+            
+            break;
+        }
+
         case Operation::Store: {
             // Log stack state before popping
             KAI_TRACE() << "Store operation - stack size before: " << data_->Size();
@@ -1517,6 +1608,16 @@ void Executor::Perform(Operation::Type op) {
         case Operation::None: {
             // Push a null/none object onto the stack
             Push(Object());
+            break;
+        }
+
+        case Operation::Self: {
+            // Self operation: print the top of the stack without popping
+            auto stack = GetDataStack();
+            if (!stack->Empty()) {
+                Object top = stack->Top();
+                std::cout << top.ToString() << std::endl;
+            }
             break;
         }
 
