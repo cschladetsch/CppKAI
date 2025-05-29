@@ -40,7 +40,14 @@ run_test_file() {
     echo "----------------------------------------" >> "$LOG_FILE"
     
     # Count tests in file (lines starting with # Test)
-    local test_count=$(grep -c "^# Test" "$test_file" 2>/dev/null || echo 0)
+    local test_count=0
+    if [ -f "$test_file" ]; then
+        test_count=$(grep -c "^# Test" "$test_file" 2>/dev/null || true)
+        # If grep returns empty or 0, default to counting non-empty, non-comment lines as a rough estimate
+        if [ -z "$test_count" ] || [ "$test_count" -eq 0 ]; then
+            test_count=$(grep -v '^$' "$test_file" | grep -v '^#' | wc -l || echo 1)
+        fi
+    fi
     TOTAL_TESTS=$((TOTAL_TESTS + test_count))
     
     # Run the test
@@ -77,7 +84,8 @@ run_verification_tests() {
     # Test 1: Verify shell command output
     echo -e "${YELLOW}Test V1: Shell command output verification${NC}"
     local expected_pwd="$PWD"
-    local actual_pwd=$(echo '`pwd`' | "$CONSOLE_BIN" 2>/dev/null | grep -v "λ" | xargs)
+    # Filter out prompt lines and extract just the pwd output
+    local actual_pwd=$(echo '`pwd`' | "$CONSOLE_BIN" 2>/dev/null | grep -v "Pi " | grep -v "^$" | head -1 | xargs)
     
     if [ "$actual_pwd" = "$expected_pwd" ]; then
         echo -e "${GREEN}✓ V1: pwd output correct${NC}"
@@ -92,9 +100,10 @@ run_verification_tests() {
     
     # Test 2: Verify embedded command expansion
     echo -e "${YELLOW}Test V2: Embedded command expansion verification${NC}"
-    local result=$(echo -e '5 `echo 3` +\n.' | "$CONSOLE_BIN" 2>/dev/null | grep -o '^8$' | head -1)
+    # Look for the stack output showing [0]: 8
+    local result=$(echo -e '5 `echo 3` +\n.' | "$CONSOLE_BIN" 2>/dev/null | grep '\[0\]: 8' | head -1)
     
-    if [ "$result" = "8" ]; then
+    if [ -n "$result" ]; then
         echo -e "${GREEN}✓ V2: Embedded command expansion works (5 + 3 = 8)${NC}"
         echo "✓ V2: Embedded command expansion works (5 + 3 = 8)" >> "$LOG_FILE"
         PASSED_TESTS=$((PASSED_TESTS + 1))
@@ -107,8 +116,9 @@ run_verification_tests() {
     
     # Test 3: Verify no closing backtick works
     echo -e "${YELLOW}Test V3: No closing backtick verification${NC}"
-    local user_output=$(echo '`whoami' | "$CONSOLE_BIN" 2>/dev/null | grep -v "λ" | xargs)
     local expected_user=$(whoami)
+    # Filter out prompt lines and extract just the whoami output
+    local user_output=$(echo '`whoami' | "$CONSOLE_BIN" 2>/dev/null | grep -v "Pi " | grep -v "^$" | head -1 | xargs)
     
     if [ "$user_output" = "$expected_user" ]; then
         echo -e "${GREEN}✓ V3: No closing backtick works${NC}"

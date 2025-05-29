@@ -1,0 +1,29 @@
+Pi λ /home/xian/local/KAI/Test/ShellCommandTests
+Pi λ /home/xian/local/KAI/Test/ShellCommandTests
+Pi λ Hello World
+Pi λ Hello World
+Pi λ xian
+Pi λ xian
+Pi λ Fri May 30 00:14:59 AEST 2025
+Pi λ Fri May 30 00:14:59 AEST 2025
+Pi λ README.md
+demo_comprehensive.txt
+results
+run_shell_tests.sh
+test_basic_clean.txt
+test_basic_shell_commands.txt
+test_complex_shell_commands.txt
+test_embedded_commands.txt
+test_error_cases.txt
+test_rho_language.txt
+Pi λ README.md
+demo_comprehensive.txt
+results
+run_shell_tests.sh
+test_basic_clean.txt
+test_basic_shell_commands.txt
+test_complex_shell_commands.txt
+test_embedded_commands.txt
+test_error_cases.txt
+test_rho_language.txt
+Pi λ 
