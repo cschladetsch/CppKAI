@@ -514,9 +514,7 @@ void Executor::Eval(Object const &Q) {
         return;
     }
 
-    KAI_TRACE() << "Eval: object=" << Q.ToString() << ", type="
-                << (Q.GetClass() ? Q.GetClass()->GetName().ToString() : "null")
-                << ", typenum=" << GetTypeNumber(Q).value;
+    // Removed noisy trace for cleaner Console output
 
     // Simplified: Treat evaluation as a simple dispatch based on type
     switch (GetTypeNumber(Q).value) {
@@ -587,9 +585,7 @@ void Executor::Eval(Object const &Q) {
             // Create a proper clone to ensure correct type information is
             // preserved
             Object clone = Q.Clone();
-            KAI_TRACE() << "Eval: Pushing value to stack: " << clone.ToString();
             Push(clone);
-            KAI_TRACE() << "Eval: Stack size after push: " << data_->Size();
             break;
     }
 }
@@ -647,8 +643,6 @@ void Executor::Continue() {
                                          "skipping evaluation";
                 }
             } else {
-                KAI_TRACE()
-                    << "Continue: Continuation finished (Next returned false)";
                 break_ = true;
             }
         } catch (const Exception::Base &e) {
@@ -739,12 +733,9 @@ void Executor::Continue(Value<Continuation> C) {
     Continue();
 
     // Restore the previous continuation
-    KAI_TRACE() << "Continue(C): Restoring saved continuation";
     if (savedContinuation.Valid() && savedContinuation.Exists()) {
-        KAI_TRACE() << "  Saved continuation is valid";
         continuation_ = savedContinuation;
     } else {
-        KAI_TRACE() << "  Saved continuation is invalid/null";
         // Don't restore a null continuation - just leave it as null
         continuation_ = Object();
     }

@@ -37,8 +37,6 @@ struct Peer : kai::Peer
 };
 #endif
 
-Console console;
-
 std::string KaiVersionString() {
     stringstream str;
     str << KAI_VERSION_MAJOR << '.' << KAI_VERSION_MINOR << '.'
@@ -47,9 +45,8 @@ std::string KaiVersionString() {
 }
 
 int main(int argc, char **argv) {
-    // Apply bold style from the start
-    cout << rang::style::bold << "KAI v" << KaiVersionString() << "\n\n";
-    cout.flush();
+    // Create console here instead of as global
+    Console console;
 
     // the higher the number, the greater the verbosity of debug output for
     // language systems

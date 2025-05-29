@@ -10,10 +10,7 @@ TranslatorCommon::TranslatorCommon(Registry &r) : ProcessCommon(r) {}
 
 void TranslatorCommon::Append(Object const &ob) {
     try {
-        KAI_TRACE() << "TranslatorCommon::Append - object type: "
-                    << (ob.GetClass() ? ob.GetClass()->GetName().ToString()
-                                      : "<null>")
-                    << ", exists: " << ob.Exists();
+        // Removed noisy trace for cleaner Console output
 
         if (stack.empty()) {
             KAI_TRACE_ERROR() << "TranslatorCommon::Append: Stack is empty";
@@ -94,10 +91,7 @@ void TranslatorCommon::Append(Object const &ob) {
                         code->RemoveAt(code->Size() - 1);      // Remove val1
                         code->Append(reg_->New<int>(result));  // Add the result
 
-                        KAI_TRACE()
-                            << "TranslatorCommon::Append: Directly evaluated "
-                            << num1 << " " << Operation::ToString(opType) << " "
-                            << num2 << " = " << result;
+                        // Removed noisy trace for cleaner Console output
                         return;
                     }
                     // Handle boolean operations
@@ -127,12 +121,7 @@ void TranslatorCommon::Append(Object const &ob) {
                         code->Append(
                             reg_->New<bool>(result));  // Add the result
 
-                        KAI_TRACE()
-                            << "TranslatorCommon::Append: Directly evaluated "
-                            << (b1 ? "true" : "false") << " "
-                            << Operation::ToString(opType) << " "
-                            << (b2 ? "true" : "false") << " = "
-                            << (result ? "true" : "false");
+                        // Removed noisy trace for cleaner Console output
                         return;
                     }
                     // Handle string concatenation
@@ -162,9 +151,7 @@ void TranslatorCommon::Append(Object const &ob) {
 
         // Add the object to the code array, with minimal logging
         code->Append(ob);
-        KAI_TRACE()
-            << "TranslatorCommon::Append - appended to code array, new size: "
-            << code->Size();
+        // Removed noisy trace for cleaner Console output
     } catch (kai::Exception::Base &e) {
         KAI_TRACE_ERROR() << "Exception in TranslatorCommon::Append: "
                           << e.ToString();
@@ -180,8 +167,6 @@ void TranslatorCommon::Append(Object const &ob) {
 }
 
 void TranslatorCommon::AppendOp(Operation::Type op) {
-    std::cout << "Appending operation: " << Operation::ToString(op)
-              << std::endl;
 
     // Create a new Operation object and add it directly to the code array
     Object opObject = reg_->New<Operation>(op);

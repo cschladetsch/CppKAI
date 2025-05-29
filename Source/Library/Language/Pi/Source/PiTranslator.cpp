@@ -26,7 +26,6 @@ Pointer<Continuation> PiTranslator::Translate(const char *text, Structure st) {
 
     // No special flag needed - we extract primitive types during execution
     if (cont.Exists()) {
-        KAI_TRACE() << "Created Pi continuation";
     }
 
     return cont;

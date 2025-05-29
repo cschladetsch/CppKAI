@@ -140,8 +140,7 @@ void Console::Execute(Pointer<Continuation> cont) {
         }
 
         // Debug the continuation code to help with diagnosing any issues
-        KAI_TRACE_1(cont->GetCode()->Size())
-            << "Executing continuation with size";
+        // Removed noisy trace for cleaner Console output
 
         // For null or empty continuations, nothing to do
         if (cont->GetCode()->Size() == 0) {
@@ -166,7 +165,6 @@ void Console::Execute(Pointer<Continuation> cont) {
         // Use ContinueOnly to execute this continuation without
         // saving/restoring state
         executor->ContinueOnly(cont);
-        KAI_TRACE() << "Execute: Continue returned, checking executor state";
 
         // After execution, process the stack to ensure proper type extraction
         Value<Stack> dataStack = executor->GetDataStack();
@@ -176,9 +174,6 @@ void Console::Execute(Pointer<Continuation> cont) {
             KAI_TRACE_WARN() << "Execute: Invalid data stack after execution";
             return;
         }
-
-        KAI_TRACE() << "Execute: Stack size after execution: "
-                    << dataStack->Size();
 
         // Process each stack item to extract primitive values from
         // continuations
@@ -232,18 +227,7 @@ void Console::Execute(String const &text, Structure st) {
     KAI_TRACE() << "Executing text: " << text;
 
     // Log the continuation details
-    if (cont->GetCode().Exists()) {
-        KAI_TRACE() << "Continuation code size: " << cont->GetCode()->Size();
-        for (int i = 0; i < cont->GetCode()->Size(); ++i) {
-            auto obj = cont->GetCode()->At(i);
-            KAI_TRACE() << "  Code[" << i << "]: " << obj.ToString()
-                        << " (type: "
-                        << (obj.GetClass()
-                                ? obj.GetClass()->GetName().ToString()
-                                : "null")
-                        << ")";
-        }
-    }
+    // Removed noisy trace for cleaner Console output
 
     // Set the scope on the continuation (important for Store operations)
     cont->SetScope(tree.GetScope());
@@ -276,15 +260,11 @@ String Console::Process(const String &text) {
 }
 
 void Console::WritePrompt(ostream &out) const {
-    const auto path = GetFullname(GetTree().GetScope());
-    auto pathName = path.ToString();
-
-    // Use rang for consistent formatting, keeping bold
-    out << rang::style::bold << rang::fg::green;
-    out << ToString(static_cast<Language>(compiler->GetLanguage())) << " ";
-    out << rang::style::bold << rang::fg::yellow;
-    out << pathName.c_str();
-    out << "> ";
+    // Use colorful prompt with lambda symbol
+    out << rang::style::bold << rang::fg::cyan 
+        << ToString(static_cast<Language>(compiler->GetLanguage())) 
+        << rang::fg::yellow << " λ " 
+        << rang::fg::reset << rang::style::bold;
     out.flush();  // Ensure prompt is displayed immediately
 }
 
@@ -325,19 +305,21 @@ int Console::Run() {
     for (;;) {
         KAI_TRY {
             for (;;) {
+                // Always show prompt before input
                 WritePrompt(cout);
-                // Bold is already applied, just get input
+                
+                // Get input with color
                 string text;
-                getline(cin, text);
+                cout << rang::fg::gray;  // White/gray color for user input
+                if (!getline(cin, text)) {
+                    // EOF or input error - exit gracefully
+                    cout << rang::fg::reset << endl;
+                    return 0;
+                }
+                cout << rang::fg::reset;  // Reset color after input
 
-                // Process input and maintain bold formatting
-                cout << rang::style::bold;
+                // Process input
                 cout << Process(text.c_str()).c_str();
-
-                executor->PrintStack(cout);
-
-                // Reset color but maintain bold
-                cout << rang::style::bold << rang::fg::reset;
 
                 if (end_) return endCode_;
             }
