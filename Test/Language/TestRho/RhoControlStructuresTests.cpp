@@ -195,55 +195,52 @@ TEST_F(RhoControlTests, DISABLED_ComplexConditions) {
 }
 
 // Basic for loops
-TEST_F(RhoControlTests, DISABLED_BasicForLoops) {
+TEST_F(RhoControlTests, BasicForLoops) {
     AssertDirectSimulation<int>(R"(
 sum = 0
-for (i = 1; i <= 5; i = i + 1)
+for i = 1; i <= 5; i = i + 1
     sum = sum + i
 sum
 )", 15);
 
     AssertDirectSimulation<int>(R"(
 sum = 0
-for (i = 0; i < 10; i = i + 2)
+for i = 0; i < 10; i = i + 2
     sum = sum + i
 sum
 )", 20);
 }
 
 // Nested for loops
-TEST_F(RhoControlTests, DISABLED_NestedForLoops) {
+TEST_F(RhoControlTests, NestedForLoops) {
     AssertDirectSimulation<int>(R"(
 sum = 0
-for (i = 1; i <= 3; i = i + 1)
-    for (j = 1; j <= 3; j = j + 1)
+for i = 1; i <= 3; i = i + 1
+    for j = 1; j <= 3; j = j + 1
         sum = sum + (i * j)
 sum
 )", 36);
 }
 
 // For loops with complex conditions
-TEST_F(RhoControlTests, DISABLED_ComplexForLoops) {
-    AssertDirectSimulation<int>(
-        "int sum = 0;\n"
-        "for (int i = 0; i < 10 && sum < 20; i = i + 1) {\n"
-        "    sum = sum + i;\n"
-        "}\n"
-        "sum;",
-        21);
+TEST_F(RhoControlTests, ComplexForLoops) {
+    AssertDirectSimulation<int>(R"(
+sum = 0
+for i = 0; i < 10 && sum < 20; i = i + 1
+    sum = sum + i
+sum
+)", 21);
 
-    AssertDirectSimulation<int>(
-        "int sum = 0;\n"
-        "for (int i = 0; i < 10 || sum < 5; i = i + 1) {\n"
-        "    sum = sum + i;\n"
-        "}\n"
-        "sum;",
-        45);
+    AssertDirectSimulation<int>(R"(
+sum = 0
+for i = 0; i < 10 || sum < 5; i = i + 1
+    sum = sum + i
+sum
+)", 45);
 }
 
 // Basic while loops
-// These work with proper test setup - see RhoControlTestsProperlyFixed.cpp
-TEST_F(RhoControlTests, DISABLED_BasicWhileLoops) {
+TEST_F(RhoControlTests, BasicWhileLoops) {
     AssertDirectSimulation<int>(R"(
 sum = 0
 i = 1
@@ -264,44 +261,39 @@ sum
 }
 
 // Nested while loops
-// These work with proper test setup - see RhoControlTestsProperlyFixed.cpp
-TEST_F(RhoControlTests, DISABLED_NestedWhileLoops) {
-    AssertDirectSimulation<int>(
-        "int sum = 0;\n"
-        "int i = 1;\n"
-        "while (i <= 3) {\n"
-        "    int j = 1;\n"
-        "    while (j <= 3) {\n"
-        "        sum = sum + (i * j);\n"
-        "        j = j + 1;\n"
-        "    }\n"
-        "    i = i + 1;\n"
-        "}\n"
-        "sum;",
-        36);
+TEST_F(RhoControlTests, NestedWhileLoops) {
+    AssertDirectSimulation<int>(R"(
+sum = 0
+i = 1
+while i <= 3
+    j = 1
+    while j <= 3
+        sum = sum + (i * j)
+        j = j + 1
+    i = i + 1
+sum
+)", 36);
 }
 
 // While loops with complex conditions
-TEST_F(RhoControlTests, DISABLED_ComplexWhileLoops) {
-    AssertDirectSimulation<int>(
-        "int sum = 0;\n"
-        "int i = 0;\n"
-        "while (i < 10 && sum < 20) {\n"
-        "    sum = sum + i;\n"
-        "    i = i + 1;\n"
-        "}\n"
-        "sum;",
-        21);
+TEST_F(RhoControlTests, ComplexWhileLoops) {
+    AssertDirectSimulation<int>(R"(
+sum = 0
+i = 0
+while i < 10 && sum < 20
+    sum = sum + i
+    i = i + 1
+sum
+)", 21);
 
-    AssertDirectSimulation<int>(
-        "int sum = 0;\n"
-        "int i = 0;\n"
-        "while (i < 10 || sum < 5) {\n"
-        "    sum = sum + i;\n"
-        "    i = i + 1;\n"
-        "}\n"
-        "sum;",
-        45);
+    AssertDirectSimulation<int>(R"(
+sum = 0
+i = 0
+while i < 10 || sum < 5
+    sum = sum + i
+    i = i + 1
+sum
+)", 45);
 }
 
 // Break statements in loops
@@ -373,20 +365,21 @@ TEST_F(RhoControlTests, DoWhileLoops) {
         1);
 }
 
-// Switch statements (using if-else if-else since Rho might not directly support
-// switch)
-TEST_F(RhoControlTests, DISABLED_SwitchLikeStatements) {
+// Switch statements (using nested if-else since Rho doesn't support else-if)
+TEST_F(RhoControlTests, SwitchLikeStatements) {
     AssertDirectSimulation<int>(
         "value = 2\n"
         "result = 0\n"
         "if value == 1\n"
         "    result = 10\n"
-        "else if value == 2\n"
-        "    result = 20\n"
-        "else if value == 3\n"
-        "    result = 30\n"
         "else\n"
-        "    result = 0\n"
+        "    if value == 2\n"
+        "        result = 20\n"
+        "    else\n"
+        "        if value == 3\n"
+        "            result = 30\n"
+        "        else\n"
+        "            result = 0\n"
         "result",
         20);
 
@@ -395,18 +388,20 @@ TEST_F(RhoControlTests, DISABLED_SwitchLikeStatements) {
         "result = 0\n"
         "if value == 1\n"
         "    result = 10\n"
-        "else if value == 2\n"
-        "    result = 20\n"
-        "else if value == 3\n"
-        "    result = 30\n"
         "else\n"
-        "    result = 0\n"
+        "    if value == 2\n"
+        "        result = 20\n"
+        "    else\n"
+        "        if value == 3\n"
+        "            result = 30\n"
+        "        else\n"
+        "            result = 0\n"
         "result",
         0);
 }
 
 // Combining control structures
-TEST_F(RhoControlTests, DISABLED_CombinedControlStructures) {
+TEST_F(RhoControlTests, CombinedControlStructures) {
     AssertDirectSimulation<int>(
         "sum = 0\n"
         "for i = 1; i <= 10; i = i + 1\n"
