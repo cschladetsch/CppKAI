@@ -41,6 +41,7 @@ The KAI documentation is organized into the following main categories:
   - [Network Tau Interfaces](NetworkTauInterfaces.md) - Tau language network support
 
 ### 5. Technical Documentation
+- [Console](Console.md) - Interactive REPL console with shell integration
 - [Color Output](ColorOutput.md) - Console color formatting
 - [Log Format](LogFormat.md) - Logging format specification
 - [Null Registry Fix](NullRegistryFix.md) - Registry null pointer fix documentation
@@ -73,7 +74,8 @@ New users should start with the following documents in order:
 The project includes several demos to showcase functionality:
 
 - **Rho Language Demo**: Run `./Scripts/run_rho_demo.sh` to see the Rho language in action
-- **Console Demo**: After building, run `./bin/Console` for an interactive environment
+- **Console Demo**: After building, run `./bin/Console` for an interactive environment with shell integration
+- **Shell Command Demo**: See `Test/ShellCommandTests/demo_simple.txt` for shell command examples
 
 ## Example Scripts
 

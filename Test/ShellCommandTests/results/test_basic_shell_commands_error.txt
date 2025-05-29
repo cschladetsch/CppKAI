@@ -1,30 +1,30 @@
-[2025-05-30 00:20:09] [ERROR  ] [Executor.cpp:528]  Eval: KAI Exception performing operation: [Stack.cpp:47] Empty Stack: 
-[2025-05-30 00:20:09] [ERROR  ] [Executor.cpp:650]  Continue: KAI Exception in continuation: [Stack.cpp:47] Empty Stack: 
-[2025-05-30 00:20:09] [ERROR  ] [Console.cpp:198]  E='[Stack.cpp:47] Empty Stack: ' 
-[2025-05-30 00:20:09] [ERROR  ] [Executor.cpp:528]  Eval: KAI Exception performing operation: [Stack.cpp:47] Empty Stack: 
-[2025-05-30 00:20:09] [ERROR  ] [Executor.cpp:650]  Continue: KAI Exception in continuation: [Stack.cpp:47] Empty Stack: 
-[2025-05-30 00:20:09] [ERROR  ] [Console.cpp:198]  E='[Stack.cpp:47] Empty Stack: ' 
-[2025-05-30 00:20:09] [ERROR  ] [Executor.cpp:528]  Eval: KAI Exception performing operation: [Stack.cpp:47] Empty Stack: 
-[2025-05-30 00:20:09] [ERROR  ] [Executor.cpp:650]  Continue: KAI Exception in continuation: [Stack.cpp:47] Empty Stack: 
-[2025-05-30 00:20:09] [ERROR  ] [Console.cpp:198]  E='[Stack.cpp:47] Empty Stack: ' 
-[2025-05-30 00:20:09] [ERROR  ] [Executor.cpp:528]  Eval: KAI Exception performing operation: [Stack.cpp:47] Empty Stack: 
-[2025-05-30 00:20:09] [ERROR  ] [Executor.cpp:650]  Continue: KAI Exception in continuation: [Stack.cpp:47] Empty Stack: 
-[2025-05-30 00:20:09] [ERROR  ] [Console.cpp:198]  E='[Stack.cpp:47] Empty Stack: ' 
-[2025-05-30 00:20:09] [ERROR  ] [Executor.cpp:528]  Eval: KAI Exception performing operation: [Stack.cpp:47] Empty Stack: 
-[2025-05-30 00:20:09] [ERROR  ] [Executor.cpp:650]  Continue: KAI Exception in continuation: [Stack.cpp:47] Empty Stack: 
-[2025-05-30 00:20:09] [ERROR  ] [Console.cpp:198]  E='[Stack.cpp:47] Empty Stack: ' 
-[2025-05-30 00:20:09] [ERROR  ] [Executor.cpp:528]  Eval: KAI Exception performing operation: [Stack.cpp:47] Empty Stack: 
-[2025-05-30 00:20:09] [ERROR  ] [Executor.cpp:650]  Continue: KAI Exception in continuation: [Stack.cpp:47] Empty Stack: 
-[2025-05-30 00:20:09] [ERROR  ] [Console.cpp:198]  E='[Stack.cpp:47] Empty Stack: ' 
-[2025-05-30 00:20:09] [ERROR  ] [Executor.cpp:528]  Eval: KAI Exception performing operation: [Stack.cpp:47] Empty Stack: 
-[2025-05-30 00:20:09] [ERROR  ] [Executor.cpp:650]  Continue: KAI Exception in continuation: [Stack.cpp:47] Empty Stack: 
-[2025-05-30 00:20:09] [ERROR  ] [Console.cpp:198]  E='[Stack.cpp:47] Empty Stack: ' 
-[2025-05-30 00:20:09] [ERROR  ] [Executor.cpp:528]  Eval: KAI Exception performing operation: [Stack.cpp:47] Empty Stack: 
-[2025-05-30 00:20:09] [ERROR  ] [Executor.cpp:650]  Continue: KAI Exception in continuation: [Stack.cpp:47] Empty Stack: 
-[2025-05-30 00:20:09] [ERROR  ] [Console.cpp:198]  E='[Stack.cpp:47] Empty Stack: ' 
-[2025-05-30 00:20:09] [ERROR  ] [Executor.cpp:528]  Eval: KAI Exception performing operation: [Stack.cpp:47] Empty Stack: 
-[2025-05-30 00:20:09] [ERROR  ] [Executor.cpp:650]  Continue: KAI Exception in continuation: [Stack.cpp:47] Empty Stack: 
-[2025-05-30 00:20:09] [ERROR  ] [Console.cpp:198]  E='[Stack.cpp:47] Empty Stack: ' 
-[2025-05-30 00:20:09] [ERROR  ] [Executor.cpp:528]  Eval: KAI Exception performing operation: [Stack.cpp:47] Empty Stack: 
-[2025-05-30 00:20:09] [ERROR  ] [Executor.cpp:650]  Continue: KAI Exception in continuation: [Stack.cpp:47] Empty Stack: 
-[2025-05-30 00:20:09] [ERROR  ] [Console.cpp:198]  E='[Stack.cpp:47] Empty Stack: ' 
+[2025-05-30 00:27:11] [ERROR  ] [Executor.cpp:528]  Eval: KAI Exception performing operation: [Stack.cpp:47] Empty Stack: 
+[2025-05-30 00:27:11] [ERROR  ] [Executor.cpp:650]  Continue: KAI Exception in continuation: [Stack.cpp:47] Empty Stack: 
+[2025-05-30 00:27:11] [ERROR  ] [Console.cpp:198]  E='[Stack.cpp:47] Empty Stack: ' 
+[2025-05-30 00:27:11] [ERROR  ] [Executor.cpp:528]  Eval: KAI Exception performing operation: [Stack.cpp:47] Empty Stack: 
+[2025-05-30 00:27:11] [ERROR  ] [Executor.cpp:650]  Continue: KAI Exception in continuation: [Stack.cpp:47] Empty Stack: 
+[2025-05-30 00:27:11] [ERROR  ] [Console.cpp:198]  E='[Stack.cpp:47] Empty Stack: ' 
+[2025-05-30 00:27:11] [ERROR  ] [Executor.cpp:528]  Eval: KAI Exception performing operation: [Stack.cpp:47] Empty Stack: 
+[2025-05-30 00:27:11] [ERROR  ] [Executor.cpp:650]  Continue: KAI Exception in continuation: [Stack.cpp:47] Empty Stack: 
+[2025-05-30 00:27:11] [ERROR  ] [Console.cpp:198]  E='[Stack.cpp:47] Empty Stack: ' 
+[2025-05-30 00:27:11] [ERROR  ] [Executor.cpp:528]  Eval: KAI Exception performing operation: [Stack.cpp:47] Empty Stack: 
+[2025-05-30 00:27:11] [ERROR  ] [Executor.cpp:650]  Continue: KAI Exception in continuation: [Stack.cpp:47] Empty Stack: 
+[2025-05-30 00:27:11] [ERROR  ] [Console.cpp:198]  E='[Stack.cpp:47] Empty Stack: ' 
+[2025-05-30 00:27:11] [ERROR  ] [Executor.cpp:528]  Eval: KAI Exception performing operation: [Stack.cpp:47] Empty Stack: 
+[2025-05-30 00:27:11] [ERROR  ] [Executor.cpp:650]  Continue: KAI Exception in continuation: [Stack.cpp:47] Empty Stack: 
+[2025-05-30 00:27:11] [ERROR  ] [Console.cpp:198]  E='[Stack.cpp:47] Empty Stack: ' 
+[2025-05-30 00:27:11] [ERROR  ] [Executor.cpp:528]  Eval: KAI Exception performing operation: [Stack.cpp:47] Empty Stack: 
+[2025-05-30 00:27:11] [ERROR  ] [Executor.cpp:650]  Continue: KAI Exception in continuation: [Stack.cpp:47] Empty Stack: 
+[2025-05-30 00:27:11] [ERROR  ] [Console.cpp:198]  E='[Stack.cpp:47] Empty Stack: ' 
+[2025-05-30 00:27:11] [ERROR  ] [Executor.cpp:528]  Eval: KAI Exception performing operation: [Stack.cpp:47] Empty Stack: 
+[2025-05-30 00:27:11] [ERROR  ] [Executor.cpp:650]  Continue: KAI Exception in continuation: [Stack.cpp:47] Empty Stack: 
+[2025-05-30 00:27:11] [ERROR  ] [Console.cpp:198]  E='[Stack.cpp:47] Empty Stack: ' 
+[2025-05-30 00:27:11] [ERROR  ] [Executor.cpp:528]  Eval: KAI Exception performing operation: [Stack.cpp:47] Empty Stack: 
+[2025-05-30 00:27:11] [ERROR  ] [Executor.cpp:650]  Continue: KAI Exception in continuation: [Stack.cpp:47] Empty Stack: 
+[2025-05-30 00:27:11] [ERROR  ] [Console.cpp:198]  E='[Stack.cpp:47] Empty Stack: ' 
+[2025-05-30 00:27:11] [ERROR  ] [Executor.cpp:528]  Eval: KAI Exception performing operation: [Stack.cpp:47] Empty Stack: 
+[2025-05-30 00:27:11] [ERROR  ] [Executor.cpp:650]  Continue: KAI Exception in continuation: [Stack.cpp:47] Empty Stack: 
+[2025-05-30 00:27:11] [ERROR  ] [Console.cpp:198]  E='[Stack.cpp:47] Empty Stack: ' 
+[2025-05-30 00:27:11] [ERROR  ] [Executor.cpp:528]  Eval: KAI Exception performing operation: [Stack.cpp:47] Empty Stack: 
+[2025-05-30 00:27:11] [ERROR  ] [Executor.cpp:650]  Continue: KAI Exception in continuation: [Stack.cpp:47] Empty Stack: 
+[2025-05-30 00:27:11] [ERROR  ] [Console.cpp:198]  E='[Stack.cpp:47] Empty Stack: ' 

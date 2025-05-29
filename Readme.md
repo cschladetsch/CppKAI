@@ -201,19 +201,38 @@ For more detailed build instructions, see [BUILD.md](Doc/BUILD.md).
 ## Applications
 
 ### Console
-The basic console supports both Pi and Rho as a REPL shell:
+The interactive console supports Pi, Rho, and shell command integration:
 
 ```
 $ ./Console
 KAI Console v1.0
-Pi> 2 3 +
-5
-Pi> :rho
-Rho> x = 10
-Rho> y = 20
-Rho> x + y
-30
+Pi λ 2 3 +
+[0]: 5
+
+Pi λ `echo 10` `echo 20` +
+[0]: 30
+
+Pi λ 1 `echo 2` + 3 ==
+[0]: true
+
+Pi λ 2 rho
+Rho λ x = 10
+[0]: 2
+
+Rho λ y = 20
+[0]: 2
+
+Rho λ x + y
+[0]: 30
 ```
+
+Features:
+- **Shell Integration**: Execute shell commands with `` `command` `` syntax
+- **Automatic Stack Display**: Stack shown after each command with colored output
+- **Language Switching**: Use `2 rho` for Rho, `1 pi` for Pi
+- **Embedded Commands**: Mix shell output with expressions: `10 `echo 5` +`
+
+See [Console Documentation](Doc/Console.md) for full details.
 
 ### Network Applications
 The system includes several network applications:

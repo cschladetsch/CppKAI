@@ -1,19 +1,19 @@
-Pi λ [2025-05-30 00:20:09] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Test'
-[2025-05-30 00:20:09] [INFO   ] [PiTranslator.cpp:544]  tok.type='55' : PiTranslator: token not implemented: Colon ':'
-[2025-05-30 00:20:09] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Switch'
-[2025-05-30 00:20:09] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'to'
-[2025-05-30 00:20:09] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Rho'
-[2025-05-30 00:20:09] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'language'
-[2025-05-30 00:20:09] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'test'
-[2025-05-30 00:20:09] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'shell'
-[2025-05-30 00:20:09] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'commands'
-[2025-05-30 00:20:09] [INFO   ] [ExecutorPerform.inl:506]  Store operation - stack size before: 0
-[2025-05-30 00:20:09] [INFO   ] [Console.cpp:205]  Exception occurred. Stack state:
-[2025-05-30 00:20:09] [INFO   ] [Console.cpp:207]    Stack size: 0
+Pi λ [2025-05-30 00:27:11] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Test'
+[2025-05-30 00:27:11] [INFO   ] [PiTranslator.cpp:544]  tok.type='55' : PiTranslator: token not implemented: Colon ':'
+[2025-05-30 00:27:11] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Switch'
+[2025-05-30 00:27:11] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'to'
+[2025-05-30 00:27:11] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Rho'
+[2025-05-30 00:27:11] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'language'
+[2025-05-30 00:27:11] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'test'
+[2025-05-30 00:27:11] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'shell'
+[2025-05-30 00:27:11] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'commands'
+[2025-05-30 00:27:11] [INFO   ] [ExecutorPerform.inl:506]  Store operation - stack size before: 0
+[2025-05-30 00:27:11] [INFO   ] [Console.cpp:205]  Exception occurred. Stack state:
+[2025-05-30 00:27:11] [INFO   ] [Console.cpp:207]    Stack size: 0
 Pi λ [0]: 2
 Rho λ [0]: 2
-Rho λ [2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:154]  Executing text: # Test 32: Shell command in Rho
-[2025-05-30 00:20:09] [WARNING] [RhoTranslate.cpp:167]  lex->Error='(0):[0]: Unrecognised #
+Rho λ [2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:154]  Executing text: # Test 32: Shell command in Rho
+[2025-05-30 00:27:11] [WARNING] [RhoTranslate.cpp:167]  lex->Error='(0):[0]: Unrecognised #
 
 # Test 32: Shell command in Rho
 ^
@@ -22,137 +22,137 @@ Rho λ [2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:154]  Executing text: #
 Rho λ Testing in Rho
 [0]: 2
 Rho λ [0]: 2
-Rho λ [2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:154]  Executing text: # Test 33: Embedded command in Rho assignment
-[2025-05-30 00:20:09] [WARNING] [RhoTranslate.cpp:167]  lex->Error='(0):[0]: Unrecognised #
+Rho λ [2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:154]  Executing text: # Test 33: Embedded command in Rho assignment
+[2025-05-30 00:27:11] [WARNING] [RhoTranslate.cpp:167]  lex->Error='(0):[0]: Unrecognised #
 
 # Test 33: Embedded command in Rho assignment
 ^
 ' 
 [0]: 2
-Rho λ [2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:154]  Executing text: result = 42
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:174]  lex->Print()='Label 'result', Whitespace ' ', Assign '=', Whitespace ' ', Int '42', NewLine '
+Rho λ [2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:154]  Executing text: result = 42
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:174]  lex->Print()='Label 'result', Whitespace ' ', Assign '=', Whitespace ' ', Int '42', NewLine '
 ', None, ' 
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:21]  Starting to process tokens
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: Label
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: Assign
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: Int
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: NewLine
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: None
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:43]  Created root Program node
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:469]  RhoParser::Expression - Starting
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:608]  RhoParser::Factor - Current token: Label
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:608]  RhoParser::Factor - Current token: Int
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:1195]  RhoParser::ConsumeNewLines - Consuming newline
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:191]  parse->PrintTree()='Program: None
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:21]  Starting to process tokens
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: Label
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: Assign
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: Int
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: NewLine
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: None
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:43]  Created root Program node
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:469]  RhoParser::Expression - Starting
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:608]  RhoParser::Factor - Current token: Label
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:608]  RhoParser::Factor - Current token: Int
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:1195]  RhoParser::ConsumeNewLines - Consuming newline
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:191]  parse->PrintTree()='Program: None
     TokenType: Assign '='
         TokenType: Int '42'
         TokenType: Label 'result'
 ' 
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:198]  Starting to process tokens
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:21]  Processing node: Program: None
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:30]  Processing Program node
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:21]  Processing node: TokenType: Assign '='
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:37]  Processing token node: Assign
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:39]  TranslateToken: Assign
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:42]  TranslateToken with text: =
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:547]  TranslateBinaryOp: Operation=Store
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:21]  Processing node: TokenType: Int '42'
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:37]  Processing token node: Int
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:39]  TranslateToken: Int
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:42]  TranslateToken with text: 42
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:196]  Translating Int: 42
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:206]  Translated integer: 42
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:619]  Appending pathname for assignment: result
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:624]  Created pathname object: exists, type: Pathname
-[2025-05-30 00:20:09] [INFO   ] [TranslatorCommon.cpp:180]  Info: TranslatorCommon::AppendDirectOperation: Store
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:648]  Binary operation successfully translated in linear stream
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:212]  Rho translated code has 3 elements
-[2025-05-30 00:20:09] [INFO   ] [ExecutorPerform.inl:506]  Store operation - stack size before: 3
-[2025-05-30 00:20:09] [INFO   ] [ExecutorPerform.inl:508]  Stack[top-1]: Int
-[2025-05-30 00:20:09] [INFO   ] [ExecutorPerform.inl:511]  Stack[top]: Int
-[2025-05-30 00:20:09] [INFO   ] [ExecutorPerform.inl:519]  Store operation - name type: Pathname, value type: Int
-[2025-05-30 00:20:09] [INFO   ] [ExecutorPerform.inl:529]  Store: continuation exists, checking scope...
-[2025-05-30 00:20:09] [INFO   ] [ExecutorPerform.inl:562]  Store with Pathname: 'result, quoted: yes
-[2025-05-30 00:20:09] [INFO   ] [ExecutorPerform.inl:584]  Added 'result' to scope (from pathname: 'result)
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:198]  Starting to process tokens
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:21]  Processing node: Program: None
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:30]  Processing Program node
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:21]  Processing node: TokenType: Assign '='
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:37]  Processing token node: Assign
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:39]  TranslateToken: Assign
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:42]  TranslateToken with text: =
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:547]  TranslateBinaryOp: Operation=Store
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:21]  Processing node: TokenType: Int '42'
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:37]  Processing token node: Int
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:39]  TranslateToken: Int
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:42]  TranslateToken with text: 42
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:196]  Translating Int: 42
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:206]  Translated integer: 42
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:619]  Appending pathname for assignment: result
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:624]  Created pathname object: exists, type: Pathname
+[2025-05-30 00:27:11] [INFO   ] [TranslatorCommon.cpp:180]  Info: TranslatorCommon::AppendDirectOperation: Store
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:648]  Binary operation successfully translated in linear stream
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:212]  Rho translated code has 3 elements
+[2025-05-30 00:27:11] [INFO   ] [ExecutorPerform.inl:506]  Store operation - stack size before: 3
+[2025-05-30 00:27:11] [INFO   ] [ExecutorPerform.inl:508]  Stack[top-1]: Int
+[2025-05-30 00:27:11] [INFO   ] [ExecutorPerform.inl:511]  Stack[top]: Int
+[2025-05-30 00:27:11] [INFO   ] [ExecutorPerform.inl:519]  Store operation - name type: Pathname, value type: Int
+[2025-05-30 00:27:11] [INFO   ] [ExecutorPerform.inl:529]  Store: continuation exists, checking scope...
+[2025-05-30 00:27:11] [INFO   ] [ExecutorPerform.inl:562]  Store with Pathname: 'result, quoted: yes
+[2025-05-30 00:27:11] [INFO   ] [ExecutorPerform.inl:584]  Added 'result' to scope (from pathname: 'result)
 [0]: 2
 Rho λ [0]: 2
-Rho λ [2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:154]  Executing text: # Test 34: Use embedded command result in Rho
-[2025-05-30 00:20:09] [WARNING] [RhoTranslate.cpp:167]  lex->Error='(0):[0]: Unrecognised #
+Rho λ [2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:154]  Executing text: # Test 34: Use embedded command result in Rho
+[2025-05-30 00:27:11] [WARNING] [RhoTranslate.cpp:167]  lex->Error='(0):[0]: Unrecognised #
 
 # Test 34: Use embedded command result in Rho
 ^
 ' 
 [0]: 2
-Rho λ [2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:154]  Executing text: value = 10 + 5
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:174]  lex->Print()='Label 'value', Whitespace ' ', Assign '=', Whitespace ' ', Int '10', Whitespace ' ', Plus '+', Whitespace ' ', Int '5', NewLine '
+Rho λ [2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:154]  Executing text: value = 10 + 5
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:174]  lex->Print()='Label 'value', Whitespace ' ', Assign '=', Whitespace ' ', Int '10', Whitespace ' ', Plus '+', Whitespace ' ', Int '5', NewLine '
 ', None, ' 
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:21]  Starting to process tokens
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: Label
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: Assign
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: Int
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: Plus
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: Int
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: NewLine
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: None
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:43]  Created root Program node
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:469]  RhoParser::Expression - Starting
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:608]  RhoParser::Factor - Current token: Label
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:608]  RhoParser::Factor - Current token: Int
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:608]  RhoParser::Factor - Current token: Int
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:1195]  RhoParser::ConsumeNewLines - Consuming newline
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:191]  parse->PrintTree()='Program: None
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:21]  Starting to process tokens
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: Label
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: Assign
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: Int
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: Plus
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: Int
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: NewLine
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: None
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:43]  Created root Program node
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:469]  RhoParser::Expression - Starting
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:608]  RhoParser::Factor - Current token: Label
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:608]  RhoParser::Factor - Current token: Int
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:608]  RhoParser::Factor - Current token: Int
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:1195]  RhoParser::ConsumeNewLines - Consuming newline
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:191]  parse->PrintTree()='Program: None
     TokenType: Assign '='
         TokenType: Plus '+'
             TokenType: Int '10'
             TokenType: Int '5'
         TokenType: Label 'value'
 ' 
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:198]  Starting to process tokens
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:21]  Processing node: Program: None
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:30]  Processing Program node
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:21]  Processing node: TokenType: Assign '='
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:37]  Processing token node: Assign
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:39]  TranslateToken: Assign
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:42]  TranslateToken with text: =
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:547]  TranslateBinaryOp: Operation=Store
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:21]  Processing node: TokenType: Plus '+'
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:37]  Processing token node: Plus
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:39]  TranslateToken: Plus
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:42]  TranslateToken with text: +
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:140]  Translating Plus operation
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:547]  TranslateBinaryOp: Operation=Plus
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:21]  Processing node: TokenType: Int '10'
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:37]  Processing token node: Int
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:39]  TranslateToken: Int
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:42]  TranslateToken with text: 10
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:196]  Translating Int: 10
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:206]  Translated integer: 10
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:21]  Processing node: TokenType: Int '5'
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:37]  Processing token node: Int
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:39]  TranslateToken: Int
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:42]  TranslateToken with text: 5
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:196]  Translating Int: 5
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:206]  Translated integer: 5
-[2025-05-30 00:20:09] [INFO   ] [TranslatorCommon.cpp:180]  Info: TranslatorCommon::AppendDirectOperation: Plus
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:648]  Binary operation successfully translated in linear stream
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:619]  Appending pathname for assignment: value
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:624]  Created pathname object: exists, type: Pathname
-[2025-05-30 00:20:09] [INFO   ] [TranslatorCommon.cpp:180]  Info: TranslatorCommon::AppendDirectOperation: Store
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:648]  Binary operation successfully translated in linear stream
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:212]  Rho translated code has 5 elements
-[2025-05-30 00:20:09] [INFO   ] [Executor.cpp:961]  PerformBinaryOp called with operation: Plus
-[2025-05-30 00:20:09] [INFO   ] [Executor.cpp:1019]  Plus operation
-[2025-05-30 00:20:09] [INFO   ] [ExecutorPerform.inl:506]  Store operation - stack size before: 3
-[2025-05-30 00:20:09] [INFO   ] [ExecutorPerform.inl:508]  Stack[top-1]: Int
-[2025-05-30 00:20:09] [INFO   ] [ExecutorPerform.inl:511]  Stack[top]: Int
-[2025-05-30 00:20:09] [INFO   ] [ExecutorPerform.inl:519]  Store operation - name type: Pathname, value type: Int
-[2025-05-30 00:20:09] [INFO   ] [ExecutorPerform.inl:529]  Store: continuation exists, checking scope...
-[2025-05-30 00:20:09] [INFO   ] [ExecutorPerform.inl:562]  Store with Pathname: 'value, quoted: yes
-[2025-05-30 00:20:09] [INFO   ] [ExecutorPerform.inl:584]  Added 'value' to scope (from pathname: 'value)
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:198]  Starting to process tokens
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:21]  Processing node: Program: None
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:30]  Processing Program node
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:21]  Processing node: TokenType: Assign '='
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:37]  Processing token node: Assign
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:39]  TranslateToken: Assign
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:42]  TranslateToken with text: =
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:547]  TranslateBinaryOp: Operation=Store
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:21]  Processing node: TokenType: Plus '+'
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:37]  Processing token node: Plus
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:39]  TranslateToken: Plus
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:42]  TranslateToken with text: +
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:140]  Translating Plus operation
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:547]  TranslateBinaryOp: Operation=Plus
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:21]  Processing node: TokenType: Int '10'
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:37]  Processing token node: Int
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:39]  TranslateToken: Int
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:42]  TranslateToken with text: 10
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:196]  Translating Int: 10
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:206]  Translated integer: 10
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:21]  Processing node: TokenType: Int '5'
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:37]  Processing token node: Int
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:39]  TranslateToken: Int
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:42]  TranslateToken with text: 5
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:196]  Translating Int: 5
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:206]  Translated integer: 5
+[2025-05-30 00:27:11] [INFO   ] [TranslatorCommon.cpp:180]  Info: TranslatorCommon::AppendDirectOperation: Plus
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:648]  Binary operation successfully translated in linear stream
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:619]  Appending pathname for assignment: value
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:624]  Created pathname object: exists, type: Pathname
+[2025-05-30 00:27:11] [INFO   ] [TranslatorCommon.cpp:180]  Info: TranslatorCommon::AppendDirectOperation: Store
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:648]  Binary operation successfully translated in linear stream
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:212]  Rho translated code has 5 elements
+[2025-05-30 00:27:11] [INFO   ] [Executor.cpp:961]  PerformBinaryOp called with operation: Plus
+[2025-05-30 00:27:11] [INFO   ] [Executor.cpp:1019]  Plus operation
+[2025-05-30 00:27:11] [INFO   ] [ExecutorPerform.inl:506]  Store operation - stack size before: 3
+[2025-05-30 00:27:11] [INFO   ] [ExecutorPerform.inl:508]  Stack[top-1]: Int
+[2025-05-30 00:27:11] [INFO   ] [ExecutorPerform.inl:511]  Stack[top]: Int
+[2025-05-30 00:27:11] [INFO   ] [ExecutorPerform.inl:519]  Store operation - name type: Pathname, value type: Int
+[2025-05-30 00:27:11] [INFO   ] [ExecutorPerform.inl:529]  Store: continuation exists, checking scope...
+[2025-05-30 00:27:11] [INFO   ] [ExecutorPerform.inl:562]  Store with Pathname: 'value, quoted: yes
+[2025-05-30 00:27:11] [INFO   ] [ExecutorPerform.inl:584]  Added 'value' to scope (from pathname: 'value)
 [0]: 2
 Rho λ [0]: 2
-Rho λ [2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:154]  Executing text: # Test 35: Shell command without closing backtick in Rho
-[2025-05-30 00:20:09] [WARNING] [RhoTranslate.cpp:167]  lex->Error='(0):[0]: Unrecognised #
+Rho λ [2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:154]  Executing text: # Test 35: Shell command without closing backtick in Rho
+[2025-05-30 00:27:11] [WARNING] [RhoTranslate.cpp:167]  lex->Error='(0):[0]: Unrecognised #
 
 # Test 35: Shell command without closing backtick in Rho
 ^
@@ -161,258 +161,258 @@ Rho λ [2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:154]  Executing text: #
 Rho λ Rho test without closing
 [0]: 2
 Rho λ [0]: 2
-Rho λ [2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:154]  Executing text: # Test 36: Multiple operations in Rho with embedded commands
-[2025-05-30 00:20:09] [WARNING] [RhoTranslate.cpp:167]  lex->Error='(0):[0]: Unrecognised #
+Rho λ [2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:154]  Executing text: # Test 36: Multiple operations in Rho with embedded commands
+[2025-05-30 00:27:11] [WARNING] [RhoTranslate.cpp:167]  lex->Error='(0):[0]: Unrecognised #
 
 # Test 36: Multiple operations in Rho with embedded commands
 ^
 ' 
 [0]: 2
-Rho λ [2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:154]  Executing text: x = 3
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:174]  lex->Print()='Label 'x', Whitespace ' ', Assign '=', Whitespace ' ', Int '3', NewLine '
+Rho λ [2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:154]  Executing text: x = 3
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:174]  lex->Print()='Label 'x', Whitespace ' ', Assign '=', Whitespace ' ', Int '3', NewLine '
 ', None, ' 
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:21]  Starting to process tokens
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: Label
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: Assign
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: Int
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: NewLine
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: None
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:43]  Created root Program node
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:469]  RhoParser::Expression - Starting
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:608]  RhoParser::Factor - Current token: Label
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:608]  RhoParser::Factor - Current token: Int
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:1195]  RhoParser::ConsumeNewLines - Consuming newline
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:191]  parse->PrintTree()='Program: None
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:21]  Starting to process tokens
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: Label
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: Assign
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: Int
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: NewLine
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: None
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:43]  Created root Program node
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:469]  RhoParser::Expression - Starting
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:608]  RhoParser::Factor - Current token: Label
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:608]  RhoParser::Factor - Current token: Int
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:1195]  RhoParser::ConsumeNewLines - Consuming newline
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:191]  parse->PrintTree()='Program: None
     TokenType: Assign '='
         TokenType: Int '3'
         TokenType: Label 'x'
 ' 
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:198]  Starting to process tokens
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:21]  Processing node: Program: None
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:30]  Processing Program node
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:21]  Processing node: TokenType: Assign '='
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:37]  Processing token node: Assign
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:39]  TranslateToken: Assign
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:42]  TranslateToken with text: =
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:547]  TranslateBinaryOp: Operation=Store
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:21]  Processing node: TokenType: Int '3'
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:37]  Processing token node: Int
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:39]  TranslateToken: Int
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:42]  TranslateToken with text: 3
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:196]  Translating Int: 3
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:206]  Translated integer: 3
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:619]  Appending pathname for assignment: x
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:624]  Created pathname object: exists, type: Pathname
-[2025-05-30 00:20:09] [INFO   ] [TranslatorCommon.cpp:180]  Info: TranslatorCommon::AppendDirectOperation: Store
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:648]  Binary operation successfully translated in linear stream
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:212]  Rho translated code has 3 elements
-[2025-05-30 00:20:09] [INFO   ] [ExecutorPerform.inl:506]  Store operation - stack size before: 3
-[2025-05-30 00:20:09] [INFO   ] [ExecutorPerform.inl:508]  Stack[top-1]: Int
-[2025-05-30 00:20:09] [INFO   ] [ExecutorPerform.inl:511]  Stack[top]: Int
-[2025-05-30 00:20:09] [INFO   ] [ExecutorPerform.inl:519]  Store operation - name type: Pathname, value type: Int
-[2025-05-30 00:20:09] [INFO   ] [ExecutorPerform.inl:529]  Store: continuation exists, checking scope...
-[2025-05-30 00:20:09] [INFO   ] [ExecutorPerform.inl:562]  Store with Pathname: 'x, quoted: yes
-[2025-05-30 00:20:09] [INFO   ] [ExecutorPerform.inl:584]  Added 'x' to scope (from pathname: 'x)
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:198]  Starting to process tokens
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:21]  Processing node: Program: None
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:30]  Processing Program node
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:21]  Processing node: TokenType: Assign '='
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:37]  Processing token node: Assign
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:39]  TranslateToken: Assign
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:42]  TranslateToken with text: =
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:547]  TranslateBinaryOp: Operation=Store
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:21]  Processing node: TokenType: Int '3'
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:37]  Processing token node: Int
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:39]  TranslateToken: Int
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:42]  TranslateToken with text: 3
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:196]  Translating Int: 3
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:206]  Translated integer: 3
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:619]  Appending pathname for assignment: x
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:624]  Created pathname object: exists, type: Pathname
+[2025-05-30 00:27:11] [INFO   ] [TranslatorCommon.cpp:180]  Info: TranslatorCommon::AppendDirectOperation: Store
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:648]  Binary operation successfully translated in linear stream
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:212]  Rho translated code has 3 elements
+[2025-05-30 00:27:11] [INFO   ] [ExecutorPerform.inl:506]  Store operation - stack size before: 3
+[2025-05-30 00:27:11] [INFO   ] [ExecutorPerform.inl:508]  Stack[top-1]: Int
+[2025-05-30 00:27:11] [INFO   ] [ExecutorPerform.inl:511]  Stack[top]: Int
+[2025-05-30 00:27:11] [INFO   ] [ExecutorPerform.inl:519]  Store operation - name type: Pathname, value type: Int
+[2025-05-30 00:27:11] [INFO   ] [ExecutorPerform.inl:529]  Store: continuation exists, checking scope...
+[2025-05-30 00:27:11] [INFO   ] [ExecutorPerform.inl:562]  Store with Pathname: 'x, quoted: yes
+[2025-05-30 00:27:11] [INFO   ] [ExecutorPerform.inl:584]  Added 'x' to scope (from pathname: 'x)
 [0]: 2
-Rho λ [2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:154]  Executing text: y = 7
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:174]  lex->Print()='Label 'y', Whitespace ' ', Assign '=', Whitespace ' ', Int '7', NewLine '
+Rho λ [2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:154]  Executing text: y = 7
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:174]  lex->Print()='Label 'y', Whitespace ' ', Assign '=', Whitespace ' ', Int '7', NewLine '
 ', None, ' 
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:21]  Starting to process tokens
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: Label
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: Assign
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: Int
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: NewLine
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: None
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:43]  Created root Program node
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:469]  RhoParser::Expression - Starting
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:608]  RhoParser::Factor - Current token: Label
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:608]  RhoParser::Factor - Current token: Int
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:1195]  RhoParser::ConsumeNewLines - Consuming newline
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:191]  parse->PrintTree()='Program: None
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:21]  Starting to process tokens
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: Label
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: Assign
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: Int
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: NewLine
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: None
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:43]  Created root Program node
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:469]  RhoParser::Expression - Starting
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:608]  RhoParser::Factor - Current token: Label
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:608]  RhoParser::Factor - Current token: Int
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:1195]  RhoParser::ConsumeNewLines - Consuming newline
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:191]  parse->PrintTree()='Program: None
     TokenType: Assign '='
         TokenType: Int '7'
         TokenType: Label 'y'
 ' 
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:198]  Starting to process tokens
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:21]  Processing node: Program: None
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:30]  Processing Program node
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:21]  Processing node: TokenType: Assign '='
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:37]  Processing token node: Assign
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:39]  TranslateToken: Assign
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:42]  TranslateToken with text: =
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:547]  TranslateBinaryOp: Operation=Store
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:21]  Processing node: TokenType: Int '7'
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:37]  Processing token node: Int
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:39]  TranslateToken: Int
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:42]  TranslateToken with text: 7
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:196]  Translating Int: 7
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:206]  Translated integer: 7
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:619]  Appending pathname for assignment: y
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:624]  Created pathname object: exists, type: Pathname
-[2025-05-30 00:20:09] [INFO   ] [TranslatorCommon.cpp:180]  Info: TranslatorCommon::AppendDirectOperation: Store
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:648]  Binary operation successfully translated in linear stream
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:212]  Rho translated code has 3 elements
-[2025-05-30 00:20:09] [INFO   ] [ExecutorPerform.inl:506]  Store operation - stack size before: 3
-[2025-05-30 00:20:09] [INFO   ] [ExecutorPerform.inl:508]  Stack[top-1]: Int
-[2025-05-30 00:20:09] [INFO   ] [ExecutorPerform.inl:511]  Stack[top]: Int
-[2025-05-30 00:20:09] [INFO   ] [ExecutorPerform.inl:519]  Store operation - name type: Pathname, value type: Int
-[2025-05-30 00:20:09] [INFO   ] [ExecutorPerform.inl:529]  Store: continuation exists, checking scope...
-[2025-05-30 00:20:09] [INFO   ] [ExecutorPerform.inl:562]  Store with Pathname: 'y, quoted: yes
-[2025-05-30 00:20:09] [INFO   ] [ExecutorPerform.inl:584]  Added 'y' to scope (from pathname: 'y)
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:198]  Starting to process tokens
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:21]  Processing node: Program: None
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:30]  Processing Program node
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:21]  Processing node: TokenType: Assign '='
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:37]  Processing token node: Assign
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:39]  TranslateToken: Assign
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:42]  TranslateToken with text: =
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:547]  TranslateBinaryOp: Operation=Store
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:21]  Processing node: TokenType: Int '7'
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:37]  Processing token node: Int
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:39]  TranslateToken: Int
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:42]  TranslateToken with text: 7
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:196]  Translating Int: 7
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:206]  Translated integer: 7
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:619]  Appending pathname for assignment: y
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:624]  Created pathname object: exists, type: Pathname
+[2025-05-30 00:27:11] [INFO   ] [TranslatorCommon.cpp:180]  Info: TranslatorCommon::AppendDirectOperation: Store
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:648]  Binary operation successfully translated in linear stream
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:212]  Rho translated code has 3 elements
+[2025-05-30 00:27:11] [INFO   ] [ExecutorPerform.inl:506]  Store operation - stack size before: 3
+[2025-05-30 00:27:11] [INFO   ] [ExecutorPerform.inl:508]  Stack[top-1]: Int
+[2025-05-30 00:27:11] [INFO   ] [ExecutorPerform.inl:511]  Stack[top]: Int
+[2025-05-30 00:27:11] [INFO   ] [ExecutorPerform.inl:519]  Store operation - name type: Pathname, value type: Int
+[2025-05-30 00:27:11] [INFO   ] [ExecutorPerform.inl:529]  Store: continuation exists, checking scope...
+[2025-05-30 00:27:11] [INFO   ] [ExecutorPerform.inl:562]  Store with Pathname: 'y, quoted: yes
+[2025-05-30 00:27:11] [INFO   ] [ExecutorPerform.inl:584]  Added 'y' to scope (from pathname: 'y)
 [0]: 2
-Rho λ [2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:154]  Executing text: sum = x + y
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:174]  lex->Print()='Label 'sum', Whitespace ' ', Assign '=', Whitespace ' ', Label 'x', Whitespace ' ', Plus '+', Whitespace ' ', Label 'y', NewLine '
+Rho λ [2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:154]  Executing text: sum = x + y
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:174]  lex->Print()='Label 'sum', Whitespace ' ', Assign '=', Whitespace ' ', Label 'x', Whitespace ' ', Plus '+', Whitespace ' ', Label 'y', NewLine '
 ', None, ' 
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:21]  Starting to process tokens
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: Label
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: Assign
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: Label
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: Plus
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: Label
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: NewLine
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: None
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:43]  Created root Program node
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:469]  RhoParser::Expression - Starting
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:608]  RhoParser::Factor - Current token: Label
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:608]  RhoParser::Factor - Current token: Label
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:608]  RhoParser::Factor - Current token: Label
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:1195]  RhoParser::ConsumeNewLines - Consuming newline
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:191]  parse->PrintTree()='Program: None
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:21]  Starting to process tokens
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: Label
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: Assign
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: Label
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: Plus
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: Label
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: NewLine
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: None
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:43]  Created root Program node
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:469]  RhoParser::Expression - Starting
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:608]  RhoParser::Factor - Current token: Label
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:608]  RhoParser::Factor - Current token: Label
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:608]  RhoParser::Factor - Current token: Label
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:1195]  RhoParser::ConsumeNewLines - Consuming newline
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:191]  parse->PrintTree()='Program: None
     TokenType: Assign '='
         TokenType: Plus '+'
             TokenType: Label 'x'
             TokenType: Label 'y'
         TokenType: Label 'sum'
 ' 
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:198]  Starting to process tokens
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:21]  Processing node: Program: None
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:30]  Processing Program node
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:21]  Processing node: TokenType: Assign '='
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:37]  Processing token node: Assign
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:39]  TranslateToken: Assign
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:42]  TranslateToken with text: =
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:547]  TranslateBinaryOp: Operation=Store
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:21]  Processing node: TokenType: Plus '+'
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:37]  Processing token node: Plus
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:39]  TranslateToken: Plus
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:42]  TranslateToken with text: +
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:140]  Translating Plus operation
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:547]  TranslateBinaryOp: Operation=Plus
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:21]  Processing node: TokenType: Label 'x'
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:37]  Processing token node: Label
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:39]  TranslateToken: Label
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:42]  TranslateToken with text: x
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:244]  Translating Ident: x
-[2025-05-30 00:20:09] [INFO   ] [TranslatorCommon.cpp:180]  Info: TranslatorCommon::AppendDirectOperation: Retreive
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:256]  Translated identifier as label with retrieve: x
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:21]  Processing node: TokenType: Label 'y'
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:37]  Processing token node: Label
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:39]  TranslateToken: Label
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:42]  TranslateToken with text: y
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:244]  Translating Ident: y
-[2025-05-30 00:20:09] [INFO   ] [TranslatorCommon.cpp:180]  Info: TranslatorCommon::AppendDirectOperation: Retreive
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:256]  Translated identifier as label with retrieve: y
-[2025-05-30 00:20:09] [INFO   ] [TranslatorCommon.cpp:180]  Info: TranslatorCommon::AppendDirectOperation: Plus
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:648]  Binary operation successfully translated in linear stream
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:619]  Appending pathname for assignment: sum
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:624]  Created pathname object: exists, type: Pathname
-[2025-05-30 00:20:09] [INFO   ] [TranslatorCommon.cpp:180]  Info: TranslatorCommon::AppendDirectOperation: Store
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:648]  Binary operation successfully translated in linear stream
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:212]  Rho translated code has 7 elements
-[2025-05-30 00:20:09] [INFO   ] [Executor.cpp:961]  PerformBinaryOp called with operation: Plus
-[2025-05-30 00:20:09] [INFO   ] [Executor.cpp:1019]  Plus operation
-[2025-05-30 00:20:09] [INFO   ] [ExecutorPerform.inl:506]  Store operation - stack size before: 3
-[2025-05-30 00:20:09] [INFO   ] [ExecutorPerform.inl:508]  Stack[top-1]: Int
-[2025-05-30 00:20:09] [INFO   ] [ExecutorPerform.inl:511]  Stack[top]: Int
-[2025-05-30 00:20:09] [INFO   ] [ExecutorPerform.inl:519]  Store operation - name type: Pathname, value type: Int
-[2025-05-30 00:20:09] [INFO   ] [ExecutorPerform.inl:529]  Store: continuation exists, checking scope...
-[2025-05-30 00:20:09] [INFO   ] [ExecutorPerform.inl:562]  Store with Pathname: 'sum, quoted: yes
-[2025-05-30 00:20:09] [INFO   ] [ExecutorPerform.inl:584]  Added 'sum' to scope (from pathname: 'sum)
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:198]  Starting to process tokens
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:21]  Processing node: Program: None
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:30]  Processing Program node
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:21]  Processing node: TokenType: Assign '='
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:37]  Processing token node: Assign
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:39]  TranslateToken: Assign
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:42]  TranslateToken with text: =
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:547]  TranslateBinaryOp: Operation=Store
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:21]  Processing node: TokenType: Plus '+'
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:37]  Processing token node: Plus
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:39]  TranslateToken: Plus
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:42]  TranslateToken with text: +
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:140]  Translating Plus operation
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:547]  TranslateBinaryOp: Operation=Plus
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:21]  Processing node: TokenType: Label 'x'
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:37]  Processing token node: Label
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:39]  TranslateToken: Label
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:42]  TranslateToken with text: x
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:244]  Translating Ident: x
+[2025-05-30 00:27:11] [INFO   ] [TranslatorCommon.cpp:180]  Info: TranslatorCommon::AppendDirectOperation: Retreive
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:256]  Translated identifier as label with retrieve: x
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:21]  Processing node: TokenType: Label 'y'
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:37]  Processing token node: Label
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:39]  TranslateToken: Label
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:42]  TranslateToken with text: y
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:244]  Translating Ident: y
+[2025-05-30 00:27:11] [INFO   ] [TranslatorCommon.cpp:180]  Info: TranslatorCommon::AppendDirectOperation: Retreive
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:256]  Translated identifier as label with retrieve: y
+[2025-05-30 00:27:11] [INFO   ] [TranslatorCommon.cpp:180]  Info: TranslatorCommon::AppendDirectOperation: Plus
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:648]  Binary operation successfully translated in linear stream
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:619]  Appending pathname for assignment: sum
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:624]  Created pathname object: exists, type: Pathname
+[2025-05-30 00:27:11] [INFO   ] [TranslatorCommon.cpp:180]  Info: TranslatorCommon::AppendDirectOperation: Store
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:648]  Binary operation successfully translated in linear stream
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:212]  Rho translated code has 7 elements
+[2025-05-30 00:27:11] [INFO   ] [Executor.cpp:961]  PerformBinaryOp called with operation: Plus
+[2025-05-30 00:27:11] [INFO   ] [Executor.cpp:1019]  Plus operation
+[2025-05-30 00:27:11] [INFO   ] [ExecutorPerform.inl:506]  Store operation - stack size before: 3
+[2025-05-30 00:27:11] [INFO   ] [ExecutorPerform.inl:508]  Stack[top-1]: Int
+[2025-05-30 00:27:11] [INFO   ] [ExecutorPerform.inl:511]  Stack[top]: Int
+[2025-05-30 00:27:11] [INFO   ] [ExecutorPerform.inl:519]  Store operation - name type: Pathname, value type: Int
+[2025-05-30 00:27:11] [INFO   ] [ExecutorPerform.inl:529]  Store: continuation exists, checking scope...
+[2025-05-30 00:27:11] [INFO   ] [ExecutorPerform.inl:562]  Store with Pathname: 'sum, quoted: yes
+[2025-05-30 00:27:11] [INFO   ] [ExecutorPerform.inl:584]  Added 'sum' to scope (from pathname: 'sum)
 [0]: 2
 Rho λ [0]: 2
-Rho λ [2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:154]  Executing text: # Test 37: Back to Pi language
-[2025-05-30 00:20:09] [WARNING] [RhoTranslate.cpp:167]  lex->Error='(0):[0]: Unrecognised #
+Rho λ [2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:154]  Executing text: # Test 37: Back to Pi language
+[2025-05-30 00:27:11] [WARNING] [RhoTranslate.cpp:167]  lex->Error='(0):[0]: Unrecognised #
 
 # Test 37: Back to Pi language
 ^
 ' 
 [0]: 2
-Rho λ [2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:154]  Executing text: 1 pi
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:174]  lex->Print()='Int '1', Whitespace ' ', ToPi 'pi', NewLine '
+Rho λ [2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:154]  Executing text: 1 pi
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:174]  lex->Print()='Int '1', Whitespace ' ', ToPi 'pi', NewLine '
 ', None, ' 
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:21]  Starting to process tokens
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: Int
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: ToPi
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: NewLine
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: None
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:43]  Created root Program node
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:469]  RhoParser::Expression - Starting
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:608]  RhoParser::Factor - Current token: Int
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:191]  parse->PrintTree()='Program: None
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:21]  Starting to process tokens
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: Int
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: ToPi
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: NewLine
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: None
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:43]  Created root Program node
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:469]  RhoParser::Expression - Starting
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:608]  RhoParser::Factor - Current token: Int
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:191]  parse->PrintTree()='Program: None
     TokenType: Int '1'
 ' 
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:198]  Starting to process tokens
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:21]  Processing node: Program: None
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:30]  Processing Program node
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:21]  Processing node: TokenType: Int '1'
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:37]  Processing token node: Int
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:39]  TranslateToken: Int
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:42]  TranslateToken with text: 1
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:196]  Translating Int: 1
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:206]  Translated integer: 1
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:212]  Rho translated code has 1 elements
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:198]  Starting to process tokens
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:21]  Processing node: Program: None
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:30]  Processing Program node
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:21]  Processing node: TokenType: Int '1'
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:37]  Processing token node: Int
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:39]  TranslateToken: Int
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:42]  TranslateToken with text: 1
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:196]  Translating Int: 1
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:206]  Translated integer: 1
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:212]  Rho translated code has 1 elements
 [0]: 2
 [1]: 1
 Rho λ [0]: 2
 [1]: 1
-Rho λ [2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:154]  Executing text: # Test 38: Verify Pi still works with embedded commands
-[2025-05-30 00:20:09] [WARNING] [RhoTranslate.cpp:167]  lex->Error='(0):[0]: Unrecognised #
+Rho λ [2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:154]  Executing text: # Test 38: Verify Pi still works with embedded commands
+[2025-05-30 00:27:11] [WARNING] [RhoTranslate.cpp:167]  lex->Error='(0):[0]: Unrecognised #
 
 # Test 38: Verify Pi still works with embedded commands
 ^
 ' 
 [0]: 2
 [1]: 1
-Rho λ [2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:154]  Executing text: 1 1 +
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:174]  lex->Print()='Int '1', Whitespace ' ', Int '1', Whitespace ' ', Plus '+', NewLine '
+Rho λ [2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:154]  Executing text: 1 1 +
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:174]  lex->Print()='Int '1', Whitespace ' ', Int '1', Whitespace ' ', Plus '+', NewLine '
 ', None, ' 
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:21]  Starting to process tokens
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: Int
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: Int
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: Plus
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: NewLine
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: None
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:43]  Created root Program node
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:469]  RhoParser::Expression - Starting
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:608]  RhoParser::Factor - Current token: Int
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:191]  parse->PrintTree()='Program: None
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:21]  Starting to process tokens
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: Int
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: Int
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: Plus
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: NewLine
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: None
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:43]  Created root Program node
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:469]  RhoParser::Expression - Starting
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:608]  RhoParser::Factor - Current token: Int
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:191]  parse->PrintTree()='Program: None
     TokenType: Int '1'
 ' 
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:198]  Starting to process tokens
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:21]  Processing node: Program: None
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:30]  Processing Program node
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:21]  Processing node: TokenType: Int '1'
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:37]  Processing token node: Int
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:39]  TranslateToken: Int
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:42]  TranslateToken with text: 1
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:196]  Translating Int: 1
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslator.cpp:206]  Translated integer: 1
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:212]  Rho translated code has 1 elements
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:198]  Starting to process tokens
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:21]  Processing node: Program: None
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:30]  Processing Program node
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:21]  Processing node: TokenType: Int '1'
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:37]  Processing token node: Int
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:39]  TranslateToken: Int
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:42]  TranslateToken with text: 1
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:196]  Translating Int: 1
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslator.cpp:206]  Translated integer: 1
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:212]  Rho translated code has 1 elements
 [0]: 2
 [1]: 1
 [2]: 1
-Rho λ [2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:154]  Executing text: .
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:174]  lex->Print()='Dot '.', NewLine '
+Rho λ [2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:154]  Executing text: .
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:174]  lex->Print()='Dot '.', NewLine '
 ', None, ' 
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:21]  Starting to process tokens
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: Dot
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: NewLine
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:32]  Token: None
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:43]  Created root Program node
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:469]  RhoParser::Expression - Starting
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:608]  RhoParser::Factor - Current token: Dot
-[2025-05-30 00:20:09] [INFO   ] [RhoParser.cpp:471]  RhoParser::Expression - Logical() failed
-[2025-05-30 00:20:09] [INFO   ] [RhoTranslate.cpp:183]  parse->PrintTree()='Program: None
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:21]  Starting to process tokens
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: Dot
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: NewLine
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:32]  Token: None
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:43]  Created root Program node
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:469]  RhoParser::Expression - Starting
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:608]  RhoParser::Factor - Current token: Dot
+[2025-05-30 00:27:11] [INFO   ] [RhoParser.cpp:471]  RhoParser::Expression - Logical() failed
+[2025-05-30 00:27:11] [INFO   ] [RhoTranslate.cpp:183]  parse->PrintTree()='Program: None
 ' 
 [0]: 2
 [1]: 1
