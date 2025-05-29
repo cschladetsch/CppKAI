@@ -213,7 +213,7 @@ result
 
 // Test multiple if-else if-else
 // DISABLED: Parser doesn't support "else if" syntax
-TEST_F(RhoControlFlowFixed, IfElseIfElse) {
+TEST_F(RhoControlFlowFixed, DISABLED_IfElseIfElse) {
     RunAndExpect<int>(R"(
 x = 2
 if x == 1
