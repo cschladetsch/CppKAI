@@ -15,8 +15,14 @@ KAI_BEGIN
 
 // Implementation of the Translate method for Pi
 Pointer<Continuation> PiTranslator::Translate(const char *text, Structure st) {
+    // Set flag to indicate we're translating the root
+    isTranslatingRoot = true;
+    
     // Call the parent implementation first
     Pointer<Continuation> cont = Parent::Translate(text, st);
+    
+    // Reset flag
+    isTranslatingRoot = false;
 
     // No special flag needed - we extract primitive types during execution
     if (cont.Exists()) {
@@ -113,12 +119,10 @@ void PiTranslator::TranslateNode(AstNodePtr node) {
         case PiAstNodeEnumType::Continuation: {
             // Check if this is a root-level continuation from the parser
             // (not an explicit {} block in the code)
-            bool isRootContinuation =
-                (node->GetToken().type == PiTokenEnumType::None);
-
-            if (isRootContinuation) {
+            if (isTranslatingRoot) {
                 // This is the root continuation created by the parser
                 // Just translate its children directly without wrapping
+                isTranslatingRoot = false; // Reset flag after processing root
                 for (auto const &ch : node->GetChildren()) {
                     TranslateNode(ch);
                 }
@@ -525,6 +529,14 @@ void PiTranslator::AppendTokenised(const TokenNode &tok) {
 
         case PiTokenEnumType::ToList:
             AppendOp(Operation::ToList);
+            return;
+
+        case PiTokenEnumType::While:
+            AppendOp(Operation::WhileLoop);
+            return;
+
+        case PiTokenEnumType::For:
+            AppendOp(Operation::ForLoop);
             return;
 
             // Note: "call" was added here but removed due to conflict
