@@ -47,6 +47,7 @@ struct Operation {
         GetChildren,
         Contents,
         Break,
+        Continue,
         Drop,
         DropN,
         Swap,

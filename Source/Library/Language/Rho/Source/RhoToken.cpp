@@ -91,6 +91,8 @@ const char *RhoTokenEnumType::ToString(Enum val) {
         CASE(For)
         CASE(DoWhile)
         CASE(ForEach)
+        CASE(Break)
+        CASE(Continue)
     }
 
     static char buff[BUFSIZ];

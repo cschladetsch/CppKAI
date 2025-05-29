@@ -185,6 +185,10 @@ void Executor::Perform(Operation::Type op) {
             break_ = true;
             break;
 
+        case Operation::Continue:
+            continue_ = true;
+            break;
+
         case Operation::Drop:
             Pop();
             break;
@@ -927,7 +931,10 @@ void Executor::Perform(Operation::Type op) {
                 Pointer<Continuation> body = bodyCont;
                 
                 // Execute while loop inline
+                break_ = false;  // Reset break flag
                 while (true) {
+                    continue_ = false;  // Reset continue flag at loop start
+                    
                     // Evaluate condition
                     if (condition->GetCode().Exists()) {
                         for (int i = 0; i < condition->GetCode()->Size(); ++i) {
@@ -946,12 +953,22 @@ void Executor::Perform(Operation::Type op) {
                     // Execute body
                     if (body->GetCode().Exists()) {
                         for (int i = 0; i < body->GetCode()->Size(); ++i) {
+                            if (break_ || continue_) {
+                                break;  // Exit the body execution loop
+                            }
                             auto obj = body->GetCode()->At(i);
                             if (obj.Exists()) {
                                 Eval(obj);
                             }
                         }
                     }
+                    
+                    // Check for break after body execution
+                    if (break_) {
+                        break_ = false;  // Reset for next loop
+                        break;  // Exit the while loop
+                    }
+                    // If continue_ is set, it just goes to next iteration
                 }
             }
             catch (const Exception::Base& e) {
@@ -1012,7 +1029,10 @@ void Executor::Perform(Operation::Type op) {
                 }
                 
                 // Execute for loop inline
+                break_ = false;  // Reset break flag
                 while (true) {
+                    continue_ = false;  // Reset continue flag at loop start
+                    
                     // Evaluate condition
                     if (condition->GetCode().Exists()) {
                         for (int i = 0; i < condition->GetCode()->Size(); ++i) {
@@ -1031,6 +1051,9 @@ void Executor::Perform(Operation::Type op) {
                     // Execute body
                     if (body->GetCode().Exists()) {
                         for (int i = 0; i < body->GetCode()->Size(); ++i) {
+                            if (break_ || continue_) {
+                                break;  // Exit the body execution loop
+                            }
                             auto obj = body->GetCode()->At(i);
                             if (obj.Exists()) {
                                 Eval(obj);
@@ -1038,7 +1061,13 @@ void Executor::Perform(Operation::Type op) {
                         }
                     }
                     
-                    // Execute increment
+                    // Check for break after body execution
+                    if (break_) {
+                        break_ = false;  // Reset for next loop
+                        break;  // Exit the for loop
+                    }
+                    
+                    // Execute increment (even if continue was hit)
                     if (increment->GetCode().Exists()) {
                         for (int i = 0; i < increment->GetCode()->Size(); ++i) {
                             auto obj = increment->GetCode()->At(i);
@@ -1092,10 +1121,16 @@ void Executor::Perform(Operation::Type op) {
                 Pointer<Continuation> body = bodyCont;
                 
                 // Execute do-while loop inline
+                break_ = false;  // Reset break flag
                 do {
+                    continue_ = false;  // Reset continue flag at loop start
+                    
                     // Execute body
                     if (body->GetCode().Exists()) {
                         for (int i = 0; i < body->GetCode()->Size(); ++i) {
+                            if (break_ || continue_) {
+                                break;  // Exit the body execution loop
+                            }
                             auto obj = body->GetCode()->At(i);
                             if (obj.Exists()) {
                                 Eval(obj);
@@ -1103,7 +1138,13 @@ void Executor::Perform(Operation::Type op) {
                         }
                     }
                     
-                    // Evaluate condition
+                    // Check for break after body execution
+                    if (break_) {
+                        break_ = false;  // Reset for next loop
+                        break;  // Exit the do-while loop
+                    }
+                    
+                    // Evaluate condition (even if continue was hit)
                     if (condition->GetCode().Exists()) {
                         for (int i = 0; i < condition->GetCode()->Size(); ++i) {
                             auto obj = condition->GetCode()->At(i);

@@ -301,6 +301,14 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
             }
             AppendDirectOperation(Operation::Return);
             return;
+
+        case RhoTokenEnumType::Break:
+            AppendDirectOperation(Operation::Break);
+            return;
+
+        case RhoTokenEnumType::Continue:
+            AppendDirectOperation(Operation::Continue);
+            return;
     }
 
     Fail(std::format("Unsupported node {}", node->ToString()));

@@ -80,6 +80,8 @@ struct RhoTokenEnumType {
         For = 78,
         DoWhile = 79,
         ForEach = 80,
+        Break = 84,
+        Continue = 85,
     };
 
     struct Type : TokenBase<RhoTokenEnumType> {

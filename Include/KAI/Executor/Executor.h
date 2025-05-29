@@ -275,6 +275,7 @@ struct Executor : Reflected {
     Value<Stack> data_;
     Object compiler_;
     bool break_;
+    bool continue_;
     Tree *tree_;
     int traceLevel_;
     int stepNumber_;

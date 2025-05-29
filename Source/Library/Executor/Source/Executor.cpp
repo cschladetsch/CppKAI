@@ -22,6 +22,7 @@ void Executor::Create() {
     data_ = New<Stack>();
     context_ = New<Stack>();
     break_ = false;
+    continue_ = false;
     traceLevel_ = 0;
     stepNumber_ = 0;
 }
@@ -501,6 +502,11 @@ Object Executor::Resolve(const Pathname &path) const {
 
 void Executor::Eval(Object const &Q) {
     stepNumber_++;
+
+    // Check if we should stop execution due to break or continue
+    if (break_ || continue_) {
+        return;
+    }
 
     // Verify the object is valid
     if (!Q.Valid() || !Q.Exists()) {

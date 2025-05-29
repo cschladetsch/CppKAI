@@ -7,8 +7,6 @@ using namespace std;
 KAI_BEGIN
 
 void RhoLexer::AddKeyWords() {
-    std::cout << "RhoLexer::AddKeyWords() - Adding keywords" << std::endl;
-
     // Basic keywords
     keyWords["if"] = Enum::If;
     keyWords["else"] = Enum::Else;
@@ -29,21 +27,13 @@ void RhoLexer::AddKeyWords() {
     keyWords["for"] = Enum::For;
     keyWords["do"] = Enum::DoWhile;  // 'do' is recognized as DoWhile token
     keyWords["foreach"] = Enum::ForEach;
-
-    std::cout << "Keywords added: " << keyWords.size() << std::endl;
-
-    // Debug output of all keywords
-    for (const auto& kw : keyWords) {
-        std::cout << "  Keyword: '" << kw.first << "' -> token type: "
-                  << RhoTokenEnumType::ToString(kw.second) << " ("
-                  << (int)kw.second << ")" << std::endl;
-    }
+    keyWords["break"] = Enum::Break;
+    keyWords["continue"] = Enum::Continue;
 }
 
 bool RhoLexer::NextToken() {
     char current = Current();
     if (current == 0) {
-        std::cout << "RhoLexer::NextToken() - End of input" << std::endl;
         return false;
     }
 
@@ -51,13 +41,10 @@ bool RhoLexer::NextToken() {
 
     // Allow identifiers to start with either a letter or an underscore
     if (isalpha(current) || current == '_') {
-        std::cout << "Lexing identifier or keyword starting with: " << current
-                  << std::endl;
         return LexPathname();
     }
 
     if (isdigit(current)) {
-        std::cout << "Lexing number starting with: " << current << std::endl;
         // Collect the digits
         int start = offset;
         while (isdigit(Current())) {
@@ -207,16 +194,11 @@ bool RhoLexer::LexPathname() {
         // map
         auto it = keyWords.find(word);
         if (it != keyWords.end()) {
-            std::cout << "Found keyword: '" << word << "' -> token type: "
-                      << RhoTokenEnumType::ToString(it->second) << " ("
-                      << (int)it->second << ")" << std::endl;
-
             // Add the token with the appropriate enum type
             return Add(it->second, Slice(wordStart, offset));
         }
 
         // Not a keyword, it's a regular identifier
-        std::cout << "Regular identifier: '" << word << "'" << std::endl;
         return Add(Enum::Label, Slice(wordStart, offset));
     }
 

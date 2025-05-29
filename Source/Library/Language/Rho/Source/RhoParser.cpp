@@ -367,6 +367,20 @@ bool RhoParser::Statement(AstNodePtr block) {
             goto finis;
         }
 
+        case TokenType::Break: {
+            KAI_TRACE() << "RhoParser::Statement - Processing Break";
+            auto brk = NewNode(Consume());
+            block->Add(brk);
+            goto finis;
+        }
+
+        case TokenType::Continue: {
+            KAI_TRACE() << "RhoParser::Statement - Processing Continue";
+            auto cont = NewNode(Consume());
+            block->Add(cont);
+            goto finis;
+        }
+
         case TokenType::If: {
             KAI_TRACE() << "RhoParser::Statement - Processing If";
             return IfCondition(block);

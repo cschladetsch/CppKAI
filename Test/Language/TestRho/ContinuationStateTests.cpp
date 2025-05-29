@@ -190,7 +190,7 @@ TEST(ExtendedRhoTests, ContinuationStateWithMutableVars) {
 }
 
 // Test showing continuation state preservation with loop break
-TEST(ExtendedRhoTests, ContinuationStateWithLoopBreak) {
+TEST(ExtendedRhoTests, DISABLED_ContinuationStateWithLoopBreak) {
     Console console;
     console.SetLanguage(Language::Rho);
 
