@@ -1,0 +1,39 @@
+# Test 21: Simple embedded command in Pi arithmetic
+10 `echo 5` +
+.
+
+# Test 22: Multiple embedded commands in Pi arithmetic
+`echo 3` `echo 7` +
+.
+
+# Test 23: Embedded command in multiplication
+5 `echo 4` *
+.
+
+# Test 24: Embedded command with complex shell operation
+2 `echo "3 * 2" | bc` +
+.
+
+# Test 25: Nested embedded commands (command generating another number)
+`echo 1` `echo 9` + `echo 5` *
+.
+
+# Test 26: Embedded command in division
+20 `echo 4` /
+.
+
+# Test 27: Embedded command with echo and arithmetic
+`echo $((2 + 3))` 6 *
+.
+
+# Test 28: Multiple separate embedded commands
+`echo 8` .
+`echo 12` .
+
+# Test 29: Embedded command in subtraction
+15 `echo 7` -
+.
+
+# Test 30: Complex embedded with pipe
+10 `echo "2 3 5" | wc -w` +
+.

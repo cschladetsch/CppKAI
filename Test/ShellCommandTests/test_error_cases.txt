@@ -1,0 +1,30 @@
+# Test 39: Empty shell command with closing backtick
+``
+
+# Test 40: Empty shell command without closing backtick
+`
+
+# Test 41: Shell command with only spaces and closing backtick
+`   `
+
+# Test 42: Shell command with only spaces without closing backtick
+`   
+
+# Test 43: Invalid command (should show error but not crash)
+`nonexistentcommand123`
+
+# Test 44: Invalid command without closing backtick
+`nonexistentcommand123
+
+# Test 45: Command that returns non-zero exit code
+`false`
+
+# Test 46: Embedded command without closing backtick (should fail parsing)
+10 `echo 5 +
+
+# Test 47: Multiple unclosed backticks in expression (should fail parsing)
+10 `echo 5 + `echo 3
+
+# Test 48: Normal language processing after shell commands
+5 5 +
+.

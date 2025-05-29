@@ -31,6 +31,8 @@ class Console : public Reflected {
     void WritePrompt(std::ostream &out) const;
     String GetPrompt() const;
     String Process(const String &);
+    String ProcessShellCommand(const String &text);
+    String ExpandShellCommands(const String &text);
     Registry &GetRegistry() const { return *reg_; }
     Tree &GetTree() { return tree; }
     Tree const &GetTree() const { return tree; }
@@ -46,6 +48,7 @@ class Console : public Reflected {
     void Execute(Pointer<Continuation> cont);
 
     String WriteStack() const;
+    void ShowColoredStack() const;
     void ControlC();
     static void Register(Registry &);
 

@@ -1,0 +1,26 @@
+# Test 31: Switch to Rho language and test shell commands
+2 rho
+
+# Test 32: Shell command in Rho
+`echo "Testing in Rho"`
+
+# Test 33: Embedded command in Rho assignment
+result = `echo 42`
+
+# Test 34: Use embedded command result in Rho
+value = 10 + `echo 5`
+
+# Test 35: Shell command without closing backtick in Rho
+`echo "Rho test without closing"
+
+# Test 36: Multiple operations in Rho with embedded commands
+x = `echo 3`
+y = `echo 7`
+sum = x + y
+
+# Test 37: Back to Pi language
+1 pi
+
+# Test 38: Verify Pi still works with embedded commands
+1 `echo 1` +
+.

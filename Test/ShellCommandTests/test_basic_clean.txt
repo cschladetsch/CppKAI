@@ -1,0 +1,10 @@
+`pwd`
+`pwd
+`echo "Hello World"`
+`echo "Hello World"
+`whoami`
+`whoami
+`date`
+`date
+`ls`
+`ls

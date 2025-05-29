@@ -19,6 +19,7 @@ void WriteToFile(String filename, Object Q);
 String ReadFile(String filename);
 void Printf(String fmt, Array items);
 void Print(Object Q);
+void print(Object Q);
 void PrintXml(Object Q);
 Object UpCast(Object Q);
 void SetClean(Object Q, bool D);

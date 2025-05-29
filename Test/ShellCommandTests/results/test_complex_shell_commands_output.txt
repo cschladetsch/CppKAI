@@ -1,0 +1,117 @@
+Pi λ [2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Test'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:544]  tok.type='55' : PiTranslator: token not implemented: Colon ':'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Command'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'with'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'pipes'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'closing'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'backtick'
+[2025-05-29 23:36:26] [INFO   ] [ExecutorPerform.inl:506]  Store operation - stack size before: 0
+[2025-05-29 23:36:26] [INFO   ] [Console.cpp:205]  Exception occurred. Stack state:
+[2025-05-29 23:36:26] [INFO   ] [Console.cpp:207]    Stack size: 0
+Pi λ total 48
+drwxr-xr-x  3 xian xian 4096 May 29 23:36 .
+drwxr-xr-x 11 xian xian 4096 May 29 23:34 ..
+Pi λ Pi λ [2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Test'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:544]  tok.type='55' : PiTranslator: token not implemented: Colon ':'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Command'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'with'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'pipes'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'without'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'closing'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'backtick'
+[2025-05-29 23:36:26] [INFO   ] [ExecutorPerform.inl:506]  Store operation - stack size before: 0
+[2025-05-29 23:36:26] [INFO   ] [Console.cpp:205]  Exception occurred. Stack state:
+[2025-05-29 23:36:26] [INFO   ] [Console.cpp:207]    Stack size: 0
+Pi λ total 48
+drwxr-xr-x  3 xian xian 4096 May 29 23:36 .
+drwxr-xr-x 11 xian xian 4096 May 29 23:34 ..
+Pi λ Pi λ [2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Test'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:544]  tok.type='55' : PiTranslator: token not implemented: Colon ':'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Command'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'with'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'nested'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'command'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'substitution'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'closing'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'backtick'
+[2025-05-29 23:36:26] [INFO   ] [ExecutorPerform.inl:506]  Store operation - stack size before: 0
+[2025-05-29 23:36:26] [INFO   ] [Console.cpp:205]  Exception occurred. Stack state:
+[2025-05-29 23:36:26] [INFO   ] [Console.cpp:207]    Stack size: 0
+Pi λ Current directory: /home/xian/local/KAI/Test/ShellCommandTests
+Pi λ Pi λ [2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Test'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:544]  tok.type='55' : PiTranslator: token not implemented: Colon ':'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Command'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'with'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'nested'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'command'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'substitution'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'without'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'closing'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'backtick'
+[2025-05-29 23:36:26] [INFO   ] [ExecutorPerform.inl:506]  Store operation - stack size before: 0
+[2025-05-29 23:36:26] [INFO   ] [Console.cpp:205]  Exception occurred. Stack state:
+[2025-05-29 23:36:26] [INFO   ] [Console.cpp:207]    Stack size: 0
+Pi λ Current directory: /home/xian/local/KAI/Test/ShellCommandTests
+Pi λ Pi λ [2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Test'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:544]  tok.type='55' : PiTranslator: token not implemented: Colon ':'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Multi-word'
+Exception: [Pathname.cpp:78] InvalidPathname: text=Multi-word
+Pi λ This is a test with multiple words
+Pi λ Pi λ [2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Test'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:544]  tok.type='55' : PiTranslator: token not implemented: Colon ':'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Multi-word'
+Exception: [Pathname.cpp:78] InvalidPathname: text=Multi-word
+Pi λ This is a test with multiple words
+Pi λ Pi λ [2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Test'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:544]  tok.type='55' : PiTranslator: token not implemented: Colon ':'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Command'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'with'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'environment'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'variable'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'closing'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'backtick'
+[2025-05-29 23:36:26] [INFO   ] [ExecutorPerform.inl:506]  Store operation - stack size before: 0
+[2025-05-29 23:36:26] [INFO   ] [Console.cpp:205]  Exception occurred. Stack state:
+[2025-05-29 23:36:26] [INFO   ] [Console.cpp:207]    Stack size: 0
+Pi λ User: xian
+Pi λ Pi λ [2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Test'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:544]  tok.type='55' : PiTranslator: token not implemented: Colon ':'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Command'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'with'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'environment'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'variable'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'without'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'closing'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'backtick'
+[2025-05-29 23:36:26] [INFO   ] [ExecutorPerform.inl:506]  Store operation - stack size before: 0
+[2025-05-29 23:36:26] [INFO   ] [Console.cpp:205]  Exception occurred. Stack state:
+[2025-05-29 23:36:26] [INFO   ] [Console.cpp:207]    Stack size: 0
+Pi λ User: xian
+Pi λ Pi λ [2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Test'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:544]  tok.type='55' : PiTranslator: token not implemented: Colon ':'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Complex'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'command'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'with'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'options'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'closing'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'backtick'
+[2025-05-29 23:36:26] [INFO   ] [ExecutorPerform.inl:506]  Store operation - stack size before: 0
+[2025-05-29 23:36:26] [INFO   ] [Console.cpp:205]  Exception occurred. Stack state:
+[2025-05-29 23:36:26] [INFO   ] [Console.cpp:207]    Stack size: 0
+Pi λ total 6332
+-rw-r--r--  1 xian xian     32 May 29 22:35 claude-0045-cwd
+Pi λ Pi λ [2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Test'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:544]  tok.type='55' : PiTranslator: token not implemented: Colon ':'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Complex'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'command'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'with'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'options'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'without'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'closing'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'backtick'
+[2025-05-29 23:36:26] [INFO   ] [ExecutorPerform.inl:506]  Store operation - stack size before: 0
+[2025-05-29 23:36:26] [INFO   ] [Console.cpp:205]  Exception occurred. Stack state:
+[2025-05-29 23:36:26] [INFO   ] [Console.cpp:207]    Stack size: 0
+Pi λ total 6332
+-rw-r--r--  1 xian xian     32 May 29 22:35 claude-0045-cwd
+Pi λ 

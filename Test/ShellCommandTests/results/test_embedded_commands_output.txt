@@ -1,0 +1,112 @@
+Pi λ [2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Test'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:544]  tok.type='55' : PiTranslator: token not implemented: Colon ':'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Simple'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'embedded'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'command'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'in'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Pi'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'arithmetic'
+[2025-05-29 23:36:26] [INFO   ] [ExecutorPerform.inl:506]  Store operation - stack size before: 0
+[2025-05-29 23:36:26] [INFO   ] [Console.cpp:205]  Exception occurred. Stack state:
+[2025-05-29 23:36:26] [INFO   ] [Console.cpp:207]    Stack size: 0
+Pi λ Pi λ 15
+Pi λ Pi λ [2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Test'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:544]  tok.type='55' : PiTranslator: token not implemented: Colon ':'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Multiple'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'embedded'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'commands'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'in'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Pi'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'arithmetic'
+[2025-05-29 23:36:26] [INFO   ] [ExecutorPerform.inl:506]  Store operation - stack size before: 1
+[2025-05-29 23:36:26] [INFO   ] [Console.cpp:205]  Exception occurred. Stack state:
+[2025-05-29 23:36:26] [INFO   ] [Console.cpp:207]    Stack size: 0
+Pi λ 3
+Pi λ Pi λ Pi λ [2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Test'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:544]  tok.type='55' : PiTranslator: token not implemented: Colon ':'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Embedded'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'command'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'in'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'multiplication'
+[2025-05-29 23:36:26] [INFO   ] [ExecutorPerform.inl:506]  Store operation - stack size before: 0
+[2025-05-29 23:36:26] [INFO   ] [Console.cpp:205]  Exception occurred. Stack state:
+[2025-05-29 23:36:26] [INFO   ] [Console.cpp:207]    Stack size: 0
+Pi λ Pi λ 20
+Pi λ Pi λ [2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Test'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:544]  tok.type='55' : PiTranslator: token not implemented: Colon ':'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Embedded'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'command'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'with'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'complex'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'shell'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'operation'
+[2025-05-29 23:36:26] [INFO   ] [ExecutorPerform.inl:506]  Store operation - stack size before: 1
+[2025-05-29 23:36:26] [INFO   ] [Console.cpp:205]  Exception occurred. Stack state:
+[2025-05-29 23:36:26] [INFO   ] [Console.cpp:207]    Stack size: 0
+Pi λ Pi λ 8
+Pi λ Pi λ [2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Test'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:544]  tok.type='55' : PiTranslator: token not implemented: Colon ':'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Nested'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'embedded'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'commands'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:544]  tok.type='22' : PiTranslator: token not implemented: (
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'command'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'generating'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'another'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'number)'
+Exception: [Pathname.cpp:78] InvalidPathname: text=number)
+Pi λ 1
+Pi λ 8
+Pi λ Pi λ [2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Test'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:544]  tok.type='55' : PiTranslator: token not implemented: Colon ':'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Embedded'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'command'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'in'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'division'
+[2025-05-29 23:36:26] [INFO   ] [ExecutorPerform.inl:506]  Store operation - stack size before: 1
+[2025-05-29 23:36:26] [INFO   ] [Console.cpp:205]  Exception occurred. Stack state:
+[2025-05-29 23:36:26] [INFO   ] [Console.cpp:207]    Stack size: 0
+Pi λ Pi λ 5
+Pi λ Pi λ [2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Test'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:544]  tok.type='55' : PiTranslator: token not implemented: Colon ':'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Embedded'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'command'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'with'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'echo'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'arithmetic'
+[2025-05-29 23:36:26] [INFO   ] [ExecutorPerform.inl:506]  Store operation - stack size before: 1
+[2025-05-29 23:36:26] [INFO   ] [Console.cpp:205]  Exception occurred. Stack state:
+[2025-05-29 23:36:26] [INFO   ] [Console.cpp:207]    Stack size: 0
+Pi λ 5
+Pi λ Pi λ Pi λ [2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Test'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:544]  tok.type='55' : PiTranslator: token not implemented: Colon ':'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Multiple'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'separate'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'embedded'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'commands'
+[2025-05-29 23:36:26] [INFO   ] [ExecutorPerform.inl:506]  Store operation - stack size before: 0
+[2025-05-29 23:36:26] [INFO   ] [Console.cpp:205]  Exception occurred. Stack state:
+[2025-05-29 23:36:26] [INFO   ] [Console.cpp:207]    Stack size: 0
+Pi λ 8
+Pi λ 12
+Pi λ Pi λ [2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Test'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:544]  tok.type='55' : PiTranslator: token not implemented: Colon ':'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Embedded'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'command'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'in'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'subtraction'
+[2025-05-29 23:36:26] [INFO   ] [ExecutorPerform.inl:506]  Store operation - stack size before: 0
+[2025-05-29 23:36:26] [INFO   ] [Console.cpp:205]  Exception occurred. Stack state:
+[2025-05-29 23:36:26] [INFO   ] [Console.cpp:207]    Stack size: 0
+Pi λ Pi λ 8
+Pi λ Pi λ [2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Test'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:544]  tok.type='55' : PiTranslator: token not implemented: Colon ':'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'Complex'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'embedded'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'with'
+[2025-05-29 23:36:26] [INFO   ] [PiTranslator.cpp:368]  Pathname token text: 'pipe'
+[2025-05-29 23:36:26] [INFO   ] [ExecutorPerform.inl:506]  Store operation - stack size before: 1
+[2025-05-29 23:36:26] [INFO   ] [Console.cpp:205]  Exception occurred. Stack state:
+[2025-05-29 23:36:26] [INFO   ] [Console.cpp:207]    Stack size: 0
+Pi λ Pi λ 13
+Pi λ 

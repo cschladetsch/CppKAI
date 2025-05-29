@@ -1,6 +1,9 @@
 #include "KAI/Console/Console.h"
 
 #include <iostream>
+#include <cstdlib>
+#include <sstream>
+#include <regex>
 
 #include "KAI/Core/BuiltinTypes.h"
 #include "KAI/Core/Memory/StandardAllocator.h"
@@ -236,6 +239,85 @@ void Console::Execute(String const &text, Structure st) {
     Execute(cont);
 }
 
+String Console::ProcessShellCommand(const String &text) {
+    // Extract command after the leading backtick
+    std::string fullText = text.StdString();
+    
+    // Find the closing backtick (optional)
+    size_t closingPos = fullText.find('`', 1);
+    
+    // Extract command - either between backticks or from first backtick to end
+    std::string commandStd;
+    if (closingPos != std::string::npos) {
+        // Closing backtick found - extract between backticks
+        commandStd = fullText.substr(1, closingPos - 1);
+    } else {
+        // No closing backtick - treat rest of line as command
+        commandStd = fullText.substr(1);
+    }
+    
+    // Trim whitespace from the command
+    size_t start = commandStd.find_first_not_of(" \t\n\r");
+    if (start == std::string::npos) {
+        return String("Error: Empty shell command\n");
+    }
+    size_t end = commandStd.find_last_not_of(" \t\n\r");
+    commandStd = commandStd.substr(start, end - start + 1);
+    
+    // Use popen to execute the command and capture output
+    FILE* pipe = popen(commandStd.c_str(), "r");
+    if (!pipe) {
+        return String("Error: Failed to execute shell command\n");
+    }
+    
+    std::string result;
+    char buffer[128];
+    while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
+        result += buffer;
+    }
+    
+    int returnCode = pclose(pipe);
+    if (returnCode != 0) {
+        result += "\nCommand exited with code: " + std::to_string(returnCode) + "\n";
+    }
+    
+    return String(result);
+}
+
+String Console::ExpandShellCommands(const String &text) {
+    std::string result = text.StdString();
+    std::regex backtick_regex("`([^`]+)`");
+    std::smatch match;
+    
+    // Keep replacing until no more backtick expressions are found
+    while (std::regex_search(result, match, backtick_regex)) {
+        std::string command = match[1].str();
+        
+        // Execute the command
+        FILE* pipe = popen(command.c_str(), "r");
+        std::string output;
+        if (pipe) {
+            char buffer[128];
+            while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
+                output += buffer;
+            }
+            pclose(pipe);
+            
+            // Remove trailing newline if present
+            if (!output.empty() && output.back() == '\n') {
+                output.pop_back();
+            }
+        } else {
+            output = "[shell command failed]";
+        }
+        
+        // Replace the backtick expression with the command output
+        result = match.prefix().str() + output + match.suffix().str();
+    }
+    
+    return String(result);
+}
+
 String Console::Process(const String &text) {
     StringStream result;
     KAI_TRY {
@@ -279,6 +361,38 @@ String Console::GetPrompt() const {
     return prompt.ToString();
 }
 
+void Console::ShowColoredStack() const {
+    const Value<const Stack> data = executor->GetDataStack();
+    if (!data.Exists() || data->Size() == 0) {
+        return; // Don't show anything for empty stack
+    }
+    
+    auto A = data->Begin(), B = data->End();
+    int N = 0;
+    for (; A != B; ++A, ++N) {
+        // Colored output: [N] in blue, content in white/colored by type
+        cout << rang::fg::cyan << "[" << N << "]: " << rang::fg::reset;
+        
+        const bool is_string = A->GetTypeNumber() == Type::Number::String;
+        const bool is_int = A->GetTypeNumber() == Type::Number::Signed32;
+        const bool is_float = A->GetTypeNumber() == Type::Number::Single;
+        
+        String objStr = A->ToString();
+        
+        if (is_string) {
+            cout << rang::fg::green << "\"" << objStr.c_str() << "\"" << rang::fg::reset;
+        } else if (is_int) {
+            cout << rang::fg::yellow << objStr.c_str() << rang::fg::reset;
+        } else if (is_float) {
+            cout << rang::fg::magenta << objStr.c_str() << rang::fg::reset;
+        } else {
+            cout << rang::fg::gray << objStr.c_str() << rang::fg::reset;
+        }
+        
+        cout << endl;
+    }
+}
+
 String Console::WriteStack() const {
     const Value<const Stack> data = executor->GetDataStack();
     auto A = data->Begin(), B = data->End();
@@ -318,8 +432,21 @@ int Console::Run() {
                 }
                 cout << rang::fg::reset;  // Reset color after input
 
-                // Process input
-                cout << Process(text.c_str()).c_str();
+                // Process input - check for shell commands first
+                if (!text.empty() && text[0] == '`') {
+                    String output = ProcessShellCommand(String(text));
+                    cout << output.c_str();
+                } else {
+                    // Expand any embedded shell commands first
+                    String expandedText = ExpandShellCommands(String(text));
+                    String output = Process(expandedText);
+                    cout << output.c_str();
+                }
+                
+                // Always show the stack after processing (unless it's empty)
+                if (executor.Exists() && executor->GetDataStack().Exists()) {
+                    ShowColoredStack();
+                }
 
                 if (end_) return endCode_;
             }

@@ -1,0 +1,33 @@
+`echo "=== Shell Command & Stack Display Demo ==="`
+
+`echo "1. Basic arithmetic with automatic stack display:"`
+1 2 +
+5 3 -
+10 2 /
+
+`echo "2. Multiple items on stack:"`
+1 2 3 4 5
+
+`echo "3. Shell command execution:"`
+`pwd`
+`whoami`
+`date`
+
+`echo "4. Shell commands without closing backticks:"`
+`echo "This works without closing backtick"
+
+`echo "5. Embedded shell commands in expressions:"`
+10 `echo 5` +
+`echo 3` `echo 7` *
+
+`echo "6. Complex shell operations:"`
+`ls -la | head -3`
+`echo "Current user is: $(whoami)"`
+
+`echo "7. Language mixing:"`
+2 rho
+result = `echo 42`
+1 pi
+
+`echo "8. Final stack state:"`
+1 2 3 "hello" `echo 99`

@@ -88,6 +88,10 @@ void Printf(String fmt, Array items) {
 
 void Print(Object Q) { std::cout << Q.ToString().c_str(); }
 
+void print(Object Q) { 
+    std::cout << Q.ToString().c_str() << std::endl;
+}
+
 void PrintXml(Object Q) { std::cout << Q.ToXmlString().c_str() << std::endl; }
 
 Object UpCast(Object Q) {
@@ -178,6 +182,7 @@ void AddFunctions(Object Q) {
     ADD_FUN(ToXmlString, "Returns an XML String reprentation of an Object");
     ADD_FUN(UpCast, "Returns a Pointer to the Base of an Object");
     ADD_FUN(Print, "Prints an Object to stdout");
+    ADD_FUN(print, "Prints an Object to KAI info log");
     ADD_FUN(Printf, "Print a list of items");
     ADD_FUN(PrintXml, "Print's an Object to stdout in XML");
     ADD_FUN(WriteToFile, "Writes an Object to a text file");
