@@ -1,6 +1,6 @@
 #include <GLFW/glfw3.h>
 #include <KAI/Console/Console.h>
-#include <KAI/ImGui/imgui.h>
+#include <imgui.h>
 #include <stdio.h>
 
 #include <iostream>

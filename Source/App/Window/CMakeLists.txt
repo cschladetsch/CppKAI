@@ -17,13 +17,15 @@ foreach(framework ${frameworks})
 	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -framework ${framework}")
 endforeach()
 
-include_directories(/opt/local/include ${KAI_HOME}/Include/Imgui)
+include_directories(/opt/local/include ${EXTERNAL}/imgui ${SOURCE_HOME}/App/${name}/Source)
 link_directories(/opt/local/lib)
 
-# Only include ExecutorWindow.cpp and Main.cpp
+# Include source files
 set(SOURCE_FILES
     ${SOURCE_HOME}/App/${name}/Source/ExecutorWindow.cpp
     ${SOURCE_HOME}/App/${name}/Source/Main.cpp
+    ${SOURCE_HOME}/App/${name}/Source/imgui_impl_glfw.cpp
+    ${SOURCE_HOME}/App/${name}/Source/imgui_impl_opengl3.cpp
 )
 
 link_libraries(Executor Core PiLang RhoLang ImGui)

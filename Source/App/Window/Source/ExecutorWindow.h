@@ -2,7 +2,7 @@
 
 #include <KAI/Console.h>
 #include <KAI/Core/Exception.h>
-#include <KAI/ImGui/imgui.h>
+#include <imgui.h>
 
 #include <string>
 #include <vector>
