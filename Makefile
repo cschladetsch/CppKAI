@@ -454,6 +454,54 @@ Source/App/Window/Source/Main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Window.dir/build.make CMakeFiles/Window.dir/Source/App/Window/Source/Main.cpp.s
 .PHONY : Source/App/Window/Source/Main.cpp.s
 
+Source/App/Window/Source/imgui_impl_glfw.o: Source/App/Window/Source/imgui_impl_glfw.cpp.o
+.PHONY : Source/App/Window/Source/imgui_impl_glfw.o
+
+# target to build an object file
+Source/App/Window/Source/imgui_impl_glfw.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Window.dir/build.make CMakeFiles/Window.dir/Source/App/Window/Source/imgui_impl_glfw.cpp.o
+.PHONY : Source/App/Window/Source/imgui_impl_glfw.cpp.o
+
+Source/App/Window/Source/imgui_impl_glfw.i: Source/App/Window/Source/imgui_impl_glfw.cpp.i
+.PHONY : Source/App/Window/Source/imgui_impl_glfw.i
+
+# target to preprocess a source file
+Source/App/Window/Source/imgui_impl_glfw.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Window.dir/build.make CMakeFiles/Window.dir/Source/App/Window/Source/imgui_impl_glfw.cpp.i
+.PHONY : Source/App/Window/Source/imgui_impl_glfw.cpp.i
+
+Source/App/Window/Source/imgui_impl_glfw.s: Source/App/Window/Source/imgui_impl_glfw.cpp.s
+.PHONY : Source/App/Window/Source/imgui_impl_glfw.s
+
+# target to generate assembly for a file
+Source/App/Window/Source/imgui_impl_glfw.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Window.dir/build.make CMakeFiles/Window.dir/Source/App/Window/Source/imgui_impl_glfw.cpp.s
+.PHONY : Source/App/Window/Source/imgui_impl_glfw.cpp.s
+
+Source/App/Window/Source/imgui_impl_opengl3.o: Source/App/Window/Source/imgui_impl_opengl3.cpp.o
+.PHONY : Source/App/Window/Source/imgui_impl_opengl3.o
+
+# target to build an object file
+Source/App/Window/Source/imgui_impl_opengl3.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Window.dir/build.make CMakeFiles/Window.dir/Source/App/Window/Source/imgui_impl_opengl3.cpp.o
+.PHONY : Source/App/Window/Source/imgui_impl_opengl3.cpp.o
+
+Source/App/Window/Source/imgui_impl_opengl3.i: Source/App/Window/Source/imgui_impl_opengl3.cpp.i
+.PHONY : Source/App/Window/Source/imgui_impl_opengl3.i
+
+# target to preprocess a source file
+Source/App/Window/Source/imgui_impl_opengl3.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Window.dir/build.make CMakeFiles/Window.dir/Source/App/Window/Source/imgui_impl_opengl3.cpp.i
+.PHONY : Source/App/Window/Source/imgui_impl_opengl3.cpp.i
+
+Source/App/Window/Source/imgui_impl_opengl3.s: Source/App/Window/Source/imgui_impl_opengl3.cpp.s
+.PHONY : Source/App/Window/Source/imgui_impl_opengl3.s
+
+# target to generate assembly for a file
+Source/App/Window/Source/imgui_impl_opengl3.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Window.dir/build.make CMakeFiles/Window.dir/Source/App/Window/Source/imgui_impl_opengl3.cpp.s
+.PHONY : Source/App/Window/Source/imgui_impl_opengl3.cpp.s
+
 Source/Library/Core/Source/BinaryPacket.o: Source/Library/Core/Source/BinaryPacket.cpp.o
 .PHONY : Source/Library/Core/Source/BinaryPacket.o
 
@@ -1524,6 +1572,12 @@ help:
 	@echo "... Source/App/Window/Source/Main.o"
 	@echo "... Source/App/Window/Source/Main.i"
 	@echo "... Source/App/Window/Source/Main.s"
+	@echo "... Source/App/Window/Source/imgui_impl_glfw.o"
+	@echo "... Source/App/Window/Source/imgui_impl_glfw.i"
+	@echo "... Source/App/Window/Source/imgui_impl_glfw.s"
+	@echo "... Source/App/Window/Source/imgui_impl_opengl3.o"
+	@echo "... Source/App/Window/Source/imgui_impl_opengl3.i"
+	@echo "... Source/App/Window/Source/imgui_impl_opengl3.s"
 	@echo "... Source/Library/Core/Source/BinaryPacket.o"
 	@echo "... Source/Library/Core/Source/BinaryPacket.i"
 	@echo "... Source/Library/Core/Source/BinaryPacket.s"

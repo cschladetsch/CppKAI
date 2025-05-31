@@ -643,9 +643,6 @@ void Executor::Perform(Operation::Type op) {
             bool condition = PopBool();
             KAI_TRACE() << "If operation: condition = " << condition;
             
-            // Remember stack size before executing the block
-            size_t stackSizeBefore = data_->Size();
-            
             if (condition) {
                 KAI_TRACE() << "If operation: Executing then block inline";
                 // Instead of calling Continue() which changes the execution context,
@@ -666,11 +663,7 @@ void Executor::Perform(Operation::Type op) {
                 KAI_TRACE() << "If operation: Skipping then block";
             }
             
-            // If nothing was pushed onto the stack by the if block, push None
-            if (data_->Size() == stackSizeBefore) {
-                KAI_TRACE() << "If operation: No value produced, pushing None";
-                Push(Object());  // Push None/null object
-            }
+            // If operation should not push anything onto the stack
             break;
         }
 
@@ -681,9 +674,6 @@ void Executor::Perform(Operation::Type op) {
             auto A = Pop();
             bool condition = PopBool();
             KAI_TRACE() << "IfElse: condition=" << condition << ", choosing " << (condition ? "A" : "B");
-            
-            // Remember stack size before executing the block
-            size_t stackSizeBefore = data_->Size();
             
             // Inline the chosen continuation's code instead of using Continue()
             auto chosen = condition ? A : B;
@@ -700,11 +690,7 @@ void Executor::Perform(Operation::Type op) {
                 }
             }
             
-            // If nothing was pushed onto the stack by the block, push None
-            if (data_->Size() == stackSizeBefore) {
-                KAI_TRACE() << "IfElse operation: No value produced, pushing None";
-                Push(Object());  // Push None/null object
-            }
+            // IfElse operation should not push anything onto the stack
             break;
         }
 

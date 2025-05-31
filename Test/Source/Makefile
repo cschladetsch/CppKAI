@@ -686,33 +686,6 @@ TestContainer/TestVector.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestContainer/TestVector.cpp.s
 .PHONY : TestContainer/TestVector.cpp.s
 
-TestDebugTrace.o: TestDebugTrace.cpp.o
-.PHONY : TestDebugTrace.o
-
-# target to build an object file
-TestDebugTrace.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestDebugTrace.cpp.o
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestDebugTrace.cpp.o
-.PHONY : TestDebugTrace.cpp.o
-
-TestDebugTrace.i: TestDebugTrace.cpp.i
-.PHONY : TestDebugTrace.i
-
-# target to preprocess a source file
-TestDebugTrace.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestDebugTrace.cpp.i
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestDebugTrace.cpp.i
-.PHONY : TestDebugTrace.cpp.i
-
-TestDebugTrace.s: TestDebugTrace.cpp.s
-.PHONY : TestDebugTrace.s
-
-# target to generate assembly for a file
-TestDebugTrace.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestDebugTrace.cpp.s
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestDebugTrace.cpp.s
-.PHONY : TestDebugTrace.cpp.s
-
 TestDotGraph.o: TestDotGraph.cpp.o
 .PHONY : TestDotGraph.o
 
@@ -1058,33 +1031,6 @@ TestString.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestString.cpp.s
 .PHONY : TestString.cpp.s
 
-TestStringStream.o: TestStringStream.cpp.o
-.PHONY : TestStringStream.o
-
-# target to build an object file
-TestStringStream.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestStringStream.cpp.o
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestStringStream.cpp.o
-.PHONY : TestStringStream.cpp.o
-
-TestStringStream.i: TestStringStream.cpp.i
-.PHONY : TestStringStream.i
-
-# target to preprocess a source file
-TestStringStream.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestStringStream.cpp.i
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestStringStream.cpp.i
-.PHONY : TestStringStream.cpp.i
-
-TestStringStream.s: TestStringStream.cpp.s
-.PHONY : TestStringStream.s
-
-# target to generate assembly for a file
-TestStringStream.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestStringStream.cpp.s
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestStringStream.cpp.s
-.PHONY : TestStringStream.cpp.s
-
 __/Common/MyTestStruct.o: __/Common/MyTestStruct.cpp.o
 .PHONY : __/Common/MyTestStruct.o
 
@@ -1092,7 +1038,6 @@ __/Common/MyTestStruct.o: __/Common/MyTestStruct.cpp.o
 __/Common/MyTestStruct.cpp.o:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/__/Common/MyTestStruct.cpp.o
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/__/Common/MyTestStruct.cpp.o
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/FixedCoreSuite.dir/build.make Test/Source/CMakeFiles/FixedCoreSuite.dir/__/Common/MyTestStruct.cpp.o
 .PHONY : __/Common/MyTestStruct.cpp.o
 
 __/Common/MyTestStruct.i: __/Common/MyTestStruct.cpp.i
@@ -1102,7 +1047,6 @@ __/Common/MyTestStruct.i: __/Common/MyTestStruct.cpp.i
 __/Common/MyTestStruct.cpp.i:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/__/Common/MyTestStruct.cpp.i
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/__/Common/MyTestStruct.cpp.i
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/FixedCoreSuite.dir/build.make Test/Source/CMakeFiles/FixedCoreSuite.dir/__/Common/MyTestStruct.cpp.i
 .PHONY : __/Common/MyTestStruct.cpp.i
 
 __/Common/MyTestStruct.s: __/Common/MyTestStruct.cpp.s
@@ -1112,7 +1056,6 @@ __/Common/MyTestStruct.s: __/Common/MyTestStruct.cpp.s
 __/Common/MyTestStruct.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/__/Common/MyTestStruct.cpp.s
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/__/Common/MyTestStruct.cpp.s
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/FixedCoreSuite.dir/build.make Test/Source/CMakeFiles/FixedCoreSuite.dir/__/Common/MyTestStruct.cpp.s
 .PHONY : __/Common/MyTestStruct.cpp.s
 
 __/Common/TestCommon.o: __/Common/TestCommon.cpp.o
@@ -1122,7 +1065,6 @@ __/Common/TestCommon.o: __/Common/TestCommon.cpp.o
 __/Common/TestCommon.cpp.o:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/__/Common/TestCommon.cpp.o
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/__/Common/TestCommon.cpp.o
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/FixedCoreSuite.dir/build.make Test/Source/CMakeFiles/FixedCoreSuite.dir/__/Common/TestCommon.cpp.o
 .PHONY : __/Common/TestCommon.cpp.o
 
 __/Common/TestCommon.i: __/Common/TestCommon.cpp.i
@@ -1132,7 +1074,6 @@ __/Common/TestCommon.i: __/Common/TestCommon.cpp.i
 __/Common/TestCommon.cpp.i:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/__/Common/TestCommon.cpp.i
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/__/Common/TestCommon.cpp.i
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/FixedCoreSuite.dir/build.make Test/Source/CMakeFiles/FixedCoreSuite.dir/__/Common/TestCommon.cpp.i
 .PHONY : __/Common/TestCommon.cpp.i
 
 __/Common/TestCommon.s: __/Common/TestCommon.cpp.s
@@ -1142,7 +1083,6 @@ __/Common/TestCommon.s: __/Common/TestCommon.cpp.s
 __/Common/TestCommon.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/__/Common/TestCommon.cpp.s
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/__/Common/TestCommon.cpp.s
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/FixedCoreSuite.dir/build.make Test/Source/CMakeFiles/FixedCoreSuite.dir/__/Common/TestCommon.cpp.s
 .PHONY : __/Common/TestCommon.cpp.s
 
 # Help Target
@@ -1214,9 +1154,6 @@ help:
 	@echo "... TestContainer/TestVector.o"
 	@echo "... TestContainer/TestVector.i"
 	@echo "... TestContainer/TestVector.s"
-	@echo "... TestDebugTrace.o"
-	@echo "... TestDebugTrace.i"
-	@echo "... TestDebugTrace.s"
 	@echo "... TestDotGraph.o"
 	@echo "... TestDotGraph.i"
 	@echo "... TestDotGraph.s"
@@ -1256,9 +1193,6 @@ help:
 	@echo "... TestString.o"
 	@echo "... TestString.i"
 	@echo "... TestString.s"
-	@echo "... TestStringStream.o"
-	@echo "... TestStringStream.i"
-	@echo "... TestStringStream.s"
 	@echo "... __/Common/MyTestStruct.o"
 	@echo "... __/Common/MyTestStruct.i"
 	@echo "... __/Common/MyTestStruct.s"

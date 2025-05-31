@@ -1,5 +1,5 @@
 /.index
-CmakeCache.txt
+/CMakeCache.txt
 *.d
 *.o
 *.internal

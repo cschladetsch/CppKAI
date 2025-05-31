@@ -30,6 +30,8 @@
 
 #pragma once
 
+#include "imgui.h"
+
 // Set default OpenGL loader to be GLEW
 #if !defined(IMGUI_IMPL_OPENGL_LOADER_GL3W) && \
     !defined(IMGUI_IMPL_OPENGL_LOADER_GLEW) && \

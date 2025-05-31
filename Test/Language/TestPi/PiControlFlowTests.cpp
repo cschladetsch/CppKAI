@@ -18,9 +18,8 @@ TEST_F(PiControlFlowTest, ConditionalExecution) {
 
     // Test if-then with false condition
     console_.Execute("false { 200 } if");
-    ASSERT_EQ(stack->Size(), 1);
-    // When condition is false, If operation pushes None
-    EXPECT_FALSE(stack->Top().Exists());
+    ASSERT_EQ(stack->Size(), 0);
+    // When condition is false, If operation doesn't push anything
 }
 
 // TODO: Code blocks { ... } are not properly translated to continuations in Pi
