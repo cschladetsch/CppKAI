@@ -44,5 +44,8 @@ find_package(glfw3 REQUIRED)
 set(OpenGL_GL_PREFERENCE GLVND)
 find_package(OpenGL REQUIRED)
 
+# Find GLEW
+find_package(GLEW REQUIRED)
+
 # Link libraries
-target_link_libraries(${name} glfw OpenGL::GL)
+target_link_libraries(${name} glfw OpenGL::GL GLEW::GLEW)

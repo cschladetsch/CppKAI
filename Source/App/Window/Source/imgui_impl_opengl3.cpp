@@ -86,7 +86,8 @@
 #elif defined(IMGUI_IMPL_OPENGL_LOADER_GLAD)
 #include <glad/glad.h>
 #else
-#include IMGUI_IMPL_OPENGL_LOADER_CUSTOM
+// Default to GLEW if no loader is specified
+#include <GL/glew.h>
 #endif
 #endif
 

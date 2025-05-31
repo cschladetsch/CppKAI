@@ -1,4 +1,4 @@
-#include "TestCommon.h"
+#include "CoreTestCommon.h"
 
 USING_NAMESPACE_KAI
 
@@ -7,7 +7,7 @@ USING_NAMESPACE_KAI
 // behavior
 
 // Struct to test Core Registry functionality
-struct FixedCoreRegistryTests : TestCommon {
+struct FixedCoreRegistryTests : CoreTestCommon {
    protected:
     void AddRequiredClasses() override {
         Reg().AddClass<bool>();
@@ -40,7 +40,7 @@ TEST_F(FixedCoreRegistryTests, TestFixedTypeRegistration) {
 }
 
 // Struct to test Core Type functionality
-struct FixedCoreObjectTests : TestCommon {
+struct FixedCoreObjectTests : CoreTestCommon {
    protected:
     void AddRequiredClasses() override {
         Reg().AddClass<bool>();
@@ -92,7 +92,7 @@ TEST_F(FixedCoreObjectTests, TestFixedObjectLifetime) {
 }
 
 // Struct to test Core Pointer functionality
-struct FixedCorePointerTests : TestCommon {
+struct FixedCorePointerTests : CoreTestCommon {
    protected:
     void AddRequiredClasses() override {
         Reg().AddClass<bool>();

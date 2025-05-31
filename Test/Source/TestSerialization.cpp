@@ -23,11 +23,13 @@ TEST_F(SerializationTest, BinarySerializationPrimitives) {
     stream << reg_->New<String>("Hello");
     stream << reg_->New<bool>(true);
 
-    // Read back
-    stream.ToStart();
+    // Read back - create a new stream from the data
+    BinaryPacket packet(stream.Begin(), stream.Last(), reg_);
+    BinaryStream readStream(*reg_);
+    readStream.Write(packet.Size(), packet.Begin());
 
     Object intObj, floatObj, strObj, boolObj;
-    stream >> intObj >> floatObj >> strObj >> boolObj;
+    readStream >> intObj >> floatObj >> strObj >> boolObj;
 
     EXPECT_EQ(ConstDeref<int>(intObj), 42);
     EXPECT_FLOAT_EQ(ConstDeref<float>(floatObj), 3.14f);
@@ -52,17 +54,19 @@ TEST_F(SerializationTest, ContainerSerialization) {
     // Serialize
     stream << array << map;
 
-    // Deserialize
-    stream.ToStart();
+    // Deserialize - create a packet from the stream data to read from beginning
+    BinaryPacket packet(stream.Begin(), stream.Last(), reg_);
+    BinaryStream readStream(*reg_);
+    readStream.Write(packet.Size(), packet.Begin());
     Object arrayOut, mapOut;
-    stream >> arrayOut >> mapOut;
+    readStream >> arrayOut >> mapOut;
 
     // Verify
     EXPECT_EQ(Deref<Array>(arrayOut).Size(), 3);
-    EXPECT_EQ(ConstDeref<int>(Deref<Array>(arrayOut)[0]), 1);
+    EXPECT_EQ(ConstDeref<int>(Deref<Array>(arrayOut).At(0)), 1);
 
     EXPECT_EQ(Deref<Map>(mapOut).Size(), 2);
-    EXPECT_TRUE(Deref<Map>(mapOut).Has(reg_->New<String>("key1")));
+    EXPECT_TRUE(Deref<Map>(mapOut).ContainsKey(reg_->New<String>("key1")));
 }
 
 // Test 18: String stream serialization
@@ -93,10 +97,12 @@ TEST_F(SerializationTest, CircularReferenceSerialization) {
     // Serialization should handle circular references
     EXPECT_NO_THROW(stream << obj1);
 
-    // Deserialize
-    stream.ToStart();
+    // Deserialize - create a packet from the stream data to read from beginning
+    BinaryPacket packet(stream.Begin(), stream.Last(), reg_);
+    BinaryStream readStream(*reg_);
+    readStream.Write(packet.Size(), packet.Begin());
     Object restored;
-    EXPECT_NO_THROW(stream >> restored);
+    EXPECT_NO_THROW(readStream >> restored);
 }
 
 // Test 20: Custom serialization format
