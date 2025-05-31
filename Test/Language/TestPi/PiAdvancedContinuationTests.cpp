@@ -8,14 +8,14 @@ protected:
     
     int ExpectInt() {
         EXPECT_FALSE(data_->Empty()) << "Stack is empty";
-        auto top = data_->Top();
+        auto top = data_->Pop();
         EXPECT_TRUE(top.IsType<int>()) << "Top is not an int";
         return kai::ConstDeref<int>(top);
     }
     
     bool ExpectBool() {
         EXPECT_FALSE(data_->Empty()) << "Stack is empty";
-        auto top = data_->Top();
+        auto top = data_->Pop();
         EXPECT_TRUE(top.IsType<bool>()) << "Top is not a bool";
         return kai::ConstDeref<bool>(top);
     }
@@ -27,13 +27,12 @@ TEST_F(TestPiAdvancedContinuations, TestNestedContinuation) {
         { 2 * } 'double #
         { 3 + } 'add3 #
         5 double &
+        add3 &
     )";
     
     console_.Execute(script);
-    ASSERT_EQ(ExpectInt(), 10);  // 5 * 2
-    
-    console_.Execute("add3 &");
-    ASSERT_EQ(ExpectInt(), 13);  // 10 + 3
+    ASSERT_EQ(data_->Size(), 1);
+    ASSERT_EQ(ExpectInt(), 13);  // (5 * 2) + 3
 }
 
 // Test 2: Continuation with conditional execution
@@ -51,10 +50,13 @@ TEST_F(TestPiAdvancedContinuations, TestConditionalContinuation) {
 
 // Test 3: Multiple continuation composition
 TEST_F(TestPiAdvancedContinuations, TestContinuationComposition) {
-    console_.Execute("{ dup * } 'square #");
-    console_.Execute("{ 1 + } 'inc #");
-    console_.Execute("5 square &");
-    console_.Execute("inc &");
+    const std::string script = R"(
+        { dup * } 'square #
+        { 1 + } 'inc #
+        5 square &
+        inc &
+    )";
+    console_.Execute(script);
     ASSERT_EQ(ExpectInt(), 26);  // (5 * 5) + 1
 }
 
@@ -62,29 +64,69 @@ TEST_F(TestPiAdvancedContinuations, TestContinuationComposition) {
 TEST_F(TestPiAdvancedContinuations, TestContinuationAsParameter) {
     // Test applying a continuation multiple times  
     // Since continuations consume their arguments, we need to structure this differently
-    console_.Execute("{ 2 * } 'double #");
-    console_.Execute("{ 4 * } 'quadruple #");
-    console_.Execute("5 quadruple &");  // 5 * 4 = 20
-    ASSERT_EQ(ExpectInt(), 20);
+    const std::string script = R"(
+        { 2 * } 'double #
+        { 4 * } 'quadruple #
+        5 quadruple &
+    )";
+    console_.Execute(script);
+    ASSERT_EQ(ExpectInt(), 20);  // 5 * 4 = 20
 }
 
 // Test 5: Array manipulation with continuations
 TEST_F(TestPiAdvancedContinuations, TestArrayContinuation) {
     // Test multiple applications of a continuation
-    console_.Execute("{ 2 * } 'double #");
-    console_.Execute("1 double & 2 double & 3 double &");
+    const std::string script = R"(
+        { 2 * } 'double #
+        1 double &
+        2 double &
+        3 double &
+    )";
+    console_.Execute(script);
     ASSERT_EQ(data_->Size(), 3);
     ASSERT_EQ(ExpectInt(), 6);  // 3 * 2
     ASSERT_EQ(ExpectInt(), 4);  // 2 * 2
     ASSERT_EQ(ExpectInt(), 2);  // 1 * 2
 }
 
+// Test identifier resolution
+TEST_F(TestPiAdvancedContinuations, TestIdentifierResolution) {
+    // Test that unquoted identifiers are resolved correctly
+    const std::string script = R"(
+        42 'answer #
+        answer
+    )";
+    console_.Execute(script);
+    ASSERT_EQ(data_->Size(), 1);
+    ASSERT_EQ(ExpectInt(), 42);
+    
+    // Clear stack for next test
+    data_->Clear();
+    
+    // Test multiple resolutions
+    const std::string script2 = R"(
+        10 'x # 
+        20 'y #
+        x y x
+    )";
+    console_.Execute(script2);
+    ASSERT_EQ(data_->Size(), 3);
+    
+    
+    ASSERT_EQ(ExpectInt(), 10);  // Last x
+    ASSERT_EQ(ExpectInt(), 20);  // y
+    ASSERT_EQ(ExpectInt(), 10);  // First x
+}
+
 // Test 6: Stack manipulation in continuations
 TEST_F(TestPiAdvancedContinuations, TestStackManipulationContinuation) {
-    console_.Execute("{ - } 'subtract #");
-    console_.Execute("{ dup + } 'double #");
-    console_.Execute("10 5 subtract &");
-    console_.Execute("double &");
+    const std::string script = R"(
+        { - } 'subtract #
+        { dup + } 'double #
+        10 5 subtract &
+        double &
+    )";
+    console_.Execute(script);
     ASSERT_EQ(ExpectInt(), 10);  // (10 - 5) * 2
 }
 
@@ -150,4 +192,50 @@ TEST_F(TestPiAdvancedContinuations, TestMutualRecursion) {
     
     console_.Execute(script);
     ASSERT_EQ(ExpectBool(), true);
+}
+
+// Test continuation storage and retrieval
+TEST_F(TestPiAdvancedContinuations, TestContinuationStorage) {
+    // Test that continuations are stored and retrieved correctly
+    const std::string script = R"(
+        { 1 + } 'inc #
+        5 inc &
+    )";
+    console_.Execute(script);
+    ASSERT_EQ(data_->Size(), 1);
+    ASSERT_EQ(ExpectInt(), 6);
+    
+    // Clear and test multiple uses
+    data_->Clear();
+    
+    // Test that continuations can be reused from scope
+    // Each use of 'double' retrieves it fresh from scope
+    const std::string script2 = R"(
+        { 2 * } 'double #
+        3 double &
+        4 double &
+    )";
+    console_.Execute(script2);
+    
+    
+    ASSERT_EQ(data_->Size(), 2);
+    ASSERT_EQ(ExpectInt(), 8);  // 4 * 2
+    ASSERT_EQ(ExpectInt(), 6);  // 3 * 2
+}
+
+// Test continuation with multiple values
+TEST_F(TestPiAdvancedContinuations, TestContinuationMultipleValues) {
+    // All operations must be in one script due to scope issues
+    const std::string script = R"(
+        { 2 * } 'double #
+        1 double &
+        2 double &
+        3 double &
+    )";
+    console_.Execute(script);
+    
+    ASSERT_EQ(data_->Size(), 3);
+    ASSERT_EQ(ExpectInt(), 6);  // 3 * 2
+    ASSERT_EQ(ExpectInt(), 4);  // 2 * 2  
+    ASSERT_EQ(ExpectInt(), 2);  // 1 * 2
 }

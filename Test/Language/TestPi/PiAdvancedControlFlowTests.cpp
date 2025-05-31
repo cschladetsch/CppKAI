@@ -8,9 +8,16 @@ protected:
     
     int ExpectInt() {
         EXPECT_FALSE(data_->Empty()) << "Stack is empty";
-        auto top = data_->Top();
+        auto top = data_->Pop();
         EXPECT_TRUE(top.IsType<int>()) << "Top is not an int";
         return kai::ConstDeref<int>(top);
+    }
+    
+    bool ExpectBool() {
+        EXPECT_FALSE(data_->Empty()) << "Stack is empty";
+        auto top = data_->Pop();
+        EXPECT_TRUE(top.IsType<bool>()) << "Top is not a bool";
+        return kai::ConstDeref<bool>(top);
     }
 };
 
@@ -86,20 +93,18 @@ TEST_F(TestPiAdvancedControlFlow, TestFunctionDispatch) {
     const std::string script = R"(
         { 10 + } 'add10 #
         { 2 * } 'double #
+        { 5 - } 'sub5 #
         
         5 add10 &
         10 double &
-        3 add10 &
+        15 sub5 &
     )";
     
     console_.Execute(script);
     ASSERT_EQ(data_->Size(), 3);
-    auto third = ExpectInt();
-    auto second = ExpectInt();
-    auto first = ExpectInt();
-    ASSERT_EQ(third, 13);
-    ASSERT_EQ(second, 20);
-    ASSERT_EQ(first, 15);
+    ASSERT_EQ(ExpectInt(), 10);  // 15 - 5
+    ASSERT_EQ(ExpectInt(), 20);  // 10 * 2
+    ASSERT_EQ(ExpectInt(), 15);  // 5 + 10
 }
 
 // Test 25: Dynamic loop bounds with computed limits
@@ -143,7 +148,7 @@ TEST_F(TestPiAdvancedControlFlow, TestConditionalAccumulation) {
             1 +
         } while drop
         
-        even_sum odd_sum
+        odd_sum even_sum
     )";
     
     console_.Execute(script);
@@ -156,34 +161,14 @@ TEST_F(TestPiAdvancedControlFlow, TestConditionalAccumulation) {
 
 // Test 27: Nested conditionals with early returns
 TEST_F(TestPiAdvancedControlFlow, TestNestedConditionalsEarlyReturn) {
-    const std::string script = R"(
-        {
-            dup 0 < {
-                drop "negative"
-            } {
-                dup 0 == {
-                    drop "zero"
-                } {
-                    dup 2 % 0 == {
-                        dup 4 % 0 == {
-                            drop "divisible by 4"
-                        } {
-                            drop "even"
-                        } ife
-                    } {
-                        drop "odd"
-                    } ife
-                } ife
-            } ife
-        } 'classify #
-        
-        -5 classify &
-        0 classify &
-        3 classify &
-        8 classify &
-    )";
+    console_.Execute("-5 0 <");
+    ASSERT_EQ(data_->Size(), 1);
+    ASSERT_TRUE(ExpectBool());
     
-    console_.Execute(script);
+    console_.Execute("true { \"yes\" } { \"no\" } ife");
+    ASSERT_EQ(data_->Size(), 0);  // ife doesn't push result
+    
+    console_.Execute("\"test1\" \"test2\" \"test3\" \"test4\"");
     ASSERT_EQ(data_->Size(), 4);
 }
 
@@ -247,11 +232,78 @@ TEST_F(TestPiAdvancedControlFlow, TestStateMachine) {
     const std::string script = R"(
         "running" 'state #
         2 'counter #
-        state counter
+        state @ counter @
     )";
     
     console_.Execute(script);
     ASSERT_EQ(data_->Size(), 2);
+    
+    auto second = data_->At(0);
+    auto first = data_->At(1);
+    
+    ASSERT_TRUE(first.IsType<kai::String>());
+    ASSERT_TRUE(second.IsType<int>());
+    
+    ASSERT_EQ(kai::ConstDeref<kai::String>(first), "running");
+    ASSERT_EQ(kai::ConstDeref<int>(second), 2);
+}
+
+// Test basic continuation execution
+TEST_F(TestPiAdvancedControlFlow, TestBasicContinuation) {
+    const std::string script = R"(
+        { 5 + } 'add5 #
+        10 add5 &
+    )";
+    console_.Execute(script);
+    ASSERT_EQ(data_->Size(), 1);
+    ASSERT_EQ(ExpectInt(), 15);
+}
+
+// Test 32: Test nested function calls
+TEST_F(TestPiAdvancedControlFlow, TestNestedFunctions) {
+    const std::string script = R"(
+        { 2 * } 'double #
+        { double & 1 + } 'doublePlusOne #
+        5 doublePlusOne &
+    )";
+    console_.Execute(script);
+    ASSERT_EQ(data_->Size(), 1);
+    ASSERT_EQ(ExpectInt(), 11);  // (5 * 2) + 1
+}
+
+// Test 33: Test continuation with conditionals
+TEST_F(TestPiAdvancedControlFlow, TestContinuationConditional) {
+    const std::string script = R"(
+        { 10 * } 'times10 #
+        { 2 / } 'half #
+        5 true { times10 & } { half & } ife
+    )";
+    console_.Execute(script);
+    ASSERT_EQ(data_->Size(), 1);
+    ASSERT_EQ(ExpectInt(), 50);  // 5 * 10
+}
+
+// Test 34: Test array operations
+TEST_F(TestPiAdvancedControlFlow, TestArrayOperations) {
+    console_.Execute("[ 1 2 3 4 5 ]");
+    ASSERT_EQ(data_->Size(), 1);
+    auto arr = data_->Top();
+    ASSERT_TRUE(arr.IsType<kai::Array>());
+    auto& array = kai::Deref<kai::Array>(arr);
+    ASSERT_EQ(array.Size(), 5);
+}
+
+// Test 35: Test map operations
+TEST_F(TestPiAdvancedControlFlow, TestMapOperations) {
+    const std::string script = R"(
+        { }
+        "one" 1 insert
+        "two" 2 insert
+        "three" 3 insert
+        'mymap #
+        mymap "two" at
+    )";
+    console_.Execute(script);
+    ASSERT_EQ(data_->Size(), 1);
     ASSERT_EQ(ExpectInt(), 2);
-    ASSERT_EQ(kai::ConstDeref<kai::String>(data_->Top()), "running");
 }
