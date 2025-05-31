@@ -37,14 +37,12 @@ set(core_sources
     ${source_path}/TestContainer/TestSet.cpp
     ${source_path}/TestContainer/TestStack.cpp
     ${source_path}/TestContainer/TestVector.cpp
-    ${source_path}/TestDebugTrace.cpp
     ${source_path}/TestDotGraph.cpp
     ${source_path}/TestEvents.cpp
     ${source_path}/TestFunction.cpp
     ${source_path}/TestGarbageCollection.cpp
     ${source_path}/TestPathname.cpp
     ${source_path}/TestString.cpp
-    ${source_path}/TestStringStream.cpp
     # New additional tests
     ${source_path}/TestAdditionalStringOps.cpp
     ${source_path}/TestRegistryOperations.cpp
