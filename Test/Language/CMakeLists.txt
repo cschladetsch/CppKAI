@@ -69,6 +69,7 @@ foreach (lang ${langs})
             ${source_path}/RhoLambdaTestsFixed.cpp         # Fixed lambda tests
             ${source_path}/SimpleFunctionDebug.cpp         # Debug function execution
             ${source_path}/RhoFunctionTestsWorking.cpp     # Working function tests
+            ${source_path}/RhoAdvancedContinuationTests.cpp # Advanced continuation tests
             # ${source_path}/TestElseIf.cpp                  # Test else-if syntax - removed, verified functionality
         )
     elseif(lang STREQUAL "Pi")
@@ -92,6 +93,8 @@ foreach (lang ${langs})
             ${source_path}/PiMinMaxTests.cpp                # Min/Max operation tests
             ${source_path}/PiMinMaxSimpleTests.cpp          # Simple Min/Max tests without TestLangCommon
             ${source_path}/PiMathStandaloneTest.cpp         # Math tests without TestLangCommon
+            ${source_path}/PiAdvancedContinuationTests.cpp  # Advanced continuation tests
+            ${source_path}/PiAdvancedControlFlowTests.cpp   # Advanced control flow tests
             # Larger tests to include if needed:
             #${source_path}/TestPiAdvanced.cpp
             #${source_path}/TestPiAdvanced2.cpp
