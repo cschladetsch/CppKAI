@@ -59,7 +59,8 @@ while true
     sum = sum + i
     i = i + 1
 sum
-)", 15);
+)",
+                      15);
 
     RunAndExpect<int>(R"(
 sum = 0
@@ -70,7 +71,8 @@ while i < 10
         break
     sum = sum + i
 sum
-)", 10);  // 1 + 2 + 3 + 4
+)",
+                      10);  // 1 + 2 + 3 + 4
 }
 
 TEST_F(RhoMoreControlFixedTests, ContinueStatement) {
@@ -83,7 +85,8 @@ while i < 10
         continue
     sum = sum + i
 sum
-)", 30);  // 2 + 4 + 6 + 8 + 10
+)",
+                      30);  // 2 + 4 + 6 + 8 + 10
 
     RunAndExpect<int>(R"(
 sum = 0
@@ -94,12 +97,14 @@ while i < 5
         continue
     sum = sum + i
 sum
-)", 12);  // 1 + 2 + 4 + 5
+)",
+                      12);  // 1 + 2 + 4 + 5
 }
 
 // Test nested loops with break/continue
 TEST_F(RhoMoreControlFixedTests, NestedLoopsWithBreakContinue) {
-    RunAndExpect<int>(R"(
+    RunAndExpect<int>(
+        R"(
 sum = 0
 i = 1
 while i <= 3
@@ -112,7 +117,8 @@ while i <= 3
         j = j + 1
     i = i + 1
 sum
-)", 24);  // (1*1 + 1*3) + (2*1 + 2*3) + (3*1 + 3*3) = 4 + 8 + 12 = 24
+)",
+        24);  // (1*1 + 1*3) + (2*1 + 2*3) + (3*1 + 3*3) = 4 + 8 + 12 = 24
 
     RunAndExpect<int>(R"(
 count = 0
@@ -126,7 +132,8 @@ while i < 5
         j = j + 1
     i = i + 1
 count
-)", 19);  // Count pairs where i + j <= 5
+)",
+                      19);  // Count pairs where i + j <= 5
 }
 
 // Test complex nested conditions
@@ -148,7 +155,8 @@ if x < y
 else
     result = 4
 result
-)", 1);
+)",
+                      1);
 
     RunAndExpect<int>(R"(
 result = 0
@@ -167,7 +175,8 @@ if a
 else
     result = 0
 result
-)", 100);
+)",
+                      100);
 }
 
 // Test multiple variable updates in loops
@@ -181,7 +190,8 @@ while i <= 4
     product = product * i
     i = i + 1
 sum + product
-)", 34);  // sum=10, product=24, total=34
+)",
+                      34);  // sum=10, product=24, total=34
 
     RunAndExpect<int>(R"(
 a = 0
@@ -193,7 +203,8 @@ while count < 6
     b = temp
     count = count + 1
 b
-)", 13);  // 6th Fibonacci number
+)",
+                      13);  // 6th Fibonacci number
 }
 
 // Test early returns with conditions
@@ -206,7 +217,8 @@ if x < 10
 else
     result = x * 3
 result
-)", 10);  // Should return x * 2 = 10
+)",
+                      10);  // Should return x * 2 = 10
 
     RunAndExpect<int>(R"(
 found = false
@@ -219,7 +231,8 @@ while i <= 10
         break
     i = i + 1
 result
-)", 5);
+)",
+                      5);
 }
 
 // Test conditional assignments
@@ -233,7 +246,8 @@ if x > y
 else
     max = y
 max
-)", 20);
+)",
+                      20);
 
     RunAndExpect<int>(R"(
 score = 85
@@ -249,7 +263,8 @@ else
         else
             grade = 1
 grade
-)", 3);
+)",
+                      3);
 }
 
 // Test loop with multiple exit conditions
@@ -265,7 +280,8 @@ while true
     if sum > 30
         break
 count
-)", 8);  // Loop exits when sum > 30
+)",
+                      8);  // Loop exits when sum > 30
 
     RunAndExpect<int>(R"(
 i = 0
@@ -278,5 +294,6 @@ while i < j
     if i + j == 10
         break
 steps
-)", 1);
+)",
+                      1);
 }

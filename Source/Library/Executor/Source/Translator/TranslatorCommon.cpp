@@ -167,7 +167,6 @@ void TranslatorCommon::Append(Object const &ob) {
 }
 
 void TranslatorCommon::AppendOp(Operation::Type op) {
-
     // Create a new Operation object and add it directly to the code array
     Object opObject = reg_->New<Operation>(op);
 

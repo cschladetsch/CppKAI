@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
+
 #include "KAI/Console/Console.h"
 #include "KAI/Core/BuiltinTypes.h"
 #include "KAI/Executor/Executor.h"
 #include "TestLangCommon.h"
-
 
 // Test fixture for working Rho function tests
 struct RhoFunctionTestsWorking : kai::TestLangCommon {
@@ -90,4 +90,3 @@ double(21)
 )",
                       42);
 }
-

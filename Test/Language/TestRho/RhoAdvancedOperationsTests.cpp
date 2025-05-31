@@ -192,7 +192,6 @@ TEST_F(RhoAdvancedTests, ComplexStringOperations) {
     ExecuteRhoAndVerify<bool>("(\"a\" + \"b\") == \"ab\"", true);
 }
 
-
 // Advanced compound expressions
 TEST_F(RhoAdvancedTests, AdvancedCompoundExpressions) {
     ExecuteRhoAndVerify<int>("(2 + 3) * 4 + 6 / 2", 23);

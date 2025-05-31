@@ -3,7 +3,8 @@
 #include "TestLangCommon.h"
 
 // Test suite for Rho error handling
-// NOTE: All tests are disabled because try-catch error handling is not yet implemented in Rho
+// NOTE: All tests are disabled because try-catch error handling is not yet
+// implemented in Rho
 TEST(RhoErrorHandling, DISABLED_TryCatchBasic) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);

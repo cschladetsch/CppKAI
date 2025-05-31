@@ -437,7 +437,8 @@ TEST_F(ExtendedRhoTests, DISABLED_ContinuationStateInNestedLoops) {
 }
 
 // Test showing continuation state with mutable variables
-// DISABLED: Mutable variable capture in continuations needs proper scoping implementation
+// DISABLED: Mutable variable capture in continuations needs proper scoping
+// implementation
 TEST_F(ExtendedRhoTests, DISABLED_ContinuationStateWithMutableVars) {
     // Switch to Rho language
     console->SetLanguage(Language::Rho);

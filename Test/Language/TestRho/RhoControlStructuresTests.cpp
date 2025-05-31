@@ -201,14 +201,16 @@ sum = 0
 for i = 1; i <= 5; i = i + 1
     sum = sum + i
 sum
-)", 15);
+)",
+                                15);
 
     AssertDirectSimulation<int>(R"(
 sum = 0
 for i = 0; i < 10; i = i + 2
     sum = sum + i
 sum
-)", 20);
+)",
+                                20);
 }
 
 // Nested for loops
@@ -219,7 +221,8 @@ for i = 1; i <= 3; i = i + 1
     for j = 1; j <= 3; j = j + 1
         sum = sum + (i * j)
 sum
-)", 36);
+)",
+                                36);
 }
 
 // For loops with complex conditions
@@ -229,14 +232,16 @@ sum = 0
 for i = 0; i < 10 && sum < 20; i = i + 1
     sum = sum + i
 sum
-)", 21);
+)",
+                                21);
 
     AssertDirectSimulation<int>(R"(
 sum = 0
 for i = 0; i < 10 || sum < 5; i = i + 1
     sum = sum + i
 sum
-)", 45);
+)",
+                                45);
 }
 
 // Basic while loops
@@ -248,7 +253,8 @@ while i <= 5
     sum = sum + i
     i = i + 1
 sum
-)", 15);
+)",
+                                15);
 
     AssertDirectSimulation<int>(R"(
 sum = 0
@@ -257,7 +263,8 @@ while i < 10
     sum = sum + i
     i = i + 2
 sum
-)", 20);
+)",
+                                20);
 }
 
 // Nested while loops
@@ -272,7 +279,8 @@ while i <= 3
         j = j + 1
     i = i + 1
 sum
-)", 36);
+)",
+                                36);
 }
 
 // While loops with complex conditions
@@ -284,7 +292,8 @@ while i < 10 && sum < 20
     sum = sum + i
     i = i + 1
 sum
-)", 21);
+)",
+                                21);
 
     AssertDirectSimulation<int>(R"(
 sum = 0
@@ -293,7 +302,8 @@ while i < 10 || sum < 5
     sum = sum + i
     i = i + 1
 sum
-)", 45);
+)",
+                                45);
 }
 
 // Break statements in loops

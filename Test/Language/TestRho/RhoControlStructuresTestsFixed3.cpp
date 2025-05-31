@@ -55,14 +55,16 @@ sum = 0
 for i = 1; i <= 5; i = i + 1
     sum = sum + i
 sum
-)", 15);
+)",
+                      15);
 
     RunAndExpect<int>(R"(
 sum = 0
 for i = 0; i < 10; i = i + 2
     sum = sum + i
 sum
-)", 20);
+)",
+                      20);
 }
 
 // Test while loops
@@ -74,7 +76,8 @@ while i <= 5
     sum = sum + i
     i = i + 1
 sum
-)", 15);
+)",
+                      15);
 }
 
 // Test nested for loops
@@ -85,5 +88,6 @@ for i = 1; i <= 3; i = i + 1
     for j = 1; j <= 3; j = j + 1
         sum = sum + (i * j)
 sum
-)", 36);
+)",
+                      36);
 }

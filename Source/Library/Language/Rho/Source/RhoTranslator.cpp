@@ -660,7 +660,8 @@ void RhoTranslator::TranslateCall(AstNodePtr node) {
     // Get function name
     auto funcNode = node->GetChild(0);
 
-    // Check if we have an ArgList node (parser creates Call with [function, ArgList])
+    // Check if we have an ArgList node (parser creates Call with [function,
+    // ArgList])
     if (node->GetChildren().size() >= 2) {
         auto secondChild = node->GetChild(1);
         if (secondChild->GetType() == AstNodeEnum::ArgList) {

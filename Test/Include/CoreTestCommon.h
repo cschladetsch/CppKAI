@@ -1,6 +1,7 @@
 #pragma once
 
 #include <gtest/gtest.h>
+
 #include "KAI/Core/BuiltinTypes.h"
 #include "KAI/Core/Object/Class.h"
 #include "KAI/Core/Object/GetStorageBase.h"
@@ -16,9 +17,9 @@ class CoreTestCommon : public ::testing::Test {
     void SetUp() override {
         // Add Map class first so we can create root
         reg.AddClass<Map>();
-        
+
         AddRequiredClasses();
-        
+
         // Create a root map to hold test objects
         root = reg.New<Map>();
     }

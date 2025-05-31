@@ -77,8 +77,7 @@ TEST_F(GarbageCollectionTest, ObjectDeletedWhenRemovedFromArray) {
     EXPECT_TRUE(vec.Exists());
 }
 
-TEST_F(GarbageCollectionTest, ObjectDeletedWhenDetached)
-{
+TEST_F(GarbageCollectionTest, ObjectDeletedWhenDetached) {
     auto [vec, num] = AddNumToArray();
     EXPECT_TRUE(num.Exists());
     EXPECT_TRUE(vec.Exists());

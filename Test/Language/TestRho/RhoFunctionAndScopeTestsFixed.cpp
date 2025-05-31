@@ -25,7 +25,8 @@ struct RhoFunctionTestsFixed : TestLangCommon {
 
         try {
             Console console;
-            console.SetLanguage(Language::Rho);  // Critical: Set language to Rho!
+            console.SetLanguage(
+                Language::Rho);  // Critical: Set language to Rho!
 
             // Execute as a complete program
             console.Execute(script, Structure::Program);
@@ -225,7 +226,8 @@ double(increment(increment(double(2))))
 }
 
 // Recursion
-// DISABLED: Requires nested function calls which don't work due to executor limitation
+// DISABLED: Requires nested function calls which don't work due to executor
+// limitation
 TEST_F(RhoFunctionTestsFixed, DISABLED_Recursion) {
     RunAndExpect<int>(R"(
 fun factorial(n)
@@ -251,7 +253,8 @@ fibonacci(7)
 }
 
 // Mutual recursion
-// DISABLED: Requires nested function calls which don't work due to executor limitation
+// DISABLED: Requires nested function calls which don't work due to executor
+// limitation
 TEST_F(RhoFunctionTestsFixed, DISABLED_MutualRecursion) {
     RunAndExpect<bool>(R"(
 fun isEven(n)
@@ -300,8 +303,8 @@ x
 }
 
 // Function scoping
-// DISABLED: These tests expect to evaluate multiple expressions and get the last one
-// but the test framework returns the first expression's result
+// DISABLED: These tests expect to evaluate multiple expressions and get the
+// last one but the test framework returns the first expression's result
 TEST_F(RhoFunctionTestsFixed, DISABLED_FunctionScoping) {
     RunAndExpect<int>(R"(
 x = 10

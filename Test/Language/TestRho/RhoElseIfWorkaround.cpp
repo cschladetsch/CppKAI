@@ -63,7 +63,8 @@ else
         else
             result = 40
 result
-)", 20);
+)",
+                      20);
 
     RunAndExpect<int>(R"(
 x = 3
@@ -78,14 +79,18 @@ else
         else
             result = 40
 result
-)", 30);
+)",
+                      30);
 }
 
 // Test single line if-else chains
 // DISABLED: Single-line if-else with braces is not supported
 TEST_F(RhoElseIfWorkaround, DISABLED_SingleLineIfElse) {
     // Try without line breaks - this syntax is not supported
-    RunAndExpect<int>("x = 2; if x == 1 { result = 10 } else { if x == 2 { result = 20 } else { result = 30 } }; result", 20);
+    RunAndExpect<int>(
+        "x = 2; if x == 1 { result = 10 } else { if x == 2 { result = 20 } "
+        "else { result = 30 } }; result",
+        20);
 }
 
 // Test using assignment in condition
@@ -102,5 +107,6 @@ if x == 3
 if result == 0
     result = 40
 result
-)", 20);
+)",
+                      20);
 }

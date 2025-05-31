@@ -227,7 +227,8 @@ TEST_F(PiStackTests, VariableOperations) {
 //         std::make_tuple(2, 3, 1));
 // }
 
-// Test computational stack patterns - converted to standalone to avoid framework issues
+// Test computational stack patterns - converted to standalone to avoid
+// framework issues
 TEST(PiComputationalStandalone, SquareNumber) {
     kai::Console console;
     console.SetLanguage(kai::Language::Pi);
@@ -274,7 +275,7 @@ TEST(PiComputationalStandalone, ComplexArithmetic) {
 //         "1 'i' ! "
 //         "begin "
 
-// Test basic stack operation patterns using standalone pattern  
+// Test basic stack operation patterns using standalone pattern
 TEST(PiStackStandalone, DupAndAdd) {
     kai::Console console;
     console.SetLanguage(kai::Language::Pi);
@@ -291,7 +292,8 @@ TEST(PiStackStandalone, OverAndMultiply) {
     console.SetLanguage(kai::Language::Pi);
     auto exec = console.GetExecutor();
 
-    console.Execute("3 4 over * +");  // 3 4 over -> 3 4 3 -> * -> 3 12 -> + -> 15
+    console.Execute(
+        "3 4 over * +");  // 3 4 over -> 3 4 3 -> * -> 3 12 -> + -> 15
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 15);
@@ -305,8 +307,8 @@ TEST(PiStackStandalone, RotateAndSubtract) {
     console.Execute("10 5 2 rot -");  // 10 5 2 rot -> 5 2 10 -> - -> 5 -8
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 2);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->At(1)), 5);  // bottom
-    EXPECT_EQ(kai::ConstDeref<int>(stack->At(0)), -8); // top
+    EXPECT_EQ(kai::ConstDeref<int>(stack->At(1)), 5);   // bottom
+    EXPECT_EQ(kai::ConstDeref<int>(stack->At(0)), -8);  // top
 }
 //         "'i' @ 'sum' +! "
 //         "'i' @ 1 + 'i' ! "

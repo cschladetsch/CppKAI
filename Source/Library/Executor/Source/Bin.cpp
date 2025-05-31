@@ -88,9 +88,7 @@ void Printf(String fmt, Array items) {
 
 void Print(Object Q) { std::cout << Q.ToString().c_str(); }
 
-void print(Object Q) { 
-    std::cout << Q.ToString().c_str() << std::endl;
-}
+void print(Object Q) { std::cout << Q.ToString().c_str() << std::endl; }
 
 void PrintXml(Object Q) { std::cout << Q.ToXmlString().c_str() << std::endl; }
 

@@ -7,14 +7,14 @@ struct PiMathOperationsTest : kai::TestLangCommon {};
 TEST_F(PiMathOperationsTest, AAA_SimplestTest) {
     console_.SetLanguage(kai::Language::Pi);
     auto exec = console_.GetExecutor();
-    
+
     console_.Execute("5 3 min");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 3);
-    
+
     stack->Clear();
-    
+
     console_.Execute("5 3 max");
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 5);
@@ -59,8 +59,8 @@ TEST_F(PiMathOperationsTest, AAA_SimplestTest) {
 //     EXPECT_FLOAT_EQ(kai::ConstDeref<float>(stack->Top()), 3.0f);
 // }
 
-// These tests were converted to standalone pattern to avoid TestLangCommon issues
-// Test 1: Min with negative numbers
+// These tests were converted to standalone pattern to avoid TestLangCommon
+// issues Test 1: Min with negative numbers
 TEST(PiMinMaxStandalone, MinWithNegativeNumbers) {
     kai::Console console;
     console.SetLanguage(kai::Language::Pi);

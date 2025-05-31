@@ -759,10 +759,11 @@ void Executor::NextContinuation() {
         // Get next continuation from context stack
         const auto next = context_->Pop();
 
-        // Check if this is a null sentinel (used by ContinueOnly to stop execution)
+        // Check if this is a null sentinel (used by ContinueOnly to stop
+        // execution)
         if (!next.Valid() || !next.Exists()) {
-            // This is expected when ContinueOnly pushed a null object as a sentinel
-            // Just set continuation to null to stop execution
+            // This is expected when ContinueOnly pushed a null object as a
+            // sentinel Just set continuation to null to stop execution
             continuation_ = Object();
             return;
         }

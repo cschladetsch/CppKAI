@@ -60,7 +60,8 @@ if true
 else
     result = 10
 result
-)", 42);
+)",
+                      42);
 
     RunAndExpect<int>(R"(
 result = 0
@@ -72,7 +73,8 @@ if true
 else
     result = 10
 result
-)", 24);
+)",
+                      24);
 
     RunAndExpect<int>(R"(
 result = 0
@@ -84,7 +86,8 @@ if false
 else
     result = 10
 result
-)", 10);
+)",
+                      10);
 }
 
 // Test complex conditions (without parentheses)
@@ -99,7 +102,8 @@ if a && b
 else
     result = 24
 result
-)", 42);
+)",
+                      42);
 
     // Test logical OR
     RunAndExpect<int>(R"(
@@ -111,7 +115,8 @@ if a || b
 else
     result = 24
 result
-)", 24);
+)",
+                      24);
 }
 
 // Test basic for loops
@@ -122,14 +127,16 @@ sum = 0
 for (i = 1; i <= 5; i = i + 1)
     sum = sum + i
 sum
-)", 15);
+)",
+                      15);
 
     RunAndExpect<int>(R"(
 sum = 0
 for (i = 0; i < 10; i = i + 2)
     sum = sum + i
 sum
-)", 20);
+)",
+                      20);
 }
 
 // Test basic while loops
@@ -141,7 +148,8 @@ while i <= 5
     sum = sum + i
     i = i + 1
 sum
-)", 15);
+)",
+                      15);
 
     RunAndExpect<int>(R"(
 sum = 0
@@ -150,7 +158,8 @@ while i > 0
     sum = sum + i
     i = i - 2
 sum
-)", 30);
+)",
+                      30);
 }
 
 // Test nested for loops
@@ -162,7 +171,8 @@ for (i = 1; i <= 3; i = i + 1)
     for (j = 1; j <= 3; j = j + 1)
         sum = sum + (i * j)
 sum
-)", 36);
+)",
+                      36);
 }
 
 // Test nested while loops
@@ -177,7 +187,8 @@ while i <= 3
         j = j + 1
     i = i + 1
 sum
-)", 36);
+)",
+                      36);
 }
 
 // Test switch-like if-else-if chains
@@ -195,7 +206,8 @@ else if value == 3
 else
     result = 0
 result
-)", 20);
+)",
+                      20);
 
     RunAndExpect<int>(R"(
 value = 5
@@ -209,7 +221,8 @@ else if value == 3
 else
     result = 99
 result
-)", 99);
+)",
+                      99);
 }
 
 // Test do-while loops
@@ -222,7 +235,8 @@ do
     i = i + 1
 while i <= 5
 sum
-)", 15);
+)",
+                      15);
 
     // Test do-while that executes only once
     RunAndExpect<int>(R"(
@@ -233,7 +247,8 @@ do
     i = i + 1
 while false
 sum
-)", 1);
+)",
+                      1);
 }
 
 // Test combined control structures
@@ -245,5 +260,6 @@ for (i = 1; i <= 10; i = i + 1)
     if i % 2 == 0
         sum = sum + i
 sum
-)", 30);  // 2 + 4 + 6 + 8 + 10
+)",
+                      30);  // 2 + 4 + 6 + 8 + 10
 }

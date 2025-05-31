@@ -17,10 +17,10 @@ KAI_BEGIN
 Pointer<Continuation> PiTranslator::Translate(const char *text, Structure st) {
     // Set flag to indicate we're translating the root
     isTranslatingRoot = true;
-    
+
     // Call the parent implementation first
     Pointer<Continuation> cont = Parent::Translate(text, st);
-    
+
     // Reset flag
     isTranslatingRoot = false;
 
@@ -121,7 +121,7 @@ void PiTranslator::TranslateNode(AstNodePtr node) {
             if (isTranslatingRoot) {
                 // This is the root continuation created by the parser
                 // Just translate its children directly without wrapping
-                isTranslatingRoot = false; // Reset flag after processing root
+                isTranslatingRoot = false;  // Reset flag after processing root
                 for (auto const &ch : node->GetChildren()) {
                     TranslateNode(ch);
                 }

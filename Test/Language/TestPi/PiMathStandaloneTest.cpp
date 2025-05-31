@@ -1,16 +1,14 @@
-#include <gtest/gtest.h>
 #include <KAI/Console/Console.h>
 #include <KAI/Language/Common/Language.h>
+#include <gtest/gtest.h>
 
 using namespace kai;
 
 // Test fixture that doesn't inherit from TestLangCommon
 struct PiMathStandaloneTest : ::testing::Test {
     Console console;
-    
-    void SetUp() override {
-        console.SetLanguage(Language::Pi);
-    }
+
+    void SetUp() override { console.SetLanguage(Language::Pi); }
 };
 
 TEST_F(PiMathStandaloneTest, MinMaxOperations) {

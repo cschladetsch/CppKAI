@@ -98,7 +98,8 @@ TEST_F(RhoDemo, DISABLED_RunDemo) {
 }
 
 // Simple test for each major feature to ensure they work separately
-// DISABLED: Basic features require parser fixes for control flow and function definitions
+// DISABLED: Basic features require parser fixes for control flow and function
+// definitions
 TEST_F(RhoDemo, DISABLED_BasicFeatureTests) {
     Registry reg;
     Console console;

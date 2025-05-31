@@ -66,7 +66,7 @@ TEST_F(PiControlFlowTest, DISABLED_ForLoop) {
     auto stack = exec->GetDataStack();
 
     ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 15); // 1+2+3+4+5
+    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 15);  // 1+2+3+4+5
 }
 
 // TODO: Code blocks { ... } are not properly translated to continuations in Pi

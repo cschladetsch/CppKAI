@@ -8,27 +8,28 @@
 
 // Forward declare the test class
 namespace ReflectionTestNS {
-    struct TestClass;
+struct TestClass;
 }
 
 KAI_BEGIN
 
 // Define type traits for TestClass
-KAI_TYPE_TRAITS(ReflectionTestNS::TestClass, 555,
-                Properties::Reflected)
+KAI_TYPE_TRAITS(ReflectionTestNS::TestClass, 555, Properties::Reflected)
 
 KAI_END
 
 namespace ReflectionTestNS {
-    struct TestClass : kai::Reflected {
-        int value = 0;
-        kai::String name = "Test";
+struct TestClass : kai::Reflected {
+    int value = 0;
+    kai::String name = "Test";
 
-        void SetValue(int v) { value = v; }
-        int GetValue() const { return value; }
-        kai::String GetDescription() const { return name + " = " + kai::String(std::to_string(value)); }
-    };
-}
+    void SetValue(int v) { value = v; }
+    int GetValue() const { return value; }
+    kai::String GetDescription() const {
+        return name + " = " + kai::String(std::to_string(value));
+    }
+};
+}  // namespace ReflectionTestNS
 
 // Test suite for reflection and type system
 class ReflectionTest : public kai::TestCommon {
@@ -52,7 +53,7 @@ TEST_F(ReflectionTest, TypeInformationRetrieval) {
     // TODO: Fix reflection tests - currently the type system
     // doesn't fully support custom types with reflection
     GTEST_SKIP() << "Reflection tests need to be fixed";
-    
+
     auto obj = reg_->New<TestClass>();
 
     EXPECT_EQ(obj.GetClass()->GetName(), kai::Label("TestClass"));
@@ -89,7 +90,7 @@ TEST_F(ReflectionTest, PropertyAccessReflection) {
 
     // Get property by name
     const auto& valueProp = obj.GetClass()->GetProperty(kai::Label("value"));
-    
+
     // Set property value
     valueProp.SetValue(obj, reg_->New<int>(456));
     EXPECT_EQ(kai::Deref<TestClass>(obj).value, 456);
@@ -119,9 +120,9 @@ TEST_F(ReflectionTest, TypeTraitsAndMeta) {
 TEST_F(ReflectionTest, CustomTypeRegistration) {
     GTEST_SKIP() << "Reflection tests need to be fixed";
     // Custom types need to be defined outside of the test function
-    // and have proper type traits defined. This is not supported 
+    // and have proper type traits defined. This is not supported
     // for types defined within a function scope.
-    
+
     // The following would work if CustomType was defined globally:
     // auto obj = reg_->New<CustomType>();
     // auto cls = obj.GetClass();
