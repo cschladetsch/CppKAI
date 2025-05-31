@@ -1,9 +1,23 @@
-#include "KAI/Test/Language/TestLangCommon.h"
+#include "KAI/Test/Include/TestLangCommon.h"
 
 class TestPiAdvancedContinuations : public kai::TestLangCommon {
 protected:
     void SetUp() override {
         TestLangCommon::SetUp();
+    }
+    
+    int ExpectInt() {
+        EXPECT_FALSE(data_->Empty()) << "Stack is empty";
+        auto top = data_->Top();
+        EXPECT_TRUE(top.IsType<int>()) << "Top is not an int";
+        return kai::ConstDeref<int>(top);
+    }
+    
+    bool ExpectBool() {
+        EXPECT_FALSE(data_->Empty()) << "Stack is empty";
+        auto top = data_->Top();
+        EXPECT_TRUE(top.IsType<bool>()) << "Top is not a bool";
+        return kai::ConstDeref<bool>(top);
     }
 };
 
@@ -18,13 +32,13 @@ TEST_F(TestPiAdvancedContinuations, TestNestedLoopContinuation) {
         drop drop
     )";
     
-    _console->Execute(script);
-    ASSERT_GT(_data->Size(), 0);
+    console_.Execute(script);
+    ASSERT_GT(data_->Size(), 0);
     
     // Should have multiple marks from the inner loop
     int marks = 0;
-    for (int i = 0; i < _data->Size(); ++i) {
-        if (_data->At(i).GetTypeNumber() == kai::Type::Traits<kai::Continuation>::Number) {
+    for (int i = 0; i < data_->Size(); ++i) {
+        if (data_->At(i).GetTypeNumber() == kai::Type::Traits<kai::Continuation>::Number) {
             marks++;
         }
     }
@@ -46,8 +60,8 @@ TEST_F(TestPiAdvancedContinuations, TestConditionalBreakWithContinuation) {
         drop
     )";
     
-    _console->Execute(script);
-    ASSERT_TRUE(_data->Size() > 0);
+    console_.Execute(script);
+    ASSERT_TRUE(data_->Size() > 0);
 }
 
 // Test 3: Recursive continuation with factorial
@@ -64,7 +78,7 @@ TEST_F(TestPiAdvancedContinuations, TestRecursiveContinuation) {
         5 factorial
     )";
     
-    _console->Execute(script);
+    console_.Execute(script);
     ASSERT_EQ(ExpectInt(), 120);
 }
 
@@ -81,7 +95,7 @@ TEST_F(TestPiAdvancedContinuations, TestContinuationPassing) {
         5 'double apply_twice
     )";
     
-    _console->Execute(script);
+    console_.Execute(script);
     ASSERT_EQ(ExpectInt(), 20);  // 5 * 2 * 2
 }
 
@@ -100,8 +114,8 @@ TEST_F(TestPiAdvancedContinuations, TestMapLikeContinuation) {
         'result
     )";
     
-    _console->Execute(script);
-    auto result = _data->Top();
+    console_.Execute(script);
+    auto result = data_->Top();
     ASSERT_TRUE(result.Exists());
 }
 
@@ -123,7 +137,7 @@ TEST_F(TestPiAdvancedContinuations, TestContinuationWithException) {
     
     // Execute and expect an exception
     try {
-        _console->Execute(script);
+        console_.Execute(script);
         FAIL() << "Expected exception was not thrown";
     } catch (...) {
         // Expected
@@ -144,7 +158,7 @@ TEST_F(TestPiAdvancedContinuations, TestCoroutineLikeContinuation) {
     )";
     
     // Note: This tests the concept - actual yield would need language support
-    _console->Execute(script);
+    console_.Execute(script);
 }
 
 // Test 8: Nested continuation with state preservation
@@ -161,7 +175,7 @@ TEST_F(TestPiAdvancedContinuations, TestStatePreservingContinuation) {
         } exec
     )";
     
-    _console->Execute(script);
+    console_.Execute(script);
     ASSERT_EQ(ExpectInt(), 15);
 }
 
@@ -183,7 +197,7 @@ TEST_F(TestPiAdvancedContinuations, TestFilterChainContinuation) {
         'evens size
     )";
     
-    _console->Execute(script);
+    console_.Execute(script);
     ASSERT_EQ(ExpectInt(), 5);
 }
 
@@ -211,6 +225,6 @@ TEST_F(TestPiAdvancedContinuations, TestMutualRecursion) {
         and not
     )";
     
-    _console->Execute(script);
+    console_.Execute(script);
     ASSERT_EQ(ExpectBool(), false);
 }

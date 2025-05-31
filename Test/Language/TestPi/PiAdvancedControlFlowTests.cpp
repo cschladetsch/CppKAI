@@ -1,9 +1,16 @@
-#include "KAI/Test/Language/TestLangCommon.h"
+#include "KAI/Test/Include/TestLangCommon.h"
 
 class TestPiAdvancedControlFlow : public kai::TestLangCommon {
 protected:
     void SetUp() override {
         TestLangCommon::SetUp();
+    }
+    
+    int ExpectInt() {
+        EXPECT_FALSE(data_->Empty()) << "Stack is empty";
+        auto top = data_->Top();
+        EXPECT_TRUE(top.IsType<int>()) << "Top is not an int";
+        return kai::ConstDeref<int>(top);
     }
 };
 
@@ -27,8 +34,8 @@ TEST_F(TestPiAdvancedControlFlow, TestShortCircuitEvaluation) {
         -5 check_value
     )";
     
-    _console->Execute(script);
-    ASSERT_EQ(_data->Size(), 6);  // 3 pairs of (string, number)
+    console_.Execute(script);
+    ASSERT_EQ(data_->Size(), 6);  // 3 pairs of (string, number)
 }
 
 // Test 22: Loop with multiple exit conditions
@@ -55,8 +62,8 @@ TEST_F(TestPiAdvancedControlFlow, TestMultipleExitLoop) {
         'sum 'count
     )";
     
-    _console->Execute(script);
-    ASSERT_TRUE(_data->Size() >= 2);
+    console_.Execute(script);
+    ASSERT_TRUE(data_->Size() >= 2);
 }
 
 // Test 23: Nested loop with variable step
@@ -75,7 +82,7 @@ TEST_F(TestPiAdvancedControlFlow, TestVariableStepLoop) {
         'total
     )";
     
-    _console->Execute(script);
+    console_.Execute(script);
     ASSERT_GT(ExpectInt(), 0);
 }
 
@@ -101,8 +108,8 @@ TEST_F(TestPiAdvancedControlFlow, TestFunctionDispatch) {
         5 3 switch
     )";
     
-    _console->Execute(script);
-    ASSERT_EQ(_data->Size(), 3);
+    console_.Execute(script);
+    ASSERT_EQ(data_->Size(), 3);
 }
 
 // Test 25: Dynamic loop bounds with computed limits
@@ -126,7 +133,7 @@ TEST_F(TestPiAdvancedControlFlow, TestDynamicLoopBounds) {
         'sum
     )";
     
-    _console->Execute(script);
+    console_.Execute(script);
     ASSERT_GT(ExpectInt(), 0);
 }
 
@@ -149,8 +156,8 @@ TEST_F(TestPiAdvancedControlFlow, TestConditionalAccumulation) {
         'even_sum 'odd_sum
     )";
     
-    _console->Execute(script);
-    ASSERT_EQ(_data->Size(), 2);
+    console_.Execute(script);
+    ASSERT_EQ(data_->Size(), 2);
     auto odd = ExpectInt();
     auto even = ExpectInt();
     ASSERT_EQ(even, 30);  // 2+4+6+8+10
@@ -189,8 +196,8 @@ TEST_F(TestPiAdvancedControlFlow, TestNestedConditionalsEarlyReturn) {
         8 classify
     )";
     
-    _console->Execute(script);
-    ASSERT_EQ(_data->Size(), 4);
+    console_.Execute(script);
+    ASSERT_EQ(data_->Size(), 4);
 }
 
 // Test 28: Loop unrolling simulation
@@ -222,7 +229,7 @@ TEST_F(TestPiAdvancedControlFlow, TestLoopUnrolling) {
         [ 1 2 3 4 5 6 7 8 9 10 ] process_batch
     )";
     
-    _console->Execute(script);
+    console_.Execute(script);
     ASSERT_EQ(ExpectInt(), 55);
 }
 
@@ -254,7 +261,7 @@ TEST_F(TestPiAdvancedControlFlow, TestExceptionLikeFlow) {
         20 4 calculate
     )";
     
-    _console->Execute(script);
+    console_.Execute(script);
 }
 
 // Test 30: State machine with complex transitions
@@ -299,6 +306,6 @@ TEST_F(TestPiAdvancedControlFlow, TestStateMachine) {
         'state 'counter
     )";
     
-    _console->Execute(script);
-    ASSERT_EQ(_data->Size(), 2);
+    console_.Execute(script);
+    ASSERT_EQ(data_->Size(), 2);
 }

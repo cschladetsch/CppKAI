@@ -1,9 +1,13 @@
-#include "KAI/Test/Language/TestLangCommon.h"
+#include "KAI/Test/Include/TestLangCommon.h"
 
 class TestRhoAdvancedContinuations : public kai::TestLangCommon {
 protected:
     void SetUp() override {
         TestLangCommon::SetUp();
+    }
+    
+    void ExecScriptReturning(const char* script) {
+        console_.Execute(script);
     }
 };
 
@@ -24,8 +28,8 @@ TEST_F(TestRhoAdvancedContinuations, TestNestedLoopEarlyReturn) {
         find_pair(42)
     )";
     
-    ExecScriptReturning(script);
-    auto result = _data->Top();
+    console_.Execute(script);
+    auto result = data_->Top();
     ASSERT_TRUE(result.Exists());
 }
 
@@ -44,8 +48,8 @@ TEST_F(TestRhoAdvancedContinuations, TestLambdaComposition) {
         pipeline(4)
     )";
     
-    ExecScriptReturning(script);
-    ASSERT_EQ(ExpectInt(), 29);  // ((4 * 3) * 2) + 5
+    console_.Execute(script);
+    ASSERT_EQ(kai::ConstDeref<int>(data_->Top()), 29);  // ((4 * 3) * 2) + 5
 }
 
 // Test 13: Advanced pattern matching with continuations
@@ -72,7 +76,7 @@ TEST_F(TestRhoAdvancedContinuations, TestPatternMatchingContinuation) {
         handler()
     )";
     
-    ExecScriptReturning(script);
+    console_.Execute(script);
 }
 
 // Test 14: Continuation-based state machine
@@ -126,7 +130,7 @@ TEST_F(TestRhoAdvancedContinuations, TestStateMachineContinuation) {
         machine("resume")
     )";
     
-    ExecScriptReturning(script);
+    console_.Execute(script);
 }
 
 // Test 15: Complex continuation with nested closures
@@ -155,8 +159,8 @@ TEST_F(TestRhoAdvancedContinuations, TestNestedClosureContinuation) {
         acc.get()
     )";
     
-    ExecScriptReturning(script);
-    ASSERT_EQ(ExpectInt(), 30);  // (10 + 5) * 2
+    console_.Execute(script);
+    ASSERT_EQ(kai::ConstDeref<int>(data_->Top()), 30);  // (10 + 5) * 2
 }
 
 // Test 16: Continuation with exception propagation
@@ -182,7 +186,7 @@ TEST_F(TestRhoAdvancedContinuations, TestExceptionPropagation) {
         calculate(100, 5, 0)
     )";
     
-    ExecScriptReturning(script);
+    console_.Execute(script);
 }
 
 // Test 17: Generator pattern with continuations
@@ -227,7 +231,7 @@ TEST_F(TestRhoAdvancedContinuations, TestGeneratorPattern) {
         results
     )";
     
-    ExecScriptReturning(script);
+    console_.Execute(script);
 }
 
 // Test 18: Memoization with continuations
@@ -258,7 +262,7 @@ TEST_F(TestRhoAdvancedContinuations, TestMemoizationContinuation) {
         fast_calc(10)
     )";
     
-    ExecScriptReturning(script);
+    console_.Execute(script);
 }
 
 // Test 19: Async-like behavior with continuations
@@ -296,7 +300,7 @@ TEST_F(TestRhoAdvancedContinuations, TestAsyncLikeContinuation) {
         chain_async(5)
     )";
     
-    ExecScriptReturning(script);
+    console_.Execute(script);
 }
 
 // Test 20: Complex control flow with Pi blocks
@@ -330,5 +334,5 @@ TEST_F(TestRhoAdvancedContinuations, TestComplexPiIntegration) {
         matrix_operation(matrix)
     )";
     
-    ExecScriptReturning(script);
+    console_.Execute(script);
 }

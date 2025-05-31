@@ -136,6 +136,8 @@ foreach (lang ${langs})
     file(GLOB_RECURSE scripts ${script_path}/*.${ext})
     include_directories(${header_path})
     include_directories(${TEST_HOME}/Include)
+    include_directories(${CMAKE_SOURCE_DIR}/Include)
+    include_directories(${CMAKE_SOURCE_DIR}/..)
     enable_testing()
     
     message(STATUS ">>>> SOURCES for ${testName}: ${sources} <<<<")
