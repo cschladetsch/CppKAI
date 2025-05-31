@@ -34,15 +34,14 @@ bool Logger::s_initialized = false;
 std::string FormatTimestamp(const std::tm& time_info) {
 #ifdef KAI_FORMAT_COMPATIBLE
     try {
-        return std::format("{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}",
-                           time_info.tm_year + 1900, time_info.tm_mon + 1,
+        return std::format("{:02d}-{:02d} {:02d}:{:02d}:{:02d}",
+                           time_info.tm_mon + 1,
                            time_info.tm_mday, time_info.tm_hour,
                            time_info.tm_min, time_info.tm_sec);
     } catch (...) {
         // Fallback if format fails
         std::stringstream ss;
-        ss << std::setfill('0') << std::setw(4) << (time_info.tm_year + 1900)
-           << "-" << std::setw(2) << (time_info.tm_mon + 1) << "-"
+        ss << std::setfill('0') << std::setw(2) << (time_info.tm_mon + 1) << "-"
            << std::setw(2) << time_info.tm_mday << " " << std::setw(2)
            << time_info.tm_hour << ":" << std::setw(2) << time_info.tm_min
            << ":" << std::setw(2) << time_info.tm_sec;
@@ -50,8 +49,7 @@ std::string FormatTimestamp(const std::tm& time_info) {
     }
 #else
     std::stringstream ss;
-    ss << std::setfill('0') << std::setw(4) << (time_info.tm_year + 1900) << "-"
-       << std::setw(2) << (time_info.tm_mon + 1) << "-" << std::setw(2)
+    ss << std::setfill('0') << std::setw(2) << (time_info.tm_mon + 1) << "-" << std::setw(2)
        << time_info.tm_mday << " " << std::setw(2) << time_info.tm_hour << ":"
        << std::setw(2) << time_info.tm_min << ":" << std::setw(2)
        << time_info.tm_sec;
@@ -178,13 +176,17 @@ void Logger::Log(Level level, const std::string& message) {
     rang::fg color = GetColorForLevel(level);
     rang::style style = GetStyleForLevel(level);
 
-    // Print to console with color and style based on level
+    // Print to console with different colors for each part
     if (level == Level::Error || level == Level::Fatal) {
-        std::cerr << style << color << formattedMessage << rang::style::reset
-                  << rang::fg::reset << std::endl;
+        std::cerr << rang::fg::gray << "[" << timestamp << "] "
+                  << style << color << "[" << levelStr << "] "
+                  << rang::style::reset << rang::fg::reset << message
+                  << std::endl;
     } else {
-        std::cout << style << color << formattedMessage << rang::style::reset
-                  << rang::fg::reset << std::endl;
+        std::cout << rang::fg::gray << "[" << timestamp << "] "
+                  << style << color << "[" << levelStr << "] "
+                  << rang::style::reset << rang::fg::reset << message
+                  << std::endl;
     }
 
     // Ensure the log directory exists

@@ -563,6 +563,7 @@ struct ExecutorWindow {
         }
 
         ImGui::EndChild();
+        ImGui::PopStyleColor();  // Pop the ChildBg color
         ImGui::PopStyleVar();
 
         // Context header
