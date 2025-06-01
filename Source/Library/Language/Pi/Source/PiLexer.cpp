@@ -134,6 +134,24 @@ bool PiLexer::NextToken() {
         case '-':
             if (Peek() == '-') return AddTwoCharOp(Enum::Decrement);
             if (Peek() == '=') return AddTwoCharOp(Enum::MinusAssign);
+            
+            // Check if this is a negative number literal
+            if (isdigit(Peek())) {
+                // This is a negative number, parse it as such
+                int start = offset;
+                Next(); // Skip the minus sign
+                Gather(isdigit);  // Collect digits
+                
+                // Check for decimal point followed by digits
+                if (Current() == '.' && isdigit(Peek())) {
+                    Next();           // Skip '.'
+                    Gather(isdigit);  // Collect fractional digits
+                    return Add(Enum::Float, Slice(start, offset));
+                }
+                
+                return Add(Enum::Int, Slice(start, offset));
+            }
+            
             return Add(Enum::Minus);
 
         case '.':

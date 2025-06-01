@@ -166,7 +166,8 @@ TEST_F(TestPiAdvancedControlFlow, TestNestedConditionalsEarlyReturn) {
     ASSERT_TRUE(ExpectBool());
     
     console_.Execute("true { \"yes\" } { \"no\" } ife");
-    ASSERT_EQ(data_->Size(), 0);  // ife doesn't push result
+    ASSERT_EQ(data_->Size(), 1);  // ife pushes the result
+    data_->Pop();  // Remove the result
     
     console_.Execute("\"test1\" \"test2\" \"test3\" \"test4\"");
     ASSERT_EQ(data_->Size(), 4);
