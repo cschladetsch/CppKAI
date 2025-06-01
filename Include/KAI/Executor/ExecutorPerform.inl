@@ -597,7 +597,22 @@ void Executor::Perform(Operation::Type op) {
         }
 
         case Operation::Retreive: {
-            Push(Resolve(Pop()));
+            // The & operation: retrieve/execute
+            Object obj = Pop();
+            
+            // If it's an identifier (Label/Pathname), resolve it first
+            if (obj.IsType<Label>() || obj.IsType<Pathname>()) {
+                obj = Resolve(obj);
+            }
+            
+            // If the result is a continuation, execute it
+            if (obj.IsType<Continuation>()) {
+                KAI_TRACE() << "Retreive: Executing continuation";
+                Continue(obj);
+            } else {
+                // Otherwise just push the value
+                Push(obj);
+            }
             break;
         }
 

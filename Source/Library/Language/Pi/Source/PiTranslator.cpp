@@ -313,6 +313,10 @@ void PiTranslator::AppendTokenised(const TokenNode &tok) {
             AppendOp(Operation::Equiv);
             break;
 
+        case PiTokenEnumType::Less:
+            AppendOp(Operation::Less);
+            break;
+
         case PiTokenEnumType::Greater:
             AppendOp(Operation::Greater);
             break;
@@ -542,7 +546,9 @@ void PiTranslator::AppendTokenised(const TokenNode &tok) {
 
         default:
             KAI_TRACE_1(tok.type)
-                << ": PiTranslator: token not implemented: " << tok.ToString();
+                << ": PiTranslator: token not implemented: " << tok.ToString()
+                << " (Less=" << PiTokenEnumType::Less 
+                << ", Greater=" << PiTokenEnumType::Greater << ")";
             break;
     }
 }

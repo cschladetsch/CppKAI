@@ -19,6 +19,8 @@ void TestCommon::SetUp() {
     reg_->AddClass<String>();
     reg_->AddClass<StringStream>();
     reg_->AddClass<BinaryStream>();
+    reg_->AddClass<Array>();
+    reg_->AddClass<Map>();
 
     root_ = reg_->New<void>();
     tree_->SetRoot(root_);

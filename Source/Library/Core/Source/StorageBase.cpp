@@ -1,16 +1,34 @@
 #include <KAI/Core/Object/IObject.h>
 #include <KAI/Core/Registry.h>
+#include <KAI/Core/BuiltinTypes/Array.h>
 
+#include <algorithm>
 #include <map>
 
 KAI_BEGIN
 
 void StorageBase::Detach(Object const &parent) {
-    for (auto const &[label, object] : dictionary) {
-        if (object.GetHandle() == parent.GetHandle()) {
-            Detach(label);
+    // The object calling Detach wants to be removed from the given parent
+    StorageBase *parentBase = GetRegistry()->GetStorageBase(parent.GetHandle());
+    if (!parentBase) return;
+    
+    // First check if parent has this object in its dictionary
+    for (auto const &[label, object] : parentBase->dictionary) {
+        if (object.GetHandle() == GetHandle()) {
+            parentBase->Remove(label);
             return;
         }
+    }
+    
+    // For containers like Array, we need to call their Erase method directly
+    // since the generic ContainerOps::Erase is not implemented
+    if (parentBase->GetClass()->GetTypeNumber() == Type::Number::Array) {
+        // Cast to Array and call Erase
+        Array &array = Deref<Array>(Object(parentBase));
+        array.Erase(GetHandle());
+    } else {
+        // Otherwise, ask parent to detach this object from its container
+        parentBase->GetClass()->DetachFromContainer(*parentBase, *this);
     }
 }
 

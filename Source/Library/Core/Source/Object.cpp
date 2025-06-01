@@ -113,7 +113,10 @@ Object &Object::operator=(Object const &Q) {
             }
 
             if (thisValid) {
-                // Silently preserve the current state
+                // Assignment of invalid object should clear the current object
+                class_base = nullptr;
+                registry = nullptr;
+                handle = Handle();
             } else {
                 // Both are invalid, clear everything
                 class_base = nullptr;

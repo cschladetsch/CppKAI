@@ -111,14 +111,9 @@ struct Executor : Reflected {
                     }
                 }
 
-                // Handle special case of resolved continuation
-                if (found.GetTypeNumber() == Type::Number::Continuation) {
-                    // For continuations, execute them directly
-                    Continue(found);
-                } else {
-                    // For other types, push the resolved object
-                    Push(found);
-                }
+                // For all types including continuations, push the resolved object
+                // This allows operations like & to control when continuations execute
+                Push(found);
             } else {
                 // If not found, try to create a placeholder instead of throwing
                 // an exception
