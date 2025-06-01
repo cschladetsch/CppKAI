@@ -1,4 +1,5 @@
 #include "CoreTestCommon.h"
+#include "KAI/Core/Tree.h"
 
 USING_NAMESPACE_KAI
 
@@ -42,6 +43,16 @@ TEST_F(FixedCoreRegistryTests, TestFixedTypeRegistration) {
 // Struct to test Core Type functionality
 struct FixedCoreObjectTests : CoreTestCommon {
    protected:
+    Tree tree;
+    
+    void SetUp() override {
+        CoreTestCommon::SetUp();
+        
+        // Set up tree for garbage collection
+        tree.SetRoot(Root());
+        Reg().SetTree(tree);
+    }
+    
     void AddRequiredClasses() override {
         Reg().AddClass<bool>();
         Reg().AddClass<int>();
@@ -94,6 +105,16 @@ TEST_F(FixedCoreObjectTests, TestFixedObjectLifetime) {
 // Struct to test Core Pointer functionality
 struct FixedCorePointerTests : CoreTestCommon {
    protected:
+    Tree tree;
+    
+    void SetUp() override {
+        CoreTestCommon::SetUp();
+        
+        // Set up tree for garbage collection
+        tree.SetRoot(Root());
+        Reg().SetTree(tree);
+    }
+    
     void AddRequiredClasses() override {
         Reg().AddClass<bool>();
         Reg().AddClass<int>();

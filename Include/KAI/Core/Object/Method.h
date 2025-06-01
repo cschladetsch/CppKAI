@@ -27,7 +27,9 @@ struct MethodConst : ConstMethodBase<R (T::*)(Args...) const> {
     MethodConst(MethodType m, const Label &N) : meth(m), Parent(m, N) {}
 
     void ConstInvoke(const Object &servant, Stack &stack) {
-        detail::Add<arity - 1>::Arg(stack, args_);
+        if constexpr (arity > 0) {
+            detail::Add<arity - 1>::Arg(stack, args_);
+        }
         stack.Push(servant.GetRegistry()->New(
             CallMethod(ConstDeref<T>(servant), meth, args_)));
     }
@@ -44,7 +46,9 @@ struct VoidMethodConst : ConstMethodBase<void (T::*)(Args...) const> {
     VoidMethodConst(MethodType mb, const Label &N) : meth(mb), Parent(mb, N) {}
 
     void ConstInvoke(const Object &servant, Stack &stack) {
-        detail::Add<arity - 1>::Arg(stack, args_);
+        if constexpr (arity > 0) {
+            detail::Add<arity - 1>::Arg(stack, args_);
+        }
         CallMethod(ConstDeref<T>(servant), meth, args_);
     }
 };
@@ -60,9 +64,11 @@ struct VoidMethod : MutatingMethodBase<void (T::*)(Args...)> {
 
     VoidMethod(MethodType m, const Label &N) : meth(m), Parent(m, N) {}
 
-    void Invoke(Object &servant, Stack &stack) {
-        detail::Add<arity - 1>::Arg(stack, args_);
-        CallMethod(Deref<T>(servant), meth, args_);
+    void NonConstInvoke(const Object &servant, Stack &stack) override {
+        if constexpr (arity > 0) {
+            detail::Add<arity - 1>::Arg(stack, args_);
+        }
+        CallMethod(Deref<T>(const_cast<Object &>(servant)), meth, args_);
     }
 };
 
@@ -77,10 +83,13 @@ struct Method : MutatingMethodBase<R (T::*)(Args...)> {
 
     Method(MethodType m, const Label &N) : meth(m), Parent(m, N) {}
 
-    void Invoke(Object &servant, Stack &stack) {
-        detail::Add<arity - 1>::Arg(stack, args_);
-        stack.Push(servant.GetRegistry()->New(
-            Deref<T>(servant)(CallMethod(servant, meth, args_))));
+    void NonConstInvoke(const Object &servant, Stack &stack) override {
+        if constexpr (arity > 0) {
+            detail::Add<arity - 1>::Arg(stack, args_);
+        }
+        Object &nonConstServant = const_cast<Object &>(servant);
+        auto result = CallMethod(Deref<T>(nonConstServant), meth, args_);
+        stack.Push(nonConstServant.GetRegistry()->New(result));
     }
 };
 

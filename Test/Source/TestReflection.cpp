@@ -130,8 +130,7 @@ TEST_F(ReflectionTest, PropertyAccessReflection) {
         // List properties with more details
         std::cout << "Available properties: " << std::endl;
         for (const auto& prop : properties) {
-            std::cout << "  Label: '" << prop.first << "' (hash: " 
-                      << std::hex << prop.first.GetHash() << std::dec << ")" << std::endl;
+            std::cout << "  Label: '" << prop.first << "'" << std::endl;
         }
         
         // Try to find it manually
@@ -147,7 +146,7 @@ TEST_F(ReflectionTest, PropertyAccessReflection) {
         EXPECT_EQ(kai::Deref<TestClass>(obj).value, 456);
 
         // Get property value
-        auto propValue = valueProp.GetObject(obj);
+        auto propValue = valueProp.GetValue(obj);
         EXPECT_EQ(kai::ConstDeref<int>(propValue), 456);
     } catch (const kai::Exception::UnknownProperty& e) {
         GTEST_SKIP() << "UnknownProperty exception: " << e.ToString();
