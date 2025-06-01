@@ -643,6 +643,7 @@ void Executor::Continue() {
                                          "skipping evaluation";
                 }
             } else {
+                KAI_TRACE() << "Continue: Continuation has no more instructions, setting break_";
                 break_ = true;
             }
         } catch (const Exception::Base &e) {
@@ -662,9 +663,13 @@ void Executor::Continue() {
         }
 
         if (break_) {
+            KAI_TRACE() << "Continue: break_ is set, calling NextContinuation";
             try {
                 NextContinuation();
-                if (!continuation_.Valid() || !continuation_.Exists()) return;
+                if (!continuation_.Valid() || !continuation_.Exists()) {
+                    KAI_TRACE() << "Continue: No valid continuation after NextContinuation, returning";
+                    return;
+                }
             } catch (const std::exception &e) {
                 KAI_TRACE_ERROR()
                     << "Continue: Exception in NextContinuation(): "
@@ -742,6 +747,9 @@ void Executor::Continue(Value<Continuation> C) {
 }
 
 void Executor::NextContinuation() {
+    KAI_TRACE() << "NextContinuation called, context stack size: " 
+                << (context_.Valid() && context_.Exists() ? context_->Size() : -1);
+    
     // Validate context stack
     if (!context_.Valid() || !context_.Exists()) {
         KAI_TRACE_ERROR()
@@ -751,6 +759,7 @@ void Executor::NextContinuation() {
     }
 
     if (context_->Empty()) {
+        KAI_TRACE() << "NextContinuation: Context stack is empty";
         continuation_ = Object();
         return;
     }

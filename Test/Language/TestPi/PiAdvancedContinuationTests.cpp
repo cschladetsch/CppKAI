@@ -215,6 +215,7 @@ TEST_F(TestPiAdvancedContinuations, TestContinuationStorage) {
         3 double &
         4 double &
     )";
+    std::cout << "\nDEBUG: Executing script2:\n" << script2 << std::endl;
     console_.Execute(script2);
     
     

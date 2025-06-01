@@ -340,10 +340,15 @@ void Executor::Perform(Operation::Type op) {
             // affect runtime execution
             break;
 
-        case Operation::Suspend:
+        case Operation::Suspend: {
+            KAI_TRACE() << "Operation::Suspend - saving current continuation and switching";
             context_->Push(continuation_);
-            continuation_ = NewContinuation(Pop());
+            auto newCont = Pop();
+            KAI_TRACE() << "  Creating new continuation from: " << newCont.ToString();
+            continuation_ = NewContinuation(newCont);
+            KAI_TRACE() << "  Context stack size: " << context_->Size();
             break;
+        }
 
         case Operation::Replace:
             continuation_ = NewContinuation(Pop());

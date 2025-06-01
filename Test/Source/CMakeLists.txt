@@ -74,4 +74,4 @@ set(fixed_core_sources
 )
 
 add_executable(${fixed_core_name} ${fixed_core_sources})
-target_link_libraries(${fixed_core_name} Core ${GTEST_BOTH_LIBRARIES} ${Boost_LIBRARIES} gtest_main)
+target_link_libraries(${fixed_core_name} Executor Core PiLang RhoLang ${GTEST_BOTH_LIBRARIES} ${Boost_LIBRARIES} gtest_main)
