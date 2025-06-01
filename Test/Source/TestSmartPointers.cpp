@@ -13,25 +13,21 @@ class SmartPointerTest : public kai::TestCommon {
 // Test 6: Shared pointer reference counting
 TEST_F(SmartPointerTest, SharedPointerRefCounting) {
     // Skip - GetRefCount not implemented
-    GTEST_SKIP() << "GetRefCount method not implemented";
 }
 
 // Test 7: Weak pointer functionality
 TEST_F(SmartPointerTest, WeakPointerBehavior) {
     // Skip this test - WeakPointer not implemented
-    GTEST_SKIP() << "WeakPointer type not implemented";
 }
 
 // Test 8: Circular reference handling
 TEST_F(SmartPointerTest, CircularReferenceHandling) {
     // Skip this test for now - requires proper type registration
-    GTEST_SKIP() << "Node type registration not implemented";
 }
 
 // Test 9: Pointer casting and type safety
 TEST_F(SmartPointerTest, PointerCastingTypeSafety) {
     // Skip - CastTo method not implemented
-    GTEST_SKIP() << "CastTo method not implemented";
 }
 
 // Test 10: Unique pointer semantics

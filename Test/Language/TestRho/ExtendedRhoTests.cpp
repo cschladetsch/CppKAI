@@ -324,7 +324,7 @@ TEST_F(ExtendedRhoTests, StringOperations) {
 
 // Test showing that continuations capture and store state from loops
 // DISABLED: Continuation state management in loops needs implementation fixes
-TEST_F(ExtendedRhoTests, DISABLED_ContinuationStateInLoop) {
+TEST_F(ExtendedRhoTests, ContinuationStateInLoop) {
     // Switch to Rho language for this test
     console->SetLanguage(Language::Rho);
 
@@ -384,7 +384,7 @@ TEST_F(ExtendedRhoTests, DISABLED_ContinuationStateInLoop) {
 
 // Test showing continuation state with nested loops
 // DISABLED: Nested loop continuation state capture requires fixes
-TEST_F(ExtendedRhoTests, DISABLED_ContinuationStateInNestedLoops) {
+TEST_F(ExtendedRhoTests, ContinuationStateInNestedLoops) {
     // Switch to Rho language
     console->SetLanguage(Language::Rho);
 
@@ -439,7 +439,7 @@ TEST_F(ExtendedRhoTests, DISABLED_ContinuationStateInNestedLoops) {
 // Test showing continuation state with mutable variables
 // DISABLED: Mutable variable capture in continuations needs proper scoping
 // implementation
-TEST_F(ExtendedRhoTests, DISABLED_ContinuationStateWithMutableVars) {
+TEST_F(ExtendedRhoTests, ContinuationStateWithMutableVars) {
     // Switch to Rho language
     console->SetLanguage(Language::Rho);
 

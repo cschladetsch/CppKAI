@@ -85,7 +85,7 @@ result
 
 // Test single line if-else chains
 // DISABLED: Single-line if-else with braces is not supported
-TEST_F(RhoElseIfWorkaround, DISABLED_SingleLineIfElse) {
+TEST_F(RhoElseIfWorkaround, SingleLineIfElse) {
     // Try without line breaks - this syntax is not supported
     RunAndExpect<int>(
         "x = 2; if x == 1 { result = 10 } else { if x == 2 { result = 20 } "

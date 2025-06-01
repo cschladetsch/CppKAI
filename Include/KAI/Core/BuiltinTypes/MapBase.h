@@ -66,14 +66,16 @@ struct MapBase : Container<Map> {
     }
 
     static void Register(Registry &R, const char *N) {
-        //        ClassBuilder<This>(R, Label(N))
-        //            .Methods
-        //            ("Size", &This::Size)
-        //            ("Empty", &This::Empty)
-        //            ("Insert", &This::Insert)
-        //            ("Erase", &This::Erase)
-        //            ("Find", &This::Find)
-        //            ;
+        // TODO: Fix const correctness issues with Map methods
+        //ClassBuilder<This>(R, Label(N))
+        //    .Methods
+        //    ("Size", &This::Size)
+        //    ("Empty", &This::Empty)
+        //    ("Insert", &This::Insert)
+        //    ("Erase", &This::Erase)
+        //    ("GetValue", &This::GetValue)
+        //    ("ContainsKey", &This::ContainsKey)
+        //    ;
     }
 };
 

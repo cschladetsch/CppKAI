@@ -42,7 +42,7 @@ TEST_F(PiControlFlowTest, IfElseExecution) {
 }
 
 // TODO: while operation has issues with stack management in condition
-TEST_F(PiControlFlowTest, DISABLED_WhileLoop) {
+TEST_F(PiControlFlowTest, WhileLoop) {
     console_.SetLanguage(kai::Language::Pi);
     auto exec = console_.GetExecutor();
 
@@ -56,7 +56,7 @@ TEST_F(PiControlFlowTest, DISABLED_WhileLoop) {
 }
 
 // TODO: for operation expects 4 continuations but test uses simplified syntax
-TEST_F(PiControlFlowTest, DISABLED_ForLoop) {
+TEST_F(PiControlFlowTest, ForLoop) {
     console_.SetLanguage(kai::Language::Pi);
     auto exec = console_.GetExecutor();
 

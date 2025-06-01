@@ -121,7 +121,7 @@ result
 
 // Test basic for loops
 // DISABLED: Parser issue with for loops - only sees first statement
-TEST_F(RhoControlTestsProperlyFixed, DISABLED_BasicForLoops) {
+TEST_F(RhoControlTestsProperlyFixed, BasicForLoops) {
     RunAndExpect<int>(R"(
 sum = 0
 for (i = 1; i <= 5; i = i + 1)
@@ -164,7 +164,7 @@ sum
 
 // Test nested for loops
 // DISABLED: Parser issue with for loops
-TEST_F(RhoControlTestsProperlyFixed, DISABLED_NestedForLoops) {
+TEST_F(RhoControlTestsProperlyFixed, NestedForLoops) {
     RunAndExpect<int>(R"(
 sum = 0
 for (i = 1; i <= 3; i = i + 1)
@@ -193,7 +193,7 @@ sum
 
 // Test switch-like if-else-if chains
 // DISABLED: Parser issue with else-if chains - "Statement expected"
-TEST_F(RhoControlTestsProperlyFixed, DISABLED_SwitchLikeStatements) {
+TEST_F(RhoControlTestsProperlyFixed, SwitchLikeStatements) {
     RunAndExpect<int>(R"(
 value = 2
 result = 0
@@ -253,7 +253,7 @@ sum
 
 // Test combined control structures
 // DISABLED: Uses for loops which have parser issues
-TEST_F(RhoControlTestsProperlyFixed, DISABLED_CombinedControlStructures) {
+TEST_F(RhoControlTestsProperlyFixed, CombinedControlStructures) {
     RunAndExpect<int>(R"(
 sum = 0
 for (i = 1; i <= 10; i = i + 1)

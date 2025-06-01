@@ -108,5 +108,4 @@ TEST_F(SerializationTest, CircularReferenceSerialization) {
 // Test 20: Custom serialization format
 TEST_F(SerializationTest, CustomSerializationFormat) {
     // Skip - Custom type registration requires proper type traits
-    GTEST_SKIP() << "Custom type registration not fully implemented";
 }

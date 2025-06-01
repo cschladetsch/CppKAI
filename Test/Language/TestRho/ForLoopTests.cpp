@@ -375,7 +375,7 @@ TEST_F(RhoForLoopTestsFixture, ComplexCondition) {
 }
 
 // For loop with early exit using break
-TEST_F(RhoForLoopTestsFixture, DISABLED_EarlyExitWithBreak) {
+TEST_F(RhoForLoopTestsFixture, EarlyExitWithBreak) {
     // Code that breaks out of a for loop early
     const std::string code = R"(
         // For loop with an early break

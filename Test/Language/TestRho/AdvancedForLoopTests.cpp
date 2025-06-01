@@ -130,7 +130,7 @@ TEST_F(AdvancedForLoopTests, NestedForLoopsWithComplexConditions) {
 }
 
 // For Loop with Early Termination (break)
-TEST_F(AdvancedForLoopTests, DISABLED_ForLoopWithBreak) {
+TEST_F(ForLoopWithBreak) {
     const std::string script = R"(
         // Find the first number whose square is greater than 100
         result = 0
@@ -152,7 +152,7 @@ TEST_F(AdvancedForLoopTests, DISABLED_ForLoopWithBreak) {
 }
 
 // For Loop with Continue Statement
-TEST_F(AdvancedForLoopTests, DISABLED_ForLoopWithContinue) {
+TEST_F(ForLoopWithContinue) {
     const std::string script = R"(
         // Sum all numbers from 1 to 10 except multiples of 3
         result = 0
@@ -213,7 +213,7 @@ TEST_F(AdvancedForLoopTests, LoopVariableReuseAfterLoop) {
 }
 
 // Infinite Loop Detection with Condition Always True
-TEST_F(AdvancedForLoopTests, DISABLED_InfiniteLoopDetection) {
+TEST_F(InfiniteLoopDetection) {
     const std::string script = R"(
         // Potentially infinite loop, but we use a safety counter
         result = 0
@@ -255,7 +255,7 @@ TEST_F(AdvancedForLoopTests, EmptyForLoop) {
 }
 
 // For Loop to Generate Prime Numbers
-TEST_F(AdvancedForLoopTests, DISABLED_GeneratePrimeNumbers) {
+TEST_F(GeneratePrimeNumbers) {
     const std::string script = R"(
         // Find prime numbers up to 20
         primes = []
@@ -290,7 +290,6 @@ TEST_F(AdvancedForLoopTests, DISABLED_GeneratePrimeNumbers) {
     } catch (const std::exception& e) {
         std::cout << "Array operations not fully supported: " << e.what()
                   << std::endl;
-        GTEST_SKIP() << "Array operations not supported";
     }
 }
 
@@ -324,7 +323,6 @@ TEST_F(AdvancedForLoopTests, ComplexInitializationAndUpdate) {
     } catch (const std::exception& e) {
         std::cout << "Complex for loop initialization not supported: "
                   << e.what() << std::endl;
-        GTEST_SKIP() << "Complex for loop initialization not supported";
     }
 }
 

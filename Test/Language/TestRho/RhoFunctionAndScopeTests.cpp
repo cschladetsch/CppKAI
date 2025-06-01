@@ -168,7 +168,7 @@ TEST_F(RhoFunctionTests, ParameterPassing) {
 }
 
 // Nested function calls
-TEST_F(RhoFunctionTests, DISABLED_NestedFunctionCalls) {
+TEST_F(RhoFunctionTests, NestedFunctionCalls) {
     AssertDirectSimulation<int>(
         "fun square(n)\n"
         "    return n * n\n"
@@ -187,7 +187,7 @@ TEST_F(RhoFunctionTests, DISABLED_NestedFunctionCalls) {
 }
 
 // Recursion
-TEST_F(RhoFunctionTests, DISABLED_Recursion) {
+TEST_F(RhoFunctionTests, Recursion) {
     AssertDirectSimulation<int>(
         "fun factorial(n)\n"
         "    if n <= 1\n"
@@ -208,7 +208,7 @@ TEST_F(RhoFunctionTests, DISABLED_Recursion) {
 }
 
 // Mutual recursion
-TEST_F(RhoFunctionTests, DISABLED_MutualRecursion) {
+TEST_F(RhoFunctionTests, MutualRecursion) {
     AssertDirectSimulation<bool>(
         "fun isEven(n)\n"
         "    if n == 0\n"
@@ -256,7 +256,7 @@ TEST_F(RhoFunctionTests, BasicScoping) {
 }
 
 // Function scoping
-TEST_F(RhoFunctionTests, DISABLED_FunctionScoping) {
+TEST_F(RhoFunctionTests, FunctionScoping) {
     AssertDirectSimulation<int>(
         "x = 10\n"
         "fun mutateX()\n"
@@ -297,7 +297,7 @@ TEST_F(RhoFunctionTests, NestedScoping) {
 }  // In Rho, all assignments affect the same x
 
 // Function scoping with parameters
-TEST_F(RhoFunctionTests, DISABLED_FunctionScopingWithParams) {
+TEST_F(RhoFunctionTests, FunctionScopingWithParams) {
     AssertDirectSimulation<int>(
         "x = 10\n"
         "fun updateX(x)\n"
@@ -318,7 +318,7 @@ TEST_F(RhoFunctionTests, DISABLED_FunctionScopingWithParams) {
 }
 
 // Complex scope testing
-TEST_F(RhoFunctionTests, DISABLED_ComplexScoping) {
+TEST_F(RhoFunctionTests, ComplexScoping) {
     AssertDirectSimulation<int>(
         "x = 10\n"
         "fun outerFunc()\n"
@@ -348,7 +348,7 @@ TEST_F(RhoFunctionTests, DISABLED_ComplexScoping) {
 }
 
 // Debug test for nested function calls - CURRENTLY FAILING
-TEST_F(RhoFunctionTests, DISABLED_DebugSimpleNestedCalls) {
+TEST_F(RhoFunctionTests, DebugSimpleNestedCalls) {
     // First, define two simple functions
     console_.Execute(
         "fun add(a, b)\n"

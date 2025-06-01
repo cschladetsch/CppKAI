@@ -201,7 +201,7 @@ joinStrings("Hello ", "World")
 // where function returns don't properly continue execution in the
 // parent continuation. The bytecode is generated correctly but
 // execution stops after the first nested function returns.
-TEST_F(RhoFunctionTestsFixed, DISABLED_NestedFunctionCalls) {
+TEST_F(RhoFunctionTestsFixed, NestedFunctionCalls) {
     RunAndExpect<int>(R"(
 fun square(n)
     return n * n
@@ -228,7 +228,7 @@ double(increment(increment(double(2))))
 // Recursion
 // DISABLED: Requires nested function calls which don't work due to executor
 // limitation
-TEST_F(RhoFunctionTestsFixed, DISABLED_Recursion) {
+TEST_F(RhoFunctionTestsFixed, Recursion) {
     RunAndExpect<int>(R"(
 fun factorial(n)
     if n <= 1
@@ -255,7 +255,7 @@ fibonacci(7)
 // Mutual recursion
 // DISABLED: Requires nested function calls which don't work due to executor
 // limitation
-TEST_F(RhoFunctionTestsFixed, DISABLED_MutualRecursion) {
+TEST_F(RhoFunctionTestsFixed, MutualRecursion) {
     RunAndExpect<bool>(R"(
 fun isEven(n)
     if n == 0
@@ -305,7 +305,7 @@ x
 // Function scoping
 // DISABLED: These tests expect to evaluate multiple expressions and get the
 // last one but the test framework returns the first expression's result
-TEST_F(RhoFunctionTestsFixed, DISABLED_FunctionScoping) {
+TEST_F(RhoFunctionTestsFixed, FunctionScoping) {
     RunAndExpect<int>(R"(
 x = 10
 fun mutateX()
@@ -332,7 +332,7 @@ x
 
 // Function scoping with parameters
 // DISABLED: Same issue as FunctionScoping - test framework limitation
-TEST_F(RhoFunctionTestsFixed, DISABLED_FunctionScopingWithParams) {
+TEST_F(RhoFunctionTestsFixed, FunctionScopingWithParams) {
     RunAndExpect<int>(R"(
 x = 10
 fun updateX(x)
@@ -358,7 +358,7 @@ x
 
 // Complex scope testing
 // DISABLED: Same issue as FunctionScoping - test framework limitation
-TEST_F(RhoFunctionTestsFixed, DISABLED_ComplexScoping) {
+TEST_F(RhoFunctionTestsFixed, ComplexScoping) {
     RunAndExpect<int>(R"(
 counter = 0
 fun makeCounter()

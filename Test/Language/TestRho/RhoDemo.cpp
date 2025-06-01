@@ -78,7 +78,7 @@ class RhoDemo : public TestLangCommon {
 
 // Test to run the demo script
 // DISABLED: Demo script requires complete file I/O and system integration fixes
-TEST_F(RhoDemo, DISABLED_RunDemo) {
+TEST_F(RhoDemo, RunDemo) {
     std::cout << "\n\n=======================================" << std::endl;
     std::cout << "          RHO LANGUAGE DEMO           " << std::endl;
     std::cout << "=======================================" << std::endl;
@@ -100,7 +100,7 @@ TEST_F(RhoDemo, DISABLED_RunDemo) {
 // Simple test for each major feature to ensure they work separately
 // DISABLED: Basic features require parser fixes for control flow and function
 // definitions
-TEST_F(RhoDemo, DISABLED_BasicFeatureTests) {
+TEST_F(BasicFeatureTests) {
     Registry reg;
     Console console;
 

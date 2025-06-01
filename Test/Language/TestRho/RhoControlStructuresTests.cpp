@@ -124,7 +124,7 @@ TEST_F(RhoControlTests, IfElseStatements) {
 
 // Nested if statements
 // These now work with proper test setup - see RhoControlTestsProperlyFixed.cpp
-TEST_F(RhoControlTests, DISABLED_NestedIfStatements) {
+TEST_F(RhoControlTests, NestedIfStatements) {
     AssertDirectSimulation<int>(
         "result = 0\n"
         "if true\n"
@@ -164,7 +164,7 @@ TEST_F(RhoControlTests, DISABLED_NestedIfStatements) {
 
 // If with complex conditions
 // These work without parentheses - see RhoControlTestsProperlyFixed.cpp
-TEST_F(RhoControlTests, DISABLED_ComplexConditions) {
+TEST_F(RhoControlTests, ComplexConditions) {
     AssertDirectSimulation<int>(
         "result = 0\n"
         "if (5 > 3) && (10 < 20)\n"
@@ -307,7 +307,7 @@ sum
 }
 
 // Break statements in loops
-TEST_F(RhoControlTests, DISABLED_BreakStatements) {
+TEST_F(RhoControlTests, BreakStatements) {
     AssertDirectSimulation<int>(
         "sum = 0\n"
         "for i = 1; i <= 10; i = i + 1\n"
@@ -330,7 +330,7 @@ TEST_F(RhoControlTests, DISABLED_BreakStatements) {
 }
 
 // Continue statements in loops
-TEST_F(RhoControlTests, DISABLED_ContinueStatements) {
+TEST_F(RhoControlTests, ContinueStatements) {
     AssertDirectSimulation<int>(
         "sum = 0\n"
         "for i = 1; i <= 10; i = i + 1\n"

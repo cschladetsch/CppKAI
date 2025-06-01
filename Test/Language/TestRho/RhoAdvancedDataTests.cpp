@@ -224,7 +224,7 @@ TEST_F(RhoAdvancedDataTests, ArrayPlusOperations) {
 
 // Test array slicing
 // Disabled: requires unimplemented .slice method
-TEST_F(RhoAdvancedDataTests, DISABLED_ArraySlicing) {
+TEST_F(RhoAdvancedDataTests, ArraySlicing) {
     VerifyArrayResult(
         "arr = [10, 20, 30, 40, 50]\n"
         "arr.slice(1, 4)",  // Elements at index 1, 2, 3
@@ -233,7 +233,7 @@ TEST_F(RhoAdvancedDataTests, DISABLED_ArraySlicing) {
 
 // Test array iteration with map-like operation
 // Disabled: requires unimplemented .size method
-TEST_F(RhoAdvancedDataTests, DISABLED_ArrayMapOperation) {
+TEST_F(RhoAdvancedDataTests, ArrayMapOperation) {
     VerifyArrayResult(
         "arr = [1, 2, 3, 4, 5]\n"
         "result = []\n"
@@ -245,7 +245,7 @@ TEST_F(RhoAdvancedDataTests, DISABLED_ArrayMapOperation) {
 
 // Test array filtering
 // Disabled: requires unimplemented features (likely .size and .push methods)
-TEST_F(RhoAdvancedDataTests, DISABLED_ArrayFilterOperation) {
+TEST_F(RhoAdvancedDataTests, ArrayFilterOperation) {
     VerifyArrayResult(
         "arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]\n"
         "result = []\n"
@@ -258,7 +258,7 @@ TEST_F(RhoAdvancedDataTests, DISABLED_ArrayFilterOperation) {
 
 // Test array reduction (sum)
 // Disabled: requires unimplemented features (likely .size method)
-TEST_F(RhoAdvancedDataTests, DISABLED_ArrayReduceSum) {
+TEST_F(RhoAdvancedDataTests, ArrayReduceSum) {
     ExecuteRhoAndVerify<int>(
         "arr = [1, 2, 3, 4, 5]\n"
         "sum = 0\n"
@@ -278,7 +278,7 @@ TEST_F(RhoAdvancedDataTests, NestedArrays) {
 
 // Test map creation and access
 // Disabled: maps not fully implemented
-TEST_F(RhoAdvancedDataTests, DISABLED_MapCreationAndAccess) {
+TEST_F(RhoAdvancedDataTests, MapCreationAndAccess) {
     VerifyMapKeyValues(
         "map = {}\n"
         "map['one'] = 1\n"
@@ -290,7 +290,7 @@ TEST_F(RhoAdvancedDataTests, DISABLED_MapCreationAndAccess) {
 
 // Test map value update
 // Disabled: maps not fully implemented
-TEST_F(RhoAdvancedDataTests, DISABLED_MapValueUpdate) {
+TEST_F(RhoAdvancedDataTests, MapValueUpdate) {
     VerifyMapKeyValues(
         "map = {}\n"
         "map['one'] = 1\n"
@@ -302,7 +302,7 @@ TEST_F(RhoAdvancedDataTests, DISABLED_MapValueUpdate) {
 
 // Test map iteration
 // Disabled: maps not fully implemented
-TEST_F(RhoAdvancedDataTests, DISABLED_MapIteration) {
+TEST_F(RhoAdvancedDataTests, MapIteration) {
     ExecuteRhoAndVerify<int>(
         "map = {}\n"
         "map['a'] = 5\n"
@@ -319,7 +319,7 @@ TEST_F(RhoAdvancedDataTests, DISABLED_MapIteration) {
 
 // Test complex data structure (array of maps)
 // Requires unimplemented features
-TEST_F(RhoAdvancedDataTests, DISABLED_ArrayOfMaps) {
+TEST_F(RhoAdvancedDataTests, ArrayOfMaps) {
     ExecuteRhoAndVerify<int>(
         "users = [\n"
         "    { 'name': 'Alice', 'age': 30, 'score': 85 },\n"
@@ -332,7 +332,7 @@ TEST_F(RhoAdvancedDataTests, DISABLED_ArrayOfMaps) {
 
 // Test complex data structure manipulation
 // Requires unimplemented features
-TEST_F(RhoAdvancedDataTests, DISABLED_ComplexDataManipulation) {
+TEST_F(RhoAdvancedDataTests, ComplexDataManipulation) {
     ExecuteRhoAndVerify<int>(
         "users = [\n"
         "    { 'name': 'Alice', 'age': 30, 'score': 85 },\n"
@@ -350,7 +350,7 @@ TEST_F(RhoAdvancedDataTests, DISABLED_ComplexDataManipulation) {
 
 // Test string operations with arrays
 // Requires unimplemented features
-TEST_F(RhoAdvancedDataTests, DISABLED_StringArrayOperations) {
+TEST_F(RhoAdvancedDataTests, StringArrayOperations) {
     ExecuteRhoAndVerifyString(
         "words = ['Hello', ' ', 'World', '!']\n"
         "message = ''\n"
@@ -362,7 +362,7 @@ TEST_F(RhoAdvancedDataTests, DISABLED_StringArrayOperations) {
 
 // Test higher order function simulation (passing functions as values)
 // Requires unimplemented features
-TEST_F(RhoAdvancedDataTests, DISABLED_HigherOrderFunctions) {
+TEST_F(RhoAdvancedDataTests, HigherOrderFunctions) {
     ExecuteRhoAndVerify<int>(
         "fun applyOperation(a, b, operation)\n"
         "    if operation == 'add'\n"
@@ -380,7 +380,7 @@ TEST_F(RhoAdvancedDataTests, DISABLED_HigherOrderFunctions) {
 
 // Test closures simulation
 // Requires unimplemented features
-TEST_F(RhoAdvancedDataTests, DISABLED_ClosureSimulation) {
+TEST_F(RhoAdvancedDataTests, ClosureSimulation) {
     ExecuteRhoAndVerify<int>(
         "fun makeCounter(start)\n"
         "    count = start\n"
@@ -397,7 +397,7 @@ TEST_F(RhoAdvancedDataTests, DISABLED_ClosureSimulation) {
 
 // Test advanced map manipulations
 // Requires unimplemented features
-TEST_F(RhoAdvancedDataTests, DISABLED_AdvancedMapManipulations) {
+TEST_F(RhoAdvancedDataTests, AdvancedMapManipulations) {
     ExecuteRhoAndVerifyString(
         "config = {\n"
         "    'server': 'api.example.com',\n"
@@ -415,7 +415,7 @@ TEST_F(RhoAdvancedDataTests, DISABLED_AdvancedMapManipulations) {
 
 // Test array sorting algorithm
 // Requires unimplemented features
-TEST_F(RhoAdvancedDataTests, DISABLED_ArraySorting) {
+TEST_F(RhoAdvancedDataTests, ArraySorting) {
     VerifyArrayResult(
         "fun bubbleSort(arr)\n"
         "    n = arr.size()\n"
@@ -434,7 +434,7 @@ TEST_F(RhoAdvancedDataTests, DISABLED_ArraySorting) {
 
 // Test complex return value from function
 // Requires unimplemented features
-TEST_F(RhoAdvancedDataTests, DISABLED_ComplexReturnValue) {
+TEST_F(RhoAdvancedDataTests, ComplexReturnValue) {
     ExecuteRhoAndVerify<int>(
         "fun processData(data)\n"
         "    result = {\n"
@@ -463,7 +463,7 @@ TEST_F(RhoAdvancedDataTests, DISABLED_ComplexReturnValue) {
 
 // Test data transformation pipeline
 // Requires unimplemented features
-TEST_F(RhoAdvancedDataTests, DISABLED_DataTransformationPipeline) {
+TEST_F(RhoAdvancedDataTests, DataTransformationPipeline) {
     VerifyArrayResult(
         "fun filterEven(arr)\n"
         "    result = []\n"

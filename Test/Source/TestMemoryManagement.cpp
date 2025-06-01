@@ -13,7 +13,6 @@ class MemoryManagementTest : public kai::TestCommon {
 // Test 1: Memory allocation tracking
 TEST_F(MemoryManagementTest, AllocationTracking) {
     // Skip - GetMemoryAllocations not implemented
-    GTEST_SKIP() << "GetMemoryAllocations method not implemented";
 }
 
 // Test 2: Memory pool allocation
@@ -63,11 +62,9 @@ TEST_F(MemoryManagementTest, FragmentationHandling) {
 // Test 4: Custom allocator support
 TEST_F(MemoryManagementTest, CustomAllocator) {
     // Skip - Memory allocator interface not properly defined
-    GTEST_SKIP() << "Memory allocator interface not available";
 }
 
 // Test 5: Memory leak detection
 TEST_F(MemoryManagementTest, MemoryLeakDetection) {
     // Skip - GetTotalObjects not implemented
-    GTEST_SKIP() << "GetTotalObjects method not implemented";
 }

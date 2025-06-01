@@ -637,8 +637,26 @@ HashValue GetHash(Object const &Q) {
     return 13;
 }
 
+// Helper to track serialization depth
+static thread_local int serialization_depth = 0;
+static const int MAX_SERIALIZATION_DEPTH = 10;
+
 BinaryStream &operator<<(BinaryStream &stream, const Object &object) {
     if (!object.Exists()) return stream << 0;
+
+    // Check for circular references by limiting depth
+    if (serialization_depth >= MAX_SERIALIZATION_DEPTH) {
+        // Write a null object marker when max depth is reached
+        return stream << 0;
+    }
+
+    // Increment depth counter
+    serialization_depth++;
+    
+    // Use RAII to ensure depth is decremented on exit
+    struct DepthGuard {
+        ~DepthGuard() { serialization_depth--; }
+    } guard;
 
     const StorageBase &base = GetStorageBase(object);
     stream << base.GetTypeNumber().ToInt();

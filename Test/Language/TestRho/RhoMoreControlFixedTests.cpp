@@ -208,7 +208,7 @@ b
 }
 
 // Test early returns with conditions
-TEST_F(RhoMoreControlFixedTests, DISABLED_EarlyReturnPatterns) {
+TEST_F(RhoMoreControlFixedTests, EarlyReturnPatterns) {
     RunAndExpect<int>(R"(
 result = 0
 x = 5

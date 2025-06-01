@@ -447,6 +447,10 @@ void PiTranslator::AppendTokenised(const TokenNode &tok) {
             AppendOp(Operation::ToArray);
             break;
 
+        case PiTokenEnumType::ToMap:
+            AppendOp(Operation::ToMap);
+            break;
+
         case PiTokenEnumType::Depth:
             AppendOp(Operation::Depth);
             break;
