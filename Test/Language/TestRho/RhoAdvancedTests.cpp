@@ -14,24 +14,24 @@ TEST_F(RhoAdvancedTest, RangeBasedForLoopInPiBlock) {
     
     // Get the result from the variable 'result'
     console_.Execute("result");
-    ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 15);  // 1+2+3+4+5 = 15
+    ASSERT_EQ(exec->GetDataStack()->Size(), 1);
+    EXPECT_EQ(kai::ConstDeref<int>(exec->GetDataStack()->Top()), 15);  // 1+2+3+4+5 = 15
 
-    stack->Clear();
+    exec->GetDataStack()->Clear();
 
     // Test 2: Factorial using pi block
     console_.Execute("factorial = pi{ 1 1 5 { * } for }");
     console_.Execute("factorial");
-    ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 120);  // 5! = 120
+    ASSERT_EQ(exec->GetDataStack()->Size(), 1);
+    EXPECT_EQ(kai::ConstDeref<int>(exec->GetDataStack()->Top()), 120);  // 5! = 120
 
-    stack->Clear();
+    exec->GetDataStack()->Clear();
 
     // Test 3: Mixed Rho and Pi with for loop
     console_.Execute("sum = 0; sum = sum + pi{ 0 1 10 { + } for }");
     console_.Execute("sum");
-    ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 55);  // Sum of 1 to 10 = 55
+    ASSERT_EQ(exec->GetDataStack()->Size(), 1);
+    EXPECT_EQ(kai::ConstDeref<int>(exec->GetDataStack()->Top()), 55);  // Sum of 1 to 10 = 55
 }
 
 // Test complex Pi blocks with multiple operations
@@ -42,24 +42,24 @@ TEST_F(RhoAdvancedTest, ComplexPiBlocks) {
     // Test 1: Nested operations in pi block
     console_.Execute("result = pi{ 2 3 + 4 * }");
     console_.Execute("result");
-    ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 20);  // (2+3)*4 = 20
+    ASSERT_EQ(exec->GetDataStack()->Size(), 1);
+    EXPECT_EQ(kai::ConstDeref<int>(exec->GetDataStack()->Top()), 20);  // (2+3)*4 = 20
 
-    stack->Clear();
+    exec->GetDataStack()->Clear();
 
     // Test 2: Using pi block for calculations in Rho expression
     console_.Execute("x = 10 + pi{ 5 6 * } - 20");
     console_.Execute("x");
-    ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 20);  // 10 + 30 - 20 = 20
+    ASSERT_EQ(exec->GetDataStack()->Size(), 1);
+    EXPECT_EQ(kai::ConstDeref<int>(exec->GetDataStack()->Top()), 20);  // 10 + 30 - 20 = 20
 
-    stack->Clear();
+    exec->GetDataStack()->Clear();
 
     // Test 3: Pi block with array operations
     console_.Execute("arr = pi{ [1 2 3] }");
     console_.Execute("pi{ arr @ size }");
-    ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 3);
+    ASSERT_EQ(exec->GetDataStack()->Size(), 1);
+    EXPECT_EQ(kai::ConstDeref<int>(exec->GetDataStack()->Top()), 3);
 }
 
 // Test Rho functions with pi blocks
@@ -73,17 +73,17 @@ TEST_F(RhoAdvancedTest, FunctionsWithPiBlocks) {
     // Call the function
     console_.Execute("result = sumRange(1, 5)");
     console_.Execute("result");
-    ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 15);  // Sum of 1 to 5
+    ASSERT_EQ(exec->GetDataStack()->Size(), 1);
+    EXPECT_EQ(kai::ConstDeref<int>(exec->GetDataStack()->Top()), 15);  // Sum of 1 to 5
 
-    stack->Clear();
+    exec->GetDataStack()->Clear();
 
     // Function with mixed Rho and Pi
     console_.Execute("function factorial(n) { return pi{ 1 1 n @ { * } for }; }");
     console_.Execute("fact5 = factorial(5)");
     console_.Execute("fact5");
-    ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 120);  // 5!
+    ASSERT_EQ(exec->GetDataStack()->Size(), 1);
+    EXPECT_EQ(kai::ConstDeref<int>(exec->GetDataStack()->Top()), 120);  // 5!
 }
 
 // Test advanced control flow with pi blocks
@@ -94,16 +94,16 @@ TEST_F(RhoAdvancedTest, ControlFlowWithPiBlocks) {
     // Test 1: If-else with pi block conditions
     console_.Execute("x = 10; result = if (pi{ x @ 5 > }) { pi{ 100 } } else { pi{ 200 } }");
     console_.Execute("result");
-    ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 100);  // x > 5 is true
+    ASSERT_EQ(exec->GetDataStack()->Size(), 1);
+    EXPECT_EQ(kai::ConstDeref<int>(exec->GetDataStack()->Top()), 100);  // x > 5 is true
 
-    stack->Clear();
+    exec->GetDataStack()->Clear();
 
     // Test 2: While loop using pi blocks
     console_.Execute("counter = 0; while (pi{ counter @ 3 < }) { counter = pi{ counter @ 1 + }; }");
     console_.Execute("counter");
-    ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 3);
+    ASSERT_EQ(exec->GetDataStack()->Size(), 1);
+    EXPECT_EQ(kai::ConstDeref<int>(exec->GetDataStack()->Top()), 3);
 }
 
 // Test error handling in pi blocks
@@ -118,8 +118,8 @@ TEST_F(RhoAdvancedTest, PiBlockErrorHandling) {
     // Test 2: Pi block leaving multiple values on stack
     console_.Execute("multi = pi{ 1 2 3 }");
     console_.Execute("multi");
-    ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 3);  // Last value
+    ASSERT_EQ(exec->GetDataStack()->Size(), 1);
+    EXPECT_EQ(kai::ConstDeref<int>(exec->GetDataStack()->Top()), 3);  // Last value
 }
 
 // Test performance-critical operations with pi blocks
@@ -130,14 +130,14 @@ TEST_F(RhoAdvancedTest, PerformanceOperations) {
     // Test 1: Large range sum
     console_.Execute("largeSum = pi{ 0 1 100 { + } for }");
     console_.Execute("largeSum");
-    ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 5050);  // Sum of 1 to 100
+    ASSERT_EQ(exec->GetDataStack()->Size(), 1);
+    EXPECT_EQ(kai::ConstDeref<int>(exec->GetDataStack()->Top()), 5050);  // Sum of 1 to 100
 
-    stack->Clear();
+    exec->GetDataStack()->Clear();
 
     // Test 2: Nested loops in pi block
     console_.Execute("nested = pi{ 0 1 10 { 1 10 { + } for + } for }");
     console_.Execute("nested");
-    ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 550);  // Sum of 10*(1+2+...+10)
+    ASSERT_EQ(exec->GetDataStack()->Size(), 1);
+    EXPECT_EQ(kai::ConstDeref<int>(exec->GetDataStack()->Top()), 550);  // Sum of 10*(1+2+...+10)
 }

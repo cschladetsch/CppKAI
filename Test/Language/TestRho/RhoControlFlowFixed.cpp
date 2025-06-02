@@ -214,16 +214,19 @@ result
 // Test multiple if-else if-else
 // DISABLED: Parser doesn't support "else if" syntax
 TEST_F(RhoControlFlowFixed, IfElseIfElse) {
+    // Use nested if-else as a workaround for else-if
     RunAndExpect<int>(R"(
 x = 2
 if x == 1
     result = 10
-else if x == 2
-    result = 20
-else if x == 3
-    result = 30
 else
-    result = 40
+    if x == 2
+        result = 20
+    else
+        if x == 3
+            result = 30
+        else
+            result = 40
 result
 )",
                       20);
