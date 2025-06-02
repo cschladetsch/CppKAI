@@ -58,6 +58,7 @@ set(core_sources
     ${source_path}/TestSmartPointers.cpp
     ${source_path}/TestReflection.cpp
     ${source_path}/TestSerialization.cpp
+    # TestAdvancedCore.cpp - Disabled - requires proper type traits
 )
 
 # Add common test files

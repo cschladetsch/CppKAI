@@ -329,6 +329,78 @@ TestPi/ExtendedPiTests.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/TestPi/ExtendedPiTests.cpp.s
 .PHONY : TestPi/ExtendedPiTests.cpp.s
 
+TestPi/PiAdvancedContinuationTests.o: TestPi/PiAdvancedContinuationTests.cpp.o
+.PHONY : TestPi/PiAdvancedContinuationTests.o
+
+# target to build an object file
+TestPi/PiAdvancedContinuationTests.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/TestPi/PiAdvancedContinuationTests.cpp.o
+.PHONY : TestPi/PiAdvancedContinuationTests.cpp.o
+
+TestPi/PiAdvancedContinuationTests.i: TestPi/PiAdvancedContinuationTests.cpp.i
+.PHONY : TestPi/PiAdvancedContinuationTests.i
+
+# target to preprocess a source file
+TestPi/PiAdvancedContinuationTests.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/TestPi/PiAdvancedContinuationTests.cpp.i
+.PHONY : TestPi/PiAdvancedContinuationTests.cpp.i
+
+TestPi/PiAdvancedContinuationTests.s: TestPi/PiAdvancedContinuationTests.cpp.s
+.PHONY : TestPi/PiAdvancedContinuationTests.s
+
+# target to generate assembly for a file
+TestPi/PiAdvancedContinuationTests.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/TestPi/PiAdvancedContinuationTests.cpp.s
+.PHONY : TestPi/PiAdvancedContinuationTests.cpp.s
+
+TestPi/PiAdvancedControlFlowTests.o: TestPi/PiAdvancedControlFlowTests.cpp.o
+.PHONY : TestPi/PiAdvancedControlFlowTests.o
+
+# target to build an object file
+TestPi/PiAdvancedControlFlowTests.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/TestPi/PiAdvancedControlFlowTests.cpp.o
+.PHONY : TestPi/PiAdvancedControlFlowTests.cpp.o
+
+TestPi/PiAdvancedControlFlowTests.i: TestPi/PiAdvancedControlFlowTests.cpp.i
+.PHONY : TestPi/PiAdvancedControlFlowTests.i
+
+# target to preprocess a source file
+TestPi/PiAdvancedControlFlowTests.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/TestPi/PiAdvancedControlFlowTests.cpp.i
+.PHONY : TestPi/PiAdvancedControlFlowTests.cpp.i
+
+TestPi/PiAdvancedControlFlowTests.s: TestPi/PiAdvancedControlFlowTests.cpp.s
+.PHONY : TestPi/PiAdvancedControlFlowTests.s
+
+# target to generate assembly for a file
+TestPi/PiAdvancedControlFlowTests.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/TestPi/PiAdvancedControlFlowTests.cpp.s
+.PHONY : TestPi/PiAdvancedControlFlowTests.cpp.s
+
+TestPi/PiAdvancedTests.o: TestPi/PiAdvancedTests.cpp.o
+.PHONY : TestPi/PiAdvancedTests.o
+
+# target to build an object file
+TestPi/PiAdvancedTests.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/TestPi/PiAdvancedTests.cpp.o
+.PHONY : TestPi/PiAdvancedTests.cpp.o
+
+TestPi/PiAdvancedTests.i: TestPi/PiAdvancedTests.cpp.i
+.PHONY : TestPi/PiAdvancedTests.i
+
+# target to preprocess a source file
+TestPi/PiAdvancedTests.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/TestPi/PiAdvancedTests.cpp.i
+.PHONY : TestPi/PiAdvancedTests.cpp.i
+
+TestPi/PiAdvancedTests.s: TestPi/PiAdvancedTests.cpp.s
+.PHONY : TestPi/PiAdvancedTests.s
+
+# target to generate assembly for a file
+TestPi/PiAdvancedTests.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/TestPi/PiAdvancedTests.cpp.s
+.PHONY : TestPi/PiAdvancedTests.cpp.s
+
 TestPi/PiAssertTest.o: TestPi/PiAssertTest.cpp.o
 .PHONY : TestPi/PiAssertTest.o
 
@@ -953,6 +1025,30 @@ TestRho/PiAssertInRhoTest.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/PiAssertInRhoTest.cpp.s
 .PHONY : TestRho/PiAssertInRhoTest.cpp.s
 
+TestRho/RhoAdvancedContinuationTests.o: TestRho/RhoAdvancedContinuationTests.cpp.o
+.PHONY : TestRho/RhoAdvancedContinuationTests.o
+
+# target to build an object file
+TestRho/RhoAdvancedContinuationTests.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoAdvancedContinuationTests.cpp.o
+.PHONY : TestRho/RhoAdvancedContinuationTests.cpp.o
+
+TestRho/RhoAdvancedContinuationTests.i: TestRho/RhoAdvancedContinuationTests.cpp.i
+.PHONY : TestRho/RhoAdvancedContinuationTests.i
+
+# target to preprocess a source file
+TestRho/RhoAdvancedContinuationTests.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoAdvancedContinuationTests.cpp.i
+.PHONY : TestRho/RhoAdvancedContinuationTests.cpp.i
+
+TestRho/RhoAdvancedContinuationTests.s: TestRho/RhoAdvancedContinuationTests.cpp.s
+.PHONY : TestRho/RhoAdvancedContinuationTests.s
+
+# target to generate assembly for a file
+TestRho/RhoAdvancedContinuationTests.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoAdvancedContinuationTests.cpp.s
+.PHONY : TestRho/RhoAdvancedContinuationTests.cpp.s
+
 TestRho/RhoAdvancedDataTests.o: TestRho/RhoAdvancedDataTests.cpp.o
 .PHONY : TestRho/RhoAdvancedDataTests.o
 
@@ -1000,6 +1096,30 @@ TestRho/RhoAdvancedOperationsTests.s: TestRho/RhoAdvancedOperationsTests.cpp.s
 TestRho/RhoAdvancedOperationsTests.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoAdvancedOperationsTests.cpp.s
 .PHONY : TestRho/RhoAdvancedOperationsTests.cpp.s
+
+TestRho/RhoAdvancedTests.o: TestRho/RhoAdvancedTests.cpp.o
+.PHONY : TestRho/RhoAdvancedTests.o
+
+# target to build an object file
+TestRho/RhoAdvancedTests.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoAdvancedTests.cpp.o
+.PHONY : TestRho/RhoAdvancedTests.cpp.o
+
+TestRho/RhoAdvancedTests.i: TestRho/RhoAdvancedTests.cpp.i
+.PHONY : TestRho/RhoAdvancedTests.i
+
+# target to preprocess a source file
+TestRho/RhoAdvancedTests.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoAdvancedTests.cpp.i
+.PHONY : TestRho/RhoAdvancedTests.cpp.i
+
+TestRho/RhoAdvancedTests.s: TestRho/RhoAdvancedTests.cpp.s
+.PHONY : TestRho/RhoAdvancedTests.s
+
+# target to generate assembly for a file
+TestRho/RhoAdvancedTests.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoAdvancedTests.cpp.s
+.PHONY : TestRho/RhoAdvancedTests.cpp.s
 
 TestRho/RhoAssertTest.o: TestRho/RhoAssertTest.cpp.o
 .PHONY : TestRho/RhoAssertTest.o
@@ -2153,6 +2273,15 @@ help:
 	@echo "... TestPi/ExtendedPiTests.o"
 	@echo "... TestPi/ExtendedPiTests.i"
 	@echo "... TestPi/ExtendedPiTests.s"
+	@echo "... TestPi/PiAdvancedContinuationTests.o"
+	@echo "... TestPi/PiAdvancedContinuationTests.i"
+	@echo "... TestPi/PiAdvancedContinuationTests.s"
+	@echo "... TestPi/PiAdvancedControlFlowTests.o"
+	@echo "... TestPi/PiAdvancedControlFlowTests.i"
+	@echo "... TestPi/PiAdvancedControlFlowTests.s"
+	@echo "... TestPi/PiAdvancedTests.o"
+	@echo "... TestPi/PiAdvancedTests.i"
+	@echo "... TestPi/PiAdvancedTests.s"
 	@echo "... TestPi/PiAssertTest.o"
 	@echo "... TestPi/PiAssertTest.i"
 	@echo "... TestPi/PiAssertTest.s"
@@ -2231,12 +2360,18 @@ help:
 	@echo "... TestRho/PiAssertInRhoTest.o"
 	@echo "... TestRho/PiAssertInRhoTest.i"
 	@echo "... TestRho/PiAssertInRhoTest.s"
+	@echo "... TestRho/RhoAdvancedContinuationTests.o"
+	@echo "... TestRho/RhoAdvancedContinuationTests.i"
+	@echo "... TestRho/RhoAdvancedContinuationTests.s"
 	@echo "... TestRho/RhoAdvancedDataTests.o"
 	@echo "... TestRho/RhoAdvancedDataTests.i"
 	@echo "... TestRho/RhoAdvancedDataTests.s"
 	@echo "... TestRho/RhoAdvancedOperationsTests.o"
 	@echo "... TestRho/RhoAdvancedOperationsTests.i"
 	@echo "... TestRho/RhoAdvancedOperationsTests.s"
+	@echo "... TestRho/RhoAdvancedTests.o"
+	@echo "... TestRho/RhoAdvancedTests.i"
+	@echo "... TestRho/RhoAdvancedTests.s"
 	@echo "... TestRho/RhoAssertTest.o"
 	@echo "... TestRho/RhoAssertTest.i"
 	@echo "... TestRho/RhoAssertTest.s"

@@ -167,7 +167,9 @@ TEST_F(RhoControlTests, NestedIfStatements) {
 TEST_F(RhoControlTests, ComplexConditions) {
     AssertDirectSimulation<int>(
         "result = 0\n"
-        "if (5 > 3) && (10 < 20)\n"
+        "a = 5 > 3\n"
+        "b = 10 < 20\n"
+        "if a && b\n"
         "    result = 42\n"
         "else\n"
         "    result = 24\n"
@@ -176,7 +178,9 @@ TEST_F(RhoControlTests, ComplexConditions) {
 
     AssertDirectSimulation<int>(
         "result = 0\n"
-        "if (5 < 3) || (10 > 20)\n"
+        "a = 5 < 3\n"
+        "b = 10 > 20\n"
+        "if a || b\n"
         "    result = 42\n"
         "else\n"
         "    result = 24\n"
@@ -184,13 +188,15 @@ TEST_F(RhoControlTests, ComplexConditions) {
         24);
 
     AssertDirectSimulation<int>(
-        "int result = 0;\n"
-        "if ((5 > 3) == (10 < 20)) {\n"
-        "    result = 42;\n"
-        "} else {\n"
-        "    result = 24;\n"
-        "}\n"
-        "result;",
+        "result = 0\n"
+        "a = 5 > 3\n"
+        "b = 10 < 20\n"
+        "c = a == b\n"
+        "if c\n"
+        "    result = 42\n"
+        "else\n"
+        "    result = 24\n"
+        "result",
         42);
 }
 

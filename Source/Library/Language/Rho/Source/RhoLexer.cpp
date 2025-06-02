@@ -158,7 +158,7 @@ bool RhoLexer::NextToken() {
             return Add(Enum::Colon);
     }
 
-    LexError("Unrecognised %c");
+    LexError("Unrecognised character");
 
     return false;
 }

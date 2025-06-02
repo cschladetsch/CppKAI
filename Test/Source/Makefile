@@ -470,6 +470,30 @@ TestAdditionalStringOps.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestAdditionalStringOps.cpp.s
 .PHONY : TestAdditionalStringOps.cpp.s
 
+TestAdvancedCore.o: TestAdvancedCore.cpp.o
+.PHONY : TestAdvancedCore.o
+
+# target to build an object file
+TestAdvancedCore.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestAdvancedCore.cpp.o
+.PHONY : TestAdvancedCore.cpp.o
+
+TestAdvancedCore.i: TestAdvancedCore.cpp.i
+.PHONY : TestAdvancedCore.i
+
+# target to preprocess a source file
+TestAdvancedCore.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestAdvancedCore.cpp.i
+.PHONY : TestAdvancedCore.cpp.i
+
+TestAdvancedCore.s: TestAdvancedCore.cpp.s
+.PHONY : TestAdvancedCore.s
+
+# target to generate assembly for a file
+TestAdvancedCore.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestAdvancedCore.cpp.s
+.PHONY : TestAdvancedCore.cpp.s
+
 TestBasePointer.o: TestBasePointer.cpp.o
 .PHONY : TestBasePointer.o
 
@@ -1130,6 +1154,9 @@ help:
 	@echo "... TestAdditionalStringOps.o"
 	@echo "... TestAdditionalStringOps.i"
 	@echo "... TestAdditionalStringOps.s"
+	@echo "... TestAdvancedCore.o"
+	@echo "... TestAdvancedCore.i"
+	@echo "... TestAdvancedCore.s"
 	@echo "... TestBasePointer.o"
 	@echo "... TestBasePointer.i"
 	@echo "... TestBasePointer.s"
