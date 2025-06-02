@@ -94,7 +94,7 @@ TEST(RhoDoWhileTests, NestedDoWhileLoops) {
 }
 
 // Test do-while with break
-TEST(RhoDoWhileTests, DISABLED_DoWhileWithBreak) {
+TEST(RhoDoWhileTests, DoWhileWithBreak) {
     Console console;
     console.SetLanguage(Language::Rho);
 
@@ -123,7 +123,7 @@ TEST(RhoDoWhileTests, DISABLED_DoWhileWithBreak) {
 }
 
 // Test do-while with continue
-TEST(RhoDoWhileTests, DISABLED_DoWhileWithContinue) {
+TEST(RhoDoWhileTests, DoWhileWithContinue) {
     Console console;
     console.SetLanguage(Language::Rho);
 

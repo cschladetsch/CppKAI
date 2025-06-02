@@ -6,7 +6,7 @@
 // All tests in this file are disabled until the feature is implemented.
 
 // Test suite for Rho pattern matching and destructuring
-TEST(RhoPatternMatching, DISABLED_BasicPatternMatch) {
+TEST(RhoPatternMatching, BasicPatternMatch) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
@@ -26,7 +26,7 @@ TEST(RhoPatternMatching, DISABLED_BasicPatternMatch) {
     EXPECT_EQ(kai::ConstDeref<kai::String>(stack->Top()), "forty-two");
 }
 
-TEST(RhoPatternMatching, DISABLED_TupleDestructuring) {
+TEST(RhoPatternMatching, TupleDestructuring) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
@@ -42,7 +42,7 @@ TEST(RhoPatternMatching, DISABLED_TupleDestructuring) {
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 30);
 }
 
-TEST(RhoPatternMatching, DISABLED_ListPatternMatch) {
+TEST(RhoPatternMatching, ListPatternMatch) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
@@ -61,7 +61,7 @@ TEST(RhoPatternMatching, DISABLED_ListPatternMatch) {
     EXPECT_EQ(kai::ConstDeref<kai::String>(stack->Top()), "multiple");
 }
 
-TEST(RhoPatternMatching, DISABLED_GuardClauses) {
+TEST(RhoPatternMatching, GuardClauses) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
@@ -80,7 +80,7 @@ TEST(RhoPatternMatching, DISABLED_GuardClauses) {
     EXPECT_EQ(kai::ConstDeref<kai::String>(stack->Top()), "adult");
 }
 
-TEST(RhoPatternMatching, DISABLED_NestedPatterns) {
+TEST(RhoPatternMatching, NestedPatterns) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();

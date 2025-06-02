@@ -4,7 +4,7 @@
 
 // Test suite for Rho generators and lazy evaluation
 // Note: Generators are not yet implemented in Rho
-TEST(DISABLED_RhoGenerator, SimpleGenerator) {
+TEST(RhoGenerator, SimpleGenerator) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
@@ -28,7 +28,7 @@ TEST(DISABLED_RhoGenerator, SimpleGenerator) {
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 6);  // 1 + 2 + 3
 }
 
-TEST(DISABLED_RhoGenerator, GeneratorWithCondition) {
+TEST(RhoGenerator, GeneratorWithCondition) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
@@ -56,7 +56,7 @@ TEST(DISABLED_RhoGenerator, GeneratorWithCondition) {
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 3);  // Fifth fibonacci number
 }
 
-TEST(DISABLED_RhoGenerator, GeneratorComprehension) {
+TEST(RhoGenerator, GeneratorComprehension) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
@@ -73,7 +73,7 @@ TEST(DISABLED_RhoGenerator, GeneratorComprehension) {
     EXPECT_EQ(kai::ConstDeref<int>(array.At(4)), 25);
 }
 
-TEST(DISABLED_RhoGenerator, LazyEvaluation) {
+TEST(RhoGenerator, LazyEvaluation) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
@@ -97,7 +97,7 @@ TEST(DISABLED_RhoGenerator, LazyEvaluation) {
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 3);
 }
 
-TEST(DISABLED_RhoGenerator, GeneratorChaining) {
+TEST(RhoGenerator, GeneratorChaining) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();

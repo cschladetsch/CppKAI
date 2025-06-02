@@ -201,7 +201,7 @@ TEST(ComplexControlFlow, ConditionalContinuationChaining) {
 }
 
 // Test 6: Guard patterns with continuations
-TEST(ComplexControlFlow, DISABLED_GuardPatternsWithContinuations) {
+TEST(ComplexControlFlow, GuardPatternsWithContinuations) {
     Console console;
     console.SetLanguage(Language::Rho);
 
@@ -259,7 +259,7 @@ TEST(ComplexControlFlow, DISABLED_GuardPatternsWithContinuations) {
 }
 
 // Test 7: Conditional break/continue with continuations
-TEST(ComplexControlFlow, DISABLED_ConditionalBreakContinue) {
+TEST(ComplexControlFlow, ConditionalBreakContinue) {
     Console console;
     console.SetLanguage(Language::Rho);
 
@@ -498,7 +498,7 @@ TEST(ComplexControlFlow, LogicalOperatorPrecedence) {
 }
 
 // Test 12: Nested loop control with conditional continuations
-TEST(ComplexControlFlow, DISABLED_NestedLoopControlConditional) {
+TEST(ComplexControlFlow, NestedLoopControlConditional) {
     Console console;
     console.SetLanguage(Language::Rho);
 
@@ -837,7 +837,7 @@ TEST(ComplexControlFlow, RecursiveContinuationsWithConditionals) {
 }
 
 // Test 18: Conditional pipeline with early termination
-TEST(ComplexControlFlow, DISABLED_ConditionalPipelineEarlyTermination) {
+TEST(ComplexControlFlow, ConditionalPipelineEarlyTermination) {
     Console console;
     console.SetLanguage(Language::Rho);
 

@@ -3,7 +3,7 @@
 #include "TestLangCommon.h"
 
 // Test suite for Rho lambda expressions and closures
-TEST(DISABLED_RhoLambda, SimpleLambdaExpression) {
+TEST(RhoLambda, SimpleLambdaExpression) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
@@ -18,7 +18,7 @@ TEST(DISABLED_RhoLambda, SimpleLambdaExpression) {
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 42);
 }
 
-TEST(DISABLED_RhoLambda, LambdaWithMultipleParams) {
+TEST(RhoLambda, LambdaWithMultipleParams) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
@@ -33,7 +33,7 @@ TEST(DISABLED_RhoLambda, LambdaWithMultipleParams) {
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 42);
 }
 
-TEST(DISABLED_RhoLambda, ClosureCapture) {
+TEST(RhoLambda, ClosureCapture) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
@@ -49,7 +49,7 @@ TEST(DISABLED_RhoLambda, ClosureCapture) {
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 50);
 }
 
-TEST(DISABLED_RhoLambda, HigherOrderFunctions) {
+TEST(RhoLambda, HigherOrderFunctions) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
@@ -65,7 +65,7 @@ TEST(DISABLED_RhoLambda, HigherOrderFunctions) {
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 7);
 }
 
-TEST(DISABLED_RhoLambda, RecursiveLambda) {
+TEST(RhoLambda, RecursiveLambda) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();

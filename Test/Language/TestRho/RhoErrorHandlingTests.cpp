@@ -5,7 +5,7 @@
 // Test suite for Rho error handling
 // NOTE: All tests are disabled because try-catch error handling is not yet
 // implemented in Rho
-TEST(RhoErrorHandling, DISABLED_TryCatchBasic) {
+TEST(RhoErrorHandling, TryCatchBasic) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
@@ -23,7 +23,7 @@ TEST(RhoErrorHandling, DISABLED_TryCatchBasic) {
     EXPECT_EQ(kai::ConstDeref<kai::String>(stack->Top()), "Division by zero");
 }
 
-TEST(RhoErrorHandling, DISABLED_TryFinallyBlock) {
+TEST(RhoErrorHandling, TryFinallyBlock) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
@@ -43,7 +43,7 @@ TEST(RhoErrorHandling, DISABLED_TryFinallyBlock) {
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 2);
 }
 
-TEST(RhoErrorHandling, DISABLED_NestedExceptions) {
+TEST(RhoErrorHandling, NestedExceptions) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
@@ -65,7 +65,7 @@ TEST(RhoErrorHandling, DISABLED_NestedExceptions) {
               "outer error: inner error");
 }
 
-TEST(RhoErrorHandling, DISABLED_CustomExceptionTypes) {
+TEST(RhoErrorHandling, CustomExceptionTypes) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
@@ -90,7 +90,7 @@ TEST(RhoErrorHandling, DISABLED_CustomExceptionTypes) {
               "Caught: Custom error");
 }
 
-TEST(RhoErrorHandling, DISABLED_AssertionErrors) {
+TEST(RhoErrorHandling, AssertionErrors) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();

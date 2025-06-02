@@ -216,7 +216,7 @@ TEST(RhoDoWhileCombined, DoWhileConditionalContinuations) {
 }
 
 // Test 6: Continuation with do-while that breaks based on for loop result
-TEST(RhoDoWhileCombined, DISABLED_ContinuationBreakFromForInDoWhile) {
+TEST(RhoDoWhileCombined, ContinuationBreakFromForInDoWhile) {
     Console console;
     console.SetLanguage(Language::Rho);
 

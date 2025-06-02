@@ -55,7 +55,7 @@ TEST(RhoPiBlock, PiBlockWithComparison) {
     EXPECT_TRUE(kai::ConstDeref<bool>(stack->Top()));
 }
 
-TEST(RhoPiBlock, DISABLED_PiBlockInCondition) {
+TEST(RhoPiBlock, PiBlockInCondition) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
@@ -87,7 +87,7 @@ TEST(RhoPiBlock, PiBlockWithStackManipulation) {
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 6);  // 1 + 2 + 3
 }
 
-TEST(RhoPiBlock, DISABLED_NestedPiBlocks) {
+TEST(RhoPiBlock, NestedPiBlocks) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
@@ -105,7 +105,7 @@ TEST(RhoPiBlock, DISABLED_NestedPiBlocks) {
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 19);  // 10 + 9
 }
 
-TEST(RhoPiBlock, DISABLED_PiBlockInArray) {
+TEST(RhoPiBlock, PiBlockInArray) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
@@ -147,7 +147,7 @@ TEST(RhoPiBlock, PiBlockWithLogicalOps) {
     EXPECT_TRUE(kai::ConstDeref<bool>(stack->Top()));
 }
 
-TEST(RhoPiBlock, DISABLED_PiBlockInFunctionArgument) {
+TEST(RhoPiBlock, PiBlockInFunctionArgument) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
@@ -179,7 +179,7 @@ TEST(RhoPiBlock, PiBlockWithDup) {
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 1764);  // 42 * 42
 }
 
-TEST(RhoPiBlock, DISABLED_PiBlockWithSwap) {
+TEST(RhoPiBlock, PiBlockWithSwap) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
@@ -193,7 +193,7 @@ TEST(RhoPiBlock, DISABLED_PiBlockWithSwap) {
               0);  // 3 / 10 (integer division)
 }
 
-TEST(RhoPiBlock, DISABLED_PiBlockInWhileCondition) {
+TEST(RhoPiBlock, PiBlockInWhileCondition) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
@@ -224,7 +224,7 @@ TEST(RhoPiBlock, PiBlockWithModulo) {
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 2);
 }
 
-TEST(RhoPiBlock, DISABLED_PiBlockReturnValue) {
+TEST(RhoPiBlock, PiBlockReturnValue) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
@@ -243,7 +243,7 @@ TEST(RhoPiBlock, DISABLED_PiBlockReturnValue) {
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 42);
 }
 
-TEST(RhoPiBlock, DISABLED_PiBlockWithNegation) {
+TEST(RhoPiBlock, PiBlockWithNegation) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
@@ -282,7 +282,7 @@ TEST(RhoPiBlock, PiBlockWithEquality) {
     EXPECT_TRUE(kai::ConstDeref<bool>(stack->Top()));
 }
 
-TEST(RhoPiBlock, DISABLED_PiBlockComplexExpression) {
+TEST(RhoPiBlock, PiBlockComplexExpression) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
