@@ -74,6 +74,18 @@ bool RhoParser::Run(Structure st) {
 bool RhoParser::Program() {
     KAI_TRACE() << "RhoParser::Program - Starting to parse program";
 
+    // Skip any leading whitespace, newlines, or semicolons
+    while (Try(TokenType::Whitespace) || Try(TokenType::NewLine) || Try(TokenType::Semi)) {
+        if (Try(TokenType::NewLine)) {
+            KAI_TRACE() << "RhoParser::Program - Skipping initial newline";
+        } else if (Try(TokenType::Whitespace)) {
+            KAI_TRACE() << "RhoParser::Program - Skipping initial whitespace";
+        } else {
+            KAI_TRACE() << "RhoParser::Program - Skipping initial semicolon";
+        }
+        Consume();
+    }
+
     // Continue parsing until we reach the end or encounter an error
     while (!Try(TokenType::None) && !Failed) {
         // Skip any newlines and/or semicolons between statements
@@ -125,7 +137,7 @@ bool RhoParser::Function(AstNodePtr node) {
 
     Expect(TokenType::Fun);
 
-    // Check if this is "fun name(args)" or "fun(args)"
+    // Check if this is "fun name(args)", "fun(args)", or "fun name = args"
     bool hasName = Try(TokenType::Label);
     RhoToken name;
 
@@ -144,19 +156,38 @@ bool RhoParser::Function(AstNodePtr node) {
         fun->Add(RhoToken(TokenEnum::Label, *lexer.get(), 0, anonymousSlice));
     }
 
-    Expect(TokenType::OpenParan);
+    // Check for "=" syntax (fun name = args)
+    bool useAssignSyntax = Try(TokenType::Assign);
+    if (useAssignSyntax) {
+        Consume(); // consume '='
+    } else {
+        Expect(TokenType::OpenParan);
+    }
     std::shared_ptr<AstNode> args = NewNode(AstEnum::None);
     fun->Add(args);
 
-    if (Try(TokenType::Label)) {
-        args->Add(Consume());
-        while (Try(TokenType::Comma)) {
-            Consume();
-            args->Add(Expect(TokenType::Label));
+    if (useAssignSyntax) {
+        // For "fun name = args" syntax, parse comma-separated args without parens
+        if (Try(TokenType::Label)) {
+            args->Add(Consume());
+            while (Try(TokenType::Comma)) {
+                Consume();
+                ConsumeNewLines(); // Allow newlines after comma
+                args->Add(Expect(TokenType::Label));
+            }
         }
+        // No closing paren for assign syntax
+    } else {
+        // For "fun name(args)" syntax with parentheses
+        if (Try(TokenType::Label)) {
+            args->Add(Consume());
+            while (Try(TokenType::Comma)) {
+                Consume();
+                args->Add(Expect(TokenType::Label));
+            }
+        }
+        Expect(TokenType::CloseParan);
     }
-
-    Expect(TokenType::CloseParan);
 
     auto block = NewNode(RhoAstNodeEnumType::Block);
 
