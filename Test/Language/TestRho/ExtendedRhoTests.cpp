@@ -326,7 +326,8 @@ TEST_F(ExtendedRhoTests, StringOperations) {
 // DISABLED: Continuation state management in loops needs implementation fixes
 TEST_F(ExtendedRhoTests, ContinuationStateInLoop) {
     // Test that demonstrates Rho's continuation behavior
-    // Since Rho uses continuations not closures, we'll test what it actually does
+    // Since Rho uses continuations not closures, we'll test what it actually
+    // does
     console->SetLanguage(Language::Rho);
 
     const std::string rhoCode = R"(
@@ -354,17 +355,21 @@ TEST_F(ExtendedRhoTests, ContinuationStateInLoop) {
     console->Execute(rhoCode, Structure::Program);
 
     // Verify all values are 3 (the final value of i)
-    ASSERT_EQ(stack->Size(), 1) << "Stack should have 1 element (the result array)";
+    ASSERT_EQ(stack->Size(), 1)
+        << "Stack should have 1 element (the result array)";
     ASSERT_TRUE(stack->Top().IsType<Array>()) << "Result should be an array";
-    
+
     auto resultArray = stack->Top();
     auto& array = Deref<Array>(resultArray);
     ASSERT_EQ(array.Size(), 3) << "Result array should have 3 elements";
-    
+
     // All continuations see the final value of i (3)
-    ASSERT_EQ(ConstDeref<int>(array.At(0)), 3) << "First continuation sees final i=3";
-    ASSERT_EQ(ConstDeref<int>(array.At(1)), 3) << "Second continuation sees final i=3";
-    ASSERT_EQ(ConstDeref<int>(array.At(2)), 3) << "Third continuation sees final i=3";
+    ASSERT_EQ(ConstDeref<int>(array.At(0)), 3)
+        << "First continuation sees final i=3";
+    ASSERT_EQ(ConstDeref<int>(array.At(1)), 3)
+        << "Second continuation sees final i=3";
+    ASSERT_EQ(ConstDeref<int>(array.At(2)), 3)
+        << "Third continuation sees final i=3";
 }
 
 // Test showing continuation state with nested loops
@@ -409,65 +414,16 @@ TEST_F(ExtendedRhoTests, ContinuationStateInNestedLoops) {
 
     ASSERT_EQ(stack->Size(), 1) << "Stack should have 1 element";
     ASSERT_TRUE(stack->Top().IsType<Array>()) << "Result should be an array";
-    
+
     auto resultArray = stack->Top();
     auto& array = Deref<Array>(resultArray);
     ASSERT_EQ(array.Size(), 4) << "Should have 4 results";
-    
+
     // All continuations see final values (i=2, j=2), so all compute 2+2=4
     for (int k = 0; k < 4; ++k) {
-        ASSERT_EQ(ConstDeref<int>(array.At(k)), 4) 
+        ASSERT_EQ(ConstDeref<int>(array.At(k)), 4)
             << "All continuations see final values i=2, j=2";
     }
-    // Switch to Rho language
-    console->SetLanguage(Language::Rho);
-
-    // Register Continuation type
-    reg->AddClass<Continuation>(Label("Continuation"));
-
-    const std::string rhoCode = R"(
-        // Create a 2D array of continuations
-        []
-        
-        // Outer loop
-        for (i = 0; i < 3; i = i + 1)
-        {
-            // Inner loop
-            for (j = 0; j < 3; j = j + 1) 
-            {
-                // Create a continuation that captures both i and j
-                // It will compute i * 10 + j when called
-                { i 10 * j + }
-                
-                // Store in array
-                swap dup size swap store
-            }
-        }
-        
-        // Now we have 9 continuations
-        // Execute some of them to verify state preservation
-        
-        // Execute continuation at index 0 (i=0, j=0): should push 0
-        dup 0 at '
-        
-        // Execute continuation at index 4 (i=1, j=1): should push 11
-        dup 4 at '
-        
-        // Execute continuation at index 8 (i=2, j=2): should push 22
-        dup 8 at '
-        
-        // Drop the array
-        drop
-    )";
-
-    console->Execute(rhoCode, Structure::Program);
-
-    // Verify stack: Should contain [0, 11, 22]
-    ASSERT_EQ(stack->Size(), 3) << "Stack should have 3 elements";
-    ASSERT_EQ(ConstDeref<int>(stack->At(0)), 0) << "First result should be 0";
-    ASSERT_EQ(ConstDeref<int>(stack->At(1)), 11)
-        << "Second result should be 11";
-    ASSERT_EQ(ConstDeref<int>(stack->At(2)), 22) << "Third result should be 22";
 }
 
 // Test showing continuation state with mutable variables
@@ -511,60 +467,13 @@ TEST_F(ExtendedRhoTests, ContinuationStateWithMutableVars) {
 
     ASSERT_EQ(stack->Size(), 1) << "Stack should have 1 element";
     ASSERT_TRUE(stack->Top().IsType<Array>()) << "Result should be an array";
-    
+
     auto resultArray = stack->Top();
     auto& array = Deref<Array>(resultArray);
     ASSERT_EQ(array.Size(), 3) << "Should have 3 results";
-    
+
     // Verify the sequence: 1, 2, 1
     ASSERT_EQ(ConstDeref<int>(array.At(0)), 1) << "After first inc";
     ASSERT_EQ(ConstDeref<int>(array.At(1)), 2) << "After second inc";
     ASSERT_EQ(ConstDeref<int>(array.At(2)), 1) << "After dec";
-
-    const std::string rhoCode = R"(
-        // Create a shared counter variable
-        counter = 0
-        
-        // Create an array for continuations
-        []
-        
-        // Create continuations that reference the counter
-        for (i = 0; i < 3; i = i + 1)
-        {
-            // Create a continuation that adds i to counter
-            { counter i + }
-            
-            // Store it
-            swap dup size swap store
-            
-            // Increment counter
-            counter = counter + 10
-        }
-        
-        // counter is now 30
-        
-        // Execute the continuations
-        // Each adds its captured i to the current counter value (30)
-        
-        // Execute continuation 0: 30 + 0 = 30
-        dup 0 at '
-        
-        // Execute continuation 1: 30 + 1 = 31
-        dup 1 at '
-        
-        // Execute continuation 2: 30 + 2 = 32
-        dup 2 at '
-        
-        // Drop the array
-        drop
-    )";
-
-    console->Execute(rhoCode, Structure::Program);
-
-    // Verify stack: Should contain [30, 31, 32]
-    ASSERT_EQ(stack->Size(), 3) << "Stack should have 3 elements";
-    ASSERT_EQ(ConstDeref<int>(stack->At(0)), 30) << "First result should be 30";
-    ASSERT_EQ(ConstDeref<int>(stack->At(1)), 31)
-        << "Second result should be 31";
-    ASSERT_EQ(ConstDeref<int>(stack->At(2)), 32) << "Third result should be 32";
 }

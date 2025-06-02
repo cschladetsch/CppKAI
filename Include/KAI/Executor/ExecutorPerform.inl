@@ -1189,62 +1189,62 @@ void Executor::Perform(Operation::Type op) {
                     // Execute initialization
                     if (init->GetCode().Exists()) {
                         for (int i = 0; i < init->GetCode()->Size(); ++i) {
-                        auto obj = init->GetCode()->At(i);
-                        if (obj.Exists()) {
-                            Eval(obj);
-                        }
-                    }
-                }
-                
-                // Execute for loop inline
-                break_ = false;  // Reset break flag
-                while (true) {
-                    continue_ = false;  // Reset continue flag at loop start
-                    
-                    // Evaluate condition
-                    if (condition->GetCode().Exists()) {
-                        for (int i = 0; i < condition->GetCode()->Size(); ++i) {
-                            auto obj = condition->GetCode()->At(i);
+                            auto obj = init->GetCode()->At(i);
                             if (obj.Exists()) {
                                 Eval(obj);
                             }
                         }
                     }
                     
-                    // Check condition result
-                    if (data_->Empty() || !PopBool()) {
-                        break;
-                    }
-                    
-                    // Execute body
-                    if (body->GetCode().Exists()) {
-                        for (int i = 0; i < body->GetCode()->Size(); ++i) {
-                            if (break_ || continue_) {
-                                break;  // Exit the body execution loop
+                    // Execute for loop inline
+                    break_ = false;  // Reset break flag
+                    while (true) {
+                        continue_ = false;  // Reset continue flag at loop start
+                        
+                        // Evaluate condition
+                        if (condition->GetCode().Exists()) {
+                            for (int i = 0; i < condition->GetCode()->Size(); ++i) {
+                                auto obj = condition->GetCode()->At(i);
+                                if (obj.Exists()) {
+                                    Eval(obj);
+                                }
                             }
-                            auto obj = body->GetCode()->At(i);
-                            if (obj.Exists()) {
-                                Eval(obj);
+                        }
+                        
+                        // Check condition result
+                        if (data_->Empty() || !PopBool()) {
+                            break;
+                        }
+                        
+                        // Execute body
+                        if (body->GetCode().Exists()) {
+                            for (int i = 0; i < body->GetCode()->Size(); ++i) {
+                                if (break_ || continue_) {
+                                    break;  // Exit the body execution loop
+                                }
+                                auto obj = body->GetCode()->At(i);
+                                if (obj.Exists()) {
+                                    Eval(obj);
+                                }
+                            }
+                        }
+                        
+                        // Check for break after body execution
+                        if (break_) {
+                            break_ = false;  // Reset for next loop
+                            break;  // Exit the for loop
+                        }
+                        
+                        // Execute increment (even if continue was hit)
+                        if (increment->GetCode().Exists()) {
+                            for (int i = 0; i < increment->GetCode()->Size(); ++i) {
+                                auto obj = increment->GetCode()->At(i);
+                                if (obj.Exists()) {
+                                    Eval(obj);
+                                }
                             }
                         }
                     }
-                    
-                    // Check for break after body execution
-                    if (break_) {
-                        break_ = false;  // Reset for next loop
-                        break;  // Exit the for loop
-                    }
-                    
-                    // Execute increment (even if continue was hit)
-                    if (increment->GetCode().Exists()) {
-                        for (int i = 0; i < increment->GetCode()->Size(); ++i) {
-                            auto obj = increment->GetCode()->At(i);
-                            if (obj.Exists()) {
-                                Eval(obj);
-                            }
-                        }
-                    }
-                }
                 }  // End of else block for traditional for loop
             }
             catch (const Exception::Base& e) {

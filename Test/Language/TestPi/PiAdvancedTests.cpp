@@ -36,7 +36,7 @@ TEST_F(PiAdvancedTest, RangeBasedForLoop) {
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 14);  // 1*1 + 2*2 + 3*3 = 14
 }
 
-// Test traditional 4-continuation for loop syntax  
+// Test traditional 4-continuation for loop syntax
 TEST_F(PiAdvancedTest, TraditionalForLoop) {
     console_.SetLanguage(kai::Language::Pi);
     auto exec = console_.GetExecutor();
@@ -44,7 +44,7 @@ TEST_F(PiAdvancedTest, TraditionalForLoop) {
     // Traditional C-style for loop: for(i=0; i<3; i++)
     console_.Execute("{ 0 } { dup 3 < } { 1 + } { } for");
     auto stack = exec->GetDataStack();
-    
+
     // Should have final counter value on stack
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 3);
@@ -66,7 +66,7 @@ TEST_F(PiAdvancedTest, NestedForLoops) {
     // For i from 1 to 2, for j from 1 to 3, sum i*j
     console_.Execute("0 1 2 { 1 3 { over * + } for drop } for");
     auto stack = exec->GetDataStack();
-    
+
     // Expected: 1*1 + 1*2 + 1*3 + 2*1 + 2*2 + 2*3 = 1+2+3+2+4+6 = 18
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 18);

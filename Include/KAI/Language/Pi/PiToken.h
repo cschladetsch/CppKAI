@@ -142,9 +142,9 @@ struct PiTokenEnumType {
         Min,     // min operator
         Max,     // max operator
 
-        Self,  // current_ continuation 'self'
-        This,  // current_ _scope '.'
-        Print, // print top of stack
+        Self,   // current_ continuation 'self'
+        This,   // current_ _scope '.'
+        Print,  // print top of stack
     };
 
     struct Type : TokenBase<PiTokenEnumType> {

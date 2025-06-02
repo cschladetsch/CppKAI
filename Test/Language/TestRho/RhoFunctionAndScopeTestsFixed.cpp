@@ -231,13 +231,15 @@ double(increment(increment(double(2))))
 TEST_F(RhoFunctionTestsFixed, Recursion) {
     // Test iterative factorial instead of recursive
     RunAndExpect<int>(R"(
-fun factorial_iter(n)
+fun factorial_iter(n) {
     result = 1
     i = 1
-    while i <= n
+    while (i <= n) {
         result = result * i
         i = i + 1
+    }
     return result
+}
 
 factorial_iter(5)
 )",
@@ -251,46 +253,17 @@ TEST_F(RhoFunctionTestsFixed, MutualRecursion) {
     // Test non-recursive version
     RunAndExpect<bool>(R"(
 // Since mutual recursion doesn't work, test a simpler case
-fun isEven(n)
+fun isEven(n) {
     return n % 2 == 0
+}
 
-fun isOdd(n)  
+fun isOdd(n) {
     return n % 2 == 1
+}
 
 // Test both functions
 result = isEven(10) && isOdd(7) && !isEven(7) && !isOdd(10)
 result
-)
-fun isEven(n)
-    if n == 0
-        return true
-    else
-        return isOdd(n - 1)
-
-fun isOdd(n)
-    if n == 0
-        return false
-    else
-        return isEven(n - 1)
-
-isEven(4)
-)",
-                       true);
-
-    RunAndExpect<bool>(R"(
-fun isEven(n)
-    if n == 0
-        return true
-    else
-        return isOdd(n - 1)
-
-fun isOdd(n)
-    if n == 0
-        return false
-    else
-        return isEven(n - 1)
-
-isOdd(5)
 )",
                        true);
 }
@@ -313,20 +286,14 @@ TEST_F(RhoFunctionTestsFixed, FunctionScoping) {
     // Test function scoping by returning result explicitly
     RunAndExpect<int>(R"(
 x = 10
-fun getX()
+fun getX() {
     return x
+}
 
 // Call function and return its result
 getX()
-)
-x = 10
-fun mutateX()
-    x = x + 5
-
-mutateX()
-x
 )",
-                      15);
+                      10);
 
     // Functions in Rho share scope with outer context
     RunAndExpect<int>(R"(

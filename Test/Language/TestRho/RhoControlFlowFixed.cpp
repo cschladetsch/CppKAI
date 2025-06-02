@@ -217,6 +217,7 @@ TEST_F(RhoControlFlowFixed, IfElseIfElse) {
     // Use nested if-else as a workaround for else-if
     RunAndExpect<int>(R"(
 x = 2
+result = 0
 if x == 1
     result = 10
 else
