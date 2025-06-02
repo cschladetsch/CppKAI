@@ -9,7 +9,7 @@
 TEST(TauAttribute, BasicAttributes) {
     // Test that we can parse IDL with attributes
     kai::Registry reg;
-    
+
     const char* code = R"(
         namespace Test {
             [Serializable]
@@ -29,19 +29,20 @@ TEST(TauAttribute, BasicAttributes) {
 
     auto lexer = std::make_shared<kai::tau::TauLexer>(code, reg);
     ASSERT_TRUE(lexer->Process());
-    
+
     auto parser = std::make_shared<kai::tau::TauParser>(reg);
     bool result = parser->Process(lexer, kai::Structure::Module);
-    
+
     // For now, attributes are not implemented in the parser
     // This test just verifies the IDL can be lexed without errors
-    EXPECT_TRUE(parser->Error.empty() || parser->Error.find("Not Implemented") != std::string::npos)
+    EXPECT_TRUE(parser->Error.empty() ||
+                parser->Error.find("Not Implemented") != std::string::npos)
         << "Parser error: " << parser->Error;
 }
 
 TEST(TauAttribute, CustomAttributes) {
     kai::Registry reg;
-    
+
     const char* code = R"(
         namespace Game {
             class ValidateRangeAttribute : Attribute {
@@ -64,18 +65,19 @@ TEST(TauAttribute, CustomAttributes) {
 
     auto lexer = std::make_shared<kai::tau::TauLexer>(code, reg);
     ASSERT_TRUE(lexer->Process());
-    
+
     auto parser = std::make_shared<kai::tau::TauParser>(reg);
     bool result = parser->Process(lexer, kai::Structure::Module);
-    
+
     // Attributes are not yet implemented
-    EXPECT_TRUE(parser->Error.empty() || parser->Error.find("Not Implemented") != std::string::npos)
+    EXPECT_TRUE(parser->Error.empty() ||
+                parser->Error.find("Not Implemented") != std::string::npos)
         << "Parser error: " << parser->Error;
 }
 
 TEST(TauAttribute, MethodAttributes) {
     kai::Registry reg;
-    
+
     const char* code = R"(
         namespace API {
             class WebService {
@@ -96,17 +98,18 @@ TEST(TauAttribute, MethodAttributes) {
 
     auto lexer = std::make_shared<kai::tau::TauLexer>(code, reg);
     ASSERT_TRUE(lexer->Process());
-    
+
     auto parser = std::make_shared<kai::tau::TauParser>(reg);
     bool result = parser->Process(lexer, kai::Structure::Module);
-    
-    EXPECT_TRUE(parser->Error.empty() || parser->Error.find("Not Implemented") != std::string::npos)
+
+    EXPECT_TRUE(parser->Error.empty() ||
+                parser->Error.find("Not Implemented") != std::string::npos)
         << "Parser error: " << parser->Error;
 }
 
 TEST(TauAttribute, CompileTimeAttributes) {
     kai::Registry reg;
-    
+
     const char* code = R"(
         namespace System {
             [CompileTime]
@@ -125,17 +128,18 @@ TEST(TauAttribute, CompileTimeAttributes) {
 
     auto lexer = std::make_shared<kai::tau::TauLexer>(code, reg);
     ASSERT_TRUE(lexer->Process());
-    
+
     auto parser = std::make_shared<kai::tau::TauParser>(reg);
     bool result = parser->Process(lexer, kai::Structure::Module);
-    
-    EXPECT_TRUE(parser->Error.empty() || parser->Error.find("Not Implemented") != std::string::npos)
+
+    EXPECT_TRUE(parser->Error.empty() ||
+                parser->Error.find("Not Implemented") != std::string::npos)
         << "Parser error: " << parser->Error;
 }
 
 TEST(TauAttribute, ConditionalAttributes) {
     kai::Registry reg;
-    
+
     const char* code = R"(
         namespace Features {
             class Service {
@@ -156,10 +160,11 @@ TEST(TauAttribute, ConditionalAttributes) {
 
     auto lexer = std::make_shared<kai::tau::TauLexer>(code, reg);
     ASSERT_TRUE(lexer->Process());
-    
+
     auto parser = std::make_shared<kai::tau::TauParser>(reg);
     bool result = parser->Process(lexer, kai::Structure::Module);
-    
-    EXPECT_TRUE(parser->Error.empty() || parser->Error.find("Not Implemented") != std::string::npos)
+
+    EXPECT_TRUE(parser->Error.empty() ||
+                parser->Error.find("Not Implemented") != std::string::npos)
         << "Parser error: " << parser->Error;
 }

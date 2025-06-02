@@ -41,6 +41,9 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Announce the C++ standard being used
+message(STATUS "Using C++ standard: C++${CMAKE_CXX_STANDARD}")
+
 # Define global log directory relative to KAI_HOME
 set(KAI_HOME ${CMAKE_CURRENT_SOURCE_DIR})
 set(KAI_LOG_DIR "${KAI_HOME}/Logs")

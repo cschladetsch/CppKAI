@@ -1,18 +1,16 @@
 #include "KAI/Test/Include/TestLangCommon.h"
 
 class TestPiAdvancedControlFlow : public kai::TestLangCommon {
-protected:
-    void SetUp() override {
-        TestLangCommon::SetUp();
-    }
-    
+   protected:
+    void SetUp() override { TestLangCommon::SetUp(); }
+
     int ExpectInt() {
         EXPECT_FALSE(data_->Empty()) << "Stack is empty";
         auto top = data_->Pop();
         EXPECT_TRUE(top.IsType<int>()) << "Top is not an int";
         return kai::ConstDeref<int>(top);
     }
-    
+
     bool ExpectBool() {
         EXPECT_FALSE(data_->Empty()) << "Stack is empty";
         auto top = data_->Pop();
@@ -40,7 +38,7 @@ TEST_F(TestPiAdvancedControlFlow, TestShortCircuitEvaluation) {
         25 check_value &
         -5 check_value &
     )";
-    
+
     console_.Execute(script);
     ASSERT_EQ(data_->Size(), 3);  // 3 strings
 }
@@ -61,7 +59,7 @@ TEST_F(TestPiAdvancedControlFlow, TestMultipleExitLoop) {
         
         sum count
     )";
-    
+
     console_.Execute(script);
     ASSERT_TRUE(data_->Size() >= 2);
 }
@@ -83,7 +81,7 @@ TEST_F(TestPiAdvancedControlFlow, TestVariableStepLoop) {
         
         total
     )";
-    
+
     console_.Execute(script);
     ASSERT_GT(ExpectInt(), 0);
 }
@@ -99,7 +97,7 @@ TEST_F(TestPiAdvancedControlFlow, TestFunctionDispatch) {
         10 double &
         15 sub5 &
     )";
-    
+
     console_.Execute(script);
     ASSERT_EQ(data_->Size(), 3);
     ASSERT_EQ(ExpectInt(), 10);  // 15 - 5
@@ -128,7 +126,7 @@ TEST_F(TestPiAdvancedControlFlow, TestDynamicLoopBounds) {
         
         sum @
     )";
-    
+
     console_.Execute(script);
     ASSERT_GT(ExpectInt(), 0);
 }
@@ -150,11 +148,11 @@ TEST_F(TestPiAdvancedControlFlow, TestConditionalAccumulation) {
         
         odd_sum @ even_sum @
     )";
-    
+
     console_.Execute(script);
     ASSERT_EQ(data_->Size(), 2);
     auto even = ExpectInt();  // First pop gets top (even_sum)
-    auto odd = ExpectInt(); // Second pop gets bottom (odd_sum)
+    auto odd = ExpectInt();   // Second pop gets bottom (odd_sum)
     ASSERT_EQ(even, 30);
     ASSERT_EQ(odd, 25);
 }
@@ -164,11 +162,11 @@ TEST_F(TestPiAdvancedControlFlow, TestNestedConditionalsEarlyReturn) {
     console_.Execute("-5 0 <");
     ASSERT_EQ(data_->Size(), 1);
     ASSERT_TRUE(ExpectBool());
-    
+
     console_.Execute("true { \"yes\" } { \"no\" } ife");
     ASSERT_EQ(data_->Size(), 1);  // ife pushes the result
-    data_->Pop();  // Remove the result
-    
+    data_->Pop();                 // Remove the result
+
     console_.Execute("\"test1\" \"test2\" \"test3\" \"test4\"");
     ASSERT_EQ(data_->Size(), 4);
 }
@@ -192,7 +190,7 @@ TEST_F(TestPiAdvancedControlFlow, TestLoopUnrolling) {
         
         [ 1 2 3 4 5 6 7 8 9 10 ] process_batch &
     )";
-    
+
     console_.Execute(script);
     ASSERT_EQ(ExpectInt(), 55);
 }
@@ -224,7 +222,7 @@ TEST_F(TestPiAdvancedControlFlow, TestExceptionLikeFlow) {
         
         20 4 calculate &
     )";
-    
+
     console_.Execute(script);
 }
 
@@ -235,16 +233,16 @@ TEST_F(TestPiAdvancedControlFlow, TestStateMachine) {
         2 'counter #
         state @ counter @
     )";
-    
+
     console_.Execute(script);
     ASSERT_EQ(data_->Size(), 2);
-    
+
     auto second = data_->At(0);
     auto first = data_->At(1);
-    
+
     ASSERT_TRUE(first.IsType<kai::String>());
     ASSERT_TRUE(second.IsType<int>());
-    
+
     ASSERT_EQ(kai::ConstDeref<kai::String>(first), "running");
     ASSERT_EQ(kai::ConstDeref<int>(second), 2);
 }

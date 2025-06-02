@@ -1,0 +1,3 @@
+// Test basic pi block execution
+result = pi { 2 3 + }
+result

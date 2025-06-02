@@ -422,7 +422,6 @@ TestAdditionalCore.o: TestAdditionalCore.cpp.o
 # target to build an object file
 TestAdditionalCore.cpp.o:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestAdditionalCore.cpp.o
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestAdditionalCore.cpp.o
 .PHONY : TestAdditionalCore.cpp.o
 
 TestAdditionalCore.i: TestAdditionalCore.cpp.i
@@ -431,7 +430,6 @@ TestAdditionalCore.i: TestAdditionalCore.cpp.i
 # target to preprocess a source file
 TestAdditionalCore.cpp.i:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestAdditionalCore.cpp.i
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestAdditionalCore.cpp.i
 .PHONY : TestAdditionalCore.cpp.i
 
 TestAdditionalCore.s: TestAdditionalCore.cpp.s
@@ -440,7 +438,6 @@ TestAdditionalCore.s: TestAdditionalCore.cpp.s
 # target to generate assembly for a file
 TestAdditionalCore.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestAdditionalCore.cpp.s
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestAdditionalCore.cpp.s
 .PHONY : TestAdditionalCore.cpp.s
 
 TestAdditionalStringOps.o: TestAdditionalStringOps.cpp.o

@@ -8,7 +8,7 @@
 
 TEST(TauTemplate, BasicGenericClass) {
     kai::Registry reg;
-    
+
     const char* code = R"(
         namespace Collections {
             class List<T> {
@@ -30,18 +30,19 @@ TEST(TauTemplate, BasicGenericClass) {
 
     auto lexer = std::make_shared<kai::tau::TauLexer>(code, reg);
     ASSERT_TRUE(lexer->Process());
-    
+
     auto parser = std::make_shared<kai::tau::TauParser>(reg);
     bool result = parser->Process(lexer, kai::Structure::Module);
-    
+
     // Generic/template syntax not yet implemented
-    EXPECT_TRUE(parser->Error.empty() || parser->Error.find("Not Implemented") != std::string::npos)
+    EXPECT_TRUE(parser->Error.empty() ||
+                parser->Error.find("Not Implemented") != std::string::npos)
         << "Parser error: " << parser->Error;
 }
 
 TEST(TauTemplate, GenericInterfaces) {
     kai::Registry reg;
-    
+
     const char* code = R"(
         namespace System {
             interface IComparable<T> {
@@ -62,17 +63,18 @@ TEST(TauTemplate, GenericInterfaces) {
 
     auto lexer = std::make_shared<kai::tau::TauLexer>(code, reg);
     ASSERT_TRUE(lexer->Process());
-    
+
     auto parser = std::make_shared<kai::tau::TauParser>(reg);
     bool result = parser->Process(lexer, kai::Structure::Module);
-    
-    EXPECT_TRUE(parser->Error.empty() || parser->Error.find("Not Implemented") != std::string::npos)
+
+    EXPECT_TRUE(parser->Error.empty() ||
+                parser->Error.find("Not Implemented") != std::string::npos)
         << "Parser error: " << parser->Error;
 }
 
 TEST(TauTemplate, ConstrainedGenerics) {
     kai::Registry reg;
-    
+
     const char* code = R"(
         namespace Advanced {
             class Repository<T> where T : IEntity {
@@ -92,17 +94,18 @@ TEST(TauTemplate, ConstrainedGenerics) {
 
     auto lexer = std::make_shared<kai::tau::TauLexer>(code, reg);
     ASSERT_TRUE(lexer->Process());
-    
+
     auto parser = std::make_shared<kai::tau::TauParser>(reg);
     bool result = parser->Process(lexer, kai::Structure::Module);
-    
-    EXPECT_TRUE(parser->Error.empty() || parser->Error.find("Not Implemented") != std::string::npos)
+
+    EXPECT_TRUE(parser->Error.empty() ||
+                parser->Error.find("Not Implemented") != std::string::npos)
         << "Parser error: " << parser->Error;
 }
 
 TEST(TauTemplate, GenericMethods) {
     kai::Registry reg;
-    
+
     const char* code = R"(
         namespace Utilities {
             class Converter {
@@ -118,17 +121,18 @@ TEST(TauTemplate, GenericMethods) {
 
     auto lexer = std::make_shared<kai::tau::TauLexer>(code, reg);
     ASSERT_TRUE(lexer->Process());
-    
+
     auto parser = std::make_shared<kai::tau::TauParser>(reg);
     bool result = parser->Process(lexer, kai::Structure::Module);
-    
-    EXPECT_TRUE(parser->Error.empty() || parser->Error.find("Not Implemented") != std::string::npos)
+
+    EXPECT_TRUE(parser->Error.empty() ||
+                parser->Error.find("Not Implemented") != std::string::npos)
         << "Parser error: " << parser->Error;
 }
 
 TEST(TauTemplate, VariadicTemplates) {
     kai::Registry reg;
-    
+
     const char* code = R"(
         namespace Variadic {
             class Tuple<T...> {
@@ -146,10 +150,11 @@ TEST(TauTemplate, VariadicTemplates) {
 
     auto lexer = std::make_shared<kai::tau::TauLexer>(code, reg);
     ASSERT_TRUE(lexer->Process());
-    
+
     auto parser = std::make_shared<kai::tau::TauParser>(reg);
     bool result = parser->Process(lexer, kai::Structure::Module);
-    
-    EXPECT_TRUE(parser->Error.empty() || parser->Error.find("Not Implemented") != std::string::npos)
+
+    EXPECT_TRUE(parser->Error.empty() ||
+                parser->Error.find("Not Implemented") != std::string::npos)
         << "Parser error: " << parser->Error;
 }

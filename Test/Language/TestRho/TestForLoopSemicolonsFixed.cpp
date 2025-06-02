@@ -5,7 +5,8 @@
 
 KAI_BEGIN
 
-// Test the Rho for loop with semicolons using correct Rho syntax (no parentheses)
+// Test the Rho for loop with semicolons using correct Rho syntax (no
+// parentheses)
 TEST_F(TestLangCommon, ForLoopSemicolonsSyntaxFixed) {
     console_.SetLanguage(Language::Rho);
 
@@ -74,15 +75,17 @@ TEST_F(TestLangCommon, ForLoopSemicolonsSyntaxFixed) {
         std::cout << "ForLoopSemicolonsSyntaxFixed test passed!" << std::endl;
     } catch (const Exception::Base& e) {
         std::cerr << "KAI Exception: " << e.ToString() << std::endl;
-        FAIL() << "ForLoopSemicolonsSyntaxFixed test failed with KAI exception: "
-               << e.ToString();
+        FAIL()
+            << "ForLoopSemicolonsSyntaxFixed test failed with KAI exception: "
+            << e.ToString();
     } catch (const std::exception& e) {
         std::cerr << "Standard exception: " << e.what() << std::endl;
         FAIL() << "ForLoopSemicolonsSyntaxFixed test failed with exception: "
                << e.what();
     } catch (...) {
         std::cerr << "Unknown exception" << std::endl;
-        FAIL() << "ForLoopSemicolonsSyntaxFixed test failed with unknown exception";
+        FAIL() << "ForLoopSemicolonsSyntaxFixed test failed with unknown "
+                  "exception";
     }
 }
 
@@ -131,8 +134,7 @@ TEST_F(TestLangCommon, ForLoopBraceSyntax) {
                << e.ToString();
     } catch (const std::exception& e) {
         std::cerr << "Standard exception: " << e.what() << std::endl;
-        FAIL() << "ForLoopBraceSyntax test failed with exception: "
-               << e.what();
+        FAIL() << "ForLoopBraceSyntax test failed with exception: " << e.what();
     } catch (...) {
         std::cerr << "Unknown exception" << std::endl;
         FAIL() << "ForLoopBraceSyntax test failed with unknown exception";

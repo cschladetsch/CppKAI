@@ -44,15 +44,15 @@ TEST_F(FixedCoreRegistryTests, TestFixedTypeRegistration) {
 struct FixedCoreObjectTests : CoreTestCommon {
    protected:
     Tree tree;
-    
+
     void SetUp() override {
         CoreTestCommon::SetUp();
-        
+
         // Set up tree for garbage collection
         tree.SetRoot(Root());
         Reg().SetTree(tree);
     }
-    
+
     void AddRequiredClasses() override {
         Reg().AddClass<bool>();
         Reg().AddClass<int>();
@@ -106,15 +106,15 @@ TEST_F(FixedCoreObjectTests, TestFixedObjectLifetime) {
 struct FixedCorePointerTests : CoreTestCommon {
    protected:
     Tree tree;
-    
+
     void SetUp() override {
         CoreTestCommon::SetUp();
-        
+
         // Set up tree for garbage collection
         tree.SetRoot(Root());
         Reg().SetTree(tree);
     }
-    
+
     void AddRequiredClasses() override {
         Reg().AddClass<bool>();
         Reg().AddClass<int>();

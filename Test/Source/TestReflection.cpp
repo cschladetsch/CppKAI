@@ -70,17 +70,17 @@ TEST_F(ReflectionTest, DynamicMethodInvocation) {
     ASSERT_TRUE(obj.Valid()) << "Object creation failed";
     ASSERT_TRUE(obj.Exists()) << "Object doesn't exist";
     ASSERT_FALSE(obj.IsConst()) << "New object should not be const";
-    
+
     kai::Deref<TestClass>(obj).name = "TestObject";
 
     // Get method by name
     auto cls = obj.GetClass();
     ASSERT_TRUE(cls != nullptr) << "Class pointer is null";
-    
+
     // Check if the class has methods
     auto methods = cls->GetMethods();
     EXPECT_GT(methods.size(), 0) << "No methods registered";
-    
+
     auto setValueMethod = cls->GetMethod(kai::Label("SetValue"));
     if (!setValueMethod) {
         // Try to see what methods are available
@@ -88,7 +88,8 @@ TEST_F(ReflectionTest, DynamicMethodInvocation) {
         for (const auto& method : methods) {
             std::cout << "  " << method.first << std::endl;
         }
-        GTEST_SKIP() << "GetMethod not properly implemented or method not found";
+        GTEST_SKIP()
+            << "GetMethod not properly implemented or method not found";
     }
 
     // For now, let's skip if we can't get a non-const method to work
@@ -98,11 +99,11 @@ TEST_F(ReflectionTest, DynamicMethodInvocation) {
         kai::Stack stack;
         stack.Push(reg_->New<int>(123));
         setValueMethod->Invoke(obj, stack);
-        
+
         EXPECT_EQ(kai::Deref<TestClass>(obj).value, 123);
     } catch (const kai::Exception::ConstError& e) {
-        GTEST_SKIP() << "Method invocation fails with const error: " << e.ToString()
-                     << ". Object IsConst: " << obj.IsConst();
+        GTEST_SKIP() << "Method invocation fails with const error: "
+                     << e.ToString() << ". Object IsConst: " << obj.IsConst();
     } catch (const kai::Exception::Base& e) {
         FAIL() << "Unexpected exception: " << e.ToString();
     }
@@ -115,32 +116,34 @@ TEST_F(ReflectionTest, PropertyAccessReflection) {
     // Get property by name
     auto cls = obj.GetClass();
     ASSERT_TRUE(cls != nullptr) << "Class pointer is null";
-    
+
     // Check if properties exist
     auto properties = cls->GetProperties();
     if (properties.empty()) {
-        GTEST_SKIP() << "GetProperties not properly implemented or no properties found";
+        GTEST_SKIP()
+            << "GetProperties not properly implemented or no properties found";
     }
-    
+
     try {
         // Debug: Check property label matching
         kai::Label valueLabel("value");
-        std::cout << "Looking for property with label: '" << valueLabel << "'" << std::endl;
-        
+        std::cout << "Looking for property with label: '" << valueLabel << "'"
+                  << std::endl;
+
         // List properties with more details
         std::cout << "Available properties: " << std::endl;
         for (const auto& prop : properties) {
             std::cout << "  Label: '" << prop.first << "'" << std::endl;
         }
-        
+
         // Try to find it manually
         auto it = properties.find(valueLabel);
         if (it == properties.end()) {
             GTEST_SKIP() << "Property 'value' not found in properties map";
         }
-        
+
         const auto& valueProp = cls->GetProperty(valueLabel);
-        
+
         // Set property value
         valueProp.SetValue(obj, reg_->New<int>(456));
         EXPECT_EQ(kai::Deref<TestClass>(obj).value, 456);

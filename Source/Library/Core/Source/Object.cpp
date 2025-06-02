@@ -652,7 +652,7 @@ BinaryStream &operator<<(BinaryStream &stream, const Object &object) {
 
     // Increment depth counter
     serialization_depth++;
-    
+
     // Use RAII to ensure depth is decremented on exit
     struct DepthGuard {
         ~DepthGuard() { serialization_depth--; }

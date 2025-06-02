@@ -111,8 +111,9 @@ struct Executor : Reflected {
                     }
                 }
 
-                // For all types including continuations, push the resolved object
-                // This allows operations like & to control when continuations execute
+                // For all types including continuations, push the resolved
+                // object This allows operations like & to control when
+                // continuations execute
                 Push(found);
             } else {
                 // If not found, try to create a placeholder instead of throwing

@@ -1,14 +1,10 @@
 #include "KAI/Test/Include/TestLangCommon.h"
 
 class TestRhoAdvancedContinuations : public kai::TestLangCommon {
-protected:
-    void SetUp() override {
-        TestLangCommon::SetUp();
-    }
-    
-    void ExecScriptReturning(const char* script) {
-        console_.Execute(script);
-    }
+   protected:
+    void SetUp() override { TestLangCommon::SetUp(); }
+
+    void ExecScriptReturning(const char *script) { console_.Execute(script); }
 };
 
 // Test 11: Nested loop continuations with early return
@@ -27,7 +23,7 @@ TEST_F(TestRhoAdvancedContinuations, TestNestedLoopEarlyReturn) {
         
         find_pair(42)
     )";
-    
+
     console_.Execute(script);
     auto result = data_->Top();
     ASSERT_TRUE(result.Exists());
@@ -47,7 +43,7 @@ TEST_F(TestRhoAdvancedContinuations, TestLambdaComposition) {
         pipeline = compose(compose(add5, double), triple)
         pipeline(4)
     )";
-    
+
     console_.Execute(script);
     ASSERT_EQ(kai::ConstDeref<int>(data_->Top()), 29);  // ((4 * 3) * 2) + 5
 }
@@ -75,7 +71,7 @@ TEST_F(TestRhoAdvancedContinuations, TestPatternMatchingContinuation) {
         handler = process_value(5)
         handler()
     )";
-    
+
     console_.Execute(script);
 }
 
@@ -129,7 +125,7 @@ TEST_F(TestRhoAdvancedContinuations, TestStateMachineContinuation) {
         machine("pause")
         machine("resume")
     )";
-    
+
     console_.Execute(script);
 }
 
@@ -158,7 +154,7 @@ TEST_F(TestRhoAdvancedContinuations, TestNestedClosureContinuation) {
         acc.multiply(2)
         acc.get()
     )";
-    
+
     console_.Execute(script);
     ASSERT_EQ(kai::ConstDeref<int>(data_->Top()), 30);  // (10 + 5) * 2
 }
@@ -185,7 +181,7 @@ TEST_F(TestRhoAdvancedContinuations, TestExceptionPropagation) {
         
         calculate(100, 5, 0)
     )";
-    
+
     console_.Execute(script);
 }
 
@@ -230,7 +226,7 @@ TEST_F(TestRhoAdvancedContinuations, TestGeneratorPattern) {
         
         results
     )";
-    
+
     console_.Execute(script);
 }
 
@@ -261,7 +257,7 @@ TEST_F(TestRhoAdvancedContinuations, TestMemoizationContinuation) {
         fast_calc = memoize(expensive_calc)
         fast_calc(10)
     )";
-    
+
     console_.Execute(script);
 }
 
@@ -299,7 +295,7 @@ TEST_F(TestRhoAdvancedContinuations, TestAsyncLikeContinuation) {
         
         chain_async(5)
     )";
-    
+
     console_.Execute(script);
 }
 
@@ -333,6 +329,6 @@ TEST_F(TestRhoAdvancedContinuations, TestComplexPiIntegration) {
         matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
         matrix_operation(matrix)
     )";
-    
+
     console_.Execute(script);
 }

@@ -342,11 +342,30 @@ void Executor::Perform(Operation::Type op) {
 
         case Operation::Suspend: {
             KAI_TRACE() << "Operation::Suspend - saving current continuation and switching";
-            context_->Push(continuation_);
+            
+            // Debug: Show current continuation state
+            if (continuation_.Exists() && continuation_->GetCode().Exists()) {
+                auto currentIndex = ConstDeref<int>(continuation_->index);
+                KAI_TRACE() << "  Current continuation index: " << currentIndex 
+                           << " of " << continuation_->GetCode()->Size();
+            }
+            
+            // Get the new continuation to execute
             auto newCont = Pop();
-            KAI_TRACE() << "  Creating new continuation from: " << newCont.ToString();
+            
+            // Save current continuation on the context stack for later resumption
+            // IMPORTANT: The instruction pointer is already at the correct position!
+            // The Continue loop calls Next() before Eval(), so when we're executing
+            // the Suspend operation, the IP has already been advanced past it.
+            // When we return and pop this continuation, it will correctly resume
+            // at the instruction after Suspend.
+            context_->Push(continuation_);
+            
+            // Create and set the new continuation
             continuation_ = NewContinuation(newCont);
+            KAI_TRACE() << "  Creating new continuation from: " << newCont.ToString();
             KAI_TRACE() << "  Context stack size: " << context_->Size();
+            
             break;
         }
 
@@ -608,7 +627,13 @@ void Executor::Perform(Operation::Type op) {
             // If the result is a continuation, execute it
             if (obj.IsType<Continuation>()) {
                 KAI_TRACE() << "Retreive: Executing continuation";
-                Continue(obj);
+                // WRONG! This should use Suspend, not Continue!
+                // Continue executes the continuation without saving the current one
+                // We need to check if this is a function call or just a continuation execution
+                
+                // For now, let's just push the continuation on the stack
+                // The calling code should use Suspend if it's a function call
+                Push(obj);
             } else {
                 // Otherwise just push the value
                 Push(obj);
@@ -1679,6 +1704,10 @@ void Executor::Perform(Operation::Type op) {
             if (returnValue.Exists()) {
                 Push(returnValue);
             }
+            
+            // For function returns, we need to resume the suspended continuation
+            // The Suspend operation pushed the caller's continuation onto the context stack
+            // So when we return, NextContinuation will pop it and resume execution
             
             break;
         }

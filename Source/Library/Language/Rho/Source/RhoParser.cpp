@@ -75,7 +75,8 @@ bool RhoParser::Program() {
     KAI_TRACE() << "RhoParser::Program - Starting to parse program";
 
     // Skip any leading whitespace, newlines, or semicolons
-    while (Try(TokenType::Whitespace) || Try(TokenType::NewLine) || Try(TokenType::Semi)) {
+    while (Try(TokenType::Whitespace) || Try(TokenType::NewLine) ||
+           Try(TokenType::Semi)) {
         if (Try(TokenType::NewLine)) {
             KAI_TRACE() << "RhoParser::Program - Skipping initial newline";
         } else if (Try(TokenType::Whitespace)) {
@@ -159,7 +160,7 @@ bool RhoParser::Function(AstNodePtr node) {
     // Check for "=" syntax (fun name = args)
     bool useAssignSyntax = Try(TokenType::Assign);
     if (useAssignSyntax) {
-        Consume(); // consume '='
+        Consume();  // consume '='
     } else {
         Expect(TokenType::OpenParan);
     }
@@ -167,12 +168,13 @@ bool RhoParser::Function(AstNodePtr node) {
     fun->Add(args);
 
     if (useAssignSyntax) {
-        // For "fun name = args" syntax, parse comma-separated args without parens
+        // For "fun name = args" syntax, parse comma-separated args without
+        // parens
         if (Try(TokenType::Label)) {
             args->Add(Consume());
             while (Try(TokenType::Comma)) {
                 Consume();
-                ConsumeNewLines(); // Allow newlines after comma
+                ConsumeNewLines();  // Allow newlines after comma
                 args->Add(Expect(TokenType::Label));
             }
         }

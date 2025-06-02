@@ -1,6 +1,6 @@
+#include <KAI/Core/BuiltinTypes/Array.h>
 #include <KAI/Core/Object/IObject.h>
 #include <KAI/Core/Registry.h>
-#include <KAI/Core/BuiltinTypes/Array.h>
 
 #include <algorithm>
 #include <map>
@@ -11,7 +11,7 @@ void StorageBase::Detach(Object const &parent) {
     // The object calling Detach wants to be removed from the given parent
     StorageBase *parentBase = GetRegistry()->GetStorageBase(parent.GetHandle());
     if (!parentBase) return;
-    
+
     // First check if parent has this object in its dictionary
     for (auto const &[label, object] : parentBase->dictionary) {
         if (object.GetHandle() == GetHandle()) {
@@ -19,7 +19,7 @@ void StorageBase::Detach(Object const &parent) {
             return;
         }
     }
-    
+
     // For containers like Array, we need to call their Erase method directly
     // since the generic ContainerOps::Erase is not implemented
     if (parentBase->GetClass()->GetTypeNumber() == Type::Number::Array) {

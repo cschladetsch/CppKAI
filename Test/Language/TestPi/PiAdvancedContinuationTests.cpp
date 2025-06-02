@@ -1,18 +1,16 @@
 #include "KAI/Test/Include/TestLangCommon.h"
 
 class TestPiAdvancedContinuations : public kai::TestLangCommon {
-protected:
-    void SetUp() override {
-        TestLangCommon::SetUp();
-    }
-    
+   protected:
+    void SetUp() override { TestLangCommon::SetUp(); }
+
     int ExpectInt() {
         EXPECT_FALSE(data_->Empty()) << "Stack is empty";
         auto top = data_->Pop();
         EXPECT_TRUE(top.IsType<int>()) << "Top is not an int";
         return kai::ConstDeref<int>(top);
     }
-    
+
     bool ExpectBool() {
         EXPECT_FALSE(data_->Empty()) << "Stack is empty";
         auto top = data_->Pop();
@@ -29,7 +27,7 @@ TEST_F(TestPiAdvancedContinuations, TestNestedContinuation) {
         5 double &
         add3 &
     )";
-    
+
     console_.Execute(script);
     ASSERT_EQ(data_->Size(), 1);
     ASSERT_EQ(ExpectInt(), 13);  // (5 * 2) + 3
@@ -43,7 +41,7 @@ TEST_F(TestPiAdvancedContinuations, TestConditionalContinuation) {
         20
         true { add10 & } { sub10 & } ife
     )";
-    
+
     console_.Execute(script);
     ASSERT_EQ(ExpectInt(), 30);  // true branch: 20 + 10
 }
@@ -62,8 +60,9 @@ TEST_F(TestPiAdvancedContinuations, TestContinuationComposition) {
 
 // Test 4: Continuation as parameter
 TEST_F(TestPiAdvancedContinuations, TestContinuationAsParameter) {
-    // Test applying a continuation multiple times  
-    // Since continuations consume their arguments, we need to structure this differently
+    // Test applying a continuation multiple times
+    // Since continuations consume their arguments, we need to structure this
+    // differently
     const std::string script = R"(
         { 2 * } 'double #
         { 4 * } 'quadruple #
@@ -99,10 +98,10 @@ TEST_F(TestPiAdvancedContinuations, TestIdentifierResolution) {
     console_.Execute(script);
     ASSERT_EQ(data_->Size(), 1);
     ASSERT_EQ(ExpectInt(), 42);
-    
+
     // Clear stack for next test
     data_->Clear();
-    
+
     // Test multiple resolutions
     const std::string script2 = R"(
         10 'x # 
@@ -111,8 +110,7 @@ TEST_F(TestPiAdvancedContinuations, TestIdentifierResolution) {
     )";
     console_.Execute(script2);
     ASSERT_EQ(data_->Size(), 3);
-    
-    
+
     ASSERT_EQ(ExpectInt(), 10);  // Last x
     ASSERT_EQ(ExpectInt(), 20);  // y
     ASSERT_EQ(ExpectInt(), 10);  // First x
@@ -139,7 +137,7 @@ TEST_F(TestPiAdvancedContinuations, TestCoroutineLikeContinuation) {
         
         generator &
     )";
-    
+
     // Note: This tests the concept - actual yield would need language support
     console_.Execute(script);
     ASSERT_EQ(data_->Size(), 3);
@@ -158,7 +156,7 @@ TEST_F(TestPiAdvancedContinuations, TestStatePreservingContinuation) {
             outer_state
         } &
     )";
-    
+
     console_.Execute(script);
     ASSERT_EQ(ExpectInt(), 15);
 }
@@ -174,7 +172,7 @@ TEST_F(TestPiAdvancedContinuations, TestFilterChainContinuation) {
         10 2 % 0 == { count 1 + 'count # } if
         count
     )";
-    
+
     console_.Execute(script);
     ASSERT_EQ(ExpectInt(), 5);
 }
@@ -189,7 +187,7 @@ TEST_F(TestPiAdvancedContinuations, TestMutualRecursion) {
         8 is_even &
         and
     )";
-    
+
     console_.Execute(script);
     ASSERT_EQ(ExpectBool(), true);
 }
@@ -204,10 +202,10 @@ TEST_F(TestPiAdvancedContinuations, TestContinuationStorage) {
     console_.Execute(script);
     ASSERT_EQ(data_->Size(), 1);
     ASSERT_EQ(ExpectInt(), 6);
-    
+
     // Clear and test multiple uses
     data_->Clear();
-    
+
     // Test that continuations can be reused from scope
     // Each use of 'double' retrieves it fresh from scope
     const std::string script2 = R"(
@@ -217,8 +215,7 @@ TEST_F(TestPiAdvancedContinuations, TestContinuationStorage) {
     )";
     std::cout << "\nDEBUG: Executing script2:\n" << script2 << std::endl;
     console_.Execute(script2);
-    
-    
+
     ASSERT_EQ(data_->Size(), 2);
     ASSERT_EQ(ExpectInt(), 8);  // 4 * 2
     ASSERT_EQ(ExpectInt(), 6);  // 3 * 2
@@ -234,9 +231,9 @@ TEST_F(TestPiAdvancedContinuations, TestContinuationMultipleValues) {
         3 double &
     )";
     console_.Execute(script);
-    
+
     ASSERT_EQ(data_->Size(), 3);
     ASSERT_EQ(ExpectInt(), 6);  // 3 * 2
-    ASSERT_EQ(ExpectInt(), 4);  // 2 * 2  
+    ASSERT_EQ(ExpectInt(), 4);  // 2 * 2
     ASSERT_EQ(ExpectInt(), 2);  // 1 * 2
 }

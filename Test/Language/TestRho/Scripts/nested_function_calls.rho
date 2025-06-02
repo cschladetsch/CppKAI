@@ -1,0 +1,5 @@
+fun increment(n)
+    return n + 1
+fun double(n)
+    return n * 2
+double(increment(increment(double(2))))

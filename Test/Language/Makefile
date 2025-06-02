@@ -1673,6 +1673,30 @@ TestRho/SimpleDirectTest.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleDirectTest.cpp.s
 .PHONY : TestRho/SimpleDirectTest.cpp.s
 
+TestRho/SimpleFunctionCall.o: TestRho/SimpleFunctionCall.cpp.o
+.PHONY : TestRho/SimpleFunctionCall.o
+
+# target to build an object file
+TestRho/SimpleFunctionCall.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleFunctionCall.cpp.o
+.PHONY : TestRho/SimpleFunctionCall.cpp.o
+
+TestRho/SimpleFunctionCall.i: TestRho/SimpleFunctionCall.cpp.i
+.PHONY : TestRho/SimpleFunctionCall.i
+
+# target to preprocess a source file
+TestRho/SimpleFunctionCall.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleFunctionCall.cpp.i
+.PHONY : TestRho/SimpleFunctionCall.cpp.i
+
+TestRho/SimpleFunctionCall.s: TestRho/SimpleFunctionCall.cpp.s
+.PHONY : TestRho/SimpleFunctionCall.s
+
+# target to generate assembly for a file
+TestRho/SimpleFunctionCall.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleFunctionCall.cpp.s
+.PHONY : TestRho/SimpleFunctionCall.cpp.s
+
 TestRho/SimpleFunctionDebug.o: TestRho/SimpleFunctionDebug.cpp.o
 .PHONY : TestRho/SimpleFunctionDebug.o
 
@@ -1840,6 +1864,30 @@ TestRho/TypeTest.s: TestRho/TypeTest.cpp.s
 TestRho/TypeTest.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/TypeTest.cpp.s
 .PHONY : TestRho/TypeTest.cpp.s
+
+TestRho/VerySimpleTest.o: TestRho/VerySimpleTest.cpp.o
+.PHONY : TestRho/VerySimpleTest.o
+
+# target to build an object file
+TestRho/VerySimpleTest.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/VerySimpleTest.cpp.o
+.PHONY : TestRho/VerySimpleTest.cpp.o
+
+TestRho/VerySimpleTest.i: TestRho/VerySimpleTest.cpp.i
+.PHONY : TestRho/VerySimpleTest.i
+
+# target to preprocess a source file
+TestRho/VerySimpleTest.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/VerySimpleTest.cpp.i
+.PHONY : TestRho/VerySimpleTest.cpp.i
+
+TestRho/VerySimpleTest.s: TestRho/VerySimpleTest.cpp.s
+.PHONY : TestRho/VerySimpleTest.s
+
+# target to generate assembly for a file
+TestRho/VerySimpleTest.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/VerySimpleTest.cpp.s
+.PHONY : TestRho/VerySimpleTest.cpp.s
 
 TestTau/NetworkConnectionTests.o: TestTau/NetworkConnectionTests.cpp.o
 .PHONY : TestTau/NetworkConnectionTests.o
@@ -2441,6 +2489,9 @@ help:
 	@echo "... TestRho/SimpleDirectTest.o"
 	@echo "... TestRho/SimpleDirectTest.i"
 	@echo "... TestRho/SimpleDirectTest.s"
+	@echo "... TestRho/SimpleFunctionCall.o"
+	@echo "... TestRho/SimpleFunctionCall.i"
+	@echo "... TestRho/SimpleFunctionCall.s"
 	@echo "... TestRho/SimpleFunctionDebug.o"
 	@echo "... TestRho/SimpleFunctionDebug.i"
 	@echo "... TestRho/SimpleFunctionDebug.s"
@@ -2462,6 +2513,9 @@ help:
 	@echo "... TestRho/TypeTest.o"
 	@echo "... TestRho/TypeTest.i"
 	@echo "... TestRho/TypeTest.s"
+	@echo "... TestRho/VerySimpleTest.o"
+	@echo "... TestRho/VerySimpleTest.i"
+	@echo "... TestRho/VerySimpleTest.s"
 	@echo "... TestTau/NetworkConnectionTests.o"
 	@echo "... TestTau/NetworkConnectionTests.i"
 	@echo "... TestTau/NetworkConnectionTests.s"

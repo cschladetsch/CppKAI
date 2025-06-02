@@ -27,7 +27,7 @@ class RhoDemo : public TestLangCommon {
             console.SetLanguage(Language::Rho);
 
             // Create a system object with print capability
-            Registry& reg = console.GetRegistry();
+            Registry &reg = console.GetRegistry();
             Object system = reg.New<Object>();
             auto scope = console.GetTree().GetScope();
             scope.Set(Label("System"), system);
@@ -104,7 +104,7 @@ TEST_F(RhoDemo, RunDemo) {
 TEST_F(RhoDemo, BasicFeatureTests) {
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     // Test arithmetic
     console.Execute(String("2 + 3 * 4"));
     auto stack = console.GetExecutor()->GetDataStack();
@@ -137,7 +137,7 @@ TEST_F(RhoDemo, BasicFeatureTests) {
     }
 
     // Skip function test for now - Rho function syntax needs work
-    
+
     // Test Pi integration - just verify pi block works
     console.Execute(String("pi { 2 3 + }"));
     EXPECT_FALSE(stack->Empty()) << "No result on stack after Pi integration";

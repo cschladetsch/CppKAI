@@ -643,7 +643,8 @@ void Executor::Continue() {
                                          "skipping evaluation";
                 }
             } else {
-                KAI_TRACE() << "Continue: Continuation has no more instructions, setting break_";
+                KAI_TRACE() << "Continue: Continuation has no more "
+                               "instructions, setting break_";
                 break_ = true;
             }
         } catch (const Exception::Base &e) {
@@ -667,7 +668,8 @@ void Executor::Continue() {
             try {
                 NextContinuation();
                 if (!continuation_.Valid() || !continuation_.Exists()) {
-                    KAI_TRACE() << "Continue: No valid continuation after NextContinuation, returning";
+                    KAI_TRACE() << "Continue: No valid continuation after "
+                                   "NextContinuation, returning";
                     return;
                 }
             } catch (const std::exception &e) {
@@ -747,9 +749,10 @@ void Executor::Continue(Value<Continuation> C) {
 }
 
 void Executor::NextContinuation() {
-    KAI_TRACE() << "NextContinuation called, context stack size: " 
-                << (context_.Valid() && context_.Exists() ? context_->Size() : -1);
-    
+    KAI_TRACE() << "NextContinuation called, context stack size: "
+                << (context_.Valid() && context_.Exists() ? context_->Size()
+                                                          : -1);
+
     // Validate context stack
     if (!context_.Valid() || !context_.Exists()) {
         KAI_TRACE_ERROR()
@@ -766,13 +769,55 @@ void Executor::NextContinuation() {
 
     try {
         // Get next continuation from context stack
+        KAI_TRACE() << "NextContinuation: About to pop from context stack";
         const auto next = context_->Pop();
+        KAI_TRACE() << "NextContinuation: Popped object of type: " 
+                    << (next.GetClass() ? next.GetClass()->GetName().ToString() : "unknown");
 
         // Check if this is a null sentinel (used by ContinueOnly to stop
         // execution)
         if (!next.Valid() || !next.Exists()) {
             // This is expected when ContinueOnly pushed a null object as a
             // sentinel Just set continuation to null to stop execution
+            continuation_ = Object();
+            return;
+        }
+
+        // Check if it's actually a continuation
+        if (!next.IsType<Continuation>()) {
+            KAI_TRACE_ERROR() << "NextContinuation: Popped object is not a Continuation";
+            continuation_ = Object();
+            return;
+        }
+
+        // Debug: Check the continuation's state
+        try {
+            Pointer<Continuation> cont = next;
+            KAI_TRACE() << "NextContinuation: Got continuation pointer";
+            
+            if (!cont.Exists()) {
+                KAI_TRACE_ERROR() << "NextContinuation: Continuation pointer doesn't exist";
+                continuation_ = Object();
+                return;
+            }
+            
+            if (!cont->GetCode().Exists()) {
+                KAI_TRACE_ERROR() << "NextContinuation: Continuation has no code";
+                continuation_ = Object();
+                return;
+            }
+            
+            int ip = ConstDeref<int>(cont->index);
+            int codeSize = cont->GetCode()->Size();
+            KAI_TRACE() << "NextContinuation: Resuming continuation with IP=" 
+                        << ip << " of " << codeSize;
+                        
+            // Check if IP is valid
+            if (ip >= codeSize) {
+                KAI_TRACE() << "NextContinuation: WARNING - IP is at or past end of code";
+            }
+        } catch (const std::exception &e) {
+            KAI_TRACE_ERROR() << "NextContinuation: Exception checking continuation: " << e.what();
             continuation_ = Object();
             return;
         }

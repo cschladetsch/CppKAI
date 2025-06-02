@@ -1,0 +1,4 @@
+fun double(n)
+    return n * 2
+
+double(3)

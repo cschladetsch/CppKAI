@@ -8,7 +8,7 @@
 
 TEST(TauAsync, BasicAsyncMethod) {
     kai::Registry reg;
-    
+
     const char* code = R"(
         namespace Services {
             interface IDataService {
@@ -27,18 +27,19 @@ TEST(TauAsync, BasicAsyncMethod) {
 
     auto lexer = std::make_shared<kai::tau::TauLexer>(code, reg);
     ASSERT_TRUE(lexer->Process());
-    
+
     auto parser = std::make_shared<kai::tau::TauParser>(reg);
     bool result = parser->Process(lexer, kai::Structure::Module);
-    
+
     // Async/await syntax not yet implemented in parser
-    EXPECT_TRUE(parser->Error.empty() || parser->Error.find("Not Implemented") != std::string::npos)
+    EXPECT_TRUE(parser->Error.empty() ||
+                parser->Error.find("Not Implemented") != std::string::npos)
         << "Parser error: " << parser->Error;
 }
 
 TEST(TauAsync, AsyncWithAwait) {
     kai::Registry reg;
-    
+
     const char* code = R"(
         namespace Application {
             class UserManager {
@@ -55,17 +56,18 @@ TEST(TauAsync, AsyncWithAwait) {
 
     auto lexer = std::make_shared<kai::tau::TauLexer>(code, reg);
     ASSERT_TRUE(lexer->Process());
-    
+
     auto parser = std::make_shared<kai::tau::TauParser>(reg);
     bool result = parser->Process(lexer, kai::Structure::Module);
-    
-    EXPECT_TRUE(parser->Error.empty() || parser->Error.find("Not Implemented") != std::string::npos)
+
+    EXPECT_TRUE(parser->Error.empty() ||
+                parser->Error.find("Not Implemented") != std::string::npos)
         << "Parser error: " << parser->Error;
 }
 
 TEST(TauAsync, AsyncStreams) {
     kai::Registry reg;
-    
+
     const char* code = R"(
         namespace Streaming {
             interface IStreamProcessor {
@@ -82,17 +84,18 @@ TEST(TauAsync, AsyncStreams) {
 
     auto lexer = std::make_shared<kai::tau::TauLexer>(code, reg);
     ASSERT_TRUE(lexer->Process());
-    
+
     auto parser = std::make_shared<kai::tau::TauParser>(reg);
     bool result = parser->Process(lexer, kai::Structure::Module);
-    
-    EXPECT_TRUE(parser->Error.empty() || parser->Error.find("Not Implemented") != std::string::npos)
+
+    EXPECT_TRUE(parser->Error.empty() ||
+                parser->Error.find("Not Implemented") != std::string::npos)
         << "Parser error: " << parser->Error;
 }
 
 TEST(TauAsync, AsyncEventHandlers) {
     kai::Registry reg;
-    
+
     const char* code = R"(
         namespace Events {
             delegate Task AsyncEventHandler(object sender, EventArgs e);
@@ -108,17 +111,18 @@ TEST(TauAsync, AsyncEventHandlers) {
 
     auto lexer = std::make_shared<kai::tau::TauLexer>(code, reg);
     ASSERT_TRUE(lexer->Process());
-    
+
     auto parser = std::make_shared<kai::tau::TauParser>(reg);
     bool result = parser->Process(lexer, kai::Structure::Module);
-    
-    EXPECT_TRUE(parser->Error.empty() || parser->Error.find("Not Implemented") != std::string::npos)
+
+    EXPECT_TRUE(parser->Error.empty() ||
+                parser->Error.find("Not Implemented") != std::string::npos)
         << "Parser error: " << parser->Error;
 }
 
 TEST(TauAsync, TaskCombinators) {
     kai::Registry reg;
-    
+
     const char* code = R"(
         namespace Concurrent {
             class TaskUtilities {
@@ -133,10 +137,11 @@ TEST(TauAsync, TaskCombinators) {
 
     auto lexer = std::make_shared<kai::tau::TauLexer>(code, reg);
     ASSERT_TRUE(lexer->Process());
-    
+
     auto parser = std::make_shared<kai::tau::TauParser>(reg);
     bool result = parser->Process(lexer, kai::Structure::Module);
-    
-    EXPECT_TRUE(parser->Error.empty() || parser->Error.find("Not Implemented") != std::string::npos)
+
+    EXPECT_TRUE(parser->Error.empty() ||
+                parser->Error.find("Not Implemented") != std::string::npos)
         << "Parser error: " << parser->Error;
 }
