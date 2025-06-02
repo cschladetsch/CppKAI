@@ -39,6 +39,7 @@ const char *PiTokenEnumType::ToString(Enum t) {
         CASE_LOWER(True)
         CASE_LOWER(False)
         CASE_LOWER(Size)
+        CASE_LOWER(Print)
         CASE_REPLACE(Suspend, "&")
         CASE_REPLACE(Resume, "...")
         CASE_REPLACE(Replace, "!")

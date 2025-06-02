@@ -45,6 +45,7 @@ void PiLexer::AddKeyWords() {
     keyWords["size"] = Enum::Size;
     keyWords["depth"] = Enum::Depth;
     keyWords["new"] = Enum::New;
+    keyWords["print"] = Enum::Print;
     keyWords["dropn"] = Enum::DropN;
 
     keyWords["toarray"] = Enum::ToArray;

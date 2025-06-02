@@ -162,6 +162,8 @@ struct Operation {
 
         Size,
 
+        Print,
+        
         ToPi,
         ToRho,
         StartPiSequence,

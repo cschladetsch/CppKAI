@@ -142,6 +142,7 @@ const char *Operation::ToString(int value) {
         CASE(DivEquals)
         CASE(ModEquals)
         CASE(Size)
+        CASE(Print)
         CASE(ToPi)
         CASE(ToRho)
         CASE(StartPiSequence)

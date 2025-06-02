@@ -546,6 +546,10 @@ void PiTranslator::AppendTokenised(const TokenNode &tok) {
             AppendOp(Operation::ForLoop);
             return;
 
+        case PiTokenEnumType::Print:
+            AppendOp(Operation::Print);
+            return;
+
             // Note: "call" was added here but removed due to conflict
 
         default:

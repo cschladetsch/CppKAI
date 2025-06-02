@@ -997,6 +997,20 @@ void Executor::Perform(Operation::Type op) {
             }
             break;
         }
+
+        case Operation::Print: {
+            // Print the top object from the stack and pop it
+            if (!data_->Empty()) {
+                Object obj = Pop();
+                if (obj.Exists()) {
+                    // Convert to string and print
+                    StringStream stream;
+                    obj.GetClass()->Insert(stream, obj.GetStorageBase());
+                    std::cout << stream.ToString() << std::endl;
+                }
+            }
+            break;
+        }
             
         case Operation::WhileLoop: {
             // ( condition body -- )
@@ -1082,9 +1096,13 @@ void Executor::Perform(Operation::Type op) {
         }
         
         case Operation::ForLoop: {
-            // ( init cond incr body -- )
-            // For loop with initialization, condition, increment, and body
-            KAI_TRACE() << "ForLoop: Getting continuations from stack";
+            // ForLoop supports two syntax forms:
+            // 1. Range-based: ( accumulator start end body -- result )
+            //    Example: 0 1 5 { + } for  // sum numbers from 1 to 5
+            // 2. Traditional: ( init cond incr body -- )
+            //    Example: { 0 } { dup 5 < } { 1 + } { trace } for
+            
+            KAI_TRACE() << "ForLoop: Checking stack for operation type";
             try {
                 // Check for valid data stack first
                 if (!data_.Valid() || !data_.Exists()) {
@@ -1098,26 +1116,79 @@ void Executor::Perform(Operation::Type op) {
                     break;
                 }
                 
-                // Get continuations in reverse order
-                auto bodyCont = Pop();
-                auto incrCont = Pop();
-                auto condCont = Pop();
-                auto initCont = Pop();
+                // Peek at the stack to determine which syntax is being used
+                // For range-based: we expect 3 numbers and 1 continuation
+                // For traditional: we expect 4 continuations
                 
-                if (!initCont.IsType<Continuation>() || !condCont.IsType<Continuation>() ||
-                    !incrCont.IsType<Continuation>() || !bodyCont.IsType<Continuation>()) {
-                    KAI_TRACE_ERROR() << "ForLoop: Expected continuations";
-                    break;
+                // Try range-based syntax first
+                auto item4 = data_->At(data_->Size() - 1);  // Top (body)
+                auto item3 = data_->At(data_->Size() - 2);  // End
+                auto item2 = data_->At(data_->Size() - 3);  // Start  
+                auto item1 = data_->At(data_->Size() - 4);  // Accumulator/Init
+                
+                if (item4.IsType<Continuation>() && 
+                    item3.IsType<int>() && 
+                    item2.IsType<int>() && 
+                    item1.IsType<int>()) {
+                    // Range-based for loop
+                    KAI_TRACE() << "ForLoop: Using range-based syntax";
+                    
+                    auto bodyCont = Pop();
+                    int end = ConstDeref<int>(Pop());
+                    int start = ConstDeref<int>(Pop());
+                    int accumulator = ConstDeref<int>(Pop());
+                    
+                    Pointer<Continuation> body = bodyCont;
+                    
+                    // Execute range-based for loop
+                    for (int i = start; i <= end; ++i) {
+                        // Push current accumulator and loop variable
+                        Push(New<int>(accumulator));
+                        Push(New<int>(i));
+                        
+                        // Execute body
+                        if (body->GetCode().Exists()) {
+                            for (int j = 0; j < body->GetCode()->Size(); ++j) {
+                                auto obj = body->GetCode()->At(j);
+                                if (obj.Exists()) {
+                                    Eval(obj);
+                                }
+                            }
+                        }
+                        
+                        // Pop result as new accumulator
+                        if (!data_->Empty()) {
+                            accumulator = ConstDeref<int>(Pop());
+                        }
+                    }
+                    
+                    // Push final accumulator value
+                    Push(New<int>(accumulator));
                 }
-                
-                Pointer<Continuation> init = initCont;
-                Pointer<Continuation> condition = condCont;
-                Pointer<Continuation> increment = incrCont;
-                Pointer<Continuation> body = bodyCont;
-                
-                // Execute initialization
-                if (init->GetCode().Exists()) {
-                    for (int i = 0; i < init->GetCode()->Size(); ++i) {
+                else {
+                    // Traditional 4-continuation for loop
+                    KAI_TRACE() << "ForLoop: Using traditional 4-continuation syntax";
+                    
+                    // Get continuations in reverse order
+                    auto bodyCont = Pop();
+                    auto incrCont = Pop();
+                    auto condCont = Pop();
+                    auto initCont = Pop();
+                    
+                    if (!initCont.IsType<Continuation>() || !condCont.IsType<Continuation>() ||
+                        !incrCont.IsType<Continuation>() || !bodyCont.IsType<Continuation>()) {
+                        KAI_TRACE_ERROR() << "ForLoop: Expected continuations for traditional syntax";
+                        break;
+                    }
+                    
+                    Pointer<Continuation> init = initCont;
+                    Pointer<Continuation> condition = condCont;
+                    Pointer<Continuation> increment = incrCont;
+                    Pointer<Continuation> body = bodyCont;
+                    
+                    // Execute initialization
+                    if (init->GetCode().Exists()) {
+                        for (int i = 0; i < init->GetCode()->Size(); ++i) {
                         auto obj = init->GetCode()->At(i);
                         if (obj.Exists()) {
                             Eval(obj);
@@ -1174,6 +1245,7 @@ void Executor::Perform(Operation::Type op) {
                         }
                     }
                 }
+                }  // End of else block for traditional for loop
             }
             catch (const Exception::Base& e) {
                 KAI_TRACE_ERROR() << "ForLoop: KAI exception: " << e.ToString();
