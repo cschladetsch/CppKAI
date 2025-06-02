@@ -7,8 +7,8 @@ KAI_NET_BEGIN
 
 // Forward declarations for KAI network classes
 enum class ConnectionEvent;
-class ProxyBase;
-class AgentBase;
+struct ProxyBase;
+struct AgentBase;
 
 // A peer on the network. Nominally, there are no servers or clients. Just
 // a collection of nodes that connect and communicate with each other.

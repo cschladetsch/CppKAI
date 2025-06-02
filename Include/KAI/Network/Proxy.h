@@ -6,7 +6,7 @@
 
 // Forward declare Node to avoid circular dependency
 KAI_NET_BEGIN
-class Node;
+struct Node;
 KAI_NET_END
 
 KAI_NET_BEGIN

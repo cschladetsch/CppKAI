@@ -1,7 +1,7 @@
 #include <KAI/Core/Logger.h>
 #include <KAI/Network/NetworkLogger.h>
 
-#include "rang.hpp"
+#include <KAI/Console/rang.hpp>
 
 KAI_NET_BEGIN
 

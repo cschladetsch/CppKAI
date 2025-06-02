@@ -7,8 +7,8 @@
 
 namespace RakNet {
 class RakPeerInterface;
-class Packet;
-struct SystemAddress;
+struct Packet;
+class SystemAddress;
 }  // namespace RakNet
 
 KAI_NET_BEGIN

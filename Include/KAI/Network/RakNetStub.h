@@ -49,6 +49,15 @@ class SystemAddress {
         : ip(_ip), port(_port) {}
 
     std::string ToString() const { return ip + ":" + std::to_string(port); }
+    
+    std::string ToString(bool withPort) const { 
+        if (withPort) {
+            return ip + ":" + std::to_string(port);
+        }
+        return ip;
+    }
+    
+    unsigned short GetPort() const { return port; }
 
     void FromString(const char* str) {
         std::string s(str);
@@ -240,6 +249,8 @@ enum StartupResult {
     INVALID_SOCKET_DESCRIPTORS,
     INVALID_MAX_CONNECTIONS,
     SOCKET_FAILED_TO_BIND,
+    SOCKET_PORT_ALREADY_IN_USE,
+    SOCKET_FAILED_TEST_SEND,
     PORT_CANNOT_BE_ZERO
 };
 
@@ -339,6 +350,11 @@ class RakPeerInterface {
     // Connection state management
     ConnectionState GetConnectionState(const SystemAddress& address) {
         return IS_CONNECTED;  // Stub always returns connected
+    }
+    
+    // Get internal ID (address of this peer)
+    SystemAddress GetInternalID() const {
+        return SystemAddress("127.0.0.1", 0);  // Stub returns localhost
     }
 
     // Ping functionality

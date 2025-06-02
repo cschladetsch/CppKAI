@@ -322,7 +322,7 @@ bool Node::IsConnectedTo(const IpAddress &address, int port) const {
         // Compare IPs and ports separately to handle different string
         // representations
         if (conn.GetPort() == targetAddr.GetPort() &&
-            strcmp(conn.ToString(false), targetAddr.ToString(false)) == 0) {
+            conn.ToString(false) == targetAddr.ToString(false)) {
             return true;
         }
     }
