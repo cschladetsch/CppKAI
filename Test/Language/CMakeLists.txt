@@ -69,6 +69,8 @@ foreach (lang ${langs})
             ${source_path}/RhoLambdaTestsFixed.cpp         # Fixed lambda tests
             ${source_path}/SimpleFunctionDebug.cpp         # Debug function execution
             ${source_path}/RhoFunctionTestsWorking.cpp     # Working function tests
+            ${source_path}/RhoFunctionTestsFixed.cpp       # Fixed function tests
+            ${source_path}/RhoRecursionDebug.cpp           # Debug recursion issues
             ${source_path}/SimpleFunctionCall.cpp           # Simple function call debug
             ${source_path}/VerySimpleTest.cpp               # Very simple execution test
             ${source_path}/RhoScriptBasedTests.cpp          # Script-based tests

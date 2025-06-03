@@ -183,7 +183,7 @@ TEST_F(RhoFunctionTests, NestedFunctionCalls) {
         "fun double(n)\n"
         "    return n * 2\n"
         "double(increment(increment(double(2))))",
-        10);
+        12);  // double(2)=4, increment(4)=5, increment(5)=6, double(6)=12
 }
 
 // Recursion
