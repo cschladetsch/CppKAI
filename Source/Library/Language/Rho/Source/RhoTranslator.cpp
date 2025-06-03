@@ -761,9 +761,7 @@ void RhoTranslator::TranslateFunction(AstNodePtr node) {
     // If the last operation isn't Return, add one
     auto cont = Top();
     if (cont.Exists() && cont.Valid()) {
-        // KAI uses Array for the code sequence
-        // We can't easily check the last operation, so just ensure there's a
-        // return Add return with no value (returns null)
+        // Add return with no value (returns null)
         AppendDirectOperation(Operation::None);
         AppendDirectOperation(Operation::Return);
     }

@@ -1361,6 +1361,30 @@ TestRho/RhoElseIfWorkaround.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoElseIfWorkaround.cpp.s
 .PHONY : TestRho/RhoElseIfWorkaround.cpp.s
 
+TestRho/RhoElseIntermediateVarTest.o: TestRho/RhoElseIntermediateVarTest.cpp.o
+.PHONY : TestRho/RhoElseIntermediateVarTest.o
+
+# target to build an object file
+TestRho/RhoElseIntermediateVarTest.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoElseIntermediateVarTest.cpp.o
+.PHONY : TestRho/RhoElseIntermediateVarTest.cpp.o
+
+TestRho/RhoElseIntermediateVarTest.i: TestRho/RhoElseIntermediateVarTest.cpp.i
+.PHONY : TestRho/RhoElseIntermediateVarTest.i
+
+# target to preprocess a source file
+TestRho/RhoElseIntermediateVarTest.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoElseIntermediateVarTest.cpp.i
+.PHONY : TestRho/RhoElseIntermediateVarTest.cpp.i
+
+TestRho/RhoElseIntermediateVarTest.s: TestRho/RhoElseIntermediateVarTest.cpp.s
+.PHONY : TestRho/RhoElseIntermediateVarTest.s
+
+# target to generate assembly for a file
+TestRho/RhoElseIntermediateVarTest.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoElseIntermediateVarTest.cpp.s
+.PHONY : TestRho/RhoElseIntermediateVarTest.cpp.s
+
 TestRho/RhoElseMinimalDebug.o: TestRho/RhoElseMinimalDebug.cpp.o
 .PHONY : TestRho/RhoElseMinimalDebug.o
 
@@ -1384,6 +1408,30 @@ TestRho/RhoElseMinimalDebug.s: TestRho/RhoElseMinimalDebug.cpp.s
 TestRho/RhoElseMinimalDebug.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoElseMinimalDebug.cpp.s
 .PHONY : TestRho/RhoElseMinimalDebug.cpp.s
+
+TestRho/RhoElseRecursionTrace.o: TestRho/RhoElseRecursionTrace.cpp.o
+.PHONY : TestRho/RhoElseRecursionTrace.o
+
+# target to build an object file
+TestRho/RhoElseRecursionTrace.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoElseRecursionTrace.cpp.o
+.PHONY : TestRho/RhoElseRecursionTrace.cpp.o
+
+TestRho/RhoElseRecursionTrace.i: TestRho/RhoElseRecursionTrace.cpp.i
+.PHONY : TestRho/RhoElseRecursionTrace.i
+
+# target to preprocess a source file
+TestRho/RhoElseRecursionTrace.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoElseRecursionTrace.cpp.i
+.PHONY : TestRho/RhoElseRecursionTrace.cpp.i
+
+TestRho/RhoElseRecursionTrace.s: TestRho/RhoElseRecursionTrace.cpp.s
+.PHONY : TestRho/RhoElseRecursionTrace.s
+
+# target to generate assembly for a file
+TestRho/RhoElseRecursionTrace.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoElseRecursionTrace.cpp.s
+.PHONY : TestRho/RhoElseRecursionTrace.cpp.s
 
 TestRho/RhoErrorHandlingTests.o: TestRho/RhoErrorHandlingTests.cpp.o
 .PHONY : TestRho/RhoErrorHandlingTests.o
@@ -1553,6 +1601,30 @@ TestRho/RhoGeneratorTests.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoGeneratorTests.cpp.s
 .PHONY : TestRho/RhoGeneratorTests.cpp.s
 
+TestRho/RhoIfElseInlineTest.o: TestRho/RhoIfElseInlineTest.cpp.o
+.PHONY : TestRho/RhoIfElseInlineTest.o
+
+# target to build an object file
+TestRho/RhoIfElseInlineTest.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoIfElseInlineTest.cpp.o
+.PHONY : TestRho/RhoIfElseInlineTest.cpp.o
+
+TestRho/RhoIfElseInlineTest.i: TestRho/RhoIfElseInlineTest.cpp.i
+.PHONY : TestRho/RhoIfElseInlineTest.i
+
+# target to preprocess a source file
+TestRho/RhoIfElseInlineTest.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoIfElseInlineTest.cpp.i
+.PHONY : TestRho/RhoIfElseInlineTest.cpp.i
+
+TestRho/RhoIfElseInlineTest.s: TestRho/RhoIfElseInlineTest.cpp.s
+.PHONY : TestRho/RhoIfElseInlineTest.s
+
+# target to generate assembly for a file
+TestRho/RhoIfElseInlineTest.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoIfElseInlineTest.cpp.s
+.PHONY : TestRho/RhoIfElseInlineTest.cpp.s
+
 TestRho/RhoLambdaTests.o: TestRho/RhoLambdaTests.cpp.o
 .PHONY : TestRho/RhoLambdaTests.o
 
@@ -1624,6 +1696,30 @@ TestRho/RhoMoreControlFixedTests.s: TestRho/RhoMoreControlFixedTests.cpp.s
 TestRho/RhoMoreControlFixedTests.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoMoreControlFixedTests.cpp.s
 .PHONY : TestRho/RhoMoreControlFixedTests.cpp.s
+
+TestRho/RhoNoAutoReturnTest.o: TestRho/RhoNoAutoReturnTest.cpp.o
+.PHONY : TestRho/RhoNoAutoReturnTest.o
+
+# target to build an object file
+TestRho/RhoNoAutoReturnTest.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoNoAutoReturnTest.cpp.o
+.PHONY : TestRho/RhoNoAutoReturnTest.cpp.o
+
+TestRho/RhoNoAutoReturnTest.i: TestRho/RhoNoAutoReturnTest.cpp.i
+.PHONY : TestRho/RhoNoAutoReturnTest.i
+
+# target to preprocess a source file
+TestRho/RhoNoAutoReturnTest.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoNoAutoReturnTest.cpp.i
+.PHONY : TestRho/RhoNoAutoReturnTest.cpp.i
+
+TestRho/RhoNoAutoReturnTest.s: TestRho/RhoNoAutoReturnTest.cpp.s
+.PHONY : TestRho/RhoNoAutoReturnTest.s
+
+# target to generate assembly for a file
+TestRho/RhoNoAutoReturnTest.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoNoAutoReturnTest.cpp.s
+.PHONY : TestRho/RhoNoAutoReturnTest.cpp.s
 
 TestRho/RhoPatternMatchingTests.o: TestRho/RhoPatternMatchingTests.cpp.o
 .PHONY : TestRho/RhoPatternMatchingTests.o
@@ -1720,6 +1816,30 @@ TestRho/RhoRecursionAnalysis.s: TestRho/RhoRecursionAnalysis.cpp.s
 TestRho/RhoRecursionAnalysis.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoRecursionAnalysis.cpp.s
 .PHONY : TestRho/RhoRecursionAnalysis.cpp.s
+
+TestRho/RhoRecursionConsistencyTest.o: TestRho/RhoRecursionConsistencyTest.cpp.o
+.PHONY : TestRho/RhoRecursionConsistencyTest.o
+
+# target to build an object file
+TestRho/RhoRecursionConsistencyTest.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoRecursionConsistencyTest.cpp.o
+.PHONY : TestRho/RhoRecursionConsistencyTest.cpp.o
+
+TestRho/RhoRecursionConsistencyTest.i: TestRho/RhoRecursionConsistencyTest.cpp.i
+.PHONY : TestRho/RhoRecursionConsistencyTest.i
+
+# target to preprocess a source file
+TestRho/RhoRecursionConsistencyTest.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoRecursionConsistencyTest.cpp.i
+.PHONY : TestRho/RhoRecursionConsistencyTest.cpp.i
+
+TestRho/RhoRecursionConsistencyTest.s: TestRho/RhoRecursionConsistencyTest.cpp.s
+.PHONY : TestRho/RhoRecursionConsistencyTest.s
+
+# target to generate assembly for a file
+TestRho/RhoRecursionConsistencyTest.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/RhoRecursionConsistencyTest.cpp.s
+.PHONY : TestRho/RhoRecursionConsistencyTest.cpp.s
 
 TestRho/RhoRecursionDebug.o: TestRho/RhoRecursionDebug.cpp.o
 .PHONY : TestRho/RhoRecursionDebug.o
@@ -2762,9 +2882,15 @@ help:
 	@echo "... TestRho/RhoElseIfWorkaround.o"
 	@echo "... TestRho/RhoElseIfWorkaround.i"
 	@echo "... TestRho/RhoElseIfWorkaround.s"
+	@echo "... TestRho/RhoElseIntermediateVarTest.o"
+	@echo "... TestRho/RhoElseIntermediateVarTest.i"
+	@echo "... TestRho/RhoElseIntermediateVarTest.s"
 	@echo "... TestRho/RhoElseMinimalDebug.o"
 	@echo "... TestRho/RhoElseMinimalDebug.i"
 	@echo "... TestRho/RhoElseMinimalDebug.s"
+	@echo "... TestRho/RhoElseRecursionTrace.o"
+	@echo "... TestRho/RhoElseRecursionTrace.i"
+	@echo "... TestRho/RhoElseRecursionTrace.s"
 	@echo "... TestRho/RhoErrorHandlingTests.o"
 	@echo "... TestRho/RhoErrorHandlingTests.i"
 	@echo "... TestRho/RhoErrorHandlingTests.s"
@@ -2786,6 +2912,9 @@ help:
 	@echo "... TestRho/RhoGeneratorTests.o"
 	@echo "... TestRho/RhoGeneratorTests.i"
 	@echo "... TestRho/RhoGeneratorTests.s"
+	@echo "... TestRho/RhoIfElseInlineTest.o"
+	@echo "... TestRho/RhoIfElseInlineTest.i"
+	@echo "... TestRho/RhoIfElseInlineTest.s"
 	@echo "... TestRho/RhoLambdaTests.o"
 	@echo "... TestRho/RhoLambdaTests.i"
 	@echo "... TestRho/RhoLambdaTests.s"
@@ -2795,6 +2924,9 @@ help:
 	@echo "... TestRho/RhoMoreControlFixedTests.o"
 	@echo "... TestRho/RhoMoreControlFixedTests.i"
 	@echo "... TestRho/RhoMoreControlFixedTests.s"
+	@echo "... TestRho/RhoNoAutoReturnTest.o"
+	@echo "... TestRho/RhoNoAutoReturnTest.i"
+	@echo "... TestRho/RhoNoAutoReturnTest.s"
 	@echo "... TestRho/RhoPatternMatchingTests.o"
 	@echo "... TestRho/RhoPatternMatchingTests.i"
 	@echo "... TestRho/RhoPatternMatchingTests.s"
@@ -2807,6 +2939,9 @@ help:
 	@echo "... TestRho/RhoRecursionAnalysis.o"
 	@echo "... TestRho/RhoRecursionAnalysis.i"
 	@echo "... TestRho/RhoRecursionAnalysis.s"
+	@echo "... TestRho/RhoRecursionConsistencyTest.o"
+	@echo "... TestRho/RhoRecursionConsistencyTest.i"
+	@echo "... TestRho/RhoRecursionConsistencyTest.s"
 	@echo "... TestRho/RhoRecursionDebug.o"
 	@echo "... TestRho/RhoRecursionDebug.i"
 	@echo "... TestRho/RhoRecursionDebug.s"

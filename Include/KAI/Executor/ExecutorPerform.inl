@@ -727,27 +727,24 @@ void Executor::Perform(Operation::Type op) {
             bool condition = PopBool();
             KAI_TRACE() << "IfElse: condition=" << condition << ", choosing " << (condition ? "A" : "B");
             
-            // Execute the chosen continuation inline
+            // Simple approach: append the chosen continuation's code to current continuation
             auto chosen = condition ? A : B;
             if (chosen.IsType<Continuation>()) {
                 Pointer<Continuation> cont = chosen;
-                if (cont->GetCode().Exists()) {
-                    // Execute each operation from the chosen block directly
-                    for (int i = 0; i < cont->GetCode()->Size(); ++i) {
+                if (cont->GetCode().Exists() && continuation_.Exists()) {
+                    auto currentCode = continuation_->GetCode();
+                    auto currentIndex = ConstDeref<int>(continuation_->index);
+                    
+                    // Insert all operations from the chosen block at current position
+                    for (int i = cont->GetCode()->Size() - 1; i >= 0; --i) {
                         auto obj = cont->GetCode()->At(i);
-                        if (obj.Exists()) {
-                            Eval(obj);
-                            // If a Return was executed, stop processing the block
-                            // The break_ flag will naturally propagate to the parent
-                            if (break_) {
-                                break;
-                            }
+                        if (obj.Exists() && currentCode.Exists()) {
+                            currentCode->Insert(currentIndex, obj);
                         }
                     }
                 }
             }
             
-            // IfElse operation should not push anything onto the stack
             break;
         }
 

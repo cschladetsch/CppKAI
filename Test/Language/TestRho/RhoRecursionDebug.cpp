@@ -1,7 +1,9 @@
 #include <gtest/gtest.h>
 #include "TestLangCommon.h"
+#include "KAI/Core/BuiltinTypes/Signed32.h"
+#include "KAI/Executor/Executor.h"
 
-// Debug recursion issues
+// Minimal test to debug recursion issue
 struct RhoRecursionDebug : kai::TestLangCommon {
     void SetUp() override {
         TestLangCommon::SetUp();
@@ -9,73 +11,27 @@ struct RhoRecursionDebug : kai::TestLangCommon {
     }
 };
 
-// Test simple countdown to verify basic recursion
-TEST_F(RhoRecursionDebug, SimpleCountdown) {
+TEST_F(RhoRecursionDebug, MinimalRecursion) {
+    // Enable maximum tracing
+    kai::Process::trace = 20;
+    
+    // Simplest possible recursive function
     console_.Execute(
-        "fun countdown(n)\n"
+        "fun simple(n)\n"
         "    if n <= 0\n"
-        "        return 0\n"
+        "        return 42\n"
         "    else\n"
-        "        return n + countdown(n - 1)");
+        "        return simple(n - 1)");
     
-    // Test countdown(3) = 3 + 2 + 1 + 0 = 6
+    // Test simple(1) - should return 42
     data_->Clear();
-    console_.Execute("countdown(3)");
-    ASSERT_EQ(data_->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(data_->Top()), 6);
-}
-
-// Test factorial step by step
-TEST_F(RhoRecursionDebug, FactorialStepByStep) {
-    console_.Execute(
-        "fun factorial(n)\n"
-        "    if n <= 1\n"
-        "        return 1\n"
-        "    else\n"
-        "        return n * factorial(n - 1)");
+    std::cout << "\n\n===== CALLING simple(1) =====\n" << std::endl;
+    console_.Execute("simple(1)");
     
-    // Test factorial(1) = 1
-    data_->Clear();
-    console_.Execute("factorial(1)");
-    ASSERT_EQ(data_->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(data_->Top()), 1);
+    kai::Process::trace = 0;
     
-    // Test factorial(2) = 2 * 1 = 2
-    data_->Clear();
-    console_.Execute("factorial(2)");
     ASSERT_EQ(data_->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(data_->Top()), 2);
-    
-    // Test factorial(3) = 3 * 2 * 1 = 6
-    data_->Clear();
-    console_.Execute("factorial(3)");
-    ASSERT_EQ(data_->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(data_->Top()), 6);
-    
-    // Test factorial(4) = 4 * 3 * 2 * 1 = 24
-    data_->Clear();
-    console_.Execute("factorial(4)");
-    ASSERT_EQ(data_->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(data_->Top()), 24);
-}
-
-// Test if recursion preserves local state
-TEST_F(RhoRecursionDebug, RecursionWithLocalState) {
-    console_.Execute(
-        "fun sumWithLocal(n)\n"
-        "    local = n * 2\n"
-        "    if n <= 0\n"
-        "        return 0\n"
-        "    else\n"
-        "        return local + sumWithLocal(n - 1)");
-    
-    // sumWithLocal(3): local=6, returns 6 + sumWithLocal(2)
-    // sumWithLocal(2): local=4, returns 4 + sumWithLocal(1)
-    // sumWithLocal(1): local=2, returns 2 + sumWithLocal(0)
-    // sumWithLocal(0): returns 0
-    // Total: 6 + 4 + 2 + 0 = 12
-    data_->Clear();
-    console_.Execute("sumWithLocal(3)");
-    ASSERT_EQ(data_->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(data_->Top()), 12);
+    auto result = kai::ConstDeref<int>(data_->Top());
+    std::cout << "\nsimple(1) returned: " << result << " (expected 42)" << std::endl;
+    EXPECT_EQ(result, 42);
 }

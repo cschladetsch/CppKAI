@@ -82,6 +82,11 @@ foreach (lang ${langs})
             ${source_path}/RhoExtraReturnTest.cpp           # Extra return test
             ${source_path}/RhoRecursionElseDebug.cpp        # Recursion else debug
             ${source_path}/RhoElseMinimalDebug.cpp          # Minimal else debug
+            ${source_path}/RhoNoAutoReturnTest.cpp          # No auto return test
+            ${source_path}/RhoElseRecursionTrace.cpp        # Else recursion trace
+            ${source_path}/RhoIfElseInlineTest.cpp          # If else inline test
+            ${source_path}/RhoElseIntermediateVarTest.cpp   # Else intermediate var test
+            ${source_path}/RhoRecursionConsistencyTest.cpp  # Recursion consistency test
             ${source_path}/SimpleFunctionCall.cpp           # Simple function call debug
             ${source_path}/VerySimpleTest.cpp               # Very simple execution test
             ${source_path}/RhoScriptBasedTests.cpp          # Script-based tests
