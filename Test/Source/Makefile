@@ -203,6 +203,30 @@ FixedCoreSuite/fast:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/FixedCoreSuite.dir/build.make Test/Source/CMakeFiles/FixedCoreSuite.dir/build
 .PHONY : FixedCoreSuite/fast
 
+CoreAdvancedTests.o: CoreAdvancedTests.cpp.o
+.PHONY : CoreAdvancedTests.o
+
+# target to build an object file
+CoreAdvancedTests.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CoreAdvancedTests.cpp.o
+.PHONY : CoreAdvancedTests.cpp.o
+
+CoreAdvancedTests.i: CoreAdvancedTests.cpp.i
+.PHONY : CoreAdvancedTests.i
+
+# target to preprocess a source file
+CoreAdvancedTests.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CoreAdvancedTests.cpp.i
+.PHONY : CoreAdvancedTests.cpp.i
+
+CoreAdvancedTests.s: CoreAdvancedTests.cpp.s
+.PHONY : CoreAdvancedTests.s
+
+# target to generate assembly for a file
+CoreAdvancedTests.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CoreAdvancedTests.cpp.s
+.PHONY : CoreAdvancedTests.cpp.s
+
 CoreContainerTests.o: CoreContainerTests.cpp.o
 .PHONY : CoreContainerTests.o
 
@@ -1097,6 +1121,9 @@ help:
 	@echo "... FixedCoreSuite"
 	@echo "... KaiTest"
 	@echo "... TestCore"
+	@echo "... CoreAdvancedTests.o"
+	@echo "... CoreAdvancedTests.i"
+	@echo "... CoreAdvancedTests.s"
 	@echo "... CoreContainerTests.o"
 	@echo "... CoreContainerTests.i"
 	@echo "... CoreContainerTests.s"

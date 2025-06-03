@@ -366,6 +366,13 @@ void Executor::Perform(Operation::Type op) {
             KAI_TRACE() << "  Creating new continuation from: " << newCont.ToString();
             KAI_TRACE() << "  Context stack size: " << context_->Size();
             
+            // IMPORTANT: Call Enter to set up arguments in the new scope
+            // This is critical for function arguments to be available in the scope
+            if (continuation_.Exists()) {
+                continuation_->Enter(this);
+                KAI_TRACE() << "  Called Enter on new continuation";
+            }
+            
             break;
         }
 
@@ -720,7 +727,7 @@ void Executor::Perform(Operation::Type op) {
             bool condition = PopBool();
             KAI_TRACE() << "IfElse: condition=" << condition << ", choosing " << (condition ? "A" : "B");
             
-            // Inline the chosen continuation's code instead of using Continue()
+            // Execute the chosen continuation inline
             auto chosen = condition ? A : B;
             if (chosen.IsType<Continuation>()) {
                 Pointer<Continuation> cont = chosen;
@@ -730,6 +737,11 @@ void Executor::Perform(Operation::Type op) {
                         auto obj = cont->GetCode()->At(i);
                         if (obj.Exists()) {
                             Eval(obj);
+                            // If a Return was executed, stop processing the block
+                            // The break_ flag will naturally propagate to the parent
+                            if (break_) {
+                                break;
+                            }
                         }
                     }
                 }

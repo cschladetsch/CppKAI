@@ -71,6 +71,17 @@ foreach (lang ${langs})
             ${source_path}/RhoFunctionTestsWorking.cpp     # Working function tests
             ${source_path}/RhoFunctionTestsFixed.cpp       # Fixed function tests
             ${source_path}/RhoRecursionDebug.cpp           # Debug recursion issues
+            ${source_path}/RhoRecursionTracingTest.cpp     # Comprehensive recursion tracing tests
+            ${source_path}/RhoRecursionAnalysis.cpp        # Deep recursion analysis
+            ${source_path}/RhoRecursionSimpleDebug.cpp      # Simple recursion debugging
+            ${source_path}/RhoReturnExpressionTest.cpp      # Return expression analysis
+            ${source_path}/RhoRecursionFixTest.cpp          # Recursion fix tests
+            ${source_path}/RhoRecursionDebugSpecific.cpp    # Specific recursion debugging
+            ${source_path}/RhoElseBranchRecursionTest.cpp   # Else branch recursion test
+            ${source_path}/RhoElseDebugTrace.cpp            # Else branch debug trace
+            ${source_path}/RhoExtraReturnTest.cpp           # Extra return test
+            ${source_path}/RhoRecursionElseDebug.cpp        # Recursion else debug
+            ${source_path}/RhoElseMinimalDebug.cpp          # Minimal else debug
             ${source_path}/SimpleFunctionCall.cpp           # Simple function call debug
             ${source_path}/VerySimpleTest.cpp               # Very simple execution test
             ${source_path}/RhoScriptBasedTests.cpp          # Script-based tests

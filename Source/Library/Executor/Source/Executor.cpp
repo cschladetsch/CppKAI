@@ -876,12 +876,18 @@ Pointer<Continuation> Executor::NewContinuation(Value<Continuation> orig) {
         // Copy arguments
         cont->args = orig->args;
 
-        // IMPORTANT: Inherit the parent's scope for nested continuations
-        // This allows inner continuations to access variables defined in outer
-        // scopes
-        if (continuation_.Exists() && continuation_->GetScope().Exists()) {
-            cont->SetScope(continuation_->GetScope());
-        }
+        // IMPORTANT: Create a new scope for function calls
+        // Each function call should have its own scope to maintain local variables
+        // This is critical for recursion to work correctly
+        
+        // Create a new scope object
+        Object newScope = New<void>();
+        
+        // If there's a parent scope, we can optionally copy global variables
+        // For now, we'll just create a fresh scope for each function call
+        cont->SetScope(newScope);
+        
+        KAI_TRACE() << "Created new scope for continuation";
 
         return cont;
     } catch (const std::exception &e) {
