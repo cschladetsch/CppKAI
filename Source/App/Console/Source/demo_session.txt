@@ -1,0 +1,145 @@
+# Console Zsh Features Demo Session
+# This shows what a user would see when using the features
+
+Pi λ 1 2 +
+[0]: 3
+
+Pi λ print "Hello, World!"
+[0]: "Hello, World!"
+
+Pi λ 3 4 *
+[0]: 12
+
+# Now let's use !! to repeat the last command
+Pi λ !!
+=> 3 4 *
+[0]: 12
+
+# Use !1 to execute the first command
+Pi λ !1
+=> 1 2 +
+[0]: 3
+
+# Use !-2 to execute second from last
+Pi λ !-2
+=> print "Hello, World!"
+[0]: "Hello, World!"
+
+# Use !print to find last command starting with 'print'
+Pi λ !print
+=> print "Hello, World!"
+[0]: "Hello, World!"
+
+# Let's test word designators
+Pi λ echo one two three four five
+[0]: "echo"
+[1]: "one"
+[2]: "two"
+[3]: "three"
+[4]: "four"
+[5]: "five"
+
+# Get just the command word
+Pi λ !!:0
+=> echo
+
+# Get the first argument
+Pi λ !!:^
+=> one
+
+# Get the last argument
+Pi λ !!:$
+=> five
+
+# Get all arguments
+Pi λ !!:*
+=> one two three four five
+
+# Get a range
+Pi λ !!:2-4
+=> two three four
+
+# From word 3 to end
+Pi λ !!:3*
+=> three four five
+
+# Complex example: !-3:4*
+Pi λ ls -la /home/user file1.txt file2.txt file3.txt
+Pi λ cd /tmp
+Pi λ pwd
+Pi λ !-3:4*
+=> file1.txt file2.txt file3.txt
+
+# Shell commands with backticks
+Pi λ `echo "Hello from shell"`
+Hello from shell
+
+Pi λ `date`
+Tue Jun  4 15:30:45 PST 2024
+
+# Embedded shell commands
+Pi λ print "Today is `date +%A`"
+[0]: "Today is Tuesday"
+
+# History expansion in commands
+Pi λ 5
+[0]: 5
+
+Pi λ !! * 10
+=> 5 * 10
+[0]: 50
+
+# Multiple history references
+Pi λ 10
+[0]: 10
+
+Pi λ 20
+[0]: 20
+
+Pi λ !-2 + !-1
+=> 10 + 20
+[0]: 30
+
+# Disable expansion with $
+Pi λ print "test"
+[0]: "test"
+
+Pi λ $!!
+# Treats !! as literal text, not history expansion
+
+# Error handling
+Pi λ !999
+No matching command in history
+
+Pi λ !xyz
+No matching command in history
+
+# Quoted strings are preserved
+Pi λ echo "hello world" "goodbye moon" unquoted
+[0]: "echo"
+[1]: "\"hello world\""
+[2]: "\"goodbye moon\""
+[3]: "unquoted"
+
+Pi λ !!:1
+=> "hello world"
+
+# Works with Pi language constructs
+Pi λ { 1 2 + }
+[0]: { 1 2 + }
+
+Pi λ { 3 4 * }
+[0]: { 3 4 * }
+
+Pi λ !! +
+=> { 3 4 * } +
+[0]: 15
+
+# Function example
+Pi λ fun square { dup * }
+Pi λ 5 square
+[0]: 25
+
+Pi λ !!
+=> 5 square
+[0]: 25

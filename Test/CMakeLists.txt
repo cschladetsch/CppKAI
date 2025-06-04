@@ -4,6 +4,9 @@ add_subdirectory(Source)
 add_subdirectory(Language)
 #add_subdirectory(Common)
 
+# Add Console tests
+add_subdirectory(Console)
+
 # Add our logging test
 add_subdirectory(LogTest)
 

@@ -1,6 +1,7 @@
 #include "KAI/Console/Console.h"
 
 #include <cstdlib>
+#include <cctype>
 #include <iostream>
 #include <regex>
 #include <sstream>
@@ -319,6 +320,229 @@ String Console::ExpandShellCommands(const String &text) {
     return String(result);
 }
 
+std::vector<std::string> Console::SplitIntoWords(const std::string &text) {
+    std::vector<std::string> words;
+    std::string current;
+    bool inQuotes = false;
+    char quoteChar = '\0';
+    
+    for (size_t i = 0; i < text.size(); ++i) {
+        char c = text[i];
+        
+        if (!inQuotes && (c == '"' || c == '\'')) {
+            inQuotes = true;
+            quoteChar = c;
+            current += c;
+        } else if (inQuotes && c == quoteChar) {
+            inQuotes = false;
+            current += c;
+        } else if (!inQuotes && std::isspace(c)) {
+            if (!current.empty()) {
+                words.push_back(current);
+                current.clear();
+            }
+        } else {
+            current += c;
+        }
+    }
+    
+    if (!current.empty()) {
+        words.push_back(current);
+    }
+    
+    return words;
+}
+
+String Console::ApplyWordDesignators(const std::string &command, const std::string &designators) {
+    auto words = SplitIntoWords(command);
+    if (words.empty()) return String("");
+    
+    std::vector<std::string> result;
+    
+    // Parse word designators
+    if (designators.empty()) {
+        return String(command);
+    }
+    
+    // Handle special designators
+    if (designators == "^") {
+        // First argument (word 1)
+        if (words.size() > 1) result.push_back(words[1]);
+    } else if (designators == "$") {
+        // Last argument
+        if (!words.empty()) result.push_back(words.back());
+    } else if (designators == "*") {
+        // All arguments (words 1 to end)
+        for (size_t i = 1; i < words.size(); ++i) {
+            result.push_back(words[i]);
+        }
+    } else if (designators.find('*') != std::string::npos) {
+        // Handle n* (from word n to end)
+        std::string startStr = designators.substr(0, designators.find('*'));
+        size_t start = std::stoul(startStr);
+        for (size_t i = start; i < words.size(); ++i) {
+            result.push_back(words[i]);
+        }
+    } else if (designators.find('-') != std::string::npos) {
+        // Range like n-m
+        size_t dashPos = designators.find('-');
+        std::string startStr = designators.substr(0, dashPos);
+        std::string endStr = designators.substr(dashPos + 1);
+        
+        size_t start = startStr.empty() ? 0 : std::stoul(startStr);
+        size_t end = endStr == "$" ? words.size() - 1 : 
+                     endStr == "*" ? words.size() - 1 : 
+                     std::stoul(endStr);
+        
+        for (size_t i = start; i <= end && i < words.size(); ++i) {
+            result.push_back(words[i]);
+        }
+    } else if (std::isdigit(designators[0])) {
+        // Single word number
+        size_t n = std::stoul(designators);
+        if (n < words.size()) {
+            result.push_back(words[n]);
+        }
+    }
+    
+    // Join results with spaces
+    std::string joined;
+    for (size_t i = 0; i < result.size(); ++i) {
+        if (i > 0) joined += " ";
+        joined += result[i];
+    }
+    
+    return String(joined);
+}
+
+String Console::ApplyModifiers(const String &text, const std::string &modifiers) {
+    // For now, just return the text unmodified
+    // TODO: Implement modifiers like :h, :t, :r, :e, :p, :s/old/new/
+    return text;
+}
+
+String Console::ParseHistoryExpansion(const String &text) {
+    std::string expansion = text.StdString();
+    if (expansion.empty() || expansion[0] != '!') {
+        return text;
+    }
+    
+    // Find the event designator and word designators
+    size_t colonPos = expansion.find(':');
+    std::string eventPart = colonPos != std::string::npos ? 
+                            expansion.substr(0, colonPos) : expansion;
+    std::string wordPart = colonPos != std::string::npos ? 
+                          expansion.substr(colonPos + 1) : "";
+    
+    // Get the command from history using the event part
+    String historicalCommand = ProcessZshCommand(String(eventPart));
+    if (historicalCommand.size() == 0) {
+        return String("");
+    }
+    
+    // Apply word designators if present
+    if (!wordPart.empty()) {
+        // Check for modifiers (they come after another colon)
+        size_t modifierPos = wordPart.find(':');
+        std::string designators = modifierPos != std::string::npos ?
+                                 wordPart.substr(0, modifierPos) : wordPart;
+        std::string modifiers = modifierPos != std::string::npos ?
+                               wordPart.substr(modifierPos + 1) : "";
+        
+        String result = ApplyWordDesignators(historicalCommand.StdString(), designators);
+        if (!modifiers.empty()) {
+            result = ApplyModifiers(result, modifiers);
+        }
+        return result;
+    }
+    
+    return historicalCommand;
+}
+
+String Console::ProcessZshCommand(const String &text) {
+    // Check if this is a zsh-like command starting with ! 
+    std::string cmd = text.StdString();
+    if (cmd.empty() || cmd[0] != '!') {
+        return text;
+    }
+    
+    // Check if it contains word designators
+    if (cmd.find(':') != std::string::npos) {
+        return ParseHistoryExpansion(text);
+    }
+    
+    // Handle !! - repeat last command
+    if (cmd == "!!" || cmd.substr(0, 2) == "!!") {
+        if (commandHistory.empty()) {
+            return String("");
+        }
+        return String(commandHistory.back());
+    }
+    
+    // Handle !n - execute nth command from history
+    if (cmd.size() > 1 && std::isdigit(cmd[1])) {
+        size_t endPos = 1;
+        while (endPos < cmd.size() && std::isdigit(cmd[endPos])) {
+            endPos++;
+        }
+        size_t n = std::stoul(cmd.substr(1, endPos - 1));
+        if (n > 0 && n <= commandHistory.size()) {
+            return String(commandHistory[n - 1]);
+        }
+        return String("");
+    }
+    
+    // Handle !-n - execute nth command from end
+    if (cmd.size() > 2 && cmd[1] == '-' && std::isdigit(cmd[2])) {
+        size_t endPos = 2;
+        while (endPos < cmd.size() && std::isdigit(cmd[endPos])) {
+            endPos++;
+        }
+        size_t n = std::stoul(cmd.substr(2, endPos - 2));
+        if (n > 0 && n <= commandHistory.size()) {
+            return String(commandHistory[commandHistory.size() - n]);
+        }
+        return String("");
+    }
+    
+    // Handle !string - execute last command starting with string
+    if (cmd.size() > 1) {
+        std::string searchStr = cmd.substr(1);
+        // Search backwards through history
+        for (auto it = commandHistory.rbegin(); it != commandHistory.rend(); ++it) {
+            if (it->substr(0, searchStr.size()) == searchStr) {
+                return String(*it);
+            }
+        }
+        return String("");
+    }
+    
+    return text;
+}
+
+String Console::ExpandHistoryReferences(const String &text) {
+    std::string result = text.StdString();
+    
+    // More comprehensive regex to match history expansions including word designators
+    // This matches patterns like !!, !n, !-n, !string, and also !n:word, !-n:word, etc.
+    std::regex history_regex("!(-?\\d+|!|[^\\s:]+)(:[^\\s]+)?");
+    std::smatch match;
+    
+    while (std::regex_search(result, match, history_regex)) {
+        std::string histRef = match[0].str();
+        String expanded = ProcessZshCommand(String(histRef));
+        
+        if (expanded.size() > 0) {
+            result = match.prefix().str() + expanded.StdString() + match.suffix().str();
+        } else {
+            // No match found, break to avoid infinite loop
+            break;
+        }
+    }
+    
+    return String(result);
+}
+
 String Console::Process(const String &text) {
     StringStream result;
     KAI_TRY {
@@ -433,15 +657,50 @@ int Console::Run() {
                 }
                 cout << rang::fg::reset;  // Reset color after input
 
-                // Process input - check for shell commands first
-                if (!text.empty() && text[0] == '`') {
-                    String output = ProcessShellCommand(String(text));
-                    cout << output.c_str();
-                } else {
+                // Skip commands starting with $
+                if (!text.empty() && text[0] == '$') {
+                    // Process as regular command without zsh features
+                    String cmdText = String(text.substr(1));
                     // Expand any embedded shell commands first
-                    String expandedText = ExpandShellCommands(String(text));
+                    String expandedText = ExpandShellCommands(cmdText);
                     String output = Process(expandedText);
                     cout << output.c_str();
+                    
+                    // Still add to history for later reference
+                    commandHistory.push_back(text);
+                } else if (!text.empty()) {
+                    // Check for zsh-like history commands first
+                    std::string processedText = text;
+                    
+                    // If it's a pure history command (just !!, !n, etc), expand it
+                    if (text[0] == '!' && text.find(' ') == std::string::npos) {
+                        String expanded = ProcessZshCommand(String(text));
+                        if (expanded.size() > 0) {
+                            processedText = expanded.StdString();
+                            // Show what command is being executed
+                            cout << rang::fg::cyan << "=> " << processedText << rang::fg::reset << endl;
+                        } else {
+                            cout << rang::fg::red << "No matching command in history" << rang::fg::reset << endl;
+                            continue;
+                        }
+                    } else {
+                        // Expand any history references within the command
+                        processedText = ExpandHistoryReferences(String(text)).StdString();
+                    }
+                    
+                    // Add original command to history before processing
+                    commandHistory.push_back(text);
+                    
+                    // Check for shell commands
+                    if (!processedText.empty() && processedText[0] == '`') {
+                        String output = ProcessShellCommand(String(processedText));
+                        cout << output.c_str();
+                    } else {
+                        // Expand any embedded shell commands first
+                        String expandedText = ExpandShellCommands(String(processedText));
+                        String output = Process(expandedText);
+                        cout << output.c_str();
+                    }
                 }
 
                 // Always show the stack after processing (unless it's empty)

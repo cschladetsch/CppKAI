@@ -5,6 +5,8 @@
 #include <KAI/Executor/Compiler.h>
 #include <KAI/Executor/Executor.h>
 #include <KAI/Language.h>
+#include <vector>
+#include <string>
 
 KAI_BEGIN
 
@@ -18,6 +20,9 @@ class Console : public Reflected {
     Pointer<Compiler> compiler;
     std::shared_ptr<Memory::IAllocator> alloc;
     Language language;
+    
+    // Command history for zsh-like ! operators
+    std::vector<std::string> commandHistory;
 
    public:
     Console();
@@ -33,6 +38,12 @@ class Console : public Reflected {
     String Process(const String &);
     String ProcessShellCommand(const String &text);
     String ExpandShellCommands(const String &text);
+    String ProcessZshCommand(const String &text);
+    String ExpandHistoryReferences(const String &text);
+    String ParseHistoryExpansion(const String &text);
+    std::vector<std::string> SplitIntoWords(const std::string &text);
+    String ApplyWordDesignators(const std::string &command, const std::string &designators);
+    String ApplyModifiers(const String &text, const std::string &modifiers);
     Registry &GetRegistry() const { return *reg_; }
     Tree &GetTree() { return tree; }
     Tree const &GetTree() const { return tree; }

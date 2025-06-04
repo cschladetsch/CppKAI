@@ -1,0 +1,93 @@
+$ /home/xian/local/KAI/Bin/Console
+KAI Console v1.0.0
+
+Pi λ 1 2 +
+[0]: 3
+
+Pi λ print "Hello, World!"
+[0]: "Hello, World!"
+
+Pi λ 3 4 *
+[0]: 12
+
+Pi λ !!
+=> 3 4 *
+[0]: 12
+
+Pi λ !1
+=> 1 2 +
+[0]: 3
+
+Pi λ !print
+=> print "Hello, World!"
+[0]: "Hello, World!"
+
+Pi λ ls -la /home/user file1.txt file2.txt file3.txt
+[0]: "ls"
+[1]: "-la"
+[2]: "/home/user"
+[3]: "file1.txt"
+[4]: "file2.txt"
+[5]: "file3.txt"
+
+Pi λ cd /tmp
+[0]: "cd"
+[1]: "/tmp"
+
+Pi λ pwd
+[0]: "pwd"
+
+Pi λ !-3:4*
+=> file1.txt file2.txt file3.txt
+[0]: "file1.txt"
+[1]: "file2.txt" 
+[2]: "file3.txt"
+
+Pi λ echo "hello world" "goodbye moon" unquoted
+[0]: "echo"
+[1]: "\"hello world\""
+[2]: "\"goodbye moon\""
+[3]: "unquoted"
+
+Pi λ !!:1
+=> "hello world"
+[0]: "\"hello world\""
+
+Pi λ !!:2-3
+=> "goodbye moon" unquoted
+[0]: "\"goodbye moon\""
+[1]: "unquoted"
+
+Pi λ `echo "Shell command test"`
+Shell command test
+
+Pi λ print "Current date: `date +%Y-%m-%d`"
+[0]: "Current date: 2024-06-04"
+
+Pi λ 5
+[0]: 5
+
+Pi λ !! * 10
+=> 5 * 10
+[0]: 50
+
+Pi λ 100
+[0]: 100
+
+Pi λ 200  
+[0]: 200
+
+Pi λ !-2 + !-1
+=> 100 + 200
+[0]: 300
+
+Pi λ $!!
+!!
+
+Pi λ !999
+No matching command in history
+
+Pi λ !xyz
+No matching command in history
+
+Pi λ exit

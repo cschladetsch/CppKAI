@@ -1,0 +1,118 @@
+# Demo: Console Zsh-like Features
+# This file demonstrates all the zsh-like features implemented
+
+# === BASIC HISTORY EXPANSION ===
+
+# Execute some commands to build history
+1 2 +
+print "Hello"
+3 4 *
+
+# Use !! to repeat the last command
+!!
+# Output: => 3 4 *
+# Stack: [0]: 12
+
+# Use !n to execute the nth command (1-based)
+!1
+# Output: => 1 2 +
+# Stack: [0]: 3
+
+# Use !-n to execute nth from end
+!-2
+# Output: => print "Hello"
+# Stack: [0]: "Hello"
+
+# Use !string to find last command starting with string
+!print
+# Output: => print "Hello"
+# Stack: [0]: "Hello"
+
+# === WORD DESIGNATORS ===
+
+# Create a command with multiple words
+echo first second third fourth fifth
+
+# Extract specific words
+!!:0     # => echo (the command)
+!!:1     # => first (word 1)
+!!:^     # => first (same as :1)
+!!:$     # => fifth (last word)
+!!:*     # => first second third fourth fifth (all args)
+!!:2-4   # => second third fourth (range)
+!!:3*    # => third fourth fifth (from 3 to end)
+
+# === COMPLEX EXAMPLES ===
+
+# The example from the user: !-3:4*
+ls -la /home/user file1.txt file2.txt file3.txt
+cd /tmp
+pwd
+!-3:4*
+# Output: => file1.txt file2.txt file3.txt
+
+# === SHELL COMMANDS ===
+
+# Execute shell commands with backticks
+`echo "Hello from shell"`
+# Output: Hello from shell
+
+# Embed shell commands in strings
+print "Current user: `whoami`"
+# Output: Current user: [username]
+
+# === HISTORY EXPANSION IN COMMANDS ===
+
+# Use history references within new commands
+5
+!! * 10
+# Output: => 5 * 10
+# Stack: [0]: 50
+
+# Multiple history references
+10
+20
+!-2 + !-1
+# Output: => 10 + 20
+# Stack: [0]: 30
+
+# === DISABLING EXPANSION ===
+
+# Use $ prefix to disable all zsh features
+$!!
+# This executes !! literally, not as history expansion
+
+$!test
+# This executes !test literally
+
+# === ERROR HANDLING ===
+
+# Non-existent history number
+!999
+# Output: No matching command in history
+
+# Non-matching string search
+!xyz
+# Output: No matching command in history
+
+# === QUOTED STRING HANDLING ===
+
+# Word splitting respects quotes
+echo "hello world" "goodbye moon" unquoted
+!!:1     # => "hello world" (preserves quotes)
+!!:2     # => "goodbye moon"
+!!:3     # => unquoted
+
+# === INTEGRATION WITH PI LANGUAGE ===
+
+# Works with Pi blocks and functions
+{ 1 2 + }
+{ 3 4 * }
+!! !!
+# Executes both blocks
+
+fun square { dup * }
+5 square
+!!
+# Output: => 5 square
+# Stack: [0]: 25

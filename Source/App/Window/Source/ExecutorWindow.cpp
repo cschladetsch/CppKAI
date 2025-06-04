@@ -753,13 +753,53 @@ struct ExecutorWindow {
                                                            : ConsoleTab::Rho;
         }
 
-        // Execute the command
+        // Execute the command with all zsh-like features
         try {
-            Structure structure = (CurrentLanguage == Language::Pi)
-                                      ? Structure::Expression
-                                      : Structure::Statement;
-
-            console_.Execute(command_line, structure);
+            std::string text = command_line;
+            
+            // Skip commands starting with $
+            if (!text.empty() && text[0] == '$') {
+                // Process as regular command without zsh features
+                String cmdText = String(text.substr(1));
+                // Expand any embedded shell commands first
+                String expandedText = console_.ExpandShellCommands(cmdText);
+                String result = console_.Process(expandedText);
+                if (!result.empty()) {
+                    AddLog("%s", result.c_str());
+                }
+            } else if (!text.empty()) {
+                // Check for shell commands
+                if (text[0] == '`') {
+                    String output = console_.ProcessShellCommand(String(text));
+                    AddLog("%s", output.c_str());
+                } else {
+                    // Handle zsh-like history commands
+                    std::string processedText = text;
+                    
+                    // If it's a pure history command (just !!, !n, etc), expand it
+                    if (text[0] == '!' && text.find(' ') == std::string::npos) {
+                        String expanded = console_.ProcessZshCommand(String(text));
+                        if (expanded.size() > 0) {
+                            processedText = expanded.StdString();
+                            // Show what command is being executed
+                            AddLog("=> %s", processedText.c_str());
+                        } else {
+                            AddLog("No matching command in history");
+                            return;
+                        }
+                    } else {
+                        // Expand any history references within the command
+                        processedText = console_.ExpandHistoryReferences(String(text)).StdString();
+                    }
+                    
+                    // Expand any embedded shell commands first
+                    String expandedText = console_.ExpandShellCommands(String(processedText));
+                    String result = console_.Process(expandedText);
+                    if (!result.empty()) {
+                        AddLog("%s", result.c_str());
+                    }
+                }
+            }
 
             // Report stack contents
             if (exec_->GetDataStack()->Size() > 0) {

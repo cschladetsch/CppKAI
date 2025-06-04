@@ -1,0 +1,171 @@
+# Interactive Console Zsh Feature Tests
+# Copy and paste these commands into the Console to test functionality
+
+# === Basic History Tests ===
+
+# Test 1: Basic command execution and history
+1 2 +
+3 4 *
+print "Hello, World!"
+
+# Test 2: !! - Repeat last command
+!!
+# Expected: Repeats 'print "Hello, World!"'
+
+# Test 3: !n - Execute nth command (1-based)
+!1
+# Expected: Executes '1 2 +'
+
+!2
+# Expected: Executes '3 4 *'
+
+# Test 4: !-n - Execute nth from end
+!-1
+# Expected: Last command
+
+!-2
+# Expected: Second to last command
+
+# Test 5: !string - Last command starting with string
+!print
+# Expected: Executes 'print "Hello, World!"'
+
+# === Word Designator Tests ===
+
+# Test 6: Set up a command with multiple words
+echo one two three four five
+
+# Test 7: Word designators
+!!:0
+# Expected: 'echo'
+
+!!:1
+# Expected: 'one'
+
+!!:^
+# Expected: 'one' (first argument)
+
+!!:$
+# Expected: 'five' (last argument)
+
+!!:*
+# Expected: 'one two three four five' (all arguments)
+
+!!:2-4
+# Expected: 'two three four'
+
+!!:3*
+# Expected: 'three four five'
+
+# === Complex History References ===
+
+# Test 8: Set up multiple commands
+ls -la /home/user file1.txt file2.txt file3.txt
+cd /tmp
+pwd
+date
+
+# Test 9: Complex reference
+!-4:4*
+# Expected: 'file1.txt file2.txt file3.txt'
+
+# === Shell Command Tests ===
+
+# Test 10: Direct shell command
+`echo "Shell command test"`
+# Expected: Output of echo command
+
+# Test 11: Shell command with current date
+`date`
+# Expected: Current date/time
+
+# Test 12: Embedded shell command
+print "Today is `date +%A`"
+# Expected: String with current day name
+
+# Test 13: Multiple embedded commands
+print "User: `whoami`, Directory: `pwd`"
+# Expected: String with username and current directory
+
+# === History Expansion in Commands ===
+
+# Test 14: Simple expansion
+5
+!! * 10
+# Expected: '5 * 10' which evaluates to 50
+
+# Test 15: Multiple expansions
+10
+20
+!-2 + !-1
+# Expected: '10 + 20' which evaluates to 30
+
+# === $ Prefix Tests ===
+
+# Test 16: Disable expansion with $
+print "test"
+$!!
+# Expected: Literal '!!' not expanded
+
+$!print
+# Expected: Literal '!print' not expanded
+
+# === Edge Cases ===
+
+# Test 17: Non-existent history
+!999
+# Expected: "No matching command in history"
+
+# Test 18: No match for string search
+!xyz
+# Expected: "No matching command in history"
+
+# Test 19: Quoted strings with spaces
+echo "hello world" "goodbye moon" unquoted
+!!:1
+# Expected: '"hello world"'
+
+!!:2
+# Expected: '"goodbye moon"'
+
+# Test 20: Mixed quotes
+echo 'single quotes' "double quotes" no_quotes
+!!:0
+# Expected: 'echo'
+!!:1
+# Expected: "'single quotes'"
+!!:2
+# Expected: '"double quotes"'
+
+# === Pi Language Integration ===
+
+# Test 21: Pi expressions with history
+{ 1 2 + }
+{ 3 4 * }
+!! +
+# Expected: Adds the results of the two blocks
+
+# Test 22: Function calls with history
+fun square { dup * }
+5 square
+!!
+# Expected: Repeats '5 square' giving 25
+
+# === Advanced Word Designators ===
+
+# Test 23: More complex command
+git commit -m "Initial commit" --author="John Doe" file1.cpp file2.cpp
+
+# Test word extraction
+!!:0     # 'git'
+!!:1     # 'commit'
+!!:2     # '-m'
+!!:3     # '"Initial commit"'
+!!:4     # '--author="John Doe"'
+!!:5     # 'file1.cpp'
+!!:6     # 'file2.cpp'
+!!:5-6   # 'file1.cpp file2.cpp'
+!!:5*    # 'file1.cpp file2.cpp'
+
+# === End of Tests ===
+print "All interactive tests completed!"
