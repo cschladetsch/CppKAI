@@ -44,6 +44,8 @@ foreach (lang ${langs})
             ${source_path}/SimpleTest.cpp                 # Adding simple test
             ${source_path}/ForLoopTests.cpp               # Adding for loop tests
             ${source_path}/SimpleForLoopTests.cpp          # Simplified for loop tests
+            ${source_path}/RhoBacktickShellTests.cpp      # Backtick shell command tests
+            ${source_path}/RhoBacktickAdvancedTests.cpp   # Advanced backtick shell tests
             ${source_path}/ExtendedRhoTests.cpp           # Added 20 new test cases for Rho
             ${source_path}/RhoAdvancedOperationsTests.cpp  # Advanced operations tests
             ${source_path}/RhoControlStructuresTests.cpp   # Control structures tests
@@ -112,6 +114,8 @@ foreach (lang ${langs})
             ${source_path}/PiStackManipulationTests.cpp     # Stack manipulation tests
             ${source_path}/PiControlFlowTests.cpp           # Control flow tests
             ${source_path}/PiForLoopTests.cpp               # Simplified for loop tests
+            ${source_path}/PiBacktickShellTests.cpp         # Backtick shell command tests
+            ${source_path}/PiBacktickAdvancedTests.cpp      # Advanced backtick shell tests
             ${source_path}/PiStringOperationsTests.cpp      # String operation tests
             ${source_path}/PiMathOperationsTests.cpp        # Mathematical operation tests
             ${source_path}/PiMinMaxTests.cpp                # Min/Max operation tests

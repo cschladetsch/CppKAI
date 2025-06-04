@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cctype>
 #include <cstdlib>
+#include <fstream>
 #include <iostream>
 #include <regex>
 #include <sstream>
@@ -814,6 +815,37 @@ String Console::ExpandHistoryReferences(const String &text) {
 
 String Console::Process(const String &text) {
     StringStream result;
+    
+    // Check if this is a shell command (starts with '$')
+    std::string textStr = text.StdString();
+    if (!textStr.empty() && textStr[0] == '$') {
+        // Execute as shell command (strip the $ and any leading space)
+        std::string shellCmd = textStr.substr(1);
+        // Trim leading whitespace
+        size_t firstNonSpace = shellCmd.find_first_not_of(" \t");
+        if (firstNonSpace != std::string::npos) {
+            shellCmd = shellCmd.substr(firstNonSpace);
+        }
+
+        // Execute the shell command
+        FILE *pipe = popen(shellCmd.c_str(), "r");
+        if (pipe) {
+            char buffer[128];
+            while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
+                result << buffer;
+            }
+            int exitCode = pclose(pipe);
+            if (exitCode != 0) {
+                result << "Command exited with code: " << exitCode << "\n";
+            }
+        } else {
+            result << "Failed to execute: " << shellCmd << "\n";
+        }
+        
+        return result.ToString();
+    }
+    
+    // Not a shell command, process as language code
     KAI_TRY {
         // Translate the text into a continuation
         auto cont = compiler->Translate(text.c_str());
@@ -1191,18 +1223,57 @@ bool Console::ExecuteFile(const char *fileName) {
         return false;
     }
 
-    // Compile the file
-    Pointer<Continuation> c =
-        compiler->CompileFile(fileName, Structure::Program);
-
-    if (!c.Exists()) {
-        KAI_TRACE_ERROR() << "ExecuteFile: Failed to compile " << fileName;
+    // Open the file
+    std::ifstream file(fileName);
+    if (!file.is_open()) {
+        KAI_TRACE_ERROR() << "ExecuteFile: Failed to open " << fileName;
         return false;
     }
 
-    // Execute the continuation using our improved method
-    // This is safer than directly calling executor->Continue
-    Execute(c);
+    // Process the file line by line to support shell commands
+    std::string line;
+    std::string accumulated;
+    int lineNum = 0;
+    
+    while (std::getline(file, line)) {
+        lineNum++;
+        
+        // Skip empty lines and comments
+        if (line.empty() || (line.size() > 0 && line[0] == '#')) {
+            continue;
+        }
+        
+        // Check if this is a shell command
+        if (!line.empty() && line[0] == '$') {
+            // If we have accumulated code, execute it first
+            if (!accumulated.empty()) {
+                String result = Process(String(accumulated));
+                if (!result.Empty()) {
+                    std::cout << result.c_str();
+                }
+                accumulated.clear();
+            }
+            
+            // Execute the shell command
+            String result = Process(String(line));
+            if (!result.Empty()) {
+                std::cout << result.c_str();
+            }
+        } else {
+            // Accumulate language code
+            accumulated += line + "\n";
+        }
+    }
+    
+    // Execute any remaining accumulated code
+    if (!accumulated.empty()) {
+        String result = Process(String(accumulated));
+        if (!result.Empty()) {
+            std::cout << result.c_str();
+        }
+    }
+    
+    file.close();
     return true;
 }
 

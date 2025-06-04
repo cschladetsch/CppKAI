@@ -71,19 +71,11 @@ int main(int argc, char **argv) {
             return 1;
         }
 
-        // Read the file
-        std::ifstream file(filename);
-        if (!file.is_open()) {
-            std::cerr << "Could not open file: " << filename << "\n";
+        // Use ExecuteFile which now supports shell commands
+        if (!console.ExecuteFile(filename.c_str())) {
+            std::cerr << "Failed to execute file: " << filename << "\n";
             return 1;
         }
-
-        std::stringstream buffer;
-        buffer << file.rdbuf();
-        std::string program = buffer.str();
-
-        // Execute as a complete program (not individual statements)
-        console.Execute(program, Structure::Program);
         return 0;
     }
 

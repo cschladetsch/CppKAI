@@ -14,46 +14,76 @@ The KAI Console is a cross-platform, colored REPL (Read-Eval-Print-Loop) interfa
 
 ### Shell Command Integration
 
-The Console supports seamless integration with shell commands through backtick syntax:
+The Console supports seamless integration with shell commands in two ways:
 
-#### Full-line Shell Commands
-Execute shell commands by starting a line with a backtick:
+#### 1. Standalone Shell Commands with $ Prefix
+Execute shell commands by starting a line with `$`:
 ```
-Pi λ `pwd
+Pi λ $ pwd
 /home/user/project
 
-Pi λ `ls
+Pi λ $ ls
 file1.txt
 file2.cpp
 directory/
 
-Pi λ `echo "Hello from shell!"
+Pi λ $ echo "Hello from shell!"
 Hello from shell!
 ```
 
-The closing backtick is optional for full-line commands:
+#### 2. Embedded Shell Commands with Backticks
+Embed shell command output within expressions using backticks `` `command` ``:
 ```
-Pi λ `date
-Fri May 30 00:20:09 AEST 2025
-```
-
-#### Embedded Shell Commands
-Embed shell command output directly into expressions using backticks:
-```
-Pi λ 10 `echo 5` +
-[0]: 15
-
-Pi λ 1 `echo 2` + 3 ==
+Pi λ 1 `echo 2` + 3 == assert
 [0]: true
 
-Pi λ `echo 100` `echo 2` /
-[0]: 50
+Pi λ `echo 10` `echo 20` +
+[0]: 30
+
+Pi λ "User: " `whoami` +
+[0]: "User: username"
 ```
 
-This feature works across all languages:
+#### Features
+- **Two modes**: Standalone (`$`) and embedded (`` `command` ``)
+- **Works in all modes**: Interactive REPL, piped input, and file execution
+- **Language agnostic**: Works in Pi, Rho, and Tau modes
+- **Command history**: Shell commands are added to the command history
+- **Exit code display**: Non-zero exit codes are shown for `$` commands
+
+#### Shell Mode
+Toggle into shell mode where all commands are executed as shell commands:
 ```
-Rho λ result = `echo 42`
-Rho λ value = 10 + `echo 5`
+Pi λ sh
+Entering shell mode. Type 'exit' to return to Pi mode.
+Bash λ ls -la
+total 48
+drwxr-xr-x  12 user  user   384 Jun  5 10:00 .
+drwxr-xr-x  25 user  user   800 Jun  5 09:00 ..
+Bash λ exit
+Exited shell mode. Back to Pi mode.
+Pi λ
+```
+
+#### Mixing Shell Commands with Code
+Shell commands can be freely mixed with Pi/Rho code:
+```
+Pi λ $ echo "Starting calculation"
+Starting calculation
+Pi λ 10 20 +
+[0]: 30
+Pi λ $ echo "Result is 30"
+Result is 30
+```
+
+In Rho:
+```
+Rho λ x = 42
+Rho λ $ echo "x is set"
+x is set
+Rho λ result = x * 2
+Rho λ $ echo "Doubled value calculated"
+Doubled value calculated
 ```
 
 #### Error Handling
@@ -146,11 +176,12 @@ Rho λ if (file_count > 5) { "Many files" print }
 ## Implementation Details
 
 ### Shell Command Processing
-1. Lines starting with ` are identified as shell commands
-2. For embedded commands, regex pattern `` `([^`]+)` `` finds all backtick-enclosed commands
+1. **Standalone commands**: Lines starting with `$` are executed directly as shell commands
+2. **Embedded commands**: The regex pattern `` `([^`]+)` `` finds all backtick-enclosed commands
 3. Commands are executed using `popen()` with read mode
-4. Command output replaces the backtick expression before language processing
+4. For backticks, command output replaces the backtick expression before language processing
 5. The shell expansion happens as a preprocessing step, making it language-agnostic
+6. Both syntaxes work in all modes: interactive REPL, piped input, and file execution
 
 ### Stack Display Implementation
 - The `ShowColoredStack()` method is called after each command execution

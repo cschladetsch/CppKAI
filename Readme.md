@@ -19,6 +19,12 @@ _KAI_ is a network distributed **Object Model** for C++ with full runtime reflec
 
 ## Recent Updates
 
+- **June 2025**: Enhanced Console with shell command integration and simplified for loops
+  - **Shell command support** - Execute shell commands directly from Pi/Rho using `$` prefix
+  - **Works in all modes** - Interactive REPL, piped input, and file execution
+  - **Seamless integration** - Mix shell commands with Pi/Rho code freely
+  - **Simplified for loop tests** - Created focused, clean tests for both Pi and Rho
+  - **Improved for loop documentation** - Clear examples for range-based and traditional syntax
 - **May 2025**: Refactored Tau code generation architecture
   - **Separated proxy and agent generation** - GenerateProxy now only creates proxy classes, GenerateAgent only creates agents
   - **Added GenerateStruct class** - New dedicated class for generating plain struct definitions
@@ -215,6 +221,9 @@ Pi λ `echo 10` `echo 20` +
 Pi λ 1 `echo 2` + 3 ==
 [0]: true
 
+Pi λ $ ls
+file1.txt  file2.cpp  directory/
+
 Pi λ 2 rho
 Rho λ x = 10
 [0]: 2
@@ -227,10 +236,12 @@ Rho λ x + y
 ```
 
 Features:
-- **Shell Integration**: Execute shell commands with `` `command` `` syntax
+- **Shell Integration**: Two modes for shell commands:
+  - **Embedded**: Use `` `command` `` to embed shell output in expressions
+  - **Standalone**: Use `$ command` to execute shell commands directly
 - **Automatic Stack Display**: Stack shown after each command with colored output
 - **Language Switching**: Use `2 rho` for Rho, `1 pi` for Pi
-- **Embedded Commands**: Mix shell output with expressions: `10 `echo 5` +`
+- **Mixed Expressions**: Combine shell output with code: `1 `echo 2` + 3 == assert`
 
 See [Console Documentation](Doc/Console.md) for full details.
 
