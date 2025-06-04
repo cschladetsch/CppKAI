@@ -1,5 +1,5 @@
-#include <KAI/Core/File.h>
 #include <KAI/Core/BuiltinTypes.h>
+#include <KAI/Core/File.h>
 #include <KAI/Language/Tau/Generate/GenerateProcess.h>
 
 #include <fstream>
@@ -11,7 +11,7 @@ TAU_BEGIN
 namespace Generate {
 
 // Helper function to register minimal types needed for parsing
-void RegisterMinimalTypes(Registry& reg) {
+void RegisterMinimalTypes(Registry &reg) {
     // Register only the minimal types needed for Tau parsing
     // We don't need full type registration since we're not executing code
     reg.AddClass<void>(Label("Void"));
@@ -31,7 +31,7 @@ bool GenerateProcess::Generate(const char *input, string &output) {
 shared_ptr<TauParser> GenerateProcess::Parse(const char *input) const {
     Registry r;
     RegisterMinimalTypes(r);
-    
+
     auto lex = make_shared<TauLexer>(input, r);
     if (!lex->Process()) {
         Fail(lex->Error);

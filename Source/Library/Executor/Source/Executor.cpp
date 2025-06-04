@@ -771,8 +771,9 @@ void Executor::NextContinuation() {
         // Get next continuation from context stack
         KAI_TRACE() << "NextContinuation: About to pop from context stack";
         const auto next = context_->Pop();
-        KAI_TRACE() << "NextContinuation: Popped object of type: " 
-                    << (next.GetClass() ? next.GetClass()->GetName().ToString() : "unknown");
+        KAI_TRACE() << "NextContinuation: Popped object of type: "
+                    << (next.GetClass() ? next.GetClass()->GetName().ToString()
+                                        : "unknown");
 
         // Check if this is a null sentinel (used by ContinueOnly to stop
         // execution)
@@ -785,7 +786,8 @@ void Executor::NextContinuation() {
 
         // Check if it's actually a continuation
         if (!next.IsType<Continuation>()) {
-            KAI_TRACE_ERROR() << "NextContinuation: Popped object is not a Continuation";
+            KAI_TRACE_ERROR()
+                << "NextContinuation: Popped object is not a Continuation";
             continuation_ = Object();
             return;
         }
@@ -794,30 +796,35 @@ void Executor::NextContinuation() {
         try {
             Pointer<Continuation> cont = next;
             KAI_TRACE() << "NextContinuation: Got continuation pointer";
-            
+
             if (!cont.Exists()) {
-                KAI_TRACE_ERROR() << "NextContinuation: Continuation pointer doesn't exist";
+                KAI_TRACE_ERROR()
+                    << "NextContinuation: Continuation pointer doesn't exist";
                 continuation_ = Object();
                 return;
             }
-            
+
             if (!cont->GetCode().Exists()) {
-                KAI_TRACE_ERROR() << "NextContinuation: Continuation has no code";
+                KAI_TRACE_ERROR()
+                    << "NextContinuation: Continuation has no code";
                 continuation_ = Object();
                 return;
             }
-            
+
             int ip = ConstDeref<int>(cont->index);
             int codeSize = cont->GetCode()->Size();
-            KAI_TRACE() << "NextContinuation: Resuming continuation with IP=" 
+            KAI_TRACE() << "NextContinuation: Resuming continuation with IP="
                         << ip << " of " << codeSize;
-                        
+
             // Check if IP is valid
             if (ip >= codeSize) {
-                KAI_TRACE() << "NextContinuation: WARNING - IP is at or past end of code";
+                KAI_TRACE() << "NextContinuation: WARNING - IP is at or past "
+                               "end of code";
             }
         } catch (const std::exception &e) {
-            KAI_TRACE_ERROR() << "NextContinuation: Exception checking continuation: " << e.what();
+            KAI_TRACE_ERROR()
+                << "NextContinuation: Exception checking continuation: "
+                << e.what();
             continuation_ = Object();
             return;
         }
@@ -877,16 +884,16 @@ Pointer<Continuation> Executor::NewContinuation(Value<Continuation> orig) {
         cont->args = orig->args;
 
         // IMPORTANT: Create a new scope for function calls
-        // Each function call should have its own scope to maintain local variables
-        // This is critical for recursion to work correctly
-        
+        // Each function call should have its own scope to maintain local
+        // variables This is critical for recursion to work correctly
+
         // Create a new scope object
         Object newScope = New<void>();
-        
+
         // If there's a parent scope, we can optionally copy global variables
         // For now, we'll just create a fresh scope for each function call
         cont->SetScope(newScope);
-        
+
         KAI_TRACE() << "Created new scope for continuation";
 
         return cont;

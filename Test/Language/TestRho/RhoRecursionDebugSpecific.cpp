@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
-#include "TestLangCommon.h"
+
 #include "KAI/Core/BuiltinTypes/Signed32.h"
+#include "TestLangCommon.h"
 
 // Debug specific recursion issues
 struct RhoRecursionDebugSpecific : kai::TestLangCommon {
@@ -20,7 +21,7 @@ TEST_F(RhoRecursionDebugSpecific, DebugSum3) {
         "        prev = debug_sum(n - 1)\n"
         "        result = n + prev\n"
         "        return result");
-    
+
     // First test debug_sum(1)
     data_->Clear();
     console_.Execute("debug_sum(1)");
@@ -28,7 +29,7 @@ TEST_F(RhoRecursionDebugSpecific, DebugSum3) {
     auto result1 = kai::ConstDeref<int>(data_->Top());
     std::cout << "debug_sum(1) = " << result1 << " (expected 1)" << std::endl;
     EXPECT_EQ(result1, 1);
-    
+
     // Test debug_sum(2)
     data_->Clear();
     console_.Execute("debug_sum(2)");
@@ -36,7 +37,7 @@ TEST_F(RhoRecursionDebugSpecific, DebugSum3) {
     auto result2 = kai::ConstDeref<int>(data_->Top());
     std::cout << "debug_sum(2) = " << result2 << " (expected 3)" << std::endl;
     EXPECT_EQ(result2, 3);
-    
+
     // Test debug_sum(3)
     data_->Clear();
     console_.Execute("debug_sum(3)");
@@ -53,7 +54,7 @@ TEST_F(RhoRecursionDebugSpecific, SimpleAddRecursion) {
         "    if n == 0\n"
         "        return 0\n"
         "    return n + add_up(n - 1)");
-    
+
     // Test add_up(1)
     data_->Clear();
     console_.Execute("add_up(1)");
@@ -61,7 +62,7 @@ TEST_F(RhoRecursionDebugSpecific, SimpleAddRecursion) {
     auto result1 = kai::ConstDeref<int>(data_->Top());
     std::cout << "add_up(1) = " << result1 << " (expected 1)" << std::endl;
     EXPECT_EQ(result1, 1);
-    
+
     // Test add_up(2)
     data_->Clear();
     console_.Execute("add_up(2)");
@@ -69,7 +70,7 @@ TEST_F(RhoRecursionDebugSpecific, SimpleAddRecursion) {
     auto result2 = kai::ConstDeref<int>(data_->Top());
     std::cout << "add_up(2) = " << result2 << " (expected 3)" << std::endl;
     EXPECT_EQ(result2, 3);
-    
+
     // Test add_up(3)
     data_->Clear();
     console_.Execute("add_up(3)");
@@ -89,11 +90,11 @@ TEST_F(RhoRecursionDebugSpecific, RecursionWithPrint) {
         "    sub = trace_sum(n - 1)\n"
         "    total = n + sub\n"
         "    return total");
-    
+
     data_->Clear();
     std::cout << "\nCalling trace_sum(3):" << std::endl;
     console_.Execute("trace_sum(3)");
-    
+
     ASSERT_EQ(data_->Size(), 1);
     auto result = kai::ConstDeref<int>(data_->Top());
     std::cout << "trace_sum(3) = " << result << " (expected 6)" << std::endl;

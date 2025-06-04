@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
-#include "TestLangCommon.h"
+
 #include "KAI/Core/BuiltinTypes/Signed32.h"
+#include "TestLangCommon.h"
 
 // Test functions without automatic returns
 struct RhoNoAutoReturnTest : kai::TestLangCommon {
@@ -15,10 +16,10 @@ TEST_F(RhoNoAutoReturnTest, FunctionWithoutReturn) {
     console_.Execute(
         "fun no_return()\n"
         "    x = 5");
-    
+
     data_->Clear();
     console_.Execute("no_return()");
-    
+
     // Without automatic return, this might leave nothing on stack
     // or might have undefined behavior
     EXPECT_EQ(data_->Size(), 0);
@@ -32,10 +33,10 @@ TEST_F(RhoNoAutoReturnTest, RecursionWithElse) {
         "        return 0\n"
         "    else\n"
         "        return n + sum_else(n - 1)");
-    
+
     data_->Clear();
     console_.Execute("sum_else(3)");
-    
+
     ASSERT_EQ(data_->Size(), 1);
     auto result = kai::ConstDeref<int>(data_->Top());
     std::cout << "sum_else(3) = " << result << " (expected 6)" << std::endl;

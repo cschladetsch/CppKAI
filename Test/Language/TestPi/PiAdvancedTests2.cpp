@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
+
 #include "TestLangCommon.h"
 
 // Additional advanced Pi tests
-struct PiAdvancedTests2 : kai::TestLangCommon {
-};
+struct PiAdvancedTests2 : kai::TestLangCommon {};
 
 // Test 1: Complex stack rotations
 TEST_F(PiAdvancedTests2, ComplexStackRotations) {
@@ -44,7 +44,7 @@ TEST_F(PiAdvancedTests2, AdvancedConditionals) {
 TEST_F(PiAdvancedTests2, StackDepthOperations) {
     RunPiCode("1 2 3 4 5 depth");
     ExpectStackSize(6);
-    ExpectStackTop<int>(5); // depth returns count of items before it
+    ExpectStackTop<int>(5);  // depth returns count of items before it
 }
 
 // Test 6: Type checking operations
@@ -52,7 +52,7 @@ TEST_F(PiAdvancedTests2, TypeCheckingOperations) {
     RunPiCode("42 type");
     ExpectStackSize(2);
     // Top should be type identifier for int
-    
+
     RunPiCode("clear \"hello\" type");
     ExpectStackSize(2);
     // Top should be type identifier for string
@@ -60,7 +60,7 @@ TEST_F(PiAdvancedTests2, TypeCheckingOperations) {
 
 // Test 7: Array slicing
 TEST_F(PiAdvancedTests2, ArraySlicing) {
-    RunPiCode("[] 1 + 2 + 3 + 4 + 5 + "); // [1,2,3,4,5]
+    RunPiCode("[] 1 + 2 + 3 + 4 + 5 + ");  // [1,2,3,4,5]
     ExpectStackSize(1);
     auto arr = GetStackTop();
     ASSERT_TRUE(arr.IsType<kai::Vector>());
@@ -78,11 +78,12 @@ TEST_F(PiAdvancedTests2, FunctionComposition) {
 // Test 9: Error handling patterns
 TEST_F(PiAdvancedTests2, ErrorHandlingPatterns) {
     // Test safe division
-    RunPiCode("{ dup 0 == { drop drop \"div by zero\" } { / } if } 'safediv # "
-              "10 5 safediv & ");
+    RunPiCode(
+        "{ dup 0 == { drop drop \"div by zero\" } { / } if } 'safediv # "
+        "10 5 safediv & ");
     ExpectStackSize(1);
     ExpectStackTop<int>(2);
-    
+
     RunPiCode("clear 10 0 safediv & ");
     ExpectStackSize(1);
     ExpectStackTop<kai::String>("div by zero");
@@ -91,8 +92,10 @@ TEST_F(PiAdvancedTests2, ErrorHandlingPatterns) {
 // Test 10: Advanced looping constructs
 TEST_F(PiAdvancedTests2, AdvancedLooping) {
     // Sum of squares from 1 to 5
-    RunPiCode("0 { dup * + } 'addsquare # "
-              "1 addsquare & 2 addsquare & 3 addsquare & 4 addsquare & 5 addsquare & ");
+    RunPiCode(
+        "0 { dup * + } 'addsquare # "
+        "1 addsquare & 2 addsquare & 3 addsquare & 4 addsquare & 5 addsquare "
+        "& ");
     // 0 + 1^2 + 2^2 + 3^2 + 4^2 + 5^2 = 0 + 1 + 4 + 9 + 16 + 25 = 55
     ExpectStackSize(1);
     ExpectStackTop<int>(55);

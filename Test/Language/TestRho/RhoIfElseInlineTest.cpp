@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
-#include "TestLangCommon.h"
+
 #include "KAI/Core/BuiltinTypes/Signed32.h"
+#include "TestLangCommon.h"
 
 // Test to understand inline execution of if/else
 struct RhoIfElseInlineTest : kai::TestLangCommon {
@@ -18,11 +19,11 @@ TEST_F(RhoIfElseInlineTest, SimpleIfElse) {
         "        return 100\n"
         "    else\n"
         "        return 200");
-    
+
     data_->Clear();
     console_.Execute("simple(0)");
     EXPECT_EQ(kai::ConstDeref<int>(data_->Top()), 100);
-    
+
     data_->Clear();
     console_.Execute("simple(1)");
     EXPECT_EQ(kai::ConstDeref<int>(data_->Top()), 200);
@@ -36,7 +37,7 @@ TEST_F(RhoIfElseInlineTest, IfElseWithExpression) {
         "        return 0\n"
         "    else\n"
         "        return n * 2");
-    
+
     data_->Clear();
     console_.Execute("expr(5)");
     EXPECT_EQ(kai::ConstDeref<int>(data_->Top()), 10);
@@ -47,7 +48,7 @@ TEST_F(RhoIfElseInlineTest, IfElseWithFunctionCall) {
     console_.Execute(
         "fun double(x)\n"
         "    return x * 2");
-    
+
     // If-else with function call
     console_.Execute(
         "fun with_call(n)\n"
@@ -55,7 +56,7 @@ TEST_F(RhoIfElseInlineTest, IfElseWithFunctionCall) {
         "        return 0\n"
         "    else\n"
         "        return double(n)");
-    
+
     data_->Clear();
     console_.Execute("with_call(5)");
     EXPECT_EQ(kai::ConstDeref<int>(data_->Top()), 10);
@@ -69,13 +70,13 @@ TEST_F(RhoIfElseInlineTest, RecursiveSimple) {
         "        return 0\n"
         "    else\n"
         "        return n + rec(n - 1)");
-    
+
     data_->Clear();
     console_.Execute("rec(1)");
     auto result1 = kai::ConstDeref<int>(data_->Top());
     std::cout << "rec(1) = " << result1 << " (expected 1)" << std::endl;
     EXPECT_EQ(result1, 1);
-    
+
     data_->Clear();
     console_.Execute("rec(2)");
     auto result2 = kai::ConstDeref<int>(data_->Top());

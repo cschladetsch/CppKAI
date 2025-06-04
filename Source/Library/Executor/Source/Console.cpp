@@ -1,11 +1,11 @@
 #include "KAI/Console/Console.h"
 
-#include <cstdlib>
+#include <algorithm>
 #include <cctype>
+#include <cstdlib>
 #include <iostream>
 #include <regex>
 #include <sstream>
-#include <algorithm>
 
 #include "KAI/Core/BuiltinTypes.h"
 #include "KAI/Core/Memory/StandardAllocator.h"
@@ -326,10 +326,10 @@ std::vector<std::string> Console::SplitIntoWords(const std::string &text) {
     std::string current;
     bool inQuotes = false;
     char quoteChar = '\0';
-    
+
     for (size_t i = 0; i < text.size(); ++i) {
         char c = text[i];
-        
+
         if (!inQuotes && (c == '"' || c == '\'')) {
             inQuotes = true;
             quoteChar = c;
@@ -346,25 +346,26 @@ std::vector<std::string> Console::SplitIntoWords(const std::string &text) {
             current += c;
         }
     }
-    
+
     if (!current.empty()) {
         words.push_back(current);
     }
-    
+
     return words;
 }
 
-String Console::ApplyWordDesignators(const std::string &command, const std::string &designators) {
+String Console::ApplyWordDesignators(const std::string &command,
+                                     const std::string &designators) {
     auto words = SplitIntoWords(command);
     if (words.empty()) return String("");
-    
+
     std::vector<std::string> result;
-    
+
     // Parse word designators
     if (designators.empty()) {
         return String(command);
     }
-    
+
     // Handle special designators
     if (designators == "^") {
         // First argument (word 1)
@@ -389,12 +390,12 @@ String Console::ApplyWordDesignators(const std::string &command, const std::stri
         size_t dashPos = designators.find('-');
         std::string startStr = designators.substr(0, dashPos);
         std::string endStr = designators.substr(dashPos + 1);
-        
+
         size_t start = startStr.empty() ? 0 : std::stoul(startStr);
-        size_t end = endStr == "$" ? words.size() - 1 : 
-                     endStr == "*" ? words.size() - 1 : 
-                     std::stoul(endStr);
-        
+        size_t end = endStr == "$"   ? words.size() - 1
+                     : endStr == "*" ? words.size() - 1
+                                     : std::stoul(endStr);
+
         for (size_t i = start; i <= end && i < words.size(); ++i) {
             result.push_back(words[i]);
         }
@@ -405,127 +406,131 @@ String Console::ApplyWordDesignators(const std::string &command, const std::stri
             result.push_back(words[n]);
         }
     }
-    
+
     // Join results with spaces
     std::string joined;
     for (size_t i = 0; i < result.size(); ++i) {
         if (i > 0) joined += " ";
         joined += result[i];
     }
-    
+
     return String(joined);
 }
 
-String Console::ApplyModifiers(const String &text, const std::string &modifiers) {
+String Console::ApplyModifiers(const String &text,
+                               const std::string &modifiers) {
     String result = text;
     std::string currentText = result.StdString();
-    
+
     // Process each modifier in sequence
     for (size_t i = 0; i < modifiers.length(); ++i) {
         char mod = modifiers[i];
-        
+
         // Handle substitution modifiers
-        if (mod == 's' && i + 1 < modifiers.length() && modifiers[i + 1] == '/') {
+        if (mod == 's' && i + 1 < modifiers.length() &&
+            modifiers[i + 1] == '/') {
             // Find the substitution pattern s/old/new/
             size_t start = i + 2;
             size_t mid = modifiers.find('/', start);
             size_t end = modifiers.find('/', mid + 1);
-            
+
             if (mid != std::string::npos && end != std::string::npos) {
                 std::string oldStr = modifiers.substr(start, mid - start);
                 std::string newStr = modifiers.substr(mid + 1, end - mid - 1);
-                
+
                 // Perform substitution
                 size_t pos = currentText.find(oldStr);
                 if (pos != std::string::npos) {
                     currentText.replace(pos, oldStr.length(), newStr);
                 }
-                
-                i = end; // Skip past the substitution
+
+                i = end;  // Skip past the substitution
                 continue;
             }
         }
-        
+
         // Handle global substitution gs/old/new/
-        if (mod == 'g' && i + 2 < modifiers.length() && 
+        if (mod == 'g' && i + 2 < modifiers.length() &&
             modifiers[i + 1] == 's' && modifiers[i + 2] == '/') {
             size_t start = i + 3;
             size_t mid = modifiers.find('/', start);
             size_t end = modifiers.find('/', mid + 1);
-            
+
             if (mid != std::string::npos && end != std::string::npos) {
                 std::string oldStr = modifiers.substr(start, mid - start);
                 std::string newStr = modifiers.substr(mid + 1, end - mid - 1);
-                
+
                 // Global substitution
                 size_t pos = 0;
-                while ((pos = currentText.find(oldStr, pos)) != std::string::npos) {
+                while ((pos = currentText.find(oldStr, pos)) !=
+                       std::string::npos) {
                     currentText.replace(pos, oldStr.length(), newStr);
                     pos += newStr.length();
                 }
-                
-                i = end; // Skip past the substitution
+
+                i = end;  // Skip past the substitution
                 continue;
             }
         }
-        
+
         // Single character modifiers
-        currentText = ProcessHistoryModifier(String(currentText), mod).StdString();
+        currentText =
+            ProcessHistoryModifier(String(currentText), mod).StdString();
     }
-    
+
     return String(currentText);
 }
 
 String Console::ProcessHistoryModifier(const String &text, char modifier) {
     std::string str = text.StdString();
-    
+
     switch (modifier) {
-        case 'h': { // Head - remove last pathname component
+        case 'h': {  // Head - remove last pathname component
             size_t lastSlash = str.find_last_of("/\\");
             if (lastSlash != std::string::npos) {
                 return String(str.substr(0, lastSlash));
             }
             return String(".");
         }
-        
-        case 't': { // Tail - remove all but last pathname component
+
+        case 't': {  // Tail - remove all but last pathname component
             size_t lastSlash = str.find_last_of("/\\");
             if (lastSlash != std::string::npos) {
                 return String(str.substr(lastSlash + 1));
             }
             return text;
         }
-        
-        case 'r': { // Root - remove extension
+
+        case 'r': {  // Root - remove extension
             size_t lastDot = str.find_last_of('.');
             size_t lastSlash = str.find_last_of("/\\");
-            if (lastDot != std::string::npos && 
+            if (lastDot != std::string::npos &&
                 (lastSlash == std::string::npos || lastDot > lastSlash)) {
                 return String(str.substr(0, lastDot));
             }
             return text;
         }
-        
-        case 'e': { // Extension - remove all but extension
+
+        case 'e': {  // Extension - remove all but extension
             size_t lastDot = str.find_last_of('.');
             size_t lastSlash = str.find_last_of("/\\");
-            if (lastDot != std::string::npos && 
+            if (lastDot != std::string::npos &&
                 (lastSlash == std::string::npos || lastDot > lastSlash)) {
                 return String(str.substr(lastDot + 1));
             }
             return String("");
         }
-        
-        case 'p': { // Print - just print but don't execute
+
+        case 'p': {  // Print - just print but don't execute
             std::cout << str << std::endl;
             return String("");
         }
-        
-        case 'q': { // Quote - quote the substituted words
+
+        case 'q': {  // Quote - quote the substituted words
             return String("\"" + str + "\"");
         }
-        
-        case 'x': { // Quote each word separately
+
+        case 'x': {  // Quote each word separately
             auto words = SplitIntoWords(str);
             std::string result;
             for (size_t i = 0; i < words.size(); ++i) {
@@ -534,17 +539,17 @@ String Console::ProcessHistoryModifier(const String &text, char modifier) {
             }
             return String(result);
         }
-        
-        case 'u': { // Uppercase
+
+        case 'u': {  // Uppercase
             std::transform(str.begin(), str.end(), str.begin(), ::toupper);
             return String(str);
         }
-        
-        case 'l': { // Lowercase
+
+        case 'l': {  // Lowercase
             std::transform(str.begin(), str.end(), str.begin(), ::tolower);
             return String(str);
         }
-        
+
         default:
             return text;
     }
@@ -555,57 +560,62 @@ String Console::ParseHistoryExpansion(const String &text) {
     if (expansion.empty() || expansion[0] != '!') {
         return text;
     }
-    
+
     // Find the event designator and word designators
     size_t colonPos = expansion.find(':');
-    std::string eventPart = colonPos != std::string::npos ? 
-                            expansion.substr(0, colonPos) : expansion;
-    std::string wordPart = colonPos != std::string::npos ? 
-                          expansion.substr(colonPos + 1) : "";
-    
+    std::string eventPart = colonPos != std::string::npos
+                                ? expansion.substr(0, colonPos)
+                                : expansion;
+    std::string wordPart =
+        colonPos != std::string::npos ? expansion.substr(colonPos + 1) : "";
+
     // Get the command from history using the event part
     String historicalCommand = ProcessZshCommand(String(eventPart));
     if (historicalCommand.size() == 0) {
         return String("");
     }
-    
+
     // Apply word designators if present
     if (!wordPart.empty()) {
         // Check for modifiers (they come after another colon)
         size_t modifierPos = wordPart.find(':');
-        std::string designators = modifierPos != std::string::npos ?
-                                 wordPart.substr(0, modifierPos) : wordPart;
-        std::string modifiers = modifierPos != std::string::npos ?
-                               wordPart.substr(modifierPos + 1) : "";
-        
-        String result = ApplyWordDesignators(historicalCommand.StdString(), designators);
+        std::string designators = modifierPos != std::string::npos
+                                      ? wordPart.substr(0, modifierPos)
+                                      : wordPart;
+        std::string modifiers = modifierPos != std::string::npos
+                                    ? wordPart.substr(modifierPos + 1)
+                                    : "";
+
+        String result =
+            ApplyWordDesignators(historicalCommand.StdString(), designators);
         if (!modifiers.empty()) {
             result = ApplyModifiers(result, modifiers);
         }
         return result;
     }
-    
+
     return historicalCommand;
 }
 
 String Console::ProcessQuickSubstitution(const String &text) {
     std::string cmd = text.StdString();
-    
+
     // Check for ^old^new^ or ^old^new pattern
     if (cmd.length() > 2 && cmd[0] == '^') {
         size_t secondCaret = cmd.find('^', 1);
         if (secondCaret != std::string::npos) {
             std::string oldStr = cmd.substr(1, secondCaret - 1);
-            
+
             // Find the end of the new string
             size_t thirdCaret = cmd.find('^', secondCaret + 1);
             std::string newStr;
             if (thirdCaret != std::string::npos) {
-                newStr = cmd.substr(secondCaret + 1, thirdCaret - secondCaret - 1);
+                newStr =
+                    cmd.substr(secondCaret + 1, thirdCaret - secondCaret - 1);
             } else {
                 newStr = cmd.substr(secondCaret + 1);
             }
-            
+
             // Apply to last command
             if (!commandHistory.empty()) {
                 std::string lastCmd = commandHistory.back();
@@ -617,30 +627,30 @@ String Console::ProcessQuickSubstitution(const String &text) {
             }
         }
     }
-    
+
     return String("");
 }
 
 String Console::SearchHistoryAnywhere(const String &pattern) {
     std::string searchStr = pattern.StdString();
-    
+
     // Search backwards through history for pattern anywhere in command
     for (auto it = commandHistory.rbegin(); it != commandHistory.rend(); ++it) {
         if (it->find(searchStr) != std::string::npos) {
             return String(*it);
         }
     }
-    
+
     return String("");
 }
 
 String Console::ProcessZshCommand(const String &text) {
-    // Check if this is a zsh-like command starting with ! 
+    // Check if this is a zsh-like command starting with !
     std::string cmd = text.StdString();
     if (cmd.empty() || cmd[0] != '!') {
         return text;
     }
-    
+
     // Handle !$ - last argument of previous command
     if (cmd == "!$") {
         if (!commandHistory.empty()) {
@@ -651,7 +661,7 @@ String Console::ProcessZshCommand(const String &text) {
         }
         return String("");
     }
-    
+
     // Handle !^ - first argument of previous command
     if (cmd == "!^") {
         if (!commandHistory.empty()) {
@@ -662,7 +672,7 @@ String Console::ProcessZshCommand(const String &text) {
         }
         return String("");
     }
-    
+
     // Handle !?string? - search anywhere in command
     if (cmd.length() > 2 && cmd[1] == '?') {
         size_t endPos = cmd.find('?', 2);
@@ -671,17 +681,17 @@ String Console::ProcessZshCommand(const String &text) {
             return SearchHistoryAnywhere(String(searchStr));
         }
     }
-    
+
     // Handle !# - reference to current command line (before the !#)
     if (cmd == "!#") {
         return String(currentCommand);
     }
-    
+
     // Check if it contains word designators
     if (cmd.find(':') != std::string::npos) {
         return ParseHistoryExpansion(text);
     }
-    
+
     // Handle !! - repeat last command
     if (cmd == "!!" || cmd.substr(0, 2) == "!!") {
         if (commandHistory.empty()) {
@@ -689,7 +699,7 @@ String Console::ProcessZshCommand(const String &text) {
         }
         return String(commandHistory.back());
     }
-    
+
     // Handle !n - execute nth command from history
     if (cmd.size() > 1 && std::isdigit(cmd[1])) {
         size_t endPos = 1;
@@ -702,7 +712,7 @@ String Console::ProcessZshCommand(const String &text) {
         }
         return String("");
     }
-    
+
     // Handle !-n - execute nth command from end
     if (cmd.size() > 2 && cmd[1] == '-' && std::isdigit(cmd[2])) {
         size_t endPos = 2;
@@ -715,84 +725,90 @@ String Console::ProcessZshCommand(const String &text) {
         }
         return String("");
     }
-    
+
     // Handle !string - execute last command starting with string
     if (cmd.size() > 1) {
         std::string searchStr = cmd.substr(1);
         // Search backwards through history
-        for (auto it = commandHistory.rbegin(); it != commandHistory.rend(); ++it) {
+        for (auto it = commandHistory.rbegin(); it != commandHistory.rend();
+             ++it) {
             if (it->substr(0, searchStr.size()) == searchStr) {
                 return String(*it);
             }
         }
         return String("");
     }
-    
+
     return text;
 }
 
 String Console::ExpandHistoryReferences(const String &text) {
     std::string result = text.StdString();
-    
+
     // First handle !# references (current command line)
     std::regex currentCmd_regex("!#(:[^\\s]+)?");
     std::smatch currentMatch;
     while (std::regex_search(result, currentMatch, currentCmd_regex)) {
         std::string histRef = currentMatch[0].str();
         String expanded = ProcessZshCommand(String(histRef));
-        
+
         if (expanded.size() > 0) {
-            result = currentMatch.prefix().str() + expanded.StdString() + currentMatch.suffix().str();
+            result = currentMatch.prefix().str() + expanded.StdString() +
+                     currentMatch.suffix().str();
         } else {
             break;
         }
     }
-    
+
     // Handle !$ and !^ shortcuts
     std::regex shortcuts_regex("![$^]");
     std::smatch shortcutMatch;
     while (std::regex_search(result, shortcutMatch, shortcuts_regex)) {
         std::string histRef = shortcutMatch[0].str();
         String expanded = ProcessZshCommand(String(histRef));
-        
+
         if (expanded.size() > 0) {
-            result = shortcutMatch.prefix().str() + expanded.StdString() + shortcutMatch.suffix().str();
+            result = shortcutMatch.prefix().str() + expanded.StdString() +
+                     shortcutMatch.suffix().str();
         } else {
             break;
         }
     }
-    
+
     // Handle !?string? patterns
     std::regex search_regex("!\\?([^?]+)\\?");
     std::smatch searchMatch;
     while (std::regex_search(result, searchMatch, search_regex)) {
         std::string searchStr = searchMatch[1].str();
         String expanded = SearchHistoryAnywhere(String(searchStr));
-        
+
         if (expanded.size() > 0) {
-            result = searchMatch.prefix().str() + expanded.StdString() + searchMatch.suffix().str();
+            result = searchMatch.prefix().str() + expanded.StdString() +
+                     searchMatch.suffix().str();
         } else {
             break;
         }
     }
-    
+
     // More comprehensive regex to match other history expansions
-    // This matches patterns like !!, !n, !-n, !string, and also !n:word, !-n:word, etc.
+    // This matches patterns like !!, !n, !-n, !string, and also !n:word,
+    // !-n:word, etc.
     std::regex history_regex("!(-?\\d+|!|[^\\s:?$^]+)(:[^\\s]+)?");
     std::smatch match;
-    
+
     while (std::regex_search(result, match, history_regex)) {
         std::string histRef = match[0].str();
         String expanded = ProcessZshCommand(String(histRef));
-        
+
         if (expanded.size() > 0) {
-            result = match.prefix().str() + expanded.StdString() + match.suffix().str();
+            result = match.prefix().str() + expanded.StdString() +
+                     match.suffix().str();
         } else {
             // No match found, break to avoid infinite loop
             break;
         }
     }
-    
+
     return String(result);
 }
 
@@ -823,13 +839,15 @@ void Console::WritePrompt(ostream &out) const {
     // Use colorful prompt with lambda symbol
     if (shellMode) {
         // Shell mode prompt
-        out << rang::style::bold << rang::fg::green
-            << "Bash" << rang::fg::yellow << " λ " << rang::fg::reset << rang::style::bold;
+        out << rang::style::bold << rang::fg::green << "Bash"
+            << rang::fg::yellow << " λ " << rang::fg::reset
+            << rang::style::bold;
     } else {
         // Normal Pi/Rho prompt
         out << rang::style::bold << rang::fg::cyan
             << ToString(static_cast<Language>(compiler->GetLanguage()))
-            << rang::fg::yellow << " λ " << rang::fg::reset << rang::style::bold;
+            << rang::fg::yellow << " λ " << rang::fg::reset
+            << rang::style::bold;
     }
     out.flush();  // Ensure prompt is displayed immediately
 }
@@ -919,17 +937,18 @@ int Console::Run() {
 
                 // Store current command for !# support
                 currentCommand = text;
-                
+
                 // Commands starting with $ are shell commands
                 if (!text.empty() && text[0] == '$') {
-                    // Execute as shell command (strip the $ and any leading space)
+                    // Execute as shell command (strip the $ and any leading
+                    // space)
                     std::string shellCmd = text.substr(1);
                     // Trim leading whitespace
                     size_t firstNonSpace = shellCmd.find_first_not_of(" \t");
                     if (firstNonSpace != std::string::npos) {
                         shellCmd = shellCmd.substr(firstNonSpace);
                     }
-                    
+
                     // Execute the shell command
                     FILE *pipe = popen(shellCmd.c_str(), "r");
                     if (pipe) {
@@ -939,28 +958,31 @@ int Console::Run() {
                         }
                         pclose(pipe);
                     } else {
-                        cout << rang::fg::red << "Failed to execute: " << shellCmd 
+                        cout << rang::fg::red
+                             << "Failed to execute: " << shellCmd
                              << rang::fg::reset << endl;
                     }
-                    
+
                     // Add to history
                     commandHistory.push_back(text);
                 } else if (!text.empty() && text[0] == '^') {
                     // Handle quick substitution ^old^new^
                     String substituted = ProcessQuickSubstitution(String(text));
                     if (substituted.size() > 0) {
-                        cout << rang::fg::cyan << "=> " << substituted.StdString() 
-                             << rang::fg::reset << endl;
-                        
+                        cout << rang::fg::cyan << "=> "
+                             << substituted.StdString() << rang::fg::reset
+                             << endl;
+
                         // Process the substituted command
                         String expandedText = ExpandShellCommands(substituted);
                         String output = Process(expandedText);
                         cout << output.c_str();
-                        
+
                         // Add the substituted command to history
                         commandHistory.push_back(substituted.StdString());
                     } else {
-                        cout << rang::fg::red << "Substitution failed: no match found" 
+                        cout << rang::fg::red
+                             << "Substitution failed: no match found"
                              << rang::fg::reset << endl;
                     }
                 } else if (!text.empty()) {
@@ -968,94 +990,111 @@ int Console::Run() {
                     if (text == "sh" || text == "bash" || text == "zsh") {
                         shellMode = !shellMode;
                         if (shellMode) {
-                            cout << rang::fg::yellow << "Entering shell mode. Type 'exit' to return to " 
-                                 << ToString(static_cast<Language>(compiler->GetLanguage())) 
+                            cout << rang::fg::yellow
+                                 << "Entering shell mode. Type 'exit' to "
+                                    "return to "
+                                 << ToString(static_cast<Language>(
+                                        compiler->GetLanguage()))
                                  << " mode." << rang::fg::reset << endl;
                         }
                         continue;
                     }
-                    
+
                     // In shell mode, execute everything as shell commands
                     if (shellMode) {
                         if (text == "exit") {
                             shellMode = false;
-                            cout << rang::fg::yellow << "Exited shell mode. Back to " 
-                                 << ToString(static_cast<Language>(compiler->GetLanguage())) 
+                            cout << rang::fg::yellow
+                                 << "Exited shell mode. Back to "
+                                 << ToString(static_cast<Language>(
+                                        compiler->GetLanguage()))
                                  << " mode." << rang::fg::reset << endl;
                             continue;
                         }
-                        
+
                         // Apply history expansion even in shell mode
                         std::string expandedCmd = text;
-                        
+
                         // Check for quick substitution
                         if (text[0] == '^') {
-                            String substituted = ProcessQuickSubstitution(String(text));
+                            String substituted =
+                                ProcessQuickSubstitution(String(text));
                             if (substituted.size() > 0) {
                                 expandedCmd = substituted.StdString();
-                                cout << rang::fg::cyan << "=> " << expandedCmd 
+                                cout << rang::fg::cyan << "=> " << expandedCmd
                                      << rang::fg::reset << endl;
                             }
                         } else {
                             // Expand history references
-                            expandedCmd = ExpandHistoryReferences(String(text)).StdString();
+                            expandedCmd = ExpandHistoryReferences(String(text))
+                                              .StdString();
                             if (expandedCmd != text) {
-                                cout << rang::fg::cyan << "=> " << expandedCmd 
+                                cout << rang::fg::cyan << "=> " << expandedCmd
                                      << rang::fg::reset << endl;
                             }
                         }
-                        
+
                         // Execute as shell command
                         FILE *pipe = popen(expandedCmd.c_str(), "r");
                         if (pipe) {
                             char buffer[128];
-                            while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
+                            while (fgets(buffer, sizeof(buffer), pipe) !=
+                                   nullptr) {
                                 cout << buffer;
                             }
                             int exitCode = pclose(pipe);
                             if (exitCode != 0) {
-                                cout << rang::fg::red << "Command exited with code: " << exitCode 
+                                cout << rang::fg::red
+                                     << "Command exited with code: " << exitCode
                                      << rang::fg::reset << endl;
                             }
                         } else {
-                            cout << rang::fg::red << "Failed to execute: " << text 
+                            cout << rang::fg::red
+                                 << "Failed to execute: " << text
                                  << rang::fg::reset << endl;
                         }
-                        
+
                         // Add to history
                         commandHistory.push_back(text);
                         continue;
                     }
-                    
+
                     // Check for zsh-like history commands first
                     std::string processedText = text;
-                    
-                    // If it's a pure history command (just !!, !n, etc), expand it
+
+                    // If it's a pure history command (just !!, !n, etc), expand
+                    // it
                     if (text[0] == '!' && text.find(' ') == std::string::npos) {
                         String expanded = ProcessZshCommand(String(text));
                         if (expanded.size() > 0) {
                             processedText = expanded.StdString();
                             // Show what command is being executed
-                            cout << rang::fg::cyan << "=> " << processedText << rang::fg::reset << endl;
+                            cout << rang::fg::cyan << "=> " << processedText
+                                 << rang::fg::reset << endl;
                         } else {
-                            cout << rang::fg::red << "No matching command in history" << rang::fg::reset << endl;
+                            cout << rang::fg::red
+                                 << "No matching command in history"
+                                 << rang::fg::reset << endl;
                             continue;
                         }
                     } else {
                         // Expand any history references within the command
-                        processedText = ExpandHistoryReferences(String(text)).StdString();
+                        processedText =
+                            ExpandHistoryReferences(String(text)).StdString();
                     }
-                    
+
                     // Add original command to history before processing
                     commandHistory.push_back(text);
-                    
+
                     // Check for shell commands
                     if (!processedText.empty() && processedText[0] == '`') {
-                        String output = ProcessShellCommand(String(processedText));
+                        String output =
+                            ProcessShellCommand(String(processedText));
                         cout << output.c_str();
                     } else {
                         // Expand any embedded shell commands first
-                        String expandedText = ExpandShellCommands(String(processedText));
+                        String expandedText =
+                            ExpandShellCommands(String(processedText));
                         String output = Process(expandedText);
                         cout << output.c_str();
                     }
@@ -1167,7 +1206,8 @@ bool Console::ExecuteFile(const char *fileName) {
     return true;
 }
 
-String Console::ProcessSubstitutionModifier(const String &text, const std::string &pattern) {
+String Console::ProcessSubstitutionModifier(const String &text,
+                                            const std::string &pattern) {
     // This is handled in ApplyModifiers for s/ and gs/ patterns
     return text;
 }

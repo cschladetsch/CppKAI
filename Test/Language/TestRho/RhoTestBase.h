@@ -1,19 +1,21 @@
 #pragma once
 
 #include <gtest/gtest.h>
-#include "TestLangCommon.h"
-#include "TestRhoUtils.h"
+
 #include "KAI/Console/Console.h"
 #include "KAI/Core/BuiltinTypes/Stack.h"
 #include "KAI/Core/Config/Base.h"
 #include "KAI/Core/Debug.h"
 #include "KAI/Core/Logger.h"
+#include "TestLangCommon.h"
+#include "TestRhoUtils.h"
 
 // Base class for Rho tests that provides utilities for script execution
 struct RhoTestBase : kai::TestLangCommon {
-protected:
+   protected:
     template <class T>
-    void RunScriptAndExpect(const std::string& scriptFile, T expected, bool verbose = false) {
+    void RunScriptAndExpect(const std::string &scriptFile, T expected,
+                            bool verbose = false) {
         if (verbose) {
             KAI_LOG_INFO(std::string("Testing script: ") + scriptFile);
         }
@@ -78,7 +80,7 @@ protected:
     }
 
     template <class T>
-    void RunCodeAndExpect(const char* code, T expected, bool verbose = false) {
+    void RunCodeAndExpect(const char *code, T expected, bool verbose = false) {
         if (verbose) {
             KAI_LOG_INFO(std::string("Testing code: ") + code);
         }

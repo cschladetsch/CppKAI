@@ -49,14 +49,14 @@ class SystemAddress {
         : ip(_ip), port(_port) {}
 
     std::string ToString() const { return ip + ":" + std::to_string(port); }
-    
-    std::string ToString(bool withPort) const { 
+
+    std::string ToString(bool withPort) const {
         if (withPort) {
             return ip + ":" + std::to_string(port);
         }
         return ip;
     }
-    
+
     unsigned short GetPort() const { return port; }
 
     void FromString(const char* str) {
@@ -351,7 +351,7 @@ class RakPeerInterface {
     ConnectionState GetConnectionState(const SystemAddress& address) {
         return IS_CONNECTED;  // Stub always returns connected
     }
-    
+
     // Get internal ID (address of this peer)
     SystemAddress GetInternalID() const {
         return SystemAddress("127.0.0.1", 0);  // Stub returns localhost

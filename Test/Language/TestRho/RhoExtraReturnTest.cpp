@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
-#include "TestLangCommon.h"
+
 #include "KAI/Core/BuiltinTypes/Signed32.h"
+#include "TestLangCommon.h"
 
 // Test to verify the extra return issue
 struct RhoExtraReturnTest : kai::TestLangCommon {
@@ -18,12 +19,12 @@ TEST_F(RhoExtraReturnTest, IfElseWithReturns) {
         "        return 100\n"
         "    else\n"
         "        return 200");
-    
+
     data_->Clear();
     console_.Execute("both_return(0)");
     ASSERT_EQ(data_->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(data_->Top()), 100);
-    
+
     data_->Clear();
     console_.Execute("both_return(1)");
     ASSERT_EQ(data_->Size(), 1);
@@ -37,12 +38,12 @@ TEST_F(RhoExtraReturnTest, IfWithoutElseButReturn) {
         "    if n == 0\n"
         "        return 100\n"
         "    return 200");
-    
+
     data_->Clear();
     console_.Execute("if_only_return(0)");
     ASSERT_EQ(data_->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(data_->Top()), 100);
-    
+
     data_->Clear();
     console_.Execute("if_only_return(1)");
     ASSERT_EQ(data_->Size(), 1);
@@ -57,7 +58,7 @@ TEST_F(RhoExtraReturnTest, RecursionWithIfElse) {
         "        return 0\n"
         "    else\n"
         "        return n + rec_sum(n - 1)");
-    
+
     // Test small values first
     data_->Clear();
     console_.Execute("rec_sum(1)");
@@ -65,14 +66,14 @@ TEST_F(RhoExtraReturnTest, RecursionWithIfElse) {
     auto result1 = kai::ConstDeref<int>(data_->Top());
     std::cout << "rec_sum(1) = " << result1 << " (expected 1)" << std::endl;
     EXPECT_EQ(result1, 1);
-    
+
     data_->Clear();
     console_.Execute("rec_sum(2)");
     ASSERT_EQ(data_->Size(), 1);
     auto result2 = kai::ConstDeref<int>(data_->Top());
     std::cout << "rec_sum(2) = " << result2 << " (expected 3)" << std::endl;
     EXPECT_EQ(result2, 3);
-    
+
     data_->Clear();
     console_.Execute("rec_sum(3)");
     ASSERT_EQ(data_->Size(), 1);

@@ -756,10 +756,10 @@ struct ExecutorWindow {
         // Execute the command with all zsh-like features
         try {
             std::string text = command_line;
-            
+
             // Store current command for !# support
             console_.currentCommand = text;
-            
+
             // Commands starting with $ are shell commands
             if (!text.empty() && text[0] == '$') {
                 // Execute as shell command (strip the $ and any leading space)
@@ -769,9 +769,9 @@ struct ExecutorWindow {
                 if (firstNonSpace != std::string::npos) {
                     shellCmd = shellCmd.substr(firstNonSpace);
                 }
-                
+
                 // Execute the shell command
-                FILE *pipe = popen(shellCmd.c_str(), "r");
+                FILE* pipe = popen(shellCmd.c_str(), "r");
                 if (pipe) {
                     std::string result;
                     char buffer[128];
@@ -785,12 +785,14 @@ struct ExecutorWindow {
                 }
             } else if (!text.empty() && text[0] == '^') {
                 // Handle quick substitution ^old^new^
-                String substituted = console_.ProcessQuickSubstitution(String(text));
+                String substituted =
+                    console_.ProcessQuickSubstitution(String(text));
                 if (substituted.size() > 0) {
                     AddLog("=> %s", substituted.c_str());
-                    
+
                     // Process the substituted command
-                    String expandedText = console_.ExpandShellCommands(substituted);
+                    String expandedText =
+                        console_.ExpandShellCommands(substituted);
                     String result = console_.Process(expandedText);
                     if (!result.empty()) {
                         AddLog("%s", result.c_str());
@@ -806,10 +808,12 @@ struct ExecutorWindow {
                 } else {
                     // Handle zsh-like history commands
                     std::string processedText = text;
-                    
-                    // If it's a pure history command (just !!, !n, etc), expand it
+
+                    // If it's a pure history command (just !!, !n, etc), expand
+                    // it
                     if (text[0] == '!' && text.find(' ') == std::string::npos) {
-                        String expanded = console_.ProcessZshCommand(String(text));
+                        String expanded =
+                            console_.ProcessZshCommand(String(text));
                         if (expanded.size() > 0) {
                             processedText = expanded.StdString();
                             // Show what command is being executed
@@ -820,11 +824,14 @@ struct ExecutorWindow {
                         }
                     } else {
                         // Expand any history references within the command
-                        processedText = console_.ExpandHistoryReferences(String(text)).StdString();
+                        processedText =
+                            console_.ExpandHistoryReferences(String(text))
+                                .StdString();
                     }
-                    
+
                     // Expand any embedded shell commands first
-                    String expandedText = console_.ExpandShellCommands(String(processedText));
+                    String expandedText =
+                        console_.ExpandShellCommands(String(processedText));
                     String result = console_.Process(expandedText);
                     if (!result.empty()) {
                         AddLog("%s", result.c_str());

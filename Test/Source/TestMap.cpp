@@ -1,5 +1,5 @@
-#include "TestCommon.h"
 #include "KAI/Core/StringStream.h"
+#include "TestCommon.h"
 
 USING_NAMESPACE_KAI
 

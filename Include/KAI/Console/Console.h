@@ -5,8 +5,9 @@
 #include <KAI/Executor/Compiler.h>
 #include <KAI/Executor/Executor.h>
 #include <KAI/Language.h>
-#include <vector>
+
 #include <string>
+#include <vector>
 
 KAI_BEGIN
 
@@ -20,7 +21,7 @@ class Console : public Reflected {
     Pointer<Compiler> compiler;
     std::shared_ptr<Memory::IAllocator> alloc;
     Language language;
-    
+
     // Command history for zsh-like ! operators
     std::vector<std::string> commandHistory;
 
@@ -42,12 +43,14 @@ class Console : public Reflected {
     String ExpandHistoryReferences(const String &text);
     String ParseHistoryExpansion(const String &text);
     std::vector<std::string> SplitIntoWords(const std::string &text);
-    String ApplyWordDesignators(const std::string &command, const std::string &designators);
+    String ApplyWordDesignators(const std::string &command,
+                                const std::string &designators);
     String ApplyModifiers(const String &text, const std::string &modifiers);
     String ProcessQuickSubstitution(const String &text);
     String SearchHistoryAnywhere(const String &pattern);
     String ProcessHistoryModifier(const String &text, char modifier);
-    String ProcessSubstitutionModifier(const String &text, const std::string &pattern);
+    String ProcessSubstitutionModifier(const String &text,
+                                       const std::string &pattern);
     std::string ExtractFilePath(const std::string &text);
     std::string currentCommand;  // For !# support
     bool shellMode = false;      // Toggle for shell mode
