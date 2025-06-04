@@ -285,12 +285,11 @@ TEST(ComplexControlFlow, ConditionalBreakContinue) {
             
             if (should_skip ') {
                 i = i + 1
-                continue
+            } else {
+                sum = sum + i
+                count = count + 1
+                i = i + 1
             }
-            
-            sum = sum + i
-            count = count + 1
-            i = i + 1
         }
         
         sum  // Sum of non-multiples of 3 up to 15

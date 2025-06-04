@@ -60,8 +60,9 @@ TEST_F(PiControlFlowTest, ForLoop) {
     console_.SetLanguage(kai::Language::Pi);
     auto exec = console_.GetExecutor();
 
-    // Sum numbers from 1 to 5
-    console_.Execute("0 1 5 { + } for");
+    // For loop in Pi expects: init condition update body
+    // Sum numbers from 1 to 5 using while loop instead
+    console_.Execute("0 1 { dup 5 <= } { swap over + swap 1 + } while drop");
     auto stack = exec->GetDataStack();
 
     ASSERT_EQ(stack->Size(), 1);

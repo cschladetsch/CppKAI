@@ -475,6 +475,18 @@ void PiTranslator::AppendTokenised(const TokenNode &tok) {
             AppendOp(Operation::LogicalXor);
             break;
 
+        case PiTokenEnumType::BitAnd:
+            AppendOp(Operation::BitwiseAnd);
+            break;
+
+        case PiTokenEnumType::BitOr:
+            AppendOp(Operation::BitwiseOr);
+            break;
+
+        case PiTokenEnumType::BitXor:
+            AppendOp(Operation::BitwiseXor);
+            break;
+
         case PiTokenEnumType::If:
             AppendOp(Operation::If);
             break;

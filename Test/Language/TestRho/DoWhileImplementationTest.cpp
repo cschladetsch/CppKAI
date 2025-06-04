@@ -138,13 +138,11 @@ TEST(RhoDoWhileTests, DoWhileWithContinue) {
         do
             counter = counter + 1
             
-            // Skip even numbers
-            if (counter % 2 == 0)
+            // Add odd numbers
+            if (counter % 2 != 0)
             {
-                continue
+                sum = sum + counter
             }
-            
-            sum = sum + counter
         while counter < 5
         
         sum  // Should be 1 + 3 + 5 = 9

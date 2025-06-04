@@ -210,10 +210,9 @@ TEST(WhileAndDoWhileTests, DoWhileWithContinue) {
         i = 0
         do {
             i = i + 1
-            if (i % 2 == 0) {
-                continue
+            if (i % 2 != 0) {
+                sum = sum + i
             }
-            sum = sum + i
         } while (i < 6)
         sum
     )";

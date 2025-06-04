@@ -43,6 +43,7 @@ foreach (lang ${langs})
             ${source_path}/Simple20Plus20Test.cpp         # Adding simple 20+20 test
             ${source_path}/SimpleTest.cpp                 # Adding simple test
             ${source_path}/ForLoopTests.cpp               # Adding for loop tests
+            ${source_path}/SimpleForLoopTests.cpp          # Simplified for loop tests
             ${source_path}/ExtendedRhoTests.cpp           # Added 20 new test cases for Rho
             ${source_path}/RhoAdvancedOperationsTests.cpp  # Advanced operations tests
             ${source_path}/RhoControlStructuresTests.cpp   # Control structures tests
@@ -110,6 +111,7 @@ foreach (lang ${langs})
             # New Pi tests added
             ${source_path}/PiStackManipulationTests.cpp     # Stack manipulation tests
             ${source_path}/PiControlFlowTests.cpp           # Control flow tests
+            ${source_path}/PiForLoopTests.cpp               # Simplified for loop tests
             ${source_path}/PiStringOperationsTests.cpp      # String operation tests
             ${source_path}/PiMathOperationsTests.cpp        # Mathematical operation tests
             ${source_path}/PiMinMaxTests.cpp                # Min/Max operation tests
@@ -117,6 +119,7 @@ foreach (lang ${langs})
             ${source_path}/PiMathStandaloneTest.cpp         # Math tests without TestLangCommon
             ${source_path}/PiAdvancedContinuationTests.cpp  # Advanced continuation tests
             ${source_path}/PiAdvancedControlFlowTests.cpp   # Advanced control flow tests
+            ${source_path}/PiContinuationOperatorTests.cpp  # Continuation operator tests (|, &, !)
             #${source_path}/PiAdvancedTests.cpp              # Advanced Pi tests including range-based for loops (disabled due to build errors)
             # Larger tests to include if needed:
             #${source_path}/TestPiAdvanced.cpp

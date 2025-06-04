@@ -336,7 +336,7 @@ TEST_F(RhoControlTests, BreakStatements) {
 }
 
 // Continue statements in loops
-TEST_F(RhoControlTests, ContinueStatements) {
+TEST_F(RhoControlTests, ContinueStatements) {  // Continue is not a keyword in Rho
     AssertDirectSimulation<int>(
         "sum = 0\n"
         "for i = 1; i <= 10; i = i + 1\n"
