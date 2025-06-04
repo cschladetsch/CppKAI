@@ -5,6 +5,7 @@
 #include <iostream>
 #include <regex>
 #include <sstream>
+#include <algorithm>
 
 #include "KAI/Core/BuiltinTypes.h"
 #include "KAI/Core/Memory/StandardAllocator.h"
@@ -416,9 +417,137 @@ String Console::ApplyWordDesignators(const std::string &command, const std::stri
 }
 
 String Console::ApplyModifiers(const String &text, const std::string &modifiers) {
-    // For now, just return the text unmodified
-    // TODO: Implement modifiers like :h, :t, :r, :e, :p, :s/old/new/
-    return text;
+    String result = text;
+    std::string currentText = result.StdString();
+    
+    // Process each modifier in sequence
+    for (size_t i = 0; i < modifiers.length(); ++i) {
+        char mod = modifiers[i];
+        
+        // Handle substitution modifiers
+        if (mod == 's' && i + 1 < modifiers.length() && modifiers[i + 1] == '/') {
+            // Find the substitution pattern s/old/new/
+            size_t start = i + 2;
+            size_t mid = modifiers.find('/', start);
+            size_t end = modifiers.find('/', mid + 1);
+            
+            if (mid != std::string::npos && end != std::string::npos) {
+                std::string oldStr = modifiers.substr(start, mid - start);
+                std::string newStr = modifiers.substr(mid + 1, end - mid - 1);
+                
+                // Perform substitution
+                size_t pos = currentText.find(oldStr);
+                if (pos != std::string::npos) {
+                    currentText.replace(pos, oldStr.length(), newStr);
+                }
+                
+                i = end; // Skip past the substitution
+                continue;
+            }
+        }
+        
+        // Handle global substitution gs/old/new/
+        if (mod == 'g' && i + 2 < modifiers.length() && 
+            modifiers[i + 1] == 's' && modifiers[i + 2] == '/') {
+            size_t start = i + 3;
+            size_t mid = modifiers.find('/', start);
+            size_t end = modifiers.find('/', mid + 1);
+            
+            if (mid != std::string::npos && end != std::string::npos) {
+                std::string oldStr = modifiers.substr(start, mid - start);
+                std::string newStr = modifiers.substr(mid + 1, end - mid - 1);
+                
+                // Global substitution
+                size_t pos = 0;
+                while ((pos = currentText.find(oldStr, pos)) != std::string::npos) {
+                    currentText.replace(pos, oldStr.length(), newStr);
+                    pos += newStr.length();
+                }
+                
+                i = end; // Skip past the substitution
+                continue;
+            }
+        }
+        
+        // Single character modifiers
+        currentText = ProcessHistoryModifier(String(currentText), mod).StdString();
+    }
+    
+    return String(currentText);
+}
+
+String Console::ProcessHistoryModifier(const String &text, char modifier) {
+    std::string str = text.StdString();
+    
+    switch (modifier) {
+        case 'h': { // Head - remove last pathname component
+            size_t lastSlash = str.find_last_of("/\\");
+            if (lastSlash != std::string::npos) {
+                return String(str.substr(0, lastSlash));
+            }
+            return String(".");
+        }
+        
+        case 't': { // Tail - remove all but last pathname component
+            size_t lastSlash = str.find_last_of("/\\");
+            if (lastSlash != std::string::npos) {
+                return String(str.substr(lastSlash + 1));
+            }
+            return text;
+        }
+        
+        case 'r': { // Root - remove extension
+            size_t lastDot = str.find_last_of('.');
+            size_t lastSlash = str.find_last_of("/\\");
+            if (lastDot != std::string::npos && 
+                (lastSlash == std::string::npos || lastDot > lastSlash)) {
+                return String(str.substr(0, lastDot));
+            }
+            return text;
+        }
+        
+        case 'e': { // Extension - remove all but extension
+            size_t lastDot = str.find_last_of('.');
+            size_t lastSlash = str.find_last_of("/\\");
+            if (lastDot != std::string::npos && 
+                (lastSlash == std::string::npos || lastDot > lastSlash)) {
+                return String(str.substr(lastDot + 1));
+            }
+            return String("");
+        }
+        
+        case 'p': { // Print - just print but don't execute
+            std::cout << str << std::endl;
+            return String("");
+        }
+        
+        case 'q': { // Quote - quote the substituted words
+            return String("\"" + str + "\"");
+        }
+        
+        case 'x': { // Quote each word separately
+            auto words = SplitIntoWords(str);
+            std::string result;
+            for (size_t i = 0; i < words.size(); ++i) {
+                if (i > 0) result += " ";
+                result += "\"" + words[i] + "\"";
+            }
+            return String(result);
+        }
+        
+        case 'u': { // Uppercase
+            std::transform(str.begin(), str.end(), str.begin(), ::toupper);
+            return String(str);
+        }
+        
+        case 'l': { // Lowercase
+            std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+            return String(str);
+        }
+        
+        default:
+            return text;
+    }
 }
 
 String Console::ParseHistoryExpansion(const String &text) {
@@ -459,11 +588,93 @@ String Console::ParseHistoryExpansion(const String &text) {
     return historicalCommand;
 }
 
+String Console::ProcessQuickSubstitution(const String &text) {
+    std::string cmd = text.StdString();
+    
+    // Check for ^old^new^ or ^old^new pattern
+    if (cmd.length() > 2 && cmd[0] == '^') {
+        size_t secondCaret = cmd.find('^', 1);
+        if (secondCaret != std::string::npos) {
+            std::string oldStr = cmd.substr(1, secondCaret - 1);
+            
+            // Find the end of the new string
+            size_t thirdCaret = cmd.find('^', secondCaret + 1);
+            std::string newStr;
+            if (thirdCaret != std::string::npos) {
+                newStr = cmd.substr(secondCaret + 1, thirdCaret - secondCaret - 1);
+            } else {
+                newStr = cmd.substr(secondCaret + 1);
+            }
+            
+            // Apply to last command
+            if (!commandHistory.empty()) {
+                std::string lastCmd = commandHistory.back();
+                size_t pos = lastCmd.find(oldStr);
+                if (pos != std::string::npos) {
+                    lastCmd.replace(pos, oldStr.length(), newStr);
+                    return String(lastCmd);
+                }
+            }
+        }
+    }
+    
+    return String("");
+}
+
+String Console::SearchHistoryAnywhere(const String &pattern) {
+    std::string searchStr = pattern.StdString();
+    
+    // Search backwards through history for pattern anywhere in command
+    for (auto it = commandHistory.rbegin(); it != commandHistory.rend(); ++it) {
+        if (it->find(searchStr) != std::string::npos) {
+            return String(*it);
+        }
+    }
+    
+    return String("");
+}
+
 String Console::ProcessZshCommand(const String &text) {
     // Check if this is a zsh-like command starting with ! 
     std::string cmd = text.StdString();
     if (cmd.empty() || cmd[0] != '!') {
         return text;
+    }
+    
+    // Handle !$ - last argument of previous command
+    if (cmd == "!$") {
+        if (!commandHistory.empty()) {
+            auto words = SplitIntoWords(commandHistory.back());
+            if (!words.empty()) {
+                return String(words.back());
+            }
+        }
+        return String("");
+    }
+    
+    // Handle !^ - first argument of previous command
+    if (cmd == "!^") {
+        if (!commandHistory.empty()) {
+            auto words = SplitIntoWords(commandHistory.back());
+            if (words.size() > 1) {
+                return String(words[1]);
+            }
+        }
+        return String("");
+    }
+    
+    // Handle !?string? - search anywhere in command
+    if (cmd.length() > 2 && cmd[1] == '?') {
+        size_t endPos = cmd.find('?', 2);
+        if (endPos != std::string::npos) {
+            std::string searchStr = cmd.substr(2, endPos - 2);
+            return SearchHistoryAnywhere(String(searchStr));
+        }
+    }
+    
+    // Handle !# - reference to current command line (before the !#)
+    if (cmd == "!#") {
+        return String(currentCommand);
     }
     
     // Check if it contains word designators
@@ -523,9 +734,51 @@ String Console::ProcessZshCommand(const String &text) {
 String Console::ExpandHistoryReferences(const String &text) {
     std::string result = text.StdString();
     
-    // More comprehensive regex to match history expansions including word designators
+    // First handle !# references (current command line)
+    std::regex currentCmd_regex("!#(:[^\\s]+)?");
+    std::smatch currentMatch;
+    while (std::regex_search(result, currentMatch, currentCmd_regex)) {
+        std::string histRef = currentMatch[0].str();
+        String expanded = ProcessZshCommand(String(histRef));
+        
+        if (expanded.size() > 0) {
+            result = currentMatch.prefix().str() + expanded.StdString() + currentMatch.suffix().str();
+        } else {
+            break;
+        }
+    }
+    
+    // Handle !$ and !^ shortcuts
+    std::regex shortcuts_regex("![$^]");
+    std::smatch shortcutMatch;
+    while (std::regex_search(result, shortcutMatch, shortcuts_regex)) {
+        std::string histRef = shortcutMatch[0].str();
+        String expanded = ProcessZshCommand(String(histRef));
+        
+        if (expanded.size() > 0) {
+            result = shortcutMatch.prefix().str() + expanded.StdString() + shortcutMatch.suffix().str();
+        } else {
+            break;
+        }
+    }
+    
+    // Handle !?string? patterns
+    std::regex search_regex("!\\?([^?]+)\\?");
+    std::smatch searchMatch;
+    while (std::regex_search(result, searchMatch, search_regex)) {
+        std::string searchStr = searchMatch[1].str();
+        String expanded = SearchHistoryAnywhere(String(searchStr));
+        
+        if (expanded.size() > 0) {
+            result = searchMatch.prefix().str() + expanded.StdString() + searchMatch.suffix().str();
+        } else {
+            break;
+        }
+    }
+    
+    // More comprehensive regex to match other history expansions
     // This matches patterns like !!, !n, !-n, !string, and also !n:word, !-n:word, etc.
-    std::regex history_regex("!(-?\\d+|!|[^\\s:]+)(:[^\\s]+)?");
+    std::regex history_regex("!(-?\\d+|!|[^\\s:?$^]+)(:[^\\s]+)?");
     std::smatch match;
     
     while (std::regex_search(result, match, history_regex)) {
@@ -657,6 +910,9 @@ int Console::Run() {
                 }
                 cout << rang::fg::reset;  // Reset color after input
 
+                // Store current command for !# support
+                currentCommand = text;
+                
                 // Skip commands starting with $
                 if (!text.empty() && text[0] == '$') {
                     // Process as regular command without zsh features
@@ -668,6 +924,24 @@ int Console::Run() {
                     
                     // Still add to history for later reference
                     commandHistory.push_back(text);
+                } else if (!text.empty() && text[0] == '^') {
+                    // Handle quick substitution ^old^new^
+                    String substituted = ProcessQuickSubstitution(String(text));
+                    if (substituted.size() > 0) {
+                        cout << rang::fg::cyan << "=> " << substituted.StdString() 
+                             << rang::fg::reset << endl;
+                        
+                        // Process the substituted command
+                        String expandedText = ExpandShellCommands(substituted);
+                        String output = Process(expandedText);
+                        cout << output.c_str();
+                        
+                        // Add the substituted command to history
+                        commandHistory.push_back(substituted.StdString());
+                    } else {
+                        cout << rang::fg::red << "Substitution failed: no match found" 
+                             << rang::fg::reset << endl;
+                    }
                 } else if (!text.empty()) {
                     // Check for zsh-like history commands first
                     std::string processedText = text;
@@ -807,6 +1081,21 @@ bool Console::ExecuteFile(const char *fileName) {
     // This is safer than directly calling executor->Continue
     Execute(c);
     return true;
+}
+
+String Console::ProcessSubstitutionModifier(const String &text, const std::string &pattern) {
+    // This is handled in ApplyModifiers for s/ and gs/ patterns
+    return text;
+}
+
+std::string Console::ExtractFilePath(const std::string &text) {
+    // Simple extraction - finds first path-like string
+    std::regex pathRegex("([/\\\\]?[\\w.-]+(?:[/\\\\][\\w.-]+)*)");
+    std::smatch match;
+    if (std::regex_search(text, match, pathRegex)) {
+        return match[1].str();
+    }
+    return "";
 }
 
 KAI_END

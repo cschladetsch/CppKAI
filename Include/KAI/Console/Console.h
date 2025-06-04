@@ -44,6 +44,12 @@ class Console : public Reflected {
     std::vector<std::string> SplitIntoWords(const std::string &text);
     String ApplyWordDesignators(const std::string &command, const std::string &designators);
     String ApplyModifiers(const String &text, const std::string &modifiers);
+    String ProcessQuickSubstitution(const String &text);
+    String SearchHistoryAnywhere(const String &pattern);
+    String ProcessHistoryModifier(const String &text, char modifier);
+    String ProcessSubstitutionModifier(const String &text, const std::string &pattern);
+    std::string ExtractFilePath(const std::string &text);
+    std::string currentCommand;  // For !# support
     Registry &GetRegistry() const { return *reg_; }
     Tree &GetTree() { return tree; }
     Tree const &GetTree() const { return tree; }

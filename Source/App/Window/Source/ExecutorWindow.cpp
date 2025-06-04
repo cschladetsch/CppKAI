@@ -757,6 +757,9 @@ struct ExecutorWindow {
         try {
             std::string text = command_line;
             
+            // Store current command for !# support
+            console_.currentCommand = text;
+            
             // Skip commands starting with $
             if (!text.empty() && text[0] == '$') {
                 // Process as regular command without zsh features
@@ -766,6 +769,21 @@ struct ExecutorWindow {
                 String result = console_.Process(expandedText);
                 if (!result.empty()) {
                     AddLog("%s", result.c_str());
+                }
+            } else if (!text.empty() && text[0] == '^') {
+                // Handle quick substitution ^old^new^
+                String substituted = console_.ProcessQuickSubstitution(String(text));
+                if (substituted.size() > 0) {
+                    AddLog("=> %s", substituted.c_str());
+                    
+                    // Process the substituted command
+                    String expandedText = console_.ExpandShellCommands(substituted);
+                    String result = console_.Process(expandedText);
+                    if (!result.empty()) {
+                        AddLog("%s", result.c_str());
+                    }
+                } else {
+                    AddLog("Substitution failed: no match found");
                 }
             } else if (!text.empty()) {
                 // Check for shell commands
