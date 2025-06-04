@@ -821,9 +821,16 @@ String Console::Process(const String &text) {
 
 void Console::WritePrompt(ostream &out) const {
     // Use colorful prompt with lambda symbol
-    out << rang::style::bold << rang::fg::cyan
-        << ToString(static_cast<Language>(compiler->GetLanguage()))
-        << rang::fg::yellow << " λ " << rang::fg::reset << rang::style::bold;
+    if (shellMode) {
+        // Shell mode prompt
+        out << rang::style::bold << rang::fg::green
+            << "Bash" << rang::fg::yellow << " λ " << rang::fg::reset << rang::style::bold;
+    } else {
+        // Normal Pi/Rho prompt
+        out << rang::style::bold << rang::fg::cyan
+            << ToString(static_cast<Language>(compiler->GetLanguage()))
+            << rang::fg::yellow << " λ " << rang::fg::reset << rang::style::bold;
+    }
     out.flush();  // Ensure prompt is displayed immediately
 }
 
@@ -913,16 +920,30 @@ int Console::Run() {
                 // Store current command for !# support
                 currentCommand = text;
                 
-                // Skip commands starting with $
+                // Commands starting with $ are shell commands
                 if (!text.empty() && text[0] == '$') {
-                    // Process as regular command without zsh features
-                    String cmdText = String(text.substr(1));
-                    // Expand any embedded shell commands first
-                    String expandedText = ExpandShellCommands(cmdText);
-                    String output = Process(expandedText);
-                    cout << output.c_str();
+                    // Execute as shell command (strip the $ and any leading space)
+                    std::string shellCmd = text.substr(1);
+                    // Trim leading whitespace
+                    size_t firstNonSpace = shellCmd.find_first_not_of(" \t");
+                    if (firstNonSpace != std::string::npos) {
+                        shellCmd = shellCmd.substr(firstNonSpace);
+                    }
                     
-                    // Still add to history for later reference
+                    // Execute the shell command
+                    FILE *pipe = popen(shellCmd.c_str(), "r");
+                    if (pipe) {
+                        char buffer[128];
+                        while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
+                            cout << buffer;
+                        }
+                        pclose(pipe);
+                    } else {
+                        cout << rang::fg::red << "Failed to execute: " << shellCmd 
+                             << rang::fg::reset << endl;
+                    }
+                    
+                    // Add to history
                     commandHistory.push_back(text);
                 } else if (!text.empty() && text[0] == '^') {
                     // Handle quick substitution ^old^new^
@@ -943,6 +964,69 @@ int Console::Run() {
                              << rang::fg::reset << endl;
                     }
                 } else if (!text.empty()) {
+                    // Check for shell mode toggle
+                    if (text == "sh" || text == "bash" || text == "zsh") {
+                        shellMode = !shellMode;
+                        if (shellMode) {
+                            cout << rang::fg::yellow << "Entering shell mode. Type 'exit' to return to " 
+                                 << ToString(static_cast<Language>(compiler->GetLanguage())) 
+                                 << " mode." << rang::fg::reset << endl;
+                        }
+                        continue;
+                    }
+                    
+                    // In shell mode, execute everything as shell commands
+                    if (shellMode) {
+                        if (text == "exit") {
+                            shellMode = false;
+                            cout << rang::fg::yellow << "Exited shell mode. Back to " 
+                                 << ToString(static_cast<Language>(compiler->GetLanguage())) 
+                                 << " mode." << rang::fg::reset << endl;
+                            continue;
+                        }
+                        
+                        // Apply history expansion even in shell mode
+                        std::string expandedCmd = text;
+                        
+                        // Check for quick substitution
+                        if (text[0] == '^') {
+                            String substituted = ProcessQuickSubstitution(String(text));
+                            if (substituted.size() > 0) {
+                                expandedCmd = substituted.StdString();
+                                cout << rang::fg::cyan << "=> " << expandedCmd 
+                                     << rang::fg::reset << endl;
+                            }
+                        } else {
+                            // Expand history references
+                            expandedCmd = ExpandHistoryReferences(String(text)).StdString();
+                            if (expandedCmd != text) {
+                                cout << rang::fg::cyan << "=> " << expandedCmd 
+                                     << rang::fg::reset << endl;
+                            }
+                        }
+                        
+                        // Execute as shell command
+                        FILE *pipe = popen(expandedCmd.c_str(), "r");
+                        if (pipe) {
+                            char buffer[128];
+                            while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
+                                cout << buffer;
+                            }
+                            int exitCode = pclose(pipe);
+                            if (exitCode != 0) {
+                                cout << rang::fg::red << "Command exited with code: " << exitCode 
+                                     << rang::fg::reset << endl;
+                            }
+                        } else {
+                            cout << rang::fg::red << "Failed to execute: " << text 
+                                 << rang::fg::reset << endl;
+                        }
+                        
+                        // Add to history
+                        commandHistory.push_back(text);
+                        continue;
+                    }
+                    
                     // Check for zsh-like history commands first
                     std::string processedText = text;
                     

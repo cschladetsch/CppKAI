@@ -50,6 +50,7 @@ class Console : public Reflected {
     String ProcessSubstitutionModifier(const String &text, const std::string &pattern);
     std::string ExtractFilePath(const std::string &text);
     std::string currentCommand;  // For !# support
+    bool shellMode = false;      // Toggle for shell mode
     Registry &GetRegistry() const { return *reg_; }
     Tree &GetTree() { return tree; }
     Tree const &GetTree() const { return tree; }

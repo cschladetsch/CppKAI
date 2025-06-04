@@ -53,9 +53,10 @@ print "`whoami` in `pwd`"
 ## Special Features
 
 ```bash
-# Disable all expansions with $ prefix
-$!!         # Literal !! (no expansion)
-$!test      # Literal !test
+# Execute shell commands with $ prefix
+$ ls        # Executes 'ls' shell command
+$ pwd       # Shows current directory
+$ echo hello  # Prints 'hello'
 
 # History expansion in commands
 5

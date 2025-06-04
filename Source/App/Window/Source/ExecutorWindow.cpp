@@ -760,15 +760,28 @@ struct ExecutorWindow {
             // Store current command for !# support
             console_.currentCommand = text;
             
-            // Skip commands starting with $
+            // Commands starting with $ are shell commands
             if (!text.empty() && text[0] == '$') {
-                // Process as regular command without zsh features
-                String cmdText = String(text.substr(1));
-                // Expand any embedded shell commands first
-                String expandedText = console_.ExpandShellCommands(cmdText);
-                String result = console_.Process(expandedText);
-                if (!result.empty()) {
+                // Execute as shell command (strip the $ and any leading space)
+                std::string shellCmd = text.substr(1);
+                // Trim leading whitespace
+                size_t firstNonSpace = shellCmd.find_first_not_of(" \t");
+                if (firstNonSpace != std::string::npos) {
+                    shellCmd = shellCmd.substr(firstNonSpace);
+                }
+                
+                // Execute the shell command
+                FILE *pipe = popen(shellCmd.c_str(), "r");
+                if (pipe) {
+                    std::string result;
+                    char buffer[128];
+                    while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
+                        result += buffer;
+                    }
+                    pclose(pipe);
                     AddLog("%s", result.c_str());
+                } else {
+                    AddLog("Failed to execute: %s", shellCmd.c_str());
                 }
             } else if (!text.empty() && text[0] == '^') {
                 // Handle quick substitution ^old^new^
