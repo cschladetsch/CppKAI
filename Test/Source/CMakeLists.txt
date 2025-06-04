@@ -10,6 +10,9 @@ set(script_path ${TEST_HOME}/Scripts)
 # Include all test files
 file(GLOB_RECURSE all_source_files ${source_path}/*.cpp)
 
+# Remove duplicate TestMap.cpp from TestContainer
+list(REMOVE_ITEM all_source_files ${source_path}/TestContainer/TestMap.cpp)
+
 # Use all source files
 set(sources ${all_source_files})
 
@@ -33,7 +36,7 @@ set(core_sources
     ${source_path}/TestBinaryStream.cpp
     ${source_path}/TestClassScripting.cpp
     ${source_path}/TestContainer/TestList.cpp
-    ${source_path}/TestContainer/TestMap.cpp
+    # ${source_path}/TestContainer/TestMap.cpp  # Commented out - duplicate with TestMap.cpp
     ${source_path}/TestContainer/TestSet.cpp
     ${source_path}/TestContainer/TestStack.cpp
     ${source_path}/TestContainer/TestVector.cpp
