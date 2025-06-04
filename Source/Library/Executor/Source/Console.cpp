@@ -847,8 +847,11 @@ String Console::Process(const String &text) {
     
     // Not a shell command, process as language code
     KAI_TRY {
+        // First expand any backtick shell commands
+        String expandedText = ExpandShellCommands(text);
+        
         // Translate the text into a continuation
-        auto cont = compiler->Translate(text.c_str());
+        auto cont = compiler->Translate(expandedText.c_str());
         if (cont.Exists()) {
             // Set the scope
             cont->SetScope(tree.GetScope());
