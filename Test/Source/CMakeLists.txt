@@ -53,6 +53,8 @@ set(core_sources
     ${source_path}/CoreContainerTests.cpp
     ${source_path}/CoreTypeTests.cpp
     ${source_path}/CorePointerTests.cpp
+    ${source_path}/TestArray.cpp
+    ${source_path}/TestMap.cpp
     # New Core tests added
     ${source_path}/TestMemoryManagement.cpp
     ${source_path}/TestSmartPointers.cpp

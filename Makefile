@@ -357,6 +357,19 @@ TestPi/fast:
 .PHONY : TestPi/fast
 
 #=============================================================================
+# Target rules for targets named TestConsole
+
+# Build rule for target.
+TestConsole: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 TestConsole
+.PHONY : TestConsole
+
+# fast build rule for target.
+TestConsole/fast:
+	$(MAKE) $(MAKESILENT) -f Test/Console/CMakeFiles/TestConsole.dir/build.make Test/Console/CMakeFiles/TestConsole.dir/build
+.PHONY : TestConsole/fast
+
+#=============================================================================
 # Target rules for targets named LogTest
 
 # Build rule for target.
@@ -1558,6 +1571,7 @@ help:
 	@echo "... RhoLang"
 	@echo "... SimpleColorExample"
 	@echo "... TauLang"
+	@echo "... TestConsole"
 	@echo "... TestCore"
 	@echo "... TestPi"
 	@echo "... TestRho"

@@ -13,6 +13,16 @@ void Array::RemoveAt(int index) {
     objects.erase(begin() + index);
 }
 
+void Array::Insert(int index, Object const &obj) {
+    if (index < 0 || index > static_cast<int>(Size())) {
+        KAI_THROW_1(BadIndex, index);
+    }
+
+    if (Attach(obj)) {
+        objects.insert(begin() + index, obj);
+    }
+}
+
 Array::iterator Array::Erase(iterator A) {
     Detach(*A);
     return objects.erase(A);
@@ -101,6 +111,8 @@ void Array::Register(Registry &R) {
         ("Erase", remove_method, "Remove an object from the sequence")(
             "RemoveAt", &Array::RemoveAt,
             "Remove the object at the given index from the sequence")(
+            "Insert", &Array::Insert2,
+            "Insert an object at the given index in the sequence")(
             "PopBack", &Array::PopBack, "Remove last object from the sequence")(
             "Size", &Array::Size, "Get the size")(
             "Empty", &Array::Empty, "Returns True if Array has no Objects")(

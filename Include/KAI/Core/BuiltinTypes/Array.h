@@ -39,6 +39,7 @@ class Array : public Container<Array> {
     void PushBack(Object const &Q) { Append(Q); }
     Object PopBack();
     void RemoveAt(int);
+    void Insert(int index, Object const &);
 
     iterator Erase(iterator A);
     void Erase(Handle A);
@@ -46,6 +47,7 @@ class Array : public Container<Array> {
 
     void Erase2(Object Q) { Erase(Q); }
     void Append2(Object Q) { Append(Q); }
+    void Insert2(int index, Object Q) { Insert(index, Q); }
 
     friend bool operator==(const Array &A, const Array &B) {
         return A.objects == B.objects;
