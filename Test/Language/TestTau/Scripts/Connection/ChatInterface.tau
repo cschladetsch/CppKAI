@@ -1,0 +1,158 @@
+// P2P Chat application interfaces using RakNet networking
+// Channel-based publish/subscribe model for Console integration
+
+namespace KAI { namespace Chat {
+
+    // Message types for the channel-based chat system
+    enum MessageType {
+        ChannelMessage,
+        ChannelAnnouncement,
+        ChannelDiscovery,
+        ChannelJoin,
+        ChannelLeave,
+        UserList,
+        Heartbeat
+    }
+
+    // Channel information
+    struct ChannelInfo {
+        string channelName;
+        string hostId;
+        SystemAddress hostAddress;
+        long createdTime;
+        int memberCount;
+        bool isPublic;
+    }
+
+    // User information in a channel
+    struct ChannelUser {
+        string username;
+        string userId;
+        SystemAddress address;
+        long joinedTime;
+        bool isHost;
+    }
+
+    // Chat message structure
+    struct ChatMessage {
+        MessageType type;
+        string channelName;
+        string senderId;
+        string senderName;
+        string content;
+        long timestamp;
+    }
+
+    // Channel-based Chat interface for Console integration
+    interface IChannelChat {
+        // Initialize chat system
+        bool Initialize(int port = 14589);
+        void Shutdown();
+        bool IsRunning();
+        
+        // User identity - must be set before publish/enter
+        bool SetUsername(string username);       // "username [name]"
+        string GetUsername();
+        bool HasUsername();
+        
+        // Channel operations - maps to console commands
+        async bool Publish(string channelName);  // "publish [channel]" - requires username
+        async bool Enter(string channelName);    // "enter [channel]" - requires username
+        bool Leave();                            // "leave"
+        ChannelInfo[] Discover();                // "discover"
+        
+        // Messaging in current channel
+        bool Send(string message);               // Just type message
+        
+        // Channel management
+        string GetCurrentChannel();
+        ChannelInfo GetChannelInfo(string channelName);
+        ChannelUser[] GetChannelUsers();
+        bool IsInChannel();
+        bool IsHosting();
+        
+        // Events
+        event OnMessageReceived(ChatMessage message);
+        event OnChannelDiscovered(ChannelInfo channel);
+        event OnUserJoined(ChannelUser user);
+        event OnUserLeft(string userId, string username);
+        event OnChannelClosed(string channelName);
+    }
+
+    // Channel Network Proxy - handles RakNet operations for channels
+    interface IChannelNetworkProxy {
+        // RakNet initialization
+        void Initialize();
+        void Shutdown();
+        
+        // Channel hosting
+        bool HostChannel(string channelName, int port);
+        void CloseChannel();
+        
+        // Channel joining
+        bool JoinChannel(string address, int port);
+        void LeaveChannel();
+        
+        // Discovery
+        void BroadcastChannelAnnouncement(ChannelInfo info);
+        void ListenForChannels(int discoveryPort);
+        void StopListening();
+        
+        // Messaging
+        void SendToChannel(ChatMessage message);
+        void SendToUser(SystemAddress target, ChatMessage message);
+        ChatMessage ReceiveMessage();
+        
+        // Connection management
+        SystemAddress[] GetChannelMembers();
+        bool IsChannelHost();
+        bool IsInChannel();
+    }
+
+    // Channel Agent - handles channel logic and message routing
+    interface IChannelAgent {
+        // Channel management
+        void CreateChannel(string channelName, string hostId);
+        void DestroyChannel();
+        bool JoinChannel(ChannelInfo channel, string userId);
+        void LeaveChannel();
+        
+        // User management
+        void AddUser(ChannelUser user);
+        void RemoveUser(string userId);
+        ChannelUser[] GetUsers();
+        ChannelUser GetUser(string userId);
+        
+        // Message handling
+        void BroadcastMessage(ChatMessage message);
+        void ProcessIncomingMessage(SystemAddress sender, ChatMessage message);
+        
+        // Channel discovery
+        void AnnounceChannel();
+        void ProcessChannelAnnouncement(SystemAddress source, ChannelInfo info);
+        ChannelInfo[] GetDiscoveredChannels();
+    }
+
+    // Console command handler for chat
+    interface IChatConsoleHandler {
+        // Command registration
+        void RegisterCommands(Console console);
+        
+        // Command handlers
+        string HandleUsername(string username);  // Set username first
+        string HandlePublish(string channelName);
+        string HandleEnter(string channelName);
+        string HandleLeave();
+        string HandleDiscover();
+        string HandleSend(string message);
+        string HandleUsers();
+        string HandleWhois(string username);     // Query user info
+        string HandleList();                     // List all channels
+        string HandleHelp();
+        
+        // Status
+        string GetStatus();
+        string GetCurrentChannelInfo();
+    }
+
+}} // namespace KAI::Chat

@@ -9,6 +9,8 @@ project(Test_Network)
     set(GTEST_SOURCES
         TestNode.cpp
         TestGenerateProxy.cpp
+        ICQStyleChatTest.cpp
+        ChatProxyGenerationTest.cpp
     )
 
     # Create the GTest-based test executable

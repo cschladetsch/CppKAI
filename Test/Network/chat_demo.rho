@@ -1,0 +1,29 @@
+# P2P Chat Demo Script for Console
+# This demonstrates the ICQ-style chat interface
+
+# Set username first
+`username Alice`
+
+# Create a channel
+`publish dev-chat`
+
+# Send some messages
+"Welcome to the dev-chat channel!"
+"This is a P2P chat system using RakNet"
+
+# Check who's in the channel
+`users`
+
+# Discover available channels
+`discover`
+
+# Example of leaving and joining
+`leave`
+`discover`
+`enter dev-chat`
+
+# Send another message
+"I'm back in the channel!"
+
+# Get help
+`help`
