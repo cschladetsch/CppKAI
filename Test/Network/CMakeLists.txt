@@ -11,6 +11,8 @@ project(Test_Network)
         TestGenerateProxy.cpp
         ICQStyleChatTest.cpp
         ChatProxyGenerationTest.cpp
+        ChatFunctionalityTests.cpp
+        ChatAdvancedTests.cpp
     )
 
     # Create the GTest-based test executable
