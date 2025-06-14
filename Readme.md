@@ -10,7 +10,7 @@ _KAI_ is a network distributed **Object Model** for C++ with full runtime reflec
 
 ![Console](Images/BasicConsole.png)
 
-![Window](Images/Gui.jpg)
+![Window](Images/Window.png)
 
 ## Key Features
 
