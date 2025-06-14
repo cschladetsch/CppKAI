@@ -20,16 +20,11 @@ Objects and *compute* can be distributed across Nodes in a Domain.
 
 **[📚 Documentation Guide](Doc/Documentation.md)** - Start here for organized navigation of all documentation
 
-- **Project Overview** - Architecture and build instructions
-- **Language System** - Pi, Rho, and Tau language documentation
-- [Tau Code Generation](Doc/TauCodeGeneration.md) - New detailed guide for code generation
-- **Networking System** - Comprehensive networking documentation
-- **Technical Documentation** - Implementation details and analyses
-- **Advanced Topics** - Event system, continuation control, etc.
 - **Building**: [Build Guide](Doc/OUT_OF_SOURCE_BUILD.md) | [Installation](Doc/Install.md)
 - **Languages**: [Pi](Doc/PiTutorial.md) | [Rho](Doc/RhoTutorial.md) | [Tau](Doc/TauTutorial.md)
 - **Networking**: [Overview](Doc/Networking.md) | [Architecture](Doc/NetworkArchitecture.md)
 - **Testing**: [Test Guide](Doc/Test.md) | [Connection Testing](Doc/ConnectionTesting.md)
+- [Tau Code Generation](Doc/TauCodeGeneration.md) - New detailed guide for code generation
 
 ### Demo and Examples
 
