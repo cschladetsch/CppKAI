@@ -239,15 +239,15 @@ if(TARGET Network)
 endif()
 
 if(TARGET PiLang)
-    target_link_libraries(PiLang Core Executor)
+    target_link_libraries(PiLang Core CommonLang)
 endif()
 
 if(TARGET RhoLang)
-    target_link_libraries(RhoLang Core Executor PiLang)
+    target_link_libraries(RhoLang Core CommonLang PiLang)
 endif()
 
 if(TARGET TauLang)
-    target_link_libraries(TauLang Core Executor)
+    target_link_libraries(TauLang Core CommonLang)
 endif()
 
 # Find or download Google Test if needed for tests

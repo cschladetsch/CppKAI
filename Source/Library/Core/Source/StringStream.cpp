@@ -104,12 +104,9 @@ StringStream &operator<<(StringStream &stream, const Object &object) {
     if (klass->HasOperation(Type::Properties::StringStreamInsert))
         klass->Insert(stream, object.GetStorageBase());
     else {
-        if (klass->GetTypeNumber() == Type::Number::Operation)
-            stream << Operation::ToString(
-                ConstDeref<Operation>(object).GetTypeNumber());
-        else
-            stream << "Handle=" << object.GetHandle().GetValue()
-                   << ", type=" << klass->GetName() << " ";
+        // Removed Operation special case to avoid Core->Executor dependency
+        stream << "Handle=" << object.GetHandle().GetValue()
+               << ", type=" << klass->GetName() << " ";
     }
 
     return stream;

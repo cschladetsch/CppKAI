@@ -13,6 +13,7 @@ class PiLexer : public LexerCommon<PiTokenEnumType> {
     typedef TokenBase<PiTokenEnumType> TokenNode;
 
     PiLexer(const char *text, Registry &r) : Parent(text, r) {}
+    virtual ~PiLexer() = default;
 
     void AddKeyWords() override;
     bool NextToken() override;

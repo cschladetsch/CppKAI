@@ -34,6 +34,7 @@ class RhoTranslator : public TranslatorBase<RhoParser> {
     RhoTranslator& operator=(RhoTranslator&&) = default;
 
     explicit RhoTranslator(Registry& r) : Parent(r) {}
+    virtual ~RhoTranslator() = default;
 
     // Override to make Rho handle direct evaluation of expressions
     // This addresses the issue where expressions are unnecessarily wrapped in

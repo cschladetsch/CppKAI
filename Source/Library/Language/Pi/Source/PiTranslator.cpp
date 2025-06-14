@@ -13,6 +13,8 @@ using namespace std;
 
 KAI_BEGIN
 
+PiTranslator::~PiTranslator() = default;
+
 // Implementation of the Translate method for Pi
 Pointer<Continuation> PiTranslator::Translate(const char *text, Structure st) {
     // Set flag to indicate we're translating the root

@@ -18,6 +18,7 @@ class PiTranslator : public TranslatorBase<PiParser> {
 
     PiTranslator() = delete;
     PiTranslator(Registry& r) : Parent(r) {}
+    virtual ~PiTranslator();
 
     // Override base class methods to improve type handling
     virtual Pointer<Continuation> Result() override { return stack.front(); }

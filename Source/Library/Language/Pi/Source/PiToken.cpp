@@ -160,29 +160,32 @@ const char *PiTokenEnumType::ToString(Enum t) {
     KAI_NOT_IMPLEMENTED();
 }
 
-std::ostream &operator<<(std::ostream &out, PiToken const &node) {
-    if (node.type == PiTokenEnumType::None) return out << "<NONE>";
+KAI_END
+
+// Define in global namespace for friend declaration
+std::ostream &operator<<(std::ostream &out, kai::PiTokenEnumType::Type const &node) {
+    if (node.type == kai::PiTokenEnumType::None) return out << "<NONE>";
 
     switch (node.type) {
-        case PiTokenEnumType::True: {
+        case kai::PiTokenEnumType::True: {
             out << "true";
             return out;
         }
-        case PiTokenEnumType::False: {
+        case kai::PiTokenEnumType::False: {
             out << "false";
             return out;
         }
     }
 
-    out << PiTokenEnumType::ToString(node.type);
+    out << kai::PiTokenEnumType::ToString(node.type);
 
     switch (node.type) {
-        case PiTokenEnumType::Int:
-        case PiTokenEnumType::Float:
-        case PiTokenEnumType::Pathname:
-        case PiTokenEnumType::String:
-        case PiTokenEnumType::Ident:
-        case PiTokenEnumType::QuotedIdent:
+        case kai::PiTokenEnumType::Int:
+        case kai::PiTokenEnumType::Float:
+        case kai::PiTokenEnumType::Pathname:
+        case kai::PiTokenEnumType::String:
+        case kai::PiTokenEnumType::Ident:
+        case kai::PiTokenEnumType::QuotedIdent:
             out << "='" << node.Text() << "'";
             break;
     }
@@ -190,4 +193,9 @@ std::ostream &operator<<(std::ostream &out, PiToken const &node) {
     return out;
 }
 
-KAI_END
+// Also define in kai namespace for ADL
+namespace kai {
+std::ostream &operator<<(std::ostream &out, PiTokenEnumType::Type const &node) {
+    return ::operator<<(out, node);
+}
+}

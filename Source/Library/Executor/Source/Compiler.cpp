@@ -1,8 +1,6 @@
 #include <KAI/Core/BuiltinTypes.h>
 #include <KAI/Core/File.h>
 #include <KAI/Executor/Compiler.h>
-#include <KAI/Language/Pi/PiTranslator.h>
-#include <KAI/Language/Rho/RhoTranslator.h>
 
 using namespace std;
 
@@ -23,22 +21,10 @@ bool Compiler::Destroy() {
 
 Pointer<Continuation> Compiler::Translate(const String &text,
                                           Structure st) const {
-    switch (language_) {
-        case Language::None:
-            return Object();
-
-        case Language::Pi:
-            return Compile<PiTranslator>(text, st);
-
-        case Language::Rho:
-            return Compile<RhoTranslator>(text, st);
-
-        case Language::Tau:
-            KAI_NOT_IMPLEMENTED();  // Tau is not a compiled language - it is an
-                                    // IDL
-            break;
-    }
-
+    // This base implementation doesn't know about specific languages
+    // The Console app will need to set up language-specific translators
+    KAI_UNUSED_2(text, st);
+    KAI_NOT_IMPLEMENTED();
     return Object();
 }
 

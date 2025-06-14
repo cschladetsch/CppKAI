@@ -6,7 +6,7 @@ set(header_path ${INCLUDE_HOME}/${name})
 
 # Main Console app
 add_executable(${name} ${source_path}/Main.cpp)
-target_link_libraries(${name} Executor Core PiLang RhoLang ${Boost_LIBRARIES})
+target_link_libraries(${name} PiLang RhoLang Executor CommonLang Core ${Boost_LIBRARIES})
 # Set the output directory explicitly for the Console app
 set_target_properties(${name} PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${BIN_HOME}"

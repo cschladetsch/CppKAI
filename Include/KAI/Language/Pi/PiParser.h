@@ -19,6 +19,7 @@ struct PiParser : ParserCommon<PiLexer, PiAstNodeEnumType> {
     typedef PiTokenEnumType TokenType;
 
     PiParser(Registry &r) : Parent(r) {}
+    virtual ~PiParser() = default;
 
     bool Process(std::shared_ptr<Lexer> lex, Structure st) override;
 

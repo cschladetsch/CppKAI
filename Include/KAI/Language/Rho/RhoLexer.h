@@ -10,6 +10,7 @@ struct RhoLexer : LexerCommon<RhoTokenEnumType> {
     typedef TokenBase<RhoTokenEnumType> TokenNode;
 
     RhoLexer(const char *text, Registry &r) : Parent(text, r) {}
+    virtual ~RhoLexer() = default;
 
     void AddKeyWords() override;
     bool NextToken() override;

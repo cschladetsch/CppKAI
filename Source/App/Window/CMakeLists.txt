@@ -28,8 +28,6 @@ set(SOURCE_FILES
     ${SOURCE_HOME}/App/${name}/Source/imgui_impl_opengl3.cpp
 )
 
-link_libraries(Executor Core PiLang RhoLang ImGui)
-
 add_executable(${name} ${SOURCE_FILES})
 
 # Set the output directory explicitly
@@ -48,4 +46,4 @@ find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 
 # Link libraries
-target_link_libraries(${name} glfw OpenGL::GL GLEW::GLEW)
+target_link_libraries(${name} PiLang RhoLang Executor CommonLang Core ImGui glfw OpenGL::GL GLEW::GLEW)

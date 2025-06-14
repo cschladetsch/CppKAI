@@ -29,20 +29,8 @@ class Compiler : public Reflected {
     int GetLanguage() const;
     void SetTraceLevel(int n) { traceLevel_ = n; }
 
-    template <class Trans>
-    Pointer<Continuation> Compile(const String &text,
-                                  Structure st = Structure::Expression) const {
-        if (text.empty()) return Object();
-
-        auto trans = std::make_shared<Trans>(Reg());
-        trans->trace = traceLevel_;
-        auto result = trans->Translate(text.c_str(), st);
-        if (trans->Failed) {
-            KAI_TRACE_ERROR_1(trans->Error);  //, st);
-            return Object();
-        }
-        return result;
-    }
+    // Template method removed to break dependency on language-specific types
+    // Applications should implement their own language compilation
 
     Pointer<Continuation> Translate(const String &text,
                                     Structure st = Structure::Expression) const;

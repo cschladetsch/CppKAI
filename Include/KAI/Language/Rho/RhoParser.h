@@ -20,6 +20,7 @@ class RhoParser : public ParserCommon<RhoLexer, RhoAstNodeEnumType> {
     typedef RhoTokenEnumType TokenType;
 
     RhoParser(Registry &r) : Parent(r) {}
+    virtual ~RhoParser() = default;
 
     virtual bool Process(std::shared_ptr<Lexer> lex, Structure st) override;
     String Print() const;
