@@ -6,6 +6,12 @@
 
 _KAI_ is a network distributed **Object Model** for C++ with full runtime reflection, persistence, and incremental garbage collection. No macros are needed to expose fields or methods to the scripting runtime, including external code from other libraries.
 
+## Demos
+
+![Console](resources/Console.jpg)
+
+![Window](resources/Gui.jpg)
+
 ## Key Features
 
 - **Zero-Macro Reflection**: Expose C++ types and methods to scripting without macros or source modifications
