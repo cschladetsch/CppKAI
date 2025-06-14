@@ -6,13 +6,36 @@
 
 _KAI_ is a network distributed **Object Model** for C++ with full runtime reflection, persistence, and incremental garbage collection. No macros are needed to expose fields or methods to the scripting runtime, including external code from other libraries.
 
-See [Documentation](Doc/Documentation.md) for more detailed documentation.
+Objects and *compute* can be distributed across Nodes in a Domain.
 
-## Demos
+## Demo Views
 
 ![Console](Images/BasicConsole.png)
 
 ![Window](Images/Window.png)
+
+## Quick Links
+
+### Documentation 
+
+**[📚 Documentation Guide](Doc/Documentation.md)** - Start here for organized navigation of all documentation
+
+- **Project Overview** - Architecture and build instructions
+- **Language System** - Pi, Rho, and Tau language documentation
+- [Tau Code Generation](Doc/TauCodeGeneration.md) - New detailed guide for code generation
+- **Networking System** - Comprehensive networking documentation
+- **Technical Documentation** - Implementation details and analyses
+- **Advanced Topics** - Event system, continuation control, etc.
+- **Building**: [Build Guide](Doc/OUT_OF_SOURCE_BUILD.md) | [Installation](Doc/Install.md)
+- **Languages**: [Pi](Doc/PiTutorial.md) | [Rho](Doc/RhoTutorial.md) | [Tau](Doc/TauTutorial.md)
+- **Networking**: [Overview](Doc/Networking.md) | [Architecture](Doc/NetworkArchitecture.md)
+- **Testing**: [Test Guide](Doc/Test.md) | [Connection Testing](Doc/ConnectionTesting.md)
+
+### Demo and Examples
+
+- Run `./Scripts/run_rho_demo.sh` for a comprehensive demo of Rho language features
+- Run `./Scripts/calc_test.sh` for a demonstration of network calculation
+- Example scripts in `Test/Language/*/Scripts` directories
 
 ## Key Features
 
@@ -207,30 +230,6 @@ The GUI application provides:
 - Object browser
 - Performance metrics
 
-## Documentation
-
-**[📚 Documentation Guide](Doc/Documentation.md)** - Start here for organized navigation of all documentation
-
-### Quick Links
-- **Building**: [Build Guide](Doc/OUT_OF_SOURCE_BUILD.md) | [Installation](Doc/Install.md)
-- **Languages**: [Pi](Doc/PiTutorial.md) | [Rho](Doc/RhoTutorial.md) | [Tau](Doc/TauTutorial.md)
-- **Networking**: [Overview](Doc/Networking.md) | [Architecture](Doc/NetworkArchitecture.md)
-- **Testing**: [Test Guide](Doc/Test.md) | [Connection Testing](Doc/ConnectionTesting.md)
-
-### Documentation Organization
-The documentation is hierarchically organized in the [Documentation Guide](Doc/Documentation.md):
-
-1. **Project Overview** - Architecture and build instructions
-2. **Language System** - Pi, Rho, and Tau language documentation
-   - [Tau Code Generation](Doc/TauCodeGeneration.md) - New detailed guide for code generation
-3. **Networking System** - Comprehensive networking documentation
-4. **Technical Documentation** - Implementation details and analyses
-5. **Advanced Topics** - Event system, continuation control, etc.
-
-### Demo and Examples
-- Run `./Scripts/run_rho_demo.sh` for a comprehensive demo of Rho language features
-- Run `./Scripts/calc_test.sh` for a demonstration of network calculation
-- Example scripts in `Test/Language/*/Scripts` directories
 
 ## Project Structure
 
