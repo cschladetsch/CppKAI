@@ -1,20 +1,28 @@
 # KAI Languages
 
-The KAI system comes with a generic language-construction system that resides [here](Include/KAI/Language/Common). For comprehensive guides on each language, see the tutorials linked below.
+The KAI system includes a generic language-construction system, which can be found at [Include/KAI/Language/Common](Include/KAI/Language/Common). For comprehensive guides on each language, see the tutorials linked below.
 
 ## Pi
 
-[Pi](Include/KAI/Language/Pi) is a post-fix language inspired by the amazing [HP48](https://en.wikipedia.org/wiki/HP_48_series) calculator and [Forth](https://en.wikipedia.org/wiki/Forth_\(programming_language\)).
+Note that it is rare to write Π directly. Rho transpiles to Pi, and you would generally write Rho.
 
-Here's some sample Pi script:
+[Pi](Doc/PiTutorial) is a post-fix language inspired by the amazing [HP48](https://en.wikipedia.org/wiki/HP_48_series) calculator and [Forth](https://en.wikipedia.org/wiki/Forth_\(programming_language\)).
 
+Unlike the more common infix, like "assert(1+2 == 3)", here's what you would say in Pi.
+
+```pi
+1 2 +       # push 1 and 2 onto the data stack, then execute plus
+3           # the result [the onl element on the stack at this point)
+3 == assert # assert that the top of the stack is 3
 ```
+
+The following creates a continuation named 'add', invokes it, and prints the result:
+
+```pi
 { 1 + } 'add # 2 add & print &
 ```
 
-This creates a function named 'add', invokes it with an argument of 2, and prints the result.
-
-The syntax uses reverse-polish notation: arguments are pushed onto the stack first, then operators are applied.
+The syntax uses reverse Polish notation: arguments are pushed onto the stack first, and then operators are applied.
 
 In this case:
 1. The function **{ 1 + }** adds 1 to whatever is on the stack
