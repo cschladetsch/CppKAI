@@ -15,7 +15,7 @@ struct CoreAdvancedTests : kai::TestCommon {};
 // Test 1: Deep object cloning
 TEST_F(CoreAdvancedTests, DeepObjectCloning) {
     kai::Object original = Reg().New<int>(42);
-    
+
     // Test object validity and handle
     ASSERT_TRUE(original.Valid());
     ASSERT_NE(original.GetHandle().GetValue(), 0);
@@ -25,7 +25,7 @@ TEST_F(CoreAdvancedTests, DeepObjectCloning) {
 // Test 2: Object type system
 TEST_F(CoreAdvancedTests, ObjectTypeSystem) {
     kai::Object obj = Reg().New<kai::String>("test");
-    
+
     // Test type information
     ASSERT_TRUE(obj.Valid());
     ASSERT_TRUE(obj.template IsType<kai::String>());
@@ -101,13 +101,13 @@ TEST_F(CoreAdvancedTests, ComplexContainerOps) {
     // Test basic array operations
     kai::Object arr = Reg().New<kai::Array>();
     ASSERT_TRUE(arr.Valid());
-    
+
     // Add some elements
     for (int i = 0; i < 10; ++i) {
         kai::Pointer<kai::Array> arrPtr = arr;
         arrPtr->Append(Reg().New<int>(i));
     }
-    
+
     // Verify size
     kai::Pointer<kai::Array> arrPtr = arr;
     ASSERT_EQ(arrPtr->Size(), 10);
@@ -143,11 +143,11 @@ TEST_F(CoreAdvancedTests, ObjectComparison) {
     kai::Object int1 = Reg().New<int>(42);
     kai::Object int2 = Reg().New<int>(42);
     kai::Object int3 = Reg().New<int>(99);
-    
+
     // Test handle comparison
     ASSERT_NE(int1.GetHandle(), int2.GetHandle());
     ASSERT_NE(int1.GetHandle(), int3.GetHandle());
-    
+
     // Test value comparison
     ASSERT_EQ(kai::ConstDeref<int>(int1), kai::ConstDeref<int>(int2));
     ASSERT_NE(kai::ConstDeref<int>(int1), kai::ConstDeref<int>(int3));
@@ -157,17 +157,17 @@ TEST_F(CoreAdvancedTests, ObjectComparison) {
 TEST_F(CoreAdvancedTests, MultipleObjectCreation) {
     // Create multiple objects of different types
     std::vector<kai::Object> objects;
-    
+
     objects.push_back(Reg().New<int>(100));
     objects.push_back(Reg().New<float>(3.14f));
     objects.push_back(Reg().New<kai::String>("hello"));
     objects.push_back(Reg().New<bool>(true));
-    
+
     // Verify all are valid
-    for (const auto& obj : objects) {
+    for (const auto &obj : objects) {
         ASSERT_TRUE(obj.Valid());
     }
-    
+
     // Verify types
     ASSERT_TRUE(objects[0].template IsType<int>());
     ASSERT_TRUE(objects[1].template IsType<float>());

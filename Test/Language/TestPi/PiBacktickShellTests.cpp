@@ -1,22 +1,20 @@
-#include <gtest/gtest.h>
-#include <KAI/Language/Common/LangCommon.h>
 #include <KAI/Core/Console.h>
+#include <KAI/Language/Common/LangCommon.h>
 #include <KAI/Language/Pi/Pi.h>
+#include <gtest/gtest.h>
 
 class PiBacktickShellTest : public ::testing::Test {
-protected:
+   protected:
     kai::Console console_;
-    
-    void SetUp() override {
-        console_.SetLanguage(kai::Language::Pi);
-    }
+
+    void SetUp() override { console_.SetLanguage(kai::Language::Pi); }
 };
 
 // Basic arithmetic with shell commands
 TEST_F(PiBacktickShellTest, SimpleAddition) {
     console_.SetLanguage(kai::Language::Pi);
     auto exec = console_.GetExecutor();
-    
+
     console_.Execute("1 `echo 2` + 3 ==");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
@@ -26,7 +24,7 @@ TEST_F(PiBacktickShellTest, SimpleAddition) {
 TEST_F(PiBacktickShellTest, MultipleShellCommands) {
     console_.SetLanguage(kai::Language::Pi);
     auto exec = console_.GetExecutor();
-    
+
     console_.Execute("`echo 10` `echo 20` +");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
@@ -36,7 +34,7 @@ TEST_F(PiBacktickShellTest, MultipleShellCommands) {
 TEST_F(PiBacktickShellTest, SubtractionWithShell) {
     console_.SetLanguage(kai::Language::Pi);
     auto exec = console_.GetExecutor();
-    
+
     console_.Execute("`echo 100` `echo 25` -");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
@@ -46,7 +44,7 @@ TEST_F(PiBacktickShellTest, SubtractionWithShell) {
 TEST_F(PiBacktickShellTest, MultiplicationWithShell) {
     console_.SetLanguage(kai::Language::Pi);
     auto exec = console_.GetExecutor();
-    
+
     console_.Execute("5 `echo 3` * 2 +");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
@@ -56,7 +54,7 @@ TEST_F(PiBacktickShellTest, MultiplicationWithShell) {
 TEST_F(PiBacktickShellTest, DivisionWithShell) {
     console_.SetLanguage(kai::Language::Pi);
     auto exec = console_.GetExecutor();
-    
+
     console_.Execute("`echo 20` `echo 4` /");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
@@ -67,7 +65,7 @@ TEST_F(PiBacktickShellTest, DivisionWithShell) {
 TEST_F(PiBacktickShellTest, StringConcatenation) {
     console_.SetLanguage(kai::Language::Pi);
     auto exec = console_.GetExecutor();
-    
+
     console_.Execute("\"Hello \" `echo World` +");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
@@ -77,7 +75,7 @@ TEST_F(PiBacktickShellTest, StringConcatenation) {
 TEST_F(PiBacktickShellTest, StringFromShellCommand) {
     console_.SetLanguage(kai::Language::Pi);
     auto exec = console_.GetExecutor();
-    
+
     console_.Execute("`echo \"test string\"`");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
@@ -88,17 +86,17 @@ TEST_F(PiBacktickShellTest, StringFromShellCommand) {
 TEST_F(PiBacktickShellTest, NestedArithmetic) {
     console_.SetLanguage(kai::Language::Pi);
     auto exec = console_.GetExecutor();
-    
+
     console_.Execute("`echo 5` `echo 3` + `echo 2` *");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 16); // (5+3)*2
+    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 16);  // (5+3)*2
 }
 
 TEST_F(PiBacktickShellTest, ModuloWithShell) {
     console_.SetLanguage(kai::Language::Pi);
     auto exec = console_.GetExecutor();
-    
+
     console_.Execute("`echo 17` `echo 5` %");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
@@ -109,7 +107,7 @@ TEST_F(PiBacktickShellTest, ModuloWithShell) {
 TEST_F(PiBacktickShellTest, BooleanComparison) {
     console_.SetLanguage(kai::Language::Pi);
     auto exec = console_.GetExecutor();
-    
+
     console_.Execute("`echo 10` `echo 10` ==");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
@@ -119,7 +117,7 @@ TEST_F(PiBacktickShellTest, BooleanComparison) {
 TEST_F(PiBacktickShellTest, LessThanComparison) {
     console_.SetLanguage(kai::Language::Pi);
     auto exec = console_.GetExecutor();
-    
+
     console_.Execute("`echo 5` `echo 10` <");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
@@ -129,7 +127,7 @@ TEST_F(PiBacktickShellTest, LessThanComparison) {
 TEST_F(PiBacktickShellTest, GreaterThanComparison) {
     console_.SetLanguage(kai::Language::Pi);
     auto exec = console_.GetExecutor();
-    
+
     console_.Execute("`echo 20` `echo 15` >");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
@@ -140,7 +138,7 @@ TEST_F(PiBacktickShellTest, GreaterThanComparison) {
 TEST_F(PiBacktickShellTest, DupWithShell) {
     console_.SetLanguage(kai::Language::Pi);
     auto exec = console_.GetExecutor();
-    
+
     console_.Execute("`echo 42` dup");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 2);
@@ -151,7 +149,7 @@ TEST_F(PiBacktickShellTest, DupWithShell) {
 TEST_F(PiBacktickShellTest, SwapWithShell) {
     console_.SetLanguage(kai::Language::Pi);
     auto exec = console_.GetExecutor();
-    
+
     console_.Execute("`echo 1` `echo 2` swap");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 2);
@@ -163,7 +161,7 @@ TEST_F(PiBacktickShellTest, SwapWithShell) {
 TEST_F(PiBacktickShellTest, PipelineCommand) {
     console_.SetLanguage(kai::Language::Pi);
     auto exec = console_.GetExecutor();
-    
+
     console_.Execute("`echo \"1 2 3\" | wc -w`");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
@@ -173,7 +171,7 @@ TEST_F(PiBacktickShellTest, PipelineCommand) {
 TEST_F(PiBacktickShellTest, MultilineOutput) {
     console_.SetLanguage(kai::Language::Pi);
     auto exec = console_.GetExecutor();
-    
+
     // Note: multiline output is concatenated, newline is stripped
     console_.Execute("`echo -e \"line1\nline2\" | head -1`");
     auto stack = exec->GetDataStack();
@@ -185,7 +183,7 @@ TEST_F(PiBacktickShellTest, MultilineOutput) {
 TEST_F(PiBacktickShellTest, MathExpressionEval) {
     console_.SetLanguage(kai::Language::Pi);
     auto exec = console_.GetExecutor();
-    
+
     console_.Execute("`echo $((2+3*4))`");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
@@ -195,18 +193,18 @@ TEST_F(PiBacktickShellTest, MathExpressionEval) {
 TEST_F(PiBacktickShellTest, ComplexCalculation) {
     console_.SetLanguage(kai::Language::Pi);
     auto exec = console_.GetExecutor();
-    
+
     console_.Execute("`echo 2` `echo 3` + `echo 4` * `echo 5` +");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 25); // ((2+3)*4)+5
+    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 25);  // ((2+3)*4)+5
 }
 
 // Mixed operations
 TEST_F(PiBacktickShellTest, MixedStringAndNumber) {
     console_.SetLanguage(kai::Language::Pi);
     auto exec = console_.GetExecutor();
-    
+
     console_.Execute("`echo 5` `echo 3` + to_string \" items\" +");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
@@ -217,7 +215,7 @@ TEST_F(PiBacktickShellTest, MixedStringAndNumber) {
 TEST_F(PiBacktickShellTest, EmptyShellOutput) {
     console_.SetLanguage(kai::Language::Pi);
     auto exec = console_.GetExecutor();
-    
+
     // Empty echo should produce empty string
     console_.Execute("`echo -n \"\"` \"empty\" +");
     auto stack = exec->GetDataStack();

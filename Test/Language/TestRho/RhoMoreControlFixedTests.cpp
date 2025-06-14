@@ -75,7 +75,8 @@ sum
                       10);  // 1 + 2 + 3 + 4
 }
 
-TEST_F(RhoMoreControlFixedTests, ContinueStatement) {  // Continue is not a keyword in Rho
+TEST_F(RhoMoreControlFixedTests,
+       ContinueStatement) {  // Continue is not a keyword in Rho
     RunAndExpect<int>(R"(
 sum = 0
 i = 0
@@ -102,7 +103,8 @@ sum
 }
 
 // Test nested loops with break/continue
-TEST_F(RhoMoreControlFixedTests, NestedLoopsWithBreakContinue) {  // Continue is not a keyword in Rho
+TEST_F(RhoMoreControlFixedTests,
+       NestedLoopsWithBreakContinue) {  // Continue is not a keyword in Rho
     RunAndExpect<int>(
         R"(
 sum = 0

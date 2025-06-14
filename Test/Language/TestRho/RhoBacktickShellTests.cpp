@@ -1,15 +1,13 @@
-#include <gtest/gtest.h>
-#include <KAI/Language/Common/LangCommon.h>
 #include <KAI/Core/Console.h>
+#include <KAI/Language/Common/LangCommon.h>
 #include <KAI/Language/Rho/Rho.h>
+#include <gtest/gtest.h>
 
 class RhoBacktickShellTest : public ::testing::Test {
-protected:
+   protected:
     kai::Console console_;
-    
-    void SetUp() override {
-        console_.SetLanguage(kai::Language::Rho);
-    }
+
+    void SetUp() override { console_.SetLanguage(kai::Language::Rho); }
 };
 
 // Basic arithmetic with shell commands
@@ -18,7 +16,7 @@ TEST_F(RhoBacktickShellTest, SimpleAddition) {
         result = 1 + `echo 2`
         result
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
@@ -31,7 +29,7 @@ TEST_F(RhoBacktickShellTest, MultipleShellCommands) {
         sum = `echo 10` + `echo 20`
         sum
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
@@ -44,7 +42,7 @@ TEST_F(RhoBacktickShellTest, SubtractionWithShell) {
         diff = `echo 100` - `echo 25`
         diff
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
@@ -57,7 +55,7 @@ TEST_F(RhoBacktickShellTest, MultiplicationWithShell) {
         product = 5 * `echo 3`
         product
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
@@ -70,7 +68,7 @@ TEST_F(RhoBacktickShellTest, DivisionWithShell) {
         quotient = `echo 20` / `echo 4`
         quotient
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
@@ -84,7 +82,7 @@ TEST_F(RhoBacktickShellTest, StringConcatenation) {
         greeting = "Hello " + `echo World`
         greeting
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
@@ -97,7 +95,7 @@ TEST_F(RhoBacktickShellTest, StringFromShellCommand) {
         text = `echo "test string"`
         text
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
@@ -111,12 +109,12 @@ TEST_F(RhoBacktickShellTest, NestedArithmetic) {
         result = (`echo 5` + `echo 3`) * `echo 2`
         result
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 16); // (5+3)*2
+    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 16);  // (5+3)*2
 }
 
 TEST_F(RhoBacktickShellTest, ModuloWithShell) {
@@ -124,7 +122,7 @@ TEST_F(RhoBacktickShellTest, ModuloWithShell) {
         remainder = `echo 17` % `echo 5`
         remainder
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
@@ -138,7 +136,7 @@ TEST_F(RhoBacktickShellTest, BooleanComparison) {
         equal = `echo 10` == `echo 10`
         equal
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
@@ -151,7 +149,7 @@ TEST_F(RhoBacktickShellTest, LessThanComparison) {
         less = `echo 5` < `echo 10`
         less
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
@@ -164,7 +162,7 @@ TEST_F(RhoBacktickShellTest, GreaterThanComparison) {
         greater = `echo 20` > `echo 15`
         greater
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
@@ -182,7 +180,7 @@ TEST_F(RhoBacktickShellTest, IfWithShellCondition) {
         }
         result
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
@@ -197,12 +195,12 @@ TEST_F(RhoBacktickShellTest, ForLoopWithShellLimit) {
             sum = sum + i
         sum
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 15); // 1+2+3+4+5
+    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 15);  // 1+2+3+4+5
 }
 
 // Complex shell command outputs
@@ -211,7 +209,7 @@ TEST_F(RhoBacktickShellTest, PipelineCommand) {
         word_count = `echo "one two three" | wc -w`
         word_count
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
@@ -227,7 +225,7 @@ TEST_F(RhoBacktickShellTest, FunctionWithShellParams) {
         result = add_shell(`echo 5`)
         result
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
@@ -241,7 +239,7 @@ TEST_F(RhoBacktickShellTest, MathExpressionEval) {
         calc = `echo $((2+3*4))`
         calc
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
@@ -254,12 +252,12 @@ TEST_F(RhoBacktickShellTest, ComplexCalculation) {
         result = (`echo 2` + `echo 3`) * `echo 4` + `echo 5`
         result
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 25); // ((2+3)*4)+5
+    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 25);  // ((2+3)*4)+5
 }
 
 // Array operations with shell commands
@@ -271,12 +269,12 @@ TEST_F(RhoBacktickShellTest, ArrayWithShellElements) {
             sum = sum + arr[i]
         sum
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 6); // 1+2+3
+    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 6);  // 1+2+3
 }
 
 // Mixed operations
@@ -286,7 +284,7 @@ TEST_F(RhoBacktickShellTest, MixedStringAndNumber) {
         message = to_string(count) + " items"
         message
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();

@@ -14,12 +14,12 @@ TEST_F(RhoForLoopTest, BasicIncrement) {
             sum = sum + i
         sum
     )";
-    
+
     console_.Execute(code);
     auto stack = exec->GetDataStack();
-    
+
     ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 10); // 0+1+2+3+4
+    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 10);  // 0+1+2+3+4
 }
 
 TEST_F(RhoForLoopTest, Decrement) {
@@ -33,10 +33,10 @@ TEST_F(RhoForLoopTest, Decrement) {
             count = count + 1
         count
     )";
-    
+
     console_.Execute(code);
     auto stack = exec->GetDataStack();
-    
+
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 5);
 }
@@ -52,10 +52,10 @@ TEST_F(RhoForLoopTest, MultiplicationTable) {
             result = result + 7
         result
     )";
-    
+
     console_.Execute(code);
     auto stack = exec->GetDataStack();
-    
+
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 28);
 }
@@ -73,12 +73,12 @@ TEST_F(RhoForLoopTest, BreakStatement) {
                 break
         sum
     )";
-    
+
     console_.Execute(code);
     auto stack = exec->GetDataStack();
-    
+
     ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 15); // 1+2+3+4+5
+    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 15);  // 1+2+3+4+5
 }
 
 TEST_F(RhoForLoopTest, ContinueStatement) {
@@ -94,12 +94,12 @@ TEST_F(RhoForLoopTest, ContinueStatement) {
             sum = sum + i
         sum
     )";
-    
+
     console_.Execute(code);
     auto stack = exec->GetDataStack();
-    
+
     ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 9); // 1+3+5
+    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 9);  // 1+3+5
 }
 
 TEST_F(RhoForLoopTest, NestedLoops) {
@@ -114,10 +114,10 @@ TEST_F(RhoForLoopTest, NestedLoops) {
                 sum = sum + (i * j)
         sum
     )";
-    
+
     console_.Execute(code);
     auto stack = exec->GetDataStack();
-    
+
     ASSERT_EQ(stack->Size(), 1);
     // (1*1 + 1*2) + (2*1 + 2*2) + (3*1 + 3*2) = 3 + 6 + 9 = 18
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 18);
@@ -134,10 +134,10 @@ TEST_F(RhoForLoopTest, EmptyBody) {
             // Empty body
         counter = i  // i should be 3 after loop
     )";
-    
+
     console_.Execute(code);
     auto stack = exec->GetDataStack();
-    
+
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 3);
 }
@@ -153,12 +153,12 @@ TEST_F(RhoForLoopTest, ComplexIncrement) {
             sum = sum + i
         sum
     )";
-    
+
     console_.Execute(code);
     auto stack = exec->GetDataStack();
-    
+
     ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 15); // 1+2+4+8
+    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 15);  // 1+2+4+8
 }
 
 TEST_F(RhoForLoopTest, ArrayIteration) {
@@ -173,10 +173,10 @@ TEST_F(RhoForLoopTest, ArrayIteration) {
             sum = sum + arr[i]
         sum
     )";
-    
+
     console_.Execute(code);
     auto stack = exec->GetDataStack();
-    
+
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 100);
 }
@@ -192,10 +192,10 @@ TEST_F(RhoForLoopTest, NoIterations) {
             x = 0  // Should never execute
         x
     )";
-    
+
     console_.Execute(code);
     auto stack = exec->GetDataStack();
-    
+
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 42);
 }
@@ -213,10 +213,10 @@ TEST_F(RhoForLoopTest, MultipleStatements) {
             b = b + (i * i)
         a + b  // 6 + 14 = 20
     )";
-    
+
     console_.Execute(code);
     auto stack = exec->GetDataStack();
-    
+
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 20);
 }
@@ -235,10 +235,10 @@ TEST_F(RhoForLoopTest, FunctionCallInLoop) {
             sum = sum + double(i)
         sum
     )";
-    
+
     console_.Execute(code);
     auto stack = exec->GetDataStack();
-    
+
     ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 20); // 2+4+6+8
+    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 20);  // 2+4+6+8
 }

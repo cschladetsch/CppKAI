@@ -17,7 +17,8 @@ TEST_F(PiContinuationOperatorTest, BitwiseOrOperator) {
     stack->Clear();
 
     // Test with multiple values
-    console_.Execute("12 10 | 3 |");  // (1100 | 1010) | 0011 = 1110 | 0011 = 1111 = 15
+    console_.Execute(
+        "12 10 | 3 |");  // (1100 | 1010) | 0011 = 1110 | 0011 = 1111 = 15
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 15);
 
@@ -48,11 +49,11 @@ TEST_F(PiContinuationOperatorTest, CallSubroutineOperator) {
 
     // Define a simple continuation
     console_.Execute("{ 2 * } 'double =");
-    
+
     // Call it with &
     console_.Execute("5 double &");
     auto stack = exec->GetDataStack();
-    
+
     // If & is implemented as call subroutine, should execute and return
     // If not implemented, might just push the continuation
     ASSERT_GE(stack->Size(), 1);
@@ -67,7 +68,7 @@ TEST_F(PiContinuationOperatorTest, ReplaceContinuationOperator) {
     // Create a continuation that replaces itself
     console_.Execute("{ 100 } !");
     auto stack = exec->GetDataStack();
-    
+
     // If ! is implemented as replace continuation
     // Otherwise might just execute normally
     ASSERT_GE(stack->Size(), 1);
@@ -193,10 +194,10 @@ TEST_F(PiContinuationOperatorTest, BitwiseOrErrorHandling) {
     // Test with insufficient operands
     console_.Execute("5 |");  // Should fail or use some default
     // Behavior depends on implementation - might throw or use 0
-    
+
     auto stack = exec->GetDataStack();
     stack->Clear();
-    
+
     // Test with non-integer types (if type checking is strict)
     console_.Execute("\"hello\" 5 |");  // Should fail or convert
     // Behavior depends on implementation
@@ -211,9 +212,9 @@ TEST_F(PiContinuationOperatorTest, OtherOperatorsIfImplemented) {
     console_.Execute("12 10 &");  // 1100 & 1010 = 1000 = 8
     auto stack = exec->GetDataStack();
     // Check if it performed bitwise AND or something else
-    
+
     stack->Clear();
-    
+
     // If ! is logical NOT or something else
     console_.Execute("0 !");
     // Check result based on implementation

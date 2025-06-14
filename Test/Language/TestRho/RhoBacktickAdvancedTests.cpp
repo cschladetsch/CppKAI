@@ -1,15 +1,13 @@
-#include <gtest/gtest.h>
-#include <KAI/Language/Common/LangCommon.h>
 #include <KAI/Core/Console.h>
+#include <KAI/Language/Common/LangCommon.h>
 #include <KAI/Language/Rho/Rho.h>
+#include <gtest/gtest.h>
 
 class RhoBacktickAdvancedTest : public ::testing::Test {
-protected:
+   protected:
     kai::Console console_;
-    
-    void SetUp() override {
-        console_.SetLanguage(kai::Language::Rho);
-    }
+
+    void SetUp() override { console_.SetLanguage(kai::Language::Rho); }
 };
 
 // File system operations
@@ -19,7 +17,7 @@ TEST_F(RhoBacktickAdvancedTest, FileCount) {
         has_files = file_count > 0
         has_files
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
@@ -33,7 +31,7 @@ TEST_F(RhoBacktickAdvancedTest, CurrentDirectory) {
         is_valid = cwd != ""
         is_valid
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
@@ -47,7 +45,7 @@ TEST_F(RhoBacktickAdvancedTest, DateProcessing) {
         is_future = year > 2000
         is_future
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
@@ -62,7 +60,7 @@ TEST_F(RhoBacktickAdvancedTest, HomeDirectory) {
         has_home = home != ""
         has_home
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
@@ -76,7 +74,7 @@ TEST_F(RhoBacktickAdvancedTest, PathProcessing) {
         has_paths = path_count > 0
         has_paths
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
@@ -94,7 +92,7 @@ TEST_F(RhoBacktickAdvancedTest, WordCountFunction) {
         count = count_words("hello world from rho")
         count
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
@@ -108,7 +106,7 @@ TEST_F(RhoBacktickAdvancedTest, TextTransformation) {
         uppercase = `echo "$original" | tr '[:lower:]' '[:upper:]'`
         uppercase
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
@@ -124,12 +122,12 @@ TEST_F(RhoBacktickAdvancedTest, ShellMathInLoop) {
             sum = sum + `echo $((i * i))`
         sum
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 14); // 1 + 4 + 9
+    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 14);  // 1 + 4 + 9
 }
 
 TEST_F(RhoBacktickAdvancedTest, ConditionalWithShell) {
@@ -144,7 +142,7 @@ TEST_F(RhoBacktickAdvancedTest, ConditionalWithShell) {
         
         status != ""
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
@@ -163,7 +161,7 @@ TEST_F(RhoBacktickAdvancedTest, DynamicArraySize) {
         
         arr[4]
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
@@ -177,7 +175,7 @@ TEST_F(RhoBacktickAdvancedTest, StringSplitting) {
         second_field = `echo 'one,two,three' | cut -d',' -f2`
         second_field
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
@@ -190,7 +188,7 @@ TEST_F(RhoBacktickAdvancedTest, RegexReplacement) {
         text = `echo 'hello world' | sed 's/world/universe/'`
         text
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
@@ -205,7 +203,7 @@ TEST_F(RhoBacktickAdvancedTest, SystemInfo) {
         is_valid_os = os_name != ""
         is_valid_os
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
@@ -219,7 +217,7 @@ TEST_F(RhoBacktickAdvancedTest, ProcessInfo) {
         has_processes = process_count > 1
         has_processes
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
@@ -240,12 +238,12 @@ TEST_F(RhoBacktickAdvancedTest, RecursiveShellSum) {
         result = shell_sum(3)
         result
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 6); // 3 + 2 + 1
+    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 6);  // 3 + 2 + 1
 }
 
 // Complex pipeline
@@ -254,7 +252,7 @@ TEST_F(RhoBacktickAdvancedTest, ComplexPipeline) {
         result = `echo -e '5\n2\n8\n1\n9' | sort -n | tail -3 | head -1`
         result
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
@@ -274,7 +272,7 @@ TEST_F(RhoBacktickAdvancedTest, WhileWithShell) {
         
         counter
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
@@ -288,7 +286,7 @@ TEST_F(RhoBacktickAdvancedTest, SimpleJSONParse) {
         json_value = `echo '{"count": 42}' | grep -o '[0-9]\+'`
         json_value
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
@@ -303,7 +301,7 @@ TEST_F(RhoBacktickAdvancedTest, CommandFailure) {
         is_empty = output == ""
         is_empty
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
@@ -321,10 +319,10 @@ TEST_F(RhoBacktickAdvancedTest, MixedShellAndRho) {
         result = base * multiplier + offset
         result
     )";
-    
+
     console_.Execute(code);
     auto exec = console_.GetExecutor();
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 55); // 10 * 5 + 5
+    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 55);  // 10 * 5 + 5
 }

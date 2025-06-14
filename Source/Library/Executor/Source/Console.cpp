@@ -815,7 +815,7 @@ String Console::ExpandHistoryReferences(const String &text) {
 
 String Console::Process(const String &text) {
     StringStream result;
-    
+
     // Check if this is a shell command (starts with '$')
     std::string textStr = text.StdString();
     if (!textStr.empty() && textStr[0] == '$') {
@@ -841,15 +841,15 @@ String Console::Process(const String &text) {
         } else {
             result << "Failed to execute: " << shellCmd << "\n";
         }
-        
+
         return result.ToString();
     }
-    
+
     // Not a shell command, process as language code
     KAI_TRY {
         // First expand any backtick shell commands
         String expandedText = ExpandShellCommands(text);
-        
+
         // Translate the text into a continuation
         auto cont = compiler->Translate(expandedText.c_str());
         if (cont.Exists()) {
@@ -1237,15 +1237,15 @@ bool Console::ExecuteFile(const char *fileName) {
     std::string line;
     std::string accumulated;
     int lineNum = 0;
-    
+
     while (std::getline(file, line)) {
         lineNum++;
-        
+
         // Skip empty lines and comments
         if (line.empty() || (line.size() > 0 && line[0] == '#')) {
             continue;
         }
-        
+
         // Check if this is a shell command
         if (!line.empty() && line[0] == '$') {
             // If we have accumulated code, execute it first
@@ -1256,7 +1256,7 @@ bool Console::ExecuteFile(const char *fileName) {
                 }
                 accumulated.clear();
             }
-            
+
             // Execute the shell command
             String result = Process(String(line));
             if (!result.Empty()) {
@@ -1267,7 +1267,7 @@ bool Console::ExecuteFile(const char *fileName) {
             accumulated += line + "\n";
         }
     }
-    
+
     // Execute any remaining accumulated code
     if (!accumulated.empty()) {
         String result = Process(String(accumulated));
@@ -1275,7 +1275,7 @@ bool Console::ExecuteFile(const char *fileName) {
             std::cout << result.c_str();
         }
     }
-    
+
     file.close();
     return true;
 }
