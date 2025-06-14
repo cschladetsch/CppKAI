@@ -6,6 +6,8 @@
 
 _KAI_ is a network distributed **Object Model** for C++ with full runtime reflection, persistence, and incremental garbage collection. No macros are needed to expose fields or methods to the scripting runtime, including external code from other libraries.
 
+See [Documentation](Doc/Documentation.md) for more detailed documentation.
+
 ## Demos
 
 ![Console](Images/BasicConsole.png)
@@ -22,10 +24,6 @@ _KAI_ is a network distributed **Object Model** for C++ with full runtime reflec
 - **Cross-Platform**: Works on Windows, Linux, macOS, and Unity3D
 - **Network Transparency**: Access remote objects as if they were local
 - **Dynamic Load Balancing**: Automatically distribute workload across network nodes
-
-## Documentation
-
-See [Documentation](Doc/Documentation.md)
 
 ## Core Components
 
@@ -97,7 +95,7 @@ git submodule update
 
 #### Using the Build Scripts
 
-We provide convenient build scripts that follow best practices for out-of-source builds:
+Build scripts that follow best practices for out-of-source builds:
 
 ```bash
 # Quick build (using Clang++ by default)
