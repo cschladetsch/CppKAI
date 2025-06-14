@@ -10,17 +10,15 @@ Objects and *compute* can be distributed across Nodes in a Domain.
 
 ## Demo Views
 
-`Pi` is a post-fix language. 
+[Pi](Doc/PiTutoral) is a postfix language. 
 
 ![Console](Images/BasicConsole.png)
 
-`Window` shows how **Rho** transpiles to **Pi**. I should make an animated gif of this. But here's a screenshot in the interim. By the way, just using the **Pi* tab is effectively like using the **Console** but has a debugger:
+`Window` illustrates how **Rho** is transpiled to **Pi**. I should make an animated gif of this. But here's a screenshot in the interim. By the way, just using the **Pi* tab is effectively like using the **Console** but has a debugger:
 
 ![Window](Images/Window.png)
 
-## Quick Links
-
-### Documentation 
+## Documentation 
 
 **[📚 Documentation Guide](Doc/Documentation.md)** - Start here for organized navigation of all documentation
 
@@ -30,7 +28,7 @@ Objects and *compute* can be distributed across Nodes in a Domain.
 - **Testing**: [Test Guide](Doc/Test.md) | [Connection Testing](Doc/ConnectionTesting.md)
 - [Tau Code Generation](Doc/TauCodeGeneration.md) - New detailed guide for code generation
 
-### Demo and Examples
+### Examples
 
 - Run `./Scripts/run_rho_demo.sh` for a comprehensive demo of Rho language features
 - Run `./Scripts/calc_test.sh` for a demonstration of network calculation
@@ -62,7 +60,10 @@ Objects and *compute* can be distributed across Nodes in a Domain.
 
 ## Example Code
 
+See [📚 Documentation Guide](Doc/Languages.md).
+
 ### Pi (Stack-based)
+
 ```pi
 { dup * } 'square #  // Define a function that squares its input
 5 square @           // Retrieve the function
@@ -70,6 +71,7 @@ Objects and *compute* can be distributed across Nodes in a Domain.
 ```
 
 ### Rho (Infix)
+
 ```rho
 fun square(x) {
     return x * x
@@ -78,6 +80,7 @@ result = square(5)  // result is 25
 ```
 
 ### Distributed Computing
+
 ```rho
 // Create a network node
 node = createNetworkNode()
