@@ -10,7 +10,11 @@ Objects and *compute* can be distributed across Nodes in a Domain.
 
 ## Demo Views
 
+`Pi` is a post-fix language. 
+
 ![Console](Images/BasicConsole.png)
+
+`Window` shows how **Rho** transpiles to **Pi**. I should make an animated gif of this. But here's a screenshot in the interim. By the way, just using the **Pi* tab is effectively like using the **Console** but has a debugger:
 
 ![Window](Images/Window.png)
 
