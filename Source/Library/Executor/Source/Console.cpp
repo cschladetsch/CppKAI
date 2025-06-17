@@ -1094,6 +1094,13 @@ int Console::Run() {
                         continue;
                     }
 
+                    // Check for exit command in normal mode
+                    if (text == "exit" || text == "quit") {
+                        end_ = true;
+                        endCode_ = 0;
+                        continue;
+                    }
+
                     // Check for zsh-like history commands first
                     std::string processedText = text;
 
