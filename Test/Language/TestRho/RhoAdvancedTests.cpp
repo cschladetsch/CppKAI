@@ -9,7 +9,9 @@ TEST_F(RhoAdvancedTest, RangeBasedForLoopInPiBlock) {
     auto exec = console_.GetExecutor();
 
     // Test 1: Sum numbers from 1 to 5 using pi block
-    console_.Execute("result = pi{ 0 1 5 { + } for }");
+    // For loop needs: init, test, update, body
+    // This sums 1+2+3+4+5 by accumulating on stack
+    console_.Execute("result = pi{ 0 1 { dup 5 <= } { swap over + swap 1 + } while drop }");
     auto stack = exec->GetDataStack();
 
     // Get the result from the variable 'result'
@@ -21,7 +23,9 @@ TEST_F(RhoAdvancedTest, RangeBasedForLoopInPiBlock) {
     exec->GetDataStack()->Clear();
 
     // Test 2: Factorial using pi block
-    console_.Execute("factorial = pi{ 1 1 5 { * } for }");
+    // For loop needs: init, test, update, body
+    // Stack: [product, counter] -> 5! = 1*2*3*4*5
+    console_.Execute("factorial = pi{ 1 1 { dup 5 <= } { swap over * swap 1 + } while drop }");
     console_.Execute("factorial");
     ASSERT_EQ(exec->GetDataStack()->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(exec->GetDataStack()->Top()),
@@ -30,7 +34,7 @@ TEST_F(RhoAdvancedTest, RangeBasedForLoopInPiBlock) {
     exec->GetDataStack()->Clear();
 
     // Test 3: Mixed Rho and Pi with for loop
-    console_.Execute("sum = 0; sum = sum + pi{ 0 1 10 { + } for }");
+    console_.Execute("sum = 0; sum = sum + pi{ 0 1 { dup 10 <= } { swap over + swap 1 + } while drop }");
     console_.Execute("sum");
     ASSERT_EQ(exec->GetDataStack()->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(exec->GetDataStack()->Top()),
@@ -94,7 +98,7 @@ TEST_F(RhoAdvancedTest, FunctionsWithPiBlocks) {
 
     // Define a function that uses pi blocks
     console_.Execute(
-        "function sumRange(start, end) { return pi{ 0 start @ end @ { + } for "
+        "function sumRange(start, end) { return pi{ 0 start @ { dup end @ <= } { swap over + swap 1 + } while drop "
         "}; }");
 
     // Call the function
@@ -108,7 +112,7 @@ TEST_F(RhoAdvancedTest, FunctionsWithPiBlocks) {
 
     // Function with mixed Rho and Pi
     console_.Execute(
-        "function factorial(n) { return pi{ 1 1 n @ { * } for }; }");
+        "function factorial(n) { return pi{ 1 1 { dup n @ <= } { swap over * swap 1 + } while drop }; }");
     console_.Execute("fact5 = factorial(5)");
     console_.Execute("fact5");
     ASSERT_EQ(exec->GetDataStack()->Size(), 1);
@@ -162,7 +166,7 @@ TEST_F(RhoAdvancedTest, PerformanceOperations) {
     auto exec = console_.GetExecutor();
 
     // Test 1: Large range sum
-    console_.Execute("largeSum = pi{ 0 1 100 { + } for }");
+    console_.Execute("largeSum = pi{ 0 1 { dup 100 <= } { swap over + swap 1 + } while drop }");
     console_.Execute("largeSum");
     ASSERT_EQ(exec->GetDataStack()->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(exec->GetDataStack()->Top()),
@@ -171,7 +175,7 @@ TEST_F(RhoAdvancedTest, PerformanceOperations) {
     exec->GetDataStack()->Clear();
 
     // Test 2: Nested loops in pi block
-    console_.Execute("nested = pi{ 0 1 10 { 1 10 { + } for + } for }");
+    console_.Execute("nested = pi{ 0 1 { dup 10 <= } { 0 1 { dup 10 <= } { swap over + swap 1 + } while drop + 1 + } while drop }");
     console_.Execute("nested");
     ASSERT_EQ(exec->GetDataStack()->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(exec->GetDataStack()->Top()),

@@ -91,19 +91,23 @@ bool RhoLexer::NextToken() {
         case ']':
             return Add(Enum::CloseSquareBracket);
         case '=':
-            return AddIfNext('=', Enum::Equiv, Enum::Assign);
+            if (Peek() == '=') return AddTwoCharOp(Enum::Equiv);
+            return Add(Enum::Assign);
         case '!':
-            return AddIfNext('=', Enum::NotEquiv, Enum::Not);
+            if (Peek() == '=') return AddTwoCharOp(Enum::NotEquiv);
+            return Add(Enum::Not);
         case '&':
             return AddIfNext('&', Enum::And, Enum::BitAnd);
         case '|':
             return AddIfNext('|', Enum::Or, Enum::BitOr);
         case '<':
             if (Peek() == '<') return AddTwoCharOp(Enum::LeftShift);
-            return AddIfNext('=', Enum::LessEquiv, Enum::Less);
+            if (Peek() == '=') return AddTwoCharOp(Enum::LessEquiv);
+            return Add(Enum::Less);
         case '>':
             if (Peek() == '>') return AddTwoCharOp(Enum::RightShift);
-            return AddIfNext('=', Enum::GreaterEquiv, Enum::Greater);
+            if (Peek() == '=') return AddTwoCharOp(Enum::GreaterEquiv);
+            return Add(Enum::Greater);
         case '"':
             return LexString();  // "
         case '\t':

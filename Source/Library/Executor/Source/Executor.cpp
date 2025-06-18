@@ -883,6 +883,7 @@ void Executor::ConditionalContextSwitch(Operation::Type op) {
             // fallthrough
         case Operation::Resume:
             break_ = true;
+            break;
         default:
             KAI_NOT_IMPLEMENTED();
             break;
