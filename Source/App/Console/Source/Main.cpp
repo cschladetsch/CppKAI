@@ -69,7 +69,13 @@ int main(int argc, char** argv) {
 
     // the higher the number, the greater the verbosity of debug output for the
     // Executor
-    console.GetExecutor()->SetTraceLevel(0);
+    auto executor = console.GetExecutor();
+    if (executor.Exists()) {
+        executor->SetTraceLevel(0);
+    } else {
+        std::cerr << "Error: Console failed to initialize properly\n";
+        return 1;
+    }
 
     // Check if a file argument was provided
     if (argc > 1) {

@@ -9,6 +9,7 @@
 #include "KAI/Core/Object/ClassBuilder.h"
 #include "KAI/Core/Tree.h"
 #include "KAI/Executor/BinBase.h"
+#include "KAI/Executor/BinaryOperationHandler.h"
 #include "KAI/Executor/Compiler.h"
 #include "KAI/Executor/SignedContinuation.h"
 #include "KAI/Language/Common/Process.h"
@@ -27,21 +28,96 @@ Executor::Executor() {
     tree_ = nullptr;
     traceLevel_ = 0;
     stepNumber_ = 0;
+    // Initialize the binary operation handler
+    binaryOpHandler_ = std::make_unique<BinaryOperationHandler>();
 }
 
 Executor::~Executor() {
-    // Default destructor
+    // unique_ptr will automatically delete the BinaryOperationHandler
 }
 
 void Executor::Create() {
-    data_ = New<Stack>();
-    context_ = New<Stack>();
-    break_ = false;
-    continue_ = false;
-    traceLevel_ = 0;
-    stepNumber_ = 0;
+    KAI_TRACE() << "Executor::Create: Starting";
+    
+    // During Create(), Self should already be set by ReflectedLifetimeManagement::Create
+    // which calls reflected->Self = (StorageBase *)storage; before calling Create()
+    if (!Self) {
+        KAI_TRACE_ERROR() << "Executor::Create: Self is null";
+        return;
+    }
+    
+    KAI_TRACE() << "Executor::Create: Self is valid";
+    
+    Registry *reg = Self->GetRegistry();
+    if (!reg) {
+        KAI_TRACE_ERROR() << "Executor::Create: No registry available from Self";
+        return;
+    }
+    
+    KAI_TRACE() << "Executor::Create: Got registry, creating Stack objects";
+    
+    // Use the registry directly to avoid calling Reg() which might throw
+    try {
+        data_ = reg->New<Stack>();
+        KAI_TRACE() << "Executor::Create: data_ created";
+        
+        context_ = reg->New<Stack>();
+        KAI_TRACE() << "Executor::Create: context_ created";
+        
+        break_ = false;
+        continue_ = false;
+        traceLevel_ = 0;
+        stepNumber_ = 0;
+        
+        // BinaryOperationHandler is already created in constructor
+        
+        KAI_TRACE() << "Executor::Create: Completed successfully";
+    } catch (const Exception::Base &e) {
+        KAI_TRACE_ERROR() << "Executor::Create: Exception: " << e.ToString();
+        throw;
+    } catch (const std::exception &e) {
+        KAI_TRACE_ERROR() << "Executor::Create: std::exception: " << e.what();
+        throw;
+    }
 }
 
+Executor::Executor(const Executor& other) : Reflected(other) {
+    continuation_ = other.continuation_;
+    context_ = other.context_;
+    data_ = other.data_;
+    compiler_ = other.compiler_;
+    break_ = other.break_;
+    continue_ = other.continue_;
+    tree_ = other.tree_;
+    traceLevel_ = other.traceLevel_;
+    stepNumber_ = other.stepNumber_;
+    // Create a new BinaryOperationHandler instance
+    if (other.binaryOpHandler_) {
+        binaryOpHandler_ = std::make_unique<BinaryOperationHandler>();
+    }
+}
+
+Executor& Executor::operator=(const Executor& other) {
+    if (this != &other) {
+        Reflected::operator=(other);
+        continuation_ = other.continuation_;
+        context_ = other.context_;
+        data_ = other.data_;
+        compiler_ = other.compiler_;
+        break_ = other.break_;
+        continue_ = other.continue_;
+        tree_ = other.tree_;
+        traceLevel_ = other.traceLevel_;
+        stepNumber_ = other.stepNumber_;
+        // Create a new BinaryOperationHandler instance
+        if (other.binaryOpHandler_) {
+            binaryOpHandler_ = std::make_unique<BinaryOperationHandler>();
+        } else {
+            binaryOpHandler_.reset();
+        }
+    }
+    return *this;
+}
 
 bool Executor::Destroy() { return true; }
 
@@ -1002,33 +1078,7 @@ void Executor::SetTraceLevel(int n) { traceLevel_ = n; }
 int Executor::GetTraceLevel() const { return traceLevel_; }
 
 bool Executor::IsBinaryOp(Operation::Type op) {
-    switch (op) {
-        case Operation::Plus:
-        case Operation::Minus:
-        case Operation::Multiply:
-        case Operation::Divide:
-        case Operation::Modulo:
-        case Operation::Min:
-        case Operation::Max:
-        case Operation::Equiv:
-        case Operation::NotEquiv:
-        case Operation::Less:
-        case Operation::Greater:
-        case Operation::LessOrEquiv:
-        case Operation::GreaterOrEquiv:
-        case Operation::LogicalAnd:
-        case Operation::LogicalOr:
-        case Operation::LogicalXor:
-        case Operation::BitwiseAnd:
-        case Operation::BitwiseOr:
-        case Operation::BitwiseXor:
-        case Operation::LeftShift:
-        case Operation::RightShift:
-            return true;
-
-        default:
-            return false;
-    }
+    return BinaryOperationHandler::IsBinaryOp(op);
 }
 
 // Detect and optimize the "5 dup +" pattern by checking the code array
