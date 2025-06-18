@@ -135,17 +135,17 @@ Logger::Level Logger::GetLevel() { return s_level; }
 std::string Logger::LevelToString(Level level) {
     switch (level) {
         case Level::Debug:
-            return "DEBUG  ";
+            return "DEBUG";
         case Level::Info:
-            return "INFO   ";
+            return "INFO ";
         case Level::Warning:
-            return "WARNING";
+            return "WARN ";
         case Level::Error:
-            return "ERROR  ";
+            return "ERROR";
         case Level::Fatal:
-            return "FATAL  ";
+            return "FATAL";
         default:
-            return "UNKNOWN";
+            return "UNKN ";
     }
 }
 

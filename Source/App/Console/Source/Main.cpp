@@ -4,11 +4,16 @@
 #include <string>
 
 #include "KAI/Console/Console.h"
+#include "KAI/Language/Common/TranslatorFactory.h"
 #include "KAI/Language/Pi/PiTranslator.h"
 #include "KAI/Language/Rho/RhoTranslator.h"
 #include "rang.hpp"
 using namespace std;
 using namespace kai;
+
+// Register the translators
+REGISTER_TRANSLATOR(Language::Pi, PiTranslator)
+REGISTER_TRANSLATOR(Language::Rho, RhoTranslator)
 
 #if 0
 #include "KAI/Network/Peer.h"
@@ -46,44 +51,12 @@ std::string KaiVersionString() {
     return str.str();
 }
 
-void SetupLanguageTranslators(Console& console) {
-    // Get the registry and compiler
-    auto& reg = console.GetRegistry();
-    auto compiler = console.GetCompiler();
-
-    // Create translators for each language as shared pointers
-    auto piTranslator = std::make_shared<PiTranslator>(reg);
-    auto rhoTranslator = std::make_shared<RhoTranslator>(reg);
-
-    // Set up the translation function
-    compiler->SetTranslateFunction(
-        [=](const String& text, Structure st) -> Pointer<Continuation> {
-            int lang = compiler->GetLanguage();
-            int traceLevel = compiler->GetTraceLevel();
-
-            switch (static_cast<Language>(lang)) {
-                case Language::Pi: {
-                    piTranslator->trace = traceLevel;
-                    auto result = piTranslator->Translate(text.c_str(), st);
-                    if (piTranslator->Failed) {
-                        KAI_TRACE_ERROR() << piTranslator->Error;
-                        return Object();
-                    }
-                    return result;
-                }
-                case Language::Rho: {
-                    rhoTranslator->trace = traceLevel;
-                    auto result = rhoTranslator->Translate(text.c_str(), st);
-                    if (rhoTranslator->Failed) {
-                        KAI_TRACE_ERROR() << rhoTranslator->Error;
-                        return Object();
-                    }
-                    return result;
-                }
-                default:
-                    return Object();
-            }
-        });
+std::shared_ptr<TranslatorCommon> CreateTranslatorForLanguage(Registry& reg, Language lang) {
+    auto translator = TranslatorFactory::Instance().CreateTranslator(lang, reg);
+    if (!translator) {
+        KAI_TRACE_ERROR() << "Unsupported language: " << static_cast<int>(lang);
+    }
+    return translator;
 }
 
 int main(int argc, char** argv) {
@@ -98,23 +71,30 @@ int main(int argc, char** argv) {
     // Executor
     console.GetExecutor()->SetTraceLevel(0);
 
-    // Set up language translators
-    SetupLanguageTranslators(console);
-
     // Check if a file argument was provided
     if (argc > 1) {
         // Execute file as a program
         std::string filename = argv[1];
 
         // Determine language from file extension
+        Language lang;
         if (filename.ends_with(".pi")) {
-            console.SetLanguage(Language::Pi);
+            lang = Language::Pi;
         } else if (filename.ends_with(".rho")) {
-            console.SetLanguage(Language::Rho);
+            lang = Language::Rho;
         } else {
             std::cerr << "Unknown file extension. Expected .pi or .rho\n";
             return 1;
         }
+
+        // Set the language and create the appropriate translator
+        console.SetLanguage(lang);
+        auto translator = CreateTranslatorForLanguage(console.GetRegistry(), lang);
+        if (!translator) {
+            std::cerr << "Failed to create translator for language\n";
+            return 1;
+        }
+        console.SetTranslator(translator);
 
         // Use ExecuteFile which now supports shell commands
         if (!console.ExecuteFile(filename.c_str())) {
@@ -125,7 +105,10 @@ int main(int argc, char** argv) {
     }
 
     // No file argument - start REPL with Pi as default
-    console.SetLanguage(Language::Pi);
+    Language defaultLang = Language::Pi;
+    console.SetLanguage(defaultLang);
+    auto defaultTranslator = CreateTranslatorForLanguage(console.GetRegistry(), defaultLang);
+    console.SetTranslator(defaultTranslator);
 
     // start the REPL
     return console.Run();

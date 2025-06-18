@@ -1,27 +1,59 @@
-#include "TestLangCommon.h"
+#include <gtest/gtest.h>
+#include "KAI/Core/Console.h"
+#include "KAI/Core/BuiltinTypes/Array.h"
+#include "TestConsoleHelper.h"
 
-// Test suite for Pi for loops - simplified and focused
-struct PiForLoopTest : kai::TestLangCommon {};
+// Test suite for Pi for loops - each test uses its own executor
+struct PiForLoopTest : ::testing::Test {};
 
 // Range-based for loop syntax: accumulator start end { body } for
 TEST_F(PiForLoopTest, SimpleRangeSum) {
-    console_.SetLanguage(kai::Language::Pi);
-    auto exec = console_.GetExecutor();
-
-    // Sum numbers from 1 to 5: 0 1 5 { + } for
-    console_.Execute("0 1 5 { + } for");
-    auto stack = exec->GetDataStack();
-
-    ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 15);  // 1+2+3+4+5
+    try {
+        // Create fresh console for this test
+        std::cout << "Creating console...\n";
+        kai::Console console;
+        std::cout << "Setting up translators...\n";
+        kai::test::SetupConsoleTranslators(console);
+        std::cout << "Setting language...\n";
+        console.SetLanguage(kai::Language::Pi);
+        
+        std::cout << "Executing simple test first...\n";
+        console.Execute("2 3 +");
+        auto exec = console.GetExecutor();
+        auto stack = exec->GetDataStack();
+        std::cout << "Simple test result: " << stack->Size() << " items on stack\n";
+        if (stack->Size() > 0) {
+            std::cout << "Top value: " << kai::ConstDeref<int>(stack->Top()) << "\n";
+        }
+        
+        // Clear stack for actual test
+        while (!stack->Empty()) stack->Pop();
+        
+        std::cout << "Executing for loop...\n";
+        // Sum numbers from 1 to 5: 0 1 5 { + } for
+        console.Execute("0 1 5 { + } for");
+        
+        std::cout << "Checking result...\n";
+        ASSERT_EQ(stack->Size(), 1);
+        EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 15);  // 1+2+3+4+5
+    } catch (const kai::Exception::Base& e) {
+        FAIL() << "KAI Exception: " << e.ToString();
+    } catch (const std::exception& e) {
+        FAIL() << "Exception: " << e.what();
+    } catch (...) {
+        FAIL() << "Unknown exception";
+    }
 }
 
 TEST_F(PiForLoopTest, RangeProduct) {
-    console_.SetLanguage(kai::Language::Pi);
-    auto exec = console_.GetExecutor();
-
+    // Create fresh console for this test
+    kai::Console console;
+    kai::test::SetupConsoleTranslators(console);
+    console.SetLanguage(kai::Language::Pi);
+    
     // Product of numbers from 1 to 4: 1 1 4 { * } for
-    console_.Execute("1 1 4 { * } for");
+    console.Execute("1 1 4 { * } for");
+    auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
 
     ASSERT_EQ(stack->Size(), 1);
@@ -29,11 +61,14 @@ TEST_F(PiForLoopTest, RangeProduct) {
 }
 
 TEST_F(PiForLoopTest, CollectSquares) {
-    console_.SetLanguage(kai::Language::Pi);
-    auto exec = console_.GetExecutor();
-
+    // Create fresh console for this test
+    kai::Console console;
+    kai::test::SetupConsoleTranslators(console);
+    console.SetLanguage(kai::Language::Pi);
+    
     // Collect squares: [] 1 4 { dup * + } for
-    console_.Execute("[] 1 4 { dup * + } for");
+    console.Execute("[] 1 4 { dup * + } for");
+    auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
 
     ASSERT_EQ(stack->Size(), 1);
@@ -46,12 +81,15 @@ TEST_F(PiForLoopTest, CollectSquares) {
 }
 
 TEST_F(PiForLoopTest, ConditionalSum) {
-    console_.SetLanguage(kai::Language::Pi);
-    auto exec = console_.GetExecutor();
-
+    // Create fresh console for this test
+    kai::Console console;
+    kai::test::SetupConsoleTranslators(console);
+    console.SetLanguage(kai::Language::Pi);
+    
     // Sum only even numbers from 1 to 6
     // Stack: accumulator current -> accumulator'
-    console_.Execute("0 1 6 { dup 2 % 0 == { + } { drop } ife } for");
+    console.Execute("0 1 6 { dup 2 % 0 == { + } { drop } ife } for");
+    auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
 
     ASSERT_EQ(stack->Size(), 1);
@@ -60,12 +98,15 @@ TEST_F(PiForLoopTest, ConditionalSum) {
 
 // Traditional 4-continuation syntax if needed
 TEST_F(PiForLoopTest, TraditionalSyntax) {
-    console_.SetLanguage(kai::Language::Pi);
-    auto exec = console_.GetExecutor();
-
+    // Create fresh console for this test
+    kai::Console console;
+    kai::test::SetupConsoleTranslators(console);
+    console.SetLanguage(kai::Language::Pi);
+    
     // Traditional for loop: { init } { condition } { increment } { body } for
     // Count from 0 to 4
-    console_.Execute("{ 0 } { dup 5 < } { 1 + } { } for");
+    console.Execute("{ 0 } { dup 5 < } { 1 + } { } for");
+    auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
 
     ASSERT_EQ(stack->Size(), 1);
@@ -73,12 +114,15 @@ TEST_F(PiForLoopTest, TraditionalSyntax) {
 }
 
 TEST_F(PiForLoopTest, TraditionalWithBody) {
-    console_.SetLanguage(kai::Language::Pi);
-    auto exec = console_.GetExecutor();
-
+    // Create fresh console for this test
+    kai::Console console;
+    kai::test::SetupConsoleTranslators(console);
+    console.SetLanguage(kai::Language::Pi);
+    
     // Sum using traditional syntax
-    console_.Execute(
+    console.Execute(
         "0 { 0 } { dup 5 < } { 1 + } { swap over + swap } for drop");
+    auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
 
     ASSERT_EQ(stack->Size(), 1);
@@ -86,12 +130,15 @@ TEST_F(PiForLoopTest, TraditionalWithBody) {
 }
 
 TEST_F(PiForLoopTest, NestedRangeLoops) {
-    console_.SetLanguage(kai::Language::Pi);
-    auto exec = console_.GetExecutor();
-
+    // Create fresh console for this test
+    kai::Console console;
+    kai::test::SetupConsoleTranslators(console);
+    console.SetLanguage(kai::Language::Pi);
+    
     // Nested range loops to build multiplication table entry
     // Outer: 2, Inner: 1-3, calculate 2*1 + 2*2 + 2*3 = 12
-    console_.Execute("0 2 2 { 1 3 { over * + } for drop } for");
+    console.Execute("0 2 2 { 1 3 { over * + } for drop } for");
+    auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
 
     ASSERT_EQ(stack->Size(), 1);
@@ -99,11 +146,14 @@ TEST_F(PiForLoopTest, NestedRangeLoops) {
 }
 
 TEST_F(PiForLoopTest, EmptyRange) {
-    console_.SetLanguage(kai::Language::Pi);
-    auto exec = console_.GetExecutor();
-
+    // Create fresh console for this test
+    kai::Console console;
+    kai::test::SetupConsoleTranslators(console);
+    console.SetLanguage(kai::Language::Pi);
+    
     // Empty range (start > end) should just return accumulator
-    console_.Execute("42 5 1 { + } for");
+    console.Execute("42 5 1 { + } for");
+    auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
 
     ASSERT_EQ(stack->Size(), 1);
@@ -111,11 +161,14 @@ TEST_F(PiForLoopTest, EmptyRange) {
 }
 
 TEST_F(PiForLoopTest, SingleIteration) {
-    console_.SetLanguage(kai::Language::Pi);
-    auto exec = console_.GetExecutor();
-
+    // Create fresh console for this test
+    kai::Console console;
+    kai::test::SetupConsoleTranslators(console);
+    console.SetLanguage(kai::Language::Pi);
+    
     // Single iteration (start == end)
-    console_.Execute("10 3 3 { + } for");
+    console.Execute("10 3 3 { + } for");
+    auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
 
     ASSERT_EQ(stack->Size(), 1);
@@ -123,11 +176,14 @@ TEST_F(PiForLoopTest, SingleIteration) {
 }
 
 TEST_F(PiForLoopTest, ArrayBuilding) {
-    console_.SetLanguage(kai::Language::Pi);
-    auto exec = console_.GetExecutor();
-
+    // Create fresh console for this test
+    kai::Console console;
+    kai::test::SetupConsoleTranslators(console);
+    console.SetLanguage(kai::Language::Pi);
+    
     // Build an array using range loop
-    console_.Execute("[] 1 3 { swap over swap + } for drop");
+    console.Execute("[] 1 3 { swap over swap + } for drop");
+    auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
 
     ASSERT_EQ(stack->Size(), 1);

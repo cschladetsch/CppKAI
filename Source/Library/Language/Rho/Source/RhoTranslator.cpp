@@ -1,6 +1,7 @@
 #include <KAI/Core/BuiltinTypes.h>
 #include <KAI/Executor/Operation.h>
 #include <KAI/Language/Pi/PiToken.h>
+#include <KAI/Language/Pi/PiTranslator.h>
 #include <KAI/Language/Rho/RhoTranslator.h>
 
 #include <concepts>
@@ -542,11 +543,30 @@ void RhoTranslator::TranslatePiBlock(AstNodePtr node) {
 
     KAI_TRACE() << "Pi code to execute: " << piCode;
 
-    // Push the Pi code string onto the stack
-    Append(reg_->New<String>(piCode));
-
-    // Use the ToPi operation to execute the Pi code
-    AppendDirectOperation(Operation::ToPi);
+    // Create a PiTranslator to translate the Pi code
+    PiTranslator piTranslator(*reg_);
+    piTranslator.trace = trace;
+    
+    // Translate the Pi code into a continuation
+    auto piCont = piTranslator.Translate(piCode.c_str(), Structure::Expression);
+    
+    if (piTranslator.Failed) {
+        KAI_TRACE_ERROR() << "Failed to translate Pi code: " << piTranslator.Error;
+        Fail("Failed to translate Pi code: " + piTranslator.Error);
+        return;
+    }
+    
+    if (!piCont.Exists()) {
+        KAI_TRACE_ERROR() << "Pi translation returned null continuation";
+        Fail("Pi translation returned null continuation");
+        return;
+    }
+    
+    // Append the Pi continuation directly
+    Append(piCont);
+    
+    // Add Suspend operation to execute the Pi continuation
+    AppendDirectOperation(Operation::Suspend);
 
     KAI_TRACE() << "Pi block translation complete";
 }

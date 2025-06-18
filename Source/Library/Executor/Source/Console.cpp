@@ -51,8 +51,6 @@ void Console::Create() {
         executor->SetCompiler(compiler);
 
         CreateTree();
-
-        SetLanguage(Language::Pi);
     }
     KAI_CATCH(exception, e) {
         KAI_TRACE_1(e.what());
@@ -69,12 +67,23 @@ void Console::ExposeTypesToTree(Object types) {
 }
 
 void Console::SetLanguage(Language lang) {
-    SetLanguage(static_cast<int>(lang));
+    language = lang;
 }
 
 void Console::SetLanguage(int lang) {
     language = static_cast<Language>(lang);
-    compiler->SetLanguage(lang);
+}
+
+void Console::SetTranslator(std::shared_ptr<TranslatorCommon> trans) {
+    translator = trans;
+    
+    // Set up the compiler's translation function to use our translator
+    if (compiler.Exists() && translator) {
+        compiler->SetTranslateFunction(
+            [this](const String& text, Structure st) -> Pointer<Continuation> {
+                return translator->Translate(text.c_str(), st);
+            });
+    }
 }
 
 void Console::ControlC() { executor->ClearContext(); }
@@ -221,8 +230,18 @@ void Console::Execute(Pointer<Continuation> cont) {
 }
 
 void Console::Execute(String const &text, Structure st) {
-    // Translate the text into a continuation
-    Pointer<Continuation> cont = compiler->Translate(text.c_str(), st);
+    // Use the translator if available, otherwise use compiler
+    Pointer<Continuation> cont;
+    
+    if (translator) {
+        cont = translator->Translate(text.c_str(), st);
+    } else if (compiler.Exists()) {
+        cont = compiler->Translate(text.c_str(), st);
+    } else {
+        KAI_TRACE_ERROR() << "No translator or compiler available";
+        return;
+    }
+    
     if (!cont.Exists()) {
         KAI_TRACE_WARN() << "Translation of '" << text
                          << "' yielded invalid continuation";
@@ -866,7 +885,13 @@ String Console::Process(const String &text) {
         }
 
         // Translate the text into a continuation
-        auto cont = compiler->Translate(expandedText.c_str(), structure);
+        Pointer<Continuation> cont;
+        if (translator) {
+            cont = translator->Translate(expandedText.c_str(), structure);
+        } else if (compiler.Exists()) {
+            cont = compiler->Translate(expandedText.c_str(), structure);
+        }
+        
         if (cont.Exists()) {
             // Set the scope
             cont->SetScope(tree.GetScope());
@@ -1143,9 +1168,13 @@ int Console::Run() {
                     // Check for language switch commands
                     if (text == "pi") {
                         SetLanguage(Language::Pi);
+                        // Note: The main application should handle translator switching
+                        // For now, just set the language
                         continue;
                     } else if (text == "rho") {
                         SetLanguage(Language::Rho);
+                        // Note: The main application should handle translator switching
+                        // For now, just set the language
                         continue;
                     }
 
@@ -1264,7 +1293,12 @@ void Console::RegisterTypes() {
 }
 
 Pointer<Continuation> Console::Compile(const char *text, Structure st) {
-    return compiler->Translate(text, st);
+    if (translator) {
+        return translator->Translate(text, st);
+    } else if (compiler.Exists()) {
+        return compiler->Translate(text, st);
+    }
+    return Object();
 }
 
 void Console::Register(Registry &) {}

@@ -25,7 +25,7 @@ remainder = 10 % 3      // 1
 assert sum == 8
 assert diference == 6
 assert product == 42
-assert quotirnt == 4
+assert quotient == 4
 assert remainder == 1
 
 // Combined operations with proper precedence
@@ -52,4 +52,4 @@ fun fibonacci_recursive n
         return n
     else
         return fibonacci_recursive(n - 1) + fibonacci_recursive(n - 2)
-assert fibonacci_recursive == 5
+assert fibonacci_recursive 3 == 2

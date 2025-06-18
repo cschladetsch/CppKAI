@@ -32,8 +32,8 @@ struct PiBinaryOpTests : TestLangCommon {
 
         // Ensure we have the basic types registered
         // Always register these types to be safe - Registry handles duplicates
-        reg_->AddClass<int>(Label("int"));
-        reg_->AddClass<bool>(Label("bool"));
+        reg_->AddClass<int>(Label("Int"));
+        reg_->AddClass<bool>(Label("Bool"));
         reg_->AddClass<String>(Label("String"));
 
         // Clear stacks to start fresh
@@ -67,7 +67,7 @@ TEST_F(PiBinaryOpTests, IntegerAddition) {
     console_.Execute("2 3 +");
 
     // Verify result type and value
-    VerifyStackOperation(1, "int");
+    VerifyStackOperation(1, "Int");
     ASSERT_EQ(ConstDeref<int>(data_->Top()), 5) << "2 + 3 should equal 5";
 }
 
@@ -147,7 +147,7 @@ TEST_F(PiBinaryOpTests, LogicalOperations) {
     // Test logical AND
     console_.Execute("true true and");
 
-    VerifyStackOperation(1, "bool");
+    VerifyStackOperation(1, "Bool");
     ASSERT_TRUE(ConstDeref<bool>(data_->Top()))
         << "true AND true should be true";
 
@@ -155,7 +155,7 @@ TEST_F(PiBinaryOpTests, LogicalOperations) {
     data_->Clear();
     console_.Execute("false true or");
 
-    VerifyStackOperation(1, "bool");
+    VerifyStackOperation(1, "Bool");
     ASSERT_TRUE(ConstDeref<bool>(data_->Top()))
         << "false OR true should be true";
 
@@ -163,14 +163,14 @@ TEST_F(PiBinaryOpTests, LogicalOperations) {
     data_->Clear();
     console_.Execute("true true xor");
 
-    VerifyStackOperation(1, "bool");
+    VerifyStackOperation(1, "Bool");
     ASSERT_FALSE(ConstDeref<bool>(data_->Top()))
         << "true XOR true should be false";
 
     data_->Clear();
     console_.Execute("true false xor");
 
-    VerifyStackOperation(1, "bool");
+    VerifyStackOperation(1, "Bool");
     ASSERT_TRUE(ConstDeref<bool>(data_->Top()))
         << "true XOR false should be true";
 }
@@ -232,7 +232,7 @@ TEST_F(PiBinaryOpTests, ComplexExpressions) {
     // Test: (2 + 3) * 4
     console_.Execute("2 3 + 4 *");
 
-    VerifyStackOperation(1, "int");
+    VerifyStackOperation(1, "Int");
     ASSERT_EQ(ConstDeref<int>(data_->Top()), 20)
         << "(2 + 3) * 4 should equal 20";
 
@@ -240,7 +240,7 @@ TEST_F(PiBinaryOpTests, ComplexExpressions) {
     data_->Clear();
     console_.Execute("10 2 div 3 4 * +");
 
-    VerifyStackOperation(1, "int");
+    VerifyStackOperation(1, "Int");
     ASSERT_EQ(ConstDeref<int>(data_->Top()), 17)
         << "10 / 2 + 3 * 4 should equal 17";
 }

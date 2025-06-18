@@ -9,6 +9,7 @@
 #include "KAI/Core/Object/ClassBuilder.h"
 #include "KAI/Core/Tree.h"
 #include "KAI/Executor/BinBase.h"
+#include "KAI/Executor/BinaryOperationHandler.h"
 #include "KAI/Executor/Compiler.h"
 #include "KAI/Executor/SignedContinuation.h"
 #include "KAI/Language/Common/Process.h"
@@ -20,6 +21,19 @@ KAI_BEGIN
 // The higher the trace number, the more verbose debug output.
 int Process::trace = 0;
 
+Executor::Executor() {
+    // Initialize members
+    break_ = false;
+    continue_ = false;
+    tree_ = nullptr;
+    traceLevel_ = 0;
+    stepNumber_ = 0;
+}
+
+Executor::~Executor() {
+    // unique_ptr will automatically delete the BinaryOperationHandler
+}
+
 void Executor::Create() {
     data_ = New<Stack>();
     context_ = New<Stack>();
@@ -27,6 +41,45 @@ void Executor::Create() {
     continue_ = false;
     traceLevel_ = 0;
     stepNumber_ = 0;
+    binaryOpHandler_ = std::make_unique<BinaryOperationHandler>();
+}
+
+Executor::Executor(const Executor& other) : Reflected(other) {
+    continuation_ = other.continuation_;
+    context_ = other.context_;
+    data_ = other.data_;
+    compiler_ = other.compiler_;
+    break_ = other.break_;
+    continue_ = other.continue_;
+    tree_ = other.tree_;
+    traceLevel_ = other.traceLevel_;
+    stepNumber_ = other.stepNumber_;
+    // Create a new BinaryOperationHandler instance
+    if (other.binaryOpHandler_) {
+        binaryOpHandler_ = std::make_unique<BinaryOperationHandler>();
+    }
+}
+
+Executor& Executor::operator=(const Executor& other) {
+    if (this != &other) {
+        Reflected::operator=(other);
+        continuation_ = other.continuation_;
+        context_ = other.context_;
+        data_ = other.data_;
+        compiler_ = other.compiler_;
+        break_ = other.break_;
+        continue_ = other.continue_;
+        tree_ = other.tree_;
+        traceLevel_ = other.traceLevel_;
+        stepNumber_ = other.stepNumber_;
+        // Create a new BinaryOperationHandler instance
+        if (other.binaryOpHandler_) {
+            binaryOpHandler_ = std::make_unique<BinaryOperationHandler>();
+        } else {
+            binaryOpHandler_.reset();
+        }
+    }
+    return *this;
 }
 
 bool Executor::Destroy() { return true; }
@@ -988,33 +1041,7 @@ void Executor::SetTraceLevel(int n) { traceLevel_ = n; }
 int Executor::GetTraceLevel() const { return traceLevel_; }
 
 bool Executor::IsBinaryOp(Operation::Type op) {
-    switch (op) {
-        case Operation::Plus:
-        case Operation::Minus:
-        case Operation::Multiply:
-        case Operation::Divide:
-        case Operation::Modulo:
-        case Operation::Min:
-        case Operation::Max:
-        case Operation::Equiv:
-        case Operation::NotEquiv:
-        case Operation::Less:
-        case Operation::Greater:
-        case Operation::LessOrEquiv:
-        case Operation::GreaterOrEquiv:
-        case Operation::LogicalAnd:
-        case Operation::LogicalOr:
-        case Operation::LogicalXor:
-        case Operation::BitwiseAnd:
-        case Operation::BitwiseOr:
-        case Operation::BitwiseXor:
-        case Operation::LeftShift:
-        case Operation::RightShift:
-            return true;
-
-        default:
-            return false;
-    }
+    return BinaryOperationHandler::IsBinaryOp(op);
 }
 
 // Detect and optimize the "5 dup +" pattern by checking the code array
@@ -1026,6 +1053,6 @@ bool Executor::IsBinaryOp(Operation::Type op) {
 
 // ======================= Perform Implementation ================
 
-#include "KAI/Executor/ExecutorPerform.inl"
+// Perform method implementation moved to ExecutorPerform.cpp
 
 KAI_END

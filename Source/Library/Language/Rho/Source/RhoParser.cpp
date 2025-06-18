@@ -782,16 +782,31 @@ bool RhoParser::Factor() {
         Consume();  // consume '{'
 
         // Collect all tokens until closing brace as Pi code
+        // Need to handle nested braces properly
         auto piContent = NewNode(NodeType::List);
-        while (!Try(TokenType::CloseBrace) && !Failed) {
-            // Consume tokens as part of the Pi block
-            piContent->Add(NewNode(Consume()));
+        int braceCount = 1;  // We've already consumed the opening brace
+        
+        while (braceCount > 0 && !Failed) {
+            if (Try(TokenType::OpenBrace)) {
+                braceCount++;
+                piContent->Add(NewNode(Consume()));
+            } else if (Try(TokenType::CloseBrace)) {
+                braceCount--;
+                if (braceCount > 0) {
+                    // This is a nested closing brace, include it in Pi content
+                    piContent->Add(NewNode(Consume()));
+                }
+                // If braceCount == 0, we've found the closing brace of the Pi block
+            } else {
+                // Regular token, add to Pi content
+                piContent->Add(NewNode(Consume()));
+            }
         }
 
-        if (!Try(TokenType::CloseBrace)) {
+        if (braceCount != 0) {
             return CreateError("Expected '}' to close Pi block");
         }
-        Consume();  // consume '}'
+        // The closing brace has already been consumed by the loop
 
         piBlock->Add(piContent);
         Push(piBlock);

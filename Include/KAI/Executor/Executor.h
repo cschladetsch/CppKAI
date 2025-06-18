@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <KAI/Core/BuiltinTypes/Stack.h>
 #include <KAI/Core/Object/Reflected.h>
 #include <KAI/Core/Pathname.h>
@@ -10,13 +11,28 @@
 KAI_BEGIN
 
 class Tree;
+class BinaryOperationHandler;
 struct Executor;
 
 KAI_TYPE_TRAITS(Executor, Number::Executor, Properties::Reflected);
 
 struct Executor : Reflected {
+    // Default constructor
+    Executor();
+    // Destructor - needs to be defined in .cpp to avoid incomplete type issue
+    ~Executor();
+    
     void Create();
     bool Destroy();
+    
+    // Custom copy constructor to handle unique_ptr
+    Executor(const Executor& other);
+    // Custom assignment operator
+    Executor& operator=(const Executor& other);
+    // Move constructor
+    Executor(Executor&& other) = default;
+    // Move assignment
+    Executor& operator=(Executor&& other) = default;
 
     void SetScope(Object);
     void PopScope();
@@ -260,6 +276,7 @@ struct Executor : Reflected {
     void Trace(const Object &, StringStream &);
     void ConditionalContextSwitch(Operation::Type);
     Pointer<Continuation> NewContinuation(Value<Continuation> P);
+    void ExecuteContinuationInline(Pointer<Continuation> cont);
 
     Object TryResolve(Object const &) const;
     Object TryResolve(Label const &label) const;
@@ -275,6 +292,7 @@ struct Executor : Reflected {
     Tree *tree_;
     int traceLevel_;
     int stepNumber_;
+    std::unique_ptr<BinaryOperationHandler> binaryOpHandler_;
     // Executor only handles Pi language operations
 };
 

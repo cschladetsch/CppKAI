@@ -17,6 +17,9 @@ struct PiStackTests : TestLangCommon {
     void AssertStackResult(const char *script, std::tuple<Ts...> expected,
                            bool verbose = false) {
         try {
+            // Clear stacks before executing to ensure clean state
+            exec_->ClearStacks();
+            
             // Use the console from TestLangCommon which has translators set up
             console_.SetLanguage(Language::Pi);
             console_.Execute(script);

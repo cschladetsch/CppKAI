@@ -178,7 +178,7 @@ TEST_F(PiBacktickShellTest, MultilineOutput) {
     auto exec = console_.GetExecutor();
 
     // Note: multiline output is concatenated, newline is stripped
-    console_.Execute("`echo -e 'line1\\nline2' | head -1`");
+    console_.Execute("`printf 'line1\\nline2' | head -1`");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<kai::String>(stack->Top()), "line1");

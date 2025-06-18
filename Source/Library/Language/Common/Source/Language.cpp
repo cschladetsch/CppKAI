@@ -15,6 +15,8 @@ const char *ToString(Language lang) {
             return "Tau";
         case Language::Hlsl:
             return "Hlsl";
+        case Language::Sigma:
+            return "Sigma";
         default:
             return "Unknown";
     }

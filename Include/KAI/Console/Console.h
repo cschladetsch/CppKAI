@@ -5,7 +5,9 @@
 #include <KAI/Executor/Compiler.h>
 #include <KAI/Executor/Executor.h>
 #include <KAI/Language.h>
+#include <KAI/Language/Common/TranslatorCommon.h>
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -20,6 +22,7 @@ class Console : public Reflected {
     Pointer<Compiler> compiler;
     std::shared_ptr<Memory::IAllocator> alloc;
     Language language;
+    std::shared_ptr<TranslatorCommon> translator;
 
     std::vector<std::string> commandHistory;
 
@@ -31,6 +34,9 @@ class Console : public Reflected {
     void SetLanguage(Language lang);
     void SetLanguage(int lang);
     Language GetLanguage() const;
+    
+    void SetTranslator(std::shared_ptr<TranslatorCommon> trans);
+    std::shared_ptr<TranslatorCommon> GetTranslator() const { return translator; }
 
     void WritePrompt(std::ostream &out) const;
     String GetPrompt() const;
