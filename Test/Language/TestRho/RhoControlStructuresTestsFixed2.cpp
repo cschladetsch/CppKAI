@@ -25,15 +25,15 @@ struct RhoControlTestsFixed2 : TestLangCommon {
         }
 
         try {
-            Console console;
-            Registry &reg = console.GetRegistry();
-            console.SetLanguage(Language::Rho);
+            // Use the console from TestLangCommon which has translators set up
+            console_.SetLanguage(Language::Rho);
+            Registry &reg = console_.GetRegistry();
 
             // Execute as a PROGRAM, not a single statement
-            console.Execute(script, Structure::Program);
+            console_.Execute(script, Structure::Program);
 
             // Get the result from the data stack after execution
-            auto executor = console.GetExecutor();
+            auto executor = console_.GetExecutor();
             auto dataStack = executor->GetDataStack();
 
             if (dataStack->Empty()) {

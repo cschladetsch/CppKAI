@@ -26,6 +26,7 @@ class TestLangCommon : public TestCommon {
    protected:
     void SetUp() override;
     void TearDown() override;
+    void SetupLanguageTranslators();
 
     void ExecScripts();
     void ExecScriptFile(const std::string &scriptName);

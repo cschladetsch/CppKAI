@@ -4,7 +4,6 @@
 #include <KAI/Language/Common/Process.h>
 #include <KAI/Language/Common/Slice.h>
 
-// TODO: ugly to need these in a library header
 #include <stdarg.h>
 
 #include <algorithm>
@@ -14,12 +13,9 @@
 #include <boost/monotonic/monotonic.hpp>
 #endif
 
-////#undef min
-// #undef max
 
 KAI_BEGIN
 
-// Tokenise an input string for later parsing
 template <class EnumType>
 class LexerCommon : public LexerBase {
    public:
@@ -67,8 +63,6 @@ class LexerCommon : public LexerBase {
     }
 
     Token LexAlpha() {
-        // Custom function to check if character is valid in an identifier
-        // (alphanumeric or underscore)
         auto isIdentChar = [](int ch) -> int {
             return isalnum(ch) || ch == '_';
         };
@@ -81,10 +75,13 @@ class LexerCommon : public LexerBase {
         return tok;
     }
 
-    // We implement LexNumber() in each specific lexer class as needed
 
     void AddStringToken(int lineNumber, Slice slice) override {
         tokens.push_back(Token(Enum::String, *this, lineNumber, slice));
+    }
+    
+    void AddShellCommandToken(int lineNumber, Slice slice) override {
+        tokens.push_back(Token(Enum::ShellCommand, *this, lineNumber, slice));
     }
 
     void LexErrorBase(const char *msg) override { LexError(msg); }
@@ -148,9 +145,6 @@ class LexerCommon : public LexerBase {
 #endif
 
         const char *fmt1 = "%s(%d):[%d]: %s\n";
-        // Ensure buffer is large enough to handle the maximum size of buff0
-        // plus the format string - doubled the buffer size to prevent
-        // truncation warnings
         char buff[8192];
 #ifdef WIN32
         sprintf_s(buff, sizeof(buff), fmt1, "", tok.lineNumber, tok.slice.Start,
@@ -200,7 +194,6 @@ class LexerCommon : public LexerBase {
 
     std::string Print() const {
         std::stringstream str;
-        // Print all tokens in the token list
         for (const auto &tok : tokens) {
             str << tok << ", ";
         }

@@ -57,6 +57,7 @@ const char *TauTokenEnumType::ToString(Enum val) {
             CASE(Struct)
             CASE(EnumKeyword)
             CASE(ConstKeyword)
+            CASE(ShellCommand)
         default:
             std::cerr << "TauToken: Case not used: " << val << std::endl;
             return "??";

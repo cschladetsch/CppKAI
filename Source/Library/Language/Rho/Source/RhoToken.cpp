@@ -93,6 +93,7 @@ const char *RhoTokenEnumType::ToString(Enum val) {
         CASE(ForEach)
         CASE(Break)
         CASE(Continue)
+        CASE(ShellCommand)
     }
 
     static char buff[BUFSIZ];
@@ -111,6 +112,7 @@ std::ostream &operator<<(std::ostream &out, kai::RhoTokenEnumType::Type const &n
         case kai::RhoTokenEnumType::Int:
         case kai::RhoTokenEnumType::String:
         case kai::RhoTokenEnumType::Label:
+        case kai::RhoTokenEnumType::ShellCommand:
             out << "=" << node.Text();
     }
 

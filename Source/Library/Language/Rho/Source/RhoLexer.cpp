@@ -66,6 +66,8 @@ bool RhoLexer::NextToken() {
     switch (current) {
         case '\'':
             return LexPathname();
+        case '`':
+            return LexShellCommand();
         case ';':
             return Add(Enum::Semi);
         case '{':

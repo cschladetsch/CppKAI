@@ -2,12 +2,14 @@
 #include <KAI/Language/Common/LangCommon.h>
 #include <KAI/Language/Pi/Pi.h>
 #include <gtest/gtest.h>
+#include "TestLangCommon.h"
 
-class PiBacktickShellTest : public ::testing::Test {
+class PiBacktickShellTest : public kai::TestLangCommon {
    protected:
-    kai::Console console_;
-
-    void SetUp() override { console_.SetLanguage(kai::Language::Pi); }
+    void SetUp() override { 
+        TestLangCommon::SetUp();
+        console_.SetLanguage(kai::Language::Pi); 
+    }
 };
 
 // Basic arithmetic with shell commands
@@ -153,8 +155,10 @@ TEST_F(PiBacktickShellTest, SwapWithShell) {
     console_.Execute("`echo 1` `echo 2` swap");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 2);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->At(0)), 2);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->At(1)), 1);
+    // Stack::At(0) is top of stack, At(1) is second from top
+    // After swap: top should be 1, second should be 2
+    EXPECT_EQ(kai::ConstDeref<int>(stack->At(0)), 1);
+    EXPECT_EQ(kai::ConstDeref<int>(stack->At(1)), 2);
 }
 
 // Complex shell command outputs
@@ -173,7 +177,7 @@ TEST_F(PiBacktickShellTest, MultilineOutput) {
     auto exec = console_.GetExecutor();
 
     // Note: multiline output is concatenated, newline is stripped
-    console_.Execute("`echo -e \"line1\nline2\" | head -1`");
+    console_.Execute("`echo -e 'line1\\nline2' | head -1`");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<kai::String>(stack->Top()), "line1");
@@ -205,7 +209,8 @@ TEST_F(PiBacktickShellTest, MixedStringAndNumber) {
     console_.SetLanguage(kai::Language::Pi);
     auto exec = console_.GetExecutor();
 
-    console_.Execute("`echo 5` `echo 3` + to_string \" items\" +");
+    // Execute the full command as one string
+    console_.Execute("`echo 5` `echo 3` + to_str \" items\" +");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<kai::String>(stack->Top()), "8 items");

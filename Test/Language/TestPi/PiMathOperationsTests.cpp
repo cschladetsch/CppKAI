@@ -59,63 +59,56 @@ TEST_F(PiMathOperationsTest, AAA_SimplestTest) {
 //     EXPECT_FLOAT_EQ(kai::ConstDeref<float>(stack->Top()), 3.0f);
 // }
 
-// These tests were converted to standalone pattern to avoid TestLangCommon
-// issues Test 1: Min with negative numbers
-TEST(PiMinMaxStandalone, MinWithNegativeNumbers) {
-    kai::Console console;
-    console.SetLanguage(kai::Language::Pi);
-    auto exec = console.GetExecutor();
+// Test fixture for Pi min/max standalone tests
+struct PiMinMaxStandaloneTests : kai::TestLangCommon {
+    void SetUp() override {
+        TestLangCommon::SetUp();
+        console_.SetLanguage(kai::Language::Pi);
+    }
+};
 
+// Test 1: Min with negative numbers
+TEST_F(PiMinMaxStandaloneTests, MinWithNegativeNumbers) {
     // Test min with negative numbers (using 0 - 5 to create -5)
-    console.Execute("0 5 - 3 min");
-    auto stack = exec->GetDataStack();
+    console_.Execute("0 5 - 3 min");
+    auto stack = console_.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), -5);
 }
 
 // Test 2: Max with negative numbers
-TEST(PiMinMaxStandalone, MaxWithNegativeNumbers) {
-    kai::Console console;
-    console.SetLanguage(kai::Language::Pi);
-    auto exec = console.GetExecutor();
-
-    console.Execute("0 5 - 3 max");
-    auto stack = exec->GetDataStack();
+TEST_F(PiMinMaxStandaloneTests, MaxWithNegativeNumbers) {
+    console_.Execute("0 5 - 3 max");
+    auto stack = console_.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 3);
 }
 
 // Test 3: Min with floats
-TEST(PiMinMaxStandalone, MinWithFloats) {
-    kai::Console console;
-    console.SetLanguage(kai::Language::Pi);
-    auto exec = console.GetExecutor();
+TEST_F(PiMinMaxStandaloneTests, MinWithFloats) {
+    auto exec = console_.GetExecutor();
 
-    console.Execute("5.5 3.2 min");
+    console_.Execute("5.5 3.2 min");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_FLOAT_EQ(kai::ConstDeref<float>(stack->Top()), 3.2f);
 }
 
 // Test 4: Max with floats
-TEST(PiMinMaxStandalone, MaxWithFloats) {
-    kai::Console console;
-    console.SetLanguage(kai::Language::Pi);
-    auto exec = console.GetExecutor();
+TEST_F(PiMinMaxStandaloneTests, MaxWithFloats) {
+    auto exec = console_.GetExecutor();
 
-    console.Execute("5.5 3.2 max");
+    console_.Execute("5.5 3.2 max");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_FLOAT_EQ(kai::ConstDeref<float>(stack->Top()), 5.5f);
 }
 
 // Test 5: Chained min operations
-TEST(PiMinMaxStandalone, ChainedMinOperations) {
-    kai::Console console;
-    console.SetLanguage(kai::Language::Pi);
-    auto exec = console.GetExecutor();
+TEST_F(PiMinMaxStandaloneTests, ChainedMinOperations) {
+    auto exec = console_.GetExecutor();
 
-    console.Execute("10 20 30 min min");
+    console_.Execute("10 20 30 min min");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 10);
@@ -197,57 +190,51 @@ TEST_F(PiMathOperationsTest, TestBasicArithmetic) {
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 2);
 }
 
-// Test basic arithmetic operations using standalone pattern
-TEST(PiArithmeticStandalone, Addition) {
-    kai::Console console;
-    console.SetLanguage(kai::Language::Pi);
-    auto exec = console.GetExecutor();
+// Test fixture for Pi arithmetic standalone tests
+struct PiArithmeticStandaloneTests : kai::TestLangCommon {
+    void SetUp() override {
+        TestLangCommon::SetUp();
+        console_.SetLanguage(kai::Language::Pi);
+    }
+};
 
-    console.Execute("5 3 +");
-    auto stack = exec->GetDataStack();
+// Test basic arithmetic operations
+TEST_F(PiArithmeticStandaloneTests, Addition) {
+    console_.Execute("5 3 +");
+    auto stack = console_.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 8);
 }
 
-TEST(PiArithmeticStandalone, Subtraction) {
-    kai::Console console;
-    console.SetLanguage(kai::Language::Pi);
-    auto exec = console.GetExecutor();
-
-    console.Execute("5 3 -");
-    auto stack = exec->GetDataStack();
+TEST_F(PiArithmeticStandaloneTests, Subtraction) {
+    console_.Execute("5 3 -");
+    auto stack = console_.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 2);
 }
 
-TEST(PiArithmeticStandalone, Multiplication) {
-    kai::Console console;
-    console.SetLanguage(kai::Language::Pi);
-    auto exec = console.GetExecutor();
-
-    console.Execute("5 3 *");
-    auto stack = exec->GetDataStack();
+TEST_F(PiArithmeticStandaloneTests, Multiplication) {
+    console_.Execute("5 3 *");
+    auto stack = console_.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 15);
 }
 
-TEST(PiArithmeticStandalone, Division) {
-    kai::Console console;
-    console.SetLanguage(kai::Language::Pi);
-    auto exec = console.GetExecutor();
+TEST_F(PiArithmeticStandaloneTests, Division) {
+    console_.SetLanguage(kai::Language::Pi);
+    auto exec = console_.GetExecutor();
 
-    console.Execute("15 3 /");
+    console_.Execute("15 3 /");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 5);
 }
 
-TEST(PiArithmeticStandalone, Modulo) {
-    kai::Console console;
-    console.SetLanguage(kai::Language::Pi);
-    auto exec = console.GetExecutor();
+TEST_F(PiArithmeticStandaloneTests, Modulo) {
+    console_.SetLanguage(kai::Language::Pi);
+    auto exec = console_.GetExecutor();
 
-    console.Execute("17 5 %");
+    console_.Execute("17 5 %");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 2);

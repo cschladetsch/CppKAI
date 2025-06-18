@@ -16,6 +16,7 @@ void PiLexer::AddKeyWords() {
     keyWords["div"] = Enum::Divide;
     keyWords["rho"] = Enum::ToRho;
     keyWords["rho{"] = Enum::ToRhoSequence;
+    keyWords["to_str"] = Enum::ToStr;
 
     keyWords["not"] = Enum::Not;
     keyWords["and"] = Enum::And;
@@ -89,6 +90,8 @@ bool PiLexer::NextToken() {
     switch (current) {
         case '\'':
             return PathnameOrKeyword();
+        case '`':
+            return LexShellCommand();
         case '{':
             return Add(Enum::OpenBrace);
         case '}':
@@ -116,7 +119,7 @@ bool PiLexer::NextToken() {
         case '=':
             return AddIfNext('=', Enum::Equiv, Enum::Assign);
         case '!':
-            return Add(Enum::Replace);
+            return AddIfNext('=', Enum::NotEquiv, Enum::Replace);
         case '&':
             return AddIfNext('&', Enum::And, Enum::Suspend);
         case '|':

@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "KAI/Core/Console.h"
+#include "TestConsoleHelper.h"
 
 using namespace kai;
 using namespace std;
@@ -10,6 +11,7 @@ using namespace std;
 // Simple test to verify that Pi language operations preserve type correctly
 TEST(TestRho, TestTypePreservation) {
     Console console;
+    test::SetupConsoleTranslators(console);
     console.SetLanguage(Language::Pi);
 
     // Clear the stack

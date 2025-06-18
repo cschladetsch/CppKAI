@@ -1,0 +1,1336 @@
+================================================
+  NLOC    CCN   token  PARAM  length  location  
+------------------------------------------------
+      98     12    717      1     127 main@21-147@Source/App/NetworkGenerate/Source/Main.cpp
+       1      1      5      0       1 main@848-848@Source/App/Console/Source/CMakeFiles/3.28.3/CompilerIdC/CMakeCCompilerId.c
+      16      6     95      1      27 main@853-879@Source/App/Console/Source/CMakeFiles/3.28.3/CompilerIdC/CMakeCCompilerId.c
+      15      6     96      1      25 main@910-934@Source/App/Console/Source/CMakeFiles/3.28.3/CompilerIdCXX/CMakeCXXCompilerId.cpp
+       1      1      5      0       1 RakNet::RakString::RakString@16-16@Source/App/Console/Source/MinimalClient.cpp
+       1      1     14      1       1 RakNet::RakString::RakString@17-17@Source/App/Console/Source/MinimalClient.cpp
+       1      1     13      0       1 RakNet::RakString::C_String@19-19@Source/App/Console/Source/MinimalClient.cpp
+       5      1     29      1       5 RakNet::RakString::operator +@22-26@Source/App/Console/Source/MinimalClient.cpp
+     111     21    718      2     162 main@34-195@Source/App/Console/Source/MinimalClient.cpp
+      16      2    138      1      18 ClientConfig::loadFromFile@36-53@Source/App/Console/Source/ConfigurableClient.cpp
+     179     37   1211      2     249 main@63-311@Source/App/Console/Source/ConfigurableClient.cpp
+       7      1     39      0       8 Peer::Peer@12-19@Source/App/Console/Source/Peer.cpp
+      16      2    113      3      26 Peer::Start@21-46@Source/App/Console/Source/Peer.cpp
+       6      1     50      2       6 Peer::Connect@48-53@Source/App/Console/Source/Peer.cpp
+      29      9    150      0      40 Peer::Step@55-94@Source/App/Console/Source/Peer.cpp
+       4      1     17      1      12 Peer::HandShake@97-108@Source/App/Console/Source/Peer.cpp
+       5      1     35      1       6 Peer::NewConnection@110-115@Source/App/Console/Source/Peer.cpp
+      12      3     75      1      12 Peer::CompleteConnnection@117-128@Source/App/Console/Source/Peer.cpp
+       4      1     22      1       4 Peer::SendText2@130-133@Source/App/Console/Source/Peer.cpp
+       4      1     16      1       4 Peer::SendBlob@135-138@Source/App/Console/Source/Peer.cpp
+      10      2     65      1      11 Peer::SendText@140-150@Source/App/Console/Source/Peer.cpp
+       5      1     23      0       5 Peer::Shutdown@152-156@Source/App/Console/Source/Peer.cpp
+       4      1     22      1       4 Peer::AddressFromPacket@158-161@Source/App/Console/Source/Peer.cpp
+       9      3     82      1      12 Peer::GetPacketIdentifier@163-174@Source/App/Console/Source/Peer.cpp
+       8      1     38      1       8 Peer::Register@176-183@Source/App/Console/Source/Peer.cpp
+       4      1     26      2       4 operator < <@185-188@Source/App/Console/Source/Peer.cpp
+       4      1     46      2       4 operator < <@190-193@Source/App/Console/Source/Peer.cpp
+       4      1      8      0       5 Peer::Start@18-22@Source/App/Console/Source/Main.cpp
+       4      1     24      2       4 Peer::Connect@24-27@Source/App/Console/Source/Main.cpp
+       4      1     18      1       4 Peer::Send@29-32@Source/App/Console/Source/Main.cpp
+       6      1     32      0       6 KaiVersionString@42-47@Source/App/Console/Source/Main.cpp
+      32      5    223      1      38 SetupLanguageTranslators@49-86@Source/App/Console/Source/Main.cpp
+      24      5    159      2      44 main@88-131@Source/App/Console/Source/Main.cpp
+      37      7    261      2      54 main@11-64@Source/App/Console/Source/SimpleServer.cpp
+      11      3     94      1      15 performCalculation@34-48@Source/App/Console/Source/NetworkPeer.cpp
+      27      6    246      1      33 PeerConfig::loadFromFile@59-91@Source/App/Console/Source/NetworkPeer.cpp
+      13      3    106      1      18 NetworkPeer::NetworkPeer@107-124@Source/App/Console/Source/NetworkPeer.cpp
+       6      2     24      0       6 NetworkPeer::~NetworkPeer@126-131@Source/App/Console/Source/NetworkPeer.cpp
+      19      4    123      0      27 NetworkPeer::Start@133-159@Source/App/Console/Source/NetworkPeer.cpp
+      14      2    102      0      17 NetworkPeer::StartListening@161-177@Source/App/Console/Source/NetworkPeer.cpp
+      12      3    107      2      14 NetworkPeer::ConnectToPeer@179-192@Source/App/Console/Source/NetworkPeer.cpp
+      48      9    340      0      67 NetworkPeer::ProcessMessages@194-260@Source/App/Console/Source/NetworkPeer.cpp
+      46     12    294      0      64 NetworkPeer::ProcessUserCommands@262-325@Source/App/Console/Source/NetworkPeer.cpp
+      58      7    440      1      77 NetworkPeer::HandlePacket@327-403@Source/App/Console/Source/NetworkPeer.cpp
+       4      1     21      2       4 NetworkPeer::registerCommandProcessor@405-408@Source/App/Console/Source/NetworkPeer.cpp
+      21      7    162      1      29 NetworkPeer::ProcessLocalCommand@410-438@Source/App/Console/Source/NetworkPeer.cpp
+      34      7    243      2      43 NetworkPeer::SendCommandToPeer@440-482@Source/App/Console/Source/NetworkPeer.cpp
+       6      1     54      1       6 NetworkPeer::RemovePeer@484-489@Source/App/Console/Source/NetworkPeer.cpp
+      12      3    102      0      14 NetworkPeer::ListConnectedPeers@491-504@Source/App/Console/Source/NetworkPeer.cpp
+      18      3    152      0      20 NetworkPeer::PrintHelp@506-525@Source/App/Console/Source/NetworkPeer.cpp
+       5      2     18      0       5 NetworkPeer::Shutdown@527-531@Source/App/Console/Source/NetworkPeer.cpp
+      28      6    170      2      37 main@534-570@Source/App/Console/Source/NetworkPeer.cpp
+      11      3     90      1      15 performCalculation@28-42@Source/App/Console/Source/ConfigurableServer.cpp
+      15      2    120      1      17 ServerConfig::loadFromFile@52-68@Source/App/Console/Source/ConfigurableServer.cpp
+     137     23   1022      2     187 main@71-257@Source/App/Console/Source/ConfigurableServer.cpp
+       2      1     11      0       3 kai::EnhancedConsole::EnhancedConsole@5-7@Source/App/Console/Source/EnhancedConsole.cpp
+      37     10    229      2      42 kai::EnhancedConsole::Translate@9-50@Source/App/Console/Source/EnhancedConsole.cpp
+       1      1      5      0       1 RakNet::RakString::RakString@16-16@Source/App/Console/Source/MinimalServer.cpp
+       1      1     14      1       1 RakNet::RakString::RakString@17-17@Source/App/Console/Source/MinimalServer.cpp
+       1      1     13      0       1 RakNet::RakString::C_String@19-19@Source/App/Console/Source/MinimalServer.cpp
+       5      1     29      1       5 RakNet::RakString::operator +@22-26@Source/App/Console/Source/MinimalServer.cpp
+      79     13    553      2     115 main@35-149@Source/App/Console/Source/MinimalServer.cpp
+      45      8    307      2      67 main@12-78@Source/App/Console/Source/SimpleClient.cpp
+       1      1     18      2       1 KAI::Demo::Chat::IChatPeerProxy::IChatPeerProxy@8-8@Source/App/Chat/Generated/ChatInterface.proxy.h
+       5      1     28      1       5 KAI::Demo::Chat::IChatPeerProxy::AnnouncePresence@11-15@Source/App/Chat/Generated/ChatInterface.proxy.h
+       1      1     12      0       1 KAI::Demo::Chat::IChatPeerProxy::RequestPeerInfo@17-17@Source/App/Chat/Generated/ChatInterface.proxy.h
+       4      1     22      0       4 KAI::Demo::Chat::IChatPeerProxy::GetPeerInfo@19-22@Source/App/Chat/Generated/ChatInterface.proxy.h
+       5      1     28      1       5 KAI::Demo::Chat::IChatPeerProxy::PeerDisconnecting@24-28@Source/App/Chat/Generated/ChatInterface.proxy.h
+       5      1     28      1       5 KAI::Demo::Chat::IChatPeerProxy::ReceiveMessage@31-35@Source/App/Chat/Generated/ChatInterface.proxy.h
+       5      1     28      1       5 KAI::Demo::Chat::IChatPeerProxy::ReceivePrivateMessage@37-41@Source/App/Chat/Generated/ChatInterface.proxy.h
+       7      1     40      2       7 KAI::Demo::Chat::IChatPeerProxy::ForwardMessage@43-49@Source/App/Chat/Generated/ChatInterface.proxy.h
+       7      1     38      2       7 KAI::Demo::Chat::IChatPeerProxy::JoinChannelRequest@52-58@Source/App/Chat/Generated/ChatInterface.proxy.h
+       7      1     38      2       7 KAI::Demo::Chat::IChatPeerProxy::LeaveChannelNotification@60-66@Source/App/Chat/Generated/ChatInterface.proxy.h
+       5      1     28      1       5 KAI::Demo::Chat::IChatPeerProxy::ChannelStateUpdate@68-72@Source/App/Chat/Generated/ChatInterface.proxy.h
+       5      1     28      1       5 KAI::Demo::Chat::IChatPeerProxy::RequestChannelState@74-78@Source/App/Chat/Generated/ChatInterface.proxy.h
+       6      1     38      2       6 KAI::Demo::Chat::IChatPeerProxy::PeerStatusChanged@81-86@Source/App/Chat/Generated/ChatInterface.proxy.h
+       6      1     38      2       6 KAI::Demo::Chat::IChatPeerProxy::PeerJoinedChannel@88-93@Source/App/Chat/Generated/ChatInterface.proxy.h
+       6      1     38      2       6 KAI::Demo::Chat::IChatPeerProxy::PeerLeftChannel@95-100@Source/App/Chat/Generated/ChatInterface.proxy.h
+       5      1     28      1       5 KAI::Demo::Chat::IChatPeerProxy::ProposeChannelCreation@103-107@Source/App/Chat/Generated/ChatInterface.proxy.h
+       6      1     38      2       6 KAI::Demo::Chat::IChatPeerProxy::VoteChannelCreation@109-114@Source/App/Chat/Generated/ChatInterface.proxy.h
+       6      1     38      2       6 KAI::Demo::Chat::IChatPeerProxy::ChannelCreationResult@116-121@Source/App/Chat/Generated/ChatInterface.proxy.h
+       6      1     38      2       6 KAI::Demo::Chat::IChatPeerProxy::Heartbeat@124-129@Source/App/Chat/Generated/ChatInterface.proxy.h
+       1      1     12      0       1 KAI::Demo::Chat::IChatPeerProxy::RequestPeerList@131-131@Source/App/Chat/Generated/ChatInterface.proxy.h
+       5      1     30      1       5 KAI::Demo::Chat::IChatPeerProxy::SharePeerList@133-137@Source/App/Chat/Generated/ChatInterface.proxy.h
+       4      1     22      1       4 KAI::Demo::Chat::IChatPeerProxy::RegisterMessageReceivedHandler@140-143@Source/App/Chat/Generated/ChatInterface.proxy.h
+       3      1     10      0       3 KAI::Demo::Chat::IChatPeerProxy::UnregisterMessageReceivedHandler@145-147@Source/App/Chat/Generated/ChatInterface.proxy.h
+       4      1     22      1       4 KAI::Demo::Chat::IChatPeerProxy::RegisterPrivateMessageReceivedHandler@149-152@Source/App/Chat/Generated/ChatInterface.proxy.h
+       3      1     10      0       3 KAI::Demo::Chat::IChatPeerProxy::UnregisterPrivateMessageReceivedHandler@154-156@Source/App/Chat/Generated/ChatInterface.proxy.h
+       3      1     22      1       3 KAI::Demo::Chat::IChatPeerProxy::RegisterPeerJoinedHandler@158-160@Source/App/Chat/Generated/ChatInterface.proxy.h
+       1      1     10      0       1 KAI::Demo::Chat::IChatPeerProxy::UnregisterPeerJoinedHandler@162-162@Source/App/Chat/Generated/ChatInterface.proxy.h
+       3      1     22      1       3 KAI::Demo::Chat::IChatPeerProxy::RegisterPeerLeftHandler@164-166@Source/App/Chat/Generated/ChatInterface.proxy.h
+       1      1     10      0       1 KAI::Demo::Chat::IChatPeerProxy::UnregisterPeerLeftHandler@168-168@Source/App/Chat/Generated/ChatInterface.proxy.h
+       4      1     24      1       4 KAI::Demo::Chat::IChatPeerProxy::RegisterPeerStatusUpdatedHandler@170-173@Source/App/Chat/Generated/ChatInterface.proxy.h
+       3      1     10      0       3 KAI::Demo::Chat::IChatPeerProxy::UnregisterPeerStatusUpdatedHandler@175-177@Source/App/Chat/Generated/ChatInterface.proxy.h
+       4      1     26      1       4 KAI::Demo::Chat::IChatPeerProxy::RegisterChannelMembershipChangedHandler@179-182@Source/App/Chat/Generated/ChatInterface.proxy.h
+       3      1     10      0       3 KAI::Demo::Chat::IChatPeerProxy::UnregisterChannelMembershipChangedHandler@184-186@Source/App/Chat/Generated/ChatInterface.proxy.h
+       4      1     22      1       4 KAI::Demo::Chat::IChatPeerProxy::RegisterChannelCreatedHandler@188-191@Source/App/Chat/Generated/ChatInterface.proxy.h
+       3      1     10      0       3 KAI::Demo::Chat::IChatPeerProxy::UnregisterChannelCreatedHandler@193-195@Source/App/Chat/Generated/ChatInterface.proxy.h
+       1      1     18      2       1 KAI::Demo::Chat::IChatManagerProxy::IChatManagerProxy@200-200@Source/App/Chat/Generated/ChatInterface.proxy.h
+       6      1     38      2       6 KAI::Demo::Chat::IChatManagerProxy::Initialize@203-208@Source/App/Chat/Generated/ChatInterface.proxy.h
+       5      1     28      1       5 KAI::Demo::Chat::IChatManagerProxy::SetStatus@210-214@Source/App/Chat/Generated/ChatInterface.proxy.h
+       4      1     22      0       4 KAI::Demo::Chat::IChatManagerProxy::GetMyInfo@216-219@Source/App/Chat/Generated/ChatInterface.proxy.h
+       6      1     38      2       6 KAI::Demo::Chat::IChatManagerProxy::CreateChannel@222-227@Source/App/Chat/Generated/ChatInterface.proxy.h
+       5      1     28      1       5 KAI::Demo::Chat::IChatManagerProxy::JoinChannel@229-233@Source/App/Chat/Generated/ChatInterface.proxy.h
+       5      1     28      1       5 KAI::Demo::Chat::IChatManagerProxy::LeaveChannel@235-239@Source/App/Chat/Generated/ChatInterface.proxy.h
+       4      1     22      0       4 KAI::Demo::Chat::IChatManagerProxy::GetMyChannels@241-244@Source/App/Chat/Generated/ChatInterface.proxy.h
+       6      1     38      2       6 KAI::Demo::Chat::IChatManagerProxy::SendMessage@247-252@Source/App/Chat/Generated/ChatInterface.proxy.h
+       6      1     38      2       6 KAI::Demo::Chat::IChatManagerProxy::SendPrivateMessage@254-259@Source/App/Chat/Generated/ChatInterface.proxy.h
+       6      1     38      1       6 KAI::Demo::Chat::IChatManagerProxy::GetChannelMessages@261-266@Source/App/Chat/Generated/ChatInterface.proxy.h
+       6      1     38      1       6 KAI::Demo::Chat::IChatManagerProxy::GetPrivateMessages@268-273@Source/App/Chat/Generated/ChatInterface.proxy.h
+       4      1     22      0       4 KAI::Demo::Chat::IChatManagerProxy::GetKnownPeers@276-279@Source/App/Chat/Generated/ChatInterface.proxy.h
+       6      1     38      1       6 KAI::Demo::Chat::IChatManagerProxy::GetPeersInChannel@281-286@Source/App/Chat/Generated/ChatInterface.proxy.h
+       1      1     12      0       1 KAI::Demo::Chat::IChatManagerProxy::RefreshPeerList@288-288@Source/App/Chat/Generated/ChatInterface.proxy.h
+       1      1     12      0       1 KAI::Demo::Chat::IChatManagerProxy::StartNetworking@291-291@Source/App/Chat/Generated/ChatInterface.proxy.h
+       1      1     12      0       1 KAI::Demo::Chat::IChatManagerProxy::StopNetworking@293-293@Source/App/Chat/Generated/ChatInterface.proxy.h
+       4      1     22      0       4 KAI::Demo::Chat::IChatManagerProxy::IsNetworkActive@295-298@Source/App/Chat/Generated/ChatInterface.proxy.h
+       4      1     22      1       4 KAI::Demo::Chat::IChatManagerProxy::RegisterNetworkStatusChangedHandler@301-304@Source/App/Chat/Generated/ChatInterface.proxy.h
+       3      1     10      0       3 KAI::Demo::Chat::IChatManagerProxy::UnregisterNetworkStatusChangedHandler@306-308@Source/App/Chat/Generated/ChatInterface.proxy.h
+       3      1     22      1       3 KAI::Demo::Chat::IChatManagerProxy::RegisterMessageAddedHandler@310-312@Source/App/Chat/Generated/ChatInterface.proxy.h
+       3      1     10      0       3 KAI::Demo::Chat::IChatManagerProxy::UnregisterMessageAddedHandler@314-316@Source/App/Chat/Generated/ChatInterface.proxy.h
+       4      1     24      1       4 KAI::Demo::Chat::IChatManagerProxy::RegisterChannelListUpdatedHandler@318-321@Source/App/Chat/Generated/ChatInterface.proxy.h
+       3      1     10      0       3 KAI::Demo::Chat::IChatManagerProxy::UnregisterChannelListUpdatedHandler@323-325@Source/App/Chat/Generated/ChatInterface.proxy.h
+       4      1     24      1       4 KAI::Demo::Chat::IChatManagerProxy::RegisterPeerListUpdatedHandler@327-330@Source/App/Chat/Generated/ChatInterface.proxy.h
+       3      1     10      0       3 KAI::Demo::Chat::IChatManagerProxy::UnregisterPeerListUpdatedHandler@332-334@Source/App/Chat/Generated/ChatInterface.proxy.h
+      29      4    205      0      40 RunServer@14-53@Source/App/NetworkTest/Source/Main.cpp
+      41      8    255      0      61 RunClient@55-115@Source/App/NetworkTest/Source/Main.cpp
+      24      6    137      2      27 main@117-143@Source/App/NetworkTest/Source/Main.cpp
+      58      7    528      1      70 RenderDrawLists@31-100@Source/App/Window/Source/Main.cpp
+       3      1     29      2       3 error_callback@102-104@Source/App/Window/Source/Main.cpp
+       3      1     18      1       3 GetClipboardText@106-108@Source/App/Window/Source/Main.cpp
+       3      1     24      2       3 SetClipboardText@110-112@Source/App/Window/Source/Main.cpp
+       5      4     38      4       5 mouse_button_callback@114-118@Source/App/Window/Source/Main.cpp
+       4      1     21      3       4 scroll_callback@120-123@Source/App/Window/Source/Main.cpp
+      15      7    137      5      16 key_callback@125-140@Source/App/Window/Source/Main.cpp
+       4      3     43      2       4 char_callback@142-145@Source/App/Window/Source/Main.cpp
+      44      1    358      1      58 InitImGui@147-204@Source/App/Window/Source/Main.cpp
+      32      8    276      0      44 UpdateImGui@206-249@Source/App/Window/Source/Main.cpp
+       8      2     41      0       9 ShutdownImGui@251-259@Source/App/Window/Source/Main.cpp
+      11      2     70      0      16 SetupGui@261-276@Source/App/Window/Source/Main.cpp
+       7      1     35      0      11 LoadFont@278-288@Source/App/Window/Source/Main.cpp
+      45      5    305      2      66 main@290-355@Source/App/Window/Source/Main.cpp
+      17      1    159      0      27 ExecutorWindow::ExecutorWindow@45-71@Source/App/Window/Source/ExecutorWindow.cpp
+       7      2     38      1       8 ExecutorWindow::ClearLog@73-80@Source/App/Window/Source/ExecutorWindow.cpp
+       7      1     44      0       7 ExecutorWindow::ClearAllLogs@82-88@Source/App/Window/Source/ExecutorWindow.cpp
+      14      2     90      1      16 ExecutorWindow::AddLog@90-105@Source/App/Window/Source/ExecutorWindow.cpp
+       8      2     43      1      10 ExecutorWindow::SwitchLanguage@107-116@Source/App/Window/Source/ExecutorWindow.cpp
+      11      4     61      1      16 ExecutorWindow::SwitchTab@118-133@Source/App/Window/Source/ExecutorWindow.cpp
+     117     15   1095      2     150 ExecutorWindow::Draw@135-284@Source/App/Window/Source/ExecutorWindow.cpp
+      78     14    640      0     112 ExecutorWindow::DrawConsoleContent@286-397@Source/App/Window/Source/ExecutorWindow.cpp
+     221     26   2162      0     299 ExecutorWindow::DrawDebuggerContent@399-697@Source/App/Window/Source/ExecutorWindow.cpp
+      34      6    252      0      42 ExecutorWindow::ExecuteDebugStep@699-740@Source/App/Window/Source/ExecutorWindow.cpp
+      92     22    668      1     121 ExecutorWindow::ExecCommand@742-862@Source/App/Window/Source/ExecutorWindow.cpp
+       4      1     21      1       4 ShowExecutorWindow@865-868@Source/App/Window/Source/ExecutorWindow.cpp
+      11      4     80      1      19 ImGui_ImplOpenGL3_Init@124-142@Source/App/Window/Source/imgui_impl_opengl3.cpp
+       1      1      9      0       1 ImGui_ImplOpenGL3_Shutdown@144-144@Source/App/Window/Source/imgui_impl_opengl3.cpp
+       3      2     14      0       3 ImGui_ImplOpenGL3_NewFrame@146-148@Source/App/Window/Source/imgui_impl_opengl3.cpp
+     162     24   1282      1     206 ImGui_ImplOpenGL3_RenderDrawData@156-361@Source/App/Window/Source/imgui_impl_opengl3.cpp
+      20      1    137      0      33 ImGui_ImplOpenGL3_CreateFontsTexture@363-395@Source/App/Window/Source/imgui_impl_opengl3.cpp
+       8      2     41      0       8 ImGui_ImplOpenGL3_DestroyFontsTexture@397-404@Source/App/Window/Source/imgui_impl_opengl3.cpp
+      17      3    128      2      17 CheckShader@408-424@Source/App/Window/Source/imgui_impl_opengl3.cpp
+      17      3    130      2      17 CheckProgram@428-444@Source/App/Window/Source/imgui_impl_opengl3.cpp
+     144      4    465      0     168 ImGui_ImplOpenGL3_CreateDeviceObjects@446-613@Source/App/Window/Source/imgui_impl_opengl3.cpp
+      16     10    104      0      20 ImGui_ImplOpenGL3_DestroyDeviceObjects@615-634@Source/App/Window/Source/imgui_impl_opengl3.cpp
+       3      1     18      1       3 ImGui_ImplGlfw_GetClipboardText@91-93@Source/App/Window/Source/imgui_impl_glfw.cpp
+       3      1     24      2       3 ImGui_ImplGlfw_SetClipboardText@95-97@Source/App/Window/Source/imgui_impl_glfw.cpp
+       8      5     58      4       9 ImGui_ImplGlfw_MouseButtonCallback@99-107@Source/App/Window/Source/imgui_impl_glfw.cpp
+       8      2     57      3       9 ImGui_ImplGlfw_ScrollCallback@109-117@Source/App/Window/Source/imgui_impl_glfw.cpp
+      16      8    151      5      19 ImGui_ImplGlfw_KeyCallback@119-137@Source/App/Window/Source/imgui_impl_glfw.cpp
+       5      4     56      2       6 ImGui_ImplGlfw_CharCallback@139-144@Source/App/Window/Source/imgui_impl_glfw.cpp
+      68      3    415      3      83 ImGui_ImplGlfw_Init@146-228@Source/App/Window/Source/imgui_impl_glfw.cpp
+       3      1     21      2       3 ImGui_ImplGlfw_InitForOpenGL@230-232@Source/App/Window/Source/imgui_impl_glfw.cpp
+       3      1     21      2       3 ImGui_ImplGlfw_InitForVulkan@234-236@Source/App/Window/Source/imgui_impl_glfw.cpp
+       8      2     40      0       8 ImGui_ImplGlfw_Shutdown@238-245@Source/App/Window/Source/imgui_impl_glfw.cpp
+      22      6    173      0      31 ImGui_ImplGlfw_UpdateMousePosAndButtons@247-277@Source/App/Window/Source/imgui_impl_glfw.cpp
+      15      6     98      0      20 ImGui_ImplGlfw_UpdateMouseCursor@279-298@Source/App/Window/Source/imgui_impl_glfw.cpp
+      44      7    388      0      68 ImGui_ImplGlfw_NewFrame@300-367@Source/App/Window/Source/imgui_impl_glfw.cpp
+      10      1     66      0      12 ExecutorWindow::ExecutorWindow@24-35@Source/App/Window/Include/ExecutorWindow.h
+       5      1     25      0       5 ExecutorWindow::ClearLog@37-41@Source/App/Window/Include/ExecutorWindow.h
+      10      1     67      1      11 ExecutorWindow::AddLog@43-53@Source/App/Window/Include/ExecutorWindow.h
+      46     15    363      2      95 ExecutorWindow::Draw@55-149@Source/App/Window/Include/ExecutorWindow.h
+      19      3    132      1      22 ExecutorWindow::ExecCommand@151-172@Source/App/Window/Include/ExecutorWindow.h
+       4      1     28      1       4 ExecutorWindow::TextEditCallbackStub@174-177@Source/App/Window/Include/ExecutorWindow.h
+       3      1     11      1     110 ExecutorWindow::TextEditCallback@179-288@Source/App/Window/Include/ExecutorWindow.h
+       4      1     21      1       4 ShowExecutorWindow@291-294@Source/App/Window/Include/ExecutorWindow.h
+      82     14    746      2     100 main@10-109@Source/Library/Rho/DiagnoseTests.cpp
+       5      1     27      1       5 ConnectionManager::ConnectionManager@11-15@Source/Library/Network/Source/ConnectionManager.cpp
+       4      1     19      0       5 ConnectionManager::~ConnectionManager@17-21@Source/Library/Network/Source/ConnectionManager.cpp
+      22      3    157      1      33 ConnectionManager::AddConnection@23-55@Source/Library/Network/Source/ConnectionManager.cpp
+      11      2     93      1      16 ConnectionManager::RemoveConnection@57-72@Source/Library/Network/Source/ConnectionManager.cpp
+      12      2     95      1      16 ConnectionManager::RemoveConnection@74-89@Source/Library/Network/Source/ConnectionManager.cpp
+      20      5    139      0      31 ConnectionManager::Update@91-121@Source/Library/Network/Source/ConnectionManager.cpp
+       6      2     43      1       6 ConnectionManager::UpdateActivity@123-128@Source/Library/Network/Source/ConnectionManager.cpp
+       7      2     53      1       7 ConnectionManager::UpdateActivity@130-136@Source/Library/Network/Source/ConnectionManager.cpp
+       7      2     44      1       7 ConnectionManager::GetConnectionState@138-144@Source/Library/Network/Source/ConnectionManager.cpp
+      28      6    130      2      31 ConnectionManager::SetConnectionState@146-176@Source/Library/Network/Source/ConnectionManager.cpp
+       7      2     43      1       7 ConnectionManager::GetPing@178-184@Source/Library/Network/Source/ConnectionManager.cpp
+       8      2     44      1       8 ConnectionManager::GetSystemAddress@186-193@Source/Library/Network/Source/ConnectionManager.cpp
+       9      2     55      1       9 ConnectionManager::GetConnectionId@195-203@Source/Library/Network/Source/ConnectionManager.cpp
+       7      2     39      0       7 ConnectionManager::GetAllConnections@206-212@Source/Library/Network/Source/ConnectionManager.cpp
+       3      1     15      0       3 ConnectionManager::GetConnectionCount@214-216@Source/Library/Network/Source/ConnectionManager.cpp
+       3      1     15      1       3 ConnectionManager::SetConnectionTimeout@218-220@Source/Library/Network/Source/ConnectionManager.cpp
+      58     14    399      1      72 ProxyGenerator::ParseTauFile@35-106@Source/Library/Network/Source/GenerateProxy.cpp
+      43      6    321      2      60 ProxyGenerator::GenerateProxyClass@109-168@Source/Library/Network/Source/GenerateProxy.cpp
+      59      8    437      2      80 ProxyGenerator::GenerateAgentClass@171-250@Source/Library/Network/Source/GenerateProxy.cpp
+      60     11    397      2      82 ProxyGenerator::ProcessFile@253-334@Source/Library/Network/Source/GenerateProxy.cpp
+      15      2     79      0      17 GenerateNetworkProxy@338-354@Source/Library/Network/Source/GenerateProxy.cpp
+       3      1     20      2       3 Representative::Receive@6-8@Source/Library/Network/Source/ProxyBase.cpp
+       3      1     20      2       3 Representative::Receive@10-12@Source/Library/Network/Source/ProxyBase.cpp
+       3      1     21      2       3 Representative::Send@14-16@Source/Library/Network/Source/ProxyBase.cpp
+       3      1     21      2       3 Representative::Send@18-20@Source/Library/Network/Source/ProxyBase.cpp
+       4      1     27      2       4 GetNetHandle@22-25@Source/Library/Network/Source/ProxyBase.cpp
+       2      1     27      1       2 PeerDiscovery::PeerDiscovery@9-10@Source/Library/Network/Source/PeerDiscovery.cpp
+       1      1     11      0       1 PeerDiscovery::~PeerDiscovery@12-12@Source/Library/Network/Source/PeerDiscovery.cpp
+       9      2     59      1      15 PeerDiscovery::Start@14-28@Source/Library/Network/Source/PeerDiscovery.cpp
+       5      2     30      0       6 PeerDiscovery::Stop@30-35@Source/Library/Network/Source/PeerDiscovery.cpp
+      17      6    116      0      24 PeerDiscovery::Update@37-60@Source/Library/Network/Source/PeerDiscovery.cpp
+       3      1     13      1       3 PeerDiscovery::SetDiscoveryCallback@62-64@Source/Library/Network/Source/PeerDiscovery.cpp
+       4      1     11      0       4 PeerDiscovery::GetDiscoveredPeers@66-69@Source/Library/Network/Source/PeerDiscovery.cpp
+       1      1     11      0       1 PeerDiscovery::IsActive@71-71@Source/Library/Network/Source/PeerDiscovery.cpp
+       1      1     13      0       1 PeerDiscovery::IsDiscovering@73-73@Source/Library/Network/Source/PeerDiscovery.cpp
+       1      1     13      0       1 PeerDiscovery::ClearDiscoveredPeers@75-75@Source/Library/Network/Source/PeerDiscovery.cpp
+      22      6    138      1      32 PeerDiscovery::ProcessDiscoveryResponse@77-108@Source/Library/Network/Source/PeerDiscovery.cpp
+       4      1     24      1       5 NetworkLogger::Init@10-14@Source/Library/Network/Source/NetworkLogger.cpp
+      14      5     52      1      14 NetworkLogger::CategoryToString@16-29@Source/Library/Network/Source/NetworkLogger.cpp
+      14      5     80      1      14 GetColorForCategory@32-45@Source/Library/Network/Source/NetworkLogger.cpp
+       3      1     22      1       3 NetworkLogger::GetLogFilename@47-49@Source/Library/Network/Source/NetworkLogger.cpp
+       5      2     49      1       5 NetworkLogger::ExtractFilename@52-56@Source/Library/Network/Source/NetworkLogger.cpp
+      11      2    104      2      21 NetworkLogger::Log@58-78@Source/Library/Network/Source/NetworkLogger.cpp
+      16      2    144      4      26 NetworkLogger::LogWithLocation@80-105@Source/Library/Network/Source/NetworkLogger.cpp
+       3      1     22      1       3 NetworkLogger::LogConnection@107-109@Source/Library/Network/Source/NetworkLogger.cpp
+       3      1     22      1       3 NetworkLogger::LogMessage@111-113@Source/Library/Network/Source/NetworkLogger.cpp
+       3      1     22      1       3 NetworkLogger::LogDiscovery@115-117@Source/Library/Network/Source/NetworkLogger.cpp
+       3      1     22      1       3 NetworkLogger::LogStatus@119-121@Source/Library/Network/Source/NetworkLogger.cpp
+       4      1     34      3       4 NetworkLogger::LogConnectionWithLocation@124-127@Source/Library/Network/Source/NetworkLogger.cpp
+       4      1     34      3       4 NetworkLogger::LogMessageWithLocation@129-132@Source/Library/Network/Source/NetworkLogger.cpp
+       4      1     34      3       4 NetworkLogger::LogDiscoveryWithLocation@134-137@Source/Library/Network/Source/NetworkLogger.cpp
+       4      1     34      3       4 NetworkLogger::LogStatusWithLocation@139-142@Source/Library/Network/Source/NetworkLogger.cpp
+      10      2     79      0      20 Node::Node@13-32@Source/Library/Network/Source/Node.cpp
+       7      2     30      0       9 Node::~Node@34-42@Source/Library/Network/Source/Node.cpp
+       1      1     19      1       1 Node::Listen@44-44@Source/Library/Network/Source/Node.cpp
+      46      7    273      2      57 Node::Listen@46-102@Source/Library/Network/Source/Node.cpp
+      90     16    542      2     112 Node::Connect@104-215@Source/Library/Network/Source/Node.cpp
+      12      5     66      0      18 Node::Disconnect@217-234@Source/Library/Network/Source/Node.cpp
+       5      1     22      0       9 Node::Shutdown@236-244@Source/Library/Network/Source/Node.cpp
+      17      7     96      0      25 Node::Update@246-270@Source/Library/Network/Source/Node.cpp
+       7      2     36      1       7 Node::StartDiscovery@272-278@Source/Library/Network/Source/Node.cpp
+       6      3     32      0       6 Node::StopDiscovery@280-285@Source/Library/Network/Source/Node.cpp
+       3      2     19      0       3 Node::IsDiscovering@287-289@Source/Library/Network/Source/Node.cpp
+       4      2     28      0       4 Node::GetDiscoveredPeers@291-294@Source/Library/Network/Source/Node.cpp
+       6      2     34      1       6 Node::SetPeerDiscoveryCallback@296-301@Source/Library/Network/Source/Node.cpp
+      10      3     57      0      10 Node::GetConnections@303-312@Source/Library/Network/Source/Node.cpp
+      11      5     88      2      17 Node::IsConnectedTo@314-330@Source/Library/Network/Source/Node.cpp
+       3      2     19      0       3 Node::GetConnectionCount@332-334@Source/Library/Network/Source/Node.cpp
+       6      3     57      2       8 Node::GetPing@336-343@Source/Library/Network/Source/Node.cpp
+       4      3     36      1       5 Node::GetPacketIdentifier@345-349@Source/Library/Network/Source/Node.cpp
+      91     21    426      1     112 Node::ProcessPacket@351-462@Source/Library/Network/Source/Node.cpp
+       4      1     19      1       5 Node::ProcessObjectMessage@464-468@Source/Library/Network/Source/Node.cpp
+       3      1     19      1       4 Node::ProcessFunctionCall@470-473@Source/Library/Network/Source/Node.cpp
+       4      1     19      1       5 Node::ProcessEventNotification@475-479@Source/Library/Network/Source/Node.cpp
+      27      6    111      2      31 Node::OnConnectionEvent@481-511@Source/Library/Network/Source/Node.cpp
+       4      3     36      1       4 List::Append@5-8@Source/Library/Core/Source/BuiltinTypes/List.cpp
+       9      3     71      1       9 List::Erase@10-18@Source/Library/Core/Source/BuiltinTypes/List.cpp
+       4      2     31      1       4 List::Erase@20-23@Source/Library/Core/Source/BuiltinTypes/List.cpp
+       8      2     44      0       8 List::Pop@25-32@Source/Library/Core/Source/BuiltinTypes/List.cpp
+       4      2     33      0       4 List::Clear@34-37@Source/Library/Core/Source/BuiltinTypes/List.cpp
+       6      2     44      2       6 operator < <@39-44@Source/Library/Core/Source/BuiltinTypes/List.cpp
+      10      2     58      2      10 operator > >@46-55@Source/Library/Core/Source/BuiltinTypes/List.cpp
+       9      3     60      2       9 operator < <@57-65@Source/Library/Core/Source/BuiltinTypes/List.cpp
+       1      1     12      0       1 GetHash@67-67@Source/Library/Core/Source/BuiltinTypes/List.cpp
+      10      1     94      1      10 List::Register@69-78@Source/Library/Core/Source/BuiltinTypes/List.cpp
+       5      1     52      0       5 String::LowerCase@10-14@Source/Library/Core/Source/BuiltinTypes/String.cpp
+       5      1     52      0       5 String::UpperCase@16-20@Source/Library/Core/Source/BuiltinTypes/String.cpp
+       3      1     12      0       9 String::Capitalise@22-30@Source/Library/Core/Source/BuiltinTypes/String.cpp
+       3      1     28      1       3 String::Contains@32-34@Source/Library/Core/Source/BuiltinTypes/String.cpp
+       4      2     53      1       4 String::StartsWith@36-39@Source/Library/Core/Source/BuiltinTypes/String.cpp
+       5      2     57      2       5 String::ReplaceFirst@41-45@Source/Library/Core/Source/BuiltinTypes/String.cpp
+       5      2     57      2       5 String::ReplaceLast@47-51@Source/Library/Core/Source/BuiltinTypes/String.cpp
+       6      2     56      1       6 String::RemoveAll@53-58@Source/Library/Core/Source/BuiltinTypes/String.cpp
+       5      2     65      1       5 String::EndsWith@60-64@Source/Library/Core/Source/BuiltinTypes/String.cpp
+       6      2     57      2       7 operator < <@66-72@Source/Library/Core/Source/BuiltinTypes/String.cpp
+      14      2     79      2      16 operator > >@74-89@Source/Library/Core/Source/BuiltinTypes/String.cpp
+       5      1     49      1       7 String::Register@91-97@Source/Library/Core/Source/BuiltinTypes/String.cpp
+       3      1     27      2       3 operator < <@100-102@Source/Library/Core/Source/BuiltinTypes/String.cpp
+       3      1     12      1      11 GetHash@9-19@Source/Library/Core/Source/BuiltinTypes/CalcHashValues.cpp
+       4      2     35      1       4 GetHash@21-24@Source/Library/Core/Source/BuiltinTypes/CalcHashValues.cpp
+       5      2     50      1       5 GetHash@26-30@Source/Library/Core/Source/BuiltinTypes/CalcHashValues.cpp
+       6      2     65      1       6 GetHash@32-37@Source/Library/Core/Source/BuiltinTypes/CalcHashValues.cpp
+       3      1     34      2       3 operator > >@8-10@Source/Library/Core/Source/BuiltinTypes/Map.cpp
+       1      1     17      2       1 operator > >@12-12@Source/Library/Core/Source/BuiltinTypes/Map.cpp
+       4      2     32      1       4 HashMapCompare::operator ( )@21-24@Source/Library/Core/Source/BuiltinTypes/Map.cpp
+       5      3     62      2       6 HashMapCompare::operator ( )@26-31@Source/Library/Core/Source/BuiltinTypes/Map.cpp
+       8      5    118      2      10 MapCompare::operator ( )@33-42@Source/Library/Core/Source/BuiltinTypes/Map.cpp
+       3      1     23      1       3 ObjectSet::Register@8-10@Source/Library/Core/Source/BuiltinTypes/Set.cpp
+       1      1     15      0       1 ObjectSet::Empty@12-12@Source/Library/Core/Source/BuiltinTypes/Set.cpp
+       1      1     21      0       1 ObjectSet::Size@14-14@Source/Library/Core/Source/BuiltinTypes/Set.cpp
+       4      1     14      0       4 ObjectSet::Destroy@16-19@Source/Library/Core/Source/BuiltinTypes/Set.cpp
+       1      1     16      1       1 ObjectSet::Insert@21-21@Source/Library/Core/Source/BuiltinTypes/Set.cpp
+       3      2     25      1       3 ObjectSet::Append@23-25@Source/Library/Core/Source/BuiltinTypes/Set.cpp
+       3      2     21      0       3 ObjectSet::Clear@27-29@Source/Library/Core/Source/BuiltinTypes/Set.cpp
+       4      2     31      1       5 ObjectSet::Erase@31-35@Source/Library/Core/Source/BuiltinTypes/Set.cpp
+       5      2     46      1       6 ObjectSet::Erase@37-42@Source/Library/Core/Source/BuiltinTypes/Set.cpp
+       3      1     28      2       3 operator < <@44-46@Source/Library/Core/Source/BuiltinTypes/Set.cpp
+       4      1     26      2       4 operator < <@48-51@Source/Library/Core/Source/BuiltinTypes/Set.cpp
+       4      1     25      2       4 operator > >@53-56@Source/Library/Core/Source/BuiltinTypes/Set.cpp
+       6      3     47      1       7 Array::RemoveAt@8-14@Source/Library/Core/Source/BuiltinTypes/Array.cpp
+       8      4     63      2       9 Array::Insert@16-24@Source/Library/Core/Source/BuiltinTypes/Array.cpp
+       4      1     23      1       4 Array::Erase@26-29@Source/Library/Core/Source/BuiltinTypes/Array.cpp
+       3      2     25      1       3 Array::Append@31-33@Source/Library/Core/Source/BuiltinTypes/Array.cpp
+       6      1     30      0       6 Array::PopBack@35-40@Source/Library/Core/Source/BuiltinTypes/Array.cpp
+       5      2     42      0       5 Array::Clear@42-46@Source/Library/Core/Source/BuiltinTypes/Array.cpp
+       1      1     20      1       1 Array::Erase@48-48@Source/Library/Core/Source/BuiltinTypes/Array.cpp
+       9      3     57      1       9 Array::Erase@50-58@Source/Library/Core/Source/BuiltinTypes/Array.cpp
+      10      2     73      2      10 operator < <@60-69@Source/Library/Core/Source/BuiltinTypes/Array.cpp
+       7      2     65      2       7 operator < <@71-77@Source/Library/Core/Source/BuiltinTypes/Array.cpp
+      11      2     64      2      11 operator > >@79-89@Source/Library/Core/Source/BuiltinTypes/Array.cpp
+      10      3     56      2      12 ConcatArrays@92-103@Source/Library/Core/Source/BuiltinTypes/Array.cpp
+      15      1    127      1      17 Array::Register@105-121@Source/Library/Core/Source/BuiltinTypes/Array.cpp
+       5      1     57      1       5 Stack::Register@8-12@Source/Library/Core/Source/BuiltinTypes/Stack.cpp
+       4      1     14      0       4 Stack::Destroy@14-17@Source/Library/Core/Source/BuiltinTypes/Stack.cpp
+       4      2     35      1       4 Stack::At@19-22@Source/Library/Core/Source/BuiltinTypes/Stack.cpp
+       4      2     28      0       4 Stack::Top@24-27@Source/Library/Core/Source/BuiltinTypes/Stack.cpp
+       1      1     18      1       1 Stack::Push@29-29@Source/Library/Core/Source/BuiltinTypes/Stack.cpp
+       3      2     18      0       3 Stack::Clear@31-33@Source/Library/Core/Source/BuiltinTypes/Stack.cpp
+       5      2     54      1       5 Stack::Erase@35-39@Source/Library/Core/Source/BuiltinTypes/Stack.cpp
+       4      1     23      1       4 Stack::Erase@41-44@Source/Library/Core/Source/BuiltinTypes/Stack.cpp
+       7      2     41      0       7 Stack::Pop@46-52@Source/Library/Core/Source/BuiltinTypes/Stack.cpp
+       9      3     58      2       9 operator < <@54-62@Source/Library/Core/Source/BuiltinTypes/Stack.cpp
+       4      1     26      2       4 operator < <@64-67@Source/Library/Core/Source/BuiltinTypes/Stack.cpp
+       4      1     25      2       4 operator > >@69-72@Source/Library/Core/Source/BuiltinTypes/Stack.cpp
+       3      1     41      4       3 ObjectConstructParams::ObjectConstructParams@10-12@Source/Library/Core/Source/Object.cpp
+       5      1     34      1       5 ObjectConstructParams::ObjectConstructParams@14-18@Source/Library/Core/Source/Object.cpp
+       2      1     32      1       2 Object::Object@20-21@Source/Library/Core/Source/Object.cpp
+      23      4    110      1      32 Object::Object@23-54@Source/Library/Core/Source/Object.cpp
+       7      2     45      2       7 Object::Assign@56-62@Source/Library/Core/Source/Object.cpp
+      49     11    213      1      69 Object::operator =@64-132@Source/Library/Core/Source/Object.cpp
+       7      4     55      0      10 Object::Delete@134-143@Source/Library/Core/Source/Object.cpp
+       3      1     17      0       3 Object::GetParentHandle@145-147@Source/Library/Core/Source/Object.cpp
+       1      1     18      1       1 Object::SetParentHandle@149-149@Source/Library/Core/Source/Object.cpp
+       4      2     27      0       5 Object::IsConst@151-155@Source/Library/Core/Source/Object.cpp
+       4      2     27      0       5 Object::GetSwitches@157-161@Source/Library/Core/Source/Object.cpp
+       4      2     27      0       5 Object::IsManaged@163-167@Source/Library/Core/Source/Object.cpp
+       4      2     27      0       5 Object::IsMarked@169-173@Source/Library/Core/Source/Object.cpp
+       4      2     27      0       5 Object::IsClean@175-179@Source/Library/Core/Source/Object.cpp
+       3      2     25      1       3 Object::SetSwitches@181-183@Source/Library/Core/Source/Object.cpp
+       3      1     25      1       3 Object::SetMarked@185-187@Source/Library/Core/Source/Object.cpp
+       3      2     22      0       3 Object::SetConst@189-191@Source/Library/Core/Source/Object.cpp
+       3      2     25      1       3 Object::SetManaged@193-195@Source/Library/Core/Source/Object.cpp
+       1      1     19      1       1 Object::SetClean@197-197@Source/Library/Core/Source/Object.cpp
+       5      1     28      0       5 Object::ToString@199-203@Source/Library/Core/Source/Object.cpp
+       6      1     33      0       6 Object::ToXmlString@205-210@Source/Library/Core/Source/Object.cpp
+       4      2     31      0       5 Object::GetTypeNumber@212-216@Source/Library/Core/Source/Object.cpp
+      35     10    142      0      65 Object::Valid@218-282@Source/Library/Core/Source/Object.cpp
+      26      7    116      0      40 Object::Exists@284-323@Source/Library/Core/Source/Object.cpp
+      10      3     40      0      13 Object::OnDeathRow@325-337@Source/Library/Core/Source/Object.cpp
+      10      3     42      1      13 Object::GetStorageBase@339-351@Source/Library/Core/Source/Object.cpp
+       4      2     30      0       5 Object::GetStorageBase@353-357@Source/Library/Core/Source/Object.cpp
+       6      3     57      1       8 GetParent@359-366@Source/Library/Core/Source/Object.cpp
+       1      1     18      0       1 Object::GetParent@368-368@Source/Library/Core/Source/Object.cpp
+       6      3     60      1       8 GetTypeNumber@370-377@Source/Library/Core/Source/Object.cpp
+      44     11    210      1      56 GetStorageBase_@379-434@Source/Library/Core/Source/Object.cpp
+      40     11    198      1      53 GetStorageBase@436-488@Source/Library/Core/Source/Object.cpp
+       5      2     47      2       7 operator > >@490-496@Source/Library/Core/Source/Object.cpp
+       3      1     30      2       3 Object::Set@498-500@Source/Library/Core/Source/Object.cpp
+       1      1     22      1       1 Object::Get@502-502@Source/Library/Core/Source/Object.cpp
+       1      1     22      1       1 Object::Has@504-504@Source/Library/Core/Source/Object.cpp
+       1      1     21      1       1 Object::Remove@506-506@Source/Library/Core/Source/Object.cpp
+       1      1     21      1       1 Object::Detach@508-508@Source/Library/Core/Source/Object.cpp
+       5      2     43      2       6 Object::SetSwitch@510-515@Source/Library/Core/Source/Object.cpp
+       4      2     29      0       5 Object::GetDictionary@517-521@Source/Library/Core/Source/Object.cpp
+       4      2     28      0       5 Object::GetDictionaryRef@523-527@Source/Library/Core/Source/Object.cpp
+       4      1     25      1       4 Object::Register@529-532@Source/Library/Core/Source/Object.cpp
+       3      1     30      2       3 Object::SetPropertyValue@534-536@Source/Library/Core/Source/Object.cpp
+       3      1     24      1       3 Object::GetPropertyValue@538-540@Source/Library/Core/Source/Object.cpp
+       3      1     30      2       3 Object::SetPropertyObject@542-544@Source/Library/Core/Source/Object.cpp
+       3      1     22      1       3 Object::HasProperty@546-548@Source/Library/Core/Source/Object.cpp
+       3      1     24      1       3 Object::GetPropertyObject@550-552@Source/Library/Core/Source/Object.cpp
+       1      1     17      0       1 Object::GetLabel@554-554@Source/Library/Core/Source/Object.cpp
+       1      1     18      0       1 Object::Duplicate@556-556@Source/Library/Core/Source/Object.cpp
+       4      2     39      1       5 Duplicate@558-562@Source/Library/Core/Source/Object.cpp
+       3      2     27      1       3 Object::SetColor@564-566@Source/Library/Core/Source/Object.cpp
+       6      2     35      1       6 Object::SetColorRecursive@568-573@Source/Library/Core/Source/Object.cpp
+       3      2     33      2       3 Object::SetColorRecursive@575-577@Source/Library/Core/Source/Object.cpp
+       3      1     17      0       3 Object::GetColor@579-581@Source/Library/Core/Source/Object.cpp
+       3      1     19      1       3 Object::RemovedFromContainer@583-585@Source/Library/Core/Source/Object.cpp
+       3      1     19      1       3 Object::AddedToContainer@587-589@Source/Library/Core/Source/Object.cpp
+       4      2     30      0       5 Object::GetBasePtr@591-595@Source/Library/Core/Source/Object.cpp
+       6      3     48      0       8 Object::GetParentBasePtr@597-604@Source/Library/Core/Source/Object.cpp
+       4      2     33      1       5 Object::GetPropertyObjects@606-610@Source/Library/Core/Source/Object.cpp
+       4      2     33      1       5 Object::GetContainedObjects@612-616@Source/Library/Core/Source/Object.cpp
+       4      3     39      1       5 Object::GetChildObjects@618-622@Source/Library/Core/Source/Object.cpp
+       5      1     26      1       5 Object::GetAllReferencedObjects@624-628@Source/Library/Core/Source/Object.cpp
+       7      3     65      1       9 GetHash@630-638@Source/Library/Core/Source/Object.cpp
+      22      6    192      2      37 operator < <@644-680@Source/Library/Core/Source/Object.cpp
+      31      7    226      2      40 operator > >@682-721@Source/Library/Core/Source/Object.cpp
+       2      1     41      2       2 Object::ChildProxy::ChildProxy@723-724@Source/Library/Core/Source/Object.cpp
+       2      1     41      2       2 Object::ChildProxy::ChildProxy@726-727@Source/Library/Core/Source/Object.cpp
+       6      3     52      0       8 Object::ChildProxy::GetObject@729-736@Source/Library/Core/Source/Object.cpp
+       4      2     33      1       5 Absolute@738-742@Source/Library/Core/Source/Object.cpp
+      25     13    243      2      39 operator <@749-787@Source/Library/Core/Source/Object.cpp
+      21     10    221      2      31 operator ==@792-822@Source/Library/Core/Source/Object.cpp
+       7      5    102      2      10 operator >@825-834@Source/Library/Core/Source/Object.cpp
+       4      3     50      2       5 operator +@836-840@Source/Library/Core/Source/Object.cpp
+       4      3     50      2       5 operator -@842-846@Source/Library/Core/Source/Object.cpp
+       4      3     50      2       5 operator *@848-852@Source/Library/Core/Source/Object.cpp
+       4      3     50      2       5 operator /@854-858@Source/Library/Core/Source/Object.cpp
+       3      1     20      1       3 Object::NewFromTypeNumber@860-862@Source/Library/Core/Source/Object.cpp
+       4      1     24      0       4 Registry::Registry@18-21@Source/Library/Core/Source/Registry.cpp
+       4      1     29      1       4 Registry::Registry@23-26@Source/Library/Core/Source/Registry.cpp
+       7      1     51      0       7 Registry::Construct@28-34@Source/Library/Core/Source/Registry.cpp
+       1      1     11      0       1 Registry::~Registry@36-36@Source/Library/Core/Source/Registry.cpp
+       1      1     11      0       1 Registry::Clear@38-38@Source/Library/Core/Source/Registry.cpp
+       6      3     55      0      11 Registry::ClearInstances@40-50@Source/Library/Core/Source/Registry.cpp
+       4      2     33      0       4 Registry::NominateAll@52-55@Source/Library/Core/Source/Registry.cpp
+       5      2     47      1       6 Registry::NewFromTypeNumber@57-62@Source/Library/Core/Source/Registry.cpp
+       6      2     52      1       7 Registry::NewFromClassName@64-70@Source/Library/Core/Source/Registry.cpp
+       5      4     37      1       6 Registry::GetClass@72-77@Source/Library/Core/Source/Registry.cpp
+       5      2     32      0       7 Registry::DestroyNominated@79-85@Source/Library/Core/Source/Registry.cpp
+      59     22    403      2      83 Registry::DestroyObject@87-169@Source/Library/Core/Source/Registry.cpp
+      10      3     65      0      10 Registry::PruneRetained@171-180@Source/Library/Core/Source/Registry.cpp
+       6      2     50      1       7 Registry::GetClass@182-188@Source/Library/Core/Source/Registry.cpp
+      20      7    115      1      32 Registry::GetStorageBase@190-221@Source/Library/Core/Source/Registry.cpp
+      10      3     50      1      14 Registry::OnDeathRow@223-236@Source/Library/Core/Source/Registry.cpp
+       5      3     55      1       7 Registry::AddClass@238-244@Source/Library/Core/Source/Registry.cpp
+       7      6     80      1      12 Registry::GetObject@246-257@Source/Library/Core/Source/Registry.cpp
+       8      2     33      1      11 Registry::MarkSweepAndDestroy@259-269@Source/Library/Core/Source/Registry.cpp
+       4      1     18      1       4 Registry::MarkAndSweep@271-274@Source/Library/Core/Source/Registry.cpp
+       3      2     28      1       4 Registry::Mark@276-279@Source/Library/Core/Source/Registry.cpp
+      11      5    106      2      15 Registry::MarkAll@281-295@Source/Library/Core/Source/Registry.cpp
+      14      6    114      0      20 Registry::Sweep@297-316@Source/Library/Core/Source/Registry.cpp
+      17      7    137      1      33 Registry::Delete@318-350@Source/Library/Core/Source/Registry.cpp
+       4      3     38      1       6 Registry::Delete@352-357@Source/Library/Core/Source/Registry.cpp
+       5      1     37      2      13 Registry::AddClass@359-371@Source/Library/Core/Source/Registry.cpp
+       1      1     11      0       1 Registry::CalcMemoryUsage@373-373@Source/Library/Core/Source/Registry.cpp
+       3      1     11      0       3 Registry::CalcMemoryFragmentationPercentage@374-376@Source/Library/Core/Source/Registry.cpp
+       1      1      7      0       1 Registry::DefragmentMemory@377-377@Source/Library/Core/Source/Registry.cpp
+       1      1     11      1       1 Registry::Pin@378-378@Source/Library/Core/Source/Registry.cpp
+       1      1     11      1       1 Registry::Unpin@379-379@Source/Library/Core/Source/Registry.cpp
+       7      2     32      0       8 Registry::GarbageCollect@381-388@Source/Library/Core/Source/Registry.cpp
+      13      4    126      1      20 Registry::NewFromClass@390-409@Source/Library/Core/Source/Registry.cpp
+       4      2     34      2       5 MarkObject@411-415@Source/Library/Core/Source/Registry.cpp
+       5      2     43      2       6 MarkObject@417-422@Source/Library/Core/Source/Registry.cpp
+       4      2     34      2       5 MarkObjectAndChildren@424-428@Source/Library/Core/Source/Registry.cpp
+      10      3     73      2      11 MarkObjectAndChildren@430-440@Source/Library/Core/Source/Registry.cpp
+       5      2     23      1       8 Registry::GarbageCollect@442-449@Source/Library/Core/Source/Registry.cpp
+      23      8    175      0      43 Registry::TriColor@451-493@Source/Library/Core/Source/Registry.cpp
+       5      2     48      0       9 Registry::ReleaseWhite@495-503@Source/Library/Core/Source/Registry.cpp
+       1      1     13      1       1 Registry::SetGCTraceLevel@505-505@Source/Library/Core/Source/Registry.cpp
+       4      2     44      2       4 RemoveFromSet@507-510@Source/Library/Core/Source/Registry.cpp
+      19      9    131      2      28 Registry::SetColor@512-539@Source/Library/Core/Source/Registry.cpp
+       4      1     28      1       4 Registry::SetTree@541-544@Source/Library/Core/Source/Registry.cpp
+      27      9    136      0      38 Registry::IsValid@546-583@Source/Library/Core/Source/Registry.cpp
+       6      3     43      4       7 find@586-592@Source/Library/Core/Source/Registry.cpp
+       3      1     27      2       3 SameHandle@594-596@Source/Library/Core/Source/Registry.cpp
+       6      3     69      1       8 Registry::AddRoot@598-605@Source/Library/Core/Source/Registry.cpp
+       1      1     11      0       1 Registry::Trace@608-608@Source/Library/Core/Source/Registry.cpp
+       8      3     56      2       9 Registry::WatchObject@610-618@Source/Library/Core/Source/Registry.cpp
+       5      3     42      1       5 Registry::IsWatching@620-624@Source/Library/Core/Source/Registry.cpp
+       4      3     27      0       4 Registry::WatchAllTypes@626-629@Source/Library/Core/Source/Registry.cpp
+       1      1     13      0       1 Registry::WatchNoTypes@631-631@Source/Library/Core/Source/Registry.cpp
+       8      3     58      2       9 Registry::WatchType@633-641@Source/Library/Core/Source/Registry.cpp
+      12      4    119      2      12 Registry::TraceSet@643-654@Source/Library/Core/Source/Registry.cpp
+       5      3     32      0       6 Registry::TraceTriColor@656-661@Source/Library/Core/Source/Registry.cpp
+       3      1     38      0       3 Registry::TraceGCCounts@663-665@Source/Library/Core/Source/Registry.cpp
+       1      1     15      0       1 Registry::TraceGrey@667-667@Source/Library/Core/Source/Registry.cpp
+       1      1     15      0       1 Registry::TraceWhite@669-669@Source/Library/Core/Source/Registry.cpp
+       1      1     16      1       1 Pathname::Pathname@27-27@Source/Library/Core/Source/Pathname.cpp
+       1      1     16      1       1 Pathname::Pathname@29-29@Source/Library/Core/Source/Pathname.cpp
+       3      2     28      0       3 Pathname::Quoted@31-33@Source/Library/Core/Source/Pathname.cpp
+       6      4     58      0       8 Pathname::Absolute@35-42@Source/Library/Core/Source/Pathname.cpp
+       1      1     14      1       1 Pathname::FromString2@44-44@Source/Library/Core/Source/Pathname.cpp
+      39     14    267      1      49 Pathname::FromString@50-98@Source/Library/Core/Source/Pathname.cpp
+       8      2     61      2       9 Pathname::AddElement@100-108@Source/Library/Core/Source/Pathname.cpp
+      32     10    164      0      39 Pathname::ToString@110-148@Source/Library/Core/Source/Pathname.cpp
+       1      1     15      0       1 Pathname::Empty@150-150@Source/Library/Core/Source/Pathname.cpp
+       4      2     22      0       5 Pathname::Validate@152-156@Source/Library/Core/Source/Pathname.cpp
+       3      1     25      2       3 operator < <@158-160@Source/Library/Core/Source/Pathname.cpp
+       3      1     24      2       3 operator <@162-164@Source/Library/Core/Source/Pathname.cpp
+       3      1     24      2       3 operator ==@166-168@Source/Library/Core/Source/Pathname.cpp
+       1      1     16      0       1 operator > >@170-170@Source/Library/Core/Source/Pathname.cpp
+       3      1     17      0       3 operator < <@172-174@Source/Library/Core/Source/Pathname.cpp
+       1      1     16      0       1 operator > >@176-176@Source/Library/Core/Source/Pathname.cpp
+      25     11    242      2      40 operator +@179-218@Source/Library/Core/Source/Pathname.cpp
+       6      1     65      1       6 Pathname::Register@220-225@Source/Library/Core/Source/Pathname.cpp
+      14      4    100      2      17 File::GetFilesWithExtensionRecursively@21-37@Source/Library/Core/Source/File.cpp
+       1      1     13      1       1 File::GetFilesRecursively@39-39@Source/Library/Core/Source/File.cpp
+       1      1     13      1       1 File::GetFiles@41-41@Source/Library/Core/Source/File.cpp
+       4      1     36      1       4 File::ReadAllText@44-47@Source/Library/Core/Source/File.cpp
+       4      1     36      1       4 File::ReadAllWideText@49-52@Source/Library/Core/Source/File.cpp
+       6      3     88      2       7 File::ReplaceWithText@55-61@Source/Library/Core/Source/File.cpp
+       4      1     21      3       4 File::ReplaceWithBinary@64-67@Source/Library/Core/Source/File.cpp
+      15      5     79      2      17 operator > >@5-21@Source/Library/Core/Source/String.cpp
+       3      1     24      2       3 operator >@23-25@Source/Library/Core/Source/String.cpp
+       6      2     63      3       7 SetPropertyValue@8-14@Source/Library/Core/Source/Property.cpp
+       6      2     59      2       8 GetPropertyValue@16-23@Source/Library/Core/Source/Property.cpp
+       6      2     63      3       7 SetPropertyObject@25-31@Source/Library/Core/Source/Property.cpp
+       6      2     59      2       8 GetPropertyObject@33-40@Source/Library/Core/Source/Property.cpp
+      61      1    315      0      65 Type::Number::ToString@8-72@Source/Library/Core/Source/TypeNumberToString.cpp
+       3      1     19      2       3 operator < <@16-18@Source/Library/Core/Source/Debug.cpp
+       1      1     18      2       1 operator < <@22-22@Source/Library/Core/Source/Debug.cpp
+       5      1     23      0       5 debug::MaxTrace@29-33@Source/Library/Core/Source/Debug.cpp
+       5      1     23      0       5 debug::MinTrace@35-39@Source/Library/Core/Source/Debug.cpp
+       3      1     24      1       3 debug::Trace::operator < <@41-43@Source/Library/Core/Source/Debug.cpp
+      10      2     41      1      14 debug::TypeToString@45-58@Source/Library/Core/Source/Debug.cpp
+      14      5     72      1      14 debug::TraceTypeToLoggerLevel@61-74@Source/Library/Core/Source/Debug.cpp
+      13      3     79      0      27 debug::Trace::~Trace@76-102@Source/Library/Core/Source/Debug.cpp
+       3      1     15      1      13 StringStream::Register@14-26@Source/Library/Core/Source/StringStream.cpp
+       3      1     24      1       3 StringStream::CanRead@28-30@Source/Library/Core/Source/StringStream.cpp
+       3      1     28      2       3 operator < <@32-34@Source/Library/Core/Source/StringStream.cpp
+       3      1     28      2       3 operator < <@36-38@Source/Library/Core/Source/StringStream.cpp
+       4      1     22      2       4 operator < <@40-43@Source/Library/Core/Source/StringStream.cpp
+       3      1     31      2       3 operator < <@45-47@Source/Library/Core/Source/StringStream.cpp
+       3      1     31      2       3 operator < <@49-51@Source/Library/Core/Source/StringStream.cpp
+       3      1     24      0       3 StringStream::ToString@53-55@Source/Library/Core/Source/StringStream.cpp
+       1      1     16      1       1 StringStream::Append@57-57@Source/Library/Core/Source/StringStream.cpp
+       3      1     35      1       3 StringStream::Append@59-61@Source/Library/Core/Source/StringStream.cpp
+       4      1     64      2       4 StringStream::Append@63-66@Source/Library/Core/Source/StringStream.cpp
+       3      2     40      1       3 StringStream::Append@68-70@Source/Library/Core/Source/StringStream.cpp
+       1      1     15      1       1 StringStream::Extract@72-72@Source/Library/Core/Source/StringStream.cpp
+       4      2     25      0       4 StringStream::Peek@74-77@Source/Library/Core/Source/StringStream.cpp
+       5      2     39      1       6 StringStream::Extract@79-84@Source/Library/Core/Source/StringStream.cpp
+       1      1     21      1       1 operator < <@86-86@Source/Library/Core/Source/StringStream.cpp
+       4      1     32      2       4 operator < <@88-91@Source/Library/Core/Source/StringStream.cpp
+       4      1     26      2       4 operator < <@93-96@Source/Library/Core/Source/StringStream.cpp
+      12      4    114      2      16 operator < <@98-113@Source/Library/Core/Source/StringStream.cpp
+       4      2     40      2       5 operator < <@115-119@Source/Library/Core/Source/StringStream.cpp
+       6      1     31      2       6 operator > >@121-126@Source/Library/Core/Source/StringStream.cpp
+       4      1     11      1       4 Ends@128-131@Source/Library/Core/Source/StringStream.cpp
+       3      1     31      2       3 operator < <@133-135@Source/Library/Core/Source/StringStream.cpp
+       6      1     41      2       6 operator > >@137-142@Source/Library/Core/Source/StringStream.cpp
+      16      5    137      1      24 StorageBase::Detach@10-33@Source/Library/Core/Source/StorageBase.cpp
+       8      4     56      2       9 StorageBase::SetSwitch@35-43@Source/Library/Core/Source/StorageBase.cpp
+       1      1     13      1       1 StorageBase::SetParentHandle@45-45@Source/Library/Core/Source/StorageBase.cpp
+       7      3     71      1       9 StorageBase::Get@47-55@Source/Library/Core/Source/StorageBase.cpp
+      33      8    243      2      49 StorageBase::Set@57-105@Source/Library/Core/Source/StorageBase.cpp
+       4      2     40      1       4 StorageBase::Has@107-110@Source/Library/Core/Source/StorageBase.cpp
+      11      3     80      1      13 StorageBase::Remove@112-124@Source/Library/Core/Source/StorageBase.cpp
+       4      1     21      1       4 StorageBase::SetColorRecursive@126-129@Source/Library/Core/Source/StorageBase.cpp
+      33     12    292      2      46 StorageBase::SetColorRecursive@132-177@Source/Library/Core/Source/StorageBase.cpp
+      12      6     96      1      14 StorageBase::SetColor@179-192@Source/Library/Core/Source/StorageBase.cpp
+       9      4     71      0      11 StorageBase::MakeReachableGrey@194-204@Source/Library/Core/Source/StorageBase.cpp
+       9      4     66      0      12 StorageBase::CanBlacken@206-217@Source/Library/Core/Source/StorageBase.cpp
+      31     10    196      1      41 StorageBase::RemovedFromContainer@219-259@Source/Library/Core/Source/StorageBase.cpp
+       3      1     14      0       5 StorageBase::DetermineNewColor@261-265@Source/Library/Core/Source/StorageBase.cpp
+       6      3     51      1       7 StorageBase::AddedToContainer@267-273@Source/Library/Core/Source/StorageBase.cpp
+       4      3     32      1       4 StorageBase::SetClean@275-278@Source/Library/Core/Source/StorageBase.cpp
+      10      4     89      0      12 StorageBase::DetachFromContainers@280-291@Source/Library/Core/Source/StorageBase.cpp
+       9      3     59      0      17 StorageBase::Delete@293-309@Source/Library/Core/Source/StorageBase.cpp
+       4      2     28      1       5 StorageBase::SetManaged@311-315@Source/Library/Core/Source/StorageBase.cpp
+       4      1     38      2       4 BinaryPacket::Register@5-8@Source/Library/Core/Source/BinaryPacket.cpp
+       6      2     40      2       7 BinaryPacket::Read@10-16@Source/Library/Core/Source/BinaryPacket.cpp
+       3      2     21      1       3 BinaryPacket::CanRead@18-20@Source/Library/Core/Source/BinaryPacket.cpp
+       4      1     21      0       4 BinaryStream::Clear@22-25@Source/Library/Core/Source/BinaryPacket.cpp
+      17      3    135      2      29 BinaryStream::Write@27-55@Source/Library/Core/Source/BinaryPacket.cpp
+      13      3    109      2      21 operator > >@57-77@Source/Library/Core/Source/BinaryPacket.cpp
+      13      3     98      2      20 operator > >@79-98@Source/Library/Core/Source/BinaryPacket.cpp
+       8      1     69      0       8 Exception::Base::ToString@6-13@Source/Library/Core/Source/Exception.cpp
+       4      1     43      1       4 Exception::TypeMismatch::WriteExtendedInformation@15-18@Source/Library/Core/Source/Exception.cpp
+       3      1     19      1       3 Exception::UnknownTypeNumber::WriteExtendedInformation@20-22@Source/Library/Core/Source/Exception.cpp
+       3      1     26      1       3 Exception::UnknownObject::WriteExtendedInformation@24-26@Source/Library/Core/Source/Exception.cpp
+       3      1     19      1       3 Exception::ObjectNotFound::WriteExtendedInformation@28-30@Source/Library/Core/Source/Exception.cpp
+       3      1     25      1       3 Exception::NoOperation::WriteExtendedInformation@32-34@Source/Library/Core/Source/Exception.cpp
+       3      1     19      1       3 Exception::PacketExtraction::WriteExtendedInformation@36-38@Source/Library/Core/Source/Exception.cpp
+       3      1     25      1       3 Exception::OutOfBounds::WriteExtendedInformation@40-42@Source/Library/Core/Source/Exception.cpp
+       3      1     19      1       3 Exception::PacketInsertion::WriteExtendedInformation@44-46@Source/Library/Core/Source/Exception.cpp
+       8      3     55      1       8 Exception::CannotResolve::WriteExtendedInformation@48-55@Source/Library/Core/Source/Exception.cpp
+       3      1     19      1       3 Exception::InvalidPathname::WriteExtendedInformation@57-59@Source/Library/Core/Source/Exception.cpp
+       3      1     19      1       3 Exception::ObjectNotInTree::WriteExtendedInformation@61-63@Source/Library/Core/Source/Exception.cpp
+       3      1     25      1       3 Exception::UnknownMethod::WriteExtendedInformation@65-67@Source/Library/Core/Source/Exception.cpp
+       3      1     23      1       3 Exception::UnknownHandle::WriteExtendedInformation@69-71@Source/Library/Core/Source/Exception.cpp
+       3      1     22      1       3 Exception::InvalidStringLiteral::WriteExtendedInformation@73-75@Source/Library/Core/Source/Exception.cpp
+       3      1     19      1       3 Exception::CannotNew::WriteExtendedInformation@77-79@Source/Library/Core/Source/Exception.cpp
+       3      1     19      1       3 Exception::UnknownKey::WriteExtendedInformation@81-83@Source/Library/Core/Source/Exception.cpp
+       3      1     19      1       3 Exception::NotImplemented::WriteExtendedInformation@85-87@Source/Library/Core/Source/Exception.cpp
+       3      1     19      1       3 Exception::BadIndex::WriteExtendedInformation@89-91@Source/Library/Core/Source/Exception.cpp
+       3      1     22      1       3 Exception::InvalidIdentifier::WriteExtendedInformation@93-95@Source/Library/Core/Source/Exception.cpp
+       3      1     22      1       3 Exception::FileNotFound::WriteExtendedInformation@97-99@Source/Library/Core/Source/Exception.cpp
+       3      1     25      1       3 Exception::UnknownProperty::WriteExtendedInformation@100-102@Source/Library/Core/Source/Exception.cpp
+       3      1     27      2       3 operator < <@105-107@Source/Library/Core/Source/Exception.cpp
+       4      3     33      0       5 Reflected::Reg@6-10@Source/Library/Core/Source/Reflected.cpp
+       4      2     24      0       5 Label::ToString@5-9@Source/Library/Core/Source/Label.cpp
+       1      1     14      1       1 Label::FromString2@11-11@Source/Library/Core/Source/Label.cpp
+      11      3     64      1      13 Label::FromString@13-25@Source/Library/Core/Source/Label.cpp
+       3      1     25      2       3 operator < <@27-29@Source/Library/Core/Source/Label.cpp
+      12      2     66      2      13 operator > >@31-43@Source/Library/Core/Source/Label.cpp
+       3      1     25      2       3 operator < <@45-47@Source/Library/Core/Source/Label.cpp
+       6      1     32      2       6 operator > >@49-54@Source/Library/Core/Source/Label.cpp
+       3      1     27      2       3 operator < <@56-58@Source/Library/Core/Source/Label.cpp
+       5      1     45      1       5 Label::Register@60-64@Source/Library/Core/Source/Label.cpp
+       5      1     38      4       6 RegisterClass@5-10@Source/Library/Core/Source/ClassBase.cpp
+       4      3     39      0       5 ClassBase::~ClassBase@12-16@Source/Library/Core/Source/ClassBase.cpp
+      12      5     94      3      16 ClassBase::SetReferencedObjectsColor@18-33@Source/Library/Core/Source/ClassBase.cpp
+       4      2     43      2       5 ClassBase::SetMarked@35-39@Source/Library/Core/Source/ClassBase.cpp
+      11      6    100      1      14 ClassBase::MakeReachableGrey@41-54@Source/Library/Core/Source/ClassBase.cpp
+      12      5     96      2      16 ClassBase::GetPropertyObjects@56-71@Source/Library/Core/Source/ClassBase.cpp
+       1      1     21      2       1 operator < <@5-5@Source/Library/Core/Source/BinaryStreamBuiltins.cpp
+       1      1     21      2       1 operator < <@7-7@Source/Library/Core/Source/BinaryStreamBuiltins.cpp
+       1      1     21      2       1 operator < <@9-9@Source/Library/Core/Source/BinaryStreamBuiltins.cpp
+       1      1     21      2       1 operator < <@11-11@Source/Library/Core/Source/BinaryStreamBuiltins.cpp
+       4      2     32      2       5 operator > >@13-17@Source/Library/Core/Source/BinaryStreamBuiltins.cpp
+       4      2     32      2       5 operator > >@19-23@Source/Library/Core/Source/BinaryStreamBuiltins.cpp
+       4      2     32      2       5 operator > >@25-29@Source/Library/Core/Source/BinaryStreamBuiltins.cpp
+       4      2     32      2       5 operator > >@31-35@Source/Library/Core/Source/BinaryStreamBuiltins.cpp
+      21      3    256      1      25 FormatTimestamp@34-58@Source/Library/Core/Source/Logger.cpp
+      16      6     94      1      16 GetColorForLevel@61-76@Source/Library/Core/Source/Logger.cpp
+       9      3     54      1       9 GetStyleForLevel@79-87@Source/Library/Core/Source/Logger.cpp
+      30      4    243      1      39 Logger::Init@89-127@Source/Library/Core/Source/Logger.cpp
+       1      1     10      0       1 Logger::IsInitialized@129-129@Source/Library/Core/Source/Logger.cpp
+       1      1     13      1       1 Logger::SetLevel@131-131@Source/Library/Core/Source/Logger.cpp
+       1      1     10      0       1 Logger::GetLevel@133-133@Source/Library/Core/Source/Logger.cpp
+      16      6     60      1      16 Logger::LevelToString@135-150@Source/Library/Core/Source/Logger.cpp
+       3      1     26      1       3 Logger::ShouldLog@152-154@Source/Library/Core/Source/Logger.cpp
+      43     10    403      2      60 Logger::Log@156-215@Source/Library/Core/Source/Logger.cpp
+       6      2     35      1       7 Logger::GetLogFilename@217-223@Source/Library/Core/Source/Logger.cpp
+       1      1     22      1       1 Logger::Debug@225-225@Source/Library/Core/Source/Logger.cpp
+       1      1     22      1       1 Logger::Info@227-227@Source/Library/Core/Source/Logger.cpp
+       3      1     22      1       3 Logger::Warning@229-231@Source/Library/Core/Source/Logger.cpp
+       1      1     22      1       1 Logger::Error@233-233@Source/Library/Core/Source/Logger.cpp
+       1      1     22      1       1 Logger::Fatal@235-235@Source/Library/Core/Source/Logger.cpp
+       5      2     47      1       5 ExtractFilename@238-242@Source/Library/Core/Source/Logger.cpp
+       7      1     63      4      10 Logger::LogWithLocation@245-254@Source/Library/Core/Source/Logger.cpp
+       4      1     34      3       4 Logger::DebugWithLocation@256-259@Source/Library/Core/Source/Logger.cpp
+       4      1     34      3       4 Logger::InfoWithLocation@261-264@Source/Library/Core/Source/Logger.cpp
+       4      1     34      3       4 Logger::WarningWithLocation@266-269@Source/Library/Core/Source/Logger.cpp
+       4      1     34      3       4 Logger::ErrorWithLocation@271-274@Source/Library/Core/Source/Logger.cpp
+       4      1     34      3       4 Logger::FatalWithLocation@276-279@Source/Library/Core/Source/Logger.cpp
+       6      2     47      2       7 operator < <@8-14@Source/Library/Core/Source/BinaryStream.cpp
+       6      2     47      2       7 operator < <@16-22@Source/Library/Core/Source/BinaryStream.cpp
+       5      1     50      1       5 BinaryStream::Register@24-28@Source/Library/Core/Source/BinaryStream.cpp
+       3      1     31      2       3 operator < <@5-7@Source/Library/Core/Source/Pair.cpp
+       3      1     27      2       3 operator > >@9-11@Source/Library/Core/Source/Pair.cpp
+       3      1     18      2       4 operator > >@9-12@Source/Library/Core/Source/BuiltinTypes.cpp
+       3      1     23      1       3 BasePointerBase::Register@22-24@Source/Library/Core/Source/BuiltinTypes.cpp
+       4      1     33      1       4 Handle::Register@26-29@Source/Library/Core/Source/BuiltinTypes.cpp
+       4      1     40      1       4 Pair::Register@31-34@Source/Library/Core/Source/BuiltinTypes.cpp
+      23      9    202      1      40 FileLocation::AddLocation@36-75@Source/Library/Core/Source/BuiltinTypes.cpp
+       4      3     34      1       4 FileLocation::AddFunction@77-80@Source/Library/Core/Source/BuiltinTypes.cpp
+       7      1     33      0       7 FileLocation::ToString@82-88@Source/Library/Core/Source/BuiltinTypes.cpp
+      10      2     58      2      11 WriteArgumentList@91-101@Source/Library/Core/Source/BuiltinTypes.cpp
+      12      3     98      0      15 MethodBase::ToString@103-117@Source/Library/Core/Source/BuiltinTypes.cpp
+       8      2     68      0      10 FunctionBase::ToString@119-128@Source/Library/Core/Source/BuiltinTypes.cpp
+       3      1     23      1       3 FunctionBase::Register@130-132@Source/Library/Core/Source/BuiltinTypes.cpp
+       4      1     26      2       4 operator < <@134-137@Source/Library/Core/Source/BuiltinTypes.cpp
+       6      1     36      2       6 operator > >@139-144@Source/Library/Core/Source/BuiltinTypes.cpp
+       7      2     31      2       8 operator < <@146-153@Source/Library/Core/Source/BuiltinTypes.cpp
+       4      1     21      2       4 operator < <@155-158@Source/Library/Core/Source/BuiltinTypes.cpp
+       5      1     34      2       5 operator < <@164-168@Source/Library/Core/Source/BuiltinTypes.cpp
+       1      1     17      1       1 GetHash@170-170@Source/Library/Core/Source/BuiltinTypes.cpp
+       3      1     25      2       4 operator < <@172-175@Source/Library/Core/Source/BuiltinTypes.cpp
+       5      1     55      2       5 operator < <@177-181@Source/Library/Core/Source/BuiltinTypes.cpp
+       3      1     31      2       3 operator < <@183-185@Source/Library/Core/Source/BuiltinTypes.cpp
+       4      1     25      2       4 operator > >@187-190@Source/Library/Core/Source/BuiltinTypes.cpp
+       3      1     28      2       3 operator < <@192-194@Source/Library/Core/Source/BuiltinTypes.cpp
+       3      1     27      2       3 operator > >@196-198@Source/Library/Core/Source/BuiltinTypes.cpp
+       3      1     39      2       3 operator < <@200-202@Source/Library/Core/Source/BuiltinTypes.cpp
+       3      1     32      2       3 operator > >@204-206@Source/Library/Core/Source/BuiltinTypes.cpp
+       3      1     33      2       3 operator < <@208-210@Source/Library/Core/Source/BuiltinTypes.cpp
+       3      1     32      2       3 operator > >@212-214@Source/Library/Core/Source/BuiltinTypes.cpp
+       3      1     47      2       3 operator < <@216-218@Source/Library/Core/Source/BuiltinTypes.cpp
+       1      1     16      0       1 operator > >@220-220@Source/Library/Core/Source/BuiltinTypes.cpp
+       3      1     38      2       3 operator < <@222-224@Source/Library/Core/Source/BuiltinTypes.cpp
+       3      1     37      2       3 operator > >@226-228@Source/Library/Core/Source/BuiltinTypes.cpp
+       1      1     24      2       1 operator < <@230-230@Source/Library/Core/Source/BuiltinTypes.cpp
+       3      1     26      2       3 operator < <@232-234@Source/Library/Core/Source/BuiltinTypes.cpp
+       3      1     37      2       3 operator < <@236-238@Source/Library/Core/Source/BuiltinTypes.cpp
+       4      1     25      2       4 operator > >@240-243@Source/Library/Core/Source/BuiltinTypes.cpp
+       3      1     28      2       3 operator < <@245-247@Source/Library/Core/Source/BuiltinTypes.cpp
+       3      1     27      2       3 operator > >@249-251@Source/Library/Core/Source/BuiltinTypes.cpp
+       7      1     62      1       7 ToLower@22-28@Source/Library/Core/Source/Utility.cpp
+      11      4     60      2      14 operator < <@30-43@Source/Library/Core/Source/Utility.cpp
+       9      3     75      3      11 ToStringStream@45-55@Source/Library/Core/Source/Utility.cpp
+       4      1     41      1       4 CreateIndent@58-61@Source/Library/Core/Source/Utility.cpp
+      28      6    301      3      38 ToXmlStream@63-100@Source/Library/Core/Source/Utility.cpp
+       1      1      7      0       1 DotGraph::DotGraph@12-12@Source/Library/Core/Source/DotGraph.cpp
+       3      1     21      2       3 DotGraph::DotGraph@14-16@Source/Library/Core/Source/DotGraph.cpp
+       7      1     41      2       7 DotGraph::Generate@18-24@Source/Library/Core/Source/DotGraph.cpp
+       1      1     13      0       1 DotGraph::WriteHeader@26-26@Source/Library/Core/Source/DotGraph.cpp
+       1      1     13      0       1 DotGraph::WriteFooter@28-28@Source/Library/Core/Source/DotGraph.cpp
+       3      1     18      1       3 DotGraph::ExcludeLabel@30-32@Source/Library/Core/Source/DotGraph.cpp
+       1      1     12      0       1 DotGraph::GetText@34-34@Source/Library/Core/Source/DotGraph.cpp
+      46     10    326      2      55 operator < <@36-90@Source/Library/Core/Source/DotGraph.cpp
+       7      4     62      1       9 DotGraph::IsExcluded@92-100@Source/Library/Core/Source/DotGraph.cpp
+       4      1     46      1       4 DotGraph::WriteToFile@102-105@Source/Library/Core/Source/DotGraph.cpp
+      98     24    533      1     125 RhoTranslator::TranslateNode@15-139@Source/Library/Language/Rho/Source/RhoTranslate.cpp
+      47     12    318      2      74 RhoTranslator::Translate@144-217@Source/Library/Language/Rho/Source/RhoTranslate.cpp
+      18     14    185      1      20 RhoTranslator::TokenToOperation@17-36@Source/Library/Language/Rho/Source/RhoTranslator.cpp
+     184     48   1169      1     280 RhoTranslator::TranslateToken@38-317@Source/Library/Language/Rho/Source/RhoTranslator.cpp
+      16      2    100      1      24 RhoTranslator::TranslateWhile@319-342@Source/Library/Language/Rho/Source/RhoTranslator.cpp
+      24      2    152      1      37 RhoTranslator::TranslateFor@344-380@Source/Library/Language/Rho/Source/RhoTranslator.cpp
+      16      2    100      1      25 RhoTranslator::TranslateDoWhile@382-406@Source/Library/Language/Rho/Source/RhoTranslator.cpp
+      22      3    141      1      37 RhoTranslator::TranslateIf@408-444@Source/Library/Language/Rho/Source/RhoTranslator.cpp
+      10      2     78      1      19 RhoTranslator::TranslateList@446-464@Source/Library/Language/Rho/Source/RhoTranslator.cpp
+       6      1     38      1      12 RhoTranslator::TranslateMap@466-477@Source/Library/Language/Rho/Source/RhoTranslator.cpp
+      13      2     89      1      22 RhoTranslator::TranslateIndex@479-500@Source/Library/Language/Rho/Source/RhoTranslator.cpp
+      26      6    180      1      43 RhoTranslator::TranslatePiBlock@502-544@Source/Library/Language/Rho/Source/RhoTranslator.cpp
+      44     11    329      2     104 RhoTranslator::TranslateBinaryOp@546-649@Source/Library/Language/Rho/Source/RhoTranslator.cpp
+      23      6    165      1      37 RhoTranslator::TranslateCall@651-687@Source/Library/Language/Rho/Source/RhoTranslator.cpp
+       7      2     43      1      10 RhoTranslator::TranslateBlock@689-698@Source/Library/Language/Rho/Source/RhoTranslator.cpp
+      54     12    433      1      89 RhoTranslator::TranslateFunction@700-788@Source/Library/Language/Rho/Source/RhoTranslator.cpp
+      28      1    118      1      38 RhoAstNodeEnumType::ToString@9-46@Source/Library/Language/Rho/Source/RhoAstNode.cpp
+      10      1     76      0      13 RhoLang::Print@14-26@Source/Library/Language/Rho/Source/RhoLang.cpp
+       3      1     31      2       3 RhoLang::TranslateFile@28-30@Source/Library/Language/Rho/Source/RhoLang.cpp
+       8      4     94      2      11 RhoLang::Translate@32-42@Source/Library/Language/Rho/Source/RhoLang.cpp
+      31      8    222      2      39 RhoParser::Process@8-46@Source/Library/Language/Rho/Source/RhoParser.cpp
+      21      8    110      1      26 RhoParser::Run@48-73@Source/Library/Language/Rho/Source/RhoParser.cpp
+      39     13    251      0      56 RhoParser::Program@74-129@Source/Library/Language/Rho/Source/RhoParser.cpp
+      76     15    495      1     113 RhoParser::Function@131-243@Source/Library/Language/Rho/Source/RhoParser.cpp
+      70     17    483      1     105 RhoParser::Block@245-349@Source/Library/Language/Rho/Source/RhoParser.cpp
+     108     29    589      1     153 RhoParser::Statement@351-503@Source/Library/Language/Rho/Source/RhoParser.cpp
+      22      9    146      0      25 RhoParser::Expression@505-529@Source/Library/Language/Rho/Source/RhoParser.cpp
+      11      5     84      0      14 RhoParser::Logical@531-544@Source/Library/Language/Rho/Source/RhoParser.cpp
+      12      6     91      0      15 RhoParser::Bitwise@546-560@Source/Library/Language/Rho/Source/RhoParser.cpp
+      13      9    112      0      16 RhoParser::Relational@562-577@Source/Library/Language/Rho/Source/RhoParser.cpp
+      11      5     84      0      14 RhoParser::Shift@579-592@Source/Library/Language/Rho/Source/RhoParser.cpp
+      25     11    200      0      33 RhoParser::Additive@594-626@Source/Library/Language/Rho/Source/RhoParser.cpp
+      12      6     91      0      15 RhoParser::Term@628-642@Source/Library/Language/Rho/Source/RhoParser.cpp
+     110     31    706      0     158 RhoParser::Factor@644-801@Source/Library/Language/Rho/Source/RhoParser.cpp
+      19      5     74      0      24 RhoParser::ParseFactorIdent@803-826@Source/Library/Language/Rho/Source/RhoParser.cpp
+      21      5    137      0      25 RhoParser::ParseMethodCall@828-852@Source/Library/Language/Rho/Source/RhoParser.cpp
+       7      1     48      0       7 RhoParser::ParseGetMember@854-860@Source/Library/Language/Rho/Source/RhoParser.cpp
+      38      7    261      1      56 RhoParser::IfCondition@862-917@Source/Library/Language/Rho/Source/RhoParser.cpp
+      11      2     67      0      12 RhoParser::ParseIndexOp@919-930@Source/Library/Language/Rho/Source/RhoParser.cpp
+       3      1     26      1       3 RhoParser::CreateError@932-934@Source/Library/Language/Rho/Source/RhoParser.cpp
+      35      6    201      1      47 RhoParser::WhileLoop@936-982@Source/Library/Language/Rho/Source/RhoParser.cpp
+      75     18    457      1     114 RhoParser::DoWhileLoop@984-1097@Source/Library/Language/Rho/Source/RhoParser.cpp
+       6      5     43      0       7 RhoParser::ConsumeWhitespace@1099-1105@Source/Library/Language/Rho/Source/RhoParser.cpp
+       4      2     32      1       4 RhoParser::AddBlock@1107-1110@Source/Library/Language/Rho/Source/RhoParser.cpp
+      75     15    424      1     115 RhoParser::ForLoop@1112-1226@Source/Library/Language/Rho/Source/RhoParser.cpp
+      11      4     60      0      14 RhoParser::ConsumeNewLines@1228-1241@Source/Library/Language/Rho/Source/RhoParser.cpp
+      82      1    334      1      93 RhoTokenEnumType::ToString@9-101@Source/Library/Language/Rho/Source/RhoToken.cpp
+      11      5     94      2      13 operator < <@106-118@Source/Library/Language/Rho/Source/RhoToken.cpp
+       3      1     30      2       3 kai::operator < <@122-124@Source/Library/Language/Rho/Source/RhoToken.cpp
+      19      1    160      0      24 RhoLexer::AddKeyWords@9-32@Source/Library/Language/Rho/Source/RhoLexer.cpp
+     111     50    738      0     131 RhoLexer::NextToken@34-164@Source/Library/Language/Rho/Source/RhoLexer.cpp
+      38     18    278      0      63 RhoLexer::LexPathname@169-231@Source/Library/Language/Rho/Source/RhoLexer.cpp
+       1      1     16      0       1 RhoLexer::Terminate@233-233@Source/Library/Language/Rho/Source/RhoLexer.cpp
+      48      7    346      0      75 main@11-85@Source/Library/Language/Rho/Test.cpp
+      69     11    516      0      99 main@12-110@Source/Library/Language/Rho/DoWhileTest.cpp
+      44      7    316      0      61 main@13-73@Source/Library/Language/Rho/DoWhileTestBasic.cpp
+      24      2    101      1      35 TauAstEnumType::ToString@7-41@Source/Library/Language/Tau/Source/Tau/TauAstNode.cpp
+      12      1     97      0      12 TauLexer::AddKeyWords@7-18@Source/Library/Language/Tau/Source/Tau/TauLexer.cpp
+      93     41    533      0     130 TauLexer::NextToken@20-149@Source/Library/Language/Tau/Source/Tau/TauLexer.cpp
+       1      1     16      0       1 TauLexer::Terminate@151-151@Source/Library/Language/Tau/Source/Tau/TauLexer.cpp
+      44      2    183      1      54 TauTokenEnumType::ToString@11-64@Source/Library/Language/Tau/Source/Tau/TauToken.cpp
+       9      3     70      2      11 operator < <@66-76@Source/Library/Language/Tau/Source/Tau/TauToken.cpp
+      17      5    118      2      31 TauParser::Process@9-39@Source/Library/Language/Tau/Source/Tau/TauParser.cpp
+      12      6     59      0      13 TauParser::StripTokens@41-53@Source/Library/Language/Tau/Source/Tau/TauParser.cpp
+      12      4     59      2      12 TauParser::Run@55-66@Source/Library/Language/Tau/Source/Tau/TauParser.cpp
+      51     18    272      1      77 TauParser::Module@68-144@Source/Library/Language/Tau/Source/Tau/TauParser.cpp
+     129     52    798      1     198 TauParser::Namespace@146-343@Source/Library/Language/Tau/Source/Tau/TauParser.cpp
+     116     33    650      1     175 TauParser::Class@345-519@Source/Library/Language/Tau/Source/Tau/TauParser.cpp
+      35      8    199      3      58 TauParser::Method@521-578@Source/Library/Language/Tau/Source/Tau/TauParser.cpp
+      52     10    343      3      82 TauParser::Field@580-661@Source/Library/Language/Tau/Source/Tau/TauParser.cpp
+      76     34    529      1     111 TauParser::Interface@663-773@Source/Library/Language/Tau/Source/Tau/TauParser.cpp
+      59     23    380      1      88 TauParser::Enum@775-862@Source/Library/Language/Tau/Source/Tau/TauParser.cpp
+      63     26    435      1      94 TauParser::Struct@864-957@Source/Library/Language/Tau/Source/Tau/TauParser.cpp
+      25      7    157      1      39 TauParser::Event@959-997@Source/Library/Language/Tau/Source/Tau/TauParser.cpp
+      47     11    320      1      75 TauParser::AddArg@1005-1079@Source/Library/Language/Tau/Source/Tau/TauParser.cpp
+       3      1     24      2       3 Generate::GenerateProxy::GenerateProxy@10-12@Source/Library/Language/Tau/Source/Generate/GenerateProxy.cpp
+       3      1     25      2       4 Generate::GenerateProxy::Generate@14-17@Source/Library/Language/Tau/Source/Generate/GenerateProxy.cpp
+       3      1     14      0       3 Generate::GenerateProxy::Prepend@19-21@Source/Library/Language/Tau/Source/Generate/GenerateProxy.cpp
+       3      1     20      1       3 Generate::GenerateProxy::ProxyDecl::ProxyDecl@27-29@Source/Library/Language/Tau/Source/Generate/GenerateProxy.cpp
+       5      1     27      0       5 Generate::GenerateProxy::ProxyDecl::ToString@31-35@Source/Library/Language/Tau/Source/Generate/GenerateProxy.cpp
+       7      1     49      1       7 Generate::GenerateProxy::AddProxyBoilerplate@38-44@Source/Library/Language/Tau/Source/Generate/GenerateProxy.cpp
+      34     13    185      1      45 Generate::GenerateProxy::Namespace@46-90@Source/Library/Language/Tau/Source/Generate/GenerateProxy.cpp
+      32     14    189      1      46 Generate::GenerateProxy::Class@92-137@Source/Library/Language/Tau/Source/Generate/GenerateProxy.cpp
+      23      3    186      1      33 Generate::GenerateProxy::Event@139-171@Source/Library/Language/Tau/Source/Generate/GenerateProxy.cpp
+      16      1    150      1      21 Generate::GenerateProxy::Property@173-193@Source/Library/Language/Tau/Source/Generate/GenerateProxy.cpp
+       9      1     83      1      12 Generate::GenerateProxy::Method@195-206@Source/Library/Language/Tau/Source/Generate/GenerateProxy.cpp
+      15      3    124      3      17 Generate::GenerateProxy::MethodDecl@208-224@Source/Library/Language/Tau/Source/Generate/GenerateProxy.cpp
+      32      6    254      3      36 Generate::GenerateProxy::MethodBody@226-261@Source/Library/Language/Tau/Source/Generate/GenerateProxy.cpp
+       1      1     15      1       1 Generate::GenerateProxy::ReturnType@263-263@Source/Library/Language/Tau/Source/Generate/GenerateProxy.cpp
+       3      1     19      1       3 Generate::GenerateProxy::ArgType@265-267@Source/Library/Language/Tau/Source/Generate/GenerateProxy.cpp
+       3      1     17      1       4 Generate::GenerateProxy::Interface@269-272@Source/Library/Language/Tau/Source/Generate/GenerateProxy.cpp
+       3      1     14      1       4 Generate::GenerateProxy::Struct@274-277@Source/Library/Language/Tau/Source/Generate/GenerateProxy.cpp
+       9      1     87      1      11 Generate::RegisterMinimalTypes@14-24@Source/Library/Language/Tau/Source/Generate/GenerateProcess.cpp
+       4      2     35      2       4 Generate::GenerateProcess::Generate@26-29@Source/Library/Language/Tau/Source/Generate/GenerateProcess.cpp
+      16      3    103      1      21 Generate::GenerateProcess::Parse@31-51@Source/Library/Language/Tau/Source/Generate/GenerateProcess.cpp
+       7      2     63      2       8 Generate::GenerateProcess::Generate@53-60@Source/Library/Language/Tau/Source/Generate/GenerateProcess.cpp
+       5      1     28      0       5 Generate::GenerateProcess::CommonPrepend@62-66@Source/Library/Language/Tau/Source/Generate/GenerateProcess.cpp
+      93     24    477      1     119 Generate::GenerateProcess::Module@68-186@Source/Library/Language/Tau/Source/Generate/GenerateProcess.cpp
+      20      8    122      1      25 Generate::GenerateProcess::Namespace@188-212@Source/Library/Language/Tau/Source/Generate/GenerateProcess.cpp
+      18      7    108      1      22 Generate::GenerateProcess::Class@214-235@Source/Library/Language/Tau/Source/Generate/GenerateProcess.cpp
+       1      1     14      1       1 Generate::GenerateProcess::Property@237-237@Source/Library/Language/Tau/Source/Generate/GenerateProcess.cpp
+       1      1     14      1       1 Generate::GenerateProcess::Method@239-239@Source/Library/Language/Tau/Source/Generate/GenerateProcess.cpp
+       1      1     11      0       1 Generate::GenerateProcess::Prepend@241-241@Source/Library/Language/Tau/Source/Generate/GenerateProcess.cpp
+       6      1     37      1       6 Generate::GenerateProcess::StartBlock@243-248@Source/Library/Language/Tau/Source/Generate/GenerateProcess.cpp
+       5      1     31      0       5 Generate::GenerateProcess::EndLine@250-254@Source/Library/Language/Tau/Source/Generate/GenerateProcess.cpp
+       4      1     20      0       4 Generate::GenerateProcess::EndBlock@256-259@Source/Library/Language/Tau/Source/Generate/GenerateProcess.cpp
+       3      1     17      1       5 Generate::GenerateProcess::Interface@261-265@Source/Library/Language/Tau/Source/Generate/GenerateProcess.cpp
+       3      1     17      1       5 Generate::GenerateProcess::Struct@267-271@Source/Library/Language/Tau/Source/Generate/GenerateProcess.cpp
+       3      1     24      2       3 Generate::GenerateAgent::GenerateAgent@6-8@Source/Library/Language/Tau/Source/Generate/GenerateAgent.cpp
+       3      1     25      2       4 Generate::GenerateAgent::Generate@10-13@Source/Library/Language/Tau/Source/Generate/GenerateAgent.cpp
+       3      1     14      0       3 Generate::GenerateAgent::Prepend@15-17@Source/Library/Language/Tau/Source/Generate/GenerateAgent.cpp
+      34     13    185      1      45 Generate::GenerateAgent::Namespace@19-63@Source/Library/Language/Tau/Source/Generate/GenerateAgent.cpp
+       3      1     20      1       3 Generate::GenerateAgent::AgentDecl::AgentDecl@69-71@Source/Library/Language/Tau/Source/Generate/GenerateAgent.cpp
+       6      1     33      0       6 Generate::GenerateAgent::AgentDecl::ToString@73-78@Source/Library/Language/Tau/Source/Generate/GenerateAgent.cpp
+      12      3     85      1      16 Generate::GenerateAgent::Class@81-96@Source/Library/Language/Tau/Source/Generate/GenerateAgent.cpp
+       3      1     16      1       5 Generate::GenerateAgent::Property@98-102@Source/Library/Language/Tau/Source/Generate/GenerateAgent.cpp
+       3      1     16      1       4 Generate::GenerateAgent::Method@104-107@Source/Library/Language/Tau/Source/Generate/GenerateAgent.cpp
+       3      1     17      1       3 Generate::GenerateAgent::ArgType@109-111@Source/Library/Language/Tau/Source/Generate/GenerateAgent.cpp
+       3      1     17      1       3 Generate::GenerateAgent::ReturnType@113-115@Source/Library/Language/Tau/Source/Generate/GenerateAgent.cpp
+       6      1     37      1       6 Generate::GenerateAgent::AddAgentBoilerplate@117-122@Source/Library/Language/Tau/Source/Generate/GenerateAgent.cpp
+      35      6    319      1      46 Generate::GenerateAgent::GenerateHandlerMethod@124-169@Source/Library/Language/Tau/Source/Generate/GenerateAgent.cpp
+       3      1     17      1       4 Generate::GenerateAgent::Interface@170-173@Source/Library/Language/Tau/Source/Generate/GenerateAgent.cpp
+       3      1     14      1       4 Generate::GenerateAgent::Struct@175-178@Source/Library/Language/Tau/Source/Generate/GenerateAgent.cpp
+       3      1     24      2       3 Generate::GenerateStruct::GenerateStruct@10-12@Source/Library/Language/Tau/Source/Generate/GenerateStruct.cpp
+       3      1     25      2       4 Generate::GenerateStruct::Generate@14-17@Source/Library/Language/Tau/Source/Generate/GenerateStruct.cpp
+       3      1     14      0       3 Generate::GenerateStruct::Prepend@19-21@Source/Library/Language/Tau/Source/Generate/GenerateStruct.cpp
+      39     14    218      1      51 Generate::GenerateStruct::Namespace@23-73@Source/Library/Language/Tau/Source/Generate/GenerateStruct.cpp
+       3      1     17      1       4 Generate::GenerateStruct::Class@75-78@Source/Library/Language/Tau/Source/Generate/GenerateStruct.cpp
+       3      1     14      1       4 Generate::GenerateStruct::Interface@80-83@Source/Library/Language/Tau/Source/Generate/GenerateStruct.cpp
+      35     14    221      1      52 Generate::GenerateStruct::Struct@85-136@Source/Library/Language/Tau/Source/Generate/GenerateStruct.cpp
+       6      1     63      1       9 Generate::GenerateStruct::Property@138-146@Source/Library/Language/Tau/Source/Generate/GenerateStruct.cpp
+      16      3    159      1      23 Generate::GenerateStruct::Method@148-170@Source/Library/Language/Tau/Source/Generate/GenerateStruct.cpp
+       1      1     15      1       1 Generate::GenerateStruct::ReturnType@172-172@Source/Library/Language/Tau/Source/Generate/GenerateStruct.cpp
+       1      1     15      1       1 Generate::GenerateStruct::ArgType@174-174@Source/Library/Language/Tau/Source/Generate/GenerateStruct.cpp
+      92     30    542      1     143 HlslTranslator::TranslateToken@11-153@Source/Library/Language/Hlsl/Source/HlslTranslator.cpp
+       5      1     42      2       6 HlslTranslator::TranslateBinaryOp@155-160@Source/Library/Language/Hlsl/Source/HlslTranslator.cpp
+      50     16    263      1      64 HlslTranslator::TranslateNode@186-249@Source/Library/Language/Hlsl/Source/HlslTranslator.cpp
+       3      2     28      1       3 HlslTranslator::TranslateBlock@251-253@Source/Library/Language/Hlsl/Source/HlslTranslator.cpp
+      10      3    109      1      19 HlslTranslator::TranslateFunction@255-273@Source/Library/Language/Hlsl/Source/HlslTranslator.cpp
+       6      2     60      1       9 HlslTranslator::TranslateCall@275-283@Source/Library/Language/Hlsl/Source/HlslTranslator.cpp
+       9      3     75      1      10 HlslTranslator::TranslateIf@285-294@Source/Library/Language/Hlsl/Source/HlslTranslator.cpp
+       3      1     16      1       3 HlslTranslator::TranslateFor@296-298@Source/Library/Language/Hlsl/Source/HlslTranslator.cpp
+       3      1     16      1       3 HlslTranslator::TranslateWhile@300-302@Source/Library/Language/Hlsl/Source/HlslTranslator.cpp
+      15      5    106      2      19 HlslParser::Process@11-29@Source/Library/Language/Hlsl/Source/HlslParser.cpp
+      25      8    114      1      30 HlslParser::Run@31-60@Source/Library/Language/Hlsl/Source/HlslParser.cpp
+       9      4     45      0      10 HlslParser::Program@62-71@Source/Library/Language/Hlsl/Source/HlslParser.cpp
+      25      4    171      1      31 HlslParser::Function@73-103@Source/Library/Language/Hlsl/Source/HlslParser.cpp
+      27      7    123      1      36 HlslParser::Block@105-140@Source/Library/Language/Hlsl/Source/HlslParser.cpp
+      32     11    186      1      65 HlslParser::Statement@142-206@Source/Library/Language/Hlsl/Source/HlslParser.cpp
+      18      8    124      0      38 HlslParser::Expression@208-245@Source/Library/Language/Hlsl/Source/HlslParser.cpp
+      38      8    347      1      43 HlslParser::Declaration@250-292@Source/Library/Language/Hlsl/Source/HlslParser.cpp
+       7      3     40      0       8 HlslParser::Initialiser@294-301@Source/Library/Language/Hlsl/Source/HlslParser.cpp
+       6      3     31      0       6 HlslParser::ExpressionList@303-308@Source/Library/Language/Hlsl/Source/HlslParser.cpp
+      11      5     84      0      14 HlslParser::Logical@310-323@Source/Library/Language/Hlsl/Source/HlslParser.cpp
+      13      9    112      0      16 HlslParser::Relational@325-340@Source/Library/Language/Hlsl/Source/HlslParser.cpp
+      25     10    193      0      34 HlslParser::Additive@342-375@Source/Library/Language/Hlsl/Source/HlslParser.cpp
+      11      5     84      0      14 HlslParser::Term@377-390@Source/Library/Language/Hlsl/Source/HlslParser.cpp
+      33     13    214      0      40 HlslParser::Factor@392-431@Source/Library/Language/Hlsl/Source/HlslParser.cpp
+      19      5     74      0      24 HlslParser::ParseFactorIdent@433-456@Source/Library/Language/Hlsl/Source/HlslParser.cpp
+      20      4    116      0      23 HlslParser::ParseMethodCall@458-480@Source/Library/Language/Hlsl/Source/HlslParser.cpp
+       7      1     47      0       7 HlslParser::ParseGetMember@482-488@Source/Library/Language/Hlsl/Source/HlslParser.cpp
+      21      4    131      1      31 HlslParser::IfCondition@490-520@Source/Library/Language/Hlsl/Source/HlslParser.cpp
+      12      2     67      0      13 HlslParser::ParseIndexOp@522-534@Source/Library/Language/Hlsl/Source/HlslParser.cpp
+      35      7    195      1      45 HlslParser::For@536-580@Source/Library/Language/Hlsl/Source/HlslParser.cpp
+       9      2     51      1      10 HlslParser::While@582-591@Source/Library/Language/Hlsl/Source/HlslParser.cpp
+       3      1     26      1       3 HlslParser::CreateError@593-595@Source/Library/Language/Hlsl/Source/HlslParser.cpp
+       5      1     31      1       5 HlslParser::AddBlock@597-601@Source/Library/Language/Hlsl/Source/HlslParser.cpp
+       3      2     20      0       3 HlslParser::ConsumeNewLines@603-605@Source/Library/Language/Hlsl/Source/HlslParser.cpp
+       2      1      7      0      15 HlslLang::Print@13-27@Source/Library/Language/Hlsl/Source/HlslLang.cpp
+       5      2     49      2       6 HlslLang::TranslateFile@29-34@Source/Library/Language/Hlsl/Source/HlslLang.cpp
+       4      1     26      2      18 HlslLang::Translate@36-53@Source/Library/Language/Hlsl/Source/HlslLang.cpp
+      25      1    106      1      35 HlslAstNodes::ToString@9-43@Source/Library/Language/Hlsl/Source/HlslAstNode.cpp
+      55      1    226      1      82 HlslTokenEnumType::ToString@9-90@Source/Library/Language/Hlsl/Source/HlslToken.cpp
+      11      5     80      2      13 operator < <@92-104@Source/Library/Language/Hlsl/Source/HlslToken.cpp
+     175      1   1564      0     178 HlslLexer::AddKeyWords@7-184@Source/Library/Language/Hlsl/Source/HlslLexer.cpp
+      78     36    541      0      87 HlslLexer::NextToken@186-272@Source/Library/Language/Hlsl/Source/HlslLexer.cpp
+       3      1     15      0      40 HlslLexer::LexIdent@276-315@Source/Library/Language/Hlsl/Source/HlslLexer.cpp
+       1      1     16      0       1 HlslLexer::Terminate@317-317@Source/Library/Language/Hlsl/Source/HlslLexer.cpp
+     107     35    629      1     142 RhoTranslator::TranslateToken@12-153@Source/Library/Language/Lisp/Source/LispTranslator.cpp
+       5      1     42      2       6 RhoTranslator::TranslateBinaryOp@155-160@Source/Library/Language/Lisp/Source/LispTranslator.cpp
+      50     16    263      1      64 RhoTranslator::TranslateNode@186-249@Source/Library/Language/Lisp/Source/LispTranslator.cpp
+       3      2     25      1       3 RhoTranslator::TranslateBlock@251-253@Source/Library/Language/Lisp/Source/LispTranslator.cpp
+      10      3    107      1      19 RhoTranslator::TranslateFunction@255-273@Source/Library/Language/Lisp/Source/LispTranslator.cpp
+      10      4     96      1      11 RhoTranslator::TranslateCall@275-285@Source/Library/Language/Lisp/Source/LispTranslator.cpp
+       9      3     75      1      10 RhoTranslator::TranslateIf@287-296@Source/Library/Language/Lisp/Source/LispTranslator.cpp
+       1      1     16      1       1 RhoTranslator::TranslateFor@298-298@Source/Library/Language/Lisp/Source/LispTranslator.cpp
+       3      1     16      1       3 RhoTranslator::TranslateWhile@300-302@Source/Library/Language/Lisp/Source/LispTranslator.cpp
+      71      1    290      1      82 RhoTokenEnumType::ToString@9-90@Source/Library/Language/Lisp/Source/LispToken.cpp
+      11      5     80      2      13 operator < <@92-104@Source/Library/Language/Lisp/Source/LispToken.cpp
+      16      1    133      0      16 RhoLexer::AddKeyWords@7-22@Source/Library/Language/Lisp/Source/LispLexer.cpp
+      82     37    547      0      91 RhoLexer::NextToken@24-114@Source/Library/Language/Lisp/Source/LispLexer.cpp
+      32     10    169      0      44 RhoLexer::LexPathname@119-162@Source/Library/Language/Lisp/Source/LispLexer.cpp
+       1      1     16      0       1 RhoLexer::Terminate@164-164@Source/Library/Language/Lisp/Source/LispLexer.cpp
+      25      1    106      1      35 RhoAstNodes::ToString@9-43@Source/Library/Language/Lisp/Source/LispAstNode.cpp
+      14      5     92      2      18 RhoParser::Process@6-23@Source/Library/Language/Lisp/Source/LispParser.cpp
+      25      8    114      1      30 RhoParser::Run@25-54@Source/Library/Language/Lisp/Source/LispParser.cpp
+      10      4     47      0      11 RhoParser::Program@56-66@Source/Library/Language/Lisp/Source/LispParser.cpp
+      22      3    158      1      26 RhoParser::Function@68-93@Source/Library/Language/Lisp/Source/LispParser.cpp
+      27      7    123      1      36 RhoParser::Block@95-130@Source/Library/Language/Lisp/Source/LispParser.cpp
+      46     14    258      1      60 RhoParser::Statement@132-191@Source/Library/Language/Lisp/Source/LispParser.cpp
+      18      8    123      0      38 RhoParser::Expression@193-230@Source/Library/Language/Lisp/Source/LispParser.cpp
+      11      5     84      0      14 RhoParser::Logical@232-245@Source/Library/Language/Lisp/Source/LispParser.cpp
+      13      9    112      0      16 RhoParser::Relational@247-262@Source/Library/Language/Lisp/Source/LispParser.cpp
+      25     10    193      0      34 RhoParser::Additive@264-297@Source/Library/Language/Lisp/Source/LispParser.cpp
+      11      5     84      0      14 RhoParser::Term@299-312@Source/Library/Language/Lisp/Source/LispParser.cpp
+      35     15    242      0      47 RhoParser::Factor@314-360@Source/Library/Language/Lisp/Source/LispParser.cpp
+      19      5     74      0      24 RhoParser::ParseFactorIdent@362-385@Source/Library/Language/Lisp/Source/LispParser.cpp
+      21      5    134      0      25 RhoParser::ParseMethodCall@387-411@Source/Library/Language/Lisp/Source/LispParser.cpp
+       7      1     47      0       7 RhoParser::ParseGetMember@413-419@Source/Library/Language/Lisp/Source/LispParser.cpp
+      21      4    131      1      31 RhoParser::IfCondition@421-451@Source/Library/Language/Lisp/Source/LispParser.cpp
+      12      2     67      0      13 RhoParser::ParseIndexOp@453-465@Source/Library/Language/Lisp/Source/LispParser.cpp
+      35      7    195      1      45 RhoParser::For@467-511@Source/Library/Language/Lisp/Source/LispParser.cpp
+       9      2     51      1      10 RhoParser::While@513-522@Source/Library/Language/Lisp/Source/LispParser.cpp
+       3      1     26      1       3 RhoParser::CreateError@524-526@Source/Library/Language/Lisp/Source/LispParser.cpp
+       5      1     31      1       5 RhoParser::AddBlock@528-532@Source/Library/Language/Lisp/Source/LispParser.cpp
+       3      2     20      0       3 RhoParser::ConsumeNewLines@534-536@Source/Library/Language/Lisp/Source/LispParser.cpp
+      10      1     76      0      13 RhoLang::Print@13-25@Source/Library/Language/Lisp/Source/LispLang.cpp
+       3      1     31      2       3 RhoLang::TranslateFile@27-29@Source/Library/Language/Lisp/Source/LispLang.cpp
+       8      4     94      2      11 RhoLang::Translate@31-41@Source/Library/Language/Lisp/Source/LispLang.cpp
+      18      3     85      1      26 PiAstNodeEnumType::ToString@11-36@Source/Library/Language/Pi/Source/PiAstNode.cpp
+       3      1     27      2       3 operator < <@38-40@Source/Library/Language/Pi/Source/PiAstNode.cpp
+     139      5    638      1     152 PiTokenEnumType::ToString@10-161@Source/Library/Language/Pi/Source/PiToken.cpp
+      25     10    165      2      29 operator < <@166-194@Source/Library/Language/Pi/Source/PiToken.cpp
+       3      1     30      2       3 kai::operator < <@198-200@Source/Library/Language/Pi/Source/PiToken.cpp
+      13      7    105      2      16 PiParser::Process@9-24@Source/Library/Language/Pi/Source/PiParser.cpp
+       7      3     38      1       8 PiParser::Run@26-33@Source/Library/Language/Pi/Source/PiParser.cpp
+      22      7    123      1      28 PiParser::NextSingle@35-62@Source/Library/Language/Pi/Source/PiParser.cpp
+      15      7    108      3      18 PiParser::ParseCompound@64-81@Source/Library/Language/Pi/Source/PiParser.cpp
+      55      1    484      0      60 PiLexer::AddKeyWords@7-66@Source/Library/Language/Pi/Source/PiLexer.cpp
+     105     44    697      0     127 PiLexer::NextToken@68-194@Source/Library/Language/Pi/Source/PiLexer.cpp
+       1      1     16      0       1 PiLexer::Terminate@196-196@Source/Library/Language/Pi/Source/PiLexer.cpp
+       6      3     42      2       7 Contains@198-204@Source/Library/Language/Pi/Source/PiLexer.cpp
+      32     10    168      0      44 PiLexer::PathnameOrKeyword@207-250@Source/Library/Language/Pi/Source/PiLexer.cpp
+       8      2     50      2      16 PiTranslator::Translate@19-34@Source/Library/Language/Pi/Source/PiTranslator.cpp
+      96     22    714      1     159 PiTranslator::TranslateNode@36-194@Source/Library/Language/Pi/Source/PiTranslator.cpp
+     268     82   1477      1     379 PiTranslator::AppendTokenised@196-574@Source/Library/Language/Pi/Source/PiTranslator.cpp
+       5      1     37      2       5 PiTranslator::AppendDirectOperation@577-581@Source/Library/Language/Pi/Source/PiTranslator.cpp
+      16      6     58      1      16 ToString@6-21@Source/Library/Language/Common/Source/Language.cpp
+       3      1     24      2       3 operator < <@7-9@Source/Library/Language/Common/Source/Structure.cpp
+       6      1     32      2       6 operator > >@11-16@Source/Library/Language/Common/Source/Structure.cpp
+       1      1     12      1       1 IsSpaceChar@5-5@Source/Library/Executor/Source/Translator/LexerBase.cpp
+       2      1     35      2       2 LexerBase::LexerBase@7-8@Source/Library/Executor/Source/Translator/LexerBase.cpp
+      10      4     84      0      11 LexerBase::CreateLines@10-20@Source/Library/Executor/Source/Translator/LexerBase.cpp
+       4      2     32      0       5 LexerBase::Current@22-26@Source/Library/Executor/Source/Translator/LexerBase.cpp
+       1      1     14      0       1 LexerBase::Line@28-28@Source/Library/Executor/Source/Translator/LexerBase.cpp
+       4      2     42      0       4 LexerBase::EndOfLine@30-33@Source/Library/Executor/Source/Translator/LexerBase.cpp
+       5      3     37      0       7 LexerBase::Peek@35-41@Source/Library/Executor/Source/Translator/LexerBase.cpp
+       5      2     38      1       6 LexerBase::Gather@43-48@Source/Library/Executor/Source/Translator/LexerBase.cpp
+       9      3     50      0      11 LexerBase::Next@50-60@Source/Library/Executor/Source/Translator/LexerBase.cpp
+      25      8    113      0      32 LexerBase::LexString@62-93@Source/Library/Executor/Source/Translator/LexerBase.cpp
+       1      1     15      1       1 TranslatorCommon::TranslatorCommon@9-9@Source/Library/Executor/Source/Translator/TranslatorCommon.cpp
+     111     42    781      1     157 TranslatorCommon::Append@11-167@Source/Library/Executor/Source/Translator/TranslatorCommon.cpp
+       4      1     29      1       8 TranslatorCommon::AppendOp@169-176@Source/Library/Executor/Source/Translator/TranslatorCommon.cpp
+      23      4    122      1      34 TranslatorCommon::AppendDirectOperation@178-211@Source/Library/Executor/Source/Translator/TranslatorCommon.cpp
+      13      3     53      0      24 TranslatorCommon::MarkAsRhoExpression@213-236@Source/Library/Executor/Source/Translator/TranslatorCommon.cpp
+       1      1     14      0       1 TranslatorCommon::Top@238-238@Source/Library/Executor/Source/Translator/TranslatorCommon.cpp
+       5      1     43      0       8 TranslatorCommon::PushNew@240-247@Source/Library/Executor/Source/Translator/TranslatorCommon.cpp
+       5      1     23      0       5 TranslatorCommon::Pop@249-253@Source/Library/Executor/Source/Translator/TranslatorCommon.cpp
+       5      2     46      0       5 TranslatorCommon::ToString@255-259@Source/Library/Executor/Source/Translator/TranslatorCommon.cpp
+       5      1     23      1       6 Process::Fail@9-14@Source/Library/Executor/Source/Translator/Process.cpp
+       8      2     57      1      12 Process::Fail@16-27@Source/Library/Executor/Source/Translator/Process.cpp
+       1      1      5      0       1 DontWarnAboutEmptyFile@5-5@Source/Library/Executor/Source/Translator/TokenBase.cpp
+      20      5    151      4      25 SignedContinuation::Create@9-33@Source/Library/Executor/Source/SignedContinuation.cpp
+       1      1     15      1       1 SignedContinuation::Enter@35-35@Source/Library/Executor/Source/SignedContinuation.cpp
+       2      1      9      0       3 SignedContinuation::Leave@37-39@Source/Library/Executor/Source/SignedContinuation.cpp
+      22      3    162      2      24 operator < <@41-64@Source/Library/Executor/Source/SignedContinuation.cpp
+       3      1     20      1       3 SignedContinuation::Register@66-68@Source/Library/Executor/Source/SignedContinuation.cpp
+       4      2     26      0      12 Compiler::Destroy@9-20@Source/Library/Executor/Source/Compiler.cpp
+       9      2     45      2      12 Compiler::Translate@22-33@Source/Library/Executor/Source/Compiler.cpp
+       7      1     62      2       7 Compiler::AddOperation@35-41@Source/Library/Executor/Source/Compiler.cpp
+       5      1     41      2       5 Compiler::CompileFile@43-47@Source/Library/Executor/Source/Compiler.cpp
+       3      1     25      2       3 Compiler::Register@49-51@Source/Library/Executor/Source/Compiler.cpp
+       1      1     19      1       1 Compiler::SetLanguage@53-53@Source/Library/Executor/Source/Compiler.cpp
+       1      1     17      0       1 Compiler::GetLanguage@55-55@Source/Library/Executor/Source/Compiler.cpp
+       8      1     41      0       8 Executor::Create@21-28@Source/Library/Executor/Source/Executor.cpp
+       1      1     10      0       1 Executor::Destroy@30-30@Source/Library/Executor/Source/Executor.cpp
+       3      1     25      2       7 Executor::Register@32-38@Source/Library/Executor/Source/Executor.cpp
+       3      1     28      2       3 operator <@40-42@Source/Library/Executor/Source/Executor.cpp
+       3      1     28      2       3 operator ==@44-46@Source/Library/Executor/Source/Executor.cpp
+      10      5    110      2      12 operator < <@48-59@Source/Library/Executor/Source/Executor.cpp
+       5      1     36      2       6 operator < <@61-66@Source/Library/Executor/Source/Executor.cpp
+       3      1     17      2       5 operator > >@68-72@Source/Library/Executor/Source/Executor.cpp
+       3      1     14      1       5 Executor::UnwrapValue@89-93@Source/Library/Executor/Source/Executor.cpp
+       7      2     52      1       9 Executor::Push@95-103@Source/Library/Executor/Source/Executor.cpp
+       3      1     35      1       3 Executor::Push@105-107@Source/Library/Executor/Source/Executor.cpp
+       1      1     14      0       1 Executor::Pop@109-109@Source/Library/Executor/Source/Executor.cpp
+       1      1     15      0       1 Executor::Top@111-111@Source/Library/Executor/Source/Executor.cpp
+       7      3     43      0       7 Executor::GetDataStack@113-119@Source/Library/Executor/Source/Executor.cpp
+       1      1     11      0       1 Executor::GetContextStack@121-121@Source/Library/Executor/Source/Executor.cpp
+       1      1     22      2       1 Executor::Push@123-123@Source/Library/Executor/Source/Executor.cpp
+       1      1     17      1       1 Executor::Pop@125-125@Source/Library/Executor/Source/Executor.cpp
+      62     23    444      0      91 Executor::PopBool@127-217@Source/Library/Executor/Source/Executor.cpp
+       8      3     71      0      17 Executor::ToArray@219-235@Source/Library/Executor/Source/Executor.cpp
+       5      3     44      0       6 Executor::DropN@237-242@Source/Library/Executor/Source/Executor.cpp
+       1      1     13      0       1 Executor::ClearContext@246-246@Source/Library/Executor/Source/Executor.cpp
+      23      5    135      0      28 Executor::Expand@248-275@Source/Library/Executor/Source/Executor.cpp
+       7      2     63      0       8 Executor::GetChildren@277-284@Source/Library/Executor/Source/Executor.cpp
+       4      2     37      1       5 Executor::PushAll@287-291@Source/Library/Executor/Source/Executor.cpp
+      20      4    134      1      25 Executor::PrintStack@295-319@Source/Library/Executor/Source/Executor.cpp
+       5      2     64      1       5 Executor::DumpStack@321-325@Source/Library/Executor/Source/Executor.cpp
+      13      7    108      2      16 Executor::Resolve@329-344@Source/Library/Executor/Source/Executor.cpp
+       9      3     69      1      10 Executor::TryResolve@346-355@Source/Library/Executor/Source/Executor.cpp
+      19      9    172      1      27 Executor::TryResolve@357-383@Source/Library/Executor/Source/Executor.cpp
+      50     12    324      2      69 Executor::TryResolveOrCreate@388-456@Source/Library/Executor/Source/Executor.cpp
+      20      8    179      1      30 Executor::TryResolve@458-487@Source/Library/Executor/Source/Executor.cpp
+       5      2     39      1       5 Executor::Resolve@489-493@Source/Library/Executor/Source/Executor.cpp
+       5      2     39      1       5 Executor::Resolve@495-499@Source/Library/Executor/Source/Executor.cpp
+      64     17    361      1      89 Executor::Eval@503-591@Source/Library/Executor/Source/Executor.cpp
+       1      1     16      1       1 Executor::SetScope@593-593@Source/Library/Executor/Source/Executor.cpp
+       1      1     13      0       1 Executor::PopScope@595-595@Source/Library/Executor/Source/Executor.cpp
+       1      1     15      0       1 Executor::GetScope@597-597@Source/Library/Executor/Source/Executor.cpp
+       1      1     16      1       1 Executor::SetContinuation@599-599@Source/Library/Executor/Source/Executor.cpp
+      71     23    377      0      87 Executor::Continue@601-687@Source/Library/Executor/Source/Executor.cpp
+      14      5     80      1      20 Executor::ContinueOnly@689-708@Source/Library/Executor/Source/Executor.cpp
+      25      9    149      1      40 Executor::Continue@710-749@Source/Library/Executor/Source/Executor.cpp
+      70     16    423      0      91 Executor::NextContinuation@751-841@Source/Library/Executor/Source/Executor.cpp
+      41     11    290      1      67 Executor::NewContinuation@843-909@Source/Library/Executor/Source/Executor.cpp
+      18      5     90      1      21 Executor::ConditionalContextSwitch@911-931@Source/Library/Executor/Source/Executor.cpp
+       5      1     22      0       5 Executor::TraceAll@933-937@Source/Library/Executor/Source/Executor.cpp
+       5      1     32      1       5 Executor::Trace@939-943@Source/Library/Executor/Source/Executor.cpp
+      13      3     89      2      17 Executor::Trace@945-961@Source/Library/Executor/Source/Executor.cpp
+       9      4    104      3      12 Executor::Trace@963-974@Source/Library/Executor/Source/Executor.cpp
+       3      1     11      0       4 Executor::MarkAndSweep@976-979@Source/Library/Executor/Source/Executor.cpp
+       3      1     20      1       3 Executor::MarkAndSweep@981-983@Source/Library/Executor/Source/Executor.cpp
+      11      2     68      2      12 Executor::ForEach@986-997@Source/Library/Executor/Source/Executor.cpp
+      20      4    151      2      25 Executor::DumpContinuation@999-1023@Source/Library/Executor/Source/Executor.cpp
+     496    212   4402      3     667 Executor::PerformBinaryOp@1027-1693@Source/Library/Executor/Source/Executor.cpp
+       1      1     13      1       1 Executor::SetTraceLevel@1695-1695@Source/Library/Executor/Source/Executor.cpp
+       1      1     11      0       1 Executor::GetTraceLevel@1697-1697@Source/Library/Executor/Source/Executor.cpp
+      28     22    130      1      29 Executor::IsBinaryOp@1699-1727@Source/Library/Executor/Source/Executor.cpp
+       8      2     50      0      11 Continuation::Create@20-30@Source/Library/Executor/Source/Continuation.cpp
+       1      1     10      0       1 Continuation::Destroy@32-32@Source/Library/Executor/Source/Continuation.cpp
+      13      3    116      0      14 Continuation::Show@34-47@Source/Library/Executor/Source/Continuation.cpp
+       1      1     13      1       1 Continuation::SetCode@49-49@Source/Library/Executor/Source/Continuation.cpp
+      16      6    136      1      19 Continuation::Enter@51-69@Source/Library/Executor/Source/Continuation.cpp
+       4      1     17      0       4 Continuation::Next@71-74@Source/Library/Executor/Source/Continuation.cpp
+      11      4     82      1      16 Continuation::Next@76-91@Source/Library/Executor/Source/Continuation.cpp
+       1      1     12      0       1 Continuation::Reset@93-93@Source/Library/Executor/Source/Continuation.cpp
+      16      6    165      4      26 InsertContinuation@95-120@Source/Library/Executor/Source/Continuation.cpp
+       5      2     77      2       5 operator < <@122-126@Source/Library/Executor/Source/Continuation.cpp
+       3      1     16      0       3 operator > >@128-130@Source/Library/Executor/Source/Continuation.cpp
+       3      1     25      2       4 operator < <@132-135@Source/Library/Executor/Source/Continuation.cpp
+       6      1     32      2       7 operator > >@137-143@Source/Library/Executor/Source/Continuation.cpp
+       6      1     56      1       6 Continuation::Register@145-150@Source/Library/Executor/Source/Continuation.cpp
+       4      2     32      1       5 GetFullname@14-18@Source/Library/Executor/Source/Tree.cpp
+      13      5    142      1      17 GetFullname@20-36@Source/Library/Executor/Source/Tree.cpp
+      35     11    255      3      44 Set@38-81@Source/Library/Executor/Source/Tree.cpp
+      20      4    131      4      22 Set@83-104@Source/Library/Executor/Source/Tree.cpp
+       5      4     64      3       7 Get@106-112@Source/Library/Executor/Source/Tree.cpp
+      21      9    130      2      27 Get@114-140@Source/Library/Executor/Source/Tree.cpp
+      13      4    105      2      15 Exists@142-156@Source/Library/Executor/Source/Tree.cpp
+      13      4    112      3      15 Exists@158-172@Source/Library/Executor/Source/Tree.cpp
+      23      9    171      2      30 Remove@174-203@Source/Library/Executor/Source/Tree.cpp
+       6      2     42      3       6 Remove@205-210@Source/Library/Executor/Source/Tree.cpp
+       8      2     79      3       9 Remove@212-220@Source/Library/Executor/Source/Tree.cpp
+       4      2     30      1       5 GetName@222-226@Source/Library/Executor/Source/Tree.cpp
+       5      2     42      1       6 Tree::SetScope@228-233@Source/Library/Executor/Source/Tree.cpp
+       4      2     39      1       5 Tree::SetScope@235-239@Source/Library/Executor/Source/Tree.cpp
+       7      2     38      1       7 Tree::AddSearchPath@241-247@Source/Library/Executor/Source/Tree.cpp
+      13      3     76      1      13 Tree::AddSearchPath@249-261@Source/Library/Executor/Source/Tree.cpp
+      10      6     91      1      13 Tree::Resolve@263-275@Source/Library/Executor/Source/Tree.cpp
+      10      5     87      1      13 Tree::Resolve@277-289@Source/Library/Executor/Source/Tree.cpp
+     146      1    582      1     150 Operation::ToString@8-157@Source/Library/Executor/Source/Operation.cpp
+       1      1     16      0       1 Operation::ToString@159-159@Source/Library/Executor/Source/Operation.cpp
+       3      1     20      1       3 Operation::Register@161-163@Source/Library/Executor/Source/Operation.cpp
+       3      1     28      2       3 operator < <@171-173@Source/Library/Executor/Source/Operation.cpp
+       6      1     41      2       8 operator > >@175-182@Source/Library/Executor/Source/Operation.cpp
+       3      1     25      2       3 operator < <@184-186@Source/Library/Executor/Source/Operation.cpp
+       3      1     17      2       5 operator > >@188-192@Source/Library/Executor/Source/Operation.cpp
+     364    131   3195      1     445 Executor::ExtractValueFromContinuation@14-458@Source/Library/Executor/Source/ExtractValueFromContinuation.cpp
+       4      1     22      0       4 Console::Console@21-24@Source/Library/Executor/Source/Console.cpp
+       4      1     24      1       4 Console::Console@26-29@Source/Library/Executor/Source/Console.cpp
+       1      1     14      0       1 Console::~Console@31-31@Source/Library/Executor/Source/Console.cpp
+      22      2    146      0      29 Console::Create@33-61@Source/Library/Executor/Source/Console.cpp
+       7      3     67      1       7 Console::ExposeTypesToTree@63-69@Source/Library/Executor/Source/Console.cpp
+       3      1     20      1       3 Console::SetLanguage@71-73@Source/Library/Executor/Source/Console.cpp
+       4      1     26      1       4 Console::SetLanguage@75-78@Source/Library/Executor/Source/Console.cpp
+       1      1     13      0       1 Console::ControlC@80-80@Source/Library/Executor/Source/Console.cpp
+       1      1     11      0       1 Console::GetLanguage@82-82@Source/Library/Executor/Source/Console.cpp
+      28      1    261      0      36 Console::CreateTree@84-119@Source/Library/Executor/Source/Console.cpp
+      60     14    359      1     101 Console::Execute@121-221@Source/Library/Executor/Source/Console.cpp
+      11      2     85      2      21 Console::Execute@223-243@Source/Library/Executor/Source/Console.cpp
+      31      6    225      1      45 Console::ProcessShellCommand@245-289@Source/Library/Executor/Source/Console.cpp
+      24      6    185      1      33 Console::ExpandShellCommands@291-323@Source/Library/Executor/Source/Console.cpp
+      28     11    181      1      32 Console::SplitIntoWords@325-356@Source/Library/Executor/Source/Console.cpp
+      46     21    478      2      62 Console::ApplyWordDesignators@358-419@Source/Library/Executor/Source/Console.cpp
+      45     15    425      2      63 Console::ApplyModifiers@421-483@Source/Library/Executor/Source/Console.cpp
+      63     20    439      2      73 Console::ProcessHistoryModifier@485-557@Source/Library/Executor/Source/Console.cpp
+      32     10    238      1      41 Console::ParseHistoryExpansion@559-599@Source/Library/Executor/Source/Console.cpp
+      26      7    214      1      33 Console::ProcessQuickSubstitution@601-633@Source/Library/Executor/Source/Console.cpp
+       9      3     76      1      12 Console::SearchHistoryAnywhere@635-646@Source/Library/Executor/Source/Console.cpp
+      76     33    610      1      97 Console::ProcessZshCommand@648-744@Source/Library/Executor/Source/Console.cpp
+      52      9    420      1      69 Console::ExpandHistoryReferences@746-814@Source/Library/Executor/Source/Console.cpp
+      50     13    398      1      70 Console::Process@816-885@Source/Library/Executor/Source/Console.cpp
+      13      2    125      1      16 Console::WritePrompt@887-902@Source/Library/Executor/Source/Console.cpp
+       9      1     74      0      10 Console::GetPrompt@904-913@Source/Library/Executor/Source/Console.cpp
+      26      7    288      0      32 Console::ShowColoredStack@915-946@Source/Library/Executor/Source/Console.cpp
+      14      4    121      0      17 Console::WriteStack@948-964@Source/Library/Executor/Source/Console.cpp
+     188     39   1309      0     252 Console::Run@966-1217@Source/Library/Executor/Source/Console.cpp
+      34      2    323      0      44 Console::RegisterTypes@1219-1262@Source/Library/Executor/Source/Console.cpp
+       3      1     24      2       3 Console::Compile@1264-1266@Source/Library/Executor/Source/Console.cpp
+       1      1      9      0       1 Console::Register@1268-1268@Source/Library/Executor/Source/Console.cpp
+      23     11    129      1      31 Console::IsStructureIncomplete@1270-1300@Source/Library/Executor/Source/Console.cpp
+      47     16    312      1      65 Console::ExecuteFile@1302-1366@Source/Library/Executor/Source/Console.cpp
+       4      1     21      2       5 Console::ProcessSubstitutionModifier@1368-1372@Source/Library/Executor/Source/Console.cpp
+       8      2     54      1       9 Console::ExtractFilePath@1374-1382@Source/Library/Executor/Source/Console.cpp
+       9      3     96      1      11 Bin::GetMethods@20-30@Source/Library/Executor/Source/Bin.cpp
+       1      1     13      0       1 Bin::Help@32-32@Source/Library/Executor/Source/Bin.cpp
+       8      3     89      1      10 Bin::GetProperties@34-43@Source/Library/Executor/Source/Bin.cpp
+       3      1     32      2       3 Bin::ScaleVector3@45-47@Source/Library/Executor/Source/Bin.cpp
+       3      1     38      2       3 Bin::AddVector3@49-51@Source/Library/Executor/Source/Bin.cpp
+       5      1     47      2       5 Bin::WriteToFile@53-57@Source/Library/Executor/Source/Bin.cpp
+      12      3     91      1      14 Bin::ReadFile@59-72@Source/Library/Executor/Source/Bin.cpp
+      13      3     94      2      14 Bin::Printf@74-87@Source/Library/Executor/Source/Bin.cpp
+       1      1     22      1       1 Bin::Print@89-89@Source/Library/Executor/Source/Bin.cpp
+       1      1     27      1       1 Bin::print@91-91@Source/Library/Executor/Source/Bin.cpp
+       1      1     27      1       1 Bin::PrintXml@93-93@Source/Library/Executor/Source/Bin.cpp
+       4      2     37      1       5 Bin::UpCast@95-99@Source/Library/Executor/Source/Bin.cpp
+       6      2     28      2       6 Bin::SetClean@101-106@Source/Library/Executor/Source/Bin.cpp
+       1      1     14      1       1 Bin::IsDirty@108-108@Source/Library/Executor/Source/Bin.cpp
+       1      1     14      1       1 Bin::IsConst@110-110@Source/Library/Executor/Source/Bin.cpp
+       3      2     17      1       3 Bin::Assert@112-114@Source/Library/Executor/Source/Bin.cpp
+       5      1     39      1       5 Bin::Freeze@116-120@Source/Library/Executor/Source/Bin.cpp
+       7      1     41      1       7 Bin::Thaw@122-128@Source/Library/Executor/Source/Bin.cpp
+       1      1     14      1       1 Bin::ToString@130-130@Source/Library/Executor/Source/Bin.cpp
+       1      1     14      1       1 Bin::ToXmlString@132-132@Source/Library/Executor/Source/Bin.cpp
+       1      1     12      1       1 Bin::ExitToOS@134-134@Source/Library/Executor/Source/Bin.cpp
+       5      1     37      1       5 Bin::TypeNumberToClass@136-140@Source/Library/Executor/Source/Bin.cpp
+       6      1     47      1       6 Bin::Describe@143-148@Source/Library/Executor/Source/Bin.cpp
+      10      3     93      1      12 Bin::info@150-161@Source/Library/Executor/Source/Bin.cpp
+      27      1    174      1      30 Bin::AddFunctions@163-192@Source/Library/Executor/Source/Bin.cpp
+      15      1    115      0      18 Color::Color@12-29@Source/Library/Platform/Windows/ConsoleColors.cpp
+       1      1     16      0       1 Color::~Color@31-31@Source/Library/Platform/Windows/ConsoleColors.cpp
+       4      1     34      2       4 operator < <@33-36@Source/Library/Platform/Windows/ConsoleColors.cpp
+113 file analyzed.
+==============================================================
+NLOC    Avg.NLOC  AvgCCN  Avg.token  function_cnt    file
+--------------------------------------------------------------
+    114      98.0    12.0      717.0         1     Source/App/NetworkGenerate/Source/Main.cpp
+     53       8.5     3.5       50.0         2     Source/App/Console/Source/CMakeFiles/3.28.3/CompilerIdC/CMakeCCompilerId.c
+    133      15.0     6.0       96.0         1     Source/App/Console/Source/CMakeFiles/3.28.3/CompilerIdCXX/CMakeCXXCompilerId.cpp
+     13       0.0     0.0        0.0         0     Source/App/Console/Source/EnhancedConsole.h
+    133      23.8     5.0      155.8         5     Source/App/Console/Source/MinimalClient.cpp
+    225      97.5    19.5      674.5         2     Source/App/Console/Source/ConfigurableClient.cpp
+    137       8.2     1.9       51.2        16     Source/App/Console/Source/Peer.cpp
+      7       0.0     0.0        0.0         0     Source/App/Console/Source/PeerMain.cpp
+     89      12.3     2.3       77.3         6     Source/App/Console/Source/Main.cpp
+     44      37.0     7.0      261.0         1     Source/App/Console/Source/SimpleServer.cpp
+    421      21.2     4.5      155.4        18     Source/App/Console/Source/NetworkPeer.cpp
+    187      54.3     9.3      410.7         3     Source/App/Console/Source/ConfigurableServer.cpp
+     42      19.5     5.5      120.0         2     Source/App/Console/Source/EnhancedConsole.cpp
+    101      17.4     3.4      122.8         5     Source/App/Console/Source/MinimalServer.cpp
+     53      45.0     8.0      307.0         1     Source/App/Console/Source/SimpleClient.cpp
+    264       4.1     1.0       24.4        61     Source/App/Chat/Generated/ChatInterface.proxy.h
+    104      31.3     6.0      199.0         3     Source/App/NetworkTest/Source/Main.cpp
+     19       0.0     0.0        0.0         0     Source/App/Window/Source/imgui_impl_glfw.h
+    259      17.3     3.1      137.4        14     Source/App/Window/Source/Main.cpp
+     29       0.0     0.0        0.0         0     Source/App/Window/Source/ExecutorWindow.h
+      9       0.0     0.0        0.0         0     Source/App/Window/Source/imgui_impl_opengl3.h
+    639      50.8     8.0      439.4        12     Source/App/Window/Source/ExecutorWindow.cpp
+    417      39.9     5.4      239.0        10     Source/App/Window/Source/imgui_impl_opengl3.cpp
+    224      15.8     3.6      116.9        13     Source/App/Window/Source/imgui_impl_glfw.cpp
+    117      12.6     3.0       89.1         8     Source/App/Window/Include/ExecutorWindow.h
+     87      82.0    14.0      746.0         1     Source/Library/Rho/DiagnoseTests.cpp
+    167       9.9     2.2       63.2        16     Source/Library/Network/Source/ConnectionManager.cpp
+    263      47.0     8.2      326.6         5     Source/Library/Network/Source/GenerateProxy.cpp
+     19       3.2     1.0       21.8         5     Source/Library/Network/Source/ProxyBase.cpp
+     71       6.0     2.1       40.2        11     Source/Library/Network/Source/PeerDiscovery.cpp
+      3       0.0     0.0        0.0         0     Source/Library/Network/Source/AgentBase.cpp
+    101       6.3     1.7       46.6        15     Source/Library/Network/Source/NetworkLogger.cpp
+    386      16.4     4.3       92.5        23     Source/Library/Network/Source/Node.cpp
+     68       6.5     2.1       48.3        10     Source/Library/Core/Source/BuiltinTypes/List.cpp
+     75       5.3     1.5       49.5        13     Source/Library/Core/Source/BuiltinTypes/String.cpp
+     23       4.5     1.8       40.5         4     Source/Library/Core/Source/BuiltinTypes/CalcHashValues.cpp
+     26       4.2     2.4       52.6         5     Source/Library/Core/Source/BuiltinTypes/Map.cpp
+     40       3.0     1.3       24.2        12     Source/Library/Core/Source/BuiltinTypes/Set.cpp
+    101       7.3     2.1       53.2        13     Source/Library/Core/Source/BuiltinTypes/Array.cpp
+     58       4.5     1.6       33.1        12     Source/Library/Core/Source/BuiltinTypes/Stack.cpp
+    582       7.5     2.7       53.4        77     Source/Library/Core/Source/Object.cpp
+    445       7.3     3.0       55.4        59     Source/Library/Core/Source/Registry.cpp
+    153       7.8     3.1       60.6        18     Source/Library/Core/Source/Pathname.cpp
+     48       4.9     1.7       43.9         7     Source/Library/Core/Source/File.cpp
+     21       9.0     3.0       51.5         2     Source/Library/Core/Source/String.cpp
+     30       6.0     2.0       61.0         4     Source/Library/Core/Source/Property.cpp
+     68      61.0     1.0      315.0         1     Source/Library/Core/Source/TypeNumberToString.cpp
+     70       6.8     1.9       37.4         8     Source/Library/Core/Source/Debug.cpp
+    100       3.8     1.3       32.7        24     Source/Library/Core/Source/StringStream.cpp
+    221      11.3     4.2       87.1        19     Source/Library/Core/Source/StorageBase.cpp
+     63       8.6     2.1       66.0         7     Source/Library/Core/Source/BinaryPacket.cpp
+     85       3.5     1.1       26.0        23     Source/Library/Core/Source/Exception.cpp
+      8       4.0     3.0       33.0         1     Source/Library/Core/Source/Reflected.cpp
+     51       5.3     1.4       35.8         9     Source/Library/Core/Source/Label.cpp
+     51       8.0     3.7       68.3         6     Source/Library/Core/Source/ClassBase.cpp
+     23       2.5     1.5       26.5         8     Source/Library/Core/Source/BinaryStreamBuiltins.cpp
+    201       8.1     2.2       69.3        23     Source/Library/Core/Source/Logger.cpp
+     21       5.7     1.7       48.0         3     Source/Library/Core/Source/BinaryStream.cpp
+      9       3.0     1.0       29.0         2     Source/Library/Core/Source/Pair.cpp
+    175       4.5     1.4       38.6        37     Source/Library/Core/Source/BuiltinTypes.cpp
+     77      11.8     3.0      107.8         5     Source/Library/Core/Source/Utility.cpp
+     81       7.4     2.2       55.9        10     Source/Library/Core/Source/DotGraph.cpp
+    155      72.5    18.0      425.5         2     Source/Library/Language/Rho/Source/RhoTranslate.cpp
+    473      33.1     8.1      228.7        14     Source/Library/Language/Rho/Source/RhoTranslator.cpp
+     31      28.0     1.0      118.0         1     Source/Library/Language/Rho/Source/RhoAstNode.cpp
+     29       7.0     2.0       67.0         3     Source/Library/Language/Rho/Source/RhoLang.cpp
+    871      33.3     9.3      211.3        26     Source/Library/Language/Rho/Source/RhoParser.cpp
+    101      32.0     2.3      152.7         3     Source/Library/Language/Rho/Source/RhoToken.cpp
+    175      42.2    17.5      298.0         4     Source/Library/Language/Rho/Source/RhoLexer.cpp
+     55      48.0     7.0      346.0         1     Source/Library/Language/Rho/Test.cpp
+     77      69.0    11.0      516.0         1     Source/Library/Language/Rho/DoWhileTest.cpp
+     53      44.0     7.0      316.0         1     Source/Library/Language/Rho/DoWhileTestBasic.cpp
+     28      24.0     2.0      101.0         1     Source/Library/Language/Tau/Source/Tau/TauAstNode.cpp
+    110      35.3    14.3      215.3         3     Source/Library/Language/Tau/Source/Tau/TauLexer.cpp
+     57      26.5     2.5      126.5         2     Source/Library/Language/Tau/Source/Tau/TauToken.cpp
+    700      53.4    18.2      332.2        13     Source/Library/Language/Tau/Source/Tau/TauParser.cpp
+    206      11.5     3.0       82.1        17     Source/Library/Language/Tau/Source/Generate/GenerateProxy.cpp
+    205      12.2     3.5       74.0        16     Source/Library/Language/Tau/Source/Generate/GenerateProcess.cpp
+    132       8.2     2.3       55.9        15     Source/Library/Language/Tau/Source/Generate/GenerateAgent.cpp
+    120      10.3     3.5       71.4        11     Source/Library/Language/Tau/Source/Generate/GenerateStruct.cpp
+    188      20.1     6.6      127.9         9     Source/Library/Language/Hlsl/Source/HlslTranslator.cpp
+    436      17.2     5.3      109.3        25     Source/Library/Language/Hlsl/Source/HlslParser.cpp
+     18       3.7     1.3       27.3         3     Source/Library/Language/Hlsl/Source/HlslLang.cpp
+     28      25.0     1.0      106.0         1     Source/Library/Language/Hlsl/Source/HlslAstNode.cpp
+     69      33.0     3.0      153.0         2     Source/Library/Language/Hlsl/Source/HlslToken.cpp
+    262      64.2     9.8      534.0         4     Source/Library/Language/Hlsl/Source/HlslLexer.cpp
+    206      22.0     7.3      141.0         9     Source/Library/Language/Lisp/Source/LispTranslator.cpp
+     85      41.0     3.0      185.0         2     Source/Library/Language/Lisp/Source/LispToken.cpp
+    136      32.8    12.2      216.2         4     Source/Library/Language/Lisp/Source/LispLexer.cpp
+     28      25.0     1.0      106.0         1     Source/Library/Language/Lisp/Source/LispAstNode.cpp
+    396      17.8     5.6      109.4        22     Source/Library/Language/Lisp/Source/LispParser.cpp
+     29       7.0     2.0       67.0         3     Source/Library/Language/Lisp/Source/LispLang.cpp
+     28      10.5     2.0       56.0         2     Source/Library/Language/Pi/Source/PiAstNode.cpp
+    175      55.7     5.3      277.7         3     Source/Library/Language/Pi/Source/PiToken.cpp
+     63      14.2     6.0       93.5         4     Source/Library/Language/Pi/Source/PiParser.cpp
+    203      39.8    11.8      281.4         5     Source/Library/Language/Pi/Source/PiLexer.cpp
+    389      94.2    26.8      569.5         4     Source/Library/Language/Pi/Source/PiTranslator.cpp
+     20      16.0     6.0       58.0         1     Source/Library/Language/Common/Source/Language.cpp
+     14       4.5     1.0       28.0         2     Source/Library/Language/Common/Source/Structure.cpp
+     69       6.6     2.7       45.7        10     Source/Library/Executor/Source/Translator/LexerBase.cpp
+    174      18.7     6.2      125.1         9     Source/Library/Executor/Source/Translator/TranslatorCommon.cpp
+     18       6.5     1.5       40.0         2     Source/Library/Executor/Source/Translator/Process.cpp
+      4       1.0     1.0        5.0         1     Source/Library/Executor/Source/Translator/TokenBase.cpp
+     54       9.6     2.2       71.4         5     Source/Library/Executor/Source/SignedContinuation.cpp
+     36       4.3     1.3       33.6         7     Source/Library/Executor/Source/Compiler.cpp
+   1237      21.8     8.1      166.7        56     Source/Library/Executor/Source/Executor.cpp
+    106       6.7     2.2       57.6        14     Source/Library/Executor/Source/Continuation.cpp
+    223      11.9     4.3       92.6        18     Source/Library/Executor/Source/Tree.cpp
+    172      23.6     1.0      104.1         7     Source/Library/Executor/Source/Operation.cpp
+    373     364.0   131.0     3195.0         1     Source/Library/Executor/Source/ExtractValueFromContinuation.cpp
+   1014      27.7     7.5      214.6        36     Source/Library/Executor/Source/Console.cpp
+    151       5.4     1.5       46.3        25     Source/Library/Executor/Source/Bin.cpp
+     27       6.7     1.0       55.0         3     Source/Library/Platform/Windows/ConsoleColors.cpp
+
+===========================================================================================================
+!!!! Warnings (cyclomatic_complexity > 10 or length > 1000 or nloc > 1000000 or parameter_count > 100) !!!!
+================================================
+  NLOC    CCN   token  PARAM  length  location  
+------------------------------------------------
+      98     12    717      1     127 main@21-147@Source/App/NetworkGenerate/Source/Main.cpp
+     111     21    718      2     162 main@34-195@Source/App/Console/Source/MinimalClient.cpp
+     179     37   1211      2     249 main@63-311@Source/App/Console/Source/ConfigurableClient.cpp
+      46     12    294      0      64 NetworkPeer::ProcessUserCommands@262-325@Source/App/Console/Source/NetworkPeer.cpp
+     137     23   1022      2     187 main@71-257@Source/App/Console/Source/ConfigurableServer.cpp
+      79     13    553      2     115 main@35-149@Source/App/Console/Source/MinimalServer.cpp
+     117     15   1095      2     150 ExecutorWindow::Draw@135-284@Source/App/Window/Source/ExecutorWindow.cpp
+      78     14    640      0     112 ExecutorWindow::DrawConsoleContent@286-397@Source/App/Window/Source/ExecutorWindow.cpp
+     221     26   2162      0     299 ExecutorWindow::DrawDebuggerContent@399-697@Source/App/Window/Source/ExecutorWindow.cpp
+      92     22    668      1     121 ExecutorWindow::ExecCommand@742-862@Source/App/Window/Source/ExecutorWindow.cpp
+     162     24   1282      1     206 ImGui_ImplOpenGL3_RenderDrawData@156-361@Source/App/Window/Source/imgui_impl_opengl3.cpp
+      46     15    363      2      95 ExecutorWindow::Draw@55-149@Source/App/Window/Include/ExecutorWindow.h
+      82     14    746      2     100 main@10-109@Source/Library/Rho/DiagnoseTests.cpp
+      58     14    399      1      72 ProxyGenerator::ParseTauFile@35-106@Source/Library/Network/Source/GenerateProxy.cpp
+      60     11    397      2      82 ProxyGenerator::ProcessFile@253-334@Source/Library/Network/Source/GenerateProxy.cpp
+      90     16    542      2     112 Node::Connect@104-215@Source/Library/Network/Source/Node.cpp
+      91     21    426      1     112 Node::ProcessPacket@351-462@Source/Library/Network/Source/Node.cpp
+      49     11    213      1      69 Object::operator =@64-132@Source/Library/Core/Source/Object.cpp
+      44     11    210      1      56 GetStorageBase_@379-434@Source/Library/Core/Source/Object.cpp
+      40     11    198      1      53 GetStorageBase@436-488@Source/Library/Core/Source/Object.cpp
+      25     13    243      2      39 operator <@749-787@Source/Library/Core/Source/Object.cpp
+      59     22    403      2      83 Registry::DestroyObject@87-169@Source/Library/Core/Source/Registry.cpp
+      39     14    267      1      49 Pathname::FromString@50-98@Source/Library/Core/Source/Pathname.cpp
+      25     11    242      2      40 operator +@179-218@Source/Library/Core/Source/Pathname.cpp
+      33     12    292      2      46 StorageBase::SetColorRecursive@132-177@Source/Library/Core/Source/StorageBase.cpp
+      98     24    533      1     125 RhoTranslator::TranslateNode@15-139@Source/Library/Language/Rho/Source/RhoTranslate.cpp
+      47     12    318      2      74 RhoTranslator::Translate@144-217@Source/Library/Language/Rho/Source/RhoTranslate.cpp
+      18     14    185      1      20 RhoTranslator::TokenToOperation@17-36@Source/Library/Language/Rho/Source/RhoTranslator.cpp
+     184     48   1169      1     280 RhoTranslator::TranslateToken@38-317@Source/Library/Language/Rho/Source/RhoTranslator.cpp
+      44     11    329      2     104 RhoTranslator::TranslateBinaryOp@546-649@Source/Library/Language/Rho/Source/RhoTranslator.cpp
+      54     12    433      1      89 RhoTranslator::TranslateFunction@700-788@Source/Library/Language/Rho/Source/RhoTranslator.cpp
+      39     13    251      0      56 RhoParser::Program@74-129@Source/Library/Language/Rho/Source/RhoParser.cpp
+      76     15    495      1     113 RhoParser::Function@131-243@Source/Library/Language/Rho/Source/RhoParser.cpp
+      70     17    483      1     105 RhoParser::Block@245-349@Source/Library/Language/Rho/Source/RhoParser.cpp
+     108     29    589      1     153 RhoParser::Statement@351-503@Source/Library/Language/Rho/Source/RhoParser.cpp
+      25     11    200      0      33 RhoParser::Additive@594-626@Source/Library/Language/Rho/Source/RhoParser.cpp
+     110     31    706      0     158 RhoParser::Factor@644-801@Source/Library/Language/Rho/Source/RhoParser.cpp
+      75     18    457      1     114 RhoParser::DoWhileLoop@984-1097@Source/Library/Language/Rho/Source/RhoParser.cpp
+      75     15    424      1     115 RhoParser::ForLoop@1112-1226@Source/Library/Language/Rho/Source/RhoParser.cpp
+     111     50    738      0     131 RhoLexer::NextToken@34-164@Source/Library/Language/Rho/Source/RhoLexer.cpp
+      38     18    278      0      63 RhoLexer::LexPathname@169-231@Source/Library/Language/Rho/Source/RhoLexer.cpp
+      69     11    516      0      99 main@12-110@Source/Library/Language/Rho/DoWhileTest.cpp
+      93     41    533      0     130 TauLexer::NextToken@20-149@Source/Library/Language/Tau/Source/Tau/TauLexer.cpp
+      51     18    272      1      77 TauParser::Module@68-144@Source/Library/Language/Tau/Source/Tau/TauParser.cpp
+     129     52    798      1     198 TauParser::Namespace@146-343@Source/Library/Language/Tau/Source/Tau/TauParser.cpp
+     116     33    650      1     175 TauParser::Class@345-519@Source/Library/Language/Tau/Source/Tau/TauParser.cpp
+      76     34    529      1     111 TauParser::Interface@663-773@Source/Library/Language/Tau/Source/Tau/TauParser.cpp
+      59     23    380      1      88 TauParser::Enum@775-862@Source/Library/Language/Tau/Source/Tau/TauParser.cpp
+      63     26    435      1      94 TauParser::Struct@864-957@Source/Library/Language/Tau/Source/Tau/TauParser.cpp
+      47     11    320      1      75 TauParser::AddArg@1005-1079@Source/Library/Language/Tau/Source/Tau/TauParser.cpp
+      34     13    185      1      45 Generate::GenerateProxy::Namespace@46-90@Source/Library/Language/Tau/Source/Generate/GenerateProxy.cpp
+      32     14    189      1      46 Generate::GenerateProxy::Class@92-137@Source/Library/Language/Tau/Source/Generate/GenerateProxy.cpp
+      93     24    477      1     119 Generate::GenerateProcess::Module@68-186@Source/Library/Language/Tau/Source/Generate/GenerateProcess.cpp
+      34     13    185      1      45 Generate::GenerateAgent::Namespace@19-63@Source/Library/Language/Tau/Source/Generate/GenerateAgent.cpp
+      39     14    218      1      51 Generate::GenerateStruct::Namespace@23-73@Source/Library/Language/Tau/Source/Generate/GenerateStruct.cpp
+      35     14    221      1      52 Generate::GenerateStruct::Struct@85-136@Source/Library/Language/Tau/Source/Generate/GenerateStruct.cpp
+      92     30    542      1     143 HlslTranslator::TranslateToken@11-153@Source/Library/Language/Hlsl/Source/HlslTranslator.cpp
+      50     16    263      1      64 HlslTranslator::TranslateNode@186-249@Source/Library/Language/Hlsl/Source/HlslTranslator.cpp
+      32     11    186      1      65 HlslParser::Statement@142-206@Source/Library/Language/Hlsl/Source/HlslParser.cpp
+      33     13    214      0      40 HlslParser::Factor@392-431@Source/Library/Language/Hlsl/Source/HlslParser.cpp
+      78     36    541      0      87 HlslLexer::NextToken@186-272@Source/Library/Language/Hlsl/Source/HlslLexer.cpp
+     107     35    629      1     142 RhoTranslator::TranslateToken@12-153@Source/Library/Language/Lisp/Source/LispTranslator.cpp
+      50     16    263      1      64 RhoTranslator::TranslateNode@186-249@Source/Library/Language/Lisp/Source/LispTranslator.cpp
+      82     37    547      0      91 RhoLexer::NextToken@24-114@Source/Library/Language/Lisp/Source/LispLexer.cpp
+      46     14    258      1      60 RhoParser::Statement@132-191@Source/Library/Language/Lisp/Source/LispParser.cpp
+      35     15    242      0      47 RhoParser::Factor@314-360@Source/Library/Language/Lisp/Source/LispParser.cpp
+     105     44    697      0     127 PiLexer::NextToken@68-194@Source/Library/Language/Pi/Source/PiLexer.cpp
+      96     22    714      1     159 PiTranslator::TranslateNode@36-194@Source/Library/Language/Pi/Source/PiTranslator.cpp
+     268     82   1477      1     379 PiTranslator::AppendTokenised@196-574@Source/Library/Language/Pi/Source/PiTranslator.cpp
+     111     42    781      1     157 TranslatorCommon::Append@11-167@Source/Library/Executor/Source/Translator/TranslatorCommon.cpp
+      62     23    444      0      91 Executor::PopBool@127-217@Source/Library/Executor/Source/Executor.cpp
+      50     12    324      2      69 Executor::TryResolveOrCreate@388-456@Source/Library/Executor/Source/Executor.cpp
+      64     17    361      1      89 Executor::Eval@503-591@Source/Library/Executor/Source/Executor.cpp
+      71     23    377      0      87 Executor::Continue@601-687@Source/Library/Executor/Source/Executor.cpp
+      70     16    423      0      91 Executor::NextContinuation@751-841@Source/Library/Executor/Source/Executor.cpp
+      41     11    290      1      67 Executor::NewContinuation@843-909@Source/Library/Executor/Source/Executor.cpp
+     496    212   4402      3     667 Executor::PerformBinaryOp@1027-1693@Source/Library/Executor/Source/Executor.cpp
+      28     22    130      1      29 Executor::IsBinaryOp@1699-1727@Source/Library/Executor/Source/Executor.cpp
+      35     11    255      3      44 Set@38-81@Source/Library/Executor/Source/Tree.cpp
+     364    131   3195      1     445 Executor::ExtractValueFromContinuation@14-458@Source/Library/Executor/Source/ExtractValueFromContinuation.cpp
+      60     14    359      1     101 Console::Execute@121-221@Source/Library/Executor/Source/Console.cpp
+      28     11    181      1      32 Console::SplitIntoWords@325-356@Source/Library/Executor/Source/Console.cpp
+      46     21    478      2      62 Console::ApplyWordDesignators@358-419@Source/Library/Executor/Source/Console.cpp
+      45     15    425      2      63 Console::ApplyModifiers@421-483@Source/Library/Executor/Source/Console.cpp
+      63     20    439      2      73 Console::ProcessHistoryModifier@485-557@Source/Library/Executor/Source/Console.cpp
+      76     33    610      1      97 Console::ProcessZshCommand@648-744@Source/Library/Executor/Source/Console.cpp
+      50     13    398      1      70 Console::Process@816-885@Source/Library/Executor/Source/Console.cpp
+     188     39   1309      0     252 Console::Run@966-1217@Source/Library/Executor/Source/Console.cpp
+      23     11    129      1      31 Console::IsStructureIncomplete@1270-1300@Source/Library/Executor/Source/Console.cpp
+      47     16    312      1      65 Console::ExecuteFile@1302-1366@Source/Library/Executor/Source/Console.cpp
+==========================================================================================
+Total nloc   Avg.NLOC  AvgCCN  Avg.token   Fun Cnt  Warning cnt   Fun Rt   nloc Rt
+------------------------------------------------------------------------------------------
+     17913      15.0     4.1      105.7     1116           90      0.08    0.44

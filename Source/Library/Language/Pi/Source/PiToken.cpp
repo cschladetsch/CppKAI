@@ -154,6 +154,8 @@ const char *PiTokenEnumType::ToString(Enum t) {
         CASE_LOWER(Modulo)
         CASE_LOWER(Min)
         CASE_LOWER(Max)
+        CASE_LOWER(ShellCommand)
+        CASE_REPLACE(ToStr, ">str")
     }
 
     KAI_TRACE() << " PiToken #" << (int)t;
@@ -186,6 +188,7 @@ std::ostream &operator<<(std::ostream &out, kai::PiTokenEnumType::Type const &no
         case kai::PiTokenEnumType::String:
         case kai::PiTokenEnumType::Ident:
         case kai::PiTokenEnumType::QuotedIdent:
+        case kai::PiTokenEnumType::ShellCommand:
             out << "='" << node.Text() << "'";
             break;
     }

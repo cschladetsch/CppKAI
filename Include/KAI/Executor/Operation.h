@@ -5,7 +5,6 @@
 
 KAI_BEGIN
 
-// An Operation represents an action to be taken by and Executor
 struct Operation {
     enum Type {
         Return,
@@ -172,6 +171,8 @@ struct Operation {
         Jump,         // Unconditional jump to a label
         IfFalseJump,  // Jump to a label if the top of the stack is false
         UnnnamedOp,
+        ShellCommand,  // Execute shell command and push result
+        ToStringOp,    // Convert top of stack to string
     };
 
    private:

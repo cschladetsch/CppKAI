@@ -2,12 +2,14 @@
 #include <KAI/Language/Common/LangCommon.h>
 #include <KAI/Language/Pi/Pi.h>
 #include <gtest/gtest.h>
+#include "TestLangCommon.h"
 
-class PiBacktickAdvancedTest : public ::testing::Test {
+class PiBacktickAdvancedTest : public kai::TestLangCommon {
    protected:
-    kai::Console console_;
-
-    void SetUp() override { console_.SetLanguage(kai::Language::Pi); }
+    void SetUp() override { 
+        TestLangCommon::SetUp();
+        console_.SetLanguage(kai::Language::Pi); 
+    }
 };
 
 // File system operations
@@ -36,7 +38,7 @@ TEST_F(PiBacktickAdvancedTest, DateCommand) {
     console_.SetLanguage(kai::Language::Pi);
     auto exec = console_.GetExecutor();
 
-    console_.Execute("`date +%Y` to_int 2000 >");
+    console_.Execute("`date +%Y` 2000 >");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<bool>(stack->Top()), true);

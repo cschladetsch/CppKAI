@@ -1,6 +1,8 @@
 #include "TestLangCommon.h"
 
 #include <KAI/Core/Exception.h>
+#include <KAI/Language/Pi/PiTranslator.h>
+#include <KAI/Language/Rho/RhoTranslator.h>
 
 #include <boost/algorithm/string/predicate.hpp>
 #include <cwctype>
@@ -27,6 +29,48 @@ void ToLower(std::wstring &str) {
     std::transform(str.begin(), str.end(), str.begin(), std::towlower);
 }
 
+void TestLangCommon::SetupLanguageTranslators() {
+    // Get the compiler from console
+    auto compiler = console_.GetCompiler();
+    if (!compiler.Exists()) {
+        std::cerr << "ERROR: Compiler is null in SetupLanguageTranslators" << std::endl;
+        return;
+    }
+    
+    // Create translators for each language as shared pointers
+    auto piTranslator = std::make_shared<PiTranslator>(*reg_);
+    auto rhoTranslator = std::make_shared<RhoTranslator>(*reg_);
+    
+    // Set up the translation function
+    compiler->SetTranslateFunction([=](const String& text, Structure st) -> Pointer<Continuation> {
+        int lang = compiler->GetLanguage();
+        int traceLevel = compiler->GetTraceLevel();
+        
+        switch (static_cast<Language>(lang)) {
+            case Language::Pi: {
+                piTranslator->trace = traceLevel;
+                auto result = piTranslator->Translate(text.c_str(), st);
+                if (piTranslator->Failed) {
+                    KAI_TRACE_ERROR() << piTranslator->Error;
+                    return Object();
+                }
+                return result;
+            }
+            case Language::Rho: {
+                rhoTranslator->trace = traceLevel;
+                auto result = rhoTranslator->Translate(text.c_str(), st);
+                if (rhoTranslator->Failed) {
+                    KAI_TRACE_ERROR() << rhoTranslator->Error;
+                    return Object();
+                }
+                return result;
+            }
+            default:
+                return Object();
+        }
+    });
+}
+
 void TestLangCommon::SetUp() {
     try {
         // Console is constructed in the default constructor
@@ -36,6 +80,9 @@ void TestLangCommon::SetUp() {
             std::cerr << "WARNING: Registry is not valid during test setup."
                       << std::endl;
         }
+
+        // Set up language translators for the console
+        SetupLanguageTranslators();
 
         // Get executor
         exec_ = &*console_.GetExecutor();

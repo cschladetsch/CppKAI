@@ -9,8 +9,6 @@
 #include <cassert>
 #include <utility>
 
-// Use tri-color generational gc. See
-// https://en.wikipedia.org/wiki/Tracing_garbage_collection#Tri-color_marking
 #define KAI_USE_TRICOLOR
 
 KAI_BEGIN
@@ -38,9 +36,6 @@ Registry::~Registry() { Clear(); }
 void Registry::Clear() { ClearInstances(); }
 
 void Registry::ClearInstances() {
-    // Create a set of handles to destroy, then destroy them
-    // this can't be done in one pass, as otherwise we would be mutating the
-    // container as we traverse it.
     std::vector<Handle> handles;
     for (auto const &instance : instances_) handles.push_back(instance.first);
 
@@ -238,7 +233,12 @@ bool Registry::OnDeathRow(Handle handle) const {
 void Registry::AddClass(const ClassBase *klass) {
     if (klass == nullptr) KAI_THROW_0(NullObject);
 
-    if (GetClass(klass->GetTypeNumber())) KAI_THROW_1(Base, "Duplicate Class");
+    if (GetClass(klass->GetTypeNumber())) {
+        KAI_TRACE_WARN() << "Attempt to register duplicate class with type number " 
+                         << klass->GetTypeNumber().ToInt() 
+                         << " (name: " << klass->GetName() << "). Ignoring.";
+        return;
+    }
 
     classes_[klass->GetTypeNumber().ToInt()] = klass;
 }
@@ -358,6 +358,14 @@ void Registry::Delete(Object const &object) {
 
 Pointer<ClassBase const *> Registry::AddClass(Type::Number N,
                                               ClassBase const *K) {
+    // Check for duplicate class registration
+    if (GetClass(N)) {
+        KAI_TRACE_WARN() << "Attempt to register duplicate class with type number " 
+                         << N.ToInt() 
+                         << " (name: " << K->GetName() << "). Ignoring.";
+        return Pointer<ClassBase const *>();
+    }
+    
     // Store the class in the registry
     classes_[N.ToInt()] = K;
 

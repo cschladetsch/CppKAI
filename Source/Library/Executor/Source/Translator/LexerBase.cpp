@@ -86,9 +86,42 @@ bool LexerBase::LexString() {
 
     Next();
 
-    // the +1 and -1 to remove the start and end double quote " characters
     AddStringToken(lineNumber, Slice(start + 1, offset - 1));
 
+    return true;
+}
+
+bool LexerBase::LexShellCommand() {
+    int start = offset;
+    Next();
+    
+    while (!Failed && Current() != '`') {
+        if (Current() == 0) {
+            Fail("Unterminated shell command");
+            return false;
+        }
+        
+        if (Current() == '\\') {
+            char nextChar = Peek();
+            if (nextChar == '`' || nextChar == '\\') {
+                Next();
+                if (Current() != 0) {
+                    Next();
+                }
+            } else {
+                Next();
+            }
+        } else {
+            Next();
+        }
+    }
+    
+    if (Current() == '`') {
+        Next();
+    }
+    
+    AddShellCommandToken(lineNumber, Slice(start + 1, offset - 1));
+    
     return true;
 }
 

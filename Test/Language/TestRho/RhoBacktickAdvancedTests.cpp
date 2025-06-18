@@ -1,13 +1,22 @@
-#include <KAI/Core/Console.h>
-#include <KAI/Language/Common/LangCommon.h>
-#include <KAI/Language/Rho/Rho.h>
-#include <gtest/gtest.h>
+#include "TestLangCommon.h"
 
-class RhoBacktickAdvancedTest : public ::testing::Test {
+using namespace kai;
+using namespace std;
+
+class RhoBacktickAdvancedTest : public TestLangCommon {
    protected:
-    kai::Console console_;
-
-    void SetUp() override { console_.SetLanguage(kai::Language::Rho); }
+    void RunRhoScript(const char* script) {
+        console_.SetLanguage(Language::Rho);
+        data_->Clear();
+        console_.Execute(script);
+        UnwrapStackValues();
+    }
+    
+    template<class T>
+    T GetTop() {
+        EXPECT_FALSE(data_->Empty());
+        return AtData<T>(0);
+    }
 };
 
 // File system operations

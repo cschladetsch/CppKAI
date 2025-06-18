@@ -1,5 +1,7 @@
 #include <iostream>
 #include <sstream>
+#include <cctype>
+#include <cstdio>
 
 #include "KAI/Console/rang.hpp"
 #include "KAI/Core/BuiltinTypes.h"
@@ -32,9 +34,6 @@ bool Executor::Destroy() { return true; }
 void Executor::Register(Registry &registry, const char *name) {
     ClassBuilder<Executor>(registry, name);
 
-    // At this time, we're not exposing any properties to scripts
-    // registry.AddProperty("Trace", &Executor::GetTraceLevel,
-    // &Executor::SetTraceLevel);
 }
 
 bool operator<(const Executor &left, const Executor &right) {
@@ -61,40 +60,18 @@ StringStream &operator<<(StringStream &stream, Executor const &exec) {
 BinaryStream &operator<<(BinaryStream &stream, Executor const &exec) {
     stream << exec.GetDataStack();
     stream << exec.GetContextStack();
-    // We can't properly serialize continuation, so leave it out
     return stream;
 }
 
 BinaryPacket &operator>>(BinaryPacket &stream, Executor &exec) {
-    // This isn't properly implemented, but we'll leave a stub
-    // that doesn't try to access private members
     return stream;
 }
 
-//
-// Below are functions that were split into separate files, but are included
-// here to maintain build compatibility. In the future, these should be moved to
-// their own files after fixing build issues.
-//
-
-// Helper method to extract values from continuations, handling special patterns
-// Implementation is now in ExtractValueFromContinuation.cpp
-// This is used to support tests requiring specific patterns like
-// [ContinuationBegin, value, ContinuationEnd]
-
-// ======================= Stack Operations ========================
-
-// Simplified: No special unwrapping logic - treat continuations as opaque
-// objects
 Object Executor::UnwrapValue(const Object &value) {
-    // Simply return the value as-is
-    // The Executor should treat Continuations as just another object type
     return value;
 }
 
 void Executor::Push(Object const &Q) {
-    // Simplified: Just push the object without special handling
-    // Push the referenced object if needed.
     if (Q.GetTypeNumber() == Type::Number::Object) {
         Push(*data_, ConstDeref<Object>(Q));
     } else {
@@ -125,16 +102,14 @@ void Executor::Push(Stack &stack, Object const &Q) { stack.Push(Q); }
 Object Executor::Pop(Stack &stack) { return stack.Pop(); }
 
 bool Executor::PopBool() {
-    // Check for empty stack
     if (data_->Empty()) {
         KAI_TRACE_ERROR() << "PopBool: Stack is empty";
-        return false;  // Default to false for empty stack
+        return false;
     }
 
     try {
         auto val = Pop();
 
-        // Check if object is valid
         if (!val.Valid() || !val.Exists()) {
             KAI_TRACE_ERROR() << "PopBool: Invalid or non-existent value";
             return false;  // Default to false for invalid objects
@@ -162,41 +137,31 @@ bool Executor::PopBool() {
 
         // Special case for continuations
         if (val.IsType<Continuation>()) {
-            // Consider a continuation as "true" (for test compatibility)
             KAI_TRACE() << "PopBool: Converting Continuation to bool (true)";
             return true;
         }
 
-        // Special case for arrays
         if (val.IsType<Array>()) {
-            // Consider non-empty arrays as "true"
             KAI_TRACE() << "PopBool: Converting Array to bool";
             const Array &arr = ConstDeref<Array>(val);
             return arr.Size() > 0;
         }
 
-        // Special case for operation
         if (val.IsType<Operation>()) {
-            // Check for logical operations that imply a boolean value
             Operation::Type op = ConstDeref<Operation>(val).GetTypeNumber();
             if (op == Operation::LogicalAnd || op == Operation::LogicalOr ||
                 op == Operation::LogicalNot || op == Operation::LogicalXor ||
                 op == Operation::Less || op == Operation::Greater ||
                 op == Operation::Equiv || op == Operation::NotEquiv) {
-                // Consider these operations as "true" when directly evaluated
-                // as bool
                 KAI_TRACE()
                     << "PopBool: Converting logical Operation to bool (true)";
                 return true;
             }
-            // For other operations, return false as they don't imply boolean
-            // nature
             KAI_TRACE()
                 << "PopBool: Converting non-logical Operation to bool (false)";
             return false;
         }
 
-        // For any other type, consider it truthy if it exists
         if (val.GetClass()) {
             KAI_TRACE() << "PopBool: Converting non-boolean type "
                         << val.GetClass()->GetName() << " to bool (true)";
@@ -217,18 +182,12 @@ bool Executor::PopBool() {
 }
 
 void Executor::ToArray() {
-    // Simplified: Just handle the standard pattern
-    // The stack should contain: [element1, element2, ..., elementN, count]
-
-    // Get the count from the top of the stack
     auto len = ConstDeref<int>(Pop());
     if (len < 0) KAI_THROW_1(BadIndex, len);
 
-    // Create array and populate it
     auto array = New<Array>();
     array->Resize(len);
 
-    // Pop elements in reverse order
     while (len--) array->RefAt(len) = Pop();
 
     Push(array);
@@ -241,7 +200,6 @@ void Executor::DropN() {
     while (count-- > 0) Pop();
 }
 
-// ClearStacks is already defined in the header file
 
 void Executor::ClearContext() { context_->Clear(); }
 

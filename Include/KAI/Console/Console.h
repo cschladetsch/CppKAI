@@ -13,7 +13,6 @@ KAI_BEGIN
 
 struct Coloriser;
 
-// This is a language-independant REPL console
 class Console : public Reflected {
     Tree tree;
     Registry *reg_;
@@ -22,7 +21,6 @@ class Console : public Reflected {
     std::shared_ptr<Memory::IAllocator> alloc;
     Language language;
 
-    // Command history for zsh-like ! operators
     std::vector<std::string> commandHistory;
 
    public:
@@ -74,6 +72,9 @@ class Console : public Reflected {
     static void Register(Registry &);
 
     int Run();
+    
+    // Helper method to detect incomplete structures for multi-line input
+    bool IsStructureIncomplete(const String &text) const;
 
    protected:
     void Create();

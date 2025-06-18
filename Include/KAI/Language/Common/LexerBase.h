@@ -7,7 +7,6 @@ KAI_BEGIN
 
 int IsSpaceChar(int ch);
 
-// Common to all lexers with different token types
 class LexerBase : public ProcessCommon {
    public:
     typedef std::vector<std::string> Lines;
@@ -37,6 +36,7 @@ class LexerBase : public ProcessCommon {
 
     void CreateLines();
     bool LexString();
+    bool LexShellCommand();
     char Current() const;
     char Next();
     bool EndOfLine() const;
@@ -45,6 +45,7 @@ class LexerBase : public ProcessCommon {
 
     virtual void LexErrorBase(const char *msg) = 0;
     virtual void AddStringToken(int lineNumber, Slice slice) = 0;
+    virtual void AddShellCommandToken(int lineNumber, Slice slice) = 0;
 
     Slice Gather(int (*filter)(int ch));
 };

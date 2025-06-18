@@ -82,6 +82,7 @@ struct RhoTokenEnumType {
         ForEach = 80,
         Break = 84,
         Continue = 85,
+        ShellCommand = 86,  // shell command wrapped in backticks `command`
     };
 
     struct Type : TokenBase<RhoTokenEnumType> {

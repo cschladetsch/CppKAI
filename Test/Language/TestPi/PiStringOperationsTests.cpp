@@ -2,26 +2,26 @@
 
 #include "TestLangCommon.h"
 
-// Test suite for Pi string operations
-TEST(PiStringOperations, StringConcatenation) {
-    kai::Console console;
-    console.SetLanguage(kai::Language::Pi);
-    auto exec = console.GetExecutor();
+// Test fixture for Pi string operations
+struct PiStringOperationsTests : kai::TestLangCommon {
+    void SetUp() override {
+        TestLangCommon::SetUp();
+        console_.SetLanguage(kai::Language::Pi);
+    }
+};
 
-    console.Execute("\"Hello \" \"World\" +");
-    auto stack = exec->GetDataStack();
+// Test suite for Pi string operations
+TEST_F(PiStringOperationsTests, StringConcatenation) {
+    console_.Execute("\"Hello \" \"World\" +");
+    auto stack = console_.GetExecutor()->GetDataStack();
 
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<kai::String>(stack->Top()), "Hello World");
 }
 
-TEST(PiStringOperations, StringLength) {
-    kai::Console console;
-    console.SetLanguage(kai::Language::Pi);
-    auto exec = console.GetExecutor();
-
-    console.Execute("\"Hello\" size");
-    auto stack = exec->GetDataStack();
+TEST_F(PiStringOperationsTests, StringLength) {
+    console_.Execute("\"Hello\" size");
+    auto stack = console_.GetExecutor()->GetDataStack();
 
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 5);

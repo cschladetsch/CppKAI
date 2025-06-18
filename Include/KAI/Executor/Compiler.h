@@ -6,21 +6,21 @@
 #include <KAI/Language/Common/Language.h>
 
 #include <map>
+#include <functional>
 
 KAI_BEGIN
 
-// this is a strange beast.
-// it works for any language that conforms to the concept defined in
-// <KAI/Language/Common/TranslatorBase.h>
 class Compiler : public Reflected {
     typedef std::map<Operation, String> OperationToString;
     typedef std::map<String, Pointer<Operation> > StringToOperation;
+    typedef std::function<Pointer<Continuation>(const String&, Structure)> TranslateFunction;
 
    private:
     OperationToString op_to_string;
     StringToOperation string_to_op;
     Language language_ = Language::Pi;
     int traceLevel_ = 0;
+    TranslateFunction translateFunction_;
 
    public:
     bool Destroy();
@@ -28,9 +28,9 @@ class Compiler : public Reflected {
     void SetLanguage(int);
     int GetLanguage() const;
     void SetTraceLevel(int n) { traceLevel_ = n; }
+    int GetTraceLevel() const { return traceLevel_; }
+    void SetTranslateFunction(TranslateFunction func) { translateFunction_ = func; }
 
-    // Template method removed to break dependency on language-specific types
-    // Applications should implement their own language compilation
 
     Pointer<Continuation> Translate(const String &text,
                                     Structure st = Structure::Expression) const;
@@ -42,7 +42,6 @@ class Compiler : public Reflected {
     void AddOperation(int N, const String &S);
 };
 
-// you can interact with a Compiler at runtime
 KAI_TYPE_TRAITS(Compiler, Number::Compiler, Properties::Reflected);
 
 KAI_END

@@ -21,8 +21,12 @@ bool Compiler::Destroy() {
 
 Pointer<Continuation> Compiler::Translate(const String &text,
                                           Structure st) const {
-    // This base implementation doesn't know about specific languages
-    // The Console app will need to set up language-specific translators
+    // Use the custom translation function if provided
+    if (translateFunction_) {
+        return translateFunction_(text, st);
+    }
+    
+    // Otherwise, this base implementation doesn't know about specific languages
     KAI_UNUSED_2(text, st);
     KAI_NOT_IMPLEMENTED();
     return Object();

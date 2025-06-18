@@ -1046,6 +1046,90 @@ void Executor::Perform(Operation::Type op) {
             break;
         }
             
+        case Operation::ShellCommand: {
+            // Execute shell command and push result
+            // Stack: ( command -- result )
+            if (!data_->Empty()) {
+                Object cmdObj = Pop();
+                if (cmdObj.IsType<String>()) {
+                    String command = ConstDeref<String>(cmdObj);
+                    
+                    // Execute the command and capture output
+                    FILE* pipe = popen(command.c_str(), "r");
+                    if (pipe) {
+                        char buffer[1024];
+                        std::string result;
+                        
+                        // Read command output
+                        while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
+                            result += buffer;
+                        }
+                        
+                        int status = pclose(pipe);
+                        
+                        // Remove trailing newline if present
+                        if (!result.empty() && result.back() == '\n') {
+                            result.pop_back();
+                        }
+                        
+                        // Try to parse as a number first
+                        bool isNumber = true;
+                        bool isFloat = false;
+                        bool hasDigits = false;
+                        
+                        // Check if the result looks like a number
+                        for (size_t i = 0; i < result.size(); ++i) {
+                            char c = result[i];
+                            if (i == 0 && (c == '-' || c == '+')) {
+                                continue;  // Allow sign at beginning
+                            }
+                            if (c == '.' && !isFloat) {
+                                isFloat = true;
+                                continue;  // Allow one decimal point
+                            }
+                            if (!std::isdigit(c)) {
+                                isNumber = false;
+                                break;
+                            }
+                            hasDigits = true;
+                        }
+                        
+                        // Make sure we have at least one digit
+                        isNumber = isNumber && hasDigits;
+                        
+                        if (isNumber) {
+                            try {
+                                if (isFloat) {
+                                    float value = std::stof(result);
+                                    Push(New<float>(value));
+                                } else {
+                                    int value = std::stoi(result);
+                                    Push(New<int>(value));
+                                }
+                            } catch (...) {
+                                // If parsing fails, push as string
+                                Push(New<String>(result));
+                            }
+                        } else {
+                            // Push as string if not a number
+                            Push(New<String>(result));
+                        }
+                    } else {
+                        // Command execution failed
+                        KAI_TRACE_ERROR() << "ShellCommand: Failed to execute command: " << command;
+                        Push(New<String>(""));  // Push empty string on failure
+                    }
+                } else {
+                    KAI_TRACE_ERROR() << "ShellCommand: Expected string on stack";
+                    Push(New<String>(""));  // Push empty string on error
+                }
+            } else {
+                KAI_TRACE_ERROR() << "ShellCommand: Empty stack";
+                Push(New<String>(""));  // Push empty string on error
+            }
+            break;
+        }
+            
         case Operation::WhileLoop: {
             // ( condition body -- )
             // While condition is true, run body.
@@ -1737,6 +1821,24 @@ void Executor::Perform(Operation::Type op) {
             break;
         }
 
+        case Operation::ToStringOp: {
+            // Convert top of stack to string
+            if (!data_->Empty()) {
+                Object obj = Pop();
+                if (obj.Exists()) {
+                    StringStream stream;
+                    obj.GetClass()->Insert(stream, obj.GetStorageBase());
+                    Push(New<String>(stream.ToString()));
+                } else {
+                    Push(New<String>(""));
+                }
+            } else {
+                KAI_TRACE_ERROR() << "ToStringOp: Empty stack";
+                Push(New<String>(""));
+            }
+            break;
+        }
+        
         default: {
             // Provide a default implementation for unimplemented operations
             KAI_TRACE_ERROR() << "Unimplemented operation: " << Operation::ToString(op);

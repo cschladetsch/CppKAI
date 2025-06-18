@@ -850,8 +850,22 @@ String Console::Process(const String &text) {
         // First expand any backtick shell commands
         String expandedText = ExpandShellCommands(text);
 
+        // Determine the appropriate structure based on the content
+        Structure structure = Structure::Expression;
+        
+        // For Rho, check if this looks like a statement (contains control structures)
+        if (language == Language::Rho) {
+            std::string str = expandedText.StdString();
+            if (str.find("for") != std::string::npos ||
+                str.find("while") != std::string::npos ||
+                str.find("do") != std::string::npos ||
+                str.find("if") != std::string::npos) {
+                structure = Structure::Statement;
+            }
+        }
+        
         // Translate the text into a continuation
-        auto cont = compiler->Translate(expandedText.c_str());
+        auto cont = compiler->Translate(expandedText.c_str(), structure);
         if (cont.Exists()) {
             // Set the scope
             cont->SetScope(tree.GetScope());
@@ -972,6 +986,29 @@ int Console::Run() {
 
                 // Store current command for !# support
                 currentCommand = text;
+                
+                // Check if we need to accumulate multi-line input
+                String accumulatedInput(text);
+                while (IsStructureIncomplete(accumulatedInput)) {
+                    // Show continuation prompt
+                    cout << rang::style::bold;
+                    cout << ToString(language) << " ... ";
+                    cout << rang::fg::gray;
+                    
+                    string continuationLine;
+                    if (!getline(cin, continuationLine)) {
+                        // EOF during multi-line input
+                        cout << rang::fg::reset << endl;
+                        return 0;
+                    }
+                    cout << rang::fg::reset;
+                    
+                    // Append the continuation line
+                    accumulatedInput = accumulatedInput + "\n" + continuationLine;
+                }
+                
+                // Update text with the full accumulated input
+                text = accumulatedInput.StdString();
 
                 // Commands starting with $ are shell commands
                 if (!text.empty() && text[0] == '$') {
@@ -1101,6 +1138,15 @@ int Console::Run() {
                         continue;
                     }
 
+                    // Check for language switch commands
+                    if (text == "pi") {
+                        SetLanguage(Language::Pi);
+                        continue;
+                    } else if (text == "rho") {
+                        SetLanguage(Language::Rho);
+                        continue;
+                    }
+
                     // Check for zsh-like history commands first
                     std::string processedText = text;
 
@@ -1220,6 +1266,38 @@ Pointer<Continuation> Console::Compile(const char *text, Structure st) {
 }
 
 void Console::Register(Registry &) {}
+
+bool Console::IsStructureIncomplete(const String &text) const {
+    // For Rho language, check if we have unmatched braces
+    if (language == Language::Rho) {
+        int braceCount = 0;
+        bool inString = false;
+        char stringChar = '\0';
+        
+        for (char c : text.StdString()) {
+            // Handle string literals
+            if ((c == '"' || c == '\'') && !inString) {
+                inString = true;
+                stringChar = c;
+            } else if (inString && c == stringChar) {
+                inString = false;
+            } else if (!inString) {
+                // Count braces outside of strings
+                if (c == '{') {
+                    braceCount++;
+                } else if (c == '}') {
+                    braceCount--;
+                }
+            }
+        }
+        
+        // Structure is incomplete if we have unmatched opening braces
+        return braceCount > 0;
+    }
+    
+    // For other languages, we don't have multi-line structures
+    return false;
+}
 
 bool Console::ExecuteFile(const char *fileName) {
     // Validate inputs first

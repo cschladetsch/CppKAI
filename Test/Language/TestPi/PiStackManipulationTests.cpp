@@ -17,11 +17,11 @@ struct PiStackTests : TestLangCommon {
     void AssertStackResult(const char *script, std::tuple<Ts...> expected,
                            bool verbose = false) {
         try {
-            Console console;
-            console.SetLanguage(Language::Pi);
-            console.Execute(script);
+            // Use the console from TestLangCommon which has translators set up
+            console_.SetLanguage(Language::Pi);
+            console_.Execute(script);
 
-            auto executor = console.GetExecutor();
+            auto executor = console_.GetExecutor();
             auto dataStack = executor->GetDataStack();
 
             if (!dataStack.Valid() || !dataStack.Exists()) {
@@ -227,39 +227,36 @@ TEST_F(PiStackTests, VariableOperations) {
 //         std::make_tuple(2, 3, 1));
 // }
 
-// Test computational stack patterns - converted to standalone to avoid
-// framework issues
-TEST(PiComputationalStandalone, SquareNumber) {
-    kai::Console console;
-    console.SetLanguage(kai::Language::Pi);
-    auto exec = console.GetExecutor();
+// Test fixture for Pi computational tests
+struct PiComputationalTests : TestLangCommon {
+    void SetUp() override {
+        TestLangCommon::SetUp();
+        console_.SetLanguage(Language::Pi);
+    }
+};
 
+// Test computational stack patterns
+TEST_F(PiComputationalTests, SquareNumber) {
     // Square a number: 5 dup * = 25
-    console.Execute("5 dup *");
-    auto stack = exec->GetDataStack();
+    console_.Execute("5 dup *");
+    auto stack = console_.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 25);
 }
 
-TEST(PiComputationalStandalone, AverageOfTwo) {
-    kai::Console console;
-    console.SetLanguage(kai::Language::Pi);
-    auto exec = console.GetExecutor();
-
+TEST_F(PiComputationalTests, AverageOfTwo) {
     // Calculate average of two numbers: (7 + 9) / 2 = 8
-    console.Execute("7 9 + 2 /");
-    auto stack = exec->GetDataStack();
+    console_.Execute("7 9 + 2 /");
+    auto stack = console_.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 8);
 }
 
-TEST(PiComputationalStandalone, ComplexArithmetic) {
-    kai::Console console;
-    console.SetLanguage(kai::Language::Pi);
-    auto exec = console.GetExecutor();
+TEST_F(PiComputationalTests, ComplexArithmetic) {
+    auto exec = console_.GetExecutor();
 
     // Complex calculation: (3 + 4) * 2 = 14
-    console.Execute("3 4 + 2 *");
+    console_.Execute("3 4 + 2 *");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 14);
@@ -275,37 +272,33 @@ TEST(PiComputationalStandalone, ComplexArithmetic) {
 //         "1 'i' ! "
 //         "begin "
 
-// Test basic stack operation patterns using standalone pattern
-TEST(PiStackStandalone, DupAndAdd) {
-    kai::Console console;
-    console.SetLanguage(kai::Language::Pi);
-    auto exec = console.GetExecutor();
+// Test fixture for standalone Pi stack tests
+struct PiStackStandaloneTests : TestLangCommon {
+    void SetUp() override {
+        TestLangCommon::SetUp();
+        console_.SetLanguage(Language::Pi);
+    }
+};
 
-    console.Execute("5 dup +");
-    auto stack = exec->GetDataStack();
+// Test basic stack operation patterns
+TEST_F(PiStackStandaloneTests, DupAndAdd) {
+    console_.Execute("5 dup +");
+    auto stack = console_.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 10);
 }
 
-TEST(PiStackStandalone, OverAndMultiply) {
-    kai::Console console;
-    console.SetLanguage(kai::Language::Pi);
-    auto exec = console.GetExecutor();
-
-    console.Execute(
+TEST_F(PiStackStandaloneTests, OverAndMultiply) {
+    console_.Execute(
         "3 4 over * +");  // 3 4 over -> 3 4 3 -> * -> 3 12 -> + -> 15
-    auto stack = exec->GetDataStack();
+    auto stack = console_.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 15);
 }
 
-TEST(PiStackStandalone, RotateAndSubtract) {
-    kai::Console console;
-    console.SetLanguage(kai::Language::Pi);
-    auto exec = console.GetExecutor();
-
-    console.Execute("10 5 2 rot -");  // 10 5 2 rot -> 5 2 10 -> - -> 5 -8
-    auto stack = exec->GetDataStack();
+TEST_F(PiStackStandaloneTests, RotateAndSubtract) {
+    console_.Execute("10 5 2 rot -");  // 10 5 2 rot -> 5 2 10 -> - -> 5 -8
+    auto stack = console_.GetExecutor()->GetDataStack();
     ASSERT_EQ(stack->Size(), 2);
     EXPECT_EQ(kai::ConstDeref<int>(stack->At(1)), 5);   // bottom
     EXPECT_EQ(kai::ConstDeref<int>(stack->At(0)), -8);  // top
