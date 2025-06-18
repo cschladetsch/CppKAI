@@ -94,13 +94,13 @@ bool LexerBase::LexString() {
 bool LexerBase::LexShellCommand() {
     int start = offset;
     Next();
-    
+
     while (!Failed && Current() != '`') {
         if (Current() == 0) {
             Fail("Unterminated shell command");
             return false;
         }
-        
+
         if (Current() == '\\') {
             char nextChar = Peek();
             if (nextChar == '`' || nextChar == '\\') {
@@ -115,13 +115,13 @@ bool LexerBase::LexShellCommand() {
             Next();
         }
     }
-    
+
     if (Current() == '`') {
         Next();
     }
-    
+
     AddShellCommandToken(lineNumber, Slice(start + 1, offset - 1));
-    
+
     return true;
 }
 

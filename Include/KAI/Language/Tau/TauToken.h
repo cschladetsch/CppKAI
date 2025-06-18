@@ -43,7 +43,8 @@ struct TauTokenEnumType {
         Struct = 44,       // Added for struct declarations
         EnumKeyword = 45,  // Added for enum declarations
         ConstKeyword = 46,  // Added for const keyword
-        ShellCommand = 47,  // Added for compatibility with LexerCommon (not used in Tau)
+        ShellCommand =
+            47,  // Added for compatibility with LexerCommon (not used in Tau)
     };
 
     struct Type : TokenBase<TauTokenEnumType> {

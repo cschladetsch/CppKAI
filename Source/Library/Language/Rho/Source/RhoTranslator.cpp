@@ -309,7 +309,7 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
         case RhoTokenEnumType::Continue:
             AppendDirectOperation(Operation::Continue);
             return;
-            
+
         case RhoTokenEnumType::ShellCommand: {
             // Push the shell command string and execute it
             auto commandText = node->GetToken().Text();

@@ -145,7 +145,7 @@ struct PiTokenEnumType {
         Self,   // current_ continuation 'self'
         This,   // current_ _scope '.'
         Print,  // print top of stack
-        
+
         ShellCommand,  // shell command wrapped in backticks `command`
         ToStr,         // >str operator to convert to string
     };

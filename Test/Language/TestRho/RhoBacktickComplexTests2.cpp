@@ -11,8 +11,8 @@ struct TestRhoBacktickComplex2 : TestLangCommon {
         console_.Execute(script, Structure::Program);
         UnwrapStackValues();
     }
-    
-    template<class T>
+
+    template <class T>
     T GetTop() {
         EXPECT_FALSE(data_->Empty());
         return AtData<T>(0);
@@ -63,7 +63,7 @@ while i < `echo 2`
 sum
 )";
     RunRhoScript(script);
-    EXPECT_EQ(GetTop<int>(), 24); // 2 * 3 * 4
+    EXPECT_EQ(GetTop<int>(), 24);  // 2 * 3 * 4
 }
 
 // Test 14: Shell with string concatenation
@@ -107,7 +107,7 @@ while i < 4
 sum
 )";
     RunRhoScript(script);
-    EXPECT_EQ(GetTop<int>(), 20); // (1+2+3+4) * 2
+    EXPECT_EQ(GetTop<int>(), 20);  // (1+2+3+4) * 2
 }
 
 // Test 17: Complex expression with shell
@@ -119,7 +119,7 @@ c = `echo 2`
 ((a + b) * c) - `echo 10`
 )";
     RunRhoScript(script);
-    EXPECT_EQ(GetTop<int>(), 20); // (10+5)*2 - 10
+    EXPECT_EQ(GetTop<int>(), 20);  // (10+5)*2 - 10
 }
 
 // Test 18: Shell with function composition
@@ -137,7 +137,7 @@ fun shellAdd(x)
 shellAdd(add5(double(`echo 3`)))
 )";
     RunRhoScript(script);
-    EXPECT_EQ(GetTop<int>(), 21); // ((3*2)+5)+10
+    EXPECT_EQ(GetTop<int>(), 21);  // ((3*2)+5)+10
 }
 
 // Test 19: Shell with error handling
@@ -167,5 +167,5 @@ fun fib(n)
 fib(`echo 10`)
 )";
     RunRhoScript(script);
-    EXPECT_EQ(GetTop<int>(), 55); // 10th Fibonacci number
+    EXPECT_EQ(GetTop<int>(), 55);  // 10th Fibonacci number
 }

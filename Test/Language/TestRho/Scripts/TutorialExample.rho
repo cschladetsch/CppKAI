@@ -10,10 +10,10 @@ a = b = c = 0
 
 // Compound assignments
 count = 10
-count += 5      // count should be 15
-count -= 3      // count should be 12
-count *= 2      // count should be 24
-count /= 4      // count should be 6
+assert count += 5  ==  15
+assert count -= 3 == 12
+assert count *= 2 ==  24
+assert count /= 4 == 6
 
 // Arithmetic operations
 sum = 5 + 3             // 8
@@ -22,33 +22,34 @@ product = 7 * 6         // 42
 quotient = 20 / 5       // 4
 remainder = 10 % 3      // 1
 
+assert sum == 8
+assert diference == 6
+assert product == 42
+assert quotirnt == 4
+assert remainder == 1
+
 // Combined operations with proper precedence
-result = (4 + 2) * 3 - 5  // 13
+assert (4 + 2) * 3 - 5 == 13
 
 // Simple if statement
-if true {
+if true
     test_value = 10
-} else {
+else
     test_value = 20
-}
-// test_value should be 10
+assert test_value == 10
 
 // Simple function
-fun add(a, b) {
-    return a + b
-}
-function_result = add(5, 3)  // Should be 8
+fun add a, b 
+    a + b 
+assert add 5, 3 == 8
 
 // Pi integration
-embedded_result = 10 + pi{ 3 4 + }  // 10 + 7 = 17
+assert 10 + pi{ 3 4 + } == 17
 
 // Fibonacci implementation from Rho tutorial
-fun fibonacci_recursive(n) {
-    if (n <= 1) {
+fun fibonacci_recursive n
+    if n <= 1
         return n
-    } else {
+    else
         return fibonacci_recursive(n - 1) + fibonacci_recursive(n - 2)
-    }
-}
-
-fib_result = fibonacci_recursive(5)  // Should be 5
+assert fibonacci_recursive == 5

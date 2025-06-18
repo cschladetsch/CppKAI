@@ -2,13 +2,14 @@
 #include <KAI/Language/Common/LangCommon.h>
 #include <KAI/Language/Pi/Pi.h>
 #include <gtest/gtest.h>
+
 #include "TestLangCommon.h"
 
 class PiBacktickComplexTest : public kai::TestLangCommon {
    protected:
-    void SetUp() override { 
+    void SetUp() override {
         TestLangCommon::SetUp();
-        console_.SetLanguage(kai::Language::Pi); 
+        console_.SetLanguage(kai::Language::Pi);
     }
 };
 
@@ -18,10 +19,11 @@ TEST_F(PiBacktickComplexTest, ComplexShellArithmetic) {
     auto exec = console_.GetExecutor();
 
     // Calculate: (10 * 5) + (100 / 4) - (3 * 7)
-    console_.Execute("`echo 10` `echo 5` * `echo 100` `echo 4` / + `echo 3` `echo 7` * -");
+    console_.Execute(
+        "`echo 10` `echo 5` * `echo 100` `echo 4` / + `echo 3` `echo 7` * -");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 54); // 50 + 25 - 21
+    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 54);  // 50 + 25 - 21
 }
 
 // Test 2: Shell command with continuation execution
@@ -66,10 +68,13 @@ TEST_F(PiBacktickComplexTest, ComplexStringShellOps) {
     auto exec = console_.GetExecutor();
 
     // Build complex string from multiple shell commands
-    console_.Execute("`echo Hello` to_str \" \" + `echo World` to_str + \"!\" + `echo 2024` to_str + \" year\" +");
+    console_.Execute(
+        "`echo Hello` to_str \" \" + `echo World` to_str + \"!\" + `echo 2024` "
+        "to_str + \" year\" +");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<kai::String>(stack->Top()), "Hello World!2024 year");
+    EXPECT_EQ(kai::ConstDeref<kai::String>(stack->Top()),
+              "Hello World!2024 year");
 }
 
 // Test 6: Nested loops with shell commands
@@ -81,7 +86,7 @@ TEST_F(PiBacktickComplexTest, NestedLoopsWithShell) {
     console_.Execute("`echo 3` { `echo 2` { 1 + } * } *");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 6); // 3 * 2
+    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 6);  // 3 * 2
 }
 
 // Test 7: Shell command in while loop condition
@@ -90,9 +95,10 @@ TEST_F(PiBacktickComplexTest, ShellInWhileCondition) {
     auto exec = console_.GetExecutor();
 
     // Count down using shell commands
-    console_.Execute("5 'count # { @count 0 > } { @count dup 1 - 'count # } while drop");
+    console_.Execute(
+        "5 'count # { @count 0 > } { @count dup 1 - 'count # } while drop");
     auto stack = exec->GetDataStack();
-    ASSERT_EQ(stack->Size(), 5); // Should have 5,4,3,2,1 on stack
+    ASSERT_EQ(stack->Size(), 5);  // Should have 5,4,3,2,1 on stack
 }
 
 // Test 8: Function definition with shell parameters
@@ -116,7 +122,8 @@ TEST_F(PiBacktickComplexTest, ComplexMathShell) {
     console_.Execute("`echo 3` dup * `echo 4` dup * + 5 ==");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<bool>(stack->Top()), true); // 3^2 + 4^2 = 25 = 5^2
+    EXPECT_EQ(kai::ConstDeref<bool>(stack->Top()),
+              true);  // 3^2 + 4^2 = 25 = 5^2
 }
 
 // Test 10: Shell with stack manipulation

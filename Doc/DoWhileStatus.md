@@ -4,16 +4,16 @@
 
 Do-while loops are partially implemented in Rho:
 
-1. **Lexer Support**: ✅ Complete
+1. **Lexer Support**: Complete
    - Token type `DoWhile = 79` is defined
    - Keyword "do" is recognized and mapped to DoWhile token
 
-2. **Parser Support**: ✅ Complete  
+2. **Parser Support**: Complete  
    - AST node type `DoWhile = 34` is defined
    - Parser has `DoWhileLoop()` method implemented
    - Parses do-while syntax: `do { body } while condition`
 
-3. **Translator Support**: ❌ Not Implemented
+3. **Translator Support**: Not Implemented
    - `RhoTranslator.h` explicitly states: "DoWhile functionality has been removed"
    - No translation method for DoWhile AST nodes
    - Do-while statements are not converted to executable operations

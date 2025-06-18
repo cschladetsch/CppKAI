@@ -7,16 +7,17 @@
 namespace kai {
 
 class EnhancedConsole : public Console {
-public:
+   public:
     EnhancedConsole();
-    
+
     // Override to provide language-specific translation
-    virtual Pointer<Continuation> Translate(const String &text, Structure st = Structure::Expression) override;
-    
-private:
+    virtual Pointer<Continuation> Translate(
+        const String &text, Structure st = Structure::Expression) override;
+
+   private:
     // Cache translators for each language
     mutable Pointer<PiTranslator> piTranslator;
     mutable Pointer<RhoTranslator> rhoTranslator;
 };
 
-} // namespace kai
+}  // namespace kai

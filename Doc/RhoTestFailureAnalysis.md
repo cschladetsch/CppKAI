@@ -2,7 +2,7 @@
 
 ## Summary of Issues Found
 
-### 1. ✅ Fixed: Floating-Point Number Parsing (RESOLVED)
+### 1. Fixed: Floating-Point Number Parsing (RESOLVED)
 - **Issue**: The lexer was not handling floating-point numbers correctly
 - **Example**: `3.5` was being lexed as three tokens: `3`, `.`, `5`
 - **Fix**: Updated the lexer to properly recognize decimal points in numbers

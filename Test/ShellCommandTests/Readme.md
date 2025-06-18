@@ -87,18 +87,18 @@ cd /path/to/KAI/Test/ShellCommandTests
 ## Functionality Verified
 
 ### Core Features
-✅ **Shell Commands**: Lines starting with ` execute as shell commands  
-✅ **Flexible Syntax**: Works with or without closing backtick  
-✅ **Embedded Substitution**: `expression with `command`` expands before processing  
-✅ **Language Independent**: Works in Pi, Rho, and any other KAI language  
-✅ **Error Handling**: Graceful handling of invalid commands and syntax  
+- **Shell Commands**: Lines starting with ` execute as shell commands  
+- **Flexible Syntax**: Works with or without closing backtick  
+- **Embedded Substitution**: `expression with `command`` expands before processing  
+- **Language Independent**: Works in Pi, Rho, and any other KAI language  
+- **Error Handling**: Graceful handling of invalid commands and syntax  
 
 ### Advanced Features
-✅ **Complex Shell Operations**: Pipes, redirection, command substitution  
-✅ **Environment Variables**: Access to shell environment  
-✅ **Multi-word Commands**: Commands with arguments and options  
-✅ **Arithmetic Integration**: Shell command results used in calculations  
-✅ **Cross-Language Persistence**: Functionality maintained across language switches  
+- **Complex Shell Operations**: Pipes, redirection, command substitution  
+- **Environment Variables**: Access to shell environment  
+- **Multi-word Commands**: Commands with arguments and options  
+- **Arithmetic Integration**: Shell command results used in calculations  
+- **Cross-Language Persistence**: Functionality maintained across language switches  
 
 ## Expected Results
 

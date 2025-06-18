@@ -11,8 +11,8 @@ class RhoBacktickAdvancedTest : public TestLangCommon {
         console_.Execute(script);
         UnwrapStackValues();
     }
-    
-    template<class T>
+
+    template <class T>
     T GetTop() {
         EXPECT_FALSE(data_->Empty());
         return AtData<T>(0);

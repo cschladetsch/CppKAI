@@ -234,9 +234,10 @@ void Registry::AddClass(const ClassBase *klass) {
     if (klass == nullptr) KAI_THROW_0(NullObject);
 
     if (GetClass(klass->GetTypeNumber())) {
-        KAI_TRACE_WARN() << "Attempt to register duplicate class with type number " 
-                         << klass->GetTypeNumber().ToInt() 
-                         << " (name: " << klass->GetName() << "). Ignoring.";
+        KAI_TRACE_WARN()
+            << "Attempt to register duplicate class with type number "
+            << klass->GetTypeNumber().ToInt() << " (name: " << klass->GetName()
+            << "). Ignoring.";
         return;
     }
 
@@ -360,12 +361,12 @@ Pointer<ClassBase const *> Registry::AddClass(Type::Number N,
                                               ClassBase const *K) {
     // Check for duplicate class registration
     if (GetClass(N)) {
-        KAI_TRACE_WARN() << "Attempt to register duplicate class with type number " 
-                         << N.ToInt() 
-                         << " (name: " << K->GetName() << "). Ignoring.";
+        KAI_TRACE_WARN()
+            << "Attempt to register duplicate class with type number "
+            << N.ToInt() << " (name: " << K->GetName() << "). Ignoring.";
         return Pointer<ClassBase const *>();
     }
-    
+
     // Store the class in the registry
     classes_[N.ToInt()] = K;
 

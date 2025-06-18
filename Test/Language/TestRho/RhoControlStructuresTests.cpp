@@ -10,8 +10,8 @@
 #include "KAI/Core/Logger.h"
 #include "KAI/Language/Rho/RhoParser.h"
 #include "KAI/Language/Rho/RhoTranslator.h"
-#include "TestLangCommon.h"
 #include "TestConsoleHelper.h"
+#include "TestLangCommon.h"
 
 using namespace kai;
 using namespace std;

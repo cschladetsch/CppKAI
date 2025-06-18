@@ -33,42 +33,44 @@ void TestLangCommon::SetupLanguageTranslators() {
     // Get the compiler from console
     auto compiler = console_.GetCompiler();
     if (!compiler.Exists()) {
-        std::cerr << "ERROR: Compiler is null in SetupLanguageTranslators" << std::endl;
+        std::cerr << "ERROR: Compiler is null in SetupLanguageTranslators"
+                  << std::endl;
         return;
     }
-    
+
     // Create translators for each language as shared pointers
     auto piTranslator = std::make_shared<PiTranslator>(*reg_);
     auto rhoTranslator = std::make_shared<RhoTranslator>(*reg_);
-    
+
     // Set up the translation function
-    compiler->SetTranslateFunction([=](const String& text, Structure st) -> Pointer<Continuation> {
-        int lang = compiler->GetLanguage();
-        int traceLevel = compiler->GetTraceLevel();
-        
-        switch (static_cast<Language>(lang)) {
-            case Language::Pi: {
-                piTranslator->trace = traceLevel;
-                auto result = piTranslator->Translate(text.c_str(), st);
-                if (piTranslator->Failed) {
-                    KAI_TRACE_ERROR() << piTranslator->Error;
-                    return Object();
+    compiler->SetTranslateFunction(
+        [=](const String &text, Structure st) -> Pointer<Continuation> {
+            int lang = compiler->GetLanguage();
+            int traceLevel = compiler->GetTraceLevel();
+
+            switch (static_cast<Language>(lang)) {
+                case Language::Pi: {
+                    piTranslator->trace = traceLevel;
+                    auto result = piTranslator->Translate(text.c_str(), st);
+                    if (piTranslator->Failed) {
+                        KAI_TRACE_ERROR() << piTranslator->Error;
+                        return Object();
+                    }
+                    return result;
                 }
-                return result;
-            }
-            case Language::Rho: {
-                rhoTranslator->trace = traceLevel;
-                auto result = rhoTranslator->Translate(text.c_str(), st);
-                if (rhoTranslator->Failed) {
-                    KAI_TRACE_ERROR() << rhoTranslator->Error;
-                    return Object();
+                case Language::Rho: {
+                    rhoTranslator->trace = traceLevel;
+                    auto result = rhoTranslator->Translate(text.c_str(), st);
+                    if (rhoTranslator->Failed) {
+                        KAI_TRACE_ERROR() << rhoTranslator->Error;
+                        return Object();
+                    }
+                    return result;
                 }
-                return result;
+                default:
+                    return Object();
             }
-            default:
-                return Object();
-        }
-    });
+        });
 }
 
 void TestLangCommon::SetUp() {
@@ -970,273 +972,44 @@ Object TestLangCommon::ExtractValueFromContinuation(Object value) {
 // file
 
 void TestLangCommon::UnwrapStackValues() {
-    if (!data_ || data_->Empty()) {
-        return;  // Nothing to do
+    if (!data_ || data_->Empty() || !exec_) {
+        return;  // Nothing to do or missing prerequisites
     }
 
-    // Use the Executor's ExtractValueFromContinuation method first, as it
-    // handles more patterns Check each item on the stack for continuations that
-    // need to be unwrapped
-    for (int i = 0; i < data_->Size(); i++) {
-        Object item = data_->At(i);
+    // Simply try to execute any continuations on the stack to get their values
+    // The executor should handle all the details generically
+    std::vector<Object> results;
 
-        // Skip if it's not a continuation
-        if (!item.IsType<Continuation>()) {
+    while (!data_->Empty()) {
+        Object item = data_->Pop();
+
+        if (!item.Exists()) {
             continue;
         }
 
-        // First, try using the executor's method which handles specific
-        // patterns
-        Object result = exec_->ExtractValueFromContinuation(item);
-
-        // If that didn't work, fall back to our local implementation
-        if (result == item) {
-            // Try to extract a value from the continuation using our enhanced
-            // method
-            result = ExtractValueFromContinuationDirect(item);
-        }
-
-        // If we got a different object back, we can't modify the stack in
-        // place, so we'll replace the entire stack with a new version that has
-        // the unwrapped values
-        if (result != item) {
-            // Create a temporary array to hold all stack items
-            std::vector<Object> stackItems;
-
-            // Copy all stack items to temporary storage
-            for (int j = 0; j < data_->Size(); j++) {
-                if (j == i) {
-                    // Replace the unwrapped item
-                    stackItems.push_back(result);
+        if (item.IsType<Continuation>()) {
+            // Let the executor handle it generically
+            try {
+                Object result = exec_->ExtractValueFromContinuation(item);
+                if (result.Exists()) {
+                    results.push_back(result);
                 } else {
-                    // Keep the original item
-                    stackItems.push_back(data_->At(j));
+                    results.push_back(
+                        item);  // Keep original if extraction failed
                 }
+            } catch (...) {
+                // If extraction fails, keep the original
+                results.push_back(item);
             }
-
-            // Clear the stack and push all items back
-            data_->Clear();
-            for (const auto &obj : stackItems) {
-                data_->Push(obj);
-            }
-
-            // Since we modified the stack, we need to restart the loop
-            // but be careful not to process the same item again
-            i = -1;  // Will be incremented to 0 in the next loop iteration
+        } else {
+            // Already a value, keep it
+            results.push_back(item);
         }
     }
 
-    // Check for the specific "5 dup +" pattern in continuations or as direct
-    // stack operations
-    if (data_->Size() >= 1) {
-        // First check for a continuation containing the "val dup +" pattern
-        Object topObj = data_->Top();
-        if (topObj.IsType<Continuation>()) {
-            Pointer<Continuation> cont = topObj;
-            if (cont->GetCode().Valid() && cont->GetCode().Exists()) {
-                Pointer<const Array> code = cont->GetCode();
-
-                // Check for a pattern like [ContinuationBegin, val, Dup, Plus,
-                // ContinuationEnd]
-                if (code->Size() >= 5 && code->At(0).IsType<Operation>() &&
-                    code->At(code->Size() - 1).IsType<Operation>() &&
-                    ConstDeref<Operation>(code->At(0)).GetTypeNumber() ==
-                        Operation::ContinuationBegin &&
-                    ConstDeref<Operation>(code->At(code->Size() - 1))
-                            .GetTypeNumber() == Operation::ContinuationEnd) {
-                    // Check for "val Dup Plus" pattern inside
-                    if (code->Size() == 5 && code->At(1).IsType<int>() &&
-                        code->At(2).IsType<Operation>() &&
-                        code->At(3).IsType<Operation>() &&
-                        ConstDeref<Operation>(code->At(2)).GetTypeNumber() ==
-                            Operation::Dup &&
-                        ConstDeref<Operation>(code->At(3)).GetTypeNumber() ==
-                            Operation::Plus) {
-                        // Extract the value
-                        int val = ConstDeref<int>(code->At(1));
-
-                        // Replace the continuation with the result of doubling
-                        // the value
-                        data_->Pop();
-                        data_->Push(reg_->New<int>(val * 2));
-                    }
-                }
-            }
-        }
-    }
-
-    // Also handle the case when the operations are directly on the stack
-    // (this happens after execution starts but before the operations are
-    // processed)
-    if (data_->Size() >= 3) {
-        Object op1 = data_->At(data_->Size() - 1);
-        Object op2 = data_->At(data_->Size() - 2);
-        Object val = data_->At(data_->Size() - 3);
-
-        if (op1.IsType<Operation>() && op2.IsType<Operation>() &&
-            (val.IsType<int>() || val.IsType<float>())) {
-            Operation::Type opType1 =
-                ConstDeref<Operation>(op1).GetTypeNumber();
-            Operation::Type opType2 =
-                ConstDeref<Operation>(op2).GetTypeNumber();
-
-            // Handle "val dup +" pattern
-            if (opType2 == Operation::Dup && opType1 == Operation::Plus) {
-                // Remove the operations
-                data_->Pop();  // Remove +
-                data_->Pop();  // Remove dup
-
-                // Get the value
-                Object valueObj = data_->Pop();
-
-                // Create a result based on the type
-                Object result;
-                if (valueObj.IsType<int>()) {
-                    // Duplicating and adding = multiplying by 2
-                    int intVal = ConstDeref<int>(valueObj);
-                    result = reg_->New<int>(intVal * 2);
-                } else if (valueObj.IsType<float>()) {
-                    // Same for floats
-                    float floatVal = ConstDeref<float>(valueObj);
-                    result = reg_->New<float>(floatVal * 2.0f);
-                } else {
-                    // For other types, just put the original value back
-                    result = valueObj;
-                }
-
-                // Push the result
-                data_->Push(result);
-            }
-        }
-    }
-
-    // Add additional unwrapping for Pi style binary operations directly on the
-    // stack This is needed for the binary operation tests
-    if (data_->Size() >= 3) {
-        Object opObj = data_->At(data_->Size() - 1);
-        Object b = data_->At(data_->Size() - 2);
-        Object a = data_->At(data_->Size() - 3);
-
-        // Check if we have a binary operation
-        if (opObj.IsType<Operation>()) {
-            Operation::Type op = ConstDeref<Operation>(opObj).GetTypeNumber();
-
-            // Only check for binary operations
-            if (op == Operation::Plus || op == Operation::Minus ||
-                op == Operation::Multiply || op == Operation::Divide ||
-                op == Operation::Modulo || op == Operation::Less ||
-                op == Operation::Greater || op == Operation::Equiv ||
-                op == Operation::NotEquiv || op == Operation::LogicalAnd ||
-                op == Operation::LogicalOr) {
-                // Process nested continuations if needed
-                if (a.IsType<Continuation>()) {
-                    a = ExtractValueFromContinuationDirect(a);
-                }
-                if (b.IsType<Continuation>()) {
-                    b = ExtractValueFromContinuationDirect(b);
-                }
-
-                // If both are primitive types, perform the operation
-                if (a.Valid() && b.Valid() && reg_) {
-                    Object result = Object();
-
-                    // Handle different type combinations
-                    if (a.IsType<int>() && b.IsType<int>()) {
-                        int aVal = ConstDeref<int>(a);
-                        int bVal = ConstDeref<int>(b);
-
-                        switch (op) {
-                            case Operation::Plus:
-                                result = reg_->New<int>(aVal + bVal);
-                                break;
-                            case Operation::Minus:
-                                result = reg_->New<int>(aVal - bVal);
-                                break;
-                            case Operation::Multiply:
-                                result = reg_->New<int>(aVal * bVal);
-                                break;
-                            case Operation::Divide:
-                                if (bVal != 0)
-                                    result = reg_->New<int>(aVal / bVal);
-                                break;
-                            case Operation::Modulo:
-                                if (bVal != 0)
-                                    result = reg_->New<int>(aVal % bVal);
-                                break;
-                            case Operation::Less:
-                                result = reg_->New<bool>(aVal < bVal);
-                                break;
-                            case Operation::Greater:
-                                result = reg_->New<bool>(aVal > bVal);
-                                break;
-                            case Operation::Equiv:
-                                result = reg_->New<bool>(aVal == bVal);
-                                break;
-                            case Operation::NotEquiv:
-                                result = reg_->New<bool>(aVal != bVal);
-                                break;
-                            default:  // Leave result as Object()
-                                break;
-                        }
-                    } else if (a.IsType<bool>() && b.IsType<bool>()) {
-                        bool aVal = ConstDeref<bool>(a);
-                        bool bVal = ConstDeref<bool>(b);
-
-                        switch (op) {
-                            case Operation::LogicalAnd:
-                                result = reg_->New<bool>(aVal && bVal);
-                                break;
-                            case Operation::LogicalOr:
-                                result = reg_->New<bool>(aVal || bVal);
-                                break;
-                            case Operation::Equiv:
-                                result = reg_->New<bool>(aVal == bVal);
-                                break;
-                            case Operation::NotEquiv:
-                                result = reg_->New<bool>(aVal != bVal);
-                                break;
-                            default:  // Leave result as Object()
-                                break;
-                        }
-                    } else if (a.IsType<String>() && b.IsType<String>()) {
-                        String aVal = ConstDeref<String>(a);
-                        String bVal = ConstDeref<String>(b);
-
-                        switch (op) {
-                            case Operation::Plus:
-                                result = reg_->New<String>(aVal + bVal);
-                                break;
-                            case Operation::Equiv:
-                                result = reg_->New<bool>(aVal == bVal);
-                                break;
-                            case Operation::NotEquiv:
-                                result = reg_->New<bool>(aVal != bVal);
-                                break;
-                            default:  // Leave result as Object()
-                                break;
-                        }
-                    }
-
-                    // If we computed a result, replace the three stack items
-                    // with it
-                    if (result.Exists()) {
-                        // Remove the three items
-                        data_->Pop();  // operation
-                        data_->Pop();  // b
-                        data_->Pop();  // a
-
-                        // Push the result
-                        data_->Push(result);
-
-                        // Since we modified the stack, we need to restart the
-                        // unwrapping process in case there are more patterns to
-                        // unwrap
-                        UnwrapStackValues();
-                        return;
-                    }
-                }
-            }
-        }
+    // Push results back in reverse order to maintain stack order
+    for (auto it = results.rbegin(); it != results.rend(); ++it) {
+        data_->Push(*it);
     }
 }
 

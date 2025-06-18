@@ -535,6 +535,7 @@ void Executor::Perform(Operation::Type op) {
         case Operation::Store: {
             // Log stack state before popping
             KAI_TRACE() << "Store operation - stack size before: " << data_->Size();
+            int stackSizeBefore = data_->Size();
             if (data_->Size() >= 2) {
                 KAI_TRACE() << "Stack[top-1]: " 
                             << (data_->At(data_->Size()-2).GetClass() ? 

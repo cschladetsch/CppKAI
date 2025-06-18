@@ -694,8 +694,8 @@ bool RhoParser::Factor() {
     }
 
     if (Try(TokenType::Int) || Try(TokenType::Float) ||
-        Try(TokenType::String) || Try(TokenType::True) || Try(TokenType::False) ||
-        Try(TokenType::ShellCommand))
+        Try(TokenType::String) || Try(TokenType::True) ||
+        Try(TokenType::False) || Try(TokenType::ShellCommand))
         return PushConsume();
 
     if (Try(TokenType::Self)) return PushConsume();

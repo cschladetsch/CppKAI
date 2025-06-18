@@ -20,7 +20,7 @@ Objects and *compute* can be distributed across Nodes in a Domain.
 
 ## Documentation 
 
-**[📚 Documentation Guide](Doc/Documentation.md)** - Start here for organized navigation of all documentation
+**[Documentation Guide](Doc/Documentation.md)** - Start here for organized navigation of all documentation
 
 - **Building**: [Build Guide](Doc/OUT_OF_SOURCE_BUILD.md) | [Installation](Doc/Install.md)
 - **Languages**: [Pi](Doc/PiTutorial.md) | [Rho](Doc/RhoTutorial.md) | [Tau](Doc/TauTutorial.md)
@@ -60,7 +60,7 @@ Objects and *compute* can be distributed across Nodes in a Domain.
 
 ## Example Code
 
-See [📚 Documentation Guide](Doc/Languages.md).
+See [Documentation Guide](Doc/Languages.md).
 
 ### Pi (Stack-based)
 

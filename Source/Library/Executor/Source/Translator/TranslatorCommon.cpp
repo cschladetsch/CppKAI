@@ -72,10 +72,9 @@ void TranslatorCommon::Append(Object const &ob) {
                         code->Append(reg_->New<int>(result));
 
                         return;
-                    }
-                    else if (val1.IsType<bool>() && val2.IsType<bool>() &&
-                             (opType == Operation::LogicalAnd ||
-                              opType == Operation::LogicalOr)) {
+                    } else if (val1.IsType<bool>() && val2.IsType<bool>() &&
+                               (opType == Operation::LogicalAnd ||
+                                opType == Operation::LogicalOr)) {
                         bool b1 = ConstDeref<bool>(val1);
                         bool b2 = ConstDeref<bool>(val2);
                         bool result = false;
@@ -93,13 +92,11 @@ void TranslatorCommon::Append(Object const &ob) {
 
                         code->RemoveAt(code->Size() - 1);
                         code->RemoveAt(code->Size() - 1);
-                        code->Append(
-                            reg_->New<bool>(result));
+                        code->Append(reg_->New<bool>(result));
 
                         return;
-                    }
-                    else if (val1.IsType<String>() && val2.IsType<String>() &&
-                             opType == Operation::Plus) {
+                    } else if (val1.IsType<String>() && val2.IsType<String>() &&
+                               opType == Operation::Plus) {
                         String s1 = ConstDeref<String>(val1);
                         String s2 = ConstDeref<String>(val2);
 
@@ -107,8 +104,7 @@ void TranslatorCommon::Append(Object const &ob) {
 
                         code->RemoveAt(code->Size() - 1);
                         code->RemoveAt(code->Size() - 1);
-                        code->Append(
-                            reg_->New<String>(result));
+                        code->Append(reg_->New<String>(result));
 
                         KAI_TRACE() << "TranslatorCommon::Append: Directly "
                                        "evaluated string concatenation: "

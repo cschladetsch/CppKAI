@@ -104,7 +104,8 @@ const char *RhoTokenEnumType::ToString(Enum val) {
 KAI_END
 
 // Define in global namespace for friend declaration
-std::ostream &operator<<(std::ostream &out, kai::RhoTokenEnumType::Type const &node) {
+std::ostream &operator<<(std::ostream &out,
+                         kai::RhoTokenEnumType::Type const &node) {
     if (node.type == kai::RhoTokenEnumType::None) return out;
 
     out << kai::RhoTokenEnumType::ToString(node.type);
@@ -121,7 +122,8 @@ std::ostream &operator<<(std::ostream &out, kai::RhoTokenEnumType::Type const &n
 
 // Also define in kai namespace for ADL
 namespace kai {
-std::ostream &operator<<(std::ostream &out, RhoTokenEnumType::Type const &node) {
+std::ostream &operator<<(std::ostream &out,
+                         RhoTokenEnumType::Type const &node) {
     return ::operator<<(out, node);
 }
-}
+}  // namespace kai

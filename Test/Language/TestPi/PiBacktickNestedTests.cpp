@@ -2,13 +2,14 @@
 #include <KAI/Language/Common/LangCommon.h>
 #include <KAI/Language/Pi/Pi.h>
 #include <gtest/gtest.h>
+
 #include "TestLangCommon.h"
 
 class PiBacktickNestedTest : public kai::TestLangCommon {
    protected:
-    void SetUp() override { 
+    void SetUp() override {
         TestLangCommon::SetUp();
-        console_.SetLanguage(kai::Language::Pi); 
+        console_.SetLanguage(kai::Language::Pi);
     }
 };
 
@@ -89,7 +90,7 @@ TEST_F(PiBacktickNestedTest, ActualNestedBackticksFail) {
     // Nested backticks should fail to parse correctly
     // The first backtick pair will be parsed as `echo `
     // Then the remaining text will cause a parse error
-    
+
     // Capture any exceptions that occur
     bool parseSucceeded = true;
     try {
@@ -98,7 +99,8 @@ TEST_F(PiBacktickNestedTest, ActualNestedBackticksFail) {
         // Expected - nested backticks cause parse errors
         parseSucceeded = false;
     }
-    
+
     // We expect the parse to fail
-    EXPECT_FALSE(parseSucceeded) << "Nested backticks should not parse successfully";
+    EXPECT_FALSE(parseSucceeded)
+        << "Nested backticks should not parse successfully";
 }

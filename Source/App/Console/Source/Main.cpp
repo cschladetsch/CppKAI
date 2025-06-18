@@ -50,42 +50,43 @@ void SetupLanguageTranslators(Console& console) {
     // Get the registry and compiler
     auto& reg = console.GetRegistry();
     auto compiler = console.GetCompiler();
-    
+
     // Create translators for each language as shared pointers
     auto piTranslator = std::make_shared<PiTranslator>(reg);
     auto rhoTranslator = std::make_shared<RhoTranslator>(reg);
-    
+
     // Set up the translation function
-    compiler->SetTranslateFunction([=](const String& text, Structure st) -> Pointer<Continuation> {
-        int lang = compiler->GetLanguage();
-        int traceLevel = compiler->GetTraceLevel();
-        
-        switch (static_cast<Language>(lang)) {
-            case Language::Pi: {
-                piTranslator->trace = traceLevel;
-                auto result = piTranslator->Translate(text.c_str(), st);
-                if (piTranslator->Failed) {
-                    KAI_TRACE_ERROR() << piTranslator->Error;
-                    return Object();
+    compiler->SetTranslateFunction(
+        [=](const String& text, Structure st) -> Pointer<Continuation> {
+            int lang = compiler->GetLanguage();
+            int traceLevel = compiler->GetTraceLevel();
+
+            switch (static_cast<Language>(lang)) {
+                case Language::Pi: {
+                    piTranslator->trace = traceLevel;
+                    auto result = piTranslator->Translate(text.c_str(), st);
+                    if (piTranslator->Failed) {
+                        KAI_TRACE_ERROR() << piTranslator->Error;
+                        return Object();
+                    }
+                    return result;
                 }
-                return result;
-            }
-            case Language::Rho: {
-                rhoTranslator->trace = traceLevel;
-                auto result = rhoTranslator->Translate(text.c_str(), st);
-                if (rhoTranslator->Failed) {
-                    KAI_TRACE_ERROR() << rhoTranslator->Error;
-                    return Object();
+                case Language::Rho: {
+                    rhoTranslator->trace = traceLevel;
+                    auto result = rhoTranslator->Translate(text.c_str(), st);
+                    if (rhoTranslator->Failed) {
+                        KAI_TRACE_ERROR() << rhoTranslator->Error;
+                        return Object();
+                    }
+                    return result;
                 }
-                return result;
+                default:
+                    return Object();
             }
-            default:
-                return Object();
-        }
-    });
+        });
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
     // Create console here instead of as global
     Console console;
 
@@ -96,7 +97,7 @@ int main(int argc, char **argv) {
     // the higher the number, the greater the verbosity of debug output for the
     // Executor
     console.GetExecutor()->SetTraceLevel(0);
-    
+
     // Set up language translators
     SetupLanguageTranslators(console);
 

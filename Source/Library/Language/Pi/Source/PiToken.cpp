@@ -165,7 +165,8 @@ const char *PiTokenEnumType::ToString(Enum t) {
 KAI_END
 
 // Define in global namespace for friend declaration
-std::ostream &operator<<(std::ostream &out, kai::PiTokenEnumType::Type const &node) {
+std::ostream &operator<<(std::ostream &out,
+                         kai::PiTokenEnumType::Type const &node) {
     if (node.type == kai::PiTokenEnumType::None) return out << "<NONE>";
 
     switch (node.type) {
@@ -201,4 +202,4 @@ namespace kai {
 std::ostream &operator<<(std::ostream &out, PiTokenEnumType::Type const &node) {
     return ::operator<<(out, node);
 }
-}
+}  // namespace kai

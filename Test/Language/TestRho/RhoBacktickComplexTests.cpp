@@ -11,8 +11,8 @@ struct TestRhoBacktickComplex : TestLangCommon {
         console_.Execute(script, Structure::Program);
         UnwrapStackValues();
     }
-    
-    template<class T>
+
+    template <class T>
     T GetTop() {
         EXPECT_FALSE(data_->Empty());
         return AtData<T>(0);
@@ -85,7 +85,7 @@ fun calc(x, y)
 calc(`echo 5`, `echo 4`)
 )";
     RunRhoScript(script);
-    EXPECT_EQ(GetTop<int>(), 22); // 5*2 + 4*3
+    EXPECT_EQ(GetTop<int>(), 22);  // 5*2 + 4*3
 }
 
 // Test 8: Shell in array operations

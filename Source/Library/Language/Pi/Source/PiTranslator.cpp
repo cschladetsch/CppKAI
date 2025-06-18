@@ -563,7 +563,7 @@ void PiTranslator::AppendTokenised(const TokenNode &tok) {
         case PiTokenEnumType::Print:
             AppendOp(Operation::Print);
             return;
-            
+
         case PiTokenEnumType::ShellCommand: {
             // Push the shell command string and execute it
             auto commandText = tok.Text();
@@ -571,7 +571,7 @@ void PiTranslator::AppendTokenised(const TokenNode &tok) {
             AppendOp(Operation::ShellCommand);
             return;
         }
-        
+
         case PiTokenEnumType::ToStr:
             AppendOp(Operation::ToStringOp);
             return;

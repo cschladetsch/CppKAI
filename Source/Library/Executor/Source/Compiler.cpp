@@ -25,7 +25,7 @@ Pointer<Continuation> Compiler::Translate(const String &text,
     if (translateFunction_) {
         return translateFunction_(text, st);
     }
-    
+
     // Otherwise, this base implementation doesn't know about specific languages
     KAI_UNUSED_2(text, st);
     KAI_NOT_IMPLEMENTED();

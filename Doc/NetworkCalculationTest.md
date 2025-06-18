@@ -70,7 +70,7 @@ The `calc_test.sh` script demonstrates the calculation functionality:
 
 A successful test will output:
 ```
-✅ TEST PASSED: Client received correct calculation result (3)
+TEST PASSED: Client received correct calculation result (3)
 ```
 
 ## Implementation Details

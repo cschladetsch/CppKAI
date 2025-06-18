@@ -3,7 +3,6 @@
 #include <KAI/Language/Common/LexerBase.h>
 #include <KAI/Language/Common/Process.h>
 #include <KAI/Language/Common/Slice.h>
-
 #include <stdarg.h>
 
 #include <algorithm>
@@ -12,7 +11,6 @@
 #ifdef KAI_USE_MONOTONIC_ALLOCATOR
 #include <boost/monotonic/monotonic.hpp>
 #endif
-
 
 KAI_BEGIN
 
@@ -75,11 +73,10 @@ class LexerCommon : public LexerBase {
         return tok;
     }
 
-
     void AddStringToken(int lineNumber, Slice slice) override {
         tokens.push_back(Token(Enum::String, *this, lineNumber, slice));
     }
-    
+
     void AddShellCommandToken(int lineNumber, Slice slice) override {
         tokens.push_back(Token(Enum::ShellCommand, *this, lineNumber, slice));
     }

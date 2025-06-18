@@ -39,7 +39,12 @@ struct RhoAdvancedTests : TestLangCommon {
         exec_->ClearStacks();
 
         // Execute the Rho code
-        console_.Execute(code);
+        try {
+            console_.Execute(code);
+        } catch (const std::exception& e) {
+            FAIL() << "Failed to execute code: " << code
+                   << "\nError: " << e.what();
+        }
 
         // Process the stack to extract values from continuations
         UnwrapStackValues();
@@ -47,11 +52,15 @@ struct RhoAdvancedTests : TestLangCommon {
         // Verify the result
         ASSERT_FALSE(data_->Empty())
             << "Stack should not be empty after operation";
+
+        // Check if top exists before accessing it
+        ASSERT_TRUE(data_->Top().Exists())
+            << "Top of stack is null after executing: " << code;
+
         ASSERT_TRUE(data_->Top().IsType<T>())
             << "Expected result type " << typeid(T).name() << " but got "
-            << (data_->Top().Exists()
-                    ? data_->Top().GetClass()->GetName().ToString()
-                    : "null");
+            << data_->Top().GetClass()->GetName().ToString();
+
         ASSERT_EQ(ConstDeref<T>(data_->Top()), expected)
             << "Expected value " << expected << " but got "
             << ConstDeref<T>(data_->Top());

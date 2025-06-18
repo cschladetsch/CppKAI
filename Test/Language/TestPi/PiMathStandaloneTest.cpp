@@ -1,15 +1,16 @@
 #include <KAI/Console/Console.h>
 #include <KAI/Language/Common/Language.h>
 #include <gtest/gtest.h>
+
 #include "TestLangCommon.h"
 
 using namespace kai;
 
 // Test fixture that inherits from TestLangCommon
 struct PiMathStandaloneTest : TestLangCommon {
-    void SetUp() override { 
+    void SetUp() override {
         TestLangCommon::SetUp();
-        console_.SetLanguage(Language::Pi); 
+        console_.SetLanguage(Language::Pi);
     }
 };
 

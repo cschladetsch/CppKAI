@@ -43,7 +43,27 @@ TEST_F(RhoAdvancedTest, ComplexPiBlocks) {
     auto exec = console_.GetExecutor();
 
     // Test 1: Nested operations in pi block
+    // First test just the pi block evaluation
+    console_.Execute("pi{ 2 3 + 4 * }");
+    ASSERT_EQ(exec->GetDataStack()->Size(), 1)
+        << "Pi block should leave one value on stack";
+    EXPECT_EQ(kai::ConstDeref<int>(exec->GetDataStack()->Top()), 20);
+    exec->GetDataStack()->Clear();
+
+    // Test simple assignment first
+    console_.Execute("x = 10");
+    ASSERT_EQ(exec->GetDataStack()->Size(), 0)
+        << "Simple assignment should not leave values on stack. Stack size: "
+        << exec->GetDataStack()->Size();
+
+    // Now test assignment with pi block
     console_.Execute("result = pi{ 2 3 + 4 * }");
+
+    // Assignment should not leave values on stack
+    ASSERT_EQ(exec->GetDataStack()->Size(), 0)
+        << "Assignment should not leave values on stack. Stack size: "
+        << exec->GetDataStack()->Size();
+
     console_.Execute("result");
     ASSERT_EQ(exec->GetDataStack()->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(exec->GetDataStack()->Top()),

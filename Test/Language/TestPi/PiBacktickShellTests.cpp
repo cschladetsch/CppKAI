@@ -2,13 +2,14 @@
 #include <KAI/Language/Common/LangCommon.h>
 #include <KAI/Language/Pi/Pi.h>
 #include <gtest/gtest.h>
+
 #include "TestLangCommon.h"
 
 class PiBacktickShellTest : public kai::TestLangCommon {
    protected:
-    void SetUp() override { 
+    void SetUp() override {
         TestLangCommon::SetUp();
-        console_.SetLanguage(kai::Language::Pi); 
+        console_.SetLanguage(kai::Language::Pi);
     }
 };
 

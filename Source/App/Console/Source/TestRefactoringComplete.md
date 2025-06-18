@@ -44,9 +44,9 @@ Successfully refactored container tests to create dedicated test files for Array
 - These were not moved to maintain existing test structure
 
 ## Build Status
-✅ All files compile successfully
-✅ No compilation errors
-⚠️ One warning in TestMap.cpp (unused variable m1)
+- All files compile successfully
+- No compilation errors
+- One warning in TestMap.cpp (unused variable m1)
 
 ## Benefits Achieved
 1. Better organization - each container has dedicated test file

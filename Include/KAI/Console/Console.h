@@ -72,7 +72,7 @@ class Console : public Reflected {
     static void Register(Registry &);
 
     int Run();
-    
+
     // Helper method to detect incomplete structures for multi-line input
     bool IsStructureIncomplete(const String &text) const;
 

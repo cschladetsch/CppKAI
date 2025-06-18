@@ -1,6 +1,6 @@
-#include <KAI/Executor/Executor.h>
 #include <KAI/Core/BuiltinTypes.h>
 #include <KAI/Core/Exception.h>
+#include <KAI/Executor/Executor.h>
 
 KAI_BEGIN
 
@@ -104,16 +104,19 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
                     return createNew(result);
                 }
                 // For other types, use the ClassBase's operation methods
-                else if (A.GetTypeNumber() == B.GetTypeNumber() && A.GetClass() && B.GetClass()) {
+                else if (A.GetTypeNumber() == B.GetTypeNumber() &&
+                         A.GetClass() && B.GetClass()) {
                     const ClassBase *classPtr = A.GetClass();
                     if (classPtr->HasOperation(Properties::Plus)) {
                         try {
-                            StorageBase *result = classPtr->Plus(A.GetStorageBase(), B.GetStorageBase());
+                            StorageBase *result = classPtr->Plus(
+                                A.GetStorageBase(), B.GetStorageBase());
                             if (result) {
                                 return Object(ObjectConstructParams(result));
                             }
                         } catch (const Exception::Base &e) {
-                            KAI_TRACE_ERROR() << "Plus operation failed: " << e.ToString();
+                            KAI_TRACE_ERROR()
+                                << "Plus operation failed: " << e.ToString();
                         }
                     }
                 }
@@ -146,16 +149,19 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
                     return createNew(result);
                 }
                 // For other types, use the ClassBase's operation methods
-                else if (A.GetTypeNumber() == B.GetTypeNumber() && A.GetClass() && B.GetClass()) {
+                else if (A.GetTypeNumber() == B.GetTypeNumber() &&
+                         A.GetClass() && B.GetClass()) {
                     const ClassBase *classPtr = A.GetClass();
                     if (classPtr->HasOperation(Properties::Minus)) {
                         try {
-                            StorageBase *result = classPtr->Minus(A.GetStorageBase(), B.GetStorageBase());
+                            StorageBase *result = classPtr->Minus(
+                                A.GetStorageBase(), B.GetStorageBase());
                             if (result) {
                                 return Object(ObjectConstructParams(result));
                             }
                         } catch (const Exception::Base &e) {
-                            KAI_TRACE_ERROR() << "Minus operation failed: " << e.ToString();
+                            KAI_TRACE_ERROR()
+                                << "Minus operation failed: " << e.ToString();
                         }
                     }
                 }
@@ -187,16 +193,19 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
                     return createNew(result);
                 }
                 // For other types, use the ClassBase's operation methods
-                else if (A.GetTypeNumber() == B.GetTypeNumber() && A.GetClass() && B.GetClass()) {
+                else if (A.GetTypeNumber() == B.GetTypeNumber() &&
+                         A.GetClass() && B.GetClass()) {
                     const ClassBase *classPtr = A.GetClass();
                     if (classPtr->HasOperation(Properties::Multiply)) {
                         try {
-                            StorageBase *result = classPtr->Multiply(A.GetStorageBase(), B.GetStorageBase());
+                            StorageBase *result = classPtr->Multiply(
+                                A.GetStorageBase(), B.GetStorageBase());
                             if (result) {
                                 return Object(ObjectConstructParams(result));
                             }
                         } catch (const Exception::Base &e) {
-                            KAI_TRACE_ERROR() << "Multiply operation failed: " << e.ToString();
+                            KAI_TRACE_ERROR() << "Multiply operation failed: "
+                                              << e.ToString();
                         }
                     }
                 }
@@ -229,8 +238,8 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
                     if (divisor == 0) {
                         KAI_THROW_0(DivideByZero);
                     }
-                    float result = ConstDeref<float>(A) /
-                                   static_cast<float>(divisor);
+                    float result =
+                        ConstDeref<float>(A) / static_cast<float>(divisor);
                     return createNew(result);
                 }
                 // Int / Float = Float
@@ -239,21 +248,24 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
                     if (divisor == 0.0f) {
                         KAI_THROW_0(DivideByZero);
                     }
-                    float result = static_cast<float>(ConstDeref<int>(A)) /
-                                   divisor;
+                    float result =
+                        static_cast<float>(ConstDeref<int>(A)) / divisor;
                     return createNew(result);
                 }
                 // For other types, use the ClassBase's operation methods
-                else if (A.GetTypeNumber() == B.GetTypeNumber() && A.GetClass() && B.GetClass()) {
+                else if (A.GetTypeNumber() == B.GetTypeNumber() &&
+                         A.GetClass() && B.GetClass()) {
                     const ClassBase *classPtr = A.GetClass();
                     if (classPtr->HasOperation(Properties::Divide)) {
                         try {
-                            StorageBase *result = classPtr->Divide(A.GetStorageBase(), B.GetStorageBase());
+                            StorageBase *result = classPtr->Divide(
+                                A.GetStorageBase(), B.GetStorageBase());
                             if (result) {
                                 return Object(ObjectConstructParams(result));
                             }
                         } catch (const Exception::Base &e) {
-                            KAI_TRACE_ERROR() << "Divide operation failed: " << e.ToString();
+                            KAI_TRACE_ERROR()
+                                << "Divide operation failed: " << e.ToString();
                         }
                     }
                 }
@@ -360,14 +372,17 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
                     return createNew(result);
                 }
                 // For other types, use the ClassBase's operation methods
-                else if (A.GetTypeNumber() == B.GetTypeNumber() && A.GetClass() && B.GetClass()) {
+                else if (A.GetTypeNumber() == B.GetTypeNumber() &&
+                         A.GetClass() && B.GetClass()) {
                     const ClassBase *classPtr = A.GetClass();
                     if (classPtr->HasOperation(Properties::Less)) {
                         try {
-                            bool result = classPtr->Less(A.GetStorageBase(), B.GetStorageBase());
+                            bool result = classPtr->Less(A.GetStorageBase(),
+                                                         B.GetStorageBase());
                             return createNew(result);
                         } catch (const Exception::Base &e) {
-                            KAI_TRACE_ERROR() << "Less operation failed: " << e.ToString();
+                            KAI_TRACE_ERROR()
+                                << "Less operation failed: " << e.ToString();
                             return createNew(false);
                         }
                     }
@@ -406,14 +421,17 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
                     return createNew(result);
                 }
                 // For other types, use the ClassBase's operation methods
-                else if (A.GetTypeNumber() == B.GetTypeNumber() && A.GetClass() && B.GetClass()) {
+                else if (A.GetTypeNumber() == B.GetTypeNumber() &&
+                         A.GetClass() && B.GetClass()) {
                     const ClassBase *classPtr = A.GetClass();
                     if (classPtr->HasOperation(Properties::Greater)) {
                         try {
-                            bool result = classPtr->Greater(A.GetStorageBase(), B.GetStorageBase());
+                            bool result = classPtr->Greater(A.GetStorageBase(),
+                                                            B.GetStorageBase());
                             return createNew(result);
                         } catch (const Exception::Base &e) {
-                            KAI_TRACE_ERROR() << "Greater operation failed: " << e.ToString();
+                            KAI_TRACE_ERROR()
+                                << "Greater operation failed: " << e.ToString();
                             return createNew(false);
                         }
                     }
@@ -544,12 +562,14 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
             case Operation::Min:
                 // Int min Int -> Int
                 if (A.IsType<int>() && B.IsType<int>()) {
-                    int result = std::min(ConstDeref<int>(A), ConstDeref<int>(B));
+                    int result =
+                        std::min(ConstDeref<int>(A), ConstDeref<int>(B));
                     return createNew(result);
                 }
                 // Float min Float -> Float
                 else if (A.IsType<float>() && B.IsType<float>()) {
-                    float result = std::min(ConstDeref<float>(A), ConstDeref<float>(B));
+                    float result =
+                        std::min(ConstDeref<float>(A), ConstDeref<float>(B));
                     return createNew(result);
                 }
                 // Handle mixed int/float types by comparing as floats
@@ -565,12 +585,14 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
             case Operation::Max:
                 // Int max Int -> Int
                 if (A.IsType<int>() && B.IsType<int>()) {
-                    int result = std::max(ConstDeref<int>(A), ConstDeref<int>(B));
+                    int result =
+                        std::max(ConstDeref<int>(A), ConstDeref<int>(B));
                     return createNew(result);
                 }
                 // Float max Float -> Float
                 else if (A.IsType<float>() && B.IsType<float>()) {
-                    float result = std::max(ConstDeref<float>(A), ConstDeref<float>(B));
+                    float result =
+                        std::max(ConstDeref<float>(A), ConstDeref<float>(B));
                     return createNew(result);
                 }
                 // Handle mixed int/float types by comparing as floats

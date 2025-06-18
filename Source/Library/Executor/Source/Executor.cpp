@@ -1,7 +1,7 @@
-#include <iostream>
-#include <sstream>
 #include <cctype>
 #include <cstdio>
+#include <iostream>
+#include <sstream>
 
 #include "KAI/Console/rang.hpp"
 #include "KAI/Core/BuiltinTypes.h"
@@ -33,7 +33,6 @@ bool Executor::Destroy() { return true; }
 
 void Executor::Register(Registry &registry, const char *name) {
     ClassBuilder<Executor>(registry, name);
-
 }
 
 bool operator<(const Executor &left, const Executor &right) {
@@ -67,9 +66,7 @@ BinaryPacket &operator>>(BinaryPacket &stream, Executor &exec) {
     return stream;
 }
 
-Object Executor::UnwrapValue(const Object &value) {
-    return value;
-}
+Object Executor::UnwrapValue(const Object &value) { return value; }
 
 void Executor::Push(Object const &Q) {
     if (Q.GetTypeNumber() == Type::Number::Object) {
@@ -154,11 +151,13 @@ bool Executor::PopBool() {
                 op == Operation::Less || op == Operation::Greater ||
                 op == Operation::Equiv || op == Operation::NotEquiv) {
                 // KAI_TRACE()
-                //     << "PopBool: Converting logical Operation to bool (true)";
+                //     << "PopBool: Converting logical Operation to bool
+                //     (true)";
                 return true;
             }
             // KAI_TRACE()
-            //     << "PopBool: Converting non-logical Operation to bool (false)";
+            //     << "PopBool: Converting non-logical Operation to bool
+            //     (false)";
             return false;
         }
 
@@ -199,7 +198,6 @@ void Executor::DropN() {
 
     while (count-- > 0) Pop();
 }
-
 
 void Executor::ClearContext() { context_->Clear(); }
 
@@ -344,7 +342,8 @@ Object Executor::TryResolve(Label const &label) const {
 Object Executor::TryResolveOrCreate(Label const &label, Type::Number type) {
     // Handle empty label case
     if (label.ToString().empty()) {
-        // KAI_TRACE() << "TryResolveOrCreate: Empty label, creating empty object";
+        // KAI_TRACE() << "TryResolveOrCreate: Empty label, creating empty
+        // object";
         return Object();  // Return empty object
     }
 
@@ -353,7 +352,8 @@ Object Executor::TryResolveOrCreate(Label const &label, Type::Number type) {
 
     // If found, return it
     if (found.Valid() && found.Exists()) {
-        // KAI_TRACE() << "TryResolveOrCreate: Found existing object for label: "
+        // KAI_TRACE() << "TryResolveOrCreate: Found existing object for label:
+        // "
         //             << label.ToString();
         return found;
     }
@@ -531,8 +531,8 @@ void Executor::Eval(Object const &Q) {
         // For all other types (primitives, arrays, etc.), just push them
         default:
             if (traceLevel_ > 2) {
-                // KAI_TRACE() << "Eval: Pushing direct value: " << Q.ToString();
-                // if (Q.GetClass()) {
+                // KAI_TRACE() << "Eval: Pushing direct value: " <<
+                // Q.ToString(); if (Q.GetClass()) {
                 //     KAI_TRACE()
                 //         << "  (Type: " << Q.GetClass()->GetName() << ")";
                 // }
@@ -620,7 +620,8 @@ void Executor::Continue() {
         }
 
         if (break_) {
-            // KAI_TRACE() << "Continue: break_ is set, calling NextContinuation";
+            // KAI_TRACE() << "Continue: break_ is set, calling
+            // NextContinuation";
             try {
                 NextContinuation();
                 if (!continuation_.Valid() || !continuation_.Exists()) {
@@ -728,7 +729,8 @@ void Executor::NextContinuation() {
         // KAI_TRACE() << "NextContinuation: About to pop from context stack";
         const auto next = context_->Pop();
         // KAI_TRACE() << "NextContinuation: Popped object of type: "
-        //             << (next.GetClass() ? next.GetClass()->GetName().ToString()
+        //             << (next.GetClass() ?
+        //             next.GetClass()->GetName().ToString()
         //                                 : "unknown");
 
         // Check if this is a null sentinel (used by ContinueOnly to stop
@@ -774,7 +776,8 @@ void Executor::NextContinuation() {
 
             // Check if IP is valid
             if (ip >= codeSize) {
-                // KAI_TRACE() << "NextContinuation: WARNING - IP is at or past "
+                // KAI_TRACE() << "NextContinuation: WARNING - IP is at or past
+                // "
                 //                "end of code";
             }
         } catch (const std::exception &e) {

@@ -5,15 +5,16 @@
 #include <KAI/Executor/Operation.h>
 #include <KAI/Language/Common/Language.h>
 
-#include <map>
 #include <functional>
+#include <map>
 
 KAI_BEGIN
 
 class Compiler : public Reflected {
     typedef std::map<Operation, String> OperationToString;
     typedef std::map<String, Pointer<Operation> > StringToOperation;
-    typedef std::function<Pointer<Continuation>(const String&, Structure)> TranslateFunction;
+    typedef std::function<Pointer<Continuation>(const String &, Structure)>
+        TranslateFunction;
 
    private:
     OperationToString op_to_string;
@@ -29,8 +30,9 @@ class Compiler : public Reflected {
     int GetLanguage() const;
     void SetTraceLevel(int n) { traceLevel_ = n; }
     int GetTraceLevel() const { return traceLevel_; }
-    void SetTranslateFunction(TranslateFunction func) { translateFunction_ = func; }
-
+    void SetTranslateFunction(TranslateFunction func) {
+        translateFunction_ = func;
+    }
 
     Pointer<Continuation> Translate(const String &text,
                                     Structure st = Structure::Expression) const;

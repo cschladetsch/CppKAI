@@ -73,6 +73,6 @@ Tests using incorrect parentheses syntax:
 
 ## Solution
 
-1. ✅ Fixed the lexer error message (already done)
-2. ❌ Update all test files to use correct Rho syntax (no parentheses in for loops)
-3. ❌ Consider adding better error messages in the parser when parentheses are encountered after 'for'
+1. Fixed the lexer error message (already done)
+2. Update all test files to use correct Rho syntax (no parentheses in for loops)
+3. Consider adding better error messages in the parser when parentheses are encountered after 'for'

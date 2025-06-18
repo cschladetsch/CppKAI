@@ -6,13 +6,14 @@ EnhancedConsole::EnhancedConsole() : Console() {
     // Initialize translators will be done lazily when needed
 }
 
-Pointer<Continuation> EnhancedConsole::Translate(const String &text, Structure st) {
+Pointer<Continuation> EnhancedConsole::Translate(const String &text,
+                                                 Structure st) {
     if (text.empty()) return Object();
-    
+
     switch (GetLanguage()) {
         case Language::None:
             return Object();
-            
+
         case Language::Pi: {
             if (!piTranslator.Exists()) {
                 piTranslator = reg_->New<PiTranslator>(*reg_);
@@ -26,7 +27,7 @@ Pointer<Continuation> EnhancedConsole::Translate(const String &text, Structure s
             }
             return result;
         }
-        
+
         case Language::Rho: {
             if (!rhoTranslator.Exists()) {
                 rhoTranslator = reg_->New<RhoTranslator>(*reg_);
@@ -40,13 +41,13 @@ Pointer<Continuation> EnhancedConsole::Translate(const String &text, Structure s
             }
             return result;
         }
-        
+
         case Language::Tau:
             KAI_NOT_IMPLEMENTED();  // Tau is not a compiled language
             break;
     }
-    
+
     return Object();
 }
 
-} // namespace kai
+}  // namespace kai

@@ -27,16 +27,16 @@ This report documents the fixes implemented to address segmentation faults and o
 
 | Category | Status | Details |
 |----------|--------|---------|
-| Core Tests | ✅ 68/68 PASS | All core data structure and registry tests pass |
-| Direct Binary Operation Tests | ✅ 5/6 PASS | Fixed critical 20+20 case, PiStyleOperation, and more |
-| RhoPiBasicTests | ✅ 14/14 PASS | All tests including stack manipulation now pass |
-| RhoPiAdvanced | ✅ 10/10 PASS | All comparison and basic operation tests pass |
-| RhoExtendedOps | ✅ 12/12 PASS | Binary & comparison operations pass |
-| RhoPiWorkaround | ✅ 10/10 PASS | All workaround functionality tests pass |
-| Simple Direct Tests | ✅ PASS | Direct tests for common scenarios pass |
-| RhoAdvancedOps | ❌ 0/26 PASS | Complex operations still failing |
-| RhoForLoop | ❌ 0/12 PASS | Loop constructs need further work |
-| TestLangCommon | ⚠️ 3/20 PASS | Basic tests pass, advanced failed |
+| Core Tests | 68/68 PASS | All core data structure and registry tests pass |
+| Direct Binary Operation Tests | 5/6 PASS | Fixed critical 20+20 case, PiStyleOperation, and more |
+| RhoPiBasicTests | 14/14 PASS | All tests including stack manipulation now pass |
+| RhoPiAdvanced | 10/10 PASS | All comparison and basic operation tests pass |
+| RhoExtendedOps | 12/12 PASS | Binary & comparison operations pass |
+| RhoPiWorkaround | 10/10 PASS | All workaround functionality tests pass |
+| Simple Direct Tests | PASS | Direct tests for common scenarios pass |
+| RhoAdvancedOps | 0/26 PASS | Complex operations still failing |
+| RhoForLoop | 0/12 PASS | Loop constructs need further work |
+| TestLangCommon | 3/20 PASS | Basic tests pass, advanced failed |
 
 ## Specific Improvements
 

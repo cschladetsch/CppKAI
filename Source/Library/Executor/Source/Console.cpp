@@ -230,7 +230,7 @@ void Console::Execute(String const &text, Structure st) {
     }
 
     // Log what we're about to execute for debugging purposes
-    KAI_TRACE() << "Executing text: " << text;
+    // KAI_TRACE() << "Executing text: " << text;
 
     // Log the continuation details
     // Removed noisy trace for cleaner Console output
@@ -852,8 +852,9 @@ String Console::Process(const String &text) {
 
         // Determine the appropriate structure based on the content
         Structure structure = Structure::Expression;
-        
-        // For Rho, check if this looks like a statement (contains control structures)
+
+        // For Rho, check if this looks like a statement (contains control
+        // structures)
         if (language == Language::Rho) {
             std::string str = expandedText.StdString();
             if (str.find("for") != std::string::npos ||
@@ -863,7 +864,7 @@ String Console::Process(const String &text) {
                 structure = Structure::Statement;
             }
         }
-        
+
         // Translate the text into a continuation
         auto cont = compiler->Translate(expandedText.c_str(), structure);
         if (cont.Exists()) {
@@ -920,7 +921,7 @@ void Console::ShowColoredStack() const {
 
     auto A = data->Begin(), B = data->End();
     int N = 0;
-    for (; A != B; ++A, ++N) {
+    for (N = data->Size() - 1; A != B; ++A, --N) {
         // Colored output: [N] in blue, content in white/colored by type
         cout << rang::fg::cyan << "[" << N << "]: " << rang::fg::reset;
 
@@ -986,7 +987,7 @@ int Console::Run() {
 
                 // Store current command for !# support
                 currentCommand = text;
-                
+
                 // Check if we need to accumulate multi-line input
                 String accumulatedInput(text);
                 while (IsStructureIncomplete(accumulatedInput)) {
@@ -994,7 +995,7 @@ int Console::Run() {
                     cout << rang::style::bold;
                     cout << ToString(language) << " ... ";
                     cout << rang::fg::gray;
-                    
+
                     string continuationLine;
                     if (!getline(cin, continuationLine)) {
                         // EOF during multi-line input
@@ -1002,11 +1003,12 @@ int Console::Run() {
                         return 0;
                     }
                     cout << rang::fg::reset;
-                    
+
                     // Append the continuation line
-                    accumulatedInput = accumulatedInput + "\n" + continuationLine;
+                    accumulatedInput =
+                        accumulatedInput + "\n" + continuationLine;
                 }
-                
+
                 // Update text with the full accumulated input
                 text = accumulatedInput.StdString();
 
@@ -1273,7 +1275,7 @@ bool Console::IsStructureIncomplete(const String &text) const {
         int braceCount = 0;
         bool inString = false;
         char stringChar = '\0';
-        
+
         for (char c : text.StdString()) {
             // Handle string literals
             if ((c == '"' || c == '\'') && !inString) {
@@ -1290,11 +1292,11 @@ bool Console::IsStructureIncomplete(const String &text) const {
                 }
             }
         }
-        
+
         // Structure is incomplete if we have unmatched opening braces
         return braceCount > 0;
     }
-    
+
     // For other languages, we don't have multi-line structures
     return false;
 }
