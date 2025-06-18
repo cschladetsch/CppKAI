@@ -137,12 +137,12 @@ bool Executor::PopBool() {
 
         // Special case for continuations
         if (val.IsType<Continuation>()) {
-            KAI_TRACE() << "PopBool: Converting Continuation to bool (true)";
+            // KAI_TRACE() << "PopBool: Converting Continuation to bool (true)";
             return true;
         }
 
         if (val.IsType<Array>()) {
-            KAI_TRACE() << "PopBool: Converting Array to bool";
+            // KAI_TRACE() << "PopBool: Converting Array to bool";
             const Array &arr = ConstDeref<Array>(val);
             return arr.Size() > 0;
         }
@@ -153,20 +153,20 @@ bool Executor::PopBool() {
                 op == Operation::LogicalNot || op == Operation::LogicalXor ||
                 op == Operation::Less || op == Operation::Greater ||
                 op == Operation::Equiv || op == Operation::NotEquiv) {
-                KAI_TRACE()
-                    << "PopBool: Converting logical Operation to bool (true)";
+                // KAI_TRACE()
+                //     << "PopBool: Converting logical Operation to bool (true)";
                 return true;
             }
-            KAI_TRACE()
-                << "PopBool: Converting non-logical Operation to bool (false)";
+            // KAI_TRACE()
+            //     << "PopBool: Converting non-logical Operation to bool (false)";
             return false;
         }
 
         if (val.GetClass()) {
-            KAI_TRACE() << "PopBool: Converting non-boolean type "
-                        << val.GetClass()->GetName() << " to bool (true)";
+            // KAI_TRACE() << "PopBool: Converting non-boolean type "
+            //             << val.GetClass()->GetName() << " to bool (true)";
         } else {
-            KAI_TRACE() << "PopBool: Converting unknown type to bool (true)";
+            // KAI_TRACE() << "PopBool: Converting unknown type to bool (true)";
         }
         return true;
     } catch (const Exception::Base &e) {
@@ -282,8 +282,6 @@ void Executor::DumpStack(Stack const &stack) {
         KAI_TRACE() << i << ": " << stack.At(i);
 }
 
-// ======================= Object Resolution ======================
-
 Object Executor::Resolve(Object Q, bool ignoreQuote) const {
     // TODO: this double-handling of Labels and Pathnames is tedious and wrong.
     if (Q.IsType<Label>()) {
@@ -315,7 +313,7 @@ Object Executor::TryResolve(Object const &Q) const {
 Object Executor::TryResolve(Label const &label) const {
     // Handle empty label case
     if (label.ToString().empty()) {
-        KAI_TRACE() << "TryResolve: Empty label";
+        // KAI_TRACE() << "TryResolve: Empty label";
         return Object();
     }
 
@@ -346,7 +344,7 @@ Object Executor::TryResolve(Label const &label) const {
 Object Executor::TryResolveOrCreate(Label const &label, Type::Number type) {
     // Handle empty label case
     if (label.ToString().empty()) {
-        KAI_TRACE() << "TryResolveOrCreate: Empty label, creating empty object";
+        // KAI_TRACE() << "TryResolveOrCreate: Empty label, creating empty object";
         return Object();  // Return empty object
     }
 
@@ -355,14 +353,14 @@ Object Executor::TryResolveOrCreate(Label const &label, Type::Number type) {
 
     // If found, return it
     if (found.Valid() && found.Exists()) {
-        KAI_TRACE() << "TryResolveOrCreate: Found existing object for label: "
-                    << label.ToString();
+        // KAI_TRACE() << "TryResolveOrCreate: Found existing object for label: "
+        //             << label.ToString();
         return found;
     }
 
     // If not found, create a placeholder based on the requested type
-    KAI_TRACE() << "TryResolveOrCreate: Creating placeholder for: "
-                << label.ToString();
+    // KAI_TRACE() << "TryResolveOrCreate: Creating placeholder for: "
+    //             << label.ToString();
 
     // Create the appropriate placeholder based on requested type
     Object placeholder;
@@ -405,8 +403,8 @@ Object Executor::TryResolveOrCreate(Label const &label, Type::Number type) {
         Object scope = continuation_->GetScope();
         if (scope.Exists()) {
             scope.Set(label, placeholder);
-            KAI_TRACE()
-                << "TryResolveOrCreate: Stored placeholder in current scope";
+            // KAI_TRACE()
+            //     << "TryResolveOrCreate: Stored placeholder in current scope";
         }
     }
 
@@ -507,7 +505,7 @@ void Executor::Eval(Object const &Q) {
         case Type::Number::Continuation: {
             // Push continuation to stack instead of executing it
             // This allows operations like IfElse to use continuations as values
-            KAI_TRACE() << "Eval: Pushing continuation to stack";
+            // KAI_TRACE() << "Eval: Pushing continuation to stack";
             Push(Q);
             break;
         }
@@ -533,11 +531,11 @@ void Executor::Eval(Object const &Q) {
         // For all other types (primitives, arrays, etc.), just push them
         default:
             if (traceLevel_ > 2) {
-                KAI_TRACE() << "Eval: Pushing direct value: " << Q.ToString();
-                if (Q.GetClass()) {
-                    KAI_TRACE()
-                        << "  (Type: " << Q.GetClass()->GetName() << ")";
-                }
+                // KAI_TRACE() << "Eval: Pushing direct value: " << Q.ToString();
+                // if (Q.GetClass()) {
+                //     KAI_TRACE()
+                //         << "  (Type: " << Q.GetClass()->GetName() << ")";
+                // }
             }
 
             // Create a proper clone to ensure correct type information is
@@ -587,11 +585,11 @@ void Executor::Continue() {
         try {
             if (continuation_->Next(next)) {
                 // Remove try-catch to allow exceptions to propagate
-                if (traceLevel_ > 10) KAI_TRACE() << "Start step\n";
-                if (traceLevel_ > 10) KAI_TRACE_1(stepNumber_);
-                if (traceLevel_ > 10) KAI_TRACE_1(data_);
-                if (traceLevel_ > 10) KAI_TRACE_1(context_);
-                if (traceLevel_ > 10) KAI_TRACE_1(next);
+                // if (traceLevel_ > 10) KAI_TRACE() << "Start step\n";
+                // if (traceLevel_ > 10) KAI_TRACE_1(stepNumber_);
+                // if (traceLevel_ > 10) KAI_TRACE_1(data_);
+                // if (traceLevel_ > 10) KAI_TRACE_1(context_);
+                // if (traceLevel_ > 10) KAI_TRACE_1(next);
 
                 // Make sure next is valid before we try to evaluate it
                 if (next.Valid()) {
@@ -601,8 +599,8 @@ void Executor::Continue() {
                                          "skipping evaluation";
                 }
             } else {
-                KAI_TRACE() << "Continue: Continuation has no more "
-                               "instructions, setting break_";
+                // KAI_TRACE() << "Continue: Continuation has no more "
+                //                "instructions, setting break_";
                 break_ = true;
             }
         } catch (const Exception::Base &e) {
@@ -622,12 +620,12 @@ void Executor::Continue() {
         }
 
         if (break_) {
-            KAI_TRACE() << "Continue: break_ is set, calling NextContinuation";
+            // KAI_TRACE() << "Continue: break_ is set, calling NextContinuation";
             try {
                 NextContinuation();
                 if (!continuation_.Valid() || !continuation_.Exists()) {
-                    KAI_TRACE() << "Continue: No valid continuation after "
-                                   "NextContinuation, returning";
+                    // KAI_TRACE() << "Continue: No valid continuation after "
+                    //                "NextContinuation, returning";
                     return;
                 }
             } catch (const std::exception &e) {
@@ -707,9 +705,9 @@ void Executor::Continue(Value<Continuation> C) {
 }
 
 void Executor::NextContinuation() {
-    KAI_TRACE() << "NextContinuation called, context stack size: "
-                << (context_.Valid() && context_.Exists() ? context_->Size()
-                                                          : -1);
+    // KAI_TRACE() << "NextContinuation called, context stack size: "
+    //             << (context_.Valid() && context_.Exists() ? context_->Size()
+    //                                                       : -1);
 
     // Validate context stack
     if (!context_.Valid() || !context_.Exists()) {
@@ -720,18 +718,18 @@ void Executor::NextContinuation() {
     }
 
     if (context_->Empty()) {
-        KAI_TRACE() << "NextContinuation: Context stack is empty";
+        // KAI_TRACE() << "NextContinuation: Context stack is empty";
         continuation_ = Object();
         return;
     }
 
     try {
         // Get next continuation from context stack
-        KAI_TRACE() << "NextContinuation: About to pop from context stack";
+        // KAI_TRACE() << "NextContinuation: About to pop from context stack";
         const auto next = context_->Pop();
-        KAI_TRACE() << "NextContinuation: Popped object of type: "
-                    << (next.GetClass() ? next.GetClass()->GetName().ToString()
-                                        : "unknown");
+        // KAI_TRACE() << "NextContinuation: Popped object of type: "
+        //             << (next.GetClass() ? next.GetClass()->GetName().ToString()
+        //                                 : "unknown");
 
         // Check if this is a null sentinel (used by ContinueOnly to stop
         // execution)
@@ -753,7 +751,7 @@ void Executor::NextContinuation() {
         // Debug: Check the continuation's state
         try {
             Pointer<Continuation> cont = next;
-            KAI_TRACE() << "NextContinuation: Got continuation pointer";
+            // KAI_TRACE() << "NextContinuation: Got continuation pointer";
 
             if (!cont.Exists()) {
                 KAI_TRACE_ERROR()
@@ -771,13 +769,13 @@ void Executor::NextContinuation() {
 
             int ip = ConstDeref<int>(cont->index);
             int codeSize = cont->GetCode()->Size();
-            KAI_TRACE() << "NextContinuation: Resuming continuation with IP="
-                        << ip << " of " << codeSize;
+            // KAI_TRACE() << "NextContinuation: Resuming continuation with IP="
+            //             << ip << " of " << codeSize;
 
             // Check if IP is valid
             if (ip >= codeSize) {
-                KAI_TRACE() << "NextContinuation: WARNING - IP is at or past "
-                               "end of code";
+                // KAI_TRACE() << "NextContinuation: WARNING - IP is at or past "
+                //                "end of code";
             }
         } catch (const std::exception &e) {
             KAI_TRACE_ERROR()
@@ -852,7 +850,7 @@ Pointer<Continuation> Executor::NewContinuation(Value<Continuation> orig) {
         // For now, we'll just create a fresh scope for each function call
         cont->SetScope(newScope);
 
-        KAI_TRACE() << "Created new scope for continuation";
+        // KAI_TRACE() << "Created new scope for continuation";
 
         return cont;
     } catch (const std::exception &e) {
@@ -897,7 +895,7 @@ void Executor::TraceAll() {
 void Executor::Trace(const Object &Q) {
     StringStream str;
     Trace(Q, str);
-    KAI_TRACE() << str.ToString();
+    // KAI_TRACE() << str.ToString();
 }
 
 void Executor::Trace(const Object &object, StringStream &str) {
@@ -932,8 +930,8 @@ void Executor::Trace(const Label &L, const StorageBase &Q, StringStream &str) {
 }
 
 void Executor::MarkAndSweep() {
-    KAI_NOT_IMPLEMENTED();
-    // MarkAndSweep(tree_->GetRoot());
+    Object root = tree_->GetRoot();
+    MarkAndSweep(root);
 }
 
 void Executor::MarkAndSweep(Object &root) {
@@ -956,7 +954,6 @@ Value<Array> Executor::ForEach(Container const &container,
 
 void Executor::DumpContinuation(Continuation const &continuation, int level) {
     KAI_UNUSED_1(level);
-    KAI_TRACE() << "----- CONTINUATION -------";
     KAI_TRACE_1(continuation.GetScope());
 
     // Get the code
@@ -971,7 +968,6 @@ void Executor::DumpContinuation(Continuation const &continuation, int level) {
         return;
     }
 
-    // Don't access the position, just show the code
     KAI_TRACE() << "Code size: " << code->Size();
     for (int index = 0; index < code->Size(); ++index) {
         StringStream str;
@@ -982,673 +978,6 @@ void Executor::DumpContinuation(Continuation const &continuation, int level) {
 
 // Enhanced version of PerformBinaryOp that handles all operation types using
 // KAI type traits
-Object Executor::PerformBinaryOp(Object const &A, Object const &B,
-                                 Operation::Type op) {
-    KAI_TRACE() << "PerformBinaryOp called with operation: "
-                << Operation::ToString(op);
-    try {
-        // Validate inputs
-        if (!A.Valid()) {
-            KAI_TRACE_ERROR() << "PerformBinaryOp: First argument is invalid";
-            return Object();
-        }
-
-        if (!B.Valid()) {
-            KAI_TRACE_ERROR() << "PerformBinaryOp: Second argument is invalid";
-            return Object();
-        }
-
-        // Ensure we have a valid registry to create new objects
-        Registry *registry = A.GetRegistry();
-        if (!registry) {
-            registry = B.GetRegistry();
-            if (!registry) {
-                // Try to use the executor's registry if available through data
-                // stack
-                if (data_.Exists() && data_.GetRegistry() != nullptr) {
-                    registry = data_.GetRegistry();
-                } else {
-                    // Try to use Self if available
-                    if (Self && Self->GetRegistry()) {
-                        registry = Self->GetRegistry();
-                    } else {
-                        KAI_TRACE_ERROR()
-                            << "PerformBinaryOp: No valid registry found";
-                        return Object();
-                    }
-                }
-            }
-        }
-
-        // Helper function to create a new object, ensuring it has a valid
-        // registry
-        auto createNew = [registry](auto value) -> Object {
-            return registry->New(value);
-        };
-
-        using Type::Properties;
-
-        // Helper to check if a type has a specific property using the type
-        // traits system
-        auto hasProperty = [](const Object &obj, int property) -> bool {
-            if (!obj.Exists() || !obj.GetClass()) return false;
-
-            // For now, return false to avoid HasProperty call with incompatible
-            // types
-            return false;
-        };
-
-        // First, handle the operation based on type using KAI type traits
-        switch (op) {
-            // Arithmetic operations
-            case Operation::Plus: {
-                KAI_TRACE() << "Plus operation";
-                // Int + Int = Int
-                if (A.IsType<int>() && B.IsType<int>()) {
-                    int result = Type::Traits<int>::Plus::Perform(
-                        ConstDeref<int>(A), ConstDeref<int>(B));
-                    return createNew(result);
-                }
-                // Float + Float = Float
-                else if (A.IsType<float>() && B.IsType<float>()) {
-                    float result = Type::Traits<float>::Plus::Perform(
-                        ConstDeref<float>(A), ConstDeref<float>(B));
-                    return createNew(result);
-                }
-                // Float + Int = Float
-                else if (A.IsType<float>() && B.IsType<int>()) {
-                    float result = ConstDeref<float>(A) +
-                                   static_cast<float>(ConstDeref<int>(B));
-                    return createNew(result);
-                }
-                // Int + Float = Float
-                else if (A.IsType<int>() && B.IsType<float>()) {
-                    float result = static_cast<float>(ConstDeref<int>(A)) +
-                                   ConstDeref<float>(B);
-                    return createNew(result);
-                }
-                // String + String = String (concatenation)
-                else if (A.IsType<String>() && B.IsType<String>()) {
-                    String result = Type::Traits<String>::Plus::Perform(
-                        ConstDeref<String>(A), ConstDeref<String>(B));
-                    return createNew(result);
-                }
-                // Pathname + Pathname = combined pathname
-                else if (A.IsType<Pathname>() && B.IsType<Pathname>()) {
-                    Pathname result = Type::Traits<Pathname>::Plus::Perform(
-                        ConstDeref<Pathname>(A), ConstDeref<Pathname>(B));
-                    return createNew(result);
-                }
-                // Array + Array = concatenated array
-                else if (A.IsType<Array>() && B.IsType<Array>()) {
-                    KAI_TRACE() << "Performing Array + Array operation";
-                    // Direct implementation since Type::Traits<Array>::Plus
-                    // isn't instantiated correctly
-                    const Array &arr1 = ConstDeref<Array>(A);
-                    const Array &arr2 = ConstDeref<Array>(B);
-                    Array result = arr1 + arr2;  // Use our operator+
-                    return createNew(result);
-                }
-                // Use type traits for other types that support Plus
-                else if (hasProperty(A, Properties::Plus) &&
-                         A.GetTypeNumber() == B.GetTypeNumber()) {
-                    // Handle generic case using dynamic dispatch
-                    // For now, return a generic object since
-                    // Registry::PerformOperation is not implemented
-                    return A;  // Placeholder - will be fixed in later
-                               // implementation
-                }
-                break;
-            }
-
-            case Operation::Minus:
-                // Int - Int = Int
-                if (A.IsType<int>() && B.IsType<int>()) {
-                    int result = Type::Traits<int>::Minus::Perform(
-                        ConstDeref<int>(A), ConstDeref<int>(B));
-                    return createNew(result);
-                }
-                // Float - Float = Float
-                else if (A.IsType<float>() && B.IsType<float>()) {
-                    float result = Type::Traits<float>::Minus::Perform(
-                        ConstDeref<float>(A), ConstDeref<float>(B));
-                    return createNew(result);
-                }
-                // Float - Int = Float
-                else if (A.IsType<float>() && B.IsType<int>()) {
-                    float result = ConstDeref<float>(A) -
-                                   static_cast<float>(ConstDeref<int>(B));
-                    return createNew(result);
-                }
-                // Int - Float = Float
-                else if (A.IsType<int>() && B.IsType<float>()) {
-                    float result = static_cast<float>(ConstDeref<int>(A)) -
-                                   ConstDeref<float>(B);
-                    return createNew(result);
-                }
-                // Use type traits for other types that support Minus
-                else if (hasProperty(A, Properties::Minus) &&
-                         A.GetTypeNumber() == B.GetTypeNumber()) {
-                    // Handle generic case using dynamic dispatch
-                    // For now, return a generic object since
-                    // Registry::PerformOperation is not implemented
-                    return A;  // Placeholder - will be fixed in later
-                               // implementation
-                }
-                break;
-
-            case Operation::Multiply:
-                // Int * Int = Int
-                if (A.IsType<int>() && B.IsType<int>()) {
-                    int result = Type::Traits<int>::Multiply::Perform(
-                        ConstDeref<int>(A), ConstDeref<int>(B));
-                    return createNew(result);
-                }
-                // Float * Float = Float
-                else if (A.IsType<float>() && B.IsType<float>()) {
-                    float result = Type::Traits<float>::Multiply::Perform(
-                        ConstDeref<float>(A), ConstDeref<float>(B));
-                    return createNew(result);
-                }
-                // Float * Int = Float
-                else if (A.IsType<float>() && B.IsType<int>()) {
-                    float result = ConstDeref<float>(A) *
-                                   static_cast<float>(ConstDeref<int>(B));
-                    return createNew(result);
-                }
-                // Int * Float = Float
-                else if (A.IsType<int>() && B.IsType<float>()) {
-                    float result = static_cast<float>(ConstDeref<int>(A)) *
-                                   ConstDeref<float>(B);
-                    return createNew(result);
-                }
-                // Use type traits for other types that support Multiply
-                else if (hasProperty(A, Properties::Multiply) &&
-                         A.GetTypeNumber() == B.GetTypeNumber()) {
-                    // Handle generic case using dynamic dispatch
-                    // For now, return a generic object since
-                    // Registry::PerformOperation is not implemented
-                    return A;  // Placeholder - will be fixed in later
-                               // implementation
-                }
-                break;
-
-            case Operation::Divide:
-                // Int / Int = Int (integer division)
-                if (A.IsType<int>() && B.IsType<int>()) {
-                    int divisor = ConstDeref<int>(B);
-                    if (divisor == 0) {
-                        KAI_THROW_1(Base, "Division by zero");
-                    }
-                    int result = Type::Traits<int>::Divide::Perform(
-                        ConstDeref<int>(A), divisor);
-                    return createNew(result);
-                }
-                // Float / Float = Float
-                else if (A.IsType<float>() && B.IsType<float>()) {
-                    float divisor = ConstDeref<float>(B);
-                    if (divisor == 0.0f) {
-                        KAI_THROW_1(Base, "Division by zero");
-                    }
-                    float result = Type::Traits<float>::Divide::Perform(
-                        ConstDeref<float>(A), divisor);
-                    return createNew(result);
-                }
-                // Float / Int = Float
-                else if (A.IsType<float>() && B.IsType<int>()) {
-                    int divisor = ConstDeref<int>(B);
-                    if (divisor == 0) {
-                        KAI_THROW_1(Base, "Division by zero");
-                    }
-                    float result =
-                        ConstDeref<float>(A) / static_cast<float>(divisor);
-                    return createNew(result);
-                }
-                // Int / Float = Float
-                else if (A.IsType<int>() && B.IsType<float>()) {
-                    float divisor = ConstDeref<float>(B);
-                    if (divisor == 0.0f) {
-                        KAI_THROW_1(Base, "Division by zero");
-                    }
-                    float result =
-                        static_cast<float>(ConstDeref<int>(A)) / divisor;
-                    return createNew(result);
-                }
-                // Use type traits for other types that support Divide
-                else if (hasProperty(A, Properties::Divide) &&
-                         A.GetTypeNumber() == B.GetTypeNumber()) {
-                    // Handle generic case using dynamic dispatch
-                    // For now, return a generic object since
-                    // Registry::PerformOperation is not implemented
-                    return A;  // Placeholder - will be fixed in later
-                               // implementation
-                }
-                break;
-
-            case Operation::Modulo:
-                // Int % Int = Int
-                if (A.IsType<int>() && B.IsType<int>()) {
-                    int divisor = ConstDeref<int>(B);
-                    if (divisor == 0) {
-                        KAI_THROW_1(Base, "Modulo by zero");
-                    }
-                    int result = ConstDeref<int>(A) % divisor;
-                    return createNew(result);
-                }
-                // Note: modulo with floats would require fmod() from <cmath>,
-                // but we're skipping for now
-                break;
-
-            // Comparison operations
-            case Operation::Equiv:
-                // Int == Int -> bool
-                if (A.IsType<int>() && B.IsType<int>()) {
-                    bool result = Type::Traits<int>::Equiv::Perform(
-                        ConstDeref<int>(A), ConstDeref<int>(B));
-                    return createNew(result);
-                }
-                // Float == Float -> bool
-                else if (A.IsType<float>() && B.IsType<float>()) {
-                    bool result = Type::Traits<float>::Equiv::Perform(
-                        ConstDeref<float>(A), ConstDeref<float>(B));
-                    return createNew(result);
-                }
-                // Float == Int -> bool
-                else if (A.IsType<float>() && B.IsType<int>()) {
-                    bool result = ConstDeref<float>(A) ==
-                                  static_cast<float>(ConstDeref<int>(B));
-                    return createNew(result);
-                }
-                // Int == Float -> bool
-                else if (A.IsType<int>() && B.IsType<float>()) {
-                    bool result = static_cast<float>(ConstDeref<int>(A)) ==
-                                  ConstDeref<float>(B);
-                    return createNew(result);
-                }
-                // Bool == Bool -> bool
-                else if (A.IsType<bool>() && B.IsType<bool>()) {
-                    bool result = Type::Traits<bool>::Equiv::Perform(
-                        ConstDeref<bool>(A), ConstDeref<bool>(B));
-                    return createNew(result);
-                }
-                // String == String -> bool
-                else if (A.IsType<String>() && B.IsType<String>()) {
-                    bool result = Type::Traits<String>::Equiv::Perform(
-                        ConstDeref<String>(A), ConstDeref<String>(B));
-                    return createNew(result);
-                }
-                // General object equality
-                else {
-                    bool result = A == B;
-                    return createNew(result);
-                }
-                break;
-
-            case Operation::NotEquiv:
-                // Invert Equiv result
-                {
-                    Object equivResult =
-                        PerformBinaryOp(A, B, Operation::Equiv);
-                    if (equivResult.IsType<bool>()) {
-                        bool result = !ConstDeref<bool>(equivResult);
-                        return createNew(result);
-                    }
-                }
-                break;
-
-            case Operation::Less:
-                // Int < Int -> bool
-                if (A.IsType<int>() && B.IsType<int>()) {
-                    bool result = Type::Traits<int>::Less::Perform(
-                        ConstDeref<int>(A), ConstDeref<int>(B));
-                    return createNew(result);
-                }
-                // Float < Float -> bool
-                else if (A.IsType<float>() && B.IsType<float>()) {
-                    bool result = Type::Traits<float>::Less::Perform(
-                        ConstDeref<float>(A), ConstDeref<float>(B));
-                    return createNew(result);
-                }
-                // Float < Int -> bool
-                else if (A.IsType<float>() && B.IsType<int>()) {
-                    bool result = ConstDeref<float>(A) <
-                                  static_cast<float>(ConstDeref<int>(B));
-                    return createNew(result);
-                }
-                // Int < Float -> bool
-                else if (A.IsType<int>() && B.IsType<float>()) {
-                    bool result = static_cast<float>(ConstDeref<int>(A)) <
-                                  ConstDeref<float>(B);
-                    return createNew(result);
-                }
-                // String < String -> bool
-                else if (A.IsType<String>() && B.IsType<String>()) {
-                    bool result = Type::Traits<String>::Less::Perform(
-                        ConstDeref<String>(A), ConstDeref<String>(B));
-                    return createNew(result);
-                }
-                // Use type traits for other types that support Less
-                else if (hasProperty(A, Properties::Less) &&
-                         A.GetTypeNumber() == B.GetTypeNumber()) {
-                    // For now, return a generic false value since
-                    // Registry::PerformOperation is not implemented
-                    return createNew(false);
-                }
-                break;
-
-            case Operation::Greater:
-                // Int > Int -> bool (invert Less)
-                if (A.IsType<int>() && B.IsType<int>()) {
-                    bool result = Type::Traits<int>::Less::Perform(
-                        ConstDeref<int>(B), ConstDeref<int>(A));
-                    return createNew(result);
-                }
-                // Float > Float -> bool
-                else if (A.IsType<float>() && B.IsType<float>()) {
-                    bool result = Type::Traits<float>::Less::Perform(
-                        ConstDeref<float>(B), ConstDeref<float>(A));
-                    return createNew(result);
-                }
-                // Float > Int -> bool
-                else if (A.IsType<float>() && B.IsType<int>()) {
-                    bool result = static_cast<float>(ConstDeref<int>(B)) <
-                                  ConstDeref<float>(A);
-                    return createNew(result);
-                }
-                // Int > Float -> bool
-                else if (A.IsType<int>() && B.IsType<float>()) {
-                    bool result = ConstDeref<float>(B) <
-                                  static_cast<float>(ConstDeref<int>(A));
-                    return createNew(result);
-                }
-                // String > String -> bool
-                else if (A.IsType<String>() && B.IsType<String>()) {
-                    bool result = Type::Traits<String>::Less::Perform(
-                        ConstDeref<String>(B), ConstDeref<String>(A));
-                    return createNew(result);
-                }
-                // Use type traits for other types that support Greater
-                else if (hasProperty(A, Properties::Greater) &&
-                         A.GetTypeNumber() == B.GetTypeNumber()) {
-                    // For now, return a generic false value since
-                    // Registry::PerformOperation is not implemented
-                    return createNew(false);
-                }
-                break;
-
-            case Operation::LessOrEquiv:
-                // Check if A is less than B or equivalent to B
-                {
-                    Object lessResult = PerformBinaryOp(A, B, Operation::Less);
-                    Object equivResult =
-                        PerformBinaryOp(A, B, Operation::Equiv);
-
-                    if (lessResult.IsType<bool>() &&
-                        equivResult.IsType<bool>()) {
-                        bool result = ConstDeref<bool>(lessResult) ||
-                                      ConstDeref<bool>(equivResult);
-                        return createNew(result);
-                    }
-                }
-                break;
-
-            case Operation::GreaterOrEquiv:
-                // Check if A is greater than B or equivalent to B
-                {
-                    Object greaterResult =
-                        PerformBinaryOp(A, B, Operation::Greater);
-                    Object equivResult =
-                        PerformBinaryOp(A, B, Operation::Equiv);
-
-                    if (greaterResult.IsType<bool>() &&
-                        equivResult.IsType<bool>()) {
-                        bool result = ConstDeref<bool>(greaterResult) ||
-                                      ConstDeref<bool>(equivResult);
-                        return createNew(result);
-                    }
-                }
-                break;
-
-            // Logical operations
-            case Operation::LogicalAnd:
-                // Bool && Bool -> Bool
-                if (A.IsType<bool>() && B.IsType<bool>()) {
-                    bool result = ConstDeref<bool>(A) && ConstDeref<bool>(B);
-                    return createNew(result);
-                }
-                break;
-
-            case Operation::LogicalOr:
-                // Bool || Bool -> Bool
-                if (A.IsType<bool>() && B.IsType<bool>()) {
-                    bool result = ConstDeref<bool>(A) || ConstDeref<bool>(B);
-                    return createNew(result);
-                }
-                break;
-
-            case Operation::LogicalXor:
-                // Bool XOR Bool -> Bool
-                if (A.IsType<bool>() && B.IsType<bool>()) {
-                    bool result = ConstDeref<bool>(A) != ConstDeref<bool>(B);
-                    return createNew(result);
-                }
-                break;
-
-            // Bitwise operations
-            case Operation::BitwiseAnd:
-                // Int & Int -> Int
-                if (A.IsType<int>() && B.IsType<int>()) {
-                    int result = ConstDeref<int>(A) & ConstDeref<int>(B);
-                    return createNew(result);
-                }
-                break;
-
-            case Operation::BitwiseOr:
-                // Int | Int -> Int
-                if (A.IsType<int>() && B.IsType<int>()) {
-                    int result = ConstDeref<int>(A) | ConstDeref<int>(B);
-                    return createNew(result);
-                }
-                break;
-
-            case Operation::BitwiseXor:
-                // Int ^ Int -> Int
-                if (A.IsType<int>() && B.IsType<int>()) {
-                    int result = ConstDeref<int>(A) ^ ConstDeref<int>(B);
-                    return createNew(result);
-                }
-                break;
-
-            case Operation::LeftShift:
-                // Int << Int -> Int
-                if (A.IsType<int>() && B.IsType<int>()) {
-                    int result = ConstDeref<int>(A) << ConstDeref<int>(B);
-                    return createNew(result);
-                }
-                break;
-
-            case Operation::RightShift:
-                // Int >> Int -> Int
-                if (A.IsType<int>() && B.IsType<int>()) {
-                    int result = ConstDeref<int>(A) >> ConstDeref<int>(B);
-                    return createNew(result);
-                }
-                break;
-
-            // Assignment-related operations
-            case Operation::Store:
-                // Special handling for the store operation
-                // Ensure we preserve B's registry
-                return B;  // Return the value (second argument) for Store
-
-            case Operation::Index:
-                // Array[Int] -> Object
-                if (A.IsType<Array>() && B.IsType<int>()) {
-                    try {
-                        const Array &array = ConstDeref<Array>(A);
-                        int index = ConstDeref<int>(B);
-
-                        if (index >= 0 &&
-                            index < static_cast<int>(array.Size())) {
-                            // For arrays, we can access elements directly
-                            return array.At(index);
-                        }
-
-                        KAI_THROW_1(BadIndex, index);
-                    } catch (const std::exception &e) {
-                        KAI_TRACE_ERROR()
-                            << "Exception in Array indexing: " << e.what();
-                    }
-                }
-                // List[Int] -> Object
-                else if (A.IsType<List>() && B.IsType<int>()) {
-                    try {
-                        const List &list = ConstDeref<List>(A);
-                        int index = ConstDeref<int>(B);
-
-                        if (index >= 0 &&
-                            index < static_cast<int>(list.Size())) {
-                            // For lists, we need to iterate to the correct
-                            // position
-                            auto it = list.begin();
-                            for (int i = 0; i < index && it != list.end();
-                                 ++i, ++it) {
-                                // Just advance the iterator
-                            }
-
-                            if (it != list.end()) {
-                                return *it;
-                            }
-                        }
-
-                        KAI_THROW_1(BadIndex, index);
-                    } catch (const std::exception &e) {
-                        KAI_TRACE_ERROR()
-                            << "Exception in List indexing: " << e.what();
-                    }
-                }
-                // Map[Key] -> Value
-                else if (A.IsType<Map>()) {
-                    try {
-                        const Map &map = ConstDeref<Map>(A);
-                        auto it = map.Find(B);
-
-                        // Check if the key exists
-                        if (it != map.end()) {
-                            // Return the value from the iterator
-                            return it->second;
-                        }
-
-                        KAI_THROW_1(Base, "Key not found in map");
-                    } catch (const std::exception &e) {
-                        KAI_TRACE_ERROR()
-                            << "Exception in Map indexing: " << e.what();
-                    }
-                }
-                break;
-
-            case Operation::Min:
-                // Min returns the smaller of two values using Less comparison
-                // For same types, use PerformBinaryOp to leverage existing Less
-                // implementation
-                if (A.GetTypeNumber() == B.GetTypeNumber()) {
-                    Object less_result = PerformBinaryOp(A, B, Operation::Less);
-                    if (less_result.Exists() && less_result.IsType<bool>()) {
-                        return ConstDeref<bool>(less_result) ? A : B;
-                    }
-                }
-                // For mixed numeric types, convert and compare
-                else if ((A.IsType<int>() || A.IsType<float>()) &&
-                         (B.IsType<int>() || B.IsType<float>())) {
-                    // Use Less operation with type conversion handled by
-                    // PerformBinaryOp
-                    Object less_result = PerformBinaryOp(A, B, Operation::Less);
-                    if (less_result.Exists() && less_result.IsType<bool>()) {
-                        return ConstDeref<bool>(less_result) ? A : B;
-                    }
-                }
-                break;
-
-            case Operation::Max:
-                // Max returns the larger of two values using Less comparison
-                // For same types, use PerformBinaryOp with swapped operands
-                if (A.GetTypeNumber() == B.GetTypeNumber()) {
-                    Object less_result = PerformBinaryOp(B, A, Operation::Less);
-                    if (less_result.Exists() && less_result.IsType<bool>()) {
-                        return ConstDeref<bool>(less_result) ? A : B;
-                    }
-                }
-                // For mixed numeric types, use swapped Less comparison
-                else if ((A.IsType<int>() || A.IsType<float>()) &&
-                         (B.IsType<int>() || B.IsType<float>())) {
-                    Object less_result = PerformBinaryOp(B, A, Operation::Less);
-                    if (less_result.Exists() && less_result.IsType<bool>()) {
-                        return ConstDeref<bool>(less_result) ? A : B;
-                    }
-                }
-                break;
-
-            default:
-                // For unsupported operations, provide a helpful error message
-                KAI_TRACE_ERROR()
-                    << "Unsupported operation in PerformBinaryOp: "
-                    << Operation::ToString(op);
-                // Fall through to default handling
-                break;
-        }
-
-        // If we reach here, it means we couldn't handle the operation with the
-        // given types
-        if (A.Valid() && A.GetClass() && B.Valid() && B.GetClass()) {
-            KAI_TRACE_ERROR()
-                << "Unsupported types for operation: "
-                << A.GetClass()->GetName() << " and " << B.GetClass()->GetName()
-                << " for operation " << Operation::ToString(op);
-        } else {
-            KAI_TRACE_ERROR()
-                << "Invalid objects for operation: " << Operation::ToString(op);
-        }
-
-        // Return a default value based on operation type and operand types
-        // Ensure we use the registry we found earlier
-
-        // Arithmetic operations typically return numeric types
-        if (op == Operation::Plus || op == Operation::Minus ||
-            op == Operation::Multiply || op == Operation::Divide ||
-            op == Operation::Modulo) {
-            if (A.IsType<int>()) return createNew(0);
-            if (A.IsType<float>()) return createNew(0.0f);
-            if (A.IsType<double>()) return createNew(0.0);
-        }
-
-        // Comparison operations typically return boolean
-        if (op == Operation::Equiv || op == Operation::NotEquiv ||
-            op == Operation::Less || op == Operation::Greater ||
-            op == Operation::LessOrEquiv || op == Operation::GreaterOrEquiv ||
-            op == Operation::LogicalAnd || op == Operation::LogicalOr ||
-            op == Operation::LogicalXor) {
-            return createNew(false);
-        }
-
-        // String operations
-        if (A.IsType<String>()) {
-            return createNew(String(""));
-        }
-
-        // If we still can't determine a suitable return type, return A if
-        // valid, otherwise an empty object
-        return A.Valid() ? A : Object();
-    } catch (const Exception::Base &e) {
-        KAI_TRACE_ERROR() << "PerformBinaryOp: KAI exception: " << e.ToString();
-        return Object();
-    } catch (const std::exception &e) {
-        KAI_TRACE_ERROR() << "PerformBinaryOp: std::exception: " << e.what();
-        return Object();
-    } catch (...) {
-        KAI_TRACE_ERROR() << "PerformBinaryOp: Unknown exception";
-        return Object();
-    }
-}
 
 void Executor::SetTraceLevel(int n) { traceLevel_ = n; }
 

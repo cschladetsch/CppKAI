@@ -137,6 +137,10 @@ struct NoInput : Base {
     NoInput(const FileLocation &L) : Base(L, "UnknownProperty") {}
 };
 
+struct DivideByZero : Base {
+    DivideByZero(const FileLocation &L) : Base(L, "DivideByZero") {}
+};
+
 }  // namespace Exception
 
 KAI_END
