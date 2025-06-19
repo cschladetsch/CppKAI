@@ -1238,25 +1238,55 @@ void Executor::Perform(Operation::Type op) {
                 }
                 
                 if (data_->Size() < 4) {
-                    KAI_TRACE_ERROR() << "ForLoop: Need at least 4 items on stack";
+                    KAI_TRACE_ERROR() << "ForLoop: Need at least 4 items on stack, have: " << data_->Size();
                     break;
                 }
                 
-                // Check the top of stack to determine syntax type
-                auto top = data_->At(data_->Size() - 1);
+                // Debug: print what's on the stack  
+                KAI_TRACE() << "ForLoop: Stack size: " << data_->Size();
+                KAI_TRACE() << "ForLoop: Checking stack positions for range-based syntax:";
+                if (data_->Size() >= 4) {
+                    for (int i = 0; i < 4; ++i) {
+                        auto item = data_->At(i);
+                        KAI_TRACE() << "  Position " << i << " (expecting " << 
+                            (i == 0 ? "int accumulator" : 
+                             i == 1 ? "int start" :
+                             i == 2 ? "int end" : 
+                             "Continuation body") << "): ";
+                        if (item.GetClass()) {
+                            KAI_TRACE() << "    Found: " << item.GetClass()->GetName() << " (type: " << item.GetTypeNumber().ToInt() << ")";
+                            if (item.IsType<int>()) {
+                                KAI_TRACE() << "    value: " << ConstDeref<int>(item);
+                            }
+                        } else {
+                            KAI_TRACE() << "    Found: <no class>";
+                        }
+                    }
+                }
                 
-                // SYNTAX 1: Range-based (Pi style)
-                // Stack: accumulator start end body_continuation
-                if (top.IsType<Continuation>() && 
-                    data_->At(data_->Size() - 2).IsType<int>() &&
-                    data_->At(data_->Size() - 3).IsType<int>()) {
+                // Check the stack to determine syntax type
+                // Note: In Pi, items are pushed in order, so "0 1 5 { + } for" results in:
+                // Bottom [0]: 0, [1]: 1, [2]: 5, [3]: { + }
+                
+                // SYNTAX 1: Range-based (Pi style)  
+                // Stack order from bottom to top: accumulator start end body_continuation
+                // For "0 1 5 { + } for", the stack is:
+                // At(3) = 0 (accumulator, bottom - can be any type)
+                // At(2) = 1 (start)
+                // At(1) = 5 (end)
+                // At(0) = { + } (body, top)
+                if (data_->Size() >= 4 &&
+                    data_->At(2).IsType<int>() &&     // start must be int
+                    data_->At(1).IsType<int>() &&     // end must be int
+                    data_->At(0).IsType<Continuation>()) {  // body must be continuation
                     
                     KAI_TRACE() << "ForLoop: Range-based syntax detected";
                     
-                    auto body = Pop();
-                    int end = ConstDeref<int>(Pop());
-                    int start = ConstDeref<int>(Pop());
-                    Object accumulator = Pop();
+                    // Pop in reverse order (top to bottom)
+                    auto body = Pop();          // Top: continuation
+                    int end = ConstDeref<int>(Pop());    // end value
+                    int start = ConstDeref<int>(Pop());  // start value  
+                    Object accumulator = Pop();          // Bottom: accumulator
                     
                     if (!body.IsType<Continuation>()) {
                         KAI_TRACE_ERROR() << "ForLoop: Body must be continuation";
@@ -1271,6 +1301,10 @@ void Executor::Perform(Operation::Type op) {
                         // Push accumulator and current value
                         Push(accumulator);
                         Push(New<int>(i));
+                        
+                        if (traceLevel_ > 0) {
+                            KAI_TRACE() << "ForLoop iteration " << i << ": accumulator=" << accumulator << ", current=" << i;
+                        }
                         
                         // Execute body inline
                         if (bodyCont->GetCode().Exists()) {
@@ -1292,6 +1326,11 @@ void Executor::Perform(Operation::Type op) {
                         // Get new accumulator value
                         if (!data_->Empty()) {
                             accumulator = Pop();
+                            if (traceLevel_ > 0) {
+                                KAI_TRACE() << "ForLoop: New accumulator after iteration " << i << ": " << accumulator;
+                            }
+                        } else {
+                            KAI_TRACE_ERROR() << "ForLoop: Stack empty after body execution";
                         }
                     }
                     
