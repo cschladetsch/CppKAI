@@ -657,74 +657,55 @@ void Executor::Continue() {
     }
 }
 
-void Executor::ContinueOnly(Value<Continuation> C) {
-    // Validate input continuation
-    if (!C.Valid() || !C.Exists()) {
+void Executor::ContinueOnly(Value<Continuation> cont) {
+    if (!cont.Valid() || !cont.Exists()) {
         KAI_TRACE_ERROR()
             << "ContinueOnly: Invalid or non-existent continuation";
         return;
     }
 
-    // Validate context stack
     if (!context_.Valid() || !context_.Exists()) {
         KAI_TRACE_ERROR()
             << "ContinueOnly: Invalid or non-existent context stack";
         return;
     }
 
-    // Add an empty context to break. this forces execution to stop after C is
-    // finished.
     context_->Push(Object());
-    Continue(C);
+    Continue(cont);
 }
 
 void Executor::Continue(Value<Continuation> C) {
-    // Simplified: Just execute the continuation without special cases
-    // Treat the continuation as a linear list of objects to execute
-
-    // Validate input continuation
     if (!C.Valid() || !C.Exists()) {
         KAI_TRACE_ERROR() << "Continue(Value<Continuation>): Invalid or "
                              "non-existent continuation";
         return;
     }
 
-    // Make sure code field is initialized
     if (!C->GetCode().Valid() || !C->GetCode().Exists()) {
         KAI_TRACE_ERROR()
             << "Continue(Value<Continuation>): Continuation has invalid code";
         return;
     }
 
-    // Validate data stack
     if (!data_.Valid() || !data_.Exists()) {
         KAI_TRACE_ERROR() << "Continue(Value<Continuation>): Invalid or "
                              "non-existent data stack";
         return;
     }
 
-    // Save the current continuation for restoring later
     Value<Continuation> savedContinuation = continuation_;
 
-    // Execute the continuation normally - let exceptions propagate
     SetContinuation(C);
     Continue();
 
-    // Restore the previous continuation
     if (savedContinuation.Valid() && savedContinuation.Exists()) {
         continuation_ = savedContinuation;
     } else {
-        // Don't restore a null continuation - just leave it as null
         continuation_ = Object();
     }
 }
 
 void Executor::NextContinuation() {
-    // KAI_TRACE() << "NextContinuation called, context stack size: "
-    //             << (context_.Valid() && context_.Exists() ? context_->Size()
-    //                                                       : -1);
-
-    // Validate context stack
     if (!context_.Valid() || !context_.Exists()) {
         KAI_TRACE_ERROR()
             << "NextContinuation: Invalid or non-existent context stack";
@@ -733,30 +714,17 @@ void Executor::NextContinuation() {
     }
 
     if (context_->Empty()) {
-        // KAI_TRACE() << "NextContinuation: Context stack is empty";
         continuation_ = Object();
         return;
     }
 
     try {
-        // Get next continuation from context stack
-        // KAI_TRACE() << "NextContinuation: About to pop from context stack";
         const auto next = context_->Pop();
-        // KAI_TRACE() << "NextContinuation: Popped object of type: "
-        //             << (next.GetClass() ?
-        //             next.GetClass()->GetName().ToString()
-        //                                 : "unknown");
-
-        // Check if this is a null sentinel (used by ContinueOnly to stop
-        // execution)
         if (!next.Valid() || !next.Exists()) {
-            // This is expected when ContinueOnly pushed a null object as a
-            // sentinel Just set continuation to null to stop execution
             continuation_ = Object();
             return;
         }
 
-        // Check if it's actually a continuation
         if (!next.IsType<Continuation>()) {
             KAI_TRACE_ERROR()
                 << "NextContinuation: Popped object is not a Continuation";
@@ -764,10 +732,8 @@ void Executor::NextContinuation() {
             return;
         }
 
-        // Debug: Check the continuation's state
         try {
             Pointer<Continuation> cont = next;
-            // KAI_TRACE() << "NextContinuation: Got continuation pointer";
 
             if (!cont.Exists()) {
                 KAI_TRACE_ERROR()
@@ -785,18 +751,13 @@ void Executor::NextContinuation() {
 
             int ip = ConstDeref<int>(cont->index);
             int codeSize = cont->GetCode()->Size();
-            // KAI_TRACE() << "NextContinuation: Resuming continuation with IP="
-            //             << ip << " of " << codeSize;
 
-            // Check if IP is valid
             if (ip >= codeSize) {
-                // KAI_TRACE() << "NextContinuation: WARNING - IP is at or past
-                // "
-                //                "end of code";
+                KAI_TRACE() << "WARNING - IP is at or past";
             }
         } catch (const std::exception &e) {
             KAI_TRACE_ERROR()
-                << "NextContinuation: Exception checking continuation: "
+                << "Exception checking continuation: "
                 << e.what();
             continuation_ = Object();
             return;
@@ -831,21 +792,17 @@ Pointer<Continuation> Executor::NewContinuation(Value<Continuation> orig) {
     }
 
     try {
-        // Create a new continuation
         Value<Continuation> val = New<Continuation>();
         Pointer<Continuation> cont = val.GetObject();
 
-        // Validate the new continuation
         if (!cont.Valid() || !cont.Exists()) {
             KAI_TRACE_ERROR()
                 << "NewContinuation: Failed to create new continuation";
             return Pointer<Continuation>();  // Return empty continuation
         }
 
-        // Initialize the new continuation from the original
-        cont->Create();  // Ensure proper initialization
+        cont->Create();
 
-        // Verify code exists before copying
         if (orig->GetCode().Valid() && orig->GetCode().Exists()) {
             cont->SetCode(orig->GetCode());
         } else {
@@ -856,18 +813,9 @@ Pointer<Continuation> Executor::NewContinuation(Value<Continuation> orig) {
         // Copy arguments
         cont->args = orig->args;
 
-        // IMPORTANT: Create a new scope for function calls
-        // Each function call should have its own scope to maintain local
-        // variables This is critical for recursion to work correctly
-
-        // Create a new scope object
         Object newScope = New<void>();
 
-        // If there's a parent scope, we can optionally copy global variables
-        // For now, we'll just create a fresh scope for each function call
         cont->SetScope(newScope);
-
-        // KAI_TRACE() << "Created new scope for continuation";
 
         return cont;
     } catch (const std::exception &e) {
@@ -1030,16 +978,5 @@ bool Executor::IsBinaryOp(Operation::Type op) {
             return false;
     }
 }
-
-// Detect and optimize the "5 dup +" pattern by checking the code array
-// Returns true if the pattern was detected and handled, false otherwise
-// Note: We've removed the DetectAndHandleValueDupPlusPattern method
-// because it was using unavailable methods on the Continuation class
-// This functionality is now handled directly in the Dup operation in
-// ExecutorPerform.inl
-
-// ======================= Perform Implementation ================
-
-// Perform method implementation moved to ExecutorPerform.cpp
 
 KAI_END
