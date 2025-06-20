@@ -15,35 +15,6 @@ using namespace kai;
 REGISTER_TRANSLATOR(Language::Pi, PiTranslator)
 REGISTER_TRANSLATOR(Language::Rho, RhoTranslator)
 
-#if 0
-#include "KAI/Network/Peer.h"
-
-struct Peer : kai::Peer
-{
-    bool Start()
-    {
-        //return _peer.Start(ReceivePacket);
-        return false;
-    }
-
-    bool Connect(String host, int port)
-    {
-        return _peer.Connect(host.c_str(), port);
-    }
-
-    void Send(String text)
-    {
-        _peer.SendText(text.c_str());
-    }
-
-    //void ReceivePacket(RakNet::Pac)
-    //{
-    //}
-
-    kai::Peer _peer;
-};
-#endif
-
 std::string KaiVersionString() {
     stringstream str;
     str << KAI_VERSION_MAJOR << '.' << KAI_VERSION_MINOR << '.'
@@ -51,7 +22,8 @@ std::string KaiVersionString() {
     return str.str();
 }
 
-std::shared_ptr<TranslatorCommon> CreateTranslatorForLanguage(Registry& reg, Language lang) {
+std::shared_ptr<TranslatorCommon> CreateTranslatorForLanguage(Registry& reg,
+                                                              Language lang) {
     auto translator = TranslatorFactory::Instance().CreateTranslator(lang, reg);
     if (!translator) {
         KAI_TRACE_ERROR() << "Unsupported language: " << static_cast<int>(lang);
@@ -77,6 +49,7 @@ int main(int argc, char** argv) {
         return 1;
     }
 
+    cout << "v0.1" << endl;
     // Check if a file argument was provided
     if (argc > 1) {
         // Execute file as a program
@@ -95,7 +68,8 @@ int main(int argc, char** argv) {
 
         // Set the language and create the appropriate translator
         console.SetLanguage(lang);
-        auto translator = CreateTranslatorForLanguage(console.GetRegistry(), lang);
+        auto translator =
+            CreateTranslatorForLanguage(console.GetRegistry(), lang);
         if (!translator) {
             std::cerr << "Failed to create translator for language\n";
             return 1;
@@ -113,7 +87,8 @@ int main(int argc, char** argv) {
     // No file argument - start REPL with Pi as default
     Language defaultLang = Language::Pi;
     console.SetLanguage(defaultLang);
-    auto defaultTranslator = CreateTranslatorForLanguage(console.GetRegistry(), defaultLang);
+    auto defaultTranslator =
+        CreateTranslatorForLanguage(console.GetRegistry(), defaultLang);
     console.SetTranslator(defaultTranslator);
 
     // start the REPL

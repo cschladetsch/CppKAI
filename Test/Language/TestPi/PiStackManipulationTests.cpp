@@ -19,7 +19,7 @@ struct PiStackTests : TestLangCommon {
         try {
             // Clear stacks before executing to ensure clean state
             exec_->ClearStacks();
-            
+
             // Use the console from TestLangCommon which has translators set up
             console_.SetLanguage(Language::Pi);
             console_.Execute(script);

@@ -92,16 +92,19 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
                     return createNew(result);
                 }
                 // For other types, use the ClassBase's operation methods
-                else if (A.GetTypeNumber() == B.GetTypeNumber() && A.GetClass() && B.GetClass()) {
+                else if (A.GetTypeNumber() == B.GetTypeNumber() &&
+                         A.GetClass() && B.GetClass()) {
                     const ClassBase *classPtr = A.GetClass();
                     if (classPtr->HasOperation(Properties::Plus)) {
                         try {
-                            StorageBase *result = classPtr->Plus(A.GetStorageBase(), B.GetStorageBase());
+                            StorageBase *result = classPtr->Plus(
+                                A.GetStorageBase(), B.GetStorageBase());
                             if (result) {
                                 return Object(ObjectConstructParams(result));
                             }
                         } catch (const Exception::Base &e) {
-                            KAI_TRACE_ERROR() << "Plus operation failed: " << e.ToString();
+                            KAI_TRACE_ERROR()
+                                << "Plus operation failed: " << e.ToString();
                         }
                     }
                 }
@@ -134,16 +137,19 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
                     return createNew(result);
                 }
                 // For other types, use the ClassBase's operation methods
-                else if (A.GetTypeNumber() == B.GetTypeNumber() && A.GetClass() && B.GetClass()) {
+                else if (A.GetTypeNumber() == B.GetTypeNumber() &&
+                         A.GetClass() && B.GetClass()) {
                     const ClassBase *classPtr = A.GetClass();
                     if (classPtr->HasOperation(Properties::Minus)) {
                         try {
-                            StorageBase *result = classPtr->Minus(A.GetStorageBase(), B.GetStorageBase());
+                            StorageBase *result = classPtr->Minus(
+                                A.GetStorageBase(), B.GetStorageBase());
                             if (result) {
                                 return Object(ObjectConstructParams(result));
                             }
                         } catch (const Exception::Base &e) {
-                            KAI_TRACE_ERROR() << "Minus operation failed: " << e.ToString();
+                            KAI_TRACE_ERROR()
+                                << "Minus operation failed: " << e.ToString();
                         }
                     }
                 }
@@ -176,16 +182,19 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
                     return createNew(result);
                 }
                 // For other types, use the ClassBase's operation methods
-                else if (A.GetTypeNumber() == B.GetTypeNumber() && A.GetClass() && B.GetClass()) {
+                else if (A.GetTypeNumber() == B.GetTypeNumber() &&
+                         A.GetClass() && B.GetClass()) {
                     const ClassBase *classPtr = A.GetClass();
                     if (classPtr->HasOperation(Properties::Multiply)) {
                         try {
-                            StorageBase *result = classPtr->Multiply(A.GetStorageBase(), B.GetStorageBase());
+                            StorageBase *result = classPtr->Multiply(
+                                A.GetStorageBase(), B.GetStorageBase());
                             if (result) {
                                 return Object(ObjectConstructParams(result));
                             }
                         } catch (const Exception::Base &e) {
-                            KAI_TRACE_ERROR() << "Multiply operation failed: " << e.ToString();
+                            KAI_TRACE_ERROR() << "Multiply operation failed: "
+                                              << e.ToString();
                         }
                     }
                 }
@@ -234,16 +243,19 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
                     return createNew(result);
                 }
                 // For other types, use the ClassBase's operation methods
-                else if (A.GetTypeNumber() == B.GetTypeNumber() && A.GetClass() && B.GetClass()) {
+                else if (A.GetTypeNumber() == B.GetTypeNumber() &&
+                         A.GetClass() && B.GetClass()) {
                     const ClassBase *classPtr = A.GetClass();
                     if (classPtr->HasOperation(Properties::Divide)) {
                         try {
-                            StorageBase *result = classPtr->Divide(A.GetStorageBase(), B.GetStorageBase());
+                            StorageBase *result = classPtr->Divide(
+                                A.GetStorageBase(), B.GetStorageBase());
                             if (result) {
                                 return Object(ObjectConstructParams(result));
                             }
                         } catch (const Exception::Base &e) {
-                            KAI_TRACE_ERROR() << "Divide operation failed: " << e.ToString();
+                            KAI_TRACE_ERROR()
+                                << "Divide operation failed: " << e.ToString();
                         }
                     }
                 }
@@ -351,14 +363,17 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
                     return createNew(result);
                 }
                 // For other types, use the ClassBase's operation methods
-                else if (A.GetTypeNumber() == B.GetTypeNumber() && A.GetClass() && B.GetClass()) {
+                else if (A.GetTypeNumber() == B.GetTypeNumber() &&
+                         A.GetClass() && B.GetClass()) {
                     const ClassBase *classPtr = A.GetClass();
                     if (classPtr->HasOperation(Properties::Less)) {
                         try {
-                            bool result = classPtr->Less(A.GetStorageBase(), B.GetStorageBase());
+                            bool result = classPtr->Less(A.GetStorageBase(),
+                                                         B.GetStorageBase());
                             return createNew(result);
                         } catch (const Exception::Base &e) {
-                            KAI_TRACE_ERROR() << "Less operation failed: " << e.ToString();
+                            KAI_TRACE_ERROR()
+                                << "Less operation failed: " << e.ToString();
                             return createNew(false);
                         }
                     }
@@ -398,14 +413,17 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
                     return createNew(result);
                 }
                 // For other types, use the ClassBase's operation methods
-                else if (A.GetTypeNumber() == B.GetTypeNumber() && A.GetClass() && B.GetClass()) {
+                else if (A.GetTypeNumber() == B.GetTypeNumber() &&
+                         A.GetClass() && B.GetClass()) {
                     const ClassBase *classPtr = A.GetClass();
                     if (classPtr->HasOperation(Properties::Greater)) {
                         try {
-                            bool result = classPtr->Greater(A.GetStorageBase(), B.GetStorageBase());
+                            bool result = classPtr->Greater(A.GetStorageBase(),
+                                                            B.GetStorageBase());
                             return createNew(result);
                         } catch (const Exception::Base &e) {
-                            KAI_TRACE_ERROR() << "Greater operation failed: " << e.ToString();
+                            KAI_TRACE_ERROR()
+                                << "Greater operation failed: " << e.ToString();
                             return createNew(false);
                         }
                     }
@@ -417,9 +435,10 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
                 // Check if A is less than B or equivalent to B
                 Object lessResult = PerformBinaryOp(A, B, Operation::Less);
                 Object equivResult = PerformBinaryOp(A, B, Operation::Equiv);
-                
+
                 if (lessResult.IsType<bool>() && equivResult.IsType<bool>()) {
-                    bool result = ConstDeref<bool>(lessResult) || ConstDeref<bool>(equivResult);
+                    bool result = ConstDeref<bool>(lessResult) ||
+                                  ConstDeref<bool>(equivResult);
                     return createNew(result);
                 }
                 break;
@@ -427,11 +446,14 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
 
             case Operation::GreaterOrEquiv: {
                 // Check if A is greater than B or equivalent to B
-                Object greaterResult = PerformBinaryOp(A, B, Operation::Greater);
+                Object greaterResult =
+                    PerformBinaryOp(A, B, Operation::Greater);
                 Object equivResult = PerformBinaryOp(A, B, Operation::Equiv);
-                
-                if (greaterResult.IsType<bool>() && equivResult.IsType<bool>()) {
-                    bool result = ConstDeref<bool>(greaterResult) || ConstDeref<bool>(equivResult);
+
+                if (greaterResult.IsType<bool>() &&
+                    equivResult.IsType<bool>()) {
+                    bool result = ConstDeref<bool>(greaterResult) ||
+                                  ConstDeref<bool>(equivResult);
                     return createNew(result);
                 }
                 break;
@@ -525,14 +547,16 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
                         const Array &array = ConstDeref<Array>(A);
                         int index = ConstDeref<int>(B);
 
-                        if (index >= 0 && index < static_cast<int>(array.Size())) {
+                        if (index >= 0 &&
+                            index < static_cast<int>(array.Size())) {
                             // For arrays, we can access elements directly
                             return array.At(index);
                         }
 
                         KAI_THROW_1(BadIndex, index);
                     } catch (const std::exception &e) {
-                        KAI_TRACE_ERROR() << "Exception in Array indexing: " << e.what();
+                        KAI_TRACE_ERROR()
+                            << "Exception in Array indexing: " << e.what();
                     }
                 }
                 // List[Int] -> Object
@@ -541,10 +565,13 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
                         const List &list = ConstDeref<List>(A);
                         int index = ConstDeref<int>(B);
 
-                        if (index >= 0 && index < static_cast<int>(list.Size())) {
-                            // For lists, we need to iterate to the correct position
+                        if (index >= 0 &&
+                            index < static_cast<int>(list.Size())) {
+                            // For lists, we need to iterate to the correct
+                            // position
                             auto it = list.begin();
-                            for (int i = 0; i < index && it != list.end(); ++i, ++it) {
+                            for (int i = 0; i < index && it != list.end();
+                                 ++i, ++it) {
                                 // Just advance the iterator
                             }
 
@@ -555,7 +582,8 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
 
                         KAI_THROW_1(BadIndex, index);
                     } catch (const std::exception &e) {
-                        KAI_TRACE_ERROR() << "Exception in List indexing: " << e.what();
+                        KAI_TRACE_ERROR()
+                            << "Exception in List indexing: " << e.what();
                     }
                 }
                 // Map[Key] -> Value
@@ -572,7 +600,8 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
 
                         KAI_THROW_1(Base, "Key not found in map");
                     } catch (const std::exception &e) {
-                        KAI_TRACE_ERROR() << "Exception in Map indexing: " << e.what();
+                        KAI_TRACE_ERROR()
+                            << "Exception in Map indexing: " << e.what();
                     }
                 }
                 break;
@@ -618,11 +647,14 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
 
             default:
                 // For unsupported operations, provide a helpful error message
-                KAI_TRACE_ERROR() << "Unsupported operation in PerformBinaryOp: " << Operation::ToString(op);
+                KAI_TRACE_ERROR()
+                    << "Unsupported operation in PerformBinaryOp: "
+                    << Operation::ToString(op);
                 break;
         }
 
-        // If we reach here, it means we couldn't handle the operation with the given types
+        // If we reach here, it means we couldn't handle the operation with the
+        // given types
         if (A.Valid() && A.GetClass() && B.Valid() && B.GetClass()) {
             KAI_TRACE_ERROR()
                 << "Unsupported types for operation: "
@@ -657,7 +689,8 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
             return createNew(String(""));
         }
 
-        // If we still can't determine a suitable return type, return A if valid, otherwise an empty object
+        // If we still can't determine a suitable return type, return A if
+        // valid, otherwise an empty object
         return A.Valid() ? A : Object();
     } catch (const Exception::Base &e) {
         KAI_TRACE_ERROR() << "PerformBinaryOp: KAI exception: " << e.ToString();

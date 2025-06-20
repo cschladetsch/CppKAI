@@ -34,9 +34,11 @@ class Console : public Reflected {
     void SetLanguage(Language lang);
     void SetLanguage(int lang);
     Language GetLanguage() const;
-    
+
     void SetTranslator(std::shared_ptr<TranslatorCommon> trans);
-    std::shared_ptr<TranslatorCommon> GetTranslator() const { return translator; }
+    std::shared_ptr<TranslatorCommon> GetTranslator() const {
+        return translator;
+    }
 
     void WritePrompt(std::ostream &out) const;
     String GetPrompt() const;

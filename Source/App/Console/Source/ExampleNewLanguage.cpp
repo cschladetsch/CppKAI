@@ -16,17 +16,18 @@ REGISTER_TRANSLATOR(Language::Sigma, SigmaTranslator)
 void ExampleUsage() {
     // Create a console
     Console console;
-    
+
     // Set the language to Sigma
     console.SetLanguage(Language::Sigma);
-    
+
     // Create and set the Sigma translator
     auto& reg = console.GetRegistry();
-    auto sigmaTranslator = TranslatorFactory::Instance().CreateTranslator(Language::Sigma, reg);
-    
+    auto sigmaTranslator =
+        TranslatorFactory::Instance().CreateTranslator(Language::Sigma, reg);
+
     if (sigmaTranslator) {
         console.SetTranslator(sigmaTranslator);
-        
+
         // Now the console is ready to process Sigma language code
         // console.Process("sigma code here");
     }

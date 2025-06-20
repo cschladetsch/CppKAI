@@ -1,6 +1,6 @@
-#include <KAI/Executor/BinaryOperationHandler.h>
 #include <KAI/Core/BuiltinTypes.h>
 #include <KAI/Core/Exception.h>
+#include <KAI/Executor/BinaryOperationHandler.h>
 
 KAI_BEGIN
 
@@ -34,7 +34,8 @@ bool BinaryOperationHandler::IsBinaryOp(Operation::Type op) {
     }
 }
 
-Registry* BinaryOperationHandler::FindRegistry(Object const &A, Object const &B) {
+Registry *BinaryOperationHandler::FindRegistry(Object const &A,
+                                               Object const &B) {
     Registry *registry = A.GetRegistry();
     if (!registry) {
         registry = B.GetRegistry();
@@ -42,7 +43,7 @@ Registry* BinaryOperationHandler::FindRegistry(Object const &A, Object const &B)
     return registry;
 }
 
-template<typename T>
+template <typename T>
 Object BinaryOperationHandler::CreateNew(Registry *registry, T value) {
     if (!registry) {
         KAI_THROW_0(NullObject);
@@ -51,31 +52,36 @@ Object BinaryOperationHandler::CreateNew(Registry *registry, T value) {
 }
 
 // Explicit instantiations for all types we use
-template Object BinaryOperationHandler::CreateNew<int>(Registry*, int);
-template Object BinaryOperationHandler::CreateNew<float>(Registry*, float);
-template Object BinaryOperationHandler::CreateNew<double>(Registry*, double);
-template Object BinaryOperationHandler::CreateNew<bool>(Registry*, bool);
-template Object BinaryOperationHandler::CreateNew<String>(Registry*, String);
-template Object BinaryOperationHandler::CreateNew<Pathname>(Registry*, Pathname);
-template Object BinaryOperationHandler::CreateNew<Array>(Registry*, Array);
+template Object BinaryOperationHandler::CreateNew<int>(Registry *, int);
+template Object BinaryOperationHandler::CreateNew<float>(Registry *, float);
+template Object BinaryOperationHandler::CreateNew<double>(Registry *, double);
+template Object BinaryOperationHandler::CreateNew<bool>(Registry *, bool);
+template Object BinaryOperationHandler::CreateNew<String>(Registry *, String);
+template Object BinaryOperationHandler::CreateNew<Pathname>(Registry *,
+                                                            Pathname);
+template Object BinaryOperationHandler::CreateNew<Array>(Registry *, Array);
 
-Object BinaryOperationHandler::Perform(Object const &A, Object const &B, Operation::Type op) {
+Object BinaryOperationHandler::Perform(Object const &A, Object const &B,
+                                       Operation::Type op) {
     try {
         // Validate inputs
         if (!A.Valid()) {
-            KAI_TRACE_ERROR() << "BinaryOperationHandler: First argument is invalid";
+            KAI_TRACE_ERROR()
+                << "BinaryOperationHandler: First argument is invalid";
             return Object();
         }
 
         if (!B.Valid()) {
-            KAI_TRACE_ERROR() << "BinaryOperationHandler: Second argument is invalid";
+            KAI_TRACE_ERROR()
+                << "BinaryOperationHandler: Second argument is invalid";
             return Object();
         }
 
         // Find a valid registry
         Registry *registry = FindRegistry(A, B);
         if (!registry) {
-            KAI_TRACE_ERROR() << "BinaryOperationHandler: No valid registry found";
+            KAI_TRACE_ERROR()
+                << "BinaryOperationHandler: No valid registry found";
             return Object();
         }
 
@@ -116,14 +122,17 @@ Object BinaryOperationHandler::Perform(Object const &A, Object const &B, Operati
                 return PerformIndex(A, B, registry);
 
             default:
-                KAI_TRACE_ERROR() << "Unsupported operation: " << Operation::ToString(op);
+                KAI_TRACE_ERROR()
+                    << "Unsupported operation: " << Operation::ToString(op);
                 return Object();
         }
     } catch (const Exception::Base &e) {
-        KAI_TRACE_ERROR() << "BinaryOperationHandler: KAI exception: " << e.ToString();
+        KAI_TRACE_ERROR() << "BinaryOperationHandler: KAI exception: "
+                          << e.ToString();
         return Object();
     } catch (const std::exception &e) {
-        KAI_TRACE_ERROR() << "BinaryOperationHandler: std::exception: " << e.what();
+        KAI_TRACE_ERROR() << "BinaryOperationHandler: std::exception: "
+                          << e.what();
         return Object();
     } catch (...) {
         KAI_TRACE_ERROR() << "BinaryOperationHandler: Unknown exception";
@@ -131,10 +140,12 @@ Object BinaryOperationHandler::Perform(Object const &A, Object const &B, Operati
     }
 }
 
-Object BinaryOperationHandler::PerformArithmetic(Object const &A, Object const &B, 
-                                                 Operation::Type op, Registry *registry) {
+Object BinaryOperationHandler::PerformArithmetic(Object const &A,
+                                                 Object const &B,
+                                                 Operation::Type op,
+                                                 Registry *registry) {
     using Type::Properties;
-    
+
     switch (op) {
         case Operation::Plus: {
             // Int + Int = Int
@@ -181,8 +192,8 @@ Object BinaryOperationHandler::PerformArithmetic(Object const &A, Object const &
                 return CreateNew(registry, result);
             }
             // For other types, use the ClassBase's operation methods
-            else if (A.GetTypeNumber() == B.GetTypeNumber() &&
-                     A.GetClass() && B.GetClass()) {
+            else if (A.GetTypeNumber() == B.GetTypeNumber() && A.GetClass() &&
+                     B.GetClass()) {
                 const ClassBase *classPtr = A.GetClass();
                 if (classPtr->HasOperation(Properties::Plus)) {
                     try {
@@ -226,8 +237,8 @@ Object BinaryOperationHandler::PerformArithmetic(Object const &A, Object const &
                 return CreateNew(registry, result);
             }
             // For other types, use the ClassBase's operation methods
-            else if (A.GetTypeNumber() == B.GetTypeNumber() &&
-                     A.GetClass() && B.GetClass()) {
+            else if (A.GetTypeNumber() == B.GetTypeNumber() && A.GetClass() &&
+                     B.GetClass()) {
                 const ClassBase *classPtr = A.GetClass();
                 if (classPtr->HasOperation(Properties::Minus)) {
                     try {
@@ -270,8 +281,8 @@ Object BinaryOperationHandler::PerformArithmetic(Object const &A, Object const &
                 return CreateNew(registry, result);
             }
             // For other types, use the ClassBase's operation methods
-            else if (A.GetTypeNumber() == B.GetTypeNumber() &&
-                     A.GetClass() && B.GetClass()) {
+            else if (A.GetTypeNumber() == B.GetTypeNumber() && A.GetClass() &&
+                     B.GetClass()) {
                 const ClassBase *classPtr = A.GetClass();
                 if (classPtr->HasOperation(Properties::Multiply)) {
                     try {
@@ -281,8 +292,8 @@ Object BinaryOperationHandler::PerformArithmetic(Object const &A, Object const &
                             return Object(ObjectConstructParams(result));
                         }
                     } catch (const Exception::Base &e) {
-                        KAI_TRACE_ERROR() << "Multiply operation failed: "
-                                          << e.ToString();
+                        KAI_TRACE_ERROR()
+                            << "Multiply operation failed: " << e.ToString();
                     }
                 }
             }
@@ -325,13 +336,12 @@ Object BinaryOperationHandler::PerformArithmetic(Object const &A, Object const &
                 if (divisor == 0.0f) {
                     KAI_THROW_0(DivideByZero);
                 }
-                float result =
-                    static_cast<float>(ConstDeref<int>(A)) / divisor;
+                float result = static_cast<float>(ConstDeref<int>(A)) / divisor;
                 return CreateNew(registry, result);
             }
             // For other types, use the ClassBase's operation methods
-            else if (A.GetTypeNumber() == B.GetTypeNumber() &&
-                     A.GetClass() && B.GetClass()) {
+            else if (A.GetTypeNumber() == B.GetTypeNumber() && A.GetClass() &&
+                     B.GetClass()) {
                 const ClassBase *classPtr = A.GetClass();
                 if (classPtr->HasOperation(Properties::Divide)) {
                     try {
@@ -366,12 +376,14 @@ Object BinaryOperationHandler::PerformArithmetic(Object const &A, Object const &
     if (A.IsType<float>()) return CreateNew(registry, 0.0f);
     if (A.IsType<double>()) return CreateNew(registry, 0.0);
     if (A.IsType<String>()) return CreateNew(registry, String(""));
-    
+
     return A.Valid() ? A : Object();
 }
 
-Object BinaryOperationHandler::PerformComparison(Object const &A, Object const &B, 
-                                                 Operation::Type op, Registry *registry) {
+Object BinaryOperationHandler::PerformComparison(Object const &A,
+                                                 Object const &B,
+                                                 Operation::Type op,
+                                                 Registry *registry) {
     switch (op) {
         case Operation::Equiv:
             // Int == Int -> bool
@@ -460,8 +472,8 @@ Object BinaryOperationHandler::PerformComparison(Object const &A, Object const &
                 return CreateNew(registry, result);
             }
             // For other types, use the ClassBase's operation methods
-            else if (A.GetTypeNumber() == B.GetTypeNumber() &&
-                     A.GetClass() && B.GetClass()) {
+            else if (A.GetTypeNumber() == B.GetTypeNumber() && A.GetClass() &&
+                     B.GetClass()) {
                 const ClassBase *classPtr = A.GetClass();
                 if (classPtr->HasOperation(Type::Properties::Less)) {
                     try {
@@ -509,8 +521,8 @@ Object BinaryOperationHandler::PerformComparison(Object const &A, Object const &
                 return CreateNew(registry, result);
             }
             // For other types, use the ClassBase's operation methods
-            else if (A.GetTypeNumber() == B.GetTypeNumber() &&
-                     A.GetClass() && B.GetClass()) {
+            else if (A.GetTypeNumber() == B.GetTypeNumber() && A.GetClass() &&
+                     B.GetClass()) {
                 const ClassBase *classPtr = A.GetClass();
                 if (classPtr->HasOperation(Type::Properties::Greater)) {
                     try {
@@ -532,8 +544,7 @@ Object BinaryOperationHandler::PerformComparison(Object const &A, Object const &
                 Object lessResult = Perform(A, B, Operation::Less);
                 Object equivResult = Perform(A, B, Operation::Equiv);
 
-                if (lessResult.IsType<bool>() &&
-                    equivResult.IsType<bool>()) {
+                if (lessResult.IsType<bool>() && equivResult.IsType<bool>()) {
                     bool result = ConstDeref<bool>(lessResult) ||
                                   ConstDeref<bool>(equivResult);
                     return CreateNew(registry, result);
@@ -561,8 +572,9 @@ Object BinaryOperationHandler::PerformComparison(Object const &A, Object const &
     return CreateNew(registry, false);
 }
 
-Object BinaryOperationHandler::PerformLogical(Object const &A, Object const &B, 
-                                             Operation::Type op, Registry *registry) {
+Object BinaryOperationHandler::PerformLogical(Object const &A, Object const &B,
+                                              Operation::Type op,
+                                              Registry *registry) {
     switch (op) {
         case Operation::LogicalAnd:
             // Bool && Bool -> Bool
@@ -593,8 +605,9 @@ Object BinaryOperationHandler::PerformLogical(Object const &A, Object const &B,
     return CreateNew(registry, false);
 }
 
-Object BinaryOperationHandler::PerformBitwise(Object const &A, Object const &B, 
-                                             Operation::Type op, Registry *registry) {
+Object BinaryOperationHandler::PerformBitwise(Object const &A, Object const &B,
+                                              Operation::Type op,
+                                              Registry *registry) {
     switch (op) {
         case Operation::BitwiseAnd:
             // Int & Int -> Int
@@ -641,14 +654,14 @@ Object BinaryOperationHandler::PerformBitwise(Object const &A, Object const &B,
     return CreateNew(registry, 0);
 }
 
-Object BinaryOperationHandler::PerformMinMax(Object const &A, Object const &B, 
-                                            Operation::Type op, Registry *registry) {
+Object BinaryOperationHandler::PerformMinMax(Object const &A, Object const &B,
+                                             Operation::Type op,
+                                             Registry *registry) {
     switch (op) {
         case Operation::Min:
             // Int min Int -> Int
             if (A.IsType<int>() && B.IsType<int>()) {
-                int result =
-                    std::min(ConstDeref<int>(A), ConstDeref<int>(B));
+                int result = std::min(ConstDeref<int>(A), ConstDeref<int>(B));
                 return CreateNew(registry, result);
             }
             // Float min Float -> Float
@@ -670,8 +683,7 @@ Object BinaryOperationHandler::PerformMinMax(Object const &A, Object const &B,
         case Operation::Max:
             // Int max Int -> Int
             if (A.IsType<int>() && B.IsType<int>()) {
-                int result =
-                    std::max(ConstDeref<int>(A), ConstDeref<int>(B));
+                int result = std::max(ConstDeref<int>(A), ConstDeref<int>(B));
                 return CreateNew(registry, result);
             }
             // Float max Float -> Float
@@ -695,23 +707,22 @@ Object BinaryOperationHandler::PerformMinMax(Object const &A, Object const &B,
     return A.Valid() ? A : Object();
 }
 
-Object BinaryOperationHandler::PerformIndex(Object const &A, Object const &B, Registry *registry) {
+Object BinaryOperationHandler::PerformIndex(Object const &A, Object const &B,
+                                            Registry *registry) {
     // Array[Int] -> Object
     if (A.IsType<Array>() && B.IsType<int>()) {
         try {
             const Array &array = ConstDeref<Array>(A);
             int index = ConstDeref<int>(B);
 
-            if (index >= 0 &&
-                index < static_cast<int>(array.Size())) {
+            if (index >= 0 && index < static_cast<int>(array.Size())) {
                 // For arrays, we can access elements directly
                 return array.At(index);
             }
 
             KAI_THROW_1(BadIndex, index);
         } catch (const std::exception &e) {
-            KAI_TRACE_ERROR()
-                << "Exception in Array indexing: " << e.what();
+            KAI_TRACE_ERROR() << "Exception in Array indexing: " << e.what();
         }
     }
 

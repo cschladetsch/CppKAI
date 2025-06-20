@@ -785,7 +785,7 @@ bool RhoParser::Factor() {
         // Need to handle nested braces properly
         auto piContent = NewNode(NodeType::List);
         int braceCount = 1;  // We've already consumed the opening brace
-        
+
         while (braceCount > 0 && !Failed) {
             if (Try(TokenType::OpenBrace)) {
                 braceCount++;
@@ -796,7 +796,8 @@ bool RhoParser::Factor() {
                     // This is a nested closing brace, include it in Pi content
                     piContent->Add(NewNode(Consume()));
                 }
-                // If braceCount == 0, we've found the closing brace of the Pi block
+                // If braceCount == 0, we've found the closing brace of the Pi
+                // block
             } else {
                 // Regular token, add to Pi content
                 piContent->Add(NewNode(Consume()));

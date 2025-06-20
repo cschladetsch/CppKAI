@@ -6,7 +6,7 @@
 KAI_BEGIN
 
 class BinaryOperationHandler {
-public:
+   public:
     BinaryOperationHandler() = default;
     ~BinaryOperationHandler() = default;
 
@@ -16,21 +16,26 @@ public:
     // Static method to check if an operation is binary
     static bool IsBinaryOp(Operation::Type op);
 
-private:
+   private:
     // Helper to create new objects with proper registry
-    template<typename T>
+    template <typename T>
     Object CreateNew(Registry *registry, T value);
 
     // Operation-specific handlers
-    Object PerformArithmetic(Object const &A, Object const &B, Operation::Type op, Registry *registry);
-    Object PerformComparison(Object const &A, Object const &B, Operation::Type op, Registry *registry);
-    Object PerformLogical(Object const &A, Object const &B, Operation::Type op, Registry *registry);
-    Object PerformBitwise(Object const &A, Object const &B, Operation::Type op, Registry *registry);
-    Object PerformMinMax(Object const &A, Object const &B, Operation::Type op, Registry *registry);
+    Object PerformArithmetic(Object const &A, Object const &B,
+                             Operation::Type op, Registry *registry);
+    Object PerformComparison(Object const &A, Object const &B,
+                             Operation::Type op, Registry *registry);
+    Object PerformLogical(Object const &A, Object const &B, Operation::Type op,
+                          Registry *registry);
+    Object PerformBitwise(Object const &A, Object const &B, Operation::Type op,
+                          Registry *registry);
+    Object PerformMinMax(Object const &A, Object const &B, Operation::Type op,
+                         Registry *registry);
     Object PerformIndex(Object const &A, Object const &B, Registry *registry);
 
     // Helper to find a valid registry from objects
-    Registry* FindRegistry(Object const &A, Object const &B);
+    Registry *FindRegistry(Object const &A, Object const &B);
 };
 
 KAI_END

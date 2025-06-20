@@ -546,25 +546,26 @@ void RhoTranslator::TranslatePiBlock(AstNodePtr node) {
     // Create a PiTranslator to translate the Pi code
     PiTranslator piTranslator(*reg_);
     piTranslator.trace = trace;
-    
+
     // Translate the Pi code into a continuation
     auto piCont = piTranslator.Translate(piCode.c_str(), Structure::Expression);
-    
+
     if (piTranslator.Failed) {
-        KAI_TRACE_ERROR() << "Failed to translate Pi code: " << piTranslator.Error;
+        KAI_TRACE_ERROR() << "Failed to translate Pi code: "
+                          << piTranslator.Error;
         Fail("Failed to translate Pi code: " + piTranslator.Error);
         return;
     }
-    
+
     if (!piCont.Exists()) {
         KAI_TRACE_ERROR() << "Pi translation returned null continuation";
         Fail("Pi translation returned null continuation");
         return;
     }
-    
+
     // Append the Pi continuation directly
     Append(piCont);
-    
+
     // Add Suspend operation to execute the Pi continuation
     AppendDirectOperation(Operation::Suspend);
 

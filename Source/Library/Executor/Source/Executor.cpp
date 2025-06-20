@@ -42,7 +42,6 @@ void Executor::Create() {
     stepNumber_ = 0;
 }
 
-
 bool Executor::Destroy() { return true; }
 
 void Executor::Register(Registry &registry, const char *name) {
@@ -757,8 +756,7 @@ void Executor::NextContinuation() {
             }
         } catch (const std::exception &e) {
             KAI_TRACE_ERROR()
-                << "Exception checking continuation: "
-                << e.what();
+                << "Exception checking continuation: " << e.what();
             continuation_ = Object();
             return;
         }

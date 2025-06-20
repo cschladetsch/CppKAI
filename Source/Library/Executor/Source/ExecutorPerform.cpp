@@ -1,14 +1,14 @@
-#include <KAI/Executor/Executor.h>
-#include <KAI/Executor/Compiler.h>
 #include <KAI/Core/BuiltinTypes.h>
 #include <KAI/Core/Exception.h>
-#include <KAI/Language/Common/Language.h>
-#include <KAI/Executor/BinaryOperationHandler.h>
-#include <KAI/Executor/BinBase.h>
 #include <KAI/Core/Tree.h>
+#include <KAI/Executor/BinBase.h>
+#include <KAI/Executor/BinaryOperationHandler.h>
+#include <KAI/Executor/Compiler.h>
+#include <KAI/Executor/Executor.h>
+#include <KAI/Language/Common/Language.h>
+#include <stdio.h>
 
 #include <iostream>
-#include <stdio.h>
 
 KAI_BEGIN
 
@@ -22,23 +22,23 @@ void Executor::Perform(Operation::Type op) {
             if (!piCode.IsType<String>()) {
                 KAI_THROW_1(Base, "ToPi requires a string containing Pi code");
             }
-            
+
             String code = ConstDeref<String>(piCode);
             KAI_TRACE() << "ToPi: Executing Pi code: " << code;
-            
+
             // Get the compiler and save current language
-            auto &compiler = Deref<Compiler>(compiler_);
+            auto& compiler = Deref<Compiler>(compiler_);
             int savedLanguage = compiler.GetLanguage();
-            
+
             // Temporarily switch to Pi language
             compiler.SetLanguage(static_cast<int>(Language::Pi));
-            
+
             // Translate the Pi code
             auto piCont = compiler.Translate(code, Structure::Expression);
-            
+
             // Restore original language
             compiler.SetLanguage(savedLanguage);
-            
+
             if (piCont.Exists()) {
                 // Execute the Pi continuation in the current context
                 // The result will be left on the stack
@@ -47,7 +47,7 @@ void Executor::Perform(Operation::Type op) {
                 KAI_TRACE_ERROR() << "ToPi: Failed to translate Pi code";
                 KAI_THROW_1(Base, "Failed to translate Pi code");
             }
-            
+
             break;
         }
 
@@ -137,7 +137,7 @@ void Executor::Perform(Operation::Type op) {
         case Operation::Equiv: {
             Object B = Pop();
             Object A = Pop();
-            
+
             // Use type traits via PerformBinaryOp for all types
             Object result = PerformBinaryOp(A, B, Operation::Equiv);
             Push(result);
@@ -147,17 +147,17 @@ void Executor::Perform(Operation::Type op) {
         case Operation::NotEquiv: {
             Object B = Pop();
             Object A = Pop();
-            
+
             // Use type traits via PerformBinaryOp for all types
             Object result = PerformBinaryOp(A, B, Operation::NotEquiv);
             Push(result);
             break;
         }
-        
+
         case Operation::Less: {
             Object B = Pop();
             Object A = Pop();
-            
+
             // Use type traits via PerformBinaryOp for all types
             Object result = PerformBinaryOp(A, B, Operation::Less);
             Push(result);
@@ -167,7 +167,7 @@ void Executor::Perform(Operation::Type op) {
         case Operation::Greater: {
             Object B = Pop();
             Object A = Pop();
-            
+
             // Use type traits via PerformBinaryOp for all types
             Object result = PerformBinaryOp(A, B, Operation::Greater);
             Push(result);
@@ -177,7 +177,7 @@ void Executor::Perform(Operation::Type op) {
         case Operation::LessOrEquiv: {
             Object B = Pop();
             Object A = Pop();
-            
+
             // Use type traits via PerformBinaryOp for all types
             Object result = PerformBinaryOp(A, B, Operation::LessOrEquiv);
             Push(result);
@@ -187,7 +187,7 @@ void Executor::Perform(Operation::Type op) {
         case Operation::GreaterOrEquiv: {
             Object B = Pop();
             Object A = Pop();
-            
+
             // Use type traits via PerformBinaryOp for all types
             Object result = PerformBinaryOp(A, B, Operation::GreaterOrEquiv);
             Push(result);
@@ -218,7 +218,8 @@ void Executor::Perform(Operation::Type op) {
             KAI_TRACE() << "Swap: Stack before: size=" << data_->Size();
             if (data_->Size() >= 2) {
                 KAI_TRACE() << "  Bottom: " << data_->At(0).ToString();
-                KAI_TRACE() << "  Top: " << data_->At(data_->Size()-1).ToString();
+                KAI_TRACE()
+                    << "  Top: " << data_->At(data_->Size() - 1).ToString();
             }
             const auto A = Pop();
             const auto B = Pop();
@@ -227,18 +228,20 @@ void Executor::Perform(Operation::Type op) {
             KAI_TRACE() << "Swap: Stack after: size=" << data_->Size();
             if (data_->Size() >= 2) {
                 KAI_TRACE() << "  Bottom: " << data_->At(0).ToString();
-                KAI_TRACE() << "  Top: " << data_->At(data_->Size()-1).ToString();
+                KAI_TRACE()
+                    << "  Top: " << data_->At(data_->Size() - 1).ToString();
             }
             break;
         }
 
         case Operation::Dup:
-            // Make sure we properly create new objects with the same type and value
+            // Make sure we properly create new objects with the same type and
+            // value
             {
                 if (data_->Empty()) {
                     KAI_THROW_1(Base, "Cannot dup from empty stack");
                 }
-                
+
                 // Get the top object on the stack and push another copy
                 Object top = data_->Top();
                 Push(top);
@@ -249,13 +252,14 @@ void Executor::Perform(Operation::Type op) {
             // Duplicate top two elements: a b -- a b a b
             {
                 if (data_->Size() < 2) {
-                    KAI_THROW_1(Base, "Cannot 2dup with less than 2 items on stack");
+                    KAI_THROW_1(Base,
+                                "Cannot 2dup with less than 2 items on stack");
                 }
-                
+
                 // Get the top two objects
-                Object top = data_->At(0);    // top of stack
-                Object second = data_->At(1); // second from top
-                
+                Object top = data_->At(0);     // top of stack
+                Object second = data_->At(1);  // second from top
+
                 // Push copies in the right order
                 Push(second);
                 Push(top);
@@ -266,9 +270,10 @@ void Executor::Perform(Operation::Type op) {
             // Drop top two elements: a b c d -- a b
             {
                 if (data_->Size() < 2) {
-                    KAI_THROW_1(Base, "Cannot 2drop with less than 2 items on stack");
+                    KAI_THROW_1(Base,
+                                "Cannot 2drop with less than 2 items on stack");
                 }
-                
+
                 Pop();
                 Pop();
             }
@@ -311,29 +316,31 @@ void Executor::Perform(Operation::Type op) {
             // With stack [bottom ... top], At(0) is top
             // Example: 10 20 30 40 3 roll -> 20 30 40 10
             if (N >= data_->Size()) KAI_THROW_1(BadIndex, N);
-            if (N == 0) break; // 0 roll does nothing
-            
+            if (N == 0) break;  // 0 roll does nothing
+
             // Use a temporary vector to store N+1 elements
             std::vector<Object> temp;
-            
-            // Pop N+1 elements from the stack (including the one we want to move)
+
+            // Pop N+1 elements from the stack (including the one we want to
+            // move)
             for (int i = 0; i <= N; ++i) {
                 temp.push_back(Pop());
             }
-            
+
             // temp[0] is the top of stack
-            // temp[N] is the element N positions from top (the one we want to move to top)
-            
+            // temp[N] is the element N positions from top (the one we want to
+            // move to top)
+
             // We need to push back the elements in the correct order
             // First, push all elements except the Nth one back in reverse order
             // (since we popped them, we need to reverse to maintain order)
-            for (int i = N-1; i >= 0; --i) {
+            for (int i = N - 1; i >= 0; --i) {
                 Push(temp[i]);
             }
-            
+
             // Then push the Nth element on top
             Push(temp[N]);
-            
+
             break;
         }
 
@@ -354,38 +361,41 @@ void Executor::Perform(Operation::Type op) {
             break;
 
         case Operation::Suspend: {
-            KAI_TRACE() << "Operation::Suspend - saving current continuation and switching";
-            
+            KAI_TRACE() << "Operation::Suspend - saving current continuation "
+                           "and switching";
+
             // Debug: Show current continuation state
             if (continuation_.Exists() && continuation_->GetCode().Exists()) {
                 auto currentIndex = ConstDeref<int>(continuation_->index);
-                KAI_TRACE() << "  Current continuation index: " << currentIndex 
-                           << " of " << continuation_->GetCode()->Size();
+                KAI_TRACE() << "  Current continuation index: " << currentIndex
+                            << " of " << continuation_->GetCode()->Size();
             }
-            
+
             // Get the new continuation to execute
             auto newCont = Pop();
-            
-            // Save current continuation on the context stack for later resumption
-            // IMPORTANT: The instruction pointer is already at the correct position!
-            // The Continue loop calls Next() before Eval(), so when we're executing
-            // the Suspend operation, the IP has already been advanced past it.
-            // When we return and pop this continuation, it will correctly resume
-            // at the instruction after Suspend.
+
+            // Save current continuation on the context stack for later
+            // resumption IMPORTANT: The instruction pointer is already at the
+            // correct position! The Continue loop calls Next() before Eval(),
+            // so when we're executing the Suspend operation, the IP has already
+            // been advanced past it. When we return and pop this continuation,
+            // it will correctly resume at the instruction after Suspend.
             context_->Push(continuation_);
-            
+
             // Create and set the new continuation
             continuation_ = NewContinuation(newCont);
-            KAI_TRACE() << "  Creating new continuation from: " << newCont.ToString();
+            KAI_TRACE() << "  Creating new continuation from: "
+                        << newCont.ToString();
             KAI_TRACE() << "  Context stack size: " << context_->Size();
-            
+
             // IMPORTANT: Call Enter to set up arguments in the new scope
-            // This is critical for function arguments to be available in the scope
+            // This is critical for function arguments to be available in the
+            // scope
             if (continuation_.Exists()) {
                 continuation_->Enter(this);
                 KAI_TRACE() << "  Called Enter on new continuation";
             }
-            
+
             break;
         }
 
@@ -457,29 +467,43 @@ void Executor::Perform(Operation::Type op) {
         case Operation::Assign: {
             // Assign is the same as Store - both bind a value to a name
             // Stack: ( name value -- )
-            KAI_TRACE() << "Assign operation - stack size before: " << data_->Size();
+            KAI_TRACE() << "Assign operation - stack size before: "
+                        << data_->Size();
             if (data_->Size() >= 2) {
-                KAI_TRACE() << "Stack[top-1]: " 
-                            << (data_->At(data_->Size()-2).GetClass() ? 
-                                data_->At(data_->Size()-2).GetClass()->GetName().ToString() : "<null>");
-                KAI_TRACE() << "Stack[top]: " 
-                            << (data_->At(data_->Size()-1).GetClass() ? 
-                                data_->At(data_->Size()-1).GetClass()->GetName().ToString() : "<null>");
+                KAI_TRACE() << "Stack[top-1]: "
+                            << (data_->At(data_->Size() - 2).GetClass()
+                                    ? data_->At(data_->Size() - 2)
+                                          .GetClass()
+                                          ->GetName()
+                                          .ToString()
+                                    : "<null>");
+                KAI_TRACE() << "Stack[top]: "
+                            << (data_->At(data_->Size() - 1).GetClass()
+                                    ? data_->At(data_->Size() - 1)
+                                          .GetClass()
+                                          ->GetName()
+                                          .ToString()
+                                    : "<null>");
             }
-            
+
             Object value = Pop();
             const auto name = Pop();
-            
-            KAI_TRACE() << "Assign operation - name type: " 
-                        << (name.GetClass() ? name.GetClass()->GetName().ToString() : "<null>")
+
+            KAI_TRACE() << "Assign operation - name type: "
+                        << (name.GetClass()
+                                ? name.GetClass()->GetName().ToString()
+                                : "<null>")
                         << ", value type: "
-                        << (value.GetClass() ? value.GetClass()->GetName().ToString() : "<null>");
-            
+                        << (value.GetClass()
+                                ? value.GetClass()->GetName().ToString()
+                                : "<null>");
+
             // If the name's already bound in the current scope, just update it.
             if (!continuation_.Exists()) {
-                KAI_THROW_1(Base, "No continuation exists for Assign operation");
+                KAI_THROW_1(Base,
+                            "No continuation exists for Assign operation");
             }
-            
+
             KAI_TRACE() << "Assign: continuation exists, checking scope...";
             Object scope = continuation_->GetScope();
             if (!scope.Exists()) {
@@ -490,19 +514,23 @@ void Executor::Perform(Operation::Type op) {
                         KAI_TRACE() << "Using scope from executor tree";
                         continuation_->SetScope(scope);
                     } else {
-                        KAI_THROW_1(Base, "No scope available in tree for Assign operation");
+                        KAI_THROW_1(
+                            Base,
+                            "No scope available in tree for Assign operation");
                     }
                 } else {
-                    KAI_THROW_1(Base, "No scope in continuation and no tree available for Assign operation");
+                    KAI_THROW_1(Base,
+                                "No scope in continuation and no tree "
+                                "available for Assign operation");
                 }
             }
-            
+
             Object bound;
-            
+
             if (name.IsType<Label>()) {
                 Label label = ConstDeref<Label>(name);
                 bound = TryResolve(label);
-                
+
                 if (bound.Exists()) {
                     // Re-bind it
                     scope.Set(label, value);
@@ -510,13 +538,12 @@ void Executor::Perform(Operation::Type op) {
                     // Add it
                     scope.Add(label, value);
                 }
-            } 
-            else if (name.IsType<Pathname>()) {
+            } else if (name.IsType<Pathname>()) {
                 Pathname path = ConstDeref<Pathname>(name);
-                KAI_TRACE() << "Assign with Pathname: " << path.ToString() 
-                           << ", quoted: " << (path.Quoted() ? "yes" : "no");
+                KAI_TRACE() << "Assign with Pathname: " << path.ToString()
+                            << ", quoted: " << (path.Quoted() ? "yes" : "no");
                 bound = TryResolve(path);
-                
+
                 if (bound.Exists()) {
                     // Re-bind it
                     // Strip the quote if present
@@ -535,42 +562,57 @@ void Executor::Perform(Operation::Type op) {
                         pathStr = String(pathStr.begin() + 1, pathStr.end());
                     }
                     scope.Add(Label(pathStr), value);
-                    KAI_TRACE() << "Added '" << pathStr << "' to scope (from pathname: " << path.ToString() << ")";
+                    KAI_TRACE()
+                        << "Added '" << pathStr
+                        << "' to scope (from pathname: " << path.ToString()
+                        << ")";
                 }
-            } 
-            else {
+            } else {
                 KAI_THROW_1(Base, "Invalid name type for Assign operation");
             }
-            
+
             break;
         }
 
         case Operation::Store: {
             // Log stack state before popping
-            KAI_TRACE() << "Store operation - stack size before: " << data_->Size();
+            KAI_TRACE() << "Store operation - stack size before: "
+                        << data_->Size();
             int stackSizeBefore = data_->Size();
             if (data_->Size() >= 2) {
-                KAI_TRACE() << "Stack[top-1]: " 
-                            << (data_->At(data_->Size()-2).GetClass() ? 
-                                data_->At(data_->Size()-2).GetClass()->GetName().ToString() : "<null>");
-                KAI_TRACE() << "Stack[top]: " 
-                            << (data_->At(data_->Size()-1).GetClass() ? 
-                                data_->At(data_->Size()-1).GetClass()->GetName().ToString() : "<null>");
+                KAI_TRACE() << "Stack[top-1]: "
+                            << (data_->At(data_->Size() - 2).GetClass()
+                                    ? data_->At(data_->Size() - 2)
+                                          .GetClass()
+                                          ->GetName()
+                                          .ToString()
+                                    : "<null>");
+                KAI_TRACE() << "Stack[top]: "
+                            << (data_->At(data_->Size() - 1).GetClass()
+                                    ? data_->At(data_->Size() - 1)
+                                          .GetClass()
+                                          ->GetName()
+                                          .ToString()
+                                    : "<null>");
             }
-            
+
             const auto name = Pop();
             Object value = Pop();
-            
-            KAI_TRACE() << "Store operation - name type: " 
-                        << (name.GetClass() ? name.GetClass()->GetName().ToString() : "<null>")
+
+            KAI_TRACE() << "Store operation - name type: "
+                        << (name.GetClass()
+                                ? name.GetClass()->GetName().ToString()
+                                : "<null>")
                         << ", value type: "
-                        << (value.GetClass() ? value.GetClass()->GetName().ToString() : "<null>");
-            
+                        << (value.GetClass()
+                                ? value.GetClass()->GetName().ToString()
+                                : "<null>");
+
             // If the name's already bound in the current scope, just update it.
             if (!continuation_.Exists()) {
                 KAI_THROW_1(Base, "No continuation exists for Store operation");
             }
-            
+
             KAI_TRACE() << "Store: continuation exists, checking scope...";
             Object scope = continuation_->GetScope();
             if (!scope.Exists()) {
@@ -581,19 +623,23 @@ void Executor::Perform(Operation::Type op) {
                         KAI_TRACE() << "Using scope from executor tree";
                         continuation_->SetScope(scope);
                     } else {
-                        KAI_THROW_1(Base, "No scope available in tree for Store operation");
+                        KAI_THROW_1(
+                            Base,
+                            "No scope available in tree for Store operation");
                     }
                 } else {
-                    KAI_THROW_1(Base, "No scope in continuation and no tree available for Store operation");
+                    KAI_THROW_1(Base,
+                                "No scope in continuation and no tree "
+                                "available for Store operation");
                 }
             }
-            
+
             Object bound;
-            
+
             if (name.IsType<Label>()) {
                 Label label = ConstDeref<Label>(name);
                 bound = TryResolve(label);
-                
+
                 if (bound.Exists()) {
                     // Re-bind it
                     scope.Set(label, value);
@@ -601,13 +647,12 @@ void Executor::Perform(Operation::Type op) {
                     // Add it
                     scope.Add(label, value);
                 }
-            } 
-            else if (name.IsType<Pathname>()) {
+            } else if (name.IsType<Pathname>()) {
                 Pathname path = ConstDeref<Pathname>(name);
-                KAI_TRACE() << "Store with Pathname: " << path.ToString() 
-                           << ", quoted: " << (path.Quoted() ? "yes" : "no");
+                KAI_TRACE() << "Store with Pathname: " << path.ToString()
+                            << ", quoted: " << (path.Quoted() ? "yes" : "no");
                 bound = TryResolve(path);
-                
+
                 if (bound.Exists()) {
                     // Re-bind it
                     // Strip the quote if present
@@ -626,32 +671,35 @@ void Executor::Perform(Operation::Type op) {
                         pathStr = String(pathStr.begin() + 1, pathStr.end());
                     }
                     scope.Add(Label(pathStr), value);
-                    KAI_TRACE() << "Added '" << pathStr << "' to scope (from pathname: " << path.ToString() << ")";
+                    KAI_TRACE()
+                        << "Added '" << pathStr
+                        << "' to scope (from pathname: " << path.ToString()
+                        << ")";
                 }
-            } 
-            else {
+            } else {
                 KAI_THROW_1(Base, "Invalid name type for Store operation");
             }
-            
+
             break;
         }
 
         case Operation::Retreive: {
             // The & operation: retrieve/execute
             Object obj = Pop();
-            
+
             // If it's an identifier (Label/Pathname), resolve it first
             if (obj.IsType<Label>() || obj.IsType<Pathname>()) {
                 obj = Resolve(obj);
             }
-            
+
             // If the result is a continuation, execute it
             if (obj.IsType<Continuation>()) {
                 KAI_TRACE() << "Retreive: Executing continuation";
                 // WRONG! This should use Suspend, not Continue!
-                // Continue executes the continuation without saving the current one
-                // We need to check if this is a function call or just a continuation execution
-                
+                // Continue executes the continuation without saving the current
+                // one We need to check if this is a function call or just a
+                // continuation execution
+
                 // For now, let's just push the continuation on the stack
                 // The calling code should use Suspend if it's a function call
                 Push(obj);
@@ -665,20 +713,19 @@ void Executor::Perform(Operation::Type op) {
         case Operation::Remove: {
             const Object scope = continuation_->GetScope();
             Object nameObj = Pop();
-            
+
             if (nameObj.IsType<Label>()) {
                 Label label = ConstDeref<Label>(nameObj);
                 scope.Remove(label);
-            }
-            else if (nameObj.IsType<Pathname>()) {
+            } else if (nameObj.IsType<Pathname>()) {
                 Pathname path = ConstDeref<Pathname>(nameObj);
-                // For pathnames, we'll just remove by the string representation as a label
+                // For pathnames, we'll just remove by the string representation
+                // as a label
                 scope.Remove(Label(path.ToString()));
-            }
-            else {
+            } else {
                 KAI_THROW_1(Base, "Invalid name type for Remove operation");
             }
-            
+
             break;
         }
 
@@ -689,15 +736,17 @@ void Executor::Perform(Operation::Type op) {
                 if (n == Type::Number::None) {
                     Push(Object());
                 } else {
-                    // We don't have easy access to the registry or a way to create objects
-                    // from type numbers, so just create an empty object for now
-                    KAI_TRACE() << "Warning: Creating objects from type numbers not fully implemented";
+                    // We don't have easy access to the registry or a way to
+                    // create objects from type numbers, so just create an empty
+                    // object for now
+                    KAI_TRACE() << "Warning: Creating objects from type "
+                                   "numbers not fully implemented";
                     Push(Object());
                 }
             } else {
                 Push(ty.Clone());
             }
-            
+
             break;
         }
 
@@ -708,11 +757,12 @@ void Executor::Perform(Operation::Type op) {
             auto continuation = Pop();
             bool condition = PopBool();
             KAI_TRACE() << "If operation: condition = " << condition;
-            
+
             if (condition) {
                 KAI_TRACE() << "If operation: Executing then block inline";
-                // Instead of calling Continue() which changes the execution context,
-                // inline the continuation's code into the current continuation
+                // Instead of calling Continue() which changes the execution
+                // context, inline the continuation's code into the current
+                // continuation
                 if (continuation.IsType<Continuation>()) {
                     Pointer<Continuation> thenCont = continuation;
                     if (thenCont->GetCode().Exists()) {
@@ -728,7 +778,7 @@ void Executor::Perform(Operation::Type op) {
             } else {
                 KAI_TRACE() << "If operation: Skipping then block";
             }
-            
+
             // If operation should not push anything onto the stack
             break;
         }
@@ -739,17 +789,20 @@ void Executor::Perform(Operation::Type op) {
             auto B = Pop();
             auto A = Pop();
             bool condition = PopBool();
-            KAI_TRACE() << "IfElse: condition=" << condition << ", choosing " << (condition ? "A" : "B");
-            
-            // Simple approach: append the chosen continuation's code to current continuation
+            KAI_TRACE() << "IfElse: condition=" << condition << ", choosing "
+                        << (condition ? "A" : "B");
+
+            // Simple approach: append the chosen continuation's code to current
+            // continuation
             auto chosen = condition ? A : B;
             if (chosen.IsType<Continuation>()) {
                 Pointer<Continuation> cont = chosen;
                 if (cont->GetCode().Exists() && continuation_.Exists()) {
                     auto currentCode = continuation_->GetCode();
                     auto currentIndex = ConstDeref<int>(continuation_->index);
-                    
-                    // Insert all operations from the chosen block at current position
+
+                    // Insert all operations from the chosen block at current
+                    // position
                     for (int i = cont->GetCode()->Size() - 1; i >= 0; --i) {
                         auto obj = cont->GetCode()->At(i);
                         if (obj.Exists() && currentCode.Exists()) {
@@ -758,7 +811,7 @@ void Executor::Perform(Operation::Type op) {
                     }
                 }
             }
-            
+
             break;
         }
 
@@ -767,110 +820,132 @@ void Executor::Perform(Operation::Type op) {
         case Operation::IfThenResume:
             ConditionalContextSwitch(op);
             break;
-            
+
         case Operation::IfThenSuspendElseSuspend: {
             // ( condition then-cont else-cont -- )
             // Run then-cont if condition is true, else run else-cont
-            
+
             try {
                 // Check for valid data stack first
                 if (!data_.Valid() || !data_.Exists()) {
-                    KAI_TRACE_ERROR() << "IfThenSuspendElseSuspend: Invalid data stack";
+                    KAI_TRACE_ERROR()
+                        << "IfThenSuspendElseSuspend: Invalid data stack";
                     break;
                 }
-                
+
                 // Check if we have enough items on the stack
-                if (data_->Size() < 2) { // We need at least the condition and one continuation
-                    KAI_TRACE_ERROR() << "IfThenSuspendElseSuspend: Not enough items on stack (need at least 2)";
+                if (data_->Size() <
+                    2) {  // We need at least the condition and one continuation
+                    KAI_TRACE_ERROR() << "IfThenSuspendElseSuspend: Not enough "
+                                         "items on stack (need at least 2)";
                     break;
                 }
-                
+
                 // Verify the stack has the required items
-                KAI_TRACE() << "IfThenSuspendElseSuspend: Stack size is " << data_->Size();
-                
+                KAI_TRACE() << "IfThenSuspendElseSuspend: Stack size is "
+                            << data_->Size();
+
                 // First check if we have at least one continuation on the stack
                 if (data_->Empty()) {
-                    KAI_TRACE_ERROR() << "IfThenSuspendElseSuspend: Empty stack";
+                    KAI_TRACE_ERROR()
+                        << "IfThenSuspendElseSuspend: Empty stack";
                     break;
                 }
-                
-                // Try to retrieve the else continuation first (it was pushed last)
+
+                // Try to retrieve the else continuation first (it was pushed
+                // last)
                 Object elseCont = Object();
                 if (data_->Size() >= 1) {
                     elseCont = data_->Top();
                     data_->Pop();
-                    
+
                     // Check validity of the else continuation
                     if (!elseCont.Valid() || !elseCont.Exists()) {
-                        KAI_TRACE_ERROR() << "IfThenSuspendElseSuspend: Invalid else continuation";
+                        KAI_TRACE_ERROR() << "IfThenSuspendElseSuspend: "
+                                             "Invalid else continuation";
                         // Push a default continuation as fallback
                         elseCont = NewContinuation(continuation_);
                     }
                 } else {
                     // Create a default empty continuation if missing
-                    KAI_TRACE_ERROR() << "IfThenSuspendElseSuspend: Missing else continuation, creating default";
+                    KAI_TRACE_ERROR() << "IfThenSuspendElseSuspend: Missing "
+                                         "else continuation, creating default";
                     elseCont = NewContinuation(continuation_);
                 }
-                
+
                 // Try to retrieve the then continuation
                 Object thenCont = Object();
                 if (data_->Size() >= 1) {
                     thenCont = data_->Top();
                     data_->Pop();
-                    
+
                     // Check validity of the then continuation
                     if (!thenCont.Valid() || !thenCont.Exists()) {
-                        KAI_TRACE_ERROR() << "IfThenSuspendElseSuspend: Invalid then continuation";
+                        KAI_TRACE_ERROR() << "IfThenSuspendElseSuspend: "
+                                             "Invalid then continuation";
                         // Push a default continuation as fallback
                         thenCont = NewContinuation(continuation_);
                     }
                 } else {
                     // Create a default empty continuation if missing
-                    KAI_TRACE_ERROR() << "IfThenSuspendElseSuspend: Missing then continuation, creating default";
+                    KAI_TRACE_ERROR() << "IfThenSuspendElseSuspend: Missing "
+                                         "then continuation, creating default";
                     thenCont = NewContinuation(continuation_);
                 }
-                
+
                 // Try to retrieve the condition value
-                bool condition = false; // Default if missing
+                bool condition = false;  // Default if missing
                 if (data_->Size() >= 1) {
-                    // Use the robust version of PopBool to handle any type safely
+                    // Use the robust version of PopBool to handle any type
+                    // safely
                     condition = PopBool();
                 } else {
-                    KAI_TRACE_ERROR() << "IfThenSuspendElseSuspend: Missing condition value, defaulting to false";
+                    KAI_TRACE_ERROR() << "IfThenSuspendElseSuspend: Missing "
+                                         "condition value, defaulting to false";
                 }
-                
-                KAI_TRACE() << "IfThenSuspendElseSuspend: Condition evaluated to " << (condition ? "true" : "false");
-                
+
+                KAI_TRACE()
+                    << "IfThenSuspendElseSuspend: Condition evaluated to "
+                    << (condition ? "true" : "false");
+
                 // Determine which continuation to execute based on condition
                 Object contToExecute = condition ? thenCont : elseCont;
-                
-                // Make sure we have a valid continuation object for current context
+
+                // Make sure we have a valid continuation object for current
+                // context
                 if (!continuation_.Valid() || !continuation_.Exists()) {
-                    KAI_TRACE_ERROR() << "IfThenSuspendElseSuspend: Current continuation is invalid";
-                    
-                    // Try to directly execute the branch continuation as a fallback
+                    KAI_TRACE_ERROR() << "IfThenSuspendElseSuspend: Current "
+                                         "continuation is invalid";
+
+                    // Try to directly execute the branch continuation as a
+                    // fallback
                     if (contToExecute.Valid() && contToExecute.Exists()) {
                         Continue(contToExecute);
                     }
                     break;
                 }
-                
+
                 // Make sure context stack is valid
                 if (!context_.Valid() || !context_.Exists()) {
-                    KAI_TRACE_ERROR() << "IfThenSuspendElseSuspend: Context stack is invalid";
+                    KAI_TRACE_ERROR()
+                        << "IfThenSuspendElseSuspend: Context stack is invalid";
                     break;
                 }
-                
+
                 // Attempt to move current continuation past this operation
                 bool success = continuation_->Next();
                 if (!success) {
-                    KAI_TRACE() << "IfThenSuspendElseSuspend: Current continuation cannot advance, using fallback";
+                    KAI_TRACE()
+                        << "IfThenSuspendElseSuspend: Current continuation "
+                           "cannot advance, using fallback";
                 }
-                
-                // Save current continuation to return to after branch regardless
+
+                // Save current continuation to return to after branch
+                // regardless
                 context_->Push(continuation_);
-                
-                // Try to create a new continuation for the branch or use directly if already a continuation
+
+                // Try to create a new continuation for the branch or use
+                // directly if already a continuation
                 Pointer<Continuation> newCont;
                 if (contToExecute.IsType<Continuation>()) {
                     // Convert to proper type
@@ -879,30 +954,32 @@ void Executor::Perform(Operation::Type op) {
                     // Attempt to create a new continuation
                     newCont = NewContinuation(contToExecute);
                 }
-                
+
                 // Validate the continuation before pushing
                 if (!newCont.Valid() || !newCont.Exists()) {
-                    KAI_TRACE_ERROR() << "IfThenSuspendElseSuspend: Failed to create valid continuation";
+                    KAI_TRACE_ERROR() << "IfThenSuspendElseSuspend: Failed to "
+                                         "create valid continuation";
                     break;
                 }
-                
-                // Push the selected continuation onto the context stack and break
-                // to force execution to switch to it
+
+                // Push the selected continuation onto the context stack and
+                // break to force execution to switch to it
                 context_->Push(newCont);
                 break_ = true;
-                
-                KAI_TRACE() << "IfThenSuspendElseSuspend: Successfully set up branch execution";
+
+                KAI_TRACE() << "IfThenSuspendElseSuspend: Successfully set up "
+                               "branch execution";
+            } catch (const Exception::Base& e) {
+                KAI_TRACE_ERROR() << "IfThenSuspendElseSuspend: KAI exception: "
+                                  << e.ToString();
+            } catch (const std::exception& e) {
+                KAI_TRACE_ERROR()
+                    << "IfThenSuspendElseSuspend: std::exception: " << e.what();
+            } catch (...) {
+                KAI_TRACE_ERROR()
+                    << "IfThenSuspendElseSuspend: Unknown exception";
             }
-            catch (const Exception::Base& e) {
-                KAI_TRACE_ERROR() << "IfThenSuspendElseSuspend: KAI exception: " << e.ToString();
-            }
-            catch (const std::exception& e) {
-                KAI_TRACE_ERROR() << "IfThenSuspendElseSuspend: std::exception: " << e.what();
-            }
-            catch (...) {
-                KAI_TRACE_ERROR() << "IfThenSuspendElseSuspend: Unknown exception";
-            }
-            
+
             break;
         }
 
@@ -910,7 +987,7 @@ void Executor::Perform(Operation::Type op) {
             // Standard Plus operation without special casing
             Object B = Pop();
             Object A = Pop();
-            
+
             // Use type traits via PerformBinaryOp for all types
             Object result = PerformBinaryOp(A, B, Operation::Plus);
             Push(result);
@@ -920,7 +997,7 @@ void Executor::Perform(Operation::Type op) {
         case Operation::Minus: {
             Object B = Pop();
             Object A = Pop();
-            
+
             // Use type traits via PerformBinaryOp for all types
             Object result = PerformBinaryOp(A, B, Operation::Minus);
             Push(result);
@@ -930,7 +1007,7 @@ void Executor::Perform(Operation::Type op) {
         case Operation::Multiply: {
             Object B = Pop();
             Object A = Pop();
-            
+
             // Use type traits via PerformBinaryOp for all types
             Object result = PerformBinaryOp(A, B, Operation::Multiply);
             Push(result);
@@ -940,7 +1017,7 @@ void Executor::Perform(Operation::Type op) {
         case Operation::Divide: {
             Object B = Pop();
             Object A = Pop();
-            
+
             // Use type traits via PerformBinaryOp for all types
             Object result = PerformBinaryOp(A, B, Operation::Divide);
             Push(result);
@@ -950,23 +1027,25 @@ void Executor::Perform(Operation::Type op) {
         case Operation::Modulo: {
             // Handle modulo operation with careful type checking
             if (data_->Size() < 2) {
-                KAI_THROW_1(Base, "Not enough values on stack for modulo operation");
+                KAI_THROW_1(Base,
+                            "Not enough values on stack for modulo operation");
             }
-            
+
             Object B = Pop();
             Object A = Pop();
-            
+
             // Add extra error handling for division by zero
             if (B.IsType<int>() && ConstDeref<int>(B) == 0) {
                 KAI_THROW_1(Base, "Modulo by zero");
             }
-            
+
             // Use type traits via PerformBinaryOp for all types
             Object result = PerformBinaryOp(A, B, Operation::Modulo);
-            
+
             // Make sure we got a result
             if (!result.Exists()) {
-                KAI_TRACE_ERROR() << "Modulo operation failed to produce a result";
+                KAI_TRACE_ERROR()
+                    << "Modulo operation failed to produce a result";
                 Push(Object());
             } else {
                 Push(result);
@@ -989,58 +1068,51 @@ void Executor::Perform(Operation::Type op) {
             MarkAndSweep();
             break;
         }
-            
+
         case Operation::Assert: {
             // Assert operation pops a value and verifies that it's true
             // If the value is true, nothing happens
             // If the value is false, an exception is thrown
             Object value = Pop();
             bool condition = false;
-            
+
             // Try to convert various types to boolean
             if (value.IsType<bool>()) {
                 condition = ConstDeref<bool>(value);
-            }
-            else if (value.IsType<int>()) {
+            } else if (value.IsType<int>()) {
                 condition = ConstDeref<int>(value) != 0;
-            }
-            else if (value.IsType<float>() || value.IsType<double>()) {
+            } else if (value.IsType<float>() || value.IsType<double>()) {
                 condition = ConstDeref<float>(value) != 0.0f;
-            }
-            else if (value.IsType<String>()) {
+            } else if (value.IsType<String>()) {
                 // Consider empty string as false, non-empty as true
                 condition = !ConstDeref<String>(value).empty();
-            }
-            else {
-                // For object types, consider existence/validity as the condition
+            } else {
+                // For object types, consider existence/validity as the
+                // condition
                 condition = value.Exists() && value.Valid();
             }
-            
+
             if (!condition) {
                 KAI_THROW_1(Base, "Assertion failed");
             }
-            
+
             break;
         }
-            
+
         case Operation::Size: {
             // Get the top object from the stack
             Object obj = Pop();
-            
+
             // Handle different container types
             if (obj.IsType<Array>()) {
                 Push(New<int>(Deref<Array>(obj).Size()));
-            }
-            else if (obj.IsType<List>()) {
+            } else if (obj.IsType<List>()) {
                 Push(New<int>(Deref<List>(obj).Size()));
-            }
-            else if (obj.IsType<Map>()) {
+            } else if (obj.IsType<Map>()) {
                 Push(New<int>(Deref<Map>(obj).Size()));
-            }
-            else if (obj.IsType<String>()) {
+            } else if (obj.IsType<String>()) {
                 Push(New<int>(Deref<String>(obj).size()));
-            }
-            else {
+            } else {
                 KAI_THROW_1(Base, "Size operation called on unsupported type");
             }
             break;
@@ -1059,7 +1131,7 @@ void Executor::Perform(Operation::Type op) {
             }
             break;
         }
-            
+
         case Operation::ShellCommand: {
             // Execute shell command and push result
             // Stack: ( command -- result )
@@ -1067,30 +1139,30 @@ void Executor::Perform(Operation::Type op) {
                 Object cmdObj = Pop();
                 if (cmdObj.IsType<String>()) {
                     String command = ConstDeref<String>(cmdObj);
-                    
+
                     // Execute the command and capture output
                     FILE* pipe = popen(command.c_str(), "r");
                     if (pipe) {
                         char buffer[1024];
                         std::string result;
-                        
+
                         // Read command output
                         while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
                             result += buffer;
                         }
-                        
+
                         int status = pclose(pipe);
-                        
+
                         // Remove trailing newline if present
                         if (!result.empty() && result.back() == '\n') {
                             result.pop_back();
                         }
-                        
+
                         // Try to parse as a number first
                         bool isNumber = true;
                         bool isFloat = false;
                         bool hasDigits = false;
-                        
+
                         // Check if the result looks like a number
                         for (size_t i = 0; i < result.size(); ++i) {
                             char c = result[i];
@@ -1107,10 +1179,10 @@ void Executor::Perform(Operation::Type op) {
                             }
                             hasDigits = true;
                         }
-                        
+
                         // Make sure we have at least one digit
                         isNumber = isNumber && hasDigits;
-                        
+
                         if (isNumber) {
                             try {
                                 if (isFloat) {
@@ -1130,11 +1202,14 @@ void Executor::Perform(Operation::Type op) {
                         }
                     } else {
                         // Command execution failed
-                        KAI_TRACE_ERROR() << "ShellCommand: Failed to execute command: " << command;
+                        KAI_TRACE_ERROR()
+                            << "ShellCommand: Failed to execute command: "
+                            << command;
                         Push(New<String>(""));  // Push empty string on failure
                     }
                 } else {
-                    KAI_TRACE_ERROR() << "ShellCommand: Expected string on stack";
+                    KAI_TRACE_ERROR()
+                        << "ShellCommand: Expected string on stack";
                     Push(New<String>(""));  // Push empty string on error
                 }
             } else {
@@ -1143,7 +1218,7 @@ void Executor::Perform(Operation::Type op) {
             }
             break;
         }
-            
+
         case Operation::WhileLoop: {
             // ( condition body -- )
             // While condition is true, run body.
@@ -1154,30 +1229,32 @@ void Executor::Perform(Operation::Type op) {
                     KAI_TRACE_ERROR() << "WhileLoop: Invalid data stack";
                     break;
                 }
-                
+
                 // Check if we have enough items on the stack
                 if (data_->Size() < 2) {
-                    KAI_TRACE_ERROR() << "WhileLoop: Not enough items on stack (need at least 2)";
+                    KAI_TRACE_ERROR() << "WhileLoop: Not enough items on stack "
+                                         "(need at least 2)";
                     break;
                 }
-                
+
                 // Get the body continuation
                 auto bodyCont = Pop();
                 auto condCont = Pop();
-                
-                if (!condCont.IsType<Continuation>() || !bodyCont.IsType<Continuation>()) {
+
+                if (!condCont.IsType<Continuation>() ||
+                    !bodyCont.IsType<Continuation>()) {
                     KAI_TRACE_ERROR() << "WhileLoop: Expected continuations";
                     break;
                 }
-                
+
                 Pointer<Continuation> condition = condCont;
                 Pointer<Continuation> body = bodyCont;
-                
+
                 // Execute while loop inline
                 break_ = false;  // Reset break flag
                 while (true) {
                     continue_ = false;  // Reset continue flag at loop start
-                    
+
                     // Evaluate condition
                     if (condition->GetCode().Exists()) {
                         for (int i = 0; i < condition->GetCode()->Size(); ++i) {
@@ -1187,12 +1264,12 @@ void Executor::Perform(Operation::Type op) {
                             }
                         }
                     }
-                    
+
                     // Check condition result
                     if (data_->Empty() || !PopBool()) {
                         break;
                     }
-                    
+
                     // Execute body
                     if (body->GetCode().Exists()) {
                         for (int i = 0; i < body->GetCode()->Size(); ++i) {
@@ -1205,110 +1282,120 @@ void Executor::Perform(Operation::Type op) {
                             }
                         }
                     }
-                    
+
                     // Check for break after body execution
                     if (break_) {
                         break_ = false;  // Reset for next loop
-                        break;  // Exit the while loop
+                        break;           // Exit the while loop
                     }
                     // If continue_ is set, it just goes to next iteration
                 }
-            }
-            catch (const Exception::Base& e) {
-                KAI_TRACE_ERROR() << "WhileLoop: KAI exception: " << e.ToString();
-            }
-            catch (const std::exception& e) {
+            } catch (const Exception::Base& e) {
+                KAI_TRACE_ERROR()
+                    << "WhileLoop: KAI exception: " << e.ToString();
+            } catch (const std::exception& e) {
                 KAI_TRACE_ERROR() << "WhileLoop: std::exception: " << e.what();
-            }
-            catch (...) {
+            } catch (...) {
                 KAI_TRACE_ERROR() << "WhileLoop: Unknown exception";
             }
-            
+
             break;
         }
-        
+
         case Operation::ForLoop: {
             KAI_TRACE() << "ForLoop: Starting execution";
-            
+
             try {
                 // Validate stack
                 if (!data_.Valid() || !data_.Exists()) {
                     KAI_TRACE_ERROR() << "ForLoop: Invalid data stack";
                     break;
                 }
-                
+
                 if (data_->Size() < 4) {
-                    KAI_TRACE_ERROR() << "ForLoop: Need at least 4 items on stack, have: " << data_->Size();
+                    KAI_TRACE_ERROR()
+                        << "ForLoop: Need at least 4 items on stack, have: "
+                        << data_->Size();
                     break;
                 }
-                
-                // Debug: print what's on the stack  
+
+                // Debug: print what's on the stack
                 KAI_TRACE() << "ForLoop: Stack size: " << data_->Size();
-                KAI_TRACE() << "ForLoop: Checking stack positions for range-based syntax:";
+                KAI_TRACE() << "ForLoop: Checking stack positions for "
+                               "range-based syntax:";
                 if (data_->Size() >= 4) {
                     for (int i = 0; i < 4; ++i) {
                         auto item = data_->At(i);
-                        KAI_TRACE() << "  Position " << i << " (expecting " << 
-                            (i == 0 ? "int accumulator" : 
-                             i == 1 ? "int start" :
-                             i == 2 ? "int end" : 
-                             "Continuation body") << "): ";
+                        KAI_TRACE() << "  Position " << i << " (expecting "
+                                    << (i == 0   ? "int accumulator"
+                                        : i == 1 ? "int start"
+                                        : i == 2 ? "int end"
+                                                 : "Continuation body")
+                                    << "): ";
                         if (item.GetClass()) {
-                            KAI_TRACE() << "    Found: " << item.GetClass()->GetName() << " (type: " << item.GetTypeNumber().ToInt() << ")";
+                            KAI_TRACE()
+                                << "    Found: " << item.GetClass()->GetName()
+                                << " (type: " << item.GetTypeNumber().ToInt()
+                                << ")";
                             if (item.IsType<int>()) {
-                                KAI_TRACE() << "    value: " << ConstDeref<int>(item);
+                                KAI_TRACE()
+                                    << "    value: " << ConstDeref<int>(item);
                             }
                         } else {
                             KAI_TRACE() << "    Found: <no class>";
                         }
                     }
                 }
-                
+
                 // Check the stack to determine syntax type
-                // Note: In Pi, items are pushed in order, so "0 1 5 { + } for" results in:
-                // Bottom [0]: 0, [1]: 1, [2]: 5, [3]: { + }
-                
-                // SYNTAX 1: Range-based (Pi style)  
-                // Stack order from bottom to top: accumulator start end body_continuation
-                // For "0 1 5 { + } for", the stack is:
-                // At(3) = 0 (accumulator, bottom - can be any type)
-                // At(2) = 1 (start)
+                // Note: In Pi, items are pushed in order, so "0 1 5 { + } for"
+                // results in: Bottom [0]: 0, [1]: 1, [2]: 5, [3]: { + }
+
+                // SYNTAX 1: Range-based (Pi style)
+                // Stack order from bottom to top: accumulator start end
+                // body_continuation For "0 1 5 { + } for", the stack is: At(3)
+                // = 0 (accumulator, bottom - can be any type) At(2) = 1 (start)
                 // At(1) = 5 (end)
                 // At(0) = { + } (body, top)
                 if (data_->Size() >= 4 &&
-                    data_->At(2).IsType<int>() &&     // start must be int
-                    data_->At(1).IsType<int>() &&     // end must be int
-                    data_->At(0).IsType<Continuation>()) {  // body must be continuation
-                    
+                    data_->At(2).IsType<int>() &&  // start must be int
+                    data_->At(1).IsType<int>() &&  // end must be int
+                    data_->At(0)
+                        .IsType<Continuation>()) {  // body must be continuation
+
                     KAI_TRACE() << "ForLoop: Range-based syntax detected";
-                    
+
                     // Pop in reverse order (top to bottom)
-                    auto body = Pop();          // Top: continuation
+                    auto body = Pop();                   // Top: continuation
                     int end = ConstDeref<int>(Pop());    // end value
-                    int start = ConstDeref<int>(Pop());  // start value  
+                    int start = ConstDeref<int>(Pop());  // start value
                     Object accumulator = Pop();          // Bottom: accumulator
-                    
+
                     if (!body.IsType<Continuation>()) {
-                        KAI_TRACE_ERROR() << "ForLoop: Body must be continuation";
+                        KAI_TRACE_ERROR()
+                            << "ForLoop: Body must be continuation";
                         Push(accumulator);
                         break;
                     }
-                    
+
                     Pointer<Continuation> bodyCont = body;
-                    
+
                     // Execute range loop
                     for (int i = start; i <= end; ++i) {
                         // Push accumulator and current value
                         Push(accumulator);
                         Push(New<int>(i));
-                        
+
                         if (traceLevel_ > 0) {
-                            KAI_TRACE() << "ForLoop iteration " << i << ": accumulator=" << accumulator << ", current=" << i;
+                            KAI_TRACE() << "ForLoop iteration " << i
+                                        << ": accumulator=" << accumulator
+                                        << ", current=" << i;
                         }
-                        
+
                         // Execute body inline
                         if (bodyCont->GetCode().Exists()) {
-                            for (int j = 0; j < bodyCont->GetCode()->Size(); ++j) {
+                            for (int j = 0; j < bodyCont->GetCode()->Size();
+                                 ++j) {
                                 if (break_ || continue_) break;
                                 auto obj = bodyCont->GetCode()->At(j);
                                 if (obj.Exists()) {
@@ -1316,87 +1403,91 @@ void Executor::Perform(Operation::Type op) {
                                 }
                             }
                         }
-                        
+
                         // Handle control flow
                         if (break_) {
                             break_ = false;
                             break;
                         }
-                        
+
                         // Get new accumulator value
                         if (!data_->Empty()) {
                             accumulator = Pop();
                             if (traceLevel_ > 0) {
-                                KAI_TRACE() << "ForLoop: New accumulator after iteration " << i << ": " << accumulator;
+                                KAI_TRACE() << "ForLoop: New accumulator after "
+                                               "iteration "
+                                            << i << ": " << accumulator;
                             }
                         } else {
-                            KAI_TRACE_ERROR() << "ForLoop: Stack empty after body execution";
+                            KAI_TRACE_ERROR()
+                                << "ForLoop: Stack empty after body execution";
                         }
                     }
-                    
+
                     // Push final accumulator
                     Push(accumulator);
                 }
-                // SYNTAX 2: Traditional (C-style) 
+                // SYNTAX 2: Traditional (C-style)
                 // Stack: init_cont cond_cont incr_cont body_cont
                 else {
                     KAI_TRACE() << "ForLoop: Traditional syntax detected";
-                    
+
                     auto body = Pop();
                     auto incr = Pop();
                     auto cond = Pop();
                     auto init = Pop();
-                    
+
                     // Validate all are continuations
-                    if (!init.IsType<Continuation>() || !cond.IsType<Continuation>() ||
-                        !incr.IsType<Continuation>() || !body.IsType<Continuation>()) {
-                        KAI_TRACE_ERROR() << "ForLoop: All 4 items must be continuations";
+                    if (!init.IsType<Continuation>() ||
+                        !cond.IsType<Continuation>() ||
+                        !incr.IsType<Continuation>() ||
+                        !body.IsType<Continuation>()) {
+                        KAI_TRACE_ERROR()
+                            << "ForLoop: All 4 items must be continuations";
                         break;
                     }
-                    
+
                     Pointer<Continuation> initCont = init;
                     Pointer<Continuation> condCont = cond;
                     Pointer<Continuation> incrCont = incr;
                     Pointer<Continuation> bodyCont = body;
-                    
+
                     // Execute initialization
                     ExecuteContinuationInline(initCont);
-                    
+
                     // Main loop
                     break_ = false;
                     while (true) {
                         continue_ = false;
-                        
+
                         // Check condition
                         ExecuteContinuationInline(condCont);
-                        
+
                         if (data_->Empty() || !PopBool()) {
                             break;
                         }
-                        
+
                         // Execute body
                         ExecuteContinuationInline(bodyCont);
-                        
+
                         if (break_) {
                             break_ = false;
                             break;
                         }
-                        
+
                         // Execute increment (even with continue)
                         ExecuteContinuationInline(incrCont);
                     }
                 }
-            }
-            catch (const Exception::Base& e) {
+            } catch (const Exception::Base& e) {
                 KAI_TRACE_ERROR() << "ForLoop: " << e.ToString();
-            }
-            catch (const std::exception& e) {
+            } catch (const std::exception& e) {
                 KAI_TRACE_ERROR() << "ForLoop: " << e.what();
             }
-            
+
             break;
         }
-        
+
         case Operation::DoLoop: {
             // ( body cond -- )
             // Do-while loop: execute body first, then check condition
@@ -1407,30 +1498,32 @@ void Executor::Perform(Operation::Type op) {
                     KAI_TRACE_ERROR() << "DoLoop: Invalid data stack";
                     break;
                 }
-                
+
                 // Check if we have enough items on the stack
                 if (data_->Size() < 2) {
-                    KAI_TRACE_ERROR() << "DoLoop: Not enough items on stack (need at least 2)";
+                    KAI_TRACE_ERROR() << "DoLoop: Not enough items on stack "
+                                         "(need at least 2)";
                     break;
                 }
-                
+
                 // Get continuations
                 auto condCont = Pop();
                 auto bodyCont = Pop();
-                
-                if (!condCont.IsType<Continuation>() || !bodyCont.IsType<Continuation>()) {
+
+                if (!condCont.IsType<Continuation>() ||
+                    !bodyCont.IsType<Continuation>()) {
                     KAI_TRACE_ERROR() << "DoLoop: Expected continuations";
                     break;
                 }
-                
+
                 Pointer<Continuation> condition = condCont;
                 Pointer<Continuation> body = bodyCont;
-                
+
                 // Execute do-while loop inline
                 break_ = false;  // Reset break flag
                 do {
                     continue_ = false;  // Reset continue flag at loop start
-                    
+
                     // Execute body
                     if (body->GetCode().Exists()) {
                         for (int i = 0; i < body->GetCode()->Size(); ++i) {
@@ -1443,13 +1536,13 @@ void Executor::Perform(Operation::Type op) {
                             }
                         }
                     }
-                    
+
                     // Check for break after body execution
                     if (break_) {
                         break_ = false;  // Reset for next loop
-                        break;  // Exit the do-while loop
+                        break;           // Exit the do-while loop
                     }
-                    
+
                     // Evaluate condition (even if continue was hit)
                     if (condition->GetCode().Exists()) {
                         for (int i = 0; i < condition->GetCode()->Size(); ++i) {
@@ -1459,23 +1552,20 @@ void Executor::Perform(Operation::Type op) {
                             }
                         }
                     }
-                    
+
                     // Check condition result
                 } while (!data_->Empty() && PopBool());
-            }
-            catch (const Exception::Base& e) {
+            } catch (const Exception::Base& e) {
                 KAI_TRACE_ERROR() << "DoLoop: KAI exception: " << e.ToString();
-            }
-            catch (const std::exception& e) {
+            } catch (const std::exception& e) {
                 KAI_TRACE_ERROR() << "DoLoop: std::exception: " << e.what();
-            }
-            catch (...) {
+            } catch (...) {
                 KAI_TRACE_ERROR() << "DoLoop: Unknown exception";
             }
-            
+
             break;
         }
-        
+
         case Operation::Jump: {
             // Unconditional jump to a label
             // Stack: ( target -- )
@@ -1486,213 +1576,263 @@ void Executor::Perform(Operation::Type op) {
                     KAI_TRACE_ERROR() << "Jump: Invalid data stack";
                     break;
                 }
-                
+
                 // Check if we have items on the stack
                 if (data_->Empty()) {
-                    KAI_TRACE_ERROR() << "Jump: Empty stack, expected jump target";
+                    KAI_TRACE_ERROR()
+                        << "Jump: Empty stack, expected jump target";
                     break;
                 }
-                
+
                 // Get the jump target
                 Object jumpTarget = data_->Top();
                 data_->Pop();
-                
+
                 // Verify that the jump target exists
                 if (!jumpTarget.Exists()) {
-                    KAI_TRACE_ERROR() << "Jump: Invalid jump target (null object)";
+                    KAI_TRACE_ERROR()
+                        << "Jump: Invalid jump target (null object)";
                     break;
                 }
-                
-                // If the jump target is a continuation, extract the first element as the label
+
+                // If the jump target is a continuation, extract the first
+                // element as the label
                 if (jumpTarget.IsType<Continuation>()) {
                     Pointer<Continuation> jumpCont = jumpTarget;
-                    if (jumpCont->GetCode().Exists() && jumpCont->GetCode()->Size() > 0) {
+                    if (jumpCont->GetCode().Exists() &&
+                        jumpCont->GetCode()->Size() > 0) {
                         Object labelObj = jumpCont->GetCode()->At(0);
-                        
+
                         // If the first element is a label, find its target
                         if (labelObj.IsType<Label>()) {
                             Label targetLabel = ConstDeref<Label>(labelObj);
-                            KAI_TRACE() << "Jump: Jumping to label " << targetLabel.ToString();
-                            
+                            KAI_TRACE() << "Jump: Jumping to label "
+                                        << targetLabel.ToString();
+
                             // Check if we have a valid target point in the code
-                            // The target should be in the code of the current continuation
+                            // The target should be in the code of the current
+                            // continuation
                             if (continuation_.Exists()) {
                                 // Get a pointer to the current continuation
                                 auto cont = continuation_.GetObject();
                                 if (cont.IsType<Continuation>()) {
                                     Pointer<Continuation> currentCont = cont;
-                                    Pointer<Array> code = currentCont->GetCode();
-                                    
+                                    Pointer<Array> code =
+                                        currentCont->GetCode();
+
                                     // Search for the label in the code
                                     if (code.Exists()) {
-                                        // Find the position of the label in the current code
+                                        // Find the position of the label in the
+                                        // current code
                                         int pos = -1;
                                         for (int i = 0; i < code->Size(); ++i) {
-                                            if (code->At(i).IsType<Label>() && 
-                                                ConstDeref<Label>(code->At(i)) == targetLabel) {
+                                            if (code->At(i).IsType<Label>() &&
+                                                ConstDeref<Label>(code->At(
+                                                    i)) == targetLabel) {
                                                 pos = i;
                                                 break;
                                             }
                                         }
-                                        
+
                                         if (pos >= 0) {
-                                            // We found the label, set the instruction pointer to that position
-                                            currentCont->SetInstructionPointer(pos);
-                                            KAI_TRACE() << "Jump: Found label at position " << pos;
+                                            // We found the label, set the
+                                            // instruction pointer to that
+                                            // position
+                                            currentCont->SetInstructionPointer(
+                                                pos);
+                                            KAI_TRACE() << "Jump: Found label "
+                                                           "at position "
+                                                        << pos;
                                         } else {
-                                            KAI_TRACE_ERROR() << "Jump: Label not found in current code";
+                                            KAI_TRACE_ERROR()
+                                                << "Jump: Label not found in "
+                                                   "current code";
                                         }
                                     } else {
-                                        KAI_TRACE_ERROR() << "Jump: Current continuation has no code";
+                                        KAI_TRACE_ERROR()
+                                            << "Jump: Current continuation has "
+                                               "no code";
                                     }
                                 } else {
-                                    KAI_TRACE_ERROR() << "Jump: Current continuation is not a Continuation";
+                                    KAI_TRACE_ERROR()
+                                        << "Jump: Current continuation is not "
+                                           "a Continuation";
                                 }
                             } else {
-                                KAI_TRACE_ERROR() << "Jump: No valid current continuation";
+                                KAI_TRACE_ERROR()
+                                    << "Jump: No valid current continuation";
                             }
                         } else {
-                            KAI_TRACE_ERROR() << "Jump: First element in jump target is not a label";
+                            KAI_TRACE_ERROR() << "Jump: First element in jump "
+                                                 "target is not a label";
                         }
                     } else {
-                        KAI_TRACE_ERROR() << "Jump: Empty jump target continuation";
+                        KAI_TRACE_ERROR()
+                            << "Jump: Empty jump target continuation";
                     }
                 } else {
-                    KAI_TRACE_ERROR() << "Jump: Jump target is not a continuation";
+                    KAI_TRACE_ERROR()
+                        << "Jump: Jump target is not a continuation";
                 }
-            }
-            catch (const Exception::Base& e) {
+            } catch (const Exception::Base& e) {
                 KAI_TRACE_ERROR() << "Jump: KAI exception: " << e.ToString();
-            }
-            catch (const std::exception& e) {
+            } catch (const std::exception& e) {
                 KAI_TRACE_ERROR() << "Jump: std::exception: " << e.what();
-            }
-            catch (...) {
+            } catch (...) {
                 KAI_TRACE_ERROR() << "Jump: Unknown exception";
             }
-            
+
             break;
         }
-        
+
         case Operation::IfFalseJump: {
             // Conditional jump to a label if the top of the stack is false
             // Stack: ( condition target -- )
-            // where condition is a boolean and target is a continuation containing a label
+            // where condition is a boolean and target is a continuation
+            // containing a label
             try {
                 // Check for valid data stack first
                 if (!data_.Valid() || !data_.Exists()) {
                     KAI_TRACE_ERROR() << "IfFalseJump: Invalid data stack";
                     break;
                 }
-                
+
                 // Check if we have enough items on the stack
                 if (data_->Size() < 1) {
-                    KAI_TRACE_ERROR() << "IfFalseJump: Not enough items on stack (need jump target)";
+                    KAI_TRACE_ERROR() << "IfFalseJump: Not enough items on "
+                                         "stack (need jump target)";
                     break;
                 }
-                
+
                 // Get the jump target
                 Object jumpTarget = data_->Top();
                 data_->Pop();
-                
+
                 // Check if we have a condition value
                 if (data_->Empty()) {
-                    KAI_TRACE_ERROR() << "IfFalseJump: No condition value on stack";
+                    KAI_TRACE_ERROR()
+                        << "IfFalseJump: No condition value on stack";
                     break;
                 }
-                
+
                 // Get the condition value
                 bool condition = PopBool();
-                
+
                 // If the condition is true, we don't jump
                 if (condition) {
-                    KAI_TRACE() << "IfFalseJump: Condition is true, not jumping";
+                    KAI_TRACE()
+                        << "IfFalseJump: Condition is true, not jumping";
                     break;
                 }
-                
-                // Condition is false, perform the jump using the same logic as Jump operation
+
+                // Condition is false, perform the jump using the same logic as
+                // Jump operation
                 KAI_TRACE() << "IfFalseJump: Condition is false, jumping";
-                
+
                 // Verify that the jump target exists
                 if (!jumpTarget.Exists()) {
-                    KAI_TRACE_ERROR() << "IfFalseJump: Invalid jump target (null object)";
+                    KAI_TRACE_ERROR()
+                        << "IfFalseJump: Invalid jump target (null object)";
                     break;
                 }
-                
-                // If the jump target is a continuation, extract the first element as the label
+
+                // If the jump target is a continuation, extract the first
+                // element as the label
                 if (jumpTarget.IsType<Continuation>()) {
                     Pointer<Continuation> jumpCont = jumpTarget;
-                    if (jumpCont->GetCode().Exists() && jumpCont->GetCode()->Size() > 0) {
+                    if (jumpCont->GetCode().Exists() &&
+                        jumpCont->GetCode()->Size() > 0) {
                         Object labelObj = jumpCont->GetCode()->At(0);
-                        
+
                         // If the first element is a label, find its target
                         if (labelObj.IsType<Label>()) {
                             Label targetLabel = ConstDeref<Label>(labelObj);
-                            KAI_TRACE() << "IfFalseJump: Jumping to label " << targetLabel.ToString();
-                            
+                            KAI_TRACE() << "IfFalseJump: Jumping to label "
+                                        << targetLabel.ToString();
+
                             // Check if we have a valid target point in the code
-                            // The target should be in the code of the current continuation
+                            // The target should be in the code of the current
+                            // continuation
                             if (continuation_.Exists()) {
                                 // Get a pointer to the current continuation
                                 auto cont = continuation_.GetObject();
                                 if (cont.IsType<Continuation>()) {
                                     Pointer<Continuation> currentCont = cont;
-                                    Pointer<Array> code = currentCont->GetCode();
-                                    
+                                    Pointer<Array> code =
+                                        currentCont->GetCode();
+
                                     // Search for the label in the code
                                     if (code.Exists()) {
-                                        // Find the position of the label in the current code
+                                        // Find the position of the label in the
+                                        // current code
                                         int pos = -1;
                                         for (int i = 0; i < code->Size(); ++i) {
-                                            if (code->At(i).IsType<Label>() && 
-                                                ConstDeref<Label>(code->At(i)) == targetLabel) {
+                                            if (code->At(i).IsType<Label>() &&
+                                                ConstDeref<Label>(code->At(
+                                                    i)) == targetLabel) {
                                                 pos = i;
                                                 break;
                                             }
                                         }
-                                        
+
                                         if (pos >= 0) {
-                                            // We found the label, set the instruction pointer to that position
-                                            currentCont->SetInstructionPointer(pos);
-                                            KAI_TRACE() << "IfFalseJump: Found label at position " << pos;
+                                            // We found the label, set the
+                                            // instruction pointer to that
+                                            // position
+                                            currentCont->SetInstructionPointer(
+                                                pos);
+                                            KAI_TRACE() << "IfFalseJump: Found "
+                                                           "label at position "
+                                                        << pos;
                                         } else {
-                                            KAI_TRACE_ERROR() << "IfFalseJump: Label not found in current code";
+                                            KAI_TRACE_ERROR()
+                                                << "IfFalseJump: Label not "
+                                                   "found in current code";
                                         }
                                     } else {
-                                        KAI_TRACE_ERROR() << "IfFalseJump: Current continuation has no code";
+                                        KAI_TRACE_ERROR()
+                                            << "IfFalseJump: Current "
+                                               "continuation has no code";
                                     }
                                 } else {
-                                    KAI_TRACE_ERROR() << "IfFalseJump: Current continuation is not a Continuation";
+                                    KAI_TRACE_ERROR()
+                                        << "IfFalseJump: Current continuation "
+                                           "is not a Continuation";
                                 }
                             } else {
-                                KAI_TRACE_ERROR() << "IfFalseJump: No valid current continuation";
+                                KAI_TRACE_ERROR() << "IfFalseJump: No valid "
+                                                     "current continuation";
                             }
                         } else {
-                            KAI_TRACE_ERROR() << "IfFalseJump: First element in jump target is not a label";
+                            KAI_TRACE_ERROR()
+                                << "IfFalseJump: First element in jump target "
+                                   "is not a label";
                         }
                     } else {
-                        KAI_TRACE_ERROR() << "IfFalseJump: Empty jump target continuation";
+                        KAI_TRACE_ERROR()
+                            << "IfFalseJump: Empty jump target continuation";
                     }
                 } else {
-                    KAI_TRACE_ERROR() << "IfFalseJump: Jump target is not a continuation";
+                    KAI_TRACE_ERROR()
+                        << "IfFalseJump: Jump target is not a continuation";
                 }
-            }
-            catch (const Exception::Base& e) {
-                KAI_TRACE_ERROR() << "IfFalseJump: KAI exception: " << e.ToString();
-            }
-            catch (const std::exception& e) {
-                KAI_TRACE_ERROR() << "IfFalseJump: std::exception: " << e.what();
-            }
-            catch (...) {
+            } catch (const Exception::Base& e) {
+                KAI_TRACE_ERROR()
+                    << "IfFalseJump: KAI exception: " << e.ToString();
+            } catch (const std::exception& e) {
+                KAI_TRACE_ERROR()
+                    << "IfFalseJump: std::exception: " << e.what();
+            } catch (...) {
                 KAI_TRACE_ERROR() << "IfFalseJump: Unknown exception";
             }
-            
+
             break;
         }
-        
+
         case Operation::UnnnamedOp: {
-            // UnnnamedOp is a placeholder for operations that don't have a specific implementation
-            // In most cases, we can just ignore it without causing an error
+            // UnnnamedOp is a placeholder for operations that don't have a
+            // specific implementation In most cases, we can just ignore it
+            // without causing an error
             KAI_TRACE() << "Ignoring UnnnamedOp operation";
             break;
         }
@@ -1704,34 +1844,36 @@ void Executor::Perform(Operation::Type op) {
                 KAI_TRACE_ERROR() << "Index: Not enough items on stack";
                 break;
             }
-            
+
             Object index = Pop();
             Object container = Pop();
-            
+
             if (!container.Exists()) {
                 KAI_TRACE_ERROR() << "Index: Container is null";
                 Push(Object());
                 break;
             }
-            
+
             if (!index.IsType<int>()) {
                 KAI_TRACE_ERROR() << "Index: Index must be an integer";
                 Push(Object());
                 break;
             }
-            
+
             int idx = ConstDeref<int>(index);
-            
+
             if (container.IsType<Array>()) {
                 Pointer<Array> arr = container;
                 if (idx < 0 || idx >= arr->Size()) {
-                    KAI_TRACE_ERROR() << "Index: Array index out of bounds: " << idx;
+                    KAI_TRACE_ERROR()
+                        << "Index: Array index out of bounds: " << idx;
                     Push(Object());
                     break;
                 }
                 Push(arr->At(idx));
             } else {
-                KAI_TRACE_ERROR() << "Index: Container type not supported for indexing";
+                KAI_TRACE_ERROR()
+                    << "Index: Container type not supported for indexing";
                 Push(Object());
             }
             break;
@@ -1744,29 +1886,30 @@ void Executor::Perform(Operation::Type op) {
                 KAI_TRACE_ERROR() << "SetChild: Not enough items on stack";
                 break;
             }
-            
+
             Object value = Pop();
             Object index = Pop();
             Object container = Pop();
-            
+
             if (!container.Exists()) {
                 KAI_TRACE_ERROR() << "SetChild: Container is null";
                 Push(container);
                 break;
             }
-            
+
             if (!index.IsType<int>()) {
                 KAI_TRACE_ERROR() << "SetChild: Index must be an integer";
                 Push(container);
                 break;
             }
-            
+
             int idx = ConstDeref<int>(index);
-            
+
             if (container.IsType<Array>()) {
                 Pointer<Array> arr = container;
                 if (idx < 0 || idx >= arr->Size()) {
-                    KAI_TRACE_ERROR() << "SetChild: Array index out of bounds: " << idx;
+                    KAI_TRACE_ERROR()
+                        << "SetChild: Array index out of bounds: " << idx;
                     Push(container);
                     break;
                 }
@@ -1774,7 +1917,8 @@ void Executor::Perform(Operation::Type op) {
                 arr->RefAt(idx) = value;
                 Push(container);
             } else {
-                KAI_TRACE_ERROR() << "SetChild: Container type not supported for indexing";
+                KAI_TRACE_ERROR()
+                    << "SetChild: Container type not supported for indexing";
                 Push(container);
             }
             break;
@@ -1783,7 +1927,7 @@ void Executor::Perform(Operation::Type op) {
         case Operation::Min: {
             Object B = Pop();
             Object A = Pop();
-            
+
             // Use type traits via PerformBinaryOp for all types
             Object result = PerformBinaryOp(A, B, Operation::Min);
             Push(result);
@@ -1793,7 +1937,7 @@ void Executor::Perform(Operation::Type op) {
         case Operation::Max: {
             Object B = Pop();
             Object A = Pop();
-            
+
             // Use type traits via PerformBinaryOp for all types
             Object result = PerformBinaryOp(A, B, Operation::Max);
             Push(result);
@@ -1802,28 +1946,29 @@ void Executor::Perform(Operation::Type op) {
 
         case Operation::Return: {
             KAI_TRACE() << "Return operation";
-            
+
             // Get the return value from the stack (if any)
             Object returnValue;
             if (!GetDataStack()->Empty()) {
                 returnValue = Pop();
             }
-            
+
             // Signal that we want to return from this continuation
             break_ = true;
-            
+
             // Push the return value back on the stack for the caller
             if (returnValue.Exists()) {
                 Push(returnValue);
             }
-            
-            // For function returns, we need to resume the suspended continuation
-            // The Suspend operation pushed the caller's continuation onto the context stack
-            // So when we return, NextContinuation will pop it and resume execution
-            
+
+            // For function returns, we need to resume the suspended
+            // continuation The Suspend operation pushed the caller's
+            // continuation onto the context stack So when we return,
+            // NextContinuation will pop it and resume execution
+
             break;
         }
-        
+
         case Operation::None: {
             // Push a null/none object onto the stack
             Push(Object());
@@ -1857,10 +2002,11 @@ void Executor::Perform(Operation::Type op) {
             }
             break;
         }
-        
+
         default: {
             // Provide a default implementation for unimplemented operations
-            KAI_TRACE_ERROR() << "Unimplemented operation: " << Operation::ToString(op);
+            KAI_TRACE_ERROR()
+                << "Unimplemented operation: " << Operation::ToString(op);
             KAI_THROW_1(Base, "Unimplemented operation");
             break;
         }

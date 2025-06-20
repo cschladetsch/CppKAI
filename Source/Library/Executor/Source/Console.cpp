@@ -66,21 +66,17 @@ void Console::ExposeTypesToTree(Object types) {
     }
 }
 
-void Console::SetLanguage(Language lang) {
-    language = lang;
-}
+void Console::SetLanguage(Language lang) { language = lang; }
 
-void Console::SetLanguage(int lang) {
-    language = static_cast<Language>(lang);
-}
+void Console::SetLanguage(int lang) { language = static_cast<Language>(lang); }
 
 void Console::SetTranslator(std::shared_ptr<TranslatorCommon> trans) {
     translator = trans;
-    
+
     // Set up the compiler's translation function to use our translator
     if (compiler.Exists() && translator) {
         compiler->SetTranslateFunction(
-            [this](const String& text, Structure st) -> Pointer<Continuation> {
+            [this](const String &text, Structure st) -> Pointer<Continuation> {
                 return translator->Translate(text.c_str(), st);
             });
     }
@@ -232,7 +228,7 @@ void Console::Execute(Pointer<Continuation> cont) {
 void Console::Execute(String const &text, Structure st) {
     // Use the translator if available, otherwise use compiler
     Pointer<Continuation> cont;
-    
+
     if (translator) {
         cont = translator->Translate(text.c_str(), st);
     } else if (compiler.Exists()) {
@@ -241,7 +237,7 @@ void Console::Execute(String const &text, Structure st) {
         KAI_TRACE_ERROR() << "No translator or compiler available";
         return;
     }
-    
+
     if (!cont.Exists()) {
         KAI_TRACE_WARN() << "Translation of '" << text
                          << "' yielded invalid continuation";
@@ -891,7 +887,7 @@ String Console::Process(const String &text) {
         } else if (compiler.Exists()) {
             cont = compiler->Translate(expandedText.c_str(), structure);
         }
-        
+
         if (cont.Exists()) {
             // Set the scope
             cont->SetScope(tree.GetScope());
@@ -1168,13 +1164,13 @@ int Console::Run() {
                     // Check for language switch commands
                     if (text == "pi") {
                         SetLanguage(Language::Pi);
-                        // Note: The main application should handle translator switching
-                        // For now, just set the language
+                        // Note: The main application should handle translator
+                        // switching For now, just set the language
                         continue;
                     } else if (text == "rho") {
                         SetLanguage(Language::Rho);
-                        // Note: The main application should handle translator switching
-                        // For now, just set the language
+                        // Note: The main application should handle translator
+                        // switching For now, just set the language
                         continue;
                     }
 

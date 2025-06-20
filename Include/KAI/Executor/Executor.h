@@ -19,10 +19,9 @@ struct Executor : Reflected {
     Executor();
     // Destructor - needs to be defined in .cpp to avoid incomplete type issue
     ~Executor();
-    
+
     void Create();
     bool Destroy();
-    
 
     void SetScope(Object);
     void PopScope();
