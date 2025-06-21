@@ -28,6 +28,7 @@ std::string default_log_dir = std::string(getenv("HOME")) + "/local/KAI/Logs";
 Logger::Level Logger::s_level = Logger::Level::Info;
 std::string Logger::s_logDirectory = default_log_dir;
 bool Logger::s_initialized = false;
+bool Logger::s_consoleOutputForInfoDebug = false;  // Default: INFO/DEBUG only go to files
 
 // Helper function to create a formatted timestamp, compatible with older
 // compilers
@@ -132,6 +133,14 @@ void Logger::SetLevel(Level level) { s_level = level; }
 
 Logger::Level Logger::GetLevel() { return s_level; }
 
+void Logger::SetConsoleOutputForInfoDebug(bool enabled) {
+    s_consoleOutputForInfoDebug = enabled;
+}
+
+bool Logger::GetConsoleOutputForInfoDebug() {
+    return s_consoleOutputForInfoDebug;
+}
+
 std::string Logger::LevelToString(Level level) {
     switch (level) {
         case Level::Debug:
@@ -176,15 +185,27 @@ void Logger::Log(Level level, const std::string& message) {
     rang::fg color = GetColorForLevel(level);
     rang::style style = GetStyleForLevel(level);
 
-    // Print to console with different colors for each part
-    if (level == Level::Error || level == Level::Fatal) {
-        std::cerr << rang::fg::gray << "[" << timestamp << "] " << style
-                  << color << "[" << levelStr << "] " << rang::style::reset
-                  << rang::fg::reset << message << std::endl;
-    } else {
-        std::cout << rang::fg::gray << "[" << timestamp << "] " << style
-                  << color << "[" << levelStr << "] " << rang::style::reset
-                  << rang::fg::reset << message << std::endl;
+    // Determine if we should output to console
+    bool outputToConsole = false;
+    if (level == Level::Warning || level == Level::Error || level == Level::Fatal) {
+        // Always output warnings, errors, and fatal to console
+        outputToConsole = true;
+    } else if ((level == Level::Info || level == Level::Debug) && s_consoleOutputForInfoDebug) {
+        // Only output info/debug to console if explicitly enabled
+        outputToConsole = true;
+    }
+
+    // Print to console if needed
+    if (outputToConsole) {
+        if (level == Level::Error || level == Level::Fatal) {
+            std::cerr << rang::fg::gray << "[" << timestamp << "] " << style
+                      << color << "[" << levelStr << "] " << rang::style::reset
+                      << rang::fg::reset << message << std::endl;
+        } else {
+            std::cout << rang::fg::gray << "[" << timestamp << "] " << style
+                      << color << "[" << levelStr << "] " << rang::style::reset
+                      << rang::fg::reset << message << std::endl;
+        }
     }
 
     // Ensure the log directory exists

@@ -48,6 +48,10 @@ class Logger {
     // Helper to get a filename for a specific module
     static std::string GetLogFilename(const std::string& module);
 
+    // Configuration for console output
+    static void SetConsoleOutputForInfoDebug(bool enabled);
+    static bool GetConsoleOutputForInfoDebug();
+
    private:
     static std::string LevelToString(Level level);
     static bool ShouldLog(Level level);
@@ -55,6 +59,7 @@ class Logger {
     static Level s_level;
     static std::string s_logDirectory;
     static bool s_initialized;
+    static bool s_consoleOutputForInfoDebug;
 };
 
 KAI_END
