@@ -782,19 +782,30 @@ bool RhoParser::IfCondition(AstNodePtr block) {
         KAI_TRACE() << "IfCondition: After consuming else, position "
                     << (int)current;
 
-        // Expect newline after else
-        if (!Try(TokenType::NewLine)) {
-            return CreateError("Expected newline after else");
+        // Check if this is an "else if" case
+        if (Try(TokenType::If)) {
+            KAI_TRACE() << "IfCondition: Found 'else if' pattern";
+            // This is an "else if" - parse it as a nested if statement
+            auto falseClause = NewNode(NodeType::Block);
+            if (!IfCondition(falseClause)) {
+                return CreateError("Failed to parse else if condition");
+            }
+            cond->Add(falseClause);
+        } else {
+            // Regular else block - expect newline after else
+            if (!Try(TokenType::NewLine)) {
+                return CreateError("Expected newline after else");
+            }
+            Consume();
+
+            auto falseClause = NewNode(NodeType::Block);
+            KAI_TRACE() << "IfCondition: Parsing else block";
+            Block(falseClause);
+            KAI_TRACE() << "IfCondition: Finished else block, position "
+                        << (int)current;
+
+            cond->Add(falseClause);
         }
-        Consume();
-
-        auto falseClause = NewNode(NodeType::Block);
-        KAI_TRACE() << "IfCondition: Parsing else block";
-        Block(falseClause);
-        KAI_TRACE() << "IfCondition: Finished else block, position "
-                    << (int)current;
-
-        cond->Add(falseClause);
     }
 
     // Semicolons are optional in Rho

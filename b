@@ -157,6 +157,6 @@ fi
 cd ..
 
 echo -e "${GREEN}Build successful!${NC}"
-echo -e "${YELLOW}Executables can be found in ${BUILD_DIR}/Bin${NC}"
+echo -e "${YELLOW}Executables can be found in Bin/${NC}"
 echo -e "${BLUE}Main executables:${NC}"
-ls -la ${BUILD_DIR}/Bin/*.exe 2>/dev/null || ls -la ${BUILD_DIR}/Bin/* 2>/dev/null | grep -E '^-..x' | awk '{print "  - " $9}'
+ls -la Bin/*.exe 2>/dev/null || ls -la Bin/* 2>/dev/null | grep -E '^-..x' | awk '{print "  - " $9}'

@@ -1,2 +1,0 @@
-#!/bin/bash
-cd /home/xian/local/KAI/build && ninja Console > /dev/null 2>&1 && ./Bin/Console

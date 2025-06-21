@@ -776,8 +776,8 @@ void Executor::Perform(Operation::Type op) {
         }
 
         case Operation::If: {
-            // ( condition continuation -- result )
-            // Run continuation if condition is true, else push None.
+            // ( condition continuation -- )
+            // Run continuation if condition is true
             KAI_TRACE() << "If operation: Getting continuation from stack";
             auto continuation = Pop();
             bool condition = PopBool();
@@ -785,11 +785,10 @@ void Executor::Perform(Operation::Type op) {
 
             if (condition) {
                 KAI_TRACE() << "If operation: Executing then block";
-                // We need to execute the continuation properly
+                // Execute the continuation inline like IfElse does
                 if (continuation.IsType<Continuation>()) {
-                    // Save current continuation state and execute the then block
-                    Push(continuation);
-                    Eval(New<Operation>(Operation::Suspend));
+                    Pointer<Continuation> cont = continuation;
+                    ExecuteContinuationInline(cont);
                 } else {
                     KAI_TRACE_ERROR() << "If operation: Expected continuation, got " 
                                       << continuation.GetTypeNumber().ToString();
@@ -798,7 +797,6 @@ void Executor::Perform(Operation::Type op) {
                 KAI_TRACE() << "If operation: Skipping then block";
             }
 
-            // If operation should not push anything onto the stack
             break;
         }
 
