@@ -135,7 +135,7 @@ String Pathname::ToString() const {
                 break;
 
             case Element::Name:
-                str << element.name.ToString();
+                str << element.name_.ToString();
                 break;
 
             case Element::None:

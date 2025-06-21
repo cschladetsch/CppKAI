@@ -2585,6 +2585,30 @@ TestRho/SimpleDirectTest.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleDirectTest.cpp.s
 .PHONY : TestRho/SimpleDirectTest.cpp.s
 
+TestRho/SimpleDoWhileContinueTest.o: TestRho/SimpleDoWhileContinueTest.cpp.o
+.PHONY : TestRho/SimpleDoWhileContinueTest.o
+
+# target to build an object file
+TestRho/SimpleDoWhileContinueTest.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleDoWhileContinueTest.cpp.o
+.PHONY : TestRho/SimpleDoWhileContinueTest.cpp.o
+
+TestRho/SimpleDoWhileContinueTest.i: TestRho/SimpleDoWhileContinueTest.cpp.i
+.PHONY : TestRho/SimpleDoWhileContinueTest.i
+
+# target to preprocess a source file
+TestRho/SimpleDoWhileContinueTest.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleDoWhileContinueTest.cpp.i
+.PHONY : TestRho/SimpleDoWhileContinueTest.cpp.i
+
+TestRho/SimpleDoWhileContinueTest.s: TestRho/SimpleDoWhileContinueTest.cpp.s
+.PHONY : TestRho/SimpleDoWhileContinueTest.s
+
+# target to generate assembly for a file
+TestRho/SimpleDoWhileContinueTest.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/SimpleDoWhileContinueTest.cpp.s
+.PHONY : TestRho/SimpleDoWhileContinueTest.cpp.s
+
 TestRho/SimpleForLoopTest.o: TestRho/SimpleForLoopTest.cpp.o
 .PHONY : TestRho/SimpleForLoopTest.o
 
@@ -3659,6 +3683,9 @@ help:
 	@echo "... TestRho/SimpleDirectTest.o"
 	@echo "... TestRho/SimpleDirectTest.i"
 	@echo "... TestRho/SimpleDirectTest.s"
+	@echo "... TestRho/SimpleDoWhileContinueTest.o"
+	@echo "... TestRho/SimpleDoWhileContinueTest.i"
+	@echo "... TestRho/SimpleDoWhileContinueTest.s"
 	@echo "... TestRho/SimpleForLoopTest.o"
 	@echo "... TestRho/SimpleForLoopTest.i"
 	@echo "... TestRho/SimpleForLoopTest.s"

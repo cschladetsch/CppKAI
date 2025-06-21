@@ -19,8 +19,7 @@ TEST_F(CoreRegistryTests, TestTypeRegistration) {
     // When we added required classes in AddRequiredClasses(), they should be
     // registered
 
-    // Let's first ensure our Registry exists
-    ASSERT_TRUE(&Reg() != nullptr);
+    // Registry is guaranteed to exist as Reg() returns a reference
 
     // Then check if the basic types are available
     // These should have been added in SetUp

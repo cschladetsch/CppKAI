@@ -8,6 +8,11 @@
 #include <regex>
 #include <sstream>
 
+#ifdef __linux__
+#include <termios.h>
+#include <unistd.h>
+#endif
+
 #include "KAI/Core/BuiltinTypes.h"
 #include "KAI/Core/Memory/StandardAllocator.h"
 #include "KAI/Core/Object.h"
@@ -95,6 +100,159 @@ void Console::SetTranslator(std::shared_ptr<TranslatorCommon> trans) {
 }
 
 void Console::ControlC() { executor->ClearContext(); }
+
+void Console::ClearScreen() const {
+    // Use ANSI escape sequences to clear screen and move cursor to top
+    // \033[2J clears the screen
+    // \033[H moves cursor to home position (top-left)
+    cout << "\033[2J\033[H" << flush;
+}
+
+String Console::ReadLineWithDynamicColor() {
+#ifdef __linux__
+    // Save current terminal settings
+    struct termios old_settings, new_settings;
+    tcgetattr(STDIN_FILENO, &old_settings);
+    new_settings = old_settings;
+    
+    // Set terminal to raw mode
+    new_settings.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &new_settings);
+    
+    string line;
+    bool isShellCommand = false;
+    char ch;
+    
+    while (true) {
+        if (read(STDIN_FILENO, &ch, 1) == 1) {
+            if (ch == '\n' || ch == '\r') {
+                cout << endl;
+                break;
+            } else if (ch == 127 || ch == 8) { // Backspace
+                if (!line.empty()) {
+                    line.pop_back();
+                    cout << "\b \b" << flush;
+                    
+                    // Check if we need to update color after backspace
+                    if (line.empty()) {
+                        isShellCommand = false;
+                        // Move cursor back to start of line and rewrite
+                        cout << "\r";
+                        WritePrompt(cout);
+                        cout << rang::fg::gray;
+                    } else if (line.size() == 1 && line[0] != '$' && isShellCommand) {
+                        isShellCommand = false;
+                        // Rewrite entire line with normal color
+                        cout << "\r";
+                        WritePrompt(cout);
+                        cout << rang::fg::gray << line << flush;
+                    }
+                }
+            } else if (ch == 3) { // Ctrl-C
+                // Restore terminal settings
+                tcsetattr(STDIN_FILENO, TCSANOW, &old_settings);
+                cout << rang::fg::reset << endl;
+                throw std::runtime_error("Interrupted");
+            } else if (ch == 12) { // Ctrl-L
+                ClearScreen();
+                WritePrompt(cout);
+                if (isShellCommand) {
+                    cout << rang::fg::green;
+                } else {
+                    cout << rang::fg::gray;
+                }
+                cout << line << flush;
+            } else if (isprint(ch)) {
+                line += ch;
+                
+                // Check if this is the first character and it's '$'
+                if (line.size() == 1 && ch == '$') {
+                    isShellCommand = true;
+                    cout << rang::fg::green << ch << flush;
+                } else if (isShellCommand) {
+                    cout << ch << flush;
+                } else {
+                    cout << ch << flush;
+                }
+            }
+        }
+    }
+    
+    // Restore terminal settings
+    tcsetattr(STDIN_FILENO, TCSANOW, &old_settings);
+    cout << rang::fg::reset;
+    
+    return String(line);
+#else
+    // Fallback to regular getline on non-Linux systems
+    string line;
+    cout << rang::fg::gray;
+    getline(cin, line);
+    cout << rang::fg::reset;
+    return String(line);
+#endif
+}
+
+void Console::ExecuteShellCommandWithColor(const std::string &command) {
+    // Prepare the command to force color output
+    std::string colorCommand = command;
+    
+    // Check if this is an ls command and add color flag if not already present
+    if (command.find("ls") == 0 && command.find("--color") == std::string::npos) {
+        // Check if there are any flags
+        size_t spacePos = command.find(' ');
+        if (spacePos != std::string::npos) {
+            // Insert --color=always after 'ls'
+            colorCommand = "ls --color=always" + command.substr(spacePos);
+        } else {
+            // Just 'ls' with no arguments
+            colorCommand = "ls --color=always";
+        }
+    }
+    
+    // For other commands that support color, we might need to add specific flags
+    // grep -> --color=always
+    // diff -> --color=always
+    // gcc/g++ -> -fdiagnostics-color=always
+    
+    if (command.find("grep") == 0 && command.find("--color") == std::string::npos) {
+        size_t spacePos = command.find(' ');
+        if (spacePos != std::string::npos) {
+            colorCommand = "grep --color=always" + command.substr(spacePos);
+        }
+    }
+    
+    // Set TERM environment variable and ensure dircolors are loaded
+    // This will respect the user's ~/.dircolors if it exists
+    std::string fullCommand = "TERM=xterm-256color ";
+    
+    // For ls commands, ensure dircolors are properly loaded
+    if (command.find("ls") == 0) {
+        fullCommand += "eval \"$(dircolors -b ~/.dircolors 2>/dev/null || dircolors -b)\" && ";
+    }
+    
+    fullCommand += colorCommand;
+    
+    // Execute the command
+    FILE *pipe = popen(fullCommand.c_str(), "r");
+    if (pipe) {
+        // Use larger buffer to handle ANSI escape sequences properly
+        char buffer[4096];
+        while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
+            cout << buffer;
+        }
+        int exitCode = pclose(pipe);
+        if (exitCode != 0) {
+            cout << rang::fg::red
+                 << "Command exited with code: " << exitCode
+                 << rang::fg::reset << endl;
+        }
+    } else {
+        cout << rang::fg::red
+             << "Failed to execute: " << command
+             << rang::fg::reset << endl;
+    }
+}
 
 Language Console::GetLanguage() const { return language; }
 
@@ -1008,15 +1166,15 @@ int Console::Run() {
                 // Always show prompt before input
                 WritePrompt(cout);
 
-                // Get input with color
+                // Get input with dynamic color
                 string text;
-                cout << rang::fg::gray;  // White/gray color for user input
-                if (!getline(cin, text)) {
-                    // EOF or input error - exit gracefully
+                try {
+                    text = ReadLineWithDynamicColor().StdString();
+                } catch (const std::runtime_error& e) {
+                    // Handle Ctrl-C
                     cout << rang::fg::reset << endl;
-                    return 0;
+                    continue;
                 }
-                cout << rang::fg::reset;  // Reset color after input
 
                 // Store current command for !# support
                 currentCommand = text;
@@ -1027,15 +1185,15 @@ int Console::Run() {
                     // Show continuation prompt
                     cout << rang::style::bold;
                     cout << ToString(language) << " ... ";
-                    cout << rang::fg::gray;
 
                     string continuationLine;
-                    if (!getline(cin, continuationLine)) {
-                        // EOF during multi-line input
+                    try {
+                        continuationLine = ReadLineWithDynamicColor().StdString();
+                    } catch (const std::runtime_error& e) {
+                        // Handle Ctrl-C during multi-line input
                         cout << rang::fg::reset << endl;
-                        return 0;
+                        break;
                     }
-                    cout << rang::fg::reset;
 
                     // Append the continuation line
                     accumulatedInput =
@@ -1056,19 +1214,8 @@ int Console::Run() {
                         shellCmd = shellCmd.substr(firstNonSpace);
                     }
 
-                    // Execute the shell command
-                    FILE *pipe = popen(shellCmd.c_str(), "r");
-                    if (pipe) {
-                        char buffer[128];
-                        while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
-                            cout << buffer;
-                        }
-                        pclose(pipe);
-                    } else {
-                        cout << rang::fg::red
-                             << "Failed to execute: " << shellCmd
-                             << rang::fg::reset << endl;
-                    }
+                    // Execute the shell command with color support
+                    ExecuteShellCommandWithColor(shellCmd);
 
                     // Add to history
                     commandHistory.push_back(text);
@@ -1093,6 +1240,12 @@ int Console::Run() {
                              << rang::fg::reset << endl;
                     }
                 } else if (!text.empty()) {
+                    // Check for clear screen command
+                    if (text == "clear" || text == "cls") {
+                        ClearScreen();
+                        continue;
+                    }
+                    
                     // Check for shell mode toggle
                     if (text == "sh" || text == "bash" || text == "zsh") {
                         shellMode = !shellMode;
@@ -1141,25 +1294,8 @@ int Console::Run() {
                             }
                         }
 
-                        // Execute as shell command
-                        FILE *pipe = popen(expandedCmd.c_str(), "r");
-                        if (pipe) {
-                            char buffer[128];
-                            while (fgets(buffer, sizeof(buffer), pipe) !=
-                                   nullptr) {
-                                cout << buffer;
-                            }
-                            int exitCode = pclose(pipe);
-                            if (exitCode != 0) {
-                                cout << rang::fg::red
-                                     << "Command exited with code: " << exitCode
-                                     << rang::fg::reset << endl;
-                            }
-                        } else {
-                            cout << rang::fg::red
-                                 << "Failed to execute: " << text
-                                 << rang::fg::reset << endl;
-                        }
+                        // Execute as shell command with color support
+                        ExecuteShellCommandWithColor(expandedCmd);
 
                         // Add to history
                         commandHistory.push_back(text);

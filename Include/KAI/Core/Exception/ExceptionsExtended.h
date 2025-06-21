@@ -52,10 +52,10 @@ struct InternalError : Base {
 };
 
 struct UnknownMethod : Base {
-    String name;
-    String class_name;
+    String name_;
+    String class_name_;
     UnknownMethod(const FileLocation &L, const String &N, const String &B)
-        : Base(L, "Unknown Method"), name(N), class_name(B) {}
+        : Base(L, "Unknown Method"), name_(N), class_name_(B) {}
     void WriteExtendedInformation(StringStream &) const;
 };
 
@@ -75,18 +75,18 @@ struct InvalidStringLiteral : Base {
 
 template <class T = meta::Null>
 struct UnknownClass : Base {
-    String name;
+    String name_;
     Type::Number type_number;
     UnknownClass(const FileLocation &L, const String &N)
-        : Base(L, "Unknown Class"), name(N) {}
+        : Base(L, "Unknown Class"), name_(N) {}
     UnknownClass(const FileLocation &L, Type::Number N)
         : Base(L, "Unknown Class"), type_number(N) {}
     UnknownClass(const FileLocation &L)
         : Base(L, "Unknown Class"),
           type_number(Type::Traits<T>::Number),
-          name("TODO boost::typeindex") {}
+          name_("TODO boost::typeindex") {}
     void WriteExtendedInformation(StringStream &S) const {
-        S << "name_=" << name << ", type_number_=" << type_number.value;
+        S << "name_=" << name_ << ", type_number_=" << type_number.value;
     }
 };
 

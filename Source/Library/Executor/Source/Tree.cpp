@@ -59,7 +59,7 @@ void Set(Object scope, const Pathname &path, Object const &Q) {
                 break;
 
             case Pathname::Element::Name: {
-                const Label &name = A->name;
+                const Label &name = A->name_;
                 if (A == --path.end()) {
                     GetStorageBase(scope).Set(name, Q);
                     break;
@@ -77,7 +77,7 @@ void Set(Object scope, const Pathname &path, Object const &Q) {
         }
     }
 
-    GetStorageBase(scope).Set(A->name, Q);
+    GetStorageBase(scope).Set(A->name_, Q);
 }
 
 void Set(Object const &root, Object const &scope, Object const &ident,
@@ -123,7 +123,7 @@ Object Get(Object scope, const Pathname &path) {
                 break;
 
             case Pathname::Element::Name: {
-                scope = scope.Get(element.name);
+                scope = scope.Get(element.name_);
                 if (!scope.Exists()) return scope;
             } break;
 
@@ -187,7 +187,7 @@ void Remove(Object scope, const Pathname &path) {
                 break;
 
             case Pathname::Element::Name:
-                scope = scope.Get(A->name);
+                scope = scope.Get(A->name_);
                 break;
 
             case Pathname::Element::This:
@@ -199,7 +199,7 @@ void Remove(Object scope, const Pathname &path) {
         }
     }
 
-    scope.Remove(A->name);
+    scope.Remove(A->name_);
 }
 
 void Remove(Object const &root, Object const &scope, const Pathname &path) {

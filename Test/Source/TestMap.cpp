@@ -130,7 +130,6 @@ TEST_F(TestMap, TestStringStream) {
 
 TEST_F(TestMap, TestBinaryStream) {
     Pointer<Map> m0 = Reg().New<Map>();
-    Pointer<Map> m1 = Reg().New<Map>();
     Pointer<int> n = Reg().New(42);
     Pointer<String> s = Reg().New<String>("Hello");
 

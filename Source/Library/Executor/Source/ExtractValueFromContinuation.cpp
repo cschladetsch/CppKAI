@@ -12,14 +12,11 @@ KAI_BEGIN
 // Enhanced implementation of ExtractValueFromContinuation to properly handle
 // test cases This implementation uses C++23 features where appropriate
 Object Executor::ExtractValueFromContinuation(Object const& value) {
-    // For better logging
-    constexpr auto func_name = __func__;
     // Define helpers for the extraction process
-    auto EarlyReturn = [&func_name](const Object& obj,
-                                    std::string_view reason) -> Object {
+    auto EarlyReturn = [](const Object& obj,
+                          std::string_view reason) -> Object {
         std::stringstream ss;
-        ss << "ExtractValueFromContinuation early return in " << func_name
-           << ": " << reason;
+        ss << "ExtractValueFromContinuation early return: " << reason;
         KAI_TRACE() << ss.str();
         return obj;
     };
@@ -451,8 +448,8 @@ Object Executor::ExtractValueFromContinuation(Object const& value) {
     // If we get here, we couldn't extract a value from the continuation
     // Return the original continuation with a diagnostic message
     std::stringstream ss;
-    ss << "ExtractValueFromContinuation no pattern match in " << func_name
-       << " for continuation with " << code->Size() << " code items";
+    ss << "ExtractValueFromContinuation no pattern match for continuation with " 
+       << code->Size() << " code items";
     KAI_TRACE() << ss.str();
     return value;
 }

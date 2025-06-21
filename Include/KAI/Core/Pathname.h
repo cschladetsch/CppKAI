@@ -24,14 +24,14 @@ class Pathname {
     struct Element {
         enum Type { None, Quote, Separator, Parent, This, Name };
         Type type;
-        Label name;
+        Label name_;
         Element(Type T = None) : type(T) {}
-        Element(const Label &L) : type(Name), name(L) {}
+        Element(const Label &L) : type(Name), name_(L) {}
         friend bool operator<(const Element &A, const Element &B) {
-            return A.type < B.type || (A.type == B.type && A.name < B.name);
+            return A.type < B.type || (A.type == B.type && A.name_ < B.name_);
         }
         friend bool operator==(const Element &A, const Element &B) {
-            return A.type == B.type && A.name == B.name;
+            return A.type == B.type && A.name_ == B.name_;
         }
     };
     typedef std::vector<Element> Elements;

@@ -230,7 +230,6 @@ TEST_F(TestAdditionalCore, RegistryOperations2) {
 
     // Create nested objects
     Object parent = Reg().New<Array>();
-    const Array& parentArray = ConstDeref<Array>(parent);
 
     Object child1 = Reg().New(42);
     Object child2 = Reg().New<String>("test string");

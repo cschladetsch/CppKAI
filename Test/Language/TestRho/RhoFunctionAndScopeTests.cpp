@@ -26,7 +26,6 @@ struct RhoFunctionTests : TestLangCommon {
 
         try {
             Console console;
-            Registry &reg = console.GetRegistry();
 
             console.SetLanguage(Language::Rho);
             console.Execute(script, Structure::Program);

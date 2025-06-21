@@ -31,7 +31,7 @@ TEST(TauAttribute, BasicAttributes) {
     ASSERT_TRUE(lexer->Process());
 
     auto parser = std::make_shared<kai::tau::TauParser>(reg);
-    bool result = parser->Process(lexer, kai::Structure::Module);
+    (void)parser->Process(lexer, kai::Structure::Module);
 
     // For now, attributes are not implemented in the parser
     // This test just verifies the IDL can be lexed without errors
@@ -67,7 +67,7 @@ TEST(TauAttribute, CustomAttributes) {
     ASSERT_TRUE(lexer->Process());
 
     auto parser = std::make_shared<kai::tau::TauParser>(reg);
-    bool result = parser->Process(lexer, kai::Structure::Module);
+    (void)parser->Process(lexer, kai::Structure::Module);
 
     // Attributes are not yet implemented
     EXPECT_TRUE(parser->Error.empty() ||
@@ -100,7 +100,7 @@ TEST(TauAttribute, MethodAttributes) {
     ASSERT_TRUE(lexer->Process());
 
     auto parser = std::make_shared<kai::tau::TauParser>(reg);
-    bool result = parser->Process(lexer, kai::Structure::Module);
+    (void)parser->Process(lexer, kai::Structure::Module);
 
     EXPECT_TRUE(parser->Error.empty() ||
                 parser->Error.find("Not Implemented") != std::string::npos)
@@ -130,7 +130,7 @@ TEST(TauAttribute, CompileTimeAttributes) {
     ASSERT_TRUE(lexer->Process());
 
     auto parser = std::make_shared<kai::tau::TauParser>(reg);
-    bool result = parser->Process(lexer, kai::Structure::Module);
+    (void)parser->Process(lexer, kai::Structure::Module);
 
     EXPECT_TRUE(parser->Error.empty() ||
                 parser->Error.find("Not Implemented") != std::string::npos)
@@ -162,7 +162,7 @@ TEST(TauAttribute, ConditionalAttributes) {
     ASSERT_TRUE(lexer->Process());
 
     auto parser = std::make_shared<kai::tau::TauParser>(reg);
-    bool result = parser->Process(lexer, kai::Structure::Module);
+    (void)parser->Process(lexer, kai::Structure::Module);
 
     EXPECT_TRUE(parser->Error.empty() ||
                 parser->Error.find("Not Implemented") != std::string::npos)

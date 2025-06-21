@@ -13,7 +13,6 @@ TEST_F(RhoAdvancedTest, RangeBasedForLoopInPiBlock) {
     // This sums 1+2+3+4+5 by accumulating on stack
     console_.Execute(
         "result = pi{ 0 1 { dup 5 <= } { swap over + swap 1 + } while drop }");
-    auto stack = exec->GetDataStack();
 
     // Get the result from the variable 'result'
     console_.Execute("result");

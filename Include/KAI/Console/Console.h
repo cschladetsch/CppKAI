@@ -77,6 +77,9 @@ class Console : public Reflected {
     String WriteStack() const;
     void ShowColoredStack() const;
     void ControlC();
+    void ClearScreen() const;
+    String ReadLineWithDynamicColor();
+    void ExecuteShellCommandWithColor(const std::string &command);
     static void Register(Registry &);
 
     int Run();

@@ -571,7 +571,6 @@ void Executor::Perform(Operation::Type op) {
             // Log stack state before popping
             KAI_TRACE() << "Store operation - stack size before: "
                         << data_->Size();
-            int stackSizeBefore = data_->Size();
             if (data_->Size() >= 2) {
                 KAI_TRACE() << "Stack[top-1]: "
                             << (data_->At(data_->Size() - 2).GetClass()
@@ -631,43 +630,76 @@ void Executor::Perform(Operation::Type op) {
 
             if (name.IsType<Label>()) {
                 Label label = ConstDeref<Label>(name);
-                bound = TryResolve(label);
-
-                if (bound.Exists()) {
-                    // Re-bind it
+                
+                // First check if it exists in current scope
+                if (scope.Has(label)) {
+                    // Update in current scope
                     scope.Set(label, value);
+                    KAI_TRACE() << "Updated '" << label.ToString() << "' in current scope";
                 } else {
-                    // Add it
-                    scope.Add(label, value);
+                    // Search in parent scopes
+                    bool foundInParent = false;
+                    Stack const &scopes = *context_;
+                    for (int N = 0; N < scopes.Size(); ++N) {
+                        Pointer<Continuation> cont = scopes.At(N);
+                        if (!cont.Exists()) break;
+                        
+                        Object parentScope = cont->GetScope();
+                        if (parentScope.Exists() && parentScope.Has(label)) {
+                            // Update in the parent scope where it was found
+                            parentScope.Set(label, value);
+                            foundInParent = true;
+                            KAI_TRACE() << "Updated '" << label.ToString() << "' in parent scope at level " << N;
+                            break;
+                        }
+                    }
+                    
+                    if (!foundInParent) {
+                        // Not found anywhere, add to current scope
+                        scope.Add(label, value);
+                        KAI_TRACE() << "Added new variable '" << label.ToString() << "' to current scope";
+                    }
                 }
             } else if (name.IsType<Pathname>()) {
                 Pathname path = ConstDeref<Pathname>(name);
                 KAI_TRACE() << "Store with Pathname: " << path.ToString()
                             << ", quoted: " << (path.Quoted() ? "yes" : "no");
-                bound = TryResolve(path);
-
-                if (bound.Exists()) {
-                    // Re-bind it
-                    // Strip the quote if present
-                    String pathStr = path.ToString();
-                    if (pathStr.Size() > 0 && pathStr[0] == '\'') {
-                        // Create a new string without the first character
-                        pathStr = String(pathStr.begin() + 1, pathStr.end());
-                    }
-                    scope.Set(Label(pathStr), value);
-                    KAI_TRACE() << "Re-bound '" << pathStr << "' in scope";
+                
+                // Strip the quote if present to get the actual name
+                String pathStr = path.ToString();
+                if (pathStr.Size() > 0 && pathStr[0] == '\'') {
+                    pathStr = String(pathStr.begin() + 1, pathStr.end());
+                }
+                Label label(pathStr);
+                
+                // First check if it exists in current scope
+                if (scope.Has(label)) {
+                    // Update in current scope
+                    scope.Set(label, value);
+                    KAI_TRACE() << "Updated '" << pathStr << "' in current scope";
                 } else {
-                    // Add it - strip the quote if present
-                    String pathStr = path.ToString();
-                    if (pathStr.Size() > 0 && pathStr[0] == '\'') {
-                        // Create a new string without the first character
-                        pathStr = String(pathStr.begin() + 1, pathStr.end());
+                    // Search in parent scopes
+                    bool foundInParent = false;
+                    Stack const &scopes = *context_;
+                    for (int N = 0; N < scopes.Size(); ++N) {
+                        Pointer<Continuation> cont = scopes.At(N);
+                        if (!cont.Exists()) break;
+                        
+                        Object parentScope = cont->GetScope();
+                        if (parentScope.Exists() && parentScope.Has(label)) {
+                            // Update in the parent scope where it was found
+                            parentScope.Set(label, value);
+                            foundInParent = true;
+                            KAI_TRACE() << "Updated '" << pathStr << "' in parent scope at level " << N;
+                            break;
+                        }
                     }
-                    scope.Add(Label(pathStr), value);
-                    KAI_TRACE()
-                        << "Added '" << pathStr
-                        << "' to scope (from pathname: " << path.ToString()
-                        << ")";
+                    
+                    if (!foundInParent) {
+                        // Not found anywhere, add to current scope
+                        scope.Add(label, value);
+                        KAI_TRACE() << "Added '" << pathStr << "' to scope (from pathname: " << path.ToString() << ")";
+                    }
                 }
             } else {
                 KAI_THROW_1(Base, "Invalid name type for Store operation");
@@ -781,9 +813,10 @@ void Executor::Perform(Operation::Type op) {
 
             auto chosen = condition ? A : B;
             if (chosen.IsType<Continuation>()) {
-                // Execute the chosen block using proper continuation mechanism
-                Push(chosen);
-                Eval(New<Operation>(Operation::Suspend));
+                // Execute the chosen block inline instead of suspending
+                // This avoids issues with continuation stack management
+                Pointer<Continuation> cont = chosen;
+                ExecuteContinuationInline(cont);
             } else {
                 KAI_TRACE_ERROR() << "IfElse: Expected continuation, got " 
                                   << chosen.GetTypeNumber().ToString();
@@ -1129,6 +1162,11 @@ void Executor::Perform(Operation::Type op) {
                         }
 
                         int status = pclose(pipe);
+                        
+                        // Check if command execution failed
+                        if (status != 0) {
+                            KAI_TRACE() << "Shell command exited with non-zero status: " << status;
+                        }
 
                         // Remove trailing newline if present
                         if (!result.empty() && result.back() == '\n') {

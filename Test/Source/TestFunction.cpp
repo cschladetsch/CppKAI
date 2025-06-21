@@ -14,10 +14,11 @@ void VF2(int, int) { called[2] = true; }
 
 void VF3(int, int, int) { called[3] = true; }
 
-int F0() {
-    called[4] = true;
-    return 0;
-}
+// TODO: Uncomment when F0 test is re-enabled
+// int F0() {
+//     called[4] = true;
+//     return 0;
+// }
 
 int F1(int) {
     called[5] = true;
@@ -34,9 +35,10 @@ int F3(int, int, int) {
     return 3;
 }
 
-void G0(Pointer<int>) {}
+[[maybe_unused]] void G0(Pointer<int>) {}
 
-/*Pointer<String> */ Object G1(Pointer<int>) { return Object(); }
+// TODO: Uncomment when G1 test is re-enabled
+// /*Pointer<String> */ Object G1(Pointer<int>) { return Object(); }
 }  // namespace
 
 struct FunctionTest : ::testing::Test {
@@ -47,7 +49,6 @@ struct FunctionTest : ::testing::Test {
         _reg.AddClass<String>(Label("String"));
         _reg.AddClass<Stack>(Label("stack"));
         _reg.AddClass<BasePointer<FunctionBase> >(Label("Function"));
-        auto n = _reg.New<int>();
         _stack = _reg.New<Stack>();
         std::fill(called, called + sizeof(called) / sizeof(called[0]), false);
     }
@@ -68,7 +69,8 @@ TEST_F(FunctionTest, TestConstruction) {
     FunctionBase *f2 = MakeFunction(F2);
     FunctionBase *f3 = MakeFunction(F3);
 
-    FunctionBase *g0 = MakeFunction(G0);
+    // TODO: Uncomment when G0 test is re-enabled
+    // FunctionBase *g0 = MakeFunction(G0);
     //    FunctionBase *g1 = MakeFunction(G1);
 
     EXPECT_EQ(vf0->GetReturnType(), Type::Traits<void>::Number);

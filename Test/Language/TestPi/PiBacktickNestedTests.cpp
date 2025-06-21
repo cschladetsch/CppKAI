@@ -85,7 +85,6 @@ TEST_F(PiBacktickNestedTest, ComplexNesting) {
 // Test that actual nested backticks are not supported
 TEST_F(PiBacktickNestedTest, ActualNestedBackticksFail) {
     console_.SetLanguage(kai::Language::Pi);
-    auto exec = console_.GetExecutor();
 
     // Nested backticks should fail to parse correctly
     // The first backtick pair will be parsed as `echo `

@@ -95,7 +95,7 @@ TEST_F(CorePointerTests, TestPointerAssignment) {
 
     // Store handles for verification later
     Handle handle1 = ptr1.GetHandle();
-    Handle handle2 = ptr2.GetHandle();
+    [[maybe_unused]] Handle handle2 = ptr2.GetHandle();
 
     // Store ptr1 in the root to keep a reference to it
     Root().Set("original_ptr1", ptr1);
@@ -121,7 +121,6 @@ TEST_F(CorePointerTests, TestPointerAssignment) {
 
     // Try to access the original objects
     Object obj1 = Reg().GetObject(handle1);
-    Object obj2 = Reg().GetObject(handle2);
 
     // The behavior here depends on the specific garbage collection
     // implementation What matters is:

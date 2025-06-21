@@ -32,7 +32,7 @@ TEST(TauTemplate, BasicGenericClass) {
     ASSERT_TRUE(lexer->Process());
 
     auto parser = std::make_shared<kai::tau::TauParser>(reg);
-    bool result = parser->Process(lexer, kai::Structure::Module);
+    (void)parser->Process(lexer, kai::Structure::Module);
 
     // Generic/template syntax not yet implemented
     EXPECT_TRUE(parser->Error.empty() ||
@@ -65,7 +65,7 @@ TEST(TauTemplate, GenericInterfaces) {
     ASSERT_TRUE(lexer->Process());
 
     auto parser = std::make_shared<kai::tau::TauParser>(reg);
-    bool result = parser->Process(lexer, kai::Structure::Module);
+    (void)parser->Process(lexer, kai::Structure::Module);
 
     EXPECT_TRUE(parser->Error.empty() ||
                 parser->Error.find("Not Implemented") != std::string::npos)
@@ -96,7 +96,7 @@ TEST(TauTemplate, ConstrainedGenerics) {
     ASSERT_TRUE(lexer->Process());
 
     auto parser = std::make_shared<kai::tau::TauParser>(reg);
-    bool result = parser->Process(lexer, kai::Structure::Module);
+    (void)parser->Process(lexer, kai::Structure::Module);
 
     EXPECT_TRUE(parser->Error.empty() ||
                 parser->Error.find("Not Implemented") != std::string::npos)
@@ -123,7 +123,7 @@ TEST(TauTemplate, GenericMethods) {
     ASSERT_TRUE(lexer->Process());
 
     auto parser = std::make_shared<kai::tau::TauParser>(reg);
-    bool result = parser->Process(lexer, kai::Structure::Module);
+    (void)parser->Process(lexer, kai::Structure::Module);
 
     EXPECT_TRUE(parser->Error.empty() ||
                 parser->Error.find("Not Implemented") != std::string::npos)
@@ -152,7 +152,7 @@ TEST(TauTemplate, VariadicTemplates) {
     ASSERT_TRUE(lexer->Process());
 
     auto parser = std::make_shared<kai::tau::TauParser>(reg);
-    bool result = parser->Process(lexer, kai::Structure::Module);
+    (void)parser->Process(lexer, kai::Structure::Module);
 
     EXPECT_TRUE(parser->Error.empty() ||
                 parser->Error.find("Not Implemented") != std::string::npos)

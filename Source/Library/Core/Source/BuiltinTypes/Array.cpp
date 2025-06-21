@@ -89,6 +89,8 @@ BinaryStream &operator>>(BinaryStream &S, Array &Q) {
 }
 
 // Static function for array concatenation
+// TODO: Currently unused - consider exposing as a utility function or removing
+/*
 static Array ConcatArrays(const Array &A, const Array &B) {
     Array result;
     // Copy all elements from first array
@@ -101,6 +103,7 @@ static Array ConcatArrays(const Array &A, const Array &B) {
     }
     return result;
 }
+*/
 
 void Array::Register(Registry &R) {
     void (Array::*remove_method)(Object) = &Array::Erase2;

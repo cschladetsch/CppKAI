@@ -30,7 +30,7 @@ struct TestTau : TestLangCommon {
         }
 
         auto parser = std::make_shared<tau::TauParser>(r);
-        bool parserSuccess = parser->Process(lex, Structure::Module);
+        parser->Process(lex, Structure::Module);
 
         if (!parser->Error.empty()) {
             FAIL() << "Parser failed for " << testName << ": " << parser->Error;

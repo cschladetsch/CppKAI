@@ -63,7 +63,7 @@ void ObjectNotInTree::WriteExtendedInformation(StringStream &S) const {
 }
 
 void UnknownMethod::WriteExtendedInformation(StringStream &S) const {
-    S << "name_=" << name << ", class=" << class_name;
+    S << "name_=" << name_ << ", class=" << class_name_;
 }
 
 void UnknownHandle::WriteExtendedInformation(StringStream &S) const {
