@@ -1141,6 +1141,7 @@ void Executor::Perform(Operation::Type op) {
         }
 
         case Operation::ShellCommand: {
+#ifdef ENABLE_SHELL_SYNTAX
             // Execute shell command and push result
             // Stack: ( command -- result )
             if (!data_->Empty()) {
@@ -1229,6 +1230,10 @@ void Executor::Perform(Operation::Type op) {
                 KAI_TRACE_ERROR() << "ShellCommand: Empty stack";
                 Push(New<String>(""));  // Push empty string on error
             }
+#else
+            // Shell operations are disabled
+            KAI_THROW_1(NotImplemented, "Shell operations are disabled for security. Enable with -DENABLE_SHELL_SYNTAX=ON");
+#endif
             break;
         }
 

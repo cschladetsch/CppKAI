@@ -92,6 +92,7 @@ bool LexerBase::LexString() {
 }
 
 bool LexerBase::LexShellCommand() {
+#ifdef ENABLE_SHELL_SYNTAX
     int start = offset;
     Next();
 
@@ -123,6 +124,10 @@ bool LexerBase::LexShellCommand() {
     AddShellCommandToken(lineNumber, Slice(start + 1, offset - 1));
 
     return true;
+#else
+    Fail("Shell syntax (backtick operations) is disabled for security. Enable with -DENABLE_SHELL_SYNTAX=ON");
+    return false;
+#endif
 }
 
 KAI_END

@@ -63,6 +63,10 @@ option(KAI_BUILD_TEST_NETWORK "Build networking tests" OFF)
 option(KAI_BUILD_RAKNET "Build RakNet" OFF)
 option(KAI_BUILD_NETWORK_APPS "Build network applications" OFF)
 
+# Security option: Enable shell syntax (backtick operations)
+# Default to OFF for security reasons
+option(ENABLE_SHELL_SYNTAX "Enable shell command execution via backtick syntax" OFF)
+
 # Find and link Boost libraries
 find_package(Boost REQUIRED COMPONENTS system filesystem program_options date_time regex)
 include_directories(${Boost_INCLUDE_DIRS})
@@ -143,6 +147,14 @@ add_definitions(-DKAI_DEBUG_TRACE)
 add_definitions(-DKAI_VERSION_MAJOR=0)
 add_definitions(-DKAI_VERSION_MINOR=3)
 add_definitions(-DKAI_VERSION_PATCH=0)
+
+# Add shell syntax define if enabled
+if(ENABLE_SHELL_SYNTAX)
+    add_definitions(-DENABLE_SHELL_SYNTAX)
+    message(WARNING "Shell syntax (backtick operations) is ENABLED. This may pose security risks.")
+else()
+    message(STATUS "Shell syntax (backtick operations) is DISABLED for security.")
+endif()
 
 # Set up external dependencies like Boost, RakNet, and GoogleTest
 if (KAI_BUILD_RAKNET)
