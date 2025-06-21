@@ -1169,6 +1169,54 @@ TestRho/ExtendedRhoTests.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/ExtendedRhoTests.cpp.s
 .PHONY : TestRho/ExtendedRhoTests.cpp.s
 
+TestRho/ExtensiveContainerTests.o: TestRho/ExtensiveContainerTests.cpp.o
+.PHONY : TestRho/ExtensiveContainerTests.o
+
+# target to build an object file
+TestRho/ExtensiveContainerTests.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/ExtensiveContainerTests.cpp.o
+.PHONY : TestRho/ExtensiveContainerTests.cpp.o
+
+TestRho/ExtensiveContainerTests.i: TestRho/ExtensiveContainerTests.cpp.i
+.PHONY : TestRho/ExtensiveContainerTests.i
+
+# target to preprocess a source file
+TestRho/ExtensiveContainerTests.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/ExtensiveContainerTests.cpp.i
+.PHONY : TestRho/ExtensiveContainerTests.cpp.i
+
+TestRho/ExtensiveContainerTests.s: TestRho/ExtensiveContainerTests.cpp.s
+.PHONY : TestRho/ExtensiveContainerTests.s
+
+# target to generate assembly for a file
+TestRho/ExtensiveContainerTests.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/ExtensiveContainerTests.cpp.s
+.PHONY : TestRho/ExtensiveContainerTests.cpp.s
+
+TestRho/ForEachLoopTest.o: TestRho/ForEachLoopTest.cpp.o
+.PHONY : TestRho/ForEachLoopTest.o
+
+# target to build an object file
+TestRho/ForEachLoopTest.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/ForEachLoopTest.cpp.o
+.PHONY : TestRho/ForEachLoopTest.cpp.o
+
+TestRho/ForEachLoopTest.i: TestRho/ForEachLoopTest.cpp.i
+.PHONY : TestRho/ForEachLoopTest.i
+
+# target to preprocess a source file
+TestRho/ForEachLoopTest.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/ForEachLoopTest.cpp.i
+.PHONY : TestRho/ForEachLoopTest.cpp.i
+
+TestRho/ForEachLoopTest.s: TestRho/ForEachLoopTest.cpp.s
+.PHONY : TestRho/ForEachLoopTest.s
+
+# target to generate assembly for a file
+TestRho/ForEachLoopTest.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/ForEachLoopTest.cpp.s
+.PHONY : TestRho/ForEachLoopTest.cpp.s
+
 TestRho/ForLoopTests.o: TestRho/ForLoopTests.cpp.o
 .PHONY : TestRho/ForLoopTests.o
 
@@ -3506,6 +3554,12 @@ help:
 	@echo "... TestRho/ExtendedRhoTests.o"
 	@echo "... TestRho/ExtendedRhoTests.i"
 	@echo "... TestRho/ExtendedRhoTests.s"
+	@echo "... TestRho/ExtensiveContainerTests.o"
+	@echo "... TestRho/ExtensiveContainerTests.i"
+	@echo "... TestRho/ExtensiveContainerTests.s"
+	@echo "... TestRho/ForEachLoopTest.o"
+	@echo "... TestRho/ForEachLoopTest.i"
+	@echo "... TestRho/ForEachLoopTest.s"
 	@echo "... TestRho/ForLoopTests.o"
 	@echo "... TestRho/ForLoopTests.i"
 	@echo "... TestRho/ForLoopTests.s"

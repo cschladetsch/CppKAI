@@ -102,6 +102,7 @@ foreach (lang ${langs})
             ${source_path}/PrintFunctionTest.cpp            # Test print as built-in operation
             ${source_path}/WhileLoopTest.cpp                # Test while loop fixes
             ${source_path}/DoWhileLoopTest.cpp              # Test do-while loop fixes
+            ${source_path}/ForEachLoopTest.cpp              # Test foreach loop implementation
             ${source_path}/MixedLanguageTest.cpp            # Test Pi/Rho interop
             ${source_path}/FunctionSyntaxTest.cpp           # Test function syntax standardization
             ${source_path}/AssertSyntaxTest.cpp             # Test assert syntax simplification
@@ -113,6 +114,7 @@ foreach (lang ${langs})
             ${source_path}/SimpleContinueTest.cpp            # Test continue statement
             ${source_path}/ModuloTest.cpp                    # Test modulo operator
             ${source_path}/SimpleDoWhileContinueTest.cpp     # Test do-while continue
+            ${source_path}/ExtensiveContainerTests.cpp       # Extensive container tests
         )
     elseif(lang STREQUAL "Pi")
         # Explicitly list Pi tests to avoid including unwanted files

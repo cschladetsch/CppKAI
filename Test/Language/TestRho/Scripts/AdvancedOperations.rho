@@ -62,29 +62,23 @@ str3 = "abc" != "def";          // true
 str4 = "abc" < "def";           // true
 
 // Functions
-function add(a, b) {
-    return a + b;
-}
+add = fun(a, b)
+    return a + b
 
-function multiply(a, b) {
-    return a * b;
-}
+multiply = fun(a, b)
+    return a * b
 
-function factorial(n) {
-    if (n <= 1) {
-        return 1;
-    } else {
-        return n * factorial(n-1);
-    }
-}
+factorial = fun(n)
+    if n <= 1
+        return 1
+    else
+        return n * factorial(n-1)
 
-function fibonacci(n) {
-    if (n <= 1) {
-        return n;
-    } else {
-        return fibonacci(n-1) + fibonacci(n-2);
-    }
-}
+fibonacci = fun(n)
+    if n <= 1
+        return n
+    else
+        return fibonacci(n-1) + fibonacci(n-2)
 
 // Test function calls
 result_add = add(5, 3);                 // 8
@@ -96,10 +90,9 @@ result_nested = add(multiply(2, 3), 4); // 10
 // Testing variables and scope
 global_var = 10;
 
-function test_scope() {
-    local_var = 20;
-    global_var = global_var + 5;
-    return local_var + global_var;
-}
+test_scope = fun()
+    local_var = 20
+    global_var = global_var + 5
+    return local_var + global_var
 
 result_scope = test_scope();  // 35 (20 + 15)

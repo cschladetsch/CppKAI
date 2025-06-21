@@ -148,6 +148,12 @@ void TestLangCommon::SetUp() {
         if (!reg_->GetClass(Label("String"))) {
             reg_->AddClass<String>(Label("String"));
         }
+        if (!reg_->GetClass(Label("Map"))) {
+            reg_->AddClass<Map>(Label("Map"));
+        }
+        if (!reg_->GetClass(Label("Array"))) {
+            reg_->AddClass<Array>(Label("Array"));
+        }
 
         // Clear stacks for a clean state
         if (exec_->GetDataStack().Exists()) {
