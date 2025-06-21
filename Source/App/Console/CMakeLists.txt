@@ -12,6 +12,13 @@ set_target_properties(${name} PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${BIN_HOME}"
 )
 
+# Copy Console to ~/bin if it exists
+add_custom_command(TARGET ${name} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E echo "Checking if ~/bin directory exists..."
+    COMMAND test -d "$ENV{HOME}/bin" && ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${name}> "$ENV{HOME}/bin/${name}" || echo "~/bin directory does not exist, skipping copy"
+    COMMENT "Copying Console to ~/bin if directory exists"
+)
+
 # Network examples - only build if RakNet is enabled
 if (KAI_BUILD_RAKNET)
     add_executable(SimpleServer ${source_path}/SimpleServer.cpp)

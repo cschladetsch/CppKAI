@@ -25,6 +25,8 @@ class Console : public Reflected {
     std::shared_ptr<TranslatorCommon> translator;
 
     std::vector<std::string> commandHistory;
+    std::string historyFile;
+    static const size_t maxHistorySize = 1000;
 
    public:
     Console();
@@ -81,6 +83,19 @@ class Console : public Reflected {
     String ReadLineWithDynamicColor();
     void ExecuteShellCommandWithColor(const std::string &command);
     static void Register(Registry &);
+
+    // Help system
+    void ShowHelp(const std::string& topic = "") const;
+    void ShowBasicHelp() const;
+    void ShowHistoryHelp() const;
+    void ShowLanguageHelp(const std::string& lang) const;
+    void ShowBuiltinCommands() const;
+    bool ProcessBuiltinCommand(const std::string& command);
+    
+    // History management
+    void LoadHistory();
+    void SaveHistory() const;
+    void AddToHistory(const std::string& command);
 
     int Run();
 
