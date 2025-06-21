@@ -3,11 +3,55 @@
 ## Starting the Console
 
 ```bash
-$ cd /path/to/KAI
-$ ./Bin/Console
+# Basic startup
+$ ./Console                    # Interactive Pi mode (default)
+$ ./Console --help             # Show all options
+$ ./Console --version          # Show version info
+
+# Different modes
+$ ./Console -l rho             # Start in Rho mode
+$ ./Console script.pi          # Execute a Pi script
+$ ./Console -t 2 -l rho        # Rho mode with trace level 2
+
+# If installed to ~/bin (automatic during build):
+$ Console --help               # Available system-wide
 ```
 
-## Basic Commands
+## Getting Help
+
+The Console includes a comprehensive help system:
+
+```console
+Pi λ help
+KAI Console Help
+
+Available help topics:
+  help basics     - Basic usage and commands
+  help history    - History and command expansion  
+  help shell      - Shell integration
+  help languages  - Pi and Rho language features
+
+Language-specific help:
+  help pi         - Pi language reference
+  help rho        - Rho language reference
+
+Pi λ help pi       # Detailed Pi language help
+Pi λ help basics   # Getting started guide
+```
+
+## Built-in Commands
+
+```console
+Pi λ help          # Show help topics
+Pi λ clear         # Clear screen (or 'cls')
+Pi λ history       # Show command history
+Pi λ stack         # Show current stack
+Pi λ pi            # Switch to Pi mode
+Pi λ rho           # Switch to Rho mode
+Pi λ exit          # Exit console (or 'quit')
+```
+
+## Basic Pi Operations
 
 ```console
 Pi λ # Basic arithmetic - Pi uses stack-based operations
@@ -17,130 +61,232 @@ Pi λ 2 3 +
 Pi λ 10 20 *
 [0]: 200
 
-Pi λ # Clear the stack
-Pi λ clear
+Pi λ # Stack operations
+Pi λ dup           # Duplicate top
+Pi λ swap          # Swap top two
+Pi λ drop          # Remove top
+Pi λ clear         # Clear stack
 ```
 
-## Shell Commands - Two Ways!
+## Language Switching
 
 ```console
-Pi λ # Method 1: Use backticks for shell commands
-Pi λ `ls`
-(shows directory listing)
+Pi λ rho           # Switch to Rho mode
+Switched to Rho language mode
 
-Pi λ `pwd`
-/home/user/KAI
+Rho λ x = 42       # Now using infix syntax
+[0]: 42
 
-Pi λ `date`
-Tue Jun 4 21:02:15 PST 2024
+Rho λ y = x * 2
+[0]: 84
 
-Pi λ # Method 2: Use $ prefix for shell commands
-Pi λ $ ls
-(shows directory listing)
+Rho λ pi           # Switch back to Pi
+Switched to Pi language mode
 
+Pi λ 2 3 +         # Back to postfix
+[0]: 5
+```
+
+## Shell Commands (When Enabled)
+
+*Note: Shell features require building with `-DENABLE_SHELL_SYNTAX=ON`*
+
+```console
+Pi λ # Method 1: Use $ prefix for shell commands
 Pi λ $ pwd
 /home/user/KAI
-
-Pi λ $ echo "Hello from shell"
-Hello from shell
-
-Pi λ # WRONG: This won't work
-Pi λ ls      # This looks for a Pi function called 'ls'
-```
-
-## History Features
-
-```console
-Pi λ # Execute a command
-Pi λ 5 5 +
-[0]: 10
-
-Pi λ # Repeat last command
-Pi λ !!
-=> 5 5 +
-[0]: 10
-
-Pi λ # Fix typos quickly
-Pi λ print "Helo"
-[0]: "Helo"
-
-Pi λ ^elo^ello
-=> print "Hello"
-[0]: "Hello"
-```
-
-## The $ Prefix - Quick Shell Commands
-
-```console
-Pi λ # Execute shell commands quickly with $
-Pi λ $ date
-Tue Jun  4 21:15:30 PST 2024
 
 Pi λ $ ls *.txt
 file1.txt
 file2.txt
-readme.txt
 
-Pi λ $ grep -c "function" *.cpp
-main.cpp:5
-utils.cpp:12
+Pi λ $ echo "Hello from shell"
+Hello from shell
 
-Pi λ # Compare with backtick method
-Pi λ `date`
-Tue Jun  4 21:15:45 PST 2024
+Pi λ # Method 2: Use backticks to embed in expressions
+Pi λ `echo 10` `echo 20` +
+[0]: 30
 
-Pi λ # Both methods work the same!
+Pi λ "Files: " `ls | wc -l` +
+[0]: "Files: 5"
+```
+
+## Persistent History
+
+Commands are automatically saved and restored:
+
+```console
+Pi λ 2 3 +         # Execute a command
+[0]: 5
+
+Pi λ history       # Show command history
+Command History:
+  1: 2 3 +
+
+Pi λ !!            # Repeat last command
+[0]: 5
+
+Pi λ !1            # Repeat command 1
+[0]: 5
+
+# History is saved to ~/.kai_history automatically
+```
+
+## Advanced History Features
+
+```console
+Pi λ # Execute several commands
+Pi λ 5 5 +
+[0]: 10
+
+Pi λ print "Hello"
+Hello
+
+Pi λ 10 20 *
+[0]: 200
+
+Pi λ # Various history expansions
+Pi λ !!            # Repeat last command
+Pi λ !p            # Find last command starting with 'p'
+Pi λ !?Hello       # Find last command containing 'Hello'
+
+Pi λ # Quick substitution
+Pi λ print "Helo"
+Hello
+
+Pi λ ^elo^ello     # Fix typo in last command
+=> print "Hello"
+Hello
+```
+
+## Rho Mode Examples
+
+```console
+# Switch to Rho for infix syntax
+Pi λ rho
+Switched to Rho language mode
+
+Rho λ x = 42
+[0]: 42
+
+Rho λ if (x > 40) {
+...     print("Large number: " + x)
+... }
+Large number: 42
+
+Rho λ fun square(n) {
+...     return n * n
+... }
+
+Rho λ result = square(7)
+[0]: 49
+
+# Shell integration in Rho (when enabled)
+Rho λ file_count = `ls | wc -l`
+Rho λ print("Found " + file_count + " files")
+```
+
+## Color-Coded Stack Display
+
+The stack automatically displays with color coding:
+
+```console
+Pi λ 42 "hello" 3.14
+[0]: 42        # Numbers in yellow
+[1]: "hello"   # Strings in green (with quotes)  
+[2]: 3.14      # Floats in magenta
+
+# Stack numbers are orange for better visibility
+```
+
+## Pro Tips
+
+### 1. Use the help system extensively
+```console
+Pi λ help basics   # Learn Console basics
+Pi λ help pi       # Pi language reference
+Pi λ help rho      # Rho language reference
+Pi λ help shell    # Shell integration
+Pi λ help history  # History features
+```
+
+### 2. Leverage persistent history
+- Commands save to `~/.kai_history` automatically
+- Use `!!`, `!n`, `!string` for quick recalls
+- History persists across sessions
+
+### 3. Take advantage of built-in commands
+```console
+Pi λ stack         # Show stack anytime
+Pi λ clear         # Clear screen
+Pi λ history       # Review what you've done
+```
+
+### 4. Switch languages as needed
+```console
+Pi λ rho           # For familiar infix syntax
+Rho λ pi           # For stack manipulation
+```
+
+### 5. Use command-line options
+```bash
+$ Console -l rho                    # Start in preferred language
+$ Console --verbose script.pi      # Debug script execution
+$ Console -t 3 complex_script.rho  # High trace level for debugging
 ```
 
 ## Common Mistakes and Solutions
 
-### Mistake 1: Trying to use shell commands directly
+### Mistake 1: Trying shell commands without enabling them
 ```console
-WRONG:  Pi λ ls
-RIGHT:  Pi λ `ls`
+WRONG:  Pi λ ls          # Undefined Pi function
+RIGHT:  Build with -DENABLE_SHELL_SYNTAX=ON first
+        Pi λ $ ls        # Then use shell commands
 ```
 
-### Mistake 2: Mixing Pi and shell syntax
+### Mistake 2: Forgetting Pi is stack-based
 ```console
-WRONG:  Pi λ print $ ls     # Can't mix Pi and shell
-RIGHT:  Pi λ print "`ls`"   # Use backticks to embed
-RIGHT:  Pi λ $ ls           # Or just shell command
+WRONG:  Pi λ 2 + 3       # Error: not enough on stack
+RIGHT:  Pi λ 2 3 +       # Pushes 2, then 3, then adds
 ```
 
-### Mistake 3: Forgetting Pi is stack-based
+### Mistake 3: Not using the help system
 ```console
-WRONG:  Pi λ 2 + 3      # Error: not enough on stack
-RIGHT:  Pi λ 2 3 +      # Pushes 2, then 3, then adds
+WRONG:  Struggling with syntax
+RIGHT:  Pi λ help pi     # Get comprehensive reference
 ```
 
-## Essential Commands
-
-1. **Exit**: `exit` or Ctrl+D
-2. **Clear stack**: `clear`
-3. **Show help**: `help`
-4. **Shell command (method 1)**: `` `command` `` (in backticks)
-5. **Shell command (method 2)**: `$ command` (with $ prefix)
-6. **Repeat last**: `!!`
-7. **Fix typo**: `^old^new`
-
-## Quick Examples
-
+### Mistake 4: Not leveraging history
 ```console
-Pi λ # Define a function
-Pi λ fun double { 2 * }
-
-Pi λ # Use it
-Pi λ 5 double
-[0]: 10
-
-Pi λ # Work with lists
-Pi λ [1 2 3 4 5] { double } map
-[0]: [2 4 6 8 10]
-
-Pi λ # Shell integration
-Pi λ files = "`ls *.txt | wc -l`"
-Pi λ print "Found " files + " text files" +
-[0]: "Found 5 text files"
+SLOW:   Retyping long commands
+FAST:   Pi λ !!          # Repeat last
+        Pi λ !long       # Find command starting with 'long'
 ```
 
-Remember: Pi is a stack-based language, use backticks for shell commands!
+## Essential Commands Summary
+
+1. **Help**: `help`, `help pi`, `help rho`, `help basics`
+2. **Navigation**: `clear`, `history`, `stack`  
+3. **Language**: `pi`, `rho`
+4. **Exit**: `exit`, `quit`, or Ctrl+D
+5. **History**: `!!`, `!n`, `!string`
+6. **Shell**: `$ command` (when enabled)
+7. **Stack**: `dup`, `swap`, `drop`, `clear`
+
+## Quick Reference Card
+
+```
+Stack Operations:    Help System:         Language Switch:
+  2 3 +               help                 pi
+  dup swap drop       help pi              rho
+  clear               help rho
+                      help basics
+History:              
+  !!                 Built-ins:           Shell (if enabled):
+  !n                  clear/cls            $ command
+  !string             history              `command`
+  ^old^new            stack
+                      exit/quit
+```
+
+Remember: Start with `help` to discover all features!

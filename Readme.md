@@ -181,44 +181,80 @@ cmake .. -DENABLE_SHELL_SYNTAX=ON
 ## Applications
 
 ### Console
-The interactive console supports Pi, Rho, and shell command integration:
+The interactive console provides a professional REPL environment with comprehensive features:
 
+```bash
+# Show help and options
+$ ./Console --help
+$ ./Console --version
+
+# Start in different modes
+$ ./Console                    # Interactive Pi mode (default)
+$ ./Console -l rho             # Interactive Rho mode
+$ ./Console script.pi          # Execute Pi script
+$ ./Console -t 2 script.rho    # Execute with trace level 2
+$ ./Console --verbose          # Enable verbose output
+```
+
+**Interactive Session Example:**
 ```
 $ ./Console
-KAI Console v1.0
+KAI Console v0.3.0
+Built on Jun 21 2025 at 23:47:34
+Type 'help' for available commands.
+
+Pi λ help
+KAI Console Help
+
+Available help topics:
+  help basics     - Basic usage and commands
+  help history    - History and command expansion
+  help shell      - Shell integration
+  help languages  - Pi and Rho language features
+
+Language-specific help:
+  help pi         - Pi language reference
+  help rho        - Rho language reference
+
+Built-in Commands:
+  help [topic]    - Show help (optionally for specific topic)
+  clear, cls      - Clear screen
+  exit, quit      - Exit console
+  pi, rho         - Switch language mode
+  history         - Show command history
+  stack           - Show current stack
+  $ <command>     - Execute shell command
+
 Pi λ 2 3 +
 [0]: 5
 
-Pi λ `echo 10` `echo 20` +
-[0]: 30
+Pi λ history
+Command History:
+  1: 2 3 +
 
-Pi λ 1 `echo 2` + 3 ==
-[0]: true
+Pi λ rho
+Switched to Rho language mode
 
-Pi λ $ ls
-file1.txt  file2.cpp  directory/
-
-Pi λ 2 rho
-Rho λ x = 10
-[0]: 2
-
-Rho λ y = 20
-[0]: 2
-
-Rho λ x + y
-[0]: 30
+Rho λ x = 42; y = x * 2; y
+[0]: 84
 ```
 
-Features:
-- **Shell Integration**: Two modes for shell commands (when enabled with ENABLE_SHELL_SYNTAX):
-  - **Embedded**: Use `` `command` `` to embed shell output in expressions
-  - **Standalone**: Use `$ command` to execute shell commands directly
-- **Automatic Stack Display**: Stack shown after each command with colored output
-- **Language Switching**: Use `2 rho` for Rho, `1 pi` for Pi
-- **Mixed Expressions**: Combine shell output with code: `1 `echo 2` + 3 == assert`
-- **Security**: Shell operations disabled by default for safety
+**Professional Features:**
+- **Command-Line Interface**: Full argument parsing with `--help`, `--version`, language selection, trace levels
+- **Interactive Help System**: Context-sensitive help with topics (`help pi`, `help rho`, `help shell`)
+- **Persistent History**: Commands automatically saved to `~/.kai_history` across sessions
+- **Built-in Commands**: `help`, `clear`, `history`, `stack`, `exit`, language switching
+- **Shell Integration**: Execute shell commands with `$ command` (when enabled with ENABLE_SHELL_SYNTAX)
+- **Backtick Expansion**: Embed shell output in expressions: `` `echo 42` 10 + ``
+- **Enhanced Display**: Color-coded stack with orange-colored numbers for better visibility
+- **Error Handling**: User-friendly error messages with suggestions
+- **Auto-installation**: Copies to `~/bin` if directory exists
 
-See [Console Documentation](Doc/Console.md) for full details.
+**Security:**
+- Shell operations disabled by default for safety
+- Enable with `-DENABLE_SHELL_SYNTAX=ON` during build
+
+See [Console Documentation](Doc/Console.md) for comprehensive usage guide.
 
 ### Network Applications
 The system includes several network applications:

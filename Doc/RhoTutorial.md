@@ -14,6 +14,37 @@ Rho provides a higher-level programming experience than Pi while retaining acces
 - **First-class continuations**: Native support for advanced control flow
 - **Strong typing**: Maintains type safety across operations
 
+### Getting Help in the Console
+
+The KAI Console provides comprehensive help for Rho:
+
+```bash
+# Start the Console in Rho mode
+$ ./Console -l rho
+
+Rho λ help rho
+Rho Language Reference
+
+Rho is a C-like language with modern features.
+
+Variables and Assignment:
+  x = 42;         # Assign value to variable
+  y = x * 2;      # Use variables in expressions
+
+Control Structures:
+  if (condition) { ... } # Conditional
+  while (condition) { ... } # Loop
+  for (i = 0; i < 10; i++) { ... } # For loop
+
+Functions:
+  fun name(args) { ... } # Define function
+  name(arguments); # Call function
+
+Rho λ rho          # Switch to Rho mode from Pi
+Rho λ help basics  # For general Console usage
+Rho λ help         # For all available help topics
+```
+
 ## Basic Syntax
 
 ### Variables and Assignment

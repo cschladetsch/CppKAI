@@ -14,6 +14,39 @@ Pi is a Reverse Polish Notation (RPN) language where operations are expressed by
 - **Minimalist syntax**: Very few syntax rules, making it easy to parse and execute
 - **Powerful**: Despite its simplicity, Pi can express complex operations and control flow
 
+### Getting Help in the Console
+
+The KAI Console provides comprehensive help for Pi:
+
+```bash
+# Start the Console in Pi mode (default)
+$ ./Console
+
+Pi λ help pi
+Pi Language Reference
+
+Pi is a stack-based language with postfix notation.
+
+Basic Operations:
+  2 3 +           # Push 2, push 3, add (result: 5)
+  10 3 -          # Subtract (result: 7)
+  4 5 *           # Multiply (result: 20)
+  15 3 /          # Divide (result: 5)
+
+Stack Operations:
+  dup             # Duplicate top of stack
+  swap            # Swap top two elements
+  drop            # Remove top element
+  over            # Copy second element to top
+
+Control Flow:
+  if then else    # Conditional execution
+  while do        # Loop while condition is true
+
+Pi λ help basics  # For general Console usage
+Pi λ help         # For all available help topics
+```
+
 ## Basic Stack Operations
 
 Pi primarily manipulates two stacks:
