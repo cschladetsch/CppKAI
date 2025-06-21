@@ -167,6 +167,17 @@ ninja             # If using Ninja generator
 
 For more detailed build instructions, see [BUILD.md](Doc/BUILD.md).
 
+### Security Configuration
+
+Shell operations (backtick syntax) are disabled by default for security. To enable:
+```bash
+# Enable shell syntax during build
+cmake .. -DENABLE_SHELL_SYNTAX=ON
+
+# Or with the build script
+./b --enable-shell
+```
+
 ## Applications
 
 ### Console
@@ -199,12 +210,13 @@ Rho λ x + y
 ```
 
 Features:
-- **Shell Integration**: Two modes for shell commands:
+- **Shell Integration**: Two modes for shell commands (when enabled with ENABLE_SHELL_SYNTAX):
   - **Embedded**: Use `` `command` `` to embed shell output in expressions
   - **Standalone**: Use `$ command` to execute shell commands directly
 - **Automatic Stack Display**: Stack shown after each command with colored output
 - **Language Switching**: Use `2 rho` for Rho, `1 pi` for Pi
 - **Mixed Expressions**: Combine shell output with code: `1 `echo 2` + 3 == assert`
+- **Security**: Shell operations disabled by default for safety
 
 See [Console Documentation](Doc/Console.md) for full details.
 
