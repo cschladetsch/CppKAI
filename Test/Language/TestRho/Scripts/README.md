@@ -16,7 +16,7 @@ This directory contains Rho language scripts used by the test suite. Each script
 Tests load these scripts using the `LoadRhoScript()` utility function:
 
 ```cpp
-std::string script = kai::test::LoadRhoScript("basic_add_function.rho");
+std::string script = kai::test::LoadRhoScript("BasicAddFunction.rho");
 ```
 
 ## Adding New Scripts

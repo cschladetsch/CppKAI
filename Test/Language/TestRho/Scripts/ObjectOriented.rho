@@ -10,22 +10,22 @@ person = {
     occupation: "Developer"
 }
 
-assert(person.name == "John")
-assert(person.age == 30)
-assert(person.occupation == "Developer")
+assert person.name == "John"
+assert person.age == 30
+assert person.occupation == "Developer"
 
 // Modifying object properties
 person.age = 31
-assert(person.age == 31)
+assert person.age == 31
 
 person.location = "New York"
-assert(person.location == "New York")
+assert person.location == "New York"
 
 // Object as function parameters
 function getDescription = p
     return p.name + " is a " + p.age + "-year-old " + p.occupation
 
-assert(getDescription(person) == "John is a 31-year-old Developer")
+assert getDescription(person) == "John is a 31-year-old Developer"
 
 // Creating an object with methods
 calculator = {
@@ -54,17 +54,17 @@ calculator = {
 
 // Method chaining
 result = calculator.add(5).multiply(2).subtract(3).getValue()
-assert(result == 7)
+assert result == 7
 
 // Reset calculator
 calculator.value = 0
 
 // More complex operations
 calculator.add(10)
-assert(calculator.getValue() == 10)
+assert calculator.getValue() == 10
 
 calculator.divide(2)
-assert(calculator.getValue() == 5)
+assert calculator.getValue() == 5
 
 // "Inheritance" via composition
 enhancedCalculator = {
@@ -79,4 +79,4 @@ enhancedCalculator = {
 
 enhancedCalculator.calc.value = 3
 enhancedCalculator.square()
-assert(enhancedCalculator.getValue() == 9)
+assert enhancedCalculator.getValue() == 9

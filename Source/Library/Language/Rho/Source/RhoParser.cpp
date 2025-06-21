@@ -57,7 +57,10 @@ bool RhoParser::Run(Structure st) {
             break;
 
         case Structure::Function:
-            Function(root);
+            // Functions are now only created via assignment syntax: a = fun(b,c)
+            // So we treat it as an expression
+            if (!Expression()) return CreateError("Expression expected");
+            root->Add(Pop());
             break;
 
         case Structure::Program:
@@ -128,119 +131,6 @@ bool RhoParser::Program() {
     return true;
 }
 
-bool RhoParser::Function(AstNodePtr node) {
-    ConsumeNewLines();
-
-    // We need to handle both formats:
-    // 1. fun name(args)
-    //    block
-    // 2. fun(args) { block }
-
-    Expect(TokenType::Fun);
-
-    // Check if this is "fun name(args)", "fun(args)", or "fun name = args"
-    bool hasName = Try(TokenType::Label);
-    RhoToken name;
-
-    if (hasName) {
-        name = Consume();
-    }
-
-    std::shared_ptr<AstNode> fun = NewNode(AstEnum::Function);
-
-    if (hasName) {
-        fun->Add(name);
-    } else {
-        // If no name is provided, add a temporary placeholder
-        // Create a slice for the anonymous identifier
-        Slice anonymousSlice;
-        fun->Add(RhoToken(TokenEnum::Label, *lexer.get(), 0, anonymousSlice));
-    }
-
-    // Check for "=" syntax (fun name = args)
-    bool useAssignSyntax = Try(TokenType::Assign);
-    if (useAssignSyntax) {
-        Consume();  // consume '='
-    } else {
-        Expect(TokenType::OpenParan);
-    }
-    std::shared_ptr<AstNode> args = NewNode(AstEnum::None);
-    fun->Add(args);
-
-    if (useAssignSyntax) {
-        // For "fun name = args" syntax, parse comma-separated args without
-        // parens
-        if (Try(TokenType::Label)) {
-            args->Add(Consume());
-            while (Try(TokenType::Comma)) {
-                Consume();
-                ConsumeNewLines();  // Allow newlines after comma
-                args->Add(Expect(TokenType::Label));
-            }
-        }
-        // No closing paren for assign syntax
-    } else {
-        // For "fun name(args)" syntax with parentheses
-        if (Try(TokenType::Label)) {
-            args->Add(Consume());
-            while (Try(TokenType::Comma)) {
-                Consume();
-                args->Add(Expect(TokenType::Label));
-            }
-        }
-        Expect(TokenType::CloseParan);
-    }
-
-    auto block = NewNode(RhoAstNodeEnumType::Block);
-
-    KAI_TRACE() << "Function: After CloseParan, current token: "
-                << TokenEnumType::ToString(Current().type) << " '"
-                << Current().Text() << "'";
-
-    // Check if we have brace-style or indentation-style
-    if (Try(TokenType::OpenBrace)) {
-        // Brace-style function body
-        Consume();  // consume '{'
-
-        ConsumeNewLines();
-
-        // Parse statements until we hit closing brace
-        while (!Try(TokenType::CloseBrace) && !Failed) {
-            if (!Statement(block)) {
-                if (!Failed) {
-                    return Fail("Statement expected in function body");
-                }
-                break;
-            }
-            ConsumeNewLines();
-        }
-
-        Expect(TokenType::CloseBrace);
-        ConsumeNewLines();  // Allow newlines after closing brace
-    } else {
-        // Indentation-style function body
-        KAI_TRACE()
-            << "Function: Indentation-style, expecting NewLine, current: "
-            << TokenEnumType::ToString(Current().type) << " '"
-            << Current().Text() << "'";
-        Expect(TokenType::NewLine);
-
-        KAI_TRACE() << "Function: After NewLine, current token: "
-                    << TokenEnumType::ToString(Current().type) << " '"
-                    << Current().Text() << "'";
-
-        // Use the Block method for indented code blocks
-        if (!Block(block)) {
-            return CreateError("Block Expected for function body");
-        }
-    }
-
-    fun->Add(block);
-
-    // No trailing semicolon in Rho
-
-    return node->Add(fun);
-}
 
 bool RhoParser::Block(AstNodePtr node) {
     ConsumeNewLines();
@@ -365,29 +255,12 @@ bool RhoParser::Statement(AstNodePtr block) {
             KAI_TRACE() << "RhoParser::Statement - Processing Assert";
             auto ass = NewNode(Consume());
 
-            // Handle parentheses in assert statements (e.g.,
-            // assert(expression))
-            bool hasParentheses = false;
-            if (Try(TokenType::OpenParan)) {
-                hasParentheses = true;
-                Consume();
-            }
-
+            // Assert only supports the syntax: assert expression
+            // No parentheses allowed
             if (!Expression()) {
                 Fail(Lexer::CreateErrorMessage(
                     Current(), "Assert needs an expression to test"));
                 return false;
-            }
-
-            // If opening parenthesis was used, expect closing parenthesis
-            if (hasParentheses) {
-                if (!Try(TokenType::CloseParan)) {
-                    Fail(Lexer::CreateErrorMessage(
-                        Current(),
-                        "Expected closing parenthesis after assert condition"));
-                    return false;
-                }
-                Consume();
             }
 
             ass->Add(Pop());
@@ -455,10 +328,6 @@ bool RhoParser::Statement(AstNodePtr block) {
             return true;
         }
 
-        case TokenType::Fun: {
-            KAI_TRACE() << "RhoParser::Statement - Processing Function";
-            return Function(block);
-        }
 
         case TokenType::None:
             // End of input is okay
@@ -716,7 +585,7 @@ bool RhoParser::Factor() {
         Slice anonymousSlice;
         fun->Add(RhoToken(TokenEnum::Label, *lexer.get(), 0, anonymousSlice));
 
-        // Parse parameters
+        // Parse parameters with parentheses (required for clarity)
         Expect(TokenType::OpenParan);
         auto args = NewNode(AstEnum::None);
         fun->Add(args);

@@ -98,6 +98,21 @@ foreach (lang ${langs})
             ${source_path}/RhoAdvancedContinuationTests.cpp # Advanced continuation tests
             ${source_path}/RhoAdvancedTests.cpp            # 20 new advanced tests
             # ${source_path}/TestElseIf.cpp                  # Test else-if syntax - removed, verified functionality
+            # New tests for our fixes
+            ${source_path}/PrintFunctionTest.cpp            # Test print as built-in operation
+            ${source_path}/WhileLoopTest.cpp                # Test while loop fixes
+            ${source_path}/DoWhileLoopTest.cpp              # Test do-while loop fixes
+            ${source_path}/MixedLanguageTest.cpp            # Test Pi/Rho interop
+            ${source_path}/FunctionSyntaxTest.cpp           # Test function syntax standardization
+            ${source_path}/AssertSyntaxTest.cpp             # Test assert syntax simplification
+            ${source_path}/SimpleStatementTest.cpp           # Test simple statements
+            ${source_path}/SimpleFunctionTest.cpp            # Test simple function calls
+            ${source_path}/FunctionScopeTest.cpp             # Test function scope in loops
+            ${source_path}/DebugFunctionInLoop.cpp           # Debug function calls in loops
+            ${source_path}/SimpleForLoopTest.cpp             # Test simple for loops
+            ${source_path}/SimpleContinueTest.cpp            # Test continue statement
+            ${source_path}/ModuloTest.cpp                    # Test modulo operator
+            ${source_path}/SimpleDoWhileContinueTest.cpp     # Test do-while continue
         )
     elseif(lang STREQUAL "Pi")
         # Explicitly list Pi tests to avoid including unwanted files

@@ -324,7 +324,7 @@ TEST_F(TestLangCommon, FunctionWithSemicolons) {
            << "    return a + b\n"
            << "}\n"
            << "result = add(2, 3)\n"
-           << "assert(result == 5)\n";
+           << "assert result == 5\n";
 
         console_.Execute(ss.str());
         std::cout << "FunctionWithSemicolons test passed!" << std::endl;
@@ -353,14 +353,12 @@ TEST_F(TestLangCommon, ComplexExpressionWithSemicolons) {
         ss << "// Complex expression combining multiple features\n"
            << "sum = 0\n"
            << "multiply = fun(a, b) { return a * b; }\n"
-           << "for (i = 0; i < 5; i = i + 1) {\n"
-           << "    if (i % 2 == 0) {\n"
+           << "for i = 0; i < 5; i = i + 1\n"
+           << "    if i % 2 == 0\n"
            << "        sum = sum + multiply(i, 2)\n"
-           << "    } else {\n"
+           << "    else\n"
            << "        sum = sum + i\n"
-           << "    }\n"
-           << "}\n"
-           << "assert(sum == 14)\n";
+           << "assert sum == 14\n";
 
         console_.Execute(ss.str());
         std::cout << "ComplexExpressionWithSemicolons test passed!"

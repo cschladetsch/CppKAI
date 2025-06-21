@@ -491,6 +491,33 @@ TestAdditionalStringOps.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestAdditionalStringOps.cpp.s
 .PHONY : TestAdditionalStringOps.cpp.s
 
+TestArray.o: TestArray.cpp.o
+.PHONY : TestArray.o
+
+# target to build an object file
+TestArray.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestArray.cpp.o
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestArray.cpp.o
+.PHONY : TestArray.cpp.o
+
+TestArray.i: TestArray.cpp.i
+.PHONY : TestArray.i
+
+# target to preprocess a source file
+TestArray.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestArray.cpp.i
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestArray.cpp.i
+.PHONY : TestArray.cpp.i
+
+TestArray.s: TestArray.cpp.s
+.PHONY : TestArray.s
+
+# target to generate assembly for a file
+TestArray.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestArray.cpp.s
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestArray.cpp.s
+.PHONY : TestArray.cpp.s
+
 TestBasePointer.o: TestBasePointer.cpp.o
 .PHONY : TestBasePointer.o
 
@@ -598,33 +625,6 @@ TestContainer/TestList.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestContainer/TestList.cpp.s
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestContainer/TestList.cpp.s
 .PHONY : TestContainer/TestList.cpp.s
-
-TestContainer/TestMap.o: TestContainer/TestMap.cpp.o
-.PHONY : TestContainer/TestMap.o
-
-# target to build an object file
-TestContainer/TestMap.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestContainer/TestMap.cpp.o
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestContainer/TestMap.cpp.o
-.PHONY : TestContainer/TestMap.cpp.o
-
-TestContainer/TestMap.i: TestContainer/TestMap.cpp.i
-.PHONY : TestContainer/TestMap.i
-
-# target to preprocess a source file
-TestContainer/TestMap.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestContainer/TestMap.cpp.i
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestContainer/TestMap.cpp.i
-.PHONY : TestContainer/TestMap.cpp.i
-
-TestContainer/TestMap.s: TestContainer/TestMap.cpp.s
-.PHONY : TestContainer/TestMap.s
-
-# target to generate assembly for a file
-TestContainer/TestMap.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestContainer/TestMap.cpp.s
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestContainer/TestMap.cpp.s
-.PHONY : TestContainer/TestMap.cpp.s
 
 TestContainer/TestSet.o: TestContainer/TestSet.cpp.o
 .PHONY : TestContainer/TestSet.o
@@ -815,6 +815,33 @@ TestGarbageCollection.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestGarbageCollection.cpp.s
 .PHONY : TestGarbageCollection.cpp.s
 
+TestMap.o: TestMap.cpp.o
+.PHONY : TestMap.o
+
+# target to build an object file
+TestMap.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestMap.cpp.o
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestMap.cpp.o
+.PHONY : TestMap.cpp.o
+
+TestMap.i: TestMap.cpp.i
+.PHONY : TestMap.i
+
+# target to preprocess a source file
+TestMap.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestMap.cpp.i
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestMap.cpp.i
+.PHONY : TestMap.cpp.i
+
+TestMap.s: TestMap.cpp.s
+.PHONY : TestMap.s
+
+# target to generate assembly for a file
+TestMap.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestMap.cpp.s
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestMap.cpp.s
+.PHONY : TestMap.cpp.s
+
 TestMemoryManagement.o: TestMemoryManagement.cpp.o
 .PHONY : TestMemoryManagement.o
 
@@ -893,29 +920,29 @@ TestRakNetStub.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestRakNetStub.cpp.s
 .PHONY : TestRakNetStub.cpp.s
 
-TestRakNetStub_Simple.o: TestRakNetStub_Simple.cpp.o
-.PHONY : TestRakNetStub_Simple.o
+TestRakNetStubSimple.o: TestRakNetStubSimple.cpp.o
+.PHONY : TestRakNetStubSimple.o
 
 # target to build an object file
-TestRakNetStub_Simple.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestRakNetStub_Simple.cpp.o
-.PHONY : TestRakNetStub_Simple.cpp.o
+TestRakNetStubSimple.cpp.o:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestRakNetStubSimple.cpp.o
+.PHONY : TestRakNetStubSimple.cpp.o
 
-TestRakNetStub_Simple.i: TestRakNetStub_Simple.cpp.i
-.PHONY : TestRakNetStub_Simple.i
+TestRakNetStubSimple.i: TestRakNetStubSimple.cpp.i
+.PHONY : TestRakNetStubSimple.i
 
 # target to preprocess a source file
-TestRakNetStub_Simple.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestRakNetStub_Simple.cpp.i
-.PHONY : TestRakNetStub_Simple.cpp.i
+TestRakNetStubSimple.cpp.i:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestRakNetStubSimple.cpp.i
+.PHONY : TestRakNetStubSimple.cpp.i
 
-TestRakNetStub_Simple.s: TestRakNetStub_Simple.cpp.s
-.PHONY : TestRakNetStub_Simple.s
+TestRakNetStubSimple.s: TestRakNetStubSimple.cpp.s
+.PHONY : TestRakNetStubSimple.s
 
 # target to generate assembly for a file
-TestRakNetStub_Simple.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestRakNetStub_Simple.cpp.s
-.PHONY : TestRakNetStub_Simple.cpp.s
+TestRakNetStubSimple.cpp.s:
+	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestRakNetStubSimple.cpp.s
+.PHONY : TestRakNetStubSimple.cpp.s
 
 TestReflection.o: TestReflection.cpp.o
 .PHONY : TestReflection.o
@@ -1154,6 +1181,9 @@ help:
 	@echo "... TestAdditionalStringOps.o"
 	@echo "... TestAdditionalStringOps.i"
 	@echo "... TestAdditionalStringOps.s"
+	@echo "... TestArray.o"
+	@echo "... TestArray.i"
+	@echo "... TestArray.s"
 	@echo "... TestBasePointer.o"
 	@echo "... TestBasePointer.i"
 	@echo "... TestBasePointer.s"
@@ -1166,9 +1196,6 @@ help:
 	@echo "... TestContainer/TestList.o"
 	@echo "... TestContainer/TestList.i"
 	@echo "... TestContainer/TestList.s"
-	@echo "... TestContainer/TestMap.o"
-	@echo "... TestContainer/TestMap.i"
-	@echo "... TestContainer/TestMap.s"
 	@echo "... TestContainer/TestSet.o"
 	@echo "... TestContainer/TestSet.i"
 	@echo "... TestContainer/TestSet.s"
@@ -1190,6 +1217,9 @@ help:
 	@echo "... TestGarbageCollection.o"
 	@echo "... TestGarbageCollection.i"
 	@echo "... TestGarbageCollection.s"
+	@echo "... TestMap.o"
+	@echo "... TestMap.i"
+	@echo "... TestMap.s"
 	@echo "... TestMemoryManagement.o"
 	@echo "... TestMemoryManagement.i"
 	@echo "... TestMemoryManagement.s"
@@ -1199,9 +1229,9 @@ help:
 	@echo "... TestRakNetStub.o"
 	@echo "... TestRakNetStub.i"
 	@echo "... TestRakNetStub.s"
-	@echo "... TestRakNetStub_Simple.o"
-	@echo "... TestRakNetStub_Simple.i"
-	@echo "... TestRakNetStub_Simple.s"
+	@echo "... TestRakNetStubSimple.o"
+	@echo "... TestRakNetStubSimple.i"
+	@echo "... TestRakNetStubSimple.s"
 	@echo "... TestReflection.o"
 	@echo "... TestReflection.i"
 	@echo "... TestReflection.s"

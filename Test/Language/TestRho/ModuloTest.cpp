@@ -3,35 +3,27 @@
 
 using namespace kai;
 
-struct SimpleFunctionTest : TestLangCommon {};
+struct ModuloTest : TestLangCommon {};
 
-TEST_F(SimpleFunctionTest, BasicFunctionCall) {
+TEST_F(ModuloTest, BasicModulo) {
     console_.SetLanguage(Language::Rho);
     
-    const char* code = R"(
-double = fun(x)
-    x * 2
-
-result = double(5)
-result
-)";
-    
-    console_.Execute(code, Structure::Program);
+    console_.Execute("result = 5 % 2", Structure::Statement);
+    console_.Execute("result", Structure::Expression);
     
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(10, ConstDeref<int>(result));
+    EXPECT_EQ(1, ConstDeref<int>(result));
 }
 
-TEST_F(SimpleFunctionTest, FunctionInExpression) {
+TEST_F(ModuloTest, ModuloInCondition) {
     console_.SetLanguage(Language::Rho);
     
     const char* code = R"(
-add = fun(a, b)
-    a + b
-
-result = 1 + add(2, 3)
+result = 0
+if 4 % 2 == 0
+    result = 1
 result
 )";
     
@@ -40,5 +32,5 @@ result
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(6, ConstDeref<int>(result));
+    EXPECT_EQ(1, ConstDeref<int>(result));
 }

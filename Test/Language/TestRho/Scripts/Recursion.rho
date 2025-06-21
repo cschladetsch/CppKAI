@@ -1,18 +1,18 @@
 // Test for Rho recursion
 
 // Factorial function using recursion
-fun factorial = n
+factorial = fun(n)
     if n <= 1
         return 1
     else
         return n * factorial(n - 1)
 
-assert(factorial(0) == 1)
-assert(factorial(1) == 1)
-assert(factorial(5) == 120)
+assert factorial(0) == 1
+assert factorial(1) == 1
+assert factorial(5) == 120
 
 // Fibonacci function using recursion
-fun fibonacci = n
+fibonacci = fun(n)
     if n <= 0
         return 0
     else if n == 1
@@ -20,35 +20,35 @@ fun fibonacci = n
     else
         return fibonacci(n - 1) + fibonacci(n - 2)
 
-assert(fibonacci(0) == 0)
-assert(fibonacci(1) == 1)
-assert(fibonacci(5) == 5)
-assert(fibonacci(7) == 13)
+assert fibonacci(0) == 0
+assert fibonacci(1) == 1
+assert fibonacci(5) == 5
+assert fibonacci(7) == 13
 
 // Mutual recursion
-fun isEven = n
+isEven = fun(n)
     if n == 0
         return true
     else
         return isOdd(n - 1)
 
-fun isOdd = n
+isOdd = fun(n)
     if n == 0
         return false
     else
         return isEven(n - 1)
 
-assert(isEven(4) == true)
-assert(isEven(5) == false)
-assert(isOdd(5) == true)
-assert(isOdd(4) == false)
+assert isEven(4) == true
+assert isEven(5) == false
+assert isOdd(5) == true
+assert isOdd(4) == false
 
 // Test tail recursion
-fun sum = n, acc
+sum = fun(n, acc)
     if n <= 0
         return acc
     else
         return sum(n - 1, acc + n)
 
-assert(sum(5, 0) == 15)
-assert(sum(100, 0) == 5050)
+assert sum(5, 0) == 15
+assert sum(100, 0) == 5050

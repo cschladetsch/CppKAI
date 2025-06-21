@@ -16,7 +16,7 @@ TEST_F(SimpleFunctionCall, BasicCall) {
 
         // Read script from file
         std::string script =
-            kai::test::LoadRhoScript("simple_function_call.rho");
+            kai::test::LoadRhoScript("SimpleFunctionCall.rho");
 
         // Instead of Structure::Program, use Structure::Expression
         // to get the result on the stack

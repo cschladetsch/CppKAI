@@ -1,4 +1,4 @@
-fun multiply(a, b)
+multiply = fun(a, b)
     return a * b
 
 multiply(4, 5)

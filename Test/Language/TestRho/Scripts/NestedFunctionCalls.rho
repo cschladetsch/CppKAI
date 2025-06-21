@@ -1,5 +1,5 @@
-fun increment(n)
+increment = fun(n)
     return n + 1
-fun double(n)
+double = fun(n)
     return n * 2
 double(increment(increment(double(2))))

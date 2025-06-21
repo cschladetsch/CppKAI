@@ -51,6 +51,9 @@ void Console::Create() {
         executor->SetCompiler(compiler);
 
         CreateTree();
+        
+        // Set default language to Pi
+        SetLanguage(Language::Pi);
     }
     KAI_CATCH(exception, e) {
         KAI_TRACE_1(e.what());
@@ -66,9 +69,18 @@ void Console::ExposeTypesToTree(Object types) {
     }
 }
 
-void Console::SetLanguage(Language lang) { language = lang; }
+void Console::SetLanguage(Language lang) { 
+    language = lang;
+    
+    // Update the compiler's language
+    if (compiler.Exists()) {
+        compiler->SetLanguage(static_cast<int>(lang));
+    }
+}
 
-void Console::SetLanguage(int lang) { language = static_cast<Language>(lang); }
+void Console::SetLanguage(int lang) { 
+    SetLanguage(static_cast<Language>(lang));
+}
 
 void Console::SetTranslator(std::shared_ptr<TranslatorCommon> trans) {
     translator = trans;

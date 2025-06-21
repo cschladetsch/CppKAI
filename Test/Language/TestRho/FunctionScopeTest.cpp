@@ -3,17 +3,18 @@
 
 using namespace kai;
 
-struct SimpleFunctionTest : TestLangCommon {};
+struct FunctionScopeTest : TestLangCommon {};
 
-TEST_F(SimpleFunctionTest, BasicFunctionCall) {
+TEST_F(FunctionScopeTest, VariableUpdateInLoop) {
     console_.SetLanguage(Language::Rho);
     
     const char* code = R"(
-double = fun(x)
-    x * 2
-
-result = double(5)
-result
+sum = 0
+i = 1
+while i <= 2
+    sum = sum + i
+    i = i + 1
+sum
 )";
     
     console_.Execute(code, Structure::Program);
@@ -21,18 +22,20 @@ result
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(10, ConstDeref<int>(result));
+    EXPECT_EQ(3, ConstDeref<int>(result)); // 1+2 = 3
 }
 
-TEST_F(SimpleFunctionTest, FunctionInExpression) {
+TEST_F(FunctionScopeTest, SimpleFunctionInLoop) {
     console_.SetLanguage(Language::Rho);
     
     const char* code = R"(
-add = fun(a, b)
-    a + b
+inc = fun(x)
+    x + 1
 
-result = 1 + add(2, 3)
-result
+i = 0
+while i < 2
+    i = inc(i)
+i
 )";
     
     console_.Execute(code, Structure::Program);
@@ -40,5 +43,5 @@ result
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(6, ConstDeref<int>(result));
+    EXPECT_EQ(2, ConstDeref<int>(result));
 }

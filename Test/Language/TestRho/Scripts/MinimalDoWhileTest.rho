@@ -8,4 +8,4 @@ do
 while i < 3
 
 // Verify i is 3 after the loop
-assert(i == 3)
+assert i == 3

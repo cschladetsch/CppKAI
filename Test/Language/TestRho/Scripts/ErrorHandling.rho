@@ -7,8 +7,8 @@ function divide = a, b
     else
         return a / b
 
-assert(divide(10, 2) == 5)
-assert(divide(10, 0) == "Error: Division by zero")
+assert divide(10, 2) == 5
+assert divide(10, 0) == "Error: Division by zero"
 
 // Function with result checking
 function safeSqrt = x
@@ -17,8 +17,8 @@ function safeSqrt = x
     else
         return x ^ 0.5
 
-assert(safeSqrt(16) == 4)
-assert(safeSqrt(-4) == "Error: Cannot take square root of negative number")
+assert safeSqrt(16) == 4
+assert safeSqrt(-4) == "Error: Cannot take square root of negative number"
 
 // Multi-level error handling
 function processNumber = n
@@ -29,9 +29,9 @@ function processNumber = n
     else
         return n * 2
 
-assert(processNumber(50) == 100)
-assert(processNumber(-10) == "Error: Number cannot be negative")
-assert(processNumber(200) == "Error: Number cannot be greater than 100")
+assert processNumber(50) == 100
+assert processNumber(-10) == "Error: Number cannot be negative"
+assert processNumber(200) == "Error: Number cannot be greater than 100"
 
 // Cascading error handling
 function validateAndProcess = input
@@ -50,5 +50,5 @@ function validate = input
 function process = value
     return value * 2
 
-assert(validateAndProcess(5) == 10)
-assert(validateAndProcess(-5)[0] == "error")
+assert validateAndProcess(5) == 10
+assert validateAndProcess(-5)[0] == "error"

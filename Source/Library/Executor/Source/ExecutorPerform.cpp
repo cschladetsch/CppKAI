@@ -361,8 +361,7 @@ void Executor::Perform(Operation::Type op) {
             break;
 
         case Operation::Suspend: {
-            KAI_TRACE() << "Operation::Suspend - saving current continuation "
-                           "and switching";
+            KAI_TRACE() << "Operation::Suspend - processing function call";
 
             // Debug: Show current continuation state
             if (continuation_.Exists() && continuation_->GetCode().Exists()) {
@@ -371,26 +370,20 @@ void Executor::Perform(Operation::Type op) {
                             << " of " << continuation_->GetCode()->Size();
             }
 
-            // Get the new continuation to execute
-            auto newCont = Pop();
-
-            // Save current continuation on the context stack for later
-            // resumption IMPORTANT: The instruction pointer is already at the
-            // correct position! The Continue loop calls Next() before Eval(),
-            // so when we're executing the Suspend operation, the IP has already
-            // been advanced past it. When we return and pop this continuation,
-            // it will correctly resume at the instruction after Suspend.
+            // Get the function/continuation to execute
+            auto funcObj = Pop();
+            
+            // Save current continuation on the context stack for later resumption
             context_->Push(continuation_);
 
             // Create and set the new continuation
-            continuation_ = NewContinuation(newCont);
+            continuation_ = NewContinuation(funcObj);
             KAI_TRACE() << "  Creating new continuation from: "
-                        << newCont.ToString();
+                        << funcObj.ToString();
             KAI_TRACE() << "  Context stack size: " << context_->Size();
 
             // IMPORTANT: Call Enter to set up arguments in the new scope
-            // This is critical for function arguments to be available in the
-            // scope
+            // This is critical for function arguments to be available in the scope
             if (continuation_.Exists()) {
                 continuation_->Enter(this);
                 KAI_TRACE() << "  Called Enter on new continuation";
@@ -759,21 +752,15 @@ void Executor::Perform(Operation::Type op) {
             KAI_TRACE() << "If operation: condition = " << condition;
 
             if (condition) {
-                KAI_TRACE() << "If operation: Executing then block inline";
-                // Instead of calling Continue() which changes the execution
-                // context, inline the continuation's code into the current
-                // continuation
+                KAI_TRACE() << "If operation: Executing then block";
+                // We need to execute the continuation properly
                 if (continuation.IsType<Continuation>()) {
-                    Pointer<Continuation> thenCont = continuation;
-                    if (thenCont->GetCode().Exists()) {
-                        // Execute each operation from the then block directly
-                        for (int i = 0; i < thenCont->GetCode()->Size(); ++i) {
-                            auto obj = thenCont->GetCode()->At(i);
-                            if (obj.Exists()) {
-                                Eval(obj);
-                            }
-                        }
-                    }
+                    // Save current continuation state and execute the then block
+                    Push(continuation);
+                    Eval(New<Operation>(Operation::Suspend));
+                } else {
+                    KAI_TRACE_ERROR() << "If operation: Expected continuation, got " 
+                                      << continuation.GetTypeNumber().ToString();
                 }
             } else {
                 KAI_TRACE() << "If operation: Skipping then block";
@@ -790,26 +777,16 @@ void Executor::Perform(Operation::Type op) {
             auto A = Pop();
             bool condition = PopBool();
             KAI_TRACE() << "IfElse: condition=" << condition << ", choosing "
-                        << (condition ? "A" : "B");
+                        << (condition ? "then" : "else") << " block";
 
-            // Simple approach: append the chosen continuation's code to current
-            // continuation
             auto chosen = condition ? A : B;
             if (chosen.IsType<Continuation>()) {
-                Pointer<Continuation> cont = chosen;
-                if (cont->GetCode().Exists() && continuation_.Exists()) {
-                    auto currentCode = continuation_->GetCode();
-                    auto currentIndex = ConstDeref<int>(continuation_->index);
-
-                    // Insert all operations from the chosen block at current
-                    // position
-                    for (int i = cont->GetCode()->Size() - 1; i >= 0; --i) {
-                        auto obj = cont->GetCode()->At(i);
-                        if (obj.Exists() && currentCode.Exists()) {
-                            currentCode->Insert(currentIndex, obj);
-                        }
-                    }
-                }
+                // Execute the chosen block using proper continuation mechanism
+                Push(chosen);
+                Eval(New<Operation>(Operation::Suspend));
+            } else {
+                KAI_TRACE_ERROR() << "IfElse: Expected continuation, got " 
+                                  << chosen.GetTypeNumber().ToString();
             }
 
             break;
@@ -1255,33 +1232,16 @@ void Executor::Perform(Operation::Type op) {
                 while (true) {
                     continue_ = false;  // Reset continue flag at loop start
 
-                    // Evaluate condition
-                    if (condition->GetCode().Exists()) {
-                        for (int i = 0; i < condition->GetCode()->Size(); ++i) {
-                            auto obj = condition->GetCode()->At(i);
-                            if (obj.Exists()) {
-                                Eval(obj);
-                            }
-                        }
-                    }
+                    // Evaluate condition using ExecuteContinuationInline
+                    ExecuteContinuationInline(condition);
 
                     // Check condition result
                     if (data_->Empty() || !PopBool()) {
                         break;
                     }
 
-                    // Execute body
-                    if (body->GetCode().Exists()) {
-                        for (int i = 0; i < body->GetCode()->Size(); ++i) {
-                            if (break_ || continue_) {
-                                break;  // Exit the body execution loop
-                            }
-                            auto obj = body->GetCode()->At(i);
-                            if (obj.Exists()) {
-                                Eval(obj);
-                            }
-                        }
-                    }
+                    // Execute body using ExecuteContinuationInline
+                    ExecuteContinuationInline(body);
 
                     // Check for break after body execution
                     if (break_) {
@@ -1524,18 +1484,8 @@ void Executor::Perform(Operation::Type op) {
                 do {
                     continue_ = false;  // Reset continue flag at loop start
 
-                    // Execute body
-                    if (body->GetCode().Exists()) {
-                        for (int i = 0; i < body->GetCode()->Size(); ++i) {
-                            if (break_ || continue_) {
-                                break;  // Exit the body execution loop
-                            }
-                            auto obj = body->GetCode()->At(i);
-                            if (obj.Exists()) {
-                                Eval(obj);
-                            }
-                        }
-                    }
+                    // Execute body using ExecuteContinuationInline
+                    ExecuteContinuationInline(body);
 
                     // Check for break after body execution
                     if (break_) {
@@ -1543,15 +1493,8 @@ void Executor::Perform(Operation::Type op) {
                         break;           // Exit the do-while loop
                     }
 
-                    // Evaluate condition (even if continue was hit)
-                    if (condition->GetCode().Exists()) {
-                        for (int i = 0; i < condition->GetCode()->Size(); ++i) {
-                            auto obj = condition->GetCode()->At(i);
-                            if (obj.Exists()) {
-                                Eval(obj);
-                            }
-                        }
-                    }
+                    // Evaluate condition (even if continue was hit) using ExecuteContinuationInline
+                    ExecuteContinuationInline(condition);
 
                     // Check condition result
                 } while (!data_->Empty() && PopBool());
@@ -2016,12 +1959,48 @@ void Executor::Perform(Operation::Type op) {
 // Helper method to execute a continuation's code inline
 void Executor::ExecuteContinuationInline(Pointer<Continuation> cont) {
     if (cont.Exists() && cont->GetCode().Exists()) {
-        for (int i = 0; i < cont->GetCode()->Size(); ++i) {
-            if (break_ || continue_) break;
-            auto obj = cont->GetCode()->At(i);
-            if (obj.Exists()) {
-                Eval(obj);
+        // Create a temporary sub-continuation for this inline execution
+        // This allows proper handling of Suspend operations
+        auto savedCont = continuation_;
+        auto savedIndex = savedCont.Exists() ? ConstDeref<int>(savedCont->index) : 0;
+        
+        // Set up the inline continuation
+        continuation_ = cont;
+        if (!continuation_->index.Exists()) {
+            continuation_->index = continuation_->New<int>(0);
+        } else {
+            *continuation_->index = 0;
+        }
+        
+        // Execute the continuation
+        try {
+            while (continuation_.Exists() && 
+                   ConstDeref<int>(continuation_->index) < continuation_->GetCode()->Size()) {
+                if (break_ || continue_) break;
+                
+                int index = ConstDeref<int>(continuation_->index);
+                auto obj = continuation_->GetCode()->At(index);
+                
+                // Advance the index first
+                *continuation_->index = index + 1;
+                
+                if (obj.Exists()) {
+                    Eval(obj);
+                }
             }
+        } catch (...) {
+            // Restore original continuation on error
+            continuation_ = savedCont;
+            if (savedCont.Exists() && savedCont->index.Exists()) {
+                *savedCont->index = savedIndex;
+            }
+            throw;
+        }
+        
+        // Restore the original continuation
+        continuation_ = savedCont;
+        if (savedCont.Exists() && savedCont->index.Exists()) {
+            *savedCont->index = savedIndex;
         }
     }
 }

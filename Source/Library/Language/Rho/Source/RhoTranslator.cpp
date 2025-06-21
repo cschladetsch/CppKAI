@@ -442,11 +442,13 @@ void RhoTranslator::TranslateIf(AstNodePtr node) {
         auto elseCont = Pop();
 
         // Use IfElse operation
+        // Pointer<T> inherits from Object, so we can use it directly
         Append(thenCont);
         Append(elseCont);
         AppendDirectOperation(Operation::IfElse);
     } else {
         // No else block - use If operation
+        // Pointer<T> inherits from Object, so we can use it directly
         Append(thenCont);
         AppendDirectOperation(Operation::If);
     }
@@ -688,7 +690,40 @@ void RhoTranslator::TranslateCall(AstNodePtr node) {
 
     // Get function name
     auto funcNode = node->GetChild(0);
+    
+    // Check if this is a built-in operation
+    if (funcNode->GetType() == AstNodeEnum::TokenType &&
+        funcNode->GetToken().type == TokenEnum::Label) {
+        String funcName = funcNode->Text();
+        KAI_TRACE() << "Function name: " << funcName;
+        
+        // Check for built-in operations
+        if (funcName == "print") {
+            // For print, translate arguments first, then use Print operation
+            if (node->GetChildren().size() >= 2) {
+                auto secondChild = node->GetChild(1);
+                if (secondChild->GetType() == AstNodeEnum::ArgList) {
+                    // Translate arguments from the ArgList node
+                    for (const auto& arg : secondChild->GetChildren()) {
+                        TranslateNode(arg);
+                    }
+                } else {
+                    // Old style: arguments are direct children starting at index 1
+                    for (size_t i = 1; i < node->GetChildren().size(); ++i) {
+                        TranslateNode(node->GetChild(i));
+                    }
+                }
+            }
+            
+            // Generate Print operation directly
+            AppendDirectOperation(Operation::Print);
+            KAI_TRACE() << "Generated Print operation for built-in print function";
+            return;
+        }
+        // Add other built-in operations here as needed
+    }
 
+    // For non-built-in functions, use the standard function call mechanism
     // Check if we have an ArgList node (parser creates Call with [function,
     // ArgList])
     if (node->GetChildren().size() >= 2) {

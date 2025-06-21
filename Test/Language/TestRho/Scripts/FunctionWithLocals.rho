@@ -1,4 +1,4 @@
-fun calculate(x, y)
+calculate = fun(x, y)
     temp = x * 2
     result = temp + y
     return result

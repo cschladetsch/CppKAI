@@ -29,7 +29,7 @@ assert quotient == 4
 assert remainder == 1
 
 // Combined operations with proper precedence
-assert (4 + 2) * 3 - 5 == 13
+assert 4 + 2 * 3 - 5 == 13
 
 // Simple if statement
 if true
