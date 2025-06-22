@@ -388,6 +388,63 @@ void RhoTranslator::TranslateFor(AstNodePtr node) {
     AppendDirectOperation(Operation::ForLoop);
 }
 
+void RhoTranslator::TranslateForEach(AstNodePtr node) {
+    KAI_TRACE() << "TranslateForEach: Starting foreach translation";
+    
+    // ForEach node structure:
+    // - Child 0: loop variable (identifier)
+    // - Child 1: collection expression
+    // - Child 2: body block
+    
+    if (node->GetChildren().size() != 3) {
+        KAI_TRACE_ERROR() << "TranslateForEach: Expected 3 children, got " 
+                          << static_cast<int>(node->GetChildren().size());
+        Fail("ForEach node must have exactly 3 children");
+        return;
+    }
+    
+    auto loopVar = node->GetChild(0);
+    auto collection = node->GetChild(1);
+    auto body = node->GetChild(2);
+    
+    KAI_TRACE() << "TranslateForEach: Loop variable: " << loopVar->GetTokenText();
+    
+    // Translate the collection expression
+    TranslateNode(collection);
+    
+    // Create a continuation for the body that:
+    // 1. Stores the current element in the loop variable
+    // 2. Executes the body
+    // 3. Returns the result (or void)
+    
+    // Start a new continuation for the foreach body
+    PushNew();
+    
+    // Store the current element in the loop variable
+    // The element will be on the stack when this continuation is called
+    // For Store operation, we need: [value, pathname]
+    // The value is already on the stack, so just add the pathname
+    String quotedPath = "'" + loopVar->GetTokenText();
+    auto pathObj = reg_->New<Pathname>(Pathname(quotedPath));
+    Append(pathObj);
+    AppendDirectOperation(Operation::Store);
+    
+    // Translate the body
+    TranslateNode(body);
+    
+    // The body should leave its result on the stack (or nothing if void)
+    // ForEach will collect whatever is on the stack after each iteration
+    
+    // Get the body continuation
+    auto bodyCont = Pop();
+    
+    // Push the body continuation and call ForEach
+    Append(bodyCont);
+    AppendDirectOperation(Operation::ForEach);
+    
+    KAI_TRACE() << "TranslateForEach: Completed foreach translation";
+}
+
 void RhoTranslator::TranslateDoWhile(AstNodePtr node) {
     KAI_TRACE() << "Translating do-while loop";
 
@@ -477,14 +534,39 @@ void RhoTranslator::TranslateList(AstNodePtr node) {
 void RhoTranslator::TranslateMap(AstNodePtr node) {
     KAI_TRACE() << "TranslateMap - Creating map literal";
 
-    // For now, we only support empty maps
-    // Push 0 to indicate no elements
-    AppendNew<int>(0);
+    // Get the number of key-value pairs (children should be in pairs)
+    auto children = node->GetChildren();
+    size_t numPairs = children.size() / 2;
+    
+    KAI_TRACE() << "Map has " << static_cast<int>(numPairs) << " key-value pairs";
+    
+    // Translate all key-value pairs
+    for (size_t i = 0; i < children.size(); i += 2) {
+        // Translate the key (should be a string token)
+        auto keyNode = children[i];
+        if (keyNode->GetType() == AstNodeEnum::TokenType && 
+            keyNode->GetToken().type == TokenEnum::String) {
+            // Push the string key
+            auto keyText = keyNode->GetTokenText();
+            Append(reg_->New<String>(keyText));
+        } else {
+            // For complex keys, translate the expression
+            TranslateNode(keyNode);
+        }
+        
+        // Translate the value
+        if (i + 1 < children.size()) {
+            TranslateNode(children[i + 1]);
+        }
+    }
+    
+    // Push the number of pairs
+    AppendNew<int>(static_cast<int>(numPairs));
 
-    // Use ToMap operation to create empty map
+    // Use ToMap operation to create map from stack
     AppendDirectOperation(Operation::ToMap);
 
-    KAI_TRACE() << "Created empty map";
+    KAI_TRACE() << "Created map with " << static_cast<int>(numPairs) << " entries";
 }
 
 void RhoTranslator::TranslateIndex(AstNodePtr node) {

@@ -15,10 +15,6 @@ void VF2(int, int) { called[2] = true; }
 void VF3(int, int, int) { called[3] = true; }
 
 // TODO: Uncomment when F0 test is re-enabled
-// int F0() {
-//     called[4] = true;
-//     return 0;
-// }
 
 int F1(int) {
     called[5] = true;
@@ -38,7 +34,6 @@ int F3(int, int, int) {
 [[maybe_unused]] void G0(Pointer<int>) {}
 
 // TODO: Uncomment when G1 test is re-enabled
-// /*Pointer<String> */ Object G1(Pointer<int>) { return Object(); }
 }  // namespace
 
 struct FunctionTest : ::testing::Test {
@@ -64,14 +59,11 @@ TEST_F(FunctionTest, TestConstruction) {
     FunctionBase *vf1 = MakeFunction(VF1);
     FunctionBase *vf2 = MakeFunction(VF2);
     FunctionBase *vf3 = MakeFunction(VF3);
-    //??    FunctionBase *f0 = MakeFunction(F0);
     FunctionBase *f1 = MakeFunction(F1);
     FunctionBase *f2 = MakeFunction(F2);
     FunctionBase *f3 = MakeFunction(F3);
 
     // TODO: Uncomment when G0 test is re-enabled
-    // FunctionBase *g0 = MakeFunction(G0);
-    //    FunctionBase *g1 = MakeFunction(G1);
 
     EXPECT_EQ(vf0->GetReturnType(), Type::Traits<void>::Number);
     EXPECT_EQ(vf1->GetReturnType(), Type::Traits<void>::Number);
@@ -111,9 +103,6 @@ TEST_F(FunctionTest, TestConstruction) {
     vf3->Invoke(_reg, *_stack);
     ASSERT_TRUE(called[3]);
 
-    //??    f0->Invoke(_reg, *_stack);
-    // ASSERT_TRUE(called[4]);
-    // EXPECT_EQ(ConstDeref<int>(_stack->Pop()), 0);
 
     _stack->Push(_reg.New(42));
     f1->Invoke(_reg, *_stack);
@@ -134,7 +123,6 @@ TEST_F(FunctionTest, TestConstruction) {
     EXPECT_EQ(ConstDeref<int>(_stack->Pop()), 3);
 
     _stack->Push(_reg.New(456));
-    // TODO g0->Invoke(_reg, *_stack);
 }
 
 // TODO: Test leaking of base pointers

@@ -5,6 +5,9 @@
 
 #include "TestLangCommon.h"
 
+// Only compile shell tests if shell syntax is enabled
+#ifdef ENABLE_SHELL_SYNTAX
+
 class PiBacktickNestedTest : public kai::TestLangCommon {
    protected:
     void SetUp() override {
@@ -103,3 +106,4 @@ TEST_F(PiBacktickNestedTest, ActualNestedBackticksFail) {
     EXPECT_FALSE(parseSucceeded)
         << "Nested backticks should not parse successfully";
 }
+#endif // ENABLE_SHELL_SYNTAX

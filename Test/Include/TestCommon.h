@@ -41,29 +41,6 @@ class TestCommon : public ::testing::Test {
 
 KAI_END
 
-// HACK to allow printing for tests. see
-// http://stackoverflow.com/questions/16491675/how-to-send-custom-message-in-google-c-testing-framework
-// namespace testing
-//{
-// namespace internal
-// {
-//  enum GTestColor {
-//      COLOR_DEFAULT,
-//      COLOR_RED,
-//      COLOR_GREEN,
-//      COLOR_YELLOW
-//  };
-//
-//  extern void ColoredPrintf(GTestColor color, const char* fmt, ...);
-// }
-//}
-//
-// #define TEST_PRINTF(COLOR, ...)  do {
-// testing::internal::ColoredPrintf(testing::internal::COLOR, "[   KAI    ] ");
-// testing::internal::ColoredPrintf(testing::internal::COLOR, __VA_ARGS__); }
-// while(0)
-//
-
 // Above fix no longer works.
 // see
 // https://stackoverflow.com/questions/16491675/how-to-send-custom-message-in-google-c-testing-framework

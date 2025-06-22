@@ -54,6 +54,11 @@ void RhoTranslator::TranslateNode(AstNodePtr node) {
             TranslateFor(node);
             break;
 
+        case AstNodeEnum::ForEach:
+            KAI_TRACE() << "Processing ForEach node";
+            TranslateForEach(node);
+            break;
+
         case AstNodeEnum::Conditional:
             KAI_TRACE() << "Processing If node";
             TranslateIf(node);

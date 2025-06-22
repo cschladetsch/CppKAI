@@ -8,14 +8,6 @@ KAI_BEGIN
 
 HashValue GetHash(const Stack &S) {
     return 42;
-    // if (S.Empty())
-    //     return Type::Number::Stack;
-    // size_t h = 42;
-    // for (const auto &v: S)
-    // {
-    //     h ^= v.GetClass().HashValue(v);
-    // }
-    // return h;//GetHash(S.Top());
 }
 
 HashValue GetHash(const Array &A) {

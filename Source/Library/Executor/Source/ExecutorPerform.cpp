@@ -790,8 +790,11 @@ void Executor::Perform(Operation::Type op) {
                     Pointer<Continuation> cont = continuation;
                     ExecuteContinuationInline(cont);
                 } else {
-                    KAI_TRACE_ERROR() << "If operation: Expected continuation, got " 
-                                      << continuation.GetTypeNumber().ToString();
+                    // Handle non-continuation objects by pushing them onto the stack
+                    // This allows If to work with simple values/expressions
+                    KAI_TRACE() << "If operation: Handling non-continuation object of type " 
+                               << continuation.GetTypeNumber().ToString();
+                    Push(continuation);
                 }
             } else {
                 KAI_TRACE() << "If operation: Skipping then block";
@@ -816,8 +819,11 @@ void Executor::Perform(Operation::Type op) {
                 Pointer<Continuation> cont = chosen;
                 ExecuteContinuationInline(cont);
             } else {
-                KAI_TRACE_ERROR() << "IfElse: Expected continuation, got " 
-                                  << chosen.GetTypeNumber().ToString();
+                // Handle non-continuation objects by pushing them onto the stack
+                // This allows IfElse to work with simple values/expressions
+                KAI_TRACE() << "IfElse: Handling non-continuation object of type " 
+                           << chosen.GetTypeNumber().ToString();
+                Push(chosen);
             }
 
             break;
@@ -1838,15 +1844,14 @@ void Executor::Perform(Operation::Type op) {
                 break;
             }
 
-            if (!index.IsType<int>()) {
-                KAI_TRACE_ERROR() << "Index: Index must be an integer";
-                Push(Object());
-                break;
-            }
-
-            int idx = ConstDeref<int>(index);
-
             if (container.IsType<Array>()) {
+                if (!index.IsType<int>()) {
+                    KAI_TRACE_ERROR() << "Index: Array index must be an integer";
+                    Push(Object());
+                    break;
+                }
+                
+                int idx = ConstDeref<int>(index);
                 Pointer<Array> arr = container;
                 if (idx < 0 || idx >= arr->Size()) {
                     KAI_TRACE_ERROR()
@@ -1855,9 +1860,50 @@ void Executor::Perform(Operation::Type op) {
                     break;
                 }
                 Push(arr->At(idx));
+            } else if (container.IsType<Map>()) {
+                // For maps, index can be any type that can be used as a key
+                Pointer<Map> map = container;
+                
+                // Convert Pathname to String for compatibility
+                Object searchKey = index;
+                if (index.IsType<Pathname>()) {
+                    String pathStr = ConstDeref<Pathname>(index).ToString();
+                    // Remove the leading quote if present
+                    if (pathStr.StartsWith("'")) {
+                        pathStr = String(pathStr.c_str() + 1);
+                    }
+                    searchKey = New<String>(pathStr);
+                }
+                
+                auto it = map->Find(searchKey);
+                if (it != map->End()) {
+                    Push(it->second);
+                } else {
+                    KAI_TRACE_ERROR() << "Index: Map key '" << searchKey.ToString() << "' not found";
+                    Push(Object());
+                }
+            } else if (container.IsType<String>()) {
+                // String indexing - return character at index
+                if (!index.IsType<int>()) {
+                    KAI_TRACE_ERROR() << "Index: String index must be an integer";
+                    Push(Object());
+                    break;
+                }
+                
+                int idx = ConstDeref<int>(index);
+                String str = ConstDeref<String>(container);
+                if (idx < 0 || idx >= static_cast<int>(str.size())) {
+                    KAI_TRACE_ERROR()
+                        << "Index: String index out of bounds: " << idx;
+                    Push(Object());
+                    break;
+                }
+                // Return single character as a String
+                Push(New<String>(String(1, str[idx])));
             } else {
                 KAI_TRACE_ERROR()
-                    << "Index: Container type not supported for indexing";
+                    << "Index: Container type " << container.GetTypeNumber().ToString() 
+                    << " not supported for indexing";
                 Push(Object());
             }
             break;
@@ -1881,15 +1927,14 @@ void Executor::Perform(Operation::Type op) {
                 break;
             }
 
-            if (!index.IsType<int>()) {
-                KAI_TRACE_ERROR() << "SetChild: Index must be an integer";
-                Push(container);
-                break;
-            }
-
-            int idx = ConstDeref<int>(index);
-
             if (container.IsType<Array>()) {
+                if (!index.IsType<int>()) {
+                    KAI_TRACE_ERROR() << "SetChild: Array index must be an integer";
+                    Push(container);
+                    break;
+                }
+                
+                int idx = ConstDeref<int>(index);
                 Pointer<Array> arr = container;
                 if (idx < 0 || idx >= arr->Size()) {
                     KAI_TRACE_ERROR()
@@ -1900,9 +1945,27 @@ void Executor::Perform(Operation::Type op) {
                 // Use RefAt to get a reference and assign the value
                 arr->RefAt(idx) = value;
                 Push(container);
+            } else if (container.IsType<Map>()) {
+                // For maps, index can be any type that can be used as a key
+                Pointer<Map> map = container;
+                
+                // Convert Pathname to String for compatibility
+                Object mapKey = index;
+                if (index.IsType<Pathname>()) {
+                    String pathStr = ConstDeref<Pathname>(index).ToString();
+                    // Remove the leading quote if present
+                    if (pathStr.StartsWith("'")) {
+                        pathStr = String(pathStr.c_str() + 1);
+                    }
+                    mapKey = New<String>(pathStr);
+                }
+                
+                map->Insert(mapKey, value);
+                Push(container);
             } else {
                 KAI_TRACE_ERROR()
-                    << "SetChild: Container type not supported for indexing";
+                    << "SetChild: Container type " << container.GetTypeNumber().ToString()
+                    << " not supported for indexing";
                 Push(container);
             }
             break;
@@ -1984,6 +2047,180 @@ void Executor::Perform(Operation::Type op) {
                 KAI_TRACE_ERROR() << "ToStringOp: Empty stack";
                 Push(New<String>(""));
             }
+            break;
+        }
+
+        case Operation::ForEach: {
+            // ForEach operation
+            // Stack: ( collection function -- result_array )
+            KAI_TRACE() << "ForEach: Starting foreach operation";
+            
+            if (data_->Size() < 2) {
+                KAI_TRACE_ERROR() << "ForEach: Not enough arguments on stack";
+                KAI_THROW_1(Base, "ForEach requires collection and function");
+            }
+            
+            // Pop function and collection
+            Object function = Pop();
+            Object collection = Pop();
+            
+            if (!function.Exists() || !collection.Exists()) {
+                KAI_TRACE_ERROR() << "ForEach: Invalid arguments";
+                KAI_THROW_1(Base, "ForEach requires valid collection and function");
+            }
+            
+            // Don't create a result array - foreach is for side effects
+            
+            // Handle different collection types
+            if (collection.IsType<Array>()) {
+                auto& arr = Deref<Array>(collection);
+                KAI_TRACE() << "ForEach: Processing array with " << arr.Size() << " elements";
+                
+                for (int i = 0; i < arr.Size(); ++i) {
+                    // Push the current element
+                    Push(arr.At(i));
+                    
+                    // Execute the function
+                    if (function.IsType<Continuation>()) {
+                        // Cast to continuation pointer
+                        Pointer<Continuation> cont = function;
+                        ExecuteContinuationInline(cont);
+                    } else {
+                        // For other callable types, use Continue
+                        Continue(function);
+                    }
+                    
+                    // Check for break
+                    if (break_) {
+                        break_ = false;
+                        break;
+                    }
+                    
+                    // Check for continue
+                    if (continue_) {
+                        continue_ = false;
+                        continue;
+                    }
+                    
+                    // Pop any result left by the body (we don't collect it)
+                    if (!data_->Empty()) {
+                        Pop();
+                    }
+                }
+            }
+            else if (collection.IsType<List>()) {
+                auto& list = Deref<List>(collection);
+                KAI_TRACE() << "ForEach: Processing list with " << list.Size() << " elements";
+                
+                for (auto it = list.Begin(); it != list.End(); ++it) {
+                    // Push the current element
+                    Push(*it);
+                    
+                    // Execute the function
+                    if (function.IsType<Continuation>()) {
+                        Pointer<Continuation> cont = function;
+                        ExecuteContinuationInline(cont);
+                    } else {
+                        Continue(function);
+                    }
+                    
+                    // Check for break
+                    if (break_) {
+                        break_ = false;
+                        break;
+                    }
+                    
+                    // Check for continue
+                    if (continue_) {
+                        continue_ = false;
+                        continue;
+                    }
+                    
+                    // Pop any result left by the body (we don't collect it)
+                    if (!data_->Empty()) {
+                        Pop();
+                    }
+                }
+            }
+            else if (collection.IsType<String>()) {
+                auto& str = Deref<String>(collection);
+                KAI_TRACE() << "ForEach: Processing string with " << str.size() << " characters";
+                
+                for (char ch : str) {
+                    // Push the current character as a string
+                    Push(New<String>(std::string(1, ch)));
+                    
+                    // Execute the function
+                    if (function.IsType<Continuation>()) {
+                        Pointer<Continuation> cont = function;
+                        ExecuteContinuationInline(cont);
+                    } else {
+                        Continue(function);
+                    }
+                    
+                    // Check for break
+                    if (break_) {
+                        break_ = false;
+                        break;
+                    }
+                    
+                    // Check for continue
+                    if (continue_) {
+                        continue_ = false;
+                        continue;
+                    }
+                    
+                    // Pop any result left by the body (we don't collect it)
+                    if (!data_->Empty()) {
+                        Pop();
+                    }
+                }
+            }
+            else if (collection.IsType<Map>()) {
+                auto& map = Deref<Map>(collection);
+                KAI_TRACE() << "ForEach: Processing map with " << map.Size() << " entries";
+                
+                for (auto it = map.Begin(); it != map.End(); ++it) {
+                    // Push key-value pair as an array
+                    auto pair = New<Array>();
+                    pair->Append(it->first);
+                    pair->Append(it->second);
+                    Push(pair);
+                    
+                    // Execute the function
+                    if (function.IsType<Continuation>()) {
+                        Pointer<Continuation> cont = function;
+                        ExecuteContinuationInline(cont);
+                    } else {
+                        Continue(function);
+                    }
+                    
+                    // Check for break
+                    if (break_) {
+                        break_ = false;
+                        break;
+                    }
+                    
+                    // Check for continue
+                    if (continue_) {
+                        continue_ = false;
+                        continue;
+                    }
+                    
+                    // Pop any result left by the body (we don't collect it)
+                    if (!data_->Empty()) {
+                        Pop();
+                    }
+                }
+            }
+            else {
+                KAI_TRACE_ERROR() << "ForEach: Unsupported collection type: " 
+                                  << collection.GetTypeNumber().ToString();
+                KAI_THROW_1(Base, "ForEach requires array, list, string, or map");
+            }
+            
+            // ForEach doesn't push anything - it's for side effects only
+            KAI_TRACE() << "ForEach: Completed";
             break;
         }
 

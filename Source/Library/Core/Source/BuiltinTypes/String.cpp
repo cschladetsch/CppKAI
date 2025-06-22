@@ -20,12 +20,6 @@ String String::UpperCase() const {
 }
 
 String String::Capitalise() const {
-    // if (string_.empty())
-    //     return String();
-
-    // String result = string_;
-    // result[0] = (String::Char)::toupper(result[0]);
-    // return result;
     KAI_NOT_IMPLEMENTED();
 }
 

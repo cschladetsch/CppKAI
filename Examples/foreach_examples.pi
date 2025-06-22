@@ -1,0 +1,54 @@
+// Examples of foreach usage in Pi language
+// Based on the test case found in PiContinuationTests.cpp
+
+// Clear the stack
+clear
+
+// Example 1: Simple foreach with array
+// Apply a function to each element of an array
+[1 2 3 4 5] { 2 * } foreach
+// Result: [2 4 6 8 10] is left on the stack
+
+// Example 2: Processing array elements with a more complex function
+// Create a function that processes a list of operations on an initial value
+{ 'ops' ! 'val' !        // take initial value and list of operations
+  'ops' @                // get the operations list
+  { 'op' !               // for each operation
+    'val' @ 'op' @ call  // apply it to the value
+    'val' !              // update the value
+  } 
+  foreach                // apply for each element
+  'val' @                // return final value
+} 'process' ! 
+
+// Use the process function
+5                            // initial value
+[ { 2 * } { 3 + } { 2 / } ] // list of operations: multiply by 2, add 3, divide by 2
+'process' @ call             // apply: ((5*2)+3)/2 = 6.5 -> 6 (integer division)
+
+// Example 3: Sum all elements in an array
+clear
+0                       // initial sum
+[10 20 30 40]         // array to sum
+{ + }                  // addition function
+foreach                // apply addition to each element with accumulator
+// Result: 100
+
+// Example 4: Create a new array by transforming elements
+clear
+[1 2 3 4 5]           // original array
+{ dup * }             // square each element
+foreach               // apply to each
+// Result: [1 4 9 16 25]
+
+// Example 5: Filter-like behavior (though Pi may not have built-in filter)
+// This would require checking each element and conditionally including it
+clear
+["hello" "world" "pi" "language" "example"]
+{ size 5 > }          // check if string length > 5
+foreach               // apply to each (returns array of booleans)
+// Result: [false false false true true]
+
+// Note: The exact syntax and behavior of foreach may vary depending on
+// the Pi language implementation. These examples are based on the
+// pattern found in the test file.

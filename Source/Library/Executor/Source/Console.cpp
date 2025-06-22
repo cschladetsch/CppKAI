@@ -420,9 +420,6 @@ void Console::Execute(String const &text, Structure st) {
     }
 
     // Log what we're about to execute for debugging purposes
-    // KAI_TRACE() << "Executing text: " << text;
-
-    // Log the continuation details
     // Removed noisy trace for cleaner Console output
 
     // Set the scope on the continuation (important for Store operations)

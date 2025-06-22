@@ -250,6 +250,8 @@ bool RhoParser::Statement(AstNodePtr block) {
     }
 
     // Handle each statement type
+    KAI_TRACE() << "RhoParser::Statement - Current token type: " << (int)Current().type 
+                << " (" << Current().ToString() << ")";
     switch (Current().type) {
         case TokenType::Assert: {
             KAI_TRACE() << "RhoParser::Statement - Processing Assert";
@@ -325,6 +327,14 @@ bool RhoParser::Statement(AstNodePtr block) {
 
             // After handling a do-while loop, there may be an optional
             // semicolon, as semicolons are optional in Rho
+            return true;
+        }
+
+        case TokenType::ForEach: {
+            KAI_TRACE() << "RhoParser::Statement - Processing ForEach";
+            if (!ForEachLoop(block)) {
+                return false;
+            }
             return true;
         }
 
@@ -556,10 +566,57 @@ bool RhoParser::Factor() {
             return true;
         }
 
-        // For now, we don't support map literal syntax with key:value pairs
-        // Just support empty maps {}
-        Fail("Map literals with initial values not yet supported");
-        return false;
+        // Parse key-value pairs
+        do {
+            // Parse key (must be a string for now)
+            if (!Try(TokenType::String)) {
+                Fail("Map key must be a string");
+                return false;
+            }
+            
+            auto key = Current();
+            Consume();
+            
+            // Expect colon
+            if (!Try(TokenType::Colon)) {
+                Fail("Expected ':' after map key");
+                return false;
+            }
+            Consume();
+            
+            // Parse value expression
+            if (!Expression()) {
+                Fail("Expected expression for map value");
+                return false;
+            }
+            
+            // Pop the value
+            auto value = Pop();
+            
+            // Add key-value pair to map node
+            // Store key as a token node and value as the expression
+            auto keyNode = NewNode(key);
+            map->Add(keyNode);
+            map->Add(value);
+            
+            // Check for more pairs
+            if (Try(TokenType::Comma)) {
+                Consume();
+                continue;
+            }
+            
+            // Must end with close brace
+            if (!Try(TokenType::CloseBrace)) {
+                Fail("Expected '}' or ',' in map literal");
+                return false;
+            }
+            break;
+            
+        } while (true);
+        
+        Consume(); // consume the CloseBrace
+        Push(map);
+        return true;
     }
 
     if (Try(TokenType::Int) || Try(TokenType::Float) ||
@@ -602,34 +659,12 @@ bool RhoParser::Factor() {
 
         auto block = NewNode(RhoAstNodeEnumType::Block);
 
-        // Check if we have brace-style or indentation-style
-        if (Try(TokenType::OpenBrace)) {
-            // Brace-style function body
-            Consume();  // consume '{'
+        // Rho uses Python-like indentation-style function bodies only
+        Expect(TokenType::NewLine);
 
-            ConsumeNewLines();
-
-            // Parse statements until we hit closing brace
-            while (!Try(TokenType::CloseBrace) && !Failed) {
-                if (!Statement(block)) {
-                    if (!Failed) {
-                        return Fail("Statement expected in function body");
-                    }
-                    break;
-                }
-                ConsumeNewLines();
-            }
-
-            Expect(TokenType::CloseBrace);
-            ConsumeNewLines();  // Allow newlines after closing brace
-        } else {
-            // Indentation-style function body
-            Expect(TokenType::NewLine);
-
-            // Use the Block method for indented code blocks
-            if (!Block(block)) {
-                return CreateError("Block Expected for function body");
-            }
+        // Use the Block method for indented code blocks
+        if (!Block(block)) {
+            return CreateError("Block Expected for function body");
         }
 
         fun->Add(block);
@@ -821,7 +856,10 @@ bool RhoParser::ParseIndexOp() {
         return CreateError("Index what?");
     }
 
-    Expect(TokenType::CloseSquareBracket);
+    if (!Try(TokenType::CloseSquareBracket)) {
+        return CreateError("Expected ']' after index expression");
+    }
+    Consume();
     index->Add(Pop());
     return Push(index);
 }
@@ -1119,6 +1157,90 @@ bool RhoParser::ForLoop(AstNodePtr block) {
     }
 
     KAI_TRACE() << "RhoParser::ForLoop - Successfully added for node to block";
+    return true;
+}
+
+bool RhoParser::ForEachLoop(AstNodePtr block) {
+    KAI_TRACE() << "RhoParser::ForEachLoop - Starting foreach loop parsing";
+    
+    // foreach item in collection
+    //     body
+    
+    // Create the foreach node
+    auto forEachNode = NewNode(NodeType::ForEach);
+    if (!forEachNode) {
+        KAI_TRACE_ERROR() << "RhoParser::ForEachLoop - Failed to create foreach node";
+        return false;
+    }
+
+    // Consume the 'foreach' keyword
+    Consume();
+    KAI_TRACE() << "RhoParser::ForEachLoop - Consumed 'foreach' keyword";
+
+    // Expect an identifier for the loop variable
+    if (!Try(TokenType::Label)) {
+        return CreateError("Expected identifier after 'foreach'");
+    }
+    
+    auto loopVar = NewNode(Consume());
+    if (!loopVar) {
+        KAI_TRACE_ERROR() << "RhoParser::ForEachLoop - Failed to create loop variable node";
+        return false;
+    }
+    forEachNode->Add(loopVar);
+    KAI_TRACE() << "RhoParser::ForEachLoop - Added loop variable: " << loopVar->GetToken().Text();
+
+    // Expect 'in' keyword - check if current token is a label with text "in"
+    if (!Try(TokenType::Label) || Current().Text() != "in") {
+        KAI_TRACE_ERROR() << "ForEachLoop: Expected 'in' after loop variable, got: " << Current().ToString();
+        return CreateError("Expected 'in' after loop variable");
+    }
+    
+    Consume(); // consume 'in'
+    KAI_TRACE() << "RhoParser::ForEachLoop - Consumed 'in' keyword";
+
+    // Parse the collection expression
+    if (!Expression()) {
+        return CreateError("Expected collection expression after 'in'");
+    }
+    
+    auto collection = Pop();
+    if (!collection) {
+        KAI_TRACE_ERROR() << "RhoParser::ForEachLoop - Failed to get collection expression";
+        return false;
+    }
+    forEachNode->Add(collection);
+    KAI_TRACE() << "RhoParser::ForEachLoop - Added collection expression";
+
+    // Expect newline before body
+    if (!Try(TokenType::NewLine)) {
+        return CreateError("Expected newline after foreach header");
+    }
+    Consume();
+
+    // Parse the body as a block
+    auto body = NewNode(NodeType::Block);
+    if (!body) {
+        KAI_TRACE_ERROR() << "RhoParser::ForEachLoop - Failed to create body block";
+        return false;
+    }
+
+    // Use the standard Block parsing method
+    KAI_TRACE() << "RhoParser::ForEachLoop - Parsing body block";
+    if (!Block(body)) {
+        return CreateError("Block expected for foreach loop body");
+    }
+    KAI_TRACE() << "RhoParser::ForEachLoop - Parsed body block";
+    forEachNode->Add(body);
+    KAI_TRACE() << "RhoParser::ForEachLoop - Added body block with " 
+                  << static_cast<int>(body->GetChildren().size()) << " statements";
+
+    if (!block->Add(forEachNode)) {
+        KAI_TRACE_ERROR() << "RhoParser::ForEachLoop - Failed to add foreach node to block";
+        return false;
+    }
+
+    KAI_TRACE() << "RhoParser::ForEachLoop - Successfully added foreach node to block";
     return true;
 }
 

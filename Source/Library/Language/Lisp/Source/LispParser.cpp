@@ -191,22 +191,6 @@ finis:
 }
 
 bool RhoParser::Expression() {
-    //    bool paran = Try(TokenType::OpenParan);
-    //    if (paran)
-    //    {
-    //        auto exp = NewNode(Consume());
-    //        if (!Logical())
-    //            return false;
-    //
-    //        Expect(TokenType::CloseParan);
-    //        exp->Add(Pop());
-    //        Push(exp);
-    //
-    ////        while (Factor())
-    ////            ;
-    ////
-    ////        return true;
-    //    }
 
     if (!Logical()) return false;
 

@@ -5,6 +5,9 @@
 
 #include "TestLangCommon.h"
 
+// Only compile shell tests if shell syntax is enabled
+#ifdef ENABLE_SHELL_SYNTAX
+
 class PiBacktickComplexTest : public kai::TestLangCommon {
    protected:
     void SetUp() override {
@@ -137,3 +140,5 @@ TEST_F(PiBacktickComplexTest, ShellStackManipulation) {
     ASSERT_GE(stack->Size(), 1);
     // Complex stack manipulation result
 }
+
+#endif // ENABLE_SHELL_SYNTAX

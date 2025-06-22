@@ -5,6 +5,9 @@
 
 #include "TestLangCommon.h"
 
+// Only compile shell tests if shell syntax is enabled
+#ifdef ENABLE_SHELL_SYNTAX
+
 class PiBacktickComplex2Test : public kai::TestLangCommon {
    protected:
     void SetUp() override {
@@ -144,3 +147,4 @@ TEST_F(PiBacktickComplex2Test, UltimateShellTest) {
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 55);  // 10th Fibonacci number
 }
+#endif // ENABLE_SHELL_SYNTAX

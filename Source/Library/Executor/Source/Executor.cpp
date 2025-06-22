@@ -598,11 +598,6 @@ void Executor::Continue() {
         try {
             if (continuation_->Next(next)) {
                 // Remove try-catch to allow exceptions to propagate
-                // if (traceLevel_ > 10) KAI_TRACE() << "Start step\n";
-                // if (traceLevel_ > 10) KAI_TRACE_1(stepNumber_);
-                // if (traceLevel_ > 10) KAI_TRACE_1(data_);
-                // if (traceLevel_ > 10) KAI_TRACE_1(context_);
-                // if (traceLevel_ > 10) KAI_TRACE_1(next);
 
                 // Make sure next is valid before we try to evaluate it
                 if (next.Valid()) {

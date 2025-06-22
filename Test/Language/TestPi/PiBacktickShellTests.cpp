@@ -5,6 +5,9 @@
 
 #include "TestLangCommon.h"
 
+// Only compile shell tests if shell syntax is enabled
+#ifdef ENABLE_SHELL_SYNTAX
+
 class PiBacktickShellTest : public kai::TestLangCommon {
    protected:
     void SetUp() override {
@@ -228,3 +231,5 @@ TEST_F(PiBacktickShellTest, EmptyShellOutput) {
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<kai::String>(stack->Top()), "empty");
 }
+
+#endif // ENABLE_SHELL_SYNTAX

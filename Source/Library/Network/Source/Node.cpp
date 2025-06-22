@@ -12,7 +12,6 @@ KAI_NET_BEGIN
 
 Node::Node() : peer_(nullptr), isRunning_(false) {
     // Use an empty registry for now
-    // _reg = std::make_shared<Registry>();
 
     // Initialize RakNet
     peer_ = RakNet::RakPeerInterface::GetInstance();
