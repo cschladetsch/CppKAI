@@ -125,7 +125,9 @@ bool LexerBase::LexShellCommand() {
 
     return true;
 #else
-    Fail("Shell syntax (backtick operations) is disabled for security. Enable with -DENABLE_SHELL_SYNTAX=ON");
+    Fail(
+        "Shell syntax (backtick operations) is disabled for security. Enable "
+        "with -DENABLE_SHELL_SYNTAX=ON");
     return false;
 #endif
 }

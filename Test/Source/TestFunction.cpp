@@ -103,7 +103,6 @@ TEST_F(FunctionTest, TestConstruction) {
     vf3->Invoke(_reg, *_stack);
     ASSERT_TRUE(called[3]);
 
-
     _stack->Push(_reg.New(42));
     f1->Invoke(_reg, *_stack);
     ASSERT_TRUE(called[5]);

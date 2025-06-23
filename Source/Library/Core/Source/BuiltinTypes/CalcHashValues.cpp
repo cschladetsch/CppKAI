@@ -6,9 +6,7 @@ KAI_BEGIN
 
 // THESE ARE TERRIBLE HASH FUNCTIONS FOR CONTAINERS
 
-HashValue GetHash(const Stack &S) {
-    return 42;
-}
+HashValue GetHash(const Stack &S) { return 42; }
 
 HashValue GetHash(const Array &A) {
     if (A.Empty()) return Type::Number::Array;

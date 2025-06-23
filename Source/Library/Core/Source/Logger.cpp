@@ -28,7 +28,8 @@ std::string default_log_dir = std::string(getenv("HOME")) + "/local/KAI/Logs";
 Logger::Level Logger::s_level = Logger::Level::Info;
 std::string Logger::s_logDirectory = default_log_dir;
 bool Logger::s_initialized = false;
-bool Logger::s_consoleOutputForInfoDebug = false;  // Default: INFO/DEBUG only go to files
+bool Logger::s_consoleOutputForInfoDebug =
+    false;  // Default: INFO/DEBUG only go to files
 
 // Helper function to create a formatted timestamp, compatible with older
 // compilers
@@ -187,10 +188,12 @@ void Logger::Log(Level level, const std::string& message) {
 
     // Determine if we should output to console
     bool outputToConsole = false;
-    if (level == Level::Warning || level == Level::Error || level == Level::Fatal) {
+    if (level == Level::Warning || level == Level::Error ||
+        level == Level::Fatal) {
         // Always output warnings, errors, and fatal to console
         outputToConsole = true;
-    } else if ((level == Level::Info || level == Level::Debug) && s_consoleOutputForInfoDebug) {
+    } else if ((level == Level::Info || level == Level::Debug) &&
+               s_consoleOutputForInfoDebug) {
         // Only output info/debug to console if explicitly enabled
         outputToConsole = true;
     }

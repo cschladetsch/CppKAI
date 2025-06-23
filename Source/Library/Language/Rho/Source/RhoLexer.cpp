@@ -70,7 +70,9 @@ bool RhoLexer::NextToken() {
 #ifdef ENABLE_SHELL_SYNTAX
             return LexShellCommand();
 #else
-            Fail("Shell syntax (backtick operations) is disabled for security. Enable with -DENABLE_SHELL_SYNTAX=ON");
+            Fail(
+                "Shell syntax (backtick operations) is disabled for security. "
+                "Enable with -DENABLE_SHELL_SYNTAX=ON");
             return false;
 #endif
         case ';':

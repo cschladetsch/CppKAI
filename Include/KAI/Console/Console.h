@@ -85,17 +85,17 @@ class Console : public Reflected {
     static void Register(Registry &);
 
     // Help system
-    void ShowHelp(const std::string& topic = "") const;
+    void ShowHelp(const std::string &topic = "") const;
     void ShowBasicHelp() const;
     void ShowHistoryHelp() const;
-    void ShowLanguageHelp(const std::string& lang) const;
+    void ShowLanguageHelp(const std::string &lang) const;
     void ShowBuiltinCommands() const;
-    bool ProcessBuiltinCommand(const std::string& command);
-    
+    bool ProcessBuiltinCommand(const std::string &command);
+
     // History management
     void LoadHistory();
     void SaveHistory() const;
-    void AddToHistory(const std::string& command);
+    void AddToHistory(const std::string &command);
 
     int Run();
 

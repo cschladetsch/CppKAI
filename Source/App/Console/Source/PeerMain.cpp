@@ -3,6 +3,7 @@
 // TODO: Implement proper peer-to-peer networking functionality
 
 #include <iostream>
+
 #include "KAI/Network/Peer.h"
 #include "RakNet/Kbhit.h"
 

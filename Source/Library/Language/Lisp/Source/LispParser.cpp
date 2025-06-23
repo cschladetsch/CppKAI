@@ -191,7 +191,6 @@ finis:
 }
 
 bool RhoParser::Expression() {
-
     if (!Logical()) return false;
 
     if (Try(TokenType::Assign) || Try(TokenType::PlusAssign) ||

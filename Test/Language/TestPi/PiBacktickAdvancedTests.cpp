@@ -229,4 +229,4 @@ TEST_F(PiBacktickAdvancedTest, NonExistentCommand) {
     EXPECT_TRUE(result);  // Should be empty
 }
 
-#endif // ENABLE_SHELL_SYNTAX
+#endif  // ENABLE_SHELL_SYNTAX

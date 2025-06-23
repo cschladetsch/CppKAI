@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include "TestLangCommon.h"
 
 using namespace kai;
@@ -7,7 +8,7 @@ struct WhileLoopTest : TestLangCommon {};
 
 TEST_F(WhileLoopTest, SimpleWhileLoop) {
     console_.SetLanguage(Language::Rho);
-    
+
     const char* code = R"(
 sum = 0
 i = 0
@@ -16,18 +17,18 @@ while i < 5
     i = i + 1
 sum
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(10, ConstDeref<int>(result)); // 0+1+2+3+4 = 10
+    EXPECT_EQ(10, ConstDeref<int>(result));  // 0+1+2+3+4 = 10
 }
 
 TEST_F(WhileLoopTest, WhileWithBreak) {
     console_.SetLanguage(Language::Rho);
-    
+
     const char* code = R"(
 count = 0
 while true
@@ -36,9 +37,9 @@ while true
         break
 count
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
@@ -47,7 +48,7 @@ count
 
 TEST_F(WhileLoopTest, WhileWithContinue) {
     console_.SetLanguage(Language::Rho);
-    
+
     const char* code = R"(
 sum = 0
 i = 0
@@ -58,18 +59,18 @@ while i < 10
     sum = sum + i
 sum
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(25, ConstDeref<int>(result)); // 1+3+5+7+9 = 25
+    EXPECT_EQ(25, ConstDeref<int>(result));  // 1+3+5+7+9 = 25
 }
 
 TEST_F(WhileLoopTest, NestedWhileLoops) {
     console_.SetLanguage(Language::Rho);
-    
+
     const char* code = R"(
 total = 0
 i = 0
@@ -81,9 +82,9 @@ while i < 3
     i = i + 1
 total
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
@@ -93,7 +94,7 @@ total
 
 TEST_F(WhileLoopTest, WhileWithFunctionCall) {
     console_.SetLanguage(Language::Rho);
-    
+
     const char* code = R"(
 double = fun(x)
     x * 2
@@ -105,18 +106,18 @@ while i <= 4
     i = i + 1
 sum
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(20, ConstDeref<int>(result)); // 2+4+6+8 = 20
+    EXPECT_EQ(20, ConstDeref<int>(result));  // 2+4+6+8 = 20
 }
 
 TEST_F(WhileLoopTest, WhileConditionWithFunctionCall) {
     console_.SetLanguage(Language::Rho);
-    
+
     const char* code = R"(
 isLessThan10 = fun(x)
     x < 10
@@ -126,9 +127,9 @@ while isLessThan10(count)
     count = count + 2
 count
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());

@@ -448,7 +448,7 @@ Object Executor::ExtractValueFromContinuation(Object const& value) {
     // If we get here, we couldn't extract a value from the continuation
     // Return the original continuation with a diagnostic message
     std::stringstream ss;
-    ss << "ExtractValueFromContinuation no pattern match for continuation with " 
+    ss << "ExtractValueFromContinuation no pattern match for continuation with "
        << code->Size() << " code items";
     KAI_TRACE() << ss.str();
     return value;

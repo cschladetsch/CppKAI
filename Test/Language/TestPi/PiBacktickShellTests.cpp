@@ -232,4 +232,4 @@ TEST_F(PiBacktickShellTest, EmptyShellOutput) {
     EXPECT_EQ(kai::ConstDeref<kai::String>(stack->Top()), "empty");
 }
 
-#endif // ENABLE_SHELL_SYNTAX
+#endif  // ENABLE_SHELL_SYNTAX

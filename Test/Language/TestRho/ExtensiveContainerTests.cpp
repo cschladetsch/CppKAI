@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include "TestLangCommon.h"
 
 using namespace kai;
@@ -13,9 +14,9 @@ TEST_F(ExtensiveContainerTests, ArrayCreation) {
 arr = [1, 2, 3, 4, 5]
 arr
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<Array>());
@@ -32,9 +33,9 @@ arr = [10, 20, 30, 40, 50]
 value = arr[2]
 value
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
@@ -49,9 +50,9 @@ arr[1] = 99
 value = arr[1]
 value
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
@@ -67,13 +68,13 @@ foreach x in arr
     sum = sum + x
 sum
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(ConstDeref<int>(result), 15); // 1+2+3+4+5
+    EXPECT_EQ(ConstDeref<int>(result), 15);  // 1+2+3+4+5
 }
 
 TEST_F(ExtensiveContainerTests, ArrayNested) {
@@ -83,9 +84,9 @@ arr = [[1, 2], [3, 4], [5, 6]]
 value = arr[1][0]
 value
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
@@ -100,9 +101,9 @@ TEST_F(ExtensiveContainerTests, MapCreation) {
 m = {"a": 1, "b": 2, "c": 3}
 m
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<Map>());
@@ -116,9 +117,9 @@ TEST_F(ExtensiveContainerTests, MapEmptyCreation) {
 m = {}
 m
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<Map>());
@@ -133,9 +134,9 @@ m = {"name": "John", "age": 30, "city": "NYC"}
 value = m["age"]
 value
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
@@ -152,9 +153,9 @@ m["three"] = 3
 value = m["two"]
 value
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
@@ -169,9 +170,9 @@ m["key"] = 20
 value = m["key"]
 value
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
@@ -187,13 +188,13 @@ foreach pair in m
     sum = sum + pair[1]
 sum
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(ConstDeref<int>(result), 6); // 1+2+3
+    EXPECT_EQ(ConstDeref<int>(result), 6);  // 1+2+3
 }
 
 TEST_F(ExtensiveContainerTests, MapMixedValueTypes) {
@@ -203,9 +204,9 @@ m = {"num": 42, "str": "hello", "bool": true}
 numVal = m["num"]
 numVal
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
@@ -221,9 +222,9 @@ str = "hello"
 char = str[1]
 char
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<String>());
@@ -239,9 +240,9 @@ foreach ch in str
     count = count + 1
 count
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
@@ -257,9 +258,9 @@ arr = [{"x": 10}, {"x": 20}, {"x": 30}]
 value = arr[1]["x"]
 value
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
@@ -273,9 +274,9 @@ m = {"nums": [1, 2, 3], "letters": ["a", "b", "c"]}
 value = m["nums"][1]
 value
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
@@ -289,9 +290,9 @@ data = {"users": [{"name": "Alice", "scores": [95, 87, 92]}, {"name": "Bob", "sc
 aliceScore = data["users"][0]["scores"][1]
 aliceScore
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
@@ -310,13 +311,13 @@ foreach row in matrix
         sum = sum + val
 sum
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(ConstDeref<int>(result), 21); // 1+2+3+4+5+6
+    EXPECT_EQ(ConstDeref<int>(result), 21);  // 1+2+3+4+5+6
 }
 
 TEST_F(ExtensiveContainerTests, ForEachWithBreak) {
@@ -330,13 +331,13 @@ foreach x in arr
     sum = sum + x
 sum
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(ConstDeref<int>(result), 6); // 1+2+3
+    EXPECT_EQ(ConstDeref<int>(result), 6);  // 1+2+3
 }
 
 TEST_F(ExtensiveContainerTests, ForEachWithContinue) {
@@ -350,13 +351,13 @@ foreach x in arr
     sum = sum + x
 sum
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(ConstDeref<int>(result), 12); // 1+2+4+5
+    EXPECT_EQ(ConstDeref<int>(result), 12);  // 1+2+4+5
 }
 
 // ===== CONTAINER MODIFICATIONS =====
@@ -370,13 +371,13 @@ foreach i in [0, 1, 2]
 sum = arr[0] + arr[1] + arr[2]
 sum
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(ConstDeref<int>(result), 12); // 2+4+6
+    EXPECT_EQ(ConstDeref<int>(result), 12);  // 2+4+6
 }
 
 TEST_F(ExtensiveContainerTests, ModifyMapInLoop) {
@@ -389,9 +390,9 @@ foreach key in keys
 value = m["b"]
 value
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
@@ -415,9 +416,9 @@ foreach ch in strEmpty
     count = count + 1
 count
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
@@ -439,13 +440,13 @@ foreach ch in str
     sum = sum + 1
 sum
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(ConstDeref<int>(result), 143); // 42+100+1
+    EXPECT_EQ(ConstDeref<int>(result), 143);  // 42+100+1
 }
 
 // ===== ADVANCED CONTAINER TESTS (20 MORE) =====
@@ -460,13 +461,13 @@ last = arr[4]
 sum = first + middle + last
 sum
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(ConstDeref<int>(result), 90); // 10+30+50
+    EXPECT_EQ(ConstDeref<int>(result), 90);  // 10+30+50
 }
 
 TEST_F(ExtensiveContainerTests, MapKeyIteration) {
@@ -478,13 +479,13 @@ foreach pair in inventory
     totalItems = totalItems + pair[1]
 totalItems
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(ConstDeref<int>(result), 16); // 5+3+8
+    EXPECT_EQ(ConstDeref<int>(result), 16);  // 5+3+8
 }
 
 TEST_F(ExtensiveContainerTests, StringCharacterCount) {
@@ -501,13 +502,13 @@ foreach ch in text
         aCount = aCount + 1
 aCount
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(ConstDeref<int>(result), 5); // a(1) + r(2) + m(2) = 5
+    EXPECT_EQ(ConstDeref<int>(result), 5);  // a(1) + r(2) + m(2) = 5
 }
 
 TEST_F(ExtensiveContainerTests, ArrayReverse) {
@@ -520,13 +521,13 @@ for i = 4; i >= 0; i = i - 1
 sum = reversed[0] + reversed[1] + reversed[2]
 sum
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(ConstDeref<int>(result), 12); // 5+4+3
+    EXPECT_EQ(ConstDeref<int>(result), 12);  // 5+4+3
 }
 
 TEST_F(ExtensiveContainerTests, MapValueUpdate) {
@@ -538,13 +539,13 @@ prices["milk"] = prices["milk"] * 2
 total = prices["bread"] + prices["milk"] + prices["eggs"]
 total
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(ConstDeref<int>(result), 13); // 3+6+4
+    EXPECT_EQ(ConstDeref<int>(result), 13);  // 3+6+4
 }
 
 TEST_F(ExtensiveContainerTests, NestedArrayAccess) {
@@ -554,13 +555,13 @@ matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
 diagonal = matrix[0][0] + matrix[1][1] + matrix[2][2]
 diagonal
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(ConstDeref<int>(result), 15); // 1+5+9
+    EXPECT_EQ(ConstDeref<int>(result), 15);  // 1+5+9
 }
 
 TEST_F(ExtensiveContainerTests, MapWithArrayValues) {
@@ -572,13 +573,13 @@ team2Total = groups["team2"][0] + groups["team2"][1]
 difference = team2Total - team1Total
 difference
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(ConstDeref<int>(result), 10); // 40-30
+    EXPECT_EQ(ConstDeref<int>(result), 10);  // 40-30
 }
 
 TEST_F(ExtensiveContainerTests, ArrayFiltering) {
@@ -591,13 +592,13 @@ foreach n in numbers
         evenSum = evenSum + n
 evenSum
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(ConstDeref<int>(result), 30); // 2+4+6+8+10
+    EXPECT_EQ(ConstDeref<int>(result), 30);  // 2+4+6+8+10
 }
 
 TEST_F(ExtensiveContainerTests, StringWordCount) {
@@ -611,13 +612,13 @@ foreach ch in sentence
 wordCount = spaceCount + 1
 wordCount
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(ConstDeref<int>(result), 3); // "hello", "world", "test"
+    EXPECT_EQ(ConstDeref<int>(result), 3);  // "hello", "world", "test"
 }
 
 TEST_F(ExtensiveContainerTests, ArrayMaxElement) {
@@ -630,9 +631,9 @@ for i = 1; i < 7; i = i + 1
         max = numbers[i]
 max
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
@@ -651,13 +652,13 @@ foreach key in keys
             foundKeys = foundKeys + 1
 foundKeys
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(ConstDeref<int>(result), 3); // debug, timeout, retries found
+    EXPECT_EQ(ConstDeref<int>(result), 3);  // debug, timeout, retries found
 }
 
 TEST_F(ExtensiveContainerTests, MultiDimensionalArraySum) {
@@ -671,13 +672,13 @@ foreach layer in cube
             total = total + val
 total
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(ConstDeref<int>(result), 36); // 1+2+3+4+5+6+7+8
+    EXPECT_EQ(ConstDeref<int>(result), 36);  // 1+2+3+4+5+6+7+8
 }
 
 TEST_F(ExtensiveContainerTests, ArrayIndexBounds) {
@@ -689,13 +690,13 @@ for i = 0; i < 3; i = i + 1
     validAccess = validAccess + arr[i]
 validAccess
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(ConstDeref<int>(result), 60); // 10+20+30
+    EXPECT_EQ(ConstDeref<int>(result), 60);  // 10+20+30
 }
 
 TEST_F(ExtensiveContainerTests, StringPalindrome) {
@@ -709,13 +710,13 @@ for i = 0; i < 2; i = i + 1
         matches = matches + 1
 matches
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(ConstDeref<int>(result), 2); // r==r, a==a
+    EXPECT_EQ(ConstDeref<int>(result), 2);  // r==r, a==a
 }
 
 TEST_F(ExtensiveContainerTests, MapMerging) {
@@ -730,13 +731,13 @@ result["c"] = map2["c"]
 total = result["a"] + result["b"] + result["c"]
 total
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(ConstDeref<int>(result), 10); // 1+5+4
+    EXPECT_EQ(ConstDeref<int>(result), 10);  // 1+5+4
 }
 
 TEST_F(ExtensiveContainerTests, ArrayConcatenation) {
@@ -754,13 +755,13 @@ for i = 0; i < 6; i = i + 1
     sum = sum + combined[i]
 sum
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(ConstDeref<int>(result), 21); // 1+2+3+4+5+6
+    EXPECT_EQ(ConstDeref<int>(result), 21);  // 1+2+3+4+5+6
 }
 
 TEST_F(ExtensiveContainerTests, NestedMapAccess) {
@@ -772,13 +773,13 @@ salesEmployees = 30
 totalEmployees = engEmployees + salesEmployees
 totalEmployees
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(ConstDeref<int>(result), 80); // 50+30
+    EXPECT_EQ(ConstDeref<int>(result), 80);  // 50+30
 }
 
 TEST_F(ExtensiveContainerTests, ArrayBubbleSort) {
@@ -795,13 +796,13 @@ for i = 0; i < n - 1; i = i + 1
 smallest = arr[0]
 smallest
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(ConstDeref<int>(result), 12); // Smallest after sorting
+    EXPECT_EQ(ConstDeref<int>(result), 12);  // Smallest after sorting
 }
 
 TEST_F(ExtensiveContainerTests, MapStatistics) {
@@ -816,13 +817,13 @@ foreach pair in scores
 average = total / count
 average
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(ConstDeref<int>(result), 85); // (85+92+78+88)/4 = 343/4 = 85
+    EXPECT_EQ(ConstDeref<int>(result), 85);  // (85+92+78+88)/4 = 343/4 = 85
 }
 
 TEST_F(ExtensiveContainerTests, StringFrequencyAnalysis) {
@@ -846,11 +847,11 @@ foreach ch in text
 lCount = letterCount["l"]
 lCount
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(ConstDeref<int>(result), 2); // "l" appears twice in "hello"
+    EXPECT_EQ(ConstDeref<int>(result), 2);  // "l" appears twice in "hello"
 }

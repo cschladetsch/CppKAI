@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include "TestLangCommon.h"
 
 using namespace kai;
@@ -7,7 +8,7 @@ struct DoWhileLoopTest : TestLangCommon {};
 
 TEST_F(DoWhileLoopTest, SimpleDoWhileLoop) {
     console_.SetLanguage(Language::Rho);
-    
+
     const char* code = R"(
 count = 0
 do
@@ -15,9 +16,9 @@ do
 while count < 5
 count
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
@@ -26,7 +27,7 @@ count
 
 TEST_F(DoWhileLoopTest, DoWhileExecutesAtLeastOnce) {
     console_.SetLanguage(Language::Rho);
-    
+
     const char* code = R"(
 executed = false
 do
@@ -34,9 +35,9 @@ do
 while false
 executed
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<bool>());
@@ -45,7 +46,7 @@ executed
 
 TEST_F(DoWhileLoopTest, DoWhileWithBreak) {
     console_.SetLanguage(Language::Rho);
-    
+
     const char* code = R"(
 sum = 0
 i = 0
@@ -57,18 +58,18 @@ do
 while i < 10
 sum
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(3, ConstDeref<int>(result)); // 0+1+2 = 3
+    EXPECT_EQ(3, ConstDeref<int>(result));  // 0+1+2 = 3
 }
 
 TEST_F(DoWhileLoopTest, DoWhileWithContinue) {
     console_.SetLanguage(Language::Rho);
-    
+
     const char* code = R"(
 sum = 0
 i = 0
@@ -80,18 +81,18 @@ do
 while i < 6
 sum
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(9, ConstDeref<int>(result)); // 1+3+5 = 9
+    EXPECT_EQ(9, ConstDeref<int>(result));  // 1+3+5 = 9
 }
 
 TEST_F(DoWhileLoopTest, NestedDoWhileLoops) {
     console_.SetLanguage(Language::Rho);
-    
+
     const char* code = R"(
 result = 0
 i = 1
@@ -105,9 +106,9 @@ do
 while i <= 2
 result
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
@@ -117,7 +118,7 @@ result
 
 TEST_F(DoWhileLoopTest, DoWhileWithFunctionCall) {
     console_.SetLanguage(Language::Rho);
-    
+
     const char* code = R"(
 increment = fun(x)
     x + 1
@@ -128,9 +129,9 @@ do
 while value < 5
 value
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());

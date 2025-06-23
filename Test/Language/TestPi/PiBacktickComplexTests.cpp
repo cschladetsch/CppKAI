@@ -141,4 +141,4 @@ TEST_F(PiBacktickComplexTest, ShellStackManipulation) {
     // Complex stack manipulation result
 }
 
-#endif // ENABLE_SHELL_SYNTAX
+#endif  // ENABLE_SHELL_SYNTAX

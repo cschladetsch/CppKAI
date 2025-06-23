@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include "TestLangCommon.h"
 
 using namespace kai;
@@ -15,9 +16,9 @@ map["three"] = 3
 value = map["two"]
 value
 )";
-    
+
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());

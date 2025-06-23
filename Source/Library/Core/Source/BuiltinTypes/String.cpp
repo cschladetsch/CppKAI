@@ -19,9 +19,7 @@ String String::UpperCase() const {
     return result;
 }
 
-String String::Capitalise() const {
-    KAI_NOT_IMPLEMENTED();
-}
+String String::Capitalise() const { KAI_NOT_IMPLEMENTED(); }
 
 bool String::Contains(String const &substr) const {
     return string_.find(substr.string_) != std::string::npos;

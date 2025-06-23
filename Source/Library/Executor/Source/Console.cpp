@@ -35,9 +35,9 @@ Console::Console(shared_ptr<Memory::IAllocator> alloc) {
     LoadHistory();
 }
 
-Console::~Console() { 
-    SaveHistory(); 
-    alloc->DeAllocate(reg_); 
+Console::~Console() {
+    SaveHistory();
+    alloc->DeAllocate(reg_);
 }
 
 void Console::Create() {
@@ -61,7 +61,7 @@ void Console::Create() {
         executor->SetCompiler(compiler);
 
         CreateTree();
-        
+
         // Set default language to Pi
         SetLanguage(Language::Pi);
     }
@@ -79,16 +79,16 @@ void Console::ExposeTypesToTree(Object types) {
     }
 }
 
-void Console::SetLanguage(Language lang) { 
+void Console::SetLanguage(Language lang) {
     language = lang;
-    
+
     // Update the compiler's language
     if (compiler.Exists()) {
         compiler->SetLanguage(static_cast<int>(lang));
     }
 }
 
-void Console::SetLanguage(int lang) { 
+void Console::SetLanguage(int lang) {
     SetLanguage(static_cast<Language>(lang));
 }
 
@@ -119,25 +119,25 @@ String Console::ReadLineWithDynamicColor() {
     struct termios old_settings, new_settings;
     tcgetattr(STDIN_FILENO, &old_settings);
     new_settings = old_settings;
-    
+
     // Set terminal to raw mode
     new_settings.c_lflag &= ~(ICANON | ECHO);
     tcsetattr(STDIN_FILENO, TCSANOW, &new_settings);
-    
+
     string line;
     bool isShellCommand = false;
     char ch;
-    
+
     while (true) {
         if (read(STDIN_FILENO, &ch, 1) == 1) {
             if (ch == '\n' || ch == '\r') {
                 cout << endl;
                 break;
-            } else if (ch == 127 || ch == 8) { // Backspace
+            } else if (ch == 127 || ch == 8) {  // Backspace
                 if (!line.empty()) {
                     line.pop_back();
                     cout << "\b \b" << flush;
-                    
+
                     // Check if we need to update color after backspace
                     if (line.empty()) {
                         isShellCommand = false;
@@ -145,7 +145,8 @@ String Console::ReadLineWithDynamicColor() {
                         cout << "\r";
                         WritePrompt(cout);
                         cout << rang::fg::gray;
-                    } else if (line.size() == 1 && line[0] != '$' && isShellCommand) {
+                    } else if (line.size() == 1 && line[0] != '$' &&
+                               isShellCommand) {
                         isShellCommand = false;
                         // Rewrite entire line with normal color
                         cout << "\r";
@@ -153,12 +154,12 @@ String Console::ReadLineWithDynamicColor() {
                         cout << rang::fg::gray << line << flush;
                     }
                 }
-            } else if (ch == 3) { // Ctrl-C
+            } else if (ch == 3) {  // Ctrl-C
                 // Restore terminal settings
                 tcsetattr(STDIN_FILENO, TCSANOW, &old_settings);
                 cout << rang::fg::reset << endl;
                 throw std::runtime_error("Interrupted");
-            } else if (ch == 12) { // Ctrl-L
+            } else if (ch == 12) {  // Ctrl-L
                 ClearScreen();
                 WritePrompt(cout);
                 if (isShellCommand) {
@@ -169,7 +170,7 @@ String Console::ReadLineWithDynamicColor() {
                 cout << line << flush;
             } else if (isprint(ch)) {
                 line += ch;
-                
+
                 // Check if this is the first character and it's '$'
                 if (line.size() == 1 && ch == '$') {
                     isShellCommand = true;
@@ -182,11 +183,11 @@ String Console::ReadLineWithDynamicColor() {
             }
         }
     }
-    
+
     // Restore terminal settings
     tcsetattr(STDIN_FILENO, TCSANOW, &old_settings);
     cout << rang::fg::reset;
-    
+
     return String(line);
 #else
     // Fallback to regular getline on non-Linux systems
@@ -201,9 +202,10 @@ String Console::ReadLineWithDynamicColor() {
 void Console::ExecuteShellCommandWithColor(const std::string &command) {
     // Prepare the command to force color output
     std::string colorCommand = command;
-    
+
     // Check if this is an ls command and add color flag if not already present
-    if (command.find("ls") == 0 && command.find("--color") == std::string::npos) {
+    if (command.find("ls") == 0 &&
+        command.find("--color") == std::string::npos) {
         // Check if there are any flags
         size_t spacePos = command.find(' ');
         if (spacePos != std::string::npos) {
@@ -214,30 +216,32 @@ void Console::ExecuteShellCommandWithColor(const std::string &command) {
             colorCommand = "ls --color=always";
         }
     }
-    
-    // For other commands that support color, we might need to add specific flags
-    // grep -> --color=always
-    // diff -> --color=always
-    // gcc/g++ -> -fdiagnostics-color=always
-    
-    if (command.find("grep") == 0 && command.find("--color") == std::string::npos) {
+
+    // For other commands that support color, we might need to add specific
+    // flags grep -> --color=always diff -> --color=always gcc/g++ ->
+    // -fdiagnostics-color=always
+
+    if (command.find("grep") == 0 &&
+        command.find("--color") == std::string::npos) {
         size_t spacePos = command.find(' ');
         if (spacePos != std::string::npos) {
             colorCommand = "grep --color=always" + command.substr(spacePos);
         }
     }
-    
+
     // Set TERM environment variable and ensure dircolors are loaded
     // This will respect the user's ~/.dircolors if it exists
     std::string fullCommand = "TERM=xterm-256color ";
-    
+
     // For ls commands, ensure dircolors are properly loaded
     if (command.find("ls") == 0) {
-        fullCommand += "eval \"$(dircolors -b ~/.dircolors 2>/dev/null || dircolors -b)\" && ";
+        fullCommand +=
+            "eval \"$(dircolors -b ~/.dircolors 2>/dev/null || dircolors -b)\" "
+            "&& ";
     }
-    
+
     fullCommand += colorCommand;
-    
+
     // Execute the command
     FILE *pipe = popen(fullCommand.c_str(), "r");
     if (pipe) {
@@ -248,13 +252,11 @@ void Console::ExecuteShellCommandWithColor(const std::string &command) {
         }
         int exitCode = pclose(pipe);
         if (exitCode != 0) {
-            cout << rang::fg::red
-                 << "Command exited with code: " << exitCode
+            cout << rang::fg::red << "Command exited with code: " << exitCode
                  << rang::fg::reset << endl;
         }
     } else {
-        cout << rang::fg::red
-             << "Failed to execute: " << command
+        cout << rang::fg::red << "Failed to execute: " << command
              << rang::fg::reset << endl;
     }
 }
@@ -1003,7 +1005,7 @@ String Console::ExpandHistoryReferences(const String &text) {
 String Console::Process(const String &text) {
     StringStream result;
     std::string textStr = text.StdString();
-    
+
     // Trim whitespace
     size_t start = textStr.find_first_not_of(" \t\n\r");
     if (start == std::string::npos) {
@@ -1014,12 +1016,12 @@ String Console::Process(const String &text) {
     if (end != std::string::npos) {
         trimmed = trimmed.substr(0, end + 1);
     }
-    
+
     // Check for built-in commands first
     if (ProcessBuiltinCommand(trimmed)) {
         return String("");  // Built-in command handled
     }
-    
+
     // Check if this is a shell command (starts with '$')
     if (!trimmed.empty() && trimmed[0] == '$') {
         // Execute as shell command (strip the $ and any leading space)
@@ -1131,7 +1133,8 @@ void Console::ShowColoredStack() const {
     auto A = data->Begin(), B = data->End();
     int N = 0;
     for (N = data->Size() - 1; A != B; ++A, --N) {
-        // Colored output: [N] in bright yellow/orange, content in white/colored by type
+        // Colored output: [N] in bright yellow/orange, content in white/colored
+        // by type
         cout << rang::fgB::yellow << "[" << N << "]: " << rang::fg::reset;
 
         const bool is_string = A->GetTypeNumber() == Type::Number::String;
@@ -1188,7 +1191,7 @@ int Console::Run() {
                 string text;
                 try {
                     text = ReadLineWithDynamicColor().StdString();
-                } catch (const std::runtime_error& e) {
+                } catch (const std::runtime_error &e) {
                     // Handle Ctrl-C
                     cout << rang::fg::reset << endl;
                     continue;
@@ -1206,8 +1209,9 @@ int Console::Run() {
 
                     string continuationLine;
                     try {
-                        continuationLine = ReadLineWithDynamicColor().StdString();
-                    } catch (const std::runtime_error& e) {
+                        continuationLine =
+                            ReadLineWithDynamicColor().StdString();
+                    } catch (const std::runtime_error &e) {
                         // Handle Ctrl-C during multi-line input
                         cout << rang::fg::reset << endl;
                         break;
@@ -1263,7 +1267,7 @@ int Console::Run() {
                         ClearScreen();
                         continue;
                     }
-                    
+
                     // Check for shell mode toggle
                     if (text == "sh" || text == "bash" || text == "zsh") {
                         shellMode = !shellMode;
@@ -1580,89 +1584,107 @@ std::string Console::ExtractFilePath(const std::string &text) {
 }
 
 // Help System Implementation
-bool Console::ProcessBuiltinCommand(const std::string& command) {
+bool Console::ProcessBuiltinCommand(const std::string &command) {
     // Convert to lowercase for case-insensitive matching
     std::string cmd = command;
     std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::tolower);
-    
+
     if (cmd == "help" || cmd == "?") {
         ShowHelp();
         return true;
     }
-    
+
     // Check for help with topic
     if (cmd.substr(0, 5) == "help ") {
         std::string topic = command.substr(5);
         ShowHelp(topic);
         return true;
     }
-    
+
     if (cmd == "clear" || cmd == "cls") {
         ClearScreen();
         return true;
     }
-    
+
     if (cmd == "exit" || cmd == "quit") {
         end_ = true;
         return true;
     }
-    
+
     if (cmd == "history") {
-        cout << rang::style::bold << "Command History:" << rang::style::reset << "\n";
+        cout << rang::style::bold << "Command History:" << rang::style::reset
+             << "\n";
         for (size_t i = 0; i < commandHistory.size(); ++i) {
-            cout << rang::fg::cyan << "  " << (i + 1) << ": " << rang::fg::reset 
+            cout << rang::fg::cyan << "  " << (i + 1) << ": " << rang::fg::reset
                  << commandHistory[i] << "\n";
         }
         return true;
     }
-    
+
     if (cmd == "stack") {
         ShowColoredStack();
         return true;
     }
-    
+
     if (cmd == "pi") {
         SetLanguage(Language::Pi);
-        cout << rang::fg::green << "Switched to Pi language mode" << rang::fg::reset << "\n";
+        cout << rang::fg::green << "Switched to Pi language mode"
+             << rang::fg::reset << "\n";
         return true;
     }
-    
+
     if (cmd == "rho") {
         SetLanguage(Language::Rho);
-        cout << rang::fg::green << "Switched to Rho language mode" << rang::fg::reset << "\n";
+        cout << rang::fg::green << "Switched to Rho language mode"
+             << rang::fg::reset << "\n";
         return true;
     }
-    
+
     return false;  // Not a built-in command
 }
 
-void Console::ShowHelp(const std::string& topic) const {
+void Console::ShowHelp(const std::string &topic) const {
     if (topic.empty()) {
-        cout << rang::style::bold << "KAI Console Help" << rang::style::reset << "\n\n"
+        cout << rang::style::bold << "KAI Console Help" << rang::style::reset
+             << "\n\n"
              << "Available help topics:\n"
-             << rang::fg::cyan << "  help basics     " << rang::fg::reset << "- Basic usage and commands\n"
-             << rang::fg::cyan << "  help history    " << rang::fg::reset << "- History and command expansion\n"
-             << rang::fg::cyan << "  help shell      " << rang::fg::reset << "- Shell integration\n"
-             << rang::fg::cyan << "  help languages  " << rang::fg::reset << "- Pi and Rho language features\n\n"
+             << rang::fg::cyan << "  help basics     " << rang::fg::reset
+             << "- Basic usage and commands\n"
+             << rang::fg::cyan << "  help history    " << rang::fg::reset
+             << "- History and command expansion\n"
+             << rang::fg::cyan << "  help shell      " << rang::fg::reset
+             << "- Shell integration\n"
+             << rang::fg::cyan << "  help languages  " << rang::fg::reset
+             << "- Pi and Rho language features\n\n"
              << "Language-specific help:\n"
-             << rang::fg::cyan << "  help pi         " << rang::fg::reset << "- Pi language reference\n"
-             << rang::fg::cyan << "  help rho        " << rang::fg::reset << "- Rho language reference\n\n";
+             << rang::fg::cyan << "  help pi         " << rang::fg::reset
+             << "- Pi language reference\n"
+             << rang::fg::cyan << "  help rho        " << rang::fg::reset
+             << "- Rho language reference\n\n";
         ShowBuiltinCommands();
     } else if (topic == "basics") {
         ShowBasicHelp();
     } else if (topic == "history") {
         ShowHistoryHelp();
     } else if (topic == "shell") {
-        cout << rang::style::bold << "Shell Integration Help" << rang::style::reset << "\n\n"
+        cout << rang::style::bold << "Shell Integration Help"
+             << rang::style::reset << "\n\n"
              << "Execute shell commands with $ prefix:\n"
-             << rang::fg::green << "  $ ls -la        " << rang::fg::reset << "# List files\n"
-             << rang::fg::green << "  $ pwd           " << rang::fg::reset << "# Show current directory\n"
-             << rang::fg::green << "  $ echo hello    " << rang::fg::reset << "# Echo text\n\n"
+             << rang::fg::green << "  $ ls -la        " << rang::fg::reset
+             << "# List files\n"
+             << rang::fg::green << "  $ pwd           " << rang::fg::reset
+             << "# Show current directory\n"
+             << rang::fg::green << "  $ echo hello    " << rang::fg::reset
+             << "# Echo text\n\n"
              << "Backtick expansion in code:\n"
-             << rang::fg::yellow << "  `echo 42` 10 +  " << rang::fg::reset << "# Uses output of echo as number\n"
-             << rang::fg::yellow << "  \"Hello \" `whoami` + " << rang::fg::reset << "# String concatenation with command output\n";
+             << rang::fg::yellow << "  `echo 42` 10 +  " << rang::fg::reset
+             << "# Uses output of echo as number\n"
+             << rang::fg::yellow << "  \"Hello \" `whoami` + "
+             << rang::fg::reset
+             << "# String concatenation with command output\n";
     } else if (topic == "languages") {
-        cout << rang::style::bold << "Language Overview" << rang::style::reset << "\n\n"
+        cout << rang::style::bold << "Language Overview" << rang::style::reset
+             << "\n\n"
              << rang::fg::cyan << "Pi Language:" << rang::fg::reset << "\n"
              << "  Stack-based, postfix notation\n"
              << "  Example: 2 3 + (adds 2 and 3)\n\n"
@@ -1675,26 +1697,32 @@ void Console::ShowHelp(const std::string& topic) const {
     } else if (topic == "rho") {
         ShowLanguageHelp("rho");
     } else {
-        cout << rang::fg::red << "Unknown help topic: " << rang::fg::reset << topic << "\n"
+        cout << rang::fg::red << "Unknown help topic: " << rang::fg::reset
+             << topic << "\n"
              << "Type 'help' for available topics.\n";
     }
 }
 
 void Console::ShowBasicHelp() const {
     cout << rang::style::bold << "Basic Usage" << rang::style::reset << "\n\n"
-         << "KAI Console is a REPL (Read-Eval-Print Loop) for the KAI language system.\n\n"
+         << "KAI Console is a REPL (Read-Eval-Print Loop) for the KAI language "
+            "system.\n\n"
          << rang::fg::cyan << "Getting Started:" << rang::fg::reset << "\n"
          << "  • Type expressions and press Enter to evaluate\n"
          << "  • Use Pi (stack-based) or Rho (C-like) syntax\n"
          << "  • Multi-line input is supported for complex structures\n\n"
          << rang::fg::cyan << "Examples:" << rang::fg::reset << "\n"
-         << rang::fg::green << "  2 3 +           " << rang::fg::reset << "# Pi: adds 2 and 3\n"
-         << rang::fg::green << "  x = 5;          " << rang::fg::reset << "# Rho: assigns 5 to x\n"
-         << rang::fg::green << "  stack           " << rang::fg::reset << "# Show current stack\n";
+         << rang::fg::green << "  2 3 +           " << rang::fg::reset
+         << "# Pi: adds 2 and 3\n"
+         << rang::fg::green << "  x = 5;          " << rang::fg::reset
+         << "# Rho: assigns 5 to x\n"
+         << rang::fg::green << "  stack           " << rang::fg::reset
+         << "# Show current stack\n";
 }
 
 void Console::ShowHistoryHelp() const {
-    cout << rang::style::bold << "History and Command Expansion" << rang::style::reset << "\n\n"
+    cout << rang::style::bold << "History and Command Expansion"
+         << rang::style::reset << "\n\n"
          << "Command history is automatically saved and can be accessed:\n\n"
          << rang::fg::cyan << "Basic History:" << rang::fg::reset << "\n"
          << "  history         - Show all commands\n"
@@ -1709,65 +1737,94 @@ void Console::ShowHistoryHelp() const {
          << "  !*              - All arguments of last command\n";
 }
 
-void Console::ShowLanguageHelp(const std::string& lang) const {
+void Console::ShowLanguageHelp(const std::string &lang) const {
     if (lang == "pi") {
-        cout << rang::style::bold << "Pi Language Reference" << rang::style::reset << "\n\n"
+        cout << rang::style::bold << "Pi Language Reference"
+             << rang::style::reset << "\n\n"
              << "Pi is a stack-based language with postfix notation.\n\n"
              << rang::fg::cyan << "Basic Operations:" << rang::fg::reset << "\n"
-             << rang::fg::green << "  2 3 +           " << rang::fg::reset << "# Push 2, push 3, add (result: 5)\n"
-             << rang::fg::green << "  10 3 -          " << rang::fg::reset << "# Subtract (result: 7)\n"
-             << rang::fg::green << "  4 5 *           " << rang::fg::reset << "# Multiply (result: 20)\n"
-             << rang::fg::green << "  15 3 /          " << rang::fg::reset << "# Divide (result: 5)\n\n"
+             << rang::fg::green << "  2 3 +           " << rang::fg::reset
+             << "# Push 2, push 3, add (result: 5)\n"
+             << rang::fg::green << "  10 3 -          " << rang::fg::reset
+             << "# Subtract (result: 7)\n"
+             << rang::fg::green << "  4 5 *           " << rang::fg::reset
+             << "# Multiply (result: 20)\n"
+             << rang::fg::green << "  15 3 /          " << rang::fg::reset
+             << "# Divide (result: 5)\n\n"
              << rang::fg::cyan << "Stack Operations:" << rang::fg::reset << "\n"
-             << rang::fg::green << "  dup             " << rang::fg::reset << "# Duplicate top of stack\n"
-             << rang::fg::green << "  swap            " << rang::fg::reset << "# Swap top two elements\n"
-             << rang::fg::green << "  drop            " << rang::fg::reset << "# Remove top element\n"
-             << rang::fg::green << "  over            " << rang::fg::reset << "# Copy second element to top\n\n"
+             << rang::fg::green << "  dup             " << rang::fg::reset
+             << "# Duplicate top of stack\n"
+             << rang::fg::green << "  swap            " << rang::fg::reset
+             << "# Swap top two elements\n"
+             << rang::fg::green << "  drop            " << rang::fg::reset
+             << "# Remove top element\n"
+             << rang::fg::green << "  over            " << rang::fg::reset
+             << "# Copy second element to top\n\n"
              << rang::fg::cyan << "Control Flow:" << rang::fg::reset << "\n"
-             << rang::fg::green << "  if then else    " << rang::fg::reset << "# Conditional execution\n"
-             << rang::fg::green << "  while do        " << rang::fg::reset << "# Loop while condition is true\n";
+             << rang::fg::green << "  if then else    " << rang::fg::reset
+             << "# Conditional execution\n"
+             << rang::fg::green << "  while do        " << rang::fg::reset
+             << "# Loop while condition is true\n";
     } else if (lang == "rho") {
-        cout << rang::style::bold << "Rho Language Reference" << rang::style::reset << "\n\n"
+        cout << rang::style::bold << "Rho Language Reference"
+             << rang::style::reset << "\n\n"
              << "Rho is a C-like language with modern features.\n\n"
-             << rang::fg::cyan << "Variables and Assignment:" << rang::fg::reset << "\n"
-             << rang::fg::green << "  x = 42;         " << rang::fg::reset << "# Assign value to variable\n"
-             << rang::fg::green << "  y = x * 2;      " << rang::fg::reset << "# Use variables in expressions\n\n"
-             << rang::fg::cyan << "Control Structures:" << rang::fg::reset << "\n"
-             << rang::fg::green << "  if (condition) { ... } " << rang::fg::reset << "# Conditional\n"
-             << rang::fg::green << "  while (condition) { ... } " << rang::fg::reset << "# Loop\n"
-             << rang::fg::green << "  for (i = 0; i < 10; i++) { ... } " << rang::fg::reset << "# For loop\n\n"
+             << rang::fg::cyan << "Variables and Assignment:" << rang::fg::reset
+             << "\n"
+             << rang::fg::green << "  x = 42;         " << rang::fg::reset
+             << "# Assign value to variable\n"
+             << rang::fg::green << "  y = x * 2;      " << rang::fg::reset
+             << "# Use variables in expressions\n\n"
+             << rang::fg::cyan << "Control Structures:" << rang::fg::reset
+             << "\n"
+             << rang::fg::green << "  if (condition) { ... } "
+             << rang::fg::reset << "# Conditional\n"
+             << rang::fg::green << "  while (condition) { ... } "
+             << rang::fg::reset << "# Loop\n"
+             << rang::fg::green << "  for (i = 0; i < 10; i++) { ... } "
+             << rang::fg::reset << "# For loop\n\n"
              << rang::fg::cyan << "Functions:" << rang::fg::reset << "\n"
-             << rang::fg::green << "  fun name(args) { ... } " << rang::fg::reset << "# Define function\n"
-             << rang::fg::green << "  name(arguments); " << rang::fg::reset << "# Call function\n";
+             << rang::fg::green << "  fun name(args) { ... } "
+             << rang::fg::reset << "# Define function\n"
+             << rang::fg::green << "  name(arguments); " << rang::fg::reset
+             << "# Call function\n";
     }
 }
 
 void Console::ShowBuiltinCommands() const {
-    cout << rang::style::bold << "Built-in Commands:" << rang::style::reset << "\n"
-         << rang::fg::cyan << "  help [topic]    " << rang::fg::reset << "- Show help (optionally for specific topic)\n"
-         << rang::fg::cyan << "  clear, cls      " << rang::fg::reset << "- Clear screen\n"
-         << rang::fg::cyan << "  exit, quit      " << rang::fg::reset << "- Exit console\n"
-         << rang::fg::cyan << "  pi, rho         " << rang::fg::reset << "- Switch language mode\n"
-         << rang::fg::cyan << "  history         " << rang::fg::reset << "- Show command history\n"
-         << rang::fg::cyan << "  stack           " << rang::fg::reset << "- Show current stack\n"
-         << rang::fg::cyan << "  $ <command>     " << rang::fg::reset << "- Execute shell command\n";
+    cout << rang::style::bold << "Built-in Commands:" << rang::style::reset
+         << "\n"
+         << rang::fg::cyan << "  help [topic]    " << rang::fg::reset
+         << "- Show help (optionally for specific topic)\n"
+         << rang::fg::cyan << "  clear, cls      " << rang::fg::reset
+         << "- Clear screen\n"
+         << rang::fg::cyan << "  exit, quit      " << rang::fg::reset
+         << "- Exit console\n"
+         << rang::fg::cyan << "  pi, rho         " << rang::fg::reset
+         << "- Switch language mode\n"
+         << rang::fg::cyan << "  history         " << rang::fg::reset
+         << "- Show command history\n"
+         << rang::fg::cyan << "  stack           " << rang::fg::reset
+         << "- Show current stack\n"
+         << rang::fg::cyan << "  $ <command>     " << rang::fg::reset
+         << "- Execute shell command\n";
 }
 
 // History Management Implementation
 void Console::LoadHistory() {
     // Set history file path
-    const char* home = std::getenv("HOME");
+    const char *home = std::getenv("HOME");
     if (home) {
         historyFile = std::string(home) + "/.kai_history";
     } else {
         historyFile = ".kai_history";
     }
-    
+
     std::ifstream file(historyFile);
     if (!file.is_open()) {
         return;  // File doesn't exist yet, that's fine
     }
-    
+
     std::string line;
     while (std::getline(file, line) && commandHistory.size() < maxHistorySize) {
         if (!line.empty()) {
@@ -1781,35 +1838,37 @@ void Console::SaveHistory() const {
     if (historyFile.empty()) {
         return;
     }
-    
+
     std::ofstream file(historyFile);
     if (!file.is_open()) {
         return;  // Can't save, but don't error
     }
-    
+
     // Save only the last maxHistorySize entries
-    size_t start = commandHistory.size() > maxHistorySize ? 
-        commandHistory.size() - maxHistorySize : 0;
-    
+    size_t start = commandHistory.size() > maxHistorySize
+                       ? commandHistory.size() - maxHistorySize
+                       : 0;
+
     for (size_t i = start; i < commandHistory.size(); ++i) {
         file << commandHistory[i] << "\n";
     }
     file.close();
 }
 
-void Console::AddToHistory(const std::string& command) {
+void Console::AddToHistory(const std::string &command) {
     // Don't add empty commands or duplicates of the last command
-    if (command.empty() || 
+    if (command.empty() ||
         (!commandHistory.empty() && commandHistory.back() == command)) {
         return;
     }
-    
+
     commandHistory.push_back(command);
-    
+
     // Keep history size under control
     if (commandHistory.size() > maxHistorySize) {
-        commandHistory.erase(commandHistory.begin(), 
-                           commandHistory.begin() + (commandHistory.size() - maxHistorySize));
+        commandHistory.erase(
+            commandHistory.begin(),
+            commandHistory.begin() + (commandHistory.size() - maxHistorySize));
     }
 }
 

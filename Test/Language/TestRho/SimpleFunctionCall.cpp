@@ -15,8 +15,7 @@ TEST_F(SimpleFunctionCall, BasicCall) {
         console.SetLanguage(kai::Language::Rho);
 
         // Read script from file
-        std::string script =
-            kai::test::LoadRhoScript("SimpleFunctionCall.rho");
+        std::string script = kai::test::LoadRhoScript("SimpleFunctionCall.rho");
 
         // Instead of Structure::Program, use Structure::Expression
         // to get the result on the stack

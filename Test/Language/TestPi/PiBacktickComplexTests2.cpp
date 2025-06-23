@@ -147,4 +147,4 @@ TEST_F(PiBacktickComplex2Test, UltimateShellTest) {
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 55);  // 10th Fibonacci number
 }
-#endif // ENABLE_SHELL_SYNTAX
+#endif  // ENABLE_SHELL_SYNTAX

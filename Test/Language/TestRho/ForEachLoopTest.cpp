@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include "TestLangCommon.h"
 
 using namespace kai;
@@ -17,11 +18,11 @@ foreach x in arr
 sum)";
 
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(ConstDeref<int>(result), 15); // 1+2+3+4+5 = 15
+    EXPECT_EQ(ConstDeref<int>(result), 15);  // 1+2+3+4+5 = 15
 }
 
 // Test foreach with strings
@@ -38,7 +39,7 @@ count
 )";
 
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
@@ -59,7 +60,7 @@ sum
 )";
 
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
@@ -80,11 +81,11 @@ sum
 )";
 
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(ConstDeref<int>(result), 6); // 1 + 2 + 3
+    EXPECT_EQ(ConstDeref<int>(result), 6);  // 1 + 2 + 3
 }
 
 // Test nested foreach loops
@@ -102,11 +103,11 @@ sum
 )";
 
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(ConstDeref<int>(result), 21); // 1+2+3+4+5+6 = 21
+    EXPECT_EQ(ConstDeref<int>(result), 21);  // 1+2+3+4+5+6 = 21
 }
 
 // Test foreach with break
@@ -125,11 +126,11 @@ count
 )";
 
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(ConstDeref<int>(result), 2); // Only 1 and 2 before break
+    EXPECT_EQ(ConstDeref<int>(result), 2);  // Only 1 and 2 before break
 }
 
 // Test foreach with continue
@@ -148,11 +149,11 @@ count
 )";
 
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(ConstDeref<int>(result), 4); // All except 3
+    EXPECT_EQ(ConstDeref<int>(result), 4);  // All except 3
 }
 
 // Test foreach with function calls
@@ -172,11 +173,11 @@ sum
 )";
 
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(ConstDeref<int>(result), 30); // 1+4+9+16 = 30
+    EXPECT_EQ(ConstDeref<int>(result), 30);  // 1+4+9+16 = 30
 }
 
 // Test foreach with empty collection
@@ -193,7 +194,7 @@ count
 )";
 
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
@@ -214,9 +215,9 @@ sum
 )";
 
     console_.Execute(code, Structure::Program);
-    
+
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
     ASSERT_TRUE(result.IsType<int>());
-    EXPECT_EQ(ConstDeref<int>(result), 36); // (1+10)+(2+10)+(3+10) = 36
+    EXPECT_EQ(ConstDeref<int>(result), 36);  // (1+10)+(2+10)+(3+10) = 36
 }

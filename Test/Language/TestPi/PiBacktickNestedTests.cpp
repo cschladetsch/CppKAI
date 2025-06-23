@@ -106,4 +106,4 @@ TEST_F(PiBacktickNestedTest, ActualNestedBackticksFail) {
     EXPECT_FALSE(parseSucceeded)
         << "Nested backticks should not parse successfully";
 }
-#endif // ENABLE_SHELL_SYNTAX
+#endif  // ENABLE_SHELL_SYNTAX

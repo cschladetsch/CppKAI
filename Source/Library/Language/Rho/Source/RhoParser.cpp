@@ -57,8 +57,8 @@ bool RhoParser::Run(Structure st) {
             break;
 
         case Structure::Function:
-            // Functions are now only created via assignment syntax: a = fun(b,c)
-            // So we treat it as an expression
+            // Functions are now only created via assignment syntax: a =
+            // fun(b,c) So we treat it as an expression
             if (!Expression()) return CreateError("Expression expected");
             root->Add(Pop());
             break;
@@ -130,7 +130,6 @@ bool RhoParser::Program() {
     KAI_TRACE() << "RhoParser::Program - Finished parsing program";
     return true;
 }
-
 
 bool RhoParser::Block(AstNodePtr node) {
     ConsumeNewLines();
@@ -250,8 +249,8 @@ bool RhoParser::Statement(AstNodePtr block) {
     }
 
     // Handle each statement type
-    KAI_TRACE() << "RhoParser::Statement - Current token type: " << (int)Current().type 
-                << " (" << Current().ToString() << ")";
+    KAI_TRACE() << "RhoParser::Statement - Current token type: "
+                << (int)Current().type << " (" << Current().ToString() << ")";
     switch (Current().type) {
         case TokenType::Assert: {
             KAI_TRACE() << "RhoParser::Statement - Processing Assert";
@@ -337,7 +336,6 @@ bool RhoParser::Statement(AstNodePtr block) {
             }
             return true;
         }
-
 
         case TokenType::None:
             // End of input is okay
@@ -573,48 +571,48 @@ bool RhoParser::Factor() {
                 Fail("Map key must be a string");
                 return false;
             }
-            
+
             auto key = Current();
             Consume();
-            
+
             // Expect colon
             if (!Try(TokenType::Colon)) {
                 Fail("Expected ':' after map key");
                 return false;
             }
             Consume();
-            
+
             // Parse value expression
             if (!Expression()) {
                 Fail("Expected expression for map value");
                 return false;
             }
-            
+
             // Pop the value
             auto value = Pop();
-            
+
             // Add key-value pair to map node
             // Store key as a token node and value as the expression
             auto keyNode = NewNode(key);
             map->Add(keyNode);
             map->Add(value);
-            
+
             // Check for more pairs
             if (Try(TokenType::Comma)) {
                 Consume();
                 continue;
             }
-            
+
             // Must end with close brace
             if (!Try(TokenType::CloseBrace)) {
                 Fail("Expected '}' or ',' in map literal");
                 return false;
             }
             break;
-            
+
         } while (true);
-        
-        Consume(); // consume the CloseBrace
+
+        Consume();  // consume the CloseBrace
         Push(map);
         return true;
     }
@@ -1162,14 +1160,15 @@ bool RhoParser::ForLoop(AstNodePtr block) {
 
 bool RhoParser::ForEachLoop(AstNodePtr block) {
     KAI_TRACE() << "RhoParser::ForEachLoop - Starting foreach loop parsing";
-    
+
     // foreach item in collection
     //     body
-    
+
     // Create the foreach node
     auto forEachNode = NewNode(NodeType::ForEach);
     if (!forEachNode) {
-        KAI_TRACE_ERROR() << "RhoParser::ForEachLoop - Failed to create foreach node";
+        KAI_TRACE_ERROR()
+            << "RhoParser::ForEachLoop - Failed to create foreach node";
         return false;
     }
 
@@ -1181,32 +1180,37 @@ bool RhoParser::ForEachLoop(AstNodePtr block) {
     if (!Try(TokenType::Label)) {
         return CreateError("Expected identifier after 'foreach'");
     }
-    
+
     auto loopVar = NewNode(Consume());
     if (!loopVar) {
-        KAI_TRACE_ERROR() << "RhoParser::ForEachLoop - Failed to create loop variable node";
+        KAI_TRACE_ERROR()
+            << "RhoParser::ForEachLoop - Failed to create loop variable node";
         return false;
     }
     forEachNode->Add(loopVar);
-    KAI_TRACE() << "RhoParser::ForEachLoop - Added loop variable: " << loopVar->GetToken().Text();
+    KAI_TRACE() << "RhoParser::ForEachLoop - Added loop variable: "
+                << loopVar->GetToken().Text();
 
     // Expect 'in' keyword - check if current token is a label with text "in"
     if (!Try(TokenType::Label) || Current().Text() != "in") {
-        KAI_TRACE_ERROR() << "ForEachLoop: Expected 'in' after loop variable, got: " << Current().ToString();
+        KAI_TRACE_ERROR()
+            << "ForEachLoop: Expected 'in' after loop variable, got: "
+            << Current().ToString();
         return CreateError("Expected 'in' after loop variable");
     }
-    
-    Consume(); // consume 'in'
+
+    Consume();  // consume 'in'
     KAI_TRACE() << "RhoParser::ForEachLoop - Consumed 'in' keyword";
 
     // Parse the collection expression
     if (!Expression()) {
         return CreateError("Expected collection expression after 'in'");
     }
-    
+
     auto collection = Pop();
     if (!collection) {
-        KAI_TRACE_ERROR() << "RhoParser::ForEachLoop - Failed to get collection expression";
+        KAI_TRACE_ERROR()
+            << "RhoParser::ForEachLoop - Failed to get collection expression";
         return false;
     }
     forEachNode->Add(collection);
@@ -1221,7 +1225,8 @@ bool RhoParser::ForEachLoop(AstNodePtr block) {
     // Parse the body as a block
     auto body = NewNode(NodeType::Block);
     if (!body) {
-        KAI_TRACE_ERROR() << "RhoParser::ForEachLoop - Failed to create body block";
+        KAI_TRACE_ERROR()
+            << "RhoParser::ForEachLoop - Failed to create body block";
         return false;
     }
 
@@ -1232,15 +1237,18 @@ bool RhoParser::ForEachLoop(AstNodePtr block) {
     }
     KAI_TRACE() << "RhoParser::ForEachLoop - Parsed body block";
     forEachNode->Add(body);
-    KAI_TRACE() << "RhoParser::ForEachLoop - Added body block with " 
-                  << static_cast<int>(body->GetChildren().size()) << " statements";
+    KAI_TRACE() << "RhoParser::ForEachLoop - Added body block with "
+                << static_cast<int>(body->GetChildren().size())
+                << " statements";
 
     if (!block->Add(forEachNode)) {
-        KAI_TRACE_ERROR() << "RhoParser::ForEachLoop - Failed to add foreach node to block";
+        KAI_TRACE_ERROR()
+            << "RhoParser::ForEachLoop - Failed to add foreach node to block";
         return false;
     }
 
-    KAI_TRACE() << "RhoParser::ForEachLoop - Successfully added foreach node to block";
+    KAI_TRACE()
+        << "RhoParser::ForEachLoop - Successfully added foreach node to block";
     return true;
 }
 

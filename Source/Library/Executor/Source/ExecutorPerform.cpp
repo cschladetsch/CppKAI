@@ -372,8 +372,9 @@ void Executor::Perform(Operation::Type op) {
 
             // Get the function/continuation to execute
             auto funcObj = Pop();
-            
-            // Save current continuation on the context stack for later resumption
+
+            // Save current continuation on the context stack for later
+            // resumption
             context_->Push(continuation_);
 
             // Create and set the new continuation
@@ -383,7 +384,8 @@ void Executor::Perform(Operation::Type op) {
             KAI_TRACE() << "  Context stack size: " << context_->Size();
 
             // IMPORTANT: Call Enter to set up arguments in the new scope
-            // This is critical for function arguments to be available in the scope
+            // This is critical for function arguments to be available in the
+            // scope
             if (continuation_.Exists()) {
                 continuation_->Enter(this);
                 KAI_TRACE() << "  Called Enter on new continuation";
@@ -630,75 +632,83 @@ void Executor::Perform(Operation::Type op) {
 
             if (name.IsType<Label>()) {
                 Label label = ConstDeref<Label>(name);
-                
+
                 // First check if it exists in current scope
                 if (scope.Has(label)) {
                     // Update in current scope
                     scope.Set(label, value);
-                    KAI_TRACE() << "Updated '" << label.ToString() << "' in current scope";
+                    KAI_TRACE() << "Updated '" << label.ToString()
+                                << "' in current scope";
                 } else {
                     // Search in parent scopes
                     bool foundInParent = false;
-                    Stack const &scopes = *context_;
+                    Stack const& scopes = *context_;
                     for (int N = 0; N < scopes.Size(); ++N) {
                         Pointer<Continuation> cont = scopes.At(N);
                         if (!cont.Exists()) break;
-                        
+
                         Object parentScope = cont->GetScope();
                         if (parentScope.Exists() && parentScope.Has(label)) {
                             // Update in the parent scope where it was found
                             parentScope.Set(label, value);
                             foundInParent = true;
-                            KAI_TRACE() << "Updated '" << label.ToString() << "' in parent scope at level " << N;
+                            KAI_TRACE() << "Updated '" << label.ToString()
+                                        << "' in parent scope at level " << N;
                             break;
                         }
                     }
-                    
+
                     if (!foundInParent) {
                         // Not found anywhere, add to current scope
                         scope.Add(label, value);
-                        KAI_TRACE() << "Added new variable '" << label.ToString() << "' to current scope";
+                        KAI_TRACE() << "Added new variable '"
+                                    << label.ToString() << "' to current scope";
                     }
                 }
             } else if (name.IsType<Pathname>()) {
                 Pathname path = ConstDeref<Pathname>(name);
                 KAI_TRACE() << "Store with Pathname: " << path.ToString()
                             << ", quoted: " << (path.Quoted() ? "yes" : "no");
-                
+
                 // Strip the quote if present to get the actual name
                 String pathStr = path.ToString();
                 if (pathStr.Size() > 0 && pathStr[0] == '\'') {
                     pathStr = String(pathStr.begin() + 1, pathStr.end());
                 }
                 Label label(pathStr);
-                
+
                 // First check if it exists in current scope
                 if (scope.Has(label)) {
                     // Update in current scope
                     scope.Set(label, value);
-                    KAI_TRACE() << "Updated '" << pathStr << "' in current scope";
+                    KAI_TRACE()
+                        << "Updated '" << pathStr << "' in current scope";
                 } else {
                     // Search in parent scopes
                     bool foundInParent = false;
-                    Stack const &scopes = *context_;
+                    Stack const& scopes = *context_;
                     for (int N = 0; N < scopes.Size(); ++N) {
                         Pointer<Continuation> cont = scopes.At(N);
                         if (!cont.Exists()) break;
-                        
+
                         Object parentScope = cont->GetScope();
                         if (parentScope.Exists() && parentScope.Has(label)) {
                             // Update in the parent scope where it was found
                             parentScope.Set(label, value);
                             foundInParent = true;
-                            KAI_TRACE() << "Updated '" << pathStr << "' in parent scope at level " << N;
+                            KAI_TRACE() << "Updated '" << pathStr
+                                        << "' in parent scope at level " << N;
                             break;
                         }
                     }
-                    
+
                     if (!foundInParent) {
                         // Not found anywhere, add to current scope
                         scope.Add(label, value);
-                        KAI_TRACE() << "Added '" << pathStr << "' to scope (from pathname: " << path.ToString() << ")";
+                        KAI_TRACE()
+                            << "Added '" << pathStr
+                            << "' to scope (from pathname: " << path.ToString()
+                            << ")";
                     }
                 }
             } else {
@@ -790,10 +800,12 @@ void Executor::Perform(Operation::Type op) {
                     Pointer<Continuation> cont = continuation;
                     ExecuteContinuationInline(cont);
                 } else {
-                    // Handle non-continuation objects by pushing them onto the stack
-                    // This allows If to work with simple values/expressions
-                    KAI_TRACE() << "If operation: Handling non-continuation object of type " 
-                               << continuation.GetTypeNumber().ToString();
+                    // Handle non-continuation objects by pushing them onto the
+                    // stack This allows If to work with simple
+                    // values/expressions
+                    KAI_TRACE() << "If operation: Handling non-continuation "
+                                   "object of type "
+                                << continuation.GetTypeNumber().ToString();
                     Push(continuation);
                 }
             } else {
@@ -819,10 +831,12 @@ void Executor::Perform(Operation::Type op) {
                 Pointer<Continuation> cont = chosen;
                 ExecuteContinuationInline(cont);
             } else {
-                // Handle non-continuation objects by pushing them onto the stack
-                // This allows IfElse to work with simple values/expressions
-                KAI_TRACE() << "IfElse: Handling non-continuation object of type " 
-                           << chosen.GetTypeNumber().ToString();
+                // Handle non-continuation objects by pushing them onto the
+                // stack This allows IfElse to work with simple
+                // values/expressions
+                KAI_TRACE()
+                    << "IfElse: Handling non-continuation object of type "
+                    << chosen.GetTypeNumber().ToString();
                 Push(chosen);
             }
 
@@ -1167,10 +1181,12 @@ void Executor::Perform(Operation::Type op) {
                         }
 
                         int status = pclose(pipe);
-                        
+
                         // Check if command execution failed
                         if (status != 0) {
-                            KAI_TRACE() << "Shell command exited with non-zero status: " << status;
+                            KAI_TRACE()
+                                << "Shell command exited with non-zero status: "
+                                << status;
                         }
 
                         // Remove trailing newline if present
@@ -1238,7 +1254,9 @@ void Executor::Perform(Operation::Type op) {
             }
 #else
             // Shell operations are disabled
-            KAI_THROW_1(NotImplemented, "Shell operations are disabled for security. Enable with -DENABLE_SHELL_SYNTAX=ON");
+            KAI_THROW_1(NotImplemented,
+                        "Shell operations are disabled for security. Enable "
+                        "with -DENABLE_SHELL_SYNTAX=ON");
 #endif
             break;
         }
@@ -1540,7 +1558,8 @@ void Executor::Perform(Operation::Type op) {
                         break;           // Exit the do-while loop
                     }
 
-                    // Evaluate condition (even if continue was hit) using ExecuteContinuationInline
+                    // Evaluate condition (even if continue was hit) using
+                    // ExecuteContinuationInline
                     ExecuteContinuationInline(condition);
 
                     // Check condition result
@@ -1846,11 +1865,12 @@ void Executor::Perform(Operation::Type op) {
 
             if (container.IsType<Array>()) {
                 if (!index.IsType<int>()) {
-                    KAI_TRACE_ERROR() << "Index: Array index must be an integer";
+                    KAI_TRACE_ERROR()
+                        << "Index: Array index must be an integer";
                     Push(Object());
                     break;
                 }
-                
+
                 int idx = ConstDeref<int>(index);
                 Pointer<Array> arr = container;
                 if (idx < 0 || idx >= arr->Size()) {
@@ -1863,7 +1883,7 @@ void Executor::Perform(Operation::Type op) {
             } else if (container.IsType<Map>()) {
                 // For maps, index can be any type that can be used as a key
                 Pointer<Map> map = container;
-                
+
                 // Convert Pathname to String for compatibility
                 Object searchKey = index;
                 if (index.IsType<Pathname>()) {
@@ -1874,22 +1894,24 @@ void Executor::Perform(Operation::Type op) {
                     }
                     searchKey = New<String>(pathStr);
                 }
-                
+
                 auto it = map->Find(searchKey);
                 if (it != map->End()) {
                     Push(it->second);
                 } else {
-                    KAI_TRACE_ERROR() << "Index: Map key '" << searchKey.ToString() << "' not found";
+                    KAI_TRACE_ERROR() << "Index: Map key '"
+                                      << searchKey.ToString() << "' not found";
                     Push(Object());
                 }
             } else if (container.IsType<String>()) {
                 // String indexing - return character at index
                 if (!index.IsType<int>()) {
-                    KAI_TRACE_ERROR() << "Index: String index must be an integer";
+                    KAI_TRACE_ERROR()
+                        << "Index: String index must be an integer";
                     Push(Object());
                     break;
                 }
-                
+
                 int idx = ConstDeref<int>(index);
                 String str = ConstDeref<String>(container);
                 if (idx < 0 || idx >= static_cast<int>(str.size())) {
@@ -1901,9 +1923,9 @@ void Executor::Perform(Operation::Type op) {
                 // Return single character as a String
                 Push(New<String>(String(1, str[idx])));
             } else {
-                KAI_TRACE_ERROR()
-                    << "Index: Container type " << container.GetTypeNumber().ToString() 
-                    << " not supported for indexing";
+                KAI_TRACE_ERROR() << "Index: Container type "
+                                  << container.GetTypeNumber().ToString()
+                                  << " not supported for indexing";
                 Push(Object());
             }
             break;
@@ -1929,11 +1951,12 @@ void Executor::Perform(Operation::Type op) {
 
             if (container.IsType<Array>()) {
                 if (!index.IsType<int>()) {
-                    KAI_TRACE_ERROR() << "SetChild: Array index must be an integer";
+                    KAI_TRACE_ERROR()
+                        << "SetChild: Array index must be an integer";
                     Push(container);
                     break;
                 }
-                
+
                 int idx = ConstDeref<int>(index);
                 Pointer<Array> arr = container;
                 if (idx < 0 || idx >= arr->Size()) {
@@ -1948,7 +1971,7 @@ void Executor::Perform(Operation::Type op) {
             } else if (container.IsType<Map>()) {
                 // For maps, index can be any type that can be used as a key
                 Pointer<Map> map = container;
-                
+
                 // Convert Pathname to String for compatibility
                 Object mapKey = index;
                 if (index.IsType<Pathname>()) {
@@ -1959,13 +1982,13 @@ void Executor::Perform(Operation::Type op) {
                     }
                     mapKey = New<String>(pathStr);
                 }
-                
+
                 map->Insert(mapKey, value);
                 Push(container);
             } else {
-                KAI_TRACE_ERROR()
-                    << "SetChild: Container type " << container.GetTypeNumber().ToString()
-                    << " not supported for indexing";
+                KAI_TRACE_ERROR() << "SetChild: Container type "
+                                  << container.GetTypeNumber().ToString()
+                                  << " not supported for indexing";
                 Push(container);
             }
             break;
@@ -2054,32 +2077,34 @@ void Executor::Perform(Operation::Type op) {
             // ForEach operation
             // Stack: ( collection function -- result_array )
             KAI_TRACE() << "ForEach: Starting foreach operation";
-            
+
             if (data_->Size() < 2) {
                 KAI_TRACE_ERROR() << "ForEach: Not enough arguments on stack";
                 KAI_THROW_1(Base, "ForEach requires collection and function");
             }
-            
+
             // Pop function and collection
             Object function = Pop();
             Object collection = Pop();
-            
+
             if (!function.Exists() || !collection.Exists()) {
                 KAI_TRACE_ERROR() << "ForEach: Invalid arguments";
-                KAI_THROW_1(Base, "ForEach requires valid collection and function");
+                KAI_THROW_1(Base,
+                            "ForEach requires valid collection and function");
             }
-            
+
             // Don't create a result array - foreach is for side effects
-            
+
             // Handle different collection types
             if (collection.IsType<Array>()) {
                 auto& arr = Deref<Array>(collection);
-                KAI_TRACE() << "ForEach: Processing array with " << arr.Size() << " elements";
-                
+                KAI_TRACE() << "ForEach: Processing array with " << arr.Size()
+                            << " elements";
+
                 for (int i = 0; i < arr.Size(); ++i) {
                     // Push the current element
                     Push(arr.At(i));
-                    
+
                     // Execute the function
                     if (function.IsType<Continuation>()) {
                         // Cast to continuation pointer
@@ -2089,33 +2114,33 @@ void Executor::Perform(Operation::Type op) {
                         // For other callable types, use Continue
                         Continue(function);
                     }
-                    
+
                     // Check for break
                     if (break_) {
                         break_ = false;
                         break;
                     }
-                    
+
                     // Check for continue
                     if (continue_) {
                         continue_ = false;
                         continue;
                     }
-                    
+
                     // Pop any result left by the body (we don't collect it)
                     if (!data_->Empty()) {
                         Pop();
                     }
                 }
-            }
-            else if (collection.IsType<List>()) {
+            } else if (collection.IsType<List>()) {
                 auto& list = Deref<List>(collection);
-                KAI_TRACE() << "ForEach: Processing list with " << list.Size() << " elements";
-                
+                KAI_TRACE() << "ForEach: Processing list with " << list.Size()
+                            << " elements";
+
                 for (auto it = list.Begin(); it != list.End(); ++it) {
                     // Push the current element
                     Push(*it);
-                    
+
                     // Execute the function
                     if (function.IsType<Continuation>()) {
                         Pointer<Continuation> cont = function;
@@ -2123,33 +2148,33 @@ void Executor::Perform(Operation::Type op) {
                     } else {
                         Continue(function);
                     }
-                    
+
                     // Check for break
                     if (break_) {
                         break_ = false;
                         break;
                     }
-                    
+
                     // Check for continue
                     if (continue_) {
                         continue_ = false;
                         continue;
                     }
-                    
+
                     // Pop any result left by the body (we don't collect it)
                     if (!data_->Empty()) {
                         Pop();
                     }
                 }
-            }
-            else if (collection.IsType<String>()) {
+            } else if (collection.IsType<String>()) {
                 auto& str = Deref<String>(collection);
-                KAI_TRACE() << "ForEach: Processing string with " << str.size() << " characters";
-                
+                KAI_TRACE() << "ForEach: Processing string with " << str.size()
+                            << " characters";
+
                 for (char ch : str) {
                     // Push the current character as a string
                     Push(New<String>(std::string(1, ch)));
-                    
+
                     // Execute the function
                     if (function.IsType<Continuation>()) {
                         Pointer<Continuation> cont = function;
@@ -2157,36 +2182,36 @@ void Executor::Perform(Operation::Type op) {
                     } else {
                         Continue(function);
                     }
-                    
+
                     // Check for break
                     if (break_) {
                         break_ = false;
                         break;
                     }
-                    
+
                     // Check for continue
                     if (continue_) {
                         continue_ = false;
                         continue;
                     }
-                    
+
                     // Pop any result left by the body (we don't collect it)
                     if (!data_->Empty()) {
                         Pop();
                     }
                 }
-            }
-            else if (collection.IsType<Map>()) {
+            } else if (collection.IsType<Map>()) {
                 auto& map = Deref<Map>(collection);
-                KAI_TRACE() << "ForEach: Processing map with " << map.Size() << " entries";
-                
+                KAI_TRACE() << "ForEach: Processing map with " << map.Size()
+                            << " entries";
+
                 for (auto it = map.Begin(); it != map.End(); ++it) {
                     // Push key-value pair as an array
                     auto pair = New<Array>();
                     pair->Append(it->first);
                     pair->Append(it->second);
                     Push(pair);
-                    
+
                     // Execute the function
                     if (function.IsType<Continuation>()) {
                         Pointer<Continuation> cont = function;
@@ -2194,31 +2219,31 @@ void Executor::Perform(Operation::Type op) {
                     } else {
                         Continue(function);
                     }
-                    
+
                     // Check for break
                     if (break_) {
                         break_ = false;
                         break;
                     }
-                    
+
                     // Check for continue
                     if (continue_) {
                         continue_ = false;
                         continue;
                     }
-                    
+
                     // Pop any result left by the body (we don't collect it)
                     if (!data_->Empty()) {
                         Pop();
                     }
                 }
-            }
-            else {
-                KAI_TRACE_ERROR() << "ForEach: Unsupported collection type: " 
+            } else {
+                KAI_TRACE_ERROR() << "ForEach: Unsupported collection type: "
                                   << collection.GetTypeNumber().ToString();
-                KAI_THROW_1(Base, "ForEach requires array, list, string, or map");
+                KAI_THROW_1(Base,
+                            "ForEach requires array, list, string, or map");
             }
-            
+
             // ForEach doesn't push anything - it's for side effects only
             KAI_TRACE() << "ForEach: Completed";
             break;
@@ -2240,8 +2265,9 @@ void Executor::ExecuteContinuationInline(Pointer<Continuation> cont) {
         // Create a temporary sub-continuation for this inline execution
         // This allows proper handling of Suspend operations
         auto savedCont = continuation_;
-        auto savedIndex = savedCont.Exists() ? ConstDeref<int>(savedCont->index) : 0;
-        
+        auto savedIndex =
+            savedCont.Exists() ? ConstDeref<int>(savedCont->index) : 0;
+
         // Set up the inline continuation
         continuation_ = cont;
         if (!continuation_->index.Exists()) {
@@ -2249,19 +2275,20 @@ void Executor::ExecuteContinuationInline(Pointer<Continuation> cont) {
         } else {
             *continuation_->index = 0;
         }
-        
+
         // Execute the continuation
         try {
-            while (continuation_.Exists() && 
-                   ConstDeref<int>(continuation_->index) < continuation_->GetCode()->Size()) {
+            while (continuation_.Exists() &&
+                   ConstDeref<int>(continuation_->index) <
+                       continuation_->GetCode()->Size()) {
                 if (break_ || continue_) break;
-                
+
                 int index = ConstDeref<int>(continuation_->index);
                 auto obj = continuation_->GetCode()->At(index);
-                
+
                 // Advance the index first
                 *continuation_->index = index + 1;
-                
+
                 if (obj.Exists()) {
                     Eval(obj);
                 }
@@ -2274,7 +2301,7 @@ void Executor::ExecuteContinuationInline(Pointer<Continuation> cont) {
             }
             throw;
         }
-        
+
         // Restore the original continuation
         continuation_ = savedCont;
         if (savedCont.Exists() && savedCont->index.Exists()) {
