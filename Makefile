@@ -395,6 +395,32 @@ SimpleColorExample/fast:
 	$(MAKE) $(MAKESILENT) -f Test/Examples/CMakeFiles/SimpleColorExample.dir/build.make Test/Examples/CMakeFiles/SimpleColorExample.dir/build
 .PHONY : SimpleColorExample/fast
 
+#=============================================================================
+# Target rules for targets named TestSimpleMock
+
+# Build rule for target.
+TestSimpleMock: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 TestSimpleMock
+.PHONY : TestSimpleMock
+
+# fast build rule for target.
+TestSimpleMock/fast:
+	$(MAKE) $(MAKESILENT) -f Test/Window/CMakeFiles/TestSimpleMock.dir/build.make Test/Window/CMakeFiles/TestSimpleMock.dir/build
+.PHONY : TestSimpleMock/fast
+
+#=============================================================================
+# Target rules for targets named TestWindow
+
+# Build rule for target.
+TestWindow: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 TestWindow
+.PHONY : TestWindow
+
+# fast build rule for target.
+TestWindow/fast:
+	$(MAKE) $(MAKESILENT) -f Test/Window/CMakeFiles/TestWindow.dir/build.make Test/Window/CMakeFiles/TestWindow.dir/build
+.PHONY : TestWindow/fast
+
 Source/App/Console/Source/Main.o: Source/App/Console/Source/Main.cpp.o
 .PHONY : Source/App/Console/Source/Main.o
 
@@ -1623,7 +1649,9 @@ help:
 	@echo "... TestCore"
 	@echo "... TestPi"
 	@echo "... TestRho"
+	@echo "... TestSimpleMock"
 	@echo "... TestTau"
+	@echo "... TestWindow"
 	@echo "... Window"
 	@echo "... Source/App/Console/Source/Main.o"
 	@echo "... Source/App/Console/Source/Main.i"

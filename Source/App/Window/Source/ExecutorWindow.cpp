@@ -7,6 +7,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <cstring>
 
 using namespace std;
 
@@ -19,6 +20,7 @@ enum class ConsoleTab { Pi, Rho, Debugger };
 struct ExecutorWindow {
     // Input and history state
     char InputBuf[256];
+    char MultilineInputBuf[4096];  // Larger buffer for multi-line Rho input
     int HistoryPos;  // -1: new line, 0..History.Size-1 browsing history.
     bool ScrollToBottom;
 
@@ -46,6 +48,10 @@ struct ExecutorWindow {
         HistoryPos = -1;
         CurrentLanguage = Language::Pi;
         CurrentTab = ConsoleTab::Pi;
+        
+        // Initialize input buffers
+        memset(InputBuf, 0, sizeof(InputBuf));
+        memset(MultilineInputBuf, 0, sizeof(MultilineInputBuf));
 
         // Initialize console with Pi language by default
         console_.SetLanguage(CurrentLanguage);
@@ -110,8 +116,9 @@ struct ExecutorWindow {
             console_.SetLanguage(CurrentLanguage);
             exec_ = &*console_.GetExecutor();
 
-            // Clear the input buffer when switching languages
+            // Clear the input buffers when switching languages
             InputBuf[0] = '\0';
+            MultilineInputBuf[0] = '\0';
         }
     }
 
@@ -127,8 +134,9 @@ struct ExecutorWindow {
                 SwitchLanguage(Language::Rho);
             }
 
-            // Clear the input buffer when switching tabs
+            // Clear the input buffers when switching tabs
             InputBuf[0] = '\0';
+            MultilineInputBuf[0] = '\0';
         }
     }
 
@@ -365,29 +373,101 @@ struct ExecutorWindow {
 
         // Command-line
         bool reclaim_focus = false;
-        ImGuiInputTextFlags input_text_flags =
-            ImGuiInputTextFlags_EnterReturnsTrue;
+        
+        // Use different input methods for Pi and Rho
+        if (CurrentLanguage == Language::Pi) {
+            // Pi uses single-line input
+            ImGuiInputTextFlags input_text_flags =
+                ImGuiInputTextFlags_EnterReturnsTrue;
 
-        // Show language indicator in the input field
-        string inputLabel = (CurrentLanguage == Language::Pi) ? "Pi>" : "Rho>";
+            if (ImGui::InputText("Pi>", InputBuf, sizeof(InputBuf),
+                                 input_text_flags)) {
+                char* input_end = InputBuf + strlen(InputBuf);
+                while (input_end > InputBuf && input_end[-1] == ' ') input_end--;
 
-        if (ImGui::InputText(inputLabel.c_str(), InputBuf, sizeof(InputBuf),
-                             input_text_flags)) {
-            char* input_end = InputBuf + strlen(InputBuf);
-            while (input_end > InputBuf && input_end[-1] == ' ') input_end--;
+                *input_end = 0;
 
-            *input_end = 0;
+                if (InputBuf[0]) {
+                    // Add to history
+                    History[CurrentLanguage].push_back(InputBuf);
 
-            if (InputBuf[0]) {
-                // Add to history
-                History[CurrentLanguage].push_back(InputBuf);
+                    // Execute the command
+                    ExecCommand(InputBuf);
+                }
 
-                // Execute the command
-                ExecCommand(InputBuf);
+                strcpy(InputBuf, "");
+                reclaim_focus = true;
             }
+        } else {
+            // Rho uses multi-line input
+            ImGui::Text("Rho> (Multi-line input - Press button to execute)");
+            ImGui::Separator();
+            
+            // Create a child window for better layout control
+            ImGui::BeginChild("RhoInputArea", ImVec2(0, ImGui::GetTextLineHeightWithSpacing() * 7), false);
+            
+            ImGuiInputTextFlags multiline_flags = 
+                ImGuiInputTextFlags_AllowTabInput;
+            
+            // Calculate width to leave room for Execute button
+            float buttonWidth = 80.0f;
+            float spacing = ImGui::GetStyle().ItemSpacing.x;
+            float inputWidth = ImGui::GetContentRegionAvailWidth() - buttonWidth - spacing;
+            
+            // Add a helpful hint
+            ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), 
+                              "Enter Rho code below (supports functions, loops, etc.):");
+            
+            // Multi-line input field with a border
+            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
+            ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
+            
+            ImGui::PushItemWidth(inputWidth);
+            ImGui::InputTextMultiline("##RhoInput", MultilineInputBuf, 
+                                     sizeof(MultilineInputBuf),
+                                     ImVec2(inputWidth, ImGui::GetTextLineHeightWithSpacing() * 5),
+                                     multiline_flags);
+            ImGui::PopItemWidth();
+            
+            ImGui::PopStyleColor();
+            ImGui::PopStyleVar();
+            
+            // Execute button aligned to the right
+            ImGui::SameLine();
+            ImGui::BeginGroup();
+            
+            // Style the execute button
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.6f, 0.2f, 1.0f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.7f, 0.3f, 1.0f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.4f, 0.8f, 0.4f, 1.0f));
+            
+            if (ImGui::Button("Execute", ImVec2(buttonWidth, ImGui::GetTextLineHeightWithSpacing() * 2))) {
+                char* input_end = MultilineInputBuf + strlen(MultilineInputBuf);
+                while (input_end > MultilineInputBuf && input_end[-1] == ' ') input_end--;
+                *input_end = 0;
 
-            strcpy(InputBuf, "");
-            reclaim_focus = true;
+                if (MultilineInputBuf[0]) {
+                    // Add to history
+                    History[CurrentLanguage].push_back(MultilineInputBuf);
+
+                    // Execute the command
+                    ExecCommand(MultilineInputBuf);
+                }
+
+                strcpy(MultilineInputBuf, "");
+                reclaim_focus = true;
+            }
+            
+            ImGui::PopStyleColor(3);
+            
+            // Clear button below Execute
+            if (ImGui::Button("Clear", ImVec2(buttonWidth, 0))) {
+                strcpy(MultilineInputBuf, "");
+                reclaim_focus = true;
+            }
+            
+            ImGui::EndGroup();
+            ImGui::EndChild();
         }
 
         // Auto-focus on window apparition
