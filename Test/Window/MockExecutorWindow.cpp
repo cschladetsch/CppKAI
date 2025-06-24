@@ -8,7 +8,7 @@ ExecutorWindow::ExecutorWindow() {
     HistoryPos = -1;
     CurrentLanguage = Language::Pi;
     CurrentTab = ConsoleTab::Pi;
-    
+
     memset(InputBuf, 0, sizeof(InputBuf));
     memset(MultilineInputBuf, 0, sizeof(MultilineInputBuf));
 
@@ -86,7 +86,7 @@ void ExecutorWindow::SwitchTab(ConsoleTab tab) {
 void ExecutorWindow::ExecuteDebugStep() {
     DebugStepCount++;
     AddLog("Step %d", DebugStepCount);
-    
+
     StringStream st;
     st << "Data Stack Size: " << exec_->GetDataStack()->Size();
     AddLog("%s", st.ToString().c_str());
@@ -127,12 +127,13 @@ void ExecutorWindow::ExecCommand(const char* command_line) {
     AddLog("%s", cmdWithPrompt.c_str());
 
     if (CurrentTab == ConsoleTab::Debugger) {
-        CurrentTab = (CurrentLanguage == Language::Pi) ? ConsoleTab::Pi : ConsoleTab::Rho;
+        CurrentTab = (CurrentLanguage == Language::Pi) ? ConsoleTab::Pi
+                                                       : ConsoleTab::Rho;
     }
 
     try {
         std::string text = command_line;
-        
+
         // Add to history if not empty
         if (!text.empty()) {
             History[CurrentLanguage].push_back(text);
@@ -152,7 +153,7 @@ void ExecutorWindow::ExecCommand(const char* command_line) {
             } else {
                 // For Rho, determine if it's a statement or expression
                 Structure structure = Structure::Statement;
-                if (text.find('=') == std::string::npos && 
+                if (text.find('=') == std::string::npos &&
                     text.find("fun") == std::string::npos &&
                     text.find("if") == std::string::npos &&
                     text.find("for") == std::string::npos &&
@@ -179,4 +180,4 @@ void ExecutorWindow::ExecCommand(const char* command_line) {
     }
 }
 
-} // namespace kai
+}  // namespace kai

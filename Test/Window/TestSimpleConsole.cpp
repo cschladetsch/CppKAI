@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include <iostream>
 
 // Simple test to verify test framework is working

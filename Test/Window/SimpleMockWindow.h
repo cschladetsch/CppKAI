@@ -1,25 +1,17 @@
 #pragma once
 
+#include <cstdarg>
+#include <cstring>
+#include <map>
+#include <sstream>
 #include <string>
 #include <vector>
-#include <map>
-#include <cstring>
-#include <cstdarg>
-#include <sstream>
 
 namespace kai {
 
-enum class Language {
-    None = 0,
-    Pi = 1,
-    Rho = 2
-};
+enum class Language { None = 0, Pi = 1, Rho = 2 };
 
-enum class ConsoleTab {
-    Pi = 0,
-    Rho = 1,
-    Debugger = 2
-};
+enum class ConsoleTab { Pi = 0, Rho = 1, Debugger = 2 };
 
 struct SimpleMockWindow {
     char InputBuf[256];
@@ -43,7 +35,7 @@ struct SimpleMockWindow {
         IsDebugging = false;
         DebugStepCount = 0;
         WatchIndex = 0;
-        
+
         memset(InputBuf, 0, sizeof(InputBuf));
         memset(MultilineInputBuf, 0, sizeof(MultilineInputBuf));
 
@@ -114,17 +106,19 @@ struct SimpleMockWindow {
     }
 
     void ExecCommand(const char* command_line) {
-        std::string cmdWithPrompt = (CurrentLanguage == Language::Pi) ? "Pi> " : "Rho> ";
+        std::string cmdWithPrompt =
+            (CurrentLanguage == Language::Pi) ? "Pi> " : "Rho> ";
         cmdWithPrompt += command_line;
         AddLog("%s", cmdWithPrompt.c_str());
 
         if (CurrentTab == ConsoleTab::Debugger) {
-            CurrentTab = (CurrentLanguage == Language::Pi) ? ConsoleTab::Pi : ConsoleTab::Rho;
+            CurrentTab = (CurrentLanguage == Language::Pi) ? ConsoleTab::Pi
+                                                           : ConsoleTab::Rho;
         }
 
         // Simple mock execution
         std::string text = command_line;
-        
+
         // Add to history if not empty
         if (!text.empty()) {
             History[CurrentLanguage].push_back(text);
@@ -141,4 +135,4 @@ struct SimpleMockWindow {
     }
 };
 
-} // namespace kai
+}  // namespace kai

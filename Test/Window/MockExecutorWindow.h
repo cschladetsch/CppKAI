@@ -2,11 +2,12 @@
 
 #include <KAI/Console.h>
 #include <KAI/Core/Exception.h>
-#include <cstring>
+
 #include <cstdarg>
+#include <cstring>
 #include <map>
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace kai {
 
@@ -51,4 +52,4 @@ struct ExecutorWindow {
     void ExecCommand(const char* command_line);
 };
 
-} // namespace kai
+}  // namespace kai

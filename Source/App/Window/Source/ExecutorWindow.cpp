@@ -2,12 +2,12 @@
 #include <KAI/Core/Exception.h>
 #include <imgui.h>
 
+#include <cstring>
 #include <iomanip>
 #include <map>
 #include <sstream>
 #include <string>
 #include <vector>
-#include <cstring>
 
 using namespace std;
 
@@ -48,7 +48,7 @@ struct ExecutorWindow {
         HistoryPos = -1;
         CurrentLanguage = Language::Pi;
         CurrentTab = ConsoleTab::Pi;
-        
+
         // Initialize input buffers
         memset(InputBuf, 0, sizeof(InputBuf));
         memset(MultilineInputBuf, 0, sizeof(MultilineInputBuf));
@@ -373,7 +373,7 @@ struct ExecutorWindow {
 
         // Command-line
         bool reclaim_focus = false;
-        
+
         // Use different input methods for Pi and Rho
         if (CurrentLanguage == Language::Pi) {
             // Pi uses single-line input
@@ -383,7 +383,8 @@ struct ExecutorWindow {
             if (ImGui::InputText("Pi>", InputBuf, sizeof(InputBuf),
                                  input_text_flags)) {
                 char* input_end = InputBuf + strlen(InputBuf);
-                while (input_end > InputBuf && input_end[-1] == ' ') input_end--;
+                while (input_end > InputBuf && input_end[-1] == ' ')
+                    input_end--;
 
                 *input_end = 0;
 
@@ -402,48 +403,60 @@ struct ExecutorWindow {
             // Rho uses multi-line input
             ImGui::Text("Rho> (Multi-line input - Press button to execute)");
             ImGui::Separator();
-            
+
             // Create a child window for better layout control
-            ImGui::BeginChild("RhoInputArea", ImVec2(0, ImGui::GetTextLineHeightWithSpacing() * 7), false);
-            
-            ImGuiInputTextFlags multiline_flags = 
+            ImGui::BeginChild(
+                "RhoInputArea",
+                ImVec2(0, ImGui::GetTextLineHeightWithSpacing() * 7), false);
+
+            ImGuiInputTextFlags multiline_flags =
                 ImGuiInputTextFlags_AllowTabInput;
-            
+
             // Calculate width to leave room for Execute button
             float buttonWidth = 80.0f;
             float spacing = ImGui::GetStyle().ItemSpacing.x;
-            float inputWidth = ImGui::GetContentRegionAvailWidth() - buttonWidth - spacing;
-            
+            float inputWidth =
+                ImGui::GetContentRegionAvailWidth() - buttonWidth - spacing;
+
             // Add a helpful hint
-            ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), 
-                              "Enter Rho code below (supports functions, loops, etc.):");
-            
+            ImGui::TextColored(
+                ImVec4(0.7f, 0.7f, 0.7f, 1.0f),
+                "Enter Rho code below (supports functions, loops, etc.):");
+
             // Multi-line input field with a border
             ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
-            ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
-            
+            ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                                  ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
+
             ImGui::PushItemWidth(inputWidth);
-            ImGui::InputTextMultiline("##RhoInput", MultilineInputBuf, 
-                                     sizeof(MultilineInputBuf),
-                                     ImVec2(inputWidth, ImGui::GetTextLineHeightWithSpacing() * 5),
-                                     multiline_flags);
+            ImGui::InputTextMultiline(
+                "##RhoInput", MultilineInputBuf, sizeof(MultilineInputBuf),
+                ImVec2(inputWidth, ImGui::GetTextLineHeightWithSpacing() * 5),
+                multiline_flags);
             ImGui::PopItemWidth();
-            
+
             ImGui::PopStyleColor();
             ImGui::PopStyleVar();
-            
+
             // Execute button aligned to the right
             ImGui::SameLine();
             ImGui::BeginGroup();
-            
+
             // Style the execute button
-            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.6f, 0.2f, 1.0f));
-            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.7f, 0.3f, 1.0f));
-            ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.4f, 0.8f, 0.4f, 1.0f));
-            
-            if (ImGui::Button("Execute", ImVec2(buttonWidth, ImGui::GetTextLineHeightWithSpacing() * 2))) {
+            ImGui::PushStyleColor(ImGuiCol_Button,
+                                  ImVec4(0.2f, 0.6f, 0.2f, 1.0f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
+                                  ImVec4(0.3f, 0.7f, 0.3f, 1.0f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonActive,
+                                  ImVec4(0.4f, 0.8f, 0.4f, 1.0f));
+
+            if (ImGui::Button(
+                    "Execute",
+                    ImVec2(buttonWidth,
+                           ImGui::GetTextLineHeightWithSpacing() * 2))) {
                 char* input_end = MultilineInputBuf + strlen(MultilineInputBuf);
-                while (input_end > MultilineInputBuf && input_end[-1] == ' ') input_end--;
+                while (input_end > MultilineInputBuf && input_end[-1] == ' ')
+                    input_end--;
                 *input_end = 0;
 
                 if (MultilineInputBuf[0]) {
@@ -457,15 +470,15 @@ struct ExecutorWindow {
                 strcpy(MultilineInputBuf, "");
                 reclaim_focus = true;
             }
-            
+
             ImGui::PopStyleColor(3);
-            
+
             // Clear button below Execute
             if (ImGui::Button("Clear", ImVec2(buttonWidth, 0))) {
                 strcpy(MultilineInputBuf, "");
                 reclaim_focus = true;
             }
-            
+
             ImGui::EndGroup();
             ImGui::EndChild();
         }

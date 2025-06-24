@@ -1,9 +1,11 @@
 #pragma once
 
-#include "SimpleMockWindow.h"
 #include <KAI/Core/BuiltinTypes/String.h>
 #include <KAI/Core/StringStream.h>
+
 #include <sstream>
+
+#include "SimpleMockWindow.h"
 
 namespace kai {
 
@@ -11,16 +13,18 @@ namespace kai {
 struct NoConsoleWindow : public SimpleMockWindow {
     // Mock execution that simulates basic Pi/Rho behavior
     void ExecCommand(const char* command_line) {
-        std::string cmdWithPrompt = (CurrentLanguage == Language::Pi) ? "Pi> " : "Rho> ";
+        std::string cmdWithPrompt =
+            (CurrentLanguage == Language::Pi) ? "Pi> " : "Rho> ";
         cmdWithPrompt += command_line;
         AddLog("%s", cmdWithPrompt.c_str());
 
         if (CurrentTab == ConsoleTab::Debugger) {
-            CurrentTab = (CurrentLanguage == Language::Pi) ? ConsoleTab::Pi : ConsoleTab::Rho;
+            CurrentTab = (CurrentLanguage == Language::Pi) ? ConsoleTab::Pi
+                                                           : ConsoleTab::Rho;
         }
 
         std::string text = command_line;
-        
+
         // Add to history if not empty
         if (!text.empty()) {
             History[CurrentLanguage].push_back(text);
@@ -34,7 +38,7 @@ struct NoConsoleWindow : public SimpleMockWindow {
         }
     }
 
-private:
+   private:
     void ExecutePiCommand(const std::string& text) {
         // Simple Pi command simulation with more realistic output
         if (text == "2 3 +") {
@@ -94,12 +98,14 @@ private:
         } else if (text == "5 double") {
             AddLog("Stack:");
             AddLog("  10");
-        } else if (text == "{ dup 0 > { dup 1 - fact * } { drop 1 } ifelse } 'fact =") {
+        } else if (text ==
+                   "{ dup 0 > { dup 1 - fact * } { drop 1 } ifelse } 'fact =") {
             AddLog("Function 'fact' defined");
         } else if (text == "5 fact") {
             AddLog("Stack:");
             AddLog("  120");
-        } else if (text.find("'") != std::string::npos && text.find("=") != std::string::npos) {
+        } else if (text.find("'") != std::string::npos &&
+                   text.find("=") != std::string::npos) {
             // Variable assignment
             AddLog("Variable assigned");
         } else if (text == "clear") {
@@ -151,21 +157,26 @@ private:
         } else if (text == "add(5, 3)") {
             AddLog("Stack:");
             AddLog("  8");
-        } else if (text == "fun multiply_and_add(x, y, z) { result = x * y; result + z }") {
+        } else if (text ==
+                   "fun multiply_and_add(x, y, z) { result = x * y; result + z "
+                   "}") {
             AddLog("Function 'multiply_and_add' defined");
         } else if (text == "multiply_and_add(3, 4, 5)") {
             AddLog("Stack:");
             AddLog("  17");
-        } else if (text == "x = 5; if (x > 3) { \"greater\" } else { \"less\" }") {
+        } else if (text ==
+                   "x = 5; if (x > 3) { \"greater\" } else { \"less\" }") {
             AddLog("Stack:");
             AddLog("  \"greater\"");
         } else if (text.find("y = 10; if (y > 5)") != std::string::npos) {
             AddLog("Stack:");
             AddLog("  \"very big\"");
-        } else if (text.find("sum = 0; for (i = 1; i <= 5") != std::string::npos) {
+        } else if (text.find("sum = 0; for (i = 1; i <= 5") !=
+                   std::string::npos) {
             AddLog("Stack:");
             AddLog("  15");
-        } else if (text.find("count = 0; while (count < 3)") != std::string::npos) {
+        } else if (text.find("count = 0; while (count < 3)") !=
+                   std::string::npos) {
             AddLog("Stack:");
             AddLog("  3");
         } else if (text.find("if (x > 3)") != std::string::npos) {
@@ -173,7 +184,8 @@ private:
             AddLog("  \"greater\"");
         } else if (text == "undefined_variable") {
             AddLog("Error: undefined variable 'undefined_variable'");
-        } else if (text.find("=") != std::string::npos && text.find("fun") == std::string::npos) {
+        } else if (text.find("=") != std::string::npos &&
+                   text.find("fun") == std::string::npos) {
             // Variable assignment
             AddLog("Variable assigned");
         } else if (text.find("fun") == 0) {
@@ -188,13 +200,13 @@ private:
         } else if (text.find("while") != std::string::npos) {
             // Loop
             AddLog("Loop executed");
-        } else if (text.find("+") != std::string::npos || 
+        } else if (text.find("+") != std::string::npos ||
                    text.find("-") != std::string::npos ||
                    text.find("*") != std::string::npos ||
                    text.find("/") != std::string::npos) {
             // Arithmetic
             AddLog("Stack:");
-            AddLog("  50"); // Default result
+            AddLog("  50");  // Default result
         } else if (text == "clear") {
             ClearLog();
         } else if (text.find("[") != std::string::npos) {
@@ -208,4 +220,4 @@ private:
 // Typedef to use in tests
 using ExecutorWindow = NoConsoleWindow;
 
-} // namespace kai
+}  // namespace kai
