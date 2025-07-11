@@ -2,11 +2,11 @@ cmake_minimum_required(VERSION 3.6)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${dir}/Bin")
 
-set(apps Console Window) # NetworkTest
+set(apps Console Window) #
 
-# Only include NetworkGenerate if RakNet is enabled
+# Only include Network apps if RakNet is enabled
 if (KAI_BUILD_RAKNET)
-    list(APPEND apps NetworkGenerate)
+    list(APPEND apps NetworkTest NetworkGenerate)
 endif()
 
 foreach (app ${apps})

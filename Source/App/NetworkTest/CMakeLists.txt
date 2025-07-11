@@ -1,13 +1,12 @@
-project(NetworkTest)
+cmake_minimum_required(VERSION 3.6)
+set(name NetworkTest)
+project(${name})
 
 include_directories(${INCLUDE_HOME})
-include_directories(${EXTERNAL}/raknet)
-set(HOME ${APP_HOME}/NetworkTest)
-set(SOURCES ${HOME}/Source/*.cpp)
+include_directories(${EXTERNAL}/raknet/Source)
 
-file(GLOB_RECURSE sources ${SOURCES})
-add_executable(NetworkTest ${sources})
+set(source_path ${APP_HOME}/${name}/Source)
+add_executable(${name} ${source_path}/Main.cpp)
+target_link_libraries(${name} Network Core Executor PiLang RhoLang TauLang RakNet ImGui)
 
-target_link_libraries(NetworkTest Network Core Executor PiLang RhoLang TauLang RakNetLibStatic)
-
-set_property(TARGET NetworkTest PROPERTY FOLDER Apps)
+set_property(TARGET ${name} PROPERTY FOLDER Apps)
