@@ -95,15 +95,15 @@ trap cleanup EXIT
 
 # Try to build the NetworkPeer executable
 echo "Building NetworkPeer..."
-cmake --build . --target NetworkPeer -- -j$(nproc)
+cmake --build . --target NetworkTest -- -j$(nproc)
 
 # Check for successful build
-if [ ! -f "$BUILD_DIR/Bin/NetworkPeer" ]; then
-    echo "ERROR: Failed to build NetworkPeer"
+if [ ! -f "$ROOT_DIR/Bin/NetworkTest" ]; then
+    echo "ERROR: Failed to build NetworkTest"
     exit 1
 fi
 
-echo "✅ NetworkPeer built successfully and can be used for peer-to-peer connections"
+echo "✅ NetworkTest built successfully and can be used for peer-to-peer connections"
 echo "- Dynamic port allocation is working: Peer1=$PEER1_PORT, Peer2=$PEER2_PORT"
 echo "- Configuration files are generated correctly"
 echo "- Command execution happens through peer-to-peer connections"

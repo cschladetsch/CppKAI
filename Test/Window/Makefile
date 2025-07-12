@@ -189,54 +189,6 @@ TestWindow/fast:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Window/CMakeFiles/TestWindow.dir/build.make Test/Window/CMakeFiles/TestWindow.dir/build
 .PHONY : TestWindow/fast
 
-MockExecutorWindow.o: MockExecutorWindow.cpp.o
-.PHONY : MockExecutorWindow.o
-
-# target to build an object file
-MockExecutorWindow.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Window/CMakeFiles/TestWindow.dir/build.make Test/Window/CMakeFiles/TestWindow.dir/MockExecutorWindow.cpp.o
-.PHONY : MockExecutorWindow.cpp.o
-
-MockExecutorWindow.i: MockExecutorWindow.cpp.i
-.PHONY : MockExecutorWindow.i
-
-# target to preprocess a source file
-MockExecutorWindow.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Window/CMakeFiles/TestWindow.dir/build.make Test/Window/CMakeFiles/TestWindow.dir/MockExecutorWindow.cpp.i
-.PHONY : MockExecutorWindow.cpp.i
-
-MockExecutorWindow.s: MockExecutorWindow.cpp.s
-.PHONY : MockExecutorWindow.s
-
-# target to generate assembly for a file
-MockExecutorWindow.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Window/CMakeFiles/TestWindow.dir/build.make Test/Window/CMakeFiles/TestWindow.dir/MockExecutorWindow.cpp.s
-.PHONY : MockExecutorWindow.cpp.s
-
-TestConsoleInit.o: TestConsoleInit.cpp.o
-.PHONY : TestConsoleInit.o
-
-# target to build an object file
-TestConsoleInit.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Window/CMakeFiles/TestWindow.dir/build.make Test/Window/CMakeFiles/TestWindow.dir/TestConsoleInit.cpp.o
-.PHONY : TestConsoleInit.cpp.o
-
-TestConsoleInit.i: TestConsoleInit.cpp.i
-.PHONY : TestConsoleInit.i
-
-# target to preprocess a source file
-TestConsoleInit.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Window/CMakeFiles/TestWindow.dir/build.make Test/Window/CMakeFiles/TestWindow.dir/TestConsoleInit.cpp.i
-.PHONY : TestConsoleInit.cpp.i
-
-TestConsoleInit.s: TestConsoleInit.cpp.s
-.PHONY : TestConsoleInit.s
-
-# target to generate assembly for a file
-TestConsoleInit.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Window/CMakeFiles/TestWindow.dir/build.make Test/Window/CMakeFiles/TestWindow.dir/TestConsoleInit.cpp.s
-.PHONY : TestConsoleInit.cpp.s
-
 TestExecutorWindow.o: TestExecutorWindow.cpp.o
 .PHONY : TestExecutorWindow.o
 
@@ -260,30 +212,6 @@ TestExecutorWindow.s: TestExecutorWindow.cpp.s
 TestExecutorWindow.cpp.s:
 	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Window/CMakeFiles/TestWindow.dir/build.make Test/Window/CMakeFiles/TestWindow.dir/TestExecutorWindow.cpp.s
 .PHONY : TestExecutorWindow.cpp.s
-
-TestExecutorWindowSimple.o: TestExecutorWindowSimple.cpp.o
-.PHONY : TestExecutorWindowSimple.o
-
-# target to build an object file
-TestExecutorWindowSimple.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Window/CMakeFiles/TestWindow.dir/build.make Test/Window/CMakeFiles/TestWindow.dir/TestExecutorWindowSimple.cpp.o
-.PHONY : TestExecutorWindowSimple.cpp.o
-
-TestExecutorWindowSimple.i: TestExecutorWindowSimple.cpp.i
-.PHONY : TestExecutorWindowSimple.i
-
-# target to preprocess a source file
-TestExecutorWindowSimple.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Window/CMakeFiles/TestWindow.dir/build.make Test/Window/CMakeFiles/TestWindow.dir/TestExecutorWindowSimple.cpp.i
-.PHONY : TestExecutorWindowSimple.cpp.i
-
-TestExecutorWindowSimple.s: TestExecutorWindowSimple.cpp.s
-.PHONY : TestExecutorWindowSimple.s
-
-# target to generate assembly for a file
-TestExecutorWindowSimple.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Window/CMakeFiles/TestWindow.dir/build.make Test/Window/CMakeFiles/TestWindow.dir/TestExecutorWindowSimple.cpp.s
-.PHONY : TestExecutorWindowSimple.cpp.s
 
 TestSimpleMock.o: TestSimpleMock.cpp.o
 .PHONY : TestSimpleMock.o
@@ -371,18 +299,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... TestSimpleMock"
 	@echo "... TestWindow"
-	@echo "... MockExecutorWindow.o"
-	@echo "... MockExecutorWindow.i"
-	@echo "... MockExecutorWindow.s"
-	@echo "... TestConsoleInit.o"
-	@echo "... TestConsoleInit.i"
-	@echo "... TestConsoleInit.s"
 	@echo "... TestExecutorWindow.o"
 	@echo "... TestExecutorWindow.i"
 	@echo "... TestExecutorWindow.s"
-	@echo "... TestExecutorWindowSimple.o"
-	@echo "... TestExecutorWindowSimple.i"
-	@echo "... TestExecutorWindowSimple.s"
 	@echo "... TestSimpleMock.o"
 	@echo "... TestSimpleMock.i"
 	@echo "... TestSimpleMock.s"

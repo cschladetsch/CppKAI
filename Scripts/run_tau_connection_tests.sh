@@ -29,7 +29,7 @@ make TestTau -j$(nproc)
 echo "Running Tau connection tests..."
 
 # The BIN_HOME variable in CMake is set to /home/xian/Bin
-TEST_EXECUTABLE="/home/xian/Bin/Test/TestTau"
+TEST_EXECUTABLE="$ROOT_DIR/Bin/Test/TestTau"
 
 # Check if the executable exists at the default location
 if [ -f "$TEST_EXECUTABLE" ]; then

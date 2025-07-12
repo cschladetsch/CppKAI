@@ -24,20 +24,13 @@ fi
 
 echo "Building the minimal console applications..."
 # Build the MinimalServer and MinimalClient applications first
-cmake --build . --target MinimalServer MinimalClient
-
-echo "Building Tau language library..."
-cmake --build . --target TauLang
-
-echo "Building network test executables..."
-# First make sure any necessary dependencies are built
-cmake --build . --target Test_Network
+cmake --build . --target TestNetwork
 
 echo "Running network tests..."
-if [ -f "bin/Test/Test_Network" ]; then
-    ./bin/Test/Test_Network --gtest_filter="*Connection*"
+if [ -f "$ROOT_DIR/Bin/Test/TestNetwork" ]; then
+    "$ROOT_DIR/Bin/Test/TestNetwork" --gtest_filter="*Connection*"
 else
-    echo "WARNING: Test_Network executable not found."
+    echo "WARNING: TestNetwork executable not found."
 fi
 
 echo "Building Tau connection tests..."
@@ -45,8 +38,8 @@ echo "Building Tau connection tests..."
 cmake --build . --target TestTau
 
 echo "Running Tau connection tests..."
-if [ -f "bin/Test/TestTau" ]; then
-    ./bin/Test/TestTau --gtest_filter="TestNetworkConnection.*"
+if [ -f "$ROOT_DIR/Bin/Test/TestTau" ]; then
+    "$ROOT_DIR/Bin/Test/TestTau" --gtest_filter="TestNetworkConnection.*"
 else
     echo "WARNING: TestTau executable not found."
 fi

@@ -43,6 +43,11 @@ add_executable(TestWindow
     TestWindowPerformance.cpp
 )
 
+# Set output directory for TestWindow
+set_target_properties(TestWindow PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Bin/Test
+)
+
 # Link libraries (using the same order as other tests)
 target_link_libraries(TestWindow
     PiLang

@@ -4,5 +4,5 @@
 # 
 # This file includes the relevant testing commands required for 
 # testing this directory and lists subdirectories to be tested as well.
-add_test(TestWindow "/Bin/TestWindow")
-set_tests_properties(TestWindow PROPERTIES  _BACKTRACE_TRIPLES "/home/xian/local/KAI/Test/Window/CMakeLists.txt;58;add_test;/home/xian/local/KAI/Test/Window/CMakeLists.txt;0;")
+add_test(TestWindow "/home/xian/local/KAI/Bin/Test/TestWindow")
+set_tests_properties(TestWindow PROPERTIES  _BACKTRACE_TRIPLES "/home/xian/local/KAI/Test/Window/CMakeLists.txt;65;add_test;/home/xian/local/KAI/Test/Window/CMakeLists.txt;0;")
