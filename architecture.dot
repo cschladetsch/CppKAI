@@ -1,0 +1,204 @@
+digraph KAI_Architecture {
+    rankdir=TB;
+    compound=true;
+    nodesep=0.5;
+    ranksep=1.0;
+    bgcolor="white";
+    
+    node [shape=box, style=filled, fontname="Arial", fontsize=10];
+    
+    // Application Layer
+    subgraph cluster_app {
+        label="Application Layer";
+        style=filled;
+        color=lightgray;
+        fontsize=12;
+        
+        Console [fillcolor=lightblue, label="Console\\n(REPL)"];
+        Window [fillcolor=lightblue, label="Window\\n(GUI/ImGui)"];
+        NetworkTest [fillcolor=lightblue, label="NetworkTest"];
+        NetworkGenerate [fillcolor=lightblue, label="NetworkGenerate"];
+    }
+    
+    // Language Processing Layer
+    subgraph cluster_lang {
+        label="Language Processing Layer";
+        style=filled;
+        color=lightgreen;
+        fontsize=12;
+        
+        Rho [fillcolor=lightyellow, label="Rho\\n(Python-like)"];
+        Pi [fillcolor=lightyellow, label="Pi\\n(Assembly-like)"];
+        Tau [fillcolor=lightyellow, label="Tau\\n(IDL)"];
+        HLSL [fillcolor=lightyellow, label="HLSL/Lisp"];
+        
+        Lexer [fillcolor=lightcyan, label="Lexer"];
+        Parser [fillcolor=lightcyan, label="Parser"];
+        AST [fillcolor=lightcyan, label="AST Nodes"];
+        Translator [fillcolor=lightcyan, label="Translator"];
+    }
+    
+    // Execution Layer
+    subgraph cluster_exec {
+        label="Execution Layer";
+        style=filled;
+        color=lightcoral;
+        fontsize=12;
+        
+        Executor [fillcolor=mistyrose, label="Executor\\n(Stack VM)"];
+        Continuation [fillcolor=mistyrose, label="Continuation\\n(Code Objects)"];
+        Operation [fillcolor=mistyrose, label="Operation"];
+        Stack [fillcolor=mistyrose, label="Stack"];
+        Compiler [fillcolor=mistyrose, label="Compiler"];
+    }
+    
+    // Network Layer
+    subgraph cluster_network {
+        label="Network Layer";
+        style=filled;
+        color=lightsteelblue;
+        fontsize=12;
+        
+        NetworkNode [fillcolor=lightcyan, label="Node\\n(P2P Peer)"];
+        ConnectionManager [fillcolor=lightcyan, label="ConnectionManager"];
+        PeerDiscovery [fillcolor=lightcyan, label="PeerDiscovery"];
+        ProxyAgent [fillcolor=lightcyan, label="Proxy/Agent\\n(RPC)"];
+        RakNet [fillcolor=lightcyan, label="RakNet\\n(UDP)"];
+    }
+    
+    // Object System Layer
+    subgraph cluster_object {
+        label="Object System Layer";
+        style=filled;
+        color=lightgoldenrodyellow;
+        fontsize=12;
+        
+        Registry [fillcolor=wheat, label="Registry\\n(Object Factory)"];
+        Object [fillcolor=wheat, label="Object\\n(Universal Wrapper)"];
+        Storage [fillcolor=wheat, label="Storage\\n(Memory Mgmt)"];
+        ClassBase [fillcolor=wheat, label="ClassBase\\n(Reflection)"];
+        Value [fillcolor=wheat, label="Value&lt;T&gt;\\n(Typed References)"];
+    }
+    
+    // Built-in Types
+    subgraph cluster_types {
+        label="Built-in Types";
+        style=filled;
+        color=lavender;
+        fontsize=12;
+        
+        Array [fillcolor=thistle, label="Array"];
+        Map [fillcolor=thistle, label="Map"];
+        String [fillcolor=thistle, label="String"];
+        Number [fillcolor=thistle, label="Number"];
+        Function [fillcolor=thistle, label="Function"];
+    }
+    
+    // Memory Management Layer
+    subgraph cluster_memory {
+        label="Memory Management Layer";
+        style=filled;
+        color=lightpink;
+        fontsize=12;
+        
+        GC [fillcolor=pink, label="Garbage Collector\\n(Tri-color)"];
+        SmartPointers [fillcolor=pink, label="Smart Pointers"];
+        BasePointer [fillcolor=pink, label="BasePointer"];
+    }
+    
+    // Cross-cutting Concerns
+    subgraph cluster_crosscut {
+        label="Cross-cutting Concerns";
+        style=filled;
+        color=lightseagreen;
+        fontsize=12;
+        
+        Serialization [fillcolor=paleturquoise, label="Serialization\\n(BinaryStream)"];
+        Logging [fillcolor=paleturquoise, label="Logging"];
+        Config [fillcolor=paleturquoise, label="Configuration"];
+        Testing [fillcolor=paleturquoise, label="Testing"];
+    }
+    
+    // External Dependencies
+    subgraph cluster_external {
+        label="External Dependencies";
+        style=filled;
+        color=lightgray;
+        fontsize=12;
+        
+        Boost [fillcolor=lightgray, label="Boost"];
+        GoogleTest [fillcolor=lightgray, label="GoogleTest"];
+        ImGui [fillcolor=lightgray, label="ImGui"];
+        CMake [fillcolor=lightgray, label="CMake"];
+    }
+    
+    // Language processing flow
+    Rho -> Lexer;
+    Pi -> Lexer;
+    Tau -> Lexer;
+    HLSL -> Lexer;
+    
+    Lexer -> Parser;
+    Parser -> AST;
+    AST -> Translator;
+    Translator -> Compiler;
+    
+    // Execution flow
+    Compiler -> Continuation;
+    Continuation -> Executor;
+    Executor -> Stack;
+    Executor -> Operation;
+    
+    // Object system connections
+    Registry -> Object;
+    Object -> Storage;
+    Object -> ClassBase;
+    Object -> Value;
+    
+    // Type system connections
+    Registry -> Array;
+    Registry -> Map;
+    Registry -> String;
+    Registry -> Number;
+    Registry -> Function;
+    
+    // Memory management connections
+    Storage -> GC;
+    Storage -> SmartPointers;
+    SmartPointers -> BasePointer;
+    
+    // Network connections
+    NetworkNode -> ConnectionManager;
+    NetworkNode -> PeerDiscovery;
+    NetworkNode -> ProxyAgent;
+    ConnectionManager -> RakNet;
+    ProxyAgent -> Serialization;
+    
+    // Application connections
+    Console -> Executor;
+    Window -> Executor;
+    NetworkTest -> NetworkNode;
+    NetworkGenerate -> Tau;
+    
+    // Cross-cutting connections
+    Serialization -> Object;
+    Logging -> NetworkNode;
+    Logging -> Executor;
+    Config -> Console;
+    Config -> Window;
+    Config -> NetworkTest;
+    Testing -> Executor;
+    Testing -> NetworkNode;
+    Testing -> Registry;
+    
+    // External dependencies
+    Window -> ImGui;
+    NetworkNode -> Boost;
+    Testing -> GoogleTest;
+    
+    // Data flow annotations
+    edge [style=dashed, color=blue];
+    Rho -> Pi [label="compiles to", fontsize=8];
+    Pi -> Executor [label="executes on", fontsize=8];
+    Tau -> ProxyAgent [label="generates", fontsize=8];
+}
