@@ -5,7 +5,7 @@
 ```mermaid
 graph TB
     subgraph "Rho Source Code"
-        SRC[Rho Source<br/>fun add(a, b) {<br/>  return a + b<br/>}<br/>result = add(5, 3)]
+        SRC["Rho Source<br/>fun add(a, b)<br/>return a + b<br/>result = add(5, 3)"]
     end
     
     subgraph "Lexical Analysis"
