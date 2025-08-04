@@ -194,8 +194,8 @@ graph TB
 graph LR
     subgraph "Rho Source with Scoping"
         GLOBAL[Global Scope<br/>x = 10]
-        FUNC_SCOPE[Function Scope<br/>fun test(y) {<br/>  local = x + y<br/>  return local<br/>}]
-        BLOCK_SCOPE[Block Scope<br/>if (condition) {<br/>  temp = 5<br/>}]
+        FUNC_SCOPE["Function Scope<br/>fun test(y)<br/>  local = x + y<br/>  return local"]
+        BLOCK_SCOPE["Block Scope<br/>if condition<br/>  temp = 5"]
     end
     
     subgraph "Scope Translation"
@@ -230,9 +230,9 @@ graph LR
 ```mermaid
 graph TB
     subgraph "Rho Code with Pi Blocks"
-        RHO_CODE[Rho Code<br/>result = 5 + pi{ 2 3 + }]
-        PI_INLINE[Inline Pi: pi{ 2 3 + }]
-        PI_BLOCK[Pi Block:<br/>pi{<br/>  stack operations<br/>  'var #<br/>}]
+        RHO_CODE["Rho Code<br/>result = 5 + pi block 2 3 +"]
+        PI_INLINE["Inline Pi: pi block 2 3 +"]
+        PI_BLOCK["Pi Block:<br/>pi block<br/>  stack operations<br/>  'var #"]
     end
     
     subgraph "Translation Process"
