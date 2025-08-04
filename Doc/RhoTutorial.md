@@ -233,6 +233,40 @@ doubled = map(numbers, fun(x) { return x * 2 })
 
 ## Pi Integration
 
+### Rho-Pi Language Integration
+
+```mermaid
+graph LR
+    subgraph "Rho Code"
+        RHO[result = 5 + pi{ 2 3 + }]
+        RHO_PART[Rho: result = 5 +]
+        PI_PART[Pi: { 2 3 + }]
+    end
+    
+    subgraph "Translation"
+        RHO_TRANS[5 push]
+        PI_TRANS[2 3 +]
+        COMBINE[Addition]
+    end
+    
+    subgraph "Execution"
+        STACK1[Stack: 5]
+        STACK2[Stack: 5, 5]
+        RESULT[Result: 10]
+    end
+    
+    RHO_PART --> RHO_TRANS
+    PI_PART --> PI_TRANS
+    RHO_TRANS --> STACK1
+    PI_TRANS --> STACK1
+    STACK1 --> STACK2
+    COMBINE --> RESULT
+    
+    style RHO_PART fill:#e8f5e8
+    style PI_PART fill:#9c27b0
+    style RESULT fill:#4caf50
+```
+
 One of Rho's most powerful features is its seamless integration with Pi code:
 
 ```rho

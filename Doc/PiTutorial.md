@@ -53,6 +53,50 @@ Pi primarily manipulates two stacks:
 1. **Data stack**: Holds values being operated on
 2. **Context stack**: Controls program flow (continuations, functions, etc.)
 
+### Pi Two-Stack Architecture
+
+```mermaid
+graph LR
+    subgraph "Pi Execution Environment"
+        subgraph "Data Stack"
+            DS3[Value 3]
+            DS2[Value 2] 
+            DS1[Value 1]
+            DS_TOP[← Top]
+        end
+        
+        subgraph "Context Stack"
+            CS3[Continuation 3]
+            CS2[Continuation 2]
+            CS1[Current Context]
+            CS_TOP[← Top]
+        end
+        
+        subgraph "Operations"
+            PUSH[Push Value]
+            POP[Pop Value]
+            DUP[Duplicate]
+            SWAP[Swap]
+            EXEC[Execute &]
+            STORE[Store #]
+            FETCH[Fetch @]
+        end
+        
+        PUSH --> DS_TOP
+        POP --> DS_TOP
+        DUP --> DS_TOP
+        SWAP --> DS_TOP
+        EXEC --> CS_TOP
+        STORE --> DS_TOP
+        FETCH --> DS_TOP
+    end
+    
+    style DS_TOP fill:#ff9800
+    style CS_TOP fill:#9c27b0
+    style PUSH fill:#4caf50
+    style EXEC fill:#2196f3
+```
+
 ### Stack Manipulation Commands
 
 ```pi
@@ -76,6 +120,52 @@ depth  // Stack is now: 1 3 2 3 4
 
 // Clear the entire stack
 clear  // Stack is now empty
+```
+
+### Stack Operation Visual Example
+
+```mermaid
+graph TD
+    subgraph "Step 1: Push values"
+        A1[1]
+        A2[2] 
+        A3[3 ← top]
+        A1 --- A2 --- A3
+    end
+    
+    subgraph "Step 2: dup (duplicate top)"
+        B1[1]
+        B2[2]
+        B3[3]
+        B4[3 ← top]
+        B1 --- B2 --- B3 --- B4
+    end
+    
+    subgraph "Step 3: swap (exchange top two)"
+        C1[1]
+        C2[2]
+        C3[3 ← top]
+        C4[3]
+        C1 --- C2 --- C3 --- C4
+    end
+    
+    subgraph "Step 4: over (copy second to top)"
+        D1[1]
+        D2[2]
+        D3[3]
+        D4[3]
+        D5[3 ← top]
+        D1 --- D2 --- D3 --- D4 --- D5
+    end
+    
+    A3 -->|dup| B4
+    B4 -->|swap| C3
+    C4 -->|over| D5
+    
+    style A3 fill:#ff9800
+    style B4 fill:#ff9800
+    style C3 fill:#ff9800
+    style D5 fill:#ff9800
 ```
 
 ## Arithmetic Operations
@@ -159,6 +249,42 @@ Continuations are a powerful concept in Pi, representing code to be executed:
 
 // Retrieve and execute the continuation
 'multiply @ &  // Executes the stored continuation, resulting in 30
+```
+
+### Continuation Execution Flow
+
+```mermaid
+sequenceDiagram
+    participant User as User Input
+    participant DataStack as Data Stack
+    participant ContextStack as Context Stack
+    participant Registry as Registry
+    participant Executor as Executor
+    
+    User->>DataStack: { 2 3 + }
+    Note over DataStack: Continuation object created
+    
+    User->>Executor: &
+    Executor->>DataStack: Pop continuation
+    Executor->>ContextStack: Push current context
+    Executor->>Executor: Execute: 2 3 +
+    Executor->>DataStack: Push 2
+    Executor->>DataStack: Push 3
+    Executor->>DataStack: Pop 3, Pop 2, Push 5
+    Executor->>ContextStack: Pop context
+    Executor->>User: Result: 5
+    
+    Note over User,Executor: Store and reuse continuation
+    User->>DataStack: { 5 6 * }
+    User->>DataStack: 'multiply
+    User->>Registry: # (store)
+    Registry->>Registry: Store continuation as 'multiply'
+    
+    User->>DataStack: 'multiply
+    User->>Registry: @ (fetch)
+    Registry->>DataStack: Return continuation
+    User->>Executor: &
+    Executor->>User: Result: 30
 ```
 
 ### Continuation Control Operations
@@ -288,6 +414,58 @@ Here's an elegant example that computes Fibonacci numbers using Pi:
 
 // Calculate the 10th Fibonacci number
 10 'fib @ &  // Result: 55
+```
+
+### Fibonacci Recursion Flow
+
+```mermaid
+graph TD
+    A[fib 5] --> B{n <= 1?}
+    B -->|No| C[fib 4]
+    B -->|No| D[fib 3]
+    
+    C --> E{n <= 1?}
+    E -->|No| F[fib 3]
+    E -->|No| G[fib 2]
+    
+    D --> H{n <= 1?}
+    H -->|No| I[fib 2]
+    H -->|No| J[fib 1]
+    
+    F --> K{n <= 1?}
+    K -->|No| L[fib 2]
+    K -->|No| M[fib 1]
+    
+    I --> N{n <= 1?}
+    N -->|No| O[fib 1]
+    N -->|No| P[fib 0]
+    
+    G --> Q{n <= 1?}
+    Q -->|No| R[fib 1]
+    Q -->|No| S[fib 0]
+    
+    L --> T{n <= 1?}
+    T -->|No| U[fib 1]
+    T -->|No| V[fib 0]
+    
+    J -->|Yes| W[1]
+    M -->|Yes| X[1]
+    O -->|Yes| Y[1]
+    P -->|Yes| Z[0]
+    R -->|Yes| AA[1]
+    S -->|Yes| BB[0]
+    U -->|Yes| CC[1]
+    V -->|Yes| DD[0]
+    
+    style A fill:#4caf50
+    style W fill:#ff9800
+    style X fill:#ff9800
+    style Y fill:#ff9800
+    style Z fill:#ff9800
+    style AA fill:#ff9800
+    style BB fill:#ff9800
+    style CC fill:#ff9800
+    style DD fill:#ff9800
 ```
 
 An optimized version using memoization to avoid redundant calculations:
