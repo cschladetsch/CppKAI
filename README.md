@@ -20,17 +20,44 @@ Objects and *compute* can be distributed across Nodes in a Domain.
 
 ![Window](Images/Window.png)
 
-## Documentation 
+## Documentation & Architecture
 
-**[Documentation Guide](Doc/Documentation.md)** - Start here for organized navigation of all documentation
+### 📖 **Main Documentation Hub**
+**[Documentation Guide](Doc/Documentation.md)** - Start here for organized navigation of all documentation | **[Doc/ README](Doc/README.md)**
 
-- **Building**: [Build Guide](Doc/OUT_OF_SOURCE_BUILD.md) | [Installation](Doc/Install.md)
-- **Languages**: [Pi](Doc/PiTutorial.md) | [Rho](Doc/RhoTutorial.md) | [Tau](Doc/TauTutorial.md)
-- **Networking**: [Overview](Doc/Networking.md) | [Architecture](Doc/NetworkArchitecture.md)
-- **Testing**: [Test Guide](Doc/Test.md) | [Connection Testing](Doc/ConnectionTesting.md)
-- [Tau Code Generation](Doc/TauCodeGeneration.md) - New detailed guide for code generation
+### 🏗️ **System Architecture** 
+**[Architecture Resources](resources/README.md)** - Comprehensive system architecture documentation and diagrams
+- **[Overall System Architecture](resources/diagrams/overall-system-architecture.md)** - High-level component relationships and data flow
+- **[Language System Architecture](resources/diagrams/language-system-architecture.md)** - Pi/Rho/Tau translation pipeline and interoperability
+- **[Console Networking Architecture](resources/diagrams/console-networking-architecture.md)** - P2P communication model and protocols
+- **[Build System Architecture](resources/diagrams/build-system-architecture.md)** - CMake structure and dependencies
+- **[Test System Architecture](resources/diagrams/test-system-architecture.md)** - Test infrastructure and validation workflows
+- **[System Overview](resources/architecture/system-overview.md)** - Complete architectural analysis with statistics
 
-### Examples
+### 🔧 **Development Guides**
+- **Building**: [Build Guide](Doc/OUT_OF_SOURCE_BUILD.md) | [Installation](Doc/Install.md) | [CMake Guide](CMake/README.md)
+- **Languages**: [Pi](Doc/PiTutorial.md) | [Rho](Doc/RhoTutorial.md) | [Tau](Doc/TauTutorial.md) | [Language System](Include/KAI/Language/README.md)
+- **Networking**: [Overview](Doc/Networking.md) | [Architecture](Doc/NetworkArchitecture.md) | [Console Networking](CONSOLE_NETWORKING.md)
+- **Testing**: [Test Guide](Doc/Test.md) | [Connection Testing](Doc/ConnectionTesting.md) | [Test Overview](Test/README.md)
+- **Code Generation**: [Tau Code Generation](Doc/TauCodeGeneration.md) | [Tau Generate](Include/KAI/Language/Tau/Generate/README.md)
+
+### 🎯 **Component Documentation**
+- **Core System**: [Core README](Include/KAI/Core/README.md) | [Registry](Include/KAI/Core/Object/README.md) | [Config](Include/KAI/Core/Config/README.md)
+- **Executor**: [Executor README](Include/KAI/Executor/README.md) - Virtual machine and execution engine
+- **Console**: [Console README](Include/KAI/Console/README.md) - Interactive shell with networking
+- **Languages**: [Common](Include/KAI/Language/Common/README.md) | [Pi](Include/KAI/Language/Pi/README.md) | [Rho](Include/KAI/Language/Rho/README.md) | [Tau](Include/KAI/Language/Tau/README.md)
+- **Platform Support**: [Platforms](Include/KAI/Platform/README.md) | [Linux](Include/KAI/Platform/Linux/README.md) | [Windows](Include/KAI/Platform/Windows/README.md) | [macOS](Include/KAI/Platform/OSX/README.md)
+
+### 🧪 **Testing & Examples**
+- **Test Suites**: [Test Overview](Test/README.md) | [Language Tests](Test/Language/README.md) | [Console Tests](Test/Console/README.md) | [Network Tests](Test/Network/README.md)
+- **Example Code**: [Examples](Examples/README.md) - Sample applications and use cases
+- **Scripts**: [Scripts](Scripts/README.md) - Build and demo scripts
+
+### 📦 **External Dependencies**
+- **External Libraries**: [Ext/](Ext/README.md) - Third-party dependencies and libraries
+- **Build System**: [CMake](CMake/README.md) - Build configuration and macros
+
+### 🚀 **Quick Start Examples**
 
 - Run `./Scripts/run_rho_demo.sh` for a comprehensive demo of Rho language features
 - Run `./Scripts/calc_test.sh` for a demonstration of network calculation
@@ -372,3 +399,55 @@ This architecture enables clean separation between:
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 📂 Complete Project Navigation
+
+### 🏗️ **Architecture & Design**
+- **[📋 Architecture Overview](resources/README.md)** - Complete system architecture with professional diagrams
+- **[📊 System Diagrams](resources/diagrams/)** - Visual architecture documentation using Mermaid
+- **[📈 System Analysis](resources/architecture/system-overview.md)** - Detailed technical analysis and statistics
+
+### 📚 **Core Documentation** (71 README files)
+- **[📖 Main Documentation](Doc/README.md)** - Central documentation hub
+- **[📝 All Documentation Files](Doc/)** - Tutorials, guides, and technical references
+
+### 🔧 **System Components**
+- **[⚙️ Core System](Include/KAI/Core/README.md)** - Registry, objects, memory management
+- **[🚀 Executor](Include/KAI/Executor/README.md)** - Virtual machine and execution engine  
+- **[💬 Console](Include/KAI/Console/README.md)** - Interactive shell with networking
+- **[🌐 Language System](Include/KAI/Language/README.md)** - Pi, Rho, Tau implementation
+- **[📡 Networking](CONSOLE_NETWORKING.md)** - P2P console communication
+
+### 💾 **Source Code Structure**
+- **[📁 Include Headers](Include/KAI/README.md)** - All public API headers and interfaces
+- **[📁 Source Code](Source/README.md)** - Implementation files and libraries
+- **[📁 Applications](Source/App/README.md)** - Console, Window, and network applications
+
+### 🧪 **Testing & Quality**
+- **[🔬 Test Overview](Test/README.md)** - Complete test suite documentation
+- **[📊 Language Tests](Test/Language/README.md)** - Pi, Rho, Tau validation
+- **[🌐 Network Tests](Test/Network/README.md)** - P2P communication testing
+- **[📜 Scripts](Scripts/README.md)** - Build, test, and demo scripts
+
+### 🛠️ **Development Tools**
+- **[🔨 Build System](CMake/README.md)** - CMake configuration and build tools
+- **[📦 Dependencies](Ext/README.md)** - External libraries and third-party code
+- **[🎯 Examples](Examples/README.md)** - Sample code and usage examples
+
+### 🖥️ **Platform Support**
+- **[🖥️ All Platforms](Include/KAI/Platform/README.md)** - Cross-platform support overview
+- **[🐧 Linux](Include/KAI/Platform/Linux/README.md)** - Linux-specific documentation
+- **[🪟 Windows](Include/KAI/Platform/Windows/README.md)** - Windows support and configuration
+- **[🍎 macOS](Include/KAI/Platform/OSX/README.md)** - macOS development setup
+
+### 📊 **Project Statistics**
+- **629** C++ source files
+- **71** README documentation files  
+- **200+** comprehensive test cases
+- **5** complete architecture diagram sets
+- **3** integrated programming languages (Pi/Rho/Tau)
+- **Full** console-to-console networking implementation
+
+**Start exploring**: Begin with the **[Documentation Guide](Doc/Documentation.md)** or dive into **[System Architecture](resources/README.md)** for technical details.
