@@ -2,11 +2,14 @@
 
 #include <algorithm>
 #include <cctype>
+#include <chrono>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
+#include <random>
 #include <regex>
 #include <sstream>
+#include <thread>
 
 #ifdef __linux__
 #include <termios.h>
@@ -25,17 +28,28 @@ KAI_BEGIN
 
 Console::Console() {
     alloc = make_shared<Memory::StandardAllocator>();
+    peer_ = nullptr;
+    networkingEnabled_ = false;
+    networkRunning_ = false;
+    listenPort_ = 14600;
+    consoleId_ = GenerateConsoleId();
     Create();
     LoadHistory();
 }
 
 Console::Console(shared_ptr<Memory::IAllocator> alloc) {
     this->alloc = alloc;
+    peer_ = nullptr;
+    networkingEnabled_ = false;
+    networkRunning_ = false;
+    listenPort_ = 14600;
+    consoleId_ = GenerateConsoleId();
     Create();
     LoadHistory();
 }
 
 Console::~Console() {
+    StopNetworking();
     SaveHistory();
     alloc->DeAllocate(reg_);
 }
@@ -1344,6 +1358,15 @@ int Console::Run() {
                         continue;
                     }
 
+                    // Check for network commands
+                    if (!text.empty() && text[0] == '/') {
+                        String result = ProcessNetworkCommand(String(text));
+                        if (!result.Empty()) {
+                            cout << result.c_str() << endl;
+                        }
+                        continue;
+                    }
+
                     // Check for zsh-like history commands first
                     std::string processedText = text;
 
@@ -1655,7 +1678,9 @@ void Console::ShowHelp(const std::string &topic) const {
              << rang::fg::cyan << "  help shell      " << rang::fg::reset
              << "- Shell integration\n"
              << rang::fg::cyan << "  help languages  " << rang::fg::reset
-             << "- Pi and Rho language features\n\n"
+             << "- Pi and Rho language features\n"
+             << rang::fg::cyan << "  help network    " << rang::fg::reset
+             << "- Network console commands\n\n"
              << "Language-specific help:\n"
              << rang::fg::cyan << "  help pi         " << rang::fg::reset
              << "- Pi language reference\n"
@@ -1692,6 +1717,8 @@ void Console::ShowHelp(const std::string &topic) const {
              << "  C-like syntax with advanced features\n"
              << "  Example: x = 2 + 3;\n\n"
              << "Switch languages with: pi or rho\n";
+    } else if (topic == "network") {
+        ShowNetworkHelp();
     } else if (topic == "pi") {
         ShowLanguageHelp("pi");
     } else if (topic == "rho") {
@@ -1870,6 +1897,517 @@ void Console::AddToHistory(const std::string &command) {
             commandHistory.begin(),
             commandHistory.begin() + (commandHistory.size() - maxHistorySize));
     }
+}
+
+// Network functionality implementation
+bool Console::StartNetworking(int listenPort) {
+    if (networkingEnabled_) {
+        cout << rang::fg::yellow << "Networking already enabled" << rang::fg::reset << endl;
+        return true;
+    }
+    
+    listenPort_ = listenPort;
+    peer_ = RakNet::RakPeerInterface::GetInstance();
+    if (!peer_) {
+        cerr << rang::fg::red << "Failed to create RakNet peer interface" << rang::fg::reset << endl;
+        return false;
+    }
+    
+    cout << rang::fg::cyan << "Starting network console on port " << listenPort_ 
+         << rang::fg::reset << endl;
+    
+    RakNet::SocketDescriptor sd(listenPort_, nullptr);
+    RakNet::StartupResult result = peer_->Startup(32, &sd, 1);
+    
+    if (result != RakNet::RAKNET_STARTED) {
+        cerr << rang::fg::red << "Failed to start network listener, error: " 
+             << result << rang::fg::reset << endl;
+        RakNet::RakPeerInterface::DestroyInstance(peer_);
+        peer_ = nullptr;
+        return false;
+    }
+    
+    peer_->SetMaximumIncomingConnections(32);
+    networkingEnabled_ = true;
+    networkRunning_ = true;
+    
+    messageThread_ = thread(&Console::ProcessNetworkMessages, this);
+    
+    cout << rang::fg::green << "Network console listening on port " << listenPort_ 
+         << " (ID: " << consoleId_ << ")" << rang::fg::reset << endl;
+    return true;
+}
+
+bool Console::ConnectToPeer(const std::string& host, int port) {
+    if (!networkingEnabled_ || !peer_) {
+        cout << rang::fg::red << "Networking not enabled. Use '/network start' first." 
+             << rang::fg::reset << endl;
+        return false;
+    }
+    
+    cout << rang::fg::yellow << "Connecting to peer at " << host << ":" << port 
+         << rang::fg::reset << endl;
+    
+    RakNet::ConnectionAttemptResult result = peer_->Connect(host.c_str(), port, nullptr, 0);
+    
+    if (result != RakNet::CONNECTION_ATTEMPT_STARTED) {
+        cerr << rang::fg::red << "Failed to connect to " << host << ":" << port 
+             << ", error: " << result << rang::fg::reset << endl;
+        return false;
+    }
+    
+    return true;
+}
+
+void Console::StopNetworking() {
+    if (!networkingEnabled_) return;
+    
+    networkRunning_ = false;
+    
+    if (messageThread_.joinable()) {
+        messageThread_.join();
+    }
+    
+    if (peer_) {
+        peer_->Shutdown(300);
+        RakNet::RakPeerInterface::DestroyInstance(peer_);
+        peer_ = nullptr;
+    }
+    
+    networkingEnabled_ = false;
+    cout << rang::fg::yellow << "Network console stopped" << rang::fg::reset << endl;
+}
+
+bool Console::SendCommandToPeer(const std::string& peerAddr, const std::string& command) {
+    if (!networkingEnabled_) return false;
+    
+    RakNet::SystemAddress targetPeer = FindPeerByAddress(peerAddr);
+    
+    if (targetPeer == RakNet::UNASSIGNED_SYSTEM_ADDRESS) {
+        cout << rang::fg::red << "Peer not found: " << peerAddr << rang::fg::reset << endl;
+        return false;
+    }
+    
+    RakNet::BitStream bs;
+    bs.Write(static_cast<RakNet::MessageID>(NetworkMessageType::CONSOLE_COMMAND));
+    bs.Write(consoleId_);
+    bs.Write(command);
+    bs.Write(static_cast<int>(GetLanguage()));
+    
+    peer_->Send(&bs, RakNet::HIGH_PRIORITY, RakNet::RELIABLE_ORDERED, 0, targetPeer, false);
+    
+    cout << rang::fg::cyan << "-> [" << AddressToString(targetPeer) << "] " 
+         << command << rang::fg::reset << endl;
+    
+    return true;
+}
+
+void Console::BroadcastCommand(const std::string& command) {
+    if (!networkingEnabled_) return;
+    
+    lock_guard<mutex> lock(peersMutex_);
+    
+    if (connectedPeers_.empty()) {
+        cout << rang::fg::yellow << "No peers connected for broadcast" << rang::fg::reset << endl;
+        return;
+    }
+    
+    RakNet::BitStream bs;
+    bs.Write(static_cast<RakNet::MessageID>(NetworkMessageType::CONSOLE_BROADCAST));
+    bs.Write(consoleId_);
+    bs.Write(command);
+    bs.Write(static_cast<int>(GetLanguage()));
+    
+    for (const auto& peerAddr : connectedPeers_) {
+        peer_->Send(&bs, RakNet::HIGH_PRIORITY, RakNet::RELIABLE_ORDERED, 0, peerAddr, false);
+    }
+    
+    cout << rang::fg::magenta << ">> [BROADCAST] " << command << rang::fg::reset << endl;
+}
+
+std::vector<std::string> Console::GetConnectedPeers() const {
+    lock_guard<mutex> lock(const_cast<mutex&>(peersMutex_));
+    vector<string> peers;
+    
+    for (const auto& peer : connectedPeers_) {
+        peers.push_back(AddressToString(peer));
+    }
+    
+    return peers;
+}
+
+std::vector<NetworkConsoleMessage> Console::GetNetworkHistory() const {
+    return messageHistory_;
+}
+
+void Console::SetNetworkMessageCallback(std::function<void(const NetworkConsoleMessage&)> callback) {
+    messageCallback_ = callback;
+}
+
+String Console::ProcessNetworkCommand(const String& command) {
+    string cmd = command.c_str();
+    stringstream ss(cmd);
+    string verb;
+    ss >> verb;
+    
+    if (verb == "/network") {
+        string subCmd;
+        ss >> subCmd;
+        
+        if (subCmd == "start") {
+            int port = 14600;
+            ss >> port;  // Optional port override
+            bool success = StartNetworking(port);
+            return success ? String("Network started") : String("Failed to start network");
+        }
+        
+        if (subCmd == "stop") {
+            StopNetworking();
+            return String("Network stopped");
+        }
+        
+        if (subCmd == "status") {
+            if (networkingEnabled_) {
+                auto peers = GetConnectedPeers();
+                return String("Network enabled, port ") + std::to_string(listenPort_) + 
+                       String(", peers: ") + std::to_string(static_cast<int>(peers.size()));
+            }
+            return String("Network disabled");
+        }
+        
+        return String("Usage: /network {start|stop|status} [port]");
+    }
+    
+    if (!networkingEnabled_) {
+        return String("Network not enabled. Use '/network start' first.");
+    }
+    
+    if (verb == "/connect") {
+        string host;
+        int port;
+        if (ss >> host >> port) {
+            bool success = ConnectToPeer(host, port);
+            return success ? String("Connecting...") : String("Connection failed");
+        } else {
+            return String("Usage: /connect <host> <port>");
+        }
+    }
+    
+    if (verb == "/peers") {
+        auto peers = GetConnectedPeers();
+        if (peers.empty()) {
+            return String("No peers connected");
+        }
+        
+        stringstream result;
+        result << "Connected peers (" << peers.size() << "):";
+        for (size_t i = 0; i < peers.size(); ++i) {
+            result << "\n  " << i << ": " << peers[i];
+        }
+        return String(result.str().c_str());
+    }
+    
+    if (verb == "/broadcast") {
+        string broadcastCmd;
+        getline(ss, broadcastCmd);
+        if (!broadcastCmd.empty() && broadcastCmd[0] == ' ') {
+            broadcastCmd = broadcastCmd.substr(1);
+        }
+        
+        if (broadcastCmd.empty()) {
+            return String("Usage: /broadcast <command>");
+        }
+        
+        BroadcastCommand(broadcastCmd);
+        return String("");
+    }
+    
+    if (verb.find("/@") == 0) {
+        string peerAddr = verb.substr(2);
+        string remoteCmd;
+        getline(ss, remoteCmd);
+        if (!remoteCmd.empty() && remoteCmd[0] == ' ') {
+            remoteCmd = remoteCmd.substr(1);
+        }
+        
+        if (remoteCmd.empty()) {
+            return String("Usage: /@<peer> <command>");
+        }
+        
+        bool success = SendCommandToPeer(peerAddr, remoteCmd);
+        return success ? String("") : String("Failed to send command");
+    }
+    
+    if (verb == "/nethistory") {
+        auto history = GetNetworkHistory();
+        if (history.empty()) {
+            return String("No network message history");
+        }
+        
+        stringstream result;
+        result << "Network History (" << history.size() << " messages):";
+        for (const auto& msg : history) {
+            result << "\n[" << msg.senderId << "] " << msg.command;
+            if (!msg.result.empty()) {
+                result << " -> " << msg.result;
+            }
+        }
+        return String(result.str().c_str());
+    }
+    
+    return String("Unknown network command: ") + command;
+}
+
+void Console::ShowNetworkHelp() const {
+    cout << rang::style::bold << "Network Console Commands:" << rang::style::reset << endl;
+    cout << "  /network start [port]   - Start networking (default port 14600)" << endl;
+    cout << "  /network stop           - Stop networking" << endl; 
+    cout << "  /network status         - Show network status" << endl;
+    cout << "  /connect <host> <port>  - Connect to a peer console" << endl;
+    cout << "  /peers                  - List connected peers" << endl;
+    cout << "  /broadcast <command>    - Broadcast command to all peers" << endl;
+    cout << "  /@<peer> <command>      - Send command to specific peer" << endl;
+    cout << "  /nethistory             - Show network message history" << endl;
+}
+
+void Console::ProcessNetworkMessages() {
+    while (networkRunning_) {
+        if (!peer_) break;
+        
+        RakNet::Packet* packet;
+        while ((packet = peer_->Receive()) != nullptr) {
+            HandleNetworkPacket(packet);
+            peer_->DeallocatePacket(packet);
+        }
+        
+        this_thread::sleep_for(chrono::milliseconds(10));
+    }
+}
+
+void Console::HandleNetworkPacket(RakNet::Packet* packet) {
+    if (!packet || packet->length < 1) return;
+    
+    NetworkMessageType msgType = static_cast<NetworkMessageType>(packet->data[0]);
+    
+    switch (msgType) {
+        case NetworkMessageType::CONSOLE_COMMAND:
+            HandleConsoleCommand(packet);
+            break;
+        case NetworkMessageType::CONSOLE_RESULT:
+            HandleConsoleResult(packet);
+            break;
+        case NetworkMessageType::CONSOLE_BROADCAST:
+            HandleConsoleBroadcast(packet);
+            break;
+        case NetworkMessageType::CONSOLE_LANGUAGE_SWITCH:
+            HandleLanguageSwitch(packet);
+            break;
+        default:
+            if (packet->data[0] == RakNet::ID_NEW_INCOMING_CONNECTION) {
+                cout << rang::fg::green << "<- Peer connected: " 
+                     << AddressToString(packet->systemAddress) << rang::fg::reset << endl;
+                AddPeer(packet->systemAddress);
+            } else if (packet->data[0] == RakNet::ID_CONNECTION_REQUEST_ACCEPTED) {
+                cout << rang::fg::green << "<- Connected to peer: " 
+                     << AddressToString(packet->systemAddress) << rang::fg::reset << endl;
+                AddPeer(packet->systemAddress);
+            } else if (packet->data[0] == RakNet::ID_DISCONNECTION_NOTIFICATION ||
+                      packet->data[0] == RakNet::ID_CONNECTION_LOST) {
+                cout << rang::fg::yellow << "<- Peer disconnected: " 
+                     << AddressToString(packet->systemAddress) << rang::fg::reset << endl;
+                RemovePeer(packet->systemAddress);
+            }
+            break;
+    }
+}
+
+void Console::HandleConsoleCommand(RakNet::Packet* packet) {
+    RakNet::BitStream bs(packet->data, packet->length, false);
+    bs.IgnoreBytes(sizeof(RakNet::MessageID));
+    
+    string senderId, command;
+    int languageInt;
+    bs.Read(senderId);
+    bs.Read(command);
+    bs.Read(languageInt);
+    
+    Language originalLang = GetLanguage();
+    Language remoteLang = static_cast<Language>(languageInt);
+    
+    cout << rang::fg::cyan << "<- [" << senderId << "] " << command << rang::fg::reset << endl;
+    
+    try {
+        if (remoteLang != originalLang) {
+            SetLanguage(remoteLang);
+        }
+        
+        Execute(String(command.c_str()));
+        string result = WriteStack().c_str();
+        
+        if (remoteLang != originalLang) {
+            SetLanguage(originalLang);
+        }
+        
+        SendResultToPeer(packet->systemAddress, command, result);
+        
+        NetworkConsoleMessage msg;
+        msg.senderId = senderId;
+        msg.command = command;
+        msg.result = result;
+        msg.language = remoteLang;
+        msg.timestamp = chrono::system_clock::now().time_since_epoch().count();
+        LogNetworkMessage(msg);
+        
+    } catch (const Exception::Base& e) {
+        string error = "Error: " + string(e.ToString().c_str());
+        SendResultToPeer(packet->systemAddress, command, error);
+        
+        if (remoteLang != originalLang) {
+            SetLanguage(originalLang);
+        }
+    }
+}
+
+void Console::HandleConsoleResult(RakNet::Packet* packet) {
+    RakNet::BitStream bs(packet->data, packet->length, false);
+    bs.IgnoreBytes(sizeof(RakNet::MessageID));
+    
+    string senderId, command, result;
+    bs.Read(senderId);
+    bs.Read(command);
+    bs.Read(result);
+    
+    cout << rang::fg::green << "<- [" << senderId << "] Result: " << result 
+         << rang::fg::reset << endl;
+    
+    NetworkConsoleMessage msg;
+    msg.senderId = senderId;
+    msg.command = command;
+    msg.result = result;
+    msg.timestamp = chrono::system_clock::now().time_since_epoch().count();
+    LogNetworkMessage(msg);
+}
+
+void Console::HandleConsoleBroadcast(RakNet::Packet* packet) {
+    RakNet::BitStream bs(packet->data, packet->length, false);
+    bs.IgnoreBytes(sizeof(RakNet::MessageID));
+    
+    string senderId, command;
+    int languageInt;
+    bs.Read(senderId);
+    bs.Read(command);
+    bs.Read(languageInt);
+    
+    cout << rang::fg::magenta << "<< [BROADCAST from " << senderId << "] " 
+         << command << rang::fg::reset << endl;
+    
+    Language originalLang = GetLanguage();
+    Language remoteLang = static_cast<Language>(languageInt);
+    
+    try {
+        if (remoteLang != originalLang) {
+            SetLanguage(remoteLang);
+        }
+        
+        Execute(String(command.c_str()));
+        string result = WriteStack().c_str();
+        cout << "   Result: " << result << endl;
+        
+        if (remoteLang != originalLang) {
+            SetLanguage(originalLang);
+        }
+        
+        NetworkConsoleMessage msg;
+        msg.senderId = senderId + " [BROADCAST]";
+        msg.command = command;
+        msg.result = result;
+        msg.language = remoteLang;
+        msg.timestamp = chrono::system_clock::now().time_since_epoch().count();
+        LogNetworkMessage(msg);
+        
+    } catch (const Exception::Base& e) {
+        cout << rang::fg::red << "   Error: " << e.ToString().c_str() 
+             << rang::fg::reset << endl;
+        
+        if (remoteLang != originalLang) {
+            SetLanguage(originalLang);
+        }
+    }
+}
+
+void Console::HandleLanguageSwitch(RakNet::Packet* packet) {
+    RakNet::BitStream bs(packet->data, packet->length, false);
+    bs.IgnoreBytes(sizeof(RakNet::MessageID));
+    
+    string senderId;
+    int languageInt;
+    bs.Read(senderId);
+    bs.Read(languageInt);
+    
+    Language newLang = static_cast<Language>(languageInt);
+    cout << rang::fg::blue << "<- [" << senderId << "] switched to " 
+         << (newLang == Language::Pi ? "Pi" : "Rho") << " language" 
+         << rang::fg::reset << endl;
+}
+
+void Console::SendResultToPeer(const RakNet::SystemAddress& peer, 
+                              const std::string& command, const std::string& result) {
+    if (!peer_) return;
+    
+    RakNet::BitStream bs;
+    bs.Write(static_cast<RakNet::MessageID>(NetworkMessageType::CONSOLE_RESULT));
+    bs.Write(consoleId_);
+    bs.Write(command);
+    bs.Write(result);
+    
+    peer_->Send(&bs, RakNet::HIGH_PRIORITY, RakNet::RELIABLE_ORDERED, 0, peer, false);
+}
+
+void Console::AddPeer(const RakNet::SystemAddress& address) {
+    lock_guard<mutex> lock(peersMutex_);
+    connectedPeers_.push_back(address);
+}
+
+void Console::RemovePeer(const RakNet::SystemAddress& address) {
+    lock_guard<mutex> lock(peersMutex_);
+    connectedPeers_.erase(
+        remove(connectedPeers_.begin(), connectedPeers_.end(), address),
+        connectedPeers_.end());
+}
+
+void Console::LogNetworkMessage(const NetworkConsoleMessage& message) {
+    messageHistory_.push_back(message);
+    if (messageHistory_.size() > 1000) {
+        messageHistory_.erase(messageHistory_.begin());
+    }
+    
+    if (messageCallback_) {
+        messageCallback_(message);
+    }
+}
+
+std::string Console::GenerateConsoleId() {
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<> dis(1000, 9999);
+    return "Console-" + to_string(dis(gen));
+}
+
+std::string Console::AddressToString(const RakNet::SystemAddress& addr) const {
+    return addr.ToString();
+}
+
+RakNet::SystemAddress Console::FindPeerByAddress(const std::string& addr) const {
+    lock_guard<mutex> lock(const_cast<mutex&>(peersMutex_));
+    
+    for (const auto& peer : connectedPeers_) {
+        string peerStr = AddressToString(peer);
+        if (peerStr.find(addr) != string::npos || addr == to_string(&peer - &connectedPeers_[0])) {
+            return peer;
+        }
+    }
+    
+    return RakNet::UNASSIGNED_SYSTEM_ADDRESS;
 }
 
 KAI_END

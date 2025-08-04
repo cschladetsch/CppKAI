@@ -37,6 +37,23 @@ enum MessageID {
     ID_USER_PACKET_ENUM
 };
 
+// Priority constants
+enum PacketPriority {
+    IMMEDIATE_PRIORITY,
+    HIGH_PRIORITY,
+    MEDIUM_PRIORITY,
+    LOW_PRIORITY
+};
+
+// Reliability constants  
+enum PacketReliability {
+    UNRELIABLE,
+    UNRELIABLE_SEQUENCED,
+    RELIABLE,
+    RELIABLE_ORDERED,
+    RELIABLE_SEQUENCED
+};
+
 // System address class
 class SystemAddress {
    public:
@@ -319,12 +336,12 @@ class RakPeerInterface {
 
     void DeallocatePacket(Packet* packet) { delete packet; }
 
-    bool Send(const char* data, int length, int priority, int reliability,
+    bool Send(const char* data, int length, PacketPriority priority, PacketReliability reliability,
               char channel, SystemAddress systemAddress, bool broadcast) {
         return true;  // Stub always succeeds
     }
 
-    bool Send(BitStream* bitStream, int priority, int reliability, char channel,
+    bool Send(BitStream* bitStream, PacketPriority priority, PacketReliability reliability, char channel,
               SystemAddress systemAddress, bool broadcast) {
         return true;  // Stub always succeeds
     }

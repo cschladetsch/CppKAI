@@ -34,12 +34,14 @@ Objects and *compute* can be distributed across Nodes in a Domain.
 
 - Run `./Scripts/run_rho_demo.sh` for a comprehensive demo of Rho language features
 - Run `./Scripts/calc_test.sh` for a demonstration of network calculation
+- Run `./demo_console_communication.sh` for interactive console-to-console networking demo
 - Example scripts in `Test/Language/*/Scripts` directories
 
 ## Key Features
 
 - **Zero-Macro Reflection**: Expose C++ types and methods to scripting without macros or source modifications
 - **Distributed Computing**: Share both data and computation across networked nodes
+- **Console Networking**: Real-time console-to-console communication with command sharing
 - **Multiple Languages**: Use Pi (stack-based), Rho (infix), or Tau (IDL) as needed
 - **Type Safety**: Full type checking across network boundaries
 - **Incremental GC**: Smooth, constant-time garbage collection with no spikes
@@ -59,6 +61,33 @@ Objects and *compute* can be distributed across Nodes in a Domain.
 - **Pi**: Stack-based RPN language inspired by Forth
 - **Rho**: Python-like infix language that compiles to Pi (fully functional with all tests passing)
 - **Tau**: Interface Definition Language (IDL) for network components
+
+### Console Networking
+
+KAI consoles can communicate with each other over the network in real-time:
+
+```bash
+# Console 1 (Server)
+./console
+pi> /network start 14600
+pi> 2 3 +
+
+# Console 2 (Client)
+./console
+pi> /network start 14601
+pi> /connect localhost 14600
+pi> /@0 10 *              # Multiply Console 1's result by 10
+pi> /broadcast stack      # Show stack on all connected consoles
+```
+
+**Network Commands:**
+- `/network start [port]` - Enable networking
+- `/connect <host> <port>` - Connect to peer console
+- `/@<peer> <command>` - Execute command on specific peer
+- `/broadcast <command>` - Execute command on all peers
+- `/peers` - List connected consoles
+
+See [Console Networking Guide](CONSOLE_NETWORKING.md) for complete documentation.
 
 ## Example Code
 

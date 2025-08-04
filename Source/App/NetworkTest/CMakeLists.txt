@@ -7,6 +7,6 @@ include_directories(${EXTERNAL}/raknet/Source)
 
 set(source_path ${APP_HOME}/${name}/Source)
 add_executable(${name} ${source_path}/Main.cpp)
-target_link_libraries(${name} Network Core Executor PiLang RhoLang TauLang RakNet ImGui)
+target_link_libraries(${name} Network Core Executor PiLang RhoLang TauLang RakNet)
 
 set_property(TARGET ${name} PROPERTY FOLDER Apps)

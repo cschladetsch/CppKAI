@@ -16,5 +16,4 @@ endif()
 include_directories(${LIBRARY_HOME}/Language/Include)
 add_subdirectory(${LIBRARY_HOME}/Language)
 
-# Add ImGui library
-add_subdirectory(${LIBRARY_HOME}/ImGui)
+# ImGui library disabled due to missing external dependencies

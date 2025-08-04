@@ -1,28 +1,30 @@
-# Rho Test Scripts
+# Rho language Tests
+Rho is much like _Python_, but with an even less verbose syntax.
 
-This directory contains Rho language scripts used by the test suite. Each script tests specific language features.
+The 'return value' for a Rho function is whatever is left on the stack(s).
 
-## Script Organization
+_Rho_ is internally translated to _Pi_ for use in a single _Executor_ that supports continuations natively.
 
-- `basic_*.rho` - Basic functionality tests
-- `*_function*.rho` - Function definition and calling tests
-- `*_loop*.rho` - Loop construct tests (for, while, do-while)
-- `if_*.rho` - Conditional statement tests
-- `array_*.rho` - Array operation tests
-- `pi_block_*.rho` - Pi language block integration tests
+Example:
 
-## Usage
-
-Tests load these scripts using the `LoadRhoScript()` utility function:
-
-```cpp
-std::string script = kai::test::LoadRhoScript("BasicAddFunction.rho");
 ```
+fun a(b, c)
+	b + c
 
-## Adding New Scripts
+assert a(1, 2) == 3
 
-When adding new test scripts:
-1. Use descriptive names that indicate what feature is being tested
-2. Include comments in the script explaining the test
-3. Keep scripts focused on testing one feature at a time
-4. Ensure the script leaves a result on the stack for verification
+fun d(e)
+	fun f(g)
+		g*2
+	f(e)
+  
+assert d(2) == 4
+assert exists a
+assert exists d
+assert !(exists f)
+
+fun h(i,j,k)
+	a(i, d(j)*k)
+
+assert h(1,2,3) == 16
+```
