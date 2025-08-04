@@ -155,9 +155,9 @@ result = add(5, 3)  // 8
 ```mermaid
 graph TB
     subgraph "Rho Code with Pi Blocks"
-        RHO_CODE["Rho Code<br/>result = 5 + pi{ 2 3 + }"]
-        PI_INLINE["Inline Pi: pi{ 2 3 + }"]
-        PI_BLOCK["Pi Block:<br/>pi{ operations }"]
+        RHO_CODE["Rho Code<br/>result = 5 + pi block"]
+        PI_INLINE["Inline Pi: pi block 2 3 +"]
+        PI_BLOCK["Pi Block:<br/>pi block operations"]
     end
     
     subgraph "Translation Process"
