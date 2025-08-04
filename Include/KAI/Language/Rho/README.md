@@ -17,6 +17,8 @@ Rho serves as KAI's high-level programming language, offering conventional synta
 
 ## Language Architecture
 
+**[Rho Architecture Diagrams](../../../../resources/diagrams/rho-language-architecture.md)** - Detailed visual documentation of Rho's infix language translation pipeline, expression handling, and Pi integration mechanisms.
+
 ### Core Components
 
 - **Rho.h**: Main language interface and utilities

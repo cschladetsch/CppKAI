@@ -8,7 +8,10 @@ This directory contains comprehensive architecture documentation and diagrams fo
 resources/
 ├── diagrams/                    # System architecture diagrams
 │   ├── overall-system-architecture.md      # High-level system overview
-│   ├── language-system-architecture.md     # Pi/Rho/Tau language systems
+│   ├── language-system-architecture.md     # Pi/Rho/Tau language systems overview
+│   ├── pi-language-architecture.md         # Pi stack-based language details
+│   ├── rho-language-architecture.md        # Rho infix language details
+│   ├── tau-language-architecture.md        # Tau IDL code generation details
 │   ├── console-networking-architecture.md  # Console-to-console communication
 │   ├── build-system-architecture.md        # CMake build system structure
 │   └── test-system-architecture.md         # Test infrastructure design
@@ -28,24 +31,42 @@ All diagrams are created using Mermaid syntax and can be viewed in any Markdown 
 - Component interaction models
 
 ### 2. Language System Architecture  
-- Translation pipeline (Lexer → Parser → Translator)
+- Translation pipeline overview (Lexer → Parser → Translator)
 - Language hierarchy (Tau → Rho → Pi → Executor)
 - Cross-language communication patterns
 - AST and code generation processes
 
-### 3. Console Networking Architecture
+### 3. Pi Language Architecture
+- Stack-based execution model and operations
+- Two-stack architecture (data and context stacks)
+- Continuation creation and execution flow
+- Pi-specific optimization techniques and performance characteristics
+
+### 4. Rho Language Architecture
+- Infix notation translation to Pi operations
+- Expression parsing with operator precedence
+- Control flow translation (if/while/for → Pi constructs)
+- Rho-Pi integration and variable sharing mechanisms
+
+### 5. Tau Language Architecture
+- Interface Definition Language (IDL) processing
+- Multi-target code generation (Proxy/Agent/Struct)
+- Network protocol integration and async operations
+- Type system mapping and serialization strategies
+
+### 6. Console Networking Architecture
 - Peer-to-peer communication model
 - Network message protocol design
 - Thread safety and concurrency patterns
 - Console command structure and flow
 
-### 4. Build System Architecture
+### 7. Build System Architecture
 - CMake project organization
 - Dependency relationships
 - Build target configuration
 - Output structure and packaging
 
-### 5. Test System Architecture
+### 8. Test System Architecture
 - Test suite organization and execution
 - Quality assurance workflows  
 - Coverage analysis and reporting

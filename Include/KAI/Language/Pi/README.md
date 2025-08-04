@@ -17,6 +17,8 @@ Pi is the core execution language in KAI - both Rho and Tau ultimately compile d
 
 ## Language Architecture
 
+**[Pi Architecture Diagrams](../../../../resources/diagrams/pi-language-architecture.md)** - Comprehensive visual documentation of Pi's stack-based execution model, component relationships, and operational flow.
+
 ### Core Components
 
 - **Pi.h**: Main language interface and utilities
