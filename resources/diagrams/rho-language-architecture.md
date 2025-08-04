@@ -160,17 +160,17 @@ classDiagram
 ```mermaid
 graph TB
     subgraph "Rho Control Structures"
-        IF_RHO[if (condition) {<br/>  statements<br/>} else {<br/>  statements<br/>}]
-        WHILE_RHO[while (condition) {<br/>  statements<br/>}]
-        FOR_RHO[for (init; cond; inc) {<br/>  statements<br/>}]
-        FUNC_RHO[fun name(params) {<br/>  statements<br/>  return expr<br/>}]
+        IF_RHO["if (condition)<br/>  statements<br/>else<br/>  statements"]
+        WHILE_RHO["while (condition)<br/>  statements"]
+        FOR_RHO["for (init; cond; inc)<br/>  statements"]
+        FUNC_RHO["fun name(params)<br/>  statements<br/>  return expr"]
     end
     
     subgraph "Pi Translation"
-        IF_PI[condition<br/>{ then-branch }<br/>{ else-branch }<br/>ife]
-        WHILE_PI['loop_start label<br/>condition<br/>{ statements<br/>  'loop_start goto }<br/>{ } ife]
-        FOR_PI[init<br/>'loop_start label<br/>condition<br/>{ statements inc<br/>  'loop_start goto }<br/>{ drop } ife]
-        FUNC_PI[{ parameters<br/>  statements<br/>  return-value }<br/>'function_name #]
+        IF_PI["condition<br/>then-branch<br/>else-branch<br/>ife"]
+        WHILE_PI["'loop_start label<br/>condition<br/>statements<br/>'loop_start goto<br/>ife"]
+        FOR_PI["init<br/>'loop_start label<br/>condition<br/>statements inc<br/>'loop_start goto<br/>ife"]
+        FUNC_PI["parameters<br/>statements<br/>return-value<br/>'function_name #"]
     end
     
     IF_RHO --> IF_PI
