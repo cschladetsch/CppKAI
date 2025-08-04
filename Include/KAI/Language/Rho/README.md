@@ -24,29 +24,29 @@ Rho serves as KAI's high-level programming language, offering conventional synta
 ```mermaid
 graph TB
     subgraph "Rho Source Code"
-        SRC[Rho Source<br/>fun add(a, b) {<br/>  return a + b<br/>}<br/>result = add(5, 3)]
+        SRC["Rho Source<br/>fun add(a, b) {<br/>  return a + b<br/>}<br/>result = add(5, 3)"]
     end
     
     subgraph "Lexical Analysis"
-        LEX[Rho Lexer<br/>Tokenization]
-        TOKENS[Token Stream<br/>FUN, IDENTIFIER, LPAREN<br/>IDENTIFIER, COMMA, etc.]
+        LEX["Rho Lexer<br/>Tokenization"]
+        TOKENS["Token Stream<br/>FUN, IDENTIFIER, LPAREN<br/>IDENTIFIER, COMMA, etc."]
     end
     
     subgraph "Syntax Analysis"  
-        PAR[Rho Parser<br/>AST Construction]
-        AST[Rho AST Nodes<br/>Function nodes<br/>Expression nodes<br/>Statement nodes]
+        PAR["Rho Parser<br/>AST Construction"]
+        AST["Rho AST Nodes<br/>Function nodes<br/>Expression nodes<br/>Statement nodes"]
     end
     
     subgraph "Translation to Pi"
-        TRANS[Rho Translator<br/>AST → Pi Operations]
-        PI_OPS[Pi Operation Stream<br/>Stack-based operations]
+        TRANS["Rho Translator<br/>AST → Pi Operations"]
+        PI_OPS["Pi Operation Stream<br/>Stack-based operations"]
     end
     
     subgraph "Execution Environment"
-        EXE[Executor<br/>Stack-based VM]
-        DS[Data Stack<br/>Values & Objects]
-        CS[Context Stack<br/>Functions & Scope]
-        REG[Registry<br/>Variables & Functions]
+        EXE["Executor<br/>Stack-based VM"]
+        DS["Data Stack<br/>Values & Objects"]
+        CS["Context Stack<br/>Functions & Scope"]
+        REG["Registry<br/>Variables & Functions"]
     end
     
     SRC --> LEX
@@ -155,28 +155,28 @@ result = add(5, 3)  // 8
 ```mermaid
 graph TB
     subgraph "Rho Code with Pi Blocks"
-        RHO_CODE[Rho Code<br/>result = 5 + pi{ 2 3 + }]
-        PI_INLINE[Inline Pi: pi{ 2 3 + }]
-        PI_BLOCK[Pi Block:<br/>pi{<br/>  stack operations<br/>  'var #<br/>}]
+        RHO_CODE["Rho Code<br/>result = 5 + pi{ 2 3 + }"]
+        PI_INLINE["Inline Pi: pi{ 2 3 + }"]
+        PI_BLOCK["Pi Block:<br/>pi{<br/>  stack operations<br/>  'var #<br/>}"]
     end
     
     subgraph "Translation Process"
-        RHO_PARSE[Parse Rho Expression]
-        PI_PARSE[Parse Embedded Pi]
-        COMBINE[Combine Operations]
+        RHO_PARSE["Parse Rho Expression"]
+        PI_PARSE["Parse Embedded Pi"]
+        COMBINE["Combine Operations"]
     end
     
     subgraph "Execution"
-        RHO_EXEC[Execute: 5 push]
-        PI_EXEC[Execute: 2 3 +]
-        FINAL_EXEC[Execute: +]
-        RESULT[Result: 10]
+        RHO_EXEC["Execute: 5 push"]
+        PI_EXEC["Execute: 2 3 +"]
+        FINAL_EXEC["Execute: +"]
+        RESULT["Result: 10"]
     end
     
     subgraph "Variable Sharing"
-        RHO_VAR[Rho Variables<br/>Accessible via @]
-        PI_VAR[Pi Variables<br/>Stored with #]
-        SHARED_REG[Shared Registry<br/>Cross-language access]
+        RHO_VAR["Rho Variables<br/>Accessible via @"]
+        PI_VAR["Pi Variables<br/>Stored with #"]
+        SHARED_REG["Shared Registry<br/>Cross-language access"]
     end
     
     RHO_CODE --> RHO_PARSE

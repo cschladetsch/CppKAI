@@ -238,21 +238,21 @@ doubled = map(numbers, fun(x) { return x * 2 })
 ```mermaid
 graph LR
     subgraph "Rho Code"
-        RHO[result = 5 + pi{ 2 3 + }]
-        RHO_PART[Rho: result = 5 +]
-        PI_PART[Pi: { 2 3 + }]
+        RHO["result = 5 + pi{ 2 3 + }"]
+        RHO_PART["Rho: result = 5 +"]
+        PI_PART["Pi: { 2 3 + }"]
     end
     
     subgraph "Translation"
-        RHO_TRANS[5 push]
-        PI_TRANS[2 3 +]
-        COMBINE[Addition]
+        RHO_TRANS["5 push"]
+        PI_TRANS["2 3 +"]
+        COMBINE["Addition"]
     end
     
     subgraph "Execution"
-        STACK1[Stack: 5]
-        STACK2[Stack: 5, 5]
-        RESULT[Result: 10]
+        STACK1["Stack: 5"]
+        STACK2["Stack: 5, 5"]
+        RESULT["Result: 10"]
     end
     
     RHO_PART --> RHO_TRANS

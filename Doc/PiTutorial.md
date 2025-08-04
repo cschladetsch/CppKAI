@@ -59,27 +59,27 @@ Pi primarily manipulates two stacks:
 graph LR
     subgraph "Pi Execution Environment"
         subgraph "Data Stack"
-            DS3[Value 3]
-            DS2[Value 2] 
-            DS1[Value 1]
-            DS_TOP[← Top]
+            DS3["Value 3"]
+            DS2["Value 2"] 
+            DS1["Value 1"]
+            DS_TOP["← Top"]
         end
         
         subgraph "Context Stack"
-            CS3[Continuation 3]
-            CS2[Continuation 2]
-            CS1[Current Context]
-            CS_TOP[← Top]
+            CS3["Continuation 3"]
+            CS2["Continuation 2"]
+            CS1["Current Context"]
+            CS_TOP["← Top"]
         end
         
         subgraph "Operations"
-            PUSH[Push Value]
-            POP[Pop Value]
-            DUP[Duplicate]
-            SWAP[Swap]
-            EXEC[Execute &]
-            STORE[Store #]
-            FETCH[Fetch @]
+            PUSH["Push Value"]
+            POP["Pop Value"]
+            DUP["Duplicate"]
+            SWAP["Swap"]
+            EXEC["Execute &"]
+            STORE["Store #"]
+            FETCH["Fetch @"]
         end
         
         PUSH --> DS_TOP
@@ -127,34 +127,34 @@ clear  // Stack is now empty
 ```mermaid
 graph TD
     subgraph "Step 1: Push values"
-        A1[1]
-        A2[2] 
-        A3[3 ← top]
+        A1["1"]
+        A2["2"] 
+        A3["3 ← top"]
         A1 --- A2 --- A3
     end
     
     subgraph "Step 2: dup (duplicate top)"
-        B1[1]
-        B2[2]
-        B3[3]
-        B4[3 ← top]
+        B1["1"]
+        B2["2"]
+        B3["3"]
+        B4["3 ← top"]
         B1 --- B2 --- B3 --- B4
     end
     
     subgraph "Step 3: swap (exchange top two)"
-        C1[1]
-        C2[2]
-        C3[3 ← top]
-        C4[3]
+        C1["1"]
+        C2["2"]
+        C3["3 ← top"]
+        C4["3"]
         C1 --- C2 --- C3 --- C4
     end
     
     subgraph "Step 4: over (copy second to top)"
-        D1[1]
-        D2[2]
-        D3[3]
-        D4[3]
-        D5[3 ← top]
+        D1["1"]
+        D2["2"]
+        D3["3"]
+        D4["3"]
+        D5["3 ← top"]
         D1 --- D2 --- D3 --- D4 --- D5
     end
     
@@ -420,42 +420,42 @@ Here's an elegant example that computes Fibonacci numbers using Pi:
 
 ```mermaid
 graph TD
-    A[fib 5] --> B{n <= 1?}
-    B -->|No| C[fib 4]
-    B -->|No| D[fib 3]
+    A["fib 5"] --> B{"n <= 1?"}
+    B -->|No| C["fib 4"]
+    B -->|No| D["fib 3"]
     
-    C --> E{n <= 1?}
-    E -->|No| F[fib 3]
-    E -->|No| G[fib 2]
+    C --> E{"n <= 1?"}
+    E -->|No| F["fib 3"]
+    E -->|No| G["fib 2"]
     
-    D --> H{n <= 1?}
-    H -->|No| I[fib 2]
-    H -->|No| J[fib 1]
+    D --> H{"n <= 1?"}
+    H -->|No| I["fib 2"]
+    H -->|No| J["fib 1"]
     
-    F --> K{n <= 1?}
-    K -->|No| L[fib 2]
-    K -->|No| M[fib 1]
+    F --> K{"n <= 1?"}
+    K -->|No| L["fib 2"]
+    K -->|No| M["fib 1"]
     
-    I --> N{n <= 1?}
-    N -->|No| O[fib 1]
-    N -->|No| P[fib 0]
+    I --> N{"n <= 1?"}
+    N -->|No| O["fib 1"]
+    N -->|No| P["fib 0"]
     
-    G --> Q{n <= 1?}
-    Q -->|No| R[fib 1]
-    Q -->|No| S[fib 0]
+    G --> Q{"n <= 1?"}
+    Q -->|No| R["fib 1"]
+    Q -->|No| S["fib 0"]
     
-    L --> T{n <= 1?}
-    T -->|No| U[fib 1]
-    T -->|No| V[fib 0]
+    L --> T{"n <= 1?"}
+    T -->|No| U["fib 1"]
+    T -->|No| V["fib 0"]
     
-    J -->|Yes| W[1]
-    M -->|Yes| X[1]
-    O -->|Yes| Y[1]
-    P -->|Yes| Z[0]
-    R -->|Yes| AA[1]
-    S -->|Yes| BB[0]
-    U -->|Yes| CC[1]
-    V -->|Yes| DD[0]
+    J -->|Yes| W["1"]
+    M -->|Yes| X["1"]
+    O -->|Yes| Y["1"]
+    P -->|Yes| Z["0"]
+    R -->|Yes| AA["1"]
+    S -->|Yes| BB["0"]
+    U -->|Yes| CC["1"]
+    V -->|Yes| DD["0"]
     
     style A fill:#4caf50
     style W fill:#ff9800

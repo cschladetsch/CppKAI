@@ -9,30 +9,30 @@ Tau is KAI's Interface Definition Language (IDL), designed for describing networ
 ```mermaid
 graph TB
     subgraph "Tau Source Code"
-        SRC[Tau IDL<br/>interface Calculator {<br/>  float add(float a, float b);<br/>  float multiply(float a, float b);<br/>}]
+        SRC["Tau IDL<br/>interface Calculator {<br/>  float add(float a, float b);<br/>  float multiply(float a, float b);<br/>}"]
     end
     
     subgraph "Lexical Analysis"
-        LEX[Tau Lexer<br/>Tokenization]
-        TOKENS[Token Stream<br/>INTERFACE, IDENTIFIER<br/>FLOAT, IDENTIFIER, etc.]
+        LEX["Tau Lexer<br/>Tokenization"]
+        TOKENS["Token Stream<br/>INTERFACE, IDENTIFIER<br/>FLOAT, IDENTIFIER, etc."]
     end
     
     subgraph "Syntax Analysis"
-        PAR[Tau Parser<br/>AST Construction]
-        AST[Tau AST Nodes<br/>Interface nodes<br/>Method nodes<br/>Type nodes]
+        PAR["Tau Parser<br/>AST Construction"]
+        AST["Tau AST Nodes<br/>Interface nodes<br/>Method nodes<br/>Type nodes"]
     end
     
     subgraph "Code Generation"
-        GEN[Tau Generator<br/>Multi-target generation]
-        PROXY[Proxy Generation<br/>Client-side stubs]
-        AGENT[Agent Generation<br/>Server-side handlers]
-        STRUCT[Struct Generation<br/>Data structures]
+        GEN["Tau Generator<br/>Multi-target generation"]
+        PROXY["Proxy Generation<br/>Client-side stubs"]
+        AGENT["Agent Generation<br/>Server-side handlers"]
+        STRUCT["Struct Generation<br/>Data structures"]
     end
     
     subgraph "Generated Output"
-        CPP_PROXY[C++ Proxy Classes<br/>Network client code]
-        CPP_AGENT[C++ Agent Classes<br/>Network server code]  
-        CPP_STRUCT[C++ Struct Definitions<br/>Data transfer objects]
+        CPP_PROXY["C++ Proxy Classes<br/>Network client code"]
+        CPP_AGENT["C++ Agent Classes<br/>Network server code"]  
+        CPP_STRUCT["C++ Struct Definitions<br/>Data transfer objects"]
     end
     
     SRC --> LEX
