@@ -17,7 +17,54 @@ Rho serves as KAI's high-level programming language, offering conventional synta
 
 ## Language Architecture
 
-**[Rho Architecture Diagrams](../../../../resources/diagrams/rho-language-architecture.md)** - Detailed visual documentation of Rho's infix language translation pipeline, expression handling, and Pi integration mechanisms.
+**[Complete Rho Architecture Diagrams](../../../../resources/diagrams/rho-language-architecture.md)** - Detailed visual documentation of Rho's infix language translation pipeline, expression handling, and Pi integration mechanisms.
+
+### Rho Infix Language Translation Pipeline
+
+```mermaid
+graph TB
+    subgraph "Rho Source Code"
+        SRC[Rho Source<br/>fun add(a, b) {<br/>  return a + b<br/>}<br/>result = add(5, 3)]
+    end
+    
+    subgraph "Lexical Analysis"
+        LEX[Rho Lexer<br/>Tokenization]
+        TOKENS[Token Stream<br/>FUN, IDENTIFIER, LPAREN<br/>IDENTIFIER, COMMA, etc.]
+    end
+    
+    subgraph "Syntax Analysis"  
+        PAR[Rho Parser<br/>AST Construction]
+        AST[Rho AST Nodes<br/>Function nodes<br/>Expression nodes<br/>Statement nodes]
+    end
+    
+    subgraph "Translation to Pi"
+        TRANS[Rho Translator<br/>AST → Pi Operations]
+        PI_OPS[Pi Operation Stream<br/>Stack-based operations]
+    end
+    
+    subgraph "Execution Environment"
+        EXE[Executor<br/>Stack-based VM]
+        DS[Data Stack<br/>Values & Objects]
+        CS[Context Stack<br/>Functions & Scope]
+        REG[Registry<br/>Variables & Functions]
+    end
+    
+    SRC --> LEX
+    LEX --> TOKENS
+    TOKENS --> PAR
+    PAR --> AST
+    AST --> TRANS
+    TRANS --> PI_OPS
+    PI_OPS --> EXE
+    EXE <--> DS
+    EXE <--> CS
+    EXE <--> REG
+    
+    style SRC fill:#e8f5e8
+    style TRANS fill:#ff9800
+    style PI_OPS fill:#9c27b0
+    style EXE fill:#4caf50
+```
 
 ### Core Components
 
@@ -102,6 +149,53 @@ result = add(5, 3)  // 8
 - **[PiBlockTest.rho](../../../../Test/Language/TestRho/Scripts/PiBlockTest.rho)** - Pi integration examples
 
 ## Pi Integration
+
+### Rho-Pi Integration Architecture
+
+```mermaid
+graph TB
+    subgraph "Rho Code with Pi Blocks"
+        RHO_CODE[Rho Code<br/>result = 5 + pi{ 2 3 + }]
+        PI_INLINE[Inline Pi: pi{ 2 3 + }]
+        PI_BLOCK[Pi Block:<br/>pi{<br/>  stack operations<br/>  'var #<br/>}]
+    end
+    
+    subgraph "Translation Process"
+        RHO_PARSE[Parse Rho Expression]
+        PI_PARSE[Parse Embedded Pi]
+        COMBINE[Combine Operations]
+    end
+    
+    subgraph "Execution"
+        RHO_EXEC[Execute: 5 push]
+        PI_EXEC[Execute: 2 3 +]
+        FINAL_EXEC[Execute: +]
+        RESULT[Result: 10]
+    end
+    
+    subgraph "Variable Sharing"
+        RHO_VAR[Rho Variables<br/>Accessible via @]
+        PI_VAR[Pi Variables<br/>Stored with #]
+        SHARED_REG[Shared Registry<br/>Cross-language access]
+    end
+    
+    RHO_CODE --> RHO_PARSE
+    PI_INLINE --> PI_PARSE
+    PI_BLOCK --> PI_PARSE
+    
+    RHO_PARSE --> COMBINE
+    PI_PARSE --> COMBINE
+    COMBINE --> RHO_EXEC
+    RHO_EXEC --> PI_EXEC
+    PI_EXEC --> FINAL_EXEC
+    FINAL_EXEC --> RESULT
+    
+    RHO_VAR <--> SHARED_REG <--> PI_VAR
+    
+    style PI_INLINE fill:#9c27b0
+    style PI_BLOCK fill:#9c27b0
+    style SHARED_REG fill:#ff9800
+```
 
 One of Rho's most powerful features is seamless Pi integration:
 

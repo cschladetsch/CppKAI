@@ -17,7 +17,55 @@ Pi is the core execution language in KAI - both Rho and Tau ultimately compile d
 
 ## Language Architecture
 
-**[Pi Architecture Diagrams](../../../../resources/diagrams/pi-language-architecture.md)** - Comprehensive visual documentation of Pi's stack-based execution model, component relationships, and operational flow.
+**[Complete Pi Architecture Diagrams](../../../../resources/diagrams/pi-language-architecture.md)** - Comprehensive visual documentation of Pi's stack-based execution model, component relationships, and operational flow.
+
+### Pi Stack-Based Execution Model
+
+```mermaid
+graph TB
+    subgraph "Pi Source Code"
+        SRC[Pi Source<br/>2 3 + dup *<br/>{ 'square # } &]
+    end
+    
+    subgraph "Lexical Analysis"
+        LEX[Pi Lexer<br/>Tokenization]
+        TOKENS[Token Stream<br/>NUMBER, NUMBER, PLUS<br/>DUP, MULTIPLY, etc.]
+    end
+    
+    subgraph "Syntax Analysis"
+        PAR[Pi Parser<br/>AST Construction]
+        AST[Pi AST Nodes<br/>Operation nodes<br/>Literal nodes<br/>Continuation nodes]
+    end
+    
+    subgraph "Translation"
+        TRANS[Pi Translator<br/>AST → Continuations]
+        CONT[Continuation Objects<br/>Executable code blocks]
+    end
+    
+    subgraph "Execution Environment"
+        EXE[Executor<br/>Stack-based VM]
+        DS[Data Stack<br/>Values & Objects]
+        CS[Context Stack<br/>Continuations & Control]
+        REG[Registry<br/>Object Factory<br/>Type System]
+    end
+    
+    SRC --> LEX
+    LEX --> TOKENS
+    TOKENS --> PAR
+    PAR --> AST
+    AST --> TRANS
+    TRANS --> CONT
+    CONT --> EXE
+    EXE <--> DS
+    EXE <--> CS
+    EXE <--> REG
+    
+    style SRC fill:#e3f2fd
+    style EXE fill:#4caf50
+    style DS fill:#ff9800
+    style CS fill:#9c27b0
+    style REG fill:#2196f3
+```
 
 ### Core Components
 
@@ -37,6 +85,48 @@ Pi operates on two primary stacks:
 2. **Context Stack**: Controls program flow and stores continuations
 
 ## Basic Operations
+
+### Pi Stack Machine Operations
+
+```mermaid
+graph LR
+    subgraph "Stack Operations"
+        PUSH[PUSH<br/>Add to top]
+        POP[POP<br/>Remove from top]
+        DUP[DUP<br/>Duplicate top]
+        SWAP[SWAP<br/>Exchange top two]
+        DROP[DROP<br/>Remove top]
+        OVER[OVER<br/>Copy second to top]
+    end
+    
+    subgraph "Arithmetic Operations"
+        ADD[ADD<br/>Pop a,b Push a+b]
+        SUB[SUB<br/>Pop a,b Push b-a]
+        MUL[MUL<br/>Pop a,b Push a*b]
+        DIV[DIV<br/>Pop a,b Push b/a]
+        MOD[MOD<br/>Pop a,b Push b%a]
+    end
+    
+    subgraph "Control Operations"
+        IFE[IFE<br/>Conditional execution]
+        CONT[CONTINUATION<br/>Code block creation]
+        EXEC[EXEC (&)<br/>Execute continuation]
+        SUSPEND[SUSPEND<br/>Pause execution]
+        RESUME[RESUME<br/>Return to context]
+    end
+    
+    subgraph "Variable Operations"
+        STORE[STORE (#)<br/>Save to registry]
+        FETCH[FETCH (@)<br/>Load from registry]
+        ASSERT[ASSERT<br/>Validate condition]
+        TRACE[TRACE<br/>Debug output]
+    end
+    
+    style PUSH fill:#4caf50
+    style ADD fill:#ff9800
+    style IFE fill:#9c27b0
+    style STORE fill:#2196f3
+```
 
 ### Stack Manipulation
 ```pi

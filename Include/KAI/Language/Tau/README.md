@@ -2,7 +2,57 @@
 
 Tau is KAI's Interface Definition Language (IDL), designed for describing networked objects, interfaces, and services within the KAI distributed object model. It provides a way to define how components communicate across the network.
 
-**[Tau Architecture Diagrams](../../../../resources/diagrams/tau-language-architecture.md)** - Complete visual documentation of Tau's IDL processing pipeline, multi-target code generation, and network integration architecture.
+**[Complete Tau Architecture Diagrams](../../../../resources/diagrams/tau-language-architecture.md)** - Complete visual documentation of Tau's IDL processing pipeline, multi-target code generation, and network integration architecture.
+
+### Tau Interface Definition Language Pipeline
+
+```mermaid
+graph TB
+    subgraph "Tau Source Code"
+        SRC[Tau IDL<br/>interface Calculator {<br/>  float add(float a, float b);<br/>  float multiply(float a, float b);<br/>}]
+    end
+    
+    subgraph "Lexical Analysis"
+        LEX[Tau Lexer<br/>Tokenization]
+        TOKENS[Token Stream<br/>INTERFACE, IDENTIFIER<br/>FLOAT, IDENTIFIER, etc.]
+    end
+    
+    subgraph "Syntax Analysis"
+        PAR[Tau Parser<br/>AST Construction]
+        AST[Tau AST Nodes<br/>Interface nodes<br/>Method nodes<br/>Type nodes]
+    end
+    
+    subgraph "Code Generation"
+        GEN[Tau Generator<br/>Multi-target generation]
+        PROXY[Proxy Generation<br/>Client-side stubs]
+        AGENT[Agent Generation<br/>Server-side handlers]
+        STRUCT[Struct Generation<br/>Data structures]
+    end
+    
+    subgraph "Generated Output"
+        CPP_PROXY[C++ Proxy Classes<br/>Network client code]
+        CPP_AGENT[C++ Agent Classes<br/>Network server code]  
+        CPP_STRUCT[C++ Struct Definitions<br/>Data transfer objects]
+    end
+    
+    SRC --> LEX
+    LEX --> TOKENS
+    TOKENS --> PAR
+    PAR --> AST
+    AST --> GEN
+    GEN --> PROXY
+    GEN --> AGENT
+    GEN --> STRUCT
+    PROXY --> CPP_PROXY
+    AGENT --> CPP_AGENT
+    STRUCT --> CPP_STRUCT
+    
+    style SRC fill:#e1bee7
+    style GEN fill:#ff9800
+    style CPP_PROXY fill:#4caf50
+    style CPP_AGENT fill:#2196f3
+    style CPP_STRUCT fill:#9c27b0
+```
 
 ## Key Features
 
@@ -32,6 +82,30 @@ namespace Trading {
         event OrderPlaced(string symbol, int quantity, float price);
     }
 }
+```
+
+### Tau Proxy Generation Pattern
+
+```mermaid
+sequenceDiagram
+    participant Client as Client Code
+    participant Proxy as Generated Proxy
+    participant Network as Network Layer
+    participant Agent as Remote Agent
+    participant Server as Server Implementation
+    
+    Client->>Proxy: calculator.add(5.0, 3.0)
+    Proxy->>Proxy: Serialize parameters
+    Proxy->>Network: Send method call request
+    Network->>Agent: Receive method call
+    Agent->>Agent: Deserialize parameters
+    Agent->>Server: Call actual add(5.0, 3.0)
+    Server->>Agent: Return result: 8.0
+    Agent->>Agent: Serialize result
+    Agent->>Network: Send response
+    Network->>Proxy: Receive response
+    Proxy->>Proxy: Deserialize result
+    Proxy->>Client: Return 8.0
 ```
 
 ## Recent Enhancements
