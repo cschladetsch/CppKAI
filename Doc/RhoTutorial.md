@@ -238,7 +238,7 @@ doubled = map(numbers, fun(x) { return x * 2 })
 ```mermaid
 graph LR
     subgraph "Rho Code"
-        RHO["result = 5 + pi block 2 3 +"]
+        RHO["result = 5 + pi( 2 3 + )"]
         RHO_PART["Rho: result = 5 +"]
         PI_PART["Pi: 2 3 +"]
     end

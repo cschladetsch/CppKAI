@@ -230,9 +230,9 @@ graph LR
 ```mermaid
 graph TB
     subgraph "Rho Code with Pi Blocks"
-        RHO_CODE["Rho Code<br/>result = 5 + pi block 2 3 +"]
-        PI_INLINE["Inline Pi: pi block 2 3 +"]
-        PI_BLOCK["Pi Block:<br/>pi block<br/>  stack operations<br/>  'var #"]
+        RHO_CODE["Rho Code<br/>result = 5 + pi( 2 3 + )"]
+        PI_INLINE["Inline Pi: pi( 2 3 + )"]
+        PI_BLOCK["Pi Block:<br/>pi(<br/>  stack operations<br/>  'var #<br/>)"]
     end
     
     subgraph "Translation Process"
