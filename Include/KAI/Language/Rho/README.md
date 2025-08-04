@@ -24,12 +24,12 @@ Rho serves as KAI's high-level programming language, offering conventional synta
 ```mermaid
 graph TB
     subgraph "Rho Source Code"
-        SRC["Rho Source<br/>fun add(a, b) {<br/>  return a + b<br/>}<br/>result = add(5, 3)"]
+        SRC["Rho Source<br/>fun add(a, b)<br/>result = add(5, 3)"]
     end
     
     subgraph "Lexical Analysis"
         LEX["Rho Lexer<br/>Tokenization"]
-        TOKENS["Token Stream<br/>FUN, IDENTIFIER, LPAREN<br/>IDENTIFIER, COMMA, etc."]
+        TOKENS["Token Stream<br/>FUN, IDENTIFIER, LPAREN<br/>IDENTIFIER, COMMA"]
     end
     
     subgraph "Syntax Analysis"  
@@ -157,7 +157,7 @@ graph TB
     subgraph "Rho Code with Pi Blocks"
         RHO_CODE["Rho Code<br/>result = 5 + pi{ 2 3 + }"]
         PI_INLINE["Inline Pi: pi{ 2 3 + }"]
-        PI_BLOCK["Pi Block:<br/>pi{<br/>  stack operations<br/>  'var #<br/>}"]
+        PI_BLOCK["Pi Block:<br/>pi{ operations }"]
     end
     
     subgraph "Translation Process"

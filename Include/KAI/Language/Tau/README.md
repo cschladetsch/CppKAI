@@ -9,12 +9,12 @@ Tau is KAI's Interface Definition Language (IDL), designed for describing networ
 ```mermaid
 graph TB
     subgraph "Tau Source Code"
-        SRC["Tau IDL<br/>interface Calculator {<br/>  float add(float a, float b);<br/>  float multiply(float a, float b);<br/>}"]
+        SRC["Tau IDL<br/>interface Calculator {<br/>  float add(float, float);<br/>}"]
     end
     
     subgraph "Lexical Analysis"
         LEX["Tau Lexer<br/>Tokenization"]
-        TOKENS["Token Stream<br/>INTERFACE, IDENTIFIER<br/>FLOAT, IDENTIFIER, etc."]
+        TOKENS["Token Stream<br/>INTERFACE, IDENTIFIER<br/>FLOAT, IDENTIFIER"]
     end
     
     subgraph "Syntax Analysis"

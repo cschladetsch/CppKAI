@@ -24,12 +24,12 @@ Pi is the core execution language in KAI - both Rho and Tau ultimately compile d
 ```mermaid
 graph TB
     subgraph "Pi Source Code"
-        SRC["Pi Source<br/>2 3 + dup *<br/>{ 'square # } &"]
+        SRC["Pi Source<br/>2 3 + dup *<br/>{ operations }"]
     end
     
     subgraph "Lexical Analysis"
         LEX["Pi Lexer<br/>Tokenization"]
-        TOKENS["Token Stream<br/>NUMBER, NUMBER, PLUS<br/>DUP, MULTIPLY, etc."]
+        TOKENS["Token Stream<br/>NUMBER, PLUS, DUP<br/>MULTIPLY"]
     end
     
     subgraph "Syntax Analysis"
