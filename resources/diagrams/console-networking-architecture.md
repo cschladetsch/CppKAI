@@ -5,8 +5,8 @@
 ```mermaid
 graph TB
     subgraph "Console A (Port 14600)"
-        CA_UI[Console Interface<br/>Pi λ /network start 14600]
-        CA_NET[Network Manager<br/>ID: Console-1234]
+        CA_UI["Console Interface<br/>Pi λ /network start 14600"]
+        CA_NET["Network Manager<br/>ID: Console-1234"]
         CA_PEER[Peer Handler<br/>RakNet Interface]
         CA_MSG[Message Queue<br/>Command/Result/Broadcast]
     end
@@ -16,8 +16,8 @@ graph TB
     end
     
     subgraph "Console B (Port 14601)"
-        CB_UI[Console Interface<br/>Rho λ /connect localhost 14600]
-        CB_NET[Network Manager<br/>ID: Console-5678]
+        CB_UI["Console Interface<br/>Rho λ /connect localhost 14600"]
+        CB_NET["Network Manager<br/>ID: Console-5678"]
         CB_PEER[Peer Handler<br/>RakNet Interface]
         CB_MSG[Message Queue<br/>Command/Result/Broadcast]
     end
@@ -80,14 +80,14 @@ sequenceDiagram
 ```mermaid
 graph TD
     subgraph "Network Commands"
-        START[/network start [port]<br/>Enable networking]
-        STOP[/network stop<br/>Disable networking]
-        STATUS[/network status<br/>Show network info]
-        CONNECT[/connect host port<br/>Connect to peer]
-        PEERS[/peers<br/>List connected peers]
-        DIRECT[/@peer command<br/>Execute on specific peer]
-        BROADCAST[/broadcast command<br/>Execute on all peers]
-        HISTORY[/nethistory<br/>Show message history]
+        START["/network start [port]<br/>Enable networking"]
+        STOP["/network stop<br/>Disable networking"]
+        STATUS["/network status<br/>Show network info"]
+        CONNECT["/connect host port<br/>Connect to peer"]
+        PEERS["/peers<br/>List connected peers"]
+        DIRECT["/@peer command<br/>Execute on specific peer"]
+        BROADCAST["/broadcast command<br/>Execute on all peers"]
+        HISTORY["/nethistory<br/>Show message history"]
     end
     
     subgraph "Message Types"

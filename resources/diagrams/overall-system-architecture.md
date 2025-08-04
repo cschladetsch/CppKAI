@@ -11,9 +11,9 @@ graph TB
     end
     
     subgraph "Language Layer"
-        TAU[Tau IDL]
-        RHO[Rho Infix]
-        PI[Pi Stack-based]
+        TAU["Tau IDL"]
+        RHO["Rho Infix"]
+        PI["Pi Stack-based"]
     end
     
     subgraph "Translation Pipeline"
@@ -120,15 +120,15 @@ sequenceDiagram
 ```mermaid
 graph LR
     subgraph "Core Components"
-        REG[Registry<br/>Object Factory]
-        EXE[Executor<br/>Virtual Machine]
-        DOM[Domain<br/>Distributed Context]
+        REG["Registry<br/>Object Factory"]
+        EXE["Executor<br/>Virtual Machine"]
+        DOM["Domain<br/>Distributed Context"]
     end
     
     subgraph "Language System"
-        PI[Pi Language<br/>Stack-based]
-        RHO[Rho Language<br/>Infix syntax]
-        TAU[Tau Language<br/>IDL Generator]
+        PI["Pi Language<br/>Stack-based"]
+        RHO["Rho Language<br/>Infix syntax"]
+        TAU["Tau Language<br/>IDL Generator"]
     end
     
     subgraph "Network System"

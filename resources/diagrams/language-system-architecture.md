@@ -5,9 +5,9 @@
 ```mermaid
 graph TD
     subgraph "Source Languages"
-        TAU_SRC[Tau Source<br/>interface Calculator {<br/>  float add(float, float);<br/>}]
-        RHO_SRC[Rho Source<br/>fun add(a, b) {<br/>  return a + b<br/>}]
-        PI_SRC[Pi Source<br/>2 3 + dup *]
+        TAU_SRC["Tau Source<br/>interface Calculator {<br/>  float add(float, float);<br/>}"]
+        RHO_SRC["Rho Source<br/>fun add(a, b) {<br/>  return a + b<br/>}"]
+        PI_SRC["Pi Source<br/>2 3 + dup *"]
     end
     
     subgraph "Lexical Analysis"
@@ -82,48 +82,19 @@ sequenceDiagram
 ```mermaid
 graph TB
     subgraph "Tau (IDL)"
-        TAU_FEATURES[
-            ✓ Interface definitions<br/>
-            ✓ Struct/Enum types<br/>
-            ✓ Network proxy generation<br/>
-            ✓ C++ code output<br/>
-            ✓ Namespace support<br/>
-            ✓ Event declarations
-        ]
+        TAU_FEATURES["✓ Interface definitions<br/>✓ Struct/Enum types<br/>✓ Network proxy generation<br/>✓ C++ code output<br/>✓ Namespace support<br/>✓ Event declarations"]
     end
     
     subgraph "Rho (Infix)"
-        RHO_FEATURES[
-            ✓ Python-like syntax<br/>
-            ✓ Functions & closures<br/>
-            ✓ Control flow (if/while/for)<br/>
-            ✓ Variable assignment<br/>
-            ✓ Arithmetic expressions<br/>
-            ✓ Pi code embedding<br/>
-            ✓ Object-oriented features
-        ]
+        RHO_FEATURES["✓ Python-like syntax<br/>✓ Functions & closures<br/>✓ Control flow (if/while/for)<br/>✓ Variable assignment<br/>✓ Arithmetic expressions<br/>✓ Pi code embedding<br/>✓ Object-oriented features"]
     end
     
     subgraph "Pi (Stack-based)"
-        PI_FEATURES[
-            ✓ Postfix notation<br/>
-            ✓ Stack manipulation<br/>
-            ✓ Direct executor mapping<br/>
-            ✓ Continuation support<br/>
-            ✓ Label/goto operations<br/>
-            ✓ Minimal syntax overhead
-        ]
+        PI_FEATURES["✓ Postfix notation<br/>✓ Stack manipulation<br/>✓ Direct executor mapping<br/>✓ Continuation support<br/>✓ Label/goto operations<br/>✓ Minimal syntax overhead"]
     end
     
     subgraph "Common Runtime"
-        COMMON[
-            ✓ Dynamic typing<br/>
-            ✓ Object introspection<br/>
-            ✓ Garbage collection<br/>
-            ✓ Network transparency<br/>
-            ✓ Exception handling<br/>
-            ✓ Serialization support
-        ]
+        COMMON["✓ Dynamic typing<br/>✓ Object introspection<br/>✓ Garbage collection<br/>✓ Network transparency<br/>✓ Exception handling<br/>✓ Serialization support"]
     end
     
     TAU_FEATURES -.-> COMMON
