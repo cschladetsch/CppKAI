@@ -160,9 +160,9 @@ classDiagram
 ```mermaid
 graph TB
     subgraph "Rho Control Structures"
-        IF_RHO["if (condition)<br/>  statements<br/>else<br/>  statements"]
-        WHILE_RHO["while (condition)<br/>  statements"]
-        FOR_RHO["for (init; cond; inc)<br/>  statements"]
+        IF_RHO["if condition<br/>  statements<br/>else<br/>  statements"]
+        WHILE_RHO["while condition<br/>  statements"]
+        FOR_RHO["for init; cond; inc<br/>  statements"]
         FUNC_RHO["fun name(params)<br/>  statements<br/>  return expr"]
     end
     
