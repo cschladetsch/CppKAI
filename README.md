@@ -8,6 +8,116 @@ _KAI_ is a network distributed **Object Model** for C++ with full runtime reflec
 
 Objects and *compute* can be distributed across Nodes in a Domain.
 
+## System Architecture Overview
+
+The KAI system provides a multi-layered architecture that enables distributed object programming with multiple language frontends:
+
+```mermaid
+graph TB
+    subgraph "Application Layer"
+        USER[User Applications]
+        SCRIPTS[Scripts & Automation]
+        TOOLS[Developer Tools]
+    end
+    
+    subgraph "Language Layer"
+        RHO[Rho Language<br/>Infix Syntax<br/>Python-like]
+        PI[Pi Language<br/>Stack-based<br/>Forth-like]
+        TAU[Tau Language<br/>Interface Definition<br/>Code Generation]
+    end
+    
+    subgraph "Console & Networking"
+        CONSOLE[Interactive Console<br/>Multi-language REPL]
+        P2P[Peer-to-Peer<br/>Console Networking]
+        NETCMD[Network Commands<br/>Remote Execution]
+    end
+    
+    subgraph "Execution Engine"
+        EXECUTOR[Stack-based Executor<br/>Virtual Machine]
+        COMPILER[Multi-language<br/>Compiler/Translator]
+        CONTINUATION[Continuation Support<br/>Advanced Control Flow]
+    end
+    
+    subgraph "Core Object Model"
+        REGISTRY[Type Registry<br/>Object Factory<br/>Reflection System]
+        OBJECTS[Distributed Objects<br/>Network Transparency]
+        GC[Incremental GC<br/>Tri-color Algorithm]
+    end
+    
+    subgraph "Platform & Runtime"
+        MEMORY[Memory Management<br/>Smart Pointers]
+        SERIALIZE[Serialization<br/>Network Protocol]
+        PLATFORM[Cross-platform<br/>Windows/Linux/macOS]
+    end
+    
+    subgraph "External Dependencies"
+        BOOST[Boost Libraries]
+        RAKNET[RakNet Networking]
+        GTEST[Google Test]
+        CMAKE[CMake Build]
+    end
+    
+    %% Application connections
+    USER --> RHO
+    USER --> PI  
+    USER --> TAU
+    SCRIPTS --> CONSOLE
+    TOOLS --> CONSOLE
+    
+    %% Language layer connections
+    RHO --> COMPILER
+    PI --> EXECUTOR
+    TAU --> COMPILER
+    
+    %% Console connections
+    CONSOLE --> EXECUTOR
+    CONSOLE --> P2P
+    P2P --> NETCMD
+    NETCMD --> EXECUTOR
+    
+    %% Execution engine connections
+    COMPILER --> EXECUTOR
+    EXECUTOR --> CONTINUATION
+    EXECUTOR --> REGISTRY
+    
+    %% Core object model connections
+    REGISTRY --> OBJECTS
+    REGISTRY --> GC
+    OBJECTS --> SERIALIZE
+    
+    %% Platform connections
+    EXECUTOR --> MEMORY
+    OBJECTS --> MEMORY
+    SERIALIZE --> PLATFORM
+    
+    %% External dependencies
+    PLATFORM --> BOOST
+    P2P --> RAKNET
+    PLATFORM --> GTEST
+    PLATFORM --> CMAKE
+    
+    %% Styling
+    style USER fill:#e1f5fe
+    style RHO fill:#c8e6c9
+    style PI fill:#ffecb3
+    style TAU fill:#f3e5f5
+    style CONSOLE fill:#fff3e0
+    style EXECUTOR fill:#e8f5e8
+    style REGISTRY fill:#fce4ec
+    style OBJECTS fill:#e0f2f1
+    style GC fill:#f1f8e9
+```
+
+### Key System Components
+
+- **Multi-Language Frontend**: Rho (infix), Pi (stack-based), and Tau (IDL) languages with seamless interoperability
+- **Interactive Console**: Real-time REPL with peer-to-peer networking capabilities  
+- **Distributed Object Model**: Network-transparent objects with type safety across node boundaries
+- **Stack-based Execution**: High-performance virtual machine with continuation support
+- **Incremental Garbage Collection**: Smooth memory management without performance spikes
+- **Code Generation**: Tau IDL generates proxy/agent pairs for network communication
+- **Cross-platform Support**: Unified development experience across major operating systems
+
 ## Demo Views
 
 [Pi](Doc/PiTutoral) is a postfix language. 
