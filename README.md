@@ -36,7 +36,7 @@ Objects and *compute* can be distributed across Nodes in a Domain.
 
 ### **Development Guides**
 - **Building**: [Build Guide](Doc/OUT_OF_SOURCE_BUILD.md) | [Installation](Doc/Install.md) | [CMake Guide](CMake/README.md)
-- **Languages**: [Pi](Doc/PiTutorial.md) | [Rho](Doc/RhoTutorial.md) | [Tau](Doc/TauTutorial.md) | [Language System](Include/KAI/Language/README.md)
+- **Languages**: [Pi Tutorial](Doc/PiTutorial.md) | [Rho Tutorial](Doc/RhoTutorial.md) | [Tau Tutorial](Doc/TauTutorial.md) | [Language System](Include/KAI/Language/README.md)
 - **Networking**: [Overview](Doc/Networking.md) | [Architecture](Doc/NetworkArchitecture.md) | [Console Networking](CONSOLE_NETWORKING.md)
 - **Testing**: [Test Guide](Doc/Test.md) | [Connection Testing](Doc/ConnectionTesting.md) | [Test Overview](Test/README.md)
 - **Code Generation**: [Tau Code Generation](Doc/TauCodeGeneration.md) | [Tau Generate](Include/KAI/Language/Tau/Generate/README.md)
