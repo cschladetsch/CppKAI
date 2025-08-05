@@ -120,7 +120,7 @@ graph TB
 
 ## Demo Views
 
-[Pi](Doc/PiTutoral) is a postfix language. 
+[Pi](Doc/PiTutorial.md) is a postfix language. 
 
 ![Console](Images/BasicConsole.png)
 
@@ -150,6 +150,7 @@ graph TB
 - **Networking**: [Overview](Doc/Networking.md) | [Architecture](Doc/NetworkArchitecture.md) | [Console Networking](CONSOLE_NETWORKING.md)
 - **Testing**: [Test Guide](Doc/Test.md) | [Connection Testing](Doc/ConnectionTesting.md) | [Test Overview](Test/README.md)
 - **Code Generation**: [Tau Code Generation](Doc/TauCodeGeneration.md) | [Tau Generate](Include/KAI/Language/Tau/Generate/README.md)
+- **Project Status**: [TODO](TODO.md) | [Test Summary](TEST_SUMMARY.md)
 
 ### **Component Documentation**
 - **Core System**: [Core README](Include/KAI/Core/README.md) | [Registry](Include/KAI/Core/Object/README.md) | [Config](Include/KAI/Core/Config/README.md)

@@ -14,14 +14,13 @@ This directory contains comprehensive documentation for the KAI distributed obje
 - **[RhoTutorial.md](RhoTutorial.md)** - Rho infix language tutorial  
 - **[TauTutorial.md](TauTutorial.md)** - Tau IDL tutorial
 - **[LanguageGuide.md](LanguageGuide.md)** - Multi-language overview
+- **[Console Quick Start](../Source/App/Console/Source/QuickStartGuide.md)** - Fast start with console features
 
 ## Core System Documentation
 
 ### Architecture
-- **[Architecture.md](Architecture.md)** - System architecture overview
+- **[Architecture.md](Architecure.md)** - System architecture overview
 - **[CommonLanguageSystem.md](CommonLanguageSystem.md)** - Language integration
-- **[Memory.md](Memory.md)** - Memory management and garbage collection
-- **[ObjectSystem.md](ObjectSystem.md)** - Object model and reflection
 
 ### Networking
 - **[Networking.md](Networking.md)** - Network system overview
@@ -41,7 +40,7 @@ This directory contains comprehensive documentation for the KAI distributed obje
 
 ### Performance and Analysis
 - **[NetworkPerformance.md](NetworkPerformance.md)** - Performance optimization
-- **[RhoAnalysis.md](RhoAnalysis.md)** - Rho language analysis
+- **[Rho-Analysis.md](Rho-Analysis.md)** - Rho language analysis
 - **[TestStatusFinal.md](TestStatusFinal.md)** - Test suite status
 
 ### Language-Specific Documentation
@@ -74,7 +73,6 @@ This directory contains comprehensive documentation for the KAI distributed obje
 
 ## Images and Diagrams
 - **Images/** - Architecture diagrams and screenshots
-- **swords.jpg** - Project logo/mascot
 
 ## Utility Scripts
 - **[find-large-files-repo.sh](find-large-files-repo.sh)** - Repository maintenance script

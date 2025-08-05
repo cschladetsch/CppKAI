@@ -64,7 +64,7 @@
 - Include/KAI/Core/Detail/CallableBase.h (marked as .notused in CallableBase.h.notused)
 
 ### Documentation
-- [ ] Update architecture documentation (Doc/Architecture.md)
+- [ ] Update architecture documentation (Doc/Architecure.md)
 - [ ] Complete language guides for Pi, Rho, and Tau
 - [ ] Document the reflection system
 - [ ] Add examples for network programming

@@ -319,9 +319,10 @@ registry->GetEventSystem()->Publish(ConfigChangedEvent{
 ## See Also
 
 - **[Object System Documentation](Object/README.md)** - Detailed object model implementation
-- **[Configuration Documentation](Config/README.md)** - Configuration system details
-- **[Registry Documentation](../../Registry/README.md)** - Complete registry system guide
-- **[Memory Management Guide](../../../Doc/MemoryManagement.md)** - GC and memory system details
-- **[Type System Overview](../../../Doc/TypeSystem.md)** - Complete type system documentation
+- **[Configuration Documentation](Config/README.md)** - Configuration system details  
+- **[Executor Integration](../Executor/README.md)** - How Core integrates with the virtual machine
+- **[Language Integration](../Language/README.md)** - Core system language support
+- **[Main Documentation Hub](../../../Doc/Documentation.md)** - Central navigation point
+- **[Architecture Resources](../../../resources/README.md)** - System architecture diagrams
 
 The Core system provides the solid foundation upon which all KAI functionality is built, ensuring consistent behavior, automatic memory management, and seamless integration across the entire distributed object model.

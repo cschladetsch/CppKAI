@@ -10,6 +10,13 @@ These share a `Common` test library.
 
 Tests are built in the `Bin/Test/` directory.
 
+## Test Documentation
+
+- **[Console Networking Tests](Console/README.md)** - Console-to-console communication testing
+- **[Connection Testing Guide](../Doc/ConnectionTesting.md)** - Network connection validation
+- **[Test Status Summary](../TEST_SUMMARY.md)** - Current test suite status
+- **[Main Test Guide](../Doc/Test.md)** - Comprehensive testing documentation
+
 ## Folders
 
 * **Common**. Common to all tests

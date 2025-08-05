@@ -146,8 +146,7 @@ Most KAI objects are not thread-safe by default. For multi-threaded usage:
 
 ## Related Documentation
 
-- [Core System](../../../Doc/Architecture.md)
-- [Object Model](../../../Doc/ObjectSystem.md)
+- [Core System](../../../Doc/Architecure.md)
 - [Language System](../../../Doc/CommonLanguageSystem.md)
 - [Network Architecture](../../../Doc/NetworkArchitecture.md)
 - [Build Instructions](../../../Doc/BUILD.md)

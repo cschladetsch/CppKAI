@@ -51,6 +51,22 @@ The Console is built on top of the [Executor](/Source/Library/Executor/Source) a
 
 For full documentation, see [Console Documentation](../../../Doc/Console.md).
 
+## Console Documentation
+
+### Quick Start and Usage
+- **[Quick Start Guide](Source/QuickStartGuide.md)** - Get up and running quickly
+- **[Console Networking](../../../CONSOLE_NETWORKING.md)** - Console-to-console communication
+- **[Implementation Summary](Source/ImplementationSummary.md)** - Technical implementation details
+
+### Advanced Features
+- **[Shell Mode Demo](Source/ShellModeDemo.md)** - Shell integration examples
+- **[Interactive Demo](Source/InteractiveDemo.md)** - Comprehensive feature demonstration
+- **[Advanced Features](Source/AdvancedZshFeatures.md)** - Power-user features
+
+### Testing and Examples
+- **[Console Tests](../../../Test/Console/README.md)** - Test suite documentation
+- **[Typical Session](Source/TypicalSession.md)** - Example usage session
+
 ## Testing
 
 Shell command functionality is tested in `Test/ShellCommandTests/` with over 50 test cases covering:
