@@ -2,7 +2,7 @@
 
 Tau is KAI's Interface Definition Language (IDL), designed for describing networked objects, interfaces, and services within the KAI distributed object model. It provides a way to define how components communicate across the network.
 
-**[Complete Tau Architecture Diagrams](../../../../resources/diagrams/tau-language-architecture.md)** - Complete visual documentation of Tau's IDL processing pipeline, multi-target code generation, and network integration architecture.
+**[Complete Tau Architecture Diagrams](../../../../Doc/TauArchitectureDiagrams.md)** - Complete visual documentation of Tau's IDL processing pipeline, multi-target code generation, and network integration architecture with detailed Mermaid diagrams.
 
 ### Tau Interface Definition Language Pipeline
 

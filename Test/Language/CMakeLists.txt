@@ -171,6 +171,7 @@ foreach (lang ${langs})
             ${source_path}/TauInterfaceTests.cpp           # Interface and contract tests
             ${source_path}/TauAttributeTests.cpp           # Attribute and metadata tests
             ${source_path}/ChatP2PConsoleTest.cpp          # P2P Chat console integration test
+            ${source_path}/TauProxyAgentCommunicationTest.cpp  # Complete proxy/agent communication test
         )
     else()
         # For other languages, use the standard approach

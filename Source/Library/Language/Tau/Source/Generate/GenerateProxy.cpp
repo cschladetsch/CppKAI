@@ -17,7 +17,15 @@ bool GenerateProxy::Generate(TauParser const &p, string &output) {
 }
 
 string GenerateProxy::Prepend() const {
-    return string("#include <KAI/Network/ProxyDecl.h>\n\n");
+    stringstream str;
+    str << "#include <KAI/Network/ProxyDecl.h>\n";
+    str << "#include <KAI/Network/NetworkException.h>\n";
+    str << "#include <functional>\n";
+    str << "#include <stdexcept>\n";
+    str << "#include <string>\n";
+    str << "#include <future>\n";
+    str << "#include <RakNet/BitStream.h>\n\n";
+    return str.str();
 }
 
 struct GenerateProxy::ProxyDecl {
@@ -91,6 +99,11 @@ bool GenerateProxy::Namespace(Node const &ns) {
 
 bool GenerateProxy::Class(Node const &cl) {
     auto className = cl.GetToken().Text();
+
+    // Generate documentation comment
+    Output() << "/// Network proxy for " << className << " interface" << EndLine();
+    Output() << "/// Provides type-safe remote method calls over the network" << EndLine();
+    Output() << "/// All methods are synchronous and may throw NetworkException on failure" << EndLine();
 
     // Generate Proxy class only
     auto proxyDecl = ProxyDecl(className);
@@ -208,6 +221,21 @@ bool GenerateProxy::Method(Node const &method) {
 void GenerateProxy::MethodDecl(const string &returnType,
                                const Node::ChildrenType &args,
                                const string &name) {
+    // Add method documentation
+    Output() << "/// Remote method call: " << name << EndLine();
+    if (!args.empty()) {
+        Output() << "/// Parameters:" << EndLine();
+        for (auto const &a : args) {
+            auto &ty = a->GetChild(0);
+            auto &id = a->GetChild(1);
+            Output() << "///   @param " << id->GetTokenText() << " " << ty->GetTokenText() << EndLine();
+        }
+    }
+    if (returnType != "void") {
+        Output() << "/// @return " << returnType << EndLine();
+    }
+    Output() << "/// @throws NetworkException on communication failure" << EndLine();
+    
     Output() << returnType << " " << name << "(";
     bool first = true;
     for (auto const &a : args) {
@@ -215,8 +243,17 @@ void GenerateProxy::MethodDecl(const string &returnType,
 
         auto &ty = a->GetChild(0);
         auto &id = a->GetChild(1);
-        Output() << "const " << ty->GetTokenText() << "& "
-                 << id->GetTokenText();
+        string typeText = ty->GetTokenText();
+        
+        // Use appropriate parameter passing for different types
+        if (typeText == "int" || typeText == "float" || typeText == "bool" || 
+            typeText == "double" || typeText == "char") {
+            // Pass by value for primitive types
+            Output() << typeText << " " << id->GetTokenText();
+        } else {
+            // Pass by const reference for complex types
+            Output() << "const " << typeText << "& " << id->GetTokenText();
+        }
 
         first = false;
     }
@@ -236,9 +273,17 @@ void GenerateProxy::MethodBody(const string &returnType,
                 Output() << "args << " << a->GetChild(1)->GetTokenText() << ";"
                          << EndLine();
             }
-            Output() << "_node->Send(\"" << name << "\", args);" << EndLine();
+            Output() << "try {" << EndLine();
+            Output() << "    _node->Send(\"" << name << "\", args);" << EndLine();
+            Output() << "} catch (const std::exception& e) {" << EndLine();
+            Output() << "    throw NetworkException(\"Failed to send '" << name << "': \" + std::string(e.what()));" << EndLine();
+            Output() << "}" << EndLine();
         } else {
-            Output() << "_node->Send(\"" << name << "\");" << EndLine();
+            Output() << "try {" << EndLine();
+            Output() << "    _node->Send(\"" << name << "\");" << EndLine();
+            Output() << "} catch (const std::exception& e) {" << EndLine();
+            Output() << "    throw NetworkException(\"Failed to send '" << name << "': \" + std::string(e.what()));" << EndLine();
+            Output() << "}" << EndLine();
         }
     } else {
         // For non-void methods, use _node->SendWithResponse
@@ -248,13 +293,22 @@ void GenerateProxy::MethodBody(const string &returnType,
                 Output() << "args << " << a->GetChild(1)->GetTokenText() << ";"
                          << EndLine();
             }
-            Output() << "auto future = _node->SendWithResponse(\"" << name
+            Output() << "try {" << EndLine();
+            Output() << "    auto future = _node->SendWithResponse(\"" << name
                      << "\", args);" << EndLine();
+            Output() << "    return future.get();" << EndLine();
+            Output() << "} catch (const std::exception& e) {" << EndLine();
+            Output() << "    throw NetworkException(\"Failed to call '" << name << "': \" + std::string(e.what()));" << EndLine();
+            Output() << "}" << EndLine();
         } else {
-            Output() << "auto future = _node->SendWithResponse(\"" << name
+            Output() << "try {" << EndLine();
+            Output() << "    auto future = _node->SendWithResponse(\"" << name
                      << "\");" << EndLine();
+            Output() << "    return future.get();" << EndLine();
+            Output() << "} catch (const std::exception& e) {" << EndLine();
+            Output() << "    throw NetworkException(\"Failed to call '" << name << "': \" + std::string(e.what()));" << EndLine();
+            Output() << "}" << EndLine();
         }
-        Output() << "return future.get();" << EndLine();
     }
 
     EndBlock();

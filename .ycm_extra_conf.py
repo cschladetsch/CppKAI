@@ -6,7 +6,7 @@ flags = [
   '-Wall',
   '-Wextra',
   '-Werror',
-  '-std=c++17',  # Change this to match your project's C++ standard
+  '-std=c++20',  # Change this to match your project's C++ standard
   '-x', 'c++',
   '-I', 'include',  # Add your include directories here
   '-I', 'Include',

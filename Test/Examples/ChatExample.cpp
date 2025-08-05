@@ -138,5 +138,5 @@ int main() {
 }
 
 // To compile and run:
-// g++ -std=c++17 chat_example.cpp -o chat_example
+// g++ -std=c++20 chat_example.cpp -o chat_example
 // ./chat_example

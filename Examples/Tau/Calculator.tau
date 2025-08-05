@@ -1,0 +1,25 @@
+// Calculator.tau - Basic mathematical service example
+// Demonstrates simple method definitions and events
+
+namespace MathService {
+    // Basic calculator interface
+    interface ICalculator {
+        // Arithmetic operations
+        float add(float a, float b);
+        float subtract(float a, float b);
+        float multiply(float a, float b);
+        float divide(float a, float b);
+        
+        // Advanced operations
+        float power(float base, float exponent);
+        float sqrt(float value);
+        
+        // Utility methods
+        void clear();
+        float getLastResult();
+        
+        // Events for operation completion
+        event CalculationCompleted(string operation, float result);
+        event ErrorOccurred(string message);
+    }
+}

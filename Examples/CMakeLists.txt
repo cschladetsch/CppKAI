@@ -17,19 +17,27 @@ add_executable(ModernCppDemo
 
 target_link_libraries(ModernCppDemo ${KAI_LIBS})
 
-# Set compiler flags for modern C++
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+# Set compiler flags for modern C++ - prefer Clang
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     target_compile_options(ModernCppDemo PRIVATE 
         -Wall -Wextra -Wpedantic
-        -fconcepts  # Enable concepts for GCC/Clang
+        -fcolor-diagnostics  # Colored output for better readability
     )
-endif()
-
-if(MSVC)
+    message(STATUS "ModernCppDemo: Using Clang-specific optimizations")
+    
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    target_compile_options(ModernCppDemo PRIVATE 
+        -Wall -Wextra -Wpedantic
+        -fdiagnostics-color=always  # Colored output for better readability
+    )
+    message(STATUS "ModernCppDemo: Using GCC-specific optimizations")
+    
+elseif(MSVC)
     target_compile_options(ModernCppDemo PRIVATE 
         /W4
         /std:c++20
     )
+    message(STATUS "ModernCppDemo: Using MSVC-specific optimizations")
 endif()
 
 # Optional: Add a test to run the demo

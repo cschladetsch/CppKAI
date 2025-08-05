@@ -9,6 +9,7 @@ project(Test_Network)
     set(GTEST_SOURCES
         TestNode.cpp
         TestGenerateProxy.cpp
+        TauNetworkCommunicationTest.cpp
         # ICQStyleChatTest.cpp
         # ChatProxyGenerationTest.cpp
         # ChatFunctionalityTests.cpp
@@ -25,7 +26,9 @@ project(Test_Network)
 
     # Link libraries
     target_link_libraries(Test_Network 
-        Network 
+        Network
+        TauLang
+        Executor
         Core 
         ${GTEST_BOTH_LIBRARIES}
         ${Boost_LIBRARIES}

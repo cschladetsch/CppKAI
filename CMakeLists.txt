@@ -7,31 +7,72 @@ endif()
 
 # KAI Project Build Configuration
 # -------------------------------
-# - Uses Ninja by default (override with -DBUILD_GCC=ON)
-# - Uses Clang++ by default (override with -DBUILD_GCC=ON)
-# - Defaults to C++23 standard
+# - Uses Ninja generator by default for faster builds
+# - Uses Clang/Clang++ by default (preferred compiler)
+# - Override to use GCC with -DBUILD_GCC=ON
+# - Defaults to C++20 standard with modern C++ features
 # - Supports out-of-source builds with output to build/Bin directory
+# - Includes Clang-specific optimizations and colored diagnostics
 
-# Temporarily disable clang-tidy due to build issues
-# set(CMAKE_CXX_CLANG_TIDY clang-tidy)
+# Enable clang-tidy for static analysis when using Clang
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    find_program(CLANG_TIDY_EXE NAMES "clang-tidy")
+    if(CLANG_TIDY_EXE)
+        set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_EXE};-checks=-*,readability-*,performance-*,modernize-*")
+        message(STATUS "Found clang-tidy: ${CLANG_TIDY_EXE}")
+    else()
+        message(STATUS "clang-tidy not found, skipping static analysis")
+    endif()
+endif()
 
-# Set the default generator to Ninja unless BUILD_GCC is set
+# Set the default generator to Ninja and compiler to Clang unless BUILD_GCC is set
 if(NOT DEFINED BUILD_GCC)
-    # Ensure Ninja is used as the default generator
+    # Ensure Ninja is used as the default generator (faster builds)
     if(NOT CMAKE_GENERATOR)
         set(CMAKE_GENERATOR "Ninja" CACHE INTERNAL "Generator used by CMake")
         message(STATUS "Using Ninja generator by default (override with -DBUILD_GCC=ON)")
     endif()
     
-    # Set default compiler to Clang++ if not explicitly set and not using GCC
+    # Set default compiler to Clang++ if not explicitly set
     if(NOT CMAKE_CXX_COMPILER)
-        set(CMAKE_CXX_COMPILER "clang++" CACHE STRING "C++ compiler" FORCE)
-        message(STATUS "Using Clang++ compiler by default (override with -DBUILD_GCC=ON)")
+        find_program(CLANG_CXX_COMPILER clang++)
+        if(CLANG_CXX_COMPILER)
+            set(CMAKE_CXX_COMPILER "${CLANG_CXX_COMPILER}" CACHE STRING "C++ compiler" FORCE)
+            message(STATUS "Using Clang++ compiler by default at: ${CLANG_CXX_COMPILER}")
+        else()
+            message(WARNING "Clang++ not found, falling back to system default compiler")
+        endif()
+    endif()
+    
+    # Set default C compiler to Clang if not explicitly set
+    if(NOT CMAKE_C_COMPILER)
+        find_program(CLANG_C_COMPILER clang)
+        if(CLANG_C_COMPILER)
+            set(CMAKE_C_COMPILER "${CLANG_C_COMPILER}" CACHE STRING "C compiler" FORCE)
+            message(STATUS "Using Clang compiler by default at: ${CLANG_C_COMPILER}")
+        endif()
     endif()
 else()
-    message(STATUS "Using default generator and compiler (BUILD_GCC is set)")
+    message(STATUS "Using GCC compiler toolchain (BUILD_GCC is set)")
     # Mark BUILD_GCC as used
     option(BUILD_GCC "Use GCC compiler instead of Clang++" ${BUILD_GCC})
+    
+    # Ensure GCC is used when BUILD_GCC is set
+    if(NOT CMAKE_CXX_COMPILER)
+        find_program(GCC_CXX_COMPILER g++)
+        if(GCC_CXX_COMPILER)
+            set(CMAKE_CXX_COMPILER "${GCC_CXX_COMPILER}" CACHE STRING "C++ compiler" FORCE)
+            message(STATUS "Using GCC++ compiler at: ${GCC_CXX_COMPILER}")
+        endif()
+    endif()
+    
+    if(NOT CMAKE_C_COMPILER)
+        find_program(GCC_C_COMPILER gcc)
+        if(GCC_C_COMPILER)
+            set(CMAKE_C_COMPILER "${GCC_C_COMPILER}" CACHE STRING "C compiler" FORCE)
+            message(STATUS "Using GCC compiler at: ${GCC_C_COMPILER}")
+        endif()
+    endif()
 endif()
 
 project(KAI)
@@ -49,7 +90,7 @@ set(KAI_HOME ${CMAKE_CURRENT_SOURCE_DIR})
 set(KAI_LOG_DIR "${KAI_HOME}/Logs")
 # Create the directory at configure time if it doesn't exist
 execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${KAI_LOG_DIR})
-# Define as a compile-time definition with proper escaping for C++23
+# Define as a compile-time definition with proper escaping for C++20
 add_definitions(-DKAI_LOG_DIR="${KAI_LOG_DIR}")
 
 # Ensure the global project uses folders
@@ -110,7 +151,7 @@ link_directories(${KAI_HOME}/Lib/Debug)
 link_directories(/usr/local/lib)
 # Don't use HOME/lib, it might not exist or have permission issues
 
-# Modern C++23 compiler flags
+# Modern C++20 compiler flags
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     # Enable modern C++ features and warnings
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall")
@@ -130,11 +171,51 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang
     # Add format-like behavior even in older compilers
     add_definitions(-DKAI_FORMAT_COMPATIBLE)
     
-    # Modern features
-    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-        # GCC-specific flags for C++23
+    # Compiler-specific optimizations and features
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        # Clang optimizations
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -DNDEBUG")
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g3")
+        
+        # Clang-specific warnings that are useful
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-command-line-argument")
+        
+        # Enable colored diagnostics when using Ninja or Make
+        if(CMAKE_GENERATOR STREQUAL "Ninja" OR CMAKE_GENERATOR STREQUAL "Unix Makefiles")
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcolor-diagnostics")
+            set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fcolor-diagnostics")
+        endif()
+        
+        # Modern C++20 features - Clang has native C++20 support
+        # No need for -fconcepts flags as they're built into C++20 support
+        
+        message(STATUS "Using Clang-specific optimizations and C++20 features")
+        
+    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        # GCC-specific flags for C++20
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fconcepts-diagnostics-depth=3")
+        
+        # GCC optimizations
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -DNDEBUG")
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g3")
+        
+        # Enable colored diagnostics when using Ninja or Make
+        if(CMAKE_GENERATOR STREQUAL "Ninja" OR CMAKE_GENERATOR STREQUAL "Unix Makefiles")
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdiagnostics-color=always")
+            set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fdiagnostics-color=always")
+        endif()
+        
+        message(STATUS "Using GCC-specific optimizations and C++20 features")
     endif()
+    
+elseif(MSVC)
+    # MSVC-specific flags
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++20")
+    add_definitions(-DKAI_FORMAT_COMPATIBLE)
+    message(STATUS "Using MSVC compiler with C++20")
+else()
+    message(WARNING "Unknown compiler: ${CMAKE_CXX_COMPILER_ID}")
 endif()
 
 # Add common defines

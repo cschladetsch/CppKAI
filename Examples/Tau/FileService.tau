@@ -1,0 +1,86 @@
+// FileService.tau - Distributed file system example
+// Demonstrates enums, complex parameter types, and async operations
+
+namespace Storage {
+    // File permission enumeration
+    enum FilePermission {
+        READ = 1,
+        WRITE = 2,
+        EXECUTE = 4,
+        DELETE = 8
+    }
+    
+    // File metadata structure
+    struct FileInfo {
+        string fileName;
+        string filePath;
+        int fileSize;
+        string createdDate;
+        string modifiedDate;
+        string owner;
+        int permissions;
+        string mimeType;
+    }
+    
+    // Directory listing structure
+    struct DirectoryEntry {
+        string name;
+        bool isDirectory;
+        FileInfo info;
+    }
+    
+    // Upload progress information
+    struct UploadProgress {
+        string uploadId;
+        int totalBytes;
+        int uploadedBytes;
+        float percentComplete;
+        string status;
+    }
+    
+    // File service interface
+    interface IFileService {
+        // Directory operations
+        DirectoryEntry[] listDirectory(string path);
+        bool createDirectory(string path);
+        bool deleteDirectory(string path, bool recursive = false);
+        bool moveDirectory(string sourcePath, string destinationPath);
+        
+        // File operations
+        FileInfo getFileInfo(string filePath);
+        bool deleteFile(string filePath);
+        bool moveFile(string sourcePath, string destinationPath);
+        bool copyFile(string sourcePath, string destinationPath);
+        
+        // File content operations
+        string readTextFile(string filePath);
+        bool writeTextFile(string filePath, string content);
+        int[] readBinaryFile(string filePath, int maxBytes = 1048576); // 1MB default
+        bool writeBinaryFile(string filePath, int[] data);
+        
+        // Upload/Download operations
+        string startUpload(string fileName, int fileSize);
+        bool uploadFileChunk(string uploadId, int chunkIndex, int[] chunkData);
+        bool completeUpload(string uploadId);
+        bool cancelUpload(string uploadId);
+        
+        string startDownload(string filePath);
+        int[] downloadFileChunk(string downloadId, int chunkIndex, int chunkSize = 8192);
+        bool completeDownload(string downloadId);
+        
+        // Permission management
+        bool setFilePermissions(string filePath, int permissions);
+        int getFilePermissions(string filePath);
+        bool hasPermission(string filePath, FilePermission permission);
+        
+        // Events for file system monitoring
+        event FileCreated(FileInfo fileInfo);
+        event FileModified(FileInfo fileInfo);
+        event FileDeleted(string filePath);
+        event DirectoryCreated(string directoryPath);
+        event DirectoryDeleted(string directoryPath);
+        event UploadProgress(UploadProgress progress);
+        event UploadCompleted(string uploadId, FileInfo fileInfo);
+        event UploadFailed(string uploadId, string error);
+    }
+}

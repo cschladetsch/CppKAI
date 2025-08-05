@@ -59,7 +59,23 @@ fi
 # Verify that TestTau.cpp compiles (without linking)
 echo -e "${YELLOW}Verifying TestTau.cpp compilation (without linking)...${NC}"
 mkdir -p build/tmpobj
-g++ -std=c++23 -g -Wall -Wno-deprecated -fconcepts -I./Include -I./Test/Include \
+
+# Use clang++ by default, fallback to g++
+if command -v clang++ >/dev/null 2>&1; then
+    CXX_COMPILER="clang++"
+    COMPILER_FLAGS="-fcolor-diagnostics"
+    echo -e "${GREEN}Using Clang++ compiler${NC}"
+elif command -v g++ >/dev/null 2>&1; then
+    CXX_COMPILER="g++"
+    COMPILER_FLAGS="-fdiagnostics-color=always"
+    echo -e "${YELLOW}Clang++ not found, using GCC++${NC}"
+else
+    echo -e "${RED}Neither clang++ nor g++ found!${NC}"
+    exit 1
+fi
+
+$CXX_COMPILER -std=c++23 -g -Wall -Wno-deprecated $COMPILER_FLAGS \
+    -I./Include -I./Test/Include \
     -c Test/Language/TestTau/TestTau.cpp \
     -o build/tmpobj/TestTau.o
 

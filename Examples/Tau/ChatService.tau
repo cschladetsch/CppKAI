@@ -1,0 +1,48 @@
+// ChatService.tau - Messaging service example
+// Demonstrates complex types, arrays, and events
+
+namespace Messaging {
+    // User information struct
+    struct User {
+        string username;
+        string displayName;
+        int userId;
+        bool isOnline;
+    }
+    
+    // Message data structure
+    struct Message {
+        int messageId;
+        string content;
+        string timestamp;
+        int senderId;
+        string channelId;
+    }
+    
+    // Chat service interface
+    interface IChatService {
+        // User management
+        bool registerUser(string username, string password);
+        bool loginUser(string username, string password);
+        void logoutUser(int userId);
+        User[] getOnlineUsers();
+        
+        // Channel operations
+        string createChannel(string channelName, string description);
+        bool joinChannel(int userId, string channelId);
+        bool leaveChannel(int userId, string channelId);
+        string[] getUserChannels(int userId);
+        
+        // Messaging
+        bool sendMessage(int senderId, string channelId, string content);
+        Message[] getRecentMessages(string channelId, int count = 50);
+        bool deleteMessage(int messageId, int userId);
+        
+        // Events for real-time updates
+        event UserJoined(User user, string channelId);
+        event UserLeft(int userId, string channelId);
+        event MessageReceived(Message message);
+        event MessageDeleted(int messageId, string channelId);
+        event ChannelCreated(string channelId, string channelName);
+    }
+}

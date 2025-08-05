@@ -1,0 +1,107 @@
+// Test Calculator interface for demonstrating Tau IDL proxy/agent communication
+// This interface will be used to generate both proxy and agent classes
+// and test network communication between them
+
+namespace TestServices {
+
+    // Data structures for testing
+    struct CalculationResult {
+        float value;
+        string operation;
+        long timestamp;
+        bool success;
+    }
+
+    struct MathVector {
+        float x;
+        float y;
+        float z;
+    }
+
+    // Enumeration for testing
+    enum OperationType {
+        Add = 0,
+        Subtract = 1,
+        Multiply = 2,
+        Divide = 3,
+        Power = 4
+    }
+
+    // Main calculator interface
+    interface ICalculator {
+        // Basic arithmetic operations
+        float Add(float a, float b);
+        float Subtract(float a, float b);
+        float Multiply(float a, float b);
+        float Divide(float a, float b);
+        
+        // Advanced operations
+        float Power(float base, float exponent);
+        float SquareRoot(float value);
+        
+        // Operations with complex types
+        CalculationResult PerformOperation(OperationType op, float a, float b);
+        float DotProduct(MathVector a, MathVector b);
+        
+        // Array operations
+        float Sum(float[] values);
+        float Average(float[] values);
+        float[] MultiplyArray(float[] values, float multiplier);
+        
+        // State management
+        void Clear();
+        void SetPrecision(int digits);
+        int GetPrecision();
+        
+        // History operations
+        CalculationResult[] GetHistory();
+        void ClearHistory();
+        
+        // Events for testing event system
+        event CalculationCompleted(CalculationResult result);
+        event CalculationError(string error, OperationType operation);
+        event HistoryCleared();
+    }
+
+    // Secondary interface for testing multiple interfaces
+    interface IStatistics {
+        // Statistical operations
+        float Mean(float[] values);
+        float Median(float[] values);
+        float StandardDeviation(float[] values);
+        float Variance(float[] values);
+        
+        // Data analysis
+        void AddSample(float value);
+        void ClearSamples();
+        int GetSampleCount();
+        float[] GetSamples();
+        
+        // Events
+        event SampleAdded(float value, int totalCount);
+        event StatisticsUpdated(float mean, float stddev);
+    }
+
+    // Network configuration interface
+    interface INetworkConfig {
+        // Connection management
+        bool Connect(string host, int port);
+        void Disconnect();
+        bool IsConnected();
+        
+        // Settings
+        void SetTimeout(int milliseconds);
+        int GetTimeout();
+        void SetRetryCount(int count);
+        int GetRetryCount();
+        
+        // Status
+        string GetConnectionStatus();
+        long GetUptime();
+        
+        // Events
+        event Connected(string host, int port);
+        event Disconnected(string reason);
+        event NetworkError(string error);
+    }
+}

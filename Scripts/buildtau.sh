@@ -27,41 +27,54 @@ echo -e "${YELLOW}Compiling TestTau object files directly...${NC}"
 # Create test files directory
 mkdir -p build/tmpobj
 
-# Compile each source file individually
-# Modified with correct flags and include paths
-g++ -std=c++23 -g -Wall -Wno-deprecated -Wno-switch -Wno-comment -Wno-reorder -Wno-unused-parameter \
+# Use clang++ by default, fallback to g++
+if command -v clang++ >/dev/null 2>&1; then
+    CXX_COMPILER="clang++"
+    COMPILER_FLAGS="-fcolor-diagnostics"
+    echo -e "${GREEN}Using Clang++ compiler for direct build${NC}"
+elif command -v g++ >/dev/null 2>&1; then
+    CXX_COMPILER="g++"
+    COMPILER_FLAGS="-fdiagnostics-color=always"
+    echo -e "${YELLOW}Clang++ not found, using GCC++ for direct build${NC}"
+else
+    echo -e "${RED}Neither clang++ nor g++ found!${NC}"
+    exit 1
+fi
+
+# Common compiler flags
+COMMON_FLAGS="-std=c++20 -g -Wall -Wno-deprecated -Wno-switch -Wno-comment -Wno-reorder -Wno-unused-parameter \
     -Wno-missing-field-initializers -Wno-unknown-pragmas -Wno-unused-value -Wno-unused-but-set-variable \
-    -fconcepts -I./Include -I./Test/Include \
+    $COMPILER_FLAGS -I./Include -I./Test/Include"
+
+# Compile each source file individually
+echo -e "${YELLOW}Compiling TestTau.cpp...${NC}"
+$CXX_COMPILER $COMMON_FLAGS \
     -c Test/Language/TestTau/TestTau.cpp \
     -o build/tmpobj/TestTau.o
 
-g++ -std=c++23 -g -Wall -Wno-deprecated -Wno-switch -Wno-comment -Wno-reorder -Wno-unused-parameter \
-    -Wno-missing-field-initializers -Wno-unknown-pragmas -Wno-unused-value -Wno-unused-but-set-variable \
-    -fconcepts -I./Include -I./Test/Include \
+echo -e "${YELLOW}Compiling TestLangCommon.cpp...${NC}"
+$CXX_COMPILER $COMMON_FLAGS \
     -c Test/Language/TestLangCommon.cpp \
     -o build/tmpobj/TestLangCommon.o
 
-g++ -std=c++23 -g -Wall -Wno-deprecated -Wno-switch -Wno-comment -Wno-reorder -Wno-unused-parameter \
-    -Wno-missing-field-initializers -Wno-unknown-pragmas -Wno-unused-value -Wno-unused-but-set-variable \
-    -fconcepts -I./Include -I./Test/Include \
+echo -e "${YELLOW}Compiling TestCommon.cpp...${NC}"
+$CXX_COMPILER $COMMON_FLAGS \
     -c Test/Common/TestCommon.cpp \
     -o build/tmpobj/TestCommon.o
 
-g++ -std=c++23 -g -Wall -Wno-deprecated -Wno-switch -Wno-comment -Wno-reorder -Wno-unused-parameter \
-    -Wno-missing-field-initializers -Wno-unknown-pragmas -Wno-unused-value -Wno-unused-but-set-variable \
-    -fconcepts -I./Include -I./Test/Include \
+echo -e "${YELLOW}Compiling MyTestStruct.cpp...${NC}"
+$CXX_COMPILER $COMMON_FLAGS \
     -c Test/Common/MyTestStruct.cpp \
     -o build/tmpobj/MyTestStruct.o
 
-g++ -std=c++23 -g -Wall -Wno-deprecated -Wno-switch -Wno-comment -Wno-reorder -Wno-unused-parameter \
-    -Wno-missing-field-initializers -Wno-unknown-pragmas -Wno-unused-value -Wno-unused-but-set-variable \
-    -fconcepts -I./Include -I./Test/Include \
+echo -e "${YELLOW}Compiling Main.cpp...${NC}"
+$CXX_COMPILER $COMMON_FLAGS \
     -c Test/Source/Main.cpp \
     -o build/tmpobj/Main.o
 
 # Now link all together
 echo -e "${YELLOW}Linking TestTau executable...${NC}"
-g++ -std=c++23 \
+$CXX_COMPILER -std=c++20 \
     build/tmpobj/TestTau.o \
     build/tmpobj/TestLangCommon.o \
     build/tmpobj/TestCommon.o \

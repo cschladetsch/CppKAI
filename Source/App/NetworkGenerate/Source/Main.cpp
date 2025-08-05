@@ -30,8 +30,9 @@ int main(int argc, const char* const argv[]) {
     string proxyName = "%s.proxy.h";
     string agentName = "%s.agent.h";
 
-    desc.add_options()("help", "Talk to Christian")("input", value<path>(),
-                                                    "Input TAU file")(
+    desc.add_options()("help,h", "Show this help message")
+                      ("version,v", "Show version information")
+                      ("input,i", value<path>(), "Input TAU file (required)")(
         "proxy_dir", value<path>(&proxy_out_dir)->default_value(proxyOutputDir),
         "Set output dir for proxy")(
         "agent_dir", value<path>(&agent_out_dir)->default_value(agentOutputDir),
@@ -51,16 +52,55 @@ int main(int argc, const char* const argv[]) {
     p.add("input", -1);
 
     variables_map vm;
-    store(command_line_parser(argc, argv).options(desc).positional(p).run(),
-          vm);
-    notify(vm);
+    try {
+        store(command_line_parser(argc, argv).options(desc).positional(p).run(),
+              vm);
+        notify(vm);
+    } catch (const exception& e) {
+        cerr << "Error parsing command line: " << e.what() << endl;
+        return 1;
+    }
+
+    if (vm.count("help")) {
+        cout << "NetworkGenerate - Tau IDL Code Generator" << endl;
+        cout << "Generates C++ proxy and agent classes from Tau interface definitions" << endl << endl;
+        cout << "Usage: NetworkGenerate [options] <input.tau>" << endl << endl;
+        cout << desc << endl;
+        cout << "Examples:" << endl;
+        cout << "  NetworkGenerate Calculator.tau" << endl;
+        cout << "  NetworkGenerate Calculator.tau --out=./generated" << endl;
+        cout << "  NetworkGenerate Calculator.tau --proxy_dir=./client --agent_dir=./server" << endl << endl;
+        cout << "For more information, see the NetworkGenerate README.md" << endl;
+        return 0;
+    }
+
+    if (vm.count("version")) {
+        cout << "NetworkGenerate version 1.0.0" << endl;
+        cout << "Part of the KAI distributed object model system" << endl;
+        cout << "Built with Boost " << BOOST_VERSION / 100000 << "." 
+             << BOOST_VERSION / 100 % 1000 << "." << BOOST_VERSION % 100 << endl;
+        return 0;
+    }
 
     if (vm.count("input") != 1) {
-        cerr << desc;
+        cerr << "Error: Input TAU file is required" << endl << endl;
+        cout << "Usage: NetworkGenerate [options] <input.tau>" << endl;
+        cout << "Use --help for more information" << endl;
         return 1;
     }
 
     auto input = vm["input"].as<path>();
+
+    // Validate input file exists
+    if (!exists(input)) {
+        cerr << "Error: Input file '" << input << "' does not exist" << endl;
+        return 1;
+    }
+
+    // Validate input file extension
+    if (input.extension() != ".tau") {
+        cout << "Warning: Input file does not have .tau extension. Proceeding anyway..." << endl;
+    }
 
     // Get the filename without extension
     string filename = input.stem().string();

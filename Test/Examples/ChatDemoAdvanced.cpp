@@ -276,5 +276,5 @@ int main() {
 }
 
 // To compile and run:
-// g++ -std=c++17 chat_demo_advanced.cpp -o chat_demo_advanced
+// g++ -std=c++20 chat_demo_advanced.cpp -o chat_demo_advanced
 // ./chat_demo_advanced
