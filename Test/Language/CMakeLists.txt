@@ -172,6 +172,9 @@ foreach (lang ${langs})
             ${source_path}/TauAttributeTests.cpp           # Attribute and metadata tests
             ${source_path}/ChatP2PConsoleTest.cpp          # P2P Chat console integration test
             ${source_path}/TauProxyAgentCommunicationTest.cpp  # Complete proxy/agent communication test
+            ${source_path}/TauEdgeCaseTests.cpp            # Comprehensive edge case tests
+            ${source_path}/TauStressTests.cpp              # Performance and stress tests
+            ${source_path}/TauCodeGenerationExtensiveTests.cpp  # Extensive code generation tests
         )
     else()
         # For other languages, use the standard approach
@@ -212,4 +215,23 @@ foreach (lang ${langs})
         KAI_LANG_EXT=.${ext}
     )
 endforeach()
+
+# Add multi-language integration tests as a separate executable
+project(MultiLanguageIntegrationTests)
+set(integration_sources
+    MultiLanguageIntegrationTests.cpp
+    TestLangCommon.cpp
+    ${TEST_HOME}/Common/TestCommon.cpp
+    ${TEST_HOME}/Common/MyTestStruct.cpp
+    ${TEST_HOME}/Source/Main.cpp
+)
+
+add_executable(MultiLanguageIntegrationTests ${integration_sources})
+target_link_libraries(MultiLanguageIntegrationTests ${core_libs} ${GTEST_BOTH_LIBRARIES} ${Boost_LIBRARIES})
+include_directories(${TEST_HOME}/Include)
+include_directories(${CMAKE_SOURCE_DIR}/Include)
+
+if(COMMAND gtest_discover_tests)
+    gtest_discover_tests(MultiLanguageIntegrationTests)
+endif()
 
