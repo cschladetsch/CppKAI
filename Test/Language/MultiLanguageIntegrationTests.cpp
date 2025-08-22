@@ -15,6 +15,7 @@
 #include "KAI/Language/Tau/TauLexer.h"
 #include "KAI/Language/Tau/Generate/GenerateProxy.h"
 #include "KAI/Language/Tau/Generate/GenerateAgent.h"
+#include "KAI/Core/Type/Deref.h"
 
 using namespace kai;
 using namespace std;
@@ -129,7 +130,7 @@ TEST_F(MultiLanguageIntegrationTests, PiRhoInteroperability) {
     
     // Verify the result
     if (result.Exists() && result.IsType<int>()) {
-        EXPECT_EQ(result.GetValue<int>(), 50);
+        EXPECT_EQ(ConstDeref<int>(result), 50);
     }
 }
 
@@ -200,7 +201,7 @@ TEST_F(MultiLanguageIntegrationTests, TauWithPiRhoImplementation) {
     Object rhoResult;
     EXPECT_TRUE(ExecuteRhoCode("add(5, 3)", rhoResult));
     if (rhoResult.Exists() && rhoResult.IsType<int>()) {
-        EXPECT_EQ(rhoResult.GetValue<int>(), 8);
+        EXPECT_EQ(ConstDeref<int>(rhoResult), 8);
     }
 }
 
