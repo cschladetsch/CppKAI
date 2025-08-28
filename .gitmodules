@@ -6,7 +6,7 @@
 	url = git@github.com:cschladetsch/rang.git
 [submodule "Ext/cpp-httplib"]
 	path = Ext/cpp-httplib
-	url = git://github.com/yhirose/cpp-httplib.git
+	url = https://github.com/yhirose/cpp-httplib.git
 [submodule "Ext/raknet"]
 	path = Ext/raknet
 	url = https://github.com/SLikeSoft/RakNet.git
