@@ -337,6 +337,11 @@ bool RhoParser::Statement(AstNodePtr block) {
             return true;
         }
 
+        case TokenType::Fun: {
+            KAI_TRACE() << "RhoParser::Statement - Processing named function definition";
+            return FunctionDefinition(block);
+        }
+
         case TokenType::None:
             // End of input is okay
             return true;
@@ -1264,6 +1269,66 @@ bool RhoParser::ConsumeNewLines() {
         }
         Consume();
     }
+    return true;
+}
+
+bool RhoParser::FunctionDefinition(AstNodePtr block) {
+    KAI_TRACE() << "RhoParser::FunctionDefinition - Processing named function definition";
+    
+    // Consume the 'fun' token
+    if (!Try(TokenType::Fun)) {
+        return CreateError("Expected 'fun' keyword");
+    }
+    Consume();
+    
+    // Create function node
+    auto fun = NewNode(AstEnum::Function);
+    
+    // Parse function name
+    if (!Try(TokenType::Label)) {
+        return CreateError("Expected function name after 'fun'");
+    }
+    fun->Add(Consume());  // Add function name
+    
+    // Parse parameters with parentheses
+    if (!Try(TokenType::OpenParan)) {
+        return CreateError("Expected '(' after function name");
+    }
+    Expect(TokenType::OpenParan);
+    
+    auto args = NewNode(AstEnum::None);
+    fun->Add(args);
+    
+    if (Try(TokenType::Label)) {
+        args->Add(Consume());
+        while (Try(TokenType::Comma)) {
+            Consume();
+            args->Add(Expect(TokenType::Label));
+        }
+    }
+    
+    if (!Try(TokenType::CloseParan)) {
+        return CreateError("Expected ')' after function parameters");
+    }
+    Expect(TokenType::CloseParan);
+    
+    auto functionBlock = NewNode(RhoAstNodeEnumType::Block);
+    
+    // Rho uses Python-like indentation-style function bodies
+    if (!Try(TokenType::NewLine)) {
+        return CreateError("Expected newline after function declaration");
+    }
+    Expect(TokenType::NewLine);
+    
+    // Use the Block method for indented code blocks
+    if (!Block(functionBlock)) {
+        return CreateError("Failed to parse function body");
+    }
+    
+    fun->Add(functionBlock);
+    block->Add(fun);
+    
+    KAI_TRACE() << "RhoParser::FunctionDefinition - Successfully parsed function definition";
     return true;
 }
 

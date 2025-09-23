@@ -1,7 +1,11 @@
 #!/bin/bash
 
 echo -e "\e[1;33mRunning Rho tests one by one to isolate segmentation faults\e[0m"
-cd /home/xian/local/KAI
+# Use current directory (should be KAI project root)
+if [ ! -d "Bin/Test" ]; then
+    echo "Error: Please run this script from the KAI project root directory"
+    exit 1
+fi
 
 # Get all the tests and test suites
 TESTS=$(./Bin/Test/TestRho --gtest_list_tests)

@@ -4,6 +4,7 @@
 #include <string>
 
 #include "KAI/Core/Console.h"
+#include "KAI/Language/Pi/PiTranslator.h"
 
 using namespace kai;
 using namespace std;
@@ -13,9 +14,11 @@ TEST(SimpleTest, BasicPi) {
     // Create a console
     Console console;
     console.SetLanguage(Language::Pi);
-
-    // Get registry and add int type
+    
+    // Set up the translator for Pi language
     Registry& reg = console.GetRegistry();
+    auto translator = std::make_shared<PiTranslator>(reg);
+    console.SetTranslator(translator);
     reg.AddClass<int>(Label("int"));
 
     // Create a basic executor to test binary operations directly

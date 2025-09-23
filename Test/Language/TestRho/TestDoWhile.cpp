@@ -4,6 +4,7 @@
 
 #include "KAI/Core/Console.h"
 #include "KAI/Core/File.h"
+#include "KAI/Language/Rho/RhoTranslator.h"
 #include "MyTestStruct.h"
 #include "TestLangCommon.h"
 
@@ -17,9 +18,13 @@ TEST(RhoLanguage, TestDoWhileLoops) {
     // Initialize console
     Console console;
     console.SetLanguage(Language::Rho);
+    
+    // Set up the translator for Rho language
+    Registry& reg = console.GetRegistry();
+    auto translator = std::make_shared<RhoTranslator>(reg);
+    console.SetTranslator(translator);
 
     // Register necessary types
-    Registry& reg = console.GetRegistry();
     reg.AddClass<int>(Label("int"));
     reg.AddClass<float>(Label("float"));
     reg.AddClass<String>(Label("String"));
@@ -37,33 +42,30 @@ TEST(RhoLanguage, TestDoWhileLoops) {
         exec->ClearContext();
 
         // Load and run the simplest do-while test script
-        string scriptPath =
-            "/home/xian/local/KAI/Test/Language/TestRho/Scripts/"
-            "SimplestDoWhile.rho";
+        vector<string> possiblePaths = {
+            "./Test/Language/TestRho/Scripts/SimplestDoWhile.rho",
+            "Test/Language/TestRho/Scripts/SimplestDoWhile.rho",
+            "/home/xian/local/KAI/Test/Language/TestRho/Scripts/SimplestDoWhile.rho"
+        };
 
-        // In this version, we don't have File::Exists, so we'll try to read the
-        // file directly If it fails, we'll try alternative paths
         string scriptContent;
-        try {
-            // Try with the absolute path first
-            scriptContent = String(File::ReadAllText(scriptPath)).c_str();
-            cout << "Found script at: " << scriptPath << endl;
-        } catch (const std::exception&) {
-            // If that fails, try with a relative path
-            scriptPath = "Test/Language/TestRho/Scripts/SimplestDoWhile.rho";
+        string scriptPath;
+        bool found = false;
+        
+        for (const auto& path : possiblePaths) {
             try {
-                scriptContent = String(File::ReadAllText(scriptPath)).c_str();
+                scriptContent = String(File::ReadAllText(path)).c_str();
+                scriptPath = path;
+                found = true;
                 cout << "Found script at: " << scriptPath << endl;
+                break;
             } catch (const std::exception&) {
-                // If that also fails, try with the path from current directory
-                scriptPath =
-                    "./Test/Language/TestRho/Scripts/SimplestDoWhile.rho";
-                scriptContent = String(File::ReadAllText(scriptPath)).c_str();
-                cout << "Found script at: " << scriptPath << endl;
+                // Try next path
+                continue;
             }
         }
 
-        if (scriptContent.empty()) {
+        if (!found || scriptContent.empty()) {
             FAIL() << "Could not read script file from any path";
         }
         cout << "Script content:" << endl << scriptContent << endl;

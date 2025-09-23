@@ -895,7 +895,8 @@ void RhoTranslator::TranslateFunction(AstNodePtr node) {
     // Process parameters from last to first (since last param is on top of
     // stack)
     for (int i = static_cast<int>(argNames.size()) - 1; i >= 0; --i) {
-        // Pop the parameter value from stack and store it
+        // Create operations that will store the parameter when executed
+        // The parameter value will be on the stack when this continuation runs
         String quotedPath = "'" + argNames[i];
         auto pathObj = reg_->New<Pathname>(Pathname(quotedPath));
         Append(pathObj);
@@ -908,14 +909,9 @@ void RhoTranslator::TranslateFunction(AstNodePtr node) {
     TranslateNode(bodyNode);
     KAI_TRACE() << "Function body translation complete";
 
-    // Ensure functions have a return statement
-    // If the last operation isn't Return, add one
-    auto cont = Top();
-    if (cont.Exists() && cont.Valid()) {
-        // Add return with no value (returns null)
-        AppendDirectOperation(Operation::None);
-        AppendDirectOperation(Operation::Return);
-    }
+    // Function body has been translated
+    // Note: We don't automatically add a return statement anymore
+    // Functions should explicitly return values or return nothing
 
     // Pop the function continuation
     auto functionCont = Pop();

@@ -55,6 +55,7 @@ class RhoParser : public ParserCommon<RhoLexer, RhoAstNodeEnumType> {
     bool ForEachLoop(AstNodePtr);
     bool ParseIndexOp();
     bool Assignment(AstNodePtr);
+    bool FunctionDefinition(AstNodePtr);
 
     // Helper methods
     void ConsumeWhitespace();

@@ -7,7 +7,7 @@ echo -e "\033[1mRunning KAI fixed tests\033[0m"
 echo -e "\033[1m=============================================\033[0m"
 
 # Find bin directory
-BIN_DIR="/home/xian/local/KAI/Bin/Test"
+BIN_DIR="./Bin/Test"
 if [ ! -d "$BIN_DIR" ]; then
     echo "Error: $BIN_DIR directory not found"
     exit 1

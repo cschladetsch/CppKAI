@@ -1,10 +1,12 @@
 #include <KAI/Core/BuiltinTypes.h>
 #include <KAI/Executor/Operation.h>
 #include <KAI/Language/Rho/RhoTranslator.h>
+#include <KAI/Language/Pi/PiTranslator.h>
 
 // Use C++20/23 headers
 #include <concepts>
 #include <format>
+#include <iostream>
 #include <optional>
 #include <ranges>
 #include <string_view>
@@ -150,11 +152,11 @@ Pointer<Continuation> RhoTranslator::Translate(const char* text, Structure st) {
     // Validate input using modern C++ idioms
     if (text == nullptr || *text == '\0') {
         KAI_TRACE_WARN_1("No input text provided");
-        return Object();  // Return empty Object for consistency with base
-                          // implementation
+        return Object();
     }
 
     trace = 5;  // Increase trace level for debugging
+    KAI_TRACE() << "RhoTranslator::Translate called with text: " << text;
 
     KAI_TRACE() << "Executing text: " << text;
 
@@ -196,29 +198,266 @@ Pointer<Continuation> RhoTranslator::Translate(const char* text, Structure st) {
         KAI_TRACE_1(parse->PrintTree());
     }
 
-    // Create a new continuation to hold the translated code
-    PushNew();
-
-    // Translate the AST to a continuation
-    KAI_TRACE() << "Starting to process tokens";
-    TranslateNode(parse->GetRoot());
-
-    // Check for errors in translation
-    if (stack.empty()) {
-        KAI_TRACE_ERROR() << "RhoTranslator::Translate: Stack is empty";
+    // Rho always transpiles to Pi - simple and direct
+    std::string piCode = TranspileToPi(parse->GetRoot());
+    
+    std::cout << "\n=== TRANSPILATION DEBUG ===\n";
+    std::cout << "Input Rho: " << text << "\n";
+    std::cout << "Generated Pi: '" << piCode << "'\n";
+    std::cout << "Failed: " << (Failed ? "true" : "false") << "\n";
+    std::cout << "=== END DEBUG ===\n\n";
+    
+    if (!piCode.empty() && !Failed) {
+        KAI_TRACE() << "Using Pi transpilation: " << piCode;
+        
+        // Use PiTranslator to convert Pi code to continuation
+        PiTranslator piTranslator(*reg_);
+        piTranslator.trace = trace;
+        
+        auto result = piTranslator.Translate(piCode.c_str(), st);
+        
+        if (!piTranslator.Failed) {
+            return result;
+        }
+        
+        KAI_TRACE() << "Pi transpilation failed";
+        Fail("Pi transpilation failed");
         return Object();
     }
+    
+    // If we get here, Pi code was empty or Failed was set
+    Fail("Unable to transpile Rho to Pi");
+    return Object();
+}
 
-    // Get the resulting continuation
-    auto cont = Pop();
+/// Transpile Rho AST to Pi code string
+std::string RhoTranslator::TranspileToPi(AstNodePtr node) {
+    if (!node) {
+        Fail("TranspileToPi: NULL node");
+        return "";
+    }
+    
+    KAI_TRACE() << "Transpiling node to Pi: " << node->ToString();
+    return TranspileNodeToPi(node);
+}
 
-    // Analyze the continuation if it exists
-    if (cont.Exists() && cont->GetCode().Exists()) {
-        KAI_TRACE() << std::format("Rho translated code has {} elements",
-                                   static_cast<int>(cont->GetCode()->Size()));
+/// Recursively transpile AST nodes to Pi code
+std::string RhoTranslator::TranspileNodeToPi(AstNodePtr node) {
+    if (!node) {
+        return "";
     }
 
-    return cont;
+    KAI_TRACE() << "TranspileNodeToPi: Processing node type " << RhoAstNodeEnumType::ToString(node->GetType());
+    
+    // Debug: print node structure
+    std::cout << "  Node type: " << RhoAstNodeEnumType::ToString(node->GetType()) << ", Children: " << node->GetChildren().size();
+    if (node->GetType() == AstNodeEnum::TokenType) {
+        std::cout << ", Token: " << RhoTokenEnumType::ToString(node->GetToken().type);
+    }
+    std::cout << "\n";
+
+    switch (node->GetType()) {
+        case AstNodeEnum::Program: {
+            std::string result;
+            for (const auto& child : node->GetChildren()) {
+                std::string childCode = TranspileNodeToPi(child);
+                if (!childCode.empty()) {
+                    if (!result.empty()) result += " ";
+                    result += childCode;
+                }
+            }
+            return result;
+        }
+        
+        case AstNodeEnum::TokenType: {
+            auto token = node->GetToken();
+            std::cout << "    Processing TokenType: " << RhoTokenEnumType::ToString(token.type) << "\n";
+            switch (token.type) {
+                case RhoTokenEnumType::Int:
+                case RhoTokenEnumType::Float:
+                    return token.Text();
+                    
+                case RhoTokenEnumType::String:
+                    return "\"" + token.Text() + "\"";
+                    
+                case RhoTokenEnumType::True:
+                    return "true";
+                    
+                case RhoTokenEnumType::False:
+                    return "false";
+                    
+                case RhoTokenEnumType::Label:
+                    // Variables are retrieved by name in Pi
+                    return token.Text();
+                    
+                case RhoTokenEnumType::Return:
+                    // In Pi, the last value on stack is automatically returned
+                    // So we just process the return value and leave it on stack
+                    if (!node->GetChildren().empty()) {
+                        return TranspileNodeToPi(node->GetChild(0));
+                    }
+                    return "";
+                    
+                // Handle assignment
+                case RhoTokenEnumType::Assign: {
+                    // Rho: var = value  ->  Pi: value 'var #
+                    if (node->GetChildren().size() >= 2) {
+                        std::string target = node->GetChild(0)->GetTokenText(); // variable name
+                        std::string value = TranspileNodeToPi(node->GetChild(1));
+                        std::cout << "    Assignment: '" << value << " '" << target << " #'\n";
+                        return value + " '" + target + " #";
+                    }
+                    return "";
+                }
+                
+                // Handle binary operators
+                case RhoTokenEnumType::Plus:
+                case RhoTokenEnumType::Minus:
+                case RhoTokenEnumType::Mul:
+                case RhoTokenEnumType::Divide:
+                case RhoTokenEnumType::Less:
+                case RhoTokenEnumType::Greater:
+                case RhoTokenEnumType::LessEquiv:
+                case RhoTokenEnumType::GreaterEquiv:
+                case RhoTokenEnumType::Equiv: {
+                    std::string op = "";
+                    switch (token.type) {
+                        case RhoTokenEnumType::Plus: op = "+"; break;
+                        case RhoTokenEnumType::Minus: op = "-"; break;
+                        case RhoTokenEnumType::Mul: op = "*"; break;
+                        case RhoTokenEnumType::Divide: op = "/"; break;
+                        case RhoTokenEnumType::Less: op = "<"; break;
+                        case RhoTokenEnumType::Greater: op = ">"; break;
+                        case RhoTokenEnumType::LessEquiv: op = "<="; break;
+                        case RhoTokenEnumType::GreaterEquiv: op = ">="; break;
+                        case RhoTokenEnumType::Equiv: op = "=="; break;
+                        default: break;
+                    }
+                    
+                    if (!op.empty() && node->GetChildren().size() >= 2) {
+                        // Binary operation: left right op
+                        std::string left = TranspileNodeToPi(node->GetChild(0));
+                        std::string right = TranspileNodeToPi(node->GetChild(1));
+                        std::cout << "    Binary op: left='" << left << "', right='" << right << "', op='" << op << "'\n";
+                        return left + " " + right + " " + op;
+                    }
+                    break;
+                }
+                
+                default:
+                    std::cout << "    TokenType default case: " << RhoTokenEnumType::ToString(token.type) << ", children: " << node->GetChildren().size() << "\n";
+                    return token.Text();
+            }
+        }
+        
+        case AstNodeEnum::Assignment: {
+            // Rho: var = value  ->  Pi: value 'var # (# is the store operator)
+            if (node->GetChildren().size() >= 2) {
+                std::string target = node->GetChild(0)->GetTokenText(); // variable name
+                std::string value = TranspileNodeToPi(node->GetChild(1));
+                return value + " '" + target + " #";
+            }
+            return "";
+        }
+        
+        case AstNodeEnum::Function: {
+            // Transpile all functions to Pi
+            if (node->GetChildren().size() >= 3) {
+                std::string name = node->GetChild(0)->GetTokenText();
+                auto argsNode = node->GetChild(1);
+                auto bodyNode = node->GetChild(2);
+                
+                std::string piCode = "{ ";
+                
+                // Generate parameter storage code (reverse order for stack)
+                // Stack is LIFO: args are pushed left-to-right, so rightmost is on top
+                auto args = argsNode->GetChildren();
+                for (int i = args.size() - 1; i >= 0; i--) {
+                    std::string paramName = args[i]->GetTokenText();
+                    piCode += "'" + paramName + " # ";
+                }
+                
+                // Generate body code
+                std::string bodyCode = TranspileNodeToPi(bodyNode);
+                piCode += bodyCode + " }";
+                
+                // Store the function (# is the store operator)
+                return piCode + " '" + name + " #";
+            }
+            return "";
+        }
+        
+        case AstNodeEnum::Call: {
+            // Rho: func(args)  ->  Pi: args... 'func retrieve suspend
+            if (!node->GetChildren().empty()) {
+                std::string funcName = node->GetChild(0)->GetTokenText();
+                std::string piCode;
+                
+                // Add arguments
+                if (node->GetChildren().size() > 1) {
+                    auto argsNode = node->GetChild(1);
+                    if (argsNode->GetType() == AstNodeEnum::ArgList) {
+                        for (const auto& arg : argsNode->GetChildren()) {
+                            if (!piCode.empty()) piCode += " ";
+                            piCode += TranspileNodeToPi(arg);
+                        }
+                    }
+                }
+                
+                // Add function call (retrieve function and execute with &)
+                if (!piCode.empty()) piCode += " ";
+                piCode += funcName + " &";
+                
+                return piCode;
+            }
+            return "";
+        }
+        
+        case AstNodeEnum::Block: {
+            std::string result;
+            for (const auto& child : node->GetChildren()) {
+                std::string childCode = TranspileNodeToPi(child);
+                if (!childCode.empty()) {
+                    if (!result.empty()) result += " ";
+                    result += childCode;
+                }
+            }
+            return result;
+        }
+        
+        case AstNodeEnum::While: {
+            // Try to transpile simple while loops to Pi
+            // For complex cases, this will return empty and trigger fallback
+            if (node->GetChildren().size() >= 2) {
+                std::string condition = "{ " + TranspileNodeToPi(node->GetChild(0)) + " }";
+                std::string body = "{ " + TranspileNodeToPi(node->GetChild(1)) + " }";
+                
+                // If either condition or body couldn't be transpiled, return empty for fallback
+                if (condition == "{ }" || body == "{ }") {
+                    return "";
+                }
+                
+                return condition + " " + body + " while";
+            }
+            return "";
+        }
+        
+        
+        default: {
+            
+            // For unhandled nodes, try to process children
+            std::string result;
+            for (const auto& child : node->GetChildren()) {
+                std::string childCode = TranspileNodeToPi(child);
+                if (!childCode.empty()) {
+                    if (!result.empty()) result += " ";
+                    result += childCode;
+                }
+            }
+            return result;
+        }
+    }
 }
+
 
 KAI_END
