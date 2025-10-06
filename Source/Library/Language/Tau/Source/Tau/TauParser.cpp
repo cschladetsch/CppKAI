@@ -27,7 +27,8 @@ bool TauParser::Process(shared_ptr<Lexer> lex, Structure st) {
     // For test compatibility, we need to handle the case where
     // the parser sets an error but we want to be resilient
     // If there's an error but we have a valid AST, clear the error
-    if (!Error.empty() && root && root->GetChildren().size() > 0) {
+    if (!strictMode_ && !Error.empty() && root &&
+        root->GetChildren().size() > 0) {
         // We have some AST nodes, so parsing was at least partially successful
         // Clear the error for resilience
         Error.clear();

@@ -4,7 +4,9 @@
 #include <KAI/Language/Pi/PiTranslator.h>
 #include <KAI/Language/Rho/RhoTranslator.h>
 
+#include <algorithm>
 #include <boost/algorithm/string/predicate.hpp>
+#include <cctype>
 #include <cwctype>
 #include <filesystem>
 
@@ -16,7 +18,11 @@ namespace fs = std::filesystem;
 
 KAI_BEGIN
 
-void ToLower(std::string &str) { KAI_NOT_IMPLEMENTED(); }
+void ToLower(std::string &str) {
+    std::transform(str.begin(), str.end(), str.begin(), [](unsigned char ch) {
+        return static_cast<char>(std::tolower(ch));
+    });
+}
 
 std::wstring ToLower(std::wstring const &str) {
     std::wstring result;

@@ -61,6 +61,8 @@ graph TB
 - **Type-safe**: Ensures type compatibility across network boundaries
 - **Declarative**: Focuses on what rather than how
 
+For the full grammar and lexical rules, consult the [Tau Language Formal Definition](../../../Doc/TauFormalDefinition.md).
+
 ## Syntax Overview
 
 Tau uses the same lexing and parsing systems as the interpreted languages Pi and Rho. **Unlike** those systems, Tau is an Interface Definition Language. The input is `.tau` files; the output is C++ files for:

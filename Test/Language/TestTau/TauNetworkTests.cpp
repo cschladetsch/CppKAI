@@ -7,6 +7,7 @@
 #include "KAI/Core/Config/Base.h"
 #include "KAI/Core/Debug.h"
 #include "TestLangCommon.h"
+#include "TestTauFileUtils.h"
 
 using namespace kai;
 using namespace std;
@@ -16,19 +17,15 @@ class TauNetworkTest : public TestLangCommon {
    protected:
     // Helper method to load a script
     string LoadScript(const char* path) {
-        stringstream ss;
-        ss << "/home/xian/local/KAI/Test/Language/TestTau/Scripts/Connection/"
-           << path;
-
-        ifstream file(ss.str());
-        if (!file.is_open()) {
-            ADD_FAILURE() << "Failed to open script file: " << ss.str();
-            return "";
+        const std::string relative = std::string("Connection/") + path;
+        const auto script = tau_test_utils::LoadScriptText(relative);
+        if (script.empty()) {
+            const auto resolved =
+                tau_test_utils::ResolveScriptPath(relative);
+            ADD_FAILURE() << "Failed to open script file: "
+                           << resolved.string();
         }
-
-        stringstream buffer;
-        buffer << file.rdbuf();
-        return buffer.str();
+        return script;
     }
 
     // Verify a Tau script is valid syntax

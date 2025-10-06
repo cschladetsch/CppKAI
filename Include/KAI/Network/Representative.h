@@ -18,17 +18,17 @@ NetHandle GetNetHandle(Object const &t, Node const &);
 struct Representative : Reflected {
    protected:
     Representative(Node &node, NetHandle handle)
-        : node_(node), netHandle_(handle) {}
+        : node_(&node), netHandle_(handle) {}
 
-   protected:
-    void Receive(NetHandle sender, BinaryStream &packet);
-    void Receive(NetHandle sender, StringStream &packet);
+    virtual ~Representative() = default;
 
-    void Send(NetHandle recipient, const char *);
-    void Send(NetHandle recipient, BinaryPacket const &);
+    Node &GetNode() const { return *node_; }
+    NetHandle GetHandle() const { return netHandle_; }
+
+    void SetHandle(NetHandle handle) { netHandle_ = handle; }
 
    private:
-    Node &node_;
+    Node *node_;
     NetHandle netHandle_;
 };
 

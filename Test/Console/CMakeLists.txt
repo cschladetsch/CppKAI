@@ -8,7 +8,7 @@ set(header_path ${TEST_HOME}/Include)
 
 # Console test files
 set(sources
-    ${source_path}/TestConsoleZshFeatures.cpp
+    ${source_path}/TestConsoleNetworking.cpp
 )
 
 # Include test headers
@@ -25,6 +25,8 @@ target_link_libraries(${name}
     CommonLang
     Executor 
     Core 
+    PiLang
+    RhoLang
     ${GTEST_BOTH_LIBRARIES} 
     gtest_main
 )

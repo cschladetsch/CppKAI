@@ -17,6 +17,7 @@
 #include "KAI/Language/Tau/TauParser.h"
 #include "KAI/Language/Tau/TauLexer.h"
 #include "TestLangCommon.h"
+#include "TestTauFileUtils.h"
 
 using namespace kai;
 using namespace std;
@@ -45,7 +46,8 @@ protected:
         fs::create_directories(outputDir);
         
         // Path to our test Tau file
-        tauFilePath = "/home/christian/local/repos/KAI/Test/Language/TestTau/Scripts/TestCalculator.tau";
+        tauFilePath =
+            tau_test_utils::ResolveScriptPath("TestCalculator.tau").string();
         
         // Expected generated file paths
         generatedProxyPath = outputDir + "/TestCalculator.proxy.h";
@@ -70,16 +72,13 @@ protected:
 
     // Load the Tau script from file
     string LoadTauScript() {
-        ifstream file(tauFilePath);
-        if (!file.is_open()) {
+        const std::string content =
+            tau_test_utils::LoadScriptText("TestCalculator.tau");
+        if (content.empty()) {
             ADD_FAILURE() << "Failed to open Tau file: " << tauFilePath;
             return "";
         }
 
-        stringstream buffer;
-        buffer << file.rdbuf();
-        string content = buffer.str();
-        
         KAI_LOG_INFO("Loaded Tau script (" + to_string(content.size()) + " bytes): " + tauFilePath);
         return content;
     }

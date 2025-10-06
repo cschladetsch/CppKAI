@@ -20,7 +20,8 @@ The KAI documentation is organized into the following main categories:
 #### Language-Specific Guides
 - [Pi Language](PiTutorial.md) - Foundation language (stack-based)
 - [Rho Language](RhoLanguage.md) - Application language (infix notation)
-- [Tau Language](TauTutorial.md) - Interface definition language
+  - [Tau Language](TauTutorial.md) - Interface definition language
+  - [Tau Formal Definition](TauFormalDefinition.md) - Grammar and lexical specification
   - [Tau Code Generation](TauCodeGeneration.md) - Code generation architecture and usage
 
 ### 3. Advanced Topics

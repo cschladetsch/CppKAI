@@ -315,14 +315,19 @@ void Console::CreateTree() {
 }
 
 void Console::Execute(Pointer<Continuation> cont) {
+    ExecuteWithExecutor(cont, executor);
+}
+
+void Console::ExecuteWithExecutor(Pointer<Continuation> cont,
+                                  Pointer<Executor> targetExecutor) {
     KAI_TRY {
         // Extra defensive check for necessary objects
-        if (!executor.Exists()) {
+        if (!targetExecutor.Exists()) {
             KAI_TRACE_ERROR() << "Execute: Null executor - skipping execution";
             return;
         }
 
-        if (!executor->GetDataStack().Exists()) {
+        if (!targetExecutor->GetDataStack().Exists()) {
             KAI_TRACE_ERROR()
                 << "Execute: Null data stack - skipping execution";
             return;
@@ -352,8 +357,8 @@ void Console::Execute(Pointer<Continuation> cont) {
         }
 
         // Set the scope for the continuation if possible
-        if (executor->GetTree() != nullptr) {
-            cont->SetScope(executor->GetTree()->GetScope());
+        if (targetExecutor->GetTree() != nullptr) {
+            cont->SetScope(targetExecutor->GetTree()->GetScope());
         }
 
         // Option 1: Execute the continuation using the standard executor
@@ -366,10 +371,10 @@ void Console::Execute(Pointer<Continuation> cont) {
         // Let exceptions propagate so that Process can catch them
         // Use ContinueOnly to execute this continuation without
         // saving/restoring state
-        executor->ContinueOnly(cont);
+        targetExecutor->ContinueOnly(cont);
 
         // After execution, process the stack to ensure proper type extraction
-        Value<Stack> dataStack = executor->GetDataStack();
+        Value<Stack> dataStack = targetExecutor->GetDataStack();
 
         // Check if we have a valid stack before processing
         if (!dataStack.Valid() || !dataStack.Exists()) {
@@ -402,8 +407,8 @@ void Console::Execute(Pointer<Continuation> cont) {
         }
         // For debugging: log stack state when exception occurs
         KAI_TRACE() << "Exception occurred. Stack state:";
-        if (executor.Exists() && executor->GetDataStack().Exists()) {
-            KAI_TRACE() << "  Stack size: " << executor->GetDataStack()->Size();
+        if (targetExecutor.Exists() && targetExecutor->GetDataStack().Exists()) {
+            KAI_TRACE() << "  Stack size: " << targetExecutor->GetDataStack()->Size();
         }
     }
     KAI_CATCH(exception, E) {
@@ -417,6 +422,12 @@ void Console::Execute(Pointer<Continuation> cont) {
 }
 
 void Console::Execute(String const &text, Structure st) {
+    ExecuteWithExecutor(text, executor, st);
+}
+
+void Console::ExecuteWithExecutor(const String &text,
+                                  Pointer<Executor> targetExecutor,
+                                  Structure st) {
     // Use the translator if available, otherwise use compiler
     Pointer<Continuation> cont;
 
@@ -442,7 +453,7 @@ void Console::Execute(String const &text, Structure st) {
     cont->SetScope(tree.GetScope());
 
     // Execute the continuation - let exceptions propagate to Process
-    Execute(cont);
+    ExecuteWithExecutor(cont, targetExecutor);
 }
 
 String Console::ProcessShellCommand(const String &text) {
@@ -1173,7 +1184,19 @@ void Console::ShowColoredStack() const {
 }
 
 String Console::WriteStack() const {
-    const Value<const Stack> data = executor->GetDataStack();
+    return WriteStackForExecutor(executor);
+}
+
+String Console::WriteStackForExecutor(Pointer<Executor> exec) const {
+    if (!exec.Exists()) {
+        return String();
+    }
+
+    Value<Stack> data = exec->GetDataStack();
+    if (!data.Exists()) {
+        return String();
+    }
+
     auto A = data->Begin(), B = data->End();
     StringStream result;
     for (int N = 0; A != B; ++A) {
@@ -1188,6 +1211,24 @@ String Console::WriteStack() const {
     }
 
     return result.ToString();
+}
+
+String Console::WriteStackForPeer(const std::string& peerId) const {
+    std::string consoleId = peerId;
+    const std::string broadcastSuffix = " [BROADCAST]";
+    if (consoleId.size() > broadcastSuffix.size()) {
+        auto suffixPos = consoleId.rfind(broadcastSuffix);
+        if (suffixPos != std::string::npos &&
+            suffixPos + broadcastSuffix.size() == consoleId.size()) {
+            consoleId = consoleId.substr(0, suffixPos);
+        }
+    }
+
+    auto exec = GetPeerExecutorByConsoleId(consoleId);
+    if (!exec.Exists()) {
+        return String();
+    }
+    return WriteStackForExecutor(exec);
 }
 
 int Console::Run() {
@@ -1961,9 +2002,9 @@ bool Console::ConnectToPeer(const std::string& host, int port) {
 
 void Console::StopNetworking() {
     if (!networkingEnabled_) return;
-    
+
     networkRunning_ = false;
-    
+
     if (messageThread_.joinable()) {
         messageThread_.join();
     }
@@ -1973,8 +2014,9 @@ void Console::StopNetworking() {
         RakNet::RakPeerInterface::DestroyInstance(peer_);
         peer_ = nullptr;
     }
-    
+
     networkingEnabled_ = false;
+    ClearPeerExecutors();
     cout << rang::fg::yellow << "Network console stopped" << rang::fg::reset << endl;
 }
 
@@ -2023,16 +2065,24 @@ void Console::BroadcastCommand(const std::string& command) {
     }
     
     cout << rang::fg::magenta << ">> [BROADCAST] " << command << rang::fg::reset << endl;
+
+    NetworkConsoleMessage msg;
+    msg.senderId = consoleId_ + " [BROADCAST]";
+    msg.command = command;
+    msg.result = "";
+    msg.language = GetLanguage();
+    msg.timestamp = chrono::system_clock::now().time_since_epoch().count();
+    LogNetworkMessage(msg);
 }
 
 std::vector<std::string> Console::GetConnectedPeers() const {
     lock_guard<mutex> lock(const_cast<mutex&>(peersMutex_));
     vector<string> peers;
-    
+
     for (const auto& peer : connectedPeers_) {
         peers.push_back(AddressToString(peer));
     }
-    
+
     return peers;
 }
 
@@ -2211,6 +2261,9 @@ void Console::HandleNetworkPacket(RakNet::Packet* packet) {
                 cout << rang::fg::green << "<- Connected to peer: " 
                      << AddressToString(packet->systemAddress) << rang::fg::reset << endl;
                 AddPeer(packet->systemAddress);
+            } else if (packet->data[0] == RakNet::ID_CONNECTION_ATTEMPT_FAILED) {
+                cout << rang::fg::red << "<- Connection attempt failed: "
+                     << AddressToString(packet->systemAddress) << rang::fg::reset << endl;
             } else if (packet->data[0] == RakNet::ID_DISCONNECTION_NOTIFICATION ||
                       packet->data[0] == RakNet::ID_CONNECTION_LOST) {
                 cout << rang::fg::yellow << "<- Peer disconnected: " 
@@ -2224,44 +2277,59 @@ void Console::HandleNetworkPacket(RakNet::Packet* packet) {
 void Console::HandleConsoleCommand(RakNet::Packet* packet) {
     RakNet::BitStream bs(packet->data, packet->length, false);
     bs.IgnoreBytes(sizeof(RakNet::MessageID));
-    
+
     string senderId, command;
     int languageInt;
     bs.Read(senderId);
     bs.Read(command);
     bs.Read(languageInt);
-    
+
+    AssignPeerConsoleId(packet->systemAddress, senderId);
+
     Language originalLang = GetLanguage();
     Language remoteLang = static_cast<Language>(languageInt);
-    
+
+    Value<Stack> mainStackBefore = executor->GetDataStack();
+    int initialSize = (mainStackBefore.Exists()) ? mainStackBefore->Size() : 0;
+    bool shareMainStack = (initialSize > 0) || (remoteLang != originalLang);
+
     cout << rang::fg::cyan << "<- [" << senderId << "] " << command << rang::fg::reset << endl;
-    
+
     try {
+        auto peerExecutor = GetOrCreatePeerExecutor(packet->systemAddress);
+        if (shareMainStack) {
+            CopyMainStackToExecutor(peerExecutor);
+        }
+
         if (remoteLang != originalLang) {
             SetLanguage(remoteLang);
         }
-        
-        Execute(String(command.c_str()));
-        string result = WriteStack().c_str();
-        
+
+        ExecuteWithExecutor(String(command.c_str()), peerExecutor);
+        string resultDump = WriteStackForExecutor(peerExecutor).c_str();
+        if (shareMainStack) {
+            CopyExecutorStackToMain(peerExecutor);
+        }
+        string simplifiedResult = SimplifyStackDump(resultDump);
+
         if (remoteLang != originalLang) {
             SetLanguage(originalLang);
         }
-        
-        SendResultToPeer(packet->systemAddress, command, result);
-        
+
+        SendResultToPeer(packet->systemAddress, command, resultDump);
+
         NetworkConsoleMessage msg;
         msg.senderId = senderId;
         msg.command = command;
-        msg.result = result;
+        msg.result = simplifiedResult;
         msg.language = remoteLang;
         msg.timestamp = chrono::system_clock::now().time_since_epoch().count();
         LogNetworkMessage(msg);
-        
+
     } catch (const Exception::Base& e) {
         string error = "Error: " + string(e.ToString().c_str());
         SendResultToPeer(packet->systemAddress, command, error);
-        
+
         if (remoteLang != originalLang) {
             SetLanguage(originalLang);
         }
@@ -2271,19 +2339,19 @@ void Console::HandleConsoleCommand(RakNet::Packet* packet) {
 void Console::HandleConsoleResult(RakNet::Packet* packet) {
     RakNet::BitStream bs(packet->data, packet->length, false);
     bs.IgnoreBytes(sizeof(RakNet::MessageID));
-    
+
     string senderId, command, result;
     bs.Read(senderId);
     bs.Read(command);
     bs.Read(result);
-    
+
     cout << rang::fg::green << "<- [" << senderId << "] Result: " << result 
          << rang::fg::reset << endl;
-    
+
     NetworkConsoleMessage msg;
     msg.senderId = senderId;
     msg.command = command;
-    msg.result = result;
+    msg.result = SimplifyStackDump(result);
     msg.timestamp = chrono::system_clock::now().time_since_epoch().count();
     LogNetworkMessage(msg);
 }
@@ -2291,28 +2359,43 @@ void Console::HandleConsoleResult(RakNet::Packet* packet) {
 void Console::HandleConsoleBroadcast(RakNet::Packet* packet) {
     RakNet::BitStream bs(packet->data, packet->length, false);
     bs.IgnoreBytes(sizeof(RakNet::MessageID));
-    
+
     string senderId, command;
     int languageInt;
     bs.Read(senderId);
     bs.Read(command);
     bs.Read(languageInt);
-    
+
+    AssignPeerConsoleId(packet->systemAddress, senderId);
+
     cout << rang::fg::magenta << "<< [BROADCAST from " << senderId << "] " 
          << command << rang::fg::reset << endl;
-    
+
     Language originalLang = GetLanguage();
     Language remoteLang = static_cast<Language>(languageInt);
-    
+
+    Value<Stack> mainStackBefore = executor->GetDataStack();
+    int initialSize = (mainStackBefore.Exists()) ? mainStackBefore->Size() : 0;
+    bool shareMainStack = (initialSize > 0) || (remoteLang != originalLang);
+
     try {
+        auto peerExecutor = GetOrCreatePeerExecutor(packet->systemAddress);
+        if (shareMainStack) {
+            CopyMainStackToExecutor(peerExecutor);
+        }
+
         if (remoteLang != originalLang) {
             SetLanguage(remoteLang);
         }
-        
-        Execute(String(command.c_str()));
-        string result = WriteStack().c_str();
-        cout << "   Result: " << result << endl;
-        
+
+        ExecuteWithExecutor(String(command.c_str()), peerExecutor);
+        string resultDump = WriteStackForExecutor(peerExecutor).c_str();
+        if (shareMainStack) {
+            CopyExecutorStackToMain(peerExecutor);
+        }
+        string simplified = SimplifyStackDump(resultDump);
+        cout << "   Result: " << resultDump << endl;
+
         if (remoteLang != originalLang) {
             SetLanguage(originalLang);
         }
@@ -2320,7 +2403,7 @@ void Console::HandleConsoleBroadcast(RakNet::Packet* packet) {
         NetworkConsoleMessage msg;
         msg.senderId = senderId + " [BROADCAST]";
         msg.command = command;
-        msg.result = result;
+        msg.result = simplified;
         msg.language = remoteLang;
         msg.timestamp = chrono::system_clock::now().time_since_epoch().count();
         LogNetworkMessage(msg);
@@ -2364,15 +2447,23 @@ void Console::SendResultToPeer(const RakNet::SystemAddress& peer,
 }
 
 void Console::AddPeer(const RakNet::SystemAddress& address) {
-    lock_guard<mutex> lock(peersMutex_);
-    connectedPeers_.push_back(address);
+    {
+        lock_guard<mutex> lock(peersMutex_);
+        connectedPeers_.push_back(address);
+    }
+
+    GetOrCreatePeerExecutor(address);
 }
 
 void Console::RemovePeer(const RakNet::SystemAddress& address) {
-    lock_guard<mutex> lock(peersMutex_);
-    connectedPeers_.erase(
-        remove(connectedPeers_.begin(), connectedPeers_.end(), address),
-        connectedPeers_.end());
+    {
+        lock_guard<mutex> lock(peersMutex_);
+        connectedPeers_.erase(
+            remove(connectedPeers_.begin(), connectedPeers_.end(), address),
+            connectedPeers_.end());
+    }
+
+    RemovePeerExecutor(address);
 }
 
 void Console::LogNetworkMessage(const NetworkConsoleMessage& message) {
@@ -2380,10 +2471,107 @@ void Console::LogNetworkMessage(const NetworkConsoleMessage& message) {
     if (messageHistory_.size() > 1000) {
         messageHistory_.erase(messageHistory_.begin());
     }
-    
+
     if (messageCallback_) {
         messageCallback_(message);
     }
+}
+
+void Console::CopyMainStackToExecutor(Pointer<Executor> target) const {
+    if (!target.Exists()) {
+        return;
+    }
+
+    Value<Stack> targetStack = target->GetDataStack();
+    if (!targetStack.Exists()) {
+        return;
+    }
+
+    targetStack->Clear();
+    Value<const Stack> mainStack = executor->GetDataStack();
+    if (!mainStack.Exists()) {
+        return;
+    }
+
+    std::vector<Object> items;
+    for (auto it = mainStack->Begin(), end = mainStack->End(); it != end; ++it) {
+        items.push_back(*it);
+    }
+
+    for (const auto& obj : items) {
+        target->Push(obj);
+    }
+}
+
+void Console::CopyExecutorStackToMain(Pointer<Executor> source) {
+    if (!source.Exists()) {
+        return;
+    }
+
+    Value<Stack> sourceStack = source->GetDataStack();
+    Value<Stack> mainStack = executor->GetDataStack();
+
+    if (!mainStack.Exists()) {
+        return;
+    }
+
+    mainStack->Clear();
+    if (!sourceStack.Exists()) {
+        return;
+    }
+
+    std::vector<Object> items;
+    for (auto it = sourceStack->Begin(), end = sourceStack->End(); it != end; ++it) {
+        items.push_back(*it);
+    }
+
+    for (const auto& obj : items) {
+        executor->Push(obj);
+    }
+}
+
+std::string Console::SimplifyStackDump(const std::string& dump) const {
+    if (dump.empty()) {
+        return dump;
+    }
+
+    std::istringstream stream(dump);
+    std::string line;
+    std::string lastNonEmpty;
+
+    while (std::getline(stream, line)) {
+        if (!line.empty()) {
+            lastNonEmpty = line;
+        }
+    }
+
+    auto trim = [](std::string& text) {
+        auto first = std::find_if_not(text.begin(), text.end(),
+                                      [](unsigned char ch) { return std::isspace(ch); });
+        auto last = std::find_if_not(text.rbegin(), text.rend(),
+                                     [](unsigned char ch) { return std::isspace(ch); }).base();
+        if (first >= last) {
+            text.clear();
+        } else {
+            text = std::string(first, last);
+        }
+    };
+
+    trim(lastNonEmpty);
+    if (lastNonEmpty.empty()) {
+        return std::string();
+    }
+
+    if (lastNonEmpty.front() == '[') {
+        auto pos = lastNonEmpty.find(']');
+        if (pos != std::string::npos) {
+            std::string value = lastNonEmpty.substr(pos + 1);
+            trim(value);
+            return value;
+        }
+    }
+
+    return lastNonEmpty;
 }
 
 std::string Console::GenerateConsoleId() {
@@ -2399,15 +2587,86 @@ std::string Console::AddressToString(const RakNet::SystemAddress& addr) const {
 
 RakNet::SystemAddress Console::FindPeerByAddress(const std::string& addr) const {
     lock_guard<mutex> lock(const_cast<mutex&>(peersMutex_));
-    
+
     for (const auto& peer : connectedPeers_) {
         string peerStr = AddressToString(peer);
         if (peerStr.find(addr) != string::npos || addr == to_string(&peer - &connectedPeers_[0])) {
             return peer;
         }
     }
-    
+
     return RakNet::UNASSIGNED_SYSTEM_ADDRESS;
+}
+
+std::string Console::MakePeerKey(const RakNet::SystemAddress& addr) const {
+    return AddressToString(addr);
+}
+
+Pointer<Executor> Console::GetOrCreatePeerExecutor(const RakNet::SystemAddress& addr) {
+    return GetOrCreatePeerExecutor(MakePeerKey(addr));
+}
+
+Pointer<Executor> Console::GetOrCreatePeerExecutor(const std::string& peerKey) {
+    lock_guard<std::mutex> lock(peerExecutorsMutex_);
+    auto it = peerExecutors_.find(peerKey);
+    if (it != peerExecutors_.end()) {
+        return it->second;
+    }
+
+    Pointer<Executor> newExecutor = reg_->New<Executor>();
+    newExecutor.SetManaged(false);
+    newExecutor->SetCompiler(compiler);
+    newExecutor->SetTree(&tree);
+
+    peerExecutors_[peerKey] = newExecutor;
+    return newExecutor;
+}
+
+void Console::AssignPeerConsoleId(const RakNet::SystemAddress& addr,
+                                  const std::string& consoleId) {
+    if (consoleId.empty()) {
+        return;
+    }
+
+    std::string key = MakePeerKey(addr);
+    lock_guard<std::mutex> lock(peerExecutorsMutex_);
+    peerConsoleIds_[consoleId] = key;
+}
+
+Pointer<Executor> Console::GetPeerExecutorByConsoleId(const std::string& consoleId) const {
+    lock_guard<std::mutex> lock(peerExecutorsMutex_);
+    auto idIt = peerConsoleIds_.find(consoleId);
+    if (idIt == peerConsoleIds_.end()) {
+        return Pointer<Executor>();
+    }
+
+    auto execIt = peerExecutors_.find(idIt->second);
+    if (execIt == peerExecutors_.end()) {
+        return Pointer<Executor>();
+    }
+
+    return execIt->second;
+}
+
+void Console::RemovePeerExecutor(const RakNet::SystemAddress& addr) {
+    std::string key = MakePeerKey(addr);
+    lock_guard<std::mutex> lock(peerExecutorsMutex_);
+
+    peerExecutors_.erase(key);
+
+    for (auto it = peerConsoleIds_.begin(); it != peerConsoleIds_.end();) {
+        if (it->second == key) {
+            it = peerConsoleIds_.erase(it);
+        } else {
+            ++it;
+        }
+    }
+}
+
+void Console::ClearPeerExecutors() {
+    lock_guard<std::mutex> lock(peerExecutorsMutex_);
+    peerExecutors_.clear();
+    peerConsoleIds_.clear();
 }
 
 KAI_END

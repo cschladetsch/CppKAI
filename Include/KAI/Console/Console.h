@@ -13,6 +13,7 @@
 #include <mutex>
 #include <string>
 #include <thread>
+#include <unordered_map>
 #include <vector>
 
 KAI_BEGIN
@@ -60,6 +61,9 @@ class Console : public Reflected {
     std::string consoleId_;
     std::vector<NetworkConsoleMessage> messageHistory_;
     std::function<void(const NetworkConsoleMessage&)> messageCallback_;
+    mutable std::mutex peerExecutorsMutex_;
+    std::unordered_map<std::string, Pointer<Executor>> peerExecutors_;
+    std::unordered_map<std::string, std::string> peerConsoleIds_;
 
    public:
     Console();
@@ -108,8 +112,14 @@ class Console : public Reflected {
     void Execute(const String &text, Structure st = Structure::Statement);
     bool ExecuteFile(const char *);
     void Execute(Pointer<Continuation> cont);
+    void ExecuteWithExecutor(Pointer<Continuation> cont,
+                             Pointer<Executor> targetExecutor);
+    void ExecuteWithExecutor(const String &text,
+                             Pointer<Executor> targetExecutor,
+                             Structure st = Structure::Statement);
 
     String WriteStack() const;
+    String WriteStackForExecutor(Pointer<Executor> exec) const;
     void ShowColoredStack() const;
     void ControlC();
     void ClearScreen() const;
@@ -141,6 +151,7 @@ class Console : public Reflected {
     void SetNetworkMessageCallback(std::function<void(const NetworkConsoleMessage&)> callback);
     String ProcessNetworkCommand(const String& command);
     void ShowNetworkHelp() const;
+    String WriteStackForPeer(const std::string& peerId) const;
     bool IsNetworkingEnabled() const { return networkingEnabled_; }
 
     int Run();
@@ -169,6 +180,17 @@ class Console : public Reflected {
     std::string GenerateConsoleId();
     std::string AddressToString(const RakNet::SystemAddress& addr) const;
     RakNet::SystemAddress FindPeerByAddress(const std::string& addr) const;
+    std::string MakePeerKey(const RakNet::SystemAddress& addr) const;
+    Pointer<Executor> GetOrCreatePeerExecutor(const RakNet::SystemAddress& addr);
+    Pointer<Executor> GetOrCreatePeerExecutor(const std::string& peerKey);
+    void AssignPeerConsoleId(const RakNet::SystemAddress& addr,
+                             const std::string& consoleId);
+    Pointer<Executor> GetPeerExecutorByConsoleId(const std::string& consoleId) const;
+    void RemovePeerExecutor(const RakNet::SystemAddress& addr);
+    void ClearPeerExecutors();
+    void CopyMainStackToExecutor(Pointer<Executor> target) const;
+    void CopyExecutorStackToMain(Pointer<Executor> source);
+    std::string SimplifyStackDump(const std::string& dump) const;
 
    private:
     bool end_ = false;

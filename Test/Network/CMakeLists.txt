@@ -11,6 +11,7 @@ project(Test_Network)
         TestGenerateProxy.cpp
         TauNetworkCommunicationTest.cpp
         AdvancedNetworkTests.cpp
+        TestAgentProxy.cpp
         # ICQStyleChatTest.cpp
         # ChatProxyGenerationTest.cpp
         # ChatFunctionalityTests.cpp

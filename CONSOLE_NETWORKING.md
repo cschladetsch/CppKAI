@@ -131,6 +131,10 @@ enum class NetworkMessageType : RakNet::MessageID {
 - **ProcessNetworkCommand()**: Network command parser and dispatcher
 - **HandleNetworkPacket()**: Incoming message handler
 - **Peer Management**: Connection tracking and addressing
+- **Peer Executor Map**: Every connected system is allocated its own executor so
+  remote commands run with an isolated data stack. The console synchronises the
+  shared executor only when the caller already has stack items or when a
+  language switch requires it.
 
 ## Examples
 
@@ -179,6 +183,13 @@ pi> /broadcast clear
 <- [Console-5678] Result:
 ```
 
+### Multi-Peer Broadcasts
+
+Thanks to the in-memory RakNet implementation, it is trivial to host multiple
+console peers inside the same process. The `MultiPeerBroadcast` unit test
+connects three consoles and confirms that a broadcast updates each remote stack
+while leaving the sender's stack untouched.
+
 ## Implementation Files
 
 ### Headers
@@ -188,7 +199,8 @@ pi> /broadcast clear
 - `Source/Library/Executor/Source/Console.cpp` - Network implementation
 
 ### Tests
-- `Test/Console/TestConsoleNetworking.cpp` - Comprehensive test suite
+- `Test/Console/TestConsoleNetworking.cpp` - Comprehensive test suite (per-peer
+  execution, broadcasts, disconnect handling)
 
 ### Demo
 - `demo_console_communication.sh` - Interactive tmux demo
@@ -201,7 +213,19 @@ pi> /broadcast clear
 3. **Language Context**: Commands execute in the sender's language mode
 4. **Error Handling**: Network errors are reported with colored output
 5. **History Tracking**: All network messages are logged with timestamps
-6. **Thread Safety**: Network operations are thread-safe with proper synchronization
+6. **Thread Safety**: Network operations are thread-safe with proper
+   synchronization
+
+## Test Coverage Snapshot
+
+`TestConsole --gtest_filter=ConsoleNetworkingTest.*` covers:
+
+- **SendCommandToPeer** – validates isolated peer executors and result logging.
+- **MultiPeerBroadcast** – exercises fan-out to multiple peers.
+- **PeerDisconnectCleanup** – ensures executor and history state is reclaimed
+  when a peer disconnects.
+- **ResultHistoryNormalization** – confirms stack dumps are normalised before
+  entering history.
 
 ## Future Enhancements
 

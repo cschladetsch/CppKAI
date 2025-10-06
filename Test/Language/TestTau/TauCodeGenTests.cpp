@@ -12,6 +12,7 @@
 #include "KAI/Language/Tau/Generate/GenerateProxy.h"
 #include "KAI/Language/Tau/TauParser.h"
 #include "TestLangCommon.h"
+#include "TestTauFileUtils.h"
 
 using namespace kai;
 using namespace std;
@@ -20,19 +21,13 @@ using namespace std;
 struct TauCodeGenTests : TestLangCommon {
     // Helper method to load a script file
     std::string LoadScriptText(const char* filename) {
-        std::stringstream path;
-        path << "/home/xian/local/KAI/Test/Language/TestTau/Scripts/"
-             << filename;
-
-        std::ifstream file(path.str());
-        if (!file.is_open()) {
-            KAI_LOG_ERROR("Failed to open file: " + path.str());
-            return "";
+        const auto script =
+            tau_test_utils::LoadScriptText(filename);
+        if (script.empty()) {
+            const auto resolved = tau_test_utils::ResolveScriptPath(filename);
+            KAI_LOG_ERROR("Failed to open file: " + resolved.string());
         }
-
-        std::stringstream buffer;
-        buffer << file.rdbuf();
-        return buffer.str();
+        return script;
     }
 
     // Helper method to check if a generated output contains expected patterns

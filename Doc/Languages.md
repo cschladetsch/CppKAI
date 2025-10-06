@@ -114,7 +114,7 @@ For a Tau file (foo.tau), the KAI system generates:
 
 If you want to host a service, you implement what's required in the agent files. If you want to use a service from elsewhere, you simply use `kai::Proxy<Service>`.
 
-For more details and examples, see the [Tau Language Tutorial](Doc/TauTutorial.md) and [Network Tau Interfaces](Doc/NetworkTauInterfaces.md) documentation.
+For syntax reference, see the [Tau Formal Definition](Doc/TauFormalDefinition.md). Detailed guides are available in the [Tau Language Tutorial](Doc/TauTutorial.md) and [Network Tau Interfaces](Doc/NetworkTauInterfaces.md) documentation.
 
 ## Continuations
 

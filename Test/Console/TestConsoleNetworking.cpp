@@ -80,7 +80,7 @@ protected:
     // Wait for network messages with timeout
     bool WaitForMessages(int expectedCount1, int expectedCount2, int timeoutMs = 2000) {
         auto deadline = chrono::steady_clock::now() + chrono::milliseconds(timeoutMs);
-        
+
         while (chrono::steady_clock::now() < deadline) {
             {
                 lock_guard<mutex> lock(messagesMutex_);
@@ -88,11 +88,15 @@ protected:
                     return true;
                 }
             }
-            this_thread::sleep_for(chrono::milliseconds(10));
+            Wait(10);
         }
         return false;
     }
-    
+
+    static void Wait(int ms) {
+        this_thread::sleep_for(chrono::milliseconds(ms));
+    }
+
 protected:
     unique_ptr<Console> console1_;
     unique_ptr<Console> console2_;
@@ -107,6 +111,7 @@ TEST_F(ConsoleNetworkingTest, BasicNetworkSetup) {
     string result = ExecuteNetworkCommand(*console1_, "/network start 14700");
     EXPECT_EQ(result, "Network started");
     EXPECT_TRUE(console1_->IsNetworkingEnabled());
+    Wait(200);
     
     // Check network status
     result = ExecuteNetworkCommand(*console1_, "/network status");
@@ -117,18 +122,32 @@ TEST_F(ConsoleNetworkingTest, BasicNetworkSetup) {
     result = ExecuteNetworkCommand(*console2_, "/network start 14701");
     EXPECT_EQ(result, "Network started");
     EXPECT_TRUE(console2_->IsNetworkingEnabled());
+    Wait(200);
     
     // Connect console2 to console1
     result = ExecuteNetworkCommand(*console2_, "/connect localhost 14700");
     EXPECT_EQ(result, "Connecting...");
-    
-    // Allow time for connection
-    this_thread::sleep_for(chrono::milliseconds(500));
-    
+
+    std::vector<std::string> peersOnClient;
+    for (int attempt = 0; attempt < 50; ++attempt) {
+        peersOnClient = console2_->GetConnectedPeers();
+        if (!peersOnClient.empty()) break;
+        Wait(100);
+    }
+    ASSERT_FALSE(peersOnClient.empty()) << "Client did not establish connection";
+
+    std::vector<std::string> peersOnServer;
+    for (int attempt = 0; attempt < 50; ++attempt) {
+        peersOnServer = console1_->GetConnectedPeers();
+        if (!peersOnServer.empty()) break;
+        Wait(100);
+    }
+    ASSERT_FALSE(peersOnServer.empty()) << "Server did not register client";
+
     // Check peers on console1
     result = ExecuteNetworkCommand(*console1_, "/peers");
     EXPECT_TRUE(result.find("Connected peers (1)") != string::npos);
-    
+
     // Check peers on console2
     result = ExecuteNetworkCommand(*console2_, "/peers");
     EXPECT_TRUE(result.find("Connected peers (1)") != string::npos);
@@ -139,33 +158,41 @@ TEST_F(ConsoleNetworkingTest, SendCommandToPeer) {
     // Setup network connection
     ExecuteNetworkCommand(*console1_, "/network start 14702");
     ExecuteNetworkCommand(*console2_, "/network start 14703");
+    Wait(200);
     ExecuteNetworkCommand(*console2_, "/connect localhost 14702");
-    
-    // Allow connection to establish
-    this_thread::sleep_for(chrono::milliseconds(500));
-    
-    // Execute a command on console1 to set up stack
-    ExecuteCommand(*console1_, "42");
-    string stack1 = ExecuteCommand(*console1_, "");  // Get current stack
-    EXPECT_TRUE(stack1.find("42") != string::npos);
-    
-    // Send command from console2 to console1
-    ExecuteNetworkCommand(*console2_, "/@0 7 *");
-    
-    // Wait for command to be processed
-    EXPECT_TRUE(WaitForMessages(1, 1, 2000));
-    
-    // Verify the command was executed on console1
-    // The stack should now contain 42 * 7 = 294
-    string newStack = console1_->WriteStack().c_str();
-    EXPECT_TRUE(newStack.find("294") != string::npos);
-    
-    // Check message history
+    std::vector<std::string> peers;
+    for (int attempt = 0; attempt < 50; ++attempt) {
+        peers = console2_->GetConnectedPeers();
+        if (!peers.empty()) break;
+        Wait(100);
+    }
+    ASSERT_FALSE(peers.empty()) << "No peers connected";
+    std::string peerAddress = peers.front();
+
+    // Seed remote stack by pushing a value from the peer
+    ExecuteNetworkCommand(*console2_, std::string("/@") + peerAddress + " 42");
+    ExecuteNetworkCommand(*console2_, std::string("/@") + peerAddress + " 7 *");
+
+    // Wait for both commands to complete
+    EXPECT_TRUE(WaitForMessages(2, 2, 2000));
+
+    // Capture remote console identifier from message history
+    std::string remoteConsoleId;
     {
         lock_guard<mutex> lock(messagesMutex_);
-        EXPECT_GE(messages1_.size(), 1);
-        EXPECT_EQ(messages1_[0].command, "7 *");
+        ASSERT_GE(messages1_.size(), 2);
+        remoteConsoleId = messages1_.back().senderId;
+        EXPECT_EQ(messages1_[0].command, "42");
+        EXPECT_EQ(messages1_[1].command, "7 *");
     }
+
+    // Verify the peer-specific stack contains the expected result
+    std::string peerStack = console1_->WriteStackForPeer(remoteConsoleId).c_str();
+    EXPECT_TRUE(peerStack.find("294") != std::string::npos);
+
+    // Ensure local console stack was not modified by the peer
+    std::string localStack = console1_->WriteStack().c_str();
+    EXPECT_TRUE(localStack.find("294") == std::string::npos);
 }
 
 // Test broadcasting commands to multiple peers
@@ -173,21 +200,37 @@ TEST_F(ConsoleNetworkingTest, BroadcastCommand) {
     // Setup network - console1 as server, console2 as client
     ExecuteNetworkCommand(*console1_, "/network start 14704");
     ExecuteNetworkCommand(*console2_, "/network start 14705");
+    Wait(200);
     ExecuteNetworkCommand(*console2_, "/connect localhost 14704");
-    
-    // Allow connection to establish
-    this_thread::sleep_for(chrono::milliseconds(500));
+    for (int attempt = 0; attempt < 50; ++attempt) {
+        if (!console2_->GetConnectedPeers().empty() &&
+            !console1_->GetConnectedPeers().empty()) {
+            break;
+        }
+        Wait(100);
+    }
     
     // Broadcast a command from console2
     ExecuteNetworkCommand(*console2_, "/broadcast 10 5 +");
-    
+
     // Wait for broadcast to be processed
     EXPECT_TRUE(WaitForMessages(1, 0, 2000));
-    
+
     // Verify the command was executed on console1
-    string stack1 = console1_->WriteStack().c_str();
-    EXPECT_TRUE(stack1.find("15") != string::npos);
-    
+    std::string broadcastConsoleId;
+    {
+        lock_guard<mutex> lock(messagesMutex_);
+        ASSERT_GE(messages1_.size(), 1);
+        broadcastConsoleId = messages1_[0].senderId;
+    }
+
+    std::string broadcastStack = console1_->WriteStackForPeer(broadcastConsoleId).c_str();
+    EXPECT_TRUE(broadcastStack.find("15") != std::string::npos);
+
+    // Local stack should remain untouched unless explicitly modified
+    std::string localStack = console1_->WriteStack().c_str();
+    EXPECT_TRUE(localStack.find("15") == std::string::npos);
+
     // Check message history for broadcast
     {
         lock_guard<mutex> lock(messagesMutex_);
@@ -195,6 +238,75 @@ TEST_F(ConsoleNetworkingTest, BroadcastCommand) {
         EXPECT_TRUE(messages1_[0].senderId.find("BROADCAST") != string::npos);
         EXPECT_EQ(messages1_[0].command, "10 5 +");
         EXPECT_EQ(messages1_[0].result, "15");
+    }
+}
+
+TEST_F(ConsoleNetworkingTest, MultiPeerBroadcast) {
+    ExecuteNetworkCommand(*console1_, "/network start 14716");
+    ExecuteNetworkCommand(*console2_, "/network start 14717");
+    Wait(200);
+
+    auto console3 = std::make_unique<Console>();
+    SetupConsoleTranslator(*console3, Language::Pi);
+    ExecuteNetworkCommand(*console3, "/network start 14718");
+    Wait(200);
+
+    std::vector<NetworkConsoleMessage> messages3;
+    console3->SetNetworkMessageCallback([this, &messages3](const NetworkConsoleMessage& msg) {
+        std::lock_guard<std::mutex> lock(messagesMutex_);
+        messages3.push_back(msg);
+    });
+
+    ExecuteNetworkCommand(*console2_, "/connect localhost 14716");
+    ExecuteNetworkCommand(*console3, "/connect localhost 14716");
+
+    for (int attempt = 0; attempt < 50; ++attempt) {
+        if (!console2_->GetConnectedPeers().empty() &&
+            !console1_->GetConnectedPeers().empty()) {
+            break;
+        }
+        Wait(100);
+    }
+
+    for (int attempt = 0; attempt < 50; ++attempt) {
+        if (!console3->GetConnectedPeers().empty()) {
+            break;
+        }
+        Wait(100);
+    }
+
+    ExecuteCommand(*console2_, "15");
+    ExecuteCommand(*console3, "20");
+
+    ExecuteNetworkCommand(*console1_, "/broadcast 8 2 +");
+
+    EXPECT_TRUE(WaitForMessages(1, 1, 2000));
+
+    for (int attempt = 0; attempt < 50; ++attempt) {
+        bool received;
+        {
+            std::lock_guard<std::mutex> lock(messagesMutex_);
+            received = messages3.size() >= 1;
+        }
+        if (received) {
+            break;
+        }
+        Wait(50);
+    }
+
+    std::string stack2 = console2_->WriteStack().c_str();
+    std::string stack3 = console3->WriteStack().c_str();
+    EXPECT_TRUE(stack2.find("10") != std::string::npos);
+    EXPECT_TRUE(stack3.find("10") != std::string::npos);
+
+    {
+        std::lock_guard<std::mutex> lock(messagesMutex_);
+        ASSERT_GE(messages1_.size(), 1);
+        EXPECT_TRUE(messages1_[0].senderId.find("BROADCAST") != std::string::npos);
+        EXPECT_EQ(messages2_.size(), 1);
+        EXPECT_EQ(messages2_[0].result, "10");
+        EXPECT_EQ(messages3.size(), 1);
+        EXPECT_EQ(messages3[0].result, "10");
     }
 }
 
@@ -209,9 +321,14 @@ TEST_F(ConsoleNetworkingTest, CrossLanguageCommunication) {
     
     ExecuteNetworkCommand(*console1_, "/network start 14706");
     ExecuteNetworkCommand(*console2_, "/network start 14707");
+    Wait(200);
     ExecuteNetworkCommand(*console2_, "/connect localhost 14706");
-    
-    this_thread::sleep_for(chrono::milliseconds(500));
+    for (int attempt = 0; attempt < 50; ++attempt) {
+        if (!console2_->GetConnectedPeers().empty()) {
+            break;
+        }
+        Wait(100);
+    }
     
     // Send Pi command from console2 (Rho) to console1 (Pi)
     ExecuteNetworkCommand(*console2_, "/@0 3 4 +");
@@ -269,9 +386,14 @@ TEST_F(ConsoleNetworkingTest, MessageHistory) {
     // Setup network connection
     ExecuteNetworkCommand(*console1_, "/network start 14710");
     ExecuteNetworkCommand(*console2_, "/network start 14711");
+    Wait(200);
     ExecuteNetworkCommand(*console2_, "/connect localhost 14710");
-    
-    this_thread::sleep_for(chrono::milliseconds(500));
+    for (int attempt = 0; attempt < 50; ++attempt) {
+        if (!console2_->GetConnectedPeers().empty()) {
+            break;
+        }
+        Wait(100);
+    }
     
     // Send several commands
     ExecuteNetworkCommand(*console2_, "/@0 1 2 +");
@@ -338,10 +460,16 @@ TEST_F(ConsoleNetworkingTest, CompleteWorkflow) {
     // Setup both consoles with networking
     ASSERT_EQ(ExecuteNetworkCommand(*console1_, "/network start 14714"), "Network started");
     ASSERT_EQ(ExecuteNetworkCommand(*console2_, "/network start 14715"), "Network started");
+    Wait(200);
     
     // Connect console2 to console1
     ASSERT_EQ(ExecuteNetworkCommand(*console2_, "/connect localhost 14714"), "Connecting...");
-    this_thread::sleep_for(chrono::milliseconds(500));
+    for (int attempt = 0; attempt < 50; ++attempt) {
+        if (!console2_->GetConnectedPeers().empty()) {
+            break;
+        }
+        this_thread::sleep_for(chrono::milliseconds(100));
+    }
     
     // Verify connection
     string peers1 = ExecuteNetworkCommand(*console1_, "/peers");
@@ -394,4 +522,55 @@ TEST_F(ConsoleNetworkingTest, CompleteWorkflow) {
     EXPECT_TRUE(status1.find("peers: 1") != string::npos);
     EXPECT_TRUE(status2.find("Network enabled") != string::npos);
     EXPECT_TRUE(status2.find("peers: 1") != string::npos);
+}
+
+TEST_F(ConsoleNetworkingTest, PeerDisconnectCleanup) {
+    ExecuteNetworkCommand(*console1_, "/network start 14722");
+    ExecuteNetworkCommand(*console2_, "/network start 14723");
+    Wait(200);
+
+    ExecuteNetworkCommand(*console2_, "/connect localhost 14722");
+    for (int attempt = 0; attempt < 50; ++attempt) {
+        if (!console2_->GetConnectedPeers().empty()) {
+            break;
+        }
+        Wait(100);
+    }
+
+    ExecuteNetworkCommand(*console2_, "/@0 9");
+    EXPECT_TRUE(WaitForMessages(1, 1, 2000));
+
+    std::string peerId;
+    {
+        std::lock_guard<std::mutex> lock(messagesMutex_);
+        ASSERT_FALSE(messages1_.empty());
+        peerId = messages1_.back().senderId;
+    }
+
+    ExecuteNetworkCommand(*console2_, "/network stop");
+    Wait(200);
+
+    EXPECT_TRUE(console1_->GetConnectedPeers().empty());
+    EXPECT_TRUE(console1_->WriteStackForPeer(peerId).empty());
+}
+
+TEST_F(ConsoleNetworkingTest, ResultHistoryNormalization) {
+    ExecuteNetworkCommand(*console1_, "/network start 14724");
+    ExecuteNetworkCommand(*console2_, "/network start 14725");
+    Wait(200);
+
+    ExecuteNetworkCommand(*console2_, "/connect localhost 14724");
+    for (int attempt = 0; attempt < 50; ++attempt) {
+        if (!console2_->GetConnectedPeers().empty()) {
+            break;
+        }
+        Wait(100);
+    }
+
+    ExecuteNetworkCommand(*console2_, "/@0 2 3 +");
+    EXPECT_TRUE(WaitForMessages(1, 1, 2000));
+
+    auto history = console1_->GetNetworkHistory();
+    ASSERT_FALSE(history.empty());
+    EXPECT_EQ(history.back().result, "5");
 }

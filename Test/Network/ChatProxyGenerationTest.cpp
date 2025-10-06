@@ -9,6 +9,7 @@
 #include "KAI/Language/Tau/Generate/Agent.h"
 #include "KAI/Language/Tau/Generate/Proxy.h"
 #include "KAI/Language/Tau/TauParser.h"
+#include "Test/Language/TestTau/TestTauFileUtils.h"
 
 using namespace kai;
 using namespace std;
@@ -36,18 +37,16 @@ class ChatProxyGenerationTest : public ::testing::Test {
 
     // Load Tau interface file
     string LoadTauInterface(const string& filename) {
-        string path =
-            "/home/xian/local/KAI/Test/Language/TestTau/Scripts/Connection/" +
-            filename;
-        ifstream file(path);
-        if (!file.is_open()) {
-            ADD_FAILURE() << "Failed to open Tau file: " << path;
-            return "";
+        const std::string relative =
+            std::string("Connection/") + filename;
+        const std::string content =
+            tau_test_utils::LoadScriptText(relative);
+        if (content.empty()) {
+            const auto resolved =
+                tau_test_utils::ResolveScriptPath(relative);
+            ADD_FAILURE() << "Failed to open Tau file: " << resolved.string();
         }
-
-        stringstream buffer;
-        buffer << file.rdbuf();
-        return buffer.str();
+        return content;
     }
 
     // Generate proxy code from Tau AST

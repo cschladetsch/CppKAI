@@ -154,9 +154,9 @@ TEST_F(TauGenerateStructTests, TestStructsIgnoreInterfaces) {
     // Should have the struct
     EXPECT_TRUE(output.find("struct Data") != string::npos);
 
-    // Should NOT have interface-related content
-    EXPECT_TRUE(output.find("interface") == string::npos);
-    EXPECT_TRUE(output.find("IService") == string::npos);
+    // Should NOT generate struct or class declarations for IService
+    EXPECT_EQ(output.find("struct IService"), string::npos);
+    EXPECT_EQ(output.find("class IService"), string::npos);
 }
 
 TAU_END

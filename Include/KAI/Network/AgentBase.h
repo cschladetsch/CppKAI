@@ -5,11 +5,8 @@
 KAI_NET_BEGIN
 
 struct AgentBase : Representative {
-    AgentBase(Node &node, NetObject servant)
-        : Representative(node, servant.GetNetHandle()) {}
-
-   protected:
-    //	using Representative::_object;
+    explicit AgentBase(Node &node);
+    virtual ~AgentBase();
 };
 
 KAI_NET_END

@@ -347,6 +347,11 @@ The KAI network system is built on top of RakNet (available in `/Ext/RakNet/`), 
 - Automatic connection management
 - Packet serialization and transmission
 
+For the console networking tests we provide an in-memory RakNet drop-in
+ (`Include/KAI/Network/RakNetStub.h`). It mimics the public API, tracks peers by
+ port, and delivers packets through in-process queues so unit tests can cover
+ multi-peer scenarios without relying on external sockets.
+
 ### Tau Network Interfaces
 
 KAI uses the Tau Interface Definition Language (IDL) to define network interfaces in a language-neutral way. The Tau language has been enhanced to support a rich set of features needed for network communications, including:
@@ -419,4 +424,3 @@ For details on connection testing and examples, see the [Connection Testing docu
 ### Implementation Documentation
 - [NetworkTest README](../Source/App/NetworkTest/Readme.md): Network test application details
 - [Scripts/network README](../Scripts/network/Readme.md): Network test scripts documentation
-

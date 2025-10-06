@@ -22,6 +22,9 @@ class TauParser : public ParserCommon<TauLexer, TauAstEnumType> {
 
     TauParser(Registry &r) : Parent(r) {}
 
+    void SetStrictMode(bool enabled) { strictMode_ = enabled; }
+    bool StrictMode() const { return strictMode_; }
+
     void StripTokens();
     bool Process(std::shared_ptr<Lexer> lex, Structure st) override;
 
@@ -40,6 +43,8 @@ class TauParser : public ParserCommon<TauLexer, TauAstEnumType> {
 
     void AddArg(AstNodePtr list);
     // void OptionalSemi();
+   private:
+    bool strictMode_ = false;
 };
 
 TAU_END

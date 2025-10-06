@@ -26,9 +26,13 @@ bool TauLexer::NextToken() {
         return true;  // parser will deal with keywords in wrong places
     }
 
-    if (isdigit(current)) {
+    if (isdigit(current) || (current == '-' && isdigit(Peek()))) {
         // Implement number lexing directly here
         int start = offset;
+
+        if (current == '-') {
+            Next();
+        }
 
         // Consume the number
         while (isdigit(Current())) {
@@ -99,7 +103,8 @@ bool TauLexer::NextToken() {
                 Next();  // consume second '/'
                 int start = offset;
                 // Consume until and including the newline (same as Rho and Pi)
-                while (Next() != '\n' && Current() != 0);
+                while (Next() != '\n' && Current() != 0)
+                    ;
 
                 // Create the comment token
                 Add(Enum::Comment, Slice(start, offset));
@@ -109,6 +114,30 @@ bool TauLexer::NextToken() {
                     Next();
                 }
 
+                return true;
+            }
+
+            if (Peek() == '*') {
+                Next();  // consume '*'
+
+                while (true) {
+                    char ch = Next();
+                    if (ch == 0) {
+                        return Fail("Unterminated block comment");
+                    }
+
+                    if (ch == '*' && Peek() == '/') {
+                        Next();  // consume '/'
+                        break;
+                    }
+                }
+
+                // Advance past the closing '/' if possible
+                if (Current() != 0) {
+                    Next();
+                }
+
+                Add(Enum::Comment);
                 return true;
             }
 

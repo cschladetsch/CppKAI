@@ -1,9 +1,14 @@
 #pragma once
 
+#include <algorithm>
+#include <atomic>
 #include <cstring>
 #include <iostream>
 #include <memory>
+#include <mutex>
+#include <queue>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace RakNet {
@@ -120,8 +125,8 @@ class BitStream {
     BitStream() : readPos(0) {}
 
     // Constructor taking pointer to data and length
-    BitStream(unsigned char* data_, size_t length, bool copyData) : readPos(0) {
-        if (copyData && data_ != nullptr && length > 0) {
+    BitStream(unsigned char* data_, size_t length, bool /*copyData*/) : readPos(0) {
+        if (data_ != nullptr && length > 0) {
             data.resize(length);
             memcpy(data.data(), data_, length);
         }
@@ -301,91 +306,260 @@ struct SocketDescriptor {
 // Main RakPeer interface
 class RakPeerInterface {
    public:
-    static RakPeerInterface* GetInstance() {
-        static RakPeerInterface instance;
-        return &instance;
-    }
+    static RakPeerInterface* GetInstance() { return new RakPeerInterface(); }
 
-    static void DestroyInstance(RakPeerInterface* instance) {
-        // Do nothing in stub implementation
-    }
+    static void DestroyInstance(RakPeerInterface* instance) { delete instance; }
 
     StartupResult Startup(unsigned int maxConnections,
                           SocketDescriptor* socketDescriptors,
                           unsigned short socketDescriptorCount) {
+        if (socketDescriptorCount == 0 || socketDescriptors == nullptr) {
+            return INVALID_SOCKET_DESCRIPTORS;
+        }
+
+        listenPort_ = socketDescriptors[0].port;
+        listenIp_ = socketDescriptors[0].hostAddress ? socketDescriptors[0].hostAddress : "127.0.0.1";
+        maxConnections_ = maxConnections;
+        started_ = true;
+        guid_.g = NextGuid();
+
+        std::lock_guard<std::mutex> lock(globalMutex_);
+        peersByPort_[listenPort_] = this;
         return RAKNET_STARTED;
     }
 
-    void Shutdown(unsigned int blockDuration) {
-        // Do nothing in stub
+    void Shutdown(unsigned int /*blockDuration*/) {
+        std::vector<RakPeerInterface*> peersToNotify;
+        {
+            std::lock_guard<std::mutex> lock(connectionMutex_);
+            for (const auto& conn : connections_) {
+                peersToNotify.push_back(conn.peer);
+            }
+            connections_.clear();
+        }
+
+        SystemAddress selfAddress(listenIp_.c_str(), listenPort_);
+        for (auto* peer : peersToNotify) {
+            peer->RemoveConnectionWithPeer(this);
+            peer->QueueSystemMessage(selfAddress, ID_CONNECTION_LOST);
+        }
+
+        {
+            std::lock_guard<std::mutex> lock(queueMutex_);
+            while (!incomingPackets_.empty()) {
+                delete incomingPackets_.front();
+                incomingPackets_.pop();
+            }
+        }
+
+        {
+            std::lock_guard<std::mutex> lock(globalMutex_);
+            auto it = peersByPort_.find(listenPort_);
+            if (it != peersByPort_.end() && it->second == this) {
+                peersByPort_.erase(it);
+            }
+        }
+
+        started_ = false;
     }
 
     void SetMaximumIncomingConnections(unsigned short numberAllowed) {
-        // Do nothing in stub
+        maxConnections_ = numberAllowed;
     }
 
     ConnectionAttemptResult Connect(const char* host, unsigned short remotePort,
-                                    const char* passwordData,
-                                    int passwordDataLength) {
+                                    const char* /*passwordData*/, int /*passwordLength*/) {
+        RakPeerInterface* remote = nullptr;
+        {
+            std::lock_guard<std::mutex> lock(globalMutex_);
+            auto it = peersByPort_.find(remotePort);
+            if (it == peersByPort_.end()) {
+                return CANNOT_RESOLVE_DOMAIN_NAME;
+            }
+            remote = it->second;
+        }
+
+        if (remote == this) {
+            return ALREADY_CONNECTED_TO_ENDPOINT;
+        }
+
+        if (!remote->started_) {
+            return CONNECTION_ATTEMPT_ALREADY_IN_PROGRESS;
+        }
+
+        {
+            std::lock_guard<std::mutex> lock(remote->connectionMutex_);
+            if (remote->maxConnections_ > 0 &&
+                remote->connections_.size() >= remote->maxConnections_) {
+                return SYSTEM_ADDRESS_IS_BLACKLISTED;
+            }
+        }
+
+        SystemAddress remoteAddress(host && *host ? host : remote->listenIp_.c_str(), remotePort);
+        SystemAddress localAddress(listenIp_.c_str(), listenPort_);
+
+        AddConnection(remoteAddress, remote);
+        remote->AddConnection(localAddress, this);
+
+        QueueSystemMessage(remoteAddress, ID_CONNECTION_REQUEST_ACCEPTED);
+        remote->QueueSystemMessage(localAddress, ID_NEW_INCOMING_CONNECTION);
+
         return CONNECTION_ATTEMPT_STARTED;
     }
 
     Packet* Receive() {
-        return nullptr;  // Stub always returns no packets
+        std::lock_guard<std::mutex> lock(queueMutex_);
+        if (incomingPackets_.empty()) {
+            return nullptr;
+        }
+        Packet* packet = incomingPackets_.front();
+        incomingPackets_.pop();
+        return packet;
     }
 
     void DeallocatePacket(Packet* packet) { delete packet; }
 
     bool Send(const char* data, int length, PacketPriority priority, PacketReliability reliability,
               char channel, SystemAddress systemAddress, bool broadcast) {
-        return true;  // Stub always succeeds
+        BitStream stream(reinterpret_cast<unsigned char*>(const_cast<char*>(data)),
+                         static_cast<size_t>(length), true);
+        return Send(&stream, priority, reliability, channel, systemAddress, broadcast);
     }
 
-    bool Send(BitStream* bitStream, PacketPriority priority, PacketReliability reliability, char channel,
+    bool Send(BitStream* bitStream, PacketPriority /*priority*/, PacketReliability /*reliability*/, char /*channel*/,
               SystemAddress systemAddress, bool broadcast) {
-        return true;  // Stub always succeeds
+        if (!bitStream || bitStream->GetNumberOfBytesUsed() == 0) {
+            return false;
+        }
+
+        std::vector<Connection> targets;
+        {
+            std::lock_guard<std::mutex> lock(connectionMutex_);
+            if (broadcast) {
+                targets = connections_;
+            } else {
+                for (const auto& conn : connections_) {
+                    if (conn.address == systemAddress ||
+                        conn.address.ToString() == systemAddress.ToString()) {
+                        targets.push_back(conn);
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (targets.empty()) {
+            return false;
+        }
+
+        const unsigned char* data = bitStream->GetData();
+        size_t length = bitStream->GetNumberOfBytesUsed();
+
+        for (const auto& target : targets) {
+            auto* packet = new Packet();
+            packet->systemAddress = SystemAddress(listenIp_.c_str(), listenPort_);
+            packet->length = length;
+            packet->data = new unsigned char[length];
+            memcpy(packet->data, data, length);
+            target.peer->EnqueuePacket(packet);
+        }
+
+        return true;
     }
 
-    void StartOccasionalPing() {
-        // Do nothing in stub
+    void StartOccasionalPing() {}
+
+    void StopOccasionalPing() {}
+
+    bool Ping(const char* /*host*/, unsigned short /*remotePort*/,
+              bool /*onlyReplyOnAcceptingConnections*/) {
+        return true;
     }
 
-    void StopOccasionalPing() {
-        // Do nothing in stub
-    }
+    void SetOfflinePingResponse(const char* /*data*/, const unsigned int /*length*/) {}
 
-    // Additional functions needed by the network code
-    bool Ping(const char* host, unsigned short remotePort,
-              bool onlyReplyOnAcceptingConnections) {
-        return true;  // Stub always succeeds
-    }
-
-    void SetOfflinePingResponse(const char* data, const unsigned int length) {
-        // Do nothing in stub
-    }
-
-    // Connection state management
     ConnectionState GetConnectionState(const SystemAddress& address) {
-        return IS_CONNECTED;  // Stub always returns connected
+        std::lock_guard<std::mutex> lock(connectionMutex_);
+        for (const auto& conn : connections_) {
+            if (conn.address == address || conn.address.ToString() == address.ToString()) {
+                return IS_CONNECTED;
+            }
+        }
+        return IS_DISCONNECTED;
     }
 
-    // Get internal ID (address of this peer)
     SystemAddress GetInternalID() const {
-        return SystemAddress("127.0.0.1", 0);  // Stub returns localhost
+        return SystemAddress(listenIp_.c_str(), listenPort_);
     }
 
-    // Ping functionality
-    int GetAveragePing(const SystemAddress& address) {
-        return 100;  // Stub returns a reasonable ping time
+    int GetAveragePing(const SystemAddress& /*address*/) { return 50; }
+    int GetLastPing(const SystemAddress& /*address*/) { return 50; }
+    int GetLowestPing(const SystemAddress& /*address*/) { return 45; }
+
+   private:
+    RakPeerInterface()
+        : started_(false), maxConnections_(0), listenPort_(0), listenIp_("127.0.0.1") {
+        guid_.g = 0;
     }
 
-    int GetLastPing(const SystemAddress& address) {
-        return 100;  // Stub returns a reasonable ping time
+    struct Connection {
+        SystemAddress address;
+        RakPeerInterface* peer;
+    };
+
+    static unsigned int NextGuid() {
+        static std::atomic<unsigned int> counter{1};
+        return counter++;
     }
 
-    int GetLowestPing(const SystemAddress& address) {
-        return 90;  // Stub returns a reasonable ping time
+    void EnqueuePacket(Packet* packet) {
+        std::lock_guard<std::mutex> lock(queueMutex_);
+        incomingPackets_.push(packet);
     }
+
+    void QueueSystemMessage(const SystemAddress& from, unsigned char msgId) {
+        auto* packet = new Packet();
+        packet->systemAddress = from;
+        packet->length = 1;
+        packet->data = new unsigned char[1];
+        packet->data[0] = msgId;
+        EnqueuePacket(packet);
+    }
+
+    void AddConnection(const SystemAddress& address, RakPeerInterface* peer) {
+        std::lock_guard<std::mutex> lock(connectionMutex_);
+        auto it = std::find_if(connections_.begin(), connections_.end(),
+                               [peer](const Connection& conn) { return conn.peer == peer; });
+        if (it == connections_.end()) {
+            connections_.push_back({address, peer});
+        }
+    }
+
+    void RemoveConnectionWithPeer(RakPeerInterface* peer) {
+        std::lock_guard<std::mutex> lock(connectionMutex_);
+        connections_.erase(
+            std::remove_if(connections_.begin(), connections_.end(),
+                           [peer](const Connection& conn) { return conn.peer == peer; }),
+            connections_.end());
+    }
+
+    bool started_;
+    unsigned int maxConnections_;
+    unsigned short listenPort_;
+    std::string listenIp_;
+    RakNetGUID guid_;
+
+    mutable std::mutex queueMutex_;
+    std::queue<Packet*> incomingPackets_;
+
+    mutable std::mutex connectionMutex_;
+    std::vector<Connection> connections_;
+
+    static std::mutex globalMutex_;
+    static std::unordered_map<unsigned short, RakPeerInterface*> peersByPort_;
 };
+
+inline std::mutex RakPeerInterface::globalMutex_;
+inline std::unordered_map<unsigned short, RakPeerInterface*> RakPeerInterface::peersByPort_;
 
 }  // namespace RakNet
