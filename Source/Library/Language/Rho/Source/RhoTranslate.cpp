@@ -302,8 +302,8 @@ std::string RhoTranslator::TranspileNodeToPi(AstNodePtr node) {
                 case RhoTokenEnumType::Assign: {
                     // Rho: var = value  ->  Pi: value 'var #
                     if (node->GetChildren().size() >= 2) {
-                        std::string target = node->GetChild(0)->GetTokenText(); // variable name
-                        std::string value = TranspileNodeToPi(node->GetChild(1));
+                        std::string target = node->GetChild(1)->GetTokenText(); // variable name
+                        std::string value = TranspileNodeToPi(node->GetChild(0));
                         std::cout << "    Assignment: '" << value << " '" << target << " #'\n";
                         return value + " '" + target + " #";
                     }
@@ -353,8 +353,8 @@ std::string RhoTranslator::TranspileNodeToPi(AstNodePtr node) {
         case AstNodeEnum::Assignment: {
             // Rho: var = value  ->  Pi: value 'var # (# is the store operator)
             if (node->GetChildren().size() >= 2) {
-                std::string target = node->GetChild(0)->GetTokenText(); // variable name
-                std::string value = TranspileNodeToPi(node->GetChild(1));
+                std::string target = node->GetChild(1)->GetTokenText(); // variable name
+                std::string value = TranspileNodeToPi(node->GetChild(0));
                 return value + " '" + target + " #";
             }
             return "";
@@ -425,24 +425,105 @@ std::string RhoTranslator::TranspileNodeToPi(AstNodePtr node) {
             return result;
         }
         
+        case AstNodeEnum::DoWhile: {
+            // Transpile do-while loops to Pi
+            // Pi doesn't have do-while, so simulate: body { condition body } while
+            // This executes body once, then while(condition) { body }
+            if (node->GetChildren().size() >= 2) {
+                std::string bodyCode = TranspileNodeToPi(node->GetChild(0));
+                std::string conditionCode = TranspileNodeToPi(node->GetChild(1));
+
+                if (bodyCode.empty() || conditionCode.empty()) {
+                    return "";
+                }
+
+                // Execute body once, then while loop with condition and body
+                return bodyCode + " { " + conditionCode + " } { " + bodyCode + " } while";
+            }
+            return "";
+        }
+
         case AstNodeEnum::While: {
             // Try to transpile simple while loops to Pi
             // For complex cases, this will return empty and trigger fallback
             if (node->GetChildren().size() >= 2) {
                 std::string condition = "{ " + TranspileNodeToPi(node->GetChild(0)) + " }";
                 std::string body = "{ " + TranspileNodeToPi(node->GetChild(1)) + " }";
-                
+
                 // If either condition or body couldn't be transpiled, return empty for fallback
                 if (condition == "{ }" || body == "{ }") {
                     return "";
                 }
-                
+
                 return condition + " " + body + " while";
             }
             return "";
         }
-        
-        
+
+        case AstNodeEnum::For: {
+            // Transpile for loops to Pi
+            // Rho: for (init; cond; step) { body }
+            // Pi: init { cond } { body step } while
+            if (node->GetChildren().size() >= 4) {
+                std::string init = TranspileNodeToPi(node->GetChild(0));
+                std::string condition = "{ " + TranspileNodeToPi(node->GetChild(1)) + " }";
+                std::string step = TranspileNodeToPi(node->GetChild(2));
+                std::string body = TranspileNodeToPi(node->GetChild(3));
+
+                // Combine body and step
+                std::string bodyWithStep = "{ " + body;
+                if (!step.empty()) {
+                    bodyWithStep += " " + step;
+                }
+                bodyWithStep += " }";
+
+                std::string result;
+                if (!init.empty()) {
+                    result = init + " ";
+                }
+                result += condition + " " + bodyWithStep + " while";
+
+                return result;
+            }
+            return "";
+        }
+
+        case AstNodeEnum::ForEach: {
+            // Transpile foreach loops to Pi
+            // Rho: foreach (item in collection) { body }
+            // Pi: collection { 'item # body } foreach
+            if (node->GetChildren().size() >= 3) {
+                std::string varName = node->GetChild(0)->GetTokenText();
+                std::string collection = TranspileNodeToPi(node->GetChild(1));
+                std::string body = TranspileNodeToPi(node->GetChild(2));
+
+                std::string piCode = collection + " { '" + varName + " # " + body + " } foreach";
+                return piCode;
+            }
+            return "";
+        }
+
+        case AstNodeEnum::Conditional: {
+            // Transpile if-else to Pi
+            // Pi syntax: condition '{ then-block } '{ else-block } ife
+            // or: condition '{ then-block } if
+            // The blocks need to be quoted so they are continuations that inherit scope
+            if (node->GetChildren().size() >= 2) {
+                std::string condition = TranspileNodeToPi(node->GetChild(0));
+                std::string thenBlock = "'{ " + TranspileNodeToPi(node->GetChild(1)) + " }";
+
+                if (node->GetChildren().size() > 2) {
+                    // Has else block
+                    std::string elseBlock = "'{ " + TranspileNodeToPi(node->GetChild(2)) + " }";
+                    return condition + " " + thenBlock + " " + elseBlock + " ife";
+                } else {
+                    // No else block
+                    return condition + " " + thenBlock + " if";
+                }
+            }
+            return "";
+        }
+
         default: {
             
             // For unhandled nodes, try to process children
