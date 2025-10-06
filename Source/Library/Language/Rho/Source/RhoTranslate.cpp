@@ -297,7 +297,17 @@ std::string RhoTranslator::TranspileNodeToPi(AstNodePtr node) {
                         return TranspileNodeToPi(node->GetChild(0));
                     }
                     return "";
-                    
+
+                case RhoTokenEnumType::Break:
+                    // Break resumes the previous continuation (exits loop)
+                    // Just resume without pushing to stack
+                    return "resume";
+
+                case RhoTokenEnumType::Continue:
+                    // Continue pushes itself to stack first, then resumes
+                    // This allows the loop to continue as a subroutine
+                    return "self resume";
+
                 // Handle assignment
                 case RhoTokenEnumType::Assign: {
                     // Rho: var = value  ->  Pi: value 'var #
