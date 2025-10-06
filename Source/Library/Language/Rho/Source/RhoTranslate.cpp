@@ -325,22 +325,26 @@ std::string RhoTranslator::TranspileNodeToPi(AstNodePtr node) {
                 case RhoTokenEnumType::Minus:
                 case RhoTokenEnumType::Mul:
                 case RhoTokenEnumType::Divide:
+                case RhoTokenEnumType::Mod:
                 case RhoTokenEnumType::Less:
                 case RhoTokenEnumType::Greater:
                 case RhoTokenEnumType::LessEquiv:
                 case RhoTokenEnumType::GreaterEquiv:
-                case RhoTokenEnumType::Equiv: {
+                case RhoTokenEnumType::Equiv:
+                case RhoTokenEnumType::NotEquiv: {
                     std::string op = "";
                     switch (token.type) {
                         case RhoTokenEnumType::Plus: op = "+"; break;
                         case RhoTokenEnumType::Minus: op = "-"; break;
                         case RhoTokenEnumType::Mul: op = "*"; break;
                         case RhoTokenEnumType::Divide: op = "/"; break;
+                        case RhoTokenEnumType::Mod: op = "%"; break;
                         case RhoTokenEnumType::Less: op = "<"; break;
                         case RhoTokenEnumType::Greater: op = ">"; break;
                         case RhoTokenEnumType::LessEquiv: op = "<="; break;
                         case RhoTokenEnumType::GreaterEquiv: op = ">="; break;
                         case RhoTokenEnumType::Equiv: op = "=="; break;
+                        case RhoTokenEnumType::NotEquiv: op = "!="; break;
                         default: break;
                     }
                     
