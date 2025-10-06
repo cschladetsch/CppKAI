@@ -538,6 +538,53 @@ std::string RhoTranslator::TranspileNodeToPi(AstNodePtr node) {
             return "";
         }
 
+        case AstNodeEnum::List: {
+            // Transpile array literal to Pi
+            // Rho: [1, 2, 3]  ->  Pi: 1 2 3 3 toarray
+            // (push elements, push count as numeric constant, convert to array)
+            std::string elements;
+            int count = 0;
+            for (const auto& child : node->GetChildren()) {
+                if (!elements.empty()) elements += " ";
+                elements += TranspileNodeToPi(child);
+                count++;
+            }
+            if (count > 0) {
+                // Pi uses lowercase 'toarray' keyword
+                return elements + " " + std::to_string(count) + " toarray";
+            }
+            return "0 toarray";  // Empty array
+        }
+
+        case AstNodeEnum::Map: {
+            // Transpile map literal to Pi
+            // Rho: {a: 1, b: 2}  ->  Pi: "a" 1 "b" 2 2 tomap
+            // (push key-value pairs, push pair count, convert to map)
+            std::string pairs;
+            int pairCount = 0;
+            for (const auto& child : node->GetChildren()) {
+                if (!pairs.empty()) pairs += " ";
+                pairs += TranspileNodeToPi(child);
+                pairCount++;
+            }
+            if (pairCount > 0) {
+                // Pi uses lowercase 'tomap' keyword
+                return pairs + " " + std::to_string(pairCount / 2) + " tomap";
+            }
+            return "0 tomap";  // Empty map
+        }
+
+        case AstNodeEnum::IndexOp: {
+            // Transpile array/map indexing to Pi
+            // Rho: arr[index]  ->  Pi: arr index @
+            if (node->GetChildren().size() >= 2) {
+                std::string container = TranspileNodeToPi(node->GetChild(0));
+                std::string index = TranspileNodeToPi(node->GetChild(1));
+                return container + " " + index + " @";
+            }
+            return "";
+        }
+
         default: {
             
             // For unhandled nodes, try to process children
