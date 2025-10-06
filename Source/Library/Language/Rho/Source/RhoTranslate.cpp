@@ -576,11 +576,12 @@ std::string RhoTranslator::TranspileNodeToPi(AstNodePtr node) {
 
         case AstNodeEnum::IndexOp: {
             // Transpile array/map indexing to Pi
-            // Rho: arr[index]  ->  Pi: arr index @
+            // Rho: arr[index]  ->  Pi: arr [index]
+            // Pi uses square bracket syntax for indexing
             if (node->GetChildren().size() >= 2) {
                 std::string container = TranspileNodeToPi(node->GetChild(0));
                 std::string index = TranspileNodeToPi(node->GetChild(1));
-                return container + " " + index + " @";
+                return container + " [" + index + "]";
             }
             return "";
         }
