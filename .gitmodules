@@ -7,9 +7,6 @@
 [submodule "Ext/cpp-httplib"]
 	path = Ext/cpp-httplib
 	url = https://github.com/yhirose/cpp-httplib.git
-[submodule "Ext/raknet"]
-	path = Ext/raknet
-	url = https://github.com/SLikeSoft/RakNet.git
 [submodule "Ext/RakNet"]
 	path = Ext/RakNet
 	url = https://github.com/facebookarchive/RakNet.git

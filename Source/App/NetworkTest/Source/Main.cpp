@@ -2,7 +2,6 @@
 #include <KAI/Network/ConnectionManager.h>
 #include <KAI/Network/Node.h>
 #include <KAI/Network/Serialization.h>
-#include <Source/SystemAddress.h>
 
 #include <chrono>
 #include <iostream>
@@ -25,9 +24,8 @@ void RunServer() {
 
     // Set discovery callback
     node.SetPeerDiscoveryCallback([](const RakNet::SystemAddress& address) {
-        char str[64];
-        address.ToString(false, str);
-        std::cout << "Discovered peer: " << str << std::endl;
+        std::string addrStr = address.ToString(false);
+        std::cout << "Discovered peer: " << addrStr << std::endl;
     });
 
     // Main server loop
@@ -41,9 +39,8 @@ void RunServer() {
                       << std::endl;
             auto peers = node.GetConnections();
             for (const auto& peer : peers) {
-                char str[64];
-                peer.ToString(false, str);
-                std::cout << "  Peer: " << str << std::endl;
+                std::string peerStr = peer.ToString(false);
+                std::cout << "  Peer: " << peerStr << std::endl;
             }
         }
 
@@ -75,13 +72,12 @@ void RunClient() {
             const auto& serverAddress = discoveredPeers[0];
 
             // Extract IP and port
-            char ipStr[64];
-            serverAddress.ToString(false, ipStr);
+            std::string ipStr = serverAddress.ToString(false);
             std::cout << "Connecting to server: " << ipStr << std::endl;
 
-            IpAddress ip = ipStr;
+            IpAddress ip(ipStr);
 
-            node.Connect(ip, serverAddress.GetPort());
+            node.Connect(ip, serverAddress.port);
             connected = true;
         }
 
@@ -92,7 +88,7 @@ void RunClient() {
     if (!connected) {
         std::cout << "Could not discover any server. Trying to connect to "
                      "localhost...\n";
-        node.Connect("127.0.0.1", 14589);
+        node.Connect(IpAddress("127.0.0.1"), 14589);
     }
 
     // Main client loop

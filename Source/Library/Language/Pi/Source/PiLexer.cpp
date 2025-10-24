@@ -64,6 +64,7 @@ void PiLexer::AddKeyWords() {
     keyWords["ls"] = Enum::GetContents;
     keyWords["freeze"] = Enum::Freeze;
     keyWords["thaw"] = Enum::Thaw;
+    keyWords["at"] = Enum::GetChild;
 }
 
 bool PiLexer::NextToken() {

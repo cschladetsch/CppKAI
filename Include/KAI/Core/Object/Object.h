@@ -19,9 +19,9 @@ class Object {
 
 #ifdef KAI_CACHE_OBJECT_LOOKUPS
     // these fields are used to cache results for speed
-    int gcIndex_{0};
-    bool valid_{false};
-    void *value{nullptr};
+    [[maybe_unused]] int gcIndex_{0};
+    [[maybe_unused]] bool valid_{false};
+    [[maybe_unused]] void *value{nullptr};
 #endif
 
    public:
