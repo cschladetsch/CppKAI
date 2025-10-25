@@ -21,8 +21,8 @@ KAI_BEGIN
 #ifdef KAI_LOG_DIR
 std::string default_log_dir = KAI_LOG_DIR;
 #else
-// Fallback to a default logs directory in the user's home folder
-std::string default_log_dir = std::string(getenv("HOME")) + "/local/KAI/Logs";
+// Fallback to a relative logs directory
+std::string default_log_dir = "./Logs";
 #endif
 
 Logger::Level Logger::s_level = Logger::Level::Info;

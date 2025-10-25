@@ -90,8 +90,8 @@ set(KAI_HOME ${CMAKE_CURRENT_SOURCE_DIR})
 set(KAI_LOG_DIR "${KAI_HOME}/Logs")
 # Create the directory at configure time if it doesn't exist
 execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${KAI_LOG_DIR})
-# Define as a compile-time definition with proper escaping for C++20
-add_definitions(-DKAI_LOG_DIR="${KAI_LOG_DIR}")
+# Define as a compile-time definition using relative path (resolved at runtime)
+add_definitions(-DKAI_LOG_DIR="./Logs")
 
 # Ensure the global project uses folders
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
