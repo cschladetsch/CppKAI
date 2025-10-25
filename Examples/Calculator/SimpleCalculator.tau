@@ -1,0 +1,28 @@
+namespace Calculator {
+    enum Operation {
+        Add,
+        Subtract,
+        Multiply,
+        Divide
+    }
+
+    struct CalculationResult {
+        Operation operation;
+        int result;
+        bool success;
+        string error;
+    }
+
+    interface ICalculator {
+        async int Add(int a, int b);
+        async int Subtract(int a, int b);
+        async int Multiply(int a, int b);
+        async int Divide(int a, int b);
+
+        void Clear();
+        int GetLastResult();
+
+        event OnCalculationComplete(Operation op, int result);
+        event OnError(string message);
+    }
+}

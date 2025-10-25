@@ -102,6 +102,20 @@ int main(int argc, const char* const argv[]) {
         cout << "Warning: Input file does not have .tau extension. Proceeding anyway..." << endl;
     }
 
+    // Read the input file contents
+    ifstream inputFile(input.string());
+    if (!inputFile) {
+        cerr << "Error: Could not open input file '" << input << "' for reading" << endl;
+        return 1;
+    }
+    string fileContents((istreambuf_iterator<char>(inputFile)), istreambuf_iterator<char>());
+    inputFile.close();
+
+    if (fileContents.empty()) {
+        cerr << "Error: Input file '" << input << "' is empty" << endl;
+        return 1;
+    }
+
     // Get the filename without extension
     string filename = input.stem().string();
 
@@ -137,10 +151,9 @@ int main(int argc, const char* const argv[]) {
 
     if (!outputProxy.empty()) {
         cout << "Generating proxy..." << endl;
-        // Convert input path to string and use that for the input file
-        string inputStr = input.string();
+        // Use the file contents, not the filename
         string proxyOutput;
-        tau::Generate::GenerateProxy proxy(inputStr.c_str(), proxyOutput);
+        tau::Generate::GenerateProxy proxy(fileContents.c_str(), proxyOutput);
         if (proxy.Failed) {
             cerr << "ProxyGenError: " << proxy.Error << endl;
             return 1;
@@ -161,10 +174,9 @@ int main(int argc, const char* const argv[]) {
 
     if (!outputAgent.empty()) {
         cout << "Generating agent..." << endl;
-        // Convert input path to string and use that for the input file
-        string inputStr = input.string();
+        // Use the file contents, not the filename
         string agentOutput;
-        tau::Generate::GenerateAgent agent(inputStr.c_str(), agentOutput);
+        tau::Generate::GenerateAgent agent(fileContents.c_str(), agentOutput);
         if (agent.Failed) {
             cerr << "AgentGenError: " << agent.Error << endl;
             return 1;

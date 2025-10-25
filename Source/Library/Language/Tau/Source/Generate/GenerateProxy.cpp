@@ -11,6 +11,32 @@ GenerateProxy::GenerateProxy(const char *input, string &output) {
     GenerateProcess::Generate(input, output);
 }
 
+bool GenerateProxy::GenerateFromFile(const char *filename, string &output, string &error) {
+    std::ifstream file(filename);
+    if (!file) {
+        error = string("Could not open file: ") + filename;
+        return false;
+    }
+
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    string contents = buffer.str();
+    file.close();
+
+    if (contents.empty()) {
+        error = string("File is empty: ") + filename;
+        return false;
+    }
+
+    GenerateProxy proxy(contents.c_str(), output);
+    if (proxy.Failed) {
+        error = proxy.Error;
+        return false;
+    }
+
+    return true;
+}
+
 bool GenerateProxy::Generate(TauParser const &p, string &output) {
     // Use the base class implementation which handles Module structure properly
     return GenerateProcess::Generate(p, output);

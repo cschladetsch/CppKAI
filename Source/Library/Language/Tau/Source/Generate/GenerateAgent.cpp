@@ -7,6 +7,32 @@ GenerateAgent::GenerateAgent(const char *input, string &output) {
     GenerateProcess::Generate(input, output);
 }
 
+bool GenerateAgent::GenerateFromFile(const char *filename, string &output, string &error) {
+    std::ifstream file(filename);
+    if (!file) {
+        error = string("Could not open file: ") + filename;
+        return false;
+    }
+
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    string contents = buffer.str();
+    file.close();
+
+    if (contents.empty()) {
+        error = string("File is empty: ") + filename;
+        return false;
+    }
+
+    GenerateAgent agent(contents.c_str(), output);
+    if (agent.Failed) {
+        error = agent.Error;
+        return false;
+    }
+
+    return true;
+}
+
 bool GenerateAgent::Generate(TauParser const &parser, string &output) {
     // Use the base class implementation which handles Module structure properly
     return GenerateProcess::Generate(parser, output);
