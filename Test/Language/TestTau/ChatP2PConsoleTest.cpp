@@ -35,7 +35,7 @@ class ChatP2PConsoleTest : public TestLangCommon {
 TEST_F(ChatP2PConsoleTest, BasicChatCommands) {
     // Verify file loaded
     ASSERT_FALSE(chatInterfaceTau_.empty()) << "ChatInterface.tau not loaded";
-    ASSERT_GT(chatInterfaceTau_.size(), 100) << "ChatInterface.tau too small";
+    ASSERT_GT(chatInterfaceTau_.size(), 100) << "ChatInterface.tau too small: " << chatInterfaceTau_.size();
 
     // Parse the Tau interface
     tau::TauParser parser(*registry_);
@@ -56,12 +56,8 @@ TEST_F(ChatP2PConsoleTest, BasicChatCommands) {
     string proxyOutput;
     tau::Generate::GenerateProxy proxy(chatInterfaceTau_.c_str(), proxyOutput);
 
-    // Note: Current Tau generator may have limitations with nested namespaces
-    // If generation fails or produces empty output, skip this test
-    if (proxy.Failed || proxyOutput.empty()) {
-        // Parsing succeeded but generation has limitations - acceptable for now
-        GTEST_SKIP() << "Proxy generation not fully implemented for nested namespaces (KAI::Chat)";
-    }
+    ASSERT_FALSE(proxy.Failed) << "Proxy generation failed: " << proxy.Error;
+    ASSERT_FALSE(proxyOutput.empty());
 
     // Verify proxy contains chat interfaces
     EXPECT_NE(proxyOutput.find("KAI"), string::npos);

@@ -221,27 +221,13 @@ bool TauParser::Namespace(AstNodePtr root) {
         }
 
         if (Empty()) {
-            // For error resilience in testing, add the namespace to the AST
-            // anyway
-            root->Add(rootNs);
-            return true;
+            return Fail("Unexpected end of input while parsing namespace");
         }
 
-        // For class tests, if we encounter a class or other token where we
-        // expect a brace, add the namespace to the AST and return success for
-        // better test resilience
-        if (CurrentIs(TokenEnum::Class) || CurrentIs(TokenEnum::Ident) ||
-            CurrentIs(TokenEnum::Interface) || CurrentIs(TokenEnum::Struct) ||
-            CurrentIs(TokenEnum::EnumKeyword)) {
-            // Add the namespace and proceed
-            root->Add(rootNs);
-            return true;
-        }
-
-        // If we're still here, we haven't found the opening brace
-        // But for test resilience, return true anyway
-        root->Add(rootNs);
-        return true;
+        // If we're still here, we haven't found the opening brace - this is an error
+        return Fail(Lexer::CreateErrorMessage(
+            Current(), "Expected '{' after namespace name, got %s",
+            TokenEnumType::ToString(Current().type)));
     }
 
     Consume();  // Consume the opening brace
@@ -339,6 +325,7 @@ bool TauParser::Namespace(AstNodePtr root) {
 
     Expect(TokenEnumType::CloseBrace);
     if (Failed) return false;
+
     root->Add(rootNs);
     return true;
 }
@@ -727,6 +714,13 @@ bool TauParser::Interface(AstNodePtr root) {
             Consume();
             if (!Interface(klass)) return false;
             continue;
+        }
+
+        // Handle async modifier
+        bool isAsync = false;
+        if (CurrentIs(TokenEnum::Async)) {
+            isAsync = true;
+            Consume();  // Consume 'async'
         }
 
         // Get the type for a method (interfaces typically don't have fields)
