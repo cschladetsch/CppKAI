@@ -175,6 +175,7 @@ foreach (lang ${langs})
             ${source_path}/TauEdgeCaseTests.cpp            # Comprehensive edge case tests
             ${source_path}/TauStressTests.cpp              # Performance and stress tests
             ${source_path}/TauCodeGenerationExtensiveTests.cpp  # Extensive code generation tests
+            ${source_path}/TauComprehensiveTests.cpp       # 100 comprehensive tests covering all Tau features
         )
     else()
         # For other languages, use the standard approach
