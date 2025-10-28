@@ -18,13 +18,15 @@ struct RhoMoreControlFixedTests : TestLangCommon {
     template <typename T>
     void RunAndExpect(const string& code, T expected) {
         try {
-            // Clear the data stack
-            auto executor = console_.GetExecutor();
-            auto dataStack = executor->GetDataStack();
-            dataStack->Clear();
+            // Set language before execution (matching AssertDirectSimulation pattern)
+            console_.SetLanguage(Language::Rho);
 
             // Execute as a complete program
             console_.Execute(code, Structure::Program);
+
+            // Get the result from the data stack after execution
+            auto executor = console_.GetExecutor();
+            auto dataStack = executor->GetDataStack();
 
             // Check result
             ASSERT_FALSE(dataStack->Empty())
@@ -298,4 +300,47 @@ while i < j
 steps
 )",
                       1);
+}
+
+// DEBUG: Test just the comparison to see if it works
+TEST_F(RhoMoreControlFixedTests, DEBUG_SimpleComparison) {
+    auto executor = console_.GetExecutor();
+    auto dataStack = executor->GetDataStack();
+    dataStack->Clear();
+
+    console_.Execute("x = 10\ny = 20\nx > y", Structure::Program);
+
+    ASSERT_FALSE(dataStack->Empty()) << "Stack empty after comparison";
+    auto result = dataStack->Top();
+    std::cout << "Comparison result type: " << result.GetTypeNumber().ToString() << std::endl;
+    if (result.IsType<bool>()) {
+        std::cout << "Comparison x > y result: " << ConstDeref<bool>(result) << " (expected: false)" << std::endl;
+        EXPECT_EQ(ConstDeref<bool>(result), false);
+    }
+}
+
+// DEBUG: Test if-else with true
+TEST_F(RhoMoreControlFixedTests, DEBUG_IfElseWithTrue) {
+    RunAndExpect<int>(R"(
+max = 0
+if true
+    max = 42
+else
+    max = 24
+max
+)", 42);
+}
+
+// DEBUG: Test if-else with comparison
+TEST_F(RhoMoreControlFixedTests, DEBUG_IfElseWithComparison) {
+    RunAndExpect<int>(R"(
+x = 10
+y = 20
+max = 0
+if x > y
+    max = x
+else
+    max = y
+max
+)", 20);
 }

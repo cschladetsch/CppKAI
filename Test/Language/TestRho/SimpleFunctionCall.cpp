@@ -11,23 +11,20 @@ TEST_F(SimpleFunctionCall, BasicCall) {
     kai::Process::trace = 0;  // Disable verbose tracing for cleaner output
 
     try {
-        kai::Console console;
-        console.SetLanguage(kai::Language::Rho);
+        // Use the console from TestLangCommon which has translators set up
+        console_.SetLanguage(kai::Language::Rho);
 
         // Read script from file
         std::string script = kai::test::LoadRhoScript("SimpleFunctionCall.rho");
 
-        // Instead of Structure::Program, use Structure::Expression
-        // to get the result on the stack
-        console.Execute(script.c_str(), kai::Structure::Expression);
+        // Execute as Program since we have multiple statements
+        console_.Execute(script.c_str(), kai::Structure::Program);
 
-        auto exec = console.GetExecutor();
-        auto stack = exec->GetDataStack();
+        // The function call result should be on the stack
+        ASSERT_FALSE(data_->Empty()) << "Stack should not be empty after function call";
 
-        ASSERT_FALSE(stack->Empty()) << "Stack should not be empty";
-
-        auto result = stack->Top();
-        ASSERT_TRUE(result.IsType<int>()) << "Result should be an integer";
+        auto result = data_->Top();
+        ASSERT_TRUE(result.IsType<int>()) << "Result should be an integer, got: " + result.GetClass()->GetName().ToString();
         ASSERT_EQ(kai::ConstDeref<int>(result), 6)
             << "double(3) should return 6";
 

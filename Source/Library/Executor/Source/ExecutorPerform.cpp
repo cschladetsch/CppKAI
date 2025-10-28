@@ -818,8 +818,11 @@ void Executor::Perform(Operation::Type op) {
         case Operation::IfElse: {
             // ( condition A B -- result )
             // Run A if condition is true, else run B.
+            KAI_TRACE() << "IfElse: Stack size before pops: " << data_->Size();
             auto B = Pop();
+            KAI_TRACE() << "IfElse: Popped B (else block), type: " << B.GetTypeNumber().ToString();
             auto A = Pop();
+            KAI_TRACE() << "IfElse: Popped A (then block), type: " << A.GetTypeNumber().ToString();
             bool condition = PopBool();
             KAI_TRACE() << "IfElse: condition=" << condition << ", choosing "
                         << (condition ? "then" : "else") << " block";

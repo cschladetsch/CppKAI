@@ -8,6 +8,8 @@ struct VerySimpleTest : kai::TestLangCommon {};
 TEST_F(VerySimpleTest, JustAssignment) {
     try {
         kai::Console console;
+        // Set up translators for this console
+        kai::TestLangCommon::SetupTranslatorsForConsole(console);
         console.SetLanguage(kai::Language::Rho);
 
         const char* script = "x = 5";

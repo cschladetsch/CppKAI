@@ -473,11 +473,11 @@ void RhoTranslator::TranslateDoWhile(AstNodePtr node) {
 }
 
 void RhoTranslator::TranslateIf(AstNodePtr node) {
-    KAI_TRACE() << "Translating if statement (linear stream version)";
+    KAI_TRACE() << "TranslateIf: Starting, children count: " << static_cast<int>(node->GetChildren().size());
 
     // If statements need at least condition and then-block
     if (node->GetChildren().size() < 2) {
-        KAI_TRACE_ERROR() << "If node needs at least condition and then block";
+        KAI_TRACE_ERROR() << "TranslateIf: ERROR - not enough children";
         return;
     }
 
@@ -495,21 +495,25 @@ void RhoTranslator::TranslateIf(AstNodePtr node) {
 
     if (node->GetChildren().size() > 2) {
         // Has else block
+        KAI_TRACE() << "TranslateIf: Has else block, translating it";
         PushNew();
         TranslateNode(node->GetChild(2));
         auto elseCont = Pop();
 
         // Use IfElse operation
         // Pointer<T> inherits from Object, so we can use it directly
+        KAI_TRACE() << "TranslateIf: Appending IfElse operation";
         Append(thenCont);
         Append(elseCont);
         AppendDirectOperation(Operation::IfElse);
     } else {
         // No else block - use If operation
         // Pointer<T> inherits from Object, so we can use it directly
+        KAI_TRACE() << "TranslateIf: No else block, using If operation";
         Append(thenCont);
         AppendDirectOperation(Operation::If);
     }
+    KAI_TRACE() << "TranslateIf: Done";
 }
 
 void RhoTranslator::TranslateList(AstNodePtr node) {
@@ -916,20 +920,19 @@ void RhoTranslator::TranslateFunction(AstNodePtr node) {
     // Pop the function continuation
     auto functionCont = Pop();
 
-    // Store the function continuation with its name
+    // Append the function continuation
+    Append(functionCont);
+
+    // For named functions, store them with their name
+    // Note: This code path is not used when transpiling Rho to Pi (which is the default)
+    // For transpilation, storage is handled in RhoTranslate.cpp TranspileNodeToPi Function case
     if (!functionName.empty() && !functionName.StartsWith("_anon_")) {
         String quotedPath = "'" + functionName;
         auto pathObj = reg_->New<Pathname>(Pathname(quotedPath));
-
-        // Push the function continuation and pathname
-        Append(functionCont);
         Append(pathObj);
         AppendDirectOperation(Operation::Store);
-
         KAI_TRACE() << "Function " << functionName << " stored";
     } else {
-        // For anonymous functions, just push the continuation
-        Append(functionCont);
         KAI_TRACE() << "Anonymous function created";
     }
 }

@@ -23,6 +23,10 @@ class TestLangCommon : public TestCommon {
     // Make ExtractValueFromContinuation public for testing
     Object ExtractValueFromContinuation(Object value);
 
+    // Static helper to set up translators for any Console
+    // This can be called from tests that create their own Console instances
+    static void SetupTranslatorsForConsole(Console& console);
+
    protected:
     void SetUp() override;
     void TearDown() override;

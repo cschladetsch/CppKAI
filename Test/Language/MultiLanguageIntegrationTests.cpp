@@ -31,7 +31,8 @@ protected:
     
     void SetUp() override {
         registry.Clear();
-        executor = make_shared<Executor>(registry);
+        executor = make_shared<Executor>();
+        executor->SetRegistry(registry);
     }
     
     bool ExecutePiCode(const string& code) {

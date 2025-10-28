@@ -784,8 +784,13 @@ bool RhoParser::ParseGetMember() {
 }
 
 bool RhoParser::IfCondition(AstNodePtr block) {
-    if (!Try(TokenType::If)) return false;
+    KAI_TRACE() << "IfCondition: Entry";
+    if (!Try(TokenType::If)) {
+        KAI_TRACE() << "IfCondition: Not an If token, returning false";
+        return false;
+    }
 
+    KAI_TRACE() << "IfCondition: Found If token, consuming";
     Consume();
 
     // No parentheses in Rho

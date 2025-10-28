@@ -15,6 +15,7 @@ add_library(CommonLang ${COMMON_SOURCES})
 set(langs Pi Rho Tau)
 foreach(l ${langs})
     def_lang_library(${l})
-    # Link each language with the common library
-    target_link_libraries(${l}Lang CommonLang)
+    # Link each language with the common library and Executor
+    # Executor is needed because the translators/lexers inherit from Process and LexerBase
+    target_link_libraries(${l}Lang CommonLang Executor)
 endforeach()

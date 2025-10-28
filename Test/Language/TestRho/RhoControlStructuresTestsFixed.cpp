@@ -119,6 +119,18 @@ TEST_F(RhoControlTestsFixed, IfElseStatements) {
         "    result = 24\n"
         "result",
         24);
+
+    // Test with comparison instead of literal
+    AssertDirectSimulation<int>(
+        "x = 10\n"
+        "y = 20\n"
+        "result = 0\n"
+        "if x > y\n"
+        "    result = 100\n"
+        "else\n"
+        "    result = 200\n"
+        "result",
+        200);
 }
 
 // While loops with Rho syntax

@@ -35,48 +35,75 @@ void ToLower(std::wstring &str) {
     std::transform(str.begin(), str.end(), str.begin(), std::towlower);
 }
 
-void TestLangCommon::SetupLanguageTranslators() {
-    // Get the compiler from console
-    auto compiler = console_.GetCompiler();
+// Multi-language translator that routes to appropriate language translator
+class MultiLanguageTranslator : public TranslatorCommon {
+   private:
+    std::shared_ptr<PiTranslator> piTranslator;
+    std::shared_ptr<RhoTranslator> rhoTranslator;
+    Pointer<Compiler> compiler;
+
+   public:
+    MultiLanguageTranslator(Registry &r, Pointer<Compiler> comp)
+        : TranslatorCommon(r), compiler(comp) {
+        piTranslator = std::make_shared<PiTranslator>(r);
+        rhoTranslator = std::make_shared<RhoTranslator>(r);
+    }
+
+    Pointer<Continuation> Translate(const char *text,
+                                      Structure st = Structure::Statement) override {
+        if (!compiler.Exists()) {
+            KAI_TRACE_ERROR() << "Compiler is null in MultiLanguageTranslator";
+            return Object();
+        }
+
+        int lang = compiler->GetLanguage();
+        int traceLevel = compiler->GetTraceLevel();
+
+        switch (static_cast<Language>(lang)) {
+            case Language::Pi: {
+                piTranslator->trace = traceLevel;
+                auto result = piTranslator->Translate(text, st);
+                if (piTranslator->Failed) {
+                    KAI_TRACE_ERROR() << piTranslator->Error;
+                    return Object();
+                }
+                return result;
+            }
+            case Language::Rho: {
+                rhoTranslator->trace = traceLevel;
+                auto result = rhoTranslator->Translate(text, st);
+                if (rhoTranslator->Failed) {
+                    KAI_TRACE_ERROR() << rhoTranslator->Error;
+                    return Object();
+                }
+                return result;
+            }
+            default:
+                KAI_TRACE_ERROR() << "Unsupported language: " << lang;
+                return Object();
+        }
+    }
+};
+
+// Static helper to set up translators for any Console
+void TestLangCommon::SetupTranslatorsForConsole(Console& console) {
+    auto compiler = console.GetCompiler();
     if (!compiler.Exists()) {
-        std::cerr << "ERROR: Compiler is null in SetupLanguageTranslators"
+        std::cerr << "ERROR: Compiler is null in SetupTranslatorsForConsole"
                   << std::endl;
         return;
     }
 
-    // Create translators for each language as shared pointers
-    auto piTranslator = std::make_shared<PiTranslator>(*reg_);
-    auto rhoTranslator = std::make_shared<RhoTranslator>(*reg_);
+    Registry& reg = console.GetRegistry();
+    auto multiTranslator = std::make_shared<MultiLanguageTranslator>(reg, compiler);
+    console.SetTranslator(multiTranslator);
+}
 
-    // Set up the translation function
-    compiler->SetTranslateFunction(
-        [=](const String &text, Structure st) -> Pointer<Continuation> {
-            int lang = compiler->GetLanguage();
-            int traceLevel = compiler->GetTraceLevel();
-
-            switch (static_cast<Language>(lang)) {
-                case Language::Pi: {
-                    piTranslator->trace = traceLevel;
-                    auto result = piTranslator->Translate(text.c_str(), st);
-                    if (piTranslator->Failed) {
-                        KAI_TRACE_ERROR() << piTranslator->Error;
-                        return Object();
-                    }
-                    return result;
-                }
-                case Language::Rho: {
-                    rhoTranslator->trace = traceLevel;
-                    auto result = rhoTranslator->Translate(text.c_str(), st);
-                    if (rhoTranslator->Failed) {
-                        KAI_TRACE_ERROR() << rhoTranslator->Error;
-                        return Object();
-                    }
-                    return result;
-                }
-                default:
-                    return Object();
-            }
-        });
+void TestLangCommon::SetupLanguageTranslators() {
+    // Use the static helper
+    SetupTranslatorsForConsole(console_);
+    // Store registry pointer for later use
+    reg_ = &console_.GetRegistry();
 }
 
 void TestLangCommon::SetUp() {
