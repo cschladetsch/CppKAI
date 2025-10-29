@@ -10,12 +10,15 @@
 - [x] Fixed ForEach exception handling for proper control flow
 - [x] Updated all Rho → Pi transpilation for loops
 - [x] Updated 74 test files to use new Python-style syntax
+- [x] Fixed continue in C-style for loops (infinite loop bug)
+- [x] Changed C-style for loop transpilation to use Pi `for` operation
+- [x] Added parser support for inline function syntax `fun name(args) { expr }`
 
 ### 📊 Current Test Status
 | Test Suite                    | Pass | Total | Rate |
 |-------------------------------|------|-------|------|
 | ForEachLoopTest               | 9    | 10    | 90%  |
-| RhoBreakContinueTests         | 9    | 12    | 75%  |
+| RhoBreakContinueTests         | 12   | 12    | 100% ✅ |
 | RhoAllIterationMethodsTest    | 50   | 65    | 77%  |
 
 ### ❌ Blocking Issues to Fix
@@ -25,15 +28,18 @@
 
 **Solution**: Implemented Operation::GetChild in ExecutorPerform.cpp to handle array/map indexing with the `at` keyword.
 
-#### 2. Function Calls in Loops (PRIORITY 1 - Blocks 10 tests)
-**Problem**: Function calls inside Python-style loops cause "invalid continuation" transpilation errors.
+#### 2. Function Calls in Loops (PRIORITY 1 - Blocks 10 tests) ⚠️ IN PROGRESS
+**Problem**: Inline functions using `fun name(args) { expr }` syntax parse correctly but return 0.
 
 **Root Cause**:
-- Old-style `for (i=1; i<=4; i=i+1)` loops with function calls work fine
-- New Python-style `for x in arr` loops with function calls fail during Rho→Pi transpilation
-- Error: "yielded invalid continuation" - transpiler can't handle function calls in foreach body
+- Parser now accepts inline function syntax (fixed "Statement expected" error)
+- Functions parse and transpile but don't return correct values
+- All Function_* tests get 0 instead of expected values
+- Issue affects both foreach loops and regular code
 
-**Failing tests**: 9 Function_* tests + ForEach_WithFunction + ForEachLoopTest.ForEachWithFunction
+**Status**: Parser implemented, execution/transpilation debugging needed
+
+**Failing tests**: 10 Function_* tests + ForEach_WithFunction
 
 **Working example** (old style):
 ```rho
@@ -55,43 +61,37 @@ for x in arr  # Python style fails!
 - [ ] Compare Pi output for old-style vs new-style loops with functions
 - [ ] May need to fix how Call nodes are handled inside ForEach context
 
-#### 3. Conditionals in ForEach (PRIORITY 2 - Blocks 4 tests)
-**Problem**: ForEach loops with `if` that has no code after it fail. Parser issue.
+#### 3. ForEach Variable Access Issue (PRIORITY 2 - Blocks 4 tests) ❓ INVESTIGATING
+**Problem**: Some foreach loops with conditionals get 0 instead of computed values.
 
-**Pattern that works**:
+**Status**: NOT a parser issue with conditional-only bodies!
+- ForEach_WithConditional passes (has if with no trailing code)
+- ForEach_MaxValue fails (also has if with no trailing code)
+- Both use identical patterns, suggesting variable access or comparison issue
+
+**Pattern** (this works in some tests, fails in others):
 ```rho
 for x in arr
-    if condition
-        do_something
-    code_after_if  # This is required!
+    if x > max     # Condition may not evaluate correctly
+        max = x    # Or assignment may not work
 ```
-
-**Pattern that fails**:
-```rho
-for x in arr
-    if condition
-        do_something
-    # Nothing after if - FAILS!
-```
-
-**Example**: `ForEach_MaxValue` expects 9, gets 0 because the `if` block has no code after it.
 
 **Failing tests**:
-- `ForEach_MaxValue`, `ForEach_MinValue` (if with no following code)
-- `ForEach_FilteringPattern` (likely same issue)
-- `Mixed_ContinueInForEach` (complex case)
+- `ForEach_MaxValue` (expects 9, gets 0)
+- `ForEach_MinValue` (expects 2, gets initial value)
+- `ForEach_FilteringPattern`
+- `Mixed_ContinueInForEach`
 
-**TODO**:
-- [ ] Fix Rho parser to allow `if` blocks without trailing statements inside foreach
-- [ ] Check RhoParser.cpp ForEach block parsing logic
-- [ ] Verify Pi code generation for single-statement if blocks
+**Theory**: Variable `x` might not be accessible in condition, or variables from outer scope
+aren't being updated correctly. Needs transpilation/execution debugging.
 
 ### 🎯 Next Steps
-1. ✅ ~~Fix array indexing~~ → DONE! Fixed 5 tests
-2. Debug function calls in loops (2-4 hours) → Should fix 10 tests
-3. Fix conditional logic in foreach (1-2 hours) → Should fix 4 tests
-4. Current: 50/65 tests passing (77%)
-5. Target with fixes: 64/65 tests passing (98%)
+1. ✅ ~~Fix array indexing~~ → DONE! Fixed 5 tests (Issue #1)
+2. ✅ ~~Fix continue in C-style for loops~~ → DONE! RhoBreakContinueTests: 12/12 (100%)
+3. 🔄 Debug inline function execution → In progress (Issue #2, blocks 11 tests)
+4. 🔄 Debug foreach variable access → Investigating (Issue #3, blocks 4 tests)
+5. Current: 50/65 tests passing (77%), RhoBreakContinueTests: 12/12 (100%)
+6. Target: 65/65 tests passing (100%)
 
 ---
 
