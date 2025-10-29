@@ -83,6 +83,7 @@ struct RhoTokenEnumType {
         Break = 84,
         Continue = 85,
         ShellCommand = 86,  // shell command wrapped in backticks `command`
+        In = 87,  // 'in' keyword for iterator-style for loops
     };
 
     struct Type : TokenBase<RhoTokenEnumType> {

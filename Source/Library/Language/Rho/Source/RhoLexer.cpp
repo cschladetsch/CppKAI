@@ -26,7 +26,7 @@ void RhoLexer::AddKeyWords() {
     keyWords["while"] = Enum::While;
     keyWords["for"] = Enum::For;
     keyWords["do"] = Enum::DoWhile;  // 'do' is recognized as DoWhile token
-    keyWords["foreach"] = Enum::ForEach;
+    keyWords["in"] = Enum::In;  // 'in' keyword for iterator-style for loops
     keyWords["break"] = Enum::Break;
     keyWords["continue"] = Enum::Continue;
 }

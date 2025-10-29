@@ -2108,14 +2108,25 @@ void Executor::Perform(Operation::Type op) {
                     // Push the current element
                     Push(arr.At(i));
 
-                    // Execute the function
-                    if (function.IsType<Continuation>()) {
-                        // Cast to continuation pointer
-                        Pointer<Continuation> cont = function;
+                    // Execute the function (must be a continuation)
+                    if (!function.IsType<Continuation>()) {
+                        KAI_TRACE_ERROR() << "ForEach: Function must be a continuation";
+                        KAI_THROW_1(Base, "ForEach requires continuation");
+                    }
+
+                    Pointer<Continuation> cont = function;
+
+                    try {
                         ExecuteContinuationInline(cont);
-                    } else {
-                        // For other callable types, use Continue
-                        Continue(function);
+                    } catch (const Exception::Base& e) {
+                        KAI_TRACE_ERROR() << "ForEach: KAI exception in iteration " << i
+                                          << ": " << e.ToString();
+                        // Don't re-throw - continue to check break/continue flags
+                    } catch (const std::exception& e) {
+                        KAI_TRACE_ERROR() << "ForEach: std::exception in iteration " << i
+                                          << ": " << e.what();
+                    } catch (...) {
+                        KAI_TRACE_ERROR() << "ForEach: Unknown exception in iteration " << i;
                     }
 
                     // Check for break
@@ -2140,16 +2151,29 @@ void Executor::Perform(Operation::Type op) {
                 KAI_TRACE() << "ForEach: Processing list with " << list.Size()
                             << " elements";
 
-                for (auto it = list.Begin(); it != list.End(); ++it) {
+                int idx = 0;
+                for (auto it = list.Begin(); it != list.End(); ++it, ++idx) {
                     // Push the current element
                     Push(*it);
 
                     // Execute the function
-                    if (function.IsType<Continuation>()) {
-                        Pointer<Continuation> cont = function;
+                    if (!function.IsType<Continuation>()) {
+                        KAI_TRACE_ERROR() << "ForEach: Function must be a continuation";
+                        KAI_THROW_1(Base, "ForEach requires continuation");
+                    }
+
+                    Pointer<Continuation> cont = function;
+
+                    try {
                         ExecuteContinuationInline(cont);
-                    } else {
-                        Continue(function);
+                    } catch (const Exception::Base& e) {
+                        KAI_TRACE_ERROR() << "ForEach: KAI exception in iteration " << idx
+                                          << ": " << e.ToString();
+                    } catch (const std::exception& e) {
+                        KAI_TRACE_ERROR() << "ForEach: std::exception in iteration " << idx
+                                          << ": " << e.what();
+                    } catch (...) {
+                        KAI_TRACE_ERROR() << "ForEach: Unknown exception in iteration " << idx;
                     }
 
                     // Check for break

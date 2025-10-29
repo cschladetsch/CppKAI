@@ -389,12 +389,16 @@ void RhoTranslator::TranslateFor(AstNodePtr node) {
 }
 
 void RhoTranslator::TranslateForEach(AstNodePtr node) {
-    KAI_TRACE() << "TranslateForEach: Starting foreach translation";
+    KAI_TRACE() << "TranslateForEach: Starting translation for 'for x in collection'";
 
     // ForEach node structure:
     // - Child 0: loop variable (identifier)
     // - Child 1: collection expression
     // - Child 2: body block
+    //
+    // Strategy: Translate `for x in arr` exactly like C-style for-loop
+    // Create synthetic AST for: for __i = 0; __i < arr.Size(); __i = __i + 1
+    // Then prepend: x = arr[__i] to the body
 
     if (node->GetChildren().size() != 3) {
         KAI_TRACE_ERROR() << "TranslateForEach: Expected 3 children, got "
@@ -405,45 +409,69 @@ void RhoTranslator::TranslateForEach(AstNodePtr node) {
 
     auto loopVar = node->GetChild(0);
     auto collection = node->GetChild(1);
-    auto body = node->GetChild(2);
+    auto userBody = node->GetChild(2);
 
-    KAI_TRACE() << "TranslateForEach: Loop variable: "
-                << loopVar->GetTokenText();
+    String loopVarName = loopVar->GetTokenText();
+    String indexVar = "__iter_i";
+    String collectionVar = "__iter_arr";
 
-    // Translate the collection expression
+    KAI_TRACE() << "TranslateForEach: Loop variable: " << loopVarName;
+
+    // Step 1: Store collection in temp variable
+    // collectionVar = collection
     TranslateNode(collection);
-
-    // Create a continuation for the body that:
-    // 1. Stores the current element in the loop variable
-    // 2. Executes the body
-    // 3. Returns the result (or void)
-
-    // Start a new continuation for the foreach body
-    PushNew();
-
-    // Store the current element in the loop variable
-    // The element will be on the stack when this continuation is called
-    // For Store operation, we need: [value, pathname]
-    // The value is already on the stack, so just add the pathname
-    String quotedPath = "'" + loopVar->GetTokenText();
-    auto pathObj = reg_->New<Pathname>(Pathname(quotedPath));
-    Append(pathObj);
+    Append(New<Pathname>(Pathname("'" + collectionVar)));
     AppendDirectOperation(Operation::Store);
 
-    // Translate the body
-    TranslateNode(body);
+    // Step 2: Create init continuation: indexVar = 0
+    PushNew();
+    Append(New<int>(0));
+    Append(New<Pathname>(Pathname("'" + indexVar)));
+    AppendDirectOperation(Operation::Store);
+    auto initCont = Pop();
 
-    // The body should leave its result on the stack (or nothing if void)
-    // ForEach will collect whatever is on the stack after each iteration
+    // Step 3: Create condition continuation: indexVar < collectionVar.Size
+    PushNew();
+    Append(New<Pathname>(Pathname(indexVar)));
+    Append(New<Pathname>(Pathname(collectionVar)));
+    AppendDirectOperation(Operation::Size);
+    AppendDirectOperation(Operation::Less);
+    auto condCont = Pop();
 
-    // Get the body continuation
+    // Step 4: Create increment continuation: indexVar = indexVar + 1
+    PushNew();
+    Append(New<Pathname>(Pathname(indexVar)));
+    Append(New<int>(1));
+    AppendDirectOperation(Operation::Plus);
+    Append(New<Pathname>(Pathname("'" + indexVar)));
+    AppendDirectOperation(Operation::Store);
+    auto incrCont = Pop();
+
+    // Step 5: Create body continuation: loopVar = collectionVar[indexVar]; userBody
+    PushNew();
+
+    // Get element: collectionVar[indexVar]
+    Append(New<Pathname>(Pathname(collectionVar)));
+    Append(New<Pathname>(Pathname(indexVar)));
+    AppendDirectOperation(Operation::Index);
+
+    // Store in loop variable: loopVar = element
+    Append(New<Pathname>(Pathname("'" + loopVarName)));
+    AppendDirectOperation(Operation::Store);
+
+    // Execute user's body
+    TranslateNode(userBody);
+
     auto bodyCont = Pop();
 
-    // Push the body continuation and call ForEach
+    // Step 6: Push all continuations and execute ForLoop
+    Append(initCont);
+    Append(condCont);
+    Append(incrCont);
     Append(bodyCont);
-    AppendDirectOperation(Operation::ForEach);
+    AppendDirectOperation(Operation::ForLoop);
 
-    KAI_TRACE() << "TranslateForEach: Completed foreach translation";
+    KAI_TRACE() << "TranslateForEach: Completed translation";
 }
 
 void RhoTranslator::TranslateDoWhile(AstNodePtr node) {

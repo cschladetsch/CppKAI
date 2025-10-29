@@ -564,6 +564,18 @@ void PiTranslator::AppendTokenised(const TokenNode &tok) {
             AppendOp(Operation::ForLoop);
             return;
 
+        case PiTokenEnumType::ForEach:
+            AppendOp(Operation::ForEach);
+            return;
+
+        case PiTokenEnumType::Break:
+            AppendOp(Operation::Break);
+            return;
+
+        case PiTokenEnumType::Continue:
+            AppendOp(Operation::Continue);
+            return;
+
         case PiTokenEnumType::Print:
             AppendOp(Operation::Print);
             return;

@@ -77,7 +77,7 @@ sum
 TEST_F(RhoBreakContinueTests, BreakInForLoop) {
     RunAndExpect<int>(R"(
 sum = 0
-for (i = 0; i < 20; i = i + 1)
+for i = 0; i < 20; i = i + 1
     if i == 7
         break
     sum = sum + i
@@ -89,7 +89,7 @@ sum
 TEST_F(RhoBreakContinueTests, ContinueInForLoop) {
     RunAndExpect<int>(R"(
 sum = 0
-for (i = 0; i < 10; i = i + 1)
+for i = 0; i < 10; i = i + 1
     if i < 5
         continue
     sum = sum + i

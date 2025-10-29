@@ -314,12 +314,12 @@ std::string RhoTranslator::TranspileNodeToPi(AstNodePtr node) {
                     return "";
 
                 case RhoTokenEnumType::Break:
-                    // Break exits the current loop - use ! (Replace operation)
-                    return "!";
+                    // Break exits the current loop
+                    return "break";
 
                 case RhoTokenEnumType::Continue:
-                    // Continue resumes to next iteration - use ... (Resume operation)
-                    return "...";
+                    // Continue skips to next iteration
+                    return "continue";
 
                 // Handle assignment
                 case RhoTokenEnumType::Assign: {
@@ -527,9 +527,9 @@ std::string RhoTranslator::TranspileNodeToPi(AstNodePtr node) {
         }
 
         case AstNodeEnum::ForEach: {
-            // Transpile foreach loops to Pi
-            // Rho: foreach (item in collection) { body }
-            // Pi: collection { 'item # body } foreach
+            // Transpile iterator-style for loops to Pi
+            // Rho: for x in collection { body }
+            // Pi: collection { 'x # body } foreach
             if (node->GetChildren().size() >= 3) {
                 std::string varName = node->GetChild(0)->GetTokenText();
                 std::string collection = TranspileNodeToPi(node->GetChild(1));

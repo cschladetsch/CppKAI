@@ -148,6 +148,9 @@ struct PiTokenEnumType {
 
         ShellCommand,  // shell command wrapped in backticks `command`
         ToStr,         // >str operator to convert to string
+        ForEach,       // foreach iterator: collection { 'x # body } foreach
+        Break,         // break statement for loops
+        Continue,      // continue statement for loops
     };
 
     struct Type : TokenBase<PiTokenEnumType> {

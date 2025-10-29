@@ -329,14 +329,6 @@ bool RhoParser::Statement(AstNodePtr block) {
             return true;
         }
 
-        case TokenType::ForEach: {
-            KAI_TRACE() << "RhoParser::Statement - Processing ForEach";
-            if (!ForEachLoop(block)) {
-                return false;
-            }
-            return true;
-        }
-
         case TokenType::Fun: {
             KAI_TRACE() << "RhoParser::Statement - Processing named function definition";
             return FunctionDefinition(block);
@@ -1058,28 +1050,71 @@ bool RhoParser::ForLoop(AstNodePtr block) {
     KAI_TRACE() << "RhoParser::ForLoop - Found 'for' token";
     Consume();
 
-    // Rho for loops have the syntax:
-    // for init; condition; increment
-    //     body
-    // Semicolons are REQUIRED between the three parts
-    // Parentheses are NOT allowed
+    // Rho for loops support TWO syntaxes:
+    // 1. C-style: for i = 0; i < 10; i = i + 1
+    // 2. Iterator-style: for x in container
+    //
+    // Strategy: Peek ahead to detect which syntax
+
+    // Peek to see if this is iterator-style (identifier followed by 'in')
+    if (Try(TokenType::Label)) {
+        // Save current position
+        int savedPos = current;
+
+        // Create node for the identifier (consume it)
+        auto loopVar = NewNode(Consume());
+
+        // Check if next token is 'in'
+        if (Try(TokenType::In)) {
+            // Iterator-style: for x in container
+            KAI_TRACE() << "RhoParser::ForLoop - Iterator-style 'for x in collection'";
+            Consume(); // consume 'in'
+
+            // Parse the collection expression
+            if (!Expression()) {
+                return CreateError("Expected collection expression after 'in'");
+            }
+            AstNodePtr collection = Pop();
+
+            // Expect newline
+            if (!Try(TokenType::NewLine)) {
+                return CreateError("Expected newline after for-loop header");
+            }
+            Consume();
+
+            // Parse body
+            auto bodyClause = NewNode(NodeType::Block);
+            if (!Block(bodyClause)) {
+                return CreateError("Block expected for for-loop body");
+            }
+
+            // Create ForEach node (iterator-style for loops use foreach internally)
+            auto forEachNode = NewNode(NodeType::ForEach);
+            forEachNode->Add(loopVar);      // loop variable
+            forEachNode->Add(collection);   // collection
+            forEachNode->Add(bodyClause);   // body
+            block->Add(forEachNode);
+
+            KAI_TRACE() << "RhoParser::ForLoop - Iterator-style for-loop complete";
+            return true;
+        }
+
+        // Not iterator-style, restore position and parse as C-style
+        current = savedPos;
+    }
+
+    // C-style: for i = 0; i < 10; i = i + 1
+    KAI_TRACE() << "RhoParser::ForLoop - C-style for-loop";
 
     // Parse the initialization expression
-    KAI_TRACE() << "RhoParser::ForLoop - Parsing initialization";
-    AstNodePtr initExpr = nullptr;
-    if (!Try(TokenType::Semi)) {
-        // We have an initialization expression
-        if (!Expression()) {
-            return CreateError(
-                "Expected initialization expression in for loop");
-        }
-        initExpr = Pop();
+    if (!Expression()) {
+        return CreateError("Expected initialization expression in for-loop");
     }
+    AstNodePtr initExpr = Pop();
 
     // Expect semicolon after initialization
     if (!Try(TokenType::Semi)) {
-        return CreateError(
-            "Expected semicolon after initialization in for loop");
+        return CreateError("Expected semicolon after initialization in for loop");
     }
     Consume();
 
@@ -1087,7 +1122,6 @@ bool RhoParser::ForLoop(AstNodePtr block) {
     KAI_TRACE() << "RhoParser::ForLoop - Parsing condition";
     AstNodePtr condExpr = nullptr;
     if (!Try(TokenType::Semi)) {
-        // We have a condition expression
         if (!Expression()) {
             return CreateError("Expected condition expression in for loop");
         }
@@ -1103,11 +1137,13 @@ bool RhoParser::ForLoop(AstNodePtr block) {
     // Parse the increment expression
     KAI_TRACE() << "RhoParser::ForLoop - Parsing increment";
     AstNodePtr incrExpr = nullptr;
-    // Always expect an increment expression (can be empty)
-    if (!Expression()) {
-        return CreateError("Expected increment expression in for loop");
+    // Increment expression is optional (can be empty before newline)
+    if (!Try(TokenType::NewLine)) {
+        if (!Expression()) {
+            return CreateError("Expected increment expression in for loop");
+        }
+        incrExpr = Pop();
     }
-    incrExpr = Pop();
 
     // Expect newline after for loop header
     if (!Try(TokenType::NewLine)) {

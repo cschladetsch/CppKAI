@@ -8,6 +8,9 @@ void PiLexer::AddKeyWords() {
     keyWords["if"] = Enum::If;
     keyWords["ife"] = Enum::IfElse;
     keyWords["for"] = Enum::For;
+    keyWords["foreach"] = Enum::ForEach;
+    keyWords["break"] = Enum::Break;
+    keyWords["continue"] = Enum::Continue;
     keyWords["true"] = Enum::True;
     keyWords["false"] = Enum::False;
     keyWords["self"] = Enum::Self;
