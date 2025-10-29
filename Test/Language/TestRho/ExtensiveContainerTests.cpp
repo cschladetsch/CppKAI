@@ -64,7 +64,7 @@ TEST_F(ExtensiveContainerTests, ArrayForEach) {
     const char* code = R"(
 arr = [1, 2, 3, 4, 5]
 sum = 0
-foreach x in arr
+for x in arr
     sum = sum + x
 sum
 )";
@@ -184,7 +184,7 @@ TEST_F(ExtensiveContainerTests, MapForEach) {
     const char* code = R"(
 m = {"a": 1, "b": 2, "c": 3}
 sum = 0
-foreach pair in m
+for pair in m
     sum = sum + pair[1]
 sum
 )";
@@ -236,7 +236,7 @@ TEST_F(ExtensiveContainerTests, StringForEach) {
     const char* code = R"(
 str = "abc"
 count = 0
-foreach ch in str
+for ch in str
     count = count + 1
 count
 )";
@@ -306,8 +306,8 @@ TEST_F(ExtensiveContainerTests, NestedForEach) {
     const char* code = R"(
 matrix = [[1, 2], [3, 4], [5, 6]]
 sum = 0
-foreach row in matrix
-    foreach val in row
+for row in matrix
+    for val in row
         sum = sum + val
 sum
 )";
@@ -325,7 +325,7 @@ TEST_F(ExtensiveContainerTests, ForEachWithBreak) {
     const char* code = R"(
 arr = [1, 2, 3, 4, 5]
 sum = 0
-foreach x in arr
+for x in arr
     if x >= 4
         break
     sum = sum + x
@@ -345,7 +345,7 @@ TEST_F(ExtensiveContainerTests, ForEachWithContinue) {
     const char* code = R"(
 arr = [1, 2, 3, 4, 5]
 sum = 0
-foreach x in arr
+for x in arr
     if x == 3
         continue
     sum = sum + x
@@ -366,7 +366,7 @@ TEST_F(ExtensiveContainerTests, ModifyArrayInLoop) {
     console_.SetLanguage(Language::Rho);
     const char* code = R"(
 arr = [1, 2, 3]
-foreach i in [0, 1, 2]
+for i in [0, 1, 2]
     arr[i] = arr[i] * 2
 sum = arr[0] + arr[1] + arr[2]
 sum
@@ -385,7 +385,7 @@ TEST_F(ExtensiveContainerTests, ModifyMapInLoop) {
     const char* code = R"(
 m = {"a": 1, "b": 2, "c": 3}
 keys = ["a", "b", "c"]
-foreach key in keys
+for key in keys
     m[key] = m[key] * 10
 value = m["b"]
 value
@@ -408,11 +408,11 @@ arr = []
 m = {}
 strEmpty = ""
 count = 0
-foreach x in arr
+for x in arr
     count = count + 1
-foreach pair in m
+for pair in m
     count = count + 1
-foreach ch in strEmpty
+for ch in strEmpty
     count = count + 1
 count
 )";
@@ -432,11 +432,11 @@ arr = [42]
 m = {"key": 100}
 str = "x"
 sum = 0
-foreach x in arr
+for x in arr
     sum = sum + x
-foreach pair in m
+for pair in m
     sum = sum + pair[1]
-foreach ch in str
+for ch in str
     sum = sum + 1
 sum
 )";
@@ -475,7 +475,7 @@ TEST_F(ExtensiveContainerTests, MapKeyIteration) {
     const char* code = R"(
 inventory = {"apples": 5, "bananas": 3, "oranges": 8}
 totalItems = 0
-foreach pair in inventory
+for pair in inventory
     totalItems = totalItems + pair[1]
 totalItems
 )";
@@ -493,7 +493,7 @@ TEST_F(ExtensiveContainerTests, StringCharacterCount) {
     const char* code = R"(
 text = "programming"
 aCount = 0
-foreach ch in text
+for ch in text
     if ch == "a"
         aCount = aCount + 1
     if ch == "r"
@@ -587,7 +587,7 @@ TEST_F(ExtensiveContainerTests, ArrayFiltering) {
     const char* code = R"(
 numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 evenSum = 0
-foreach n in numbers
+for n in numbers
     if n % 2 == 0
         evenSum = evenSum + n
 evenSum
@@ -606,7 +606,7 @@ TEST_F(ExtensiveContainerTests, StringWordCount) {
     const char* code = R"(
 sentence = "hello world test"
 spaceCount = 0
-foreach ch in sentence
+for ch in sentence
     if ch == " "
         spaceCount = spaceCount + 1
 wordCount = spaceCount + 1
@@ -646,8 +646,8 @@ TEST_F(ExtensiveContainerTests, MapKeyExistence) {
 config = {"debug": true, "timeout": 30, "retries": 3}
 foundKeys = 0
 keys = ["debug", "timeout", "missing", "retries"]
-foreach key in keys
-    foreach pair in config
+for key in keys
+    for pair in config
         if pair[0] == key
             foundKeys = foundKeys + 1
 foundKeys
@@ -666,9 +666,9 @@ TEST_F(ExtensiveContainerTests, MultiDimensionalArraySum) {
     const char* code = R"(
 cube = [[[1, 2], [3, 4]], [[5, 6], [7, 8]]]
 total = 0
-foreach layer in cube
-    foreach row in layer
-        foreach val in row
+for layer in cube
+    for row in layer
+        for val in row
             total = total + val
 total
 )";
@@ -811,7 +811,7 @@ TEST_F(ExtensiveContainerTests, MapStatistics) {
 scores = {"math": 85, "science": 92, "english": 78, "history": 88}
 total = 0
 count = 0
-foreach pair in scores
+for pair in scores
     total = total + pair[1]
     count = count + 1
 average = total / count
@@ -835,7 +835,7 @@ letterCount["h"] = 0
 letterCount["e"] = 0
 letterCount["l"] = 0
 letterCount["o"] = 0
-foreach ch in text
+for ch in text
     if ch == "h"
         letterCount["h"] = letterCount["h"] + 1
     if ch == "e"

@@ -12,7 +12,7 @@ TEST_F(ForEachLoopTest, ForEachArray) {
     const char* code = R"(arr = [1, 2, 3, 4, 5]
 sum = 0
 
-foreach x in arr
+for x in arr
     sum = sum + x
 
 sum)";
@@ -32,7 +32,7 @@ TEST_F(ForEachLoopTest, ForEachString) {
 str = "hello"
 count = 0
 
-foreach ch in str
+for ch in str
     count = count + 1
 
 count
@@ -53,7 +53,7 @@ TEST_F(ForEachLoopTest, ForEachList) {
 lst = [10, 20, 30]
 sum = 0
 
-foreach item in lst
+for item in lst
     sum = sum + item
 
 sum
@@ -74,7 +74,7 @@ TEST_F(ForEachLoopTest, ForEachMap) {
 m = {"a": 1, "b": 2, "c": 3}
 sum = 0
 
-foreach pair in m
+for pair in m
     sum = sum + pair[1]
 
 sum
@@ -95,8 +95,8 @@ TEST_F(ForEachLoopTest, ForEachNested) {
 matrix = [[1, 2], [3, 4], [5, 6]]
 sum = 0
 
-foreach row in matrix
-    foreach val in row
+for row in matrix
+    for val in row
         sum = sum + val
 
 sum
@@ -117,7 +117,7 @@ TEST_F(ForEachLoopTest, ForEachBreak) {
 arr = [1, 2, 3, 4, 5]
 count = 0
 
-foreach x in arr
+for x in arr
     if x >= 3
         break
     count = count + 1
@@ -140,7 +140,7 @@ TEST_F(ForEachLoopTest, ForEachContinue) {
 arr = [1, 2, 3, 4, 5]
 count = 0
 
-foreach x in arr
+for x in arr
     if x == 3
         continue
     count = count + 1
@@ -166,7 +166,7 @@ square = fun(x)
 arr = [1, 2, 3, 4]
 sum = 0
 
-foreach n in arr
+for n in arr
     sum = sum + square(n)
 
 sum
@@ -187,7 +187,7 @@ TEST_F(ForEachLoopTest, ForEachEmpty) {
 arr = []
 count = 0
 
-foreach x in arr
+for x in arr
     count = count + 1
 
 count
@@ -208,7 +208,7 @@ TEST_F(ForEachLoopTest, ForEachModifyElements) {
 arr = [1, 2, 3]
 sum = 0
 
-foreach x in arr
+for x in arr
     sum = sum + x + 10
 
 sum
