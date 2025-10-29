@@ -1354,16 +1354,47 @@ bool RhoParser::FunctionDefinition(AstNodePtr block) {
     Expect(TokenType::CloseParan);
     
     auto functionBlock = NewNode(RhoAstNodeEnumType::Block);
-    
-    // Rho uses Python-like indentation-style function bodies
-    if (!Try(TokenType::NewLine)) {
-        return CreateError("Expected newline after function declaration");
-    }
-    Expect(TokenType::NewLine);
-    
-    // Use the Block method for indented code blocks
-    if (!Block(functionBlock)) {
-        return CreateError("Failed to parse function body");
+
+    // Rho supports two function body styles:
+    // 1. Python-like indented blocks (multiline):
+    //    fun name(args)
+    //        body
+    // 2. Inline expression with braces (single-line):
+    //    fun name(args) { expr }
+
+    if (Try(TokenType::OpenBrace)) {
+        // Inline expression style: fun name(args) { expr }
+        KAI_TRACE() << "RhoParser::FunctionDefinition - Parsing inline function body with braces";
+        Consume();  // consume '{'
+
+        // Parse the expression inside braces
+        if (!Expression()) {
+            return CreateError("Expected expression inside function body braces");
+        }
+
+        // The expression result should be returned implicitly
+        // For inline functions { expr }, treat the expression as the return value
+        auto expr = Pop();
+
+        // Just add the expression to the block - in Rho, the last expression
+        // in a function body is implicitly the return value
+        functionBlock->Add(expr);
+
+        if (!Try(TokenType::CloseBrace)) {
+            return CreateError("Expected '}' after function body expression");
+        }
+        Consume();  // consume '}'
+    } else {
+        // Python-like indentation-style function bodies
+        if (!Try(TokenType::NewLine)) {
+            return CreateError("Expected newline or '{' after function declaration");
+        }
+        Expect(TokenType::NewLine);
+
+        // Use the Block method for indented code blocks
+        if (!Block(functionBlock)) {
+            return CreateError("Failed to parse function body");
+        }
     }
     
     fun->Add(functionBlock);
