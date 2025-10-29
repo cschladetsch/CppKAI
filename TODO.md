@@ -26,14 +26,34 @@
 **Solution**: Implemented Operation::GetChild in ExecutorPerform.cpp to handle array/map indexing with the `at` keyword.
 
 #### 2. Function Calls in Loops (PRIORITY 1 - Blocks 10 tests)
-**Problem**: Function calls inside loops don't work.
+**Problem**: Function calls inside Python-style loops cause "invalid continuation" transpilation errors.
+
+**Root Cause**:
+- Old-style `for (i=1; i<=4; i=i+1)` loops with function calls work fine
+- New Python-style `for x in arr` loops with function calls fail during Rho→Pi transpilation
+- Error: "yielded invalid continuation" - transpiler can't handle function calls in foreach body
 
 **Failing tests**: 9 Function_* tests + ForEach_WithFunction + ForEachLoopTest.ForEachWithFunction
 
+**Working example** (old style):
+```rho
+fun square(n) return n * n
+for (i = 1; i <= 4; i = i + 1)  # Parentheses style works!
+    sum = sum + square(i)
+```
+
+**Failing example** (new style):
+```rho
+fun double(x) { x * 2 }
+for x in arr  # Python style fails!
+    sum = sum + double(x)  # "invalid continuation" error
+```
+
 **TODO**:
-- [ ] Test: `fun f(x) return x * 2; for i in [1,2,3] sum = sum + f(i)`
-- [ ] Check if issue is scope, continuation, or function lookup
-- [ ] Verify function call transpilation in loop context
+- [ ] Debug RhoTranslate.cpp ForEach transpilation with function calls
+- [ ] Check if function calls in ForEach body generate valid Pi code
+- [ ] Compare Pi output for old-style vs new-style loops with functions
+- [ ] May need to fix how Call nodes are handled inside ForEach context
 
 #### 3. Conditionals in ForEach (PRIORITY 2 - Blocks 4 tests)
 **Problem**: ForEach loops with `if` that has no code after it fail. Parser issue.
