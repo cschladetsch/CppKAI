@@ -451,6 +451,35 @@ void Executor::Perform(Operation::Type op) {
             GetChildren();
             break;
 
+        case Operation::GetChild: {
+            // Stack: ( container key -- value )
+            auto key = Pop();
+            auto container = Pop();
+
+            // For arrays, use integer index
+            if (container.IsType<Array>()) {
+                int index = ConstDeref<int>(key);
+                auto& arr = Deref<Array>(container);
+                Push(arr.At(index));
+            }
+            // For maps, use key directly
+            else if (container.IsType<Map>()) {
+                auto& map = Deref<Map>(container);
+                Push(map.GetValue(key));
+            }
+            // For generic objects, convert key to Label
+            else {
+                Label label;
+                if (key.IsType<String>()) {
+                    label = Label(ConstDeref<String>(key).c_str());
+                } else if (key.IsType<int>()) {
+                    label = Label(std::to_string(ConstDeref<int>(key)).c_str());
+                }
+                Push(container.GetChild(label));
+            }
+            break;
+        }
+
         case Operation::TraceAll:
             TraceAll();
             break;

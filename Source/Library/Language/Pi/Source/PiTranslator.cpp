@@ -545,7 +545,7 @@ void PiTranslator::AppendTokenised(const TokenNode &tok) {
             return;
 
         case PiTokenEnumType::GetChild:
-            AppendOp(Operation::Index);
+            AppendOp(Operation::GetChild);
             return;
 
         case PiTokenEnumType::DropN:
