@@ -1,5 +1,94 @@
 # KAI Project TODO List
 
+## 🔄 Current Work: Python-Style Iteration Implementation (2025-10-29)
+
+### ✅ Completed
+- [x] Removed parentheses requirement from for loops
+- [x] Implemented Python-style `for x in container` syntax
+- [x] Added `foreach` keyword to Pi language
+- [x] Added `break` and `continue` keywords to Pi
+- [x] Fixed ForEach exception handling for proper control flow
+- [x] Updated all Rho → Pi transpilation for loops
+- [x] Updated 74 test files to use new Python-style syntax
+
+### 📊 Current Test Status
+| Test Suite                    | Pass | Total | Rate |
+|-------------------------------|------|-------|------|
+| ForEachLoopTest               | 8    | 10    | 80%  |
+| RhoBreakContinueTests         | 9    | 12    | 75%  |
+| RhoAllIterationMethodsTest    | 43   | 65    | 66%  |
+
+### ❌ Blocking Issues to Fix
+
+#### 1. Array/Map Indexing (PRIORITY 1 - Blocks 4-6 tests)
+**Problem**: Array indexing causes hangs or failures. Root cause: Pi's `at` operation (GetChild) not implemented in executor.
+
+**Failing tests**:
+- `RangeStyle_WithArray`, `RangeStyle_ForLoop`
+- `Mixed_WhileWithArray`, `Mixed_DoWhileWithArray`
+- `ForEachLoopTest.ForEachMap`
+
+**Fix**:
+```cpp
+// In Source/Library/Executor/Source/ExecutorPerform.cpp, add:
+case Operation::GetChild: {
+    auto key = Pop();
+    auto container = Pop();
+    if (container.IsType<Array>()) {
+        int index = ConstDeref<int>(key);
+        Push(Deref<Array>(container).At(index));
+    } else if (container.IsType<Map>()) {
+        Push(Deref<Map>(container).Get(key));
+    }
+    break;
+}
+```
+
+```cpp
+// In Source/Library/Language/Rho/Source/RhoTranslate.cpp:631, change:
+return container + " " + index + " at";  // Not: "[index]"
+```
+
+#### 2. Function Calls in Loops (PRIORITY 2 - Blocks 10-12 tests)
+**Problem**: Function calls inside loops don't work.
+
+**Failing tests**: All Function_* tests (MapPattern, FilterPattern, ReducePattern, etc.)
+
+**TODO**:
+- [ ] Test: `fun f(x) return x * 2; for i in [1,2,3] sum = sum + f(i)`
+- [ ] Check if issue is scope, continuation, or function lookup
+- [ ] Verify function call transpilation in loop context
+
+#### 3. Conditionals in ForEach (PRIORITY 3 - Blocks 4-6 tests)
+**Problem**: Some foreach loops with `if` statements fail. Loop body doesn't execute or executes incorrectly.
+
+**Example failure**: `ForEach_MaxValue` expects 9, gets 0
+```rho
+arr = [3, 7, 2, 9, 4]
+max = 0
+for x in arr
+    if x > max
+        max = x
+max  # Expected: 9, Got: 0
+```
+
+**Failing tests**:
+- `ForEach_FilteringPattern`, `ForEach_MaxValue`, `ForEach_MinValue`
+- `Mixed_ContinueInForEach`, `Mixed_NestedForEachInWhile`
+
+**TODO**:
+- [ ] Debug why nested `if` in `for x in arr` sometimes fails
+- [ ] Check indentation parsing for nested blocks
+- [ ] Verify Pi code generation for conditionals inside foreach
+
+### 🎯 Next Steps
+1. Fix array indexing (1-2 hours) → Should fix 4-6 tests
+2. Debug function calls in loops (2-4 hours) → Should fix 10-12 tests
+3. Fix conditional logic in foreach (1-2 hours) → Should fix 4-6 tests
+4. Target: 90%+ tests passing
+
+---
+
 ## High Priority Issues
 
 ### Build System
