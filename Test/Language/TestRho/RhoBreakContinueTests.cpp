@@ -155,7 +155,7 @@ while i < 20
         continue
     sum = sum + i
 sum
-)", 55);  // Sum of numbers 1-19 that are neither divisible by 2 nor 3
+)", 73);  // Sum of numbers 1-19 that are neither divisible by 2 nor 3: 1+5+7+11+13+17+19=73
 }
 
 // Test 9: Break with value accumulation before break

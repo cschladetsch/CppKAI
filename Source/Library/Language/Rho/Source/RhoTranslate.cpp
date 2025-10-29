@@ -499,29 +499,28 @@ std::string RhoTranslator::TranspileNodeToPi(AstNodePtr node) {
         }
 
         case AstNodeEnum::For: {
-            // Transpile for loops to Pi
-            // Rho: for (init; cond; step) { body }
-            // Pi: init { cond } { body step } while
+            // Transpile C-style for loops to Pi 'for' operation
+            // Rho: for init; cond; step
+            //          body
+            // Pi: { init } { cond } { step } { body } for
+            //
+            // The Pi 'for' operation (Operation::ForLoop) properly handles continue
+            // by executing step even when continue is set, which is correct C-style
+            // for loop semantics.
             if (node->GetChildren().size() >= 4) {
                 std::string init = TranspileNodeToPi(node->GetChild(0));
-                std::string condition = "{ " + TranspileNodeToPi(node->GetChild(1)) + " }";
+                std::string condition = TranspileNodeToPi(node->GetChild(1));
                 std::string step = TranspileNodeToPi(node->GetChild(2));
                 std::string body = TranspileNodeToPi(node->GetChild(3));
 
-                // Combine body and step
-                std::string bodyWithStep = "{ " + body;
-                if (!step.empty()) {
-                    bodyWithStep += " " + step;
-                }
-                bodyWithStep += " }";
+                // Wrap each part in a continuation (braces)
+                std::string initCont = "{ " + (init.empty() ? "" : init) + " }";
+                std::string condCont = "{ " + (condition.empty() ? "true" : condition) + " }";
+                std::string stepCont = "{ " + (step.empty() ? "" : step) + " }";
+                std::string bodyCont = "{ " + body + " }";
 
-                std::string result;
-                if (!init.empty()) {
-                    result = init + " ";
-                }
-                result += condition + " " + bodyWithStep + " while";
-
-                return result;
+                // Stack order for 'for' operation: init cond step body
+                return initCont + " " + condCont + " " + stepCont + " " + bodyCont + " for";
             }
             return "";
         }

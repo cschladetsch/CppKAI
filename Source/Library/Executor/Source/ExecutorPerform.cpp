@@ -1532,6 +1532,11 @@ void Executor::Perform(Operation::Type op) {
                             break;
                         }
 
+                        // Reset continue flag before increment so increment always runs
+                        // This is correct C-style for loop semantics: continue should
+                        // skip the rest of the body but still execute the increment
+                        continue_ = false;
+
                         // Execute increment (even with continue)
                         ExecuteContinuationInline(incrCont);
                     }
