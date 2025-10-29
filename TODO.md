@@ -14,78 +14,64 @@
 ### 📊 Current Test Status
 | Test Suite                    | Pass | Total | Rate |
 |-------------------------------|------|-------|------|
-| ForEachLoopTest               | 8    | 10    | 80%  |
+| ForEachLoopTest               | 9    | 10    | 90%  |
 | RhoBreakContinueTests         | 9    | 12    | 75%  |
-| RhoAllIterationMethodsTest    | 43   | 65    | 66%  |
+| RhoAllIterationMethodsTest    | 50   | 65    | 77%  |
 
 ### ❌ Blocking Issues to Fix
 
-#### 1. Array/Map Indexing (PRIORITY 1 - Blocks 4-6 tests)
-**Problem**: Array indexing causes hangs or failures. Root cause: Pi's `at` operation (GetChild) not implemented in executor.
+#### 1. ✅ Array/Map Indexing (FIXED)
+**Status**: All 5 array/map indexing tests now pass!
 
-**Failing tests**:
-- `RangeStyle_WithArray`, `RangeStyle_ForLoop`
-- `Mixed_WhileWithArray`, `Mixed_DoWhileWithArray`
-- `ForEachLoopTest.ForEachMap`
+**Solution**: Implemented Operation::GetChild in ExecutorPerform.cpp to handle array/map indexing with the `at` keyword.
 
-**Fix**:
-```cpp
-// In Source/Library/Executor/Source/ExecutorPerform.cpp, add:
-case Operation::GetChild: {
-    auto key = Pop();
-    auto container = Pop();
-    if (container.IsType<Array>()) {
-        int index = ConstDeref<int>(key);
-        Push(Deref<Array>(container).At(index));
-    } else if (container.IsType<Map>()) {
-        Push(Deref<Map>(container).Get(key));
-    }
-    break;
-}
-```
-
-```cpp
-// In Source/Library/Language/Rho/Source/RhoTranslate.cpp:631, change:
-return container + " " + index + " at";  // Not: "[index]"
-```
-
-#### 2. Function Calls in Loops (PRIORITY 2 - Blocks 10-12 tests)
+#### 2. Function Calls in Loops (PRIORITY 1 - Blocks 10 tests)
 **Problem**: Function calls inside loops don't work.
 
-**Failing tests**: All Function_* tests (MapPattern, FilterPattern, ReducePattern, etc.)
+**Failing tests**: 9 Function_* tests + ForEach_WithFunction + ForEachLoopTest.ForEachWithFunction
 
 **TODO**:
 - [ ] Test: `fun f(x) return x * 2; for i in [1,2,3] sum = sum + f(i)`
 - [ ] Check if issue is scope, continuation, or function lookup
 - [ ] Verify function call transpilation in loop context
 
-#### 3. Conditionals in ForEach (PRIORITY 3 - Blocks 4-6 tests)
-**Problem**: Some foreach loops with `if` statements fail. Loop body doesn't execute or executes incorrectly.
+#### 3. Conditionals in ForEach (PRIORITY 2 - Blocks 4 tests)
+**Problem**: ForEach loops with `if` that has no code after it fail. Parser issue.
 
-**Example failure**: `ForEach_MaxValue` expects 9, gets 0
+**Pattern that works**:
 ```rho
-arr = [3, 7, 2, 9, 4]
-max = 0
 for x in arr
-    if x > max
-        max = x
-max  # Expected: 9, Got: 0
+    if condition
+        do_something
+    code_after_if  # This is required!
 ```
 
+**Pattern that fails**:
+```rho
+for x in arr
+    if condition
+        do_something
+    # Nothing after if - FAILS!
+```
+
+**Example**: `ForEach_MaxValue` expects 9, gets 0 because the `if` block has no code after it.
+
 **Failing tests**:
-- `ForEach_FilteringPattern`, `ForEach_MaxValue`, `ForEach_MinValue`
-- `Mixed_ContinueInForEach`, `Mixed_NestedForEachInWhile`
+- `ForEach_MaxValue`, `ForEach_MinValue` (if with no following code)
+- `ForEach_FilteringPattern` (likely same issue)
+- `Mixed_ContinueInForEach` (complex case)
 
 **TODO**:
-- [ ] Debug why nested `if` in `for x in arr` sometimes fails
-- [ ] Check indentation parsing for nested blocks
-- [ ] Verify Pi code generation for conditionals inside foreach
+- [ ] Fix Rho parser to allow `if` blocks without trailing statements inside foreach
+- [ ] Check RhoParser.cpp ForEach block parsing logic
+- [ ] Verify Pi code generation for single-statement if blocks
 
 ### 🎯 Next Steps
-1. Fix array indexing (1-2 hours) → Should fix 4-6 tests
-2. Debug function calls in loops (2-4 hours) → Should fix 10-12 tests
-3. Fix conditional logic in foreach (1-2 hours) → Should fix 4-6 tests
-4. Target: 90%+ tests passing
+1. ✅ ~~Fix array indexing~~ → DONE! Fixed 5 tests
+2. Debug function calls in loops (2-4 hours) → Should fix 10 tests
+3. Fix conditional logic in foreach (1-2 hours) → Should fix 4 tests
+4. Current: 50/65 tests passing (77%)
+5. Target with fixes: 64/65 tests passing (98%)
 
 ---
 
