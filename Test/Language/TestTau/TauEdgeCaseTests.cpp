@@ -272,7 +272,7 @@ TEST_F(TauEdgeCaseTests, ComplexEvents) {
 
 // Test malformed syntax edge cases
 TEST_F(TauEdgeCaseTests, MalformedSyntax) {
-    // Missing semicolons
+    // Missing semicolons - should fail to parse
     string missingSemicolon = R"(
         namespace Bad {
             interface IBad {
@@ -280,9 +280,9 @@ TEST_F(TauEdgeCaseTests, MalformedSyntax) {
             }
         }
     )";
-    EXPECT_NO_THROW({ ParseTauContent(missingSemicolon); });
-    
-    // Missing braces
+    EXPECT_FALSE(ParseTauContent(missingSemicolon));
+
+    // Missing braces - should fail to parse
     string missingBrace = R"(
         namespace Bad {
             interface IBad {
@@ -290,9 +290,9 @@ TEST_F(TauEdgeCaseTests, MalformedSyntax) {
             // Missing closing brace
         }
     )";
-    EXPECT_NO_THROW({ ParseTauContent(missingBrace); });
-    
-    // Invalid parameter syntax
+    EXPECT_FALSE(ParseTauContent(missingBrace));
+
+    // Invalid parameter syntax - should fail to parse
     string invalidParams = R"(
         namespace Bad {
             interface IBad {
@@ -300,9 +300,9 @@ TEST_F(TauEdgeCaseTests, MalformedSyntax) {
             }
         }
     )";
-    EXPECT_NO_THROW({ ParseTauContent(invalidParams); });
-    
-    // Invalid return type
+    EXPECT_FALSE(ParseTauContent(invalidParams));
+
+    // Invalid return type - should fail to parse
     string invalidReturn = R"(
         namespace Bad {
             interface IBad {
@@ -310,7 +310,7 @@ TEST_F(TauEdgeCaseTests, MalformedSyntax) {
             }
         }
     )";
-    EXPECT_NO_THROW({ ParseTauContent(invalidReturn); });
+    EXPECT_FALSE(ParseTauContent(invalidReturn));
 }
 
 // Test unicode and special characters
