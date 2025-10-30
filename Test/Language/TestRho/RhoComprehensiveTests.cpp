@@ -298,14 +298,14 @@ TEST_F(RhoComprehensiveTests, FunctionReturningBoolean) {
 }
 
 TEST_F(RhoComprehensiveTests, FunctionWithComplexLogic) {
-    console_.Execute("max = fun(a, b)\n    if a > b then a else b");
-    console_.Execute("max(10, 20)");
+    console_.Execute("maxFunc = fun(a, b)\n    if a > b then a else b");
+    console_.Execute("maxFunc(10, 20)");
     ASSERT_EQ(kai::ConstDeref<int>(data_->Top()), 20);
 }
 
 TEST_F(RhoComprehensiveTests, MinFunction) {
-    console_.Execute("min = fun(a, b)\n    if a < b then a else b");
-    console_.Execute("min(10, 20)");
+    console_.Execute("minFunc = fun(a, b)\n    if a < b then a else b");
+    console_.Execute("minFunc(10, 20)");
     ASSERT_EQ(kai::ConstDeref<int>(data_->Top()), 10);
 }
 

@@ -56,9 +56,20 @@ void Executor::Perform(Operation::Type op) {
                 static_cast<int>(Language::Rho));
             break;
 
-        case Operation::Lookup:
-            Push(Resolve(Pop()));
+        case Operation::Lookup: {
+            auto label = Pop();
+            std::cerr << "[Lookup] Looking up: ";
+            if (label.IsType<Label>()) {
+                std::cerr << "Label '" << ConstDeref<Label>(label).ToString() << "'";
+            } else if (label.IsType<Pathname>()) {
+                std::cerr << "Pathname '" << ConstDeref<Pathname>(label).ToString() << "'";
+            } else {
+                std::cerr << "Unknown type";
+            }
+            std::cerr << std::endl;
+            Push(Resolve(label));
             break;
+        }
 
         case Operation::Freeze:
             Push(Bin::Freeze(Pop()));
@@ -827,6 +838,10 @@ void Executor::Perform(Operation::Type op) {
                 // Execute the continuation inline like IfElse does
                 if (continuation.IsType<Continuation>()) {
                     Pointer<Continuation> cont = continuation;
+                    // Ensure the continuation has access to the current scope
+                    if (continuation_.Exists()) {
+                        cont->SetScope(continuation_->GetScope());
+                    }
                     ExecuteContinuationInline(cont);
                 } else {
                     // Handle non-continuation objects by pushing them onto the
@@ -861,6 +876,10 @@ void Executor::Perform(Operation::Type op) {
                 // Execute the chosen block inline instead of suspending
                 // This avoids issues with continuation stack management
                 Pointer<Continuation> cont = chosen;
+                // Ensure the continuation has access to the current scope
+                if (continuation_.Exists()) {
+                    cont->SetScope(continuation_->GetScope());
+                }
                 ExecuteContinuationInline(cont);
             } else {
                 // Handle non-continuation objects by pushing them onto the
@@ -2150,6 +2169,17 @@ void Executor::Perform(Operation::Type op) {
 
                     Pointer<Continuation> cont = function;
 
+                    // Ensure the continuation has access to the current scope
+                    // so it can read/write outer variables
+                    if (continuation_.Exists()) {
+                        Object parentScope = continuation_->GetScope();
+                        if (!parentScope.Exists()) {
+                            // Parent doesn't have a scope, get it from tree
+                            parentScope = GetTree()->GetScope();
+                        }
+                        cont->SetScope(parentScope);
+                    }
+
                     try {
                         ExecuteContinuationInline(cont);
                     } catch (const Exception::Base& e) {
@@ -2197,6 +2227,17 @@ void Executor::Perform(Operation::Type op) {
                     }
 
                     Pointer<Continuation> cont = function;
+
+                    // Ensure the continuation has access to the current scope
+                    // so it can read/write outer variables
+                    if (continuation_.Exists()) {
+                        Object parentScope = continuation_->GetScope();
+                        if (!parentScope.Exists()) {
+                            // Parent doesn't have a scope, get it from tree
+                            parentScope = GetTree()->GetScope();
+                        }
+                        cont->SetScope(parentScope);
+                    }
 
                     try {
                         ExecuteContinuationInline(cont);
@@ -2329,6 +2370,12 @@ void Executor::ExecuteContinuationInline(Pointer<Continuation> cont) {
         auto savedIndex =
             savedCont.Exists() ? ConstDeref<int>(savedCont->index) : 0;
 
+        // Push the saved continuation onto context stack so variable resolution
+        // can find variables in parent scopes
+        if (savedCont.Exists()) {
+            context_->Push(savedCont);
+        }
+
         // Set up the inline continuation
         continuation_ = cont;
         if (!continuation_->index.Exists()) {
@@ -2355,12 +2402,21 @@ void Executor::ExecuteContinuationInline(Pointer<Continuation> cont) {
                 }
             }
         } catch (...) {
+            // Pop the saved continuation from context stack
+            if (savedCont.Exists() && !context_->Empty()) {
+                context_->Pop();
+            }
             // Restore original continuation on error
             continuation_ = savedCont;
             if (savedCont.Exists() && savedCont->index.Exists()) {
                 *savedCont->index = savedIndex;
             }
             throw;
+        }
+
+        // Pop the saved continuation from context stack
+        if (savedCont.Exists() && !context_->Empty()) {
+            context_->Pop();
         }
 
         // Restore the original continuation

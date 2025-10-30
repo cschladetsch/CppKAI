@@ -1,4 +1,5 @@
 #include <KAI/Language/Pi/PiLexer.h>
+#include <iostream>
 
 using namespace std;
 
@@ -241,6 +242,7 @@ bool PiLexer::PathnameOrKeyword() {
                 return false;
             }
 
+            std::cerr << "[PiLexer] Adding keyword token: type=" << result.type << std::endl;
             Add(result);
             return true;
         }
@@ -258,7 +260,10 @@ bool PiLexer::PathnameOrKeyword() {
         }
     } while (true);
 
-    Add(Enum::Pathname, Slice(start, offset));
+    auto pathText = Slice(start, offset);
+    std::string pathStr(input.begin() + start, input.begin() + offset);
+    std::cerr << "[PiLexer] Adding Pathname token: '" << pathStr << "'" << std::endl;
+    Add(Enum::Pathname, pathText);
 
     return true;
 }

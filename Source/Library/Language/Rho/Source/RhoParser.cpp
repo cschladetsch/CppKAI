@@ -2,8 +2,23 @@
 #include <KAI/Language/Rho/RhoParser.h>
 
 #include <iostream>
+#include <unordered_set>
 
 KAI_BEGIN
+
+// Pi keywords that cannot be used as Rho variable names
+static const std::unordered_set<std::string> piKeywords = {
+    "if", "ife", "for", "foreach", "break", "continue", "true", "false", "self",
+    "while", "assert", "div", "rho", "rho{", "to_str", "not", "and", "or", "xor",
+    "exists", "drop", "dup", "dup2", "drop2", "pick", "over", "swap", "rot", "rotn",
+    "roll", "min", "max", "toarray", "gc", "clear", "expand", "cd", "pwd", "type",
+    "size", "depth", "new", "print", "dropn", "tolist", "tomap", "toset", "mul",
+    "mod", "noteq", "lls", "ls", "freeze", "thaw", "at"
+};
+
+static bool IsPiKeyword(const std::string& name) {
+    return piKeywords.find(name) != piKeywords.end();
+}
 
 bool RhoParser::Process(std::shared_ptr<Lexer> lex, Structure st) {
     lexer = lex;
@@ -388,6 +403,16 @@ bool RhoParser::Expression() {
         Try(TokenType::DivAssign) || Try(TokenType::ModAssign)) {
         auto node = NewNode(Consume());
         auto ident = Pop();
+
+        // Validate that variable name is not a Pi keyword
+        if (ident && ident->GetToken().type == TokenType::Label) {
+            std::string varName = ident->GetTokenText();
+            if (IsPiKeyword(varName)) {
+                return CreateError(("Variable name '" + varName +
+                    "' conflicts with Pi keyword and cannot be used").c_str());
+            }
+        }
+
         if (!Logical()) {
             Fail(Lexer::CreateErrorMessage(
                 Current(), "Assignment requires an expression"));
@@ -1063,6 +1088,13 @@ bool RhoParser::ForLoop(AstNodePtr block) {
 
         // Create node for the identifier (consume it)
         auto loopVar = NewNode(Consume());
+
+        // Validate that loop variable name is not a Pi keyword
+        std::string loopVarName = loopVar->GetTokenText();
+        if (IsPiKeyword(loopVarName)) {
+            return CreateError(("Loop variable name '" + loopVarName +
+                "' conflicts with Pi keyword and cannot be used").c_str());
+        }
 
         // Check if next token is 'in'
         if (Try(TokenType::In)) {

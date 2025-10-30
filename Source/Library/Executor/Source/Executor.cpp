@@ -328,6 +328,30 @@ Object Executor::TryResolve(Label const &label) const {
         return Object();
     }
 
+    // DEBUG: Log ALL resolution attempts to understand the issue
+    std::cerr << "[TryResolve] Looking for '" << label.ToString() << "'" << std::endl;
+    std::cerr << "  continuation exists: " << (continuation_.Exists() ? "yes" : "no") << std::endl;
+    if (continuation_.Exists()) {
+        Object scope = continuation_->GetScope();
+        std::cerr << "  continuation scope exists: " << (scope.Exists() ? "yes" : "no") << std::endl;
+        if (scope.Exists()) {
+            std::cerr << "  scope.Has('" << label.ToString() << "'): " << (scope.Has(label) ? "YES" : "NO") << std::endl;
+        }
+    }
+    std::cerr << "  context stack size: " << context_->Size() << std::endl;
+    for (int i = 0; i < context_->Size(); ++i) {
+        Pointer<Continuation> cont = context_->At(i);
+        if (cont.Exists()) {
+            Object scope = cont->GetScope();
+            std::cerr << "  context[" << i << "] scope exists: " << (scope.Exists() ? "yes" : "no");
+            if (scope.Exists()) {
+                std::cerr << ", Has('" << label.ToString() << "'): " << (scope.Has(label) ? "YES" : "NO");
+            }
+            std::cerr << std::endl;
+        }
+    }
+    std::cerr << "  tree exists: " << (tree_ ? "yes" : "no") << std::endl;
+
     // Search in current scope.
     if (continuation_.Exists()) {
         Object scope = continuation_->GetScope();
@@ -341,6 +365,9 @@ Object Executor::TryResolve(Label const &label) const {
         if (!cont.Exists()) break;
 
         Object scope = cont->GetScope();
+        // Try both Has (direct children) and HasChild (recursive search)
+        if (scope.Exists() && scope.Has(label))
+            return scope.Get(label);
         if (scope.Exists() && scope.HasChild(label))
             return scope.GetChild(label);
     }
@@ -483,6 +510,22 @@ void Executor::Eval(Object const &Q) {
         return;
     }
 
+    // DEBUG: Log what we're evaluating
+    auto typeNum = GetTypeNumber(Q);
+    std::cerr << "[Eval] Type=" << typeNum.ToString();
+    if (Q.GetClass()) {
+        std::cerr << " (" << Q.GetClass()->GetName().ToString() << ")";
+    }
+    if (Q.IsType<Label>()) {
+        std::cerr << " Label: '" << ConstDeref<Label>(Q).ToString() << "'";
+    } else if (Q.IsType<Pathname>()) {
+        auto path = ConstDeref<Pathname>(Q);
+        std::cerr << " Pathname: '" << path.ToString() << "' quoted=" << (path.Quoted() ? "yes" : "no");
+    } else if (Q.IsType<int>()) {
+        std::cerr << " int: " << ConstDeref<int>(Q);
+    }
+    std::cerr << std::endl;
+
     // Removed noisy trace for cleaner Console output
 
     // Simplified: Treat evaluation as a simple dispatch based on type
@@ -490,6 +533,7 @@ void Executor::Eval(Object const &Q) {
         case Type::Number::Operation: {
             try {
                 const auto op = Deref<Operation>(Q).GetTypeNumber();
+                std::cerr << "    --> Performing operation: " << Operation::ToString(op) << std::endl;
                 Perform(op);
             } catch (const Exception::Base &e) {
                 // Re-throw KAI exceptions (like assertion failures) so they can

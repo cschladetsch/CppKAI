@@ -358,16 +358,16 @@ TEST_F(RhoForLoopTestsFixture, ComplexCondition) {
     const std::string code = R"(
         // For loop with a more complex condition
         result = 0;
-        max = 10;
+        maxVal = 10;
         target = 25;
-        
-        for (i = 0; i < max && result < target; i = i + 1) {
+
+        for (i = 0; i < maxVal && result < target; i = i + 1) {
             result = result + i * 2;
         }
-        
-        // Should exit when result >= 25, specifically at i=4 
+
+        // Should exit when result >= 25, specifically at i=4
         // (result = 0 + 0*2 + 1*2 + 2*2 + 3*2 + 4*2 = 20)
-        // or when i reaches max (10)
+        // or when i reaches maxVal (10)
         result;
     )";
 

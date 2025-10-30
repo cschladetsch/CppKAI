@@ -9,6 +9,7 @@
 #include <iostream>
 #include <optional>
 #include <ranges>
+#include <set>
 #include <string_view>
 
 KAI_BEGIN
@@ -228,8 +229,9 @@ Pointer<Continuation> RhoTranslator::Translate(const char* text, Structure st) {
 
     // Rho always transpiles to Pi - simple and direct
     std::string piCode = TranspileToPi(parse->GetRoot());
-    
-    
+
+    std::cerr << "=== FULL Pi CODE ===\n" << piCode << "\n====================" << std::endl;
+
     if (!piCode.empty() && !Failed) {
         KAI_TRACE() << "Using Pi transpilation: " << piCode;
         
@@ -238,11 +240,13 @@ Pointer<Continuation> RhoTranslator::Translate(const char* text, Structure st) {
         piTranslator.trace = trace;
         
         auto result = piTranslator.Translate(piCode.c_str(), st);
-        
+
         if (!piTranslator.Failed) {
+            std::cerr << "Pi translation succeeded, returning result" << std::endl;
             return result;
         }
-        
+
+        std::cerr << "Pi transpilation FAILED: " << piTranslator.Error << std::endl;
         KAI_TRACE() << "Pi transpilation failed";
         Fail("Pi transpilation failed");
         return Object();
@@ -529,14 +533,20 @@ std::string RhoTranslator::TranspileNodeToPi(AstNodePtr node) {
             // Transpile iterator-style for loops to Pi
             // Rho: for x in collection { body }
             // Pi: collection { 'x # body } foreach
+            std::cerr << "DEBUG: Transpiling ForEach node with " << node->GetChildren().size() << " children" << std::endl;
             if (node->GetChildren().size() >= 3) {
                 std::string varName = node->GetChild(0)->GetTokenText();
+                std::cerr << "DEBUG:   varName=" << varName << std::endl;
                 std::string collection = TranspileNodeToPi(node->GetChild(1));
+                std::cerr << "DEBUG:   collection=" << collection << std::endl;
                 std::string body = TranspileNodeToPi(node->GetChild(2));
+                std::cerr << "DEBUG:   body=" << body << std::endl;
 
                 std::string piCode = collection + " { '" + varName + " # " + body + " } foreach";
+                std::cerr << "DEBUG ForEach transpiled to: " << piCode << std::endl;
                 return piCode;
             }
+            std::cerr << "DEBUG: ForEach node has insufficient children!" << std::endl;
             return "";
         }
 

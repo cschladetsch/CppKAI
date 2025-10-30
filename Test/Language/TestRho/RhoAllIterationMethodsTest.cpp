@@ -376,7 +376,7 @@ for x in arr
         if x > 3
             count = count + 1
 count
-)", 4, "ForEach_FilteringPattern");  // 5, 7, 9 are odd and > 3
+)", 3, "ForEach_FilteringPattern");  // 5, 7, 9 are odd and > 3 (3 items, not 4)
 }
 
 TEST_F(RhoAllIterationMethodsTest, ForEach_Accumulator) {
@@ -392,22 +392,22 @@ product
 TEST_F(RhoAllIterationMethodsTest, ForEach_MaxValue) {
     RunAndExpect<int>(R"(
 arr = [3, 7, 2, 9, 4]
-max = 0
+maxVal = 0
 for x in arr
-    if x > max
-        max = x
-max
+    if x > maxVal
+        maxVal = x
+maxVal
 )", 9, "ForEach_MaxValue");
 }
 
 TEST_F(RhoAllIterationMethodsTest, ForEach_MinValue) {
     RunAndExpect<int>(R"(
 arr = [3, 7, 2, 9, 4]
-min = 1000
+minVal = 1000
 for x in arr
-    if x < min
-        min = x
-min
+    if x < minVal
+        minVal = x
+minVal
 )", 2, "ForEach_MinValue");
 }
 

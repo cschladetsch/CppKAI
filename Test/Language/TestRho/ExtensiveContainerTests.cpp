@@ -625,11 +625,11 @@ TEST_F(ExtensiveContainerTests, ArrayMaxElement) {
     console_.SetLanguage(Language::Rho);
     const char* code = R"(
 numbers = [3, 7, 2, 9, 1, 8, 4]
-max = numbers[0]
+maxVal = numbers[0]
 for i = 1; i < 7; i = i + 1
-    if numbers[i] > max
-        max = numbers[i]
-max
+    if numbers[i] > maxVal
+        maxVal = numbers[i]
+maxVal
 )";
 
     console_.Execute(code, Structure::Program);
