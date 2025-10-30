@@ -172,10 +172,13 @@ bool PiLexer::NextToken() {
 
         case '.':
             if (Peek() == '.') {
-                Next();
+                // Save the start position (first dot)
+                int start = offset;
+                Next();  // Move past second dot
                 if (Peek() == '.') {
-                    Next();
-                    return Add(Enum::Resume, 3);
+                    // Three dots - create Resume token from saved start
+                    Next();  // Move past third dot
+                    return Add(Enum::Resume, Slice(start, offset + 1));
                 }
                 return Fail("Two dots doesn't work");
             }

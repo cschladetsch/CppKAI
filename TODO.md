@@ -1,6 +1,24 @@
 # KAI Project TODO List
 
-## 🔄 Current Work: Python-Style Iteration Implementation (2025-10-29)
+## 📈 Summary (2025-10-30)
+
+**Latest Achievement**: Fixed Pi keyword validation issue - 4 more tests now pass! 🎉
+
+**Progress**: Python-style iteration is 82% complete for RhoAllIterationMethodsTest (53/65 tests)
+
+**Key Improvements Today**:
+- Discovered and fixed root cause: Rho variable names conflicting with Pi keywords
+- Variables like `max`, `min` were lexed as Pi operations instead of identifiers
+- Added validation to reject Pi keywords as Rho variable names
+- Enhanced variable scoping for nested continuations
+- Updated all affected tests to use non-conflicting names
+
+**Remaining Work**:
+- 12 tests blocked by inline function execution (returns 0)
+- 8 tests with break/continue edge cases in nested loops
+- 5 tests with conditional evaluation issues
+
+## 🔄 Current Work: Python-Style Iteration Implementation (2025-10-30)
 
 ### ✅ Completed
 - [x] Removed parentheses requirement from for loops
@@ -13,13 +31,17 @@
 - [x] Fixed continue in C-style for loops (infinite loop bug)
 - [x] Changed C-style for loop transpilation to use Pi `for` operation
 - [x] Added parser support for inline function syntax `fun name(args) { expr }`
+- [x] **Fixed ForEach variable access with Pi keyword validation**
+- [x] **Enhanced continuation scope inheritance for nested loops**
+- [x] **Improved variable resolution via context stack**
 
-### 📊 Current Test Status
-| Test Suite                    | Pass | Total | Rate |
-|-------------------------------|------|-------|------|
-| ForEachLoopTest               | 9    | 10    | 90%  |
-| RhoBreakContinueTests         | 12   | 12    | 100% ✅ |
-| RhoAllIterationMethodsTest    | 50   | 65    | 77%  |
+### 📊 Current Test Status (2025-10-30)
+| Test Suite                    | Pass | Total | Rate | Notes |
+|-------------------------------|------|-------|------|-------|
+| RhoBreakContinueTests         | 12   | 12    | 100% | ✅ All passing |
+| RhoAllIterationMethodsTest    | 53   | 65    | 82%  | ⬆️ +3 from Pi keyword fix |
+| Break/Continue (all suites)   | 48   | 56    | 86%  | 8 failures in nested/C-style |
+| RhoMoreControlFixedTests      | 6    | 11    | 55%  | 5 failures in conditionals |
 
 ### ❌ Blocking Issues to Fix
 
@@ -61,37 +83,48 @@ for x in arr  # Python style fails!
 - [ ] Compare Pi output for old-style vs new-style loops with functions
 - [ ] May need to fix how Call nodes are handled inside ForEach context
 
-#### 3. ForEach Variable Access Issue (PRIORITY 2 - Blocks 4 tests) ❓ INVESTIGATING
-**Problem**: Some foreach loops with conditionals get 0 instead of computed values.
+#### 3. ✅ ForEach Variable Access Issue (FIXED - 2025-10-30)
+**Problem**: Foreach loops with conditionals comparing to outer scope variables failed.
 
-**Status**: NOT a parser issue with conditional-only bodies!
-- ForEach_WithConditional passes (has if with no trailing code)
-- ForEach_MaxValue fails (also has if with no trailing code)
-- Both use identical patterns, suggesting variable access or comparison issue
+**Root Cause**: Variable names like `max`, `min` conflicted with Pi stack operation keywords.
+When Rho code transpiled to Pi, these were lexed as keywords instead of identifiers.
 
-**Pattern** (this works in some tests, fails in others):
-```rho
-for x in arr
-    if x > max     # Condition may not evaluate correctly
-        max = x    # Or assignment may not work
-```
+**Solution Implemented**:
+1. Added Pi keyword validation in Rho parser (RhoParser.cpp)
+2. Rejects Pi keywords (`max`, `min`, `swap`, `dup`, etc.) as Rho variable names
+3. Enhanced continuation scope inheritance for foreach/if/ifelse operations
+4. Improved variable resolution to search parent scopes via context stack
+5. Updated tests to use non-conflicting names (max→maxVal, min→minVal)
 
-**Failing tests**:
-- `ForEach_MaxValue` (expects 9, gets 0)
-- `ForEach_MinValue` (expects 2, gets initial value)
-- `ForEach_FilteringPattern`
-- `Mixed_ContinueInForEach`
+**Fixed Tests**:
+- ✅ `ForEach_MaxValue` - now passes
+- ✅ `ForEach_MinValue` - now passes
+- ✅ `ForLoopTests.ComplexCondition` - now passes
+- ✅ `ExtensiveContainerTests.ArrayMaxElement` - now passes
 
-**Theory**: Variable `x` might not be accessible in condition, or variables from outer scope
-aren't being updated correctly. Needs transpilation/execution debugging.
+**Remaining Issues**: 12 tests still failing, mostly related to function calls in loops (see Issue #2)
 
-### 🎯 Next Steps
+#### 4. ⚠️ Remaining Test Failures (12 tests)
+**Breakdown by category**:
+- **Function calls in loops**: 12 tests (all Function_* + ForEach_WithFunction)
+  - Issue #2 above - inline function execution returns 0
+- **Break/Continue edge cases**: 8 tests
+  - `RhoIterationComprehensiveTests`: 5 failures (nested breaks, C-style for break/continue)
+  - `RhoMoreControlFixedTests.NestedLoopsWithBreakContinue`: nested loop control flow
+  - `SimpleDoWhileContinueTest.DoWhileContinueNoIf`: do-while continue without if
+  - `RhoAllIterationMethodsTest.Mixed_ContinueInForEach`: continue in foreach
+- **Conditional issues**: 5 tests
+  - `RhoMoreControlFixedTests`: Complex nested conditionals, if-else logic
+
+### 🎯 Next Steps (Updated 2025-10-30)
 1. ✅ ~~Fix array indexing~~ → DONE! Fixed 5 tests (Issue #1)
 2. ✅ ~~Fix continue in C-style for loops~~ → DONE! RhoBreakContinueTests: 12/12 (100%)
-3. 🔄 Debug inline function execution → In progress (Issue #2, blocks 11 tests)
-4. 🔄 Debug foreach variable access → Investigating (Issue #3, blocks 4 tests)
-5. Current: 50/65 tests passing (77%), RhoBreakContinueTests: 12/12 (100%)
-6. Target: 65/65 tests passing (100%)
+3. ✅ ~~Fix foreach variable access~~ → DONE! Fixed Pi keyword conflicts (Issue #3, +4 tests)
+4. 🔄 Debug inline function execution → PRIORITY 1 (Issue #2, blocks 12 tests)
+5. 🔄 Fix break/continue edge cases → PRIORITY 2 (8 tests, mostly nested scenarios)
+6. 🔄 Fix conditional evaluation issues → PRIORITY 3 (5 tests in RhoMoreControlFixedTests)
+7. **Current**: 53/65 tests passing in RhoAllIterationMethodsTest (82%), 48/56 in Break/Continue (86%)
+8. **Target**: 65/65 tests passing (100%)
 
 ---
 

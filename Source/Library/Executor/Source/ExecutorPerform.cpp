@@ -2385,20 +2385,61 @@ void Executor::ExecuteContinuationInline(Pointer<Continuation> cont) {
         }
 
         // Execute the continuation
+        // Check cont instead of continuation_ because Suspend may change continuation_
         try {
-            while (continuation_.Exists() &&
-                   ConstDeref<int>(continuation_->index) <
-                       continuation_->GetCode()->Size()) {
+            while (cont.Exists() &&
+                   ConstDeref<int>(cont->index) < cont->GetCode()->Size()) {
                 if (break_ || continue_) break;
 
-                int index = ConstDeref<int>(continuation_->index);
-                auto obj = continuation_->GetCode()->At(index);
+                int index = ConstDeref<int>(cont->index);
+                auto obj = cont->GetCode()->At(index);
 
                 // Advance the index first
-                *continuation_->index = index + 1;
+                *cont->index = index + 1;
 
                 if (obj.Exists()) {
                     Eval(obj);
+
+                    // If Suspend changed continuation_, execute suspended function
+                    if (continuation_ != cont) {
+                        // Save cont's current index
+                        int savedIndex = ConstDeref<int>(cont->index);
+                        // Save break_ flag
+                        bool savedBreak = break_;
+
+                        // Execute the suspended function inline, not via Continue()
+                        // Continue() would continue executing cont after the suspended function completes
+                        auto suspendedCont = continuation_;
+                        if (suspendedCont.Exists() && suspendedCont->GetCode().Exists()) {
+                            // Initialize suspended continuation's index
+                            if (!suspendedCont->index.Exists()) {
+                                suspendedCont->index = suspendedCont->New<int>(0);
+                            } else {
+                                *suspendedCont->index = 0;
+                            }
+
+                            // Execute all operations in suspended continuation
+                            while (ConstDeref<int>(suspendedCont->index) < suspendedCont->GetCode()->Size()) {
+                                int idx = ConstDeref<int>(suspendedCont->index);
+                                auto operation = suspendedCont->GetCode()->At(idx);
+                                *suspendedCont->index = idx + 1;
+                                if (operation.Exists()) {
+                                    Eval(operation);
+                                }
+                            }
+                        }
+
+                        // Pop cont from context stack (pushed by Suspend)
+                        if (!context_->Empty()) {
+                            context_->Pop();
+                        }
+
+                        // Restore cont as current continuation
+                        continuation_ = cont;
+                        *cont->index = savedIndex;
+                        // Restore break_ flag
+                        break_ = savedBreak;
+                    }
                 }
             }
         } catch (...) {
