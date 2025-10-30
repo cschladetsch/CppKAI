@@ -151,6 +151,7 @@ foreach (lang ${langs})
             ${source_path}/PiAdvancedControlFlowTests.cpp   # Advanced control flow tests
             ${source_path}/PiContinuationOperatorTests.cpp  # Continuation operator tests (|, &, !)
             ${source_path}/PiSuspendResumeReplaceTests.cpp  # Suspend (&), Resume (...), Replace (!) tests
+            ${source_path}/PiTailRecursionTests.cpp         # Focused tail recursion tests using ! (Replace)
             ${source_path}/PiComprehensiveTests.cpp         # 50 comprehensive Pi tests covering Resume, Replace, loops, nesting
             ${source_path}/PiAdvancedTests.cpp              # 100 advanced Pi tests: recursion, mutual recursion, tail recursion, nested calls
             # Larger tests to include if needed:

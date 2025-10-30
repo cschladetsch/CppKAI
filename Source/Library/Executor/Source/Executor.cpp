@@ -876,10 +876,14 @@ void Executor::ConditionalContextSwitch(Operation::Type op) {
         case Operation::Suspend:
             continuation_->Next();
             context_->Push(continuation_);
-            // fallthrough
+            continuation_ = NewContinuation(Pop());
+            break_ = true;
+            break;
         case Operation::Replace:
-            context_->Push(NewContinuation(Pop()));
-            // fallthrough
+            // Replace does NOT push to context - that's the whole point for tail calls
+            continuation_ = NewContinuation(Pop());
+            break_ = true;
+            break;
         case Operation::Resume:
             break_ = true;
             break;

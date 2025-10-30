@@ -405,9 +405,19 @@ void Executor::Perform(Operation::Type op) {
             break;
         }
 
-        case Operation::Replace:
-            continuation_ = NewContinuation(Pop());
+        case Operation::Replace: {
+            // Pop the object from stack
+            Object obj = Pop();
+
+            // If it's an identifier (Label/Pathname), resolve it first
+            if (obj.IsType<Label>() || obj.IsType<Pathname>()) {
+                obj = Resolve(obj);
+            }
+
+            // Replace current continuation with the resolved object
+            continuation_ = NewContinuation(obj);
             break;
+        }
 
         case Operation::Resume:
             break_ = true;
