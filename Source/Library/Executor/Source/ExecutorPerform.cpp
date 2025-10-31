@@ -414,8 +414,34 @@ void Executor::Perform(Operation::Type op) {
                 obj = Resolve(obj);
             }
 
-            // Replace current continuation with the resolved object
-            continuation_ = NewContinuation(obj);
+            // For tail call optimization: create new continuation but reuse scope
+            // This avoids context growth while maintaining proper state isolation
+            if (obj.IsType<Continuation>()) {
+                Value<Continuation> orig = obj;
+                Value<Continuation> val = New<Continuation>();
+                Pointer<Continuation> cont = val.GetObject();
+
+                if (cont.Exists()) {
+                    cont->Create();
+                    cont->SetCode(orig->GetCode());
+                    cont->args = orig->args;
+
+                    // Reuse current continuation's scope instead of creating new one
+                    if (continuation_.Exists() && continuation_->GetScope().Exists()) {
+                        cont->SetScope(continuation_->GetScope());
+                    } else {
+                        cont->SetScope(orig->GetScope());
+                    }
+
+                    // Reset index to start
+                    cont->index = cont->New<int>(0);
+
+                    continuation_ = cont;
+                }
+            } else {
+                // Fallback for non-continuation objects
+                continuation_ = NewContinuation(obj);
+            }
             break;
         }
 

@@ -86,43 +86,43 @@ TEST_F(PiAdvancedTests, FactorialTen) {
 
 // Tests 11-20: Simple Recursion (Fibonacci)
 TEST_F(PiAdvancedTests, FibonacciZero) {
-    AssertResult<int>("{ dup 1 < { } { dup 1 - fib & swap 2 - fib & + } ife } 'fib # 0 fib &", 0);
+    AssertResult<int>("{ dup 2 >= { dup 1 - fib & swap 2 - fib & + } if } 'fib # 0 fib &", 0);
 }
 
 TEST_F(PiAdvancedTests, FibonacciOne) {
-    AssertResult<int>("{ dup 1 < { } { dup 1 - fib & swap 2 - fib & + } ife } 'fib # 1 fib &", 1);
+    AssertResult<int>("{ dup 2 >= { dup 1 - fib & swap 2 - fib & + } if } 'fib # 1 fib &", 1);
 }
 
 TEST_F(PiAdvancedTests, FibonacciTwo) {
-    AssertResult<int>("{ dup 1 < { } { dup 1 - fib & swap 2 - fib & + } ife } 'fib # 2 fib &", 1);
+    AssertResult<int>("{ dup 2 >= { dup 1 - fib & swap 2 - fib & + } if } 'fib # 2 fib &", 1);
 }
 
 TEST_F(PiAdvancedTests, FibonacciThree) {
-    AssertResult<int>("{ dup 1 < { } { dup 1 - fib & swap 2 - fib & + } ife } 'fib # 3 fib &", 2);
+    AssertResult<int>("{ dup 2 >= { dup 1 - fib & swap 2 - fib & + } if } 'fib # 3 fib &", 2);
 }
 
 TEST_F(PiAdvancedTests, FibonacciFour) {
-    AssertResult<int>("{ dup 1 < { } { dup 1 - fib & swap 2 - fib & + } ife } 'fib # 4 fib &", 3);
+    AssertResult<int>("{ dup 2 >= { dup 1 - fib & swap 2 - fib & + } if } 'fib # 4 fib &", 3);
 }
 
 TEST_F(PiAdvancedTests, FibonacciFive) {
-    AssertResult<int>("{ dup 1 < { } { dup 1 - fib & swap 2 - fib & + } ife } 'fib # 5 fib &", 5);
+    AssertResult<int>("{ dup 2 >= { dup 1 - fib & swap 2 - fib & + } if } 'fib # 5 fib &", 5);
 }
 
 TEST_F(PiAdvancedTests, FibonacciSix) {
-    AssertResult<int>("{ dup 1 < { } { dup 1 - fib & swap 2 - fib & + } ife } 'fib # 6 fib &", 8);
+    AssertResult<int>("{ dup 2 >= { dup 1 - fib & swap 2 - fib & + } if } 'fib # 6 fib &", 8);
 }
 
 TEST_F(PiAdvancedTests, FibonacciSeven) {
-    AssertResult<int>("{ dup 1 < { } { dup 1 - fib & swap 2 - fib & + } ife } 'fib # 7 fib &", 13);
+    AssertResult<int>("{ dup 2 >= { dup 1 - fib & swap 2 - fib & + } if } 'fib # 7 fib &", 13);
 }
 
 TEST_F(PiAdvancedTests, FibonacciEight) {
-    AssertResult<int>("{ dup 1 < { } { dup 1 - fib & swap 2 - fib & + } ife } 'fib # 8 fib &", 21);
+    AssertResult<int>("{ dup 2 >= { dup 1 - fib & swap 2 - fib & + } if } 'fib # 8 fib &", 21);
 }
 
 TEST_F(PiAdvancedTests, FibonacciTen) {
-    AssertResult<int>("{ dup 1 < { } { dup 1 - fib & swap 2 - fib & + } ife } 'fib # 10 fib &", 55);
+    AssertResult<int>("{ dup 2 >= { dup 1 - fib & swap 2 - fib & + } if } 'fib # 10 fib &", 55);
 }
 
 // Tests 21-30: Tail Recursion (Sum)

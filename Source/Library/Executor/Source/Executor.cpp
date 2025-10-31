@@ -872,16 +872,46 @@ void Executor::ConditionalContextSwitch(Operation::Type op) {
         return;
     }
 
+    Object obj = Pop();
+
+    // Resolve if needed
+    if (obj.IsType<Label>() || obj.IsType<Pathname>()) {
+        obj = Resolve(obj);
+    }
+
     switch (op) {
         case Operation::Suspend:
             continuation_->Next();
             context_->Push(continuation_);
-            continuation_ = NewContinuation(Pop());
+            continuation_ = NewContinuation(obj);
             break_ = true;
             break;
         case Operation::Replace:
             // Replace does NOT push to context - that's the whole point for tail calls
-            continuation_ = NewContinuation(Pop());
+            // Create new continuation but reuse scope to avoid context growth
+            if (obj.IsType<Continuation>()) {
+                Value<Continuation> orig = obj;
+                Value<Continuation> val = New<Continuation>();
+                Pointer<Continuation> cont = val.GetObject();
+
+                if (cont.Exists()) {
+                    cont->Create();
+                    cont->SetCode(orig->GetCode());
+                    cont->args = orig->args;
+
+                    // Reuse current continuation's scope
+                    if (continuation_.Exists() && continuation_->GetScope().Exists()) {
+                        cont->SetScope(continuation_->GetScope());
+                    } else {
+                        cont->SetScope(orig->GetScope());
+                    }
+
+                    cont->index = cont->New<int>(0);
+                    continuation_ = cont;
+                }
+            } else {
+                continuation_ = NewContinuation(obj);
+            }
             break_ = true;
             break;
         case Operation::Resume:
