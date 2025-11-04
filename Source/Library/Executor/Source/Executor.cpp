@@ -331,28 +331,25 @@ Object Executor::TryResolve(Label const &label) const {
     }
 
     // DEBUG: Log ALL resolution attempts to understand the issue
-    std::cerr << "[TryResolve] Looking for '" << label.ToString() << "'" << std::endl;
-    std::cerr << "  continuation exists: " << (continuation_.Exists() ? "yes" : "no") << std::endl;
+    KAI_TRACE() << "[TryResolve] Looking for '" << label.ToString() << "'";
+    KAI_TRACE() << "  continuation exists: " << (continuation_.Exists() ? "yes" : "no");
     if (continuation_.Exists()) {
         Object scope = continuation_->GetScope();
-        std::cerr << "  continuation scope exists: " << (scope.Exists() ? "yes" : "no") << std::endl;
+        KAI_TRACE() << "  continuation scope exists: " << (scope.Exists() ? "yes" : "no");
         if (scope.Exists()) {
-            std::cerr << "  scope.Has('" << label.ToString() << "'): " << (scope.Has(label) ? "YES" : "NO") << std::endl;
+            KAI_TRACE() << "  scope.Has('" << label.ToString() << "'): " << (scope.Has(label) ? "YES" : "NO");
         }
     }
-    std::cerr << "  context stack size: " << context_->Size() << std::endl;
+    KAI_TRACE() << "  context stack size: " << context_->Size();
     for (int i = 0; i < context_->Size(); ++i) {
         Pointer<Continuation> cont = context_->At(i);
         if (cont.Exists()) {
             Object scope = cont->GetScope();
-            std::cerr << "  context[" << i << "] scope exists: " << (scope.Exists() ? "yes" : "no");
-            if (scope.Exists()) {
-                std::cerr << ", Has('" << label.ToString() << "'): " << (scope.Has(label) ? "YES" : "NO");
-            }
-            std::cerr << std::endl;
+            KAI_TRACE() << "  context[" << i << "] scope exists: " << (scope.Exists() ? "yes" : "no")
+                        << ", Has('" << label.ToString() << "'): " << (scope.Has(label) ? "YES" : "NO");
         }
     }
-    std::cerr << "  tree exists: " << (tree_ ? "yes" : "no") << std::endl;
+    KAI_TRACE() << "  tree exists: " << (tree_ ? "yes" : "no");
 
     // Search in current scope.
     if (continuation_.Exists()) {
@@ -512,21 +509,6 @@ void Executor::Eval(Object const &Q) {
         return;
     }
 
-    // DEBUG: Log what we're evaluating
-    auto typeNum = GetTypeNumber(Q);
-    std::cerr << "[Eval] Type=" << typeNum.ToString();
-    if (Q.GetClass()) {
-        std::cerr << " (" << Q.GetClass()->GetName().ToString() << ")";
-    }
-    if (Q.IsType<Label>()) {
-        std::cerr << " Label: '" << ConstDeref<Label>(Q).ToString() << "'";
-    } else if (Q.IsType<Pathname>()) {
-        auto path = ConstDeref<Pathname>(Q);
-        std::cerr << " Pathname: '" << path.ToString() << "' quoted=" << (path.Quoted() ? "yes" : "no");
-    } else if (Q.IsType<int>()) {
-        std::cerr << " int: " << ConstDeref<int>(Q);
-    }
-    std::cerr << std::endl;
 
     // Removed noisy trace for cleaner Console output
 
@@ -535,7 +517,6 @@ void Executor::Eval(Object const &Q) {
         case Type::Number::Operation: {
             try {
                 const auto op = Deref<Operation>(Q).GetTypeNumber();
-                std::cerr << "    --> Performing operation: " << Operation::ToString(op) << std::endl;
                 Perform(op);
             } catch (const Exception::Base &e) {
                 // Re-throw KAI exceptions (like assertion failures) so they can

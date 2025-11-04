@@ -245,7 +245,7 @@ bool PiLexer::PathnameOrKeyword() {
                 return false;
             }
 
-            std::cerr << "[PiLexer] Adding keyword token: type=" << result.type << std::endl;
+            KAI_TRACE() << "[PiLexer] Adding keyword token: type=" << result.type;
             Add(result);
             return true;
         }
@@ -265,7 +265,7 @@ bool PiLexer::PathnameOrKeyword() {
 
     auto pathText = Slice(start, offset);
     std::string pathStr(input.begin() + start, input.begin() + offset);
-    std::cerr << "[PiLexer] Adding Pathname token: '" << pathStr << "'" << std::endl;
+    KAI_TRACE() << "[PiLexer] Adding Pathname token: '" << pathStr << "'";
     Add(Enum::Pathname, pathText);
 
     return true;
