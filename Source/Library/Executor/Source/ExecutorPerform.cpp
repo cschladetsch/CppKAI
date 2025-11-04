@@ -444,11 +444,10 @@ void Executor::Perform(Operation::Type op) {
             }
 
             // Set replace_ = true to signal that continuation has been replaced.
-            // This is needed to break out of ExecuteContinuationInline's loop when
-            // Replace happens inside an inline execution context (e.g., IfElse).
-            // The Continue() loop should check if continuation_ is valid and continue
-            // with the new continuation rather than calling NextContinuation().
+            // Set break_ = true to exit any inline execution (like ExecuteContinuationInline)
+            // The Continue() loop will see replace_=true and continue with new continuation
             replace_ = true;
+            break_ = true;
             break;
         }
 
@@ -925,12 +924,8 @@ void Executor::Perform(Operation::Type op) {
                 }
                 ExecuteContinuationInline(cont);
                 // If Replace happened inside ExecuteContinuationInline, replace_ will be true
-                // and continuation_ will be the new continuation. We should NOT call
-                // NextContinuation() in this case - just clear replace_ and continue executing
-                // the new continuation in the Continue() loop.
-                if (replace_) {
-                    replace_ = false;
-                }
+                // and continuation_ will be the new continuation. Don't clear it here -
+                // let the Continue() loop handle it
             } else {
                 // Handle non-continuation objects by pushing them onto the
                 // stack This allows IfElse to work with simple

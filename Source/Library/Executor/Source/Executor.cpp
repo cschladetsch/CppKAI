@@ -659,6 +659,7 @@ void Executor::Continue() {
             // Replace operation - continuation has been replaced
             // Continue with the new continuation, don't call NextContinuation
             replace_ = false;
+            break_ = false;  // Also clear break_ if it was set
             continue;
         }
 

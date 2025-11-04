@@ -132,27 +132,27 @@ TEST_F(PiAdvancedTests, TailRecursiveSumZero) {
 }
 
 TEST_F(PiAdvancedTests, TailRecursiveSumOne) {
-    AssertResult<int>("{ swap dup 0 == { drop } { swap over + swap 1 - sumTail ! } ife } 'sumTail # 1 0 sumTail &", 1);
+    AssertResult<int>("{ swap dup 0 == { drop } { swap over + swap 1 - swap sumTail ! } ife } 'sumTail # 1 0 sumTail &", 1);
 }
 
 TEST_F(PiAdvancedTests, TailRecursiveSumFive) {
     // 1+2+3+4+5 = 15
-    AssertResult<int>("{ swap dup 0 == { drop } { swap over + swap 1 - sumTail ! } ife } 'sumTail # 5 0 sumTail &", 15);
+    AssertResult<int>("{ swap dup 0 == { drop } { swap over + swap 1 - swap sumTail ! } ife } 'sumTail # 5 0 sumTail &", 15);
 }
 
 TEST_F(PiAdvancedTests, TailRecursiveSumTen) {
     // 1+2+...+10 = 55
-    AssertResult<int>("{ swap dup 0 == { drop } { swap over + swap 1 - sumTail ! } ife } 'sumTail # 10 0 sumTail &", 55);
+    AssertResult<int>("{ swap dup 0 == { drop } { swap over + swap 1 - swap sumTail ! } ife } 'sumTail # 10 0 sumTail &", 55);
 }
 
 TEST_F(PiAdvancedTests, TailRecursiveSumTwenty) {
     // 1+2+...+20 = 210
-    AssertResult<int>("{ swap dup 0 == { drop } { swap over + swap 1 - sumTail ! } ife } 'sumTail # 20 0 sumTail &", 210);
+    AssertResult<int>("{ swap dup 0 == { drop } { swap over + swap 1 - swap sumTail ! } ife } 'sumTail # 20 0 sumTail &", 210);
 }
 
 TEST_F(PiAdvancedTests, TailRecursiveProduct) {
     // product(5, 1) = 5! = 120 - takes n on top, acc below
-    AssertResult<int>("{ swap dup 0 == { drop } { swap over * swap 1 - prodTail ! } ife } 'prodTail # 5 1 prodTail &", 120);
+    AssertResult<int>("{ swap dup 0 == { drop } { swap over * swap 1 - swap prodTail ! } ife } 'prodTail # 5 1 prodTail &", 120);
 }
 
 TEST_F(PiAdvancedTests, TailRecursivePower) {
@@ -172,7 +172,7 @@ TEST_F(PiAdvancedTests, TailRecursiveMax) {
 
 TEST_F(PiAdvancedTests, TailRecursiveAccumulator) {
     // accumulator pattern: doubles value 5 times - takes n on top, acc below
-    AssertResult<int>("{ swap dup 0 < { drop } { swap 2 * swap 1 - accRec ! } ife } 'accRec # 5 1 accRec &", 32);
+    AssertResult<int>("{ swap dup 0 == { drop } { swap 2 * swap 1 - swap accRec ! } ife } 'accRec # 5 1 accRec &", 32);
 }
 
 // Tests 31-40: Nested Function Calls
