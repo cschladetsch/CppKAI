@@ -8,23 +8,27 @@ KAI's network architecture is built around a true peer-to-peer model where every
 
 ### Key Components
 
-```
-┌─────────────────────────────────────────────────┐
-│                     Node                        │
-├─────────────────────────────────────────────────┤
-│                                                 │
-│ ┌───────────────┐         ┌──────────────────┐  │
-│ │PeerDiscovery  │         │ConnectionManager │  │
-│ └───────────────┘         └──────────────────┘  │
-│                                                 │
-│ ┌───────────────┐         ┌──────────────────┐  │
-│ │NetworkLogger  │         │ProxyAgentSystem  │  │
-│ └───────────────┘         └──────────────────┘  │
-│                                                 │
-│               ┌──────────────┐                  │
-│               │  RakNet      │                  │
-│               └──────────────┘                  │
-└─────────────────────────────────────────────────┘
+```mermaid
+graph TB
+    subgraph Node["Node"]
+        PD[PeerDiscovery]
+        CM[ConnectionManager]
+        NL[NetworkLogger]
+        PAS[ProxyAgentSystem]
+        RN[RakNet]
+
+        PD -.-> CM
+        CM -.-> RN
+        PAS -.-> CM
+        NL -.-> RN
+    end
+
+    style Node fill:#e3f2fd
+    style PD fill:#fff3e0
+    style CM fill:#c8e6c9
+    style NL fill:#f3e5f5
+    style PAS fill:#ffe0b2
+    style RN fill:#ffebee
 ```
 
 #### Node
@@ -99,19 +103,27 @@ KAI implements several custom protocols on top of RakNet:
 
 The command execution flow in the peer-to-peer system works as follows:
 
-```
-┌─────────┐          ┌─────────┐
-│ Peer A  │          │ Peer B  │
-└─────────┘          └─────────┘
-     │                    │
-     │    Command @B      │
-     │───────────────────>│
-     │                    │
-     │                    │ Process Command
-     │                    │
-     │     Result         │
-     │<───────────────────│
-     │                    │
+```mermaid
+sequenceDiagram
+    participant UserA as User at Peer A
+    participant PeerA as Peer A Node
+    participant Network as Network
+    participant PeerB as Peer B Node
+    participant ExecB as Executor at Peer B
+
+    UserA->>PeerA: Enter command "calc @B"
+    PeerA->>PeerA: Parse @B prefix
+    PeerA->>Network: Route command to Peer B
+    Network->>PeerB: Deliver command packet
+
+    PeerB->>PeerB: Translate aliases (calc → calculator)
+    PeerB->>ExecB: Execute "calculator"
+    ExecB->>ExecB: Run calculation
+
+    ExecB->>PeerB: Return result
+    PeerB->>Network: Send result packet
+    Network->>PeerA: Deliver result
+    PeerA->>UserA: Display result
 ```
 
 1. **Command Input**: User enters a command with "@peer" prefix
@@ -126,31 +138,24 @@ The command execution flow in the peer-to-peer system works as follows:
 
 KAI's networking system is organized into several abstraction layers:
 
-```
-┌─────────────────────────────────────────────────┐
-│              Application Layer                  │
-│      (NetworkPeer, NetworkTest applications)    │
-└────────────────────────┬────────────────────────┘
-                         │
-┌────────────────────────┴────────────────────────┐
-│              Proxy/Agent Layer                  │
-│    (Remote object references and methods)       │
-└────────────────────────┬────────────────────────┘
-                         │
-┌────────────────────────┴────────────────────────┐
-│              Object Layer                       │
-│    (Object serialization and transmission)      │
-└────────────────────────┬────────────────────────┘
-                         │
-┌────────────────────────┴────────────────────────┐
-│              Node Layer                         │
-│    (Connection management, peer discovery)      │
-└────────────────────────┬────────────────────────┘
-                         │
-┌────────────────────────┴────────────────────────┐
-│              RakNet Layer                       │
-│    (Low-level networking, packet handling)      │
-└─────────────────────────────────────────────────┘
+```mermaid
+graph TB
+    APP[Application Layer<br/>NetworkPeer, NetworkTest applications]
+    PROXY[Proxy/Agent Layer<br/>Remote object references and methods]
+    OBJ[Object Layer<br/>Object serialization and transmission]
+    NODE[Node Layer<br/>Connection management, peer discovery]
+    RAKNET[RakNet Layer<br/>Low-level networking, packet handling]
+
+    APP --> PROXY
+    PROXY --> OBJ
+    OBJ --> NODE
+    NODE --> RAKNET
+
+    style APP fill:#e3f2fd
+    style PROXY fill:#fff3e0
+    style OBJ fill:#c8e6c9
+    style NODE fill:#ffe0b2
+    style RAKNET fill:#ffebee
 ```
 
 ### Application Layer

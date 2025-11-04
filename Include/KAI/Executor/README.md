@@ -17,16 +17,80 @@ The Executor is KAI's virtual machine, responsible for:
 
 The Executor follows a clean separation of concerns in the KAI language pipeline:
 
+```mermaid
+graph LR
+    subgraph "User Interface"
+        USER[User Input]
+    end
+
+    subgraph "Language Frontend"
+        CONSOLE[Console/Parser]
+        TRANS[Translator]
+    end
+
+    subgraph "Execution Engine"
+        EXEC[Executor VM]
+        CONT[Continuations]
+    end
+
+    subgraph "Object Model"
+        REG[Registry]
+        OBJ[Objects]
+        GC[Garbage Collector]
+    end
+
+    USER -->|"2 3 +"| CONSOLE
+    CONSOLE -->|Parse| TRANS
+    TRANS -->|Pi AST| CONT
+    CONT -->|Operations| EXEC
+    EXEC -->|Create/Access| REG
+    REG -->|Manage| OBJ
+    OBJ -.->|Mark/Sweep| GC
+    EXEC -.->|Stack Roots| GC
+
+    style USER fill:#e1f5fe
+    style EXEC fill:#c8e6c9
+    style REG fill:#fff3e0
+    style GC fill:#fce4ec
 ```
-User Input → Console → Translator → Executor → Registry/Objects
-    ↓           ↓          ↓           ↓           ↓
-   "2 3 +"   → Parse →  Pi AST →  Continuations → Results
+
+### Language Pipeline Flow
+
+```mermaid
+flowchart TB
+    subgraph "Language Input"
+        PI["Pi: 2 3 +"]
+        RHO["Rho: result = 2 + 3"]
+        TAU["Tau: interface methods"]
+    end
+
+    subgraph "Translation Layer"
+        PI_PARSE[Pi Parser]
+        RHO_PARSE[Rho Parser]
+        TAU_PARSE[Tau Parser]
+
+        RHO_TRANS[Rho→Pi Translator]
+        TAU_GEN[Tau Code Generator]
+    end
+
+    subgraph "Unified Execution"
+        PI_OPS[Pi Operations]
+        EXECUTOR[Executor VM]
+    end
+
+    PI --> PI_PARSE --> PI_OPS
+    RHO --> RHO_PARSE --> RHO_TRANS --> PI_OPS
+    TAU --> TAU_PARSE --> TAU_GEN --> PI_OPS
+    PI_OPS --> EXECUTOR
+
+    style PI_OPS fill:#ffecb3
+    style EXECUTOR fill:#c8e6c9
 ```
 
 ### Core Components
 
 1. **Console** - Handles user interaction and passes input to the Translator
-2. **Translator** - Converts language-specific syntax to Continuations  
+2. **Translator** - Converts language-specific syntax to Continuations
 3. **Executor** - Executes Continuations in a language-agnostic manner
 4. **Registry** - Provides object creation and type management services
 
@@ -36,17 +100,95 @@ All languages (Pi, Rho, Tau) are ultimately translated into Pi operations, which
 
 The Executor maintains two primary stacks that work together to provide a complete execution environment:
 
+```mermaid
+graph TB
+    subgraph "Executor State"
+        DS[Data Stack]
+        CS[Context Stack]
+        CONT[Current Continuation]
+        IP[Instruction Pointer]
+    end
+
+    subgraph "Data Stack Operations"
+        DS_PUSH[Push Value]
+        DS_POP[Pop Value]
+        DS_DUP[Duplicate Top]
+        DS_SWAP[Swap Top Two]
+    end
+
+    subgraph "Context Stack Operations"
+        CS_PUSH[Push Context]
+        CS_POP[Pop Context]
+        CS_SWITCH[Switch Continuation]
+    end
+
+    subgraph "Control Flow"
+        SUSPEND[Suspend &]
+        REPLACE[Replace !]
+        RESUME[Resume ...]
+    end
+
+    DS -.-> DS_PUSH
+    DS -.-> DS_POP
+    DS -.-> DS_DUP
+    DS -.-> DS_SWAP
+
+    CS -.-> CS_PUSH
+    CS -.-> CS_POP
+    CS -.-> CS_SWITCH
+
+    SUSPEND --> CS_PUSH
+    SUSPEND --> CS_SWITCH
+    REPLACE --> CS_SWITCH
+    RESUME --> CS_POP
+    RESUME --> CS_SWITCH
+
+    style DS fill:#ffecb3
+    style CS fill:#c8e6c9
+    style CONT fill:#e1f5fe
+    style IP fill:#fce4ec
+```
+
 ### Data Stack
 - **Purpose**: Contains values being operated on
 - **Operations**: Push, pop, manipulate data values
 - **Content**: Numbers, strings, objects, references
 - **Example**: `2 3 +` pushes 2, pushes 3, then pops both and pushes 5
 
-### Context Stack  
+### Context Stack
 - **Purpose**: Manages execution flow and continuations
 - **Operations**: Function calls, returns, exception handling
 - **Content**: Continuations, return addresses, exception handlers
 - **Example**: Function calls push return context, `&` pops and executes continuations
+
+### Execution Flow with Continuations
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Executor
+    participant DataStack
+    participant ContextStack
+    participant Continuation
+
+    User->>Executor: Execute: { 2 3 + } &
+    Executor->>DataStack: Push Continuation { 2 3 + }
+    Executor->>DataStack: Pop Continuation
+    Executor->>ContextStack: Push current context
+    Executor->>Continuation: Create new continuation
+    Executor->>Executor: Switch to new continuation
+
+    Note over Executor,Continuation: Execute continuation operations
+
+    Continuation->>DataStack: Push 2
+    Continuation->>DataStack: Push 3
+    Continuation->>DataStack: Pop 3, Pop 2
+    Continuation->>DataStack: Push 5 (2+3)
+
+    Continuation->>ContextStack: Pop previous context
+    Executor->>Executor: Return to previous continuation
+    Executor->>User: Result: 5
+```
 
 ```cpp
 class Executor {
@@ -171,6 +313,102 @@ public:
 
 // Replace: Completely substitute current continuation
 { "New path" trace } replace    // Change execution flow permanently
+```
+
+### Tail Recursion with Replace
+
+The Replace operation (`!`) enables efficient tail call optimization by replacing the current continuation instead of pushing a new one. This keeps the context stack size constant:
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Executor
+    participant DataStack
+    participant ContextStack
+    participant Continuation
+
+    Note over User,Continuation: Tail Recursive Countdown Example
+
+    User->>Executor: Execute: { dup 0 == { } { 1 - countdown ! } ife } 'countdown # 5 countdown &
+
+    Note over Executor: Initial Setup
+    Executor->>ContextStack: Push initial context (size: 1)
+    Executor->>DataStack: Push 5
+
+    Note over Executor: First Iteration (n=5)
+    Executor->>DataStack: dup → [5, 5]
+    Executor->>DataStack: Push 0, == → [5, false]
+    Executor->>Executor: IfElse: take else branch
+    Executor->>DataStack: 1 - → [4]
+    Executor->>Executor: Replace ! (not Suspend &)
+
+    Note over Executor,ContextStack: Replace reuses continuation at same context level
+    Executor->>Continuation: Replace continuation code with countdown
+    Note over ContextStack: Context stack size STAYS at 1
+
+    Note over Executor: Second Iteration (n=4)
+    Executor->>DataStack: dup → [4, 4]
+    Executor->>DataStack: Push 0, == → [4, false]
+    Executor->>Executor: Replace ! again
+    Note over ContextStack: Context stack STILL at 1
+
+    Note over Executor: ... Continue iterations ...
+
+    Note over Executor: Final Iteration (n=0)
+    Executor->>DataStack: dup → [0, 0]
+    Executor->>DataStack: Push 0, == → [0, true]
+    Executor->>Executor: IfElse: take then branch (empty)
+    Executor->>DataStack: Result: [0]
+
+    Note over ContextStack: Context stack returns to 0
+    Executor->>User: Result: 0 (constant stack depth!)
+```
+
+**Key Difference: Replace vs Suspend**
+
+```mermaid
+graph TB
+    subgraph "Using Replace (Tail Call) !"
+        R1[Context Stack: 1]
+        R2[Call countdown]
+        R3[Replace continuation]
+        R4[Context Stack: 1]
+        R5[Execute new iteration]
+        R6[Context Stack: 1]
+
+        R1 --> R2 --> R3 --> R4 --> R5 --> R6
+
+        style R1 fill:#c8e6c9
+        style R4 fill:#c8e6c9
+        style R6 fill:#c8e6c9
+    end
+
+    subgraph "Using Suspend (Regular Call) &"
+        S1[Context Stack: 1]
+        S2[Call countdown]
+        S3[Push new context]
+        S4[Context Stack: 2]
+        S5[Call countdown again]
+        S6[Push new context]
+        S7[Context Stack: 3]
+
+        S1 --> S2 --> S3 --> S4 --> S5 --> S6 --> S7
+
+        style S1 fill:#c8e6c9
+        style S4 fill:#ffeb3b
+        style S7 fill:#ff5252
+    end
+```
+
+**Tail Recursion Example - Factorial with Accumulator**:
+```pi
+// Non-tail recursive (grows stack)
+{ dup 0 == { drop 1 } { dup 1 - fact & * } ife } 'fact #
+5 fact & // Stack grows: 1 → 2 → 3 → 4 → 5 → 4 → 3 → 2 → 1
+
+// Tail recursive with accumulator (constant stack)
+{ swap dup 0 == { drop } { swap over * swap 1 - swap fact ! } ife } 'fact #
+5 1 fact & // Stack stays constant at depth 1, result: 120
 ```
 
 ## Memory Management Integration
