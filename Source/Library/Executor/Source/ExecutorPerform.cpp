@@ -443,9 +443,11 @@ void Executor::Perform(Operation::Type op) {
                 continuation_ = NewContinuation(obj);
             }
 
-            // CRITICAL: Set break_ = true to signal that continuation has changed
-            // This prevents Continue() from calling NextContinuation() which would
-            // overwrite our new continuation
+            // Set break_ = true to signal that continuation has changed.
+            // This is needed to break out of ExecuteContinuationInline's loop when
+            // Replace happens inside an inline execution context (e.g., IfElse).
+            // The Continue() loop or IfElse handler should check if continuation_ is
+            // valid and continue with the new continuation rather than calling NextContinuation().
             break_ = true;
             break;
         }

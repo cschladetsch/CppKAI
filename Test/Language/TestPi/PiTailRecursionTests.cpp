@@ -66,18 +66,21 @@ TEST_F(PiTailRecursionTests, TailSumZero) {
 
 TEST_F(PiTailRecursionTests, TailSumFive) {
     // sum(5, 0) = 1+2+3+4+5 = 15
-    AssertResult<int>("{ swap dup 0 == { drop } { swap over + swap 1 - sum ! } ife } 'sum # 5 0 sum &", 15);
+    // Stack starts as [n, acc], we compute sum(n-1, acc+n)
+    AssertResult<int>("{ swap dup 0 == { drop } { swap over + swap 1 - swap sum ! } ife } 'sum # 5 0 sum &", 15);
 }
 
 TEST_F(PiTailRecursionTests, TailSumTen) {
     // sum(10, 0) = 1+2+...+10 = 55
-    AssertResult<int>("{ swap dup 0 == { drop } { swap over + swap 1 - sum ! } ife } 'sum # 10 0 sum &", 55);
+    // Stack starts as [n, acc], we compute sum(n-1, acc+n)
+    AssertResult<int>("{ swap dup 0 == { drop } { swap over + swap 1 - swap sum ! } ife } 'sum # 10 0 sum &", 55);
 }
 
 // Tail recursive factorial
 TEST_F(PiTailRecursionTests, TailFactorialFive) {
     // factorial(5, 1) = 120
-    AssertResult<int>("{ swap dup 0 == { drop } { swap over * swap 1 - fact ! } ife } 'fact # 5 1 fact &", 120);
+    // Stack starts as [n, acc], we compute fact(n-1, acc*n)
+    AssertResult<int>("{ swap dup 0 == { drop } { swap over * swap 1 - swap fact ! } ife } 'fact # 5 1 fact &", 120);
 }
 
 // Tail recursive even/odd check

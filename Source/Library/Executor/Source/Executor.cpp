@@ -672,8 +672,19 @@ void Executor::Continue() {
         }
 
         if (break_) {
-            // KAI_TRACE() << "Continue: break_ is set, calling
-            // NextContinuation";
+            // Check if this is a Replace operation (continuation_ is valid, at index 0, and has code to execute)
+            // or a Break/Resume/end-of-continuation (need to pop from context)
+            if (continuation_.Valid() && continuation_.Exists() &&
+                continuation_->index.Exists() && *continuation_->index == 0 &&
+                continuation_->GetCode().Exists() && continuation_->GetCode()->Size() > 0) {
+                // This looks like a Replace - continuation is valid, at start, with code
+                // Continue with the new continuation, don't call NextContinuation
+                break_ = false;
+                continue;
+            }
+
+            // This is Break/Resume or end-of-continuation - call NextContinuation
+            // KAI_TRACE() << "Continue: break_ is set, calling NextContinuation";
             try {
                 NextContinuation();
                 if (!continuation_.Valid() || !continuation_.Exists()) {
