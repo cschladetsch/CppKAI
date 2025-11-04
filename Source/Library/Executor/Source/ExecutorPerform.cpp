@@ -442,6 +442,11 @@ void Executor::Perform(Operation::Type op) {
                 // Fallback for non-continuation objects
                 continuation_ = NewContinuation(obj);
             }
+
+            // CRITICAL: Set break_ = true to signal that continuation has changed
+            // This prevents Continue() from calling NextContinuation() which would
+            // overwrite our new continuation
+            break_ = true;
             break;
         }
 
@@ -917,6 +922,13 @@ void Executor::Perform(Operation::Type op) {
                     cont->SetScope(continuation_->GetScope());
                 }
                 ExecuteContinuationInline(cont);
+                // If Replace happened inside ExecuteContinuationInline, break_ will be true
+                // and continuation_ will be the new continuation. We should NOT call
+                // NextContinuation() in this case - just clear break_ and continue executing
+                // the new continuation in the Continue() loop.
+                if (break_) {
+                    break_ = false;
+                }
             } else {
                 // Handle non-continuation objects by pushing them onto the
                 // stack This allows IfElse to work with simple
@@ -2436,8 +2448,16 @@ void Executor::ExecuteContinuationInline(Pointer<Continuation> cont) {
                 if (obj.Exists()) {
                     Eval(obj);
 
-                    // If Suspend changed continuation_, execute suspended function
+                    // If Suspend or Replace changed continuation_
                     if (continuation_ != cont) {
+                        // Check if this was a Replace (break_ is set) or Suspend
+                        if (break_) {
+                            // Replace operation - don't execute inline, just break out
+                            // The new continuation will be executed by the outer loop
+                            break;
+                        }
+
+                        // This was a Suspend - execute the suspended function inline
                         // Save cont's current index
                         int savedIndex = ConstDeref<int>(cont->index);
                         // Save break_ flag
@@ -2491,16 +2511,20 @@ void Executor::ExecuteContinuationInline(Pointer<Continuation> cont) {
             throw;
         }
 
-        // Pop the saved continuation from context stack
+        // Always pop the saved continuation from context stack
         if (savedCont.Exists() && !context_->Empty()) {
             context_->Pop();
         }
 
-        // Restore the original continuation
-        continuation_ = savedCont;
-        if (savedCont.Exists() && savedCont->index.Exists()) {
-            *savedCont->index = savedIndex;
+        // If Replace was used (break_ is true), keep the new continuation
+        // Otherwise restore the original continuation
+        if (!break_) {
+            continuation_ = savedCont;
+            if (savedCont.Exists() && savedCont->index.Exists()) {
+                *savedCont->index = savedIndex;
+            }
         }
+        // If break_ is true, continuation_ already has the replacement - don't restore
     }
 }
 
