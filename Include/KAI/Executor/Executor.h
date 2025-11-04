@@ -276,8 +276,9 @@ struct Executor : Reflected {
     Value<Stack> context_;
     Value<Stack> data_;
     Object compiler_;
-    bool break_;
-    bool continue_;
+    bool break_;      // Set by Break operation to exit loops
+    bool continue_;   // Set by Continue operation to skip to next loop iteration
+    bool replace_;    // Set by Replace operation to replace current continuation
     Tree *tree_;
     int traceLevel_;
     int stepNumber_;

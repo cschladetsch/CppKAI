@@ -57,10 +57,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/xian/local/KAI
+CMAKE_SOURCE_DIR = /home/christian/local/repos/KAI
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/xian/local/KAI
+CMAKE_BINARY_DIR = /home/christian/local/repos/KAI
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -85,61 +85,16 @@ rebuild_cache:
 rebuild_cache/fast: rebuild_cache
 .PHONY : rebuild_cache/fast
 
-# Special rule for the target list_install_components
-list_install_components:
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Available install components are: \"Unspecified\""
-.PHONY : list_install_components
-
-# Special rule for the target list_install_components
-list_install_components/fast: list_install_components
-.PHONY : list_install_components/fast
-
-# Special rule for the target install
-install: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Install the project..."
-	/usr/bin/cmake -P cmake_install.cmake
-.PHONY : install
-
-# Special rule for the target install
-install/fast: preinstall/fast
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Install the project..."
-	/usr/bin/cmake -P cmake_install.cmake
-.PHONY : install/fast
-
-# Special rule for the target install/local
-install/local: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing only the local directory..."
-	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
-.PHONY : install/local
-
-# Special rule for the target install/local
-install/local/fast: preinstall/fast
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing only the local directory..."
-	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
-.PHONY : install/local/fast
-
-# Special rule for the target install/strip
-install/strip: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing the project stripped..."
-	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
-.PHONY : install/strip
-
-# Special rule for the target install/strip
-install/strip/fast: preinstall/fast
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing the project stripped..."
-	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
-.PHONY : install/strip/fast
-
 # The main all target
 all: cmake_check_build_system
-	cd /home/xian/local/KAI && $(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/CMakeFiles /home/xian/local/KAI/Test/Source//CMakeFiles/progress.marks
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/Source/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/CMakeFiles 0
+	cd /home/christian/local/repos/KAI && $(CMAKE_COMMAND) -E cmake_progress_start /home/christian/local/repos/KAI/CMakeFiles /home/christian/local/repos/KAI/Test/Source//CMakeFiles/progress.marks
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/Source/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/christian/local/repos/KAI/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/Source/clean
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/Source/clean
 .PHONY : clean
 
 # The main clean target
@@ -148,22 +103,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/Source/preinstall
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/Source/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/Source/preinstall
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/Source/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /home/xian/local/KAI && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/christian/local/repos/KAI && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 Test/Source/CMakeFiles/KaiTest.dir/rule:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/Source/CMakeFiles/KaiTest.dir/rule
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/Source/CMakeFiles/KaiTest.dir/rule
 .PHONY : Test/Source/CMakeFiles/KaiTest.dir/rule
 
 # Convenience name for target.
@@ -172,12 +127,12 @@ KaiTest: Test/Source/CMakeFiles/KaiTest.dir/rule
 
 # fast build rule for target.
 KaiTest/fast:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/build
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/build
 .PHONY : KaiTest/fast
 
 # Convenience name for target.
 Test/Source/CMakeFiles/TestCore.dir/rule:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/Source/CMakeFiles/TestCore.dir/rule
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/Source/CMakeFiles/TestCore.dir/rule
 .PHONY : Test/Source/CMakeFiles/TestCore.dir/rule
 
 # Convenience name for target.
@@ -186,12 +141,12 @@ TestCore: Test/Source/CMakeFiles/TestCore.dir/rule
 
 # fast build rule for target.
 TestCore/fast:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/build
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/build
 .PHONY : TestCore/fast
 
 # Convenience name for target.
 Test/Source/CMakeFiles/FixedCoreSuite.dir/rule:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/Source/CMakeFiles/FixedCoreSuite.dir/rule
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/Source/CMakeFiles/FixedCoreSuite.dir/rule
 .PHONY : Test/Source/CMakeFiles/FixedCoreSuite.dir/rule
 
 # Convenience name for target.
@@ -200,7 +155,7 @@ FixedCoreSuite: Test/Source/CMakeFiles/FixedCoreSuite.dir/rule
 
 # fast build rule for target.
 FixedCoreSuite/fast:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/FixedCoreSuite.dir/build.make Test/Source/CMakeFiles/FixedCoreSuite.dir/build
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/FixedCoreSuite.dir/build.make Test/Source/CMakeFiles/FixedCoreSuite.dir/build
 .PHONY : FixedCoreSuite/fast
 
 CoreAdvancedTests.o: CoreAdvancedTests.cpp.o
@@ -208,7 +163,7 @@ CoreAdvancedTests.o: CoreAdvancedTests.cpp.o
 
 # target to build an object file
 CoreAdvancedTests.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CoreAdvancedTests.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CoreAdvancedTests.cpp.o
 .PHONY : CoreAdvancedTests.cpp.o
 
 CoreAdvancedTests.i: CoreAdvancedTests.cpp.i
@@ -216,7 +171,7 @@ CoreAdvancedTests.i: CoreAdvancedTests.cpp.i
 
 # target to preprocess a source file
 CoreAdvancedTests.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CoreAdvancedTests.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CoreAdvancedTests.cpp.i
 .PHONY : CoreAdvancedTests.cpp.i
 
 CoreAdvancedTests.s: CoreAdvancedTests.cpp.s
@@ -224,7 +179,7 @@ CoreAdvancedTests.s: CoreAdvancedTests.cpp.s
 
 # target to generate assembly for a file
 CoreAdvancedTests.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CoreAdvancedTests.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CoreAdvancedTests.cpp.s
 .PHONY : CoreAdvancedTests.cpp.s
 
 CoreContainerTests.o: CoreContainerTests.cpp.o
@@ -232,8 +187,8 @@ CoreContainerTests.o: CoreContainerTests.cpp.o
 
 # target to build an object file
 CoreContainerTests.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CoreContainerTests.cpp.o
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/CoreContainerTests.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CoreContainerTests.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/CoreContainerTests.cpp.o
 .PHONY : CoreContainerTests.cpp.o
 
 CoreContainerTests.i: CoreContainerTests.cpp.i
@@ -241,8 +196,8 @@ CoreContainerTests.i: CoreContainerTests.cpp.i
 
 # target to preprocess a source file
 CoreContainerTests.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CoreContainerTests.cpp.i
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/CoreContainerTests.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CoreContainerTests.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/CoreContainerTests.cpp.i
 .PHONY : CoreContainerTests.cpp.i
 
 CoreContainerTests.s: CoreContainerTests.cpp.s
@@ -250,8 +205,8 @@ CoreContainerTests.s: CoreContainerTests.cpp.s
 
 # target to generate assembly for a file
 CoreContainerTests.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CoreContainerTests.cpp.s
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/CoreContainerTests.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CoreContainerTests.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/CoreContainerTests.cpp.s
 .PHONY : CoreContainerTests.cpp.s
 
 CoreObjectTests.o: CoreObjectTests.cpp.o
@@ -259,8 +214,8 @@ CoreObjectTests.o: CoreObjectTests.cpp.o
 
 # target to build an object file
 CoreObjectTests.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CoreObjectTests.cpp.o
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/CoreObjectTests.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CoreObjectTests.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/CoreObjectTests.cpp.o
 .PHONY : CoreObjectTests.cpp.o
 
 CoreObjectTests.i: CoreObjectTests.cpp.i
@@ -268,8 +223,8 @@ CoreObjectTests.i: CoreObjectTests.cpp.i
 
 # target to preprocess a source file
 CoreObjectTests.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CoreObjectTests.cpp.i
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/CoreObjectTests.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CoreObjectTests.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/CoreObjectTests.cpp.i
 .PHONY : CoreObjectTests.cpp.i
 
 CoreObjectTests.s: CoreObjectTests.cpp.s
@@ -277,8 +232,8 @@ CoreObjectTests.s: CoreObjectTests.cpp.s
 
 # target to generate assembly for a file
 CoreObjectTests.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CoreObjectTests.cpp.s
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/CoreObjectTests.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CoreObjectTests.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/CoreObjectTests.cpp.s
 .PHONY : CoreObjectTests.cpp.s
 
 CorePointerTests.o: CorePointerTests.cpp.o
@@ -286,8 +241,8 @@ CorePointerTests.o: CorePointerTests.cpp.o
 
 # target to build an object file
 CorePointerTests.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CorePointerTests.cpp.o
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/CorePointerTests.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CorePointerTests.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/CorePointerTests.cpp.o
 .PHONY : CorePointerTests.cpp.o
 
 CorePointerTests.i: CorePointerTests.cpp.i
@@ -295,8 +250,8 @@ CorePointerTests.i: CorePointerTests.cpp.i
 
 # target to preprocess a source file
 CorePointerTests.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CorePointerTests.cpp.i
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/CorePointerTests.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CorePointerTests.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/CorePointerTests.cpp.i
 .PHONY : CorePointerTests.cpp.i
 
 CorePointerTests.s: CorePointerTests.cpp.s
@@ -304,8 +259,8 @@ CorePointerTests.s: CorePointerTests.cpp.s
 
 # target to generate assembly for a file
 CorePointerTests.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CorePointerTests.cpp.s
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/CorePointerTests.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CorePointerTests.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/CorePointerTests.cpp.s
 .PHONY : CorePointerTests.cpp.s
 
 CoreRegistryTests.o: CoreRegistryTests.cpp.o
@@ -313,8 +268,8 @@ CoreRegistryTests.o: CoreRegistryTests.cpp.o
 
 # target to build an object file
 CoreRegistryTests.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CoreRegistryTests.cpp.o
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/CoreRegistryTests.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CoreRegistryTests.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/CoreRegistryTests.cpp.o
 .PHONY : CoreRegistryTests.cpp.o
 
 CoreRegistryTests.i: CoreRegistryTests.cpp.i
@@ -322,8 +277,8 @@ CoreRegistryTests.i: CoreRegistryTests.cpp.i
 
 # target to preprocess a source file
 CoreRegistryTests.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CoreRegistryTests.cpp.i
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/CoreRegistryTests.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CoreRegistryTests.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/CoreRegistryTests.cpp.i
 .PHONY : CoreRegistryTests.cpp.i
 
 CoreRegistryTests.s: CoreRegistryTests.cpp.s
@@ -331,8 +286,8 @@ CoreRegistryTests.s: CoreRegistryTests.cpp.s
 
 # target to generate assembly for a file
 CoreRegistryTests.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CoreRegistryTests.cpp.s
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/CoreRegistryTests.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CoreRegistryTests.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/CoreRegistryTests.cpp.s
 .PHONY : CoreRegistryTests.cpp.s
 
 CoreTypeTests.o: CoreTypeTests.cpp.o
@@ -340,8 +295,8 @@ CoreTypeTests.o: CoreTypeTests.cpp.o
 
 # target to build an object file
 CoreTypeTests.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CoreTypeTests.cpp.o
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/CoreTypeTests.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CoreTypeTests.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/CoreTypeTests.cpp.o
 .PHONY : CoreTypeTests.cpp.o
 
 CoreTypeTests.i: CoreTypeTests.cpp.i
@@ -349,8 +304,8 @@ CoreTypeTests.i: CoreTypeTests.cpp.i
 
 # target to preprocess a source file
 CoreTypeTests.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CoreTypeTests.cpp.i
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/CoreTypeTests.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CoreTypeTests.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/CoreTypeTests.cpp.i
 .PHONY : CoreTypeTests.cpp.i
 
 CoreTypeTests.s: CoreTypeTests.cpp.s
@@ -358,8 +313,8 @@ CoreTypeTests.s: CoreTypeTests.cpp.s
 
 # target to generate assembly for a file
 CoreTypeTests.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CoreTypeTests.cpp.s
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/CoreTypeTests.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/CoreTypeTests.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/CoreTypeTests.cpp.s
 .PHONY : CoreTypeTests.cpp.s
 
 FixedCoreSuite.o: FixedCoreSuite.cpp.o
@@ -367,8 +322,8 @@ FixedCoreSuite.o: FixedCoreSuite.cpp.o
 
 # target to build an object file
 FixedCoreSuite.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/FixedCoreSuite.cpp.o
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/FixedCoreSuite.dir/build.make Test/Source/CMakeFiles/FixedCoreSuite.dir/FixedCoreSuite.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/FixedCoreSuite.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/FixedCoreSuite.dir/build.make Test/Source/CMakeFiles/FixedCoreSuite.dir/FixedCoreSuite.cpp.o
 .PHONY : FixedCoreSuite.cpp.o
 
 FixedCoreSuite.i: FixedCoreSuite.cpp.i
@@ -376,8 +331,8 @@ FixedCoreSuite.i: FixedCoreSuite.cpp.i
 
 # target to preprocess a source file
 FixedCoreSuite.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/FixedCoreSuite.cpp.i
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/FixedCoreSuite.dir/build.make Test/Source/CMakeFiles/FixedCoreSuite.dir/FixedCoreSuite.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/FixedCoreSuite.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/FixedCoreSuite.dir/build.make Test/Source/CMakeFiles/FixedCoreSuite.dir/FixedCoreSuite.cpp.i
 .PHONY : FixedCoreSuite.cpp.i
 
 FixedCoreSuite.s: FixedCoreSuite.cpp.s
@@ -385,8 +340,8 @@ FixedCoreSuite.s: FixedCoreSuite.cpp.s
 
 # target to generate assembly for a file
 FixedCoreSuite.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/FixedCoreSuite.cpp.s
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/FixedCoreSuite.dir/build.make Test/Source/CMakeFiles/FixedCoreSuite.dir/FixedCoreSuite.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/FixedCoreSuite.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/FixedCoreSuite.dir/build.make Test/Source/CMakeFiles/FixedCoreSuite.dir/FixedCoreSuite.cpp.s
 .PHONY : FixedCoreSuite.cpp.s
 
 Main.o: Main.cpp.o
@@ -394,8 +349,8 @@ Main.o: Main.cpp.o
 
 # target to build an object file
 Main.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/Main.cpp.o
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/Main.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/Main.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/Main.cpp.o
 .PHONY : Main.cpp.o
 
 Main.i: Main.cpp.i
@@ -403,8 +358,8 @@ Main.i: Main.cpp.i
 
 # target to preprocess a source file
 Main.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/Main.cpp.i
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/Main.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/Main.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/Main.cpp.i
 .PHONY : Main.cpp.i
 
 Main.s: Main.cpp.s
@@ -412,8 +367,8 @@ Main.s: Main.cpp.s
 
 # target to generate assembly for a file
 Main.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/Main.cpp.s
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/Main.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/Main.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/Main.cpp.s
 .PHONY : Main.cpp.s
 
 RakNetStubSimple.o: RakNetStubSimple.cpp.o
@@ -421,7 +376,7 @@ RakNetStubSimple.o: RakNetStubSimple.cpp.o
 
 # target to build an object file
 RakNetStubSimple.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/RakNetStubSimple.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/RakNetStubSimple.cpp.o
 .PHONY : RakNetStubSimple.cpp.o
 
 RakNetStubSimple.i: RakNetStubSimple.cpp.i
@@ -429,7 +384,7 @@ RakNetStubSimple.i: RakNetStubSimple.cpp.i
 
 # target to preprocess a source file
 RakNetStubSimple.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/RakNetStubSimple.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/RakNetStubSimple.cpp.i
 .PHONY : RakNetStubSimple.cpp.i
 
 RakNetStubSimple.s: RakNetStubSimple.cpp.s
@@ -437,7 +392,7 @@ RakNetStubSimple.s: RakNetStubSimple.cpp.s
 
 # target to generate assembly for a file
 RakNetStubSimple.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/RakNetStubSimple.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/RakNetStubSimple.cpp.s
 .PHONY : RakNetStubSimple.cpp.s
 
 TestAdditionalCore.o: TestAdditionalCore.cpp.o
@@ -445,7 +400,7 @@ TestAdditionalCore.o: TestAdditionalCore.cpp.o
 
 # target to build an object file
 TestAdditionalCore.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestAdditionalCore.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestAdditionalCore.cpp.o
 .PHONY : TestAdditionalCore.cpp.o
 
 TestAdditionalCore.i: TestAdditionalCore.cpp.i
@@ -453,7 +408,7 @@ TestAdditionalCore.i: TestAdditionalCore.cpp.i
 
 # target to preprocess a source file
 TestAdditionalCore.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestAdditionalCore.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestAdditionalCore.cpp.i
 .PHONY : TestAdditionalCore.cpp.i
 
 TestAdditionalCore.s: TestAdditionalCore.cpp.s
@@ -461,7 +416,7 @@ TestAdditionalCore.s: TestAdditionalCore.cpp.s
 
 # target to generate assembly for a file
 TestAdditionalCore.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestAdditionalCore.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestAdditionalCore.cpp.s
 .PHONY : TestAdditionalCore.cpp.s
 
 TestAdditionalStringOps.o: TestAdditionalStringOps.cpp.o
@@ -469,8 +424,8 @@ TestAdditionalStringOps.o: TestAdditionalStringOps.cpp.o
 
 # target to build an object file
 TestAdditionalStringOps.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestAdditionalStringOps.cpp.o
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestAdditionalStringOps.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestAdditionalStringOps.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestAdditionalStringOps.cpp.o
 .PHONY : TestAdditionalStringOps.cpp.o
 
 TestAdditionalStringOps.i: TestAdditionalStringOps.cpp.i
@@ -478,8 +433,8 @@ TestAdditionalStringOps.i: TestAdditionalStringOps.cpp.i
 
 # target to preprocess a source file
 TestAdditionalStringOps.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestAdditionalStringOps.cpp.i
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestAdditionalStringOps.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestAdditionalStringOps.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestAdditionalStringOps.cpp.i
 .PHONY : TestAdditionalStringOps.cpp.i
 
 TestAdditionalStringOps.s: TestAdditionalStringOps.cpp.s
@@ -487,8 +442,8 @@ TestAdditionalStringOps.s: TestAdditionalStringOps.cpp.s
 
 # target to generate assembly for a file
 TestAdditionalStringOps.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestAdditionalStringOps.cpp.s
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestAdditionalStringOps.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestAdditionalStringOps.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestAdditionalStringOps.cpp.s
 .PHONY : TestAdditionalStringOps.cpp.s
 
 TestArray.o: TestArray.cpp.o
@@ -496,8 +451,8 @@ TestArray.o: TestArray.cpp.o
 
 # target to build an object file
 TestArray.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestArray.cpp.o
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestArray.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestArray.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestArray.cpp.o
 .PHONY : TestArray.cpp.o
 
 TestArray.i: TestArray.cpp.i
@@ -505,8 +460,8 @@ TestArray.i: TestArray.cpp.i
 
 # target to preprocess a source file
 TestArray.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestArray.cpp.i
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestArray.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestArray.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestArray.cpp.i
 .PHONY : TestArray.cpp.i
 
 TestArray.s: TestArray.cpp.s
@@ -514,8 +469,8 @@ TestArray.s: TestArray.cpp.s
 
 # target to generate assembly for a file
 TestArray.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestArray.cpp.s
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestArray.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestArray.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestArray.cpp.s
 .PHONY : TestArray.cpp.s
 
 TestBasePointer.o: TestBasePointer.cpp.o
@@ -523,8 +478,8 @@ TestBasePointer.o: TestBasePointer.cpp.o
 
 # target to build an object file
 TestBasePointer.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestBasePointer.cpp.o
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestBasePointer.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestBasePointer.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestBasePointer.cpp.o
 .PHONY : TestBasePointer.cpp.o
 
 TestBasePointer.i: TestBasePointer.cpp.i
@@ -532,8 +487,8 @@ TestBasePointer.i: TestBasePointer.cpp.i
 
 # target to preprocess a source file
 TestBasePointer.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestBasePointer.cpp.i
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestBasePointer.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestBasePointer.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestBasePointer.cpp.i
 .PHONY : TestBasePointer.cpp.i
 
 TestBasePointer.s: TestBasePointer.cpp.s
@@ -541,8 +496,8 @@ TestBasePointer.s: TestBasePointer.cpp.s
 
 # target to generate assembly for a file
 TestBasePointer.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestBasePointer.cpp.s
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestBasePointer.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestBasePointer.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestBasePointer.cpp.s
 .PHONY : TestBasePointer.cpp.s
 
 TestBinaryStream.o: TestBinaryStream.cpp.o
@@ -550,8 +505,8 @@ TestBinaryStream.o: TestBinaryStream.cpp.o
 
 # target to build an object file
 TestBinaryStream.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestBinaryStream.cpp.o
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestBinaryStream.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestBinaryStream.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestBinaryStream.cpp.o
 .PHONY : TestBinaryStream.cpp.o
 
 TestBinaryStream.i: TestBinaryStream.cpp.i
@@ -559,8 +514,8 @@ TestBinaryStream.i: TestBinaryStream.cpp.i
 
 # target to preprocess a source file
 TestBinaryStream.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestBinaryStream.cpp.i
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestBinaryStream.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestBinaryStream.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestBinaryStream.cpp.i
 .PHONY : TestBinaryStream.cpp.i
 
 TestBinaryStream.s: TestBinaryStream.cpp.s
@@ -568,8 +523,8 @@ TestBinaryStream.s: TestBinaryStream.cpp.s
 
 # target to generate assembly for a file
 TestBinaryStream.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestBinaryStream.cpp.s
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestBinaryStream.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestBinaryStream.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestBinaryStream.cpp.s
 .PHONY : TestBinaryStream.cpp.s
 
 TestClassScripting.o: TestClassScripting.cpp.o
@@ -577,8 +532,8 @@ TestClassScripting.o: TestClassScripting.cpp.o
 
 # target to build an object file
 TestClassScripting.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestClassScripting.cpp.o
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestClassScripting.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestClassScripting.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestClassScripting.cpp.o
 .PHONY : TestClassScripting.cpp.o
 
 TestClassScripting.i: TestClassScripting.cpp.i
@@ -586,8 +541,8 @@ TestClassScripting.i: TestClassScripting.cpp.i
 
 # target to preprocess a source file
 TestClassScripting.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestClassScripting.cpp.i
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestClassScripting.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestClassScripting.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestClassScripting.cpp.i
 .PHONY : TestClassScripting.cpp.i
 
 TestClassScripting.s: TestClassScripting.cpp.s
@@ -595,8 +550,8 @@ TestClassScripting.s: TestClassScripting.cpp.s
 
 # target to generate assembly for a file
 TestClassScripting.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestClassScripting.cpp.s
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestClassScripting.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestClassScripting.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestClassScripting.cpp.s
 .PHONY : TestClassScripting.cpp.s
 
 TestContainer/TestList.o: TestContainer/TestList.cpp.o
@@ -604,8 +559,8 @@ TestContainer/TestList.o: TestContainer/TestList.cpp.o
 
 # target to build an object file
 TestContainer/TestList.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestContainer/TestList.cpp.o
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestContainer/TestList.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestContainer/TestList.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestContainer/TestList.cpp.o
 .PHONY : TestContainer/TestList.cpp.o
 
 TestContainer/TestList.i: TestContainer/TestList.cpp.i
@@ -613,8 +568,8 @@ TestContainer/TestList.i: TestContainer/TestList.cpp.i
 
 # target to preprocess a source file
 TestContainer/TestList.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestContainer/TestList.cpp.i
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestContainer/TestList.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestContainer/TestList.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestContainer/TestList.cpp.i
 .PHONY : TestContainer/TestList.cpp.i
 
 TestContainer/TestList.s: TestContainer/TestList.cpp.s
@@ -622,8 +577,8 @@ TestContainer/TestList.s: TestContainer/TestList.cpp.s
 
 # target to generate assembly for a file
 TestContainer/TestList.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestContainer/TestList.cpp.s
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestContainer/TestList.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestContainer/TestList.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestContainer/TestList.cpp.s
 .PHONY : TestContainer/TestList.cpp.s
 
 TestContainer/TestSet.o: TestContainer/TestSet.cpp.o
@@ -631,8 +586,8 @@ TestContainer/TestSet.o: TestContainer/TestSet.cpp.o
 
 # target to build an object file
 TestContainer/TestSet.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestContainer/TestSet.cpp.o
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestContainer/TestSet.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestContainer/TestSet.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestContainer/TestSet.cpp.o
 .PHONY : TestContainer/TestSet.cpp.o
 
 TestContainer/TestSet.i: TestContainer/TestSet.cpp.i
@@ -640,8 +595,8 @@ TestContainer/TestSet.i: TestContainer/TestSet.cpp.i
 
 # target to preprocess a source file
 TestContainer/TestSet.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestContainer/TestSet.cpp.i
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestContainer/TestSet.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestContainer/TestSet.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestContainer/TestSet.cpp.i
 .PHONY : TestContainer/TestSet.cpp.i
 
 TestContainer/TestSet.s: TestContainer/TestSet.cpp.s
@@ -649,8 +604,8 @@ TestContainer/TestSet.s: TestContainer/TestSet.cpp.s
 
 # target to generate assembly for a file
 TestContainer/TestSet.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestContainer/TestSet.cpp.s
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestContainer/TestSet.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestContainer/TestSet.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestContainer/TestSet.cpp.s
 .PHONY : TestContainer/TestSet.cpp.s
 
 TestContainer/TestStack.o: TestContainer/TestStack.cpp.o
@@ -658,8 +613,8 @@ TestContainer/TestStack.o: TestContainer/TestStack.cpp.o
 
 # target to build an object file
 TestContainer/TestStack.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestContainer/TestStack.cpp.o
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestContainer/TestStack.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestContainer/TestStack.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestContainer/TestStack.cpp.o
 .PHONY : TestContainer/TestStack.cpp.o
 
 TestContainer/TestStack.i: TestContainer/TestStack.cpp.i
@@ -667,8 +622,8 @@ TestContainer/TestStack.i: TestContainer/TestStack.cpp.i
 
 # target to preprocess a source file
 TestContainer/TestStack.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestContainer/TestStack.cpp.i
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestContainer/TestStack.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestContainer/TestStack.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestContainer/TestStack.cpp.i
 .PHONY : TestContainer/TestStack.cpp.i
 
 TestContainer/TestStack.s: TestContainer/TestStack.cpp.s
@@ -676,8 +631,8 @@ TestContainer/TestStack.s: TestContainer/TestStack.cpp.s
 
 # target to generate assembly for a file
 TestContainer/TestStack.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestContainer/TestStack.cpp.s
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestContainer/TestStack.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestContainer/TestStack.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestContainer/TestStack.cpp.s
 .PHONY : TestContainer/TestStack.cpp.s
 
 TestContainer/TestVector.o: TestContainer/TestVector.cpp.o
@@ -685,8 +640,8 @@ TestContainer/TestVector.o: TestContainer/TestVector.cpp.o
 
 # target to build an object file
 TestContainer/TestVector.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestContainer/TestVector.cpp.o
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestContainer/TestVector.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestContainer/TestVector.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestContainer/TestVector.cpp.o
 .PHONY : TestContainer/TestVector.cpp.o
 
 TestContainer/TestVector.i: TestContainer/TestVector.cpp.i
@@ -694,8 +649,8 @@ TestContainer/TestVector.i: TestContainer/TestVector.cpp.i
 
 # target to preprocess a source file
 TestContainer/TestVector.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestContainer/TestVector.cpp.i
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestContainer/TestVector.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestContainer/TestVector.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestContainer/TestVector.cpp.i
 .PHONY : TestContainer/TestVector.cpp.i
 
 TestContainer/TestVector.s: TestContainer/TestVector.cpp.s
@@ -703,8 +658,8 @@ TestContainer/TestVector.s: TestContainer/TestVector.cpp.s
 
 # target to generate assembly for a file
 TestContainer/TestVector.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestContainer/TestVector.cpp.s
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestContainer/TestVector.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestContainer/TestVector.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestContainer/TestVector.cpp.s
 .PHONY : TestContainer/TestVector.cpp.s
 
 TestDotGraph.o: TestDotGraph.cpp.o
@@ -712,8 +667,8 @@ TestDotGraph.o: TestDotGraph.cpp.o
 
 # target to build an object file
 TestDotGraph.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestDotGraph.cpp.o
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestDotGraph.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestDotGraph.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestDotGraph.cpp.o
 .PHONY : TestDotGraph.cpp.o
 
 TestDotGraph.i: TestDotGraph.cpp.i
@@ -721,8 +676,8 @@ TestDotGraph.i: TestDotGraph.cpp.i
 
 # target to preprocess a source file
 TestDotGraph.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestDotGraph.cpp.i
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestDotGraph.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestDotGraph.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestDotGraph.cpp.i
 .PHONY : TestDotGraph.cpp.i
 
 TestDotGraph.s: TestDotGraph.cpp.s
@@ -730,8 +685,8 @@ TestDotGraph.s: TestDotGraph.cpp.s
 
 # target to generate assembly for a file
 TestDotGraph.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestDotGraph.cpp.s
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestDotGraph.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestDotGraph.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestDotGraph.cpp.s
 .PHONY : TestDotGraph.cpp.s
 
 TestEvents.o: TestEvents.cpp.o
@@ -739,8 +694,8 @@ TestEvents.o: TestEvents.cpp.o
 
 # target to build an object file
 TestEvents.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestEvents.cpp.o
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestEvents.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestEvents.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestEvents.cpp.o
 .PHONY : TestEvents.cpp.o
 
 TestEvents.i: TestEvents.cpp.i
@@ -748,8 +703,8 @@ TestEvents.i: TestEvents.cpp.i
 
 # target to preprocess a source file
 TestEvents.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestEvents.cpp.i
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestEvents.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestEvents.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestEvents.cpp.i
 .PHONY : TestEvents.cpp.i
 
 TestEvents.s: TestEvents.cpp.s
@@ -757,8 +712,8 @@ TestEvents.s: TestEvents.cpp.s
 
 # target to generate assembly for a file
 TestEvents.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestEvents.cpp.s
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestEvents.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestEvents.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestEvents.cpp.s
 .PHONY : TestEvents.cpp.s
 
 TestFunction.o: TestFunction.cpp.o
@@ -766,8 +721,8 @@ TestFunction.o: TestFunction.cpp.o
 
 # target to build an object file
 TestFunction.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestFunction.cpp.o
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestFunction.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestFunction.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestFunction.cpp.o
 .PHONY : TestFunction.cpp.o
 
 TestFunction.i: TestFunction.cpp.i
@@ -775,8 +730,8 @@ TestFunction.i: TestFunction.cpp.i
 
 # target to preprocess a source file
 TestFunction.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestFunction.cpp.i
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestFunction.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestFunction.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestFunction.cpp.i
 .PHONY : TestFunction.cpp.i
 
 TestFunction.s: TestFunction.cpp.s
@@ -784,8 +739,8 @@ TestFunction.s: TestFunction.cpp.s
 
 # target to generate assembly for a file
 TestFunction.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestFunction.cpp.s
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestFunction.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestFunction.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestFunction.cpp.s
 .PHONY : TestFunction.cpp.s
 
 TestGarbageCollection.o: TestGarbageCollection.cpp.o
@@ -793,8 +748,8 @@ TestGarbageCollection.o: TestGarbageCollection.cpp.o
 
 # target to build an object file
 TestGarbageCollection.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestGarbageCollection.cpp.o
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestGarbageCollection.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestGarbageCollection.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestGarbageCollection.cpp.o
 .PHONY : TestGarbageCollection.cpp.o
 
 TestGarbageCollection.i: TestGarbageCollection.cpp.i
@@ -802,8 +757,8 @@ TestGarbageCollection.i: TestGarbageCollection.cpp.i
 
 # target to preprocess a source file
 TestGarbageCollection.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestGarbageCollection.cpp.i
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestGarbageCollection.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestGarbageCollection.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestGarbageCollection.cpp.i
 .PHONY : TestGarbageCollection.cpp.i
 
 TestGarbageCollection.s: TestGarbageCollection.cpp.s
@@ -811,8 +766,8 @@ TestGarbageCollection.s: TestGarbageCollection.cpp.s
 
 # target to generate assembly for a file
 TestGarbageCollection.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestGarbageCollection.cpp.s
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestGarbageCollection.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestGarbageCollection.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestGarbageCollection.cpp.s
 .PHONY : TestGarbageCollection.cpp.s
 
 TestMap.o: TestMap.cpp.o
@@ -820,8 +775,8 @@ TestMap.o: TestMap.cpp.o
 
 # target to build an object file
 TestMap.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestMap.cpp.o
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestMap.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestMap.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestMap.cpp.o
 .PHONY : TestMap.cpp.o
 
 TestMap.i: TestMap.cpp.i
@@ -829,8 +784,8 @@ TestMap.i: TestMap.cpp.i
 
 # target to preprocess a source file
 TestMap.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestMap.cpp.i
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestMap.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestMap.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestMap.cpp.i
 .PHONY : TestMap.cpp.i
 
 TestMap.s: TestMap.cpp.s
@@ -838,8 +793,8 @@ TestMap.s: TestMap.cpp.s
 
 # target to generate assembly for a file
 TestMap.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestMap.cpp.s
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestMap.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestMap.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestMap.cpp.s
 .PHONY : TestMap.cpp.s
 
 TestMemoryManagement.o: TestMemoryManagement.cpp.o
@@ -847,8 +802,8 @@ TestMemoryManagement.o: TestMemoryManagement.cpp.o
 
 # target to build an object file
 TestMemoryManagement.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestMemoryManagement.cpp.o
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestMemoryManagement.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestMemoryManagement.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestMemoryManagement.cpp.o
 .PHONY : TestMemoryManagement.cpp.o
 
 TestMemoryManagement.i: TestMemoryManagement.cpp.i
@@ -856,8 +811,8 @@ TestMemoryManagement.i: TestMemoryManagement.cpp.i
 
 # target to preprocess a source file
 TestMemoryManagement.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestMemoryManagement.cpp.i
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestMemoryManagement.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestMemoryManagement.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestMemoryManagement.cpp.i
 .PHONY : TestMemoryManagement.cpp.i
 
 TestMemoryManagement.s: TestMemoryManagement.cpp.s
@@ -865,8 +820,8 @@ TestMemoryManagement.s: TestMemoryManagement.cpp.s
 
 # target to generate assembly for a file
 TestMemoryManagement.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestMemoryManagement.cpp.s
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestMemoryManagement.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestMemoryManagement.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestMemoryManagement.cpp.s
 .PHONY : TestMemoryManagement.cpp.s
 
 TestPathname.o: TestPathname.cpp.o
@@ -874,8 +829,8 @@ TestPathname.o: TestPathname.cpp.o
 
 # target to build an object file
 TestPathname.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestPathname.cpp.o
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestPathname.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestPathname.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestPathname.cpp.o
 .PHONY : TestPathname.cpp.o
 
 TestPathname.i: TestPathname.cpp.i
@@ -883,8 +838,8 @@ TestPathname.i: TestPathname.cpp.i
 
 # target to preprocess a source file
 TestPathname.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestPathname.cpp.i
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestPathname.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestPathname.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestPathname.cpp.i
 .PHONY : TestPathname.cpp.i
 
 TestPathname.s: TestPathname.cpp.s
@@ -892,8 +847,8 @@ TestPathname.s: TestPathname.cpp.s
 
 # target to generate assembly for a file
 TestPathname.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestPathname.cpp.s
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestPathname.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestPathname.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestPathname.cpp.s
 .PHONY : TestPathname.cpp.s
 
 TestRakNetStub.o: TestRakNetStub.cpp.o
@@ -901,7 +856,7 @@ TestRakNetStub.o: TestRakNetStub.cpp.o
 
 # target to build an object file
 TestRakNetStub.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestRakNetStub.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestRakNetStub.cpp.o
 .PHONY : TestRakNetStub.cpp.o
 
 TestRakNetStub.i: TestRakNetStub.cpp.i
@@ -909,7 +864,7 @@ TestRakNetStub.i: TestRakNetStub.cpp.i
 
 # target to preprocess a source file
 TestRakNetStub.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestRakNetStub.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestRakNetStub.cpp.i
 .PHONY : TestRakNetStub.cpp.i
 
 TestRakNetStub.s: TestRakNetStub.cpp.s
@@ -917,7 +872,7 @@ TestRakNetStub.s: TestRakNetStub.cpp.s
 
 # target to generate assembly for a file
 TestRakNetStub.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestRakNetStub.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestRakNetStub.cpp.s
 .PHONY : TestRakNetStub.cpp.s
 
 TestRakNetStubSimple.o: TestRakNetStubSimple.cpp.o
@@ -925,7 +880,7 @@ TestRakNetStubSimple.o: TestRakNetStubSimple.cpp.o
 
 # target to build an object file
 TestRakNetStubSimple.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestRakNetStubSimple.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestRakNetStubSimple.cpp.o
 .PHONY : TestRakNetStubSimple.cpp.o
 
 TestRakNetStubSimple.i: TestRakNetStubSimple.cpp.i
@@ -933,7 +888,7 @@ TestRakNetStubSimple.i: TestRakNetStubSimple.cpp.i
 
 # target to preprocess a source file
 TestRakNetStubSimple.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestRakNetStubSimple.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestRakNetStubSimple.cpp.i
 .PHONY : TestRakNetStubSimple.cpp.i
 
 TestRakNetStubSimple.s: TestRakNetStubSimple.cpp.s
@@ -941,7 +896,7 @@ TestRakNetStubSimple.s: TestRakNetStubSimple.cpp.s
 
 # target to generate assembly for a file
 TestRakNetStubSimple.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestRakNetStubSimple.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestRakNetStubSimple.cpp.s
 .PHONY : TestRakNetStubSimple.cpp.s
 
 TestReflection.o: TestReflection.cpp.o
@@ -949,8 +904,8 @@ TestReflection.o: TestReflection.cpp.o
 
 # target to build an object file
 TestReflection.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestReflection.cpp.o
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestReflection.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestReflection.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestReflection.cpp.o
 .PHONY : TestReflection.cpp.o
 
 TestReflection.i: TestReflection.cpp.i
@@ -958,8 +913,8 @@ TestReflection.i: TestReflection.cpp.i
 
 # target to preprocess a source file
 TestReflection.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestReflection.cpp.i
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestReflection.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestReflection.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestReflection.cpp.i
 .PHONY : TestReflection.cpp.i
 
 TestReflection.s: TestReflection.cpp.s
@@ -967,8 +922,8 @@ TestReflection.s: TestReflection.cpp.s
 
 # target to generate assembly for a file
 TestReflection.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestReflection.cpp.s
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestReflection.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestReflection.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestReflection.cpp.s
 .PHONY : TestReflection.cpp.s
 
 TestRegistryOperations.o: TestRegistryOperations.cpp.o
@@ -976,8 +931,8 @@ TestRegistryOperations.o: TestRegistryOperations.cpp.o
 
 # target to build an object file
 TestRegistryOperations.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestRegistryOperations.cpp.o
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestRegistryOperations.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestRegistryOperations.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestRegistryOperations.cpp.o
 .PHONY : TestRegistryOperations.cpp.o
 
 TestRegistryOperations.i: TestRegistryOperations.cpp.i
@@ -985,8 +940,8 @@ TestRegistryOperations.i: TestRegistryOperations.cpp.i
 
 # target to preprocess a source file
 TestRegistryOperations.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestRegistryOperations.cpp.i
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestRegistryOperations.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestRegistryOperations.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestRegistryOperations.cpp.i
 .PHONY : TestRegistryOperations.cpp.i
 
 TestRegistryOperations.s: TestRegistryOperations.cpp.s
@@ -994,8 +949,8 @@ TestRegistryOperations.s: TestRegistryOperations.cpp.s
 
 # target to generate assembly for a file
 TestRegistryOperations.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestRegistryOperations.cpp.s
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestRegistryOperations.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestRegistryOperations.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestRegistryOperations.cpp.s
 .PHONY : TestRegistryOperations.cpp.s
 
 TestSerialization.o: TestSerialization.cpp.o
@@ -1003,8 +958,8 @@ TestSerialization.o: TestSerialization.cpp.o
 
 # target to build an object file
 TestSerialization.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestSerialization.cpp.o
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestSerialization.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestSerialization.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestSerialization.cpp.o
 .PHONY : TestSerialization.cpp.o
 
 TestSerialization.i: TestSerialization.cpp.i
@@ -1012,8 +967,8 @@ TestSerialization.i: TestSerialization.cpp.i
 
 # target to preprocess a source file
 TestSerialization.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestSerialization.cpp.i
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestSerialization.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestSerialization.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestSerialization.cpp.i
 .PHONY : TestSerialization.cpp.i
 
 TestSerialization.s: TestSerialization.cpp.s
@@ -1021,8 +976,8 @@ TestSerialization.s: TestSerialization.cpp.s
 
 # target to generate assembly for a file
 TestSerialization.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestSerialization.cpp.s
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestSerialization.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestSerialization.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestSerialization.cpp.s
 .PHONY : TestSerialization.cpp.s
 
 TestSmartPointers.o: TestSmartPointers.cpp.o
@@ -1030,8 +985,8 @@ TestSmartPointers.o: TestSmartPointers.cpp.o
 
 # target to build an object file
 TestSmartPointers.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestSmartPointers.cpp.o
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestSmartPointers.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestSmartPointers.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestSmartPointers.cpp.o
 .PHONY : TestSmartPointers.cpp.o
 
 TestSmartPointers.i: TestSmartPointers.cpp.i
@@ -1039,8 +994,8 @@ TestSmartPointers.i: TestSmartPointers.cpp.i
 
 # target to preprocess a source file
 TestSmartPointers.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestSmartPointers.cpp.i
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestSmartPointers.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestSmartPointers.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestSmartPointers.cpp.i
 .PHONY : TestSmartPointers.cpp.i
 
 TestSmartPointers.s: TestSmartPointers.cpp.s
@@ -1048,8 +1003,8 @@ TestSmartPointers.s: TestSmartPointers.cpp.s
 
 # target to generate assembly for a file
 TestSmartPointers.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestSmartPointers.cpp.s
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestSmartPointers.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestSmartPointers.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestSmartPointers.cpp.s
 .PHONY : TestSmartPointers.cpp.s
 
 TestString.o: TestString.cpp.o
@@ -1057,8 +1012,8 @@ TestString.o: TestString.cpp.o
 
 # target to build an object file
 TestString.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestString.cpp.o
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestString.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestString.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestString.cpp.o
 .PHONY : TestString.cpp.o
 
 TestString.i: TestString.cpp.i
@@ -1066,8 +1021,8 @@ TestString.i: TestString.cpp.i
 
 # target to preprocess a source file
 TestString.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestString.cpp.i
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestString.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestString.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestString.cpp.i
 .PHONY : TestString.cpp.i
 
 TestString.s: TestString.cpp.s
@@ -1075,8 +1030,8 @@ TestString.s: TestString.cpp.s
 
 # target to generate assembly for a file
 TestString.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestString.cpp.s
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestString.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestString.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestString.cpp.s
 .PHONY : TestString.cpp.s
 
 __/Common/MyTestStruct.o: __/Common/MyTestStruct.cpp.o
@@ -1084,8 +1039,8 @@ __/Common/MyTestStruct.o: __/Common/MyTestStruct.cpp.o
 
 # target to build an object file
 __/Common/MyTestStruct.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/__/Common/MyTestStruct.cpp.o
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/__/Common/MyTestStruct.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/__/Common/MyTestStruct.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/__/Common/MyTestStruct.cpp.o
 .PHONY : __/Common/MyTestStruct.cpp.o
 
 __/Common/MyTestStruct.i: __/Common/MyTestStruct.cpp.i
@@ -1093,8 +1048,8 @@ __/Common/MyTestStruct.i: __/Common/MyTestStruct.cpp.i
 
 # target to preprocess a source file
 __/Common/MyTestStruct.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/__/Common/MyTestStruct.cpp.i
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/__/Common/MyTestStruct.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/__/Common/MyTestStruct.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/__/Common/MyTestStruct.cpp.i
 .PHONY : __/Common/MyTestStruct.cpp.i
 
 __/Common/MyTestStruct.s: __/Common/MyTestStruct.cpp.s
@@ -1102,8 +1057,8 @@ __/Common/MyTestStruct.s: __/Common/MyTestStruct.cpp.s
 
 # target to generate assembly for a file
 __/Common/MyTestStruct.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/__/Common/MyTestStruct.cpp.s
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/__/Common/MyTestStruct.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/__/Common/MyTestStruct.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/__/Common/MyTestStruct.cpp.s
 .PHONY : __/Common/MyTestStruct.cpp.s
 
 __/Common/TestCommon.o: __/Common/TestCommon.cpp.o
@@ -1111,8 +1066,8 @@ __/Common/TestCommon.o: __/Common/TestCommon.cpp.o
 
 # target to build an object file
 __/Common/TestCommon.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/__/Common/TestCommon.cpp.o
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/__/Common/TestCommon.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/__/Common/TestCommon.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/__/Common/TestCommon.cpp.o
 .PHONY : __/Common/TestCommon.cpp.o
 
 __/Common/TestCommon.i: __/Common/TestCommon.cpp.i
@@ -1120,8 +1075,8 @@ __/Common/TestCommon.i: __/Common/TestCommon.cpp.i
 
 # target to preprocess a source file
 __/Common/TestCommon.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/__/Common/TestCommon.cpp.i
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/__/Common/TestCommon.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/__/Common/TestCommon.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/__/Common/TestCommon.cpp.i
 .PHONY : __/Common/TestCommon.cpp.i
 
 __/Common/TestCommon.s: __/Common/TestCommon.cpp.s
@@ -1129,8 +1084,8 @@ __/Common/TestCommon.s: __/Common/TestCommon.cpp.s
 
 # target to generate assembly for a file
 __/Common/TestCommon.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/__/Common/TestCommon.cpp.s
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/__/Common/TestCommon.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/__/Common/TestCommon.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/__/Common/TestCommon.cpp.s
 .PHONY : __/Common/TestCommon.cpp.s
 
 # Help Target
@@ -1140,10 +1095,6 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
-	@echo "... install"
-	@echo "... install/local"
-	@echo "... install/strip"
-	@echo "... list_install_components"
 	@echo "... rebuild_cache"
 	@echo "... FixedCoreSuite"
 	@echo "... KaiTest"
@@ -1264,6 +1215,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/xian/local/KAI && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/christian/local/repos/KAI && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

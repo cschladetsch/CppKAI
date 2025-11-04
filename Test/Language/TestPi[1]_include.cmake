@@ -1,5 +1,5 @@
-if(EXISTS "/home/xian/local/KAI/Test/Language/TestPi[1]_tests.cmake")
-  include("/home/xian/local/KAI/Test/Language/TestPi[1]_tests.cmake")
+if(EXISTS "/home/christian/local/repos/KAI/Test/Language/TestPi[1]_tests.cmake")
+  include("/home/christian/local/repos/KAI/Test/Language/TestPi[1]_tests.cmake")
 else()
   add_test(TestPi_NOT_BUILT TestPi_NOT_BUILT)
 endif()

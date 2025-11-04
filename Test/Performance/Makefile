@@ -87,14 +87,14 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /home/christian/local/repos/KAI && $(CMAKE_COMMAND) -E cmake_progress_start /home/christian/local/repos/KAI/CMakeFiles /home/christian/local/repos/KAI/Test//CMakeFiles/progress.marks
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/all
+	cd /home/christian/local/repos/KAI && $(CMAKE_COMMAND) -E cmake_progress_start /home/christian/local/repos/KAI/CMakeFiles /home/christian/local/repos/KAI/Test/Performance//CMakeFiles/progress.marks
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/Performance/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/christian/local/repos/KAI/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/clean
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/Performance/clean
 .PHONY : clean
 
 # The main clean target
@@ -103,18 +103,56 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/preinstall
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/Performance/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/preinstall
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/Performance/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
 	cd /home/christian/local/repos/KAI && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
+
+# Convenience name for target.
+Test/Performance/CMakeFiles/PerformanceTests.dir/rule:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/Performance/CMakeFiles/PerformanceTests.dir/rule
+.PHONY : Test/Performance/CMakeFiles/PerformanceTests.dir/rule
+
+# Convenience name for target.
+PerformanceTests: Test/Performance/CMakeFiles/PerformanceTests.dir/rule
+.PHONY : PerformanceTests
+
+# fast build rule for target.
+PerformanceTests/fast:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Performance/CMakeFiles/PerformanceTests.dir/build.make Test/Performance/CMakeFiles/PerformanceTests.dir/build
+.PHONY : PerformanceTests/fast
+
+SimplifiedPerformanceTests.o: SimplifiedPerformanceTests.cpp.o
+.PHONY : SimplifiedPerformanceTests.o
+
+# target to build an object file
+SimplifiedPerformanceTests.cpp.o:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Performance/CMakeFiles/PerformanceTests.dir/build.make Test/Performance/CMakeFiles/PerformanceTests.dir/SimplifiedPerformanceTests.cpp.o
+.PHONY : SimplifiedPerformanceTests.cpp.o
+
+SimplifiedPerformanceTests.i: SimplifiedPerformanceTests.cpp.i
+.PHONY : SimplifiedPerformanceTests.i
+
+# target to preprocess a source file
+SimplifiedPerformanceTests.cpp.i:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Performance/CMakeFiles/PerformanceTests.dir/build.make Test/Performance/CMakeFiles/PerformanceTests.dir/SimplifiedPerformanceTests.cpp.i
+.PHONY : SimplifiedPerformanceTests.cpp.i
+
+SimplifiedPerformanceTests.s: SimplifiedPerformanceTests.cpp.s
+.PHONY : SimplifiedPerformanceTests.s
+
+# target to generate assembly for a file
+SimplifiedPerformanceTests.cpp.s:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Performance/CMakeFiles/PerformanceTests.dir/build.make Test/Performance/CMakeFiles/PerformanceTests.dir/SimplifiedPerformanceTests.cpp.s
+.PHONY : SimplifiedPerformanceTests.cpp.s
 
 # Help Target
 help:
@@ -124,6 +162,10 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... PerformanceTests"
+	@echo "... SimplifiedPerformanceTests.o"
+	@echo "... SimplifiedPerformanceTests.i"
+	@echo "... SimplifiedPerformanceTests.s"
 .PHONY : help
 
 

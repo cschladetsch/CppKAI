@@ -443,12 +443,12 @@ void Executor::Perform(Operation::Type op) {
                 continuation_ = NewContinuation(obj);
             }
 
-            // Set break_ = true to signal that continuation has changed.
+            // Set replace_ = true to signal that continuation has been replaced.
             // This is needed to break out of ExecuteContinuationInline's loop when
             // Replace happens inside an inline execution context (e.g., IfElse).
-            // The Continue() loop or IfElse handler should check if continuation_ is
-            // valid and continue with the new continuation rather than calling NextContinuation().
-            break_ = true;
+            // The Continue() loop should check if continuation_ is valid and continue
+            // with the new continuation rather than calling NextContinuation().
+            replace_ = true;
             break;
         }
 
@@ -924,12 +924,12 @@ void Executor::Perform(Operation::Type op) {
                     cont->SetScope(continuation_->GetScope());
                 }
                 ExecuteContinuationInline(cont);
-                // If Replace happened inside ExecuteContinuationInline, break_ will be true
+                // If Replace happened inside ExecuteContinuationInline, replace_ will be true
                 // and continuation_ will be the new continuation. We should NOT call
-                // NextContinuation() in this case - just clear break_ and continue executing
+                // NextContinuation() in this case - just clear replace_ and continue executing
                 // the new continuation in the Continue() loop.
-                if (break_) {
-                    break_ = false;
+                if (replace_) {
+                    replace_ = false;
                 }
             } else {
                 // Handle non-continuation objects by pushing them onto the
@@ -2452,8 +2452,8 @@ void Executor::ExecuteContinuationInline(Pointer<Continuation> cont) {
 
                     // If Suspend or Replace changed continuation_
                     if (continuation_ != cont) {
-                        // Check if this was a Replace (break_ is set) or Suspend
-                        if (break_) {
+                        // Check if this was a Replace (replace_ is set) or Suspend
+                        if (replace_) {
                             // Replace operation - don't execute inline, just break out
                             // The new continuation will be executed by the outer loop
                             break;
@@ -2518,15 +2518,15 @@ void Executor::ExecuteContinuationInline(Pointer<Continuation> cont) {
             context_->Pop();
         }
 
-        // If Replace was used (break_ is true), keep the new continuation
+        // If Replace was used (replace_ is true), keep the new continuation
         // Otherwise restore the original continuation
-        if (!break_) {
+        if (!replace_) {
             continuation_ = savedCont;
             if (savedCont.Exists() && savedCont->index.Exists()) {
                 *savedCont->index = savedIndex;
             }
         }
-        // If break_ is true, continuation_ already has the replacement - don't restore
+        // If replace_ is true, continuation_ already has the replacement - don't restore
     }
 }
 

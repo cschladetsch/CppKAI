@@ -57,10 +57,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/xian/local/KAI
+CMAKE_SOURCE_DIR = /home/christian/local/repos/KAI
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/xian/local/KAI
+CMAKE_BINARY_DIR = /home/christian/local/repos/KAI
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -85,61 +85,16 @@ rebuild_cache:
 rebuild_cache/fast: rebuild_cache
 .PHONY : rebuild_cache/fast
 
-# Special rule for the target list_install_components
-list_install_components:
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Available install components are: \"Unspecified\""
-.PHONY : list_install_components
-
-# Special rule for the target list_install_components
-list_install_components/fast: list_install_components
-.PHONY : list_install_components/fast
-
-# Special rule for the target install
-install: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Install the project..."
-	/usr/bin/cmake -P cmake_install.cmake
-.PHONY : install
-
-# Special rule for the target install
-install/fast: preinstall/fast
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Install the project..."
-	/usr/bin/cmake -P cmake_install.cmake
-.PHONY : install/fast
-
-# Special rule for the target install/local
-install/local: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing only the local directory..."
-	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
-.PHONY : install/local
-
-# Special rule for the target install/local
-install/local/fast: preinstall/fast
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing only the local directory..."
-	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
-.PHONY : install/local/fast
-
-# Special rule for the target install/strip
-install/strip: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing the project stripped..."
-	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
-.PHONY : install/strip
-
-# Special rule for the target install/strip
-install/strip/fast: preinstall/fast
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing the project stripped..."
-	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
-.PHONY : install/strip/fast
-
 # The main all target
 all: cmake_check_build_system
-	cd /home/xian/local/KAI && $(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/CMakeFiles /home/xian/local/KAI/Test/Console//CMakeFiles/progress.marks
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/Console/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/CMakeFiles 0
+	cd /home/christian/local/repos/KAI && $(CMAKE_COMMAND) -E cmake_progress_start /home/christian/local/repos/KAI/CMakeFiles /home/christian/local/repos/KAI/Test/Console//CMakeFiles/progress.marks
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/Console/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/christian/local/repos/KAI/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/Console/clean
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/Console/clean
 .PHONY : clean
 
 # The main clean target
@@ -148,22 +103,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/Console/preinstall
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/Console/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/Console/preinstall
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/Console/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /home/xian/local/KAI && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/christian/local/repos/KAI && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 Test/Console/CMakeFiles/TestConsole.dir/rule:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/Console/CMakeFiles/TestConsole.dir/rule
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/Console/CMakeFiles/TestConsole.dir/rule
 .PHONY : Test/Console/CMakeFiles/TestConsole.dir/rule
 
 # Convenience name for target.
@@ -172,32 +127,32 @@ TestConsole: Test/Console/CMakeFiles/TestConsole.dir/rule
 
 # fast build rule for target.
 TestConsole/fast:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Console/CMakeFiles/TestConsole.dir/build.make Test/Console/CMakeFiles/TestConsole.dir/build
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Console/CMakeFiles/TestConsole.dir/build.make Test/Console/CMakeFiles/TestConsole.dir/build
 .PHONY : TestConsole/fast
 
-TestConsoleZshFeatures.o: TestConsoleZshFeatures.cpp.o
-.PHONY : TestConsoleZshFeatures.o
+TestConsoleNetworking.o: TestConsoleNetworking.cpp.o
+.PHONY : TestConsoleNetworking.o
 
 # target to build an object file
-TestConsoleZshFeatures.cpp.o:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Console/CMakeFiles/TestConsole.dir/build.make Test/Console/CMakeFiles/TestConsole.dir/TestConsoleZshFeatures.cpp.o
-.PHONY : TestConsoleZshFeatures.cpp.o
+TestConsoleNetworking.cpp.o:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Console/CMakeFiles/TestConsole.dir/build.make Test/Console/CMakeFiles/TestConsole.dir/TestConsoleNetworking.cpp.o
+.PHONY : TestConsoleNetworking.cpp.o
 
-TestConsoleZshFeatures.i: TestConsoleZshFeatures.cpp.i
-.PHONY : TestConsoleZshFeatures.i
+TestConsoleNetworking.i: TestConsoleNetworking.cpp.i
+.PHONY : TestConsoleNetworking.i
 
 # target to preprocess a source file
-TestConsoleZshFeatures.cpp.i:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Console/CMakeFiles/TestConsole.dir/build.make Test/Console/CMakeFiles/TestConsole.dir/TestConsoleZshFeatures.cpp.i
-.PHONY : TestConsoleZshFeatures.cpp.i
+TestConsoleNetworking.cpp.i:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Console/CMakeFiles/TestConsole.dir/build.make Test/Console/CMakeFiles/TestConsole.dir/TestConsoleNetworking.cpp.i
+.PHONY : TestConsoleNetworking.cpp.i
 
-TestConsoleZshFeatures.s: TestConsoleZshFeatures.cpp.s
-.PHONY : TestConsoleZshFeatures.s
+TestConsoleNetworking.s: TestConsoleNetworking.cpp.s
+.PHONY : TestConsoleNetworking.s
 
 # target to generate assembly for a file
-TestConsoleZshFeatures.cpp.s:
-	cd /home/xian/local/KAI && $(MAKE) $(MAKESILENT) -f Test/Console/CMakeFiles/TestConsole.dir/build.make Test/Console/CMakeFiles/TestConsole.dir/TestConsoleZshFeatures.cpp.s
-.PHONY : TestConsoleZshFeatures.cpp.s
+TestConsoleNetworking.cpp.s:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Console/CMakeFiles/TestConsole.dir/build.make Test/Console/CMakeFiles/TestConsole.dir/TestConsoleNetworking.cpp.s
+.PHONY : TestConsoleNetworking.cpp.s
 
 # Help Target
 help:
@@ -206,15 +161,11 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
-	@echo "... install"
-	@echo "... install/local"
-	@echo "... install/strip"
-	@echo "... list_install_components"
 	@echo "... rebuild_cache"
 	@echo "... TestConsole"
-	@echo "... TestConsoleZshFeatures.o"
-	@echo "... TestConsoleZshFeatures.i"
-	@echo "... TestConsoleZshFeatures.s"
+	@echo "... TestConsoleNetworking.o"
+	@echo "... TestConsoleNetworking.i"
+	@echo "... TestConsoleNetworking.s"
 .PHONY : help
 
 
@@ -226,6 +177,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/xian/local/KAI && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/christian/local/repos/KAI && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

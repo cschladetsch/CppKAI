@@ -57,10 +57,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/xian/local/KAI
+CMAKE_SOURCE_DIR = /home/christian/local/repos/KAI
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/xian/local/KAI
+CMAKE_BINARY_DIR = /home/christian/local/repos/KAI
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -85,56 +85,11 @@ rebuild_cache:
 rebuild_cache/fast: rebuild_cache
 .PHONY : rebuild_cache/fast
 
-# Special rule for the target list_install_components
-list_install_components:
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Available install components are: \"Unspecified\""
-.PHONY : list_install_components
-
-# Special rule for the target list_install_components
-list_install_components/fast: list_install_components
-.PHONY : list_install_components/fast
-
-# Special rule for the target install
-install: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Install the project..."
-	/usr/bin/cmake -P cmake_install.cmake
-.PHONY : install
-
-# Special rule for the target install
-install/fast: preinstall/fast
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Install the project..."
-	/usr/bin/cmake -P cmake_install.cmake
-.PHONY : install/fast
-
-# Special rule for the target install/local
-install/local: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing only the local directory..."
-	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
-.PHONY : install/local
-
-# Special rule for the target install/local
-install/local/fast: preinstall/fast
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing only the local directory..."
-	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
-.PHONY : install/local/fast
-
-# Special rule for the target install/strip
-install/strip: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing the project stripped..."
-	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
-.PHONY : install/strip
-
-# Special rule for the target install/strip
-install/strip/fast: preinstall/fast
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing the project stripped..."
-	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
-.PHONY : install/strip/fast
-
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/CMakeFiles /home/xian/local/KAI//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/christian/local/repos/KAI/CMakeFiles /home/christian/local/repos/KAI//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/xian/local/KAI/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/christian/local/repos/KAI/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -188,19 +143,6 @@ Executor/fast:
 .PHONY : Executor/fast
 
 #=============================================================================
-# Target rules for targets named Network
-
-# Build rule for target.
-Network: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Network
-.PHONY : Network
-
-# fast build rule for target.
-Network/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/build
-.PHONY : Network/fast
-
-#=============================================================================
 # Target rules for targets named Console
 
 # Build rule for target.
@@ -212,136 +154,6 @@ Console: cmake_check_build_system
 Console/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Console.dir/build.make CMakeFiles/Console.dir/build
 .PHONY : Console/fast
-
-#=============================================================================
-# Target rules for targets named SimpleServer
-
-# Build rule for target.
-SimpleServer: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 SimpleServer
-.PHONY : SimpleServer
-
-# fast build rule for target.
-SimpleServer/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimpleServer.dir/build.make CMakeFiles/SimpleServer.dir/build
-.PHONY : SimpleServer/fast
-
-#=============================================================================
-# Target rules for targets named SimpleClient
-
-# Build rule for target.
-SimpleClient: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 SimpleClient
-.PHONY : SimpleClient
-
-# fast build rule for target.
-SimpleClient/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimpleClient.dir/build.make CMakeFiles/SimpleClient.dir/build
-.PHONY : SimpleClient/fast
-
-#=============================================================================
-# Target rules for targets named MinimalServer
-
-# Build rule for target.
-MinimalServer: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 MinimalServer
-.PHONY : MinimalServer
-
-# fast build rule for target.
-MinimalServer/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/MinimalServer.dir/build.make CMakeFiles/MinimalServer.dir/build
-.PHONY : MinimalServer/fast
-
-#=============================================================================
-# Target rules for targets named MinimalClient
-
-# Build rule for target.
-MinimalClient: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 MinimalClient
-.PHONY : MinimalClient
-
-# fast build rule for target.
-MinimalClient/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/MinimalClient.dir/build.make CMakeFiles/MinimalClient.dir/build
-.PHONY : MinimalClient/fast
-
-#=============================================================================
-# Target rules for targets named NetworkPeer
-
-# Build rule for target.
-NetworkPeer: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 NetworkPeer
-.PHONY : NetworkPeer
-
-# fast build rule for target.
-NetworkPeer/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/NetworkPeer.dir/build.make CMakeFiles/NetworkPeer.dir/build
-.PHONY : NetworkPeer/fast
-
-#=============================================================================
-# Target rules for targets named ConfigurableServer
-
-# Build rule for target.
-ConfigurableServer: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ConfigurableServer
-.PHONY : ConfigurableServer
-
-# fast build rule for target.
-ConfigurableServer/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ConfigurableServer.dir/build.make CMakeFiles/ConfigurableServer.dir/build
-.PHONY : ConfigurableServer/fast
-
-#=============================================================================
-# Target rules for targets named ConfigurableClient
-
-# Build rule for target.
-ConfigurableClient: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ConfigurableClient
-.PHONY : ConfigurableClient
-
-# fast build rule for target.
-ConfigurableClient/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ConfigurableClient.dir/build.make CMakeFiles/ConfigurableClient.dir/build
-.PHONY : ConfigurableClient/fast
-
-#=============================================================================
-# Target rules for targets named Window
-
-# Build rule for target.
-Window: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Window
-.PHONY : Window
-
-# fast build rule for target.
-Window/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Window.dir/build.make CMakeFiles/Window.dir/build
-.PHONY : Window/fast
-
-#=============================================================================
-# Target rules for targets named NetworkTest
-
-# Build rule for target.
-NetworkTest: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 NetworkTest
-.PHONY : NetworkTest
-
-# fast build rule for target.
-NetworkTest/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/NetworkTest.dir/build.make CMakeFiles/NetworkTest.dir/build
-.PHONY : NetworkTest/fast
-
-#=============================================================================
-# Target rules for targets named NetworkGenerate
-
-# Build rule for target.
-NetworkGenerate: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 NetworkGenerate
-.PHONY : NetworkGenerate
-
-# fast build rule for target.
-NetworkGenerate/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/NetworkGenerate.dir/build.make CMakeFiles/NetworkGenerate.dir/build
-.PHONY : NetworkGenerate/fast
 
 #=============================================================================
 # Target rules for targets named CommonLang
@@ -394,19 +206,6 @@ TauLang: cmake_check_build_system
 TauLang/fast:
 	$(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/TauLang.dir/build.make Source/Library/Language/CMakeFiles/TauLang.dir/build
 .PHONY : TauLang/fast
-
-#=============================================================================
-# Target rules for targets named ImGui
-
-# Build rule for target.
-ImGui: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ImGui
-.PHONY : ImGui
-
-# fast build rule for target.
-ImGui/fast:
-	$(MAKE) $(MAKESILENT) -f Source/Library/ImGui/CMakeFiles/ImGui.dir/build.make Source/Library/ImGui/CMakeFiles/ImGui.dir/build
-.PHONY : ImGui/fast
 
 #=============================================================================
 # Target rules for targets named KaiTest
@@ -552,117 +351,17 @@ TestWindow/fast:
 .PHONY : TestWindow/fast
 
 #=============================================================================
-# Target rules for targets named Test_Network
+# Target rules for targets named PerformanceTests
 
 # Build rule for target.
-Test_Network: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test_Network
-.PHONY : Test_Network
+PerformanceTests: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 PerformanceTests
+.PHONY : PerformanceTests
 
 # fast build rule for target.
-Test_Network/fast:
-	$(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/Test_Network.dir/build.make Test/Network/CMakeFiles/Test_Network.dir/build
-.PHONY : Test_Network/fast
-
-#=============================================================================
-# Target rules for targets named ConsoleConnectionTest
-
-# Build rule for target.
-ConsoleConnectionTest: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ConsoleConnectionTest
-.PHONY : ConsoleConnectionTest
-
-# fast build rule for target.
-ConsoleConnectionTest/fast:
-	$(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/ConsoleConnectionTest.dir/build.make Test/Network/CMakeFiles/ConsoleConnectionTest.dir/build
-.PHONY : ConsoleConnectionTest/fast
-
-#=============================================================================
-# Target rules for targets named IntegratedConsoleTest
-
-# Build rule for target.
-IntegratedConsoleTest: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 IntegratedConsoleTest
-.PHONY : IntegratedConsoleTest
-
-# fast build rule for target.
-IntegratedConsoleTest/fast:
-	$(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/IntegratedConsoleTest.dir/build.make Test/Network/CMakeFiles/IntegratedConsoleTest.dir/build
-.PHONY : IntegratedConsoleTest/fast
-
-#=============================================================================
-# Target rules for targets named CalculationTest
-
-# Build rule for target.
-CalculationTest: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CalculationTest
-.PHONY : CalculationTest
-
-# fast build rule for target.
-CalculationTest/fast:
-	$(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/CalculationTest.dir/build.make Test/Network/CMakeFiles/CalculationTest.dir/build
-.PHONY : CalculationTest/fast
-
-#=============================================================================
-# Target rules for targets named Test_ProxyGeneration
-
-# Build rule for target.
-Test_ProxyGeneration: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test_ProxyGeneration
-.PHONY : Test_ProxyGeneration
-
-# fast build rule for target.
-Test_ProxyGeneration/fast:
-	$(MAKE) $(MAKESILENT) -f Test/Network/ProxyTest/CMakeFiles/Test_ProxyGeneration.dir/build.make Test/Network/ProxyTest/CMakeFiles/Test_ProxyGeneration.dir/build
-.PHONY : Test_ProxyGeneration/fast
-
-Source/App/Console/Source/ConfigurableClient.o: Source/App/Console/Source/ConfigurableClient.cpp.o
-.PHONY : Source/App/Console/Source/ConfigurableClient.o
-
-# target to build an object file
-Source/App/Console/Source/ConfigurableClient.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ConfigurableClient.dir/build.make CMakeFiles/ConfigurableClient.dir/Source/App/Console/Source/ConfigurableClient.cpp.o
-.PHONY : Source/App/Console/Source/ConfigurableClient.cpp.o
-
-Source/App/Console/Source/ConfigurableClient.i: Source/App/Console/Source/ConfigurableClient.cpp.i
-.PHONY : Source/App/Console/Source/ConfigurableClient.i
-
-# target to preprocess a source file
-Source/App/Console/Source/ConfigurableClient.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ConfigurableClient.dir/build.make CMakeFiles/ConfigurableClient.dir/Source/App/Console/Source/ConfigurableClient.cpp.i
-.PHONY : Source/App/Console/Source/ConfigurableClient.cpp.i
-
-Source/App/Console/Source/ConfigurableClient.s: Source/App/Console/Source/ConfigurableClient.cpp.s
-.PHONY : Source/App/Console/Source/ConfigurableClient.s
-
-# target to generate assembly for a file
-Source/App/Console/Source/ConfigurableClient.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ConfigurableClient.dir/build.make CMakeFiles/ConfigurableClient.dir/Source/App/Console/Source/ConfigurableClient.cpp.s
-.PHONY : Source/App/Console/Source/ConfigurableClient.cpp.s
-
-Source/App/Console/Source/ConfigurableServer.o: Source/App/Console/Source/ConfigurableServer.cpp.o
-.PHONY : Source/App/Console/Source/ConfigurableServer.o
-
-# target to build an object file
-Source/App/Console/Source/ConfigurableServer.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ConfigurableServer.dir/build.make CMakeFiles/ConfigurableServer.dir/Source/App/Console/Source/ConfigurableServer.cpp.o
-.PHONY : Source/App/Console/Source/ConfigurableServer.cpp.o
-
-Source/App/Console/Source/ConfigurableServer.i: Source/App/Console/Source/ConfigurableServer.cpp.i
-.PHONY : Source/App/Console/Source/ConfigurableServer.i
-
-# target to preprocess a source file
-Source/App/Console/Source/ConfigurableServer.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ConfigurableServer.dir/build.make CMakeFiles/ConfigurableServer.dir/Source/App/Console/Source/ConfigurableServer.cpp.i
-.PHONY : Source/App/Console/Source/ConfigurableServer.cpp.i
-
-Source/App/Console/Source/ConfigurableServer.s: Source/App/Console/Source/ConfigurableServer.cpp.s
-.PHONY : Source/App/Console/Source/ConfigurableServer.s
-
-# target to generate assembly for a file
-Source/App/Console/Source/ConfigurableServer.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ConfigurableServer.dir/build.make CMakeFiles/ConfigurableServer.dir/Source/App/Console/Source/ConfigurableServer.cpp.s
-.PHONY : Source/App/Console/Source/ConfigurableServer.cpp.s
+PerformanceTests/fast:
+	$(MAKE) $(MAKESILENT) -f Test/Performance/CMakeFiles/PerformanceTests.dir/build.make Test/Performance/CMakeFiles/PerformanceTests.dir/build
+.PHONY : PerformanceTests/fast
 
 Source/App/Console/Source/Main.o: Source/App/Console/Source/Main.cpp.o
 .PHONY : Source/App/Console/Source/Main.o
@@ -687,270 +386,6 @@ Source/App/Console/Source/Main.s: Source/App/Console/Source/Main.cpp.s
 Source/App/Console/Source/Main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Console.dir/build.make CMakeFiles/Console.dir/Source/App/Console/Source/Main.cpp.s
 .PHONY : Source/App/Console/Source/Main.cpp.s
-
-Source/App/Console/Source/MinimalClient.o: Source/App/Console/Source/MinimalClient.cpp.o
-.PHONY : Source/App/Console/Source/MinimalClient.o
-
-# target to build an object file
-Source/App/Console/Source/MinimalClient.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/MinimalClient.dir/build.make CMakeFiles/MinimalClient.dir/Source/App/Console/Source/MinimalClient.cpp.o
-.PHONY : Source/App/Console/Source/MinimalClient.cpp.o
-
-Source/App/Console/Source/MinimalClient.i: Source/App/Console/Source/MinimalClient.cpp.i
-.PHONY : Source/App/Console/Source/MinimalClient.i
-
-# target to preprocess a source file
-Source/App/Console/Source/MinimalClient.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/MinimalClient.dir/build.make CMakeFiles/MinimalClient.dir/Source/App/Console/Source/MinimalClient.cpp.i
-.PHONY : Source/App/Console/Source/MinimalClient.cpp.i
-
-Source/App/Console/Source/MinimalClient.s: Source/App/Console/Source/MinimalClient.cpp.s
-.PHONY : Source/App/Console/Source/MinimalClient.s
-
-# target to generate assembly for a file
-Source/App/Console/Source/MinimalClient.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/MinimalClient.dir/build.make CMakeFiles/MinimalClient.dir/Source/App/Console/Source/MinimalClient.cpp.s
-.PHONY : Source/App/Console/Source/MinimalClient.cpp.s
-
-Source/App/Console/Source/MinimalServer.o: Source/App/Console/Source/MinimalServer.cpp.o
-.PHONY : Source/App/Console/Source/MinimalServer.o
-
-# target to build an object file
-Source/App/Console/Source/MinimalServer.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/MinimalServer.dir/build.make CMakeFiles/MinimalServer.dir/Source/App/Console/Source/MinimalServer.cpp.o
-.PHONY : Source/App/Console/Source/MinimalServer.cpp.o
-
-Source/App/Console/Source/MinimalServer.i: Source/App/Console/Source/MinimalServer.cpp.i
-.PHONY : Source/App/Console/Source/MinimalServer.i
-
-# target to preprocess a source file
-Source/App/Console/Source/MinimalServer.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/MinimalServer.dir/build.make CMakeFiles/MinimalServer.dir/Source/App/Console/Source/MinimalServer.cpp.i
-.PHONY : Source/App/Console/Source/MinimalServer.cpp.i
-
-Source/App/Console/Source/MinimalServer.s: Source/App/Console/Source/MinimalServer.cpp.s
-.PHONY : Source/App/Console/Source/MinimalServer.s
-
-# target to generate assembly for a file
-Source/App/Console/Source/MinimalServer.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/MinimalServer.dir/build.make CMakeFiles/MinimalServer.dir/Source/App/Console/Source/MinimalServer.cpp.s
-.PHONY : Source/App/Console/Source/MinimalServer.cpp.s
-
-Source/App/Console/Source/NetworkPeer.o: Source/App/Console/Source/NetworkPeer.cpp.o
-.PHONY : Source/App/Console/Source/NetworkPeer.o
-
-# target to build an object file
-Source/App/Console/Source/NetworkPeer.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/NetworkPeer.dir/build.make CMakeFiles/NetworkPeer.dir/Source/App/Console/Source/NetworkPeer.cpp.o
-.PHONY : Source/App/Console/Source/NetworkPeer.cpp.o
-
-Source/App/Console/Source/NetworkPeer.i: Source/App/Console/Source/NetworkPeer.cpp.i
-.PHONY : Source/App/Console/Source/NetworkPeer.i
-
-# target to preprocess a source file
-Source/App/Console/Source/NetworkPeer.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/NetworkPeer.dir/build.make CMakeFiles/NetworkPeer.dir/Source/App/Console/Source/NetworkPeer.cpp.i
-.PHONY : Source/App/Console/Source/NetworkPeer.cpp.i
-
-Source/App/Console/Source/NetworkPeer.s: Source/App/Console/Source/NetworkPeer.cpp.s
-.PHONY : Source/App/Console/Source/NetworkPeer.s
-
-# target to generate assembly for a file
-Source/App/Console/Source/NetworkPeer.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/NetworkPeer.dir/build.make CMakeFiles/NetworkPeer.dir/Source/App/Console/Source/NetworkPeer.cpp.s
-.PHONY : Source/App/Console/Source/NetworkPeer.cpp.s
-
-Source/App/Console/Source/SimpleClient.o: Source/App/Console/Source/SimpleClient.cpp.o
-.PHONY : Source/App/Console/Source/SimpleClient.o
-
-# target to build an object file
-Source/App/Console/Source/SimpleClient.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimpleClient.dir/build.make CMakeFiles/SimpleClient.dir/Source/App/Console/Source/SimpleClient.cpp.o
-.PHONY : Source/App/Console/Source/SimpleClient.cpp.o
-
-Source/App/Console/Source/SimpleClient.i: Source/App/Console/Source/SimpleClient.cpp.i
-.PHONY : Source/App/Console/Source/SimpleClient.i
-
-# target to preprocess a source file
-Source/App/Console/Source/SimpleClient.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimpleClient.dir/build.make CMakeFiles/SimpleClient.dir/Source/App/Console/Source/SimpleClient.cpp.i
-.PHONY : Source/App/Console/Source/SimpleClient.cpp.i
-
-Source/App/Console/Source/SimpleClient.s: Source/App/Console/Source/SimpleClient.cpp.s
-.PHONY : Source/App/Console/Source/SimpleClient.s
-
-# target to generate assembly for a file
-Source/App/Console/Source/SimpleClient.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimpleClient.dir/build.make CMakeFiles/SimpleClient.dir/Source/App/Console/Source/SimpleClient.cpp.s
-.PHONY : Source/App/Console/Source/SimpleClient.cpp.s
-
-Source/App/Console/Source/SimpleServer.o: Source/App/Console/Source/SimpleServer.cpp.o
-.PHONY : Source/App/Console/Source/SimpleServer.o
-
-# target to build an object file
-Source/App/Console/Source/SimpleServer.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimpleServer.dir/build.make CMakeFiles/SimpleServer.dir/Source/App/Console/Source/SimpleServer.cpp.o
-.PHONY : Source/App/Console/Source/SimpleServer.cpp.o
-
-Source/App/Console/Source/SimpleServer.i: Source/App/Console/Source/SimpleServer.cpp.i
-.PHONY : Source/App/Console/Source/SimpleServer.i
-
-# target to preprocess a source file
-Source/App/Console/Source/SimpleServer.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimpleServer.dir/build.make CMakeFiles/SimpleServer.dir/Source/App/Console/Source/SimpleServer.cpp.i
-.PHONY : Source/App/Console/Source/SimpleServer.cpp.i
-
-Source/App/Console/Source/SimpleServer.s: Source/App/Console/Source/SimpleServer.cpp.s
-.PHONY : Source/App/Console/Source/SimpleServer.s
-
-# target to generate assembly for a file
-Source/App/Console/Source/SimpleServer.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimpleServer.dir/build.make CMakeFiles/SimpleServer.dir/Source/App/Console/Source/SimpleServer.cpp.s
-.PHONY : Source/App/Console/Source/SimpleServer.cpp.s
-
-Source/App/NetworkGenerate/Source/Main.o: Source/App/NetworkGenerate/Source/Main.cpp.o
-.PHONY : Source/App/NetworkGenerate/Source/Main.o
-
-# target to build an object file
-Source/App/NetworkGenerate/Source/Main.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/NetworkGenerate.dir/build.make CMakeFiles/NetworkGenerate.dir/Source/App/NetworkGenerate/Source/Main.cpp.o
-.PHONY : Source/App/NetworkGenerate/Source/Main.cpp.o
-
-Source/App/NetworkGenerate/Source/Main.i: Source/App/NetworkGenerate/Source/Main.cpp.i
-.PHONY : Source/App/NetworkGenerate/Source/Main.i
-
-# target to preprocess a source file
-Source/App/NetworkGenerate/Source/Main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/NetworkGenerate.dir/build.make CMakeFiles/NetworkGenerate.dir/Source/App/NetworkGenerate/Source/Main.cpp.i
-.PHONY : Source/App/NetworkGenerate/Source/Main.cpp.i
-
-Source/App/NetworkGenerate/Source/Main.s: Source/App/NetworkGenerate/Source/Main.cpp.s
-.PHONY : Source/App/NetworkGenerate/Source/Main.s
-
-# target to generate assembly for a file
-Source/App/NetworkGenerate/Source/Main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/NetworkGenerate.dir/build.make CMakeFiles/NetworkGenerate.dir/Source/App/NetworkGenerate/Source/Main.cpp.s
-.PHONY : Source/App/NetworkGenerate/Source/Main.cpp.s
-
-Source/App/NetworkTest/Source/Main.o: Source/App/NetworkTest/Source/Main.cpp.o
-.PHONY : Source/App/NetworkTest/Source/Main.o
-
-# target to build an object file
-Source/App/NetworkTest/Source/Main.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/NetworkTest.dir/build.make CMakeFiles/NetworkTest.dir/Source/App/NetworkTest/Source/Main.cpp.o
-.PHONY : Source/App/NetworkTest/Source/Main.cpp.o
-
-Source/App/NetworkTest/Source/Main.i: Source/App/NetworkTest/Source/Main.cpp.i
-.PHONY : Source/App/NetworkTest/Source/Main.i
-
-# target to preprocess a source file
-Source/App/NetworkTest/Source/Main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/NetworkTest.dir/build.make CMakeFiles/NetworkTest.dir/Source/App/NetworkTest/Source/Main.cpp.i
-.PHONY : Source/App/NetworkTest/Source/Main.cpp.i
-
-Source/App/NetworkTest/Source/Main.s: Source/App/NetworkTest/Source/Main.cpp.s
-.PHONY : Source/App/NetworkTest/Source/Main.s
-
-# target to generate assembly for a file
-Source/App/NetworkTest/Source/Main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/NetworkTest.dir/build.make CMakeFiles/NetworkTest.dir/Source/App/NetworkTest/Source/Main.cpp.s
-.PHONY : Source/App/NetworkTest/Source/Main.cpp.s
-
-Source/App/Window/Source/ExecutorWindow.o: Source/App/Window/Source/ExecutorWindow.cpp.o
-.PHONY : Source/App/Window/Source/ExecutorWindow.o
-
-# target to build an object file
-Source/App/Window/Source/ExecutorWindow.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Window.dir/build.make CMakeFiles/Window.dir/Source/App/Window/Source/ExecutorWindow.cpp.o
-.PHONY : Source/App/Window/Source/ExecutorWindow.cpp.o
-
-Source/App/Window/Source/ExecutorWindow.i: Source/App/Window/Source/ExecutorWindow.cpp.i
-.PHONY : Source/App/Window/Source/ExecutorWindow.i
-
-# target to preprocess a source file
-Source/App/Window/Source/ExecutorWindow.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Window.dir/build.make CMakeFiles/Window.dir/Source/App/Window/Source/ExecutorWindow.cpp.i
-.PHONY : Source/App/Window/Source/ExecutorWindow.cpp.i
-
-Source/App/Window/Source/ExecutorWindow.s: Source/App/Window/Source/ExecutorWindow.cpp.s
-.PHONY : Source/App/Window/Source/ExecutorWindow.s
-
-# target to generate assembly for a file
-Source/App/Window/Source/ExecutorWindow.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Window.dir/build.make CMakeFiles/Window.dir/Source/App/Window/Source/ExecutorWindow.cpp.s
-.PHONY : Source/App/Window/Source/ExecutorWindow.cpp.s
-
-Source/App/Window/Source/Main.o: Source/App/Window/Source/Main.cpp.o
-.PHONY : Source/App/Window/Source/Main.o
-
-# target to build an object file
-Source/App/Window/Source/Main.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Window.dir/build.make CMakeFiles/Window.dir/Source/App/Window/Source/Main.cpp.o
-.PHONY : Source/App/Window/Source/Main.cpp.o
-
-Source/App/Window/Source/Main.i: Source/App/Window/Source/Main.cpp.i
-.PHONY : Source/App/Window/Source/Main.i
-
-# target to preprocess a source file
-Source/App/Window/Source/Main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Window.dir/build.make CMakeFiles/Window.dir/Source/App/Window/Source/Main.cpp.i
-.PHONY : Source/App/Window/Source/Main.cpp.i
-
-Source/App/Window/Source/Main.s: Source/App/Window/Source/Main.cpp.s
-.PHONY : Source/App/Window/Source/Main.s
-
-# target to generate assembly for a file
-Source/App/Window/Source/Main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Window.dir/build.make CMakeFiles/Window.dir/Source/App/Window/Source/Main.cpp.s
-.PHONY : Source/App/Window/Source/Main.cpp.s
-
-Source/App/Window/Source/imgui_impl_glfw.o: Source/App/Window/Source/imgui_impl_glfw.cpp.o
-.PHONY : Source/App/Window/Source/imgui_impl_glfw.o
-
-# target to build an object file
-Source/App/Window/Source/imgui_impl_glfw.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Window.dir/build.make CMakeFiles/Window.dir/Source/App/Window/Source/imgui_impl_glfw.cpp.o
-.PHONY : Source/App/Window/Source/imgui_impl_glfw.cpp.o
-
-Source/App/Window/Source/imgui_impl_glfw.i: Source/App/Window/Source/imgui_impl_glfw.cpp.i
-.PHONY : Source/App/Window/Source/imgui_impl_glfw.i
-
-# target to preprocess a source file
-Source/App/Window/Source/imgui_impl_glfw.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Window.dir/build.make CMakeFiles/Window.dir/Source/App/Window/Source/imgui_impl_glfw.cpp.i
-.PHONY : Source/App/Window/Source/imgui_impl_glfw.cpp.i
-
-Source/App/Window/Source/imgui_impl_glfw.s: Source/App/Window/Source/imgui_impl_glfw.cpp.s
-.PHONY : Source/App/Window/Source/imgui_impl_glfw.s
-
-# target to generate assembly for a file
-Source/App/Window/Source/imgui_impl_glfw.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Window.dir/build.make CMakeFiles/Window.dir/Source/App/Window/Source/imgui_impl_glfw.cpp.s
-.PHONY : Source/App/Window/Source/imgui_impl_glfw.cpp.s
-
-Source/App/Window/Source/imgui_impl_opengl3.o: Source/App/Window/Source/imgui_impl_opengl3.cpp.o
-.PHONY : Source/App/Window/Source/imgui_impl_opengl3.o
-
-# target to build an object file
-Source/App/Window/Source/imgui_impl_opengl3.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Window.dir/build.make CMakeFiles/Window.dir/Source/App/Window/Source/imgui_impl_opengl3.cpp.o
-.PHONY : Source/App/Window/Source/imgui_impl_opengl3.cpp.o
-
-Source/App/Window/Source/imgui_impl_opengl3.i: Source/App/Window/Source/imgui_impl_opengl3.cpp.i
-.PHONY : Source/App/Window/Source/imgui_impl_opengl3.i
-
-# target to preprocess a source file
-Source/App/Window/Source/imgui_impl_opengl3.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Window.dir/build.make CMakeFiles/Window.dir/Source/App/Window/Source/imgui_impl_opengl3.cpp.i
-.PHONY : Source/App/Window/Source/imgui_impl_opengl3.cpp.i
-
-Source/App/Window/Source/imgui_impl_opengl3.s: Source/App/Window/Source/imgui_impl_opengl3.cpp.s
-.PHONY : Source/App/Window/Source/imgui_impl_opengl3.s
-
-# target to generate assembly for a file
-Source/App/Window/Source/imgui_impl_opengl3.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Window.dir/build.make CMakeFiles/Window.dir/Source/App/Window/Source/imgui_impl_opengl3.cpp.s
-.PHONY : Source/App/Window/Source/imgui_impl_opengl3.cpp.s
 
 Source/Library/Core/Source/BinaryPacket.o: Source/Library/Core/Source/BinaryPacket.cpp.o
 .PHONY : Source/Library/Core/Source/BinaryPacket.o
@@ -2032,174 +1467,6 @@ Source/Library/Executor/Source/Tree.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Executor.dir/build.make CMakeFiles/Executor.dir/Source/Library/Executor/Source/Tree.cpp.s
 .PHONY : Source/Library/Executor/Source/Tree.cpp.s
 
-Source/Library/Network/Source/AgentBase.o: Source/Library/Network/Source/AgentBase.cpp.o
-.PHONY : Source/Library/Network/Source/AgentBase.o
-
-# target to build an object file
-Source/Library/Network/Source/AgentBase.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/AgentBase.cpp.o
-.PHONY : Source/Library/Network/Source/AgentBase.cpp.o
-
-Source/Library/Network/Source/AgentBase.i: Source/Library/Network/Source/AgentBase.cpp.i
-.PHONY : Source/Library/Network/Source/AgentBase.i
-
-# target to preprocess a source file
-Source/Library/Network/Source/AgentBase.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/AgentBase.cpp.i
-.PHONY : Source/Library/Network/Source/AgentBase.cpp.i
-
-Source/Library/Network/Source/AgentBase.s: Source/Library/Network/Source/AgentBase.cpp.s
-.PHONY : Source/Library/Network/Source/AgentBase.s
-
-# target to generate assembly for a file
-Source/Library/Network/Source/AgentBase.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/AgentBase.cpp.s
-.PHONY : Source/Library/Network/Source/AgentBase.cpp.s
-
-Source/Library/Network/Source/ConnectionManager.o: Source/Library/Network/Source/ConnectionManager.cpp.o
-.PHONY : Source/Library/Network/Source/ConnectionManager.o
-
-# target to build an object file
-Source/Library/Network/Source/ConnectionManager.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/ConnectionManager.cpp.o
-.PHONY : Source/Library/Network/Source/ConnectionManager.cpp.o
-
-Source/Library/Network/Source/ConnectionManager.i: Source/Library/Network/Source/ConnectionManager.cpp.i
-.PHONY : Source/Library/Network/Source/ConnectionManager.i
-
-# target to preprocess a source file
-Source/Library/Network/Source/ConnectionManager.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/ConnectionManager.cpp.i
-.PHONY : Source/Library/Network/Source/ConnectionManager.cpp.i
-
-Source/Library/Network/Source/ConnectionManager.s: Source/Library/Network/Source/ConnectionManager.cpp.s
-.PHONY : Source/Library/Network/Source/ConnectionManager.s
-
-# target to generate assembly for a file
-Source/Library/Network/Source/ConnectionManager.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/ConnectionManager.cpp.s
-.PHONY : Source/Library/Network/Source/ConnectionManager.cpp.s
-
-Source/Library/Network/Source/GenerateProxy.o: Source/Library/Network/Source/GenerateProxy.cpp.o
-.PHONY : Source/Library/Network/Source/GenerateProxy.o
-
-# target to build an object file
-Source/Library/Network/Source/GenerateProxy.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/GenerateProxy.cpp.o
-.PHONY : Source/Library/Network/Source/GenerateProxy.cpp.o
-
-Source/Library/Network/Source/GenerateProxy.i: Source/Library/Network/Source/GenerateProxy.cpp.i
-.PHONY : Source/Library/Network/Source/GenerateProxy.i
-
-# target to preprocess a source file
-Source/Library/Network/Source/GenerateProxy.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/GenerateProxy.cpp.i
-.PHONY : Source/Library/Network/Source/GenerateProxy.cpp.i
-
-Source/Library/Network/Source/GenerateProxy.s: Source/Library/Network/Source/GenerateProxy.cpp.s
-.PHONY : Source/Library/Network/Source/GenerateProxy.s
-
-# target to generate assembly for a file
-Source/Library/Network/Source/GenerateProxy.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/GenerateProxy.cpp.s
-.PHONY : Source/Library/Network/Source/GenerateProxy.cpp.s
-
-Source/Library/Network/Source/NetworkLogger.o: Source/Library/Network/Source/NetworkLogger.cpp.o
-.PHONY : Source/Library/Network/Source/NetworkLogger.o
-
-# target to build an object file
-Source/Library/Network/Source/NetworkLogger.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/NetworkLogger.cpp.o
-.PHONY : Source/Library/Network/Source/NetworkLogger.cpp.o
-
-Source/Library/Network/Source/NetworkLogger.i: Source/Library/Network/Source/NetworkLogger.cpp.i
-.PHONY : Source/Library/Network/Source/NetworkLogger.i
-
-# target to preprocess a source file
-Source/Library/Network/Source/NetworkLogger.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/NetworkLogger.cpp.i
-.PHONY : Source/Library/Network/Source/NetworkLogger.cpp.i
-
-Source/Library/Network/Source/NetworkLogger.s: Source/Library/Network/Source/NetworkLogger.cpp.s
-.PHONY : Source/Library/Network/Source/NetworkLogger.s
-
-# target to generate assembly for a file
-Source/Library/Network/Source/NetworkLogger.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/NetworkLogger.cpp.s
-.PHONY : Source/Library/Network/Source/NetworkLogger.cpp.s
-
-Source/Library/Network/Source/Node.o: Source/Library/Network/Source/Node.cpp.o
-.PHONY : Source/Library/Network/Source/Node.o
-
-# target to build an object file
-Source/Library/Network/Source/Node.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/Node.cpp.o
-.PHONY : Source/Library/Network/Source/Node.cpp.o
-
-Source/Library/Network/Source/Node.i: Source/Library/Network/Source/Node.cpp.i
-.PHONY : Source/Library/Network/Source/Node.i
-
-# target to preprocess a source file
-Source/Library/Network/Source/Node.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/Node.cpp.i
-.PHONY : Source/Library/Network/Source/Node.cpp.i
-
-Source/Library/Network/Source/Node.s: Source/Library/Network/Source/Node.cpp.s
-.PHONY : Source/Library/Network/Source/Node.s
-
-# target to generate assembly for a file
-Source/Library/Network/Source/Node.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/Node.cpp.s
-.PHONY : Source/Library/Network/Source/Node.cpp.s
-
-Source/Library/Network/Source/PeerDiscovery.o: Source/Library/Network/Source/PeerDiscovery.cpp.o
-.PHONY : Source/Library/Network/Source/PeerDiscovery.o
-
-# target to build an object file
-Source/Library/Network/Source/PeerDiscovery.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/PeerDiscovery.cpp.o
-.PHONY : Source/Library/Network/Source/PeerDiscovery.cpp.o
-
-Source/Library/Network/Source/PeerDiscovery.i: Source/Library/Network/Source/PeerDiscovery.cpp.i
-.PHONY : Source/Library/Network/Source/PeerDiscovery.i
-
-# target to preprocess a source file
-Source/Library/Network/Source/PeerDiscovery.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/PeerDiscovery.cpp.i
-.PHONY : Source/Library/Network/Source/PeerDiscovery.cpp.i
-
-Source/Library/Network/Source/PeerDiscovery.s: Source/Library/Network/Source/PeerDiscovery.cpp.s
-.PHONY : Source/Library/Network/Source/PeerDiscovery.s
-
-# target to generate assembly for a file
-Source/Library/Network/Source/PeerDiscovery.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/PeerDiscovery.cpp.s
-.PHONY : Source/Library/Network/Source/PeerDiscovery.cpp.s
-
-Source/Library/Network/Source/ProxyBase.o: Source/Library/Network/Source/ProxyBase.cpp.o
-.PHONY : Source/Library/Network/Source/ProxyBase.o
-
-# target to build an object file
-Source/Library/Network/Source/ProxyBase.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/ProxyBase.cpp.o
-.PHONY : Source/Library/Network/Source/ProxyBase.cpp.o
-
-Source/Library/Network/Source/ProxyBase.i: Source/Library/Network/Source/ProxyBase.cpp.i
-.PHONY : Source/Library/Network/Source/ProxyBase.i
-
-# target to preprocess a source file
-Source/Library/Network/Source/ProxyBase.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/ProxyBase.cpp.i
-.PHONY : Source/Library/Network/Source/ProxyBase.cpp.i
-
-Source/Library/Network/Source/ProxyBase.s: Source/Library/Network/Source/ProxyBase.cpp.s
-.PHONY : Source/Library/Network/Source/ProxyBase.s
-
-# target to generate assembly for a file
-Source/Library/Network/Source/ProxyBase.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/ProxyBase.cpp.s
-.PHONY : Source/Library/Network/Source/ProxyBase.cpp.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -2207,35 +1474,18 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
-	@echo "... install"
-	@echo "... install/local"
-	@echo "... install/strip"
-	@echo "... list_install_components"
 	@echo "... rebuild_cache"
-	@echo "... CalculationTest"
 	@echo "... CommonLang"
-	@echo "... ConfigurableClient"
-	@echo "... ConfigurableServer"
 	@echo "... Console"
-	@echo "... ConsoleConnectionTest"
 	@echo "... Core"
 	@echo "... Executor"
 	@echo "... FixedCoreSuite"
-	@echo "... ImGui"
-	@echo "... IntegratedConsoleTest"
 	@echo "... KaiTest"
 	@echo "... LogTest"
-	@echo "... MinimalClient"
-	@echo "... MinimalServer"
-	@echo "... Network"
-	@echo "... NetworkGenerate"
-	@echo "... NetworkPeer"
-	@echo "... NetworkTest"
+	@echo "... PerformanceTests"
 	@echo "... PiLang"
 	@echo "... RhoLang"
-	@echo "... SimpleClient"
 	@echo "... SimpleColorExample"
-	@echo "... SimpleServer"
 	@echo "... TauLang"
 	@echo "... TestConsole"
 	@echo "... TestCore"
@@ -2244,51 +1494,9 @@ help:
 	@echo "... TestSimpleMock"
 	@echo "... TestTau"
 	@echo "... TestWindow"
-	@echo "... Test_Network"
-	@echo "... Test_ProxyGeneration"
-	@echo "... Window"
-	@echo "... Source/App/Console/Source/ConfigurableClient.o"
-	@echo "... Source/App/Console/Source/ConfigurableClient.i"
-	@echo "... Source/App/Console/Source/ConfigurableClient.s"
-	@echo "... Source/App/Console/Source/ConfigurableServer.o"
-	@echo "... Source/App/Console/Source/ConfigurableServer.i"
-	@echo "... Source/App/Console/Source/ConfigurableServer.s"
 	@echo "... Source/App/Console/Source/Main.o"
 	@echo "... Source/App/Console/Source/Main.i"
 	@echo "... Source/App/Console/Source/Main.s"
-	@echo "... Source/App/Console/Source/MinimalClient.o"
-	@echo "... Source/App/Console/Source/MinimalClient.i"
-	@echo "... Source/App/Console/Source/MinimalClient.s"
-	@echo "... Source/App/Console/Source/MinimalServer.o"
-	@echo "... Source/App/Console/Source/MinimalServer.i"
-	@echo "... Source/App/Console/Source/MinimalServer.s"
-	@echo "... Source/App/Console/Source/NetworkPeer.o"
-	@echo "... Source/App/Console/Source/NetworkPeer.i"
-	@echo "... Source/App/Console/Source/NetworkPeer.s"
-	@echo "... Source/App/Console/Source/SimpleClient.o"
-	@echo "... Source/App/Console/Source/SimpleClient.i"
-	@echo "... Source/App/Console/Source/SimpleClient.s"
-	@echo "... Source/App/Console/Source/SimpleServer.o"
-	@echo "... Source/App/Console/Source/SimpleServer.i"
-	@echo "... Source/App/Console/Source/SimpleServer.s"
-	@echo "... Source/App/NetworkGenerate/Source/Main.o"
-	@echo "... Source/App/NetworkGenerate/Source/Main.i"
-	@echo "... Source/App/NetworkGenerate/Source/Main.s"
-	@echo "... Source/App/NetworkTest/Source/Main.o"
-	@echo "... Source/App/NetworkTest/Source/Main.i"
-	@echo "... Source/App/NetworkTest/Source/Main.s"
-	@echo "... Source/App/Window/Source/ExecutorWindow.o"
-	@echo "... Source/App/Window/Source/ExecutorWindow.i"
-	@echo "... Source/App/Window/Source/ExecutorWindow.s"
-	@echo "... Source/App/Window/Source/Main.o"
-	@echo "... Source/App/Window/Source/Main.i"
-	@echo "... Source/App/Window/Source/Main.s"
-	@echo "... Source/App/Window/Source/imgui_impl_glfw.o"
-	@echo "... Source/App/Window/Source/imgui_impl_glfw.i"
-	@echo "... Source/App/Window/Source/imgui_impl_glfw.s"
-	@echo "... Source/App/Window/Source/imgui_impl_opengl3.o"
-	@echo "... Source/App/Window/Source/imgui_impl_opengl3.i"
-	@echo "... Source/App/Window/Source/imgui_impl_opengl3.s"
 	@echo "... Source/Library/Core/Source/BinaryPacket.o"
 	@echo "... Source/Library/Core/Source/BinaryPacket.i"
 	@echo "... Source/Library/Core/Source/BinaryPacket.s"
@@ -2424,27 +1632,6 @@ help:
 	@echo "... Source/Library/Executor/Source/Tree.o"
 	@echo "... Source/Library/Executor/Source/Tree.i"
 	@echo "... Source/Library/Executor/Source/Tree.s"
-	@echo "... Source/Library/Network/Source/AgentBase.o"
-	@echo "... Source/Library/Network/Source/AgentBase.i"
-	@echo "... Source/Library/Network/Source/AgentBase.s"
-	@echo "... Source/Library/Network/Source/ConnectionManager.o"
-	@echo "... Source/Library/Network/Source/ConnectionManager.i"
-	@echo "... Source/Library/Network/Source/ConnectionManager.s"
-	@echo "... Source/Library/Network/Source/GenerateProxy.o"
-	@echo "... Source/Library/Network/Source/GenerateProxy.i"
-	@echo "... Source/Library/Network/Source/GenerateProxy.s"
-	@echo "... Source/Library/Network/Source/NetworkLogger.o"
-	@echo "... Source/Library/Network/Source/NetworkLogger.i"
-	@echo "... Source/Library/Network/Source/NetworkLogger.s"
-	@echo "... Source/Library/Network/Source/Node.o"
-	@echo "... Source/Library/Network/Source/Node.i"
-	@echo "... Source/Library/Network/Source/Node.s"
-	@echo "... Source/Library/Network/Source/PeerDiscovery.o"
-	@echo "... Source/Library/Network/Source/PeerDiscovery.i"
-	@echo "... Source/Library/Network/Source/PeerDiscovery.s"
-	@echo "... Source/Library/Network/Source/ProxyBase.o"
-	@echo "... Source/Library/Network/Source/ProxyBase.i"
-	@echo "... Source/Library/Network/Source/ProxyBase.s"
 .PHONY : help
 
 
