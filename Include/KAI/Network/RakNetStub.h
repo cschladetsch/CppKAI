@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef KAI_USE_ENET
+#include <enet/enet.h>
+#endif
+
 #include <algorithm>
 #include <atomic>
 #include <cstring>

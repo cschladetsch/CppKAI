@@ -101,7 +101,7 @@ option(KAI_BUILD_TEST_ALL "Build all tests" ON)
 option(KAI_BUILD_CORE_TEST "Build unit tests" ON)
 option(KAI_BUILD_TEST_LANG "Build language tests" ON)
 option(KAI_BUILD_TEST_NETWORK "Build networking tests" OFF)
-option(KAI_BUILD_RAKNET "Build RakNet" OFF)
+option(KAI_BUILD_ENET "Build ENet networking" ON)
 option(KAI_BUILD_NETWORK_APPS "Build network applications" OFF)
 
 # Security option: Enable shell syntax (backtick operations)
@@ -237,25 +237,18 @@ else()
     message(STATUS "Shell syntax (backtick operations) is DISABLED for security.")
 endif()
 
-# Set up external dependencies like Boost, RakNet, and GoogleTest
-if (KAI_BUILD_RAKNET)
-    set(RAKNET_ROOT ${EXTERNAL}/raknet)
-    include_directories(${RAKNET_ROOT})
-    # Disable crypto in RakNet due to OpenSSL compatibility issues
-    add_definitions(-DSLIBCFG_DISABLE_SSL)
-    add_definitions(-DSLIBCFG_DISABLE_CRYPTOGRAPHY)
-    # Skip building RakNet for now, we'll use our stub implementation
-    # add_subdirectory(${RAKNET_ROOT})
-    add_definitions(-DKAI_USE_RAKNET)
-endif()
-
-# Only use RakNetStub implementation when KAI_BUILD_RAKNET is OFF
-if (NOT KAI_BUILD_RAKNET)
-    add_definitions(-DKAI_USE_RAKNET_STUB)
-endif()
-
 # Add rang external library
 set(EXTERNAL ${KAI_HOME}/Ext)
+
+# Set up external dependencies like Boost, ENet, and GoogleTest
+if (KAI_BUILD_ENET)
+    set(ENET_ROOT ${EXTERNAL}/ENet)
+    include_directories(${ENET_ROOT}/include)
+    add_subdirectory(${ENET_ROOT})
+    add_definitions(-DKAI_USE_ENET)
+else()
+    add_definitions(-DKAI_USE_RAKNET_STUB)
+endif()
 include_directories(${EXTERNAL}/rang/include)
 
 # Macro to define a new library

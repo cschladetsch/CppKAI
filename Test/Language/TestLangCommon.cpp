@@ -1,6 +1,7 @@
 #include "TestLangCommon.h"
 
 #include <KAI/Core/Exception.h>
+#include <KAI/Core/Logger.h>
 #include <KAI/Language/Pi/PiTranslator.h>
 #include <KAI/Language/Rho/RhoTranslator.h>
 
