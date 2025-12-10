@@ -175,7 +175,7 @@ Test/
 ├── Core/              # Core system tests (147 tests, 100% pass)
 ├── Language/
 │   ├── TestPi/       # Pi language tests (runs without segfaults, basic pass, advanced fail due to implementation bugs)
-│   ├── TestRho/      # Rho language tests (basic expressions work, functions incomplete)
+│   ├── TestRho/      # Rho language tests (basic expressions work, functions disabled due to implementation issues)
 │   └── TestTau/      # Tau language tests (109 tests, 91.7% pass)
 └── Console/          # Console tests (20 tests, 25% pass)
 ```
@@ -189,7 +189,7 @@ Test/
 - Core: Excellent (100%)
 - Pi: Runs without segfaults (basic pass, advanced fail due to implementation bugs)
 - Tau: Good (91.7%)
-- Rho: Basic expressions work, functions incomplete - active development focus
+- Rho: Basic expressions work, functions disabled due to implementation issues - active development focus
 - Console: Needs work (25%)
 
 ## Current Work in Progress
