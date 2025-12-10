@@ -48,8 +48,9 @@ struct RhoFunctionTestsWorking : kai::TestLangCommon {
 // Basic function definition and call - using correct syntax
 TEST_F(RhoFunctionTestsWorking, BasicFunction) {
     RunAndExpect<int>(R"(
-fun add(a, b)
-    return a + b
+add = fun(a, b) {
+a + b
+}
 
 add(2, 3)
 )",
