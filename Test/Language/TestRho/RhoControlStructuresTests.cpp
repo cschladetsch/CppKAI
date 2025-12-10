@@ -338,7 +338,7 @@ TEST_F(RhoControlTests, BreakStatements) {
 
 // Continue statements in loops
 TEST_F(RhoControlTests,
-       DISABLED_ContinueStatements) {  // TODO: Debug continue implementation
+       ContinueStatements) {  // TODO: Debug continue implementation
     AssertDirectSimulation<int>(
         "sum = 0\n"
         "for i = 1; i <= 10; i = i + 1\n"

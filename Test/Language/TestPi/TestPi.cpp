@@ -11,10 +11,9 @@ using namespace std;
 
 struct TestPi : TestLangCommon {};
 
-#if 0
 TEST_F(TestPi, RunScripts) {
-    // Trace disabled to prevent segfault
-    // debug::MinTrace();
+    // Enable trace output for debugging
+    debug::MinTrace();
 
     // Get the executor and stacks
     auto& exec = *console_.GetExecutor();
@@ -63,7 +62,6 @@ TEST_F(TestPi, RunScripts) {
         SUCCEED() << "RunScripts test completed with some expected exceptions";
     }
 }
-#endif
 
 // Basic test for Pi continuations - simplified to avoid any complex edge cases
 TEST_F(TestPi, TestContinuations) {

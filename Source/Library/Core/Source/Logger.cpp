@@ -184,16 +184,28 @@ void Logger::Log(Level level, const std::string& message) {
     rang::fg color = GetColorForLevel(level);
     rang::style style = GetStyleForLevel(level);
 
-    // Disable console output to prevent segfault
+    // Determine if we should output to console
     bool outputToConsole = false;
-
+    if (level == Level::Warning || level == Level::Error ||
+        level == Level::Fatal) {
+        // Always output warnings, errors, and fatal to console
+        outputToConsole = true;
+    } else if ((level == Level::Info || level == Level::Debug) &&
+                s_consoleOutputForInfoDebug) {
+        // Only output info/debug to console if explicitly enabled
+        outputToConsole = true;
+    }
 
     // Print to console if needed
     if (outputToConsole) {
         if (level == Level::Error || level == Level::Fatal) {
-            std::cerr << "[" << timestamp << "] [" << levelStr << "] " << message << std::endl;
+            std::cerr << rang::fg::gray << "[" << timestamp << "] " << style
+                      << color << "[" << levelStr << "] " << rang::style::reset
+                      << rang::fg::reset << message << std::endl;
         } else {
-            std::cout << "[" << timestamp << "] [" << levelStr << "] " << message << std::endl;
+            std::cout << rang::fg::gray << "[" << timestamp << "] " << style
+                      << color << "[" << levelStr << "] " << rang::style::reset
+                      << rang::fg::reset << message << std::endl;
         }
     }
 

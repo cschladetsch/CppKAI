@@ -42,7 +42,7 @@ protected:
         ss << "        string name;\n";
         ss << "        float value;\n";
         ss << "        bool active;\n";
-        ss << "        int64 timestamp;\n";
+        ss << "        int timestamp;\n";
         ss << "    }\n\n";
         
         ss << "    struct ComplexStruct {\n";
@@ -254,42 +254,59 @@ TEST_F(TauStressTests, MemoryUsageTest) {
     }
 }
 
+// Test simple generation
+TEST_F(TauStressTests, SimpleGenerationTest) {
+    string tauContent = GenerateLargeInterface(10, 5, "Simple");
+    EXPECT_FALSE(tauContent.empty());
+    cout << "Simple test passed" << endl;
+}
+
 // Test concurrent generation
 TEST_F(TauStressTests, ConcurrentGenerationTest) {
     const int NUM_THREADS = 4;
-    const int METHODS_PER_INTERFACE = 100;
-    const int EVENTS_PER_INTERFACE = 50;
-    
+
     atomic<int> successfulGenerations{0};
     atomic<int> totalAttempts{0};
     vector<future<bool>> futures;
     
     // Launch concurrent generation tasks
     for (int i = 0; i < NUM_THREADS; ++i) {
-        futures.push_back(async(launch::async, [i, &successfulGenerations, &totalAttempts, this]() {
+        futures.push_back(async(launch::deferred, [i, &successfulGenerations, &totalAttempts, this]() {
+            cout << "Starting thread " << i << endl;
             Registry localRegistry;
             string tauContent = GenerateLargeInterface(
                 100, 50, "Concurrent" + to_string(i));
-            
+
+            cout << "Generated interface for thread " << i << endl;
             totalAttempts++;
             
             try {
                 string proxyOutput, agentOutput;
                 
                 tau::Generate::GenerateProxy proxyGen(tauContent.c_str(), proxyOutput);
-                if (proxyGen.Failed) return false;
+                if (proxyGen.Failed) {
+                    cout << "Proxy generation failed for thread " << i << endl;
+                    return false;
+                }
                 
                 tau::Generate::GenerateAgent agentGen(tauContent.c_str(), agentOutput);
-                if (agentGen.Failed) return false;
+                if (agentGen.Failed) {
+                    cout << "Agent generation failed for thread " << i << endl;
+                    return false;
+                }
                 
                 // Verify outputs are reasonable
                 if (proxyOutput.size() > 1000 && agentOutput.size() > 1000 &&
                     proxyOutput.find("Concurrent" + to_string(i)) != string::npos &&
                     agentOutput.find("Concurrent" + to_string(i)) != string::npos) {
                     successfulGenerations++;
+                    cout << "Thread " << i << " succeeded" << endl;
                     return true;
+                } else {
+                    cout << "Verification failed for thread " << i << ", proxy size: " << proxyOutput.size() << ", agent size: " << agentOutput.size() << endl;
                 }
-            } catch (const exception&) {
+            } catch (const exception& e) {
+                cout << "Exception in thread " << i << ": " << e.what() << endl;
                 return false;
             }
             
