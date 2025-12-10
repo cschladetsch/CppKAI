@@ -28,6 +28,7 @@ Executor::Executor() {
     tree_ = nullptr;
     traceLevel_ = 0;
     stepNumber_ = 0;
+    singleStep_ = false;
 }
 
 Executor::~Executor() {
@@ -595,94 +596,156 @@ Object Executor::GetScope() const { return context_->Top(); }
 void Executor::SetContinuation(Value<Continuation> C) { continuation_ = C; }
 
 void Executor::Continue() {
-    // First, validate that we have a valid continuation
+    // Single-step mode: execute one instruction and return
+    if (singleStep_) {
+        ContinueOneInstruction();
+        return;
+    }
+
+    // Full execution mode: loop until done
+    while (!break_ && continuation_.Valid() && continuation_.Exists()) {
+        stepNumber_++;
+        ContinueOneInstruction();
+    }
+}
+
+// NEW: Extract the single-instruction logic
+void Executor::ContinueOneInstruction() {
     if (!continuation_.Valid() || !continuation_.Exists()) {
-        // This is normal when execution completes - just return silently
         break_ = true;
         return;
     }
 
-    // Make sure we have valid stacks
     if (!data_.Valid() || !data_.Exists()) {
-        KAI_TRACE_ERROR() << "Continue: Invalid or non-existent data stack";
+        KAI_TRACE_ERROR() << "Continue: Invalid data stack";
         break_ = true;
         return;
     }
 
     if (!context_.Valid() || !context_.Exists()) {
-        KAI_TRACE_ERROR() << "Continue: Invalid or non-existent context stack";
+        KAI_TRACE_ERROR() << "Continue: Invalid context stack";
         break_ = true;
         return;
     }
 
-    // Note: Special pattern handling for "5 dup +" is now done in the Dup
-    // operation itself, so we don't need to check for it here
-
-    while (true) {
-        break_ = false;
-        Object next;
-
-        try {
-            if (continuation_->Next(next)) {
-                // Remove try-catch to allow exceptions to propagate
-
-                // Make sure next is valid before we try to evaluate it
-                if (next.Valid()) {
-                    Eval(next);
-                } else {
-                    KAI_TRACE_ERROR() << "Continue: Invalid next object, "
-                                         "skipping evaluation";
-                }
-            } else {
-                // KAI_TRACE() << "Continue: Continuation has no more "
-                //                "instructions, setting break_";
-                break_ = true;
-            }
-        } catch (const Exception::Base &e) {
-            // Re-throw KAI exceptions so they can be handled by Process
-            KAI_TRACE_ERROR()
-                << "Continue: KAI Exception in continuation: " << e.ToString();
-            throw;
-        } catch (const std::exception &e) {
-            // Re-throw standard exceptions as well
-            KAI_TRACE_ERROR()
-                << "Continue: Exception in continuation->Next(): " << e.what();
-            throw;
-        } catch (...) {
-            KAI_TRACE_ERROR()
-                << "Continue: Unknown exception in continuation->Next()";
-            throw;
+    Object next;
+    
+    try {
+        if (!continuation_->Next(next)) {
+            NextContinuation();
+            return;
         }
-
-        // Check for Replace operation first (it sets replace_ flag)
+        
+        if (!next.Valid()) {
+            KAI_TRACE_ERROR() << "Continue: Invalid next object";
+            break_ = true;
+            return;
+        }
+        
+        Eval(next);
+        
         if (replace_) {
-            // Replace operation - continuation has been replaced
-            // Continue with the new continuation, don't call NextContinuation
             replace_ = false;
-            break_ = false;  // Also clear break_ if it was set
-            continue;
+            break_ = false;
+            return;
         }
-
+        
         if (break_) {
-            // This is Break/Resume or end-of-continuation - call NextContinuation
-            // KAI_TRACE() << "Continue: break_ is set, calling NextContinuation";
-            try {
-                NextContinuation();
-                if (!continuation_.Valid() || !continuation_.Exists()) {
-                    // KAI_TRACE() << "Continue: No valid continuation after "
-                    //                "NextContinuation, returning";
-                    return;
-                }
-            } catch (const std::exception &e) {
-                KAI_TRACE_ERROR()
-                    << "Continue: Exception in NextContinuation(): "
-                    << e.what();
-                return;  // Stop execution if we can't continue
-            } catch (...) {
-                KAI_TRACE_ERROR()
-                    << "Continue: Unknown exception in NextContinuation()";
-                return;  // Stop execution if we can't continue
-            }
+            NextContinuation();
+            return;
+        }
+        
+    } catch (const Exception::Base &e) {
+        KAI_TRACE_ERROR() << "Continue: KAI Exception: " << e.ToString();
+        break_ = true;
+        throw;
+    } catch (const std::exception &e) {
+        KAI_TRACE_ERROR() << "Continue: Exception: " << e.what();
+        break_ = true;
+        throw;
+    }
+}
+
+// NEW: Step() implementation
+bool Executor::Step() {
+    if (!continuation_.Valid() || !continuation_.Exists()) {
+        return false;
+    }
+    
+    stepNumber_++;
+    
+    bool oldMode = singleStep_;
+    singleStep_ = true;
+    Continue();
+    singleStep_ = oldMode;
+    
+    return !break_ && continuation_.Valid() && continuation_.Exists();
+}
+/*
+void Executor::ContinueOneInstruction() {
+    // This is the refactored single-instruction executor
+    
+    if (!continuation_.Valid() || !continuation_.Exists()) {
+        break_ = true;
+        return;
+    }
+
+    Object next;
+    
+    try {
+        if (!continuation_->Next(next)) {
+            // No more instructions in current continuation
+            NextContinuation();
+            return;
+        }
+        
+        if (!next.Valid()) {
+            KAI_TRACE_ERROR() << "Continue: Invalid next object";
+            break_ = true;
+            return;
+        }
+        
+        // Execute this ONE instruction
+        Eval(next);
+        
+        // Check what happened during execution
+        if (replace_) {
+            // Replace operation changed continuation
+            replace_ = false;
+            break_ = false;
+            return;
+        }
+        
+        if (break_) {
+            // Resume/Break operation
+            NextContinuation();
+            return;
+        }
+        
+    } catch (const Exception::Base &e) {
+        KAI_TRACE_ERROR() << "Continue: KAI Exception: " << e.ToString();
+        break_ = true;
+        throw;
+    } catch (const std::exception &e) {
+        KAI_TRACE_ERROR() << "Continue: Exception: " << e.what();
+        break_ = true;
+        throw;
+    }
+}
+*/
+
+void Executor::Run() {
+    // Execute continuously until done or suspended
+    stepNumber_ = 0;
+    break_ = false;
+    
+    while (!break_ && continuation_.Valid() && continuation_.Exists()) {
+        stepNumber_++;
+        Continue();  // Execute ONE instruction
+        
+        // If someone explicitly set break_, stop
+        if (break_) {
+            break;
         }
     }
 }

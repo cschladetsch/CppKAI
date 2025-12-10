@@ -59,7 +59,7 @@ TEST_F(WindowPerformanceTest, CommandExecution_BatchCommands) {
     const int NUM_COMMANDS = 1000;
 
     // Measure batch execution time
-    double totalTime = MeasureTime([this, NUM_COMMANDS]() {
+    double totalTime = MeasureTime([this]() {
         for (int i = 0; i < NUM_COMMANDS; ++i) {
             window->ExecCommand(std::to_string(i).c_str());
         }
@@ -98,7 +98,7 @@ TEST_F(WindowPerformanceTest, CommandExecution_ComplexExpressions) {
 TEST_F(WindowPerformanceTest, TabSwitching_Speed) {
     const int NUM_SWITCHES = 1000;
 
-    double time = MeasureTime([this, NUM_SWITCHES]() {
+    double time = MeasureTime([this]() {
         for (int i = 0; i < NUM_SWITCHES; ++i) {
             window->SwitchTab(ConsoleTab::Pi);
             window->SwitchTab(ConsoleTab::Rho);
@@ -124,7 +124,7 @@ TEST_F(WindowPerformanceTest, TabSwitching_WithContent) {
 
     // Measure switching with content
     const int NUM_SWITCHES = 100;
-    double time = MeasureTime([this, NUM_SWITCHES]() {
+    double time = MeasureTime([this]() {
         for (int i = 0; i < NUM_SWITCHES; ++i) {
             window->SwitchTab(static_cast<ConsoleTab>(i % 3));
         }
@@ -174,7 +174,7 @@ TEST_F(WindowPerformanceTest, Memory_StackGrowth) {
     const int NUM_ITEMS = 1000;
 
     // Push many items to stack
-    double pushTime = MeasureTime([this, NUM_ITEMS]() {
+    double pushTime = MeasureTime([this]() {
         for (int i = 0; i < NUM_ITEMS; ++i) {
             window->ExecCommand(std::to_string(i).c_str());
         }
@@ -233,7 +233,7 @@ TEST_F(WindowPerformanceTest, Concurrent_RapidCommands) {
     // Simulate rapid command entry
     const int NUM_RAPID = 100;
 
-    double time = MeasureTime([this, NUM_RAPID]() {
+    double time = MeasureTime([this]() {
         for (int i = 0; i < NUM_RAPID; ++i) {
             window->ExecCommand(GenerateRandomCommand().c_str());
             // No delay between commands
@@ -354,7 +354,7 @@ TEST_F(WindowPerformanceTest, Stress_LongRunning) {
     // Simulate long-running session
     const int NUM_OPERATIONS = 10000;
 
-    double totalTime = MeasureTime([this, NUM_OPERATIONS]() {
+    double totalTime = MeasureTime([this]() {
         for (int i = 0; i < NUM_OPERATIONS; ++i) {
             // Vary operations
             if (i % 10 == 0) {
@@ -431,7 +431,7 @@ TEST_F(WindowPerformanceTest, Debugger_StepPerformance) {
 
     // Measure stepping performance
     const int NUM_STEPS = 100;
-    double time = MeasureTime([this, NUM_STEPS]() {
+    double time = MeasureTime([this]() {
         for (int i = 0; i < NUM_STEPS; ++i) {
             window->ExecuteDebugStep();
         }

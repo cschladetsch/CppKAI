@@ -15,10 +15,11 @@ struct Executor;
 KAI_TYPE_TRAITS(Executor, Number::Executor, Properties::Reflected);
 
 struct Executor : Reflected {
-    // Default constructor
     Executor();
-    // Destructor - needs to be defined in .cpp to avoid incomplete type issue
     ~Executor();
+
+    friend bool operator<(const Executor &A, const Executor &B);
+    friend bool operator==(const Executor &A, const Executor &B);
 
     void Create();
     bool Destroy();
@@ -28,10 +29,15 @@ struct Executor : Reflected {
     Object GetScope() const;
 
     void SetContinuation(Value<Continuation>);
+    void Continue();
     void Continue(Value<Continuation>);
     void ContinueOnly(Value<Continuation> C);
-    void Continue();
-    // No need for language-specific methods - Executor only executes Pi
+    void ContinueOneInstruction();
+
+    void SetSingleStep(bool enable) { singleStep_ = enable; }
+    bool GetSingleStep() const { return singleStep_; }
+    
+    bool Step();
 
     Object GetCompiler() const { return compiler_; }
     void SetCompiler(Object c) { compiler_ = c; }
@@ -41,6 +47,7 @@ struct Executor : Reflected {
 
     std::string PrintStack() const;
     void PrintStack(std::ostream &out) const;
+    void Run();
 
     template <class T>
     Value<T> New() {
@@ -57,9 +64,6 @@ struct Executor : Reflected {
 
     void SetTraceLevel(int);
     int GetTraceLevel() const;
-
-    // Executor only handles Pi language operations
-    // No need for language-specific methods
 
     template <class T>
     void Push(const Value<T> &val) {
@@ -170,76 +174,37 @@ struct Executor : Reflected {
         return Value<const Stack>(data_.GetConstObject());
     }
 
-    // Add setter for data stack to support RhoTranslator
     void SetDataStack(Value<Stack> stack) { data_ = stack; }
 
-    // could be const, but more fun to mess with the context stack as needed
-    // elsewhere
-    Value</*const*/ Stack> GetContextStack() const;
+    Value<Stack> GetContextStack() const;
 
-    // This resets the entire process, other than static state stored
-    // in referenced objects
     void ClearStacks() {
         data_->Clear();
         context_->Clear();
     }
 
     static void Register(Registry &, const char * = "Executor");
-
-    friend bool operator<(const Executor &A, const Executor &B);
-    friend bool operator==(const Executor &A, const Executor &B);
-
     void ClearContext();
-
     void DropN();
-
-    // Helper method for handling Pi language operations
     void ContinuePi();
-
-    // Helper method for evaluating continuations
     void EvalContinuation(Object const &Q);
-
-    // Helper method to perform binary operations with proper type handling
-    // This method is used by tests to directly execute binary operations
-    Object PerformBinaryOp(Object const &A, Object const &B,
-                           Operation::Type op);
-
-    // Helper method to determine if an operation is a binary operation
     bool IsBinaryOp(Operation::Type op);
-
-    // Note: Special pattern handling for "5 dup +" is now done in the Dup
-    // operation
-
-    // if ignoreQuote is true, then we resolve the identifier
-    // even if it is quoted
+    Object PerformBinaryOp(Object const &A, Object const &B, Operation::Type op);
     Object Resolve(Object, bool ignoreQuote = false) const;
     Object Resolve(const Label &) const;
     Object Resolve(const Pathname &) const;
-
-    // Enhanced TryResolveOrCreate method that attempts to resolve an identifier
-    // and creates a placeholder if not found. This is safer than direct
-    // resolution where missing objects cause ObjectNotFound exceptions.
-    Object TryResolveOrCreate(Label const &label,
-                              Type::Number type = Type::Number::None);
-
-    // Helper method to extract values from continuations, handling special
-    // patterns Used to support tests requiring specific patterns to be
-    // recognized
+    Object TryResolveOrCreate(Label const &label, Type::Number type = Type::Number::None);
     Object ExtractValueFromContinuation(Object const &value);
-
-    // Helper method to recursively unwrap continuations and extract primitive
-    // values
     Object UnwrapValue(const Object &value);
 
-   public:
-    // Execute a Pi operation directly (moved from protected to support tests)
+public:
     void Perform(Operation::Type op);
 
-   protected:
+protected:
     bool PopBool();
 
     void ToArray();
-    void ProcessToArray(int len);  // Helper method for ToArray
+    void ProcessToArray(int len);
 
     void GetChildren();
     void Expand();
@@ -253,7 +218,7 @@ struct Executor : Reflected {
     void DumpStack(Stack const &);
     static void DumpContinuation(Continuation const &, int);
 
-   private:
+private:
     template <class C>
     Value<Array> ForEach(C const &, Object const &);
     template <class Cont>
@@ -271,7 +236,7 @@ struct Executor : Reflected {
     Object TryResolve(Label const &label) const;
     Object TryResolve(Pathname const &label) const;
 
-   private:
+private:
     Value<Continuation> continuation_;
     Value<Stack> context_;
     Value<Stack> data_;
@@ -282,7 +247,7 @@ struct Executor : Reflected {
     Tree *tree_;
     int traceLevel_;
     int stepNumber_;
-    // Executor only handles Pi language operations
+    bool singleStep_;
 };
 
 StringStream &operator<<(StringStream &, Executor const &);
@@ -290,3 +255,4 @@ BinaryStream &operator<<(BinaryStream &, Executor const &);
 BinaryPacket &operator>>(BinaryPacket &, Executor &);
 
 KAI_END
+
