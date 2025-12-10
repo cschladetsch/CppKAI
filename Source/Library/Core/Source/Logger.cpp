@@ -121,9 +121,7 @@ void Logger::Init(const std::string& logDirectory) {
             logFile.close();
         }
     } catch (const std::exception& e) {
-        std::cerr << rang::fg::red
-                  << "Failed to create log directory: " << e.what()
-                  << rang::fg::reset << std::endl;
+        std::cerr << "Failed to create log directory: " << e.what() << std::endl;
         s_initialized = false;
     }
 }
@@ -186,28 +184,16 @@ void Logger::Log(Level level, const std::string& message) {
     rang::fg color = GetColorForLevel(level);
     rang::style style = GetStyleForLevel(level);
 
-    // Determine if we should output to console
+    // Disable console output to prevent segfault
     bool outputToConsole = false;
-    if (level == Level::Warning || level == Level::Error ||
-        level == Level::Fatal) {
-        // Always output warnings, errors, and fatal to console
-        outputToConsole = true;
-    } else if ((level == Level::Info || level == Level::Debug) &&
-               s_consoleOutputForInfoDebug) {
-        // Only output info/debug to console if explicitly enabled
-        outputToConsole = true;
-    }
+
 
     // Print to console if needed
     if (outputToConsole) {
         if (level == Level::Error || level == Level::Fatal) {
-            std::cerr << rang::fg::gray << "[" << timestamp << "] " << style
-                      << color << "[" << levelStr << "] " << rang::style::reset
-                      << rang::fg::reset << message << std::endl;
+            std::cerr << "[" << timestamp << "] [" << levelStr << "] " << message << std::endl;
         } else {
-            std::cout << rang::fg::gray << "[" << timestamp << "] " << style
-                      << color << "[" << levelStr << "] " << rang::style::reset
-                      << rang::fg::reset << message << std::endl;
+            std::cout << "[" << timestamp << "] [" << levelStr << "] " << message << std::endl;
         }
     }
 
