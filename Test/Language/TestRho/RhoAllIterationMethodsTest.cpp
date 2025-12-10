@@ -22,6 +22,8 @@ struct RhoAllIterationMethodsTest : TestLangCommon {
             console_.SetLanguage(Language::Rho);
             console_.Execute(code, Structure::Program);
 
+            UnwrapStackValues();
+
             auto executor = console_.GetExecutor();
             auto dataStack = executor->GetDataStack();
 
@@ -896,3 +898,435 @@ for y in result
 sum
 )", 12, "Function_CallInForEach_VerifyFix");  // 2+4+6
 }
+
+TEST_F(RhoAllIterationMethodsTest, Function_CallInWhileLoop) {
+    RunAndExpect<int>(R"(
+fun inc(x) { x + 1 }
+sum = 0
+i = 0
+while i < 5
+    sum = sum + inc(i)
+    i = i + 1
+sum
+)", 15, "Function_CallInWhileLoop");  // 1+2+3+4+5
+}
+
+TEST_F(RhoAllIterationMethodsTest, Function_CallInForLoop) {
+    RunAndExpect<int>(R"(
+fun square(x) { x * x }
+sum = 0
+for i = 1; i <= 3; i = i + 1
+    sum = sum + square(i)
+sum
+)", 14, "Function_CallInForLoop");  // 1+4+9
+}
+
+TEST_F(RhoAllIterationMethodsTest, Function_CallInDoWhileLoop) {
+    RunAndExpect<int>(R"(
+fun triple(x) { x * 3 }
+sum = 0
+i = 1
+do
+    sum = sum + triple(i)
+    i = i + 1
+while i <= 3
+sum
+)", 18, "Function_CallInDoWhileLoop");  // 3+6+9
+}
+
+TEST_F(RhoAllIterationMethodsTest, Function_CallInNestedLoops) {
+    RunAndExpect<int>(R"(
+fun add(a, b) { a + b }
+sum = 0
+for i = 1; i <= 2; i = i + 1
+    for j = 1; j <= 2; j = j + 1
+        sum = sum + add(i, j)
+sum
+)", 10, "Function_CallInNestedLoops");  // 2+3 + 3+4
+}
+
+TEST_F(RhoAllIterationMethodsTest, Function_WithReturnInLoop) {
+    RunAndExpect<int>(R"(
+fun half(x)
+    return x / 2
+arr = [2, 4, 6]
+result = []
+for x in arr
+    result = result + [half(x)]
+sum = 0
+for y in result
+    sum = sum + y
+sum
+)", 6, "Function_WithReturnInLoop");  // 1+2+3
+}
+
+TEST_F(RhoAllIterationMethodsTest, InlineFunction_InLoop) {
+    RunAndExpect<int>(R"(
+fun double_inline(x) { x * 2 }
+arr = [1, 2, 3]
+sum = 0
+for x in arr
+    sum = sum + double_inline(x)
+sum
+)", 12, "InlineFunction_InLoop");  // 2+4+6
+}
+
+TEST_F(RhoAllIterationMethodsTest, Function_WithMultipleParams_InLoop) {
+    RunAndExpect<int>(R"(
+fun multiply(a, b) { a * b }
+sum = 0
+for i = 1; i <= 3; i = i + 1
+    sum = sum + multiply(i, 2)
+sum
+)", 12, "Function_WithMultipleParams_InLoop");  // 2+4+6
+}
+
+TEST_F(RhoAllIterationMethodsTest, Function_CallInMapPattern) {
+    RunAndExpect<int>(R"(
+fun double(x) { x * 2 }
+arr = [1, 2, 3]
+result = []
+for x in arr
+    result = result + [double(x)]
+sum = 0
+for y in result
+    sum = sum + y
+sum
+)", 12, "Function_CallInMapPattern");  // 2+4+6
+}
+
+TEST_F(RhoAllIterationMethodsTest, Function_CallInFilterPattern) {
+    RunAndExpect<int>(R"(
+fun is_even(x) { x % 2 == 0 }
+arr = [1, 2, 3, 4, 5]
+result = []
+for x in arr
+    if is_even(x)
+        result = result + [x]
+sum = 0
+for y in result
+    sum = sum + y
+sum
+)", 6, "Function_CallInFilterPattern");  // 2+4
+}
+
+TEST_F(RhoAllIterationMethodsTest, Function_CallInReducePattern) {
+    RunAndExpect<int>(R"(
+fun add(a, b) { a + b }
+arr = [1, 2, 3, 4]
+result = 0
+for x in arr
+    result = add(result, x)
+result
+)", 10, "Function_CallInReducePattern");  // 1+2+3+4
+}
+
+TEST_F(RhoAllIterationMethodsTest, Function_CallInComprehension) {
+    RunAndExpect<int>(R"(
+fun square(x) { x * x }
+result = []
+for x in [1, 2, 3]
+    result = result + [square(x)]
+sum = 0
+for y in result
+    sum = sum + y
+sum
+)", 14, "Function_CallInComprehension");  // 1+4+9
+}
+
+TEST_F(RhoAllIterationMethodsTest, Function_CallInWhileWithBreak) {
+    RunAndExpect<int>(R"(
+fun inc(x) { x + 1 }
+sum = 0
+i = 0
+while i < 10
+    sum = sum + inc(i)
+    i = i + 1
+    if sum > 10
+        break
+sum
+)", 15, "Function_CallInWhileWithBreak");  // 1+2+3+4+5
+}
+
+TEST_F(RhoAllIterationMethodsTest, Function_CallInForEachWithContinue) {
+    RunAndExpect<int>(R"(
+fun double(x) { x * 2 }
+arr = [1, 2, 3, 4]
+sum = 0
+for x in arr
+    if x % 2 == 0
+        continue
+    sum = sum + double(x)
+sum
+)", 8, "Function_CallInForEachWithContinue");  // 2+6
+}
+
+TEST_F(RhoAllIterationMethodsTest, Function_CallInMixedLoops) {
+    RunAndExpect<int>(R"(
+fun add(a, b) { a + b }
+sum = 0
+for i = 1; i <= 2; i = i + 1
+    j = 1
+    while j <= 2
+        sum = sum + add(i, j)
+        j = j + 1
+sum
+)", 10, "Function_CallInMixedLoops");  // 2+3 + 3+4
+}
+
+TEST_F(RhoAllIterationMethodsTest, Function_CallInAllThreeLoops) {
+    RunAndExpect<int>(R"(
+fun inc(x) { x + 1 }
+sum = 0
+i = 0
+while i < 2
+    sum = sum + inc(i)
+    i = i + 1
+for j = 2; j < 4; j = j + 1
+    sum = sum + inc(j)
+for k in [3, 4]
+    sum = sum + inc(k)
+sum
+)", 21, "Function_CallInAllThreeLoops");  // 1+2 + 3+4 + 4+5
+}
+
+TEST_F(RhoAllIterationMethodsTest, Function_CallInEdgeCases) {
+    RunAndExpect<int>(R"(
+fun identity(x) { x }
+sum = 0
+for x in []
+    sum = sum + identity(x)
+for x in [0]
+    sum = sum + identity(x)
+for x in [1, -1]
+    sum = sum + identity(x)
+sum
+)", 0, "Function_CallInEdgeCases");  // 0 + 0 + 1 + (-1) = 0
+}
+
+TEST_F(RhoAllIterationMethodsTest, Function_CallWithFloats) {
+    RunAndExpect<float>(R"(
+fun half(x) { x / 2.0 }
+sum = 0.0
+for x in [2.0, 4.0, 6.0]
+    sum = sum + half(x)
+sum
+)", 6.0f, "Function_CallWithFloats");  // 1.0 + 2.0 + 3.0
+}
+
+TEST_F(RhoAllIterationMethodsTest, Function_CallNestedFunctions) {
+    RunAndExpect<int>(R"(
+fun square(x) { x * x }
+fun sum_squares(a, b) { square(a) + square(b) }
+total = 0
+for i in [1, 2]
+    total = total + sum_squares(i, i + 1)
+total
+)", 1 + 4 + 4 + 9, "Function_CallNestedFunctions");  // 1^2 + 2^2 + 2^2 + 3^2 = 1+4+4+9=18
+}
+
+TEST_F(RhoAllIterationMethodsTest, Function_CallInDoWhileComplex) {
+    RunAndExpect<int>(R"(
+fun fib(n)
+    if n <= 1
+        n
+    else
+        fib(n - 1) + fib(n - 2)
+sum = 0
+i = 1
+do
+    sum = sum + fib(i)
+    i = i + 1
+while i <= 3
+sum
+)", 1 + 1 + 2, "Function_CallInDoWhileComplex");  // fib(1)=1, fib(2)=1, fib(3)=2
+}
+
+TEST_F(RhoAllIterationMethodsTest, Function_CallWithArrays) {
+    RunAndExpect<int>(R"(
+fun length(arr) { arr.size() }
+sum = 0
+for arr in [[1,2], [3,4,5], [6]]
+    sum = sum + length(arr)
+sum
+)", 2 + 3 + 1, "Function_CallWithArrays");  // 6
+}
+
+TEST_F(RhoAllIterationMethodsTest, Function_CallInWhileWithCondition) {
+    RunAndExpect<int>(R"(
+fun is_positive(x) { x > 0 }
+count = 0
+i = -2
+while i < 5
+    if is_positive(i)
+        count = count + 1
+    i = i + 1
+count
+)", 5, "Function_CallInWhileWithCondition");  // 1,2,3,4,5 are positive
+}
+
+TEST_F(RhoAllIterationMethodsTest, Function_CallInForLoopRange) {
+    RunAndExpect<int>(R"(
+fun cube(x) { x * x * x }
+sum = 0
+for i = 1; i <= 3; i = i + 1
+    sum = sum + cube(i)
+sum
+)", 1 + 8 + 27, "Function_CallInForLoopRange");  // 36
+}
+
+TEST_F(RhoAllIterationMethodsTest, Function_CallInForEachNested) {
+    RunAndExpect<int>(R"(
+fun sum_list(lst) 
+    s = 0
+    for x in lst
+        s = s + x
+    s
+total = 0
+for lst in [[1,2], [3,4]]
+    total = total + sum_list(lst)
+total
+)", 3 + 7, "Function_CallInForEachNested");  // 10
+}
+
+TEST_F(RhoAllIterationMethodsTest, Function_CallWithDefaultArgs) {
+    RunAndExpect<int>(R"(
+fun power(base, exp) { if exp == 0 { 1 } else { base * power(base, exp - 1) } }
+sum = 0
+for b in [2, 3]
+    sum = sum + power(b, 2)
+sum
+)", 4 + 9, "Function_CallWithDefaultArgs");  // 13
+}
+
+TEST_F(RhoAllIterationMethodsTest, Function_CallInMixedTypes) {
+    RunAndExpect<int>(R"(
+fun process(x) { if x % 2 == 0 { x / 2 } else { x * 3 } }
+sum = 0
+for x in [1, 2, 3, 4]
+    sum = sum + process(x)
+sum
+)", 3 + 1 + 9 + 2, "Function_CallInMixedTypes");  // 15
+}
+
+TEST_F(RhoAllIterationMethodsTest, Function_CallInErrorHandling) {
+    RunAndExpect<int>(R"(
+fun safe_div(a, b) { if b == 0 { 0 } else { a / b } }
+sum = 0
+for pair in [[10, 2], [8, 0], [6, 3]]
+    a = pair 0 at
+    b = pair 1 at
+    sum = sum + safe_div(a, b)
+sum
+)", 5 + 0 + 2, "Function_CallInErrorHandling");  // 7
+}
+
+TEST_F(RhoAllIterationMethodsTest, Function_CallInRecursionLimit) {
+    RunAndExpect<int>(R"(
+fun countdown(n) { if n == 0 { 0 } else { n + countdown(n - 1) } }
+result = countdown(5)
+result
+)", 15, "Function_CallInRecursionLimit");  // 5+4+3+2+1+0 = 15
+}
+
+TEST_F(RhoAllIterationMethodsTest, Function_CallWithClosures) {
+    RunAndExpect<int>(R"(
+fun make_adder(y) { fun(x) { x + y } }
+add5 = make_adder(5)
+sum = 0
+for x in [1, 2, 3]
+    sum = sum + add5(x)
+sum
+)", 6 + 7 + 8, "Function_CallWithClosures");  // 21
+}
+
+TEST_F(RhoAllIterationMethodsTest, Function_CallInParallelStructures) {
+    RunAndExpect<int>(R"(
+fun min(a, b) { if a < b { a } else { b } }
+result = []
+for i in [1, 2, 3]
+    for j in [4, 5]
+        result = result + [min(i, j)]
+sum = 0
+for x in result
+    sum = sum + x
+sum
+)", 1+1+2+2+3+3, "Function_CallInParallelStructures");  // 12
+}
+
+TEST_F(RhoAllIterationMethodsTest, Function_CallInStatefulLoop) {
+    RunAndExpect<int>(R"(
+fun update_state(state, val) { state + val }
+state = 0
+for x in [10, 20, 30]
+    state = update_state(state, x)
+state
+)", 60, "Function_CallInStatefulLoop");
+}
+
+TEST_F(RhoAllIterationMethodsTest, Function_CallInConditionalLoop) {
+    RunAndExpect<int>(R"(
+fun should_continue(x) { x < 10 }
+sum = 0
+x = 1
+while should_continue(x)
+    sum = sum + x
+    x = x + 1
+sum
+)", 45, "Function_CallInConditionalLoop");  // 1+2+...+9 = 45
+}
+
+TEST_F(RhoAllIterationMethodsTest, Function_CallInMapReduce) {
+    RunAndExpect<int>(R"(
+fun map_double(x) { x * 2 }
+fun reduce_sum(acc, x) { acc + x }
+mapped = []
+for x in [1, 2, 3]
+    mapped = mapped + [map_double(x)]
+result = 0
+for y in mapped
+    result = reduce_sum(result, y)
+result
+)", 12, "Function_CallInMapReduce");  // 2+4+6
+}
+
+TEST_F(RhoAllIterationMethodsTest, Function_CallInComplexConditionals) {
+    RunAndExpect<int>(R"(
+fun complex_cond(x) { x > 0 and x % 2 == 0 }
+sum = 0
+for x in [-2, -1, 0, 1, 2, 3, 4]
+    if complex_cond(x)
+        sum = sum + x
+sum
+)", 2 + 4, "Function_CallInComplexConditionals");  // 6
+}
+
+TEST_F(RhoAllIterationMethodsTest, Function_CallInDynamicLoop) {
+    RunAndExpect<int>(R"(
+fun get_limit() { 3 }
+fun inc(x) { x + 1 }
+sum = 0
+i = 1
+limit = get_limit()
+while i <= limit
+    sum = sum + inc(i - 1)
+    i = i + 1
+sum
+)", 1 + 2 + 3, "Function_CallInDynamicLoop");  // 6
+}
+
+TEST_F(RhoAllIterationMethodsTest, Function_CallInNestedRecursion) {
+    RunAndExpect<int>(R"(
+fun ackermann(m, n)
+    if m == 0
+        n + 1
+    else if n == 0
+        ackermann(m - 1, 1)
+    else
+        ackermann(m - 1, ackermann(m, n - 1))
+result = ackermann(1, 1)
+result
+)", 3, "Function_CallInNestedRecursion");
+}
+
+

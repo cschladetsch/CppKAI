@@ -421,7 +421,7 @@ std::string RhoTranslator::TranspileNodeToPi(AstNodePtr node) {
                 // For assignment syntax (name = fun(...)), the Assignment case handles storage
                 // We add storage here for named functions to support both syntaxes
                 if (!name.empty() && name != "_" && !name.starts_with("_anon_")) {
-                    piCode += " '" + name + " #";
+                    piCode += " '" + name + " !";
                 }
 
                 return piCode;
@@ -446,9 +446,9 @@ std::string RhoTranslator::TranspileNodeToPi(AstNodePtr node) {
                     }
                 }
 
-                // Add function call (lookup function and execute with call)
+                // Add function call (lookup function and execute with suspend)
                 if (!piCode.empty()) piCode += " ";
-                piCode += "'" + funcName + "' @ call";
+                piCode += "'" + funcName + "' @ &";
 
                 return piCode;
             }
@@ -533,20 +533,14 @@ std::string RhoTranslator::TranspileNodeToPi(AstNodePtr node) {
             // Transpile iterator-style for loops to Pi
             // Rho: for x in collection { body }
             // Pi: collection { 'x # body } foreach
-            std::cerr << "DEBUG: Transpiling ForEach node with " << node->GetChildren().size() << " children" << std::endl;
             if (node->GetChildren().size() >= 3) {
                 std::string varName = node->GetChild(0)->GetTokenText();
-                std::cerr << "DEBUG:   varName=" << varName << std::endl;
                 std::string collection = TranspileNodeToPi(node->GetChild(1));
-                std::cerr << "DEBUG:   collection=" << collection << std::endl;
                 std::string body = TranspileNodeToPi(node->GetChild(2));
-                std::cerr << "DEBUG:   body=" << body << std::endl;
 
                 std::string piCode = collection + " { '" + varName + " # " + body + " } foreach";
-                std::cerr << "DEBUG ForEach transpiled to: " << piCode << std::endl;
                 return piCode;
             }
-            std::cerr << "DEBUG: ForEach node has insufficient children!" << std::endl;
             return "";
         }
 
