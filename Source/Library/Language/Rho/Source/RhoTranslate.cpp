@@ -430,11 +430,11 @@ std::string RhoTranslator::TranspileNodeToPi(AstNodePtr node) {
         }
         
         case AstNodeEnum::Call: {
-            // Rho: func(args)  ->  Pi: args... 'func retrieve suspend
+            // Rho: func(args)  ->  Pi: args... 'func @ call
             if (!node->GetChildren().empty()) {
                 std::string funcName = node->GetChild(0)->GetTokenText();
                 std::string piCode;
-                
+
                 // Add arguments
                 if (node->GetChildren().size() > 1) {
                     auto argsNode = node->GetChild(1);
@@ -445,11 +445,11 @@ std::string RhoTranslator::TranspileNodeToPi(AstNodePtr node) {
                         }
                     }
                 }
-                
-                // Add function call (retrieve function and execute with &)
+
+                // Add function call (lookup function and execute with call)
                 if (!piCode.empty()) piCode += " ";
-                piCode += funcName + " &";
-                
+                piCode += "'" + funcName + "' @ call";
+
                 return piCode;
             }
             return "";

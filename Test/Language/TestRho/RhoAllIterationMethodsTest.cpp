@@ -882,3 +882,17 @@ while i > 0
 sum
 )", 30, "Edge_NegativeStep");  // 10+8+6+4+2
 }
+
+TEST_F(RhoAllIterationMethodsTest, Function_CallInForEach_VerifyFix) {
+    RunAndExpect<int>(R"(
+fun double(x) { x * 2 }
+arr = [1, 2, 3]
+result = []
+for x in arr
+    result = result + [double(x)]
+sum = 0
+for y in result
+    sum = sum + y
+sum
+)", 12, "Function_CallInForEach_VerifyFix");  // 2+4+6
+}
