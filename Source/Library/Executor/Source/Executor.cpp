@@ -842,9 +842,13 @@ Pointer<Continuation> Executor::NewContinuation(Value<Continuation> orig) {
         // Copy arguments
         cont->args = orig->args;
 
-        Object newScope = New<void>();
-
-        cont->SetScope(newScope);
+        // Inherit the scope from the original continuation
+        if (orig->GetScope().Exists()) {
+            cont->SetScope(orig->GetScope());
+        } else {
+            // Fallback to a new empty scope if original has none
+            cont->SetScope(New<void>());
+        }
 
         return cont;
     } catch (const std::exception &e) {

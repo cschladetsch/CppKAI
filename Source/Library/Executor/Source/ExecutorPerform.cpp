@@ -811,15 +811,24 @@ void Executor::Perform(Operation::Type op) {
 
             // If the result is a continuation, execute it
             if (obj.IsType<Continuation>()) {
-                KAI_TRACE() << "Retreive: Executing continuation";
-                // WRONG! This should use Suspend, not Continue!
-                // Continue executes the continuation without saving the current
-                // one We need to check if this is a function call or just a
-                // continuation execution
+                KAI_TRACE() << "Retreive: Executing continuation via Suspend logic";
 
-                // For now, let's just push the continuation on the stack
-                // The calling code should use Suspend if it's a function call
-                Push(obj);
+                // Save current continuation on the context stack for later resumption
+                context_->Push(continuation_);
+
+                // Create and set the new continuation
+                continuation_ = NewContinuation(obj);
+                KAI_TRACE() << "  Creating new continuation from: "
+                            << obj.ToString();
+                KAI_TRACE() << "  Context stack size: " << context_->Size();
+
+                // IMPORTANT: Call Enter to set up arguments in the new scope
+                // This is critical for function arguments to be available in the scope
+                if (continuation_.Exists()) {
+                    continuation_->Enter(this);
+                    KAI_TRACE() << "  Called Enter on new continuation";
+                }
+                break_ = true; // Signal a context switch
             } else {
                 // Otherwise just push the value
                 Push(obj);
