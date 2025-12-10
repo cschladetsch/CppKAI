@@ -9,7 +9,7 @@ KAI is a sophisticated C++23 multi-language runtime system featuring:
 - Network layer for peer-to-peer communication
 - Interactive console with REPL capabilities
 
-**Current Status:** Core system stable, TestPi runs without segfaults. Basic tests pass, advanced tests fail due to bugs in Pi implementation and test scripts. Active development on language features and network generation.
+**Current Status:** Core system stable, TestPi runs without segfaults, Rho basic expressions work. Advanced Pi recursion tests have segfaults, Rho function implementation incomplete. Active development on language features and network generation.
 
 ## Architecture Overview
 
@@ -175,7 +175,7 @@ Test/
 ├── Core/              # Core system tests (147 tests, 100% pass)
 ├── Language/
 │   ├── TestPi/       # Pi language tests (runs without segfaults, basic pass, advanced fail due to implementation bugs)
-│   ├── TestRho/      # Rho language tests (~540 tests, ~55% pass)
+│   ├── TestRho/      # Rho language tests (basic expressions work, functions incomplete)
 │   └── TestTau/      # Tau language tests (109 tests, 91.7% pass)
 └── Console/          # Console tests (20 tests, 25% pass)
 ```
@@ -189,7 +189,7 @@ Test/
 - Core: Excellent (100%)
 - Pi: Runs without segfaults (basic pass, advanced fail due to implementation bugs)
 - Tau: Good (91.7%)
-- Rho: Moderate (55%) - active development focus
+- Rho: Basic expressions work, functions incomplete - active development focus
 - Console: Needs work (25%)
 
 ## Current Work in Progress
