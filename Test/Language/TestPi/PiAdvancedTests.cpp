@@ -295,7 +295,7 @@ TEST_F(PiAdvancedTests, RecursionWithRot) {
 
 // TEST_F(PiAdvancedTests, RecursionWithOver) {
 //     // Using over in recursion - takes n on top, acc below
-//     AssertResult<int>("{ swap dup 0 == { drop } { swap over + swap 1 - overRec & } ife } 'overRec # 5 0 overRec &", 15);
+//     AssertResult<int>("{ dup 0 == { drop } { over + swap 1 - overRec & } ife } 'overRec # 5 0 overRec &", 15);
 // }
 
 TEST_F(PiAdvancedTests, RecursionWithDrop) {
