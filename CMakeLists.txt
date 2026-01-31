@@ -313,7 +313,10 @@ endforeach()
 
 # Set up main library dependencies
 if(TARGET Executor)
-    target_link_libraries(Executor CommonLang Core)
+    target_link_libraries(Executor PUBLIC CommonLang Core)
+    if(KAI_BUILD_ENET AND TARGET enet)
+        target_link_libraries(Executor PUBLIC enet)
+    endif()
 endif()
 
 if(TARGET CommonLang)
