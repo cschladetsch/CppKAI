@@ -30,6 +30,7 @@ const char *PiTokenEnumType::ToString(Enum t) {
 
         CASE_LOWER(Freeze)
         CASE_LOWER(Thaw)
+        CASE_LOWER(Send)
         CASE_LOWER(Bool)
         CASE_LOWER(Greater)
         CASE_LOWER(Debug)

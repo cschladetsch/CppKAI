@@ -137,6 +137,7 @@ struct PiTokenEnumType {
         Exists,
         Freeze,
         Thaw,
+        Send,
 
         Modulo,  // % operator
         Min,     // min operator

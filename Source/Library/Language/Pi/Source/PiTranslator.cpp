@@ -536,6 +536,12 @@ void PiTranslator::AppendTokenised(const TokenNode &tok) {
             AppendOp(Operation::Thaw);
             return;
 
+        case PiTokenEnumType::Send:
+            AppendNew(Label("send"));
+            AppendOp(Operation::Lookup);
+            AppendOp(Operation::Suspend);
+            return;
+
         case PiTokenEnumType::This:
             AppendOp(Operation::This);
             return;

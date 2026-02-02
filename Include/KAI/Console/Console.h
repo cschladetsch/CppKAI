@@ -19,12 +19,14 @@
 KAI_BEGIN
 
 struct Coloriser;
+class BinaryStream;
 
 enum class NetworkMessageType : unsigned char {
     CONSOLE_COMMAND = RakNet::ID_USER_PACKET_ENUM + 10,
     CONSOLE_RESULT = RakNet::ID_USER_PACKET_ENUM + 11,
     CONSOLE_BROADCAST = RakNet::ID_USER_PACKET_ENUM + 12,
-    CONSOLE_LANGUAGE_SWITCH = RakNet::ID_USER_PACKET_ENUM + 13
+    CONSOLE_LANGUAGE_SWITCH = RakNet::ID_USER_PACKET_ENUM + 13,
+    CONSOLE_BINARY = RakNet::ID_USER_PACKET_ENUM + 14
 };
 
 struct NetworkConsoleMessage {
@@ -149,6 +151,8 @@ class Console : public Reflected {
     std::vector<std::string> GetConnectedPeers() const;
     std::vector<NetworkConsoleMessage> GetNetworkHistory() const;
     void SetNetworkMessageCallback(std::function<void(const NetworkConsoleMessage&)> callback);
+    bool SendBinaryToPeer(const std::string& peerAddr,
+                          const BinaryStream& payload);
     String ProcessNetworkCommand(const String& command);
     void ShowNetworkHelp() const;
     String WriteStackForPeer(const std::string& peerId) const;
@@ -172,6 +176,7 @@ class Console : public Reflected {
     void HandleConsoleResult(RakNet::Packet* packet);
     void HandleConsoleBroadcast(RakNet::Packet* packet);
     void HandleLanguageSwitch(RakNet::Packet* packet);
+    void HandleConsoleBinary(RakNet::Packet* packet);
     void SendResultToPeer(const RakNet::SystemAddress& peer, const std::string& command, 
                          const std::string& result);
     void AddPeer(const RakNet::SystemAddress& address);
