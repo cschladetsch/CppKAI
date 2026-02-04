@@ -7,18 +7,18 @@ graph TB
     subgraph "Console A (Port 14600)"
         CA_UI["Console Interface<br/>Pi λ /network start 14600"]
         CA_NET["Network Manager<br/>ID: Console-1234"]
-        CA_PEER[Peer Handler<br/>RakNet Interface]
+        CA_PEER[Peer Handler<br/>ENet Interface]
         CA_MSG[Message Queue<br/>Command/Result/Broadcast]
     end
     
     subgraph "Network Transport Layer"
-        TRANSPORT[RakNet P2P Transport<br/>UDP with reliability<br/>Packet priority system]
+        TRANSPORT[ENet P2P Transport<br/>UDP with reliability<br/>Packet priority system]
     end
     
     subgraph "Console B (Port 14601)"
         CB_UI["Console Interface<br/>Rho λ /connect localhost 14600"]
         CB_NET["Network Manager<br/>ID: Console-5678"]
-        CB_PEER[Peer Handler<br/>RakNet Interface]
+        CB_PEER[Peer Handler<br/>ENet Interface]
         CB_MSG[Message Queue<br/>Command/Result/Broadcast]
     end
     
@@ -168,8 +168,8 @@ stateDiagram-v2
     [*] --> Disconnected
     
     Disconnected --> Starting : /network start
-    Starting --> Listening : RakNet startup success
-    Starting --> Error : RakNet startup failed
+    Starting --> Listening : ENet startup success
+    Starting --> Error : ENet startup failed
     
     Listening --> Connecting : /connect command
     Listening --> Accepting : Incoming connection
@@ -199,11 +199,11 @@ graph LR
         PARSE_CMD[Parse Network Command<br/>Extract peer & command]
         CREATE_MSG[Create Message<br/>CONSOLE_COMMAND type]
         SERIALIZE[Serialize to BitStream<br/>Add message headers]
-        SEND[RakNet Send<br/>HIGH_PRIORITY, RELIABLE_ORDERED]
+        SEND[ENet Send<br/>HIGH_PRIORITY, RELIABLE_ORDERED]
     end
     
     subgraph "Incoming Messages" 
-        RECEIVE[RakNet Receive<br/>Get packet from network]
+        RECEIVE[ENet Receive<br/>Get packet from network]
         DESERIALIZE[Deserialize BitStream<br/>Extract message data]
         HANDLE_MSG[Handle Message Type<br/>COMMAND/RESULT/BROADCAST]
         EXECUTE[Execute Command<br/>On local executor]

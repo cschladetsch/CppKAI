@@ -82,7 +82,7 @@ graph LR
     subgraph "External Dependencies"
         BOOST[Boost Libraries<br/>system, filesystem<br/>program_options, regex]
         GTEST[Google Test<br/>Unit testing framework]
-        RAKNET[RakNet<br/>Network communication<br/>(stub implementation)]
+        ENET[ENet<br/>Network communication<br/>(stub implementation)]
     end
     
     subgraph "Core Layer"
@@ -109,7 +109,7 @@ graph LR
     
     BOOST --> CORE
     GTEST --> TESTS
-    RAKNET --> NETWORK
+    ENET --> NETWORK
     
     CORE --> COMMON
     CORE --> EXECUTOR
@@ -151,7 +151,7 @@ graph TD
     
     subgraph "Optional Components"
         OPTIONS[Component Options]
-        OPTIONS --> RAKNET_OPT[KAI_BUILD_RAKNET<br/>Enable real RakNet<br/>Default: OFF (stub)]
+        OPTIONS --> ENET_OPT[KAI_BUILD_ENET<br/>Enable real ENet<br/>Default: OFF (stub)]
         OPTIONS --> NETWORK_OPT[KAI_BUILD_NETWORK_APPS<br/>Network applications<br/>Default: OFF]
         OPTIONS --> TESTS_OPT[KAI_BUILD_TEST_ALL<br/>Complete test suite<br/>Default: ON]
         OPTIONS --> SHELL_OPT[ENABLE_SHELL_SYNTAX<br/>Backtick operations<br/>Security setting]
@@ -166,7 +166,7 @@ graph TD
     
     style CLANG fill:#4caf50
     style CPP23 fill:#2196f3
-    style RAKNET_OPT fill:#ff9800
+    style ENET_OPT fill:#ff9800
     style LINUX fill:#9c27b0
 ```
 

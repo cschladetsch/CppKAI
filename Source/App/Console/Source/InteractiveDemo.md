@@ -3,7 +3,7 @@
 ## Starting the Console
 
 ```bash
-$ cd /home/xian/local/KAI
+$ cd $KAI_ROOT
 $ ./Bin/Console
 ```
 
@@ -109,7 +109,7 @@ Pi λ 12 !!
 ```console
 Pi λ # Check current directory
 Pi λ `pwd`
-/home/xian/local/KAI
+$KAI_ROOT
 
 Pi λ # List Pi script files
 Pi λ `ls *.pi 2>/dev/null | head -5`

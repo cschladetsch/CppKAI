@@ -16,12 +16,12 @@ The Tau code generation system uses a clean, separated architecture:
 1. **GenerateProxy** - Generates client-side proxy classes
    - Methods that forward calls over the network
    - Event registration/unregistration handlers
-   - Serialization of parameters using RakNet BitStreams
+   - Serialization of parameters using BinaryStreams
    - Future-based return value handling
 
 2. **GenerateAgent** - Generates server-side agent classes
    - Handler methods for incoming network requests
-   - Deserialization of parameters from BitStreams
+   - Deserialization of parameters from BinaryStreams
    - Implementation method invocation
    - Response serialization for non-void methods
 

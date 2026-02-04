@@ -47,12 +47,12 @@ This keeps the actual validation logic intact (objects still fail validation in 
 
 ## Files Modified
 
-- `/home/xian/local/KAI/Source/Library/Core/Source/Object.cpp`
+- `$KAI_ROOT/Source/Library/Core/Source/Object.cpp`
   - Modified `Object::Valid()` to be silent on null registry
   - Modified `Object::Object(const Object&)` copy constructor to be silent about invalid source objects
   - Changed log levels in `GetStorageBase_()` and `GetStorageBase()`
   
-- `/home/xian/local/KAI/Test/Language/TestRho/TestRho.cpp`
+- `$KAI_ROOT/Test/Language/TestRho/TestRho.cpp`
   - Updated Stack validation checks from `!data_->Valid()` to `data_->Empty()`
   - Updated Stack validation checks from `!context_->Valid()` to `context_->Empty()`
 

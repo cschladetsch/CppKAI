@@ -1,16 +1,24 @@
 #pragma once
 
-#include "KAI/Network/RakNetStub.h"  // Include RakNetStub.h directly
 #include "KAI/Network/FwdDeclarations.h"
 #include "KAI/Network/Future.h"
 #include "KAI/Network/NetHandle.h"
+#include "KAI/Network/Transport.h"
+#include "KAI/Core/BuiltinTypes/Array.h"
+#include "KAI/Core/BinaryStream.h"
+#include "KAI/Core/Object.h"
+#include "KAI/Core/Value.h"
 
 #include <any>
 #include <atomic>
 #include <functional>
+#include <utility>
 #include <mutex>
+#include <memory>
 #include <optional>
 #include <stdexcept>
+#include <chrono>
+#include <thread>
 #include <type_traits>
 #include <typeindex>
 #include <unordered_map>
@@ -37,16 +45,23 @@ class PeerDiscovery;
 
 struct Node {
    private:
-    RakNet::RakPeerInterface *peer_;
+    std::unique_ptr<NetPeer> peer_;
     bool isRunning_;
+    Registry *registry_;
     std::unique_ptr<ConnectionManager> connectionManager_;
     std::unique_ptr<PeerDiscovery> peerDiscovery_;
+    std::function<void()> updatePump_;
 
    public:
     static int constexpr DefaultPort = 14589;
 
     Node();
     ~Node();
+
+    void SetRegistry(Registry *registry) { registry_ = registry; }
+    Registry *GetRegistry() const { return registry_; }
+
+    void SetUpdatePump(std::function<void()> pump) { updatePump_ = std::move(pump); }
 
     void Listen(int port);
     void Listen(IpAddress const &address, int port);
@@ -62,12 +77,12 @@ struct Node {
     void StartDiscovery(int discoveryPort = DefaultPort);
     void StopDiscovery();
     bool IsDiscovering() const;
-    std::vector<RakNet::SystemAddress> GetDiscoveredPeers() const;
+    std::vector<NetAddress> GetDiscoveredPeers() const;
     void SetPeerDiscoveryCallback(
-        std::function<void(const RakNet::SystemAddress &)> callback);
+        std::function<void(const NetAddress &)> callback);
 
     // Get all active connections
-    std::vector<RakNet::SystemAddress> GetConnections() const;
+    std::vector<NetAddress> GetConnections() const;
 
     // Check if connected to a specific address
     bool IsConnectedTo(const IpAddress &address, int port) const;
@@ -109,6 +124,21 @@ struct Node {
     Future<R> Invoke(NetHandle handle, const std::string &name,
                      Args &&...args);
 
+    template <typename T>
+    T WaitFor(Future<T> &future,
+              std::chrono::milliseconds timeout =
+                  std::chrono::milliseconds(5000));
+
+    void WaitFor(Future<void> &future,
+                 std::chrono::milliseconds timeout =
+                     std::chrono::milliseconds(5000));
+
+    // Compatibility helpers for generated agents
+    void SendResponse(const NetAddress &peer, BinaryStream &response);
+    void BroadcastEvent(const std::string &name,
+                        BinaryStream &eventData);
+    void BroadcastEvent(const std::string &name);
+
     template <typename P>
     Future<P> FetchProperty(NetHandle handle, const std::string &name);
 
@@ -117,14 +147,17 @@ struct Node {
                                P &&value);
 
    private:
-    void ProcessPacket(RakNet::Packet *packet);
-    void ProcessObjectMessage(RakNet::Packet *packet);
-    void ProcessFunctionCall(RakNet::Packet *packet);
-    void ProcessEventNotification(RakNet::Packet *packet);
+    void ProcessPacket(const NetPacket &packet);
+    void ProcessObjectMessage(const NetPacket &packet);
+    void ProcessFunctionCall(const NetPacket &packet);
+    void ProcessEventNotification(const NetPacket &packet);
+    void ProcessFunctionResponse(const NetPacket &packet);
     void OnConnectionEvent(int connectionId, ConnectionEvent event);
+    void SendFunctionCall(NetHandle handle, const std::string &name,
+                          const Object &args, int futureId);
 
     // Helper method to get the packet identifier
-    unsigned char GetPacketIdentifier(RakNet::Packet *packet);
+    unsigned char GetPacketIdentifier(const NetPacket &packet);
 
    private:
     // Use raw pointer for Registry to avoid build issues
@@ -153,6 +186,15 @@ struct Node {
     std::mutex agentMutex_;
     std::atomic<int> nextHandle_{1};
     std::atomic<int> nextFutureId_{1};
+
+    struct PendingResponse {
+        std::function<void(const Object &, ResponseType,
+                           const std::string &)>
+            complete;
+    };
+
+    std::unordered_map<int, PendingResponse> pendingResponses_;
+    std::mutex pendingMutex_;
 };
 
 // -----------------------------------------------------------------------------
@@ -161,15 +203,15 @@ struct Node {
 namespace detail {
     struct MethodInvokerBase {
         virtual ~MethodInvokerBase() = default;
-        virtual std::any Invoke(const std::vector<std::any> &args) = 0;
+        virtual Object Invoke(const std::vector<Object> &args) = 0;
     };
 
     template <typename R, typename... Args>
     struct MethodInvoker : MethodInvokerBase {
-        explicit MethodInvoker(std::function<R(Args...)> fn)
-            : fn_(std::move(fn)) {}
+        MethodInvoker(Registry *registry, std::function<R(Args...)> fn)
+            : registry_(registry), fn_(std::move(fn)) {}
 
-        std::any Invoke(const std::vector<std::any> &args) override {
+        Object Invoke(const std::vector<Object> &args) override {
             if (args.size() != sizeof...(Args)) {
                 throw std::invalid_argument("Incorrect number of arguments");
             }
@@ -177,18 +219,31 @@ namespace detail {
         }
 
        private:
-        template <std::size_t... Indices>
-        std::any InvokeImpl(const std::vector<std::any> &args,
-                            std::index_sequence<Indices...>) {
-            if constexpr (std::is_void_v<R>) {
-                fn_(std::any_cast<std::decay_t<Args>>(args[Indices])...);
-                return std::any();
+        template <typename T>
+        static std::decay_t<T> ExtractArg(const Object &obj) {
+            if constexpr (std::is_same_v<std::decay_t<T>, Object>) {
+                return obj;
             } else {
-                R result = fn_(std::any_cast<std::decay_t<Args>>(args[Indices])...);
-                return std::any(std::move(result));
+                return ConstDeref<std::decay_t<T>>(obj);
             }
         }
 
+        template <std::size_t... Indices>
+        Object InvokeImpl(const std::vector<Object> &args,
+                          std::index_sequence<Indices...>) {
+            if constexpr (std::is_void_v<R>) {
+                fn_(ExtractArg<Args>(args[Indices])...);
+                return Object();
+            } else {
+                if (!registry_) {
+                    throw std::runtime_error("Null registry for return value");
+                }
+                R result = fn_(ExtractArg<Args>(args[Indices])...);
+                return registry_->New(result);
+            }
+        }
+
+        Registry *registry_;
         std::function<R(Args...)> fn_;
     };
 
@@ -256,8 +311,8 @@ void Node::RegisterMethod(NetHandle handle, const std::string &name,
                           std::function<R(Args...)> fn) {
     std::lock_guard<std::mutex> lock(agentMutex_);
     auto &entry = agentEntries_[handle.value];
-    entry.methods[name] =
-        std::make_shared<detail::MethodInvoker<R, Args...>>(std::move(fn));
+    entry.methods[name] = std::make_shared<detail::MethodInvoker<R, Args...>>(
+        registry_, std::move(fn));
 }
 
 template <typename Value>
@@ -284,46 +339,89 @@ template <typename R, typename... Args>
 Future<R> Node::Invoke(NetHandle handle, const std::string &name,
                        Args &&...args) {
     Future<R> future;
-    future.Id = nextFutureId_++;
+    future.SetId(nextFutureId_++);
     std::shared_ptr<detail::MethodInvokerBase> invoker;
 
     {
         std::lock_guard<std::mutex> lock(agentMutex_);
         auto entry = agentEntries_.find(handle.value);
-        if (entry == agentEntries_.end()) {
-            future.Response = ResponseType::UnkownAgent;
-            future.Complete = true;
-            future.ErrorMessage = "Unknown agent";
-            return future;
+        if (entry != agentEntries_.end()) {
+            auto it = entry->second.methods.find(name);
+            if (it != entry->second.methods.end()) {
+                invoker = it->second;
+            }
         }
-        auto it = entry->second.methods.find(name);
-        if (it == entry->second.methods.end()) {
-            future.Response = ResponseType::BadRequest;
-            future.Complete = true;
-            future.ErrorMessage = "Unknown method";
-            return future;
-        }
-        invoker = it->second;
     }
 
-    std::vector<std::any> packedArgs{std::forward<Args>(args)...};
+    if (invoker) {
+        try {
+            std::vector<Object> packedArgs;
+            packedArgs.reserve(sizeof...(Args));
+            if (!registry_) {
+                throw std::runtime_error("Null registry for local invoke");
+            }
+            if constexpr (sizeof...(Args) > 0) {
+                (packedArgs.emplace_back(
+                     registry_->New(std::forward<Args>(args))),
+                 ...);
+            }
 
-    try {
-        std::any result = invoker->Invoke(packedArgs);
-        future.Response = ResponseType::Returned;
-        future.Complete = true;
-        if constexpr (!std::is_void_v<R>) {
-            future.Value = std::any_cast<R>(result);
+            Object result = invoker->Invoke(packedArgs);
+            future.SetResponse(ResponseType::Returned);
+            future.SetComplete(true);
+            if constexpr (!std::is_void_v<R>) {
+                if constexpr (std::is_same_v<std::decay_t<R>, Object>) {
+                    future.SetValue(result);
+                } else {
+                    future.SetValue(ConstDeref<std::decay_t<R>>(result));
+                }
+            }
+        } catch (const std::exception &e) {
+            future.SetResponse(ResponseType::BadRequest);
+            future.SetComplete(true);
+            future.SetErrorMessage(e.what());
         }
-    } catch (const std::bad_any_cast &e) {
-        future.Response = ResponseType::BadRequest;
-        future.Complete = true;
-        future.ErrorMessage = e.what();
-    } catch (const std::exception &e) {
-        future.Response = ResponseType::BadRequest;
-        future.Complete = true;
-        future.ErrorMessage = e.what();
+        return future;
     }
+
+    // Remote path - serialize args and send a function call request.
+    if (!registry_) {
+        future.SetResponse(ResponseType::BadRequest);
+        future.SetComplete(true);
+        future.SetErrorMessage("Null registry for remote invoke");
+        return future;
+    }
+
+    Value<Array> argsArray = registry_->New<Array>();
+    if constexpr (sizeof...(Args) > 0) {
+        (argsArray->Append(registry_->New(std::forward<Args>(args))), ...);
+    }
+
+    Object argsObject = argsArray.GetObject();
+
+    {
+        std::lock_guard<std::mutex> lock(pendingMutex_);
+        auto state = future.GetState();
+        pendingResponses_[future.GetId()].complete =
+            [state](const Object &obj, ResponseType response,
+                    const std::string &error) {
+                state->Response = response;
+                state->Complete = true;
+                state->ErrorMessage = error;
+                if constexpr (!std::is_void_v<R>) {
+                    if (response == ResponseType::Returned) {
+                        if constexpr (std::is_same_v<std::decay_t<R>, Object>) {
+                            state->Value = obj;
+                        } else {
+                            state->Value = ConstDeref<std::decay_t<R>>(obj);
+                        }
+                    }
+                }
+            };
+    }
+
+    // Implemented in Node.cpp
+    SendFunctionCall(handle, name, argsObject, future.GetId());
 
     return future;
 }
@@ -331,23 +429,23 @@ Future<R> Node::Invoke(NetHandle handle, const std::string &name,
 template <typename P>
 Future<P> Node::FetchProperty(NetHandle handle, const std::string &name) {
     Future<P> future;
-    future.Id = nextFutureId_++;
+    future.SetId(nextFutureId_++);
     std::shared_ptr<detail::PropertyAccessorBase> accessor;
 
     {
         std::lock_guard<std::mutex> lock(agentMutex_);
         auto entry = agentEntries_.find(handle.value);
         if (entry == agentEntries_.end()) {
-            future.Response = ResponseType::UnkownAgent;
-            future.Complete = true;
-            future.ErrorMessage = "Unknown agent";
+            future.SetResponse(ResponseType::UnkownAgent);
+            future.SetComplete(true);
+            future.SetErrorMessage("Unknown agent");
             return future;
         }
         auto it = entry->second.properties.find(name);
         if (it == entry->second.properties.end()) {
-            future.Response = ResponseType::BadRequest;
-            future.Complete = true;
-            future.ErrorMessage = "Unknown property";
+            future.SetResponse(ResponseType::BadRequest);
+            future.SetComplete(true);
+            future.SetErrorMessage("Unknown property");
             return future;
         }
         accessor = it->second;
@@ -355,13 +453,13 @@ Future<P> Node::FetchProperty(NetHandle handle, const std::string &name) {
 
     try {
         std::any value = accessor->Get();
-        future.Response = ResponseType::Returned;
-        future.Complete = true;
-        future.Value = std::any_cast<P>(value);
+        future.SetResponse(ResponseType::Returned);
+        future.SetComplete(true);
+        future.SetValue(std::any_cast<P>(value));
     } catch (const std::bad_any_cast &e) {
-        future.Response = ResponseType::BadRequest;
-        future.Complete = true;
-        future.ErrorMessage = e.what();
+        future.SetResponse(ResponseType::BadRequest);
+        future.SetComplete(true);
+        future.SetErrorMessage(e.what());
     }
 
     return future;
@@ -371,23 +469,23 @@ template <typename P>
 Future<void> Node::StoreProperty(NetHandle handle, const std::string &name,
                                  P &&value) {
     Future<void> future;
-    future.Id = nextFutureId_++;
+    future.SetId(nextFutureId_++);
     std::shared_ptr<detail::PropertyAccessorBase> accessor;
 
     {
         std::lock_guard<std::mutex> lock(agentMutex_);
         auto entry = agentEntries_.find(handle.value);
         if (entry == agentEntries_.end()) {
-            future.Response = ResponseType::UnkownAgent;
-            future.Complete = true;
-            future.ErrorMessage = "Unknown agent";
+            future.SetResponse(ResponseType::UnkownAgent);
+            future.SetComplete(true);
+            future.SetErrorMessage("Unknown agent");
             return future;
         }
         auto it = entry->second.properties.find(name);
         if (it == entry->second.properties.end()) {
-            future.Response = ResponseType::BadRequest;
-            future.Complete = true;
-            future.ErrorMessage = "Unknown property";
+            future.SetResponse(ResponseType::BadRequest);
+            future.SetComplete(true);
+            future.SetErrorMessage("Unknown property");
             return future;
         }
         accessor = it->second;
@@ -395,14 +493,47 @@ Future<void> Node::StoreProperty(NetHandle handle, const std::string &name,
 
     try {
         accessor->Set(std::any(std::forward<P>(value)));
-        future.Response = ResponseType::Returned;
-        future.Complete = true;
+        future.SetResponse(ResponseType::Returned);
+        future.SetComplete(true);
     } catch (const std::exception &e) {
-        future.Response = ResponseType::BadRequest;
-        future.Complete = true;
-        future.ErrorMessage = e.what();
+        future.SetResponse(ResponseType::BadRequest);
+        future.SetComplete(true);
+        future.SetErrorMessage(e.what());
     }
 
     return future;
+}
+
+template <typename T>
+T Node::WaitFor(Future<T> &future, std::chrono::milliseconds timeout) {
+    auto start = std::chrono::steady_clock::now();
+    while (!future.IsComplete()) {
+        Update();
+        if (updatePump_) updatePump_();
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        if (timeout.count() >= 0 &&
+            std::chrono::steady_clock::now() - start > timeout) {
+            future.SetResponse(ResponseType::TimedOut);
+            future.SetComplete(true);
+            break;
+        }
+    }
+    return future.GetValue();
+}
+
+inline void Node::WaitFor(Future<void> &future,
+                          std::chrono::milliseconds timeout) {
+    auto start = std::chrono::steady_clock::now();
+    while (!future.IsComplete()) {
+        Update();
+        if (updatePump_) updatePump_();
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        if (timeout.count() >= 0 &&
+            std::chrono::steady_clock::now() - start > timeout) {
+            future.SetResponse(ResponseType::TimedOut);
+            future.SetComplete(true);
+            break;
+        }
+    }
 }
 KAI_NET_END

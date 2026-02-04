@@ -25,15 +25,15 @@ Rather than trying to fix the underlying issues in the Rho language's continuati
 
 ### Files Modified:
 
-- `/home/xian/local/KAI/Test/Language/TestLangCommon.cpp` - Fixed unwrapping logic for continuation values
-- `/home/xian/local/KAI/Test/Include/TestLangCommon.h` - Added helper methods to extract primitive values from continuations
-- `/home/xian/local/KAI/Readme.md` - Updated to reflect the testing changes and current project status
+- `$KAI_ROOT/Test/Language/TestLangCommon.cpp` - Fixed unwrapping logic for continuation values
+- `$KAI_ROOT/Test/Include/TestLangCommon.h` - Added helper methods to extract primitive values from continuations
+- `$KAI_ROOT/Readme.md` - Updated to reflect the testing changes and current project status
 
 ### Files Created:
 
-- `/home/xian/local/KAI/Test/Language/TestRho/RhoPiFix.cpp` - New direct test implementations that bypass continuations
-- `/home/xian/local/KAI/run_all_tests_fixed` - Custom test runner script
-- `/home/xian/local/KAI/Test-Fixes-Summary.md` - This documentation of the fixes
+- `$KAI_ROOT/Test/Language/TestRho/RhoPiFix.cpp` - New direct test implementations that bypass continuations
+- `$KAI_ROOT/run_all_tests_fixed` - Custom test runner script
+- `$KAI_ROOT/Test-Fixes-Summary.md` - This documentation of the fixes
 
 ## Test Coverage
 
@@ -59,7 +59,7 @@ The test fixes cover the following functionality:
 To run all tests with the fixes:
 
 ```bash
-cd /home/xian/local/KAI
+cd $KAI_ROOT
 ./run_all_tests_fixed
 ```
 

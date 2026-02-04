@@ -12,7 +12,7 @@ KAI is cross-platform across maxOS, Linux and Windows system with many internal 
 
 Currently the list of external `git` repos are:
 
-* *RakNet*. Cross-platform networking.
+* *ENet*. Cross-platform networking.
 * *rang*. Cross-platform Colored console output.
 * *imgui*. Cross-platform Immediate-mode windowing system.
 

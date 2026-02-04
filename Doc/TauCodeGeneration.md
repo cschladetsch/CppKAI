@@ -100,14 +100,14 @@ namespace MyApp {
         IUserServiceProxy(Node &node, NetHandle handle) : ProxyBase(node, handle) { }
         
         UserData GetUser(const int& id) {
-            RakNet::BitStream args;
+            ENet::BitStream args;
             args << id;
             auto future = _node->SendWithResponse("GetUser", args);
             return future.get();
         }
         
         void UpdateUser(const UserData& user) {
-            RakNet::BitStream args;
+            ENet::BitStream args;
             args << user;
             _node->Send("UpdateUser", args);
         }
@@ -126,18 +126,18 @@ namespace MyApp {
     class IUserServiceAgent : public AgentBase<IUserService> {
         IUserServiceAgent(Node &node, NetHandle handle) : AgentBase(node, handle) { }
         
-        void Handle_GetUser(RakNet::BitStream& bs, RakNet::SystemAddress& sender) {
+        void Handle_GetUser(ENet::BitStream& bs, ENet::SystemAddress& sender) {
             int id;
             bs >> id;
             
             UserData result = _impl->GetUser(id);
             
-            RakNet::BitStream response;
+            ENet::BitStream response;
             response << result;
             _node->SendResponse(sender, response);
         }
         
-        void Handle_UpdateUser(RakNet::BitStream& bs, RakNet::SystemAddress& sender) {
+        void Handle_UpdateUser(ENet::BitStream& bs, ENet::SystemAddress& sender) {
             UserData user;
             bs >> user;
             
@@ -170,7 +170,7 @@ The generated code integrates seamlessly with KAI's network infrastructure:
 
 1. **Proxies** use the Node's `Send()` and `SendWithResponse()` methods
 2. **Agents** register handlers with the Node's message dispatcher
-3. **Structs** are serializable via RakNet BitStreams
+3. **Structs** are serializable via ENet BitStreams
 4. **Events** use the Node's event system for multicast notifications
 
 ## Best Practices

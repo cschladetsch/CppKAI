@@ -65,8 +65,8 @@ bool VerifyGeneratedCode(const std::string& filePath) {
         // Check for proxy method implementation
         std::regex("auto future = _node->SendWithResponse"),
         // Check for agent method implementation
-        std::regex("void Handle_\\w+\\(RakNet::BitStream& bs, "
-                   "RakNet::SystemAddress& sender\\)")};
+        std::regex("void Handle_\\w+\\(BinaryStream& bs, "
+                   "const kai::net::NetAddress& sender\\)")};
 
     // Verify each pattern exists in the generated code
     for (const auto& pattern : patterns) {

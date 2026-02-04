@@ -308,12 +308,12 @@ This script:
 
 1. Start a peer in server mode:
    ```bash
-   cd /path/to/KAI/build && ./Bin/NetworkPeer ../config/peer1_config.json
+   cd $KAI_ROOT/build && ./Bin/NetworkPeer ../config/peer1_config.json
    ```
 
 2. Start another peer in client mode:
    ```bash
-   cd /path/to/KAI/build && ./Bin/NetworkPeer ../config/peer2_config.json
+   cd $KAI_ROOT/build && ./Bin/NetworkPeer ../config/peer2_config.json
    ```
 
 3. In the client terminal:
@@ -338,17 +338,17 @@ KAI provides several components for implementing and testing network connections
 - **NetworkPeer**: Advanced peer-to-peer implementation with SSH-like command execution (`/Source/App/NetworkPeer/`)
 - **MinimalServer/MinimalClient**: Simple examples showing basic connection and message passing
 
-### RakNet Integration
+### ENet Integration
 
-The KAI network system is built on top of RakNet (available in `/Ext/RakNet/`), which provides:
+The KAI network system is built on top of ENet (available in `/Ext/ENet/`), which provides:
 
 - Reliable UDP communication
 - Peer discovery through pings
 - Automatic connection management
 - Packet serialization and transmission
 
-For the console networking tests we provide an in-memory RakNet drop-in
- (`Include/KAI/Network/RakNetStub.h`). It mimics the public API, tracks peers by
+For the console networking tests we provide an in-memory ENet drop-in
+ (`Include/KAI/Network/ENetStub.h`). It mimics the public API, tracks peers by
  port, and delivers packets through in-process queues so unit tests can cover
  multi-peer scenarios without relying on external sockets.
 

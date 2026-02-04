@@ -109,7 +109,7 @@ Test/Console/TestConsoleNetworking.cpp
 ### Network Integration
 
 The networking is integrated into the base `Console` class through:
-- **RakNet Integration**: Uses existing RakNet adapter for reliable P2P communication
+- **ENet Integration**: Uses existing ENet adapter for reliable P2P communication
 - **Thread Safety**: Separate network message processing thread
 - **Message Protocol**: Custom message types for commands, results, broadcasts
 - **Language Support**: Commands execute in sender's language context
@@ -117,11 +117,11 @@ The networking is integrated into the base `Console` class through:
 ### Message Types
 
 ```cpp
-enum class NetworkMessageType : RakNet::MessageID {
-    CONSOLE_COMMAND = RakNet::ID_USER_PACKET_ENUM + 10,
-    CONSOLE_RESULT = RakNet::ID_USER_PACKET_ENUM + 11,
-    CONSOLE_BROADCAST = RakNet::ID_USER_PACKET_ENUM + 12,
-    CONSOLE_LANGUAGE_SWITCH = RakNet::ID_USER_PACKET_ENUM + 13
+enum class NetworkMessageType : ENet::MessageID {
+    CONSOLE_COMMAND = ENet::ID_USER_PACKET_ENUM + 10,
+    CONSOLE_RESULT = ENet::ID_USER_PACKET_ENUM + 11,
+    CONSOLE_BROADCAST = ENet::ID_USER_PACKET_ENUM + 12,
+    CONSOLE_LANGUAGE_SWITCH = ENet::ID_USER_PACKET_ENUM + 13
 };
 ```
 
@@ -185,7 +185,7 @@ pi> /broadcast clear
 
 ### Multi-Peer Broadcasts
 
-Thanks to the in-memory RakNet implementation, it is trivial to host multiple
+Thanks to the in-memory ENet implementation, it is trivial to host multiple
 console peers inside the same process. The `MultiPeerBroadcast` unit test
 connects three consoles and confirms that a broadcast updates each remote stack
 while leaving the sender's stack untouched.

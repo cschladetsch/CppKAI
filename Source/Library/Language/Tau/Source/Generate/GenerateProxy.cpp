@@ -44,13 +44,14 @@ bool GenerateProxy::Generate(TauParser const &p, string &output) {
 
 string GenerateProxy::Prepend() const {
     stringstream str;
-    str << "#include <KAI/Network/ProxyDecl.h>\n";
+    str << "#include <KAI/Network/ProxyBase.h>\n";
+    str << "#include <KAI/Network/Node.h>\n";
     str << "#include <KAI/Network/NetworkException.h>\n";
     str << "#include <functional>\n";
     str << "#include <stdexcept>\n";
     str << "#include <string>\n";
     str << "#include <future>\n";
-    str << "#include <RakNet/BitStream.h>\n\n";
+    str << "#include <KAI/Core/BinaryStream.h>\n\n";
     return str.str();
 }
 
@@ -291,50 +292,38 @@ void GenerateProxy::MethodBody(const string &returnType,
                                const string &name) {
     StartBlock();
 
+    auto isFuture = [](const string &type, string &inner) {
+        const string prefix = "Future<";
+        if (type.size() <= prefix.size() + 1) return false;
+        if (type.rfind(prefix, 0) != 0) return false;
+        if (type.back() != '>') return false;
+        inner = type.substr(prefix.size(), type.size() - prefix.size() - 1);
+        return true;
+    };
+
+    string innerType;
+    bool returnsFuture = isFuture(returnType, innerType);
+
     if (returnType == "void") {
-        // For void methods, use _node->Send
-        if (!args.empty()) {
-            Output() << "RakNet::BitStream args;" << EndLine();
-            for (auto const &a : args) {
-                Output() << "args << " << a->GetChild(1)->GetTokenText() << ";"
-                         << EndLine();
-            }
-            Output() << "try {" << EndLine();
-            Output() << "    _node->Send(\"" << name << "\", args);" << EndLine();
-            Output() << "} catch (const std::exception& e) {" << EndLine();
-            Output() << "    throw NetworkException(\"Failed to send '" << name << "': \" + std::string(e.what()));" << EndLine();
-            Output() << "}" << EndLine();
-        } else {
-            Output() << "try {" << EndLine();
-            Output() << "    _node->Send(\"" << name << "\");" << EndLine();
-            Output() << "} catch (const std::exception& e) {" << EndLine();
-            Output() << "    throw NetworkException(\"Failed to send '" << name << "': \" + std::string(e.what()));" << EndLine();
-            Output() << "}" << EndLine();
+        Output() << "auto future = Exec<void>(\"" << name << "\"";
+        for (auto const &a : args) {
+            Output() << ", " << a->GetChild(1)->GetTokenText();
         }
+        Output() << ");" << EndLine();
+        Output() << "GetNode().WaitFor(future);" << EndLine();
+    } else if (returnsFuture) {
+        Output() << "return Exec<" << innerType << ">(\"" << name << "\"";
+        for (auto const &a : args) {
+            Output() << ", " << a->GetChild(1)->GetTokenText();
+        }
+        Output() << ");" << EndLine();
     } else {
-        // For non-void methods, use _node->SendWithResponse
-        if (!args.empty()) {
-            Output() << "RakNet::BitStream args;" << EndLine();
-            for (auto const &a : args) {
-                Output() << "args << " << a->GetChild(1)->GetTokenText() << ";"
-                         << EndLine();
-            }
-            Output() << "try {" << EndLine();
-            Output() << "    auto future = _node->SendWithResponse(\"" << name
-                     << "\", args);" << EndLine();
-            Output() << "    return future.get();" << EndLine();
-            Output() << "} catch (const std::exception& e) {" << EndLine();
-            Output() << "    throw NetworkException(\"Failed to call '" << name << "': \" + std::string(e.what()));" << EndLine();
-            Output() << "}" << EndLine();
-        } else {
-            Output() << "try {" << EndLine();
-            Output() << "    auto future = _node->SendWithResponse(\"" << name
-                     << "\");" << EndLine();
-            Output() << "    return future.get();" << EndLine();
-            Output() << "} catch (const std::exception& e) {" << EndLine();
-            Output() << "    throw NetworkException(\"Failed to call '" << name << "': \" + std::string(e.what()));" << EndLine();
-            Output() << "}" << EndLine();
+        Output() << "auto future = Exec<" << returnType << ">(\"" << name << "\"";
+        for (auto const &a : args) {
+            Output() << ", " << a->GetChild(1)->GetTokenText();
         }
+        Output() << ");" << EndLine();
+        Output() << "return GetNode().WaitFor(future);" << EndLine();
     }
 
     EndBlock();

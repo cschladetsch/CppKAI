@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include <cstdlib>
 #include <iostream>
 
 #include "KAI/Core/Console.h"
@@ -44,9 +45,13 @@ TEST(RhoLanguage, TestDoWhileLoops) {
         // Load and run the simplest do-while test script
         vector<string> possiblePaths = {
             "./Test/Language/TestRho/Scripts/SimplestDoWhile.rho",
-            "Test/Language/TestRho/Scripts/SimplestDoWhile.rho",
-            "/home/xian/local/KAI/Test/Language/TestRho/Scripts/SimplestDoWhile.rho"
+            "Test/Language/TestRho/Scripts/SimplestDoWhile.rho"
         };
+        if (const char* kaiRootEnv = std::getenv("KAI_ROOT")) {
+            possiblePaths.push_back(
+                std::string(kaiRootEnv) +
+                "/Test/Language/TestRho/Scripts/SimplestDoWhile.rho");
+        }
 
         string scriptContent;
         string scriptPath;

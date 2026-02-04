@@ -34,7 +34,7 @@ The KAI test runner now includes a comprehensive test suite summary feature. Thi
 To run all tests and see the summary:
 
 ```bash
-cd /home/xian/local/KAI
+cd $KAI_ROOT
 ./run_all_tests_fixed
 ```
 

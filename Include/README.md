@@ -24,7 +24,7 @@ The languages are all located in <KAI/Lang/Lang.h> for each of Pi, Rho and Tau f
 
 ## Network
 
-The common networking system. This is entirely indepedant of actual transport layers or libraries. Currently first implementation is based on RakNet, but that is not needed to build - only to link.
+The common networking system. This is entirely indepedant of actual transport layers or libraries. Currently first implementation is based on ENet, but that is not needed to build - only to link.
 
 ## Platform
 
@@ -34,4 +34,4 @@ Contains platform-specific code. Currently supported platforms are:
 * Ubuntu
 * Windows 7-10
 
-The CMakeFiles should deal with the details, however you may need to install boost and RakNet and provide some hints to their location.
+The CMakeFiles should deal with the details, however you may need to install boost and ENet and provide some hints to their location.

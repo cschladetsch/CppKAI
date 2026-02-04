@@ -1,14 +1,23 @@
 #include "KAI/Network/ConnectionManager.h"
 
+#include <chrono>
 #include <iostream>
+#include <vector>
 
 #include "KAI/Network/ConnectionEvent.h"
 #include "KAI/Network/NetworkLogger.h"
-#include "KAI/Network/RakNetStub.h"
 
 KAI_NET_BEGIN
 
-ConnectionManager::ConnectionManager(RakNet::RakPeerInterface* peer)
+namespace {
+int64_t NowMs() {
+    return std::chrono::duration_cast<std::chrono::milliseconds>(
+               std::chrono::steady_clock::now().time_since_epoch())
+        .count();
+}
+}  // namespace
+
+ConnectionManager::ConnectionManager(NetPeer* peer)
     : peer_(peer),
       nextId_(1),
       connectionTimeout_(30000)  // 30 seconds timeout
@@ -21,10 +30,9 @@ ConnectionManager::~ConnectionManager() {
 }
 
 ConnectionManager::ConnectionId ConnectionManager::AddConnection(
-    const RakNet::SystemAddress& address) {
+    const NetAddress& address) {
     if (!peer_) return 0;
 
-    // Convert SystemAddress to string for map lookup
     std::string addrStr = address.ToString();
 
     // Check if we already have this connection
@@ -38,7 +46,7 @@ ConnectionManager::ConnectionId ConnectionManager::AddConnection(
     ConnectionInfo info;
     info.address = address;
     info.state = ConnectionState::Connected;
-    info.lastActivity = RakNet::GetTimeMS();
+    info.lastActivity = NowMs();
     info.ping = peer_->GetAveragePing(address);
 
     // Add to our maps
@@ -71,7 +79,7 @@ void ConnectionManager::RemoveConnection(ConnectionId id) {
     }
 }
 
-void ConnectionManager::RemoveConnection(const RakNet::SystemAddress& address) {
+void ConnectionManager::RemoveConnection(const NetAddress& address) {
     std::string addrStr = address.ToString();
     auto it = addressToId_.find(addrStr);
     if (it != addressToId_.end()) {
@@ -92,7 +100,7 @@ void ConnectionManager::Update() {
     if (!peer_) return;
 
     // Update ping times and check for timeouts
-    RakNet::TimeMS currentTime = RakNet::GetTimeMS();
+    int64_t currentTime = NowMs();
 
     std::vector<ConnectionId> timedOutConnections;
 
@@ -123,11 +131,11 @@ void ConnectionManager::Update() {
 void ConnectionManager::UpdateActivity(ConnectionId id) {
     auto it = connections_.find(id);
     if (it != connections_.end()) {
-        it->second.lastActivity = RakNet::GetTimeMS();
+        it->second.lastActivity = NowMs();
     }
 }
 
-void ConnectionManager::UpdateActivity(const RakNet::SystemAddress& address) {
+void ConnectionManager::UpdateActivity(const NetAddress& address) {
     std::string addrStr = address.ToString();
     auto it = addressToId_.find(addrStr);
     if (it != addressToId_.end()) {
@@ -183,17 +191,16 @@ int ConnectionManager::GetPing(ConnectionId id) const {
     return -1;
 }
 
-RakNet::SystemAddress ConnectionManager::GetSystemAddress(
-    ConnectionId id) const {
+NetAddress ConnectionManager::GetSystemAddress(ConnectionId id) const {
     auto it = connections_.find(id);
     if (it != connections_.end()) {
         return it->second.address;
     }
-    return RakNet::UNASSIGNED_SYSTEM_ADDRESS;
+    return NetAddress();
 }
 
 ConnectionManager::ConnectionId ConnectionManager::GetConnectionId(
-    const RakNet::SystemAddress& address) const {
+    const NetAddress& address) const {
     std::string addrStr = address.ToString();
     auto it = addressToId_.find(addrStr);
     if (it != addressToId_.end()) {
@@ -215,7 +222,7 @@ size_t ConnectionManager::GetConnectionCount() const {
     return connections_.size();
 }
 
-void ConnectionManager::SetConnectionTimeout(RakNet::TimeMS timeout) {
+void ConnectionManager::SetConnectionTimeout(int64_t timeout) {
     connectionTimeout_ = timeout;
 }
 

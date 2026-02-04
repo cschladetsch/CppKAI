@@ -42,7 +42,7 @@ graph TB
     end
     
     subgraph "Runtime Integration"
-        NETWORK["🌐 Network Layer<br/>RakNet BitStreams<br/>Message routing<br/>Connection management"]
+        NETWORK["🌐 Network Layer<br/>ENet BitStreams<br/>Message routing<br/>Connection management"]
         KAI_CORE["🏗️ KAI Core<br/>Object system<br/>Registry<br/>Memory management"]
     end
     
@@ -229,7 +229,7 @@ Detailed sequence diagram showing the complete network communication flow betwee
 sequenceDiagram
     participant App as Client Application
     participant Proxy as Generated Proxy<br/>ICalculatorProxy
-    participant NetLayer as Network Layer<br/>RakNet/BitStream
+    participant NetLayer as Network Layer<br/>ENet/BitStream
     participant AgentNet as Network Layer<br/>Remote Node
     participant Agent as Generated Agent<br/>ICalculatorAgent
     participant Impl as Server Implementation<br/>Calculator
@@ -330,7 +330,7 @@ graph TB
     
     subgraph "KAI Core Integration"
         Registry["📚 Registry<br/>Object management<br/>Type system<br/>Memory allocation"]
-        Network["🌐 Network<br/>RakNet integration<br/>Message routing<br/>Connection pools"]
+        Network["🌐 Network<br/>ENet integration<br/>Message routing<br/>Connection pools"]
         ObjectSystem["🏗️ Object System<br/>Smart pointers<br/>Reference counting<br/>Garbage collection"]
     end
     
@@ -387,7 +387,7 @@ flowchart TB
         end
         
         subgraph "Agent Event Code"
-            TRIGGER_EVENT["📝 TriggerOrderPlaced<br/><pre><code>void TriggerOrderPlaced(<br/>  const string& symbol,<br/>  int quantity,<br/>  float price<br/>) {<br/>  RakNet::BitStream eventData;<br/>  eventData << symbol << quantity << price;<br/>  _node->BroadcastEvent('OrderPlaced', eventData);<br/>}</code></pre>"]
+            TRIGGER_EVENT["📝 TriggerOrderPlaced<br/><pre><code>void TriggerOrderPlaced(<br/>  const string& symbol,<br/>  int quantity,<br/>  float price<br/>) {<br/>  ENet::BitStream eventData;<br/>  eventData << symbol << quantity << price;<br/>  _node->BroadcastEvent('OrderPlaced', eventData);<br/>}</code></pre>"]
         end
     end
     
@@ -460,7 +460,7 @@ graph TB
     end
     
     subgraph "Serialization System"
-        BITSTREAM["📦 RakNet BitStream<br/>• Binary serialization<br/>• Network endianness<br/>• Compression support"]
+        BITSTREAM["📦 ENet BitStream<br/>• Binary serialization<br/>• Network endianness<br/>• Compression support"]
         
         subgraph "Serialization Patterns"
             PRIMITIVE_SERIAL["🔢 Primitive Serialization<br/><pre><code>bitstream << intValue;<br/>bitstream << floatValue;<br/>bitstream << boolValue;</code></pre>"]
@@ -510,7 +510,7 @@ graph TB
 These Tau components integrate seamlessly with the broader KAI distributed computing framework:
 
 - **Object System**: Tau-generated classes inherit from KAI's object model
-- **Network Layer**: Uses RakNet for reliable network communication
+- **Network Layer**: Uses ENet for reliable network communication
 - **Registry**: All generated types are registered with KAI's type system
 - **Memory Management**: Automatic memory management through KAI's smart pointer system
 - **Error Handling**: Comprehensive error handling with KAI's exception system

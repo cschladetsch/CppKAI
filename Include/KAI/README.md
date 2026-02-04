@@ -125,7 +125,7 @@ The header files are organized with minimal dependencies:
 - **Base.h** - No dependencies, foundation types
 - **Core/** - Depends on Base.h and platform headers
 - **Language/** - Depends on Core/ and Executor/
-- **Network/** - Depends on Core/ and external RakNet
+- **Network/** - Depends on Core/ and external ENet
 - **Console/** - Depends on Core/, Executor/, Language/, and Network/
 
 ## Platform Support

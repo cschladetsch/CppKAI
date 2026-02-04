@@ -96,7 +96,7 @@ This document provides a comprehensive summary of all test suites in the KAI pro
 
 4. **Network Tests:** 
    - Tau's network-related code generation tests failing
-   - May be related to RakNet stub implementation
+   - May be related to ENet stub implementation
 
 ## Summary Statistics
 

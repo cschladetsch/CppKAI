@@ -3,7 +3,7 @@
 ## What was done:
 
 ### 1. Created Dedicated Array Test File
-- **Created**: `/home/xian/local/KAI/Test/Source/TestArray.cpp`
+- **Created**: `$KAI_ROOT/Test/Source/TestArray.cpp`
 - **Purpose**: Dedicated test file for all Array-related tests
 - **Test Fixture**: `TestArray` (inherits from `TestCommon`)
 

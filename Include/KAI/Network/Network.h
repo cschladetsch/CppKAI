@@ -11,3 +11,4 @@
 #include "KAI/Network/Proxy.h"
 #include "KAI/Network/ProxyBase.h"
 #include "KAI/Network/Representative.h"
+#include "KAI/Network/Transport.h"

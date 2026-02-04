@@ -34,7 +34,7 @@ graph TB
         NODE[Network Nodes]
         PEER[Peer-to-Peer]
         PROXY[Proxy Objects]
-        RAKNET[RakNet Transport]
+        ENET[ENet Transport]
     end
     
     subgraph "Memory Management"
@@ -64,7 +64,7 @@ graph TB
     EXE <--> NODE
     NODE <--> PEER
     PEER <--> PROXY
-    PROXY <--> RAKNET
+    PROXY <--> ENET
     
     REG --> GC
     GC --> HEAP

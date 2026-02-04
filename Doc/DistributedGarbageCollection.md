@@ -383,10 +383,10 @@ interface IGCDiagnostics {
    - Workaround: Manual cycle breaking
    - Fix planned: Proper cycle detection algorithm
 
-2. **RakNet Stub**: Network layer uses stub implementation
+2. **ENet Stub**: Network layer uses stub implementation
    - Affects: Real network testing
    - Workaround: In-memory testing only
-   - Fix planned: Full RakNet integration or alternative
+   - Fix planned: Full ENet integration or alternative
 
 ### Design Limitations
 1. **Clock Synchronization**: Lease management assumes synchronized clocks

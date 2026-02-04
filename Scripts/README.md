@@ -108,7 +108,7 @@ Located in project root:
 Most scripts require:
 - CMake 3.10+
 - C++17 compatible compiler
-- RakNet networking library
+- ENet networking library
 - tmux (for interactive demos)
 
 Network scripts may require:

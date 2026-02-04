@@ -47,7 +47,7 @@ KAI is a C++ project implementing a multi-language runtime system with networkin
 - **Core**: Object system, registry, memory management
 - **Executor**: Stack-based execution engine  
 - **Languages**: Pi (stack-based), Rho (functional), Tau (C++-like)
-- **Network**: Peer-to-peer networking with RakNet
+- **Network**: Peer-to-peer networking with ENet
 - **Console**: Interactive REPL with language switching
 
 ## Development Notes

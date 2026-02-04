@@ -12,8 +12,7 @@ class NetworkLogger {
    public:
     enum class Category { Connection, Message, Discovery, Status };
 
-    static void Init(
-        const std::string& logDirectory = "/home/xian/local/KAI/Logs");
+    static void Init(const std::string& logDirectory = "Logs");
 
     // Standard logging methods
     static void LogConnection(const std::string& message);

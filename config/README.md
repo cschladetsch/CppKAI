@@ -63,7 +63,7 @@ To use these configuration files, run the NetworkPeer executable:
 
 For example:
 ```bash
-cd /home/xian/local/KAI/build && ./Bin/NetworkPeer ../config/peer1_config.json
+cd $KAI_ROOT/build && ./Bin/NetworkPeer ../config/peer1_config.json
 ```
 
 ### Interactive Commands

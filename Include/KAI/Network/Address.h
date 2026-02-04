@@ -39,7 +39,7 @@ struct IpAddress {
 
     const std::string& Text() const { return text_; }
 
-    // Convert to string for use with RakNet
+    // Convert to string for use with the transport layer
     std::string ToString() const { return text_; }
 
     // Parse IP address from string

@@ -42,7 +42,7 @@ flowchart TB
     subgraph "Integration"
         CLIENT_APP["👤 Client Application<br/>Links Calculator.proxy.h<br/>Calls remote methods<br/>Handles events"]
         SERVER_APP["🏠 Server Application<br/>Links Calculator.agent.h<br/>Implements handlers<br/>Triggers events"]
-        NETWORK["🌐 Network Layer<br/>RakNet BitStreams<br/>Message routing<br/>Connection management"]
+        NETWORK["🌐 Network Layer<br/>BinaryStreams<br/>Message routing<br/>Connection management"]
     end
     
     TAU_FILE --> VALIDATE
@@ -199,10 +199,10 @@ namespace MathService {
 namespace MathService {
     class ICalculatorAgent {
     public:
-        void HandleAdd(BitStream& params, BitStream& response);
-        void HandleSubtract(BitStream& params, BitStream& response);
-        void HandleMultiply(BitStream& params, BitStream& response);
-        void HandleDivide(BitStream& params, BitStream& response);
+        void HandleAdd(BinaryStream& params, BinaryStream& response);
+        void HandleSubtract(BinaryStream& params, BinaryStream& response);
+        void HandleMultiply(BinaryStream& params, BinaryStream& response);
+        void HandleDivide(BinaryStream& params, BinaryStream& response);
         
         void TriggerCalculationCompleted(string operation, float result);
     };
@@ -273,7 +273,7 @@ Error: Could not open /readonly/dir/Calculator.proxy.h for writing
 Generated proxy and agent classes integrate seamlessly with the KAI distributed object model:
 
 - **Type Safety** - Full C++ type checking across network boundaries
-- **Serialization** - Automatic parameter serialization using RakNet BitStreams
+- **Serialization** - Automatic parameter serialization using BinaryStreams
 - **Event Handling** - Callback registration for distributed events
 - **Network Transparency** - Remote objects appear as local C++ objects
 
@@ -296,5 +296,4 @@ NetworkGenerate supports the full Tau IDL specification:
 - **[Tau README](../../../Include/KAI/Language/Tau/README.md)** - Language overview
 - **[Generate README](../../../Include/KAI/Language/Tau/Generate/README.md)** - Code generation details
 - **[Test Examples](../../../Test/Language/TestTau/)** - Comprehensive test cases
-
 

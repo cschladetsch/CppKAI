@@ -63,6 +63,14 @@ Added new documentation files:
 ./Scripts/p2p_test.sh
 ```
 
+### Tau Pi Serialization (Local Nodes)
+
+`Test/Network/TauPiSerializationTest.cpp` runs two `Node` instances in a single
+thread and pumps updates manually. The same RPC + Pi serialization path scales
+to multi-process or multi-machine nodes by running each node in its own process
+and removing the in-process update pump (each process calls `Node::Update()` on
+its own thread).
+
 ### Running NetworkPeer Manually
 
 ```bash

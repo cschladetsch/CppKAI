@@ -296,7 +296,7 @@ graph TB
     end
     
     subgraph "KAI Network Integration"
-        RAKNET[RakNet Integration<br/>- P2P networking<br/>- NAT traversal<br/>- Packet priority]
+        ENET[ENet Integration<br/>- P2P networking<br/>- NAT traversal<br/>- Packet priority]
         CONSOLE[Console Networking<br/>- Interactive debugging<br/>- Live service monitoring<br/>- Command injection]
     end
     
@@ -307,13 +307,13 @@ graph TB
     AGENT_NET --> PROTOCOL
     
     PROTOCOL --> TRANSPORT
-    TRANSPORT --> RAKNET
+    TRANSPORT --> ENET
     TRANSPORT --> CONSOLE
     
     style TAU_INTERFACE fill:#e1bee7
     style PROXY_NET fill:#4caf50
     style AGENT_NET fill:#2196f3
-    style RAKNET fill:#ff9800
+    style ENET fill:#ff9800
 ```
 
 ## Tau Async Operations Model
@@ -360,7 +360,7 @@ graph LR
     
     subgraph "Customization Points"
         SERIALIZATION[Serialization Format<br/>- Binary<br/>- JSON<br/>- XML<br/>- Custom]
-        NETWORKING[Network Backend<br/>- RakNet<br/>- TCP/IP<br/>- WebSockets<br/>- Custom]
+        NETWORKING[Network Backend<br/>- ENet<br/>- TCP/IP<br/>- WebSockets<br/>- Custom]
         ERROR_HANDLING[Error Strategy<br/>- Exceptions<br/>- Error codes<br/>- Optional returns<br/>- Custom]
     end
     

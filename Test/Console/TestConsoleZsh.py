@@ -1,12 +1,18 @@
 #!/usr/bin/env python3
 
+import os
 import subprocess
 import sys
 import time
 from typing import List, Tuple
 
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+KAI_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, "../.."))
+
 class ConsoleTest:
-    def __init__(self, console_path="/home/xian/local/KAI/Bin/Console"):
+    def __init__(self, console_path=None):
+        if console_path is None:
+            console_path = os.path.join(KAI_ROOT, "Bin", "Console")
         self.console_path = console_path
         self.passed = 0
         self.failed = 0
@@ -178,8 +184,7 @@ class ConsoleTest:
 
 def main():
     # Check if console binary exists
-    import os
-    console_path = "/home/xian/local/KAI/Bin/Console"
+    console_path = os.path.join(KAI_ROOT, "Bin", "Console")
     
     if not os.path.exists(console_path):
         print(f"Error: Console binary not found at {console_path}")

@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # Set base path for the project
-PROJECT_ROOT="/home/xian/local/KAI"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 CONFIG_DIR="$PROJECT_ROOT/config"
 BUILD_DIR="$PROJECT_ROOT/build"
 TEST_OUTPUT_DIR="$PROJECT_ROOT/network_test_output"

@@ -112,7 +112,7 @@ TEST_F(TauCodeGenerationExtensiveTests, ProxyHeaderGeneration) {
         "#include <stdexcept>",
         "#include <string>",
         "#include <future>",
-        "#include <RakNet/BitStream.h>"
+        "#include <KAI/Core/BinaryStream.h>"
     };
 
     EXPECT_TRUE(ContainsPatterns(output, expectedHeaders)) 
@@ -269,7 +269,7 @@ TEST_F(TauCodeGenerationExtensiveTests, AgentHeaderGeneration) {
         "#include <KAI/Network/NetworkException.h>",
         "#include <stdexcept>",
         "#include <string>",
-        "#include <RakNet/BitStream.h>"
+        "#include <KAI/Core/BinaryStream.h>"
     };
 
     EXPECT_TRUE(ContainsPatterns(output, expectedHeaders))
@@ -320,24 +320,24 @@ TEST_F(TauCodeGenerationExtensiveTests, AgentHandlerGeneration) {
     // Check handler method generation with documentation  
     vector<string> expectedPatterns = {
         "/// Handler for remote method call: calculate",
-        "/// Deserializes parameters from BitStream and calls implementation",
+        "/// Deserializes parameters from BinaryStream and calls implementation",
         "/// Parameters deserialized from network:",
         "///   input (float)",
         "///   mode (int)", 
         "/// Sends int response back to sender",
-        "void Handle_calculate(RakNet::BitStream& bs, RakNet::SystemAddress& sender)",
+        "void Handle_calculate(BinaryStream& bs, const kai::net::NetAddress& sender)",
 
         "float input;",
         "bs >> input;",
         "int mode;", 
         "bs >> mode;",
         "int result = _impl->calculate(input, mode);",
-        "RakNet::BitStream response;",
+        "BinaryStream response;",
         "response << result;",
         "_node->SendResponse(sender, response);",
 
         "/// Handler for remote method call: reset",
-        "void Handle_reset(RakNet::BitStream& bs, RakNet::SystemAddress& sender)",
+        "void Handle_reset(BinaryStream& bs, const kai::net::NetAddress& sender)",
         "_impl->reset();"
     };
 
@@ -368,8 +368,8 @@ TEST_F(TauCodeGenerationExtensiveTests, AgentEventTriggers) {
         "///   score (float)",
         "///   success (bool)",
         "void TriggerDataProcessed(const string& result, float score, bool success)",
-        "RakNet::BitStream eventData;",
-        "eventData << result;",
+        "BinaryStream eventData;",
+        "kai::net::NetworkSerializer::WriteString(eventData, result);",
         "eventData << score;",
         "eventData << success;",
         "_node->BroadcastEvent(\"DataProcessed\", eventData);",
@@ -716,14 +716,14 @@ TEST_F(TauCodeGenerationExtensiveTests, CodeQualityMetrics) {
     vector<string> requiredProxyIncludes = {
         "#include <KAI/Network/ProxyDecl.h>",
         "#include <functional>",
-        "#include <RakNet/BitStream.h>"  
+        "#include <KAI/Core/BinaryStream.h>"  
     };
     EXPECT_TRUE(ContainsPatterns(proxyOutput, requiredProxyIncludes))
         << "Missing required includes in proxy";
 
     vector<string> requiredAgentIncludes = {
         "#include <KAI/Network/AgentDecl.h>",
-        "#include <RakNet/BitStream.h>"
+        "#include <KAI/Core/BinaryStream.h>"
     };
     EXPECT_TRUE(ContainsPatterns(agentOutput, requiredAgentIncludes))
         << "Missing required includes in agent";

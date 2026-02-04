@@ -59,7 +59,7 @@ Our direct tests cover the following functionality:
 To run the tests that pass reliably, use the `run_all_tests_fixed` script:
 
 ```bash
-cd /home/xian/local/KAI
+cd $KAI_ROOT
 ./run_all_tests_fixed
 ```
 

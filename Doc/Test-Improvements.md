@@ -59,7 +59,7 @@ Created `run_all_tests_fixed` which provides several advantages over the origina
 To run the improved test suite:
 
 ```bash
-cd /home/xian/local/KAI
+cd $KAI_ROOT
 ./run_all_tests_fixed
 ```
 

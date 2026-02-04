@@ -137,26 +137,17 @@ class ProxyGenerator {
             ss << ") {\n";
 
             // Method implementation
-            ss << "        // Create parameter packet\n";
-            ss << "        RakNet::BitStream bs;\n";
-            ss << "        bs.Write((unsigned "
-                  "char)kai::net::NetworkSerializer::ID_KAI_FUNCTION_CALL);\n";
-            ss << "        bs.Write(_handle);\n";
-            ss << "        bs.Write(std::string(\"" << method.name << "\"));\n";
-
-            // Serialize parameters
+            ss << "        auto future = _node->Invoke<" << method.returnType
+               << ">(_handle, \"" << method.name << "\"";
             for (const auto& param : method.params) {
-                ss << "        bs.Write(" << param.second << ");\n";
+                ss << ", " << param.second;
             }
+            ss << ");\n";
 
-            // Send request and handle response
             if (method.returnType == "void") {
-                ss << "        _node->Send(_handle, bs);\n";
+                ss << "        return;\n";
             } else {
-                ss << "        // Send and wait for response\n";
-                ss << "        auto future = _node->SendWithResponse<"
-                   << method.returnType << ">(_handle, bs);\n";
-                ss << "        return future.get();\n";
+                ss << "        return _node->WaitFor(future);\n";
             }
 
             ss << "    }\n\n";
@@ -183,8 +174,8 @@ class ProxyGenerator {
            << "::" << cls.name << "* impl)\n";
         ss << "        : _node(node), _implementation(impl) {}\n\n";
 
-        ss << "    void ProcessMessage(RakNet::BitStream& bs, "
-              "RakNet::SystemAddress& sender) {\n";
+        ss << "    void ProcessMessage(BinaryStream& bs, "
+              "const kai::net::NetAddress& sender) {\n";
         ss << "        // Read function name\n";
         ss << "        std::string functionName;\n";
         ss << "        bs.Read(functionName);\n\n";
@@ -205,7 +196,7 @@ class ProxyGenerator {
         // Generate handler methods
         for (const auto& method : cls.methods) {
             ss << "    void Handle_" << method.name
-               << "(RakNet::BitStream& bs, RakNet::SystemAddress& sender) {\n";
+               << "(BinaryStream& bs, const kai::net::NetAddress& sender) {\n";
 
             // Deserialize parameters
             for (const auto& param : method.params) {
@@ -233,7 +224,7 @@ class ProxyGenerator {
             // Send response if needed
             if (method.returnType != "void") {
                 ss << "        // Send response\n";
-                ss << "        RakNet::BitStream response;\n";
+                ss << "        BinaryStream response;\n";
                 ss << "        response.Write((unsigned "
                       "char)kai::net::NetworkSerializer::ID_KAI_FUNCTION_"
                       "RESPONSE);\n";

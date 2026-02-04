@@ -38,7 +38,7 @@ The KAI network system's performance has been measured under various conditions:
 |--------|-------|-------|
 | Minimum Latency | 1-2 ms | Local network, minimal load |
 | Maximum Throughput | ~10,000 commands/sec | Local network, simple commands |
-| Maximum Connections | 32 per node | Default RakNet configuration |
+| Maximum Connections | 32 per node | Default ENet configuration |
 | Serialization Overhead | 20-100 bytes | Depends on command complexity |
 | Connection Setup Time | 50-200 ms | Includes discovery and handshake |
 
@@ -69,7 +69,7 @@ The KAI network system's performance has been measured under various conditions:
 └────────────────────────────────────────────────┘
 ```
 
-RakNet is designed to maintain reasonable performance up to its connection limit, with a gradual increase in resource usage as peer count grows.
+ENet is designed to maintain reasonable performance up to its connection limit, with a gradual increase in resource usage as peer count grows.
 
 ## Optimizing Performance
 
@@ -77,11 +77,11 @@ RakNet is designed to maintain reasonable performance up to its connection limit
 
 The following configuration parameters can significantly affect network performance:
 
-1. **RakNet Configuration**
+1. **ENet Configuration**
    - Maximum connections
    - MTU size
    - Send/receive buffer sizes
-   - RakNet compression level
+   - ENet compression level
    - Congestion control parameters
 
 2. **KAI Node Configuration**
@@ -177,7 +177,7 @@ Optimize data transmission with these techniques:
    - Track object versions for change detection
 
 3. **Compression**
-   - Use RakNet's built-in compression for efficient transmission
+   - Use ENet's built-in compression for efficient transmission
    - Consider custom compression for specific data types
    - Balance compression ratio with CPU overhead
 

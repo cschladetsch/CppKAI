@@ -176,8 +176,8 @@ TEST_F(ChatProxyGenerationTest, VerifyGeneratedProxyStructure) {
         << "Generated proxy should contain SendMessage method";
     EXPECT_NE(proxyCode.find("ConnectToPeer"), string::npos)
         << "Generated proxy should contain ConnectToPeer method";
-    EXPECT_NE(proxyCode.find("RakNet"), string::npos)
-        << "Generated proxy should include RakNet headers";
+    EXPECT_NE(proxyCode.find("BinaryStream"), string::npos)
+        << "Generated proxy should include BinaryStream headers";
 }
 
 // Test generated agent structure

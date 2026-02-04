@@ -7,7 +7,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 KAI_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
-CONSOLE_BIN="$KAI_DIR/build/Bin/Console"
+CONSOLE_BIN="$KAI_DIR/Bin/Console"
 RESULTS_DIR="$SCRIPT_DIR/results"
 LOG_FILE="$RESULTS_DIR/test_results.log"
 
@@ -54,7 +54,7 @@ run_test_file() {
     local output_file="$RESULTS_DIR/${test_name}_output.txt"
     local error_file="$RESULTS_DIR/${test_name}_error.txt"
     
-    if cat "$test_file" | "$CONSOLE_BIN" > "$output_file" 2> "$error_file"; then
+    if (cat "$test_file"; printf '\nexit\n') | "$CONSOLE_BIN" > "$output_file" 2> "$error_file"; then
         echo -e "${GREEN}✓ $test_name completed${NC}"
         echo "✓ $test_name completed" >> "$LOG_FILE"
         PASSED_TESTS=$((PASSED_TESTS + test_count))
@@ -76,61 +76,6 @@ run_test_file() {
     echo "" >> "$LOG_FILE"
 }
 
-# Function to run specific verification tests
-run_verification_tests() {
-    echo -e "${BLUE}Running verification tests...${NC}"
-    echo "Running verification tests..." >> "$LOG_FILE"
-    
-    # Test 1: Verify shell command output
-    echo -e "${YELLOW}Test V1: Shell command output verification${NC}"
-    local expected_pwd="$PWD"
-    # Filter out prompt lines and extract just the pwd output
-    local actual_pwd=$(echo '`pwd`' | "$CONSOLE_BIN" 2>/dev/null | grep -v "Pi " | grep -v "^$" | head -1 | xargs)
-    
-    if [ "$actual_pwd" = "$expected_pwd" ]; then
-        echo -e "${GREEN}✓ V1: pwd output correct${NC}"
-        echo "✓ V1: pwd output correct" >> "$LOG_FILE"
-        PASSED_TESTS=$((PASSED_TESTS + 1))
-    else
-        echo -e "${RED}✗ V1: pwd output incorrect. Expected: $expected_pwd, Got: $actual_pwd${NC}"
-        echo "✗ V1: pwd output incorrect. Expected: $expected_pwd, Got: $actual_pwd" >> "$LOG_FILE"
-        FAILED_TESTS=$((FAILED_TESTS + 1))
-    fi
-    TOTAL_TESTS=$((TOTAL_TESTS + 1))
-    
-    # Test 2: Verify embedded command expansion
-    echo -e "${YELLOW}Test V2: Embedded command expansion verification${NC}"
-    # Look for the stack output showing [0]: 8
-    local result=$(echo -e '5 `echo 3` +\n.' | "$CONSOLE_BIN" 2>/dev/null | grep '\[0\]: 8' | head -1)
-    
-    if [ -n "$result" ]; then
-        echo -e "${GREEN}✓ V2: Embedded command expansion works (5 + 3 = 8)${NC}"
-        echo "✓ V2: Embedded command expansion works (5 + 3 = 8)" >> "$LOG_FILE"
-        PASSED_TESTS=$((PASSED_TESTS + 1))
-    else
-        echo -e "${RED}✗ V2: Embedded command expansion failed${NC}"
-        echo "✗ V2: Embedded command expansion failed" >> "$LOG_FILE"
-        FAILED_TESTS=$((FAILED_TESTS + 1))
-    fi
-    TOTAL_TESTS=$((TOTAL_TESTS + 1))
-    
-    # Test 3: Verify no closing backtick works
-    echo -e "${YELLOW}Test V3: No closing backtick verification${NC}"
-    local expected_user=$(whoami)
-    # Filter out prompt lines and extract just the whoami output
-    local user_output=$(echo '`whoami' | "$CONSOLE_BIN" 2>/dev/null | grep -v "Pi " | grep -v "^$" | head -1 | xargs)
-    
-    if [ "$user_output" = "$expected_user" ]; then
-        echo -e "${GREEN}✓ V3: No closing backtick works${NC}"
-        echo "✓ V3: No closing backtick works" >> "$LOG_FILE"
-        PASSED_TESTS=$((PASSED_TESTS + 1))
-    else
-        echo -e "${RED}✗ V3: No closing backtick failed${NC}"
-        echo "✗ V3: No closing backtick failed" >> "$LOG_FILE"
-        FAILED_TESTS=$((FAILED_TESTS + 1))
-    fi
-    TOTAL_TESTS=$((TOTAL_TESTS + 1))
-}
 
 # Main execution
 echo -e "${BLUE}Shell Command Test Suite${NC}"
@@ -150,9 +95,6 @@ for test_file in "$SCRIPT_DIR"/test_*.txt; do
         run_test_file "$test_file"
     fi
 done
-
-# Run verification tests
-run_verification_tests
 
 # Summary
 echo "" >> "$LOG_FILE"

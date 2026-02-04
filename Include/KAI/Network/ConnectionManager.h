@@ -1,13 +1,15 @@
 #pragma once
 
+#include <cstdint>
 #include <functional>
 #include <map>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include "KAI/Network/ConnectionEvent.h"
 #include "KAI/Network/Network.h"
-#include "KAI/Network/RakNetStub.h"  // Include the RakNetStub.h file directly
+#include "KAI/Network/Transport.h"
 
 KAI_NET_BEGIN
 
@@ -16,7 +18,7 @@ enum class ConnectionState { Disconnected, Connecting, Connected, Failed };
 
 // Connection info for a remote peer
 struct ConnectionInfo {
-    RakNet::SystemAddress address;
+    NetAddress address;
     ConnectionState state;
     int64_t lastActivity;
     int ping;
@@ -32,17 +34,17 @@ class ConnectionManager {
     using ConnectionCallback =
         std::function<void(ConnectionId, ConnectionEvent)>;
 
-    ConnectionManager(RakNet::RakPeerInterface* peer);
+    ConnectionManager(NetPeer* peer);
     ~ConnectionManager();
 
     // Add a connection (after successful connection or incoming connection)
-    ConnectionId AddConnection(const RakNet::SystemAddress& address);
+    ConnectionId AddConnection(const NetAddress& address);
 
     // Remove a connection
     void RemoveConnection(ConnectionId id);
 
     // Remove a connection by address
-    void RemoveConnection(const RakNet::SystemAddress& address);
+    void RemoveConnection(const NetAddress& address);
 
     // Update connection states and detect timeouts
     void Update();
@@ -51,8 +53,7 @@ class ConnectionManager {
     ConnectionInfo* GetConnection(ConnectionId id);
 
     // Get a connection by system address
-    ConnectionInfo* GetConnectionByAddress(
-        const RakNet::SystemAddress& address);
+    ConnectionInfo* GetConnectionByAddress(const NetAddress& address);
 
     // Get all connections
     std::vector<ConnectionId> GetAllConnections() const;
@@ -67,17 +68,17 @@ class ConnectionManager {
     bool IsConnected(ConnectionId id) const;
 
     // Check if a specific peer is connected by address
-    bool IsConnected(const RakNet::SystemAddress& address) const;
+    bool IsConnected(const NetAddress& address) const;
 
     // Handle connection events for a system address
-    void OnConnectionEvent(const RakNet::SystemAddress& address,
+    void OnConnectionEvent(const NetAddress& address,
                            ConnectionEvent event);
 
     // Update activity timestamp for a connection
     void UpdateActivity(ConnectionId id);
 
     // Update activity timestamp for a connection by address
-    void UpdateActivity(const RakNet::SystemAddress& address);
+    void UpdateActivity(const NetAddress& address);
 
     // Get connection state
     ConnectionState GetConnectionState(ConnectionId id) const;
@@ -89,21 +90,18 @@ class ConnectionManager {
     int GetPing(ConnectionId id) const;
 
     // Get system address for a connection ID
-    RakNet::SystemAddress GetSystemAddress(ConnectionId id) const;
+    NetAddress GetSystemAddress(ConnectionId id) const;
 
     // Get connection ID for a system address
-    ConnectionId GetConnectionId(const RakNet::SystemAddress& address) const;
+    ConnectionId GetConnectionId(const NetAddress& address) const;
 
     // Set connection timeout
-    void SetConnectionTimeout(RakNet::TimeMS timeout);
+    void SetConnectionTimeout(int64_t timeout);
 
    private:
-    RakNet::RakPeerInterface* peer_;
+    NetPeer* peer_;
     std::unordered_map<ConnectionId, ConnectionInfo> connections_;
-    // Custom hash and equal functions for the map since RakNet::SystemAddress
-    // doesn't have a proper hash implementation
-    std::map<std::string, ConnectionId>
-        addressToId_;  // Use string representation as key
+    std::map<std::string, ConnectionId> addressToId_;
     ConnectionCallback callback_;
     ConnectionId nextId_;
     int64_t connectionTimeout_;  // Timeout in milliseconds

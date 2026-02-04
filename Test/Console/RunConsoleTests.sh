@@ -3,7 +3,9 @@
 # Console Zsh Features Test Script
 # This script tests all the zsh-like features implemented in the Console
 
-CONSOLE_BIN="/home/xian/local/KAI/Bin/Console"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+KAI_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+CONSOLE_BIN="$KAI_DIR/Bin/Console"
 TEST_OUTPUT="console_test_results.txt"
 TEMP_INPUT="temp_test_input.txt"
 

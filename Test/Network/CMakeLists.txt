@@ -7,10 +7,9 @@ project(Test_Network)
 # if(KAI_BUILD_TEST_NETWORK)
     # GTest-based test files
     set(GTEST_SOURCES
-        TestNode.cpp
         TestGenerateProxy.cpp
         TauNetworkCommunicationTest.cpp
-        AdvancedNetworkTests.cpp
+        TauPiSerializationTest.cpp
         # TestAgentProxy.cpp
         # ICQStyleChatTest.cpp
         # ChatProxyGenerationTest.cpp

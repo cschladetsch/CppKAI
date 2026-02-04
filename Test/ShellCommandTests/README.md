@@ -54,7 +54,7 @@ This test suite comprehensively tests the shell command functionality added to t
 ### Prerequisites
 1. Build the KAI Console:
    ```bash
-   cd /path/to/KAI/build
+   cd $KAI_ROOT/build
    ninja Console
    ```
 
@@ -62,7 +62,7 @@ This test suite comprehensively tests the shell command functionality added to t
 
 ### Execute Test Suite
 ```bash
-cd /path/to/KAI/Test/ShellCommandTests
+cd $KAI_ROOT/Test/ShellCommandTests
 ./run_shell_tests.sh
 ```
 

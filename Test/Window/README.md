@@ -141,7 +141,7 @@ Performance and stress tests to ensure responsive UI:
 
 ### Build the tests:
 ```bash
-cd /path/to/KAI/Test/Window
+cd $KAI_ROOT/Test/Window
 mkdir build
 cd build
 cmake ..

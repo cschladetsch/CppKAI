@@ -40,7 +40,7 @@ TEST(RhoLanguage, DISABLED_TestDoWhileLoops) {
 
         // Load and run the simplest do-while test script
         string scriptPath =
-            "/home/xian/local/KAI/Test/Language/TestRho/Scripts/"
+            "$KAI_ROOT/Test/Language/TestRho/Scripts/"
             "SimplestDoWhile.rho";
         string scriptContent = String(File::ReadAllText(scriptPath)).c_str();
         cout << "Script content:" << endl << scriptContent << endl;

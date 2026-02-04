@@ -1,26 +1,2 @@
-[2025-05-30 00:27:11] [ERROR  ] [Executor.cpp:528]  Eval: KAI Exception performing operation: [Stack.cpp:47] Empty Stack: 
-[2025-05-30 00:27:11] [ERROR  ] [Executor.cpp:650]  Continue: KAI Exception in continuation: [Stack.cpp:47] Empty Stack: 
-[2025-05-30 00:27:11] [ERROR  ] [Console.cpp:198]  E='[Stack.cpp:47] Empty Stack: ' 
-[2025-05-30 00:27:11] [ERROR  ] [Executor.cpp:528]  Eval: KAI Exception performing operation: [Stack.cpp:47] Empty Stack: 
-[2025-05-30 00:27:11] [ERROR  ] [Executor.cpp:650]  Continue: KAI Exception in continuation: [Stack.cpp:47] Empty Stack: 
-[2025-05-30 00:27:11] [ERROR  ] [Console.cpp:198]  E='[Stack.cpp:47] Empty Stack: ' 
-[2025-05-30 00:27:11] [ERROR  ] [Executor.cpp:528]  Eval: KAI Exception performing operation: [Stack.cpp:47] Empty Stack: 
-[2025-05-30 00:27:11] [ERROR  ] [Executor.cpp:650]  Continue: KAI Exception in continuation: [Stack.cpp:47] Empty Stack: 
-[2025-05-30 00:27:11] [ERROR  ] [Console.cpp:198]  E='[Stack.cpp:47] Empty Stack: ' 
-[2025-05-30 00:27:11] [ERROR  ] [Executor.cpp:528]  Eval: KAI Exception performing operation: [Stack.cpp:47] Empty Stack: 
-[2025-05-30 00:27:11] [ERROR  ] [Executor.cpp:650]  Continue: KAI Exception in continuation: [Stack.cpp:47] Empty Stack: 
-[2025-05-30 00:27:11] [ERROR  ] [Console.cpp:198]  E='[Stack.cpp:47] Empty Stack: ' 
 sh: 1: nonexistentcommand123: not found
-[2025-05-30 00:27:11] [ERROR  ] [Executor.cpp:528]  Eval: KAI Exception performing operation: [Stack.cpp:47] Empty Stack: 
-[2025-05-30 00:27:11] [ERROR  ] [Executor.cpp:650]  Continue: KAI Exception in continuation: [Stack.cpp:47] Empty Stack: 
-[2025-05-30 00:27:11] [ERROR  ] [Console.cpp:198]  E='[Stack.cpp:47] Empty Stack: ' 
 sh: 1: nonexistentcommand123: not found
-[2025-05-30 00:27:11] [ERROR  ] [Compiler.h:41]  trans->Error='(0):[3]: Unrecognised `
-
-10 `echo 5 +
-   ^
-' 
-[2025-05-30 00:27:11] [ERROR  ] [Executor.h:134]  EvalIdent: Object not found: echo
-[2025-05-30 00:27:11] [ERROR  ] [Executor.cpp:528]  Eval: KAI Exception performing operation: [ExecutorPerform.inl:588] Invalid name type for Store operation: 
-[2025-05-30 00:27:11] [ERROR  ] [Executor.cpp:650]  Continue: KAI Exception in continuation: [ExecutorPerform.inl:588] Invalid name type for Store operation: 
-[2025-05-30 00:27:11] [ERROR  ] [Console.cpp:198]  E='[ExecutorPerform.inl:588] Invalid name type for Store operation: ' 

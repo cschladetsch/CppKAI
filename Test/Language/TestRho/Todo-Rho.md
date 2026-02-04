@@ -94,7 +94,7 @@ The fix involved a fundamental correction to how the RhoTranslator generates cod
 
 ## Key Files Modified
 
-- `/home/xian/local/KAI/Source/Library/Language/Rho/Source/RhoTranslator.cpp`: Fixed the translator to generate operations instead of evaluating at translation time
+- `$KAI_ROOT/Source/Library/Language/Rho/Source/RhoTranslator.cpp`: Fixed the translator to generate operations instead of evaluating at translation time
 - Removed approximately 1000 lines of direct evaluation code
 - Added proper Store operation handling
 

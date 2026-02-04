@@ -9,7 +9,7 @@
 
 # Send some messages
 "Welcome to the dev-chat channel!"
-"This is a P2P chat system using RakNet"
+"This is a P2P chat system using ENet"
 
 # Check who's in the channel
 `users`

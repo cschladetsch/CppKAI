@@ -63,7 +63,7 @@ digraph KAI_Architecture {
         ConnectionManager [fillcolor=lightcyan, label="ConnectionManager"];
         PeerDiscovery [fillcolor=lightcyan, label="PeerDiscovery"];
         ProxyAgent [fillcolor=lightcyan, label="Proxy/Agent\\n(RPC)"];
-        RakNet [fillcolor=lightcyan, label="RakNet\\n(UDP)"];
+        ENet [fillcolor=lightcyan, label="ENet\\n(UDP)"];
     }
     
     // Object System Layer
@@ -171,7 +171,7 @@ digraph KAI_Architecture {
     NetworkNode -> ConnectionManager;
     NetworkNode -> PeerDiscovery;
     NetworkNode -> ProxyAgent;
-    ConnectionManager -> RakNet;
+    ConnectionManager -> ENet;
     ProxyAgent -> Serialization;
     
     // Application connections

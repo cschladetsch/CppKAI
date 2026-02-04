@@ -53,7 +53,7 @@ This document outlines the systematic migration from raw pointers to smart point
 ### Phase 4: Network Layer (Week 7-8)
 1. **Network RAII** - Connection and session management
 2. **Agent/Proxy** - Lifecycle management
-3. **External Resources** - RakNet wrapper
+3. **External Resources** - ENet wrapper
 
 ## Implementation Strategy
 
@@ -121,9 +121,9 @@ class Registry {
 ### Connection Management
 ```cpp
 class ManagedConnection {
-    std::unique_ptr<RakNet::Connection, ConnectionDeleter> conn_;
+    std::unique_ptr<ENet::Connection, ConnectionDeleter> conn_;
 public:
-    ManagedConnection(RakNet::Connection* c) : conn_(c) {}
+    ManagedConnection(ENet::Connection* c) : conn_(c) {}
     ~ManagedConnection() { /* automatic cleanup */ }
 };
 ```

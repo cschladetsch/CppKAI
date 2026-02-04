@@ -8,6 +8,14 @@ _KAI_ is a network distributed **Object Model** for C++ with full runtime reflec
 
 Objects and *compute* can be distributed across Nodes in a Domain.
 
+## Environment Conventions
+
+Docs and scripts may refer to `$KAI_ROOT` as the repository root. Set it once per shell:
+
+```sh
+export KAI_ROOT=/path/to/KAI
+```
+
 ## System Architecture Overview
 
 The KAI system provides a multi-layered architecture that enables distributed object programming with multiple language frontends:
@@ -52,7 +60,7 @@ graph TB
     
     subgraph "External Dependencies"
         BOOST[Boost Libraries]
-        RAKNET[RakNet Networking]
+        ENET[ENet Networking]
         GTEST[Google Test]
         CMAKE[CMake Build]
     end
@@ -92,7 +100,7 @@ graph TB
     
     %% External dependencies
     PLATFORM --> BOOST
-    P2P --> RAKNET
+    P2P --> ENET
     PLATFORM --> GTEST
     PLATFORM --> CMAKE
     

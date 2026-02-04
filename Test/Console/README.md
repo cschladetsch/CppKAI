@@ -52,7 +52,7 @@ For complete documentation of all features, see:
 ### C++ Unit Tests
 ```bash
 # Build the tests
-cd /home/xian/local/KAI
+cd $KAI_ROOT
 make TestConsole
 
 # Run the tests
@@ -61,20 +61,20 @@ make TestConsole
 
 ### Automated Shell Tests
 ```bash
-cd /home/xian/local/KAI/Test/Console
+cd $KAI_ROOT/Test/Console
 ./RunConsoleTests.sh
 ```
 
 ### Python Tests
 ```bash
-cd /home/xian/local/KAI/Test/Console
+cd $KAI_ROOT/Test/Console
 ./TestConsoleZsh.py
 ```
 
 ### Interactive Testing
 ```bash
 # Start the console
-/home/xian/local/KAI/Bin/Console
+$KAI_ROOT/Bin/Console
 
 # Copy and paste commands from InteractiveTests.txt
 ```

@@ -26,8 +26,8 @@ This analysis identifies raw pointer usage patterns in the KAI codebase, focusin
 ### 3. Network Layer (`Include/KAI/Network/`)
 - **Issue**: External library integration using raw pointers
 - **Critical Areas**:
-  - `RakNet::RakPeerInterface *peer_` in multiple classes
-  - `RakNet::Packet *` used throughout for packet handling
+  - `ENet::RakPeerInterface *peer_` in multiple classes
+  - `ENet::Packet *` used throughout for packet handling
   - `Domain *domain_` in NetPointer
 - **Risk**: Dependency on external library's memory management
 
@@ -77,7 +77,7 @@ This analysis identifies raw pointer usage patterns in the KAI codebase, focusin
 - Implement RAII for all dynamically allocated objects
 
 ### 3. Network Layer Safety
-- Wrap RakNet pointers in RAII wrappers
+- Wrap ENet pointers in RAII wrappers
 - Use `std::unique_ptr` with custom deleters for external resources
 - Implement safe packet handling with automatic cleanup
 

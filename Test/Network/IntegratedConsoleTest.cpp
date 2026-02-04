@@ -106,6 +106,9 @@ class IntegratedConsoleTest : public ::testing::Test {
 
     // Start server and client processes
     void StartProcesses() {
+        const char* kaiRootEnv = std::getenv("KAI_ROOT");
+        const std::string kaiRoot = kaiRootEnv ? kaiRootEnv : ".";
+
         // Start the server process
         serverPid = fork();
         if (serverPid == 0) {
@@ -116,7 +119,7 @@ class IntegratedConsoleTest : public ::testing::Test {
 
             // Execute the MinimalServer
             std::string serverCommand =
-                std::string("/home/xian/local/KAI/build/bin/MinimalServer ") +
+                kaiRoot + "/build/Bin/MinimalServer " +
                 std::to_string(testPort);
             execl("/bin/sh", "sh", "-c", serverCommand.c_str(), NULL);
 
@@ -141,8 +144,7 @@ class IntegratedConsoleTest : public ::testing::Test {
 
             // Execute the MinimalClient
             std::string clientCommand =
-                std::string(
-                    "/home/xian/local/KAI/build/bin/MinimalClient 127.0.0.1 ") +
+                kaiRoot + "/build/Bin/MinimalClient 127.0.0.1 " +
                 std::to_string(testPort);
             execl("/bin/sh", "sh", "-c", clientCommand.c_str(), NULL);
 

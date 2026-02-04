@@ -4,7 +4,7 @@
 #include "KAI/Network/Future.h"
 
 // This is a minimal header for proxy generation
-// to avoid circular dependencies with RakNet
+// to avoid circular dependencies in network types
 
 KAI_NET_BEGIN
 

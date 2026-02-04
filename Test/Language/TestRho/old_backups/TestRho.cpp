@@ -97,7 +97,7 @@ TEST_F(TestRho, DISABLED_TestIterationConstructs) {
     ASSERT_EQ(AtData<int>(0), 10);  // 0+1+2+3+4 = 10
 
     // Note: do-while test removed as do-while is not fully implemented yet
-    // See /home/xian/local/KAI/Todo-DoWhile.md for details on the status of
+    // See $KAI_ROOT/Todo-DoWhile.md for details on the status of
     // do-while implementation
 }
 

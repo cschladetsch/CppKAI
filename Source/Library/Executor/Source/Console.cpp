@@ -5,6 +5,7 @@
 #include <chrono>
 #include <cstdlib>
 #include <fstream>
+#include <functional>
 #include <iostream>
 #include <random>
 #include <regex>
@@ -18,9 +19,11 @@
 
 #include "KAI/Core/BinaryStream.h"
 #include "KAI/Core/BuiltinTypes.h"
+#include "KAI/Core/Detail/Function.h"
 #include "KAI/Core/Memory/StandardAllocator.h"
 #include "KAI/Core/Object.h"
 #include "KAI/Executor/BinBase.h"
+#include "KAI/Network/Serialization.h"
 #include "rang.hpp"
 
 using namespace std;
@@ -29,7 +32,7 @@ KAI_BEGIN
 
 Console::Console() {
     alloc = make_shared<Memory::StandardAllocator>();
-    peer_ = nullptr;
+    peer_.reset();
     networkingEnabled_ = false;
     networkRunning_ = false;
     listenPort_ = 14600;
@@ -40,7 +43,7 @@ Console::Console() {
 
 Console::Console(shared_ptr<Memory::IAllocator> alloc) {
     this->alloc = alloc;
-    peer_ = nullptr;
+    peer_.reset();
     networkingEnabled_ = false;
     networkRunning_ = false;
     listenPort_ = 14600;
@@ -144,7 +147,15 @@ String Console::ReadLineWithDynamicColor() {
     char ch;
 
     while (true) {
-        if (read(STDIN_FILENO, &ch, 1) == 1) {
+        const ssize_t readCount = read(STDIN_FILENO, &ch, 1);
+        if (readCount == 0) {
+            // EOF on stdin (e.g., piped input). Exit cleanly.
+            tcsetattr(STDIN_FILENO, TCSANOW, &old_settings);
+            cout << rang::fg::reset;
+            end_ = true;
+            return String(line);
+        }
+        if (readCount == 1) {
             if (ch == '\n' || ch == '\r') {
                 cout << endl;
                 break;
@@ -302,17 +313,11 @@ void Console::CreateTree() {
     Set(root, Pathname("/Executor"), executor);
 
     Bin::AddFunctions(bin);
-    AddFunction(bin, [this](Object &, Stack &stack) {
+    std::function<void(Object, Object)> sendBinaryFn =
+        [this](Object payloadObj, Object peerSpec) {
         if (!networkingEnabled_) {
             KAI_THROW_1(Base, "Network not enabled. Use '/network start' first.");
         }
-
-        if (stack.Size() < 2) {
-            KAI_THROW_1(Base, "send expects <payload> <peer>");
-        }
-
-        Object peerSpec = stack.Pop();
-        Object payloadObj = stack.Pop();
 
         Object payload = payloadObj;
         if (!payloadObj.IsType<BinaryStream>()) {
@@ -321,7 +326,7 @@ void Console::CreateTree() {
 
         BinaryStream &stream = Deref<BinaryStream>(payload);
 
-        RakNet::SystemAddress targetPeer = RakNet::UNASSIGNED_SYSTEM_ADDRESS;
+        net::NetAddress targetPeer;
 
         if (peerSpec.IsType<int>()) {
             int index = ConstDeref<int>(peerSpec);
@@ -335,18 +340,20 @@ void Console::CreateTree() {
                 FindPeerByAddress(ConstDeref<String>(peerSpec).StdString());
         } else if (peerSpec.IsType<Label>()) {
             targetPeer =
-                FindPeerByAddress(ConstDeref<Label>(peerSpec).ToString());
+                FindPeerByAddress(ConstDeref<Label>(peerSpec).ToString().StdString());
         } else if (peerSpec.IsType<Pathname>()) {
             targetPeer =
-                FindPeerByAddress(ConstDeref<Pathname>(peerSpec).ToString());
+                FindPeerByAddress(ConstDeref<Pathname>(peerSpec).ToString().StdString());
         }
 
-        if (targetPeer == RakNet::UNASSIGNED_SYSTEM_ADDRESS) {
+        if (!targetPeer.IsValid()) {
             KAI_THROW_1(Base, "send: peer not found");
         }
 
         SendBinaryToPeer(AddressToString(targetPeer), stream);
-    }, Label("send"), "Send a BinaryStream to a peer");
+    };
+    AddFunction(bin, sendBinaryFn, Label("send"),
+                "Send a BinaryStream to a peer");
     tree.AddSearchPath(Pathname("/Bin"));
     tree.AddSearchPath(Pathname("/Sys"));
     tree.AddSearchPath(Pathname("/Types"));
@@ -1994,23 +2001,20 @@ bool Console::StartNetworking(int listenPort) {
     }
     
     listenPort_ = listenPort;
-    peer_ = RakNet::RakPeerInterface::GetInstance();
+    peer_ = net::NetPeer::Create();
     if (!peer_) {
-        cerr << rang::fg::red << "Failed to create RakNet peer interface" << rang::fg::reset << endl;
+        cerr << rang::fg::red << "Failed to create network peer" << rang::fg::reset << endl;
         return false;
     }
     
     cout << rang::fg::cyan << "Starting network console on port " << listenPort_ 
          << rang::fg::reset << endl;
     
-    RakNet::SocketDescriptor sd(listenPort_, nullptr);
-    RakNet::StartupResult result = peer_->Startup(32, &sd, 1);
-    
-    if (result != RakNet::RAKNET_STARTED) {
-        cerr << rang::fg::red << "Failed to start network listener, error: " 
-             << result << rang::fg::reset << endl;
-        RakNet::RakPeerInterface::DestroyInstance(peer_);
-        peer_ = nullptr;
+    if (!peer_->Startup(32, net::NetAddress("0.0.0.0",
+                                           static_cast<unsigned short>(listenPort_)))) {
+        cerr << rang::fg::red << "Failed to start network listener" 
+             << rang::fg::reset << endl;
+        peer_.reset();
         return false;
     }
     
@@ -2035,11 +2039,9 @@ bool Console::ConnectToPeer(const std::string& host, int port) {
     cout << rang::fg::yellow << "Connecting to peer at " << host << ":" << port 
          << rang::fg::reset << endl;
     
-    RakNet::ConnectionAttemptResult result = peer_->Connect(host.c_str(), port, nullptr, 0);
-    
-    if (result != RakNet::CONNECTION_ATTEMPT_STARTED) {
+    if (!peer_->Connect(net::NetAddress(host, static_cast<unsigned short>(port)))) {
         cerr << rang::fg::red << "Failed to connect to " << host << ":" << port 
-             << ", error: " << result << rang::fg::reset << endl;
+             << rang::fg::reset << endl;
         return false;
     }
     
@@ -2057,8 +2059,7 @@ void Console::StopNetworking() {
     
     if (peer_) {
         peer_->Shutdown(300);
-        RakNet::RakPeerInterface::DestroyInstance(peer_);
-        peer_ = nullptr;
+        peer_.reset();
     }
 
     networkingEnabled_ = false;
@@ -2069,20 +2070,22 @@ void Console::StopNetworking() {
 bool Console::SendCommandToPeer(const std::string& peerAddr, const std::string& command) {
     if (!networkingEnabled_) return false;
     
-    RakNet::SystemAddress targetPeer = FindPeerByAddress(peerAddr);
+    net::NetAddress targetPeer = FindPeerByAddress(peerAddr);
     
-    if (targetPeer == RakNet::UNASSIGNED_SYSTEM_ADDRESS) {
+    if (!targetPeer.IsValid()) {
         cout << rang::fg::red << "Peer not found: " << peerAddr << rang::fg::reset << endl;
         return false;
     }
     
-    RakNet::BitStream bs;
-    bs.Write(static_cast<RakNet::MessageID>(NetworkMessageType::CONSOLE_COMMAND));
-    bs.Write(consoleId_);
-    bs.Write(command);
+    BinaryStream bs;
+    bs.Write(static_cast<unsigned char>(NetworkMessageType::CONSOLE_COMMAND));
+    net::NetworkSerializer::WriteString(bs, consoleId_);
+    net::NetworkSerializer::WriteString(bs, command);
     bs.Write(static_cast<int>(GetLanguage()));
     
-    peer_->Send(&bs, RakNet::HIGH_PRIORITY, RakNet::RELIABLE_ORDERED, 0, targetPeer, false);
+    peer_->Send(reinterpret_cast<const unsigned char*>(bs.Begin()),
+                static_cast<std::size_t>(bs.Size()),
+                true, 0, targetPeer, false);
     
     cout << rang::fg::cyan << "-> [" << AddressToString(targetPeer) << "] " 
          << command << rang::fg::reset << endl;
@@ -2094,24 +2097,25 @@ bool Console::SendBinaryToPeer(const std::string& peerAddr,
                                const BinaryStream& payload) {
     if (!networkingEnabled_) return false;
 
-    RakNet::SystemAddress targetPeer = FindPeerByAddress(peerAddr);
-    if (targetPeer == RakNet::UNASSIGNED_SYSTEM_ADDRESS) {
+    net::NetAddress targetPeer = FindPeerByAddress(peerAddr);
+    if (!targetPeer.IsValid()) {
         cout << rang::fg::red << "Peer not found: " << peerAddr << rang::fg::reset
              << endl;
         return false;
     }
 
-    RakNet::BitStream bs;
-    bs.Write(static_cast<RakNet::MessageID>(NetworkMessageType::CONSOLE_BINARY));
-    bs.Write(consoleId_);
+    BinaryStream bs;
+    bs.Write(static_cast<unsigned char>(NetworkMessageType::CONSOLE_BINARY));
+    net::NetworkSerializer::WriteString(bs, consoleId_);
     int size = payload.Size();
     bs.Write(size);
     if (size > 0) {
-        bs.Write(payload.Begin(), static_cast<size_t>(size));
+        bs.Write(size, payload.Begin());
     }
 
-    peer_->Send(&bs, RakNet::HIGH_PRIORITY, RakNet::RELIABLE_ORDERED, 0,
-                targetPeer, false);
+    peer_->Send(reinterpret_cast<const unsigned char*>(bs.Begin()),
+                static_cast<std::size_t>(bs.Size()),
+                true, 0, targetPeer, false);
 
     cout << rang::fg::cyan << "-> [" << AddressToString(targetPeer)
          << "] <binary " << size << " bytes>" << rang::fg::reset << endl;
@@ -2129,14 +2133,16 @@ void Console::BroadcastCommand(const std::string& command) {
         return;
     }
     
-    RakNet::BitStream bs;
-    bs.Write(static_cast<RakNet::MessageID>(NetworkMessageType::CONSOLE_BROADCAST));
-    bs.Write(consoleId_);
-    bs.Write(command);
+    BinaryStream bs;
+    bs.Write(static_cast<unsigned char>(NetworkMessageType::CONSOLE_BROADCAST));
+    net::NetworkSerializer::WriteString(bs, consoleId_);
+    net::NetworkSerializer::WriteString(bs, command);
     bs.Write(static_cast<int>(GetLanguage()));
     
     for (const auto& peerAddr : connectedPeers_) {
-        peer_->Send(&bs, RakNet::HIGH_PRIORITY, RakNet::RELIABLE_ORDERED, 0, peerAddr, false);
+        peer_->Send(reinterpret_cast<const unsigned char*>(bs.Begin()),
+                    static_cast<std::size_t>(bs.Size()),
+                    true, 0, peerAddr, false);
     }
     
     cout << rang::fg::magenta << ">> [BROADCAST] " << command << rang::fg::reset << endl;
@@ -2298,21 +2304,22 @@ void Console::ShowNetworkHelp() const {
 void Console::ProcessNetworkMessages() {
     while (networkRunning_) {
         if (!peer_) break;
-        
-        RakNet::Packet* packet;
-        while ((packet = peer_->Receive()) != nullptr) {
-            HandleNetworkPacket(packet);
-            peer_->DeallocatePacket(packet);
+        while (true) {
+            auto packet = peer_->Receive();
+            if (!packet) {
+                break;
+            }
+            HandleNetworkPacket(*packet);
         }
         
         this_thread::sleep_for(chrono::milliseconds(10));
     }
 }
 
-void Console::HandleNetworkPacket(RakNet::Packet* packet) {
-    if (!packet || packet->length < 1) return;
+void Console::HandleNetworkPacket(const net::NetPacket& packet) {
+    if (packet.data.empty()) return;
     
-    NetworkMessageType msgType = static_cast<NetworkMessageType>(packet->data[0]);
+    NetworkMessageType msgType = static_cast<NetworkMessageType>(packet.data[0]);
     
     switch (msgType) {
         case NetworkMessageType::CONSOLE_COMMAND:
@@ -2331,38 +2338,51 @@ void Console::HandleNetworkPacket(RakNet::Packet* packet) {
             HandleConsoleBinary(packet);
             break;
         default:
-            if (packet->data[0] == RakNet::ID_NEW_INCOMING_CONNECTION) {
+            if (packet.data[0] == static_cast<unsigned char>(
+                                     net::SystemMessage::NewIncomingConnection)) {
                 cout << rang::fg::green << "<- Peer connected: " 
-                     << AddressToString(packet->systemAddress) << rang::fg::reset << endl;
-                AddPeer(packet->systemAddress);
-            } else if (packet->data[0] == RakNet::ID_CONNECTION_REQUEST_ACCEPTED) {
+                     << AddressToString(packet.address) << rang::fg::reset << endl;
+                AddPeer(packet.address);
+            } else if (packet.data[0] == static_cast<unsigned char>(
+                                               net::SystemMessage::ConnectionRequestAccepted)) {
                 cout << rang::fg::green << "<- Connected to peer: " 
-                     << AddressToString(packet->systemAddress) << rang::fg::reset << endl;
-                AddPeer(packet->systemAddress);
-            } else if (packet->data[0] == RakNet::ID_CONNECTION_ATTEMPT_FAILED) {
+                     << AddressToString(packet.address) << rang::fg::reset << endl;
+                AddPeer(packet.address);
+            } else if (packet.data[0] == static_cast<unsigned char>(
+                                               net::SystemMessage::ConnectionAttemptFailed)) {
                 cout << rang::fg::red << "<- Connection attempt failed: "
-                     << AddressToString(packet->systemAddress) << rang::fg::reset << endl;
-            } else if (packet->data[0] == RakNet::ID_DISCONNECTION_NOTIFICATION ||
-                      packet->data[0] == RakNet::ID_CONNECTION_LOST) {
+                     << AddressToString(packet.address) << rang::fg::reset << endl;
+            } else if (packet.data[0] == static_cast<unsigned char>(
+                                               net::SystemMessage::DisconnectionNotification) ||
+                      packet.data[0] == static_cast<unsigned char>(
+                                               net::SystemMessage::ConnectionLost)) {
                 cout << rang::fg::yellow << "<- Peer disconnected: " 
-                     << AddressToString(packet->systemAddress) << rang::fg::reset << endl;
-                RemovePeer(packet->systemAddress);
+                     << AddressToString(packet.address) << rang::fg::reset << endl;
+                RemovePeer(packet.address);
             }
             break;
     }
 }
 
-void Console::HandleConsoleCommand(RakNet::Packet* packet) {
-    RakNet::BitStream bs(packet->data, packet->length, false);
-    bs.IgnoreBytes(sizeof(RakNet::MessageID));
+void Console::HandleConsoleCommand(const net::NetPacket& packet) {
+    BinaryPacket packetStream(reinterpret_cast<const char*>(packet.data.data()),
+                        reinterpret_cast<const char*>(packet.data.data() +
+                                                      packet.data.size()),
+                        reg_);
+    unsigned char msgId = 0;
+    if (!packetStream.Read(msgId)) {
+        return;
+    }
 
     string senderId, command;
-    int languageInt;
-    bs.Read(senderId);
-    bs.Read(command);
-    bs.Read(languageInt);
+    int languageInt = 0;
+    if (!net::NetworkSerializer::ReadString(packetStream, senderId) ||
+        !net::NetworkSerializer::ReadString(packetStream, command) ||
+        !packetStream.Read(languageInt)) {
+        return;
+    }
 
-    AssignPeerConsoleId(packet->systemAddress, senderId);
+    AssignPeerConsoleId(packet.address, senderId);
 
     Language originalLang = GetLanguage();
     Language remoteLang = static_cast<Language>(languageInt);
@@ -2374,7 +2394,7 @@ void Console::HandleConsoleCommand(RakNet::Packet* packet) {
     cout << rang::fg::cyan << "<- [" << senderId << "] " << command << rang::fg::reset << endl;
 
     try {
-        auto peerExecutor = GetOrCreatePeerExecutor(packet->systemAddress);
+        auto peerExecutor = GetOrCreatePeerExecutor(packet.address);
         if (shareMainStack) {
             CopyMainStackToExecutor(peerExecutor);
         }
@@ -2394,7 +2414,7 @@ void Console::HandleConsoleCommand(RakNet::Packet* packet) {
             SetLanguage(originalLang);
         }
 
-        SendResultToPeer(packet->systemAddress, command, resultDump);
+        SendResultToPeer(packet.address, command, resultDump);
 
         NetworkConsoleMessage msg;
         msg.senderId = senderId;
@@ -2406,7 +2426,7 @@ void Console::HandleConsoleCommand(RakNet::Packet* packet) {
 
     } catch (const Exception::Base& e) {
         string error = "Error: " + string(e.ToString().c_str());
-        SendResultToPeer(packet->systemAddress, command, error);
+        SendResultToPeer(packet.address, command, error);
 
         if (remoteLang != originalLang) {
             SetLanguage(originalLang);
@@ -2414,14 +2434,22 @@ void Console::HandleConsoleCommand(RakNet::Packet* packet) {
     }
 }
 
-void Console::HandleConsoleResult(RakNet::Packet* packet) {
-    RakNet::BitStream bs(packet->data, packet->length, false);
-    bs.IgnoreBytes(sizeof(RakNet::MessageID));
+void Console::HandleConsoleResult(const net::NetPacket& packet) {
+    BinaryPacket stream(reinterpret_cast<const char*>(packet.data.data()),
+                        reinterpret_cast<const char*>(packet.data.data() +
+                                                      packet.data.size()),
+                        reg_);
+    unsigned char msgId = 0;
+    if (!stream.Read(msgId)) {
+        return;
+    }
 
     string senderId, command, result;
-    bs.Read(senderId);
-    bs.Read(command);
-    bs.Read(result);
+    if (!net::NetworkSerializer::ReadString(stream, senderId) ||
+        !net::NetworkSerializer::ReadString(stream, command) ||
+        !net::NetworkSerializer::ReadString(stream, result)) {
+        return;
+    }
 
     cout << rang::fg::green << "<- [" << senderId << "] Result: " << result 
          << rang::fg::reset << endl;
@@ -2434,17 +2462,25 @@ void Console::HandleConsoleResult(RakNet::Packet* packet) {
     LogNetworkMessage(msg);
 }
 
-void Console::HandleConsoleBroadcast(RakNet::Packet* packet) {
-    RakNet::BitStream bs(packet->data, packet->length, false);
-    bs.IgnoreBytes(sizeof(RakNet::MessageID));
+void Console::HandleConsoleBroadcast(const net::NetPacket& packet) {
+    BinaryPacket stream(reinterpret_cast<const char*>(packet.data.data()),
+                        reinterpret_cast<const char*>(packet.data.data() +
+                                                      packet.data.size()),
+                        reg_);
+    unsigned char msgId = 0;
+    if (!stream.Read(msgId)) {
+        return;
+    }
 
     string senderId, command;
-    int languageInt;
-    bs.Read(senderId);
-    bs.Read(command);
-    bs.Read(languageInt);
+    int languageInt = 0;
+    if (!net::NetworkSerializer::ReadString(stream, senderId) ||
+        !net::NetworkSerializer::ReadString(stream, command) ||
+        !stream.Read(languageInt)) {
+        return;
+    }
 
-    AssignPeerConsoleId(packet->systemAddress, senderId);
+    AssignPeerConsoleId(packet.address, senderId);
 
     cout << rang::fg::magenta << "<< [BROADCAST from " << senderId << "] " 
          << command << rang::fg::reset << endl;
@@ -2457,7 +2493,7 @@ void Console::HandleConsoleBroadcast(RakNet::Packet* packet) {
     bool shareMainStack = (initialSize > 0) || (remoteLang != originalLang);
 
     try {
-        auto peerExecutor = GetOrCreatePeerExecutor(packet->systemAddress);
+        auto peerExecutor = GetOrCreatePeerExecutor(packet.address);
         if (shareMainStack) {
             CopyMainStackToExecutor(peerExecutor);
         }
@@ -2496,14 +2532,22 @@ void Console::HandleConsoleBroadcast(RakNet::Packet* packet) {
     }
 }
 
-void Console::HandleLanguageSwitch(RakNet::Packet* packet) {
-    RakNet::BitStream bs(packet->data, packet->length, false);
-    bs.IgnoreBytes(sizeof(RakNet::MessageID));
+void Console::HandleLanguageSwitch(const net::NetPacket& packet) {
+    BinaryPacket stream(reinterpret_cast<const char*>(packet.data.data()),
+                        reinterpret_cast<const char*>(packet.data.data() +
+                                                      packet.data.size()),
+                        reg_);
+    unsigned char msgId = 0;
+    if (!stream.Read(msgId)) {
+        return;
+    }
     
     string senderId;
-    int languageInt;
-    bs.Read(senderId);
-    bs.Read(languageInt);
+    int languageInt = 0;
+    if (!net::NetworkSerializer::ReadString(stream, senderId) ||
+        !stream.Read(languageInt)) {
+        return;
+    }
     
     Language newLang = static_cast<Language>(languageInt);
     cout << rang::fg::blue << "<- [" << senderId << "] switched to " 
@@ -2511,13 +2555,20 @@ void Console::HandleLanguageSwitch(RakNet::Packet* packet) {
          << rang::fg::reset << endl;
 }
 
-void Console::HandleConsoleBinary(RakNet::Packet* packet) {
-    RakNet::BitStream bs(packet->data, packet->length, false);
-    bs.IgnoreBytes(sizeof(RakNet::MessageID));
+void Console::HandleConsoleBinary(const net::NetPacket& packet) {
+    BinaryPacket packetStream(reinterpret_cast<const char*>(packet.data.data()),
+                        reinterpret_cast<const char*>(packet.data.data() +
+                                                      packet.data.size()),
+                        reg_);
+    unsigned char msgId = 0;
+    if (!packetStream.Read(msgId)) {
+        return;
+    }
 
     std::string senderId;
     int size = 0;
-    if (!bs.Read(senderId) || !bs.Read(size)) {
+    if (!net::NetworkSerializer::ReadString(packetStream, senderId) ||
+        !packetStream.Read(size)) {
         cout << rang::fg::red << "<- [binary] Failed to read payload header"
              << rang::fg::reset << endl;
         return;
@@ -2526,7 +2577,7 @@ void Console::HandleConsoleBinary(RakNet::Packet* packet) {
     std::vector<char> buffer;
     if (size > 0) {
         buffer.resize(size);
-        if (!bs.Read(buffer.data(), static_cast<size_t>(size))) {
+        if (!packetStream.Read(size, buffer.data())) {
             cout << rang::fg::red
                  << "<- [binary] Failed to read payload bytes"
                  << rang::fg::reset << endl;
@@ -2534,12 +2585,12 @@ void Console::HandleConsoleBinary(RakNet::Packet* packet) {
         }
     }
 
-    auto stream = reg_->New<BinaryStream>();
+    Value<BinaryStream> stream = reg_->New<BinaryStream>();
     if (size > 0) {
         stream->Write(size, buffer.data());
     }
 
-    executor->Push(stream);
+    executor->Push(stream.GetObject());
 
     cout << rang::fg::magenta << "<- [" << senderId << "] "
          << "<binary " << size << " bytes pushed to stack>"
@@ -2554,20 +2605,22 @@ void Console::HandleConsoleBinary(RakNet::Packet* packet) {
     LogNetworkMessage(msg);
 }
 
-void Console::SendResultToPeer(const RakNet::SystemAddress& peer, 
+void Console::SendResultToPeer(const net::NetAddress& peer, 
                               const std::string& command, const std::string& result) {
     if (!peer_) return;
     
-    RakNet::BitStream bs;
-    bs.Write(static_cast<RakNet::MessageID>(NetworkMessageType::CONSOLE_RESULT));
-    bs.Write(consoleId_);
-    bs.Write(command);
-    bs.Write(result);
+    BinaryStream bs;
+    bs.Write(static_cast<unsigned char>(NetworkMessageType::CONSOLE_RESULT));
+    net::NetworkSerializer::WriteString(bs, consoleId_);
+    net::NetworkSerializer::WriteString(bs, command);
+    net::NetworkSerializer::WriteString(bs, result);
     
-    peer_->Send(&bs, RakNet::HIGH_PRIORITY, RakNet::RELIABLE_ORDERED, 0, peer, false);
+    peer_->Send(reinterpret_cast<const unsigned char*>(bs.Begin()),
+                static_cast<std::size_t>(bs.Size()),
+                true, 0, peer, false);
 }
 
-void Console::AddPeer(const RakNet::SystemAddress& address) {
+void Console::AddPeer(const net::NetAddress& address) {
     {
         lock_guard<mutex> lock(peersMutex_);
         connectedPeers_.push_back(address);
@@ -2576,7 +2629,7 @@ void Console::AddPeer(const RakNet::SystemAddress& address) {
     GetOrCreatePeerExecutor(address);
 }
 
-void Console::RemovePeer(const RakNet::SystemAddress& address) {
+void Console::RemovePeer(const net::NetAddress& address) {
     {
         lock_guard<mutex> lock(peersMutex_);
         connectedPeers_.erase(
@@ -2702,11 +2755,11 @@ std::string Console::GenerateConsoleId() {
     return "Console-" + to_string(dis(gen));
 }
 
-std::string Console::AddressToString(const RakNet::SystemAddress& addr) const {
+std::string Console::AddressToString(const net::NetAddress& addr) const {
     return addr.ToString();
 }
 
-RakNet::SystemAddress Console::FindPeerByAddress(const std::string& addr) const {
+net::NetAddress Console::FindPeerByAddress(const std::string& addr) const {
     lock_guard<mutex> lock(const_cast<mutex&>(peersMutex_));
 
     for (const auto& peer : connectedPeers_) {
@@ -2716,14 +2769,14 @@ RakNet::SystemAddress Console::FindPeerByAddress(const std::string& addr) const 
         }
     }
 
-    return RakNet::UNASSIGNED_SYSTEM_ADDRESS;
+    return net::NetAddress();
 }
 
-std::string Console::MakePeerKey(const RakNet::SystemAddress& addr) const {
+std::string Console::MakePeerKey(const net::NetAddress& addr) const {
     return AddressToString(addr);
 }
 
-Pointer<Executor> Console::GetOrCreatePeerExecutor(const RakNet::SystemAddress& addr) {
+Pointer<Executor> Console::GetOrCreatePeerExecutor(const net::NetAddress& addr) {
     return GetOrCreatePeerExecutor(MakePeerKey(addr));
 }
 
@@ -2743,7 +2796,7 @@ Pointer<Executor> Console::GetOrCreatePeerExecutor(const std::string& peerKey) {
     return newExecutor;
 }
 
-void Console::AssignPeerConsoleId(const RakNet::SystemAddress& addr,
+void Console::AssignPeerConsoleId(const net::NetAddress& addr,
                                   const std::string& consoleId) {
     if (consoleId.empty()) {
         return;
@@ -2769,7 +2822,7 @@ Pointer<Executor> Console::GetPeerExecutorByConsoleId(const std::string& console
     return execIt->second;
 }
 
-void Console::RemovePeerExecutor(const RakNet::SystemAddress& addr) {
+void Console::RemovePeerExecutor(const net::NetAddress& addr) {
     std::string key = MakePeerKey(addr);
     lock_guard<std::mutex> lock(peerExecutorsMutex_);
 

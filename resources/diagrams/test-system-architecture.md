@@ -27,7 +27,7 @@ graph TB
     end
     
     subgraph "Network Tests"
-        NET_TESTS[Network Tests<br/>P2P communication<br/>RakNet validation]
+        NET_TESTS[Network Tests<br/>P2P communication<br/>ENet validation]
         CONSOLE_NET[Console Networking<br/>16KB test suite<br/>8 comprehensive tests]
     end
     

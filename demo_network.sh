@@ -91,7 +91,7 @@ if "${MATCH_CMD[@]}" "Connection failed" "$LOG2"; then
     echo "✗ Result: 49 * 10 = 490"
     echo "✗ Broadcast command showed stack on both consoles"
     if "${MATCH_CMD[@]}" "error: 2" "$LOG2"; then
-        echo "Note: this build uses the in-memory RakNet stub, which only connects peers inside"
+        echo "Note: this build uses the ENet transport, which only connects peers inside"
         echo "the same process. Two separate ./Bin/Console processes will always fail to connect."
     fi
 else

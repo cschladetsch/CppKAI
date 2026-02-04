@@ -6,7 +6,7 @@
 #include <KAI/Executor/Executor.h>
 #include <KAI/Language.h>
 #include <KAI/Language/Common/TranslatorCommon.h>
-#include <KAI/Network/RakNetAdapter.h>
+#include <KAI/Network/Transport.h>
 
 #include <functional>
 #include <memory>
@@ -22,11 +22,11 @@ struct Coloriser;
 class BinaryStream;
 
 enum class NetworkMessageType : unsigned char {
-    CONSOLE_COMMAND = RakNet::ID_USER_PACKET_ENUM + 10,
-    CONSOLE_RESULT = RakNet::ID_USER_PACKET_ENUM + 11,
-    CONSOLE_BROADCAST = RakNet::ID_USER_PACKET_ENUM + 12,
-    CONSOLE_LANGUAGE_SWITCH = RakNet::ID_USER_PACKET_ENUM + 13,
-    CONSOLE_BINARY = RakNet::ID_USER_PACKET_ENUM + 14
+    CONSOLE_COMMAND = net::kUserPacketStart + 10,
+    CONSOLE_RESULT = net::kUserPacketStart + 11,
+    CONSOLE_BROADCAST = net::kUserPacketStart + 12,
+    CONSOLE_LANGUAGE_SWITCH = net::kUserPacketStart + 13,
+    CONSOLE_BINARY = net::kUserPacketStart + 14
 };
 
 struct NetworkConsoleMessage {
@@ -53,9 +53,9 @@ class Console : public Reflected {
     static const size_t maxHistorySize = 1000;
 
     // Network members
-    RakNet::RakPeerInterface* peer_;
+    std::unique_ptr<net::NetPeer> peer_;
     std::mutex peersMutex_;
-    std::vector<RakNet::SystemAddress> connectedPeers_;
+    std::vector<net::NetAddress> connectedPeers_;
     std::thread messageThread_;
     bool networkingEnabled_;
     bool networkRunning_;
@@ -171,27 +171,27 @@ class Console : public Reflected {
 
     // Network protected methods
     void ProcessNetworkMessages();
-    void HandleNetworkPacket(RakNet::Packet* packet);
-    void HandleConsoleCommand(RakNet::Packet* packet);
-    void HandleConsoleResult(RakNet::Packet* packet);
-    void HandleConsoleBroadcast(RakNet::Packet* packet);
-    void HandleLanguageSwitch(RakNet::Packet* packet);
-    void HandleConsoleBinary(RakNet::Packet* packet);
-    void SendResultToPeer(const RakNet::SystemAddress& peer, const std::string& command, 
+    void HandleNetworkPacket(const net::NetPacket& packet);
+    void HandleConsoleCommand(const net::NetPacket& packet);
+    void HandleConsoleResult(const net::NetPacket& packet);
+    void HandleConsoleBroadcast(const net::NetPacket& packet);
+    void HandleLanguageSwitch(const net::NetPacket& packet);
+    void HandleConsoleBinary(const net::NetPacket& packet);
+    void SendResultToPeer(const net::NetAddress& peer, const std::string& command, 
                          const std::string& result);
-    void AddPeer(const RakNet::SystemAddress& address);
-    void RemovePeer(const RakNet::SystemAddress& address);
+    void AddPeer(const net::NetAddress& address);
+    void RemovePeer(const net::NetAddress& address);
     void LogNetworkMessage(const NetworkConsoleMessage& message);
     std::string GenerateConsoleId();
-    std::string AddressToString(const RakNet::SystemAddress& addr) const;
-    RakNet::SystemAddress FindPeerByAddress(const std::string& addr) const;
-    std::string MakePeerKey(const RakNet::SystemAddress& addr) const;
-    Pointer<Executor> GetOrCreatePeerExecutor(const RakNet::SystemAddress& addr);
+    std::string AddressToString(const net::NetAddress& addr) const;
+    net::NetAddress FindPeerByAddress(const std::string& addr) const;
+    std::string MakePeerKey(const net::NetAddress& addr) const;
+    Pointer<Executor> GetOrCreatePeerExecutor(const net::NetAddress& addr);
     Pointer<Executor> GetOrCreatePeerExecutor(const std::string& peerKey);
-    void AssignPeerConsoleId(const RakNet::SystemAddress& addr,
+    void AssignPeerConsoleId(const net::NetAddress& addr,
                              const std::string& consoleId);
     Pointer<Executor> GetPeerExecutorByConsoleId(const std::string& consoleId) const;
-    void RemovePeerExecutor(const RakNet::SystemAddress& addr);
+    void RemovePeerExecutor(const net::NetAddress& addr);
     void ClearPeerExecutors();
     void CopyMainStackToExecutor(Pointer<Executor> target) const;
     void CopyExecutorStackToMain(Pointer<Executor> source);

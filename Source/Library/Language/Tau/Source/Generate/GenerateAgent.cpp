@@ -3,6 +3,12 @@
 TAU_BEGIN
 
 namespace Generate {
+namespace {
+bool IsStdStringType(const std::string &typeText) {
+    return typeText == "string" || typeText == "std::string";
+}
+}  // namespace
+
 GenerateAgent::GenerateAgent(const char *input, string &output) {
     GenerateProcess::Generate(input, output);
 }
@@ -41,10 +47,15 @@ bool GenerateAgent::Generate(TauParser const &parser, string &output) {
 string GenerateAgent::Prepend() const {
     stringstream str;
     str << "#include <KAI/Network/AgentDecl.h>\n";
+    str << "#include <KAI/Network/Node.h>\n";
     str << "#include <KAI/Network/NetworkException.h>\n";
-    str << "#include <stdexcept>\n";
+    str << "#include <KAI/Network/Serialization.h>\n";
+    str << "#include <KAI/Network/Transport.h>\n";
+    str << "#include <KAI/Core/BinaryStream.h>\n";
+    str << "#include <memory>\n";
     str << "#include <string>\n";
-    str << "#include <RakNet/BitStream.h>\n\n";
+    str << "#include <utility>\n";
+    str << "\n";
     return str.str();
 }
 
@@ -104,8 +115,7 @@ struct GenerateAgent::AgentDecl {
 
     string ToString() const {
         stringstream decl;
-        decl << "class " << AgentName << ": public AgentBase<" << RootName
-             << ">";
+        decl << "class " << AgentName << ": public AgentBase";
         return decl.str();
     }
 };
@@ -120,7 +130,7 @@ bool GenerateAgent::Class(TauParser::AstNode const &cl) {
 
     auto agentDecl = AgentDecl(className);
     StartBlock(agentDecl.ToString());
-    AddAgentBoilerplate(agentDecl);
+    AddAgentBoilerplate(agentDecl, cl);
 
     // Generate handler methods for each method and event in the class
     for (const auto &member : cl.GetChildren()) {
@@ -139,6 +149,11 @@ bool GenerateAgent::Class(TauParser::AstNode const &cl) {
                 break;
         }
     }
+
+    Output() << "private:" << EndLine();
+    Output() << "std::shared_ptr<" << agentDecl.RootName << "> _impl;"
+             << EndLine();
+    Output() << "Node* _node = nullptr;" << EndLine();
 
     EndBlock();
     return true;
@@ -163,11 +178,69 @@ std::string GenerateAgent::ReturnType(std::string const &text) const {
     return text;
 }
 
-void GenerateAgent::AddAgentBoilerplate(AgentDecl const &agent) {
-    Output() << agent.AgentName
-             << "(Node &node, NetHandle handle) : AgentBase(node, handle) { }"
+void GenerateAgent::AddAgentBoilerplate(AgentDecl const &agent,
+                                        TauParser::AstNode const &cl) {
+    Output() << agent.AgentName << "(Node &node, std::shared_ptr<"
+             << agent.RootName
+             << "> impl = std::make_shared<" << agent.RootName << ">())"
+             << " : AgentBase(node), _impl(std::move(impl)), _node(&node)"
              << EndLine();
+    StartBlock();
+
+    for (const auto &member : cl.GetChildren()) {
+        if (member->GetType() == TauAstEnumType::Method) {
+            const auto name = member->GetTokenText();
+            const auto &returnType = member->GetChild(0)->GetTokenText();
+            const auto &args = member->GetChild(1)->GetChildren();
+
+            Output() << "_node->RegisterMethod<" << returnType << ">("
+                     << "GetHandle(), \"" << name << "\", "
+                     << "std::function<" << returnType << "(";
+
+            bool first = true;
+            for (auto const &a : args) {
+                if (!first) Output() << ", ";
+                auto &ty = a->GetChild(0);
+                Output() << ty->GetTokenText();
+                first = false;
+            }
+            Output() << ")>([this](";
+
+            first = true;
+            for (auto const &a : args) {
+                if (!first) Output() << ", ";
+                auto &ty = a->GetChild(0);
+                auto &id = a->GetChild(1);
+                Output() << ty->GetTokenText() << " " << id->GetTokenText();
+                first = false;
+            }
+            Output() << ") { ";
+
+            if (returnType != "void") {
+                Output() << "return _impl->" << name << "(";
+            } else {
+                Output() << "_impl->" << name << "(";
+            }
+
+            first = true;
+            for (auto const &a : args) {
+                if (!first) Output() << ", ";
+                auto &id = a->GetChild(1);
+                Output() << id->GetTokenText();
+                first = false;
+            }
+            Output() << "); ";
+
+            if (returnType == "void") {
+                Output() << "return; ";
+            }
+
+            Output() << "}));" << EndLine();
+        }
+    }
+
     Output() << EndLine();
+    EndBlock();
 }
 
 void GenerateAgent::GenerateHandlerMethod(TauParser::AstNode const &method) {
@@ -177,7 +250,7 @@ void GenerateAgent::GenerateHandlerMethod(TauParser::AstNode const &method) {
 
     // Generate documentation for handler method
     Output() << "/// Handler for remote method call: " << name << EndLine();
-    Output() << "/// Deserializes parameters from BitStream and calls implementation" << EndLine();
+    Output() << "/// Deserializes parameters from BinaryStream and calls implementation" << EndLine();
     if (!args.empty()) {
         Output() << "/// Parameters deserialized from network:" << EndLine();
         for (auto const &a : args) {
@@ -192,16 +265,21 @@ void GenerateAgent::GenerateHandlerMethod(TauParser::AstNode const &method) {
 
     // Generate the Handle_MethodName signature
     Output() << "void Handle_" << name
-             << "(RakNet::BitStream& bs, RakNet::SystemAddress& sender)";
+             << "(BinaryStream& bs, const kai::net::NetAddress& sender)";
     StartBlock();
 
-    // Deserialize parameters from BitStream
+    // Deserialize parameters from BinaryStream
     for (auto const &a : args) {
         auto &ty = a->GetChild(0);
         auto &id = a->GetChild(1);
         Output() << ty->GetTokenText() << " " << id->GetTokenText() << ";"
                  << EndLine();
-        Output() << "bs >> " << id->GetTokenText() << ";" << EndLine();
+        if (IsStdStringType(ty->GetTokenText())) {
+            Output() << "kai::net::NetworkSerializer::ReadString(bs, "
+                     << id->GetTokenText() << ");" << EndLine();
+        } else {
+            Output() << "bs >> " << id->GetTokenText() << ";" << EndLine();
+        }
     }
 
     // Call the implementation method
@@ -223,8 +301,12 @@ void GenerateAgent::GenerateHandlerMethod(TauParser::AstNode const &method) {
 
     // Send back result for non-void methods
     if (returnType != "void") {
-        Output() << "RakNet::BitStream response;" << EndLine();
-        Output() << "response << result;" << EndLine();
+        Output() << "BinaryStream response;" << EndLine();
+        if (IsStdStringType(returnType)) {
+            Output() << "kai::net::NetworkSerializer::WriteString(response, result);" << EndLine();
+        } else {
+            Output() << "response << result;" << EndLine();
+        }
         Output() << "_node->SendResponse(sender, response);" << EndLine();
     }
 
@@ -276,10 +358,16 @@ void GenerateAgent::GenerateEventTrigger(TauParser::AstNode const &event) {
     
     // Serialize event parameters
     if (!args.empty()) {
-        Output() << "RakNet::BitStream eventData;" << EndLine();
+        Output() << "BinaryStream eventData;" << EndLine();
         for (auto const &a : args) {
+            auto &ty = a->GetChild(0);
             auto &id = a->GetChild(1);
-            Output() << "eventData << " << id->GetTokenText() << ";" << EndLine();
+            if (IsStdStringType(ty->GetTokenText())) {
+                Output() << "kai::net::NetworkSerializer::WriteString(eventData, "
+                         << id->GetTokenText() << ");" << EndLine();
+            } else {
+                Output() << "eventData << " << id->GetTokenText() << ";" << EndLine();
+            }
         }
         Output() << "_node->BroadcastEvent(\"" << name << "\", eventData);" << EndLine();
     } else {

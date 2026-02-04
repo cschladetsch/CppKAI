@@ -28,5 +28,3 @@ A Domain is a network-aware KAI Registry. Objects within a Domain have a unique 
 ## System Agnostic
 
 There is no expsosure to any underlying networking sub-system.
-
-The first implementation will use RakNet. However, none of the exposed types use Raknet and you will not need Raknet headers to compile. However of course you will need the libraries to link.

@@ -5,26 +5,23 @@
 #include "KAI/Network/ConnectionManager.h"
 #include "KAI/Network/NetworkLogger.h"
 #include "KAI/Network/PeerDiscovery.h"
-#include "KAI/Network/RakNetStub.h"
 #include "KAI/Network/Serialization.h"
+#include "KAI/Core/BuiltinTypes/Array.h"
 
 KAI_NET_BEGIN
 
-Node::Node() : peer_(nullptr), isRunning_(false) {
-    // Use an empty registry for now
-
-    // Initialize RakNet
-    peer_ = RakNet::RakPeerInterface::GetInstance();
-    if (peer_ == nullptr) {
-        std::cerr << "Failed to create RakNet peer interface" << std::endl;
+Node::Node() : peer_(nullptr), isRunning_(false), registry_(nullptr) {
+    peer_ = NetPeer::Create();
+    if (!peer_) {
+        std::cerr << "Failed to create network peer" << std::endl;
         return;
     }
 
     // Create the connection manager
-    connectionManager_ = std::make_unique<ConnectionManager>(peer_);
+    connectionManager_ = std::make_unique<ConnectionManager>(peer_.get());
 
     // Create the peer discovery component
-    peerDiscovery_ = std::make_unique<PeerDiscovery>(peer_);
+    peerDiscovery_ = std::make_unique<PeerDiscovery>(peer_.get());
 
     // Initialize NetworkLogger
     NetworkLogger::Init();
@@ -32,12 +29,7 @@ Node::Node() : peer_(nullptr), isRunning_(false) {
 
 Node::~Node() {
     Shutdown();
-
-    // Clean up RakNet
-    if (peer_) {
-        RakNet::RakPeerInterface::DestroyInstance(peer_);
-        peer_ = nullptr;
-    }
+    peer_.reset();
 }
 
 void Node::Listen(int port) { Listen(IpAddress("0.0.0.0"), port); }
@@ -54,37 +46,11 @@ void Node::Listen(IpAddress const &address, int port) {
         return;
     }
 
-    // Max 32 connections, use all available network interfaces
-    RakNet::SocketDescriptor sd(port, address.ToString().c_str());
-    RakNet::StartupResult result = peer_->Startup(32, &sd, 1);
-
-    if (result != RakNet::RAKNET_STARTED) {
-        std::string errorMsg;
-
-        // Provide more specific error messages for common issues
-        switch (result) {
-            case RakNet::SOCKET_PORT_ALREADY_IN_USE:
-                errorMsg = "Failed to start RakNet server: Port " +
-                           std::to_string(port) +
-                           " is already in use. Try a different port.";
-                break;
-            case RakNet::SOCKET_FAILED_TO_BIND:
-                errorMsg =
-                    "Failed to start RakNet server: Could not bind to "
-                    "address " +
-                    address.ToString() + ":" + std::to_string(port);
-                break;
-            case RakNet::SOCKET_FAILED_TEST_SEND:
-                errorMsg =
-                    "Failed to start RakNet server: Test send failed, network "
-                    "may be unavailable";
-                break;
-            default:
-                errorMsg = "Failed to start RakNet server, error code: " +
-                           std::to_string(result);
-                break;
-        }
-
+    NetAddress bindAddress(address.ToString(), static_cast<unsigned short>(port));
+    if (!peer_->Startup(32, bindAddress)) {
+        std::string errorMsg =
+            "Failed to start network server on " + address.ToString() + ":" +
+            std::to_string(port);
         std::cerr << errorMsg << std::endl;
         NetworkLogger::LogStatus(errorMsg);
         return;
@@ -114,45 +80,10 @@ void Node::Connect(IpAddress const &ip, int port) {
 
     // If not started yet, start with any available port
     if (!isRunning_) {
-        // For loopback connections, it's better to explicitly bind to loopback
-        RakNet::SocketDescriptor sd;
-
-        // When connecting to loopback, bind on loopback interface
-        if (ip.ToString() == "127.0.0.1" || ip.ToString() == "localhost") {
-            sd.port = 0;  // Use any available port
-            sd.hostAddress = "127.0.0.1";
-        } else {
-            sd.port = 0;               // Use any available port
-            sd.hostAddress = nullptr;  // Use any available interface
-        }
-
-        RakNet::StartupResult result = peer_->Startup(32, &sd, 1);
-
-        if (result != RakNet::RAKNET_STARTED) {
-            std::string errorMsg;
-
-            // Provide more specific error messages for common issues
-            switch (result) {
-                case RakNet::SOCKET_PORT_ALREADY_IN_USE:
-                    errorMsg =
-                        "Failed to start RakNet client: Port is already in use";
-                    break;
-                case RakNet::SOCKET_FAILED_TO_BIND:
-                    errorMsg =
-                        "Failed to start RakNet client: Could not bind to "
-                        "address";
-                    break;
-                case RakNet::SOCKET_FAILED_TEST_SEND:
-                    errorMsg =
-                        "Failed to start RakNet client: Test send failed, "
-                        "network may be unavailable";
-                    break;
-                default:
-                    errorMsg = "Failed to start RakNet client, error code: " +
-                               std::to_string(result);
-                    break;
-            }
-
+        NetAddress bindAddress("0.0.0.0", 0);
+        if (!peer_->Startup(32, bindAddress)) {
+            std::string errorMsg =
+                "Failed to start network client for " + ip.ToString();
             std::cerr << errorMsg << std::endl;
             NetworkLogger::LogStatus(errorMsg);
             return;
@@ -161,7 +92,7 @@ void Node::Connect(IpAddress const &ip, int port) {
         isRunning_ = true;
 
         // Log the port we're using
-        int usedPort = peer_->GetInternalID().GetPort();
+        int usedPort = peer_->GetInternalAddress().GetPort();
         std::string startupMsg =
             "Node started and bound to port " + std::to_string(usedPort);
         std::cout << startupMsg << std::endl;
@@ -169,39 +100,10 @@ void Node::Connect(IpAddress const &ip, int port) {
     }
 
     // Connect to remote peer
-    RakNet::ConnectionAttemptResult result =
-        peer_->Connect(ip.ToString().c_str(), port, nullptr, 0);
-
-    if (result != RakNet::CONNECTION_ATTEMPT_STARTED) {
-        std::string errorMsg;
-
-        // Provide more specific error messages
-        switch (result) {
-            case RakNet::CONNECTION_ATTEMPT_ALREADY_IN_PROGRESS:
-                errorMsg = "Connection attempt to " + ip.ToString() + ":" +
-                           std::to_string(port) + " already in progress";
-                break;
-            case RakNet::ALREADY_CONNECTED_TO_ENDPOINT:
-                errorMsg = "Already connected to " + ip.ToString() + ":" +
-                           std::to_string(port);
-                break;
-            case RakNet::CONNECTION_ATTEMPT_STARTED:
-                errorMsg = "Connection attempt started";
-                break;
-            case RakNet::CANNOT_RESOLVE_DOMAIN_NAME:
-                errorMsg = "Cannot resolve domain name: " + ip.ToString();
-                break;
-            case RakNet::INVALID_PARAMETER:
-                errorMsg = "Invalid parameter when connecting to " +
-                           ip.ToString() + ":" + std::to_string(port);
-                break;
-            default:
-                errorMsg = "Failed to connect to " + ip.ToString() + ":" +
-                           std::to_string(port) +
-                           ", error code: " + std::to_string(result);
-                break;
-        }
-
+    if (!peer_->Connect(NetAddress(ip.ToString(),
+                                   static_cast<unsigned short>(port)))) {
+        std::string errorMsg = "Failed to connect to " + ip.ToString() + ":" +
+                               std::to_string(port);
         std::cerr << errorMsg << std::endl;
         NetworkLogger::LogStatus(errorMsg);
         return;
@@ -248,11 +150,13 @@ bool Node::Update() {
     bool processedPackets = false;
 
     // Process incoming packets
-    RakNet::Packet *packet = nullptr;
-    while ((packet = peer_->Receive()) != nullptr) {
+    while (true) {
+        auto packet = peer_->Receive();
+        if (!packet) {
+            break;
+        }
         processedPackets = true;
-        ProcessPacket(packet);
-        peer_->DeallocatePacket(packet);
+        ProcessPacket(*packet);
     }
 
     // Update connection manager
@@ -287,20 +191,20 @@ bool Node::IsDiscovering() const {
     return peerDiscovery_ ? peerDiscovery_->IsDiscovering() : false;
 }
 
-std::vector<RakNet::SystemAddress> Node::GetDiscoveredPeers() const {
+std::vector<NetAddress> Node::GetDiscoveredPeers() const {
     return peerDiscovery_ ? peerDiscovery_->GetDiscoveredPeers()
-                          : std::vector<RakNet::SystemAddress>();
+                          : std::vector<NetAddress>();
 }
 
 void Node::SetPeerDiscoveryCallback(
-    std::function<void(const RakNet::SystemAddress &)> callback) {
+    std::function<void(const NetAddress &)> callback) {
     if (peerDiscovery_) {
         peerDiscovery_->SetDiscoveryCallback(callback);
     }
 }
 
-std::vector<RakNet::SystemAddress> Node::GetConnections() const {
-    std::vector<RakNet::SystemAddress> result;
+std::vector<NetAddress> Node::GetConnections() const {
+    std::vector<NetAddress> result;
     if (connectionManager_) {
         auto connectionIds = connectionManager_->GetAllConnections();
         for (auto id : connectionIds) {
@@ -313,15 +217,15 @@ std::vector<RakNet::SystemAddress> Node::GetConnections() const {
 bool Node::IsConnectedTo(const IpAddress &address, int port) const {
     if (!connectionManager_) return false;
 
-    // Create a proper SystemAddress for comparison
-    RakNet::SystemAddress targetAddr(address.ToString().c_str(), port);
+    NetAddress targetAddr(address.ToString(),
+                          static_cast<unsigned short>(port));
 
     // Get all connections and check each one
     for (auto conn : GetConnections()) {
         // Compare IPs and ports separately to handle different string
         // representations
         if (conn.GetPort() == targetAddr.GetPort() &&
-            conn.ToString(false) == targetAddr.ToString(false)) {
+            conn.host == targetAddr.host) {
             return true;
         }
     }
@@ -335,46 +239,45 @@ size_t Node::GetConnectionCount() const {
 int Node::GetPing(const IpAddress &address, int port) const {
     if (!peer_ || !connectionManager_) return -1;
 
-    RakNet::SystemAddress systemAddr =
-        RakNet::SystemAddress(address.ToString().c_str(), port);
-
+    NetAddress systemAddr(address.ToString(),
+                          static_cast<unsigned short>(port));
     return peer_->GetAveragePing(systemAddr);
 }
 
-unsigned char Node::GetPacketIdentifier(RakNet::Packet *packet) {
-    if (!packet || packet->length < 1) return 255;
-
-    return (packet->data[0]);
+unsigned char Node::GetPacketIdentifier(const NetPacket &packet) {
+    if (packet.data.empty()) return 255;
+    return packet.data[0];
 }
 
-void Node::ProcessPacket(RakNet::Packet *packet) {
-    if (!packet) return;
-
+void Node::ProcessPacket(const NetPacket &packet) {
     // Get the packet identifier
     unsigned char packetId = GetPacketIdentifier(packet);
 
     // Log the packet
     std::string packetType = "unknown";
     switch (packetId) {
-        case RakNet::ID_CONNECTION_REQUEST_ACCEPTED:
+        case static_cast<unsigned char>(
+            SystemMessage::ConnectionRequestAccepted):
             packetType = "connection request accepted";
             break;
-        case RakNet::ID_CONNECTION_ATTEMPT_FAILED:
+        case static_cast<unsigned char>(SystemMessage::ConnectionAttemptFailed):
             packetType = "connection attempt failed";
             break;
-        case RakNet::ID_ALREADY_CONNECTED:
+        case static_cast<unsigned char>(SystemMessage::AlreadyConnected):
             packetType = "already connected";
             break;
-        case RakNet::ID_NEW_INCOMING_CONNECTION:
+        case static_cast<unsigned char>(SystemMessage::NewIncomingConnection):
             packetType = "new incoming connection";
             break;
-        case RakNet::ID_NO_FREE_INCOMING_CONNECTIONS:
+        case static_cast<unsigned char>(
+            SystemMessage::NoFreeIncomingConnections):
             packetType = "no free incoming connections";
             break;
-        case RakNet::ID_DISCONNECTION_NOTIFICATION:
+        case static_cast<unsigned char>(
+            SystemMessage::DisconnectionNotification):
             packetType = "disconnection notification";
             break;
-        case RakNet::ID_CONNECTION_LOST:
+        case static_cast<unsigned char>(SystemMessage::ConnectionLost):
             packetType = "connection lost";
             break;
         default:
@@ -383,76 +286,84 @@ void Node::ProcessPacket(RakNet::Packet *packet) {
     }
 
     std::string logMessage = "Received packet of type '" + packetType +
-                             "' from " + packet->systemAddress.ToString();
+                             "' from " + packet.address.ToString();
     NetworkLogger::LogMessage(logMessage);
 
     // Update connection activity
     if (connectionManager_) {
-        connectionManager_->UpdateActivity(packet->systemAddress);
+        connectionManager_->UpdateActivity(packet.address);
     }
 
     // Handle standard connection events
     switch (packetId) {
-        case RakNet::ID_CONNECTION_REQUEST_ACCEPTED: {
+        case static_cast<unsigned char>(
+            SystemMessage::ConnectionRequestAccepted): {
             // We connected to another system
             OnConnectionEvent(
-                connectionManager_->AddConnection(packet->systemAddress),
+                connectionManager_->AddConnection(packet.address),
                 ConnectionEvent::Connected);
             break;
         }
-        case RakNet::ID_CONNECTION_ATTEMPT_FAILED: {
+        case static_cast<unsigned char>(SystemMessage::ConnectionAttemptFailed): {
             // Connection attempt failed
             OnConnectionEvent(0, ConnectionEvent::ConnectionFailed);
             break;
         }
-        case RakNet::ID_ALREADY_CONNECTED: {
+        case static_cast<unsigned char>(SystemMessage::AlreadyConnected): {
             // We're already connected to this system
             // Re-use Connected event since AlreadyConnected is not defined
             OnConnectionEvent(
-                connectionManager_->GetConnectionId(packet->systemAddress),
+                connectionManager_->GetConnectionId(packet.address),
                 ConnectionEvent::Connected);
             break;
         }
-        case RakNet::ID_NEW_INCOMING_CONNECTION: {
+        case static_cast<unsigned char>(
+            SystemMessage::NewIncomingConnection): {
             // A remote system connected to us
             OnConnectionEvent(
-                connectionManager_->AddConnection(packet->systemAddress),
+                connectionManager_->AddConnection(packet.address),
                 ConnectionEvent::Connected);
             break;
         }
-        case RakNet::ID_NO_FREE_INCOMING_CONNECTIONS: {
+        case static_cast<unsigned char>(
+            SystemMessage::NoFreeIncomingConnections): {
             // Remote system has no free incoming connections
             OnConnectionEvent(0, ConnectionEvent::ConnectionFailed);
             break;
         }
-        case RakNet::ID_DISCONNECTION_NOTIFICATION: {
+        case static_cast<unsigned char>(
+            SystemMessage::DisconnectionNotification): {
             // Remote system disconnected
             OnConnectionEvent(
-                connectionManager_->GetConnectionId(packet->systemAddress),
+                connectionManager_->GetConnectionId(packet.address),
                 ConnectionEvent::Disconnected);
-            connectionManager_->RemoveConnection(packet->systemAddress);
+            connectionManager_->RemoveConnection(packet.address);
             break;
         }
-        case RakNet::ID_CONNECTION_LOST: {
+        case static_cast<unsigned char>(SystemMessage::ConnectionLost): {
             // Connection lost
             OnConnectionEvent(
-                connectionManager_->GetConnectionId(packet->systemAddress),
+                connectionManager_->GetConnectionId(packet.address),
                 ConnectionEvent::ConnectionLost);
-            connectionManager_->RemoveConnection(packet->systemAddress);
+            connectionManager_->RemoveConnection(packet.address);
             break;
         }
         default: {
             // Check if this is a custom message type
-            if (packetId >= RakNet::ID_USER_PACKET_ENUM) {
-                if (packetId == RakNet::ID_USER_PACKET_ENUM) {
+            if (packetId >= kUserPacketStart) {
+                if (packetId == NetworkSerializer::ID_KAI_OBJECT_MESSAGE) {
                     // Process object message (serialized object)
                     ProcessObjectMessage(packet);
-                } else if (packetId == RakNet::ID_USER_PACKET_ENUM + 1) {
+                } else if (packetId == NetworkSerializer::ID_KAI_FUNCTION_CALL) {
                     // Process function call
                     ProcessFunctionCall(packet);
-                } else if (packetId == RakNet::ID_USER_PACKET_ENUM + 2) {
+                } else if (packetId ==
+                           NetworkSerializer::ID_KAI_EVENT_NOTIFICATION) {
                     // Process event notification
                     ProcessEventNotification(packet);
+                } else if (packetId ==
+                           NetworkSerializer::ID_KAI_FUNCTION_RESPONSE) {
+                    ProcessFunctionResponse(packet);
                 }
             }
             break;
@@ -460,21 +371,224 @@ void Node::ProcessPacket(RakNet::Packet *packet) {
     }
 }
 
-void Node::ProcessObjectMessage(RakNet::Packet *packet) {
+void Node::ProcessObjectMessage(const NetPacket &packet) {
     // TODO: Implement object message processing
     NetworkLogger::LogMessage(
         "Processing object message (not yet implemented)");
 }
 
-void Node::ProcessFunctionCall(RakNet::Packet *packet) {
-    // TODO: Implement function call processing
-    NetworkLogger::LogMessage("Processing function call (not yet implemented)");
+void Node::ProcessFunctionCall(const NetPacket &packet) {
+    if (!registry_) {
+        NetworkLogger::LogMessage(
+            "Processing function call failed: null packet or registry");
+        return;
+    }
+
+    BinaryPacket stream(reinterpret_cast<const char *>(packet.data.data()),
+                        reinterpret_cast<const char *>(packet.data.data() +
+                                                      packet.data.size()),
+                        registry_);
+
+    unsigned char msgId = 0;
+    if (!stream.Read(msgId)) {
+        NetworkLogger::LogMessage("Failed to read function call header");
+        return;
+    }
+
+    int handleValue = 0;
+    int futureId = 0;
+    std::string methodName;
+
+    if (!stream.Read(handleValue) || !stream.Read(futureId) ||
+        !NetworkSerializer::ReadString(stream, methodName)) {
+        NetworkLogger::LogMessage("Failed to read function call metadata");
+        return;
+    }
+
+    Object argsObj = NetworkSerializer::DeserializeObject(stream, *registry_);
+    std::vector<Object> args;
+    if (argsObj.Exists() && argsObj.IsType<Array>()) {
+        const Array &arr = ConstDeref<Array>(argsObj);
+        args.reserve(arr.Size());
+        for (int i = 0; i < arr.Size(); ++i) {
+            args.push_back(arr.At(i));
+        }
+    }
+
+    std::shared_ptr<detail::MethodInvokerBase> invoker;
+    {
+        std::lock_guard<std::mutex> lock(agentMutex_);
+        auto entry = agentEntries_.find(handleValue);
+        if (entry != agentEntries_.end()) {
+            auto it = entry->second.methods.find(methodName);
+            if (it != entry->second.methods.end()) {
+                invoker = it->second;
+            }
+        }
+    }
+
+    ResponseType response = ResponseType::Returned;
+    std::string errorMessage;
+    Object result;
+
+    if (!invoker) {
+        response = ResponseType::BadRequest;
+        errorMessage = "Unknown agent or method";
+    } else {
+        try {
+            result = invoker->Invoke(args);
+        } catch (const std::exception &e) {
+            response = ResponseType::BadRequest;
+            errorMessage = e.what();
+        }
+    }
+
+    if (futureId != 0) {
+        BinaryStream responseStream;
+        responseStream.Write(
+            static_cast<unsigned char>(
+                NetworkSerializer::ID_KAI_FUNCTION_RESPONSE));
+        responseStream.Write(futureId);
+        responseStream.Write(static_cast<int>(response));
+        NetworkSerializer::WriteString(responseStream, errorMessage);
+        NetworkSerializer::SerializeObject(responseStream, result);
+
+        peer_->Send(reinterpret_cast<const unsigned char *>(
+                        responseStream.Begin()),
+                    static_cast<std::size_t>(responseStream.Size()),
+                    true, 0, packet.address, false);
+    }
 }
 
-void Node::ProcessEventNotification(RakNet::Packet *packet) {
+void Node::ProcessEventNotification(const NetPacket &packet) {
     // TODO: Implement event notification processing
     NetworkLogger::LogMessage(
         "Processing event notification (not yet implemented)");
+}
+
+void Node::SendResponse(const NetAddress &peer, BinaryStream &response) {
+    if (!peer_ || !isRunning_) return;
+
+    BinaryStream bs;
+    bs.Write(static_cast<unsigned char>(
+        NetworkSerializer::ID_KAI_FUNCTION_RESPONSE));
+    bs.Write(0);  // Unknown future id; compatibility-only
+    bs.Write(static_cast<int>(ResponseType::Returned));
+    NetworkSerializer::WriteString(bs, std::string());
+
+    // Pass through raw response payload to keep generated code compiling.
+    int size = response.Size();
+    bs.Write(size);
+    if (size > 0) {
+        bs.Write(size, response.Begin());
+    }
+
+    peer_->Send(reinterpret_cast<const unsigned char *>(bs.Begin()),
+                static_cast<std::size_t>(bs.Size()),
+                true, 0, peer, false);
+}
+
+void Node::BroadcastEvent(const std::string &name,
+                          BinaryStream &eventData) {
+    if (!peer_ || !isRunning_) return;
+
+    BinaryStream bs;
+    bs.Write(static_cast<unsigned char>(
+        NetworkSerializer::ID_KAI_EVENT_NOTIFICATION));
+    NetworkSerializer::WriteString(bs, name);
+
+    if (eventData.Size() > 0) {
+        bs.Write(eventData.Size(), eventData.Begin());
+    } else {
+        int size = 0;
+        bs.Write(size);
+    }
+
+    peer_->Send(reinterpret_cast<const unsigned char *>(bs.Begin()),
+                static_cast<std::size_t>(bs.Size()),
+                true, 0, NetAddress(), true);
+}
+
+void Node::BroadcastEvent(const std::string &name) {
+    BinaryStream empty;
+    BroadcastEvent(name, empty);
+}
+
+void Node::ProcessFunctionResponse(const NetPacket &packet) {
+    if (!registry_) {
+        NetworkLogger::LogMessage(
+            "Processing function response failed: null packet or registry");
+        return;
+    }
+
+    BinaryPacket stream(reinterpret_cast<const char *>(packet.data.data()),
+                        reinterpret_cast<const char *>(packet.data.data() +
+                                                      packet.data.size()),
+                        registry_);
+
+    unsigned char msgId = 0;
+    int futureId = 0;
+    int responseValue = 0;
+    std::string errorMessage;
+
+    if (!stream.Read(msgId) || !stream.Read(futureId) ||
+        !stream.Read(responseValue) ||
+        !NetworkSerializer::ReadString(stream, errorMessage)) {
+        NetworkLogger::LogMessage("Failed to read function response");
+        return;
+    }
+
+    Object result = NetworkSerializer::DeserializeObject(stream, *registry_);
+
+    PendingResponse pending;
+    {
+        std::lock_guard<std::mutex> lock(pendingMutex_);
+        auto it = pendingResponses_.find(futureId);
+        if (it == pendingResponses_.end()) {
+            return;
+        }
+        pending = std::move(it->second);
+        pendingResponses_.erase(it);
+    }
+
+    if (pending.complete) {
+        pending.complete(result, static_cast<ResponseType>(responseValue),
+                         errorMessage);
+    }
+}
+
+void Node::SendFunctionCall(NetHandle handle, const std::string &name,
+                            const Object &args, int futureId) {
+    if (!peer_ || !isRunning_) return;
+
+    NetAddress targetAddress;
+    bool found = false;
+
+    if (connectionManager_) {
+        auto connections = connectionManager_->GetAllConnections();
+        if (!connections.empty()) {
+            targetAddress =
+                connectionManager_->GetSystemAddress(connections.front());
+            found = true;
+        }
+    }
+
+    if (!found) {
+        NetworkLogger::LogMessage("No active connection for SendFunctionCall");
+        return;
+    }
+
+    BinaryStream bs;
+    bs.Write(static_cast<unsigned char>(
+        NetworkSerializer::ID_KAI_FUNCTION_CALL));
+    bs.Write(handle.value);
+    bs.Write(futureId);
+    NetworkSerializer::WriteString(bs, name);
+    NetworkSerializer::SerializeObject(bs, args);
+
+    peer_->Send(reinterpret_cast<const unsigned char *>(bs.Begin()),
+                static_cast<std::size_t>(bs.Size()),
+                true, 0, targetAddress, false);
 }
 
 void Node::OnConnectionEvent(int connectionId, ConnectionEvent event) {

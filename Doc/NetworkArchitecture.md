@@ -15,7 +15,7 @@ graph TB
         CM[ConnectionManager]
         NL[NetworkLogger]
         PAS[ProxyAgentSystem]
-        RN[RakNet]
+        RN[ENet]
 
         PD -.-> CM
         CM -.-> RN
@@ -41,9 +41,9 @@ The Node class is the primary entry point to the networking system. It:
 - Handles object serialization and transmission
 - Provides an API for peer discovery
 
-#### RakNet Integration
+#### ENet Integration
 
-KAI uses the RakNet library as its low-level networking implementation, which provides:
+KAI uses the ENet library as its low-level networking implementation, which provides:
 - Reliable UDP communication
 - NAT traversal capabilities
 - Automatic packet ordering and sequencing
@@ -75,11 +75,11 @@ The proxy-agent system enables remote procedure calls:
 
 ## Network Protocols
 
-KAI implements several custom protocols on top of RakNet:
+KAI implements several custom protocols on top of ENet:
 
 ### Connection Protocol
 
-1. **Node Startup**: A node initializes RakNet and starts listening or connects to peers
+1. **Node Startup**: A node initializes ENet and starts listening or connects to peers
 2. **Connection Attempt**: Node sends a connection request to remote peer
 3. **Connection Acceptance**: Remote peer accepts connection and both peers store the connection
 4. **Connection Maintenance**: Periodic ping messages to detect connection loss
@@ -144,18 +144,18 @@ graph TB
     PROXY[Proxy/Agent Layer<br/>Remote object references and methods]
     OBJ[Object Layer<br/>Object serialization and transmission]
     NODE[Node Layer<br/>Connection management, peer discovery]
-    RAKNET[RakNet Layer<br/>Low-level networking, packet handling]
+    ENET[ENet Layer<br/>Low-level networking, packet handling]
 
     APP --> PROXY
     PROXY --> OBJ
     OBJ --> NODE
-    NODE --> RAKNET
+    NODE --> ENET
 
     style APP fill:#e3f2fd
     style PROXY fill:#fff3e0
     style OBJ fill:#c8e6c9
     style NODE fill:#ffe0b2
-    style RAKNET fill:#ffebee
+    style ENET fill:#ffebee
 ```
 
 ### Application Layer
@@ -184,7 +184,7 @@ The node layer manages:
 - Network event handling
 - Message routing
 
-### RakNet Layer
+### ENet Layer
 The lowest layer handles:
 - Socket communication
 - Packet fragmentation and reassembly
@@ -193,12 +193,12 @@ The lowest layer handles:
 
 ## Implementation Details
 
-### RakNet Integration
+### ENet Integration
 
-KAI integrates with RakNet through several adapter classes:
-- `RakNetStub.h`: Provides forward declarations to avoid direct inclusion of RakNet headers
-- `RakNetAdapter`: Wraps RakNet functionality to keep the core KAI system independent of RakNet
-- `RakNetImpl`: Implements the actual RakNet functionality
+KAI integrates with ENet through several adapter classes:
+- `ENetStub.h`: Provides forward declarations to avoid direct inclusion of ENet headers
+- `ENetAdapter`: Wraps ENet functionality to keep the core KAI system independent of ENet
+- `ENetImpl`: Implements the actual ENet functionality
 
 This design allows KAI to potentially switch to a different networking library without major changes to the core system.
 

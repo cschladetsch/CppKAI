@@ -49,10 +49,10 @@ The minimal connection implementation consists of:
 2. Follow the instructions to test the connection:
    ```
    # In Terminal 1
-   /home/xian/local/KAI/build/Bin/MinimalServer 14591
+   $KAI_ROOT/build/Bin/MinimalServer 14591
 
    # In Terminal 2
-   /home/xian/local/KAI/build/Bin/MinimalClient 127.0.0.1 14591
+   $KAI_ROOT/build/Bin/MinimalClient 127.0.0.1 14591
    ```
 3. In the client terminal, enter messages like "1+2" which will be sent to the server
 4. The server will echo back the message with "Server echoed:" prefix

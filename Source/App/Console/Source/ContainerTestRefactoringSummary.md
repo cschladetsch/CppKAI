@@ -6,13 +6,13 @@ Successfully refactored container tests into dedicated test files for better org
 ## What was done:
 
 ### 1. Array Tests Refactoring
-- **Created**: `/home/xian/local/KAI/Test/Source/TestArray.cpp`
+- **Created**: `$KAI_ROOT/Test/Source/TestArray.cpp`
 - **Moved**: 17 Array tests (7 original + 10 new Insert tests)
 - **Source**: Tests moved from CoreContainerTests.cpp
 - **Status**: Compiles successfully
 
 ### 2. Map Tests Refactoring
-- **Created**: `/home/xian/local/KAI/Test/Source/TestMap.cpp`
+- **Created**: `$KAI_ROOT/Test/Source/TestMap.cpp`
 - **Moved**: 11 Map tests total
   - 5 tests from TestContainer/TestMap.cpp
   - 6 tests from CoreContainerTests.cpp

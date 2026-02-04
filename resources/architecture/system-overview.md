@@ -42,7 +42,7 @@ KAI is a sophisticated distributed object model that enables:
 ### 4. Network Transparency
 - P2P architecture without central servers
 - Objects and computations distribute seamlessly
-- RakNet-based reliable communication
+- ENet-based reliable communication
 - Automatic peer discovery and connection management
 
 ## Major System Components

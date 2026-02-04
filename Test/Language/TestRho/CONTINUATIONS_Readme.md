@@ -105,7 +105,7 @@ Until then, our direct test implementations and selective test filtering provide
 Use the custom test runner to run the tests in a controlled manner:
 
 ```bash
-cd /home/xian/local/KAI
+cd $KAI_ROOT
 ./run_all_tests_fixed
 ```
 

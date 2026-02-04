@@ -1,4 +1,4 @@
-$ /home/xian/local/KAI/Bin/Console
+$ /home/christian/local/repos/KAI/Bin/Console
 KAI Console v1.0.0
 
 Pi λ 1 2 +

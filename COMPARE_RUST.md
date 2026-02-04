@@ -1,7 +1,7 @@
 # Networking & Concurrency
 
 ## KAI (C++):
-  - RakNet-based P2P networking with custom Node abstraction (Node.h:19-96)
+  - ENet-based P2P networking with custom Node abstraction (Node.h:19-96)
   - Event-driven architecture with manual connection management
   - Future-based async messaging (Node.h:63-66)
   - No built-in thread safety - relies on external synchronization
@@ -48,7 +48,7 @@
 
   1. Rewriting the object system using Rust's trait system
   2. Converting GC to ownership - major architectural change
-  3. Replacing RakNet with tokio-based async networking
+  3. Replacing ENet with tokio-based async networking
   4. Rebuilding DSL interpreters with Rust parser crates
   5. Extensive testing - behavioral parity verification
 

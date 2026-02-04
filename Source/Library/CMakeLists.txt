@@ -6,8 +6,7 @@ foreach(lib ${libs})
     def_library(${lib})
 endforeach()
 
-if (KAI_BUILD_RAKNET)
-    # Add Network library only if RakNet is enabled
+if (KAI_BUILD_ENET)
     def_library(Network)
     add_subdirectory(${LIBRARY_HOME}/Network)
 endif()

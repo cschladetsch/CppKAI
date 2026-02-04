@@ -142,7 +142,7 @@ namespace Network {
 
 **Current Issues:**
 - Some network-related code generation tests failing
-- Related to RakNet stub implementation
+- Related to ENet stub implementation
 
 ### Build System
 
@@ -165,7 +165,7 @@ namespace Network {
 **Dependencies:**
 - Boost (system, filesystem, program_options, date_time, regex)
 - GoogleTest (downloaded if not found)
-- RakNet (optional, stubbed by default)
+- ENet (optional, stubbed by default)
 
 ### Test Infrastructure
 
@@ -278,7 +278,7 @@ Execute:
 - Complex control flow combinations
 
 **Tau:**
-- Network code generation tests (related to RakNet stub)
+- Network code generation tests (related to ENet stub)
 - Some async pattern tests
 
 ### Build System

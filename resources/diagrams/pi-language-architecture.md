@@ -265,7 +265,7 @@ graph LR
     
     subgraph "Network Layer"
         SERIALIZE[Serialize<br/>Pi operations]
-        TRANSPORT[Network Transport<br/>RakNet/TCP]
+        TRANSPORT[Network Transport<br/>ENet/TCP]
         DESERIALIZE[Deserialize<br/>Remote operations]
     end
     

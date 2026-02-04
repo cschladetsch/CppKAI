@@ -1,4 +1,4 @@
-// P2P Chat application interfaces using RakNet networking
+// P2P Chat application interfaces using ENet networking
 // Channel-based publish/subscribe model for Console integration
 
 namespace KAI { namespace Chat {
@@ -79,9 +79,9 @@ namespace KAI { namespace Chat {
         event OnChannelClosed(string channelName);
     }
 
-    // Channel Network Proxy - handles RakNet operations for channels
+    // Channel Network Proxy - handles ENet operations for channels
     interface IChannelNetworkProxy {
-        // RakNet initialization
+        // ENet initialization
         void Initialize();
         void Shutdown();
         

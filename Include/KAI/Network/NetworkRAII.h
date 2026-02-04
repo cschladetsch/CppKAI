@@ -204,13 +204,15 @@ class Node_SmartPtr : public std::enable_shared_from_this<Node_SmartPtr> {
 // RAII wrapper for peer discovery
 class PeerDiscoverySession {
    private:
-    std::shared_ptr<PeerDiscovery> discovery_;
+    std::shared_ptr<net::PeerDiscovery> discovery_;
     bool is_active_ = true;
 
    public:
-    explicit PeerDiscoverySession(std::shared_ptr<Node_SmartPtr> node)
-        : discovery_(std::make_shared<PeerDiscovery>(node)) {
-        discovery_->Start();
+    explicit PeerDiscoverySession(std::shared_ptr<net::PeerDiscovery> discovery)
+        : discovery_(std::move(discovery)) {
+        if (discovery_) {
+            discovery_->Start();
+        }
     }
 
     ~PeerDiscoverySession() { Stop(); }
@@ -226,8 +228,9 @@ class PeerDiscoverySession {
         }
     }
 
-    std::vector<Address> GetDiscoveredPeers() const {
-        return discovery_ ? discovery_->GetPeers() : std::vector<Address>{};
+    std::vector<net::NetAddress> GetDiscoveredPeers() const {
+        return discovery_ ? discovery_->GetDiscoveredPeers()
+                          : std::vector<net::NetAddress>{};
     }
 };
 
@@ -282,7 +285,7 @@ auto node = std::make_shared<Network::Node_SmartPtr>(registry);
 
 // Peer discovery with RAII:
 {
-    Network::PeerDiscoverySession discovery(node);
+    Network::PeerDiscoverySession discovery(nullptr);
     auto peers = discovery.GetDiscoveredPeers();
     // ... use peers ...
 } // Discovery automatically stopped

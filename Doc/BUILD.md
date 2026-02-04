@@ -97,7 +97,7 @@ cmake .. -DKAI_BUILD_TEST_ALL=ON          # Build all tests (default)
 cmake .. -DKAI_BUILD_CORE_TEST=ON         # Build core unit tests (default)
 cmake .. -DKAI_BUILD_TEST_LANG=ON         # Build language tests (default)
 cmake .. -DKAI_BUILD_TEST_NETWORK=OFF     # Build networking tests (default: OFF)
-cmake .. -DKAI_BUILD_RAKNET=OFF           # Build with RakNet (default: OFF)
+cmake .. -DKAI_BUILD_ENET=ON             # Build with ENet (default: ON)
 ```
 
 #### Security Configuration
