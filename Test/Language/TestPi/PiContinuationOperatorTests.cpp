@@ -48,16 +48,15 @@ TEST_F(PiContinuationOperatorTest, CallSubroutineOperator) {
     auto exec = console_.GetExecutor();
 
     // Define a simple continuation
-    console_.Execute("{ 2 * } 'double =");
+    console_.Execute("{ 2 * } 'double #");
 
     // Call it with &
     console_.Execute("5 double &");
     auto stack = exec->GetDataStack();
 
-    // If & is implemented as call subroutine, should execute and return
-    // If not implemented, might just push the continuation
-    ASSERT_GE(stack->Size(), 1);
-    // Expected behavior depends on implementation
+    ASSERT_EQ(stack->Size(), 1);
+    EXPECT_TRUE(stack->Top().IsType<int>());
+    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 10);
 }
 
 // Test ! as replace continuation (if implemented)

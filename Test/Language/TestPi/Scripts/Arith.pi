@@ -9,7 +9,7 @@ clear
 1 2 + 3 == assert 
 
 // Test complex arithmetic
-1 2 + 3 mul 3 + 6 div 2 == assert 
+1 2 + 3 * 3 + 6 div 2 == assert 
 
 // Test swap operation with subtraction
 2 3 swap - 1 == assert
@@ -22,5 +22,4 @@ clear
 
 // Commented out for now
 // 1 2 3 3 toarray [1 2 3] == assert
-
 

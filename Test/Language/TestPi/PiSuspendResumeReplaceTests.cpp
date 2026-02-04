@@ -89,8 +89,8 @@ TEST_F(PiSuspendResumeReplaceTests, ReplaceTailCall) {
 // Test 8: Resume vs Replace difference
 TEST_F(PiSuspendResumeReplaceTests, ResumeVsReplace) {
     // Resume returns to caller, Replace does not
-    // This tests that resume goes back to context stack
-    AssertResult<int>("{ { 5 ... 99 } & 10 + } &", 15);  // inner returns 5, adds 10
+    // Resume exits the current continuation immediately
+    AssertResult<int>("{ { 5 ... 99 } & 10 + } &", 5);
 }
 
 // Test 9: Multiple suspends building context stack

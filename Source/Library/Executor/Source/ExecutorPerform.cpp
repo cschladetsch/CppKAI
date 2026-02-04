@@ -8,6 +8,7 @@
 #include <KAI/Language/Common/Language.h>
 #include <stdio.h>
 
+#include <functional>
 #include <iostream>
 
 KAI_BEGIN
@@ -386,6 +387,7 @@ void Executor::Perform(Operation::Type op) {
 
             // Save current continuation on the context stack for later
             // resumption
+            auto caller = continuation_;
             context_->Push(continuation_);
 
             // Create and set the new continuation
@@ -398,6 +400,11 @@ void Executor::Perform(Operation::Type op) {
             // This is critical for function arguments to be available in the
             // scope
             if (continuation_.Exists()) {
+                continuation_->InitialStackDepth = data_->Size();
+                if (!continuation_->GetScope().Exists() && caller.Exists() &&
+                    caller->GetScope().Exists()) {
+                    continuation_->SetScope(caller->GetScope());
+                }
                 continuation_->Enter(this);
                 KAI_TRACE() << "  Called Enter on new continuation";
             }
@@ -441,6 +448,11 @@ void Executor::Perform(Operation::Type op) {
             } else {
                 // Fallback for non-continuation objects
                 continuation_ = NewContinuation(obj);
+            }
+
+            if (continuation_.Exists()) {
+                continuation_->InitialStackDepth = data_->Size();
+                continuation_->Enter(this);
             }
 
             // Set replace_ = true to signal that continuation has been replaced.
@@ -727,7 +739,7 @@ void Executor::Perform(Operation::Type op) {
                     Stack const& scopes = *context_;
                     for (int N = 0; N < scopes.Size(); ++N) {
                         Pointer<Continuation> cont = scopes.At(N);
-                        if (!cont.Exists()) break;
+                        if (!cont.Exists()) continue;
 
                         Object parentScope = cont->GetScope();
                         if (parentScope.Exists() && parentScope.Has(label)) {
@@ -771,7 +783,7 @@ void Executor::Perform(Operation::Type op) {
                     Stack const& scopes = *context_;
                     for (int N = 0; N < scopes.Size(); ++N) {
                         Pointer<Continuation> cont = scopes.At(N);
-                        if (!cont.Exists()) break;
+                        if (!cont.Exists()) continue;
 
                         Object parentScope = cont->GetScope();
                         if (parentScope.Exists() && parentScope.Has(label)) {
@@ -809,30 +821,8 @@ void Executor::Perform(Operation::Type op) {
                 obj = Resolve(obj);
             }
 
-            // If the result is a continuation, execute it
-            if (obj.IsType<Continuation>()) {
-                KAI_TRACE() << "Retreive: Executing continuation via Suspend logic";
-
-                // Save current continuation on the context stack for later resumption
-                context_->Push(continuation_);
-
-                // Create and set the new continuation
-                continuation_ = NewContinuation(obj);
-                KAI_TRACE() << "  Creating new continuation from: "
-                            << obj.ToString();
-                KAI_TRACE() << "  Context stack size: " << context_->Size();
-
-                // IMPORTANT: Call Enter to set up arguments in the new scope
-                // This is critical for function arguments to be available in the scope
-                if (continuation_.Exists()) {
-                    continuation_->Enter(this);
-                    KAI_TRACE() << "  Called Enter on new continuation";
-                }
-                break_ = true; // Signal a context switch
-            } else {
-                // Otherwise just push the value
-                Push(obj);
-            }
+            // Lookup should not auto-execute continuations; it only resolves.
+            Push(obj);
             break;
         }
 
@@ -924,8 +914,7 @@ void Executor::Perform(Operation::Type op) {
 
             auto chosen = condition ? A : B;
             if (chosen.IsType<Continuation>()) {
-                // Execute the chosen block inline instead of suspending
-                // This avoids issues with continuation stack management
+                // Execute the chosen block inline instead of suspending.
                 Pointer<Continuation> cont = chosen;
                 // Ensure the continuation has access to the current scope
                 if (continuation_.Exists()) {
@@ -1097,6 +1086,7 @@ void Executor::Perform(Operation::Type op) {
 
                 // Push the selected continuation onto the context stack and
                 // break to force execution to switch to it
+                newCont->InitialStackDepth = data_->Size();
                 context_->Push(newCont);
                 break_ = true;
 
@@ -1522,17 +1512,8 @@ void Executor::Perform(Operation::Type op) {
                                         << ", current=" << i;
                         }
 
-                        // Execute body inline
-                        if (bodyCont->GetCode().Exists()) {
-                            for (int j = 0; j < bodyCont->GetCode()->Size();
-                                 ++j) {
-                                if (break_ || continue_) break;
-                                auto obj = bodyCont->GetCode()->At(j);
-                                if (obj.Exists()) {
-                                    Eval(obj);
-                                }
-                            }
-                        }
+                    // Execute body inline (handles suspend/replace/resume)
+                    ExecuteContinuationInline(bodyCont);
 
                         // Handle control flow
                         if (break_) {
@@ -2417,20 +2398,26 @@ void Executor::Perform(Operation::Type op) {
 
 // Helper method to execute a continuation's code inline
 void Executor::ExecuteContinuationInline(Pointer<Continuation> cont) {
-    if (cont.Exists() && cont->GetCode().Exists()) {
-        // Create a temporary sub-continuation for this inline execution
-        // This allows proper handling of Suspend operations
+    std::function<void(Pointer<Continuation>, bool)> executeInline;
+    executeInline = [this, &executeInline](Pointer<Continuation> cont,
+                                           bool pushContext) {
+        if (!cont.Exists() || !cont->GetCode().Exists()) {
+            return;
+        }
+
         auto savedCont = continuation_;
         auto savedIndex =
             savedCont.Exists() ? ConstDeref<int>(savedCont->index) : 0;
 
-        // Push the saved continuation onto context stack so variable resolution
-        // can find variables in parent scopes
-        if (savedCont.Exists()) {
+        if (pushContext && savedCont.Exists()) {
             context_->Push(savedCont);
         }
 
-        // Set up the inline continuation
+        if (!cont->GetScope().Exists() && savedCont.Exists() &&
+            savedCont->GetScope().Exists()) {
+            cont->SetScope(savedCont->GetScope());
+        }
+
         continuation_ = cont;
         if (!continuation_->index.Exists()) {
             continuation_->index = continuation_->New<int>(0);
@@ -2438,8 +2425,6 @@ void Executor::ExecuteContinuationInline(Pointer<Continuation> cont) {
             *continuation_->index = 0;
         }
 
-        // Execute the continuation
-        // Check cont instead of continuation_ because Suspend may change continuation_
         try {
             while (cont.Exists() &&
                    ConstDeref<int>(cont->index) < cont->GetCode()->Size()) {
@@ -2447,69 +2432,65 @@ void Executor::ExecuteContinuationInline(Pointer<Continuation> cont) {
 
                 int index = ConstDeref<int>(cont->index);
                 auto obj = cont->GetCode()->At(index);
-
-                // Advance the index first
                 *cont->index = index + 1;
 
-                if (obj.Exists()) {
-                    Eval(obj);
+                if (!obj.Exists()) continue;
 
-                    // If Suspend or Replace changed continuation_
-                    if (continuation_ != cont) {
-                        // Check if this was a Replace (replace_ is set) or Suspend
-                        if (replace_) {
-                            // Replace operation - don't execute inline, just break out
-                            // The new continuation will be executed by the outer loop
-                            break;
-                        }
+                Eval(obj);
 
-                        // This was a Suspend - execute the suspended function inline
-                        // Save cont's current index
-                        int savedIndex = ConstDeref<int>(cont->index);
-                        // Save break_ flag
-                        bool savedBreak = break_;
-
-                        // Execute the suspended function inline, not via Continue()
-                        // Continue() would continue executing cont after the suspended function completes
-                        auto suspendedCont = continuation_;
-                        if (suspendedCont.Exists() && suspendedCont->GetCode().Exists()) {
-                            // Initialize suspended continuation's index
-                            if (!suspendedCont->index.Exists()) {
-                                suspendedCont->index = suspendedCont->New<int>(0);
-                            } else {
-                                *suspendedCont->index = 0;
-                            }
-
-                            // Execute all operations in suspended continuation
-                            while (ConstDeref<int>(suspendedCont->index) < suspendedCont->GetCode()->Size()) {
-                                int idx = ConstDeref<int>(suspendedCont->index);
-                                auto operation = suspendedCont->GetCode()->At(idx);
-                                *suspendedCont->index = idx + 1;
-                                if (operation.Exists()) {
-                                    Eval(operation);
-                                }
-                            }
-                        }
-
-                        // Pop cont from context stack (pushed by Suspend)
-                        if (!context_->Empty()) {
+                if (continuation_ != cont) {
+                    if (replace_) {
+                        if (pushContext && savedCont.Exists() &&
+                            !context_->Empty()) {
                             context_->Pop();
                         }
-
-                        // Restore cont as current continuation
-                        continuation_ = cont;
-                        *cont->index = savedIndex;
-                        // Restore break_ flag
-                        break_ = savedBreak;
+                        return;
                     }
+
+                    int resumeIndex = ConstDeref<int>(cont->index);
+                    bool savedBreak = break_;
+                    Pointer<Continuation> suspendedCont =
+                        Object(continuation_);
+
+                    executeInline(suspendedCont, false);
+
+                    if (replace_) {
+                        if (pushContext && savedCont.Exists() &&
+                            !context_->Empty()) {
+                            context_->Pop();
+                        }
+                        return;
+                    }
+
+                    bool callerHasMore = cont->GetCode().Exists() &&
+                                         resumeIndex < cont->GetCode()->Size();
+                    if (callerHasMore && suspendedCont.Exists() &&
+                        suspendedCont->InitialStackDepth >= 0 &&
+                        data_.Valid() && data_.Exists() &&
+                        data_->Size() > suspendedCont->InitialStackDepth) {
+                        Object result = Pop();
+                        int targetBelow = suspendedCont->InitialStackDepth > 0
+                                              ? suspendedCont->InitialStackDepth - 1
+                                              : 0;
+                        while (data_->Size() > targetBelow) {
+                            Pop();
+                        }
+                        Push(result);
+                    }
+
+                    if (!context_->Empty()) {
+                        context_->Pop();
+                    }
+
+                    continuation_ = cont;
+                    *cont->index = resumeIndex;
+                    break_ = savedBreak;
                 }
             }
         } catch (...) {
-            // Pop the saved continuation from context stack
-            if (savedCont.Exists() && !context_->Empty()) {
+            if (pushContext && savedCont.Exists() && !context_->Empty()) {
                 context_->Pop();
             }
-            // Restore original continuation on error
             continuation_ = savedCont;
             if (savedCont.Exists() && savedCont->index.Exists()) {
                 *savedCont->index = savedIndex;
@@ -2517,21 +2498,19 @@ void Executor::ExecuteContinuationInline(Pointer<Continuation> cont) {
             throw;
         }
 
-        // Always pop the saved continuation from context stack
-        if (savedCont.Exists() && !context_->Empty()) {
+        if (pushContext && savedCont.Exists() && !context_->Empty()) {
             context_->Pop();
         }
 
-        // If Replace was used (replace_ is true), keep the new continuation
-        // Otherwise restore the original continuation
         if (!replace_) {
             continuation_ = savedCont;
             if (savedCont.Exists() && savedCont->index.Exists()) {
                 *savedCont->index = savedIndex;
             }
         }
-        // If replace_ is true, continuation_ already has the replacement - don't restore
-    }
+    };
+
+    executeInline(cont, true);
 }
 
 KAI_END

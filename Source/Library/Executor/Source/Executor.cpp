@@ -362,7 +362,7 @@ Object Executor::TryResolve(Label const &label) const {
     Stack const &scopes = *context_;
     for (int N = 0; N < scopes.Size(); ++N) {
         Pointer<Continuation> cont = scopes.At(N);
-        if (!cont.Exists()) break;
+        if (!cont.Exists()) continue;
 
         Object scope = cont->GetScope();
         // Try both Has (direct children) and HasChild (recursive search)
@@ -812,6 +812,34 @@ void Executor::NextContinuation() {
     }
 
     try {
+        bool callerHasMore = false;
+        if (!context_->Empty()) {
+            const auto nextPeek = context_->Top();
+            if (nextPeek.Valid() && nextPeek.Exists() &&
+                nextPeek.IsType<Continuation>()) {
+                Pointer<Continuation> caller = nextPeek;
+                if (caller.Exists() && caller->GetCode().Exists() &&
+                    caller->index.Exists()) {
+                    callerHasMore = ConstDeref<int>(caller->index) <
+                                    caller->GetCode()->Size();
+                }
+            }
+        }
+
+        Value<Continuation> finished = continuation_;
+        if (callerHasMore && finished.Valid() && finished.Exists() &&
+            finished->InitialStackDepth >= 0 && data_.Valid() && data_.Exists() &&
+            data_->Size() > finished->InitialStackDepth) {
+            Object result = Pop();
+            int targetBelow =
+                finished->InitialStackDepth > 0 ? finished->InitialStackDepth - 1
+                                                : 0;
+            while (data_->Size() > targetBelow) {
+                Pop();
+            }
+            Push(result);
+        }
+
         const auto next = context_->Pop();
         if (!next.Valid() || !next.Exists()) {
             continuation_ = Object();
@@ -943,6 +971,10 @@ void Executor::ConditionalContextSwitch(Operation::Type op) {
             continuation_->Next();
             context_->Push(continuation_);
             continuation_ = NewContinuation(obj);
+            if (continuation_.Exists()) {
+                continuation_->InitialStackDepth = data_->Size();
+                continuation_->Enter(this);
+            }
             break_ = true;
             break;
         case Operation::Replace:
@@ -970,6 +1002,9 @@ void Executor::ConditionalContextSwitch(Operation::Type op) {
                 }
             } else {
                 continuation_ = NewContinuation(obj);
+            }
+            if (continuation_.Exists()) {
+                continuation_->InitialStackDepth = data_->Size();
             }
             break_ = true;
             break;

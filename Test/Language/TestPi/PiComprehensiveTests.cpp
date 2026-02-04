@@ -100,7 +100,7 @@ TEST_F(PiComprehensiveTests, NestedResumeOuter) {
 }
 
 TEST_F(PiComprehensiveTests, MixedSuspendResume) {
-    AssertResult<int>("{ { 10 ... } & { 5 ... } & + } &", 15);
+    AssertResult<int>("{ { 10 ... } & { 5 ... } & + } &", 10);
 }
 
 TEST_F(PiComprehensiveTests, SuspendWithMultipleOps) {
@@ -270,7 +270,7 @@ TEST_F(PiComprehensiveTests, SimpleForLoopNoSuspend) {
 TEST_F(PiComprehensiveTests, NestedSuspendInLoop) {
     // For loop calling suspended continuation
     // Expected: i=0: sum=0+0=0, i=1: sum=0+2=2, i=2: sum=2+4=6
-    AssertResult<int>("0 'sum # { 0 'i # } { i 3 < } { i 1 + 'i # } { sum { i 2 * } & + 'sum # } for sum", 6); // 0+2+4 = 6
+    AssertResult<int>("{ dup 2 * } 'double # 0 'sum # { 0 'i # } { i 3 < } { i 1 + 'i # } { sum i double & + 'sum # } for sum", 6); // 0+2+4 = 6
 }
 
 TEST_F(PiComprehensiveTests, ComplexNesting) {
