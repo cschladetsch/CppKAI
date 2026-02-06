@@ -33,6 +33,33 @@ Pointer<Continuation> PiTranslator::Translate(const char *text, Structure st) {
     return cont;
 }
 
+Pointer<Continuation> PiTranslator::TranslateTokens(
+    const std::vector<TokenNode> &tokens, Structure st) {
+    isTranslatingRoot = true;
+
+    auto parse = std::make_shared<PiParser>(*reg_);
+    if (!parse->ProcessTokens(tokens, st)) {
+        Fail(parse->Error);
+        isTranslatingRoot = false;
+        return Object();
+    }
+
+    if (parse->Failed) {
+        Fail(parse->Error);
+        isTranslatingRoot = false;
+        return Object();
+    }
+
+    PushNew();
+    TranslateNode(parse->GetRoot());
+
+    if (stack.empty()) KAI_THROW_0(EmptyStack);
+
+    isTranslatingRoot = false;
+
+    return Pop();
+}
+
 void PiTranslator::TranslateNode(AstNodePtr node) {
     if (!node) {
         Fail("Empty input");
@@ -560,6 +587,10 @@ void PiTranslator::AppendTokenised(const TokenNode &tok) {
 
         case PiTokenEnumType::GetChild:
             AppendOp(Operation::GetChild);
+            return;
+
+        case PiTokenEnumType::SetChild:
+            AppendOp(Operation::SetChild);
             return;
 
         case PiTokenEnumType::DropN:

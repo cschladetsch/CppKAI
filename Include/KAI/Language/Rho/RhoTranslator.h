@@ -49,11 +49,7 @@ class RhoTranslator : public TranslatorBase<RhoParser> {
     // Helper method is now implemented in TranslatorBase
 
    private:
-    // Transpilation approach: Convert Rho AST to Pi code string
-    std::string TranspileToPi(AstNodePtr node);
-    std::string TranspileNodeToPi(AstNodePtr node);
-    
-    // Old direct translation methods (will be deprecated)
+    // Direct translation methods
     void TranslateToken(AstNodePtr node);
     void TranslateFunction(AstNodePtr node);
     void TranslateBlock(AstNodePtr node);

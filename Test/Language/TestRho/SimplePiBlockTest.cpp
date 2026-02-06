@@ -5,6 +5,7 @@
 // Simple test for pi block functionality
 TEST(SimplePiBlock, SingleLineExpression) {
     kai::Console console;
+    kai::TestLangCommon::SetupTranslatorsForConsole(console);
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
 
@@ -19,6 +20,7 @@ TEST(SimplePiBlock, SingleLineExpression) {
 
 TEST(SimplePiBlock, SingleLineAssignment) {
     kai::Console console;
+    kai::TestLangCommon::SetupTranslatorsForConsole(console);
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
 
@@ -33,6 +35,7 @@ TEST(SimplePiBlock, SingleLineAssignment) {
 
 TEST(SimplePiBlock, DirectArithmetic) {
     kai::Console console;
+    kai::TestLangCommon::SetupTranslatorsForConsole(console);
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
 

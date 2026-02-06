@@ -10,19 +10,19 @@ class TestRhoAdvancedContinuations : public kai::TestLangCommon {
 // Test 11: Nested loop continuations with early return
 TEST_F(TestRhoAdvancedContinuations, TestNestedLoopEarlyReturn) {
     const char *script = R"(
-        fun find_pair(target) {
-            do i = 1 to 10 {
-                do j = 1 to 10 {
-                    if (i * j == target) {
-                        return [i, j]
-                    }
-                }
-            }
-            return []
-        }
-        
-        find_pair(42)
-    )";
+fun find_pair(target)
+    i = 1
+    while i <= 10
+        j = 1
+        while j <= 10
+            if (i * j == target)
+                return [i, j]
+            j = j + 1
+        i = i + 1
+    return []
+
+find_pair(42)
+)";
 
     console_.Execute(script);
     auto result = data_->Top();
@@ -32,17 +32,17 @@ TEST_F(TestRhoAdvancedContinuations, TestNestedLoopEarlyReturn) {
 // Test 12: Continuation with lambda composition
 TEST_F(TestRhoAdvancedContinuations, TestLambdaComposition) {
     const char *script = R"(
-        compose = fun(f, g) {
-            return fun(x) { f(g(x)) }
-        }
-        
-        add5 = fun(x) { x + 5 }
-        double = fun(x) { x * 2 }
-        triple = fun(x) { x * 3 }
-        
-        pipeline = compose(compose(add5, double), triple)
-        pipeline(4)
-    )";
+compose = fun(f, g) {
+    return fun(x) { return f(g(x)) }
+}
+
+add5 = fun(x) { return x + 5 }
+double = fun(x) { return x * 2 }
+triple = fun(x) { return x * 3 }
+
+pipeline = compose(compose(add5, double), triple)
+pipeline(4)
+)";
 
     console_.Execute(script);
     ASSERT_EQ(kai::ConstDeref<int>(data_->Top()), 29);  // ((4 * 3) * 2) + 5
@@ -51,26 +51,18 @@ TEST_F(TestRhoAdvancedContinuations, TestLambdaComposition) {
 // Test 13: Advanced pattern matching with continuations
 TEST_F(TestRhoAdvancedContinuations, TestPatternMatchingContinuation) {
     const char *script = R"(
-        fun process_value(val) {
-            match val {
-                case n when n < 0 => {
-                    return fun() { "negative: " + n }
-                }
-                case 0 => {
-                    return fun() { "zero" }
-                }
-                case n when n > 0 && n < 10 => {
-                    return fun() { "single digit: " + n }
-                }
-                case n => {
-                    return fun() { "large: " + n }
-                }
-            }
-        }
-        
-        handler = process_value(5)
-        handler()
-    )";
+fun process_value(val)
+    if (val < 0)
+        return fun() { return -1 }
+    if (val == 0)
+        return fun() { return 0 }
+    if (val < 10)
+        return fun() { return val }
+    return fun() { return val * 2 }
+
+handler = process_value(5)
+handler()
+)";
 
     console_.Execute(script);
 }
@@ -78,53 +70,48 @@ TEST_F(TestRhoAdvancedContinuations, TestPatternMatchingContinuation) {
 // Test 14: Continuation-based state machine
 TEST_F(TestRhoAdvancedContinuations, TestStateMachineContinuation) {
     const char *script = R"(
-        fun create_state_machine() {
-            state = "idle"
-            
-            transitions = {
-                idle: fun(event) {
-                    if (event == "start") {
-                        state = "running"
-                        return "started"
-                    }
-                    return "invalid"
-                },
-                running: fun(event) {
-                    if (event == "pause") {
-                        state = "paused"
-                        return "paused"
-                    } else if (event == "stop") {
-                        state = "idle"
-                        return "stopped"
-                    }
-                    return "invalid"
-                },
-                paused: fun(event) {
-                    if (event == "resume") {
-                        state = "running"
-                        return "resumed"
-                    } else if (event == "stop") {
-                        state = "idle"
-                        return "stopped"
-                    }
-                    return "invalid"
-                }
-            }
-            
-            return fun(event) {
-                handler = transitions[state]
-                if (handler) {
-                    return handler(event)
-                }
-                return "unknown state"
-            }
+fun create_state_machine()
+    state = "idle"
+
+    transitions = {
+        "idle": fun(event) {
+            if (event == "start")
+                state = "running"
+                return "started"
+            return "invalid"
+        },
+        "running": fun(event) {
+            if (event == "pause")
+                state = "paused"
+                return "paused"
+            else if (event == "stop")
+                state = "idle"
+                return "stopped"
+            return "invalid"
+        },
+        "paused": fun(event) {
+            if (event == "resume")
+                state = "running"
+                return "resumed"
+            else if (event == "stop")
+                state = "idle"
+                return "stopped"
+            return "invalid"
         }
-        
-        machine = create_state_machine()
-        machine("start")
-        machine("pause")
-        machine("resume")
-    )";
+    }
+
+    return fun(event) {
+        handler = transitions[state]
+        if (handler)
+            return handler(event)
+        return "unknown state"
+    }
+
+machine = create_state_machine()
+machine("start")
+machine("pause")
+machine("resume")
+)";
 
     console_.Execute(script);
 }
@@ -132,28 +119,27 @@ TEST_F(TestRhoAdvancedContinuations, TestStateMachineContinuation) {
 // Test 15: Complex continuation with nested closures
 TEST_F(TestRhoAdvancedContinuations, TestNestedClosureContinuation) {
     const char *script = R"(
-        fun create_accumulator(initial) {
-            sum = initial
-            
-            return {
-                add: fun(x) {
-                    sum = sum + x
-                    return sum
-                },
-                multiply: fun(x) {
-                    sum = sum * x
-                    return sum
-                },
-                get: fun() { sum },
-                reset: fun() { sum = initial }
-            }
-        }
-        
-        acc = create_accumulator(10)
-        acc.add(5)
-        acc.multiply(2)
-        acc.get()
-    )";
+fun create_accumulator(initial)
+    sum = initial
+
+    return {
+        "add": fun(x) {
+            sum = sum + x
+            return sum
+        },
+        "multiply": fun(x) {
+            sum = sum * x
+            return sum
+        },
+        "get": fun() { return sum },
+        "reset": fun() { sum = initial }
+    }
+
+acc = create_accumulator(10)
+acc["add"](5)
+acc["multiply"](2)
+acc["get"]()
+)";
 
     console_.Execute(script);
     ASSERT_EQ(kai::ConstDeref<int>(data_->Top()), 30);  // (10 + 5) * 2
@@ -162,25 +148,22 @@ TEST_F(TestRhoAdvancedContinuations, TestNestedClosureContinuation) {
 // Test 16: Continuation with exception propagation
 TEST_F(TestRhoAdvancedContinuations, TestExceptionPropagation) {
     const char *script = R"(
-        fun safe_divide(a, b) {
-            if (b == 0) {
-                throw "Division by zero"
-            }
-            return a / b
-        }
-        
-        fun calculate(x, y, z) {
-            try {
-                result1 = safe_divide(x, y)
-                result2 = safe_divide(result1, z)
-                return result2
-            } catch (e) {
-                return "Error: " + e
-            }
-        }
-        
-        calculate(100, 5, 0)
-    )";
+fun safe_divide(a, b)
+    if (b == 0)
+        return null
+    return a / b
+
+fun calculate(x, y, z)
+    result1 = safe_divide(x, y)
+    if (result1 == null)
+        return "Error"
+    result2 = safe_divide(result1, z)
+    if (result2 == null)
+        return "Error"
+    return result2
+
+calculate(100, 5, 0)
+)";
 
     console_.Execute(script);
 }
@@ -233,30 +216,26 @@ TEST_F(TestRhoAdvancedContinuations, TestGeneratorPattern) {
 // Test 18: Memoization with continuations
 TEST_F(TestRhoAdvancedContinuations, TestMemoizationContinuation) {
     const char *script = R"(
-        fun memoize(f) {
-            cache = {}
-            
-            return fun(x) {
-                if (cache[x] != null) {
-                    return cache[x]
-                }
-                
-                result = f(x)
-                cache[x] = result
-                return result
-            }
-        }
-        
-        fun expensive_calc(n) {
-            if (n <= 1) {
-                return n
-            }
-            return expensive_calc(n - 1) + expensive_calc(n - 2)
-        }
-        
-        fast_calc = memoize(expensive_calc)
-        fast_calc(10)
-    )";
+fun memoize(f)
+    cache = [null, null, null, null, null, null, null, null, null, null, null]
+
+    return fun(x) {
+        if (cache[x] != null)
+            return cache[x]
+
+        result = f(x)
+        cache[x] = result
+        return result
+    }
+
+fun expensive_calc(n)
+    if (n <= 1)
+        return n
+    return expensive_calc(n - 1) + expensive_calc(n - 2)
+
+fast_calc = memoize(expensive_calc)
+fast_calc(10)
+)";
 
     console_.Execute(script);
 }

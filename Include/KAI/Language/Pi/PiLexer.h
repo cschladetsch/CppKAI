@@ -3,6 +3,8 @@
 #include <KAI/Language/Common/LexerCommon.h>
 #include <KAI/Language/Pi/PiToken.h>
 
+#include <string>
+
 KAI_BEGIN
 
 // Lexer for the Pi language. A specialistion of the generalised lexer.
@@ -18,6 +20,8 @@ class PiLexer : public LexerCommon<PiTokenEnumType> {
     void AddKeyWords() override;
     bool NextToken() override;
     void Terminate() override;
+    static bool TryGetKeyword(const std::string &text,
+                              PiTokenEnumType::Enum &out);
 
    private:
     bool PathnameOrKeyword();

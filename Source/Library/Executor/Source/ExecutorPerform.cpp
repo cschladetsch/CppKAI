@@ -532,6 +532,25 @@ void Executor::Perform(Operation::Type op) {
                 auto& map = Deref<Map>(container);
                 Push(map.GetValue(key));
             }
+            // For strings, use integer index
+            else if (container.IsType<String>()) {
+                if (!key.IsType<int>()) {
+                    KAI_TRACE_ERROR()
+                        << "GetChild: String index must be an integer";
+                    Push(Object());
+                    break;
+                }
+
+                int idx = ConstDeref<int>(key);
+                String str = ConstDeref<String>(container);
+                if (idx < 0 || idx >= static_cast<int>(str.size())) {
+                    KAI_TRACE_ERROR()
+                        << "GetChild: String index out of bounds: " << idx;
+                    Push(Object());
+                    break;
+                }
+                Push(New<String>(String(1, str[idx])));
+            }
             // For generic objects, convert key to Label
             else {
                 Label label;

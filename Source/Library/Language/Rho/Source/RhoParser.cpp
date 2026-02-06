@@ -63,7 +63,7 @@ bool RhoParser::Process(std::shared_ptr<Lexer> lex, Structure st) {
 bool RhoParser::Run(Structure st) {
     switch (st) {
         case Structure::Statement:
-            if (!Statement(root)) return CreateError("Statement expected");
+            Program();
             break;
 
         case Structure::Expression:
@@ -679,12 +679,31 @@ bool RhoParser::Factor() {
 
         auto block = NewNode(RhoAstNodeEnumType::Block);
 
-        // Rho uses Python-like indentation-style function bodies only
-        Expect(TokenType::NewLine);
+        // Rho supports two anonymous function body styles:
+        // 1. Inline expression with braces: fun(args) { expr }
+        // 2. Indented block: fun(args)\n    body
+        if (Try(TokenType::OpenBrace)) {
+            Consume();  // consume '{'
 
-        // Use the Block method for indented code blocks
-        if (!Block(block)) {
-            return CreateError("Block Expected for function body");
+            if (!Expression()) {
+                return CreateError(
+                    "Expected expression inside anonymous function braces");
+            }
+
+            auto expr = Pop();
+            block->Add(expr);
+
+            if (!Try(TokenType::CloseBrace)) {
+                return CreateError(
+                    "Expected '}' after anonymous function expression");
+            }
+            Consume();  // consume '}'
+        } else {
+            Expect(TokenType::NewLine);
+
+            if (!Block(block)) {
+                return CreateError("Block Expected for function body");
+            }
         }
 
         fun->Add(block);
@@ -696,6 +715,7 @@ bool RhoParser::Factor() {
     if (Try(TokenType::ToPi)) {
         KAI_TRACE() << "RhoParser::Factor - Found ToPi token";
         Consume();  // consume 'pi'
+        ConsumeWhitespace();
 
         // Expect opening brace
         if (!Try(TokenType::OpenBrace)) {
@@ -719,6 +739,8 @@ bool RhoParser::Factor() {
                 if (braceCount > 0) {
                     // This is a nested closing brace, include it in Pi content
                     piContent->Add(NewNode(Consume()));
+                } else {
+                    Consume();
                 }
                 // If braceCount == 0, we've found the closing brace of the Pi
                 // block
@@ -818,6 +840,9 @@ bool RhoParser::IfCondition(AstNodePtr block) {
     auto condition = Pop();
 
     // Expect newline after condition
+    while (Try(TokenType::Whitespace) || Try(TokenType::Tab)) {
+        Consume();
+    }
     if (!Try(TokenType::NewLine)) {
         return CreateError("Expected newline after if condition");
     }
@@ -909,6 +934,9 @@ bool RhoParser::WhileLoop(AstNodePtr block) {
     KAI_TRACE() << "RhoParser::WhileLoop - Parsed condition expression";
 
     // Expect newline after condition
+    while (Try(TokenType::Whitespace) || Try(TokenType::Tab)) {
+        Consume();
+    }
     if (!Try(TokenType::NewLine)) {
         return CreateError("Expected newline after while condition");
     }
@@ -1075,6 +1103,12 @@ bool RhoParser::ForLoop(AstNodePtr block) {
     KAI_TRACE() << "RhoParser::ForLoop - Found 'for' token";
     Consume();
 
+    bool headerHasParens = false;
+    if (Try(TokenType::OpenParan)) {
+        headerHasParens = true;
+        Consume();
+    }
+
     // Rho for loops support TWO syntaxes:
     // 1. C-style: for i = 0; i < 10; i = i + 1
     // 2. Iterator-style: for x in container
@@ -1107,6 +1141,13 @@ bool RhoParser::ForLoop(AstNodePtr block) {
                 return CreateError("Expected collection expression after 'in'");
             }
             AstNodePtr collection = Pop();
+
+            if (headerHasParens) {
+                if (!Try(TokenType::CloseParan)) {
+                    return CreateError("Expected ')' after for-loop header");
+                }
+                Consume();
+            }
 
             // Expect newline
             if (!Try(TokenType::NewLine)) {
@@ -1170,11 +1211,18 @@ bool RhoParser::ForLoop(AstNodePtr block) {
     KAI_TRACE() << "RhoParser::ForLoop - Parsing increment";
     AstNodePtr incrExpr = nullptr;
     // Increment expression is optional (can be empty before newline)
-    if (!Try(TokenType::NewLine)) {
+    if (!Try(TokenType::NewLine) && !(headerHasParens && Try(TokenType::CloseParan))) {
         if (!Expression()) {
             return CreateError("Expected increment expression in for loop");
         }
         incrExpr = Pop();
+    }
+
+    if (headerHasParens) {
+        if (!Try(TokenType::CloseParan)) {
+            return CreateError("Expected ')' after for-loop header");
+        }
+        Consume();
     }
 
     // Expect newline after for loop header

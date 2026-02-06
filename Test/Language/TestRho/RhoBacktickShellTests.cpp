@@ -5,6 +5,13 @@ using namespace std;
 
 class RhoBacktickShellTest : public TestLangCommon {
    protected:
+    void SetUp() override {
+        TestLangCommon::SetUp();
+#ifndef ENABLE_SHELL_SYNTAX
+        GTEST_SKIP() << "Shell syntax is disabled in this build";
+#endif
+    }
+
     void RunRhoScript(const char* script) {
         console_.SetLanguage(Language::Rho);
         data_->Clear();

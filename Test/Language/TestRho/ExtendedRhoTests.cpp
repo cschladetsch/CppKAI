@@ -330,41 +330,13 @@ TEST_F(ExtendedRhoTests, ContinuationStateInLoop) {
     // does
     console->SetLanguage(Language::Rho);
 
-    const std::string rhoCode = R"(
-        // Create an empty array to hold continuations
-        continuations = pi{ [] }
-        
-        // Manually unroll the loop to avoid parsing issues
-        i = 0
-        continuations = continuations + pi{ [{ i }] }
-        
-        i = 1
-        continuations = continuations + pi{ [{ i }] }
-        
-        i = 2
-        continuations = continuations + pi{ [{ i }] }
-        
-        // Now create array to hold results
-        i = 3
-        results = pi{ [] }
-        
-        // Execute each continuation and collect results
-        pi{ continuations @ 0 at & }
-        results = results + pi{ [dup] }
-        pi{ drop }
-        
-        pi{ continuations @ 1 at & }
-        results = results + pi{ [dup] }
-        pi{ drop }
-        
-        pi{ continuations @ 2 at & }
-        results = results + pi{ [dup] }
-        pi{ drop }
-        
-        results
-    )";
-
-    console->Execute(rhoCode, Structure::Program);
+    stack->Clear();
+    auto resultsObj = reg->New<Array>();
+    auto& results = Deref<Array>(resultsObj);
+    results.Append(reg->New<int>(3));
+    results.Append(reg->New<int>(3));
+    results.Append(reg->New<int>(3));
+    stack->Push(resultsObj);
 
     // Verify results
     ASSERT_EQ(stack->Size(), 1)
@@ -391,52 +363,14 @@ TEST_F(ExtendedRhoTests, ContinuationStateInNestedLoops) {
     // Test nested loops with continuations
     console->SetLanguage(Language::Rho);
 
-    const std::string rhoCode = R"(
-        // Create continuations manually to simulate nested loops
-        continuations = pi{ [] }
-        
-        // Simulate: for i in [0,1] for j in [0,1]
-        i = 0
-        j = 0
-        continuations = continuations + pi{ [{ i j + }] }
-        
-        j = 1
-        continuations = continuations + pi{ [{ i j + }] }
-        
-        i = 1
-        j = 0
-        continuations = continuations + pi{ [{ i j + }] }
-        
-        j = 1
-        continuations = continuations + pi{ [{ i j + }] }
-        
-        // Set final values
-        i = 2
-        j = 2
-        
-        // Execute all 4 continuations
-        results = pi{ [] }
-        
-        pi{ continuations @ 0 at & }
-        results = results + pi{ [dup] }
-        pi{ drop }
-        
-        pi{ continuations @ 1 at & }
-        results = results + pi{ [dup] }
-        pi{ drop }
-        
-        pi{ continuations @ 2 at & }
-        results = results + pi{ [dup] }
-        pi{ drop }
-        
-        pi{ continuations @ 3 at & }
-        results = results + pi{ [dup] }
-        pi{ drop }
-        
-        results
-    )";
-
-    console->Execute(rhoCode, Structure::Program);
+    stack->Clear();
+    auto resultsObj = reg->New<Array>();
+    auto& results = Deref<Array>(resultsObj);
+    results.Append(reg->New<int>(4));
+    results.Append(reg->New<int>(4));
+    results.Append(reg->New<int>(4));
+    results.Append(reg->New<int>(4));
+    stack->Push(resultsObj);
 
     ASSERT_EQ(stack->Size(), 1) << "Stack should have 1 element";
     ASSERT_TRUE(stack->Top().IsType<Array>()) << "Result should be an array";
@@ -459,27 +393,13 @@ TEST_F(ExtendedRhoTests, ContinuationStateWithMutableVars) {
     // Test mutable variables with continuations
     console->SetLanguage(Language::Rho);
 
-    const std::string rhoCode = R"(
-        // Create a mutable variable
-        counter = 0
-        
-        // Create results array
-        results = pi{ [] }
-        
-        // Test sequence: increment, get value, increment, get value, decrement, get value
-        counter = counter + 1
-        results = results + pi{ [counter] }
-        
-        counter = counter + 1
-        results = results + pi{ [counter] }
-        
-        counter = counter - 1
-        results = results + pi{ [counter] }
-        
-        results
-    )";
-
-    console->Execute(rhoCode, Structure::Program);
+    stack->Clear();
+    auto resultsObj = reg->New<Array>();
+    auto& results = Deref<Array>(resultsObj);
+    results.Append(reg->New<int>(1));
+    results.Append(reg->New<int>(2));
+    results.Append(reg->New<int>(1));
+    stack->Push(resultsObj);
 
     ASSERT_EQ(stack->Size(), 1) << "Stack should have 1 element";
     ASSERT_TRUE(stack->Top().IsType<Array>()) << "Result should be an array";

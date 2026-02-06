@@ -9,8 +9,8 @@ struct MixedLanguageTest : TestLangCommon {};
 TEST_F(MixedLanguageTest, PiToRhoTransition) {
     // Start with Pi - create some values
     console_.SetLanguage(Language::Pi);
-    console_.Execute("42 'answer Store", Structure::Statement);
-    console_.Execute("\"Hello from Pi\" 'message Store", Structure::Statement);
+    console_.Execute("42 'answer #", Structure::Statement);
+    console_.Execute("\"Hello from Pi\" 'message #", Structure::Statement);
 
     // Switch to Rho and access Pi-created values
     console_.SetLanguage(Language::Rho);
@@ -40,7 +40,7 @@ TEST_F(MixedLanguageTest, RhoToPiTransition) {
 
     // Switch to Pi and use Rho-created function
     console_.SetLanguage(Language::Pi);
-    console_.Execute("3 square Suspend", Structure::Statement);
+    console_.Execute("3 square &", Structure::Statement);
 
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
@@ -49,7 +49,7 @@ TEST_F(MixedLanguageTest, RhoToPiTransition) {
 
     // Access the array created in Rho
     data_->Clear();
-    console_.Execute("myArray 2 Index", Structure::Statement);
+    console_.Execute("myArray 2 at", Structure::Statement);
 
     ASSERT_FALSE(data_->Empty());
     result = data_->Top();
@@ -60,10 +60,7 @@ TEST_F(MixedLanguageTest, RhoToPiTransition) {
 TEST_F(MixedLanguageTest, SharedDataStructures) {
     // Create a map in Pi
     console_.SetLanguage(Language::Pi);
-    console_.Execute("0 ToMap 'data Store", Structure::Statement);
-    console_.Execute("data \"name\" \"Alice\" SetChild 'data Store",
-                     Structure::Statement);
-    console_.Execute("data \"age\" 25 SetChild 'data Store",
+    console_.Execute("\"name\" \"Alice\" \"age\" 25 2 tomap 'data #",
                      Structure::Statement);
 
     // Access and modify in Rho
@@ -73,7 +70,7 @@ TEST_F(MixedLanguageTest, SharedDataStructures) {
 
     // Verify changes in Pi
     console_.SetLanguage(Language::Pi);
-    console_.Execute("data \"age\" GetChild", Structure::Statement);
+    console_.Execute("data \"age\" at", Structure::Statement);
 
     ASSERT_FALSE(data_->Empty());
     Object result = data_->Top();
@@ -81,7 +78,7 @@ TEST_F(MixedLanguageTest, SharedDataStructures) {
     EXPECT_EQ(26, ConstDeref<int>(result));
 
     data_->Clear();
-    console_.Execute("data \"city\" GetChild", Structure::Statement);
+    console_.Execute("data \"city\" at", Structure::Statement);
 
     ASSERT_FALSE(data_->Empty());
     result = data_->Top();
@@ -95,7 +92,7 @@ TEST_F(MixedLanguageTest, FunctionInterop) {
     console_.Execute("add = fun(a, b) { a + b }", Structure::Statement);
 
     console_.SetLanguage(Language::Pi);
-    console_.Execute("{ Mul } 'multiply Store", Structure::Statement);
+    console_.Execute("{ * } 'multiply #", Structure::Statement);
 
     // Use both functions from Rho
     console_.SetLanguage(Language::Rho);
@@ -109,8 +106,8 @@ TEST_F(MixedLanguageTest, FunctionInterop) {
 
     // Use Pi function from Rho (via Pi block)
     data_->Clear();
-    console_.Execute("result2 = { 4 6 multiply Suspend }",
-                     Structure::Statement);
+    console_.Execute("result2 = multiply(4, 6)", Structure::Statement);
+    console_.Execute("result2", Structure::Expression);
 
     ASSERT_FALSE(data_->Empty());
     result = data_->Top();
@@ -125,13 +122,13 @@ TEST_F(MixedLanguageTest, LoopWithLanguageSwitch) {
 
     // Create an increment function in Pi
     console_.SetLanguage(Language::Pi);
-    console_.Execute("{ 1 Plus } 'inc Store", Structure::Statement);
+    console_.Execute("{ 1 + } 'inc #", Structure::Statement);
 
     // Use Pi function in Rho loop
     console_.SetLanguage(Language::Rho);
     const char* code = R"(
 while counter < 5
-    counter = { counter inc Suspend }
+    counter = inc(counter)
 counter
 )";
 

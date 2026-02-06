@@ -1,75 +1,96 @@
 #include <KAI/Language/Pi/PiLexer.h>
 #include <iostream>
+#include <map>
 
 using namespace std;
 
 KAI_BEGIN
 
-void PiLexer::AddKeyWords() {
-    keyWords["if"] = Enum::If;
-    keyWords["ife"] = Enum::IfElse;
-    keyWords["for"] = Enum::For;
-    keyWords["foreach"] = Enum::ForEach;
-    keyWords["break"] = Enum::Break;
-    keyWords["continue"] = Enum::Continue;
-    keyWords["true"] = Enum::True;
-    keyWords["false"] = Enum::False;
-    keyWords["self"] = Enum::Self;
-    keyWords["while"] = Enum::While;
-    keyWords["assert"] = Enum::Assert;
-    keyWords["div"] = Enum::Divide;
-    keyWords["rho"] = Enum::ToRho;
-    keyWords["rho{"] = Enum::ToRhoSequence;
-    keyWords["to_str"] = Enum::ToStr;
+namespace {
+void PopulateKeywords(std::map<std::string, PiTokenEnumType::Enum> &keywords) {
+    keywords["if"] = PiTokenEnumType::If;
+    keywords["ife"] = PiTokenEnumType::IfElse;
+    keywords["for"] = PiTokenEnumType::For;
+    keywords["foreach"] = PiTokenEnumType::ForEach;
+    keywords["break"] = PiTokenEnumType::Break;
+    keywords["continue"] = PiTokenEnumType::Continue;
+    keywords["true"] = PiTokenEnumType::True;
+    keywords["false"] = PiTokenEnumType::False;
+    keywords["self"] = PiTokenEnumType::Self;
+    keywords["while"] = PiTokenEnumType::While;
+    keywords["assert"] = PiTokenEnumType::Assert;
+    keywords["div"] = PiTokenEnumType::Divide;
+    keywords["rho"] = PiTokenEnumType::ToRho;
+    keywords["rho{"] = PiTokenEnumType::ToRhoSequence;
+    keywords["to_str"] = PiTokenEnumType::ToStr;
 
-    keyWords["not"] = Enum::Not;
-    keyWords["and"] = Enum::And;
-    keyWords["or"] = Enum::Or;
-    keyWords["xor"] = Enum::Xor;
-    keyWords["exists"] = Enum::Exists;
+    keywords["not"] = PiTokenEnumType::Not;
+    keywords["and"] = PiTokenEnumType::And;
+    keywords["or"] = PiTokenEnumType::Or;
+    keywords["xor"] = PiTokenEnumType::Xor;
+    keywords["exists"] = PiTokenEnumType::Exists;
 
-    keyWords["drop"] = Enum::Drop;
-    keyWords["dup"] = Enum::Dup;
-    keyWords["dup2"] = Enum::Dup2;
-    keyWords["drop2"] = Enum::Drop2;
-    keyWords["pick"] = Enum::PickN;
-    keyWords["over"] = Enum::Over;
-    keyWords["swap"] = Enum::Swap;
-    keyWords["rot"] = Enum::Rot;
-    keyWords["rotn"] = Enum::RotN;
-    keyWords["roll"] = Enum::Roll;
-    keyWords["min"] = Enum::Min;
-    keyWords["max"] = Enum::Max;
-    keyWords["toarray"] = Enum::ToArray;
-    keyWords["gc"] = Enum::GarbageCollect;
-    keyWords["clear"] = Enum::Clear;
-    keyWords["expand"] = Enum::Expand;
-    keyWords["cd"] = Enum::ChangeFolder;
-    keyWords["pwd"] = Enum::PrintFolder;
-    keyWords["type"] = Enum::GetType;
-    keyWords["size"] = Enum::Size;
-    keyWords["depth"] = Enum::Depth;
-    keyWords["new"] = Enum::New;
-    keyWords["print"] = Enum::Print;
-    keyWords["dropn"] = Enum::DropN;
+    keywords["drop"] = PiTokenEnumType::Drop;
+    keywords["dup"] = PiTokenEnumType::Dup;
+    keywords["dup2"] = PiTokenEnumType::Dup2;
+    keywords["drop2"] = PiTokenEnumType::Drop2;
+    keywords["pick"] = PiTokenEnumType::PickN;
+    keywords["over"] = PiTokenEnumType::Over;
+    keywords["swap"] = PiTokenEnumType::Swap;
+    keywords["rot"] = PiTokenEnumType::Rot;
+    keywords["rotn"] = PiTokenEnumType::RotN;
+    keywords["roll"] = PiTokenEnumType::Roll;
+    keywords["min"] = PiTokenEnumType::Min;
+    keywords["max"] = PiTokenEnumType::Max;
+    keywords["toarray"] = PiTokenEnumType::ToArray;
+    keywords["gc"] = PiTokenEnumType::GarbageCollect;
+    keywords["clear"] = PiTokenEnumType::Clear;
+    keywords["expand"] = PiTokenEnumType::Expand;
+    keywords["cd"] = PiTokenEnumType::ChangeFolder;
+    keywords["pwd"] = PiTokenEnumType::PrintFolder;
+    keywords["type"] = PiTokenEnumType::GetType;
+    keywords["size"] = PiTokenEnumType::Size;
+    keywords["depth"] = PiTokenEnumType::Depth;
+    keywords["new"] = PiTokenEnumType::New;
+    keywords["print"] = PiTokenEnumType::Print;
+    keywords["dropn"] = PiTokenEnumType::DropN;
+    keywords["setchild"] = PiTokenEnumType::SetChild;
 
-    keyWords["toarray"] = Enum::ToArray;
-    keyWords["tolist"] = Enum::ToList;
-    keyWords["tomap"] = Enum::ToMap;
-    keyWords["toset"] = Enum::ToSet;
+    keywords["toarray"] = PiTokenEnumType::ToArray;
+    keywords["tolist"] = PiTokenEnumType::ToList;
+    keywords["tomap"] = PiTokenEnumType::ToMap;
+    keywords["toset"] = PiTokenEnumType::ToSet;
 
-    keyWords["div"] = Enum::Divide;
-    keyWords["mod"] = Enum::Modulo;
+    keywords["div"] = PiTokenEnumType::Divide;
+    keywords["mod"] = PiTokenEnumType::Modulo;
 
-    keyWords["expand"] = Enum::Expand;
-    keyWords["noteq"] = Enum::NotEquiv;
-    keyWords["lls"] = Enum::Contents;
-    keyWords["ls"] = Enum::GetContents;
-    keyWords["freeze"] = Enum::Freeze;
-    keyWords["thaw"] = Enum::Thaw;
-    keyWords["send"] = Enum::Send;
-    keyWords["call"] = Enum::Suspend;
-    keyWords["at"] = Enum::GetChild;
+    keywords["expand"] = PiTokenEnumType::Expand;
+    keywords["noteq"] = PiTokenEnumType::NotEquiv;
+    keywords["lls"] = PiTokenEnumType::Contents;
+    keywords["ls"] = PiTokenEnumType::GetContents;
+    keywords["freeze"] = PiTokenEnumType::Freeze;
+    keywords["thaw"] = PiTokenEnumType::Thaw;
+    keywords["send"] = PiTokenEnumType::Send;
+    keywords["call"] = PiTokenEnumType::Suspend;
+    keywords["at"] = PiTokenEnumType::GetChild;
+}
+}  // namespace
+
+void PiLexer::AddKeyWords() { PopulateKeywords(keyWords); }
+
+bool PiLexer::TryGetKeyword(const std::string &text,
+                            PiTokenEnumType::Enum &out) {
+    static const std::map<std::string, PiTokenEnumType::Enum> keywords = [] {
+        std::map<std::string, PiTokenEnumType::Enum> map;
+        PopulateKeywords(map);
+        return map;
+    }();
+
+    auto it = keywords.find(text);
+    if (it == keywords.end()) return false;
+
+    out = it->second;
+    return true;
 }
 
 bool PiLexer::NextToken() {

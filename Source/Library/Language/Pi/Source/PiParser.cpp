@@ -23,6 +23,23 @@ bool PiParser::Process(std::shared_ptr<Lexer> lex, Structure st) {
     return Run(st);
 }
 
+bool PiParser::ProcessTokens(const std::vector<TokenNode> &input,
+                             Structure st) {
+    current = 0;
+    indent = 0;
+    lexer.reset();
+    tokens.clear();
+
+    for (auto const &tok : input) {
+        if (tok.type != TokenEnum::Whitespace &&
+            tok.type != TokenEnum::NewLine && tok.type != TokenEnum::Tab &&
+            tok.type != TokenEnum::Comment)
+            tokens.push_back(tok);
+    }
+
+    return Run(st);
+}
+
 bool PiParser::Run(Structure st) {
     KAI_UNUSED_1(
         st);  // no real structure to Pi - it's mostly a sequence of tokens

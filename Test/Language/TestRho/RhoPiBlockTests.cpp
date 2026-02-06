@@ -1,15 +1,96 @@
 #include <gtest/gtest.h>
 
+#include <limits>
+#include <string>
+#include <vector>
+
 #include "TestLangCommon.h"
+
+namespace {
+std::string Dedent(const char* code) {
+    std::string text(code ? code : "");
+    if (text.empty()) return text;
+
+    // Trim leading/trailing newlines
+    while (!text.empty() && (text.front() == '\n' || text.front() == '\r')) {
+        text.erase(text.begin());
+    }
+    while (!text.empty() && (text.back() == '\n' || text.back() == '\r')) {
+        text.pop_back();
+    }
+
+    std::vector<std::string> lines;
+    std::string line;
+    for (char ch : text) {
+        if (ch == '\n') {
+            lines.push_back(line);
+            line.clear();
+        } else if (ch != '\r') {
+            line.push_back(ch);
+        }
+    }
+    lines.push_back(line);
+
+    auto is_all_ws = [](const std::string& ln) {
+        for (char ch : ln) {
+            if (ch != ' ' && ch != '\t') return false;
+        }
+        return true;
+    };
+
+    while (!lines.empty() && is_all_ws(lines.front())) {
+        lines.erase(lines.begin());
+    }
+    while (!lines.empty() && is_all_ws(lines.back())) {
+        lines.pop_back();
+    }
+
+    size_t minIndent = std::numeric_limits<size_t>::max();
+    for (const auto& ln : lines) {
+        size_t i = 0;
+        while (i < ln.size() && (ln[i] == ' ' || ln[i] == '\t')) {
+            ++i;
+        }
+        if (i == ln.size()) continue;  // skip empty/whitespace-only lines
+        if (i < minIndent) minIndent = i;
+    }
+
+    if (minIndent == std::numeric_limits<size_t>::max()) return "";
+
+    std::string out;
+    for (size_t idx = 0; idx < lines.size(); ++idx) {
+        const auto& ln = lines[idx];
+        if (!is_all_ws(ln) && ln.size() >= minIndent) {
+            out.append(ln.substr(minIndent));
+        }
+        if (idx + 1 < lines.size()) out.push_back('\n');
+    }
+
+    return out;
+}
+
+void SetupRhoConsole(kai::Console& console) {
+    kai::TestLangCommon::SetupTranslatorsForConsole(console);
+    console.SetLanguage(kai::Language::Rho);
+}
+
+void ExecRho(kai::Console& console, const char* code) {
+    std::string dedented = Dedent(code);
+    auto structure = dedented.find('\n') == std::string::npos
+                         ? kai::Structure::Statement
+                         : kai::Structure::Program;
+    console.Execute(dedented.c_str(), structure);
+}
+}  // namespace
 
 // Test suite for Rho pi{} block syntax
 TEST(RhoPiBlock, BasicPiExpression) {
     kai::Console console;
-    console.SetLanguage(kai::Language::Rho);
+    SetupRhoConsole(console);
     auto exec = console.GetExecutor();
 
     // Basic Pi arithmetic in a pi block
-    console.Execute("result = pi { 2 3 + }; result");
+    ExecRho(console, "result = pi { 2 3 + }; result");
     auto stack = exec->GetDataStack();
 
     ASSERT_EQ(stack->Size(), 1);
@@ -18,11 +99,11 @@ TEST(RhoPiBlock, BasicPiExpression) {
 
 TEST(RhoPiBlock, PiBlockAsStatement) {
     kai::Console console;
-    console.SetLanguage(kai::Language::Rho);
+    SetupRhoConsole(console);
     auto exec = console.GetExecutor();
 
     // Pi block as a standalone statement
-    console.Execute("pi { 10 20 + }");
+    ExecRho(console, "pi { 10 20 + }");
     auto stack = exec->GetDataStack();
 
     ASSERT_EQ(stack->Size(), 1);
@@ -31,11 +112,11 @@ TEST(RhoPiBlock, PiBlockAsStatement) {
 
 TEST(RhoPiBlock, PiBlockWithStringOperations) {
     kai::Console console;
-    console.SetLanguage(kai::Language::Rho);
+    SetupRhoConsole(console);
     auto exec = console.GetExecutor();
 
     // String operations in Pi block
-    console.Execute(R"(greeting = pi { "Hello " "World" + }; greeting)");
+    ExecRho(console, R"(greeting = pi { "Hello " "World" + }; greeting)");
     auto stack = exec->GetDataStack();
 
     ASSERT_EQ(stack->Size(), 1);
@@ -44,11 +125,11 @@ TEST(RhoPiBlock, PiBlockWithStringOperations) {
 
 TEST(RhoPiBlock, PiBlockWithComparison) {
     kai::Console console;
-    console.SetLanguage(kai::Language::Rho);
+    SetupRhoConsole(console);
     auto exec = console.GetExecutor();
 
     // Comparison operations in Pi block
-    console.Execute("result = pi { 5 3 > }; result");
+    ExecRho(console, "result = pi { 5 3 > }; result");
     auto stack = exec->GetDataStack();
 
     ASSERT_EQ(stack->Size(), 1);
@@ -57,17 +138,16 @@ TEST(RhoPiBlock, PiBlockWithComparison) {
 
 TEST(RhoPiBlock, PiBlockInCondition) {
     kai::Console console;
-    console.SetLanguage(kai::Language::Rho);
+    SetupRhoConsole(console);
     auto exec = console.GetExecutor();
 
     // Pi block used in if condition
-    console.Execute(R"(
-        if pi { 10 5 > }
-            result = 100
-        else
-            result = 200
-        result
-    )");
+    ExecRho(console,
+            "if pi { 10 5 > }\n"
+            "    result = 100\n"
+            "else\n"
+            "    result = 200\n"
+            "result\n");
 
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
@@ -76,11 +156,11 @@ TEST(RhoPiBlock, PiBlockInCondition) {
 
 TEST(RhoPiBlock, PiBlockWithStackManipulation) {
     kai::Console console;
-    console.SetLanguage(kai::Language::Rho);
+    SetupRhoConsole(console);
     auto exec = console.GetExecutor();
 
     // Stack manipulation in Pi block
-    console.Execute("result = pi { 1 2 3 rot + + }; result");
+    ExecRho(console, "result = pi { 1 2 3 rot + + }; result");
     auto stack = exec->GetDataStack();
 
     ASSERT_EQ(stack->Size(), 1);
@@ -89,11 +169,11 @@ TEST(RhoPiBlock, PiBlockWithStackManipulation) {
 
 TEST(RhoPiBlock, NestedPiBlocks) {
     kai::Console console;
-    console.SetLanguage(kai::Language::Rho);
+    SetupRhoConsole(console);
     auto exec = console.GetExecutor();
 
     // Nested pi blocks (pi block result used in another expression)
-    console.Execute(R"(
+    ExecRho(console, R"(
         a = pi { 5 5 + }
         b = pi { 3 3 * }
         result = a + b
@@ -107,11 +187,11 @@ TEST(RhoPiBlock, NestedPiBlocks) {
 
 TEST(RhoPiBlock, PiBlockInArray) {
     kai::Console console;
-    console.SetLanguage(kai::Language::Rho);
+    SetupRhoConsole(console);
     auto exec = console.GetExecutor();
 
     // Pi blocks as array elements
-    console.Execute(R"(
+    ExecRho(console, R"(
         arr = [pi { 1 1 + }, pi { 2 2 * }, pi { 3 3 - }]
         arr[1]
     )");
@@ -123,11 +203,11 @@ TEST(RhoPiBlock, PiBlockInArray) {
 
 TEST(RhoPiBlock, PiBlockWithFloats) {
     kai::Console console;
-    console.SetLanguage(kai::Language::Rho);
+    SetupRhoConsole(console);
     auto exec = console.GetExecutor();
 
     // Float operations in Pi block
-    console.Execute("result = pi { 3.14 2.0 * }; result");
+    ExecRho(console, "result = pi { 3.14 2.0 * }; result");
     auto stack = exec->GetDataStack();
 
     ASSERT_EQ(stack->Size(), 1);
@@ -136,11 +216,11 @@ TEST(RhoPiBlock, PiBlockWithFloats) {
 
 TEST(RhoPiBlock, PiBlockWithLogicalOps) {
     kai::Console console;
-    console.SetLanguage(kai::Language::Rho);
+    SetupRhoConsole(console);
     auto exec = console.GetExecutor();
 
     // Logical operations in Pi block
-    console.Execute("result = pi { true false or }; result");
+    ExecRho(console, "result = pi { true false or }; result");
     auto stack = exec->GetDataStack();
 
     ASSERT_EQ(stack->Size(), 1);
@@ -149,11 +229,11 @@ TEST(RhoPiBlock, PiBlockWithLogicalOps) {
 
 TEST(RhoPiBlock, PiBlockInFunctionArgument) {
     kai::Console console;
-    console.SetLanguage(kai::Language::Rho);
+    SetupRhoConsole(console);
     auto exec = console.GetExecutor();
 
     // Pi block as function argument
-    console.Execute(R"(
+    ExecRho(console, R"(
         fun double(x)
             x * 2
         
@@ -168,11 +248,11 @@ TEST(RhoPiBlock, PiBlockInFunctionArgument) {
 
 TEST(RhoPiBlock, PiBlockWithDup) {
     kai::Console console;
-    console.SetLanguage(kai::Language::Rho);
+    SetupRhoConsole(console);
     auto exec = console.GetExecutor();
 
     // Dup operation in Pi block
-    console.Execute("result = pi { 42 dup * }; result");
+    ExecRho(console, "result = pi { 42 dup * }; result");
     auto stack = exec->GetDataStack();
 
     ASSERT_EQ(stack->Size(), 1);
@@ -181,11 +261,11 @@ TEST(RhoPiBlock, PiBlockWithDup) {
 
 TEST(RhoPiBlock, PiBlockWithSwap) {
     kai::Console console;
-    console.SetLanguage(kai::Language::Rho);
+    SetupRhoConsole(console);
     auto exec = console.GetExecutor();
 
     // Swap operation in Pi block
-    console.Execute("result = pi { 10 3 swap / }; result");
+    ExecRho(console, "result = pi { 10 3 swap / }; result");
     auto stack = exec->GetDataStack();
 
     ASSERT_EQ(stack->Size(), 1);
@@ -195,16 +275,15 @@ TEST(RhoPiBlock, PiBlockWithSwap) {
 
 TEST(RhoPiBlock, PiBlockInWhileCondition) {
     kai::Console console;
-    console.SetLanguage(kai::Language::Rho);
+    SetupRhoConsole(console);
     auto exec = console.GetExecutor();
 
     // Pi block in while loop condition
-    console.Execute(R"(
-        counter = 0
-        while pi { counter 5 < }
-            counter = counter + 1
-        counter
-    )");
+    ExecRho(console,
+            "counter = 0\n"
+            "while pi { counter 5 < }\n"
+            "    counter = counter + 1\n"
+            "counter\n");
 
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
@@ -213,11 +292,11 @@ TEST(RhoPiBlock, PiBlockInWhileCondition) {
 
 TEST(RhoPiBlock, PiBlockWithModulo) {
     kai::Console console;
-    console.SetLanguage(kai::Language::Rho);
+    SetupRhoConsole(console);
     auto exec = console.GetExecutor();
 
     // Modulo operation in Pi block
-    console.Execute("result = pi { 17 5 % }; result");
+    ExecRho(console, "result = pi { 17 5 % }; result");
     auto stack = exec->GetDataStack();
 
     ASSERT_EQ(stack->Size(), 1);
@@ -226,11 +305,11 @@ TEST(RhoPiBlock, PiBlockWithModulo) {
 
 TEST(RhoPiBlock, PiBlockReturnValue) {
     kai::Console console;
-    console.SetLanguage(kai::Language::Rho);
+    SetupRhoConsole(console);
     auto exec = console.GetExecutor();
 
     // Pi block as return value
-    console.Execute(R"(
+    ExecRho(console, R"(
         fun getPiResult()
             return pi { 6 7 * }
         
@@ -245,11 +324,11 @@ TEST(RhoPiBlock, PiBlockReturnValue) {
 
 TEST(RhoPiBlock, PiBlockWithNegation) {
     kai::Console console;
-    console.SetLanguage(kai::Language::Rho);
+    SetupRhoConsole(console);
     auto exec = console.GetExecutor();
 
     // Negation in Pi block
-    console.Execute("result = pi { 25 neg }; result");
+    ExecRho(console, "result = pi { 25 neg }; result");
     auto stack = exec->GetDataStack();
 
     ASSERT_EQ(stack->Size(), 1);
@@ -258,11 +337,11 @@ TEST(RhoPiBlock, PiBlockWithNegation) {
 
 TEST(RhoPiBlock, PiBlockChainedOperations) {
     kai::Console console;
-    console.SetLanguage(kai::Language::Rho);
+    SetupRhoConsole(console);
     auto exec = console.GetExecutor();
 
     // Multiple chained operations in Pi block
-    console.Execute("result = pi { 2 3 + 4 * 5 - }; result");
+    ExecRho(console, "result = pi { 2 3 + 4 * 5 - }; result");
     auto stack = exec->GetDataStack();
 
     ASSERT_EQ(stack->Size(), 1);
@@ -271,11 +350,11 @@ TEST(RhoPiBlock, PiBlockChainedOperations) {
 
 TEST(RhoPiBlock, PiBlockWithEquality) {
     kai::Console console;
-    console.SetLanguage(kai::Language::Rho);
+    SetupRhoConsole(console);
     auto exec = console.GetExecutor();
 
     // Equality test in Pi block (verifying == conversion)
-    console.Execute("result = pi { 10 10 == }; result");
+    ExecRho(console, "result = pi { 10 10 == }; result");
     auto stack = exec->GetDataStack();
 
     ASSERT_EQ(stack->Size(), 1);
@@ -284,11 +363,11 @@ TEST(RhoPiBlock, PiBlockWithEquality) {
 
 TEST(RhoPiBlock, PiBlockComplexExpression) {
     kai::Console console;
-    console.SetLanguage(kai::Language::Rho);
+    SetupRhoConsole(console);
     auto exec = console.GetExecutor();
 
     // Complex expression mixing Rho and Pi
-    console.Execute(R"(
+    ExecRho(console, R"(
         x = 5
         y = 10
         result = x * pi { 3 4 + } + y

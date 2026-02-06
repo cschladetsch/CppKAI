@@ -11,7 +11,7 @@ TEST(MinimalFunction, JustStore) {
     // Push a value and a name, then store
     console.Execute("42");     // Push 42
     console.Execute("'x");     // Push pathname 'x
-    console.Execute("Store");  // Store 42 as x
+    console.Execute("#");      // Store 42 as x
 
     // Now retrieve x
     console.Execute("x");
@@ -28,6 +28,7 @@ TEST(MinimalFunction, ManualFunctionCall) {
     Console console;
 
     // Define a function manually using Pi-like operations
+    console.SetLanguage(Language::Rho);
     console.Execute(R"(
 fun simpleAdd(x, y)
     return x + y
@@ -35,12 +36,13 @@ fun simpleAdd(x, y)
 
     // Now manually set up a function call
     // Push arguments
+    console.SetLanguage(Language::Pi);
     console.Execute("10");  // First argument
     console.Execute("20");  // Second argument
 
     // Get the function and call it
     console.Execute("simpleAdd");  // Get the function
-    console.Execute("Suspend");    // Call it
+    console.Execute("&");          // Call it
 
     auto stack = console.GetExecutor()->GetDataStack();
     ASSERT_FALSE(stack->Empty()) << "Stack should have result";

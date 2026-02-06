@@ -7,6 +7,8 @@
 #include <KAI/Language/Pi/PiParser.h>
 #include <KAI/Language/Pi/PiToken.h>
 
+#include <vector>
+
 KAI_BEGIN
 
 class PiTranslator : public TranslatorBase<PiParser> {
@@ -27,6 +29,8 @@ class PiTranslator : public TranslatorBase<PiParser> {
     // This addresses the issue where expressions lose type information
     [[nodiscard]] Pointer<Continuation> Translate(const char* text,
                                                   Structure st) override;
+    [[nodiscard]] Pointer<Continuation> TranslateTokens(
+        const std::vector<TokenNode>& tokens, Structure st);
 
    protected:
     virtual void TranslateNode(AstNodePtr node) override;

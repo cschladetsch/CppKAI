@@ -1,13 +1,15 @@
 #include <KAI/Core/BuiltinTypes.h>
 #include <KAI/Executor/Operation.h>
+#include <KAI/Language/Pi/PiLexer.h>
 #include <KAI/Language/Pi/PiToken.h>
-#include <KAI/Language/Pi/PiTranslator.h>
 #include <KAI/Language/Rho/RhoTranslator.h>
 
 #include <concepts>
 #include <format>
 #include <ranges>
+#include <string>
 #include <stdexcept>
+#include <vector>
 
 KAI_BEGIN
 
@@ -636,57 +638,241 @@ void RhoTranslator::TranslatePiBlock(AstNodePtr node) {
         return;
     }
 
-    // Build the Pi code string from the tokens
-    std::string piCode;
     auto tokenList = node->GetChild(0);
 
-    for (const auto& tokenNode : tokenList->GetChildren()) {
-        // Add space before each token except the first
-        if (!piCode.empty()) {
-            piCode += " ";
+    auto appendPiKeyword = [this](PiTokenEnumType::Enum piType) {
+        switch (piType) {
+            case PiTokenEnumType::Assert:
+                AppendDirectOperation(Operation::Assert);
+                break;
+            case PiTokenEnumType::Not:
+                AppendDirectOperation(Operation::LogicalNot);
+                break;
+            case PiTokenEnumType::And:
+                AppendDirectOperation(Operation::LogicalAnd);
+                break;
+            case PiTokenEnumType::Or:
+                AppendDirectOperation(Operation::LogicalOr);
+                break;
+            case PiTokenEnumType::Xor:
+                AppendDirectOperation(Operation::LogicalXor);
+                break;
+            case PiTokenEnumType::Dup:
+                AppendDirectOperation(Operation::Dup);
+                break;
+            case PiTokenEnumType::Dup2:
+                AppendDirectOperation(Operation::Dup2);
+                break;
+            case PiTokenEnumType::Drop:
+                AppendDirectOperation(Operation::Drop);
+                break;
+            case PiTokenEnumType::Drop2:
+                AppendDirectOperation(Operation::Drop2);
+                break;
+            case PiTokenEnumType::Over:
+                AppendDirectOperation(Operation::Over);
+                break;
+            case PiTokenEnumType::Swap:
+                AppendDirectOperation(Operation::Swap);
+                break;
+            case PiTokenEnumType::Rot:
+                AppendDirectOperation(Operation::Rot);
+                break;
+            case PiTokenEnumType::RotN:
+                AppendDirectOperation(Operation::RotN);
+                break;
+            case PiTokenEnumType::Roll:
+                AppendDirectOperation(Operation::Roll);
+                break;
+            case PiTokenEnumType::PickN:
+                AppendDirectOperation(Operation::Pick);
+                break;
+            case PiTokenEnumType::Depth:
+                AppendDirectOperation(Operation::Depth);
+                break;
+            case PiTokenEnumType::Clear:
+                AppendDirectOperation(Operation::Clear);
+                break;
+            case PiTokenEnumType::Min:
+                AppendDirectOperation(Operation::Min);
+                break;
+            case PiTokenEnumType::Max:
+                AppendDirectOperation(Operation::Max);
+                break;
+            case PiTokenEnumType::Modulo:
+                AppendDirectOperation(Operation::Modulo);
+                break;
+            case PiTokenEnumType::ToArray:
+                AppendDirectOperation(Operation::ToArray);
+                break;
+            case PiTokenEnumType::ToList:
+                AppendDirectOperation(Operation::ToList);
+                break;
+            case PiTokenEnumType::ToMap:
+                AppendDirectOperation(Operation::ToMap);
+                break;
+            case PiTokenEnumType::ToSet:
+                AppendDirectOperation(Operation::ToSet);
+                break;
+            case PiTokenEnumType::Size:
+                AppendDirectOperation(Operation::Size);
+                break;
+            case PiTokenEnumType::New:
+                AppendDirectOperation(Operation::New);
+                break;
+            case PiTokenEnumType::Print:
+                AppendDirectOperation(Operation::Print);
+                break;
+            case PiTokenEnumType::DropN:
+                AppendDirectOperation(Operation::DropN);
+                break;
+            case PiTokenEnumType::SetChild:
+                AppendDirectOperation(Operation::SetChild);
+                break;
+            case PiTokenEnumType::Freeze:
+                AppendDirectOperation(Operation::Freeze);
+                break;
+            case PiTokenEnumType::Thaw:
+                AppendDirectOperation(Operation::Thaw);
+                break;
+            case PiTokenEnumType::Suspend:
+                AppendDirectOperation(Operation::Suspend);
+                break;
+            case PiTokenEnumType::Replace:
+                AppendDirectOperation(Operation::Replace);
+                break;
+            case PiTokenEnumType::Resume:
+                AppendDirectOperation(Operation::Resume);
+                break;
+            default:
+                Fail(std::format("Unsupported Pi keyword in Pi block: {}",
+                                 PiTokenEnumType::ToString(piType)));
+                break;
+        }
+    };
+
+    for (const auto &tokenNode : tokenList->GetChildren()) {
+        const auto &rhoTok = tokenNode->GetToken();
+        auto tokenType = rhoTok.type;
+
+        // Skip layout tokens from the Rho lexer.
+        if (tokenType == RhoTokenEnumType::Whitespace ||
+            tokenType == RhoTokenEnumType::NewLine ||
+            tokenType == RhoTokenEnumType::Tab ||
+            tokenType == RhoTokenEnumType::Comment) {
+            continue;
         }
 
-        auto tokenType = tokenNode->GetToken().type;
-
-        // Special handling for different token types
-        if (tokenType == RhoTokenEnumType::Equiv) {
-            // Pi uses == not = for equality
-            piCode += "==";
-        } else if (tokenType == RhoTokenEnumType::String) {
-            // Preserve quotes around strings
-            piCode += "\"" + tokenNode->Text() + "\"";
-        } else {
-            piCode += tokenNode->Text();
+        switch (tokenType) {
+            case RhoTokenEnumType::Int:
+                AppendNew(std::stoi(tokenNode->Text()));
+                break;
+            case RhoTokenEnumType::Float:
+                AppendNew(std::stof(tokenNode->Text()));
+                break;
+            case RhoTokenEnumType::String:
+                AppendNew(String(tokenNode->Text()));
+                break;
+            case RhoTokenEnumType::True:
+                AppendNew(true);
+                break;
+            case RhoTokenEnumType::False:
+                AppendNew(false);
+                break;
+            case RhoTokenEnumType::Label: {
+                PiTokenEnumType::Enum keyword = PiTokenEnumType::None;
+                if (PiLexer::TryGetKeyword(tokenNode->Text(), keyword)) {
+                    appendPiKeyword(keyword);
+                } else if (tokenNode->Text() == "neg") {
+                    AppendNew(0);
+                    AppendDirectOperation(Operation::Swap);
+                    AppendDirectOperation(Operation::Minus);
+                } else {
+                    AppendNew(Label(tokenNode->Text()));
+                    AppendDirectOperation(Operation::Retreive);
+                }
+                break;
+            }
+            case RhoTokenEnumType::Pathname:
+                AppendNew(Pathname(tokenNode->Text()));
+                break;
+            case RhoTokenEnumType::ShellCommand:
+                AppendNew(String(tokenNode->Text()));
+                AppendDirectOperation(Operation::ShellCommand);
+                break;
+            case RhoTokenEnumType::Plus:
+                AppendDirectOperation(Operation::Plus);
+                break;
+            case RhoTokenEnumType::Minus:
+                AppendDirectOperation(Operation::Minus);
+                break;
+            case RhoTokenEnumType::Mul:
+                AppendDirectOperation(Operation::Multiply);
+                break;
+            case RhoTokenEnumType::Divide:
+                AppendDirectOperation(Operation::Divide);
+                break;
+            case RhoTokenEnumType::Mod:
+                AppendDirectOperation(Operation::Modulo);
+                break;
+            case RhoTokenEnumType::Equiv:
+                AppendDirectOperation(Operation::Equiv);
+                break;
+            case RhoTokenEnumType::NotEquiv:
+                AppendDirectOperation(Operation::NotEquiv);
+                break;
+            case RhoTokenEnumType::Less:
+                AppendDirectOperation(Operation::Less);
+                break;
+            case RhoTokenEnumType::Greater:
+                AppendDirectOperation(Operation::Greater);
+                break;
+            case RhoTokenEnumType::LessEquiv:
+                AppendDirectOperation(Operation::LessOrEquiv);
+                break;
+            case RhoTokenEnumType::GreaterEquiv:
+                AppendDirectOperation(Operation::GreaterOrEquiv);
+                break;
+            case RhoTokenEnumType::And:
+                AppendDirectOperation(Operation::LogicalAnd);
+                break;
+            case RhoTokenEnumType::Or:
+                AppendDirectOperation(Operation::LogicalOr);
+                break;
+            case RhoTokenEnumType::Xor:
+                AppendDirectOperation(Operation::LogicalXor);
+                break;
+            case RhoTokenEnumType::BitAnd:
+                AppendDirectOperation(Operation::Suspend);
+                break;
+            case RhoTokenEnumType::BitOr:
+                AppendDirectOperation(Operation::BitwiseOr);
+                break;
+            case RhoTokenEnumType::BitXor:
+                AppendDirectOperation(Operation::BitwiseXor);
+                break;
+            case RhoTokenEnumType::Lookup:
+                AppendDirectOperation(Operation::Lookup);
+                break;
+            case RhoTokenEnumType::Assert:
+                AppendDirectOperation(Operation::Assert);
+                break;
+            case RhoTokenEnumType::Suspend:
+                AppendDirectOperation(Operation::Suspend);
+                break;
+            case RhoTokenEnumType::Resume:
+            case RhoTokenEnumType::Replace:
+                AppendDirectOperation(Operation::Resume);
+                break;
+            case RhoTokenEnumType::Not:
+                AppendDirectOperation(Operation::Replace);
+                break;
+            default:
+                Fail(std::format("Unsupported token in Pi block: {}",
+                                 RhoTokenEnumType::ToString(tokenType)));
+                return;
         }
     }
-
-    KAI_TRACE() << "Pi code to execute: " << piCode;
-
-    // Create a PiTranslator to translate the Pi code
-    PiTranslator piTranslator(*reg_);
-    piTranslator.trace = trace;
-
-    // Translate the Pi code into a continuation
-    auto piCont = piTranslator.Translate(piCode.c_str(), Structure::Expression);
-
-    if (piTranslator.Failed) {
-        KAI_TRACE_ERROR() << "Failed to translate Pi code: "
-                          << piTranslator.Error;
-        Fail("Failed to translate Pi code: " + piTranslator.Error);
-        return;
-    }
-
-    if (!piCont.Exists()) {
-        KAI_TRACE_ERROR() << "Pi translation returned null continuation";
-        Fail("Pi translation returned null continuation");
-        return;
-    }
-
-    // Append the Pi continuation directly
-    Append(piCont);
-
-    // Add Suspend operation to execute the Pi continuation
-    AppendDirectOperation(Operation::Suspend);
 
     KAI_TRACE() << "Pi block translation complete";
 }
@@ -952,8 +1138,6 @@ void RhoTranslator::TranslateFunction(AstNodePtr node) {
     Append(functionCont);
 
     // For named functions, store them with their name
-    // Note: This code path is not used when transpiling Rho to Pi (which is the default)
-    // For transpilation, storage is handled in RhoTranslate.cpp TranspileNodeToPi Function case
     if (!functionName.empty() && !functionName.StartsWith("_anon_")) {
         String quotedPath = "'" + functionName;
         auto pathObj = reg_->New<Pathname>(Pathname(quotedPath));

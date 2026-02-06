@@ -22,6 +22,7 @@ struct PiParser : ParserCommon<PiLexer, PiAstNodeEnumType> {
     virtual ~PiParser() = default;
 
     bool Process(std::shared_ptr<Lexer> lex, Structure st) override;
+    bool ProcessTokens(const std::vector<TokenNode> &input, Structure st);
 
    private:
     bool Run(Structure);

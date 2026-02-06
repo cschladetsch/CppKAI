@@ -1,10 +1,11 @@
 #include <gtest/gtest.h>
 
-#include "KAI/Core/Console.h"
+#include "TestLangCommon.h"
 
 // DISABLED: Pi block integration with if statements requires parser fixes
 TEST(PiBlockDebug, SimplePiBlock) {
     kai::Console console;
+    kai::TestLangCommon::SetupTranslatorsForConsole(console);
     console.SetLanguage(kai::Language::Rho);
     auto exec = console.GetExecutor();
 

@@ -457,6 +457,9 @@ Object Executor::TryResolve(Pathname const &path) const {
 
     // For simple pathnames (no dots), convert to Label for lookup
     String pathStr = path.ToString();
+    if (path.Quoted() && pathStr.Size() > 0 && pathStr[0] == '\'') {
+        pathStr = String(pathStr.begin() + 1, pathStr.end());
+    }
     if (!pathStr.Contains(".")) {
         // Simple identifier - resolve as Label
         Label label(pathStr);
