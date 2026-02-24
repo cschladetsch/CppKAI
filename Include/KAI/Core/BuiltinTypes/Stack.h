@@ -58,7 +58,7 @@ class Stack : public Container<Stack> {
 
 StringStream &operator<<(StringStream &, const Stack &);
 BinaryStream &operator<<(BinaryStream &, const Stack &);
-BinaryPacket &operator>>(BinaryPacket &, Stack &);
+BinaryStream &operator>>(BinaryStream &, Stack &);
 
 HashValue GetHash(const Stack &);
 

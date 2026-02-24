@@ -11,7 +11,7 @@ static const std::unordered_set<std::string> piKeywords = {
     "if", "ife", "for", "foreach", "break", "continue", "true", "false", "self",
     "while", "assert", "div", "rho", "rho{", "to_str", "not", "and", "or", "xor",
     "exists", "drop", "dup", "dup2", "drop2", "pick", "over", "swap", "rot", "rotn",
-    "roll", "min", "max", "toarray", "gc", "clear", "expand", "cd", "pwd", "type",
+    "roll", "toarray", "gc", "clear", "expand", "cd", "pwd", "type",
     "size", "depth", "new", "print", "dropn", "tolist", "tomap", "toset", "mul",
     "mod", "noteq", "lls", "ls", "freeze", "thaw", "at"
 };
@@ -839,19 +839,53 @@ bool RhoParser::IfCondition(AstNodePtr block) {
 
     auto condition = Pop();
 
+    auto parseInlineBlock = [this](AstNodePtr inlineBlock) -> bool {
+        if (!Try(TokenType::OpenBrace)) {
+            return false;
+        }
+        Consume();  // consume '{'
+
+        while (!Try(TokenType::CloseBrace) && !Try(TokenType::None)) {
+            // Skip whitespace tokens inside inline blocks
+            while (Try(TokenType::Whitespace) || Try(TokenType::Tab) ||
+                   Try(TokenType::NewLine)) {
+                Consume();
+            }
+
+            if (Try(TokenType::CloseBrace)) {
+                break;
+            }
+
+            if (!Statement(inlineBlock)) {
+                return CreateError("Expected statement in inline if block");
+            }
+        }
+
+        if (!Try(TokenType::CloseBrace)) {
+            return CreateError("Expected '}' to close inline if block");
+        }
+        Consume();  // consume '}'
+        return true;
+    };
+
     // Expect newline after condition
     while (Try(TokenType::Whitespace) || Try(TokenType::Tab)) {
         Consume();
     }
-    if (!Try(TokenType::NewLine)) {
-        return CreateError("Expected newline after if condition");
-    }
-    Consume();
-
     auto trueClause = NewNode(NodeType::Block);
 
-    if (!Block(trueClause)) {
-        return CreateError("Block Expected for if body");
+    if (Try(TokenType::OpenBrace)) {
+        if (!parseInlineBlock(trueClause)) {
+            return CreateError("Inline block expected for if body");
+        }
+    } else {
+        if (!Try(TokenType::NewLine)) {
+            return CreateError("Expected newline or '{' after if condition");
+        }
+        Consume();
+        if (!Block(trueClause)) {
+            return CreateError("Block Expected for if body");
+        }
     }
 
     auto cond = NewNode(NodeType::Conditional);
@@ -877,17 +911,24 @@ bool RhoParser::IfCondition(AstNodePtr block) {
             }
             cond->Add(falseClause);
         } else {
-            // Regular else block - expect newline after else
-            if (!Try(TokenType::NewLine)) {
-                return CreateError("Expected newline after else");
-            }
-            Consume();
-
             auto falseClause = NewNode(NodeType::Block);
-            KAI_TRACE() << "IfCondition: Parsing else block";
-            Block(falseClause);
-            KAI_TRACE() << "IfCondition: Finished else block, position "
-                        << (int)current;
+
+            // Regular else block - allow inline braces or indented block
+            if (Try(TokenType::OpenBrace)) {
+                if (!parseInlineBlock(falseClause)) {
+                    return CreateError("Inline block expected for else body");
+                }
+            } else {
+                if (!Try(TokenType::NewLine)) {
+                    return CreateError("Expected newline or '{' after else");
+                }
+                Consume();
+
+                KAI_TRACE() << "IfCondition: Parsing else block";
+                Block(falseClause);
+                KAI_TRACE() << "IfCondition: Finished else block, position "
+                            << (int)current;
+            }
 
             cond->Add(falseClause);
         }

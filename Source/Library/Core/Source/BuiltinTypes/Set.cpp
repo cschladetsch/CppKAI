@@ -46,13 +46,27 @@ StringStream &operator<<(StringStream &S, const ObjectSet &T) {
 }
 
 BinaryStream &operator<<(BinaryStream &S, const ObjectSet &T) {
-    KAI_UNUSED_2(S, T);
-    KAI_NOT_IMPLEMENTED();
+    int length = T.Size();
+    S << length;
+    for (auto const &obj : T) {
+        S << obj;
+    }
+    return S;
 }
 
 BinaryStream &operator>>(BinaryStream &S, ObjectSet &T) {
-    KAI_UNUSED_2(S, T);
-    KAI_NOT_IMPLEMENTED();
+    T.Clear();
+    int length = 0;
+    S >> length;
+    if (length < 0) {
+        KAI_THROW_1(BadIndex, length);
+    }
+    for (int N = 0; N < length; ++N) {
+        Object obj;
+        S >> obj;
+        T.Append(obj);
+    }
+    return S;
 }
 
 KAI_END

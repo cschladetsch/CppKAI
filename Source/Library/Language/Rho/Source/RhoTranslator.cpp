@@ -136,12 +136,24 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
             return;
 
         case RhoTokenEnumType::Minus:
-            TranslateBinaryOp(node, Operation::Minus);
+            if (node->GetChildren().size() == 1) {
+                // Unary minus: translate as 0 - expr
+                Append(reg_->New<int>(0));
+                TranslateNode(node->GetChild(0));
+                AppendDirectOperation(Operation::Minus);
+            } else {
+                TranslateBinaryOp(node, Operation::Minus);
+            }
             return;
 
         case RhoTokenEnumType::Plus:
             KAI_TRACE() << "Translating Plus operation";
-            TranslateBinaryOp(node, Operation::Plus);
+            if (node->GetChildren().size() == 1) {
+                // Unary plus: no-op, just translate operand
+                TranslateNode(node->GetChild(0));
+            } else {
+                TranslateBinaryOp(node, Operation::Plus);
+            }
             return;
 
         case RhoTokenEnumType::Mul:
@@ -398,9 +410,8 @@ void RhoTranslator::TranslateForEach(AstNodePtr node) {
     // - Child 1: collection expression
     // - Child 2: body block
     //
-    // Strategy: Translate `for x in arr` exactly like C-style for-loop
-    // Create synthetic AST for: for __i = 0; __i < arr.Size(); __i = __i + 1
-    // Then prepend: x = arr[__i] to the body
+    // Strategy: Translate `for x in collection` into a runtime foreach so it
+    // works for arrays, lists, strings, and maps uniformly.
 
     if (node->GetChildren().size() != 3) {
         KAI_TRACE_ERROR() << "TranslateForEach: Expected 3 children, got "
@@ -414,64 +425,19 @@ void RhoTranslator::TranslateForEach(AstNodePtr node) {
     auto userBody = node->GetChild(2);
 
     String loopVarName = loopVar->GetTokenText();
-    String indexVar = "__iter_i";
-    String collectionVar = "__iter_arr";
-
     KAI_TRACE() << "TranslateForEach: Loop variable: " << loopVarName;
 
-    // Step 1: Store collection in temp variable
-    // collectionVar = collection
-    TranslateNode(collection);
-    Append(New<Pathname>(Pathname("'" + collectionVar)));
-    AppendDirectOperation(Operation::Store);
-
-    // Step 2: Create init continuation: indexVar = 0
+    // Build body continuation: loopVar = <element>; userBody
     PushNew();
-    Append(New<int>(0));
-    Append(New<Pathname>(Pathname("'" + indexVar)));
-    AppendDirectOperation(Operation::Store);
-    auto initCont = Pop();
-
-    // Step 3: Create condition continuation: indexVar < collectionVar.Size
-    PushNew();
-    Append(New<Pathname>(Pathname(indexVar)));
-    Append(New<Pathname>(Pathname(collectionVar)));
-    AppendDirectOperation(Operation::Size);
-    AppendDirectOperation(Operation::Less);
-    auto condCont = Pop();
-
-    // Step 4: Create increment continuation: indexVar = indexVar + 1
-    PushNew();
-    Append(New<Pathname>(Pathname(indexVar)));
-    Append(New<int>(1));
-    AppendDirectOperation(Operation::Plus);
-    Append(New<Pathname>(Pathname("'" + indexVar)));
-    AppendDirectOperation(Operation::Store);
-    auto incrCont = Pop();
-
-    // Step 5: Create body continuation: loopVar = collectionVar[indexVar]; userBody
-    PushNew();
-
-    // Get element: collectionVar[indexVar]
-    Append(New<Pathname>(Pathname(collectionVar)));
-    Append(New<Pathname>(Pathname(indexVar)));
-    AppendDirectOperation(Operation::Index);
-
-    // Store in loop variable: loopVar = element
     Append(New<Pathname>(Pathname("'" + loopVarName)));
     AppendDirectOperation(Operation::Store);
-
-    // Execute user's body
     TranslateNode(userBody);
-
     auto bodyCont = Pop();
 
-    // Step 6: Push all continuations and execute ForLoop
-    Append(initCont);
-    Append(condCont);
-    Append(incrCont);
+    // Push collection and body continuation, then execute ForEach.
+    TranslateNode(collection);
     Append(bodyCont);
-    AppendDirectOperation(Operation::ForLoop);
+    AppendDirectOperation(Operation::ForEach);
 
     KAI_TRACE() << "TranslateForEach: Completed translation";
 }
@@ -948,6 +914,31 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op) {
             // operation
             return;  // Skip the Store operation below
 
+        } else if (identNode->GetType() == AstNodeEnum::GetMember) {
+            // Special handling for member assignment: obj.member = value
+            KAI_TRACE() << "Handling member assignment";
+
+            auto objectNode = identNode->GetChild(0);
+            auto memberNode = identNode->GetChild(1);
+
+            // Translate the object expression
+            TranslateNode(objectNode);
+
+            // Push member name as a string key
+            if (memberNode->GetType() == AstNodeEnum::TokenType &&
+                memberNode->GetToken().type == RhoTokenEnumType::Label) {
+                Append(reg_->New<String>(String(memberNode->GetTokenText())));
+            } else {
+                TranslateNode(memberNode);
+            }
+
+            // Stack now has: [value, object, key]
+            AppendDirectOperation(Operation::Rot);  // [object, key, value]
+            AppendDirectOperation(Operation::SetChild);
+
+            // SetChild leaves the modified container on the stack; skip Store
+            return;
+
         } else if (identNode->GetToken().type == RhoTokenEnumType::Label) {
             // Push the identifier name as a quoted Pathname for assignment
             KAI_TRACE() << "Appending pathname for assignment: "
@@ -1105,22 +1096,6 @@ void RhoTranslator::TranslateFunction(AstNodePtr node) {
     // Create a new continuation for the function body
     PushNew();
 
-    // Extract parameters from the stack and store them
-    // When the function is called, arguments are on the stack in the order they
-    // were pushed For add(2, 3): stack has [2, 3] with 3 on top We need to
-    // store them in the correct parameter variables
-
-    // Process parameters from last to first (since last param is on top of
-    // stack)
-    for (int i = static_cast<int>(argNames.size()) - 1; i >= 0; --i) {
-        // Create operations that will store the parameter when executed
-        // The parameter value will be on the stack when this continuation runs
-        String quotedPath = "'" + argNames[i];
-        auto pathObj = reg_->New<Pathname>(Pathname(quotedPath));
-        Append(pathObj);
-        AppendDirectOperation(Operation::Store);
-    }
-
     // Translate the function body
     auto bodyNode = node->GetChild(2);
     KAI_TRACE() << "Translating function body into new continuation";
@@ -1133,6 +1108,16 @@ void RhoTranslator::TranslateFunction(AstNodePtr node) {
 
     // Pop the function continuation
     auto functionCont = Pop();
+
+    // Add args in reverse order so Enter() pops values correctly.
+    if (!argNames.empty()) {
+        Pointer<Continuation> cont = functionCont;
+        if (cont.Exists()) {
+            for (auto it = argNames.rbegin(); it != argNames.rend(); ++it) {
+                cont->AddArg(Label(it->c_str()));
+            }
+        }
+    }
 
     // Append the function continuation
     Append(functionCont);

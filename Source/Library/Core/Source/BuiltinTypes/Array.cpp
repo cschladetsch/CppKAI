@@ -33,6 +33,9 @@ void Array::Append(Object const &Q) {
 }
 
 Object Array::PopBack() {
+    if (objects.empty()) {
+        KAI_THROW_0(EmptyStack);
+    }
     Object Q = objects.back();
     Detach(Q);
     objects.pop_back();
@@ -55,6 +58,7 @@ void Array::Erase(Handle H) {
             return;
         }
     }
+    KAI_THROW_1(UnknownObject, H);
 }
 
 StringStream &operator<<(StringStream &S, const Array &A) {

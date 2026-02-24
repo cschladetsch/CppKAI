@@ -387,7 +387,6 @@ void Executor::Perform(Operation::Type op) {
 
             // Save current continuation on the context stack for later
             // resumption
-            auto caller = continuation_;
             context_->Push(continuation_);
 
             // Create and set the new continuation
@@ -401,10 +400,9 @@ void Executor::Perform(Operation::Type op) {
             // scope
             if (continuation_.Exists()) {
                 continuation_->InitialStackDepth = data_->Size();
-                if (!continuation_->GetScope().Exists() && caller.Exists() &&
-                    caller->GetScope().Exists()) {
-                    continuation_->SetScope(caller->GetScope());
-                }
+                // Create a fresh scope per invocation so parameters/locals
+                // don't clobber caller scope (dynamic scoping via context stack).
+                continuation_->SetScope(New<void>());
                 continuation_->Enter(this);
                 KAI_TRACE() << "  Called Enter on new continuation";
             }
@@ -1668,6 +1666,11 @@ void Executor::Perform(Operation::Type op) {
                         break;           // Exit the do-while loop
                     }
 
+                    // Continue should jump to the condition check (C/C++ semantics)
+                    if (continue_) {
+                        continue_ = false;
+                    }
+
                     // Evaluate condition (even if continue was hit) using
                     // ExecuteContinuationInline
                     ExecuteContinuationInline(condition);
@@ -2424,6 +2427,18 @@ void Executor::ExecuteContinuationInline(Pointer<Continuation> cont) {
             return;
         }
 
+        struct ScopeGuard {
+            Pointer<Continuation> cont;
+            Object originalScope;
+            ScopeGuard(Pointer<Continuation> c)
+                : cont(c), originalScope(c.Exists() ? c->GetScope() : Object()) {}
+            ~ScopeGuard() {
+                if (cont.Exists()) {
+                    cont->SetScope(originalScope);
+                }
+            }
+        } scopeGuard(cont);
+
         auto savedCont = continuation_;
         auto savedIndex =
             savedCont.Exists() ? ConstDeref<int>(savedCont->index) : 0;
@@ -2529,7 +2544,21 @@ void Executor::ExecuteContinuationInline(Pointer<Continuation> cont) {
         }
     };
 
-    executeInline(cont, true);
+    Pointer<Continuation> inlineCont = cont;
+    if (cont.Exists()) {
+        bool hadScope = cont->GetScope().Exists();
+        Value<Continuation> orig = cont;
+        inlineCont = NewContinuation(orig);
+        if (inlineCont.Exists()) {
+            if (hadScope) {
+                inlineCont->SetScope(cont->GetScope());
+            } else {
+                inlineCont->SetScope(Object());
+            }
+        }
+    }
+
+    executeInline(inlineCont, true);
 }
 
 KAI_END

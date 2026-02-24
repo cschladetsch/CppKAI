@@ -17,6 +17,7 @@ bool Stack::Destroy() {
 }
 
 Object Stack::At(int N) const {
+    if (N < 0) KAI_THROW_1(BadIndex, N);
     if (N >= Size()) KAI_THROW_0(EmptyStack);
     return stack[Size() - 1 - N];
 }
@@ -62,13 +63,27 @@ StringStream &operator<<(StringStream &stream, const Stack &stack) {
 }
 
 BinaryStream &operator<<(BinaryStream &S, const Stack &T) {
-    KAI_UNUSED_2(S, T);
-    KAI_NOT_IMPLEMENTED();
+    int length = T.Size();
+    S << length;
+    for (auto const &obj : T) {
+        S << obj;
+    }
+    return S;
 }
 
-BinaryPacket &operator>>(BinaryPacket &S, Stack &T) {
-    KAI_UNUSED_2(S, T);
-    KAI_NOT_IMPLEMENTED();
+BinaryStream &operator>>(BinaryStream &S, Stack &T) {
+    T.Clear();
+    int length = 0;
+    S >> length;
+    if (length < 0) {
+        KAI_THROW_1(BadIndex, length);
+    }
+    for (int N = 0; N < length; ++N) {
+        Object obj;
+        S >> obj;
+        T.Push(obj);
+    }
+    return S;
 }
 
 KAI_END

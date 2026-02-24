@@ -3,7 +3,6 @@
 KAI_BEGIN
 
 void List::Append(Object const &Q) {
-    if (!Q.Exists()) return;
     if (Attach(Q)) objects.push_back(Q);
 }
 
@@ -63,8 +62,6 @@ StringStream &operator<<(StringStream &stream, List const &list) {
     }
     return stream << "]";
 }
-
-size_t GetHash(List const &) { KAI_NOT_IMPLEMENTED(); }
 
 void List::Register(Registry &R) {
     ClassBuilder<List>(R, Label(Type::Traits<List>::Name()))

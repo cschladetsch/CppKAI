@@ -27,6 +27,7 @@ struct RhoFunctionTests : TestLangCommon {
         try {
             Console console;
 
+            SetupTranslatorsForConsole(console);
             console.SetLanguage(Language::Rho);
             console.Execute(script, Structure::Program);
 
@@ -348,6 +349,8 @@ TEST_F(RhoFunctionTests, ComplexScoping) {
 
 // Debug test for nested function calls - CURRENTLY FAILING
 TEST_F(RhoFunctionTests, DebugSimpleNestedCalls) {
+    console_.SetLanguage(Language::Rho);
+
     // First, define two simple functions
     console_.Execute(
         "fun add(a, b)\n"

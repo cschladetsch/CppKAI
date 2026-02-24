@@ -2,6 +2,7 @@
 #include <KAI/Core/Type/Properties.h>
 
 #include <algorithm>
+#include <cctype>
 
 #include "KAI/Core/BuiltinTypes.h"
 
@@ -9,17 +10,29 @@ KAI_BEGIN
 
 String String::LowerCase() const {
     String result((int)string_.size(), ' ');
-    std::transform(string_.begin(), string_.end(), result.begin(), ::tolower);
+    std::transform(string_.begin(), string_.end(), result.begin(),
+                   [](unsigned char ch) {
+                       return static_cast<char>(std::tolower(ch));
+                   });
     return result;
 }
 
 String String::UpperCase() const {
     String result((int)string_.size(), ' ');
-    std::transform(string_.begin(), string_.end(), result.begin(), ::toupper);
+    std::transform(string_.begin(), string_.end(), result.begin(),
+                   [](unsigned char ch) {
+                       return static_cast<char>(std::toupper(ch));
+                   });
     return result;
 }
 
-String String::Capitalise() const { KAI_NOT_IMPLEMENTED(); }
+String String::Capitalise() const {
+    if (string_.empty()) return String();
+    String result = LowerCase();
+    result.string_[0] = static_cast<char>(
+        std::toupper(static_cast<unsigned char>(result.string_[0])));
+    return result;
+}
 
 bool String::Contains(String const &substr) const {
     return string_.find(substr.string_) != std::string::npos;
@@ -66,17 +79,23 @@ BinaryStream &operator<<(BinaryStream &S, const String &T) {
 BinaryStream &operator>>(BinaryStream &S, String &T) {
     int length = 0;
     S >> length;
+    if (length < 0) {
+        KAI_THROW_1(BadIndex, length);
+    }
     if (length == 0) {
         T = "";
         return S;
     }
 
-    // TODO: allocate from String directly
-    char *buffer = new char[length + 1];
-    S.Read(length, buffer);
-    buffer[length] = 0;
+    if (!S.CanRead(length)) {
+        KAI_THROW_0(PacketExtraction);
+    }
+
+    std::string buffer(static_cast<std::size_t>(length), '\0');
+    if (!S.Read(length, &buffer[0])) {
+        KAI_THROW_0(PacketExtraction);
+    }
     T = buffer;
-    delete[] buffer;
     return S;
 }
 

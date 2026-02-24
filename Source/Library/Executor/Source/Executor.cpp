@@ -888,6 +888,8 @@ void Executor::NextContinuation() {
 
         // Validate before setting as current continuation
         SetContinuation(next);
+        // Clear break_ so the caller can continue after a return.
+        break_ = false;
     } catch (const std::exception &e) {
         KAI_TRACE_ERROR() << "NextContinuation: Exception: " << e.what();
         continuation_ = Object();

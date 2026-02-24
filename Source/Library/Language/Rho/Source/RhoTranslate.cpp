@@ -118,6 +118,25 @@ void RhoTranslator::TranslateNode(AstNodePtr node) {
                 break;
             }
 
+            // Special-case member assignment: obj.member = value
+            if (targetNode->GetType() == AstNodeEnum::GetMember) {
+                auto objectNode = targetNode->GetChild(0);
+                auto memberNode = targetNode->GetChild(1);
+
+                TranslateNode(objectNode);
+                if (memberNode->GetType() == AstNodeEnum::TokenType &&
+                    memberNode->GetToken().type == TokenEnum::Label) {
+                    Append(reg_->New<String>(String(memberNode->GetTokenText())));
+                } else {
+                    TranslateNode(memberNode);
+                }
+
+                // Stack: value, object, key -> rotate to object, key, value
+                AppendDirectOperation(Operation::Rot);
+                AppendDirectOperation(Operation::SetChild);
+                break;
+            }
+
             // For the target (left-hand side), create a quoted pathname
             // instead of translating it normally (which would add Retrieve)
             if (targetNode->GetType() == AstNodeEnum::Ident ||
@@ -147,7 +166,13 @@ void RhoTranslator::TranslateNode(AstNodePtr node) {
             // GetMember nodes have: object and member name
             if (node->GetChildren().size() >= 2) {
                 TranslateNode(node->GetChild(0));  // Object
-                TranslateNode(node->GetChild(1));  // Member name
+                auto memberNode = node->GetChild(1);
+                if (memberNode->GetType() == AstNodeEnum::TokenType &&
+                    memberNode->GetToken().type == TokenEnum::Label) {
+                    Append(reg_->New<String>(String(memberNode->GetTokenText())));
+                } else {
+                    TranslateNode(memberNode);
+                }
                 AppendDirectOperation(Operation::GetChild);
             }
             break;

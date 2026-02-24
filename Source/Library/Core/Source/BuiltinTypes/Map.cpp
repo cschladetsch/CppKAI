@@ -24,21 +24,11 @@ std::size_t HashMapCompare::operator()(const Object &A) const {
 }
 
 bool HashMapCompare::operator()(const Object &A, const Object &B) const {
-    if (!A.Valid()) return B.Valid();
-    if (!A.Exists()) return B.Exists();
-
-    return GetHash(A) == GetHash(B);
+    return A == B;
 }
 
 bool MapCompare::operator()(const Object &A, const Object &B) const {
-    if (!A.Valid()) return B.Valid();
-    if (!A.Exists()) return B.Exists();
-
-    bool same_class = A.GetClass() == B.GetClass();
-    if (same_class && A.GetClass()->HasTraitsProperty(Type::Properties::Less))
-        return A.GetClass()->Less(A.GetStorageBase(), B.GetStorageBase());
-
-    return GetHash(A) < GetHash(B);
+    return A < B;
 }
 
 KAI_END
