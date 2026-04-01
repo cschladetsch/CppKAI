@@ -1,105 +1,84 @@
-# KAI Network Documentation Index
+# KAI Network Documentation
 
-This document serves as a central index for all network-related documentation in the KAI project.
+Central index for all networking documentation.
 
-## Overview Documents
+## Architecture
 
-| Document | Description |
-|----------|-------------|
-| [Networking.md](Networking.md) | Main overview of the networking system |
-| [NetworkArchitecture.md](NetworkArchitecture.md) | Detailed architecture of the network components |
-| [PeerToPeerSummary.md](PeerToPeerSummary.md) | Concise summary of the peer-to-peer implementation |
+```mermaid
+graph LR
+    TAU[Tau IDL<br/>.tau files] -->|NetworkGenerate| GEN[Generated<br/>proxy.h / agent.h]
+    GEN --> PROXY[Proxy&lt;T&gt;<br/>client stub]
+    GEN --> AGENT[Agent&lt;T&gt;<br/>server handler]
+    PROXY -->|ENet UDP| AGENT
+    AGENT --> NODE[Node<br/>network endpoint]
+    PROXY --> NODE
+    NODE --> DOMAIN[Domain<br/>node grouping]
+```
 
-## Detailed Implementation Documents
+## Documents
 
-| Document | Description |
-|----------|-------------|
-| [PeerToPeerNetworking.md](PeerToPeerNetworking.md) | Detailed documentation of the peer-to-peer system |
-| [ConnectionTesting.md](ConnectionTesting.md) | Testing procedures for network connections |
-| [NetworkIteration.md](NetworkIteration.md) | Distributed iteration using across-node operations |
-| [NetworkCalculationTest.md](NetworkCalculationTest.md) | Examples of distributed calculations |
+| Document | Contents |
+|----------|----------|
+| [PeerToPeerNetworking.md](PeerToPeerNetworking.md) | Node/Domain/Agent/Proxy architecture, wire protocol, quick-start |
+| [TauTutorial.md](TauTutorial.md) | Tau IDL syntax for defining network interfaces |
+| [NetworkSecurity.md](NetworkSecurity.md) | Security considerations and future plans |
+| [NetworkIteration.md](NetworkIteration.md) | Distributed iteration patterns |
+| [NetworkCalculationTest.md](NetworkCalculationTest.md) | Example distributed calculation |
 
-## Advanced Topics
+## Core Components
 
-| Document | Description |
-|----------|-------------|
-| [NetworkPerformance.md](NetworkPerformance.md) | Performance considerations and optimization |
-| [NetworkSecurity.md](NetworkSecurity.md) | Security features and best practices |
-| [NetworkingChanges.md](NetworkingChanges.md) | History of networking system changes |
+| Header | Purpose |
+|--------|---------|
+| `KAI/Network/Node.h` | Network endpoint — listen, connect, send, receive |
+| `KAI/Network/Domain.h` | Groups a Node with `MakeAgent<T>()` / `MakeProxy<T>()` |
+| `KAI/Network/Agent.h` | Server-side object; `BindMethod`, `BindMemberProperty` |
+| `KAI/Network/Proxy.h` | Client-side stub; `Call<R>()`, `Get<P>()`, `Set<P>()` |
+| `KAI/Network/ProxyBase.h` | Base for proxies: `Exec`, `Fetch`, `Store` |
+| `KAI/Network/AgentBase.h` | Base for agents: registers handle with Node |
+| `KAI/Network/Future.h` | Async result type returned by all remote calls |
+| `KAI/Network/Transport.h` | `SendReliability`, `SendRouting`, `BufferOffset` enums |
+| `KAI/Network/Serialization.h` | Wire message IDs and serialization helpers |
 
-## Application Documentation
+## Build
 
-| Document | Description |
-|----------|-------------|
-| [NetworkTest README](../Source/App/NetworkTest/Readme.md) | Network test application |
-| [Scripts/network README](../Scripts/network/Readme.md) | Network test scripts |
+Networking is off by default:
 
-## Configuration Documentation
+```bash
+./b --network          # build with ENet, Tau IDL, NetworkGenerate, network tests
+./b --network --clean  # clean rebuild with networking
 
-| Document | Description |
-|----------|-------------|
-| [config README](../config/Readme.md) | Configuration file format |
+cmake .. -DKAI_NETWORKING=ON   # equivalent CMake flag
+```
 
-## Core Components Reference
+The `KAI_NETWORKING` option controls:
+- ENet library
+- `Network` library
+- `TauLang` (needed for IDL code generation)
+- `NetworkGenerate` executable
+- `Test_Network` test binary
+- `TestTau` language tests
 
-| Component | Location | Description |
-|-----------|----------|-------------|
-| Node | `/Include/KAI/Network/Node.h` | Main network entity |
-| PeerDiscovery | `/Include/KAI/Network/PeerDiscovery.h` | Peer discovery system |
-| ConnectionManager | `/Include/KAI/Network/ConnectionManager.h` | Connection state management |
-| NetworkSerializer | `/Include/KAI/Network/Serialization.h` | Object serialization |
-| ProxyBase | `/Include/KAI/Network/ProxyBase.h` | Base class for remote object proxies |
-| AgentBase | `/Include/KAI/Network/AgentBase.h` | Base class for remote object agents |
+## Running Network Tests
 
-## Network Protocol Reference
+```bash
+./Bin/Test_Network                                     # all 17 tests
+./Bin/Test_Network --gtest_filter="NodeEndToEndTest*"  # 6 E2E tests
+./Bin/Test_Network --gtest_filter="TauDomain*"         # 3 domain tests
+```
 
-| Protocol | Description |
-|----------|-------------|
-| Connection | Establishing and maintaining peer connections |
-| Discovery | Automatic peer discovery on local network |
-| Object Transmission | Serializing and sending objects between peers |
-| Command Execution | Remote command execution between peers |
-| RPC | Remote procedure call implementation |
+## FAQ
 
-## Learning Path
+**Q: Is KAI networking peer-to-peer or client-server?**
+Symmetric P2P — every `Node` can both listen and connect. Roles (agent = server, proxy = client) are per-object, not per-node.
 
-For developers new to the KAI networking system, we recommend following this learning path:
+**Q: What transport is used?**
+ENet over UDP (reliable and unreliable channels both supported via `SendReliability` enum).
 
-1. Start with [PeerToPeerSummary.md](PeerToPeerSummary.md) for a high-level overview
-2. Read [Networking.md](Networking.md) for more detailed concepts
-3. Follow the examples in [Scripts/network README](../Scripts/network/Readme.md)
-4. Understand the architecture with [NetworkArchitecture.md](NetworkArchitecture.md)
-5. Explore specific implementation details in the other documents
+**Q: How do I expose a C++ method over the network?**
+Create an `Agent<MyClass>`, call `BindMethod("Name", &MyClass::Method)`. The other side creates a `Proxy<MyClass>` and calls `proxy.Call<ReturnType>("Name", args...)`.
 
-## Related Systems
-
-The networking system interacts with these related KAI systems:
-
-- **Registry System**: Object management and garbage collection
-- **Serialization**: Converting objects to transmissible format
-- **Tau Language**: Interface definition for network components
-- **Common Language System**: Shared language infrastructure
-
-## Frequently Asked Questions
-
-### General Questions
-
-**Q: Is KAI's networking peer-to-peer or client-server?**  
-A: KAI uses a true peer-to-peer architecture where any node can connect to any other node.
-
-**Q: How many peers can connect to a single node?**  
-A: By default, a node can support up to 32 connections, but this is configurable.
-
-**Q: Does KAI support encrypted connections?**  
-A: Encryption is planned but not yet implemented. See [NetworkSecurity.md](NetworkSecurity.md) for details.
-
-### Implementation Questions
-
-**Q: How do I create a peer node?**  
-A: See [NetworkTest README](../Source/App/NetworkTest/Readme.md) for examples of creating and using peer nodes.
-
-**Q: How do I execute a command on a remote peer?**  
-A: Use the `@peer command` syntax in the NetworkPeer application. See [PeerToPeerNetworking.md](PeerToPeerNetworking.md) for details.
-
-**Q: How do I discover other peers on the network?**  
-A: Use the PeerDiscovery component. See [NetworkTest README](../Source/App/NetworkTest/Readme.md) for examples.
+**Q: How do I generate proxy/agent from a `.tau` file?**
+```bash
+./Bin/NetworkGenerate MyInterface.tau
+# produces MyInterface.proxy.h and MyInterface.agent.h
+```

@@ -303,11 +303,20 @@ Build scripts that follow best practices for out-of-source builds:
 # Quick build (using Clang++ by default)
 ./b
 
+# Build with networking support (ENet, Tau IDL, NetworkGenerate, network tests)
+./b --network
+
 # Build with GCC
 ./b --gcc
 
 # Build without Ninja
 ./b --no-ninja
+
+# Force CMake reconfiguration (required when switching --network on/off)
+./b --reconfigure
+
+# Clean everything and rebuild
+./b --clean
 
 # Using Makefile (Clang++ by default)
 make
@@ -434,20 +443,53 @@ Rho λ x = 42; y = x * 2; y
 See [Console Documentation](Doc/Console.md) for comprehensive usage guide.
 
 ### Network Applications
-The system includes several network applications:
+
+Networking is optional and must be enabled at build time:
 
 ```bash
-# Run a configurable calculation server
-./build/Bin/ConfigurableServer config/server_config.json
-
-# Run a client that sends a calculation request
-./build/Bin/ConfigurableClient config/client_config.json
+./b --network
 ```
 
-Try the calculation test demo:
+This builds the ENet transport layer, the Tau IDL code generator (`NetworkGenerate`), and all network tests.
+
+The core networking model uses **Domains**, **Agents**, and **Proxies**:
+
+- **Node** — a network endpoint that can listen or connect
+- **Domain** — logical grouping of nodes that share object handles
+- **Agent** — server-side object that registers methods and properties
+- **Proxy** — client-side representative that forwards calls to a remote Agent
+
+```cpp
+// Domain A: register a service
+Node nodeA;
+nodeA.Listen(IpAddress("127.0.0.1"), 14600);
+ISensorAgent agent(nodeA);            // exposes Value property
+
+// Domain B: call it remotely
+Node nodeB;
+nodeB.Connect(IpAddress("127.0.0.1"), 14600);
+nodeB.BindProxyAddress(agent.Handle(), agentAddr);
+ISensorProxy proxy(nodeB, agent.Handle());
+auto future = proxy.Value();          // returns Future<int>
+int value = nodeB.WaitFor(future);    // blocks until resolved
+```
+
+The **Tau IDL** describes network interfaces and generates matching Agent/Proxy pairs:
+
+```tau
+namespace Sensor {
+    interface ISensor {
+        int Value;
+        Future<int> Measure(float range);
+    }
+}
+```
+
 ```bash
-./Scripts/calc_test.sh
+./Bin/NetworkGenerate MySensor.tau     # generates MySensor.proxy.h / MySensor.agent.h
 ```
+
+See [Network Documentation](Doc/NetworkDocumentation.md) for full details.
 
 ### GUI Application
 The GUI application provides:
@@ -562,11 +604,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **[macOS](Include/KAI/Platform/OSX/README.md)** - macOS development setup
 
 ### **Project Statistics**
-- **629** C++ source files
-- **71** README documentation files  
-- **200+** comprehensive test cases
-- **5** complete architecture diagram sets
-- **3** integrated programming languages (Pi/Rho/Tau)
-- **Full** console-to-console networking implementation
+- **629+** C++ source files
+- **3** integrated programming languages (Pi / Rho / Tau)
+- **17** passing network end-to-end tests
+- **Full** Agent/Proxy/Domain networking over ENet UDP
+- **Tau IDL** generates type-safe proxy/agent pairs from `.tau` interfaces
+- **Single flag** `KAI_NETWORKING=ON` enables the entire networking stack
 
 **Start exploring**: Begin with the **[Documentation Guide](Doc/Documentation.md)** or dive into **[System Architecture](resources/README.md)** for technical details.

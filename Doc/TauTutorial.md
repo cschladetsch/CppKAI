@@ -519,8 +519,51 @@ Tau is particularly suited for:
 4. **Real-time systems**: Defining event-based communication channels
 5. **Service discovery**: Advertising and locating network services
 
+## Code Generation
+
+Use `NetworkGenerate` to turn a `.tau` file into C++ proxy and agent headers:
+
+```bash
+# Build with networking enabled
+./b --network
+
+# Generate proxy/agent headers
+./Bin/NetworkGenerate MyService.tau
+# produces: MyService.proxy.h  MyService.agent.h
+```
+
+The generated proxy inherits from `ProxyBase`; the generated agent inherits from `AgentBase`. Both work with `Node` and `Domain` directly.
+
+### Full Workflow
+
+```mermaid
+graph LR
+    IDL[MyService.tau] -->|NetworkGenerate| PH[MyService.proxy.h]
+    IDL -->|NetworkGenerate| AH[MyService.agent.h]
+    PH --> CLIENT[Client code<br/>MyServiceProxy proxy]
+    AH --> SERVER[Server code<br/>MyServiceAgent agent]
+    CLIENT <-->|ENet UDP| SERVER
+```
+
+### Template Return Types
+
+Methods may return `Future<T>` to indicate an asynchronous result:
+
+```tau
+interface ICalc {
+    Future<int> Add(int a, int b);   // async
+    int         Value;               // property (sync get/set)
+}
+```
+
+`Future<T>` is parsed as a single composite token by the Tau lexer, so template parameters are fully supported.
+
 ## Conclusion
 
 Tau provides a powerful way to define and coordinate distributed components in a KAI system. By focusing on clear interface definitions, it enables transparent cross-network communication while maintaining type safety and versioning. As you build more complex distributed applications with KAI, Tau becomes an essential tool for ensuring robust communication between components.
 
-For practical examples, explore the [Tau test scripts](../Test/Language/TestTau/Scripts) which demonstrate various aspects of the language.
+For practical examples, see:
+- [Tau test scripts](../Test/Language/TestTau/Scripts)
+- [TauPiSerializationTest.cpp](../Test/Network/TauPiSerializationTest.cpp) — full roundtrip test
+- [TauDomainPropertyTest.cpp](../Test/Network/TauDomainPropertyTest.cpp) — cross-domain agent/proxy property test
+- [Network Documentation](NetworkDocumentation.md)

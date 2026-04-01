@@ -208,21 +208,40 @@ The best way to get started with KAI's language system is to:
 4. Learn about advanced control flow with the [Continuation Control documentation](ContinuationControl.md)
 5. Experiment with the Console application to try examples
 
-## Recent Improvements (May 2025)
+## Recent Improvements (2026)
 
-Major improvements have been made to the Rho language implementation, resolving critical issues:
+### Tau — Template Return Type Parsing
 
-- **Type Mismatch Fixes**: Resolved fundamental translator issues where wrong types were being generated
-- **Translation Overhaul**: Removed ~1000 lines of direct evaluation code from RhoTranslator
-- **Operation Generation**: Fixed to generate proper operations for runtime execution
-- **Store Operation**: Corrected operand ordering for variable assignments
-- **Test Success**: All 120 Rho language tests now pass successfully
+`Future<T>` return types in Tau IDL interfaces now parse correctly:
 
-### Technical Details
+```tau
+interface ICalc {
+    Future<int> Add(int a, int b);  // was: parser failed here
+}
+```
 
-The core issue was that RhoTranslator was attempting to evaluate expressions during translation time, creating type mismatches when the executor expected Continuation objects but received primitive values. The fix ensures proper separation between translation and execution phases.
+The fix is in `TauLexer`: after lexing an alpha identifier, if the next character is `<`, the lexer now extends the token to include the full angle-bracket expression, making `Future<int>` a single `Ident` token. This allows `TauParser::Interface` to correctly identify the method name that follows.
 
-For details on the recent fixes, see the [Rho Fix Documentation](Rho-Fix-Documentation.md) and [Todo-Rho.md](../Test/Language/TestRho/Todo-Rho.md).
+### Networking — Domain/Agent/Proxy
+
+KAI now has a complete peer-to-peer RPC system:
+
+```mermaid
+graph LR
+    A[Domain A<br/>Agent&lt;T&gt;] <-->|ENet UDP| B[Domain B<br/>Proxy&lt;T&gt;]
+```
+
+- `BindMethod` / `BindMemberProperty` on an `Agent<T>` registers C++ methods and properties
+- `Proxy<T>::Call<R>()`, `Get<P>()`, `Set<P>()` forward typed calls remotely
+- `Future<T>` / `Node::WaitFor()` provide synchronous resolution of async calls
+
+### Rho — Python-Style Iteration (2025)
+
+- `for x in container` syntax
+- `break` and `continue` in all loop types
+- Pi keyword validation — rejects `max`, `min`, etc. as Rho variable names
+
+For details on the Rho translator architecture, see [Rho Fix Documentation](Rho-Fix-Documentation.md).
 
 ## Conclusion
 

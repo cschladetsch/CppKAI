@@ -1,147 +1,106 @@
 # KAI Project Test Summary
 
-Generated on: 2025-06-21
+Generated: 2026-04-01
 
-## Overall Test Status
+## Overall Status
 
-This document provides a comprehensive summary of all test suites in the KAI project.
-
-## Test Suite Results
-
-### 1. Core Tests ✅
-- **Total Tests:** 147
-- **Passed:** 147 (100%)
-- **Failed:** 0
-- **Status:** Excellent - All core functionality working perfectly
-- **Key Areas:** Registry, Pointers, Memory Management, Data Structures
-
-### 2. Pi Language Tests ✅
-- **Total Tests:** 223
-- **Passed:** 208 (93.3%)
-- **Failed:** 15
-- **Disabled:** 3
-- **Status:** Good - Main language features working
-- **Issues:** 
-  - Backtick shell operations (all failing)
-  - Some advanced control flow tests
-- **Working Features:**
-  - Basic arithmetic and operations
-  - Stack manipulation
-  - Control flow (if/else)
-  - Functions and continuations
-  - Arrays and data structures
-
-### 3. Rho Language Tests ⚠️
-- **Total Tests:** ~540 (86 test suites)
-- **Estimated Pass Rate:** ~50-60%
-- **Status:** Moderate - Core features working but many advanced features need attention
-- **Working Features:**
-  - Basic conditionals (fixed in recent update)
-  - Else-if chains (fixed in recent update)
-  - Basic expressions and operations
-  - Simple functions
-  - While loops
-- **Major Issues:**
-  - Backtick shell operations (all failing)
-  - For loop parsing in certain formats
-  - Some recursive function patterns
-  - Complex control flow combinations
-  - Function scoping in certain contexts
-
-### 4. Tau Language Tests ✅
-- **Total Tests:** 109
-- **Passed:** 100 (91.7%)
-- **Failed:** 9
-- **Status:** Good - Code generation and type system working well
-- **Working Features:**
-  - Class definitions
-  - Code generation
-  - Type system
-  - Namespace management
-  - Template basics
-- **Issues:** 
-  - Network-related code generation tests
-  - Some async pattern tests
-
-### 5. Console Tests ⚠️
-- **Total Tests:** 20
-- **Passed:** 5 (25%)
-- **Failed:** 15
-- **Status:** Needs significant work
-- **Issues:**
-  - Tab completion features
-  - History management
-  - Interactive features
-  - Zsh-style features
-
-### 6. Other Tests ✅
-- **LogTest:** Working correctly - All logging functionality operational
-- **FixedCoreSuite:** Available but not part of main test suite
-- **KaiTest:** Integration test suite available
-
-## Critical Failures Identified
-
-1. **Shell Integration (All Languages):** 
-   - Backtick operations for shell commands are universally failing
-   - Affects Pi, Rho, and some Tau tests
-   - Likely due to security or implementation issues
-
-2. **Rho For Loops:** 
-   - Parsing issues with certain for loop syntax variations
-   - Particularly affects C-style for loops with semicolons
-
-3. **Console Features:** 
-   - Significant functionality gaps in the interactive console
-   - Tab completion, history, and advanced features not working
-
-4. **Network Tests:** 
-   - Tau's network-related code generation tests failing
-   - May be related to ENet stub implementation
-
-## Summary Statistics
-
-- **Total Tests Across All Suites:** ~1,048
-- **Overall Estimated Pass Rate:** ~75-80%
-- **Core Functionality:** Stable and working
-- **Language Features:** 
-  - Pi: 93.3% pass rate
-  - Tau: 91.7% pass rate
-  - Rho: ~55% pass rate
-- **Tooling:** Console needs significant work (25% pass rate)
-
-## Recent Improvements
-
-- Fixed conditional statement execution in Rho (If/IfElse operations)
-- Added proper else-if parsing support in RhoParser
-- Improved continuation execution for control flow
-
-## Recommendations
-
-1. **Disable or Fix Shell Integration:** The backtick shell operations should either be properly sandboxed or disabled for security
-2. **Improve Rho Parser:** Focus on for loop parsing and complex control structures
-3. **Console Functionality:** Implement missing interactive features for better developer experience
-4. **Network Features:** Investigate and fix Tau's network code generation
-5. **Documentation:** Update documentation to reflect current feature status
-
-## Test Execution Commands
-
-To run individual test suites:
-
-```bash
-./Bin/Test/TestCore      # Core functionality tests
-./Bin/Test/TestPi        # Pi language tests
-./Bin/Test/TestRho       # Rho language tests
-./Bin/Test/TestTau       # Tau language tests
-./Bin/Test/TestConsole   # Console tests
-./Bin/LogTest           # Logging tests (not gtest)
+```mermaid
+pie title Test Pass Rate by Suite
+    "Core (100%)" : 147
+    "Pi (93%)" : 208
+    "Rho (82%)" : 450
+    "Tau (92%)" : 100
+    "Network (100%)" : 17
 ```
 
-To run specific test filters:
+| Suite | Passed | Total | Rate | Notes |
+|-------|--------|-------|------|-------|
+| Core | 147 | 147 | 100% | All passing |
+| Pi | 208 | 223 | 93% | Backtick shell tests disabled |
+| Rho | ~450 | ~550 | ~82% | Inline function calls in loops still failing |
+| Tau | ~100 | ~109 | 92% | All code-gen tests passing |
+| Network | 17 | 17 | 100% | All E2E tests passing |
+
+## Test Suite Details
+
+### Core Tests
+- **Status**: All 147 tests passing
+- Registry, type system, memory management, garbage collection, BinaryStream, Array, Map
+
+### Pi Language Tests
+- **Status**: 208/223 passing (93%)
+- Backtick shell operations are disabled by default (`-DENABLE_SHELL_SYNTAX=ON` to enable)
+- Stack operations, control flow, continuations, functions all working
+
+### Rho Language Tests
+- **Status**: ~82% passing
+- Core features working: expressions, conditionals, while/do-while, for loops, functions, recursion
+- Remaining failures: inline function calls inside `for x in container` loops (returns 0 instead of computed value)
+- Break/continue edge cases in certain nested-loop patterns
+
+### Tau Language Tests
+- **Status**: ~92% passing
+- Namespace/class/interface parsing, code generation, struct generation all working
+- `Future<T>` return types now parse correctly (lexer fix: `Future<int>` is a single token)
+
+### Network Tests
+- **Status**: 17/17 passing (100%)
+- Built only when `KAI_NETWORKING=ON` (use `./b --network`)
+
+#### NodeEndToEndTest (6 tests)
+| Test | Description |
+|------|-------------|
+| `RemoteMethodCallReturnsCorrectValue` | Client calls `Add(3,4)` on server agent, receives 7 |
+| `EventBroadcastReachesSubscriber` | Server broadcasts `Ping`, client subscriber fires |
+| `ObjectMessageReachesSubscriber` | Server sends `int 42` object, client receives it |
+| `EventPayloadDecodedCorrectly` | Server broadcasts `Score` with int payload 99 |
+| `RemotePropertyGetReturnsValue` | Client fetches `Counter` property (value 55) from server |
+| `RemotePropertySetUpdatesValue` | Client sets `Counter` to 77, server value updates |
+
+#### TauDomainPropertyTest (3 tests)
+| Test | Description |
+|------|-------------|
+| `IdlGeneratesExpectedClassNames` | `.tau` IDL generates `ISensorProxy` / `ISensorAgent` |
+| `DomainBProxyFetchesPropertyFromDomainA` | Domain B reads `Value=42` from Domain A agent |
+| `DomainBProxySetsPropertyOnDomainA` | Domain B writes `Value=99`, Domain A servant reflects it |
+
+#### TauPiSerializationTest (1 test)
+| Test | Description |
+|------|-------------|
+| `LocalNodeRoundTrip` | Two nodes: Tau-generated proxy calls `Add(2,3)`, expects 5 |
+
+#### TauNetworkCommunicationTest (4 tests)
+- IDL parsing, proxy/agent generation, error handling
+
+#### TestGenerateProxy (3 tests)
+- Proxy code generation from Tau input
+
+## Build Commands
+
 ```bash
-./Bin/Test/TestRho --gtest_filter="*Conditional*"  # Run only conditional tests
-./Bin/Test/TestPi --gtest_filter="-*Backtick*"     # Exclude backtick tests
+# Run all non-network tests (default build)
+./b
+./Bin/Test/TestCore
+./Bin/Test/TestPi
+./Bin/Test/TestRho
+./Bin/Test/TestTau
+
+# Run network tests (requires --network build)
+./b --network
+./Bin/Test_Network
+
+# Filter specific tests
+./Bin/Test/TestRho --gtest_filter="*ForLoop*"
+./Bin/Test_Network --gtest_filter="TauDomainPropertyTest*"
 ```
 
-## Conclusion
+## Recent Improvements (2026)
 
-The KAI project demonstrates solid core functionality with its registry, memory management, and basic language features working well. The main areas needing attention are shell integration, advanced Rho language features, and console functionality. The recent fixes to conditionals show that the codebase is maintainable and improvements can be made incrementally.
+- **Network layer**: Complete `Node`/`Domain`/`Agent`/`Proxy` RPC system over ENet UDP
+- **Remote property get/set**: `FetchProperty<T>` and `StoreProperty<T>` work across nodes
+- **`KAI_NETWORKING` flag**: Single CMake option controls entire networking stack (default OFF)
+- **`./b --network`**: Build script switch to enable networking
+- **`SendReliability`/`SendRouting` enums**: Type-safe network send API
+- **`BufferOffset` type**: Replaces bare `int` channel argument in `Send()`
+- **Tau lexer fix**: `Future<int>` is now a single `Ident` token — template return types parse correctly
+- **`TauDomainPropertyTest`**: New cross-domain agent/proxy property tests

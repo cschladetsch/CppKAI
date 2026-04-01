@@ -1,83 +1,92 @@
-# Future Work for KAI Tests
+# Future Work
 
-This document outlines the remaining work needed to fix all KAI tests, focusing on the complex cases that are still failing.
+This document tracks known gaps and planned improvements across the KAI codebase.
 
-## 1. Control Flow Structure Tests
+## Language
 
-The RhoForLoop tests are still failing with error code 1 (test failure, not segmentation fault). These require:
+### Rho — Inline Functions in `for x in container` Loops
 
-- Complete implementation of the for loop parsing in Rho
-- Proper handling of loop variables and scoping
-- Proper continuation execution for nested loop bodies
-- Support for loop variable updates
+**Status**: Active
 
-Affected files:
-- `Source/Library/Executor/Source/Executor.cpp`
-- `Source/Library/RhoLang/Source/RhoTranslator.cpp`
-- `Test/Language/TestRho/TestForLoopSemicolons.cpp`
+Functions defined with `fun name(args) { body }` work correctly in most contexts but return 0 when called inside Python-style foreach loops.
 
-## 2. Advanced Operations Tests
+```rho
+fun double(x) { x * 2 }
+for x in arr           // this works
+    total = total + 1  // OK
 
-The RhoAdvancedOps tests are failing with segmentation faults. These require:
+for x in arr
+    total = total + double(x)  // BUG: double(x) returns 0
+```
 
-- Better handling of complex expression evaluation
-- Improved operator precedence handling
-- Support for mixed-type operations
-- Handling of edge cases like division by zero
-- Support for short-circuit logic evaluation
+Root cause: Call nodes generated inside a `ForEach` continuation body are not dispatched correctly by the executor. The fix is in `RhoTranslator.cpp` ForEach generation and/or `Executor.cpp` ForEach dispatch.
 
-Affected files:
-- `Source/Library/Executor/Source/Executor.cpp`
-- `Source/Library/Core/Source/Object.cpp`
-- `Source/Library/Core/Source/Operation.cpp`
+**Affected files**:
+- `Source/Library/Language/Rho/Source/RhoTranslator.cpp`
+- `Source/Library/Executor/Source/ExecutorPerform.cpp`
 
-## 3. TestLangCommon Advanced Tests
+### Tau — Struct Serialization
 
-The more advanced language common tests involving semicolons and complex statements need:
+Tau IDL supports `struct` declarations and generates plain C++ structs, but there is no automatic binary serialization for user-defined structs. Passing a struct across the network requires manual `BinaryStream` read/write code.
 
-- Better handling of statement separation
-- Proper parsing of complex expressions with semicolons
-- Support for inline control structures
-- Improved handling of nested expressions
+**Needed**: `GenerateStruct` should emit `operator<<(BinaryStream&)` and `operator>>(BinaryStream&)` methods.
 
-Affected files:
-- `Source/Library/Executor/Source/Console.cpp`
-- `Source/Library/RhoLang/Source/RhoParser.cpp`
-- `Test/Language/TestLangCommon.cpp`
+### Pi — Missing Operations
 
-## 4. Continuation Nesting and Unwrapping
+| Operation | Status |
+|-----------|--------|
+| `+!` (increment in place) | Not implemented |
+| `begin`/`until` | Not implemented |
+| `sin`, `cos`, `pow`, `sqrt`, `abs` | Not implemented |
+| `at`, `slice`, `toint`, `tofloat` | Not implemented |
+| Code blocks `{ }` as continuations | Partial |
 
-A comprehensive solution for complex continuations needs:
+## Networking
 
-- Recursive unwrapping of deeply nested continuations
-- Better handling of continuation execution order
-- Support for continuation merging
-- Cleanup of temporary continuations
+### IPv6
 
-Affected files:
-- `Source/Library/Executor/Source/Executor.cpp`
-- `Test/Include/TestLangCommon.h`
+The current `IpAddress` and ENet binding only support IPv4. Add an `IpAddress("::1")` constructor and pass `ENET_HOST_ANY6` to `enet_host_create`.
 
-## Implementation Strategy
+### TLS / Authenticated Connections
 
-The recommended approach for addressing these issues is:
+All wire traffic is currently plaintext. Options:
+- DTLS wrapper over ENet sockets
+- Shared-secret HMAC per packet
+- Peer certificate exchange on connect
 
-1. Start with the TestLangCommon improvements since they provide the foundation
-2. Address RhoAdvancedOps tests next to improve complex expression handling
-3. Finally tackle the control flow structures in RhoForLoop tests
+### Peer Discovery
 
-For each area:
-1. Add comprehensive try-catch blocks around execution paths
-2. Add null checks for all object accesses
-3. Implement proper tracing to diagnose specific failure points
-4. Add fallback mechanisms for graceful degradation when operations can't be completed
+Nodes must be connected explicitly by IP and port. A LAN discovery mechanism (mDNS or UDP broadcast) would allow nodes to find each other automatically.
 
-## Testing Strategy
+### Streaming Large Objects
 
-For each fix:
-1. Run the specific failing test in isolation with detailed tracing
-2. Use GDB to track down segmentation faults
-3. Add instrumentation around the failing code points
-4. Verify fixes incrementally rather than trying to fix everything at once
+Packets are currently limited to single ENet frames. Objects larger than ~1 MB need fragmentation/reassembly at the application layer.
 
-The Scripts/run_rho_tests.sh script provides a good foundation for iterative testing and development.
+## Core
+
+### Garbage Collection Cycles
+
+`Registry.cpp` contains a `HACK` comment around the cycle-breaking logic. A proper tri-colour incremental GC with cycle detection should replace it.
+
+### Map Serialization
+
+`BinaryStream` serialization of `Map` objects requires a `Registry` reference for type lookup, but `BinaryStream` is not tied to a `Registry`. The serialization protocol needs a design decision: embed type IDs in the stream, or require the caller to supply a `Registry`.
+
+## Testing
+
+### Console Tests
+
+Console tests are at ~25% pass rate. The missing features are:
+- Tab completion
+- History expansion (`!!`, `!N`)
+- Zsh-style interactive prompts
+
+### Shell (Backtick) Tests
+
+Shell syntax is disabled by default (`-DENABLE_SHELL_SYNTAX=ON` to enable). All backtick tests are skipped in the default build.
+
+## Documentation
+
+- [ ] `Doc/TauTutorial.md` — add a complete worked example from `.tau` → generated code → running test
+- [ ] `Doc/PiTutorial.md` — document `Suspend`/`Resume`/`Replace` continuation operators
+- [ ] `Doc/RhoTutorial.md` — document `for x in container` and `break`/`continue`

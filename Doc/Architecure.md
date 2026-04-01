@@ -1,97 +1,206 @@
-  # Core Architecture
+# KAI Architecture
 
-  KAI is a sophisticated programming language infrastructure with multiple language layers and execution models.
-  The architecture reveals a thoughtful design centered around a few key concepts:
+## Overview
 
-  1. Registry-based Object Management: The system uses a central Registry that manages object creation, reference
-  tracking, and garbage collection. This is similar to how virtual machines maintain object heaps.
-  2. Value-based Computation Model: Values flow through the system as Objects, which are managed references to
-  typed values. This allows for a uniform interface while maintaining type safety.
-  3. Continuation-based Execution: Rather than a traditional stack-based VM, KAI uses Continuations as first-class
-  objects that represent executable code sequences. This is a powerful concept borrowed from functional
-  programming.
-  4. Translation Layer Hierarchy: Languages are implemented through a series of translators that convert from
-  higher-level syntax to lower-level execution primitives.
+KAI is a distributed object model for C++ with full runtime reflection, incremental garbage collection, and a multi-language execution environment. Three languages — Pi, Rho, and Tau — share a common lexer/parser/executor pipeline, all running on a stack-based virtual machine.
 
-  Language Hierarchy
+```mermaid
+graph TB
+    subgraph Languages
+        RHO[Rho<br/>infix, Python-like]
+        PI[Pi<br/>stack-based, Forth-like]
+        TAU[Tau<br/>IDL, code generation]
+    end
 
-  The language architecture is particularly interesting:
+    subgraph Translation
+        RHOLEX[RhoLexer]
+        RHOPAR[RhoParser]
+        RHOTRANS[RhoTranslator]
+        PILEX[PiLexer]
+        PIPAR[PiParser]
+    end
 
-  - Pi: Functions as an assembly-like language with stack operations, direct manipulation of values, and a postfix
-  notation similar to Forth.
-  - Rho: A higher-level language with Python-like indentation syntax that transpiles to Pi. It abstracts away the
-  stack operations of Pi, offering a more familiar programming model.
-  - Other Languages: References to Tau, HLSL, and Lisp suggest the architecture is designed to support multiple
-  front-ends for different programming paradigms.
+    subgraph Execution
+        EXEC[Executor<br/>stack VM]
+        CONT[Continuation<br/>code sequence]
+        DATA[Data Stack]
+        CTX[Context Stack]
+    end
 
-  Type System
+    subgraph Core
+        REG[Registry<br/>type factory + GC]
+        OBJ[Object<br/>managed reference]
+        BS[BinaryStream<br/>serialization]
+    end
 
-  The type system appears to be dynamic but strongly typed:
+    subgraph Network
+        NODE[Node<br/>network endpoint]
+        AGENT[Agent<br/>server-side handler]
+        PROXY[Proxy<br/>client-side stub]
+        DOMAIN[Domain<br/>node grouping]
+        ENET[ENet<br/>UDP transport]
+    end
 
-  - Types are registered with the system (reg.AddClass<int>(Label("int")))
-  - Runtime type checking is enforced (seen in error handling like "Type Mismatch: expected=Continuation,
-  got=Signed32")
-  - Type conversions appear to be explicit rather than implicit
+    RHO --> RHOLEX --> RHOPAR --> RHOTRANS --> PIPAR
+    TAU --> PIPAR
+    PI  --> PILEX  --> PIPAR
+    PIPAR --> CONT --> EXEC
+    EXEC --> DATA
+    EXEC --> CTX
+    EXEC --> REG
+    REG  --> OBJ
+    OBJ  --> BS
+    BS   --> NODE
+    NODE --> ENET
+    NODE --> AGENT
+    NODE --> PROXY
+    DOMAIN --> NODE
+    PROXY --> AGENT
+```
 
-  Continuation Mechanism
+## Core Concepts
 
-  The Continuation model is particularly sophisticated:
+### Registry and Object Model
 
-  1. Continuations represent code that can be executed later
-  2. They have their own code arrays (essentially instruction sequences)
-  3. They can have arguments and maintain their own scope
-  4. They support operations like suspension, resumption, and replacement
+The `Registry` is the central factory and garbage collector. Every value in KAI is wrapped in an `Object` — a managed, typed reference. Types are registered at startup:
 
-  This model offers significant power for implementing complex control flow constructs and even potentially for
-  concurrency patterns.
+```cpp
+reg.AddClass<int>();
+reg.AddClass<String>();
+MyType::Register(reg);
+```
 
-  Issues with the Rho Implementation
+No macros are required. The reflection system uses template specialisation and the `Traits<T>` machinery.
 
-  The core issue with the Rho translator was an architectural mismatch between:
+### Continuation-Based Execution
 
-  1. How operations were being wrapped in Continuations
-  2. How the execution model expected to process these operations
+Rather than a traditional call stack, KAI uses **Continuations** — first-class objects that represent a sequence of operations. This enables:
 
-  In Pi, operations are directly added to code arrays. In Rho, operations were being wrapped in additional
-  Continuations, which caused type mismatches during execution. The recent changes bring the Rho implementation
-  closer to Pi's direct model.
+- Suspension and resumption of execution mid-sequence
+- Tail-call replacement (`!` in Pi)
+- Coroutine-like patterns
+- The `for`/`while`/`if` control structures are all implemented as continuations
 
-  Deeper Design Patterns
+```mermaid
+sequenceDiagram
+    participant Executor
+    participant Continuation
+    participant DataStack
 
-  Several sophisticated design patterns are evident:
+    Executor->>Continuation: fetch next op
+    Continuation-->>Executor: Operation
+    Executor->>DataStack: push/pop values
+    Executor->>Continuation: Suspend (& op)
+    Executor->>Continuation: Resume (... op)
+    Executor->>Continuation: Replace (! op)
+```
 
-  1. Observer Pattern: Implemented via the modern Event system, allowing objects to subscribe to and react to events
-  2. Visitor Pattern: Used extensively in AST traversal and translation
-  3. Factory Pattern: Used for object creation through the Registry
-  4. Command Pattern: Operations are first-class objects
-  5. Composite Pattern: AST nodes form a tree structure
-  6. Interpreter Pattern: The core execution model
+### Translation Pipeline
 
-  Testing Philosophy
+Rho code is compiled to Pi, which is then executed directly:
 
-  The testing approach reveals a focus on functionality verification:
+```
+Rho source
+    → RhoLexer (tokens)
+    → RhoParser (AST)
+    → RhoTranslator (Pi operations)
+    → Pi Continuation
+    → Executor
+```
 
-  1. Small, focused unit tests for individual language features
-  2. Cross-language testing to verify translation correctness
-  3. Error handling and edge case testing
+Tau IDL is compiled offline to C++ proxy/agent headers — it does not run through the executor.
 
-  Future Directions
+## Language Architecture
 
-  Based on the architecture, potential future directions might include:
+### Pi — Foundation Language
 
-  1. Optimization Passes: Adding optimization layers between translation and execution
-  2. Stronger Type System: Perhaps introducing more static typing features
-  3. Concurrency Model: Leveraging Continuations for efficient parallel execution
-  4. More Language Front-ends: Adding other syntax options while preserving the execution model
+Pi is an assembly-like stack language. All other languages ultimately emit Pi operations. It uses two stacks:
 
-  Architectural Strengths
+| Stack | Purpose |
+|-------|---------|
+| Data stack | Values and intermediate results |
+| Context stack | Continuations, scopes, control flow |
 
-  The design shows several strong points:
+Key operations: `dup`, `drop`, `swap`, `over`, `@` (dereference), `!` (replace/store), `&` (suspend), `...` (resume).
 
-  1. Separation of Concerns: Clear boundaries between lexing, parsing, translation, and execution
-  2. Extensibility: New languages can be added without changing the core execution model
-  3. Uniform Object Model: Consistent approach to object management
-  4. First-class Continuations: Powerful primitive for expressing complex control flow
+### Rho — Application Language
 
-  The KAI system appears to be a well-designed language infrastructure that balances flexibility with robustness,
-  allowing for multiple language front-ends while maintaining a consistent execution model underneath.
+Rho provides infix, Python-like syntax that transpiles to Pi. The translator generates Pi operations — it does not evaluate at translation time. This separation is critical: the executor owns all evaluation.
+
+```rho
+fun factorial(n) {
+    if (n <= 1) { return 1 }
+    else { return n * factorial(n - 1) }
+}
+```
+
+### Tau — Interface Definition Language
+
+Tau is a declarative IDL for defining network interfaces. `NetworkGenerate` reads `.tau` files and emits C++ headers:
+
+```tau
+namespace Calc {
+    interface ICalc {
+        Future<int> Add(int a, int b);
+        int Value;
+    }
+}
+```
+
+Generates `ICalcProxy` (for callers) and `ICalcAgent` (for implementors). Template return types like `Future<int>` are handled by the lexer as a single composite token.
+
+## Networking Architecture
+
+```mermaid
+graph LR
+    subgraph "Domain A (server)"
+        NA[Node A] --> AG[Agent<br/>registers methods<br/>and properties]
+        AG --> IMPL[Servant<br/>C++ object]
+    end
+
+    subgraph "Domain B (client)"
+        NB[Node B] --> PR[Proxy<br/>forwards calls]
+        PR --> FUT[Future&lt;T&gt;<br/>async result]
+    end
+
+    NA <-->|ENet UDP| NB
+    PR -->|RPC request| AG
+    AG -->|response| FUT
+```
+
+### Agent/Proxy Pattern
+
+- **Agent** registers on a `Node` and exposes methods/properties via `RegisterMethod` / `RegisterProperty`
+- **Proxy** holds a `NetHandle` pointing to a remote agent and forwards typed calls via `Invoke<R>(...)` or `FetchProperty<T>(...)`
+- **Domain** is a thin wrapper that groups a `Node` with factory methods `MakeAgent<T>()` / `MakeProxy<T>()`
+- **`Future<T>`** is returned by all remote calls; `Node::WaitFor(future)` blocks until resolved
+
+### Message Types
+
+| ID | Decimal | Purpose |
+|----|---------|---------|
+| `ID_KAI_FUNCTION_CALL` | 129 | Client → Agent: invoke method |
+| `ID_KAI_FUNCTION_RESPONSE` | 131 | Agent → Client: return value |
+| `ID_KAI_EVENT` | 130 | Agent → all: broadcast event |
+| `ID_KAI_OBJECT` | 128 | Node → all: broadcast KAI object |
+| `ID_KAI_PROPERTY_GET` | 132 | Client → Agent: read property |
+| `ID_KAI_PROPERTY_SET` | 133 | Client → Agent: write property |
+
+## Design Patterns
+
+| Pattern | Where used |
+|---------|------------|
+| Registry / Factory | `Registry::New<T>()` for all object creation |
+| Visitor | AST traversal in all language translators |
+| Observer | `SubscribeEvent`, `SetConnectionEventCallback` |
+| Command | Operations are first-class `Object` values |
+| Proxy | `ProxyBase` / `Proxy<T>` for remote calls |
+| Template Method | `GenerateProcess` base drives `GenerateProxy` / `GenerateAgent` |
+
+## Architectural Strengths
+
+1. **Separation of concerns**: Lexing → Parsing → Translation → Execution are fully decoupled
+2. **Extensibility**: New languages plug in by implementing the `LexerCommon` / `ParserCommon` interfaces
+3. **Uniform object model**: Every value is an `Object`; the executor never handles raw C++ types
+4. **First-class continuations**: `Suspend`/`Resume`/`Replace` enable powerful control-flow primitives without special VM support
+5. **Zero-macro reflection**: Types are registered via template specialisation, no source modifications needed
