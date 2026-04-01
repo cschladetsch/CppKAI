@@ -224,9 +224,12 @@ TEST_F(MultiLanguageIntegrationTests, CrossLanguageDataSharing) {
     // Process the data using Rho
     string rhoProcessing = R"(
         fun countActive(users) = 
-            if (length(users) == 0) then 0
-            else if (head(users).active) then 1 + countActive(tail(users))
-            else countActive(tail(users));
+            if (length(users) == 0)
+                0
+            else if (head(users).active)
+                1 + countActive(tail(users))
+            else
+                countActive(tail(users));
     )";
     
     Object rhoResult;
@@ -418,9 +421,12 @@ TEST_F(MultiLanguageIntegrationTests, EventSystemIntegration) {
     // Set up event processing in Rho
     string rhoEventProcessor = R"(
         fun processEvent(event) = 
-            if (event.type == "data") then event.value * 2
-            else if (event.type == "error") then -1
-            else 0;
+            if (event.type == "data")
+                event.value * 2
+            else if (event.type == "error")
+                -1
+            else
+                0;
     )";
     
     Object rhoResult;
@@ -489,7 +495,11 @@ TEST_F(MultiLanguageIntegrationTests, ComplexWorkflowIntegration) {
             all(fun(dep) = contains(completedTasks, dep), task.dependencies);
         
         fun calculateProgress(tasks) =
-            (sum(map(fun(t) = if t.completed then 1.0 else t.progress, tasks))) / length(tasks);
+            (sum(map(fun(t) =
+                if t.completed
+                    1.0
+                else
+                    t.progress, tasks))) / length(tasks);
         
         fun getNextTask(tasks, completed) =
             find(fun(t) = not t.completed and canExecuteTask(t, completed), tasks);

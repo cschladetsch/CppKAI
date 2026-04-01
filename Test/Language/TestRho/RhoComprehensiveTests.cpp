@@ -268,25 +268,25 @@ TEST_F(RhoComprehensiveTests, FunctionWithMultipleStatements) {
 }
 
 TEST_F(RhoComprehensiveTests, RecursiveCountdown) {
-    console_.Execute("countdown = fun(n)\n    if n <= 0 then 0 else countdown(n - 1)");
+    console_.Execute("countdown = fun(n)\n    if n <= 0\n        0\n    else\n        countdown(n - 1)");
     console_.Execute("countdown(5)");
     ASSERT_EQ(kai::ConstDeref<int>(data_->Top()), 0);
 }
 
 TEST_F(RhoComprehensiveTests, SimpleFactorial) {
-    console_.Execute("factorial = fun(n)\n    if n <= 1 then 1 else n * factorial(n - 1)");
+    console_.Execute("factorial = fun(n)\n    if n <= 1\n        1\n    else\n        n * factorial(n - 1)");
     console_.Execute("factorial(5)");
     ASSERT_EQ(kai::ConstDeref<int>(data_->Top()), 120);
 }
 
 TEST_F(RhoComprehensiveTests, FunctionReturningSum) {
-    console_.Execute("sumRange = fun(start, end)\n    if start > end then 0 else start + sumRange(start + 1, end)");
+    console_.Execute("sumRange = fun(start, end)\n    if start > end\n        0\n    else\n        start + sumRange(start + 1, end)");
     console_.Execute("sumRange(1, 5)");
     ASSERT_EQ(kai::ConstDeref<int>(data_->Top()), 15);
 }
 
 TEST_F(RhoComprehensiveTests, FunctionWithNegativeParameter) {
-    console_.Execute("abs = fun(x)\n    if x < 0 then 0 - x else x");
+    console_.Execute("abs = fun(x)\n    if x < 0\n        0 - x\n    else\n        x");
     console_.Execute("abs(0 - 5)");
     ASSERT_EQ(kai::ConstDeref<int>(data_->Top()), 5);
 }
@@ -298,13 +298,13 @@ TEST_F(RhoComprehensiveTests, FunctionReturningBoolean) {
 }
 
 TEST_F(RhoComprehensiveTests, FunctionWithComplexLogic) {
-    console_.Execute("maxFunc = fun(a, b)\n    if a > b then a else b");
+    console_.Execute("maxFunc = fun(a, b)\n    if a > b\n        a\n    else\n        b");
     console_.Execute("maxFunc(10, 20)");
     ASSERT_EQ(kai::ConstDeref<int>(data_->Top()), 20);
 }
 
 TEST_F(RhoComprehensiveTests, MinFunction) {
-    console_.Execute("minFunc = fun(a, b)\n    if a < b then a else b");
+    console_.Execute("minFunc = fun(a, b)\n    if a < b\n        a\n    else\n        b");
     console_.Execute("minFunc(10, 20)");
     ASSERT_EQ(kai::ConstDeref<int>(data_->Top()), 10);
 }
@@ -317,7 +317,7 @@ TEST_F(RhoComprehensiveTests, FunctionParameterShadowing) {
 }
 
 TEST_F(RhoComprehensiveTests, MultipleReturnPaths) {
-    console_.Execute("sign = fun(x)\n    if x < 0 then 0 - 1 else if x > 0 then 1 else 0");
+    console_.Execute("sign = fun(x)\n    if x < 0\n        0 - 1\n    else\n        if x > 0\n            1\n        else\n            0");
     console_.Execute("sign(0)");
     ASSERT_EQ(kai::ConstDeref<int>(data_->Top()), 0);
 }
@@ -349,86 +349,86 @@ TEST_F(RhoComprehensiveTests, FunctionReassignment) {
 // ============================================================================
 
 TEST_F(RhoComprehensiveTests, SimpleIfTrue) {
-    console_.Execute("test = fun()\n    if true then 1 else 0");
+    console_.Execute("test = fun()\n    if true\n        1\n    else\n        0");
     console_.Execute("test()");
     ASSERT_EQ(kai::ConstDeref<int>(data_->Top()), 1);
 }
 
 TEST_F(RhoComprehensiveTests, SimpleIfFalse) {
-    console_.Execute("test = fun()\n    if false then 1 else 0");
+    console_.Execute("test = fun()\n    if false\n        1\n    else\n        0");
     console_.Execute("test()");
     ASSERT_EQ(kai::ConstDeref<int>(data_->Top()), 0);
 }
 
 TEST_F(RhoComprehensiveTests, IfWithComparison) {
-    console_.Execute("test = fun()\n    if 5 > 3 then 100 else 200");
+    console_.Execute("test = fun()\n    if 5 > 3\n        100\n    else\n        200");
     console_.Execute("test()");
     ASSERT_EQ(kai::ConstDeref<int>(data_->Top()), 100);
 }
 
 TEST_F(RhoComprehensiveTests, IfWithVariable) {
-    console_.Execute("test = fun(x)\n    if x > 5 then 1 else 0");
+    console_.Execute("test = fun(x)\n    if x > 5\n        1\n    else\n        0");
     console_.Execute("test(10)");
     ASSERT_EQ(kai::ConstDeref<int>(data_->Top()), 1);
 }
 
 TEST_F(RhoComprehensiveTests, NestedIf) {
-    console_.Execute("test = fun(x)\n    if x > 5 then if x > 15 then 2 else 1 else 0");
+    console_.Execute("test = fun(x)\n    if x > 5\n        if x > 15\n            2\n        else\n            1\n    else\n        0");
     console_.Execute("test(10)");
     ASSERT_EQ(kai::ConstDeref<int>(data_->Top()), 1);
 }
 
 TEST_F(RhoComprehensiveTests, IfElseIfElse) {
-    console_.Execute("test = fun(x)\n    if x < 5 then 1 else if x < 15 then 2 else 3");
+    console_.Execute("test = fun(x)\n    if x < 5\n        1\n    else\n        if x < 15\n            2\n        else\n            3");
     console_.Execute("test(10)");
     ASSERT_EQ(kai::ConstDeref<int>(data_->Top()), 2);
 }
 
 TEST_F(RhoComprehensiveTests, IfWithExpression) {
-    console_.Execute("test = fun(x)\n    if x * 2 > 8 then 1 else 0");
+    console_.Execute("test = fun(x)\n    if x * 2 > 8\n        1\n    else\n        0");
     console_.Execute("test(5)");
     ASSERT_EQ(kai::ConstDeref<int>(data_->Top()), 1);
 }
 
 TEST_F(RhoComprehensiveTests, IfReturningComputation) {
-    console_.Execute("test = fun(x)\n    if x > 5 then x * 2 else x / 2");
+    console_.Execute("test = fun(x)\n    if x > 5\n        x * 2\n    else\n        x / 2");
     console_.Execute("test(10)");
     ASSERT_EQ(kai::ConstDeref<int>(data_->Top()), 20);
 }
 
 TEST_F(RhoComprehensiveTests, IfWithEquality) {
-    console_.Execute("test = fun(x)\n    if x == 42 then 1 else 0");
+    console_.Execute("test = fun(x)\n    if x == 42\n        1\n    else\n        0");
     console_.Execute("test(42)");
     ASSERT_EQ(kai::ConstDeref<int>(data_->Top()), 1);
 }
 
 TEST_F(RhoComprehensiveTests, IfWithNotEqual) {
-    console_.Execute("test = fun(x)\n    if x != 10 then 1 else 0");
+    console_.Execute("test = fun(x)\n    if x != 10\n        1\n    else\n        0");
     console_.Execute("test(5)");
     ASSERT_EQ(kai::ConstDeref<int>(data_->Top()), 1);
 }
 
 TEST_F(RhoComprehensiveTests, IfInFunction) {
-    console_.Execute("abs = fun(x)\n    if x < 0 then 0 - x else x");
+    console_.Execute("abs = fun(x)\n    if x < 0\n        0 - x\n    else\n        x");
     console_.Execute("abs(0 - 10)");
     ASSERT_EQ(kai::ConstDeref<int>(data_->Top()), 10);
 }
 
 TEST_F(RhoComprehensiveTests, MultipleIfStatements) {
-    console_.Execute("test1 = fun(x)\n    if x > 0 then 1 else 0");
-    console_.Execute("test2 = fun(y)\n    if y > 0 then 1 else 0");
+    console_.Execute("test1 = fun(x)\n    if x > 0\n        1\n    else\n        0");
+    console_.Execute("test2 = fun(y)\n    if y > 0\n        1\n    else\n        0");
     console_.Execute("test2(10)");
     ASSERT_EQ(kai::ConstDeref<int>(data_->Top()), 1);
 }
 
 TEST_F(RhoComprehensiveTests, IfWithZero) {
-    console_.Execute("test = fun(x)\n    if x == 0 then 1 else 0");
+    console_.Execute("test = fun(x)\n    if x == 0\n        1\n    else\n        0");
     console_.Execute("test(0)");
     ASSERT_EQ(kai::ConstDeref<int>(data_->Top()), 1);
 }
 
 TEST_F(RhoComprehensiveTests, IfBothBranchesExecutable) {
-    console_.Execute("test = fun(toggle)\n    if toggle then 10 else 20");
+    console_.Execute("test = fun(toggle)\n    if toggle\n        10\n    else\n        20");
     console_.Execute("test(true)");
     data_->Clear();
     console_.Execute("test(false)");
@@ -436,7 +436,7 @@ TEST_F(RhoComprehensiveTests, IfBothBranchesExecutable) {
 }
 
 TEST_F(RhoComprehensiveTests, ComplexCondition) {
-    console_.Execute("test = fun(x, y)\n    if x < y then if x > 0 then 1 else 2 else 3");
+    console_.Execute("test = fun(x, y)\n    if x < y\n        if x > 0\n            1\n        else\n            2\n    else\n        3");
     console_.Execute("test(5, 10)");
     ASSERT_EQ(kai::ConstDeref<int>(data_->Top()), 1);
 }

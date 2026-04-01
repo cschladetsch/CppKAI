@@ -2496,21 +2496,7 @@ void Executor::ExecuteContinuationInline(Pointer<Continuation> cont) {
                         return;
                     }
 
-                    bool callerHasMore = cont->GetCode().Exists() &&
-                                         resumeIndex < cont->GetCode()->Size();
-                    if (callerHasMore && suspendedCont.Exists() &&
-                        suspendedCont->InitialStackDepth >= 0 &&
-                        data_.Valid() && data_.Exists() &&
-                        data_->Size() > suspendedCont->InitialStackDepth) {
-                        Object result = Pop();
-                        int targetBelow = suspendedCont->InitialStackDepth > 0
-                                              ? suspendedCont->InitialStackDepth - 1
-                                              : 0;
-                        while (data_->Size() > targetBelow) {
-                            Pop();
-                        }
-                        Push(result);
-                    }
+                    // Do not collapse stack on continuation completion.
 
                     if (!context_->Empty()) {
                         context_->Pop();

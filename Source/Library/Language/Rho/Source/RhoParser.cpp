@@ -868,10 +868,10 @@ bool RhoParser::IfCondition(AstNodePtr block) {
         return true;
     };
 
-    // Expect newline after condition
     while (Try(TokenType::Whitespace) || Try(TokenType::Tab)) {
         Consume();
     }
+
     auto trueClause = NewNode(NodeType::Block);
 
     if (Try(TokenType::OpenBrace)) {
@@ -1358,8 +1358,8 @@ bool RhoParser::ForEachLoop(AstNodePtr block) {
     KAI_TRACE() << "RhoParser::ForEachLoop - Added loop variable: "
                 << loopVar->GetToken().Text();
 
-    // Expect 'in' keyword - check if current token is a label with text "in"
-    if (!Try(TokenType::Label) || Current().Text() != "in") {
+    // Expect 'in' keyword
+    if (!Try(TokenType::In)) {
         KAI_TRACE_ERROR()
             << "ForEachLoop: Expected 'in' after loop variable, got: "
             << Current().ToString();

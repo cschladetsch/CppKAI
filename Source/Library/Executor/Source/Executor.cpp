@@ -815,33 +815,8 @@ void Executor::NextContinuation() {
     }
 
     try {
-        bool callerHasMore = false;
-        if (!context_->Empty()) {
-            const auto nextPeek = context_->Top();
-            if (nextPeek.Valid() && nextPeek.Exists() &&
-                nextPeek.IsType<Continuation>()) {
-                Pointer<Continuation> caller = nextPeek;
-                if (caller.Exists() && caller->GetCode().Exists() &&
-                    caller->index.Exists()) {
-                    callerHasMore = ConstDeref<int>(caller->index) <
-                                    caller->GetCode()->Size();
-                }
-            }
-        }
-
-        Value<Continuation> finished = continuation_;
-        if (callerHasMore && finished.Valid() && finished.Exists() &&
-            finished->InitialStackDepth >= 0 && data_.Valid() && data_.Exists() &&
-            data_->Size() > finished->InitialStackDepth) {
-            Object result = Pop();
-            int targetBelow =
-                finished->InitialStackDepth > 0 ? finished->InitialStackDepth - 1
-                                                : 0;
-            while (data_->Size() > targetBelow) {
-                Pop();
-            }
-            Push(result);
-        }
+        // Do not collapse stack on continuation completion.
+        // Pi continuations can legitimately produce multiple values.
 
         const auto next = context_->Pop();
         if (!next.Valid() || !next.Exists()) {
