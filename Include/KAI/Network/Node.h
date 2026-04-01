@@ -171,9 +171,20 @@ struct Node {
     void ProcessFunctionCall(const NetPacket &packet);
     void ProcessEventNotification(const NetPacket &packet);
     void ProcessFunctionResponse(const NetPacket &packet);
+    void ProcessPropertyGet(const NetPacket &packet);
+    void ProcessPropertySet(const NetPacket &packet);
     void OnConnectionEvent(int connectionId, ConnectionEvent event);
     void SendFunctionCall(NetHandle handle, const std::string &name,
                           const Object &args, int futureId);
+    // Implemented in Node.cpp to avoid circular includes via Serialization.h.
+    void SendPropertyGet(NetHandle handle, int futureId,
+                         const std::string &name);
+    void SendPropertySet(NetHandle handle, int futureId,
+                         const std::string &name, const Object &value);
+
+    // Returns the routed NetAddress for a handle: checks proxyAddresses_ first,
+    // then falls back to the first active connection.
+    NetAddress RouteAddress(NetHandle handle) const;
 
     // Helper method to get the packet identifier
     unsigned char GetPacketIdentifier(const NetPacket &packet);
@@ -288,6 +299,12 @@ namespace detail {
             throw std::runtime_error("Property is read-only");
         }
         virtual bool CanWrite() const { return false; }
+        // Object-level accessors used by the remote property get/set path.
+        virtual Object GetAsObject(Registry *reg) = 0;
+        virtual void SetFromObject(const Object &obj) {
+            KAI_UNUSED_1(obj);
+            throw std::runtime_error("Property is read-only");
+        }
         std::type_index type{typeid(void)};
     };
 
@@ -307,6 +324,15 @@ namespace detail {
 
         bool CanWrite() const override { return static_cast<bool>(setter_); }
 
+        Object GetAsObject(Registry *reg) override {
+            if (!reg) throw std::runtime_error("Null registry in GetAsObject");
+            return reg->New(getter_());
+        }
+
+        void SetFromObject(const Object &obj) override {
+            setter_(ConstDeref<std::decay_t<Value>>(obj));
+        }
+
         std::function<Value()> getter_;
         std::function<void(Value)> setter_;
     };
@@ -319,6 +345,11 @@ namespace detail {
         }
 
         std::any Get() override { return std::any(getter_()); }
+
+        Object GetAsObject(Registry *reg) override {
+            if (!reg) throw std::runtime_error("Null registry in GetAsObject");
+            return reg->New(getter_());
+        }
 
         std::function<Value()> getter_;
     };
@@ -468,33 +499,58 @@ Future<P> Node::FetchProperty(NetHandle handle, const std::string &name) {
     {
         std::lock_guard<std::mutex> lock(agentMutex_);
         auto entry = agentEntries_.find(handle.value);
-        if (entry == agentEntries_.end()) {
-            future.SetResponse(ResponseType::UnknownAgent);
-            future.SetComplete(true);
-            future.SetErrorMessage("Unknown agent");
-            return future;
+        if (entry != agentEntries_.end()) {
+            auto it = entry->second.properties.find(name);
+            if (it != entry->second.properties.end()) {
+                accessor = it->second;
+            }
         }
-        auto it = entry->second.properties.find(name);
-        if (it == entry->second.properties.end()) {
+    }
+
+    if (accessor) {
+        // Local path.
+        try {
+            std::any value = accessor->Get();
+            future.SetResponse(ResponseType::Returned);
+            future.SetComplete(true);
+            future.SetValue(std::any_cast<P>(value));
+        } catch (const std::bad_any_cast &e) {
             future.SetResponse(ResponseType::BadRequest);
             future.SetComplete(true);
-            future.SetErrorMessage("Unknown property");
-            return future;
+            future.SetErrorMessage(e.what());
         }
-        accessor = it->second;
+        return future;
     }
 
-    try {
-        std::any value = accessor->Get();
-        future.SetResponse(ResponseType::Returned);
-        future.SetComplete(true);
-        future.SetValue(std::any_cast<P>(value));
-    } catch (const std::bad_any_cast &e) {
+    // Remote path: serialize a property-get request and register the future.
+    if (!registry_) {
         future.SetResponse(ResponseType::BadRequest);
         future.SetComplete(true);
-        future.SetErrorMessage(e.what());
+        future.SetErrorMessage("Null registry for remote FetchProperty");
+        return future;
     }
 
+    {
+        std::lock_guard<std::mutex> lock(pendingMutex_);
+        auto state = future.GetState();
+        pendingResponses_[future.GetId()].complete =
+            [state](const Object &obj, ResponseType response,
+                    const std::string &error) {
+                state->Response = response;
+                state->Complete = true;
+                state->ErrorMessage = error;
+                if (response == ResponseType::Returned) {
+                    if constexpr (std::is_same_v<std::decay_t<P>, Object>) {
+                        state->Value = obj;
+                    } else {
+                        state->Value = ConstDeref<std::decay_t<P>>(obj);
+                    }
+                }
+            };
+    }
+
+    // Implemented in Node.cpp to avoid circular includes via Serialization.h.
+    SendPropertyGet(handle, future.GetId(), name);
     return future;
 }
 
@@ -508,32 +564,51 @@ Future<void> Node::StoreProperty(NetHandle handle, const std::string &name,
     {
         std::lock_guard<std::mutex> lock(agentMutex_);
         auto entry = agentEntries_.find(handle.value);
-        if (entry == agentEntries_.end()) {
-            future.SetResponse(ResponseType::UnknownAgent);
-            future.SetComplete(true);
-            future.SetErrorMessage("Unknown agent");
-            return future;
+        if (entry != agentEntries_.end()) {
+            auto it = entry->second.properties.find(name);
+            if (it != entry->second.properties.end()) {
+                accessor = it->second;
+            }
         }
-        auto it = entry->second.properties.find(name);
-        if (it == entry->second.properties.end()) {
+    }
+
+    if (accessor) {
+        // Local path.
+        try {
+            accessor->Set(std::any(std::forward<P>(value)));
+            future.SetResponse(ResponseType::Returned);
+            future.SetComplete(true);
+        } catch (const std::exception &e) {
             future.SetResponse(ResponseType::BadRequest);
             future.SetComplete(true);
-            future.SetErrorMessage("Unknown property");
-            return future;
+            future.SetErrorMessage(e.what());
         }
-        accessor = it->second;
+        return future;
     }
 
-    try {
-        accessor->Set(std::any(std::forward<P>(value)));
-        future.SetResponse(ResponseType::Returned);
-        future.SetComplete(true);
-    } catch (const std::exception &e) {
+    // Remote path: serialize a property-set request.
+    if (!registry_) {
         future.SetResponse(ResponseType::BadRequest);
         future.SetComplete(true);
-        future.SetErrorMessage(e.what());
+        future.SetErrorMessage("Null registry for remote StoreProperty");
+        return future;
     }
 
+    {
+        std::lock_guard<std::mutex> lock(pendingMutex_);
+        auto state = future.GetState();
+        pendingResponses_[future.GetId()].complete =
+            [state](const Object & /*obj*/, ResponseType response,
+                    const std::string &error) {
+                state->Response = response;
+                state->Complete = true;
+                state->ErrorMessage = error;
+            };
+    }
+
+    Object valueObj = registry_->New(std::forward<P>(value));
+    // Implemented in Node.cpp to avoid circular includes via Serialization.h.
+    SendPropertySet(handle, future.GetId(), name, valueObj);
     return future;
 }
 

@@ -186,3 +186,127 @@ TEST_F(NodeEndToEndTest, ObjectMessageReachesSubscriber) {
     EXPECT_TRUE(ok) << "Object message was not received within timeout";
     EXPECT_EQ(received, 42);
 }
+
+// Server broadcasts an event with an int payload; client decodes it.
+TEST_F(NodeEndToEndTest, EventPayloadDecodedCorrectly) {
+    const int port = kBasePort + 3;
+
+    Node server;
+    server.SetRegistry(reg_);
+    server.Listen(port);
+
+    Node client;
+    client.SetRegistry(reg_);
+    client.SetUpdatePump([&server]() { server.Update(); });
+
+    bool clientConnected = false;
+    bool serverConnected = false;
+    client.SetConnectionEventCallback(
+        [&](ConnectionEvent ev, const NetAddress &) {
+            if (ev == ConnectionEvent::Connected) clientConnected = true;
+        });
+    server.SetConnectionEventCallback(
+        [&](ConnectionEvent ev, const NetAddress &) {
+            if (ev == ConnectionEvent::Connected) serverConnected = true;
+        });
+
+    client.Connect(IpAddress("127.0.0.1"), port);
+
+    bool ok = PollUntil(server, client,
+                        [&] { return clientConnected && serverConnected; });
+    ASSERT_TRUE(ok) << "Nodes did not both connect within timeout";
+
+    int receivedValue = 0;
+    client.SubscribeEvent("Score", [&](BinaryPacket &pkt) {
+        int val = 0;
+        if (pkt.Read(val)) receivedValue = val;
+    });
+
+    // Build event with an int payload.
+    BinaryStream payload;
+    payload.Write(static_cast<int>(99));
+    server.BroadcastEvent("Score", payload);
+
+    ok = PollUntil(server, client, [&] { return receivedValue != 0; });
+    EXPECT_TRUE(ok) << "Event with payload was not received within timeout";
+    EXPECT_EQ(receivedValue, 99);
+}
+
+// Client fetches a property from a server-side agent over the network.
+TEST_F(NodeEndToEndTest, RemotePropertyGetReturnsValue) {
+    const int port = kBasePort + 4;
+
+    Node server;
+    server.SetRegistry(reg_);
+    server.Listen(port);
+
+    int serverValue = 55;
+    NetHandle agentHandle = server.AttachAgent(nullptr);
+    server.RegisterProperty<int>(
+        agentHandle, "Counter",
+        std::function<int()>([&] { return serverValue; }));
+
+    Node client;
+    client.SetRegistry(reg_);
+    client.SetUpdatePump([&server]() { server.Update(); });
+
+    bool connected = false;
+    client.SetConnectionEventCallback(
+        [&](ConnectionEvent ev, const NetAddress &) {
+            if (ev == ConnectionEvent::Connected) connected = true;
+        });
+
+    client.Connect(IpAddress("127.0.0.1"), port);
+
+    bool ok = PollUntil(server, client, [&] { return connected; });
+    ASSERT_TRUE(ok) << "Client did not connect within timeout";
+
+    NetAddress serverAddr("127.0.0.1", static_cast<unsigned short>(port));
+    client.BindProxyAddress(agentHandle, serverAddr);
+
+    auto future = client.FetchProperty<int>(agentHandle, "Counter");
+    int result = client.WaitFor(future, 2000ms);
+
+    EXPECT_TRUE(future.Succeeded());
+    EXPECT_EQ(result, 55);
+}
+
+// Client sets a property on a server-side agent over the network.
+TEST_F(NodeEndToEndTest, RemotePropertySetUpdatesValue) {
+    const int port = kBasePort + 5;
+
+    Node server;
+    server.SetRegistry(reg_);
+    server.Listen(port);
+
+    int serverValue = 0;
+    NetHandle agentHandle = server.AttachAgent(nullptr);
+    server.RegisterProperty<int>(
+        agentHandle, "Counter",
+        std::function<int()>([&] { return serverValue; }),
+        std::function<void(int)>([&](int v) { serverValue = v; }));
+
+    Node client;
+    client.SetRegistry(reg_);
+    client.SetUpdatePump([&server]() { server.Update(); });
+
+    bool connected = false;
+    client.SetConnectionEventCallback(
+        [&](ConnectionEvent ev, const NetAddress &) {
+            if (ev == ConnectionEvent::Connected) connected = true;
+        });
+
+    client.Connect(IpAddress("127.0.0.1"), port);
+
+    bool ok = PollUntil(server, client, [&] { return connected; });
+    ASSERT_TRUE(ok) << "Client did not connect within timeout";
+
+    NetAddress serverAddr("127.0.0.1", static_cast<unsigned short>(port));
+    client.BindProxyAddress(agentHandle, serverAddr);
+
+    auto future = client.StoreProperty<int>(agentHandle, "Counter", 77);
+    client.WaitFor(future, 2000ms);
+
+    EXPECT_TRUE(future.Succeeded());
+    EXPECT_EQ(serverValue, 77);
+}

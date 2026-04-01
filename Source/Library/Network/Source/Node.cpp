@@ -364,6 +364,12 @@ void Node::ProcessPacket(const NetPacket &packet) {
                 } else if (packetId ==
                            NetworkSerializer::ID_KAI_FUNCTION_RESPONSE) {
                     ProcessFunctionResponse(packet);
+                } else if (packetId ==
+                           NetworkSerializer::ID_KAI_PROPERTY_GET) {
+                    ProcessPropertyGet(packet);
+                } else if (packetId ==
+                           NetworkSerializer::ID_KAI_PROPERTY_SET) {
+                    ProcessPropertySet(packet);
                 }
             }
             break;
@@ -485,6 +491,7 @@ void Node::ProcessFunctionCall(const NetPacket &packet) {
                         responseStream.Begin()),
                     static_cast<std::size_t>(responseStream.Size()),
                     true, 0, packet.address, false);
+        peer_->Flush();
     }
 }
 
@@ -551,11 +558,9 @@ void Node::BroadcastEvent(const std::string &name,
         NetworkSerializer::ID_KAI_EVENT_NOTIFICATION));
     NetworkSerializer::WriteString(bs, name);
 
+    // Always write raw payload bytes (zero bytes for empty events).
     if (eventData.Size() > 0) {
         bs.Write(eventData.Size(), eventData.Begin());
-    } else {
-        int size = 0;
-        bs.Write(size);
     }
 
     peer_->Send(reinterpret_cast<const unsigned char *>(bs.Begin()),
@@ -655,6 +660,7 @@ void Node::SendFunctionCall(NetHandle handle, const std::string &name,
     peer_->Send(reinterpret_cast<const unsigned char *>(bs.Begin()),
                 static_cast<std::size_t>(bs.Size()),
                 true, 0, targetAddress, false);
+    peer_->Flush();
 }
 
 void Node::OnConnectionEvent(int connectionId, ConnectionEvent event) {
@@ -717,6 +723,183 @@ void Node::SetConnectionEventCallback(
 
 void Node::BindProxyAddress(NetHandle handle, const NetAddress &address) {
     proxyAddresses_[handle.value] = address;
+}
+
+void Node::SendPropertyGet(NetHandle handle, int futureId,
+                           const std::string &name) {
+    if (!peer_ || !isRunning_) return;
+
+    BinaryStream bs;
+    bs.Write(static_cast<unsigned char>(
+        NetworkSerializer::ID_KAI_PROPERTY_GET));
+    bs.Write(handle.value);
+    bs.Write(futureId);
+    NetworkSerializer::WriteString(bs, name);
+
+    NetAddress target = RouteAddress(handle);
+    if (target.IsValid()) {
+        peer_->Send(reinterpret_cast<const unsigned char *>(bs.Begin()),
+                    static_cast<std::size_t>(bs.Size()),
+                    true, 0, target, false);
+        peer_->Flush();
+    }
+}
+
+void Node::SendPropertySet(NetHandle handle, int futureId,
+                           const std::string &name, const Object &value) {
+    if (!peer_ || !isRunning_) return;
+
+    BinaryStream bs;
+    bs.Write(static_cast<unsigned char>(
+        NetworkSerializer::ID_KAI_PROPERTY_SET));
+    bs.Write(handle.value);
+    bs.Write(futureId);
+    NetworkSerializer::WriteString(bs, name);
+    NetworkSerializer::SerializeObject(bs, value);
+
+    NetAddress target = RouteAddress(handle);
+    if (target.IsValid()) {
+        peer_->Send(reinterpret_cast<const unsigned char *>(bs.Begin()),
+                    static_cast<std::size_t>(bs.Size()),
+                    true, 0, target, false);
+        peer_->Flush();
+    }
+}
+
+NetAddress Node::RouteAddress(NetHandle handle) const {
+    auto it = proxyAddresses_.find(handle.value);
+    if (it != proxyAddresses_.end()) {
+        return it->second;
+    }
+    if (connectionManager_) {
+        auto connections = connectionManager_->GetAllConnections();
+        if (!connections.empty()) {
+            return connectionManager_->GetSystemAddress(connections.front());
+        }
+    }
+    return NetAddress();
+}
+
+void Node::ProcessPropertyGet(const NetPacket &packet) {
+    if (!registry_) return;
+
+    BinaryPacket stream(reinterpret_cast<const char *>(packet.data.data()),
+                        reinterpret_cast<const char *>(packet.data.data() +
+                                                      packet.data.size()),
+                        registry_);
+
+    unsigned char msgId = 0;
+    int handleValue = 0;
+    int futureId = 0;
+    std::string propertyName;
+    if (!stream.Read(msgId) || !stream.Read(handleValue) ||
+        !stream.Read(futureId) ||
+        !NetworkSerializer::ReadString(stream, propertyName)) {
+        NetworkLogger::LogMessage("ProcessPropertyGet: failed to read header");
+        return;
+    }
+
+    std::shared_ptr<detail::PropertyAccessorBase> accessor;
+    {
+        std::lock_guard<std::mutex> lock(agentMutex_);
+        auto entry = agentEntries_.find(handleValue);
+        if (entry != agentEntries_.end()) {
+            auto it = entry->second.properties.find(propertyName);
+            if (it != entry->second.properties.end()) {
+                accessor = it->second;
+            }
+        }
+    }
+
+    ResponseType response = ResponseType::Returned;
+    std::string errorMessage;
+    Object result;
+    if (!accessor) {
+        response = ResponseType::BadRequest;
+        errorMessage = "Unknown property";
+    } else {
+        try {
+            result = accessor->GetAsObject(registry_);
+        } catch (const std::exception &e) {
+            response = ResponseType::BadRequest;
+            errorMessage = e.what();
+        }
+    }
+
+    BinaryStream responseStream;
+    responseStream.Write(static_cast<unsigned char>(
+        NetworkSerializer::ID_KAI_FUNCTION_RESPONSE));
+    responseStream.Write(futureId);
+    responseStream.Write(static_cast<int>(response));
+    NetworkSerializer::WriteString(responseStream, errorMessage);
+    NetworkSerializer::SerializeObject(responseStream, result);
+
+    peer_->Send(reinterpret_cast<const unsigned char *>(responseStream.Begin()),
+                static_cast<std::size_t>(responseStream.Size()),
+                true, 0, packet.address, false);
+    peer_->Flush();
+}
+
+void Node::ProcessPropertySet(const NetPacket &packet) {
+    if (!registry_) return;
+
+    BinaryPacket stream(reinterpret_cast<const char *>(packet.data.data()),
+                        reinterpret_cast<const char *>(packet.data.data() +
+                                                      packet.data.size()),
+                        registry_);
+
+    unsigned char msgId = 0;
+    int handleValue = 0;
+    int futureId = 0;
+    std::string propertyName;
+    if (!stream.Read(msgId) || !stream.Read(handleValue) ||
+        !stream.Read(futureId) ||
+        !NetworkSerializer::ReadString(stream, propertyName)) {
+        NetworkLogger::LogMessage("ProcessPropertySet: failed to read header");
+        return;
+    }
+
+    Object valueObj = NetworkSerializer::DeserializeObject(stream, *registry_);
+
+    std::shared_ptr<detail::PropertyAccessorBase> accessor;
+    {
+        std::lock_guard<std::mutex> lock(agentMutex_);
+        auto entry = agentEntries_.find(handleValue);
+        if (entry != agentEntries_.end()) {
+            auto it = entry->second.properties.find(propertyName);
+            if (it != entry->second.properties.end()) {
+                accessor = it->second;
+            }
+        }
+    }
+
+    ResponseType response = ResponseType::Returned;
+    std::string errorMessage;
+    if (!accessor) {
+        response = ResponseType::BadRequest;
+        errorMessage = "Unknown property";
+    } else {
+        try {
+            accessor->SetFromObject(valueObj);
+        } catch (const std::exception &e) {
+            response = ResponseType::BadRequest;
+            errorMessage = e.what();
+        }
+    }
+
+    Object empty;
+    BinaryStream responseStream;
+    responseStream.Write(static_cast<unsigned char>(
+        NetworkSerializer::ID_KAI_FUNCTION_RESPONSE));
+    responseStream.Write(futureId);
+    responseStream.Write(static_cast<int>(response));
+    NetworkSerializer::WriteString(responseStream, errorMessage);
+    NetworkSerializer::SerializeObject(responseStream, empty);
+
+    peer_->Send(reinterpret_cast<const unsigned char *>(responseStream.Begin()),
+                static_cast<std::size_t>(responseStream.Size()),
+                true, 0, packet.address, false);
+    peer_->Flush();
 }
 
 KAI_NET_END
