@@ -19,6 +19,7 @@ for arg in "$@"; do
     echo "  --no-color    Disable colored output"
     echo "  --no-ninja    Use default CMake generator instead of Ninja"
     echo "  --gcc         Use GCC instead of Clang++"
+    echo "  --network     Enable networking (KAI_NETWORKING=ON)"
     echo "  --help, -h    Show this help message"
     exit 0
   fi
@@ -28,6 +29,7 @@ done
 USE_COLOR=true
 USE_NINJA=true
 USE_GCC=false
+USE_NETWORKING=false
 
 for arg in "$@"; do
   if [ "$arg" == "--no-color" ]; then
@@ -38,6 +40,9 @@ for arg in "$@"; do
   fi
   if [ "$arg" == "--gcc" ]; then
     USE_GCC=true
+  fi
+  if [ "$arg" == "--network" ]; then
+    USE_NETWORKING=true
   fi
 done
 
@@ -90,9 +95,9 @@ if [ ! -f "CMakeCache.txt" ]; then
   NEED_CONFIGURE=true
 fi
 
-# Also reconfigure if --reconfigure flag is provided
+# Also reconfigure if --reconfigure or --network flag is provided
 for arg in "$@"; do
-  if [ "$arg" == "--reconfigure" ]; then
+  if [ "$arg" == "--reconfigure" ] || [ "$arg" == "--network" ]; then
     NEED_CONFIGURE=true
   fi
 done
@@ -105,6 +110,11 @@ CMAKE_ARGS="-DCMAKE_BUILD_TYPE=Debug \
       -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY="${SRC_DIR}/Bin" \
       -DBIN_HOME="${SRC_DIR}/Bin" \
       -DINCLUDE_HOME="${SRC_DIR}/Include/KAI""
+
+if [ "$USE_NETWORKING" = true ]; then
+  echo -e "${BLUE}Networking enabled (KAI_NETWORKING=ON)${NC}"
+  CMAKE_ARGS="$CMAKE_ARGS -DKAI_NETWORKING=ON"
+fi
 
 # Set compiler to clang++ by default unless --gcc flag was provided
 if [ "$USE_GCC" = false ]; then
