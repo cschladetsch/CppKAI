@@ -7,9 +7,13 @@
 #include <utility>
 #include <vector>
 
+#include "KAI/Core/BinaryStream.h"
 #include "KAI/Network/Config.h"
 
 KAI_NET_BEGIN
+
+enum class SendReliability { Unreliable, Reliable };
+enum class SendRouting    { Unicast, Broadcast };
 
 // System message identifiers reserved for the transport layer.
 enum class SystemMessage : unsigned char {
@@ -68,6 +72,19 @@ class NetPeer {
     virtual bool Send(const unsigned char* data, std::size_t size, bool reliable,
                       int channel, const NetAddress& target,
                       bool broadcast) = 0;
+
+    // Convenience overload: takes a BinaryStream and named enums instead of
+    // raw pointer/size and boolean flags.
+    bool Send(const BinaryStream& stream, SendReliability reliability,
+              int channel, const NetAddress& target, SendRouting routing) {
+        return Send(
+            reinterpret_cast<const unsigned char *>(stream.Begin()),
+            static_cast<std::size_t>(stream.Size()),
+            reliability == SendReliability::Reliable,
+            channel,
+            target,
+            routing == SendRouting::Broadcast);
+    }
     virtual NetAddress GetInternalAddress() const = 0;
     virtual int GetAveragePing(const NetAddress& address) const = 0;
     virtual void Ping(const NetAddress& address) = 0;
