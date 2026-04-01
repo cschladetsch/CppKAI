@@ -7,6 +7,7 @@ project(Test_Network)
 # if(KAI_BUILD_TEST_NETWORK)
     # GTest-based test files
     set(GTEST_SOURCES
+        NodeEndToEndTest.cpp
         TestGenerateProxy.cpp
         TauNetworkCommunicationTest.cpp
         TauPiSerializationTest.cpp

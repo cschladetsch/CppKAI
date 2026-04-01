@@ -56,8 +56,9 @@ NetAddress ToNetAddress(const ENetAddress& addr) {
 
 bool ToEnetAddress(const NetAddress& addr, ENetAddress& out) {
     out.port = addr.port;
-    if (addr.host.empty() || addr.host == "0.0.0.0" ||
-        addr.host == "127.0.0.1") {
+    // ENET_HOST_ANY is only appropriate for bind addresses (listen sockets).
+    // Specific hosts — including loopback — must be resolved properly.
+    if (addr.host.empty() || addr.host == "0.0.0.0") {
         out.host = ENET_HOST_ANY;
         return true;
     }
@@ -236,6 +237,10 @@ class EnetPeer final : public NetPeer {
 
     void SetOfflinePingResponse(const unsigned char* /*data*/,
                                 std::size_t /*size*/) override {}
+
+    void Flush() override {
+        if (host_) enet_host_flush(host_);
+    }
 
    private:
     std::unique_ptr<EnetInitGuard> initGuard_;

@@ -561,6 +561,7 @@ void Node::BroadcastEvent(const std::string &name,
     peer_->Send(reinterpret_cast<const unsigned char *>(bs.Begin()),
                 static_cast<std::size_t>(bs.Size()),
                 true, 0, NetAddress(), true);
+    peer_->Flush();
 }
 
 void Node::BroadcastEvent(const std::string &name) {
@@ -701,6 +702,7 @@ void Node::SendObject(const Object &obj) {
     peer_->Send(reinterpret_cast<const unsigned char *>(bs.Begin()),
                 static_cast<std::size_t>(bs.Size()),
                 true, 0, NetAddress(), true);
+    peer_->Flush();
 }
 
 void Node::SubscribeObjectMessage(std::function<void(const Object &)> handler) {

@@ -73,6 +73,8 @@ class NetPeer {
     virtual void Ping(const NetAddress& address) = 0;
     virtual void SetOfflinePingResponse(const unsigned char* data,
                                         std::size_t size) = 0;
+    // Flush all queued outgoing packets immediately.
+    virtual void Flush() = 0;
 };
 
 KAI_NET_END

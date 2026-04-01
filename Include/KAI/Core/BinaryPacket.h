@@ -22,7 +22,7 @@ class BinaryPacket {
     BinaryPacket() : registry(0) { first = last = current = 0; }
     BinaryPacket(Registry &R) : registry(&R) { first = last = current = 0; }
     BinaryPacket(const_iterator F, const_iterator L, Registry *R = 0)
-        : first(F), last(L), current(0), registry(R) {}
+        : first(F), last(L), current(F), registry(R) {}
 
     const_iterator Begin() const { return first; }
     const_iterator Current() const { return current; }
