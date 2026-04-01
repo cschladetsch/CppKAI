@@ -31,6 +31,10 @@ KAI is a C++ project implementing a multi-language runtime system with networkin
 - "rho demo" → run `./Scripts/run_rho_demo.sh` 
 - "p2p demo" → run `./Scripts/p2p_test.sh`
 
+## Network
+
+- Focus on getting Networking working.
+
 ### Network Commands
 - "peers" → run `./Scripts/network/run_peers.sh`
 - "automated demo" → run `./Scripts/network/automated_demo.sh`

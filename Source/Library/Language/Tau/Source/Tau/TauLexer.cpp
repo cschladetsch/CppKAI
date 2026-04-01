@@ -22,7 +22,23 @@ bool TauLexer::NextToken() {
     if (current == 0) return false;
 
     if (isalpha(current) || current == '_') {
-        Add(LexAlpha());
+        Token tok = LexAlpha();
+        // If the identifier is immediately followed by '<', combine the
+        // template parameters into a single token, e.g. "Future<int>"
+        if (Current() == '<') {
+            int start = tok.slice.Start;
+            int depth = 1;
+            Next();  // consume '<'
+            while (depth > 0 && Current() != 0) {
+                if (Current() == '<') depth++;
+                if (Current() == '>') depth--;
+                if (depth > 0) Next();
+                else break;
+            }
+            if (Current() == '>') Next();  // consume '>'
+            return Add(Enum::Ident, Slice(start, offset));
+        }
+        Add(tok);
         return true;  // parser will deal with keywords in wrong places
     }
 
