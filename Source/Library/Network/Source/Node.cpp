@@ -618,7 +618,17 @@ void Node::SendFunctionCall(NetHandle handle, const std::string &name,
     NetAddress targetAddress;
     bool found = false;
 
-    if (connectionManager_) {
+    // Check if this proxy handle has a bound remote address.
+    {
+        auto it = proxyAddresses_.find(handle.value);
+        if (it != proxyAddresses_.end()) {
+            targetAddress = it->second;
+            found = true;
+        }
+    }
+
+    // Fall back to the first available connection (single-peer case).
+    if (!found && connectionManager_) {
         auto connections = connectionManager_->GetAllConnections();
         if (!connections.empty()) {
             targetAddress =
@@ -628,7 +638,8 @@ void Node::SendFunctionCall(NetHandle handle, const std::string &name,
     }
 
     if (!found) {
-        NetworkLogger::LogMessage("No active connection for SendFunctionCall");
+        NetworkLogger::LogMessage("No active connection for SendFunctionCall to handle " +
+                                  std::to_string(handle.value));
         return;
     }
 
@@ -700,6 +711,10 @@ void Node::SubscribeObjectMessage(std::function<void(const Object &)> handler) {
 void Node::SetConnectionEventCallback(
     std::function<void(ConnectionEvent, const NetAddress &)> callback) {
     connectionEventCallback_ = std::move(callback);
+}
+
+void Node::BindProxyAddress(NetHandle handle, const NetAddress &address) {
+    proxyAddresses_[handle.value] = address;
 }
 
 KAI_NET_END

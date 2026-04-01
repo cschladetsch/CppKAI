@@ -154,6 +154,10 @@ struct Node {
     void SetConnectionEventCallback(
         std::function<void(ConnectionEvent, const NetAddress &)> callback);
 
+    // Associate a proxy handle with the remote peer address that hosts it.
+    // Must be called before invoking methods on that proxy.
+    void BindProxyAddress(NetHandle handle, const NetAddress &address);
+
     template <typename P>
     Future<P> FetchProperty(NetHandle handle, const std::string &name);
 
@@ -221,6 +225,9 @@ struct Node {
 
     std::function<void(ConnectionEvent, const NetAddress &)>
         connectionEventCallback_;
+
+    // Maps proxy NetHandle value → the remote peer's address.
+    std::unordered_map<int, NetAddress> proxyAddresses_;
 };
 
 // -----------------------------------------------------------------------------
