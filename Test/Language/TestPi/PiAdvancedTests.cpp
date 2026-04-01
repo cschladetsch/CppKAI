@@ -259,7 +259,7 @@ TEST_F(PiAdvancedTests, ComplexSwitchLike) {
 
 TEST_F(PiAdvancedTests, ComplexLoopWithSuspend) {
     // Loop with suspended function call: sum of squares 1^2 to 4^2
-    AssertResult<int>("{ dup dup * } 'square # 0 'sum # 1 'i # { i 5 < } { sum i square & + 'sum # i 1 + 'i # } while sum", 30);
+    AssertResult<int>("{ dup * } 'square # 0 'sum # 1 'i # { i 5 < } { sum i square & + 'sum # i 1 + 'i # } while sum", 30);
 }
 
 TEST_F(PiAdvancedTests, ComplexConditionalRecursion) {
@@ -280,7 +280,7 @@ TEST_F(PiAdvancedTests, ComplexTripleNested) {
 // Tests 51-60: Stack Manipulation in Recursion
 TEST_F(PiAdvancedTests, RecursionWithDup) {
     // Recursion using dup
-    AssertResult<int>("{ dup 0 == { drop 1 } { dup dup 1 - facDup & * } ife } 'facDup # 5 facDup &", 120);
+    AssertResult<int>("{ dup 0 == { drop 1 } { dup 1 - facDup & * } ife } 'facDup # 5 facDup &", 120);
 }
 
 TEST_F(PiAdvancedTests, RecursionWithSwap) {
@@ -468,7 +468,7 @@ TEST_F(PiAdvancedTests, ExtremeFibonacciLoop) {
 
 TEST_F(PiAdvancedTests, ExtremeRecursiveSum) {
     // Sum 1 to 100: (100*101)/2 = 5050
-    AssertResult<int>("{ dup 0 == { } { dup dup 1 - sumTo & + } ife } 'sumTo # 100 sumTo &", 5050);
+    AssertResult<int>("{ dup 0 == { } { dup 1 - sumTo & + } ife } 'sumTo # 100 sumTo &", 5050);
 }
 
 TEST_F(PiAdvancedTests, ExtremeChainedComposition) {
@@ -509,7 +509,7 @@ TEST_F(PiAdvancedTests, ComplexPowerOf2) {
 
 TEST_F(PiAdvancedTests, ComplexTriangular) {
     // Triangular number: T(n) = n*(n+1)/2, T(10) = 55
-    AssertResult<int>("{ dup 0 == { } { dup dup 1 - tri & + } ife } 'tri # 10 tri &", 55);
+    AssertResult<int>("{ dup 0 == { } { dup 1 - tri & + } ife } 'tri # 10 tri &", 55);
 }
 
 TEST_F(PiAdvancedTests, ComplexDoubleRecursion) {

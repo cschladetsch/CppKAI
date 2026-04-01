@@ -462,6 +462,13 @@ void Executor::Perform(Operation::Type op) {
         }
 
         case Operation::Resume:
+            // Non-local exit: unwind the entire context stack and stop.
+            // `...` is a "return to top-level" — it escapes all nested
+            // continuations, including any outer block that called the current
+            // one via `&`. The data stack is left intact so the caller can
+            // inspect the result.
+            context_->Clear();
+            continuation_ = Object();
             break_ = true;
             break;
 
