@@ -62,6 +62,12 @@ class Array : public Container<Array> {
                               B.objects.end());
         return result;
     }
+    friend Array operator+(const Array &A, const Object &B) {
+        Array result;
+        result.objects = A.objects;
+        result.objects.push_back(B);
+        return result;
+    }
 
     // void SetChildSwitch(int N, bool M)
     //{

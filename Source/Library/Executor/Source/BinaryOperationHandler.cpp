@@ -191,6 +191,11 @@ Object BinaryOperationHandler::PerformArithmetic(Object const &A,
                 Array result = arr1 + arr2;
                 return CreateNew(registry, result);
             }
+            // Array + Object = array with object appended
+            else if (A.IsType<Array>()) {
+                Array result = ConstDeref<Array>(A) + B;
+                return CreateNew(registry, result);
+            }
             // For other types, use the ClassBase's operation methods
             else if (A.GetTypeNumber() == B.GetTypeNumber() && A.GetClass() &&
                      B.GetClass()) {
@@ -278,6 +283,16 @@ Object BinaryOperationHandler::PerformArithmetic(Object const &A,
             else if (A.IsType<int>() && B.IsType<float>()) {
                 float result = static_cast<float>(ConstDeref<int>(A)) *
                                ConstDeref<float>(B);
+                return CreateNew(registry, result);
+            }
+            // Int * Bool = Int (treat bool as 0 or 1)
+            else if (A.IsType<int>() && B.IsType<bool>()) {
+                int result = ConstDeref<int>(A) * (ConstDeref<bool>(B) ? 1 : 0);
+                return CreateNew(registry, result);
+            }
+            // Bool * Int = Int (treat bool as 0 or 1)
+            else if (A.IsType<bool>() && B.IsType<int>()) {
+                int result = (ConstDeref<bool>(A) ? 1 : 0) * ConstDeref<int>(B);
                 return CreateNew(registry, result);
             }
             // For other types, use the ClassBase's operation methods

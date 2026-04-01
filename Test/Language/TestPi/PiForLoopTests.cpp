@@ -64,7 +64,7 @@ TEST_F(PiForLoopTest, RangeProduct) {
 }
 
 // DISABLED: Array append operation not available in Pi
-TEST_F(PiForLoopTest, DISABLED_CollectSquares) {
+TEST_F(PiForLoopTest, CollectSquares) {
     // Create fresh console for this test
     kai::Console console;
     kai::test::SetupConsoleTranslators(console);
@@ -85,7 +85,7 @@ TEST_F(PiForLoopTest, DISABLED_CollectSquares) {
 }
 
 // DISABLED: ife doesn't work with inline for loop execution
-TEST_F(PiForLoopTest, DISABLED_ConditionalSum) {
+TEST_F(PiForLoopTest, ConditionalSum) {
     // Create fresh console for this test
     kai::Console console;
     kai::test::SetupConsoleTranslators(console);
@@ -189,14 +189,14 @@ TEST_F(PiForLoopTest, SingleIteration) {
 }
 
 // DISABLED: Array append operation not available in Pi
-TEST_F(PiForLoopTest, DISABLED_ArrayBuilding) {
+TEST_F(PiForLoopTest, ArrayBuilding) {
     // Create fresh console for this test
     kai::Console console;
     kai::test::SetupConsoleTranslators(console);
     console.SetLanguage(kai::Language::Pi);
 
-    // Build an array using range loop
-    console.Execute("[] 1 3 { swap over swap + } for drop");
+    // Build an array using range loop: acc + i appends i to array acc
+    console.Execute("[] 1 3 { + } for");
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
 

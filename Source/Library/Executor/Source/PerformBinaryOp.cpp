@@ -91,6 +91,11 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
                     Array result = arr1 + arr2;  // Use our operator+
                     return createNew(result);
                 }
+                // Array + Object = array with object appended
+                else if (A.IsType<Array>()) {
+                    Array result = ConstDeref<Array>(A) + B;
+                    return createNew(result);
+                }
                 // For other types, use the ClassBase's operation methods
                 else if (A.GetTypeNumber() == B.GetTypeNumber() &&
                          A.GetClass() && B.GetClass()) {
@@ -179,6 +184,16 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
                 else if (A.IsType<int>() && B.IsType<float>()) {
                     float result = static_cast<float>(ConstDeref<int>(A)) *
                                    ConstDeref<float>(B);
+                    return createNew(result);
+                }
+                // Int * Bool = Int (treat bool as 0 or 1)
+                else if (A.IsType<int>() && B.IsType<bool>()) {
+                    int result = ConstDeref<int>(A) * (ConstDeref<bool>(B) ? 1 : 0);
+                    return createNew(result);
+                }
+                // Bool * Int = Int (treat bool as 0 or 1)
+                else if (A.IsType<bool>() && B.IsType<int>()) {
+                    int result = (ConstDeref<bool>(A) ? 1 : 0) * ConstDeref<int>(B);
                     return createNew(result);
                 }
                 // For other types, use the ClassBase's operation methods
