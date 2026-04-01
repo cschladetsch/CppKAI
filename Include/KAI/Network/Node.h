@@ -139,6 +139,21 @@ struct Node {
                         BinaryStream &eventData);
     void BroadcastEvent(const std::string &name);
 
+    // Event subscription: handler receives a BinaryPacket positioned after the
+    // event name so callers can deserialize the payload directly.
+    void SubscribeEvent(const std::string &name,
+                        std::function<void(BinaryPacket &)> handler);
+
+    // Send a serialized KAI object to all connected peers.
+    void SendObject(const Object &obj);
+
+    // Subscribe to incoming object messages.
+    void SubscribeObjectMessage(std::function<void(const Object &)> handler);
+
+    // Register a callback for connection lifecycle events.
+    void SetConnectionEventCallback(
+        std::function<void(ConnectionEvent, const NetAddress &)> callback);
+
     template <typename P>
     Future<P> FetchProperty(NetHandle handle, const std::string &name);
 
@@ -195,6 +210,17 @@ struct Node {
 
     std::unordered_map<int, PendingResponse> pendingResponses_;
     std::mutex pendingMutex_;
+
+    std::unordered_map<std::string,
+                       std::vector<std::function<void(BinaryPacket &)>>>
+        eventSubscriptions_;
+    std::mutex eventMutex_;
+
+    std::vector<std::function<void(const Object &)>> objectMessageHandlers_;
+    std::mutex objectMessageMutex_;
+
+    std::function<void(ConnectionEvent, const NetAddress &)>
+        connectionEventCallback_;
 };
 
 // -----------------------------------------------------------------------------
@@ -436,7 +462,7 @@ Future<P> Node::FetchProperty(NetHandle handle, const std::string &name) {
         std::lock_guard<std::mutex> lock(agentMutex_);
         auto entry = agentEntries_.find(handle.value);
         if (entry == agentEntries_.end()) {
-            future.SetResponse(ResponseType::UnkownAgent);
+            future.SetResponse(ResponseType::UnknownAgent);
             future.SetComplete(true);
             future.SetErrorMessage("Unknown agent");
             return future;
@@ -476,7 +502,7 @@ Future<void> Node::StoreProperty(NetHandle handle, const std::string &name,
         std::lock_guard<std::mutex> lock(agentMutex_);
         auto entry = agentEntries_.find(handle.value);
         if (entry == agentEntries_.end()) {
-            future.SetResponse(ResponseType::UnkownAgent);
+            future.SetResponse(ResponseType::UnknownAgent);
             future.SetComplete(true);
             future.SetErrorMessage("Unknown agent");
             return future;

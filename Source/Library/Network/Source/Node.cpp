@@ -372,9 +372,37 @@ void Node::ProcessPacket(const NetPacket &packet) {
 }
 
 void Node::ProcessObjectMessage(const NetPacket &packet) {
-    // TODO: Implement object message processing
-    NetworkLogger::LogMessage(
-        "Processing object message (not yet implemented)");
+    if (!registry_) {
+        NetworkLogger::LogMessage("ProcessObjectMessage: null registry");
+        return;
+    }
+
+    BinaryPacket stream(reinterpret_cast<const char *>(packet.data.data()),
+                        reinterpret_cast<const char *>(packet.data.data() +
+                                                      packet.data.size()),
+                        registry_);
+
+    unsigned char msgId = 0;
+    if (!stream.Read(msgId)) {
+        NetworkLogger::LogMessage("ProcessObjectMessage: failed to read header");
+        return;
+    }
+
+    Object obj = NetworkSerializer::DeserializeObject(stream, *registry_);
+    if (!obj.Exists()) {
+        NetworkLogger::LogMessage("ProcessObjectMessage: failed to deserialize object");
+        return;
+    }
+
+    std::vector<std::function<void(const Object &)>> handlers;
+    {
+        std::lock_guard<std::mutex> lock(objectMessageMutex_);
+        handlers = objectMessageHandlers_;
+    }
+
+    for (auto &handler : handlers) {
+        handler(obj);
+    }
 }
 
 void Node::ProcessFunctionCall(const NetPacket &packet) {
@@ -461,9 +489,35 @@ void Node::ProcessFunctionCall(const NetPacket &packet) {
 }
 
 void Node::ProcessEventNotification(const NetPacket &packet) {
-    // TODO: Implement event notification processing
-    NetworkLogger::LogMessage(
-        "Processing event notification (not yet implemented)");
+    BinaryPacket stream(reinterpret_cast<const char *>(packet.data.data()),
+                        reinterpret_cast<const char *>(packet.data.data() +
+                                                      packet.data.size()),
+                        registry_);
+
+    unsigned char msgId = 0;
+    std::string eventName;
+    if (!stream.Read(msgId) ||
+        !NetworkSerializer::ReadString(stream, eventName)) {
+        NetworkLogger::LogMessage("ProcessEventNotification: failed to read header");
+        return;
+    }
+
+    std::vector<std::function<void(BinaryPacket &)>> handlers;
+    {
+        std::lock_guard<std::mutex> lock(eventMutex_);
+        auto it = eventSubscriptions_.find(eventName);
+        if (it != eventSubscriptions_.end()) {
+            handlers = it->second;
+        }
+    }
+
+    NetworkLogger::LogMessage("ProcessEventNotification: dispatching event '" +
+                              eventName + "' to " +
+                              std::to_string(handlers.size()) + " subscriber(s)");
+
+    for (auto &handler : handlers) {
+        handler(stream);
+    }
 }
 
 void Node::SendResponse(const NetAddress &peer, BinaryStream &response) {
@@ -592,35 +646,60 @@ void Node::SendFunctionCall(NetHandle handle, const std::string &name,
 }
 
 void Node::OnConnectionEvent(int connectionId, ConnectionEvent event) {
-    // Log the connection event
     std::string eventType;
     switch (event) {
-        case ConnectionEvent::Connected:
-            eventType = "Connected";
-            break;
-        case ConnectionEvent::Disconnected:
-            eventType = "Disconnected";
-            break;
-        case ConnectionEvent::ConnectionFailed:
-            eventType = "ConnectionFailed";
-            break;
-        case ConnectionEvent::ConnectionLost:
-            eventType = "ConnectionLost";
-            break;
-        case ConnectionEvent::Timeout:
-            eventType = "Timeout";
-            break;
-        default:
-            eventType = "Unknown";
-            break;
+        case ConnectionEvent::Connected:       eventType = "Connected";       break;
+        case ConnectionEvent::Disconnected:    eventType = "Disconnected";    break;
+        case ConnectionEvent::ConnectionFailed:eventType = "ConnectionFailed";break;
+        case ConnectionEvent::ConnectionLost:  eventType = "ConnectionLost";  break;
+        case ConnectionEvent::Timeout:         eventType = "Timeout";         break;
+        default:                               eventType = "Unknown";         break;
     }
 
-    std::string logMessage = "Connection event: " + eventType +
-                             " for connection ID " +
-                             std::to_string(connectionId);
-    NetworkLogger::LogConnection(logMessage);
+    NetworkLogger::LogConnection("Connection event: " + eventType +
+                                 " for connection ID " +
+                                 std::to_string(connectionId));
 
-    // TODO: Implement connection event handling
+    if (connectionEventCallback_ && connectionManager_) {
+        NetAddress address;
+        auto connections = connectionManager_->GetAllConnections();
+        for (auto id : connections) {
+            if (id == connectionId) {
+                address = connectionManager_->GetSystemAddress(id);
+                break;
+            }
+        }
+        connectionEventCallback_(event, address);
+    }
+}
+
+void Node::SubscribeEvent(const std::string &name,
+                          std::function<void(BinaryPacket &)> handler) {
+    std::lock_guard<std::mutex> lock(eventMutex_);
+    eventSubscriptions_[name].push_back(std::move(handler));
+}
+
+void Node::SendObject(const Object &obj) {
+    if (!peer_ || !isRunning_) return;
+
+    BinaryStream bs;
+    bs.Write(static_cast<unsigned char>(
+        NetworkSerializer::ID_KAI_OBJECT_MESSAGE));
+    NetworkSerializer::SerializeObject(bs, obj);
+
+    peer_->Send(reinterpret_cast<const unsigned char *>(bs.Begin()),
+                static_cast<std::size_t>(bs.Size()),
+                true, 0, NetAddress(), true);
+}
+
+void Node::SubscribeObjectMessage(std::function<void(const Object &)> handler) {
+    std::lock_guard<std::mutex> lock(objectMessageMutex_);
+    objectMessageHandlers_.push_back(std::move(handler));
+}
+
+void Node::SetConnectionEventCallback(
+    std::function<void(ConnectionEvent, const NetAddress &)> callback) {
+    connectionEventCallback_ = std::move(callback);
 }
 
 KAI_NET_END

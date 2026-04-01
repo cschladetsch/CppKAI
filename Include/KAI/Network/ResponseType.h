@@ -10,7 +10,7 @@ enum class ResponseType {
     TimedOut,
     Delivered,
     BadRequest,
-    UnkownAgent,
+    UnknownAgent,
     Returned,
 };
 
