@@ -45,7 +45,7 @@ protected:
         agentFile = testDir + "/TestService.agent.h";
         
         // Path to NetworkGenerate executable
-        networkGenerateExe = "/home/christian/local/repos/KAI/build/NetworkGenerate";
+        networkGenerateExe = KAI_BIN_DIR "/NetworkGenerate";
         
         KAI_LOG_INFO("TauNetworkCommunicationTest setup complete - test directory: " + testDir);
     }

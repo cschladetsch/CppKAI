@@ -44,6 +44,11 @@ project(Test_Network)
         ${GTEST_INCLUDE_DIRS}
     )
 
+    # Expose the binary output directory so tests can locate built tools.
+    target_compile_definitions(Test_Network PRIVATE
+        KAI_BIN_DIR="${BIN_HOME}"
+    )
+
     # Set compile flags
     set_target_properties(Test_Network PROPERTIES COMPILE_FLAGS "-g -Wno-deprecated")
 

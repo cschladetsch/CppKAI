@@ -19,11 +19,9 @@ add_subdirectory(Window)
 # Add Performance benchmark tests
 add_subdirectory(Performance)
 
-if (KAI_BUILD_TEST_NETWORK)
+if(KAI_NETWORKING)
     add_subdirectory(Network)
     add_subdirectory(Network/ProxyTest)
-else()
-    message(WARNING "Not building Network unit tests")
 endif()
 
 

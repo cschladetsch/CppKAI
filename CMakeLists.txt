@@ -100,9 +100,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 option(KAI_BUILD_TEST_ALL "Build all tests" ON)
 option(KAI_BUILD_CORE_TEST "Build unit tests" ON)
 option(KAI_BUILD_TEST_LANG "Build language tests" ON)
-option(KAI_BUILD_TEST_NETWORK "Build networking tests" OFF)
-option(KAI_BUILD_ENET "Build ENet networking" ON)
-option(KAI_BUILD_NETWORK_APPS "Build network applications" OFF)
+option(KAI_NETWORKING "Build networking library, Tau IDL, NetworkGenerate tool, and network tests" OFF)
 
 # Security option: Enable shell syntax (backtick operations)
 # Default to OFF for security reasons
@@ -241,11 +239,14 @@ endif()
 set(EXTERNAL ${KAI_HOME}/Ext)
 
 # Set up external dependencies like Boost, ENet, and GoogleTest
-if (KAI_BUILD_ENET)
+if(KAI_NETWORKING)
     set(ENET_ROOT ${EXTERNAL}/ENet)
     include_directories(${ENET_ROOT}/include)
     add_subdirectory(${ENET_ROOT})
     add_definitions(-DKAI_USE_ENET)
+    message(STATUS "Networking enabled: ENet, Network lib, Tau, NetworkGenerate, and network tests will be built")
+else()
+    message(STATUS "Networking disabled (enable with -DKAI_NETWORKING=ON)")
 endif()
 include_directories(${EXTERNAL}/rang/include)
 
@@ -315,7 +316,7 @@ if(TARGET Executor)
     if(TARGET Network)
         target_link_libraries(Executor PUBLIC Network)
     endif()
-    if(KAI_BUILD_ENET AND TARGET enet)
+    if(KAI_NETWORKING AND TARGET enet)
         target_link_libraries(Executor PUBLIC enet)
     endif()
 endif()
@@ -326,7 +327,7 @@ endif()
 
 if(TARGET Network)
     target_link_libraries(Network PUBLIC Core)
-    if(KAI_BUILD_ENET AND TARGET enet)
+    if(KAI_NETWORKING AND TARGET enet)
         target_link_libraries(Network PUBLIC enet)
     endif()
 endif()
@@ -344,7 +345,7 @@ if(TARGET TauLang)
 endif()
 
 # Find or download Google Test if needed for tests
-if(KAI_BUILD_TEST_ALL OR KAI_BUILD_CORE_TEST OR KAI_BUILD_TEST_LANG)
+if(KAI_BUILD_TEST_ALL OR KAI_BUILD_CORE_TEST OR KAI_BUILD_TEST_LANG OR KAI_NETWORKING)
   # First try to find the system's gtest
   find_package(GTest QUIET)
   

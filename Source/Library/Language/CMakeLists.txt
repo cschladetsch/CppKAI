@@ -11,11 +11,14 @@ set(COMMON_SOURCES
 # Create a separate library for Common language components
 add_library(CommonLang ${COMMON_SOURCES})
 
-# Create the main language libraries
-set(langs Pi Rho Tau)
-foreach(l ${langs})
+# Pi and Rho are always built. Tau is the IDL compiler and requires networking.
+set(core_langs Pi Rho)
+foreach(l ${core_langs})
     def_lang_library(${l})
-    # Link each language with the common library and Executor
-    # Executor is needed because the translators/lexers inherit from Process and LexerBase
     target_link_libraries(${l}Lang CommonLang Executor)
 endforeach()
+
+if(KAI_NETWORKING)
+    def_lang_library(Tau)
+    target_link_libraries(TauLang CommonLang Executor)
+endif()

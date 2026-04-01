@@ -6,7 +6,7 @@ foreach(lib ${libs})
     def_library(${lib})
 endforeach()
 
-if (KAI_BUILD_ENET)
+if(KAI_NETWORKING)
     def_library(Network)
     add_subdirectory(${LIBRARY_HOME}/Network)
 endif()

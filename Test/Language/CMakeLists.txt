@@ -1,14 +1,17 @@
 cmake_minimum_required(VERSION 3.10)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${BIN_HOME}/Test")
-set(core_libs Executor Core PiLang RhoLang TauLang)
+if(KAI_NETWORKING)
+    set(core_libs Executor Core PiLang RhoLang TauLang)
+    set(langs Tau Rho Pi)
+else()
+    set(core_libs Executor Core PiLang RhoLang)
+    set(langs Rho Pi)
+endif()
 
 macro(build_lang_test lang)
 endmacro()
 message(STATUS "GOOGLETESTDIR - ${CMAKE_BINARY_DIR}/googletest")
-#include(${CMAKE_BINARY_DIR}/_deps/googletest-src/googletest/include)
-
-set(langs Tau Rho Pi)
 foreach (lang ${langs})
     project(Test${lang})
     set(testName Test${lang})
