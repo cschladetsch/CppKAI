@@ -36,7 +36,6 @@ Comprehensive test runner that executes all test suites:
 
 ### Network Test Scripts
 
-- **build_and_test_network.sh** - Build and test network functionality
 - **run_connection_tests.sh** - Network connection validation
 - **run_tau_connection_tests.sh** - Tau network interface tests
 - **p2p_test.sh** - Peer-to-peer networking tests
@@ -90,7 +89,6 @@ Located in project root:
 ./Scripts/run_rho_demo.sh
 
 # Test networking changes
-./Scripts/build_and_test_network.sh
 ./Scripts/p2p_test.sh
 ```
 

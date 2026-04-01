@@ -22,7 +22,7 @@ KAI is a C++ project implementing a multi-language runtime system with networkin
 - "test" → run `./Scripts/run_all_tests.sh`
 - "rho tests" → run `./Scripts/run_rho_tests.sh`
 - "tau tests" → run `./Scripts/test_tau.sh`
-- "network tests" → run `./Scripts/build_and_test_network.sh`
+- "network tests" → run `./Bin/Test_Network`
 - "connection tests" → run `./Scripts/run_connection_tests.sh`
 - "console tests" → run `./Test/Console/RunConsoleTests.sh`
 

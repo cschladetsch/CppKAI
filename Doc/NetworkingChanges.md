@@ -44,7 +44,6 @@ Added several new test scripts and test cases:
 
 - **p2p_test.sh**: Test script that demonstrates the peer-to-peer calculation functionality
 - **test_tau_interfaces.sh**: Script to verify the Tau interface definitions
-- **build_and_test_network.sh**: Unified script to build and test all network components
 
 ## 5. New Documentation
 
