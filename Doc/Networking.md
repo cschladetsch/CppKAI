@@ -30,6 +30,33 @@ Rather, a network System is a collection of distributed Domains, each such uniqu
 
 In other words, a Registry can exist locally within a single Console application on a single machine. A collection of Registries is a Domain, and a collection of Domains is the overall System.
 
+```mermaid
+graph TB
+    subgraph System
+        subgraph "Domain A"
+            R1[Registry A]
+            O1[Object]
+            O2[Object]
+            R1 --> O1
+            R1 --> O2
+        end
+        subgraph "Domain B"
+            R2[Registry B]
+            O3[Object]
+            O4[Object]
+            R2 --> O3
+            R2 --> O4
+        end
+        subgraph "Domain C"
+            R3[Registry C]
+            O5[Object]
+            R3 --> O5
+        end
+    end
+    DA[Domain A] <-->|ENet UDP| DB[Domain B]
+    DB <-->|ENet UDP| DC[Domain C]
+```
+
 ## Architecture Overview
 
 KAI's networking architecture is designed around these key principles:
@@ -38,6 +65,31 @@ KAI's networking architecture is designed around these key principles:
 2. **Distributed Computation**: Work can be shared across multiple nodes for parallel processing.
 3. **Object Synchronization**: Objects can be synchronized across nodes with automatic state propagation.
 4. **Code Mobility**: Functions and code can be transmitted between nodes and executed remotely.
+
+```mermaid
+graph LR
+    subgraph "Process A"
+        NA[Node A]
+        DA[Domain A]
+        AG["Agent&lt;T&gt;<br/>exposes methods/properties"]
+        DA --> NA
+        AG --> NA
+    end
+
+    subgraph "Process B"
+        NB[Node B]
+        DB[Domain B]
+        PR["Proxy&lt;T&gt;<br/>forwards calls"]
+        FT["Future&lt;R&gt;<br/>async result"]
+        DB --> NB
+        PR --> NB
+        PR --> FT
+    end
+
+    NA <-->|"ENet UDP<br/>reliable / unreliable"| NB
+    PR -->|RPC call| AG
+    AG -->|response| FT
+```
 
 ## Distributed Computation with AcrossAllNodes
 
@@ -73,6 +125,22 @@ result = acrossAllNodes(node, data, process)
 
 // The result contains the processed values, computed in parallel
 // across all available network nodes
+```
+
+```mermaid
+sequenceDiagram
+    participant C as Caller (Node A)
+    participant A as Node A
+    participant B as Node B
+    participant D as Node C
+
+    C->>A: acrossAllNodes(data[0..3])
+    A->>B: slice data[0..1] + process fn
+    A->>D: slice data[2..3] + process fn
+    A->>A: execute locally (no spare nodes)
+    B-->>A: partial result [0..1]
+    D-->>A: partial result [2..3]
+    A-->>C: combined result
 ```
 
 For more details on the AcrossAllNodes operation, see the [Network Iteration documentation](NetworkIteration.md).
@@ -322,6 +390,26 @@ This script:
    - You should see the result `3` returned from the calculation
 
 ## Network Components
+
+```mermaid
+graph TB
+    TAU["Tau IDL<br/>.tau file"] -->|NetworkGenerate| PH["proxy.h"]
+    TAU -->|NetworkGenerate| AH["agent.h"]
+
+    subgraph "Server Process"
+        AH --> AGT["Agent&lt;T&gt;<br/>BindMethod / BindMemberProperty"]
+        AGT --> SRV["Servant (C++ object)"]
+        AGT --> NA[Node A]
+    end
+
+    subgraph "Client Process"
+        PH --> PRX["Proxy&lt;T&gt;<br/>Call / Get / Set"]
+        PRX --> FUT["Future&lt;T&gt;"]
+        PRX --> NB[Node B]
+    end
+
+    NA <-->|ENet UDP| NB
+```
 
 KAI provides several components for implementing and testing network connections:
 
