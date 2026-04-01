@@ -488,7 +488,7 @@ void Node::ProcessFunctionCall(const NetPacket &packet) {
         NetworkSerializer::SerializeObject(responseStream, result);
 
         peer_->Send(responseStream, SendReliability::Reliable,
-                    0, packet.address, SendRouting::Unicast);
+                    BufferOffset(0), packet.address, SendRouting::Unicast);
         peer_->Flush();
     }
 }
@@ -542,7 +542,7 @@ void Node::SendResponse(const NetAddress &peer, BinaryStream &response) {
         bs.Write(size, response.Begin());
     }
 
-    peer_->Send(bs, SendReliability::Reliable, 0, peer, SendRouting::Unicast);
+    peer_->Send(bs, SendReliability::Reliable, BufferOffset(0), peer, SendRouting::Unicast);
 }
 
 void Node::BroadcastEvent(const std::string &name,
@@ -559,7 +559,7 @@ void Node::BroadcastEvent(const std::string &name,
         bs.Write(eventData.Size(), eventData.Begin());
     }
 
-    peer_->Send(bs, SendReliability::Reliable, 0, NetAddress(), SendRouting::Broadcast);
+    peer_->Send(bs, SendReliability::Reliable, BufferOffset(0), NetAddress(), SendRouting::Broadcast);
     peer_->Flush();
 }
 
@@ -651,7 +651,7 @@ void Node::SendFunctionCall(NetHandle handle, const std::string &name,
     NetworkSerializer::WriteString(bs, name);
     NetworkSerializer::SerializeObject(bs, args);
 
-    peer_->Send(bs, SendReliability::Reliable, 0, targetAddress, SendRouting::Unicast);
+    peer_->Send(bs, SendReliability::Reliable, BufferOffset(0), targetAddress, SendRouting::Unicast);
     peer_->Flush();
 }
 
@@ -697,7 +697,7 @@ void Node::SendObject(const Object &obj) {
         NetworkSerializer::ID_KAI_OBJECT_MESSAGE));
     NetworkSerializer::SerializeObject(bs, obj);
 
-    peer_->Send(bs, SendReliability::Reliable, 0, NetAddress(), SendRouting::Broadcast);
+    peer_->Send(bs, SendReliability::Reliable, BufferOffset(0), NetAddress(), SendRouting::Broadcast);
     peer_->Flush();
 }
 
@@ -728,7 +728,7 @@ void Node::SendPropertyGet(NetHandle handle, int futureId,
 
     NetAddress target = RouteAddress(handle);
     if (target.IsValid()) {
-        peer_->Send(bs, SendReliability::Reliable, 0, target, SendRouting::Unicast);
+        peer_->Send(bs, SendReliability::Reliable, BufferOffset(0), target, SendRouting::Unicast);
         peer_->Flush();
     }
 }
@@ -747,7 +747,7 @@ void Node::SendPropertySet(NetHandle handle, int futureId,
 
     NetAddress target = RouteAddress(handle);
     if (target.IsValid()) {
-        peer_->Send(bs, SendReliability::Reliable, 0, target, SendRouting::Unicast);
+        peer_->Send(bs, SendReliability::Reliable, BufferOffset(0), target, SendRouting::Unicast);
         peer_->Flush();
     }
 }
@@ -821,7 +821,7 @@ void Node::ProcessPropertyGet(const NetPacket &packet) {
     NetworkSerializer::SerializeObject(responseStream, result);
 
     peer_->Send(responseStream, SendReliability::Reliable,
-                0, packet.address, SendRouting::Unicast);
+                BufferOffset(0), packet.address, SendRouting::Unicast);
     peer_->Flush();
 }
 
@@ -882,7 +882,7 @@ void Node::ProcessPropertySet(const NetPacket &packet) {
     NetworkSerializer::SerializeObject(responseStream, empty);
 
     peer_->Send(responseStream, SendReliability::Reliable,
-                0, packet.address, SendRouting::Unicast);
+                BufferOffset(0), packet.address, SendRouting::Unicast);
     peer_->Flush();
 }
 

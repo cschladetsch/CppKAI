@@ -15,6 +15,11 @@ KAI_NET_BEGIN
 enum class SendReliability { Unreliable, Reliable };
 enum class SendRouting    { Unicast, Broadcast };
 
+struct BufferOffset {
+    explicit BufferOffset(std::size_t value) : value(value) {}
+    std::size_t value;
+};
+
 // System message identifiers reserved for the transport layer.
 enum class SystemMessage : unsigned char {
     NewIncomingConnection = 1,
@@ -76,12 +81,12 @@ class NetPeer {
     // Convenience overload: takes a BinaryStream and named enums instead of
     // raw pointer/size and boolean flags.
     bool Send(const BinaryStream& stream, SendReliability reliability,
-              int channel, const NetAddress& target, SendRouting routing) {
+              BufferOffset channel, const NetAddress& target, SendRouting routing) {
         return Send(
             reinterpret_cast<const unsigned char *>(stream.Begin()),
             static_cast<std::size_t>(stream.Size()),
             reliability == SendReliability::Reliable,
-            channel,
+            static_cast<int>(channel.value),
             target,
             routing == SendRouting::Broadcast);
     }
