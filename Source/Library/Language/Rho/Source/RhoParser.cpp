@@ -974,21 +974,44 @@ bool RhoParser::WhileLoop(AstNodePtr block) {
     auto condition = Pop();
     KAI_TRACE() << "RhoParser::WhileLoop - Parsed condition expression";
 
-    // Expect newline after condition
+    // Expect newline, semicolon, or brace after while condition
     while (Try(TokenType::Whitespace) || Try(TokenType::Tab)) {
         Consume();
     }
-    if (!Try(TokenType::NewLine)) {
-        return CreateError("Expected newline after while condition");
+    bool whileSingleLine = false;
+    bool whileBraceBlock = false;
+    if (Try(TokenType::Semi)) {
+        whileSingleLine = true;
+        Consume();
+    } else if (Try(TokenType::OpenBrace)) {
+        whileBraceBlock = true;
+        Consume();  // consume '{'
+    } else if (Try(TokenType::NewLine)) {
+        Consume();
+    } else {
+        return CreateError("Expected newline, ';', or '{' after while condition");
     }
-    Consume();
 
     auto bodyClause = NewNode(NodeType::Block);
-    KAI_TRACE() << "RhoParser::WhileLoop - Created body block node";
+    KAI_TRACE() << "RhoParser::WhileLoop - Parsing body block (single-line: "
+                << whileSingleLine << ", brace: " << whileBraceBlock << ")";
 
-    // Parse the body block
-    KAI_TRACE() << "RhoParser::WhileLoop - Parsing body block";
-    if (!Block(bodyClause)) {
+    if (whileSingleLine) {
+        if (!Statement(bodyClause)) {
+            return CreateError("Statement expected for while loop body");
+        }
+    } else if (whileBraceBlock) {
+        if (!Block(bodyClause)) {
+            return CreateError("Block Expected inside while loop braces");
+        }
+        while (Try(TokenType::NewLine) || Try(TokenType::Whitespace) || Try(TokenType::Tab)) {
+            Consume();
+        }
+        if (!Try(TokenType::CloseBrace)) {
+            return CreateError("Expected '}' to close while loop body");
+        }
+        Consume();
+    } else if (!Block(bodyClause)) {
         return CreateError("Block Expected for While loop body");
     }
     KAI_TRACE() << "RhoParser::WhileLoop - Parsed body block";
@@ -1266,19 +1289,48 @@ bool RhoParser::ForLoop(AstNodePtr block) {
         Consume();
     }
 
-    // Expect newline after for loop header
-    if (!Try(TokenType::NewLine)) {
-        return CreateError("Expected newline after for loop declaration");
+    // Skip optional whitespace between header and body delimiter.
+    while (Try(TokenType::Whitespace) || Try(TokenType::Tab)) {
+        Consume();
     }
-    Consume();
 
-    // Parse the body using indentation
+    // Parse the body: three forms are accepted.
+    //   '{' ... '}'  — brace-delimited inline block (e.g. C-style)
+    //   '\n' BLOCK   — indented multi-line block (Rho default)
+    //   ';'  STMT    — single-statement on the same line
     auto bodyClause = NewNode(NodeType::Block);
     KAI_TRACE() << "RhoParser::ForLoop - Parsing body block";
 
-    // Use the Block method for indented code blocks
-    if (!Block(bodyClause)) {
-        return CreateError("Block Expected for for loop body");
+    if (Try(TokenType::OpenBrace)) {
+        // Brace block: consume '{', then statements until '}'
+        Consume();
+        while (!Try(TokenType::CloseBrace) && !Try(TokenType::None)) {
+            while (Try(TokenType::Whitespace) || Try(TokenType::Tab) ||
+                   Try(TokenType::NewLine)) {
+                Consume();
+            }
+            if (Try(TokenType::CloseBrace)) break;
+            if (!Statement(bodyClause)) {
+                return CreateError("Expected statement in for loop body");
+            }
+        }
+        if (!Try(TokenType::CloseBrace)) {
+            return CreateError("Expected '}' to close for loop body");
+        }
+        Consume();
+    } else if (Try(TokenType::NewLine)) {
+        Consume();
+        if (!Block(bodyClause)) {
+            return CreateError("Block Expected for for loop body");
+        }
+    } else if (Try(TokenType::Semi)) {
+        // Single-statement form: "for init; cond; incr; stmt"
+        Consume();
+        if (!Statement(bodyClause)) {
+            return CreateError("Statement expected for for loop body");
+        }
+    } else {
+        return CreateError("Expected '{', newline, or ';' after for loop header");
     }
 
     KAI_TRACE() << "RhoParser::ForLoop - Parsed body block";
@@ -1484,27 +1536,40 @@ bool RhoParser::FunctionDefinition(AstNodePtr block) {
     //    fun name(args) { expr }
 
     if (Try(TokenType::OpenBrace)) {
-        // Inline expression style: fun name(args) { expr }
-        KAI_TRACE() << "RhoParser::FunctionDefinition - Parsing inline function body with braces";
+        KAI_TRACE() << "RhoParser::FunctionDefinition - Parsing brace-delimited function body";
         Consume();  // consume '{'
 
-        // Parse the expression inside braces
-        if (!Expression()) {
-            return CreateError("Expected expression inside function body braces");
+        // Check if this is a multi-line block (newline after '{') or inline expression
+        if (Try(TokenType::NewLine)) {
+            // Multi-line brace block: parse as indented block, then consume '}'
+            if (!Block(functionBlock)) {
+                return CreateError("Failed to parse multi-line function body");
+            }
+            // Skip any trailing whitespace/newlines before '}'
+            while (Try(TokenType::NewLine) || Try(TokenType::Whitespace) || Try(TokenType::Tab)) {
+                Consume();
+            }
+            if (!Try(TokenType::CloseBrace)) {
+                return CreateError("Expected '}' to close multi-line function body");
+            }
+            Consume();  // consume '}'
+        } else {
+            // Inline brace block: parse statements until '}'
+            // Handles both simple expressions and complex statements (if/else, etc.)
+            while (!Try(TokenType::CloseBrace) && !Try(TokenType::None)) {
+                while (Try(TokenType::Whitespace) || Try(TokenType::Tab) || Try(TokenType::NewLine)) {
+                    Consume();
+                }
+                if (Try(TokenType::CloseBrace)) break;
+                if (!Statement(functionBlock)) {
+                    return CreateError("Expected statement in inline function body");
+                }
+            }
+            if (!Try(TokenType::CloseBrace)) {
+                return CreateError("Expected '}' after inline function body");
+            }
+            Consume();  // consume '}'
         }
-
-        // The expression result should be returned implicitly
-        // For inline functions { expr }, treat the expression as the return value
-        auto expr = Pop();
-
-        // Just add the expression to the block - in Rho, the last expression
-        // in a function body is implicitly the return value
-        functionBlock->Add(expr);
-
-        if (!Try(TokenType::CloseBrace)) {
-            return CreateError("Expected '}' after function body expression");
-        }
-        Consume();  // consume '}'
     } else {
         // Python-like indentation-style function bodies
         if (!Try(TokenType::NewLine)) {

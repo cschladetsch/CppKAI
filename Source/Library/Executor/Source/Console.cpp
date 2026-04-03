@@ -1,5 +1,8 @@
 #include "KAI/Console/Console.h"
 
+#include "KAI/Language/Pi/PiTranslator.h"
+#include "KAI/Language/Rho/RhoTranslator.h"
+
 #include <algorithm>
 #include <cctype>
 #include <chrono>
@@ -29,6 +32,50 @@
 using namespace std;
 
 KAI_BEGIN
+
+// Translator that dispatches to Pi or Rho based on the compiler's active language.
+class MultiLangTranslator : public TranslatorCommon {
+    shared_ptr<PiTranslator> pi_;
+    shared_ptr<RhoTranslator> rho_;
+    Pointer<Compiler> compiler_;
+
+   public:
+    MultiLangTranslator(Registry &reg,
+                        shared_ptr<PiTranslator> pi,
+                        shared_ptr<RhoTranslator> rho,
+                        Pointer<Compiler> comp)
+        : TranslatorCommon(reg),
+          pi_(move(pi)),
+          rho_(move(rho)),
+          compiler_(comp) {}
+
+    Pointer<Continuation> Translate(const char *text,
+                                    Structure st) override {
+        if (!compiler_.Exists()) return Object();
+        switch (static_cast<Language>(compiler_->GetLanguage())) {
+            case Language::Pi: {
+                pi_->trace = compiler_->GetTraceLevel();
+                auto result = pi_->Translate(text, st);
+                if (pi_->Failed) {
+                    KAI_TRACE_ERROR() << pi_->Error;
+                    return Object();
+                }
+                return result;
+            }
+            case Language::Rho: {
+                rho_->trace = compiler_->GetTraceLevel();
+                auto result = rho_->Translate(text, st);
+                if (rho_->Failed) {
+                    KAI_TRACE_ERROR() << rho_->Error;
+                    return Object();
+                }
+                return result;
+            }
+            default:
+                return Object();
+        }
+    }
+};
 
 Console::Console() {
     alloc = make_shared<Memory::StandardAllocator>();
@@ -100,9 +147,16 @@ void Console::ExposeTypesToTree(Object types) {
 void Console::SetLanguage(Language lang) {
     language = lang;
 
-    // Update the compiler's language
     if (compiler.Exists()) {
         compiler->SetLanguage(static_cast<int>(lang));
+    }
+
+    if (!translator) {
+        SetTranslator(std::make_shared<MultiLangTranslator>(
+            *reg_,
+            std::make_shared<PiTranslator>(*reg_),
+            std::make_shared<RhoTranslator>(*reg_),
+            compiler));
     }
 }
 

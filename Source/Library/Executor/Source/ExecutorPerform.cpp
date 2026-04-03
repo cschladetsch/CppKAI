@@ -1119,12 +1119,15 @@ void Executor::Perform(Operation::Type op) {
             } catch (const Exception::Base& e) {
                 KAI_TRACE_ERROR() << "IfThenSuspendElseSuspend: KAI exception: "
                                   << e.ToString();
+                throw e;
             } catch (const std::exception& e) {
                 KAI_TRACE_ERROR()
                     << "IfThenSuspendElseSuspend: std::exception: " << e.what();
+                throw e;
             } catch (...) {
                 KAI_TRACE_ERROR()
                     << "IfThenSuspendElseSuspend: Unknown exception";
+                throw;
             }
 
             break;
@@ -1437,10 +1440,13 @@ void Executor::Perform(Operation::Type op) {
             } catch (const Exception::Base& e) {
                 KAI_TRACE_ERROR()
                     << "WhileLoop: KAI exception: " << e.ToString();
+                throw e;
             } catch (const std::exception& e) {
                 KAI_TRACE_ERROR() << "WhileLoop: std::exception: " << e.what();
+                throw e;
             } catch (...) {
                 KAI_TRACE_ERROR() << "WhileLoop: Unknown exception";
+                throw;
             }
 
             break;
@@ -1621,8 +1627,10 @@ void Executor::Perform(Operation::Type op) {
                 }
             } catch (const Exception::Base& e) {
                 KAI_TRACE_ERROR() << "ForLoop: " << e.ToString();
+                throw e;
             } catch (const std::exception& e) {
                 KAI_TRACE_ERROR() << "ForLoop: " << e.what();
+                throw e;
             }
 
             break;
@@ -1686,10 +1694,13 @@ void Executor::Perform(Operation::Type op) {
                 } while (!data_->Empty() && PopBool());
             } catch (const Exception::Base& e) {
                 KAI_TRACE_ERROR() << "DoLoop: KAI exception: " << e.ToString();
+                throw e;
             } catch (const std::exception& e) {
                 KAI_TRACE_ERROR() << "DoLoop: std::exception: " << e.what();
+                throw e;
             } catch (...) {
                 KAI_TRACE_ERROR() << "DoLoop: Unknown exception";
+                throw;
             }
 
             break;
@@ -1805,10 +1816,13 @@ void Executor::Perform(Operation::Type op) {
                 }
             } catch (const Exception::Base& e) {
                 KAI_TRACE_ERROR() << "Jump: KAI exception: " << e.ToString();
+                throw e;
             } catch (const std::exception& e) {
                 KAI_TRACE_ERROR() << "Jump: std::exception: " << e.what();
+                throw e;
             } catch (...) {
                 KAI_TRACE_ERROR() << "Jump: Unknown exception";
+                throw;
             }
 
             break;
@@ -1948,11 +1962,14 @@ void Executor::Perform(Operation::Type op) {
             } catch (const Exception::Base& e) {
                 KAI_TRACE_ERROR()
                     << "IfFalseJump: KAI exception: " << e.ToString();
+                throw e;
             } catch (const std::exception& e) {
                 KAI_TRACE_ERROR()
                     << "IfFalseJump: std::exception: " << e.what();
+                throw e;
             } catch (...) {
                 KAI_TRACE_ERROR() << "IfFalseJump: Unknown exception";
+                throw;
             }
 
             break;

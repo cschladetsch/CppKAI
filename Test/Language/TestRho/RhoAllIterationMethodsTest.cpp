@@ -603,7 +603,7 @@ for x in arr
         continue
     sum = sum + x
 sum
-)", 16, "Mixed_ContinueInForEach");  // 1+5+7 (skip evens and multiples of 3)
+)", 13, "Mixed_ContinueInForEach");  // 1+5+7 = 13 (skip evens and multiples of 3)
 }
 
 TEST_F(RhoAllIterationMethodsTest, Mixed_ComplexNesting) {
@@ -705,7 +705,7 @@ sum = 0
 for x in arr
     sum = sum + transform(x)
 sum
-)", 45, "Function_ConditionalTransform");  // 11+4+13+8+15
+)", 51, "Function_ConditionalTransform");  // 11+4+13+8+15 = 51
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_ChainedOperations) {
@@ -718,7 +718,7 @@ sum = 0
 for x in arr
     sum = sum + square(double(inc(x)))
 sum
-)", 56, "Function_ChainedOperations");  // 4+16+36
+)", 116, "Function_ChainedOperations");  // square(double(inc(1)))+square(double(inc(2)))+square(double(inc(3))) = 16+36+64 = 116
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_PredicateFilter) {
@@ -942,7 +942,7 @@ for i = 1; i <= 2; i = i + 1
     for j = 1; j <= 2; j = j + 1
         sum = sum + add(i, j)
 sum
-)", 10, "Function_CallInNestedLoops");  // 2+3 + 3+4
+)", 12, "Function_CallInNestedLoops");  // add(1,1)+add(1,2)+add(2,1)+add(2,2) = 2+3+3+4 = 12
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_WithReturnInLoop) {
@@ -1071,7 +1071,7 @@ for i = 1; i <= 2; i = i + 1
         sum = sum + add(i, j)
         j = j + 1
 sum
-)", 10, "Function_CallInMixedLoops");  // 2+3 + 3+4
+)", 12, "Function_CallInMixedLoops");  // add(1,1)+add(1,2)+add(2,1)+add(2,2) = 2+3+3+4 = 12
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInAllThreeLoops) {
@@ -1087,7 +1087,7 @@ for j = 2; j < 4; j = j + 1
 for k in [3, 4]
     sum = sum + inc(k)
 sum
-)", 21, "Function_CallInAllThreeLoops");  // 1+2 + 3+4 + 4+5
+)", 19, "Function_CallInAllThreeLoops");  // inc(0)+inc(1) + inc(2)+inc(3) + inc(3)+inc(4) = 1+2+3+4+4+5 = 19
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInEdgeCases) {
@@ -1162,7 +1162,7 @@ while i < 5
         count = count + 1
     i = i + 1
 count
-)", 5, "Function_CallInWhileWithCondition");  // 1,2,3,4,5 are positive
+)", 4, "Function_CallInWhileWithCondition");  // i in [-2..4] (i<5), positive values: 1,2,3,4 → count=4
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInForLoopRange) {

@@ -446,7 +446,7 @@ TEST_F(RhoComprehensiveTests, ComplexCondition) {
 // ============================================================================
 
 TEST_F(RhoComprehensiveTests, SimpleWhileLoop) {
-    console_.Execute("i = 0; sum = 0; while i < 5; i = i + 1; sum = sum + i; sum");
+    console_.Execute("i = 0\nsum = 0\nwhile i < 5\n    i = i + 1\n    sum = sum + i\nsum");
     ASSERT_EQ(kai::ConstDeref<int>(data_->Top()), 15);
 }
 
@@ -456,12 +456,12 @@ TEST_F(RhoComprehensiveTests, WhileLoopCountdown) {
 }
 
 TEST_F(RhoComprehensiveTests, WhileLoopProduct) {
-    console_.Execute("i = 1; prod = 1; while i <= 4; prod = prod * i; i = i + 1; prod");
+    console_.Execute("i = 1\nprod = 1\nwhile i <= 4\n    prod = prod * i\n    i = i + 1\nprod");
     ASSERT_EQ(kai::ConstDeref<int>(data_->Top()), 24);
 }
 
 TEST_F(RhoComprehensiveTests, NestedWhileLoops) {
-    console_.Execute("i = 0; sum = 0; while i < 3; j = 0; while j < 2; sum = sum + 1; j = j + 1; i = i + 1; sum");
+    console_.Execute("i = 0\nsum = 0\nwhile i < 3\n    j = 0\n    while j < 2\n        sum = sum + 1\n        j = j + 1\n    i = i + 1\nsum");
     ASSERT_EQ(kai::ConstDeref<int>(data_->Top()), 6);
 }
 
@@ -496,7 +496,7 @@ TEST_F(RhoComprehensiveTests, NestedForLoops) {
 }
 
 TEST_F(RhoComprehensiveTests, WhileLoopZeroIterations) {
-    console_.Execute("sum = 0; i = 10; while i < 5; sum = sum + 1; i = i + 1; sum");
+    console_.Execute("sum = 0\ni = 10\nwhile i < 5\n    sum = sum + 1\n    i = i + 1\nsum");
     ASSERT_EQ(kai::ConstDeref<int>(data_->Top()), 0);
 }
 
@@ -506,7 +506,7 @@ TEST_F(RhoComprehensiveTests, ForLoopSingleIteration) {
 }
 
 TEST_F(RhoComprehensiveTests, WhileWithVariable) {
-    console_.Execute("limit = 5; i = 0; sum = 0; while i < limit; sum = sum + i; i = i + 1; sum");
+    console_.Execute("limit = 5\ni = 0\nsum = 0\nwhile i < limit\n    sum = sum + i\n    i = i + 1\nsum");
     ASSERT_EQ(kai::ConstDeref<int>(data_->Top()), 10);
 }
 
@@ -517,7 +517,7 @@ TEST_F(RhoComprehensiveTests, LoopWithFunctionCall) {
 }
 
 TEST_F(RhoComprehensiveTests, ComplexLoopCondition) {
-    console_.Execute("sum = 0; i = 0; while i * i < 25; sum = sum + i; i = i + 1; sum");
+    console_.Execute("sum = 0\ni = 0\nwhile i * i < 25\n    sum = sum + i\n    i = i + 1\nsum");
     ASSERT_EQ(kai::ConstDeref<int>(data_->Top()), 10);
 }
 

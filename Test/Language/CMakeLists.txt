@@ -2,10 +2,10 @@ cmake_minimum_required(VERSION 3.10)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${BIN_HOME}/Test")
 if(KAI_NETWORKING)
-    set(core_libs Executor Core PiLang RhoLang TauLang)
+    set(core_libs ConsoleLib Executor Core PiLang RhoLang TauLang)
     set(langs Tau Rho Pi)
 else()
-    set(core_libs Executor Core PiLang RhoLang)
+    set(core_libs ConsoleLib Executor Core PiLang RhoLang)
     set(langs Rho Pi)
 endif()
 

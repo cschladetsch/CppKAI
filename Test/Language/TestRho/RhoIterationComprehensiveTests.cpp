@@ -169,7 +169,7 @@ while i < 10
     i = i + 1
     j = j - 1
 sum
-)", 145);  // Sum of (0+20, 1+19, ..., 9+11)
+)", 200);  // Sum of (0+20, 1+19, ..., 9+11) = 10 * 20 = 200
 }
 
 // ============================================================================
@@ -252,7 +252,7 @@ for (i = 0; i < 10; i = i + 1)
         continue
     sum = sum + i
 sum
-)", 30);  // 1+2+4+5+7+8 (skips 0,3,6,9)
+)", 27);  // 1+2+4+5+7+8 = 27 (skips 0,3,6,9 where i%3==0)
 }
 
 TEST_F(RhoIterationComprehensiveTests, ForLoop_MultipleVariables) {
@@ -319,7 +319,7 @@ sum = 0
 for (i = 0 - 5; i < 5; i = i + 1)
     sum = sum + i
 sum
-)", 0);  // -5+(-4)+(-3)+(-2)+(-1)+0+1+2+3+4
+)", -5);  // -5+(-4)+(-3)+(-2)+(-1)+0+1+2+3+4 = -5
 }
 
 // ============================================================================
@@ -629,7 +629,7 @@ while i < 10
             break
         sum = sum + 1
 sum
-)", 20);  // Complex pattern of breaks and continues
+)", 16);  // Odd i values: 1,3,5,7,9. Each adds min(i,4) elements: 1+3+4+4+4=16
 }
 
 TEST_F(RhoIterationComprehensiveTests, Mixed_DeepNesting) {

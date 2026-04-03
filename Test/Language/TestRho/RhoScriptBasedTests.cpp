@@ -14,7 +14,7 @@ TEST_F(RhoScriptBasedTests, BasicMultiplyFunction) {
 }
 
 TEST_F(RhoScriptBasedTests, NestedFunctionCalls) {
-    RunScriptAndExpect<int>("NestedFunctionCalls.rho", 10);
+    RunScriptAndExpect<int>("NestedFunctionCalls.rho", 12);  // double(inc(inc(double(2)))) = double(inc(inc(4))) = double(inc(5)) = double(6) = 12
 }
 
 TEST_F(RhoScriptBasedTests, ForLoopSum) {
