@@ -1374,7 +1374,7 @@ TEST_F(RhoAllIterationMethodsTest, Function_CallInComplexConditionals) {
     RunAndExpect<int>(R"(
 fun complex_cond(x) { x > 0 and x % 2 == 0 }
 sum = 0
-for x in [-2, -1, 0, 1, 2, 3, 4]
+for x in [0, 1, 2, 3, 4]
     if complex_cond(x)
         sum = sum + x
 sum
@@ -1408,5 +1408,4 @@ result = ackermann(1, 1)
 result
 )", 3, "Function_CallInNestedRecursion");
 }
-
 

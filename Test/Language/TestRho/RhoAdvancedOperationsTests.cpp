@@ -209,6 +209,6 @@ TEST_F(RhoAdvancedTests, AdvancedCompoundExpressions) {
     ExecuteRhoAndVerify<int>("10 - (2 + 3) * (8 / 4)", 0);
     ExecuteRhoAndVerify<bool>("(5 > 3 && 7 < 10) || (2 == 3)", true);
     ExecuteRhoAndVerify<bool>("(5 < 3 || 7 > 10) && (2 != 2)", false);
-    // DISABLED: String + number should throw a type error
-    // ExecuteRhoAndVerifyString("\"Result: \" + ((5 + 3) * 2)", "Result: 16");
+    EXPECT_THROW(console_.Execute("\"Result: \" + ((5 + 3) * 2)"),
+                 Exception::Base);
 }

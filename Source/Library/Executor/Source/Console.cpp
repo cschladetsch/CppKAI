@@ -507,24 +507,20 @@ void Console::ExecuteWithExecutor(Pointer<Continuation> cont,
     }
     KAI_CATCH(Exception::Base, E) {
         KAI_TRACE_ERROR_1(E);
-        // Only re-throw assertion failures and similar errors that should be
-        // visible to Process
-        if (E.ToString().find("Assertion failed") != std::string::npos) {
-            throw;
-        }
         // For debugging: log stack state when exception occurs
         KAI_TRACE() << "Exception occurred. Stack state:";
         if (targetExecutor.Exists() && targetExecutor->GetDataStack().Exists()) {
             KAI_TRACE() << "  Stack size: " << targetExecutor->GetDataStack()->Size();
         }
+        throw;
     }
     KAI_CATCH(exception, E) {
         KAI_TRACE_ERROR_2("StdException: ", E.what());
-        // Don't re-throw standard exceptions unless they're assertion-related
+        throw;
     }
     KAI_CATCH_ALL() {
         KAI_TRACE_ERROR_1("UnknownException");
-        // Don't re-throw unknown exceptions
+        throw;
     }
 }
 

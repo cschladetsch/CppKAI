@@ -160,6 +160,9 @@ struct Operation {
         ModEquals,
 
         Size,
+        MapKeys,
+        ArrayPush,
+        ArraySlice,
 
         Print,
 

@@ -189,35 +189,14 @@ TEST_F(ExtendedBinaryOpTests, BitwiseOperations) {
     }
 }
 
-// Complex Mixed Type Operations - String + Number Conversion
+// Complex Mixed Type Operations - String + Number must fail (no coercion)
 TEST_F(ExtendedBinaryOpTests, StringNumberConversion) {
     // Create operands
     Object strObj = reg_->New<String>("Value: ");
     Object intObj = reg_->New<int>(42);
 
-    data_->Clear();
-    try {
-        // Try to concatenate string + int
-        Object result = exec_->PerformBinaryOp(strObj, intObj, Operation::Plus);
-        data_->Push(result);
-
-        UnwrapStackValues(data_, exec_);
-
-        ASSERT_FALSE(data_->Empty()) << "Stack should not be empty";
-        // The result might be a String if automatic conversion is supported
-        if (data_->Top().IsType<String>()) {
-            ASSERT_EQ(ConstDeref<String>(data_->Top()), "Value: 42")
-                << "Expected automatic conversion of int to string for "
-                   "concatenation";
-        } else {
-            // If automatic conversion isn't supported, this test is
-            // informational
-            std::cout << "String + int automatic conversion not supported"
-                      << std::endl;
-        }
-    } catch (const std::exception& e) {
-        std::cout << "String + int operation failed: " << e.what() << std::endl;
-    }
+    EXPECT_THROW(exec_->PerformBinaryOp(strObj, intObj, Operation::Plus),
+                 Exception::Base);
 }
 
 // Negative Number Operations

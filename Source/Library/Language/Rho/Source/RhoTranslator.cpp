@@ -176,6 +176,24 @@ void RhoTranslator::TranslateToken(AstNodePtr node) {
             TranslateBinaryOp(node, Operation::LogicalAnd);
             return;
 
+        case RhoTokenEnumType::Question: {
+            // Ternary conditional: cond ? thenExpr : elseExpr
+            TranslateNode(node->GetChild(0));
+
+            PushNew();
+            TranslateNode(node->GetChild(1));
+            auto thenCont = Pop();
+
+            PushNew();
+            TranslateNode(node->GetChild(2));
+            auto elseCont = Pop();
+
+            Append(thenCont);
+            Append(elseCont);
+            AppendDirectOperation(Operation::IfElse);
+            return;
+        }
+
         case RhoTokenEnumType::BitAnd:
             TranslateBinaryOp(node, Operation::BitwiseAnd);
             return;
@@ -984,6 +1002,61 @@ void RhoTranslator::TranslateCall(AstNodePtr node) {
 
     // Get function name
     auto funcNode = node->GetChild(0);
+    std::vector<AstNodePtr> callArgs;
+
+    // Normalize call arguments regardless of parser style.
+    if (node->GetChildren().size() >= 2) {
+        auto secondChild = node->GetChild(1);
+        if (secondChild->GetType() == AstNodeEnum::ArgList) {
+            for (const auto& arg : secondChild->GetChildren()) {
+                callArgs.push_back(arg);
+            }
+        } else {
+            for (size_t i = 1; i < node->GetChildren().size(); ++i) {
+                callArgs.push_back(node->GetChild(i));
+            }
+        }
+    }
+
+    // Built-in member calls on containers.
+    // Handles: obj.size(), obj.keys(), obj.push(x), obj.slice(a, b)
+    if (funcNode->GetType() == AstNodeEnum::GetMember &&
+        funcNode->GetChildren().size() >= 2) {
+        auto objectNode = funcNode->GetChild(0);
+        auto memberNode = funcNode->GetChild(1);
+
+        if (memberNode->GetType() == AstNodeEnum::TokenType &&
+            memberNode->GetToken().type == TokenEnum::Label) {
+            String memberName = memberNode->Text();
+
+            if (memberName == "size" && callArgs.empty()) {
+                TranslateNode(objectNode);
+                AppendDirectOperation(Operation::Size);
+                return;
+            }
+
+            if (memberName == "keys" && callArgs.empty()) {
+                TranslateNode(objectNode);
+                AppendDirectOperation(Operation::MapKeys);
+                return;
+            }
+
+            if (memberName == "push" && callArgs.size() == 1) {
+                TranslateNode(objectNode);
+                TranslateNode(callArgs[0]);
+                AppendDirectOperation(Operation::ArrayPush);
+                return;
+            }
+
+            if (memberName == "slice" && callArgs.size() == 2) {
+                TranslateNode(objectNode);
+                TranslateNode(callArgs[0]);
+                TranslateNode(callArgs[1]);
+                AppendDirectOperation(Operation::ArraySlice);
+                return;
+            }
+        }
+    }
 
     // Check if this is a built-in operation
     if (funcNode->GetType() == AstNodeEnum::TokenType &&
@@ -994,20 +1067,8 @@ void RhoTranslator::TranslateCall(AstNodePtr node) {
         // Check for built-in operations
         if (funcName == "print") {
             // For print, translate arguments first, then use Print operation
-            if (node->GetChildren().size() >= 2) {
-                auto secondChild = node->GetChild(1);
-                if (secondChild->GetType() == AstNodeEnum::ArgList) {
-                    // Translate arguments from the ArgList node
-                    for (const auto& arg : secondChild->GetChildren()) {
-                        TranslateNode(arg);
-                    }
-                } else {
-                    // Old style: arguments are direct children starting at
-                    // index 1
-                    for (size_t i = 1; i < node->GetChildren().size(); ++i) {
-                        TranslateNode(node->GetChild(i));
-                    }
-                }
+            for (const auto& arg : callArgs) {
+                TranslateNode(arg);
             }
 
             // Generate Print operation directly
@@ -1022,18 +1083,9 @@ void RhoTranslator::TranslateCall(AstNodePtr node) {
     // For non-built-in functions, use the standard function call mechanism
     // Check if we have an ArgList node (parser creates Call with [function,
     // ArgList])
-    if (node->GetChildren().size() >= 2) {
-        auto secondChild = node->GetChild(1);
-        if (secondChild->GetType() == AstNodeEnum::ArgList) {
-            // Translate arguments from the ArgList node
-            for (const auto& arg : secondChild->GetChildren()) {
-                TranslateNode(arg);
-            }
-        } else {
-            // Old style: arguments are direct children starting at index 1
-            for (size_t i = 1; i < node->GetChildren().size(); ++i) {
-                TranslateNode(node->GetChild(i));
-            }
+    if (!callArgs.empty()) {
+        for (const auto& arg : callArgs) {
+            TranslateNode(arg);
         }
     }
 

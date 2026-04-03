@@ -8,6 +8,7 @@
 #include <KAI/Language/Common/Language.h>
 #include <stdio.h>
 
+#include <algorithm>
 #include <functional>
 #include <iostream>
 
@@ -1233,6 +1234,98 @@ void Executor::Perform(Operation::Type op) {
                 Push(New<int>(Deref<String>(obj).size()));
             } else {
                 KAI_THROW_1(Base, "Size operation called on unsupported type");
+            }
+            break;
+        }
+
+        case Operation::MapKeys: {
+            Object obj = Pop();
+            auto keys = New<Array>();
+
+            if (obj.IsType<Map>()) {
+                Pointer<Map> map = obj;
+                for (auto it = map->Begin(); it != map->End(); ++it) {
+                    keys->Append(it->first);
+                }
+            } else if (obj.Exists()) {
+                for (const auto &entry : obj.GetDictionary()) {
+                    keys->Append(New<String>(entry.first.ToString()));
+                }
+            }
+
+            Push(keys);
+            break;
+        }
+
+        case Operation::ArrayPush: {
+            // ( container value -- container )
+            if (data_->Size() < 2) {
+                KAI_TRACE_ERROR() << "ArrayPush: Not enough items on stack";
+                break;
+            }
+
+            Object value = Pop();
+            Object container = Pop();
+
+            if (container.IsType<Array>()) {
+                Pointer<Array> arr = container;
+                arr->Append(value);
+                Push(container);
+            } else if (container.IsType<List>()) {
+                Pointer<List> list = container;
+                list->Append(value);
+                Push(container);
+            } else {
+                KAI_TRACE_ERROR() << "ArrayPush: Unsupported container type";
+                Push(container);
+            }
+            break;
+        }
+
+        case Operation::ArraySlice: {
+            // ( container start end -- sliced )
+            if (data_->Size() < 3) {
+                KAI_TRACE_ERROR() << "ArraySlice: Not enough items on stack";
+                Push(Object());
+                break;
+            }
+
+            Object endObj = Pop();
+            Object startObj = Pop();
+            Object container = Pop();
+
+            if (!startObj.IsType<int>() || !endObj.IsType<int>()) {
+                KAI_TRACE_ERROR() << "ArraySlice: start/end must be integers";
+                Push(Object());
+                break;
+            }
+
+            int start = ConstDeref<int>(startObj);
+            int end = ConstDeref<int>(endObj);
+            if (end < start) {
+                end = start;
+            }
+
+            if (container.IsType<Array>()) {
+                Pointer<Array> src = container;
+                int size = src->Size();
+                start = std::max(0, std::min(start, size));
+                end = std::max(0, std::min(end, size));
+
+                auto result = New<Array>();
+                for (int i = start; i < end; ++i) {
+                    result->Append(src->At(i));
+                }
+                Push(result);
+            } else if (container.IsType<String>()) {
+                String src = ConstDeref<String>(container);
+                int size = static_cast<int>(src.size());
+                start = std::max(0, std::min(start, size));
+                end = std::max(0, std::min(end, size));
+                Push(New<String>(String(src.begin() + start, src.begin() + end)));
+            } else {
+                KAI_TRACE_ERROR() << "ArraySlice: Unsupported container type";
+                Push(Object());
             }
             break;
         }

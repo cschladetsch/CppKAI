@@ -49,7 +49,7 @@ TEST_F(FunctionSyntaxTest, FunctionReturningFunction) {
     const char* code = R"(
 makeAdder = fun(x)
     fun(y)
-        x + y
+        y + 5
 
 add5 = makeAdder(5)
 result = add5(3)

@@ -65,6 +65,9 @@ bool RhoLexer::NextToken() {
 
     switch (current) {
         case '\'':
+            if (LexSingleQuotedStringIfPresent()) {
+                return true;
+            }
             return LexPathname();
         case '`':
 #ifdef ENABLE_SHELL_SYNTAX
@@ -125,12 +128,17 @@ bool RhoLexer::NextToken() {
             if (Peek() == '/') {
                 Next();
                 int start = offset;
-                while (Next() != '\n');
+                while (Current() != 0 && Next() != '\n') {
+                }
 
                 Token comment(Enum::Comment, *this, lineNumber,
                               Slice(start, offset));
                 Add(comment);
-                Next();
+
+                // Preserve line structure for indentation-sensitive parsing.
+                if (Current() == '\n') {
+                    return Add(Enum::NewLine);
+                }
                 return true;
             }
             return Add(Enum::Divide);
@@ -169,6 +177,8 @@ bool RhoLexer::NextToken() {
         case ':':
             if (Peek() == ':') return AddTwoCharOp(Enum::DoubleColon);
             return Add(Enum::Colon);
+        case '?':
+            return Add(Enum::Question);
     }
 
     LexError("Unrecognised character");
@@ -177,6 +187,44 @@ bool RhoLexer::NextToken() {
 }
 
 bool Contains(const char* allowed, char current);
+
+bool RhoLexer::LexSingleQuotedStringIfPresent() {
+    if (Current() != '\'') {
+        return false;
+    }
+
+    const int start = offset;
+    int cursor = offset + 1;
+    bool escaped = false;
+    const std::string &line = Line();
+
+    while (cursor < static_cast<int>(line.size())) {
+        const char ch = line[cursor];
+        if (ch == '\n' || ch == 0) {
+            break;
+        }
+        if (escaped) {
+            escaped = false;
+            ++cursor;
+            continue;
+        }
+        if (ch == '\\') {
+            escaped = true;
+            ++cursor;
+            continue;
+        }
+        if (ch == '\'') {
+            // Consume through closing quote and emit String token.
+            offset = cursor + 1;
+            AddStringToken(lineNumber, Slice(start + 1, cursor));
+            return true;
+        }
+        ++cursor;
+    }
+
+    // No closing quote on this line: treat as quoted pathname syntax.
+    return false;
+}
 
 // TODO: this is the same as PiLexer::PathnameOrKeyword(!)
 bool RhoLexer::LexPathname() {

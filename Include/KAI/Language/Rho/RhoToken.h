@@ -74,6 +74,7 @@ struct RhoTokenEnumType {
         AcrossAllNodes = 72,
         Mod = 73,
         Colon = 74,
+        Question = 88,
         ModAssign = 75,
         DoubleColon = 76,
         While = 77,

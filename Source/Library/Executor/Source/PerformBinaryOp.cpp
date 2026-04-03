@@ -11,13 +11,11 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
     try {
         // Validate inputs
         if (!A.Valid()) {
-            KAI_TRACE_ERROR() << "PerformBinaryOp: First argument is invalid";
-            return Object();
+            KAI_THROW_1(Base, "PerformBinaryOp: First argument is invalid");
         }
 
         if (!B.Valid()) {
-            KAI_TRACE_ERROR() << "PerformBinaryOp: Second argument is invalid";
-            return Object();
+            KAI_THROW_1(Base, "PerformBinaryOp: Second argument is invalid");
         }
 
         // Ensure we have a valid registry to create new objects
@@ -34,9 +32,8 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
                     if (Self && Self->GetRegistry()) {
                         registry = Self->GetRegistry();
                     } else {
-                        KAI_TRACE_ERROR()
-                            << "PerformBinaryOp: No valid registry found";
-                        return Object();
+                        KAI_THROW_1(Base,
+                                    "PerformBinaryOp: No valid registry found");
                     }
                 }
             }
@@ -84,6 +81,23 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
                         ConstDeref<String>(A), ConstDeref<String>(B));
                     return createNew(result);
                 }
+                // Reject implicit string coercion (e.g. string + int).
+                else if (A.IsType<String>() || B.IsType<String>()) {
+                    const String leftType =
+                        (A.Valid() && A.GetClass())
+                            ? A.GetClass()->GetName().ToString()
+                            : String("<invalid>");
+                    const String rightType =
+                        (B.Valid() && B.GetClass())
+                            ? B.GetClass()->GetName().ToString()
+                            : String("<invalid>");
+                    KAI_THROW_1(
+                        Base,
+                        ("Type error: mixed string/non-string addition is not "
+                         "allowed (" +
+                         leftType + " + " + rightType + ")")
+                            .c_str());
+                }
                 // Array + Array = concatenated array
                 else if (A.IsType<Array>() && B.IsType<Array>()) {
                     const Array &arr1 = ConstDeref<Array>(A);
@@ -108,8 +122,7 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
                                 return Object(ObjectConstructParams(result));
                             }
                         } catch (const Exception::Base &e) {
-                            KAI_TRACE_ERROR()
-                                << "Plus operation failed: " << e.ToString();
+                            throw;
                         }
                     }
                 }
@@ -153,8 +166,7 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
                                 return Object(ObjectConstructParams(result));
                             }
                         } catch (const Exception::Base &e) {
-                            KAI_TRACE_ERROR()
-                                << "Minus operation failed: " << e.ToString();
+                            throw;
                         }
                     }
                 }
@@ -208,8 +220,7 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
                                 return Object(ObjectConstructParams(result));
                             }
                         } catch (const Exception::Base &e) {
-                            KAI_TRACE_ERROR() << "Multiply operation failed: "
-                                              << e.ToString();
+                            throw;
                         }
                     }
                 }
@@ -269,8 +280,7 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
                                 return Object(ObjectConstructParams(result));
                             }
                         } catch (const Exception::Base &e) {
-                            KAI_TRACE_ERROR()
-                                << "Divide operation failed: " << e.ToString();
+                            throw;
                         }
                     }
                 }
@@ -387,9 +397,7 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
                                                          B.GetStorageBase());
                             return createNew(result);
                         } catch (const Exception::Base &e) {
-                            KAI_TRACE_ERROR()
-                                << "Less operation failed: " << e.ToString();
-                            return createNew(false);
+                            throw;
                         }
                     }
                 }
@@ -437,9 +445,7 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
                                                             B.GetStorageBase());
                             return createNew(result);
                         } catch (const Exception::Base &e) {
-                            KAI_TRACE_ERROR()
-                                << "Greater operation failed: " << e.ToString();
-                            return createNew(false);
+                            throw;
                         }
                     }
                 }
@@ -569,9 +575,10 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
                         }
 
                         KAI_THROW_1(BadIndex, index);
+                    } catch (const Exception::Base &e) {
+                        throw;
                     } catch (const std::exception &e) {
-                        KAI_TRACE_ERROR()
-                            << "Exception in Array indexing: " << e.what();
+                        KAI_THROW_1(Base, e.what());
                     }
                 }
                 // List[Int] -> Object
@@ -596,9 +603,10 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
                         }
 
                         KAI_THROW_1(BadIndex, index);
+                    } catch (const Exception::Base &e) {
+                        throw;
                     } catch (const std::exception &e) {
-                        KAI_TRACE_ERROR()
-                            << "Exception in List indexing: " << e.what();
+                        KAI_THROW_1(Base, e.what());
                     }
                 }
                 // Map[Key] -> Value
@@ -614,9 +622,10 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
                         }
 
                         KAI_THROW_1(Base, "Key not found in map");
+                    } catch (const Exception::Base &e) {
+                        throw;
                     } catch (const std::exception &e) {
-                        KAI_TRACE_ERROR()
-                            << "Exception in Map indexing: " << e.what();
+                        KAI_THROW_1(Base, e.what());
                     }
                 }
                 break;
@@ -661,61 +670,36 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
             }
 
             default:
-                // For unsupported operations, provide a helpful error message
-                KAI_TRACE_ERROR()
-                    << "Unsupported operation in PerformBinaryOp: "
-                    << Operation::ToString(op);
-                break;
+                KAI_THROW_1(
+                    Base,
+                    (String("Unsupported operation in PerformBinaryOp: ") +
+                     String(Operation::ToString(op)))
+                        .c_str());
         }
 
-        // If we reach here, it means we couldn't handle the operation with the
-        // given types
+        // If we reach here, no typed branch matched for this operation.
         if (A.Valid() && A.GetClass() && B.Valid() && B.GetClass()) {
-            KAI_TRACE_ERROR()
-                << "Unsupported types for operation: "
-                << A.GetClass()->GetName() << " and " << B.GetClass()->GetName()
-                << " for operation " << Operation::ToString(op);
+            KAI_THROW_1(
+                Base,
+                ("Unsupported types for operation: " +
+                 A.GetClass()->GetName().ToString() + " and " +
+                 B.GetClass()->GetName().ToString() + " for operation " +
+                 Operation::ToString(op))
+                    .c_str());
         } else {
-            KAI_TRACE_ERROR()
-                << "Invalid objects for operation: " << Operation::ToString(op);
+            KAI_THROW_1(
+                Base,
+                (String("Invalid objects for operation: ") +
+                 String(Operation::ToString(op)))
+                    .c_str());
         }
-
-        // Return a default value based on operation type
-        // Arithmetic operations typically return numeric types
-        if (op == Operation::Plus || op == Operation::Minus ||
-            op == Operation::Multiply || op == Operation::Divide ||
-            op == Operation::Modulo) {
-            if (A.IsType<int>()) return createNew(0);
-            if (A.IsType<float>()) return createNew(0.0f);
-            if (A.IsType<double>()) return createNew(0.0);
-        }
-
-        // Comparison operations typically return boolean
-        if (op == Operation::Equiv || op == Operation::NotEquiv ||
-            op == Operation::Less || op == Operation::Greater ||
-            op == Operation::LessOrEquiv || op == Operation::GreaterOrEquiv ||
-            op == Operation::LogicalAnd || op == Operation::LogicalOr ||
-            op == Operation::LogicalXor) {
-            return createNew(false);
-        }
-
-        // String operations
-        if (A.IsType<String>()) {
-            return createNew(String(""));
-        }
-
-        // If we still can't determine a suitable return type, return A if
-        // valid, otherwise an empty object
-        return A.Valid() ? A : Object();
     } catch (const Exception::Base &e) {
         KAI_TRACE_ERROR() << "PerformBinaryOp: KAI exception: " << e.ToString();
-        return Object();
+        throw;
     } catch (const std::exception &e) {
-        KAI_TRACE_ERROR() << "PerformBinaryOp: std::exception: " << e.what();
-        return Object();
+        KAI_THROW_1(Base, e.what());
     } catch (...) {
-        KAI_TRACE_ERROR() << "PerformBinaryOp: Unknown exception";
-        return Object();
+        KAI_THROW_1(Base, "PerformBinaryOp: Unknown exception");
     }
 }
 

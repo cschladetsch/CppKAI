@@ -345,8 +345,27 @@ bool RhoParser::Statement(AstNodePtr block) {
         }
 
         case TokenType::Fun: {
-            KAI_TRACE() << "RhoParser::Statement - Processing named function definition";
-            return FunctionDefinition(block);
+            // `fun` can start either:
+            // 1) a named declaration: `fun name(args) ...`
+            // 2) an anonymous function expression statement: `fun(args) ...`
+            // Route to named-definition parsing only when a label follows.
+            KAI_TRACE() << "RhoParser::Statement - Processing Fun";
+
+            const int saved = current;
+            Consume();  // consume 'fun'
+            while (Try(TokenType::Whitespace) || Try(TokenType::Tab)) {
+                Consume();
+            }
+            const bool isNamedFunction = Try(TokenType::Label);
+            current = saved;
+
+            if (isNamedFunction) {
+                KAI_TRACE() << "RhoParser::Statement - Named function definition";
+                return FunctionDefinition(block);
+            }
+
+            KAI_TRACE() << "RhoParser::Statement - Anonymous function expression";
+            break;
         }
 
         case TokenType::None:
@@ -398,6 +417,38 @@ bool RhoParser::Expression() {
         return false;
     }
 
+    // Ternary conditional: condition ? thenExpr : elseExpr
+    if (Try(TokenType::Question)) {
+        auto condExpr = Pop();
+        Consume();  // consume '?'
+
+        if (!Expression()) {
+            return CreateError("Expected expression after '?'");
+        }
+        auto trueExpr = Pop();
+
+        if (!Try(TokenType::Colon)) {
+            return CreateError("Expected ':' in ternary expression");
+        }
+        Consume();
+
+        if (!Expression()) {
+            return CreateError("Expected expression after ':'");
+        }
+        auto falseExpr = Pop();
+
+        auto ternary = NewNode(NodeType::Conditional);
+        auto trueBlock = NewNode(NodeType::Block);
+        auto falseBlock = NewNode(NodeType::Block);
+        trueBlock->Add(trueExpr);
+        falseBlock->Add(falseExpr);
+        ternary->Add(condExpr);
+        ternary->Add(trueBlock);
+        ternary->Add(falseBlock);
+        Push(ternary);
+        return true;
+    }
+
     if (Try(TokenType::Assign) || Try(TokenType::PlusAssign) ||
         Try(TokenType::MinusAssign) || Try(TokenType::MulAssign) ||
         Try(TokenType::DivAssign) || Try(TokenType::ModAssign)) {
@@ -413,7 +464,7 @@ bool RhoParser::Expression() {
             }
         }
 
-        if (!Logical()) {
+        if (!Expression()) {
             Fail(Lexer::CreateErrorMessage(
                 Current(), "Assignment requires an expression"));
             return false;
@@ -558,16 +609,37 @@ bool RhoParser::Factor() {
 
     if (Try(TokenType::OpenSquareBracket)) {
         auto list = NewNode(NodeType::List);
-        do {
-            Consume();
+        Consume();  // consume '['
+
+        auto consumeLayout = [this]() {
+            while (Try(TokenType::Whitespace) || Try(TokenType::Tab) ||
+                   Try(TokenType::NewLine)) {
+                Consume();
+            }
+        };
+
+        consumeLayout();
+        while (!Try(TokenType::CloseSquareBracket)) {
             if (Try(TokenType::CloseSquareBracket)) break;
-            if (Expression())
+            if (Expression()) {
                 list->Add(Pop());
-            else {
+            } else {
                 Fail("Badly formed array");
                 return false;
             }
-        } while (Try(TokenType::Comma));
+
+            consumeLayout();
+            if (Try(TokenType::Comma)) {
+                Consume();
+                consumeLayout();
+                continue;
+            }
+
+            if (!Try(TokenType::CloseSquareBracket)) {
+                Fail("Expected ',' or ']' in array literal");
+                return false;
+            }
+        }
 
         Expect(TokenType::CloseSquareBracket);
         Push(list);
@@ -579,6 +651,15 @@ bool RhoParser::Factor() {
         auto map = NewNode(NodeType::Map);
         Consume();
 
+        auto consumeLayout = [this]() {
+            while (Try(TokenType::Whitespace) || Try(TokenType::Tab) ||
+                   Try(TokenType::NewLine)) {
+                Consume();
+            }
+        };
+
+        consumeLayout();
+
         // Handle empty map case
         if (Try(TokenType::CloseBrace)) {
             Consume();
@@ -588,6 +669,8 @@ bool RhoParser::Factor() {
 
         // Parse key-value pairs
         do {
+            consumeLayout();
+
             // Parse key (must be a string for now)
             if (!Try(TokenType::String)) {
                 Fail("Map key must be a string");
@@ -597,12 +680,16 @@ bool RhoParser::Factor() {
             auto key = Current();
             Consume();
 
+            consumeLayout();
+
             // Expect colon
             if (!Try(TokenType::Colon)) {
                 Fail("Expected ':' after map key");
                 return false;
             }
             Consume();
+
+            consumeLayout();
 
             // Parse value expression
             if (!Expression()) {
@@ -619,6 +706,8 @@ bool RhoParser::Factor() {
             map->Add(keyNode);
             map->Add(value);
 
+            consumeLayout();
+
             // Check for more pairs
             if (Try(TokenType::Comma)) {
                 Consume();
@@ -626,6 +715,7 @@ bool RhoParser::Factor() {
             }
 
             // Must end with close brace
+            consumeLayout();
             if (!Try(TokenType::CloseBrace)) {
                 Fail("Expected '}' or ',' in map literal");
                 return false;

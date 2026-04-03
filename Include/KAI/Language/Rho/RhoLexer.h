@@ -19,6 +19,7 @@ struct RhoLexer : LexerCommon<RhoTokenEnumType> {
 
    protected:
     bool LexPathname();
+    bool LexSingleQuotedStringIfPresent();
     using Parent::reg_;
 };
 

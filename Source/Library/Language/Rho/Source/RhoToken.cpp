@@ -85,6 +85,7 @@ const char *RhoTokenEnumType::ToString(Enum val) {
         CASE(AcrossAllNodes)
         CASE(Mod)
         CASE(Colon)
+        CASE(Question)
         CASE(ModAssign)
         CASE(DoubleColon)
         CASE(While)
