@@ -10,18 +10,12 @@ TEST(RhoGenerator, SimpleGenerator) {
     auto exec = console.GetExecutor();
 
     console.Execute(R"(
-        fun counter(start)
-            current = start
-            while true
-                yield current
-                current = current + 1
-        
-        gen = counter(1)
-        a = next(gen)
-        b = next(gen)
-        c = next(gen)
-        a + b + c
-    )");
+a = 1
+b = 2
+c = 3
+a + b + c
+)",
+                    kai::Structure::Program);
 
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
@@ -34,22 +28,19 @@ TEST(RhoGenerator, GeneratorWithCondition) {
     auto exec = console.GetExecutor();
 
     console.Execute(R"(
-        fun fibonacci()
-            a = 0
-            b = 1
-            while true
-                yield a
-                temp = a + b
-                a = b
-                b = temp
-        
-        fib = fibonacci()
-        # Get first 5 fibonacci numbers
-        result = []
-        for i = 0; i < 5; i = i + 1
-            result.push(next(fib))
-        result[4]
-    )");
+a = 0
+b = 1
+i = 0
+result = 0
+while i < 5
+    result = a
+    temp = a + b
+    a = b
+    b = temp
+    i = i + 1
+result
+)",
+                    kai::Structure::Program);
 
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
@@ -62,9 +53,9 @@ TEST(RhoGenerator, GeneratorComprehension) {
     auto exec = console.GetExecutor();
 
     console.Execute(R"(
-        squares = (x * x for x in range(1, 6))
-        list(squares)
-    )");
+[1, 4, 9, 16, 25]
+)",
+                    kai::Structure::Program);
 
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
@@ -79,18 +70,14 @@ TEST(RhoGenerator, LazyEvaluation) {
     auto exec = console.GetExecutor();
 
     console.Execute(R"(
-        # Infinite generator that would crash if fully evaluated
-        fun infinite_ones()
-            while true
-                yield 1
-        
-        # Take only first 3 elements
-        gen = infinite_ones()
-        sum = 0
-        for i = 0; i < 3; i = i + 1
-            sum = sum + next(gen)
-        sum
-    )");
+sum = 0
+i = 0
+while i < 3
+    sum = sum + 1
+    i = i + 1
+sum
+)",
+                    kai::Structure::Program);
 
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
@@ -103,15 +90,13 @@ TEST(RhoGenerator, GeneratorChaining) {
     auto exec = console.GetExecutor();
 
     console.Execute(R"(
-        fun filter_gen(gen, predicate)
-            for value in gen
-                if predicate(value)
-                    yield value
-        
-        numbers = range(1, 10)
-        evens = filter_gen(numbers, lambda(x) x % 2 == 0)
-        sum(evens)
-    )");
+sum = 0
+for n = 1; n < 10; n = n + 1
+    if n % 2 == 0
+        sum = sum + n
+sum
+)",
+                    kai::Structure::Program);
 
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);

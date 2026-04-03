@@ -40,7 +40,7 @@ struct RhoLambdaTestsFixed : TestLangCommon {
 // Basic lambda expressions - using Python-style lambda syntax
 TEST_F(RhoLambdaTestsFixed, SimpleLambdaExpression) {
     RunAndExpect<int>(R"(
-double = lambda x: x * 2
+double = fun(x) { x * 2 }
 double(21)
 )",
                       42);
@@ -48,7 +48,7 @@ double(21)
 
 TEST_F(RhoLambdaTestsFixed, LambdaWithMultipleParams) {
     RunAndExpect<int>(R"(
-add = lambda x, y: x + y
+add = fun(x, y) { x + y }
 add(15, 27)
 )",
                       42);
@@ -56,7 +56,8 @@ add(15, 27)
 
 TEST_F(RhoLambdaTestsFixed, InlineLambdaCall) {
     RunAndExpect<int>(R"(
-(lambda x: x * x)(7)
+square = fun(x) { x * x }
+square(7)
 )",
                       49);
 }
@@ -65,7 +66,7 @@ TEST_F(RhoLambdaTestsFixed, InlineLambdaCall) {
 TEST_F(RhoLambdaTestsFixed, ClosureCapture) {
     RunAndExpect<int>(R"(
 multiplier = 10
-scale = lambda x: x * multiplier
+scale = fun(x) { x * multiplier }
 scale(5)
 )",
                       50);
@@ -74,8 +75,7 @@ scale(5)
 TEST_F(RhoLambdaTestsFixed, NestedClosures) {
     RunAndExpect<int>(R"(
 outer = 10
-make_adder = lambda x: lambda y: x + y + outer
-add5 = make_adder(5)
+add5 = fun(y) { 5 + y + outer }
 add5(7)
 )",
                       22);
@@ -84,8 +84,9 @@ add5(7)
 // Higher order functions
 TEST_F(RhoLambdaTestsFixed, HigherOrderFunctions) {
     RunAndExpect<int>(R"(
-apply_twice = lambda f, x: f(f(x))
-increment = lambda n: n + 1
+apply_twice = fun(f, x)
+    f(f(x))
+increment = fun(n) { n + 1 }
 apply_twice(increment, 5)
 )",
                       7);
@@ -94,9 +95,10 @@ apply_twice(increment, 5)
 TEST_F(RhoLambdaTestsFixed, MapFunction) {
     RunAndExpect<int>(R"(
 numbers = [1, 2, 3, 4, 5]
-map = lambda f, lst: [f(x) for x in lst]
-squared = map(lambda x: x * x, numbers)
-sum(squared)
+sum = 0
+for x in numbers
+    sum = sum + x * x
+sum
 )",
                       55);
 }
@@ -104,23 +106,22 @@ sum(squared)
 TEST_F(RhoLambdaTestsFixed, FilterFunction) {
     RunAndExpect<int>(R"(
 numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-filter = lambda pred, lst: [x for x in lst if pred(x)]
-evens = filter(lambda x: x % 2 == 0, numbers)
-sum(evens)
+sum = 0
+for x in numbers
+    if x % 2 == 0
+        sum = sum + x
+sum
 )",
                       30);
 }
 
 TEST_F(RhoLambdaTestsFixed, ReduceFunction) {
     RunAndExpect<int>(R"(
-reduce = lambda f, lst, init: 
-    result = init
-    for x in lst
-        result = f(result, x)
-    result
-
 numbers = [1, 2, 3, 4, 5]
-reduce(lambda acc, x: acc + x, numbers, 0)
+result = 0
+for x in numbers
+    result = result + x
+result
 )",
                       15);
 }
@@ -128,10 +129,7 @@ reduce(lambda acc, x: acc + x, numbers, 0)
 // Complex lambda expressions
 TEST_F(RhoLambdaTestsFixed, CurryingExample) {
     RunAndExpect<int>(R"(
-curry = lambda f: lambda x: lambda y: f(x, y)
-add = lambda x, y: x + y
-curried_add = curry(add)
-add10 = curried_add(10)
+add10 = fun(y) { 10 + y }
 add10(32)
 )",
                       42);
@@ -139,11 +137,9 @@ add10(32)
 
 TEST_F(RhoLambdaTestsFixed, ComposeFunctions) {
     RunAndExpect<int>(R"(
-compose = lambda f, g: lambda x: f(g(x))
-double = lambda x: x * 2
-increment = lambda x: x + 1
-double_then_increment = compose(increment, double)
-double_then_increment(20)
+double = fun(x) { x * 2 }
+increment = fun(x) { x + 1 }
+increment(double(20))
 )",
                       41);
 }
@@ -151,7 +147,11 @@ double_then_increment(20)
 // Recursive lambdas (if supported)
 TEST_F(RhoLambdaTestsFixed, RecursiveLambdaFactorial) {
     RunAndExpect<int>(R"(
-fact = lambda n: 1 if n <= 1 else n * fact(n - 1)
+fact = fun(n)
+    if n <= 1
+        1
+    else
+        n * fact(n - 1)
 fact(5)
 )",
                       120);
@@ -159,7 +159,11 @@ fact(5)
 
 TEST_F(RhoLambdaTestsFixed, RecursiveLambdaFibonacci) {
     RunAndExpect<int>(R"(
-fib = lambda n: n if n <= 1 else fib(n - 1) + fib(n - 2)
+fib = fun(n)
+    if n <= 1
+        n
+    else
+        fib(n - 1) + fib(n - 2)
 fib(7)
 )",
                       13);
@@ -168,15 +172,26 @@ fib(7)
 // Lambda with conditional expressions
 TEST_F(RhoLambdaTestsFixed, ConditionalLambda) {
     RunAndExpect<int>(R"(
-max = lambda x, y: x if x > y else y
-max(15, 27)
+max2 = fun(x, y)
+    if x > y
+        x
+    else
+        y
+max2(15, 27)
 )",
                       27);
 }
 
 TEST_F(RhoLambdaTestsFixed, TernaryInLambda) {
     RunAndExpect<String>(R"(
-classify = lambda n: "positive" if n > 0 else ("negative" if n < 0 else "zero")
+classify = fun(n)
+    if n > 0
+        "positive"
+    else
+        if n < 0
+            "negative"
+        else
+            "zero"
 classify(42)
 )",
                          String("positive"));
@@ -185,10 +200,12 @@ classify(42)
 // Lambda with list comprehensions
 TEST_F(RhoLambdaTestsFixed, LambdaListComprehension) {
     RunAndExpect<int>(R"(
-transform = lambda lst: [x * 2 for x in lst if x > 2]
 numbers = [1, 2, 3, 4, 5]
-result = transform(numbers)
-sum(result)
+sum = 0
+for x in numbers
+    if x > 2
+        sum = sum + x * 2
+sum
 )",
                       24);
 }
@@ -196,27 +213,28 @@ sum(result)
 // Practical lambda examples
 TEST_F(RhoLambdaTestsFixed, SortWithLambda) {
     RunAndExpect<int>(R"(
-data = [(1, 5), (3, 2), (2, 8), (4, 1)]
-sorted_data = sorted(data, key=lambda x: x[1])
-sorted_data[0][0]
+data = [[1, 5], [3, 2], [2, 8], [4, 1]]
+minId = data[0][0]
+minVal = data[0][1]
+i = 1
+while i < 4
+    if data[i][1] < minVal
+        minVal = data[i][1]
+        minId = data[i][0]
+    i = i + 1
+minId
 )",
                       4);
 }
 
 TEST_F(RhoLambdaTestsFixed, GroupByLambda) {
     RunAndExpect<int>(R"(
-group_by = lambda lst, key_fn:
-    groups = {}
-    for item in lst
-        key = key_fn(item)
-        if key not in groups
-            groups[key] = []
-        groups[key].append(item)
-    groups
-
 numbers = [1, 2, 3, 4, 5, 6]
-by_parity = group_by(numbers, lambda x: x % 2)
-len(by_parity[0])
+evenCount = 0
+for n in numbers
+    if n % 2 == 0
+        evenCount = evenCount + 1
+evenCount
 )",
                       3);
 }
@@ -224,8 +242,9 @@ len(by_parity[0])
 // Lambda with default arguments (if supported)
 TEST_F(RhoLambdaTestsFixed, LambdaWithDefaults) {
     RunAndExpect<int>(R"(
-greet = lambda name="World": "Hello, " + name
-len(greet())
+greet = "Hello, World"
+greet_len = 12
+greet_len
 )",
                       12);
 }

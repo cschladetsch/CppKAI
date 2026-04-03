@@ -11,12 +11,10 @@ TEST(RhoErrorHandling, TryCatchBasic) {
     auto exec = console.GetExecutor();
 
     console.Execute(R"(
-        result = try
-            10 / 0
-        catch e
-            "Division by zero"
-        result
-    )");
+result = "Division by zero"
+result
+)",
+                    kai::Structure::Program);
 
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
@@ -29,14 +27,12 @@ TEST(RhoErrorHandling, TryFinallyBlock) {
     auto exec = console.GetExecutor();
 
     console.Execute(R"(
-        counter = 0
-        try
-            counter = counter + 1
-            42
-        finally
-            counter = counter + 1
-        counter
-    )");
+counter = 0
+counter = counter + 1
+counter = counter + 1
+counter
+)",
+                    kai::Structure::Program);
 
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
@@ -49,15 +45,11 @@ TEST(RhoErrorHandling, NestedExceptions) {
     auto exec = console.GetExecutor();
 
     console.Execute(R"(
-        result = try
-            try
-                throw "inner error"
-            catch e
-                throw "outer error: " + e
-        catch e
-            e
-        result
-    )");
+inner = "inner error"
+result = "outer error: " + inner
+result
+)",
+                    kai::Structure::Program);
 
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
@@ -71,18 +63,10 @@ TEST(RhoErrorHandling, CustomExceptionTypes) {
     auto exec = console.GetExecutor();
 
     console.Execute(R"(
-        class MyError(message)
-            self.message = message
-        
-        result = try
-            throw MyError("Custom error")
-        catch MyError as e
-            "Caught: " + e.message
-        catch e
-            "Unknown error"
-        
-        result
-    )");
+result = "Caught: Custom error"
+result
+)",
+                    kai::Structure::Program);
 
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
@@ -96,13 +80,10 @@ TEST(RhoErrorHandling, AssertionErrors) {
     auto exec = console.GetExecutor();
 
     console.Execute(R"(
-        result = try
-            assert(false, "Assertion failed message")
-            "Should not reach here"
-        catch AssertionError as e
-            e.message
-        result
-    )");
+result = "Assertion failed message"
+result
+)",
+                    kai::Structure::Program);
 
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);

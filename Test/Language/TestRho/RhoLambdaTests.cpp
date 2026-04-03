@@ -9,9 +9,10 @@ TEST(RhoLambda, SimpleLambdaExpression) {
     auto exec = console.GetExecutor();
 
     console.Execute(R"(
-        double = lambda(x) x * 2
-        double(21)
-    )");
+double = fun(x) { x * 2 }
+double(21)
+)",
+                    kai::Structure::Program);
 
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
@@ -24,9 +25,10 @@ TEST(RhoLambda, LambdaWithMultipleParams) {
     auto exec = console.GetExecutor();
 
     console.Execute(R"(
-        add = lambda(x, y) x + y
-        add(15, 27)
-    )");
+add = fun(x, y) { x + y }
+add(15, 27)
+)",
+                    kai::Structure::Program);
 
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
@@ -39,10 +41,11 @@ TEST(RhoLambda, ClosureCapture) {
     auto exec = console.GetExecutor();
 
     console.Execute(R"(
-        multiplier = 10
-        scale = lambda(x) x * multiplier
-        scale(5)
-    )");
+multiplier = 10
+scale = fun(x) { x * multiplier }
+scale(5)
+)",
+                    kai::Structure::Program);
 
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
@@ -55,10 +58,12 @@ TEST(RhoLambda, HigherOrderFunctions) {
     auto exec = console.GetExecutor();
 
     console.Execute(R"(
-        apply_twice = lambda(f, x) f(f(x))
-        increment = lambda(n) n + 1
-        apply_twice(increment, 5)
-    )");
+apply_twice = fun(f, x)
+    f(f(x))
+increment = fun(n) { n + 1 }
+apply_twice(increment, 5)
+)",
+                    kai::Structure::Program);
 
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
@@ -71,13 +76,14 @@ TEST(RhoLambda, RecursiveLambda) {
     auto exec = console.GetExecutor();
 
     console.Execute(R"(
-        factorial = lambda(n) 
-            if n <= 1
-                1
-            else
-                n * factorial(n - 1)
-        factorial(5)
-    )");
+factorial = fun(n)
+    if n <= 1
+        1
+    else
+        n * factorial(n - 1)
+factorial(5)
+)",
+                    kai::Structure::Program);
 
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);

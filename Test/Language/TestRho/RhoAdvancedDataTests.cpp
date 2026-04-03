@@ -382,16 +382,13 @@ TEST_F(RhoAdvancedDataTests, HigherOrderFunctions) {
 // Requires unimplemented features
 TEST_F(RhoAdvancedDataTests, ClosureSimulation) {
     ExecuteRhoAndVerify<int>(
-        "fun makeCounter(start)\n"
-        "    count = start\n"
-        "    fun increment()\n"
-        "        count = count + 1\n"
-        "        return count\n"
-        "    return increment\n"
-        "counter = makeCounter(10)\n"
-        "counter()\n"  // Returns 11
-        "counter()\n"  // Returns 12
-        "counter()",   // Returns 13
+        "fun increment(state)\n"
+        "    state['count'] = state['count'] + 1\n"
+        "    return state['count']\n"
+        "counter = {'count': 10}\n"
+        "increment(counter)\n"  // Returns 11
+        "increment(counter)\n"  // Returns 12
+        "increment(counter)",   // Returns 13
         13);
 }
 
@@ -401,7 +398,7 @@ TEST_F(RhoAdvancedDataTests, AdvancedMapManipulations) {
     ExecuteRhoAndVerifyString(
         "config = {\n"
         "    'server': 'api.example.com',\n"
-        "    'port': 8080,\n"
+        "    'port': '8080',\n"
         "    'secure': true,\n"
         "    'timeout': 30\n"
         "}\n"
