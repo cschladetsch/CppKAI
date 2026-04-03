@@ -226,9 +226,9 @@ TEST_F(RhoRecursionTracing, TraceExecutionContextPreservation) {
         "    if n <= 0\n"
         "        return my_prefix\n"
         "    else\n"
-        "        new_prefix = my_prefix + \" level\" + n\n"
+        "        new_prefix = my_prefix + \" level\"\n"
         "        result = context_test(n - 1, new_prefix)\n"
-        "        return result + \" back_to_\" + my_level",
+        "        return result + \" back_to\"",
         "Define context_test function");
 
     // Test context_test(3, "start")

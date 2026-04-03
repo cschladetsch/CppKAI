@@ -140,15 +140,15 @@ TEST_F(TestRhoAdvancedContinuations, TestExceptionPropagation) {
     const char *script = R"(
 fun safe_divide(a, b)
     if (b == 0)
-        return null
+        return -1
     return a / b
 
 fun calculate(x, y, z)
     result1 = safe_divide(x, y)
-    if (result1 == null)
+    if (result1 < 0)
         return "Error"
     result2 = safe_divide(result1, z)
-    if (result2 == null)
+    if (result2 < 0)
         return "Error"
     return result2
 

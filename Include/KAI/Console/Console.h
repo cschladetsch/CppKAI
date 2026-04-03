@@ -111,14 +111,14 @@ class Console : public Reflected {
     Pointer<Compiler> GetCompiler() const { return compiler; }
 
     Pointer<Continuation> Compile(const char *, Structure);
-    void Execute(const String &text, Structure st = Structure::Statement);
+    void Execute(const String &text, Structure st = Structure::Program);
     bool ExecuteFile(const char *);
     void Execute(Pointer<Continuation> cont);
     void ExecuteWithExecutor(Pointer<Continuation> cont,
                              Pointer<Executor> targetExecutor);
     void ExecuteWithExecutor(const String &text,
                              Pointer<Executor> targetExecutor,
-                             Structure st = Structure::Statement);
+                             Structure st = Structure::Program);
 
     String WriteStack() const;
     String WriteStackForExecutor(Pointer<Executor> exec) const;

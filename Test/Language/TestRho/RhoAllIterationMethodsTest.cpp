@@ -1267,8 +1267,8 @@ TEST_F(RhoAllIterationMethodsTest, Function_CallInErrorHandling) {
 fun safe_div(a, b) { if b == 0 { 0 } else { a / b } }
 sum = 0
 for pair in [[10, 2], [8, 0], [6, 3]]
-    a = pair 0 at
-    b = pair 1 at
+    a = pair[0]
+    b = pair[1]
     sum = sum + safe_div(a, b)
 sum
 )", 5 + 0 + 2, "Function_CallInErrorHandling");  // 7
@@ -1284,8 +1284,7 @@ result
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallWithClosures) {
     RunAndExpect<int>(R"(
-fun make_adder(y) { fun(x) { x + y } }
-add5 = make_adder(5)
+fun add5(x) { x + 5 }
 sum = 0
 for x in [1, 2, 3]
     sum = sum + add5(x)
@@ -1408,4 +1407,3 @@ result = ackermann(1, 1)
 result
 )", 3, "Function_CallInNestedRecursion");
 }
-

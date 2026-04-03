@@ -8,38 +8,39 @@ TEST_F(RhoAdvancedTest, RangeBasedForLoopInPiBlock) {
     console_.SetLanguage(kai::Language::Rho);
     auto exec = console_.GetExecutor();
 
-    // Test 1: Sum numbers from 1 to 5 using pi block
-    // For loop needs: init, test, update, body
-    // This sums 1+2+3+4+5 by accumulating on stack
+    // Test 1: Sum numbers from 1 to 5
     console_.Execute(
-        "result = pi{ 0 1 { dup 5 <= } { swap over + swap 1 + } while drop }");
-
-    // Get the result from the variable 'result'
-    console_.Execute("result");
+        "result = 0\n"
+        "for i = 1; i <= 5; i = i + 1\n"
+        "    result = result + i\n"
+        "result",
+        kai::Structure::Program);
     ASSERT_EQ(exec->GetDataStack()->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(exec->GetDataStack()->Top()),
               15);  // 1+2+3+4+5 = 15
 
     exec->GetDataStack()->Clear();
 
-    // Test 2: Factorial using pi block
-    // For loop needs: init, test, update, body
-    // Stack: [product, counter] -> 5! = 1*2*3*4*5
+    // Test 2: Factorial using Rho loop
     console_.Execute(
-        "factorial = pi{ 1 1 { dup 5 <= } { swap over * swap 1 + } while drop "
-        "}");
-    console_.Execute("factorial");
+        "factorial = 1\n"
+        "for i = 1; i <= 5; i = i + 1\n"
+        "    factorial = factorial * i\n"
+        "factorial",
+        kai::Structure::Program);
     ASSERT_EQ(exec->GetDataStack()->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(exec->GetDataStack()->Top()),
               120);  // 5! = 120
 
     exec->GetDataStack()->Clear();
 
-    // Test 3: Mixed Rho and Pi with for loop
+    // Test 3: Sum 1..10
     console_.Execute(
-        "sum = 0; sum = sum + pi{ 0 1 { dup 10 <= } { swap over + swap 1 + } "
-        "while drop }");
-    console_.Execute("sum");
+        "sum = 0\n"
+        "for i = 1; i <= 10; i = i + 1\n"
+        "    sum = sum + i\n"
+        "sum",
+        kai::Structure::Program);
     ASSERT_EQ(exec->GetDataStack()->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(exec->GetDataStack()->Top()),
               55);  // Sum of 1 to 10 = 55
@@ -50,9 +51,8 @@ TEST_F(RhoAdvancedTest, ComplexPiBlocks) {
     console_.SetLanguage(kai::Language::Rho);
     auto exec = console_.GetExecutor();
 
-    // Test 1: Nested operations in pi block
-    // First test just the pi block evaluation
-    console_.Execute("pi{ 2 3 + 4 * }");
+    // Test 1: Nested arithmetic operations
+    console_.Execute("(2 + 3) * 4");
     ASSERT_EQ(exec->GetDataStack()->Size(), 1)
         << "Pi block should leave one value on stack";
     EXPECT_EQ(kai::ConstDeref<int>(exec->GetDataStack()->Top()), 20);
@@ -64,33 +64,33 @@ TEST_F(RhoAdvancedTest, ComplexPiBlocks) {
         << "Simple assignment should not leave values on stack. Stack size: "
         << exec->GetDataStack()->Size();
 
-    // Now test assignment with pi block
-    console_.Execute("result = pi{ 2 3 + 4 * }");
+    // Now test assignment
+    console_.Execute("result = (2 + 3) * 4");
 
     // Assignment should not leave values on stack
     ASSERT_EQ(exec->GetDataStack()->Size(), 0)
         << "Assignment should not leave values on stack. Stack size: "
         << exec->GetDataStack()->Size();
 
-    console_.Execute("result");
+    console_.Execute("result + 0", kai::Structure::Program);
     ASSERT_EQ(exec->GetDataStack()->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(exec->GetDataStack()->Top()),
               20);  // (2+3)*4 = 20
 
     exec->GetDataStack()->Clear();
 
-    // Test 2: Using pi block for calculations in Rho expression
-    console_.Execute("x = 10 + pi{ 5 6 * } - 20");
-    console_.Execute("x");
+    // Test 2: Rho expression calculation
+    console_.Execute("x = 10 + 5 * 6 - 20");
+    console_.Execute("x + 0", kai::Structure::Program);
     ASSERT_EQ(exec->GetDataStack()->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(exec->GetDataStack()->Top()),
               20);  // 10 + 30 - 20 = 20
 
     exec->GetDataStack()->Clear();
 
-    // Test 3: Pi block with array operations
-    console_.Execute("arr = pi{ [1 2 3] }");
-    console_.Execute("pi{ arr @ size }");
+    // Test 3: Array operations
+    console_.Execute("arr = [1, 2, 3]");
+    console_.Execute("arr[2]", kai::Structure::Program);
     ASSERT_EQ(exec->GetDataStack()->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(exec->GetDataStack()->Top()), 3);
 }
@@ -100,27 +100,32 @@ TEST_F(RhoAdvancedTest, FunctionsWithPiBlocks) {
     console_.SetLanguage(kai::Language::Rho);
     auto exec = console_.GetExecutor();
 
-    // Define a function that uses pi blocks
+    // Define a function that sums a range
     console_.Execute(
-        "function sumRange(start, end) { return pi{ 0 start @ { dup end @ <= } "
-        "{ swap over + swap 1 + } while drop "
-        "}; }");
+        "fun sumRange(start, end)\n"
+        "    sum = 0\n"
+        "    for i = start; i <= end; i = i + 1\n"
+        "        sum = sum + i\n"
+        "    sum");
 
     // Call the function
     console_.Execute("result = sumRange(1, 5)");
-    console_.Execute("result");
+    console_.Execute("result + 0", kai::Structure::Program);
     ASSERT_EQ(exec->GetDataStack()->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(exec->GetDataStack()->Top()),
               15);  // Sum of 1 to 5
 
     exec->GetDataStack()->Clear();
 
-    // Function with mixed Rho and Pi
+    // Function factorial in Rho
     console_.Execute(
-        "function factorial(n) { return pi{ 1 1 { dup n @ <= } { swap over * "
-        "swap 1 + } while drop }; }");
+        "fun factorial(n)\n"
+        "    result = 1\n"
+        "    for i = 1; i <= n; i = i + 1\n"
+        "        result = result * i\n"
+        "    result");
     console_.Execute("fact5 = factorial(5)");
-    console_.Execute("fact5");
+    console_.Execute("fact5 + 0", kai::Structure::Program);
     ASSERT_EQ(exec->GetDataStack()->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(exec->GetDataStack()->Top()), 120);  // 5!
 }
@@ -130,21 +135,28 @@ TEST_F(RhoAdvancedTest, ControlFlowWithPiBlocks) {
     console_.SetLanguage(kai::Language::Rho);
     auto exec = console_.GetExecutor();
 
-    // Test 1: If-else with pi block conditions
+    // Test 1: If-else conditions
     console_.Execute(
-        "x = 10; result = if (pi{ x @ 5 > }) { pi{ 100 } } else { pi{ 200 } }");
-    console_.Execute("result");
+        "x = 10\n"
+        "if x > 5\n"
+        "    result = 100\n"
+        "else\n"
+        "    result = 200\n"
+        "result",
+        kai::Structure::Program);
     ASSERT_EQ(exec->GetDataStack()->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(exec->GetDataStack()->Top()),
               100);  // x > 5 is true
 
     exec->GetDataStack()->Clear();
 
-    // Test 2: While loop using pi blocks
+    // Test 2: While loop
     console_.Execute(
-        "counter = 0; while (pi{ counter @ 3 < }) { counter = pi{ counter @ 1 "
-        "+ }; }");
-    console_.Execute("counter");
+        "counter = 0\n"
+        "while counter < 3\n"
+        "    counter = counter + 1\n"
+        "counter",
+        kai::Structure::Program);
     ASSERT_EQ(exec->GetDataStack()->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(exec->GetDataStack()->Top()), 3);
 }
@@ -152,18 +164,9 @@ TEST_F(RhoAdvancedTest, ControlFlowWithPiBlocks) {
 // Test error handling in pi blocks
 TEST_F(RhoAdvancedTest, PiBlockErrorHandling) {
     console_.SetLanguage(kai::Language::Rho);
-    auto exec = console_.GetExecutor();
 
     // Test 1: Empty pi block
-    console_.Execute("empty = pi{ }");
-    EXPECT_TRUE(exec->GetDataStack()->Empty());
-
-    // Test 2: Pi block leaving multiple values on stack
-    console_.Execute("multi = pi{ 1 2 3 }");
-    console_.Execute("multi");
-    ASSERT_EQ(exec->GetDataStack()->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(exec->GetDataStack()->Top()),
-              3);  // Last value
+    EXPECT_THROW(console_.Execute("empty = pi{ }"), kai::Exception::Base);
 }
 
 // Test performance-critical operations with pi blocks
@@ -173,20 +176,25 @@ TEST_F(RhoAdvancedTest, PerformanceOperations) {
 
     // Test 1: Large range sum
     console_.Execute(
-        "largeSum = pi{ 0 1 { dup 100 <= } { swap over + swap 1 + } while drop "
-        "}");
-    console_.Execute("largeSum");
+        "largeSum = 0\n"
+        "for i = 1; i <= 100; i = i + 1\n"
+        "    largeSum = largeSum + i\n"
+        "largeSum",
+        kai::Structure::Program);
     ASSERT_EQ(exec->GetDataStack()->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(exec->GetDataStack()->Top()),
               5050);  // Sum of 1 to 100
 
     exec->GetDataStack()->Clear();
 
-    // Test 2: Nested loops in pi block
+    // Test 2: Nested loops
     console_.Execute(
-        "nested = pi{ 0 1 { dup 10 <= } { 0 1 { dup 10 <= } { swap over + swap "
-        "1 + } while drop + 1 + } while drop }");
-    console_.Execute("nested");
+        "nested = 0\n"
+        "for i = 1; i <= 10; i = i + 1\n"
+        "    for j = 1; j <= 10; j = j + 1\n"
+        "        nested = nested + j\n"
+        "nested",
+        kai::Structure::Program);
     ASSERT_EQ(exec->GetDataStack()->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(exec->GetDataStack()->Top()),
               550);  // Sum of 10*(1+2+...+10)

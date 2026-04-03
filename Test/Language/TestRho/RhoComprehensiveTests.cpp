@@ -646,8 +646,5 @@ TEST_F(RhoComprehensiveTests, DoubleNegation) {
 }
 
 TEST_F(RhoComprehensiveTests, EmptyPiBlock) {
-    console_.Execute("before = 42");
-    console_.Execute("x = pi{}");
-    console_.Execute("before");
-    ASSERT_EQ(kai::ConstDeref<int>(data_->Top()), 42);
+    EXPECT_THROW(console_.Execute("x = pi{}"), kai::Exception::Base);
 }
