@@ -1,6 +1,6 @@
 # Building KAI
 
-KAI uses CMake as its build system and follows modern out-of-source build practices. All build artifacts are kept in a `build/` directory, separate from source code.
+KAI uses CMake as its build system and supports both in-source and out-of-source builds. For day-to-day development, prefer an out-of-source `build/` directory to keep generated files separate from the source tree.
 
 ## Prerequisites
 
@@ -54,7 +54,7 @@ make clean
 
 ### Standard Out-of-Source Build
 
-Always build from a separate `build` directory to keep your source tree clean:
+Build from a separate `build` directory when you want an isolated configure/build tree:
 
 ```bash
 # Create build directory
@@ -92,13 +92,15 @@ cmake .. -DCMAKE_BUILD_TYPE=Release
 # Security options
 cmake .. -DENABLE_SHELL_SYNTAX=ON         # Enable shell command integration (default: OFF)
 
-# Control which components to build
-cmake .. -DKAI_BUILD_TEST_ALL=ON          # Build all tests (default)
-cmake .. -DKAI_BUILD_CORE_TEST=ON         # Build core unit tests (default)
-cmake .. -DKAI_BUILD_TEST_LANG=ON         # Build language tests (default)
-cmake .. -DKAI_BUILD_TEST_NETWORK=OFF     # Build networking tests (default: OFF)
-cmake .. -DKAI_BUILD_ENET=ON             # Build with ENet (default: ON)
+# Control which components to build on `develop`
+cmake .. -DKAI_BUILD_TEST_ALL=ON          # Build test targets (default: ON)
+cmake .. -DKAI_BUILD_CORE_TEST=ON         # Build core/unit tests (default: ON)
+cmake .. -DKAI_BUILD_TEST_LANG=ON         # Build language tests (default: ON)
+cmake .. -DKAI_NETWORKING=OFF             # Skip networking components and network tests (default)
+cmake .. -DKAI_NETWORKING=ON              # Enable networking, Tau network codegen, and Test_Network
 ```
+
+On the current `develop` branch, core and language tests are enabled by default. Network features remain opt-in via `-DKAI_NETWORKING=ON`.
 
 #### Security Configuration
 
@@ -184,13 +186,20 @@ Console --help                   # Available system-wide
 
 ### Running Tests
 
-From the build directory:
+After building, test binaries are written to `Bin/` at the repository root:
 
 ```bash
-ctest              # Run all tests
-./Bin/KaiTest      # Run core tests
-./Bin/TestRho      # Run Rho language tests
-./Bin/TestPi       # Run Pi language tests
+# Full suite from the repository root
+./run_all_tests.sh
+
+# Individual test binaries
+./Bin/Test/TestCore
+./Bin/Test/TestPi
+./Bin/Test/TestRho
+./Bin/Test/TestTau
+
+# Network tests are available only when KAI_NETWORKING=ON
+./Bin/Test/Test_Network
 ```
 
 ## Common Issues

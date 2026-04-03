@@ -61,9 +61,9 @@ The `KAI_NETWORKING` option controls:
 ## Running Network Tests
 
 ```bash
-./Bin/Test_Network                                     # all 17 tests
-./Bin/Test_Network --gtest_filter="NodeEndToEndTest*"  # 6 E2E tests
-./Bin/Test_Network --gtest_filter="TauDomain*"         # 3 domain tests
+./Bin/Test/Test_Network                                     # all 17 tests
+./Bin/Test/Test_Network --gtest_filter="NodeEndToEndTest*"  # 6 E2E tests
+./Bin/Test/Test_Network --gtest_filter="TauDomain*"         # 3 domain tests
 ```
 
 ## FAQ

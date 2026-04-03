@@ -2,7 +2,7 @@
 
 ## Problem Summary
 
-When running Rho language tests via `./run_tests --rho`, the console was flooded with the message:
+When running Rho language tests via `./Bin/Test/TestRho`, the console was flooded with the message:
 ```
 [INFO] Info: Object::Valid failed: Null registry
 ```
@@ -75,7 +75,7 @@ This keeps the actual validation logic intact (objects still fail validation in 
 
 Run the Rho tests to verify that the annoying messages no longer appear:
 ```
-./run_tests --rho
+./Bin/Test/TestRho
 ```
 
 The fix successfully eliminates all the "Object::Valid failed: Null registry" and "Object copy constructor: Invalid source object" messages from the output.

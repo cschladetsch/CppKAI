@@ -8,6 +8,13 @@ This directory contains comprehensive documentation for the KAI distributed obje
 - **[BUILD.md](BUILD.md)** - Building KAI from source
 - **[Install.md](Install.md)** - Installation instructions
 - **[Documentation.md](Documentation.md)** - Main documentation index
+- **[Test.md](Test.md)** - Running the test suites and filtering failures
+
+## Current Branch Notes
+
+- On `develop`, core and language tests are enabled by default.
+- Network features and `Test_Network` are enabled with `-DKAI_NETWORKING=ON`.
+- See **[../TEST_SUMMARY.md](../TEST_SUMMARY.md)** for the current test status snapshot.
 
 ### Language Tutorials
 - **[PiTutorial.md](PiTutorial.md)** - Pi stack-based language tutorial

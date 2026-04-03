@@ -13,7 +13,7 @@ The enhanced test suite summary feature provides comprehensive reporting and ana
 
 ## Files Modified/Created
 
-- **`run_all_tests_fixed`** - Enhanced with:
+- **`run_all_tests.sh`** - Current top-level test runner, with:
   - Proper log file headers and footers
   - Improved summary format
   - Archive management functionality
@@ -82,7 +82,7 @@ Generated: [Timestamp]
 Test runs can now be archived with a simple flag:
 
 ```bash
-./run_all_tests_fixed --archive
+./run_all_tests.sh
 ```
 
 This preserves all log files in a timestamped directory for historical analysis.
@@ -100,7 +100,7 @@ The new `Scripts/analyze_test_history.sh` script provides insights into test sui
 
 1. Run the tests and archive the results:
    ```bash
-   ./run_all_tests_fixed --archive
+   ./run_all_tests.sh
    ```
 
 2. Analyze historical test data:

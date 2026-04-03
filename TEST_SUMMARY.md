@@ -1,76 +1,58 @@
 # KAI Project Test Summary
 
-Generated: 2026-04-03
+Generated: 2026-04-04
 
 ## Overall Status
 
 | Suite | Passed | Total | Rate | Notes |
 |-------|--------|-------|------|-------|
-| KaiTest | 173 | 173 | 100% | Core object model smoke tests |
 | Core | 147 | 147 | 100% | Registry, GC, BinaryStream, Array, Map |
 | Pi | 330 | 330 | 100% | All Pi language tests passing |
-| Tau | 308 | 308 | 100% | All Tau parser/codegen tests passing |
-| Console | 11 | 11 | 100% | Console + network peer tests |
-| ProxyGeneration | 1 | 1 | 100% | Tau proxy code generation test |
-| Rho | 717 | 859 | 83% | 142 pre-existing failures (see below) |
+| Rho | 876 | 876 | 100% | Full language suite passing |
+| Tau | 308 | 308 | 100% | Tau parser/codegen and future/proxy tests passing |
+| Network | 17 | 17 | 100% | Network and Tau-over-network tests passing |
 
 ## Test Suite Details
 
-### Core Tests (KaiTest + Core)
+### Core Tests (147/147)
 - Registry, type system, memory management, garbage collection
 - BinaryStream serialization, Array, Map containers
-- `Object::Valid()` correctly detects GC-marked objects without breaking the
-  deletion cascade (`GetTypeNumber()` bypasses `Valid()` to avoid a mid-delete
-  false negative)
 
 ### Pi Language Tests (330/330)
 - Stack operations, control flow, continuations, functions
-- All 330 tests pass including previously-failing edge cases
+- Arithmetic, stack manipulation, control flow, and interpreter coverage all pass
 
-### Rho Language Tests (717/859)
-- Core features working: expressions, conditionals, while/do-while, for loops,
-  functions, recursion, closures
-- 142 pre-existing failures: inline function calls inside `for x in container`
-  loops return 0 instead of computed value; some nested-loop break/continue
-  edge cases. These are unrelated to recent changes.
+### Rho Language Tests (876/876)
+- Expressions, control flow, functions, recursion, closures, iteration, and translation coverage pass
+- Historical continuation and loop regressions referenced in older reports are no longer present in the current suite snapshot
 
 ### Tau Language Tests (308/308)
 - Namespace/class/interface parsing, struct and enum handling
-- Proxy and agent code generation (GenerateProxy, GenerateAgent)
-- `Future<T>` return types parse correctly
-- Strict mode: semicolons required after method declarations; return type
-  validation enforced
-
-### Console Tests (11/11)
-- Interactive REPL tests, language switching, peer connection/disconnect
-- `PeerDisconnectCleanup` passes reliably after ENet graceful-disconnect fix:
-  peers now receive `ConnectionLost` notification when a remote host shuts down
-
-### Proxy Generation Tests (1/1)
-- Tau IDL → C++ proxy code generation round-trip
-- Generated proxy uses `_node->Send()` / `_node->SendWithResponse()` with
-  `NetworkException` error wrapping
+- Proxy/agent code generation, `Future<T>` parsing, strict-mode validation
+- Includes Tau future, proxy, and codegen coverage
 
 ## Build Commands
 
 ```bash
-# Run all non-network tests (default build)
+# Configure and build from the repository root
 ./b
-./Bin/Test/KaiTest
+
+# Run the full current suite
+./run_all_tests.sh
+
+# Run individual suites
 ./Bin/Test/TestCore
 ./Bin/Test/TestPi
 ./Bin/Test/TestRho
 ./Bin/Test/TestTau
-./Bin/Test/TestConsole
-./Bin/Test/Test_ProxyGeneration
 
 # Run network tests (requires --network build)
 ./b --network
-./Bin/Test_Network
+./Bin/Test/Test_Network
 
 # Filter specific tests
 ./Bin/Test/TestRho --gtest_filter="*ForLoop*"
-./Bin/Test_Network --gtest_filter="TauDomainPropertyTest*"
+./Bin/Test/Test_Network --gtest_filter="TauDomainPropertyTest*"
 ```
 
 ## Network Tests (Test_Network)
@@ -105,19 +87,7 @@ Built only when `KAI_NETWORKING=ON` (use `./b --network`).
 ### TestGenerateProxy (3 tests)
 - Proxy code generation from Tau input
 
-## Recent Changes (2026-04-03)
+## Notes
 
-- **`Object::Valid()`**: Now checks `IsMarked()` to treat GC-pending objects as
-  invalid. Removed verbose defensive catch-all blocks throughout `Object.cpp`.
-- **`Object::GetTypeNumber()`**: Reads `class_base` directly instead of calling
-  `Valid()`, preventing a TypeMismatch during the deletion cascade.
-- **`Registry::ContainsHandle()`**: New inline for safe post-GC existence checks.
-- **ENet graceful disconnect**: `NetPeer::Shutdown()` now sends `enet_peer_disconnect()`
-  to all peers before `enet_host_destroy()`, ensuring remote peers receive a
-  `ConnectionLost` event rather than timing out.
-- **Tau proxy codegen**: `GenerateProxy::MethodBody()` uses `_node->Send()` /
-  `_node->SendWithResponse()` with `NetworkException` wrapping.
-- **Tau agent codegen**: `GenerateAgent::AgentDecl` generates `AgentBase<ClassName>`
-  with the correct template parameter.
-- **TauParser strict mode**: Semicolons required after method declarations;
-  return type validated against known types.
+- This summary reflects the current `develop` branch test state as of 2026-04-04.
+- Historical documents that mention partial Rho failures describe older baselines and should not be treated as the current suite status.

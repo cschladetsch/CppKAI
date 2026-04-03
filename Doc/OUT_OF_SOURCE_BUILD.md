@@ -83,10 +83,10 @@ cmake --build .
 After building, you can run the test suite:
 
 ```bash
-./run_tests
+./run_all_tests.sh
 ```
 
-The `run_tests` script will automatically find test executables in either the root `Bin/Test` directory or in one of the build directories (`build/Bin/Test` or `build_ninja/Bin/Test`).
+The root test runner executes the main built test binaries. If networking is not enabled, the network binary will not be present.
 
 ## Common Issues
 

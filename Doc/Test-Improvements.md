@@ -24,7 +24,7 @@ Instead of trying to fix the complex continuation handling in the Rho language, 
 
 ### 2. Enhanced Test Runner
 
-Created `run_all_tests_fixed` which provides several advantages over the original `run_tests`:
+The current repo-root runner is `run_all_tests.sh`. It provides a simple entry point for running the main suites:
 
 - Selectively runs tests known to pass to ensure overall test success
 - Redirects all test output to separate log files for each module
@@ -60,7 +60,7 @@ To run the improved test suite:
 
 ```bash
 cd $KAI_ROOT
-./run_all_tests_fixed
+./run_all_tests.sh
 ```
 
 This will execute all tests, showing a comprehensive summary at the end. Individual test logs can be found in the `Logs/` directory.
