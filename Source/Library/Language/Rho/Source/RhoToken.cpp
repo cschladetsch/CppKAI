@@ -6,40 +6,42 @@ KAI_BEGIN
 #undef CASE_LOWER
 #undef CASE_REPLACE
 
-const char *RhoTokenEnumType::ToString(Enum val)
-{
-    switch (val)
-    {
-        #define CASE(N) case RhoTokens::N : return #N;
-        #define CASE_LOWER(N) case RhoTokens::N : return ToLower(#N);
-        #define CASE_REPLACE(N, M) case RhoTokens::N : return M;
+const char *RhoTokenEnumType::ToString(Enum val) {
+    switch (val) {
+#define CASE(N)        \
+    case RhoTokens::N: \
+        return #N;
+#define CASE_LOWER(N)  \
+    case RhoTokens::N: \
+        return ToLower(#N);
+#define CASE_REPLACE(N, M) \
+    case RhoTokens::N:     \
+        return M;
 
         CASE(None)
         CASE(Whitespace)
         CASE(Semi)
         CASE(Int)
-        CASE(Float )
-        CASE(String )
-        CASE(True )
+        CASE(Float)
+        CASE(String)
+        CASE(True)
         CASE(False)
         CASE(Return)
-        CASE(Ident)
+        CASE(Label)
         CASE(Dot)
         CASE(Comma)
-        CASE(If )
+        CASE(If)
         CASE(Else)
-        CASE(For )
-        CASE(While)
-        CASE(OpenBrace )
+        CASE(OpenBrace)
         CASE(CloseBrace)
-        CASE(OpenParan )
+        CASE(OpenParan)
         CASE(CloseParan)
-        CASE(Plus )
+        CASE(Plus)
         CASE(Minus)
         CASE(Mul)
         CASE(Divide)
         CASE(Assign)
-        CASE(Less )
+        CASE(Less)
         CASE(Equiv)
         CASE(NotEquiv)
         CASE(Greater)
@@ -56,6 +58,9 @@ const char *RhoTokenEnumType::ToString(Enum val)
         CASE(BitAnd)
         CASE(BitOr)
         CASE(BitXor)
+        CASE(BitNot)
+        CASE(LeftShift)
+        CASE(RightShift)
         CASE(Self)
         CASE(Lookup)
         CASE(Tab)
@@ -70,7 +75,6 @@ const char *RhoTokenEnumType::ToString(Enum val)
         CASE(MinusAssign)
         CASE(MulAssign)
         CASE(DivAssign)
-        CASE(In)
         CASE(Assert)
         CASE(ToPi)
         CASE(PiSequence)
@@ -78,6 +82,20 @@ const char *RhoTokenEnumType::ToString(Enum val)
         CASE(Quote)
         CASE(Sep)
         CASE(Pathname)
+        CASE(AcrossAllNodes)
+        CASE(Mod)
+        CASE(Colon)
+        CASE(Question)
+        CASE(ModAssign)
+        CASE(DoubleColon)
+        CASE(While)
+        CASE(For)
+        CASE(DoWhile)
+        CASE(ForEach)
+        CASE(Break)
+        CASE(Continue)
+        CASE(ShellCommand)
+        CASE(In)
     }
 
     static char buff[BUFSIZ];
@@ -85,21 +103,29 @@ const char *RhoTokenEnumType::ToString(Enum val)
     return buff;
 }
 
-std::ostream &operator<<(std::ostream &out, RhoToken const &node)
-{
-    if (node.type == RhoTokenEnumType::None)
-        return out;
+KAI_END
 
-    out << RhoTokenEnumType::ToString(node.type);
-    switch (node.type)
-    {
-    case RhoTokenEnumType::Int:
-    case RhoTokenEnumType::String:
-    case RhoTokenEnumType::Ident:
-        out << "=" << node.Text();
+// Define in global namespace for friend declaration
+std::ostream &operator<<(std::ostream &out,
+                         kai::RhoTokenEnumType::Type const &node) {
+    if (node.type == kai::RhoTokenEnumType::None) return out;
+
+    out << kai::RhoTokenEnumType::ToString(node.type);
+    switch (node.type) {
+        case kai::RhoTokenEnumType::Int:
+        case kai::RhoTokenEnumType::String:
+        case kai::RhoTokenEnumType::Label:
+        case kai::RhoTokenEnumType::ShellCommand:
+            out << "=" << node.Text();
     }
 
     return out;
 }
 
-KAI_END
+// Also define in kai namespace for ADL
+namespace kai {
+std::ostream &operator<<(std::ostream &out,
+                         RhoTokenEnumType::Type const &node) {
+    return ::operator<<(out, node);
+}
+}  // namespace kai

@@ -1,13 +1,17 @@
+#include <cctype>
+#include <cstdio>
 #include <iostream>
+#include <sstream>
 
+#include "KAI/Console/rang.hpp"
 #include "KAI/Core/BuiltinTypes.h"
 #include "KAI/Core/FunctionBase.h"
+#include "KAI/Core/Object/ClassBuilder.h"
 #include "KAI/Core/Tree.h"
-#include "KAI/Language/Common/Process.h"
-#include "KAI/Executor/SignedContinuation.h"
-#include "KAI/Executor/Compiler.h"
 #include "KAI/Executor/BinBase.h"
-#include "KAI/Console/rang.hpp"
+#include "KAI/Executor/Compiler.h"
+#include "KAI/Executor/SignedContinuation.h"
+#include "KAI/Language/Common/Process.h"
 
 using namespace std;
 
@@ -16,1549 +20,1108 @@ KAI_BEGIN
 // The higher the trace number, the more verbose debug output.
 int Process::trace = 0;
 
-void Executor::Create()
-{
-    _data = New<Stack>();
-    _context = New<Stack>();
-    _break = false;
-    _traceLevel = 0;
-    _stepNumber = 0;
+Executor::Executor() {
+    // Initialize members
+    break_ = false;
+    continue_ = false;
+    replace_ = false;
+    tree_ = nullptr;
+    traceLevel_ = 0;
+    stepNumber_ = 0;
+    singleStep_ = false;
 }
 
-bool Executor::Destroy()
-{
-    return true;
+Executor::~Executor() {
+    // Default destructor
 }
 
-void Executor::Push(Object const &Q)
-{
-	// Push the referenced object if needed.
-    if (Q.GetTypeNumber() == Type::Number::Object)
-        Push(*_data, ConstDeref<Object>(Q));
-    else
-        Push(*_data, Q);
+void Executor::Create() {
+    data_ = New<Stack>();
+    context_ = New<Stack>();
+    break_ = false;
+    continue_ = false;
+    replace_ = false;
+    traceLevel_ = 0;
+    stepNumber_ = 0;
 }
 
-void Executor::Push(const std::pair<Object, Object> &P)
-{
+bool Executor::Destroy() { return true; }
+
+void Executor::Register(Registry &registry, const char *name) {
+    ClassBuilder<Executor>(registry, name);
+}
+
+bool operator<(const Executor &left, const Executor &right) {
+    return left.GetDataStack() < right.GetDataStack();
+}
+
+bool operator==(const Executor &left, const Executor &right) {
+    return left.GetDataStack() == right.GetDataStack();
+}
+
+StringStream &operator<<(StringStream &stream, Executor const &exec) {
+    stream << "Executor: ";
+    Value<const Stack> data = exec.GetDataStack();
+    stream << "Stack " << (data.Valid() ? "Valid" : "Invalid");
+    if (data.Valid()) stream << data;
+
+    Value<Stack> context = exec.GetContextStack();
+    stream << ", Context " << (context.Valid() ? "Valid" : "Invalid");
+    if (context.Valid()) stream << context;
+
+    return stream;
+}
+
+BinaryStream &operator<<(BinaryStream &stream, Executor const &exec) {
+    stream << exec.GetDataStack();
+    stream << exec.GetContextStack();
+    return stream;
+}
+
+BinaryPacket &operator>>(BinaryPacket &stream, Executor &exec) {
+    return stream;
+}
+
+Object Executor::UnwrapValue(const Object &value) { return value; }
+
+void Executor::Push(Object const &Q) {
+    if (Q.GetTypeNumber() == Type::Number::Object) {
+        Push(*data_, ConstDeref<Object>(Q));
+    } else {
+        Push(*data_, Q);
+    }
+}
+
+void Executor::Push(const std::pair<Object, Object> &P) {
     Push(New(Pair(P.first, P.second)));
 }
 
-Object Executor::Pop()
-{
-    return Pop(*_data);
-}
+Object Executor::Pop() { return Pop(*data_); }
 
-Value<Stack> Executor::GetDataStack()
-{
-    return _data;
-}
+Object Executor::Top() const { return data_->Top(); }
 
-Value<Stack> Executor::GetContextStack() const
-{
-    return _context;
-}
-
-void Executor::SetContinuation(Value<Continuation> C)
-{
-    _continuation = C;
-}
-
-struct Trace
-{
-    static std::ostream &Debug()
-    {
-        return std::cout;
+Value<Stack> Executor::GetDataStack() {
+    if (!data_.Valid() || !data_.Exists()) {
+        KAI_TRACE_ERROR() << "GetDataStack: Invalid data stack";
+        return Value<Stack>();
     }
-};
+    return data_;
+}
 
-void Executor::Continue()
-{
-    while (true)
-    {
-        _break = false;
-        Object next;
-        if (_continuation->Next(next))
-        {
-            KAI_TRY
-            {
-                if (_traceLevel > 10)
-                    KAI_TRACE() << "Start step\n";
-                if (_traceLevel > 10)
-                    KAI_TRACE_1(_stepNumber);
-                if (_traceLevel > 10)
-                    KAI_TRACE_1(_data);
-                if (_traceLevel > 10)
-                    KAI_TRACE_1(_context);
-                if (_traceLevel > 10)
-                    KAI_TRACE_1(next);
+Value<Stack> Executor::GetContextStack() const { return context_; }
 
-                Eval(next);
+void Executor::Push(Stack &stack, Object const &Q) { stack.Push(Q); }
+
+Object Executor::Pop(Stack &stack) { return stack.Pop(); }
+
+bool Executor::PopBool() {
+    if (data_->Empty()) {
+        KAI_TRACE_ERROR() << "PopBool: Stack is empty";
+        return false;
+    }
+
+    try {
+        auto val = Pop();
+
+        if (!val.Valid() || !val.Exists()) {
+            KAI_TRACE_ERROR() << "PopBool: Invalid or non-existent value";
+            return false;  // Default to false for invalid objects
+        }
+
+        // If it's already a bool, just return it directly
+        if (val.IsType<bool>()) return ConstDeref<bool>(val);
+
+        // Type conversion for common types
+        if (val.IsType<int>()) {
+            // Common convention: 0 is false, any other value is true
+            return ConstDeref<int>(val) != 0;
+        }
+
+        if (val.IsType<float>()) {
+            // Common convention: 0.0 is false, any other value is true
+            return ConstDeref<float>(val) != 0.0f;
+        }
+
+        if (val.IsType<String>()) {
+            // Common convention: empty string is false, any other string is
+            // true
+            return !ConstDeref<String>(val).empty();
+        }
+
+        // Special case for continuations
+        if (val.IsType<Continuation>()) {
+            // KAI_TRACE() << "PopBool: Converting Continuation to bool (true)";
+            return true;
+        }
+
+        if (val.IsType<Array>()) {
+            // KAI_TRACE() << "PopBool: Converting Array to bool";
+            const Array &arr = ConstDeref<Array>(val);
+            return arr.Size() > 0;
+        }
+
+        if (val.IsType<Operation>()) {
+            Operation::Type op = ConstDeref<Operation>(val).GetTypeNumber();
+            if (op == Operation::LogicalAnd || op == Operation::LogicalOr ||
+                op == Operation::LogicalNot || op == Operation::LogicalXor ||
+                op == Operation::Less || op == Operation::Greater ||
+                op == Operation::Equiv || op == Operation::NotEquiv) {
+                // KAI_TRACE()
+                //     << "PopBool: Converting logical Operation to bool
+                //     (true)";
+                return true;
             }
-            catch (Exception::Base &E)
-            {
-                KAI_TRACE_1(E);
-            }
+            // KAI_TRACE()
+            //     << "PopBool: Converting non-logical Operation to bool
+            //     (false)";
+            return false;
         }
-        else
-            _break = true;
 
-        if (_break)
-        {
-            NextContinuation();
-            if (!_continuation.Exists())
-                return;
+        if (val.GetClass()) {
+            // KAI_TRACE() << "PopBool: Converting non-boolean type "
+            //             << val.GetClass()->GetName() << " to bool (true)";
+        } else {
+            // KAI_TRACE() << "PopBool: Converting unknown type to bool (true)";
         }
+        return true;
+    } catch (const Exception::Base &e) {
+        KAI_TRACE_ERROR() << "PopBool: Caught KAI exception: " << e.ToString();
+        return false;
+    } catch (const std::exception &e) {
+        KAI_TRACE_ERROR() << "PopBool: Caught std::exception: " << e.what();
+        return false;
+    } catch (...) {
+        KAI_TRACE_ERROR() << "PopBool: Caught unknown exception";
+        return false;
     }
 }
 
-void Executor::SetScope(Object scope)
-{
-    _context->Push(scope);
+void Executor::ToArray() {
+    auto len = ConstDeref<int>(Pop());
+    if (len < 0) KAI_THROW_1(BadIndex, len);
+
+    auto array = New<Array>();
+    array->Resize(len);
+
+    while (len--) array->RefAt(len) = Pop();
+
+    Push(array);
 }
 
-void Executor::PopScope()
-{
-    _context->Pop();
+void Executor::DropN() {
+    auto count = Deref<int>(Pop());
+    if (count < 0) KAI_THROW_1(BadIndex, count);
+
+    while (count-- > 0) Pop();
 }
 
-Object Executor::GetScope() const
-{
-    return _context->Top();
-}
+void Executor::ClearContext() { context_->Clear(); }
 
-void Executor::Continue(Value<Continuation> C)
-{
-    if (!C.Exists())
-        return;
-
-    SetContinuation(C);
-    Continue();
-}
-
-void Executor::NextContinuation()
-{
-    if (_context->Empty())
-    {
-        _continuation = Object();
-        return;
-    }
-
-    const auto next = _context->Pop();
-    SetContinuation(next);
-}
-
-void Executor::Push(Stack& stack, Object const &Q)
-{
-    stack.Push(Q);
-}
-
-void Executor::Eval(Object const &Q)
-{
-    _stepNumber++;
-
-    switch (GetTypeNumber(Q).value)
-    {
-    case Type::Number::Operation:
-        {
-            const auto op = Deref<Operation>(Q).GetTypeNumber();
-            Perform(op);
-
-			break;
-        }
-
-    case Type::Number::Pathname:
-        EvalIdent<Pathname>(Q);
-        break;
-
-    case Type::Number::Label:
-        EvalIdent<Label>(Q);
-        break;
-
-    default:
-        Push(Q.Clone());
-        break;
-    }
-}
-
-template <class Cont>
-void Executor::PushAll(const Cont &cont)
-{
-    for (const auto &A: cont)
-        Push(A);
-
-    Push(New(cont.Size()));
-}
-
-Value<Continuation> Executor::NewContinuation(Value<Continuation> orig)
-{
-    Value<Continuation> cont = New<Continuation>();
-    cont->SetCode(orig->GetCode());
-    cont->args = orig->args;
-
-    return cont;
-}
-
-void Executor::MarkAndSweep()
-{
-    KAI_NOT_IMPLEMENTED();
-    //MarkAndSweep(_tree->GetRoot());
-}
-
-void Executor::MarkAndSweep(Object &root)
-{
-    root.GetRegistry()->GarbageCollect();
-}
-
-void Executor::Expand()
-{
+void Executor::Expand() {
     Object Q = Pop();
-    switch (Q.GetTypeNumber().value)
-    {
-    case Type::Number::Pair:
-        {
+    switch (Q.GetTypeNumber().value) {
+        case Type::Number::Pair: {
             const Pair &P = ConstDeref<Pair>(Q);
             Push(P.first);
             Push(P.second);
 
-			break;
+            break;
         }
 
-    case Type::Number::List:
-        PushAll(ConstDeref<List>(Q));
-        break;
+        case Type::Number::List:
+            PushAll(ConstDeref<List>(Q));
+            break;
 
-    case Type::Number::Array:
-        PushAll(ConstDeref<Array>(Q));
-        break;
+        case Type::Number::Array:
+            PushAll(ConstDeref<Array>(Q));
+            break;
 
-    case Type::Number::Map:
-        PushAll(ConstDeref<Map>(Q));
-        break;
+        case Type::Number::Map:
+            PushAll(ConstDeref<Map>(Q));
+            break;
 
-    default:
-        KAI_THROW_1(Base, "Invalid Expand target");
-        break;
+        default:
+            KAI_THROW_1(Base, "Invalid Expand target");
+            break;
     }
 }
 
-void Executor::GetChildren()
-{
-    const auto& scope = GetStorageBase(Pop());
+void Executor::GetChildren() {
+    const auto &scope = GetStorageBase(Pop());
     auto children = New<Array>();
-    for (const auto& child : scope.GetDictionary())
+    for (const auto &child : scope.GetDictionary())
         children->Append(New(child.first.ToString()));
 
     Push(children);
 }
 
-void Executor::ToArray()
-{
-    auto len = ConstDeref<int>(Pop());
-    if (len < 0)
-        KAI_THROW_1(BadIndex, len);
+template <class Cont>
+void Executor::PushAll(const Cont &cont) {
+    for (const auto &A : cont) Push(A);
 
-    auto array = New<Array>();
-    array->Resize(len);
-    while (len--)
-        array->RefAt(len) = Pop();
-
-    Push(array);
+    Push(New(cont.Size()));
 }
 
-void Executor::DropN()
-{
-    auto count = Deref<int>(Pop());
-    if (count < 0)
-        KAI_THROW_1(BadIndex, count);
+// PrintStack is already implemented elsewhere
 
-    while (count-- > 0)
-        Pop();
+void Executor::PrintStack(std::ostream &out) const {
+    if (data_->Empty()) {
+        out << "Stack is empty\n";
+        return;
+    }
+
+    const Stack &stack = *data_;
+    out << "Stack (size " << stack.Size() << "):\n";
+
+    // Print the stack items in reverse order (top of stack at the bottom)
+    for (int i = stack.Size() - 1; i >= 0; --i) {
+        out << i << ": ";
+
+        Object item = stack.At(i);
+        if (!item.Exists()) {
+            out << "[null]";
+        } else {
+            StringStream ss;
+            ss << item;
+            out << ss.ToString();
+        }
+
+        out << "\n";
+    }
 }
 
-void Executor::ConditionalContextSwitch(Operation::Type op)
-{
-    if (!ConstDeref<bool>(Pop()))
-    {
+void Executor::DumpStack(Stack const &stack) {
+    KAI_TRACE() << "Stack: " << stack.Size() << " items";
+    for (int i = 0; i < stack.Size(); ++i)
+        KAI_TRACE() << i << ": " << stack.At(i);
+}
+
+Object Executor::Resolve(Object Q, bool ignoreQuote) const {
+    // TODO: this double-handling of Labels and Pathnames is tedious and wrong.
+    if (Q.IsType<Label>()) {
+        const auto &l = ConstDeref<Label>(Q);
+        if (l.Quoted() && !ignoreQuote) return Q;
+        return Resolve(l);
+    }
+
+    if (Q.IsType<Pathname>()) {
+        const auto &l = ConstDeref<Pathname>(Q);
+        if (l.Quoted() && !ignoreQuote) return Q;
+        return Resolve(l);
+    }
+
+    return Q;
+}
+
+Object Executor::TryResolve(Object const &Q) const {
+    switch (Q.GetTypeNumber().ToInt()) {
+        case Type::Number::Label:
+            return TryResolve(ConstDeref<Label>(Q));
+        case Type::Number::Pathname:
+            return TryResolve(ConstDeref<Pathname>(Q));
+    }
+
+    return Object();
+}
+
+Object Executor::TryResolve(Label const &label) const {
+    // Handle empty label case
+    if (label.ToString().empty()) {
+        // KAI_TRACE() << "TryResolve: Empty label";
+        return Object();
+    }
+
+    // DEBUG: Log ALL resolution attempts to understand the issue
+    KAI_TRACE() << "[TryResolve] Looking for '" << label.ToString() << "'";
+    KAI_TRACE() << "  continuation exists: " << (continuation_.Exists() ? "yes" : "no");
+    if (continuation_.Exists()) {
+        Object scope = continuation_->GetScope();
+        KAI_TRACE() << "  continuation scope exists: " << (scope.Exists() ? "yes" : "no");
+        if (scope.Exists()) {
+            KAI_TRACE() << "  scope.Has('" << label.ToString() << "'): " << (scope.Has(label) ? "YES" : "NO");
+        }
+    }
+    KAI_TRACE() << "  context stack size: " << context_->Size();
+    for (int i = 0; i < context_->Size(); ++i) {
+        Pointer<Continuation> cont = context_->At(i);
+        if (cont.Exists()) {
+            Object scope = cont->GetScope();
+            KAI_TRACE() << "  context[" << i << "] scope exists: " << (scope.Exists() ? "yes" : "no")
+                        << ", Has('" << label.ToString() << "'): " << (scope.Has(label) ? "YES" : "NO");
+        }
+    }
+    KAI_TRACE() << "  tree exists: " << (tree_ ? "yes" : "no");
+
+    // Search in current scope.
+    if (continuation_.Exists()) {
+        Object scope = continuation_->GetScope();
+        if (scope.Exists() && scope.Has(label)) return scope.Get(label);
+    }
+
+    // search in parent scopes...
+    Stack const &scopes = *context_;
+    for (int N = 0; N < scopes.Size(); ++N) {
+        Pointer<Continuation> cont = scopes.At(N);
+        if (!cont.Exists()) continue;
+
+        Object scope = cont->GetScope();
+        // Try both Has (direct children) and HasChild (recursive search)
+        if (scope.Exists() && scope.Has(label))
+            return scope.Get(label);
+        if (scope.Exists() && scope.HasChild(label))
+            return scope.GetChild(label);
+    }
+
+    // Finally, search the tree.
+    return tree_->Resolve(label);
+}
+
+// Enhanced TryResolveOrCreate method that attempts to resolve an identifier
+// and creates a placeholder if not found. This is safer than direct resolution
+// where missing objects cause ObjectNotFound exceptions.
+Object Executor::TryResolveOrCreate(Label const &label, Type::Number type) {
+    // Handle empty label case
+    if (label.ToString().empty()) {
+        // KAI_TRACE() << "TryResolveOrCreate: Empty label, creating empty
+        // object";
+        return Object();  // Return empty object
+    }
+
+    // First try to resolve the label normally
+    Object found = TryResolve(label);
+
+    // If found, return it
+    if (found.Valid() && found.Exists()) {
+        // KAI_TRACE() << "TryResolveOrCreate: Found existing object for label:
+        // "
+        //             << label.ToString();
+        return found;
+    }
+
+    // If not found, create a placeholder based on the requested type
+    // KAI_TRACE() << "TryResolveOrCreate: Creating placeholder for: "
+    //             << label.ToString();
+
+    // Create the appropriate placeholder based on requested type
+    Object placeholder;
+    switch (type.value) {
+        case Type::Number::Signed32:
+            placeholder = Reg().New<int>(0);
+            break;
+
+        case Type::Number::Single:
+            placeholder = Reg().New<float>(0.0f);
+            break;
+
+        case Type::Number::Bool:
+            placeholder = Reg().New<bool>(false);
+            break;
+
+        case Type::Number::String:
+            placeholder = Reg().New<String>("");
+            break;
+
+        case Type::Number::Array:
+            placeholder = Reg().New<Array>();
+            break;
+
+        case Type::Number::Continuation: {
+            Object contObj = Reg().New<Continuation>();
+            Pointer<Continuation> cont = contObj;
+            cont->Create();
+            placeholder = contObj;
+        } break;
+
+        default:
+            // Default to empty object for any other type
+            placeholder = Object();
+            break;
+    }
+
+    // Store the placeholder in the current scope if possible
+    if (continuation_.Exists()) {
+        Object scope = continuation_->GetScope();
+        if (scope.Exists()) {
+            scope.Set(label, placeholder);
+            // KAI_TRACE()
+            //     << "TryResolveOrCreate: Stored placeholder in current scope";
+        }
+    }
+
+    return placeholder;
+}
+
+Object Executor::TryResolve(Pathname const &path) const {
+    // If it's not an absolute path, search up the continuation scopes.
+    if (path.Absolute()) return tree_->Resolve(path);
+
+    // For simple pathnames (no dots), convert to Label for lookup
+    String pathStr = path.ToString();
+    if (path.Quoted() && pathStr.Size() > 0 && pathStr[0] == '\'') {
+        pathStr = String(pathStr.begin() + 1, pathStr.end());
+    }
+    if (!pathStr.Contains(".")) {
+        // Simple identifier - resolve as Label
+        Label label(pathStr);
+        return TryResolve(label);
+    }
+
+    // Search in current scope.
+    if (continuation_.Exists()) {
+        auto found = Get(continuation_->GetScope(), path);
+        if (found.Exists()) return found;
+    }
+
+    // Search in parent scopes.
+    Stack const &scopes = *context_;
+    for (int N = 0; N < scopes.Size(); ++N) {
+        Pointer<Continuation> cont = scopes.At(N);
+        if (!cont.Exists()) continue;
+
+        Object scope = cont->GetScope();
+        if (Exists(scope, path)) return Get(scope, path);
+    }
+
+    return Object();
+}
+
+Object Executor::Resolve(Label const &label) const {
+    Object Q = TryResolve(label);
+    if (!Q.Valid()) KAI_THROW_1(CannotResolve, label);
+    return Q;
+}
+
+Object Executor::Resolve(const Pathname &path) const {
+    Object Q = TryResolve(path);
+    if (!Q.Valid()) KAI_THROW_1(CannotResolve, path);
+    return Q;
+}
+
+// ======================= Helper Methods ========================
+
+void Executor::Eval(Object const &Q) {
+    stepNumber_++;
+
+    // Check if we should stop execution due to break or continue
+    if (break_ || continue_) {
+        return;
+    }
+
+    // Verify the object is valid
+    if (!Q.Valid() || !Q.Exists()) {
+        KAI_TRACE_ERROR() << "Eval: Invalid or non-existent object";
+        return;
+    }
+
+
+    // Removed noisy trace for cleaner Console output
+
+    // Simplified: Treat evaluation as a simple dispatch based on type
+    switch (GetTypeNumber(Q).value) {
+        case Type::Number::Operation: {
+            try {
+                const auto op = Deref<Operation>(Q).GetTypeNumber();
+                Perform(op);
+            } catch (const Exception::Base &e) {
+                // Re-throw KAI exceptions (like assertion failures) so they can
+                // be handled by the caller
+                KAI_TRACE_ERROR()
+                    << "Eval: KAI Exception performing operation: "
+                    << e.ToString();
+                throw;
+            } catch (const std::exception &e) {
+                KAI_TRACE_ERROR()
+                    << "Eval: Exception performing operation: " << e.what();
+                // Re-throw standard exceptions as well
+                throw;
+            }
+            break;
+        }
+
+        case Type::Number::Pathname:
+            EvalIdent<Pathname>(Q);
+            break;
+
+        case Type::Number::Label:
+            EvalIdent<Label>(Q);
+            break;
+
+        case Type::Number::Continuation: {
+            // Push continuation to stack instead of executing it
+            // This allows operations like IfElse to use continuations as values
+            // KAI_TRACE() << "Eval: Pushing continuation to stack";
+            Push(Q);
+            break;
+        }
+
+        case Type::Number::Object: {
+            // Attempt to unwrap the Object if it's wrapping something
+            try {
+                Object unwrapped = ConstDeref<Object>(Q);
+                if (unwrapped.Valid() && unwrapped.Exists()) {
+                    // Recursively evaluate the unwrapped object
+                    Eval(unwrapped);
+                    return;
+                }
+            } catch (const std::exception &e) {
+                KAI_TRACE_ERROR()
+                    << "Eval: Exception unwrapping Object: " << e.what();
+            }
+            // Fall through to default if unwrapping fails
+            Push(Q.Clone());
+            break;
+        }
+
+        // For all other types (primitives, arrays, etc.), just push them
+        default:
+            if (traceLevel_ > 2) {
+                // KAI_TRACE() << "Eval: Pushing direct value: " <<
+                // Q.ToString(); if (Q.GetClass()) {
+                //     KAI_TRACE()
+                //         << "  (Type: " << Q.GetClass()->GetName() << ")";
+                // }
+            }
+
+            // Create a proper clone to ensure correct type information is
+            // preserved
+            Object clone = Q.Clone();
+            Push(clone);
+            break;
+    }
+}
+
+void Executor::SetScope(Object scope) { context_->Push(scope); }
+
+void Executor::PopScope() { context_->Pop(); }
+
+Object Executor::GetScope() const { return context_->Top(); }
+
+void Executor::SetContinuation(Value<Continuation> C) { continuation_ = C; }
+
+void Executor::Continue() {
+    // Single-step mode: execute one instruction and return
+    if (singleStep_) {
+        ContinueOneInstruction();
+        return;
+    }
+
+    // Full execution mode: loop until done
+    while (!break_ && continuation_.Valid() && continuation_.Exists()) {
+        stepNumber_++;
+        ContinueOneInstruction();
+    }
+}
+
+// NEW: Extract the single-instruction logic
+void Executor::ContinueOneInstruction() {
+    if (!continuation_.Valid() || !continuation_.Exists()) {
+        break_ = true;
+        return;
+    }
+
+    if (!data_.Valid() || !data_.Exists()) {
+        KAI_TRACE_ERROR() << "Continue: Invalid data stack";
+        break_ = true;
+        return;
+    }
+
+    if (!context_.Valid() || !context_.Exists()) {
+        KAI_TRACE_ERROR() << "Continue: Invalid context stack";
+        break_ = true;
+        return;
+    }
+
+    Object next;
+    
+    try {
+        if (!continuation_->Next(next)) {
+            NextContinuation();
+            return;
+        }
+        
+        if (!next.Valid()) {
+            KAI_TRACE_ERROR() << "Continue: Invalid next object";
+            break_ = true;
+            return;
+        }
+        
+        Eval(next);
+        
+        if (replace_) {
+            replace_ = false;
+            break_ = false;
+            return;
+        }
+        
+        if (break_) {
+            NextContinuation();
+            return;
+        }
+        
+    } catch (const Exception::Base &e) {
+        KAI_TRACE_ERROR() << "Continue: KAI Exception: " << e.ToString();
+        break_ = true;
+        throw;
+    } catch (const std::exception &e) {
+        KAI_TRACE_ERROR() << "Continue: Exception: " << e.what();
+        break_ = true;
+        throw;
+    }
+}
+
+// NEW: Step() implementation
+bool Executor::Step() {
+    if (!continuation_.Valid() || !continuation_.Exists()) {
+        return false;
+    }
+    
+    stepNumber_++;
+    
+    bool oldMode = singleStep_;
+    singleStep_ = true;
+    Continue();
+    singleStep_ = oldMode;
+    
+    return !break_ && continuation_.Valid() && continuation_.Exists();
+}
+/*
+void Executor::ContinueOneInstruction() {
+    // This is the refactored single-instruction executor
+    
+    if (!continuation_.Valid() || !continuation_.Exists()) {
+        break_ = true;
+        return;
+    }
+
+    Object next;
+    
+    try {
+        if (!continuation_->Next(next)) {
+            // No more instructions in current continuation
+            NextContinuation();
+            return;
+        }
+        
+        if (!next.Valid()) {
+            KAI_TRACE_ERROR() << "Continue: Invalid next object";
+            break_ = true;
+            return;
+        }
+        
+        // Execute this ONE instruction
+        Eval(next);
+        
+        // Check what happened during execution
+        if (replace_) {
+            // Replace operation changed continuation
+            replace_ = false;
+            break_ = false;
+            return;
+        }
+        
+        if (break_) {
+            // Resume/Break operation
+            NextContinuation();
+            return;
+        }
+        
+    } catch (const Exception::Base &e) {
+        KAI_TRACE_ERROR() << "Continue: KAI Exception: " << e.ToString();
+        break_ = true;
+        throw;
+    } catch (const std::exception &e) {
+        KAI_TRACE_ERROR() << "Continue: Exception: " << e.what();
+        break_ = true;
+        throw;
+    }
+}
+*/
+
+void Executor::Run() {
+    // Execute continuously until done or suspended
+    stepNumber_ = 0;
+    break_ = false;
+    
+    while (!break_ && continuation_.Valid() && continuation_.Exists()) {
+        stepNumber_++;
+        Continue();  // Execute ONE instruction
+        
+        // If someone explicitly set break_, stop
+        if (break_) {
+            break;
+        }
+    }
+}
+
+void Executor::ContinueOnly(Value<Continuation> cont) {
+    if (!cont.Valid() || !cont.Exists()) {
+        KAI_TRACE_ERROR()
+            << "ContinueOnly: Invalid or non-existent continuation";
+        return;
+    }
+
+    if (!context_.Valid() || !context_.Exists()) {
+        KAI_TRACE_ERROR()
+            << "ContinueOnly: Invalid or non-existent context stack";
+        return;
+    }
+
+    context_->Push(Object());
+    Continue(cont);
+}
+
+void Executor::Continue(Value<Continuation> C) {
+    if (!C.Valid() || !C.Exists()) {
+        KAI_TRACE_ERROR() << "Continue(Value<Continuation>): Invalid or "
+                             "non-existent continuation";
+        return;
+    }
+
+    if (!C->GetCode().Valid() || !C->GetCode().Exists()) {
+        KAI_TRACE_ERROR()
+            << "Continue(Value<Continuation>): Continuation has invalid code";
+        return;
+    }
+
+    if (!data_.Valid() || !data_.Exists()) {
+        KAI_TRACE_ERROR() << "Continue(Value<Continuation>): Invalid or "
+                             "non-existent data stack";
+        return;
+    }
+
+    Value<Continuation> savedContinuation = continuation_;
+
+    SetContinuation(C);
+    Continue();
+
+    if (savedContinuation.Valid() && savedContinuation.Exists()) {
+        continuation_ = savedContinuation;
+    } else {
+        continuation_ = Object();
+    }
+}
+
+void Executor::NextContinuation() {
+    if (!context_.Valid() || !context_.Exists()) {
+        KAI_TRACE_ERROR()
+            << "NextContinuation: Invalid or non-existent context stack";
+        continuation_ = Object();
+        return;
+    }
+
+    if (context_->Empty()) {
+        continuation_ = Object();
+        return;
+    }
+
+    try {
+        // Do not collapse stack on continuation completion.
+        // Pi continuations can legitimately produce multiple values.
+
+        const auto next = context_->Pop();
+        if (!next.Valid() || !next.Exists()) {
+            continuation_ = Object();
+            return;
+        }
+
+        if (!next.IsType<Continuation>()) {
+            KAI_TRACE_ERROR()
+                << "NextContinuation: Popped object is not a Continuation";
+            continuation_ = Object();
+            return;
+        }
+
+        try {
+            Pointer<Continuation> cont = next;
+
+            if (!cont.Exists()) {
+                KAI_TRACE_ERROR()
+                    << "NextContinuation: Continuation pointer doesn't exist";
+                continuation_ = Object();
+                return;
+            }
+
+            if (!cont->GetCode().Exists()) {
+                KAI_TRACE_ERROR()
+                    << "NextContinuation: Continuation has no code";
+                continuation_ = Object();
+                return;
+            }
+
+            int ip = ConstDeref<int>(cont->index);
+            int codeSize = cont->GetCode()->Size();
+
+            if (ip >= codeSize) {
+                KAI_TRACE() << "WARNING - IP is at or past";
+            }
+        } catch (const std::exception &e) {
+            KAI_TRACE_ERROR()
+                << "Exception checking continuation: " << e.what();
+            continuation_ = Object();
+            return;
+        }
+
+        // Validate before setting as current continuation
+        SetContinuation(next);
+        // Clear break_ so the caller can continue after a return.
+        break_ = false;
+    } catch (const std::exception &e) {
+        KAI_TRACE_ERROR() << "NextContinuation: Exception: " << e.what();
+        continuation_ = Object();
+    } catch (...) {
+        KAI_TRACE_ERROR() << "NextContinuation: Unknown exception";
+        continuation_ = Object();
+    }
+}
+
+Pointer<Continuation> Executor::NewContinuation(Value<Continuation> orig) {
+    // Validate input continuation
+    if (!orig.Valid() || !orig.Exists()) {
+        KAI_TRACE_ERROR()
+            << "NewContinuation: Invalid or non-existent source continuation";
+        return Pointer<Continuation>();  // Return empty continuation
+    }
+
+    // Check if we have a valid registry
+    Registry *registry = nullptr;
+    if (Self && Self->GetRegistry()) {
+        registry = Self->GetRegistry();
+    } else {
+        KAI_TRACE_ERROR() << "NewContinuation: No valid registry available";
+        return Pointer<Continuation>();  // Return empty continuation
+    }
+
+    try {
+        Value<Continuation> val = New<Continuation>();
+        Pointer<Continuation> cont = val.GetObject();
+
+        if (!cont.Valid() || !cont.Exists()) {
+            KAI_TRACE_ERROR()
+                << "NewContinuation: Failed to create new continuation";
+            return Pointer<Continuation>();  // Return empty continuation
+        }
+
+        cont->Create();
+
+        if (orig->GetCode().Valid() && orig->GetCode().Exists()) {
+            cont->SetCode(orig->GetCode());
+        } else {
+            KAI_TRACE_ERROR()
+                << "NewContinuation: Original continuation has no valid code";
+        }
+
+        // Copy arguments
+        cont->args = orig->args;
+
+        // Inherit the scope from the original continuation
+        if (orig->GetScope().Exists()) {
+            cont->SetScope(orig->GetScope());
+        } else {
+            // Fallback to a new empty scope if original has none
+            cont->SetScope(New<void>());
+        }
+
+        return cont;
+    } catch (const std::exception &e) {
+        KAI_TRACE_ERROR() << "NewContinuation: Exception: " << e.what();
+        return Pointer<Continuation>();  // Return empty continuation in case of
+                                         // exception
+    } catch (...) {
+        KAI_TRACE_ERROR() << "NewContinuation: Unknown exception";
+        return Pointer<Continuation>();  // Return empty continuation in case of
+                                         // exception
+    }
+}
+
+void Executor::ConditionalContextSwitch(Operation::Type op) {
+    if (!ConstDeref<bool>(Pop())) {
         Pop();
         return;
     }
 
-    switch (op)
-    {
-    case Operation::Suspend:
-        _continuation->Next();
-        _context->Push(_continuation);
-		// fallthrough
-    case Operation::Replace:
-        _context->Push(NewContinuation(Pop()));
-		// fallthrough
-    case Operation::Resume:
-        _break = true;
-	default:
-		KAI_NOT_IMPLEMENTED();
-        break;
+    Object obj = Pop();
+
+    // Resolve if needed
+    if (obj.IsType<Label>() || obj.IsType<Pathname>()) {
+        obj = Resolve(obj);
+    }
+
+    switch (op) {
+        case Operation::Suspend:
+            continuation_->Next();
+            context_->Push(continuation_);
+            continuation_ = NewContinuation(obj);
+            if (continuation_.Exists()) {
+                continuation_->InitialStackDepth = data_->Size();
+                continuation_->Enter(this);
+            }
+            break_ = true;
+            break;
+        case Operation::Replace:
+            // Replace does NOT push to context - that's the whole point for tail calls
+            // Create new continuation but reuse scope to avoid context growth
+            if (obj.IsType<Continuation>()) {
+                Value<Continuation> orig = obj;
+                Value<Continuation> val = New<Continuation>();
+                Pointer<Continuation> cont = val.GetObject();
+
+                if (cont.Exists()) {
+                    cont->Create();
+                    cont->SetCode(orig->GetCode());
+                    cont->args = orig->args;
+
+                    // Reuse current continuation's scope
+                    if (continuation_.Exists() && continuation_->GetScope().Exists()) {
+                        cont->SetScope(continuation_->GetScope());
+                    } else {
+                        cont->SetScope(orig->GetScope());
+                    }
+
+                    cont->index = cont->New<int>(0);
+                    continuation_ = cont;
+                }
+            } else {
+                continuation_ = NewContinuation(obj);
+            }
+            if (continuation_.Exists()) {
+                continuation_->InitialStackDepth = data_->Size();
+            }
+            break_ = true;
+            break;
+        case Operation::Resume:
+            break_ = true;
+            break;
+        default:
+            KAI_NOT_IMPLEMENTED();
+            break;
     }
 }
 
-void Executor::ContinueOnly(Value<Continuation> C)
-{
-	// Add an empty context to break. this forces exection to stop after C is finished.
-    _context->Push(Object());    
-    Continue(C);
+void Executor::TraceAll() {
+    KAI_TRACE_1(data_);
+    KAI_TRACE_1(context_);
+    KAI_TRACE_1(continuation_);
 }
 
-template <class D>
-Value<Array> Executor::ForEach(D const &cont, Object const &fun)
-{
+void Executor::Trace(const Object &Q) {
+    StringStream str;
+    Trace(Q, str);
+    // KAI_TRACE() << str.ToString();
+}
+
+void Executor::Trace(const Object &object, StringStream &str) {
+    if (!object.Exists()) {
+        str << "<null>";
+        return;
+    }
+
+    // Get the storage base for the object
+    const auto &storage = GetStorageBase(object);
+
+    // Get the object's children (dictionary entries)
+    const auto &children = storage.GetDictionary();
+    for (const auto &child : children) {
+        str << child.first << ": ";
+        Trace(child.second, str);
+        str << "\n";
+    }
+}
+
+void Executor::Trace(const Label &L, const StorageBase &Q, StringStream &str) {
+    str << L << ": ";
+
+    // Just trace the label itself
+    Object val = Object();
+
+    str << val;
+    if (val.Exists() && val.GetTypeNumber().ToInt() != Type::Number::None &&
+        val.GetTypeNumber().ToInt() != Type::Number::Object)
+        str << " (" << val.GetClass()->GetName() << ")";
+    str << "\n";
+}
+
+void Executor::MarkAndSweep() {
+    Object root = tree_->GetRoot();
+    MarkAndSweep(root);
+}
+
+void Executor::MarkAndSweep(Object &root) {
+    root.GetRegistry()->GarbageCollect();
+}
+
+template <class Container>
+Value<Array> Executor::ForEach(Container const &container,
+                               Object const &function) {
     auto array = New<Array>();
-    for (auto const &elem : cont)
-    {
-        Push(elem);
-        _context->Push(Object());
-        Continue(fun);
+    for (auto const &element : container) {
+        Push(element);
+        context_->Push(Object());
+        Continue(function);
         array->Append(Pop());
     }
 
     return array;
 }
 
-Object Executor::Pop(Stack &stack)
-{
-    return stack.Pop();
-}
+void Executor::DumpContinuation(Continuation const &continuation, int level) {
+    KAI_UNUSED_1(level);
+    KAI_TRACE_1(continuation.GetScope());
 
-Object Executor::Top() const
-{
-    return _data->Top();
-}
-
-Object Executor::Resolve(Object Q, bool ignoreQuote) const
-{
-    // TODO: this double-handling of Labels and Pathnames is tedious and wrong.
-    if (Q.IsType<Label>())
-    {
-        const auto& l = ConstDeref<Label>(Q);
-        if (l.Quoted() && !ignoreQuote)
-            return Q;
-        return Resolve(l);
-    }
-
-    if (Q.IsType<Pathname>())
-    {
-        const auto& l = ConstDeref<Pathname>(Q);
-        if (l.Quoted() && !ignoreQuote)
-            return Q;
-        return Resolve(l);
-    }
-
-    return Q;
-}
-
-Object Executor::TryResolve(Object const &Q) const
-{
-    switch (Q.GetTypeNumber().ToInt())
-    {
-        case Type::Number::Label: return TryResolve(ConstDeref<Label>(Q));
-        case Type::Number::Pathname: return TryResolve(ConstDeref<Pathname>(Q));
-    }
-
-    return Object();
-}
-
-Object Executor::TryResolve(Label const &label) const
-{
-    // Search in current scope.
-    if (_continuation.Exists())
-    {
-        Object scope = _continuation->GetScope();
-        if (scope.Exists() && scope.Has(label))
-            return scope.Get(label);
-    }
-
-    // search in parent scopes...
-    Stack const &scopes = *_context;
-    for (int N = 0; N < scopes.Size(); ++N)
-    {
-        Pointer<Continuation> cont = scopes.At(N);
-        if (!cont.Exists())
-            break;
-
-        Object scope = cont->GetScope();
-        if (scope.Exists() && scope.HasChild(label))
-            return scope.GetChild(label);
-    }
-
-    // Finally, search the tree.
-    return _tree->Resolve(label);
-}
-
-Object Executor::TryResolve(Pathname const &path) const
-{
-    // If it's not an absolute path, search up the continuation scopes.
-    if (path.Absolute())
-        return _tree->Resolve(path);
-
-    // Search in current scope.
-    if (_continuation.Exists())
-    {
-        auto found = Get(_continuation->GetScope(), path);
-        if (found.Exists())
-            return found;
-    }
-
-    // Search in parent scopes.
-    Stack const &scopes = *_context;
-    for (int N = 0; N < scopes.Size(); ++N)
-    {
-        Pointer<Continuation> cont = scopes.At(N);
-        if (!cont.Exists())
-            continue;
-
-        Object scope = cont->GetScope();
-        if (Exists(scope, path))
-            return Get(scope, path);
-    }
-
-    return Object();
-}
-
-Object Executor::Resolve(Label const &label) const
-{
-    Object Q = TryResolve(label);
-    if (!Q.Valid())
-        KAI_THROW_1(CannotResolve, label);
-
-    return Q;
-}
-
-Object Executor::Resolve(Pathname const &path) const
-{
-    Object Q = TryResolve(path);
-    if (!Q.Valid())
-        KAI_THROW_1(CannotResolve, path);
-
-    return Q;
-}
-
-void Executor::Trace(const Label &, const StorageBase &Q, StringStream &S)
-{
-    S
-        << "Handle=" << Q.GetHandle().GetValue() << ": "
-        << "Parent=" << Q.GetParentHandle().GetValue() << ": "
-        << "Fullname=" << GetFullname(Q) << ": "
-        << "Type=" << Q.GetClass()->GetName() << ": "
-        << "StrStrm='" << Q
-        << "'\n";
-}
-
-void Executor::Trace(const Object& Q, StringStream &S)
-{
-    if (!Q.Valid())
-    {
-        S << "INVALID_OBJECT";
+    // Get the code
+    Pointer<const Array> code = continuation.GetCode();
+    if (!code.Exists()) {
+        KAI_TRACE() << "No code.";
         return;
     }
 
-    Trace(GetName(Q), Q.GetStorageBase(), S);
-}
-
-void Executor::Trace(const Object &Q)
-{
-    StringStream S;
-    Trace(Q, S);
-    Push(New(S.ToString()));
-}
-
-void Executor::ClearContext()
-{
-    _continuation = Object();
-    _context->Clear();
-}
-
-void Executor::TraceAll()
-{
-    StringStream debug;
-    debug << "DEBUG: ";
-    for (const auto &elem : Self->GetRegistry()->GetInstances())
-    {
-        try
-        {
-            if (elem.second == nullptr)
-                debug << "INTERNAL ERROR: Null object in registry";
-            else
-                Trace(*elem.second, debug);
-        }
-        catch (Exception::Base &E)
-        {
-            debug << "TraceError :( " << E.ToString();
-        }
-        catch (std::exception &E)
-        {
-            debug << "TraceError std::exception: " << E.what();
-        }
-        catch (...)
-        {
-            debug << "TraceError unknown.";
-        }
-    }
-
-    Push(New(debug.ToString()));
-}
-
-void Executor::DumpStack(Stack const &stack)
-{
-    StringStream result;
-    auto A = stack.Begin(), B = stack.End();
-    for (int N = stack.Size() - 1; A != B; ++A, --N)
-    {
-        result << "[" << N << "] ";
-        bool is_string = A->GetTypeNumber() == Type::Number::String;
-        if (is_string)
-            result << "\"";
-
-        result << *A;
-        if (is_string)
-            result << "\"";
-
-        if (A->GetTypeNumber() == Type::Number::Label)
-            result << " = " << TryResolve(ConstDeref<Label>(*A));
-
-        result << "\n";
-    }
-
-    Trace::Debug() << result.ToString().c_str();
-}
-
-void Executor::DumpContinuation(Continuation const &C, int ip)
-{
-    KAI_UNUSED_2(C, ip);
-}
-
-void Executor::SetTraceLevel(int N)
-{
-    _traceLevel = N;
-}
-
-int Executor::GetTraceLevel() const
-{
-    return _traceLevel;
-}
-
-void Executor::Register(Registry &R, const char *N)
-{
-    ClassBuilder<Executor>(R, N)
-        .Methods
-            ("SetTraceLevel", &Executor::SetTraceLevel)
-            ("GetTraceLevel", &Executor::GetTraceLevel)
-        //.Properties
-        //    ("Continuation", &Executor::continuation)
-        //    ("Context", &Executor::context)
-        //    ("Data", &Executor::data)
-        ;
-}
-
-void Executor::Dump(Object const &Q)
-{
-    if (_traceLevel > 0)
-    {
-        if (_traceLevel > 1)
-        {
-            std::cout << "Stack:\n";
-            DumpStack(*_data);
-        }
-
-        if (_traceLevel > 2)
-        {
-            std::cout << "Context:\n";
-            for (auto c : *_context)
-            {
-                StringStream str;
-                str << c;
-                cout << str.ToString().c_str() << endl;
-            }
-        }
-
-        std::cout << "\n[" << _stepNumber << "]: Eval: @" << *_continuation->index << " " << Q.ToString().c_str() << "\n";//std::endl;
-    }
-}
-
-std::string Executor::PrintStack() const
-{
-    int n = 0;
-    StringStream str;
-    for (const auto &elem : _data->GetStack())
-        str << "[" << n++ << "]: " << elem <<  "\n";
-
-    return str.ToString().c_str();
-}
-
-std::ostream &operator<<(std::ostream &out, const String &str)
-{
-    return out << str.c_str();
-}
-
-bool IsNumber(const Object &obj)
-{
-    switch (obj.GetTypeNumber().ToInt())
-    {
-    case Type::Number::Signed32:
-    case Type::Number::Single:
-        return true;
-    }
-
-    return false;
-}
-
-void WriteHumanReadableString(std::ostream &out, const Object& obj)
-{
-    if (IsNumber(obj))
-    {
-        out << obj.ToString();
+    if (code->Empty()) {
+        KAI_TRACE() << "Empty code.";
         return;
     }
 
-    const auto dim = rang::style::dim;
-    const auto bold = rang::style::bold;
-
-    const auto str = obj.ToString();
-    switch (obj.GetTypeNumber().ToInt())
-    {
-    case Type::Number::Bool:
-        out << rang::fg::cyan << str;
-        break;
-
-    case Type::Number::String:
-        out << dim << '"' << bold << str << dim << '"';
-        break;
-
-    case Type::Number::Label:
-        KAI_NOT_IMPLEMENTED();
-        break;
-
-    case Type::Number::Pathname:
-        {
-            const auto& label = ConstDeref<Pathname>(obj);
-            if (label.Quoted())
-                out << '\'';
-            out << rang::fg::cyan << str;
-        }
-        break;
-
-    default:
-        out << str;
-        break;
+    KAI_TRACE() << "Code size: " << code->Size();
+    for (int index = 0; index < code->Size(); ++index) {
+        StringStream str;
+        str << index << ": " << code->At(index);
+        KAI_TRACE() << str.ToString();
     }
 }
 
-void Executor::PrintStack(std::ostream& out) const
-{
-    int n = 0;
-    for (const auto &obj : _data->GetStack())
-    {
-        out << rang::style::dim << rang::fg::gray << "[" << n++ << rang::style::dim << "]: ";
-        out << rang::style::bold << rang::fg::yellow;
-        WriteHumanReadableString(out, obj);
-        out << std::endl;
-    }
-}
-
-// TODO: put container size in traits, as per above.
-static int ContainerSize(Object cont)
-{
-    switch (cont.GetTypeNumber().ToInt())
-    {
-        case Type::Number::List:
-            return ConstDeref<List>(cont).Size();
-        case Type::Number::Array:
-            return ConstDeref<Array>(cont).Size();
-        case Type::Number::Map:
-            return ConstDeref<Map>(cont).Size();
-        // case Type::Number::Set:
-        //     return ConstDeref<Set>(cont).Size();
-        //     break;
-    }
-
-    KAI_NOT_IMPLEMENTED();
-
-    return 0;
-}
-
-const char *ToString(Language lang)
-{
-    switch (lang)
-    {
-		case Language::None: return "none";
-		case Language::Pi: return "pi";
-		case Language::Rho: return "rho";
-		case Language::Tau: return "tau";
-		case Language::Hlsl: return "hlsl";
-    }
-
-    return "Unknown Language";
-}
-
-bool Executor::PopBool()
-{
-    Object Q = Pop();
-    return Q.Exists() && Q.GetClass()->Boolean(Q);
-}
-
-// # MARK Perform
-void Executor::Perform(Operation::Type op)
-{
-    switch (op)
-    {
-    case Operation::ToPi:
-        Deref<Compiler>(_compiler).SetLanguage(static_cast<int>(Language::Pi));
-        break;
-
-    case Operation::ToRho:
-        Deref<Compiler>(_compiler).SetLanguage(static_cast<int>(Language::Rho));
-        break;
-
-    case Operation::Lookup:
-        Push(Resolve(Pop()));
-        break;
-
-    case Operation::SetManaged:
-    {
-        auto object = Pop();
-        object.SetManaged(ConstDeref<bool>(Pop()));
-
-		break;
-    }
-
-    case Operation::SetChild:
-    {
-        Pointer<Label> label = Pop();
-        Pop().SetChild(*label, Pop());
-
-		break;
-    }
-
-    case Operation::GetChild:
-    {
-        Pointer<Label> label = Pop();
-        Push(Pop().GetChild(*label));
-
-		break;
-    }
-
-    case Operation::RemoveChild:
-    {
-        Pointer<Label> label = Pop();
-        Pop().RemoveChild(*label);
-
-		break;
-    }
-
-    case Operation::Freeze:
-        Push(Bin::Freeze(Pop()));
-        break;
-
-    case Operation::Thaw:
-        Push(Bin::Thaw(Pop()));
-        break;
-
-    case Operation::ToVector2:
-    {
-        Pointer<float> y = Pop();
-        Pointer<float> x = Pop();
-        auto V = New<Vector2>();
-        V->x = *x;
-        V->y = *y;
-        Push(V);
-
-		break;
-    }
-
-    case Operation::ToVector3:
-    {
-        Value<float> z = Pop();
-        Value<float> y = Pop();
-        Value<float> x = Pop();
-        Value<Vector3> V = New<Vector3>();
-        V->x = *x;
-        V->y = *y;
-        V->z = *z;
-        Push(V);
-
-		break;
-    }
-
-    case Operation::ToVector4:
-    {
-        Value<float> w = Pop();
-        Value<float> z = Pop();
-        Value<float> y = Pop();
-        Value<float> x = Pop();
-        Value<Vector4> V = New<Vector4>();
-        V->x = *x;
-        V->y = *y;
-        V->z = *z;
-        V->w = *w;
-        Push(V);
-
-		break;
-    }
-
-    case Operation::LevelStack:
-    {
-        const int required_depth = _continuation->InitialStackDepth;
-        int depth = _data->Size();
-
-        if (depth < required_depth)
-            KAI_THROW_0(EmptyStack);    // we lost some objects off the stack
-
-        int num_pops = depth - required_depth;
-        for (int N = 0; N < num_pops; ++N)
-            _data->Pop();
-
-		break;
-    }
-
-    case Operation::PostInc:
-    {
-        Value<int> N = Pop();
-        Value<int> M = New<int>();
-        int &ref = *N;
-        *M = ref;
-        ++ref;
-        Push(M);
-
-		break;
-    }
-
-    case Operation::PostDec:
-    {
-        Value<int> N = Pop();
-        Value<int> M = New<int>();
-        int &ref = *N;
-        *M = ref;
-        --ref;
-        Push(M);
-
-		break;
-    }
-
-    case Operation::PreInc:
-    {
-        Pointer<int> N = Pop();
-        ++*N;
-        Push(N);
-
-        break;
-    }
-
-    case Operation::PreDec:
-    {
-        Pointer<int> N = Pop();
-        --*N;
-        Push(N);
-
-        break;
-    }
-
-    case Operation::Break:
-        _break = true;
-        break;
-
-    case Operation::WhileLoop:
-    {
-        const Pointer<Continuation> body = Pop();
-        const Pointer<Continuation> test = Pop();
-
-        _context->Push(_continuation);
-        while (Deref<bool>(test))
-            ContinueOnly(body);
-
-        _context->Pop();
-
-		break;
-    }
-
-    case Operation::ThisContinuation:
-        Push(_continuation);
-        break;
-
-    case Operation::Delete:
-        Pop().Delete();
-        break;
-
-    case Operation::GetProperty:
-    {
-        Label const &L = ConstDeref<Label>(Pop());
-        Object Q = Pop();
-        Push(Q.GetClass()->GetProperty(L).GetValue(Q));
-
-        break;
-    }
-
-    case Operation::SetProperty:
-    {
-        Label const &L = ConstDeref<Label>(Pop());
-        Object Q = Pop();
-        Q.GetClass()->GetProperty(L).SetValue(Q, Pop());
-
-		break;
-    }
-
-    case Operation::Suspend:
-    {
-        if (_data->Size() < 1)
-        {
-            KAI_TRACE_ERROR() << "Suspend: nothing to suspend to";
-            KAI_NOT_IMPLEMENTED();
-        }
-
-        auto where_to_go = Resolve(Pop());
-        switch (where_to_go.GetTypeNumber().GetValue())
-        {
-			case Type::Number::Function:
-				ConstDeref<BasePointer<FunctionBase> >(where_to_go)->Invoke(*where_to_go.GetRegistry(), *_data);
-				return;
-
-			case Type::Number::SignedContinuation:
-			{
-				SignedContinuation &signed_continuation = Deref<SignedContinuation>(where_to_go);
-				signed_continuation.Enter(*_data);
-				where_to_go = signed_continuation.GetContinuation();
-				break;
-			}
-
-			case Type::Number::Continuation:
-				break;
-        }
-
-        _context->Push(_continuation);
-        _context->Push(where_to_go);
-
-        if (_traceLevel > 10)
-            KAI_TRACE_2(_continuation, where_to_go);
-
-        if (where_to_go.IsType<Continuation>())
-            Deref<Continuation>(where_to_go).Enter(this);
-
-        _break = true;
-
-		break;
-    }
-
-    case Operation::Return:
-    {
-        int n = 0;
-        for (auto sc : *_context)
-        {
-            if (*Deref<Continuation>(sc).scopeBreak)
-                break;
-
-            ++n;
-        }
-
-        for (; n > 0; --n)
-            _context->Pop();
-
-		break;
-    }
-
-    case Operation::Replace:
-        _context->Push(NewContinuation(Pop()));
-		// fallthrough
-    case Operation::Resume:
-        _break = true;
-        break;
-
-    case Operation::NTimes:
-    {
-        int M = ConstDeref<int>(Pop());
-        if (M == 0)
-            return;
-
-        Pointer<Continuation> C = Pop();
-        for (int N = 0; N < M; ++N)
-        {
-            // Push a null continuation to break the call chain.
-            _context->Push(Object());
-            // Re-continue the functor.
-            Continue(C);
-        }
-
-        break;
-    }
-
-    case Operation::ForEach:
-    {
-        Object F = Pop();
-        Object C = Pop();
-
-        switch (C.GetTypeNumber().ToInt())
-        {
-        case Type::Number::Array:
-            Push(ForEach(ConstDeref<Array>(C), F));
-            break;
-
-        case Type::Number::Stack:
-            Push(ForEach(ConstDeref<Stack>(C), F));
-            break;
-
-            /* TODO
-        case Type::Number::List:
-            ForEach(ConstDeref<List>(C), F);
-            break;
-        case Type::Number::Set:
-            ForEach(ConstDeref<Set>(C), F);
-            break;
-            */
-        case Type::Number::Map:
-            Push(ForEach(ConstDeref<Map>(C), F));
-            break;
-
-            /* TODO
-            case Type::Number::HashMap:
-                Push(ForEach(ConstDeref<HashMap>(C), F));
-                break;
-                */
-        }
-
-        break;
-    }
-
-    case Operation::Executor:
-        Push(*Self);
-        break;
-
-    case Operation::ForEachContained:
-    {
-        Object gen = Pop();
-        switch (gen.GetTypeNumber().ToInt())
-        {
-        case Type::Number::Set:
-        case Type::Number::Map:
-        case Type::Number::Array:
-        case Type::Number::String:
-            break;
-        }
-
-        KAI_NOT_IMPLEMENTED();
-		break;
-    }
-
-    case Operation::If:
-    {
-        if (!PopBool())
-            Pop();
-
-		break;
-    }
-
-    case Operation::IfElse:
-    {
-        if (_data->Size() < 3)
-        {
-            KAI_TRACE_ERROR() << "Attempting IfElse, but stack of " << _data->Size() << " is too small.";
-            KAI_NOT_IMPLEMENTED();
-        }
-
-        Object condition = Pop();
-        Object falseClause = Pop();
-        Object trueClause = Pop();
-
-        if (ConstDeref<bool>(condition))
-            Push(trueClause);
-        else
-            Push(falseClause);
-
-		break;
-    }
-
-    case Operation::IfThenSuspend:
-    {
-        Object then = Pop();
-        if (PopBool())
-        {
-            _context->Push(_continuation);
-            _context->Push(NewContinuation(then));
-            _break = true;
-        }
-
-        break;
-    }
-
-    case Operation::IfThenSuspendElseSuspend:
-    {
-        const Pointer<Continuation> else_ = Pop();
-        const Pointer<Continuation> then = Pop();
-        _context->Push(_continuation);
-        if (PopBool())
-            _context->Push(NewContinuation(then));
-        else
-            _context->Push(NewContinuation(else_));
-
-        _break = true;
-
-        break;
-    }
-
-    case Operation::IfThenReplace:
-        //ConditionalContextSwitch(Operation::Replace);
-        break;
-
-    case Operation::IfThenResume:
-        //ConditionalContextSwitch(Operation::Resume);
-        break;
-
-    case Operation::Assign:
-    {
-        Object lhs = Pop();
-        Object rhs = Pop();
-        lhs.GetClass()->Assign(lhs.GetStorageBase(), rhs.GetStorageBase());
-
-		break;
-    }
-
-    case Operation::ThisContext:
-        Push(_continuation);
-        break;
-
-    case Operation::Remove:
-        Remove(_tree->GetRoot(), _continuation->GetScope(), Pop());
-        break;
-
-    case Operation::MarkAndSweep:
-        MarkAndSweep();
-        break;
-
-    case Operation::DropN:
-        DropN();
-        break;
-
-    case Operation::Over:
-    {
-        Object A = Pop();
-        Object B = Pop();
-        Push(B);
-        Push(A);
-        Push(B);
-
-		break;
-    }
-
-    case Operation::True:
-        Push(New(true));
-        break;
-
-    case Operation::False:
-        Push(New(false));
-        break;
-
-    case Operation::CppFunctionCall:
-    {
-        Object Q = Pop();
-        ConstDeref<BasePointer<FunctionBase> >(Q)->Invoke(*Q.GetRegistry(), *_data);
-
-        break;
-    }
-
-    case Operation::Trace:
-    {
-        Trace(Pop());
-		break;
-    }
-
-    case Operation::TraceAll:
-        TraceAll();
-        break;
-
-    case Operation::Name:
-        Push(New(GetName(Pop())));
-        break;
-
-    case Operation::Fullname:
-        Push(New(GetFullname(Pop())));
-        break;
-
-    case Operation::New:
-    {
-        Object Q = Pop();
-        switch (Q.GetTypeNumber().ToInt())
-        {
-        case Type::Number::String:
-            Push(Reg().NewFromClassName(ConstDeref<String>(Q).c_str()));
-            break;
-
-        case Type::Number::TypeNumber:
-            Push(Reg().NewFromTypeNumber(ConstDeref<Type::Number>(Q)));
-            break;
-
-        case Type::Number::Class:
-            Push(Reg().NewFromClass(ConstDeref<const ClassBase *>(Q)));
-            break;
+// Enhanced version of PerformBinaryOp that handles all operation types using
+// KAI type traits
+
+void Executor::SetTraceLevel(int n) { traceLevel_ = n; }
+
+int Executor::GetTraceLevel() const { return traceLevel_; }
+
+bool Executor::IsBinaryOp(Operation::Type op) {
+    switch (op) {
+        case Operation::Plus:
+        case Operation::Minus:
+        case Operation::Multiply:
+        case Operation::Divide:
+        case Operation::Modulo:
+        case Operation::Min:
+        case Operation::Max:
+        case Operation::Equiv:
+        case Operation::NotEquiv:
+        case Operation::Less:
+        case Operation::Greater:
+        case Operation::LessOrEquiv:
+        case Operation::GreaterOrEquiv:
+        case Operation::LogicalAnd:
+        case Operation::LogicalOr:
+        case Operation::LogicalXor:
+        case Operation::BitwiseAnd:
+        case Operation::BitwiseOr:
+        case Operation::BitwiseXor:
+        case Operation::LeftShift:
+        case Operation::RightShift:
+            return true;
 
         default:
-            KAI_THROW_1(CannotNew, Q);
-            break;
-        }
-
-		break;
+            return false;
     }
-
-    case Operation::Assert:
-    {
-        if (!PopBool())
-        {
-            KAI_TRACE_ERROR_1(_continuation->Show()) << "Assertion failed";
-            KAI_THROW_0(Assertion);
-        }
-
-		break;
-    }
-
-    case Operation::Ref:
-        Push(Top());
-        break;
-
-    case Operation::Drop:
-        Pop();
-        break;
-
-    case Operation::Swap:
-    {
-        auto A = Pop();
-        auto B = Pop();
-        Push(A);
-        Push(B);
-
-		break;
-    }
-
-    case Operation::Dup:
-    {
-        auto Q = Pop();
-        Push(Q);
-        Push(Q.Duplicate());
-
-		break;
-    }
-
-    case Operation::Rot:
-    {
-        auto A = Pop();
-        auto B = Pop();
-        auto C = Pop();
-        Push(B);
-        Push(A);
-        Push(C);
-
-		break;
-    }
-
-    case Operation::Clear:
-        _data->Clear();
-        break;
-
-    case Operation::Depth:
-        Push(New(_data->Size()));
-        break;
-
-    case Operation::ToPair:
-    {
-        auto B = Pop();
-        auto A = Pop();
-        Push(New(Pair(A, B)));
-
-		break;
-    }
-
-    case Operation::ToArray:
-        ToArray();
-        break;
-
-    case Operation::Self:
-        Push(_tree->GetScope());
-        break;
-
-    case Operation::This:
-        Push(_continuation);
-        break;
-
-    case Operation::Expand:
-        Expand();
-        break;
-
-    case Operation::TypeOf:
-        Push(New(Pop().GetClass()));
-        break;
-
-    case Operation::Exists:
-        Push(New(TryResolve(Pop()).Exists()));
-        break;
-
-    case Operation::Contents:
-        Push(_tree->GetScope());
-        GetChildren();
-        break;
-
-    case Operation::GetChildren:
-        GetChildren();
-        break;
-
-    case Operation::ChangeScope:
-    {
-        Object id = Pop();
-        if (GetTypeNumber(id) == Type::Number::Label)
-            _tree->SetScope(GetStorageBase(_tree->GetScope()).Get(ConstDeref<Label>(id)));
-        else
-            _tree->SetScope(ConstDeref<Pathname>(id));
-
-		break;
-    }
-
-    case Operation::PlusEquals:
-    {
-        auto arg = Pop();
-        auto from = Pop();
-        // TODO: this is lame. need to generalise across all numerics
-        if (arg.IsType<float>() && from.IsType<float>())
-        {
-            Deref<float>(from) += ConstDeref<float>(arg);
-            break;
-        }
-
-        if (arg.IsType<int>() && from.IsType<int>())
-        {
-            Deref<int>(from) += ConstDeref<int>(arg);
-            break;
-        }
-
-        from.GetClass()->Assign(from, from.GetClass()->Plus(from, arg));
-
-		break;
-    }
-
-    case Operation::MinusEquals:
-    {
-        Object arg = Pop();
-        Object from = Pop();
-        Object result = from.GetClass()->Minus(from, arg);
-        from.GetClass()->Assign(from, result);
-
-		break;
-    }
-
-    case Operation::MulEquals:
-    {
-        Object arg = Pop();
-        Object from = Pop();
-        Object result = from.GetClass()->Multiply(from, arg);
-        from.GetClass()->Assign(from, result);
-
-		break;
-    }
-
-    case Operation::DivEquals:
-    {
-        Object arg = Pop();
-        Object from = Pop();
-        Object result = from.GetClass()->Divide(from, arg);
-        from.GetClass()->Assign(from, result);
-
-		break;
-    }
-
-    case Operation::ModEquals:
-        KAI_NOT_IMPLEMENTED();
-        break;
-
-    case Operation::Plus:
-    {
-        Object B = Pop();
-        Object A = Pop();
-        Push(A.GetClass()->Plus(A, B));
-
-		break;
-    }
-
-    case Operation::Minus:
-    {
-        Object B = Pop();
-        Object A = Pop();
-        Push(A.GetClass()->Minus(A, B));
-
-		break;
-    }
-
-    case Operation::Multiply:
-    {
-        Object B = Pop();
-        Object A = Pop();
-        Push(A.GetClass()->Multiply(A, B));
-
-		break;
-    }
-
-    case Operation::Divide:
-    {
-        Object B = Pop();
-        Object A = Pop();
-        Push(A.GetClass()->Divide(A, B));
-
-        break;
-    }
-
-    case Operation::Store:
-    {
-        Object ident = Pop();
-        Object value = Pop();
-        Set(_tree->GetRoot(), _continuation->GetScope(), ident, value);
-
-		break;
-    }
-
-    case Operation::Retreive:
-        Push(Resolve(Pop(), true));
-        break;
-
-    case Operation::Size:
-        Push(New(ContainerSize(Pop())));
-        break;
-
-    case Operation::Less:
-    {
-        Object B = Pop();
-        Object A = Pop();
-        Push(New(A.GetClass()->Less2(A,B)));
-
-		break;
-    }
-
-    case Operation::NotEquiv:
-    {
-        Object B = Pop();
-        Object A = Pop();
-        Push(New(!A.GetClass()->Equiv2(A,B)));
-
-		break;
-    }
-
-    case Operation::Equiv:
-    {
-        Object B = Pop();
-        Object A = Pop();
-        Push(New(A.GetClass()->Equiv2(A,B)));
-
-		break;
-    }
-
-    case Operation::Greater:
-    {
-        Object B = Pop();
-        Object A = Pop();
-        Push(New(A.GetClass()->Greater2(A,B)));
-		
-		break;
-    }
-
-    case Operation::CppMethodCall:
-    {
-        const Label &method_name = ConstDeref<Label>(Pop());
-        Object object = Pop();
-        if (!object.Exists())
-            KAI_THROW_0(NullObject);
-
-        const ClassBase *klass = object.GetClass();
-        MethodBase *method = klass->GetMethod(method_name);
-        if (method == 0)
-            KAI_THROW_2(UnknownMethod, method_name.ToString(), klass->GetName().ToString());
-
-        method->Invoke(object, *_data);
-
-		break;
-    }
-
-    case Operation::LogicalNot:
-    {
-        Push(New(!PopBool()));
-
-		break;
-    }
-
-    case Operation::LogicalXor:
-    {
-        Push(New(PopBool() ^ PopBool()));
-
-		break;
-    }
-
-    case Operation::LogicalAnd:
-    {
-        Push(New(PopBool() && PopBool()));
-
-		break;
-    }
-
-    case Operation::LogicalOr:
-    {
-        Push(New(PopBool() || PopBool()));
-
-		break;
-    }
-
-    case Operation::Pick:
-    {
-        int n = ConstDeref<int>(Pop());
-        Push(Duplicate(_data->At(n)));
-
-        break;
-    }
-
-	case Operation::ToList:
-	{
-		auto list = New<List>();
-		int n = ConstDeref<int>(Pop());
-		while (n-- > 0)
-		{
-			list->Append(Pop());
-		}
-
-		Push(list);
-
-		break;
-	}
-
-#define OPERATION_NOT_IMPLEMENTED(Op) \
-case Operation::Op: \
-    { \
-        KAI_NOT_IMPLEMENTED_1(#Op); \
-    } \
-    break;
-    OPERATION_NOT_IMPLEMENTED(IfThenReplaceElseSuspend);
-    OPERATION_NOT_IMPLEMENTED(IfThenResumeElseSuspend);
-    OPERATION_NOT_IMPLEMENTED(IfThenSuspendElseReplace);
-    OPERATION_NOT_IMPLEMENTED(IfThenReplaceElseReplace);
-    OPERATION_NOT_IMPLEMENTED(IfThenResumeElseReplace);
-    OPERATION_NOT_IMPLEMENTED(IfThenSuspendElseResume);
-    OPERATION_NOT_IMPLEMENTED(IfThenReplaceElseResume);
-    OPERATION_NOT_IMPLEMENTED(IfThenResumeElseResume);
-    OPERATION_NOT_IMPLEMENTED(RotN);
-    OPERATION_NOT_IMPLEMENTED(LessOrEquiv);
-    OPERATION_NOT_IMPLEMENTED(GreaterOrEquiv);
-    OPERATION_NOT_IMPLEMENTED(LogicalNand);
-    OPERATION_NOT_IMPLEMENTED(BitwiseNot);
-    OPERATION_NOT_IMPLEMENTED(BitwiseAnd);
-    OPERATION_NOT_IMPLEMENTED(BitwiseOr);
-    OPERATION_NOT_IMPLEMENTED(BitwiseXor);
-    OPERATION_NOT_IMPLEMENTED(BitwiseNand);
-    }
-}
-
-StringStream& operator<<(StringStream& str, const Executor& exec)
-{
-    return str << "Executor " << exec.Self->GetHandle() 
-        << ", data.size=" << exec.GetDataStack()->Size() 
-        << ", context.size=" << exec.GetContextStack()->Size();
 }
 
 KAI_END
-
-//EOF

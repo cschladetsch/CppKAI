@@ -1,37 +1,42 @@
 #pragma once
 
 #include <KAI/Language/Tau/Generate/GenerateProcess.h>
+#include <fstream>
+#include <sstream>
 
 TAU_BEGIN
 
-namespace Generate
-{
-    struct GenerateAgent : GenerateProcess
-    {
-        using GenerateProcess::Node;
+namespace Generate {
+struct GenerateAgent : GenerateProcess {
+    using GenerateProcess::Node;
 
-        GenerateAgent(const char *input, string &output);
+    // Generate from TAU IDL content string
+    GenerateAgent(const char *input, string &output);
 
-    protected:
-        bool Generate(TauParser const &parser, string &output) override;
+    // Convenience: Generate from TAU IDL file
+    static bool GenerateFromFile(const char *filename, string &output, string &error);
 
-        string Prepend() const override;
-        bool Namespace(Node const &cl) override;
-        bool Class(Node const &cl) override;
-        bool Property(Node const &prop) override;
-        bool Method(Node const &method) override;
-        string ArgType(string const &text) const override;
-        string ReturnType(string const &text) const override;
+   protected:
+    bool Generate(TauParser const &parser, string &output) override;
 
-    private:
-        struct Decl;
-        void AddAgentBoilerplate(Decl const &agent);
-        void MethodBody(const string &returnType, const Node::ChildrenType &args, const string &name);
-        void MethodDecl(const string &returnType, const Node::ChildrenType &args, const string &name);
-    };
-}
+    string Prepend() const override;
+    bool Namespace(Node const &cl) override;
+    bool Class(Node const &cl) override;
+    bool Property(Node const &prop) override;
+    bool Method(Node const &method) override;
+    bool Interface(Node const &interface) override;
+    bool Struct(Node const &strct) override;
+    string ArgType(string const &text) const override;
+    string ReturnType(string const &text) const override;
+
+   private:
+    struct AgentDecl;
+    void AddAgentBoilerplate(AgentDecl const &agent, Node const &cl);
+    void GenerateHandlerMethod(Node const &method);
+    void GenerateEventTrigger(Node const &event);
+};
+}  // namespace Generate
 
 TAU_END
 
-//EOF
-
+// EOF

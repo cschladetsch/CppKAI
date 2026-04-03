@@ -1,0 +1,54 @@
+// Test for Rho error handling
+
+// Basic error prevention with conditionals
+function divide = a, b
+    if b == 0
+        return "Error: Division by zero"
+    else
+        return a / b
+
+assert divide(10, 2) == 5
+assert divide(10, 0) == "Error: Division by zero"
+
+// Function with result checking
+function safeSqrt = x
+    if x < 0
+        return "Error: Cannot take square root of negative number"
+    else
+        return x ^ 0.5
+
+assert safeSqrt(16) == 4
+assert safeSqrt(-4) == "Error: Cannot take square root of negative number"
+
+// Multi-level error handling
+function processNumber = n
+    if n < 0
+        return "Error: Number cannot be negative"
+    else if n > 100
+        return "Error: Number cannot be greater than 100"
+    else
+        return n * 2
+
+assert processNumber(50) == 100
+assert processNumber(-10) == "Error: Number cannot be negative"
+assert processNumber(200) == "Error: Number cannot be greater than 100"
+
+// Cascading error handling
+function validateAndProcess = input
+    validated = validate(input)
+    if validated[0] == "error"
+        return validated
+    else
+        return process(validated[1])
+
+function validate = input
+    if input < 0
+        return ["error", "Input cannot be negative"]
+    else
+        return ["success", input]
+        
+function process = value
+    return value * 2
+
+assert validateAndProcess(5) == 10
+assert validateAndProcess(-5)[0] == "error"

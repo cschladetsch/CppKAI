@@ -1,0 +1,22 @@
+// Basic test for Rho language diagnostics
+a = 5
+b = 10
+c = a + b
+print("a + b = " + c)
+
+// Try basic conditionals
+if a < b
+    print("a is less than b")
+else
+    print("a is not less than b")
+
+// Define a function
+square = fun(x)
+    return x * x
+
+print("square(5) = " + square(5))
+
+// Try to use a simple loop - this may fail
+i = 0
+print("Starting loop test...")
+// Try a basic while loop with diagnostic tracing

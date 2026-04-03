@@ -1,0 +1,11 @@
+// Super-minimal do-while test for isolation
+// Initializes a counter
+i = 0
+
+// Basic do-while that increments i three times
+do
+    i = i + 1
+while i < 3
+
+// Verify i is 3 after the loop
+assert i == 3

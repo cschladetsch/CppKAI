@@ -1,0 +1,53 @@
+// Test for Rho basic operations - designed to work with minimal features
+
+// Basic arithmetic
+a = 1 + 2
+assert a == 3
+
+b = 10 - 5
+assert b == 5
+
+c = 3 * 4
+assert c == 12
+
+d = 10 / 2
+assert d == 5
+
+// Variable reassignment
+x = 10
+assert x == 10
+x = 20
+assert x == 20
+
+// Simple logical operations
+t = true
+f = false
+assert t
+assert !f
+assert t && t
+assert t || f
+assert !(t && f)
+
+// Basic conditionals
+result = 0
+if true
+    result = 1
+assert result == 1
+
+// Simple functions
+add = fun(m, n)
+    return m + n
+assert add(2, 3) == 5
+
+// Function composition
+double = fun(x)
+    return x * 2
+inc = fun(x)
+    return x + 1
+assert double(inc(3)) == 8  // double(inc(3)) = double(4) = 8
+
+// String operations
+s1 = "Hello"
+s2 = " World"
+s3 = s1 + s2
+assert s3 == "Hello World"

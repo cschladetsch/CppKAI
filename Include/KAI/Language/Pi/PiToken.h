@@ -1,16 +1,15 @@
 #pragma once
 
 // TODO: Use kai::StringStringStream
-#include <ostream>
 #include <KAI/Language/Common/TokenBase.h>
+
+#include <ostream>
 
 KAI_BEGIN
 
 // A token in the Pi language
-struct PiTokenEnumType
-{
-    enum Enum
-    {
+struct PiTokenEnumType {
+    enum Enum {
         None = 0,
         Whitespace,
         Int,
@@ -72,7 +71,9 @@ struct PiTokenEnumType
         ToRho,
         ToRhoSequence,
         Dup,
+        Dup2,
         Drop,
+        Drop2,
         Over,
         OverM,
         PickN,
@@ -81,6 +82,7 @@ struct PiTokenEnumType
         Swap,
         Rot,
         RotN,
+        Roll,
         Clear,
         Expand,
         ToArray,
@@ -135,16 +137,27 @@ struct PiTokenEnumType
         Exists,
         Freeze,
         Thaw,
+        Send,
 
-        Self,   // current continuation 'self'
-        This,   // current scope '.'
+        Modulo,  // % operator
+        Min,     // min operator
+        Max,     // max operator
+
+        Self,   // current_ continuation 'self'
+        This,   // current_ _scope '.'
+        Print,  // print top of stack
+
+        ShellCommand,  // shell command wrapped in backticks `command`
+        ToStr,         // >str operator to convert to string
+        ForEach,       // foreach iterator: collection { 'x # body } foreach
+        Break,         // break statement for loops
+        Continue,      // continue statement for loops
     };
 
-    struct Type : TokenBase<PiTokenEnumType>
-    {
-        Type() { }
+    struct Type : TokenBase<PiTokenEnumType> {
+        Type() {}
         Type(Enum val, const LexerBase &lexer, int ln, Slice slice)
-            : TokenBase<PiTokenEnumType>(val, lexer, ln, slice) { }
+            : TokenBase<PiTokenEnumType>(val, lexer, ln, slice) {}
 
         friend std::ostream &operator<<(std::ostream &out, Type const &node);
     };
@@ -156,4 +169,3 @@ typedef PiTokenEnumType PiTokens;
 typedef PiTokenEnumType::Type PiToken;
 
 KAI_END
-

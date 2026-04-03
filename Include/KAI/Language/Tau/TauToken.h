@@ -4,10 +4,8 @@
 
 TAU_BEGIN
 
-struct TauTokenEnumType
-{
-    enum Enum
-    {
+struct TauTokenEnumType {
+    enum Enum {
         None = 0,
         Ident = 1,
         OpenParan = 2,
@@ -31,20 +29,30 @@ struct TauTokenEnumType
         Sync = 31,
         Class = 32,
         Comma = 33,
-        Whitespace  = 34,
+        Whitespace = 34,
         Comment = 35,
         Async = 36,
         Tab = 37,
         String = 38,
+        Number = 39,
+        Assign = 40,       // For handling '=' assignment and default parameters
+        Dot = 41,          // Added for handling member access (e.g.,
+                           // ConnectionState.Disconnected)
+        Interface = 42,    // Added for explicit interface keyword
+        Event = 43,        // Added for event declarations
+        Struct = 44,       // Added for struct declarations
+        EnumKeyword = 45,  // Added for enum declarations
+        ConstKeyword = 46,  // Added for const keyword
+        ShellCommand =
+            47,  // Added for compatibility with LexerCommon (not used in Tau)
     };
 
-    struct Type : TokenBase<TauTokenEnumType>
-    {
+    struct Type : TokenBase<TauTokenEnumType> {
         typedef TokenBase<TauTokenEnumType> Parent;
 
-        Type() { }
+        Type() {}
         Type(Enum val, const LexerBase &lexer, int ln, Slice slice)
-                : Parent(val, lexer, ln, slice) { }
+            : Parent(val, lexer, ln, slice) {}
     };
 
     static const char *ToString(Enum val);
@@ -54,4 +62,3 @@ typedef TauTokenEnumType::Type TauToken;
 typedef TauTokenEnumType::Enum TauTokenEnum;
 
 TAU_END
-

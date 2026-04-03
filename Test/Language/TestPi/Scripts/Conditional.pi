@@ -1,4 +1,20 @@
+// Start with a clean state
+clear
+
+// Test if with true condition
 1 true if 1 == assert
+
+// Test if with false condition
 2 false if depth 0 == assert
+
+// Test if-else with true condition
 1 2 true ife 1 == assert
+
+// Test if-else with false condition
 1 2 false ife 2 == assert
+
+// Verify stack is empty at the end
+depth 0 == assert
+
+// Clean up at the end
+clear

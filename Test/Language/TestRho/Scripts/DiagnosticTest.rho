@@ -1,0 +1,48 @@
+// Simple diagnostic test file for Rho language
+
+///
+// This is a simplified test file for debugging purposes
+// It exercises basic language features to verify core functionality
+
+// Define a trace array for logging
+trace = []
+
+print("Begin diagnostic test")
+
+// Try basic expressions
+a = 1 + 5
+b = 2 - 7
+c = 6 * 4
+d = 2 / 4
+trace("a = " + a)
+trace("b = " + b)
+trace("c = " + c) 
+trace("d = " + d)
+
+print("Testing simple conditionals")
+// Try a basic conditional
+if 1 > 5
+    trace("1 > 5")
+else
+    trace("1 <= 5")
+
+// Define a function
+print("Testing functions")
+square = fun(x) { 
+    return x * x 
+}
+result = square(5)
+trace("square(5) = " + result)
+
+print("Testing loops")
+// Try a basic while loop - this will probably fail
+i = 0
+print("Starting loop test...")
+// Try a basic while loop with diagnostic tracing
+while (i < 3) {
+    trace("i = " + i)
+    i = i + 1
+}
+
+print("Diagnostic test complete")
+print()

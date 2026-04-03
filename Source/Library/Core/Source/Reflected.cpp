@@ -3,13 +3,10 @@
 
 KAI_BEGIN
 
-Registry &Reflected::Reg() const
-{
-    if (!Self || !Self->Exists())
-        KAI_THROW_0(NullObject);
+Registry &Reflected::Reg() const {
+    if (!Self || !Self->Exists()) KAI_THROW_0(NullObject);
 
     return *Self->GetRegistry();
 }
 
 KAI_END
-

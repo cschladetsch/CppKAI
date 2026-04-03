@@ -9,11 +9,8 @@ StringStream &operator>>(StringStream &, bool &);
 BinaryStream &operator<<(BinaryStream &, bool);
 BinaryStream &operator>>(BinaryStream &, bool &);
 
-KAI_TYPE_TRAITS(bool,
-	Number::Bool
-	, Properties::Streaming 
-	| Properties::Boolean
-	| Properties::Equiv
-	| Properties::Assign)
+KAI_TYPE_TRAITS(bool, Number::Bool,
+                Properties::Streaming | Properties::Boolean |
+                    Properties::Equiv | Properties::Assign)
 
 KAI_END

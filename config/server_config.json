@@ -1,0 +1,6 @@
+{
+    "port": 14591,
+    "maxClients": 32,
+    "enableCalculation": true,
+    "echoMode": true
+}

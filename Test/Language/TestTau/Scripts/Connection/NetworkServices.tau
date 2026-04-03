@@ -1,0 +1,74 @@
+// Network services and applications for testing
+
+namespace KAI { namespace Network { namespace Services
+{
+    // Service discovery information
+    struct ServiceInfo
+    {
+        string name;
+        string description;
+        string version;
+        SystemAddress address;
+        int[] ports;
+        string[] capabilities;
+        date discoveredAt;
+    }
+    
+    // Service registry interface
+    interface IServiceRegistry
+    {
+        void RegisterService(ServiceInfo info);
+        void UnregisterService(string name);
+        ServiceInfo[] GetAvailableServices();
+        ServiceInfo FindService(string name);
+        ServiceInfo[] FindServicesByCapability(string capability);
+        
+        // Events
+        event ServiceRegistered(ServiceInfo info);
+        event ServiceUnregistered(string name);
+    }
+    
+    // Network chat application example
+    interface IChatService
+    {
+        void Connect(string username, SystemAddress serverAddress, int port);
+        void Disconnect();
+        bool IsConnected();
+        void SendMessage(string message, string channel = "general");
+        void JoinChannel(string channel);
+        void LeaveChannel(string channel);
+        string[] GetChannels();
+        string[] GetUsersInChannel(string channel);
+        
+        // Events
+        event MessageReceived(string sender, string message, string channel);
+        event UserJoined(string username, string channel);
+        event UserLeft(string username, string channel);
+    }
+    
+    // File transfer service
+    interface IFileTransferService
+    {
+        void Connect(SystemAddress address, int port);
+        void Disconnect();
+        
+        // Sending files
+        async int SendFile(string localPath, string remotePath);
+        void CancelTransfer(int transferId);
+        
+        // Receiving files
+        void AcceptIncomingTransfer(int transferId, string savePath);
+        void RejectIncomingTransfer(int transferId);
+        
+        // Status methods
+        float GetTransferProgress(int transferId);
+        int[] GetActiveTransfers();
+        
+        // Events
+        event TransferStarted(int transferId, string filename, int64 size, bool incoming);
+        event TransferProgress(int transferId, float percentage);
+        event TransferCompleted(int transferId);
+        event TransferFailed(int transferId, string reason);
+        event IncomingTransferRequest(int transferId, string filename, int64 size);
+    }
+}}}

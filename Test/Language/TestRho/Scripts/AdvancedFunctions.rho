@@ -1,0 +1,68 @@
+// Test for Rho advanced functions and closures
+
+// Higher-order functions
+apply = fun(f, x)
+    return f(x)
+
+double = fun(x)
+    return x * 2
+
+square = fun(x)
+    return x * x
+
+assert apply(double, 5) == 10
+assert apply(square, 5) == 25
+
+// Function returning function (closure)
+makeMultiplier = fun(factor)
+    multiplier = fun(x)
+        return x * factor
+    return multiplier
+
+doubler = makeMultiplier(2)
+tripler = makeMultiplier(3)
+
+assert doubler(5) == 10
+assert tripler(5) == 15
+
+// Composition
+compose = fun(f, g)
+    composition = fun(x)
+        return f(g(x))
+    return composition
+
+doubleThenSquare = compose(square, double)
+squareThenDouble = compose(double, square)
+
+assert doubleThenSquare(3) == 36  // (3*2)^2 = 36
+assert squareThenDouble(3) == 18  // (3^2)*2 = 18
+
+// Partial application
+partial = fun(f, x)
+    partialApplied = fun(y)
+        return f(x, y)
+    return partialApplied
+
+add = fun(a, b)
+    return a + b
+
+addFive = partial(add, 5)
+assert addFive(3) == 8
+
+// Memoization
+createMemoized = fun(f)
+    cache = {}
+    memoized = fun(x)
+        if exists cache[x]
+            return cache[x]
+        else
+            result = f(x)
+            cache[x] = result
+            return result
+    return memoized
+
+// This would be more useful with an expensive function like fibonacci,
+// but we're just testing the concept here
+memoizedSquare = createMemoized(square)
+assert memoizedSquare(4) == 16
+assert memoizedSquare(4) == 16  // Should use cached value

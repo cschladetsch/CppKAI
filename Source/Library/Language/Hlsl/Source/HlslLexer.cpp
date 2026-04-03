@@ -4,8 +4,7 @@ using namespace std;
 
 KAI_BEGIN
 
-void HlslLexer::AddKeyWords()
-{
+void HlslLexer::AddKeyWords() {
     keyWords["AppendStructuredBuffer"] = Enum::AppendStructuredBuffer;
     keyWords["asm"] = Enum::Asm;
     keyWords["asm_fragment"] = Enum::AsmFragment;
@@ -184,82 +183,87 @@ void HlslLexer::AddKeyWords()
     keyWords["double4x4"] = Enum::Double4x4;
 }
 
-bool HlslLexer::NextToken()
-{
+bool HlslLexer::NextToken() {
     const char current = Current();
-    if (current == 0)
-        return false;
+    if (current == 0) return false;
 
-    if (isalpha(current))
-        return LexIdent();
+    if (isalpha(current)) return LexIdent();
 
-    if (isdigit(current))
-        return Add(Enum::Int, Gather(isdigit));
+    if (isdigit(current)) return Add(Enum::Int, Gather(isdigit));
 
-    switch (current)
-    {
-    case ';': return Add(Enum::Semi);
-    case '{': return Add(Enum::OpenBrace);
-    case '}': return Add(Enum::CloseBrace);
-    case '(': return Add(Enum::OpenParan);
-    case ')': return Add(Enum::CloseParan);
-    case ' ': return Add(Enum::Whitespace, Gather(IsSpaceChar));
-    case ',': return Add(Enum::Comma);
-    case '*': return Add(Enum::Mul);
-    case '[': return Add(Enum::OpenSquareBracket);
-    case ']': return Add(Enum::CloseSquareBracket);
-    case '=': return AddIfNext('=', Enum::Equiv, Enum::Assign);
-    case '!': return AddIfNext('=', Enum::NotEquiv, Enum::Not);
-    case '&': return AddIfNext('&', Enum::And, Enum::BitAnd);
-    case '|': return AddIfNext('|', Enum::Or, Enum::BitOr);
-    case '<': return AddIfNext('=', Enum::LessEquiv, Enum::Less); 
-    case '>': return AddIfNext('=', Enum::GreaterEquiv, Enum::Greater);
-    case '"': return LexString(); // "
-    case '\t': return Add(Enum::Tab);
-    case '\n': return Add(Enum::NewLine);
-    case '/':
-        if (Peek() == '/')
-        {
-            Next();
-            const int start = offset;
-            while (Next() != '\n')
-                ;
+    switch (current) {
+        case ';':
+            return Add(Enum::Semi);
+        case '{':
+            return Add(Enum::OpenBrace);
+        case '}':
+            return Add(Enum::CloseBrace);
+        case '(':
+            return Add(Enum::OpenParan);
+        case ')':
+            return Add(Enum::CloseParan);
+        case ' ':
+            return Add(Enum::Whitespace, Gather(IsSpaceChar));
+        case ',':
+            return Add(Enum::Comma);
+        case '*':
+            return Add(Enum::Mul);
+        case '[':
+            return Add(Enum::OpenSquareBracket);
+        case ']':
+            return Add(Enum::CloseSquareBracket);
+        case '=':
+            return AddIfNext('=', Enum::Equiv, Enum::Assign);
+        case '!':
+            return AddIfNext('=', Enum::NotEquiv, Enum::Not);
+        case '&':
+            return AddIfNext('&', Enum::And, Enum::BitAnd);
+        case '|':
+            return AddIfNext('|', Enum::Or, Enum::BitOr);
+        case '<':
+            return AddIfNext('=', Enum::LessEquiv, Enum::Less);
+        case '>':
+            return AddIfNext('=', Enum::GreaterEquiv, Enum::Greater);
+        case '"':
+            return LexString();  // "
+        case '\t':
+            return Add(Enum::Tab);
+        case '\n':
+            return Add(Enum::NewLine);
+        case '/':
+            if (Peek() == '/') {
+                Next();
+                const int start = offset;
+                while (Next() != '\n');
 
-            Add(Token(Enum::Comment, *this, lineNumber, Slice(start, offset)));
-            Next();
-            return true;
-        }
-        if (Peek() == '=')
-        {
-            Next();
-            return AddTwoCharOp(Enum::DivAssign);
-        }
-        return Add(Enum::Divide);
+                Add(Token(Enum::Comment, *this, lineNumber,
+                          Slice(start, offset)));
+                Next();
+                return true;
+            }
+            if (Peek() == '=') {
+                Next();
+                return AddTwoCharOp(Enum::DivAssign);
+            }
+            return Add(Enum::Divide);
 
-    case '-':
-        if (Peek() == '-')
-            return AddTwoCharOp(Enum::Decrement);
-        if (Peek() == '=')
-            return AddTwoCharOp(Enum::MinusAssign);
-        return Add(Enum::Minus);
+        case '-':
+            if (Peek() == '-') return AddTwoCharOp(Enum::Decrement);
+            if (Peek() == '=') return AddTwoCharOp(Enum::MinusAssign);
+            return Add(Enum::Minus);
 
-    case '.':
-        if (Peek() == '.')
-        {
-            Next();
-            if (Peek() == '.')
-                return AddThreeCharOp(Enum::ThreeDots);
-            return LexError("Unexpected ..");
-        }
-        return Add(Enum::Dot);
+        case '.':
+            if (Peek() == '.') {
+                Next();
+                if (Peek() == '.') return AddThreeCharOp(Enum::ThreeDots);
+                return LexError("Unexpected ..");
+            }
+            return Add(Enum::Dot);
 
-    case '+':
-        if (Peek() == '+')
-            return AddTwoCharOp(Enum::Increment);
-        if (Peek() == '=')
-            return AddTwoCharOp(Enum::PlusAssign);
-        return Add(Enum::Plus);
-
+        case '+':
+            if (Peek() == '+') return AddTwoCharOp(Enum::Increment);
+            if (Peek() == '=') return AddTwoCharOp(Enum::PlusAssign);
+            return Add(Enum::Plus);
     }
 
     LexError("Unrecognized %c");
@@ -269,15 +273,14 @@ bool HlslLexer::NextToken()
 
 bool Contains(const char *allowed, char current);
 
-bool HlslLexer::LexIdent()
-{
+bool HlslLexer::LexIdent() {
     return Add(LexAlpha());
-    //const int start = offset;
+    // const int start = offset;
     //
-    //bool prev_ident = false;
-    //do
+    // bool prev_ident = false;
+    // do
     //{
-    //    const Token result = LexAlpha();
+    //     const Token result = LexAlpha();
 
     //    if (result.type != TokenEnumType::Ident)
     //    {
@@ -305,15 +308,12 @@ bool HlslLexer::LexIdent()
     //        break;
     //    }
     //}
-    //while (true);
+    // while (true);
 
-    //Add(Enum::Ident, Slice(start, offset));
-    //return true;
+    // Add(Enum::Ident, Slice(start, offset));
+    // return true;
 }
 
-void HlslLexer::Terminate()
-{
-    Add(Enum::None, 0);
-}
+void HlslLexer::Terminate() { Add(Enum::None, 0); }
 
 KAI_END

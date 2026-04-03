@@ -1,0 +1,26 @@
+// Test file for Pi language string operations
+// First clear any leftover stack items
+clear
+
+// Test string concatenation
+"Hello" " world" + "Hello world" == assert
+
+// Test string as boolean
+"" not assert
+"non-empty" assert
+
+// Test string comparison
+"abc" "abc" == assert
+"abc" "def" == not assert
+// These operators might not be implemented
+// "abc" "def" < assert
+// "def" "abc" > assert
+
+// Test string with simple integer (if supported)
+"Number " 42 + "Number 42" == assert
+
+// Test more complex string operations
+"Hello" " " + "world" + "Hello world" == assert
+
+// Clean up
+clear

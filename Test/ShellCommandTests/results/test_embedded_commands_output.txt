@@ -1,0 +1,51 @@
+KAI Console v0.3.0
+Built on Feb  5 2026 at 03:16:24
+Type 'help' for available commands.
+
+Pi λ # Test 21: Simple embedded command in Pi arithmetic
+Pi λ 10 `echo 5` +
+Pi λ .
+Pi λ 
+Pi λ # Test 22: Multiple embedded commands in Pi arithmetic
+Pi λ `echo 3` `echo 7` +
+3
+Pi λ .
+Pi λ 
+Pi λ # Test 23: Embedded command in multiplication
+Pi λ 5 `echo 4` *
+Pi λ .
+Pi λ 
+Pi λ # Test 24: Embedded command with complex shell operation
+Pi λ 2 `echo "3 * 2" | bc` +
+Pi λ .
+Pi λ 
+Pi λ # Test 25: Nested embedded commands (command generating another number)
+Exception: [Pathname.cpp:78] InvalidPathname: text=number)
+Pi λ `echo 1` `echo 9` + `echo 5` *
+1
+Pi λ .
+Pi λ 
+Pi λ # Test 26: Embedded command in division
+Pi λ 20 `echo 4` /
+Pi λ .
+Pi λ 
+Pi λ # Test 27: Embedded command with echo and arithmetic
+Pi λ `echo $((2 + 3))` 6 *
+5
+Pi λ .
+Pi λ 
+Pi λ # Test 28: Multiple separate embedded commands
+Pi λ `echo 8` .
+8
+Pi λ `echo 12` .
+12
+Pi λ 
+Pi λ # Test 29: Embedded command in subtraction
+Pi λ 15 `echo 7` -
+Pi λ .
+Pi λ 
+Pi λ # Test 30: Complex embedded with pipe
+Pi λ 10 `echo "2 3 5" | wc -w` +
+Pi λ .
+Pi λ exit
+Pi λ 

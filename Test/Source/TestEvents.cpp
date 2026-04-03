@@ -1,61 +1,37 @@
+#include "EventHelper.h"
 #include "TestCommon.h"
-#include "KAI/Core/Event.h"
 
 USING_NAMESPACE_KAI
 
-struct TestEvents : TestCommon
-{
-};
+struct TestEvents : TestCommon {};
 
 static bool funCalled[4];
 
-void function0()
-{
-    funCalled[0] = true;
-}
-void function1(int)
-{
-    funCalled[1] = true;
-}
-void function2(int, String)
-{
-    funCalled[2] = true;
-}
-void function3(int, String, float)
-{
-    funCalled[3] = true;
-}
+void function0() { funCalled[0] = true; }
+void function1(int) { funCalled[1] = true; }
+void function2(int, String) { funCalled[2] = true; }
+void function3(int, String, float) { funCalled[3] = true; }
 
-struct Foobar
-{
+struct Foobar {
     int methodCalled[4];
     int r1, r2, r3;
     String s2, s3;
     float f3;
 
-    Foobar()
-    {
-        std::fill(methodCalled, methodCalled + 4, false);
-    }
+    Foobar() { std::fill(methodCalled, methodCalled + 4, false); }
 
-    void method0()
-    {
-        methodCalled[0] = true;
-    }
-    void method1(int r)
-    {
+    void method0() { methodCalled[0] = true; }
+    void method1(int r) {
         r1 = r;
         methodCalled[1] = true;
     }
 
-    void method2(int r, String s)
-    {
+    void method2(int r, String s) {
         r2 = r;
         s2 = s;
         methodCalled[2] = true;
     }
-    void method3(int r, String s, float f)
-    {
+    void method3(int r, String s, float f) {
         r3 = r;
         s3 = s;
         f3 = f;
@@ -63,23 +39,18 @@ struct Foobar
     }
 };
 
-struct Grok
-{
+struct Grok {
     bool called;
 
     Grok() { called = false; }
-    void method0()
-    {
-        called = true;
-    };
+    void method0() { called = true; };
 };
 
 KAI_BEGIN
 KAI_TYPE_TRAITS_BASIC(Grok, 666);
 KAI_END
 
-TEST_F(TestEvents, TestFunctionsAndMethods)
-{
+TEST_F(TestEvents, TestFunctionsAndMethods) {
     Event<> event0;
     Event<int> event1;
     Event<int, String> event2;
@@ -102,8 +73,7 @@ TEST_F(TestEvents, TestFunctionsAndMethods)
     event2(123, "hello");
     event3(-2, "world", 3.14f);
 
-    for (int n = 0; n < 4; ++n)
-    {
+    for (int n = 0; n < 4; ++n) {
         ASSERT_TRUE(funCalled[n]);
         ASSERT_TRUE(foo.methodCalled[n]);
     }

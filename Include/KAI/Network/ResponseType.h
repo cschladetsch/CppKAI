@@ -4,17 +4,14 @@
 
 KAI_NET_BEGIN
 
-enum class ResponseType
-{
-	None,
-	Pending,
-	TimedOut,
-	Delivered,
-	BadRequest,
-	UnkownAgent,
-	Returned,
+enum class ResponseType {
+    None,
+    Pending,
+    TimedOut,
+    Delivered,
+    BadRequest,
+    UnknownAgent,
+    Returned,
 };
 
 KAI_NET_END
-
-

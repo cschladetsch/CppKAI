@@ -2,11 +2,6 @@
 
 USING_NAMESPACE_KAI
 
-struct BasePointerTest : TestCommon
-{
-};
+struct BasePointerTest : TestCommon {};
 
-TEST_F(BasePointerTest, TestUpCast)
-{
-    ASSERT_TRUE(1);
-}
+TEST_F(BasePointerTest, TestUpCast) { ASSERT_TRUE(1); }

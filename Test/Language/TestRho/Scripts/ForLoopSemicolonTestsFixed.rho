@@ -1,0 +1,191 @@
+// ForLoopSemicolonTestsFixed.rho
+// Tests for semicolon usage in for loops in the Rho language
+// Fixed to use correct Rho syntax (no parentheses)
+
+// Enable debug tracing
+print("Enabling diagnostic level")
+setTraceLevel(3)
+
+// Initialize test metrics
+test_count = 0
+pass_count = 0
+fail_count = 0
+
+// Helper function to run and verify a test
+run_test = fun(name, test_func, expected)
+    test_count = test_count + 1
+    print("\nTest " + test_count + ": " + name)
+    
+    try
+        result = test_func()
+        passed = result == expected
+        
+        if passed
+            pass_count = pass_count + 1
+            print("  ✅ PASSED: Got expected result: " + result)
+        else
+            fail_count = fail_count + 1
+            print("  ❌ FAILED: Expected " + expected + " but got " + result)
+        
+        return passed
+    catch error
+        fail_count = fail_count + 1
+        print("  ❌ FAILED with exception: " + error)
+        return false
+
+// =============================================================================
+// TEST 1: Standard for loop with semicolons (no parentheses)
+// =============================================================================
+test_standard_for = fun()
+    sum = 0
+    
+    // Standard for loop with semicolons - NO PARENTHESES in Rho
+    for i = 0; i < 5; i = i + 1
+        sum = sum + i
+    
+    return sum
+
+run_test("Standard for loop with semicolons", test_standard_for, 10)  // 0+1+2+3+4=10
+
+// =============================================================================
+// TEST 2: Empty initialization section
+// =============================================================================
+test_empty_init = fun()
+    count = 0
+    i = 0
+    
+    // Empty initialization with semicolon
+    for ; i < 3; i = i + 1
+        count = count + 1
+    
+    return count
+
+run_test("Empty initialization section", test_empty_init, 3)
+
+// =============================================================================
+// TEST 3: Empty condition with semicolons (runs until explicit break)
+// =============================================================================
+test_empty_condition = fun()
+    count = 0
+    
+    // Empty condition with semicolons on both sides
+    for i = 0; ; i = i + 1
+        count = count + 1
+        if count >= 5
+            break
+    
+    return count
+
+run_test("Empty condition section", test_empty_condition, 5)
+
+// =============================================================================
+// TEST 4: Empty increment with semicolons
+// =============================================================================
+test_empty_increment = fun()
+    sum = 0
+    
+    // Empty increment with trailing semicolon
+    for i = 0; i < 5;
+        sum = sum + i
+        i = i + 1
+    
+    return sum
+
+run_test("Empty increment section", test_empty_increment, 10)
+
+// =============================================================================
+// TEST 5: All empty sections but semicolons present
+// =============================================================================
+test_all_empty = fun()
+    count = 0
+    
+    // All sections empty but semicolons present
+    for ;;
+        count = count + 1
+        if count >= 3
+            break
+    
+    return count
+
+run_test("All empty sections", test_all_empty, 3)
+
+// =============================================================================
+// TEST 6: For loop with break and continue
+// =============================================================================
+test_break_continue = fun()
+    even_sum = 0
+    
+    for i = 0; i < 10; i = i + 1
+        if i % 2 != 0
+            continue  // Skip odd numbers
+        
+        even_sum = even_sum + i
+        
+        if i >= 6
+            break  // Stop after adding 6
+    
+    return even_sum  // 0 + 2 + 4 + 6 = 12
+
+run_test("Break and continue in for loop", test_break_continue, 12)
+
+// =============================================================================
+// TEST 7: Nested for loops with semicolons
+// =============================================================================
+test_nested_loops = fun()
+    total = 0
+    
+    for i = 0; i < 3; i = i + 1
+        for j = 0; j < 3; j = j + 1
+            total = total + (i * 3 + j)
+    
+    // Return a specific calculation to simplify test
+    return total  // Should be 36
+
+run_test("Nested for loops", test_nested_loops, 36)
+
+// =============================================================================
+// TEST 8: For loop with function call in sections
+// =============================================================================
+add_one = fun(x)
+    return x + 1
+
+test_function_calls = fun()
+    sum = 0
+    
+    // Function calls in initialization, condition, and increment
+    for i = add_one(0); i < add_one(4); i = add_one(i)
+        sum = sum + i
+    
+    return sum  // 1 + 2 + 3 + 4 = 10
+
+run_test("Function calls in sections", test_function_calls, 10)
+
+// =============================================================================
+// TEST 9: For loop with brace syntax
+// =============================================================================
+test_brace_syntax = fun()
+    sum = 0
+    
+    // For loop with braces
+    for i = 0; i < 5; i = i + 1 {
+        sum = sum + i
+    }
+    
+    return sum
+
+run_test("For loop with braces", test_brace_syntax, 10)
+
+// =============================================================================
+// Print final results
+// =============================================================================
+print("\n==== FOR LOOP SEMICOLON TEST RESULTS ====")
+print("Total tests: " + test_count)
+print("Passed: " + pass_count)
+print("Failed: " + fail_count)
+
+if fail_count == 0
+    print("\nAll for loop semicolon tests passed successfully! ✅")
+else
+    print("\nSome tests failed. Please check the output for details. ❌")
+
+print("\nFor loop semicolon tests completed")

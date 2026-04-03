@@ -1,0 +1,68 @@
+// ForLoopDiagnostic.rho
+// This script is designed to help diagnose issues with for loops in Rho
+
+// Enable maximum diagnostic output
+print("Enabling maximum diagnostic output")
+setTraceLevel(5)
+
+// Initialize results array
+results = []
+
+// Test 1: Basic C-style for loop
+print("\n==== Test 1: Basic C-style for loop ====")
+print("for (i = 0; i < 5; i = i + 1) { results.append(i) }")
+
+// The actual for loop - this may fail with type mismatch errors
+for (i = 0; i < 5; i = i + 1) {
+    // Print diagnostic info during each iteration
+    print("  Iteration: i = " + i)
+    
+    // Append to results
+    results.append(i)
+}
+
+// Print results
+print("For loop complete. Results array: " + results)
+
+// Test 2: Empty for loop
+print("\n==== Test 2: Empty for loop ====")
+print("for (j = 0; j < 3; j = j + 1) { }")
+
+for (j = 0; j < 3; j = j + 1) {
+    // This loop body is intentionally empty
+}
+
+print("Empty for loop complete. j = " + j)
+
+// Test 3: For-each style loop (over array)
+print("\n==== Test 3: For-each style loop ====")
+array = [10, 20, 30, 40, 50]
+foreachResults = []
+print("for item in array { foreachResults.append(item) }")
+
+for item in array {
+    print("  Processing item: " + item)
+    foreachResults.append(item)
+}
+
+print("For-each loop complete. Results: " + foreachResults)
+
+// Test 4: Complex for loop with break
+print("\n==== Test 4: Complex for loop with break ====")
+print("for (k = 0; k < 10; k = k + 1) { if (k > 5) break; results.append(k) }")
+
+for (k = 0; k < 10; k = k + 1) {
+    print("  Iteration: k = " + k)
+    
+    if (k > 5) {
+        print("  Breaking out of loop at k = " + k)
+        break
+    }
+    
+    results.append(k)
+}
+
+print("Complex for loop complete. Final k = " + k)
+print("Final results array: " + results)
+
+print("\nFor loop diagnostic script complete")

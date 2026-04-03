@@ -1,0 +1,1095 @@
+#include <cctype>
+#include <cstdio>
+#include <iostream>
+#include <sstream>
+
+#include "KAI/Console/rang.hpp"
+#include "KAI/Core/BuiltinTypes.h"
+#include "KAI/Core/FunctionBase.h"
+#include "KAI/Core/Object/ClassBuilder.h"
+#include "KAI/Core/Tree.h"
+#include "KAI/Executor/BinBase.h"
+#include "KAI/Executor/BinaryOperationHandler.h"
+#include "KAI/Executor/Compiler.h"
+#include "KAI/Executor/SignedContinuation.h"
+#include "KAI/Language/Common/Process.h"
+
+using namespace std;
+
+KAI_BEGIN
+
+// The higher the trace number, the more verbose debug output.
+int Process::trace = 0;
+
+Executor::Executor() {
+    // Initialize members
+    break_ = false;
+    continue_ = false;
+    tree_ = nullptr;
+    traceLevel_ = 0;
+    stepNumber_ = 0;
+    // Initialize the binary operation handler
+    binaryOpHandler_ = std::make_unique<BinaryOperationHandler>();
+}
+
+Executor::~Executor() {
+    // unique_ptr will automatically delete the BinaryOperationHandler
+}
+
+void Executor::Create() {
+    KAI_TRACE() << "Executor::Create: Starting";
+    
+    // During Create(), Self should already be set by ReflectedLifetimeManagement::Create
+    // which calls reflected->Self = (StorageBase *)storage; before calling Create()
+    if (!Self) {
+        KAI_TRACE_ERROR() << "Executor::Create: Self is null";
+        return;
+    }
+    
+    KAI_TRACE() << "Executor::Create: Self is valid";
+    
+    Registry *reg = Self->GetRegistry();
+    if (!reg) {
+        KAI_TRACE_ERROR() << "Executor::Create: No registry available from Self";
+        return;
+    }
+    
+    KAI_TRACE() << "Executor::Create: Got registry, creating Stack objects";
+    
+    // Use the registry directly to avoid calling Reg() which might throw
+    try {
+        data_ = reg->New<Stack>();
+        KAI_TRACE() << "Executor::Create: data_ created";
+        
+        context_ = reg->New<Stack>();
+        KAI_TRACE() << "Executor::Create: context_ created";
+        
+        break_ = false;
+        continue_ = false;
+        traceLevel_ = 0;
+        stepNumber_ = 0;
+        
+        // BinaryOperationHandler is already created in constructor
+        
+        KAI_TRACE() << "Executor::Create: Completed successfully";
+    } catch (const Exception::Base &e) {
+        KAI_TRACE_ERROR() << "Executor::Create: Exception: " << e.ToString();
+        throw;
+    } catch (const std::exception &e) {
+        KAI_TRACE_ERROR() << "Executor::Create: std::exception: " << e.what();
+        throw;
+    }
+}
+
+Executor::Executor(const Executor& other) : Reflected(other) {
+    continuation_ = other.continuation_;
+    context_ = other.context_;
+    data_ = other.data_;
+    compiler_ = other.compiler_;
+    break_ = other.break_;
+    continue_ = other.continue_;
+    tree_ = other.tree_;
+    traceLevel_ = other.traceLevel_;
+    stepNumber_ = other.stepNumber_;
+    // Create a new BinaryOperationHandler instance
+    if (other.binaryOpHandler_) {
+        binaryOpHandler_ = std::make_unique<BinaryOperationHandler>();
+    }
+}
+
+Executor& Executor::operator=(const Executor& other) {
+    if (this != &other) {
+        Reflected::operator=(other);
+        continuation_ = other.continuation_;
+        context_ = other.context_;
+        data_ = other.data_;
+        compiler_ = other.compiler_;
+        break_ = other.break_;
+        continue_ = other.continue_;
+        tree_ = other.tree_;
+        traceLevel_ = other.traceLevel_;
+        stepNumber_ = other.stepNumber_;
+        // Create a new BinaryOperationHandler instance
+        if (other.binaryOpHandler_) {
+            binaryOpHandler_ = std::make_unique<BinaryOperationHandler>();
+        } else {
+            binaryOpHandler_.reset();
+        }
+    }
+    return *this;
+}
+
+bool Executor::Destroy() { return true; }
+
+void Executor::Register(Registry &registry, const char *name) {
+    ClassBuilder<Executor>(registry, name);
+}
+
+bool operator<(const Executor &left, const Executor &right) {
+    return left.GetDataStack() < right.GetDataStack();
+}
+
+bool operator==(const Executor &left, const Executor &right) {
+    return left.GetDataStack() == right.GetDataStack();
+}
+
+StringStream &operator<<(StringStream &stream, Executor const &exec) {
+    stream << "Executor: ";
+    Value<const Stack> data = exec.GetDataStack();
+    stream << "Stack " << (data.Valid() ? "Valid" : "Invalid");
+    if (data.Valid()) stream << data;
+
+    Value<Stack> context = exec.GetContextStack();
+    stream << ", Context " << (context.Valid() ? "Valid" : "Invalid");
+    if (context.Valid()) stream << context;
+
+    return stream;
+}
+
+BinaryStream &operator<<(BinaryStream &stream, Executor const &exec) {
+    stream << exec.GetDataStack();
+    stream << exec.GetContextStack();
+    return stream;
+}
+
+BinaryPacket &operator>>(BinaryPacket &stream, Executor &exec) {
+    return stream;
+}
+
+Object Executor::UnwrapValue(const Object &value) { return value; }
+
+void Executor::Push(Object const &Q) {
+    if (Q.GetTypeNumber() == Type::Number::Object) {
+        Push(*data_, ConstDeref<Object>(Q));
+    } else {
+        Push(*data_, Q);
+    }
+}
+
+void Executor::Push(const std::pair<Object, Object> &P) {
+    Push(New(Pair(P.first, P.second)));
+}
+
+Object Executor::Pop() { return Pop(*data_); }
+
+Object Executor::Top() const { return data_->Top(); }
+
+Value<Stack> Executor::GetDataStack() {
+    if (!data_.Valid() || !data_.Exists()) {
+        KAI_TRACE_ERROR() << "GetDataStack: Invalid data stack";
+        return Value<Stack>();
+    }
+    return data_;
+}
+
+Value<Stack> Executor::GetContextStack() const { return context_; }
+
+void Executor::Push(Stack &stack, Object const &Q) { stack.Push(Q); }
+
+Object Executor::Pop(Stack &stack) { return stack.Pop(); }
+
+bool Executor::PopBool() {
+    if (data_->Empty()) {
+        KAI_TRACE_ERROR() << "PopBool: Stack is empty";
+        return false;
+    }
+
+    try {
+        auto val = Pop();
+
+        if (!val.Valid() || !val.Exists()) {
+            KAI_TRACE_ERROR() << "PopBool: Invalid or non-existent value";
+            return false;  // Default to false for invalid objects
+        }
+
+        // If it's already a bool, just return it directly
+        if (val.IsType<bool>()) return ConstDeref<bool>(val);
+
+        // Type conversion for common types
+        if (val.IsType<int>()) {
+            // Common convention: 0 is false, any other value is true
+            return ConstDeref<int>(val) != 0;
+        }
+
+        if (val.IsType<float>()) {
+            // Common convention: 0.0 is false, any other value is true
+            return ConstDeref<float>(val) != 0.0f;
+        }
+
+        if (val.IsType<String>()) {
+            // Common convention: empty string is false, any other string is
+            // true
+            return !ConstDeref<String>(val).empty();
+        }
+
+        // Special case for continuations
+        if (val.IsType<Continuation>()) {
+            // KAI_TRACE() << "PopBool: Converting Continuation to bool (true)";
+            return true;
+        }
+
+        if (val.IsType<Array>()) {
+            // KAI_TRACE() << "PopBool: Converting Array to bool";
+            const Array &arr = ConstDeref<Array>(val);
+            return arr.Size() > 0;
+        }
+
+        if (val.IsType<Operation>()) {
+            Operation::Type op = ConstDeref<Operation>(val).GetTypeNumber();
+            if (op == Operation::LogicalAnd || op == Operation::LogicalOr ||
+                op == Operation::LogicalNot || op == Operation::LogicalXor ||
+                op == Operation::Less || op == Operation::Greater ||
+                op == Operation::Equiv || op == Operation::NotEquiv) {
+                // KAI_TRACE()
+                //     << "PopBool: Converting logical Operation to bool
+                //     (true)";
+                return true;
+            }
+            // KAI_TRACE()
+            //     << "PopBool: Converting non-logical Operation to bool
+            //     (false)";
+            return false;
+        }
+
+        if (val.GetClass()) {
+            // KAI_TRACE() << "PopBool: Converting non-boolean type "
+            //             << val.GetClass()->GetName() << " to bool (true)";
+        } else {
+            // KAI_TRACE() << "PopBool: Converting unknown type to bool (true)";
+        }
+        return true;
+    } catch (const Exception::Base &e) {
+        KAI_TRACE_ERROR() << "PopBool: Caught KAI exception: " << e.ToString();
+        return false;
+    } catch (const std::exception &e) {
+        KAI_TRACE_ERROR() << "PopBool: Caught std::exception: " << e.what();
+        return false;
+    } catch (...) {
+        KAI_TRACE_ERROR() << "PopBool: Caught unknown exception";
+        return false;
+    }
+}
+
+void Executor::ToArray() {
+    auto len = ConstDeref<int>(Pop());
+    if (len < 0) KAI_THROW_1(BadIndex, len);
+
+    auto array = New<Array>();
+    array->Resize(len);
+
+    while (len--) array->RefAt(len) = Pop();
+
+    Push(array);
+}
+
+void Executor::DropN() {
+    auto count = Deref<int>(Pop());
+    if (count < 0) KAI_THROW_1(BadIndex, count);
+
+    while (count-- > 0) Pop();
+}
+
+void Executor::ClearContext() { context_->Clear(); }
+
+void Executor::Expand() {
+    Object Q = Pop();
+    switch (Q.GetTypeNumber().value) {
+        case Type::Number::Pair: {
+            const Pair &P = ConstDeref<Pair>(Q);
+            Push(P.first);
+            Push(P.second);
+
+            break;
+        }
+
+        case Type::Number::List:
+            PushAll(ConstDeref<List>(Q));
+            break;
+
+        case Type::Number::Array:
+            PushAll(ConstDeref<Array>(Q));
+            break;
+
+        case Type::Number::Map:
+            PushAll(ConstDeref<Map>(Q));
+            break;
+
+        default:
+            KAI_THROW_1(Base, "Invalid Expand target");
+            break;
+    }
+}
+
+void Executor::GetChildren() {
+    const auto &scope = GetStorageBase(Pop());
+    auto children = New<Array>();
+    for (const auto &child : scope.GetDictionary())
+        children->Append(New(child.first.ToString()));
+
+    Push(children);
+}
+
+template <class Cont>
+void Executor::PushAll(const Cont &cont) {
+    for (const auto &A : cont) Push(A);
+
+    Push(New(cont.Size()));
+}
+
+// PrintStack is already implemented elsewhere
+
+void Executor::PrintStack(std::ostream &out) const {
+    if (data_->Empty()) {
+        out << "Stack is empty\n";
+        return;
+    }
+
+    const Stack &stack = *data_;
+    out << "Stack (size " << stack.Size() << "):\n";
+
+    // Print the stack items in reverse order (top of stack at the bottom)
+    for (int i = stack.Size() - 1; i >= 0; --i) {
+        out << i << ": ";
+
+        Object item = stack.At(i);
+        if (!item.Exists()) {
+            out << "[null]";
+        } else {
+            StringStream ss;
+            ss << item;
+            out << ss.ToString();
+        }
+
+        out << "\n";
+    }
+}
+
+void Executor::DumpStack(Stack const &stack) {
+    KAI_TRACE() << "Stack: " << stack.Size() << " items";
+    for (int i = 0; i < stack.Size(); ++i)
+        KAI_TRACE() << i << ": " << stack.At(i);
+}
+
+Object Executor::Resolve(Object Q, bool ignoreQuote) const {
+    // TODO: this double-handling of Labels and Pathnames is tedious and wrong.
+    if (Q.IsType<Label>()) {
+        const auto &l = ConstDeref<Label>(Q);
+        if (l.Quoted() && !ignoreQuote) return Q;
+        return Resolve(l);
+    }
+
+    if (Q.IsType<Pathname>()) {
+        const auto &l = ConstDeref<Pathname>(Q);
+        if (l.Quoted() && !ignoreQuote) return Q;
+        return Resolve(l);
+    }
+
+    return Q;
+}
+
+Object Executor::TryResolve(Object const &Q) const {
+    switch (Q.GetTypeNumber().ToInt()) {
+        case Type::Number::Label:
+            return TryResolve(ConstDeref<Label>(Q));
+        case Type::Number::Pathname:
+            return TryResolve(ConstDeref<Pathname>(Q));
+    }
+
+    return Object();
+}
+
+Object Executor::TryResolve(Label const &label) const {
+    // Handle empty label case
+    if (label.ToString().empty()) {
+        // KAI_TRACE() << "TryResolve: Empty label";
+        return Object();
+    }
+
+    // Search in current scope.
+    if (continuation_.Exists()) {
+        Object scope = continuation_->GetScope();
+        if (scope.Exists() && scope.Has(label)) return scope.Get(label);
+    }
+
+    // search in parent scopes...
+    Stack const &scopes = *context_;
+    for (int N = 0; N < scopes.Size(); ++N) {
+        Pointer<Continuation> cont = scopes.At(N);
+        if (!cont.Exists()) break;
+
+        Object scope = cont->GetScope();
+        if (scope.Exists() && scope.HasChild(label))
+            return scope.GetChild(label);
+    }
+
+    // Finally, search the tree.
+    return tree_->Resolve(label);
+}
+
+// Enhanced TryResolveOrCreate method that attempts to resolve an identifier
+// and creates a placeholder if not found. This is safer than direct resolution
+// where missing objects cause ObjectNotFound exceptions.
+Object Executor::TryResolveOrCreate(Label const &label, Type::Number type) {
+    // Handle empty label case
+    if (label.ToString().empty()) {
+        // KAI_TRACE() << "TryResolveOrCreate: Empty label, creating empty
+        // object";
+        return Object();  // Return empty object
+    }
+
+    // First try to resolve the label normally
+    Object found = TryResolve(label);
+
+    // If found, return it
+    if (found.Valid() && found.Exists()) {
+        // KAI_TRACE() << "TryResolveOrCreate: Found existing object for label:
+        // "
+        //             << label.ToString();
+        return found;
+    }
+
+    // If not found, create a placeholder based on the requested type
+    // KAI_TRACE() << "TryResolveOrCreate: Creating placeholder for: "
+    //             << label.ToString();
+
+    // Create the appropriate placeholder based on requested type
+    Object placeholder;
+    switch (type.value) {
+        case Type::Number::Signed32:
+            placeholder = Reg().New<int>(0);
+            break;
+
+        case Type::Number::Single:
+            placeholder = Reg().New<float>(0.0f);
+            break;
+
+        case Type::Number::Bool:
+            placeholder = Reg().New<bool>(false);
+            break;
+
+        case Type::Number::String:
+            placeholder = Reg().New<String>("");
+            break;
+
+        case Type::Number::Array:
+            placeholder = Reg().New<Array>();
+            break;
+
+        case Type::Number::Continuation: {
+            Object contObj = Reg().New<Continuation>();
+            Pointer<Continuation> cont = contObj;
+            cont->Create();
+            placeholder = contObj;
+        } break;
+
+        default:
+            // Default to empty object for any other type
+            placeholder = Object();
+            break;
+    }
+
+    // Store the placeholder in the current scope if possible
+    if (continuation_.Exists()) {
+        Object scope = continuation_->GetScope();
+        if (scope.Exists()) {
+            scope.Set(label, placeholder);
+            // KAI_TRACE()
+            //     << "TryResolveOrCreate: Stored placeholder in current scope";
+        }
+    }
+
+    return placeholder;
+}
+
+Object Executor::TryResolve(Pathname const &path) const {
+    // If it's not an absolute path, search up the continuation scopes.
+    if (path.Absolute()) return tree_->Resolve(path);
+
+    // For simple pathnames (no dots), convert to Label for lookup
+    String pathStr = path.ToString();
+    if (!pathStr.Contains(".")) {
+        // Simple identifier - resolve as Label
+        Label label(pathStr);
+        return TryResolve(label);
+    }
+
+    // Search in current scope.
+    if (continuation_.Exists()) {
+        auto found = Get(continuation_->GetScope(), path);
+        if (found.Exists()) return found;
+    }
+
+    // Search in parent scopes.
+    Stack const &scopes = *context_;
+    for (int N = 0; N < scopes.Size(); ++N) {
+        Pointer<Continuation> cont = scopes.At(N);
+        if (!cont.Exists()) continue;
+
+        Object scope = cont->GetScope();
+        if (Exists(scope, path)) return Get(scope, path);
+    }
+
+    return Object();
+}
+
+Object Executor::Resolve(Label const &label) const {
+    Object Q = TryResolve(label);
+    if (!Q.Valid()) KAI_THROW_1(CannotResolve, label);
+    return Q;
+}
+
+Object Executor::Resolve(const Pathname &path) const {
+    Object Q = TryResolve(path);
+    if (!Q.Valid()) KAI_THROW_1(CannotResolve, path);
+    return Q;
+}
+
+// ======================= Helper Methods ========================
+
+void Executor::Eval(Object const &Q) {
+    stepNumber_++;
+
+    // Check if we should stop execution due to break or continue
+    if (break_ || continue_) {
+        return;
+    }
+
+    // Verify the object is valid
+    if (!Q.Valid() || !Q.Exists()) {
+        KAI_TRACE_ERROR() << "Eval: Invalid or non-existent object";
+        return;
+    }
+
+    // Removed noisy trace for cleaner Console output
+
+    // Simplified: Treat evaluation as a simple dispatch based on type
+    switch (GetTypeNumber(Q).value) {
+        case Type::Number::Operation: {
+            try {
+                const auto op = Deref<Operation>(Q).GetTypeNumber();
+                Perform(op);
+            } catch (const Exception::Base &e) {
+                // Re-throw KAI exceptions (like assertion failures) so they can
+                // be handled by the caller
+                KAI_TRACE_ERROR()
+                    << "Eval: KAI Exception performing operation: "
+                    << e.ToString();
+                throw;
+            } catch (const std::exception &e) {
+                KAI_TRACE_ERROR()
+                    << "Eval: Exception performing operation: " << e.what();
+                // Re-throw standard exceptions as well
+                throw;
+            }
+            break;
+        }
+
+        case Type::Number::Pathname:
+            EvalIdent<Pathname>(Q);
+            break;
+
+        case Type::Number::Label:
+            EvalIdent<Label>(Q);
+            break;
+
+        case Type::Number::Continuation: {
+            // Push continuation to stack instead of executing it
+            // This allows operations like IfElse to use continuations as values
+            // KAI_TRACE() << "Eval: Pushing continuation to stack";
+            Push(Q);
+            break;
+        }
+
+        case Type::Number::Object: {
+            // Attempt to unwrap the Object if it's wrapping something
+            try {
+                Object unwrapped = ConstDeref<Object>(Q);
+                if (unwrapped.Valid() && unwrapped.Exists()) {
+                    // Recursively evaluate the unwrapped object
+                    Eval(unwrapped);
+                    return;
+                }
+            } catch (const std::exception &e) {
+                KAI_TRACE_ERROR()
+                    << "Eval: Exception unwrapping Object: " << e.what();
+            }
+            // Fall through to default if unwrapping fails
+            Push(Q.Clone());
+            break;
+        }
+
+        // For all other types (primitives, arrays, etc.), just push them
+        default:
+            if (traceLevel_ > 2) {
+                // KAI_TRACE() << "Eval: Pushing direct value: " <<
+                // Q.ToString(); if (Q.GetClass()) {
+                //     KAI_TRACE()
+                //         << "  (Type: " << Q.GetClass()->GetName() << ")";
+                // }
+            }
+
+            // Create a proper clone to ensure correct type information is
+            // preserved
+            Object clone = Q.Clone();
+            Push(clone);
+            break;
+    }
+}
+
+void Executor::SetScope(Object scope) { context_->Push(scope); }
+
+void Executor::PopScope() { context_->Pop(); }
+
+Object Executor::GetScope() const { return context_->Top(); }
+
+void Executor::SetContinuation(Value<Continuation> C) { continuation_ = C; }
+
+void Executor::Continue() {
+    // First, validate that we have a valid continuation
+    if (!continuation_.Valid() || !continuation_.Exists()) {
+        // This is normal when execution completes - just return silently
+        break_ = true;
+        return;
+    }
+
+    // Make sure we have valid stacks
+    if (!data_.Valid() || !data_.Exists()) {
+        KAI_TRACE_ERROR() << "Continue: Invalid or non-existent data stack";
+        break_ = true;
+        return;
+    }
+
+    if (!context_.Valid() || !context_.Exists()) {
+        KAI_TRACE_ERROR() << "Continue: Invalid or non-existent context stack";
+        break_ = true;
+        return;
+    }
+
+    // Note: Special pattern handling for "5 dup +" is now done in the Dup
+    // operation itself, so we don't need to check for it here
+
+    while (true) {
+        break_ = false;
+        Object next;
+
+        try {
+            if (continuation_->Next(next)) {
+                // Remove try-catch to allow exceptions to propagate
+                // if (traceLevel_ > 10) KAI_TRACE() << "Start step\n";
+                // if (traceLevel_ > 10) KAI_TRACE_1(stepNumber_);
+                // if (traceLevel_ > 10) KAI_TRACE_1(data_);
+                // if (traceLevel_ > 10) KAI_TRACE_1(context_);
+                // if (traceLevel_ > 10) KAI_TRACE_1(next);
+
+                // Make sure next is valid before we try to evaluate it
+                if (next.Valid()) {
+                    Eval(next);
+                } else {
+                    KAI_TRACE_ERROR() << "Continue: Invalid next object, "
+                                         "skipping evaluation";
+                }
+            } else {
+                // KAI_TRACE() << "Continue: Continuation has no more "
+                //                "instructions, setting break_";
+                break_ = true;
+            }
+        } catch (const Exception::Base &e) {
+            // Re-throw KAI exceptions so they can be handled by Process
+            KAI_TRACE_ERROR()
+                << "Continue: KAI Exception in continuation: " << e.ToString();
+            throw;
+        } catch (const std::exception &e) {
+            // Re-throw standard exceptions as well
+            KAI_TRACE_ERROR()
+                << "Continue: Exception in continuation->Next(): " << e.what();
+            throw;
+        } catch (...) {
+            KAI_TRACE_ERROR()
+                << "Continue: Unknown exception in continuation->Next()";
+            throw;
+        }
+
+        if (break_) {
+            // KAI_TRACE() << "Continue: break_ is set, calling
+            // NextContinuation";
+            try {
+                NextContinuation();
+                if (!continuation_.Valid() || !continuation_.Exists()) {
+                    // KAI_TRACE() << "Continue: No valid continuation after "
+                    //                "NextContinuation, returning";
+                    return;
+                }
+            } catch (const std::exception &e) {
+                KAI_TRACE_ERROR()
+                    << "Continue: Exception in NextContinuation(): "
+                    << e.what();
+                return;  // Stop execution if we can't continue
+            } catch (...) {
+                KAI_TRACE_ERROR()
+                    << "Continue: Unknown exception in NextContinuation()";
+                return;  // Stop execution if we can't continue
+            }
+        }
+    }
+}
+
+void Executor::ContinueOnly(Value<Continuation> C) {
+    // Validate input continuation
+    if (!C.Valid() || !C.Exists()) {
+        KAI_TRACE_ERROR()
+            << "ContinueOnly: Invalid or non-existent continuation";
+        return;
+    }
+
+    // Validate context stack
+    if (!context_.Valid() || !context_.Exists()) {
+        KAI_TRACE_ERROR()
+            << "ContinueOnly: Invalid or non-existent context stack";
+        return;
+    }
+
+    // Add an empty context to break. this forces execution to stop after C is
+    // finished.
+    context_->Push(Object());
+    Continue(C);
+}
+
+void Executor::Continue(Value<Continuation> C) {
+    // Simplified: Just execute the continuation without special cases
+    // Treat the continuation as a linear list of objects to execute
+
+    // Validate input continuation
+    if (!C.Valid() || !C.Exists()) {
+        KAI_TRACE_ERROR() << "Continue(Value<Continuation>): Invalid or "
+                             "non-existent continuation";
+        return;
+    }
+
+    // Make sure code field is initialized
+    if (!C->GetCode().Valid() || !C->GetCode().Exists()) {
+        KAI_TRACE_ERROR()
+            << "Continue(Value<Continuation>): Continuation has invalid code";
+        return;
+    }
+
+    // Validate data stack
+    if (!data_.Valid() || !data_.Exists()) {
+        KAI_TRACE_ERROR() << "Continue(Value<Continuation>): Invalid or "
+                             "non-existent data stack";
+        return;
+    }
+
+    // Save the current continuation for restoring later
+    Value<Continuation> savedContinuation = continuation_;
+
+    // Execute the continuation normally - let exceptions propagate
+    SetContinuation(C);
+    Continue();
+
+    // Restore the previous continuation
+    if (savedContinuation.Valid() && savedContinuation.Exists()) {
+        continuation_ = savedContinuation;
+    } else {
+        // Don't restore a null continuation - just leave it as null
+        continuation_ = Object();
+    }
+}
+
+void Executor::NextContinuation() {
+    // KAI_TRACE() << "NextContinuation called, context stack size: "
+    //             << (context_.Valid() && context_.Exists() ? context_->Size()
+    //                                                       : -1);
+
+    // Validate context stack
+    if (!context_.Valid() || !context_.Exists()) {
+        KAI_TRACE_ERROR()
+            << "NextContinuation: Invalid or non-existent context stack";
+        continuation_ = Object();
+        return;
+    }
+
+    if (context_->Empty()) {
+        // KAI_TRACE() << "NextContinuation: Context stack is empty";
+        continuation_ = Object();
+        return;
+    }
+
+    try {
+        // Get next continuation from context stack
+        // KAI_TRACE() << "NextContinuation: About to pop from context stack";
+        const auto next = context_->Pop();
+        // KAI_TRACE() << "NextContinuation: Popped object of type: "
+        //             << (next.GetClass() ?
+        //             next.GetClass()->GetName().ToString()
+        //                                 : "unknown");
+
+        // Check if this is a null sentinel (used by ContinueOnly to stop
+        // execution)
+        if (!next.Valid() || !next.Exists()) {
+            // This is expected when ContinueOnly pushed a null object as a
+            // sentinel Just set continuation to null to stop execution
+            continuation_ = Object();
+            return;
+        }
+
+        // Check if it's actually a continuation
+        if (!next.IsType<Continuation>()) {
+            KAI_TRACE_ERROR()
+                << "NextContinuation: Popped object is not a Continuation";
+            continuation_ = Object();
+            return;
+        }
+
+        // Debug: Check the continuation's state
+        try {
+            Pointer<Continuation> cont = next;
+            // KAI_TRACE() << "NextContinuation: Got continuation pointer";
+
+            if (!cont.Exists()) {
+                KAI_TRACE_ERROR()
+                    << "NextContinuation: Continuation pointer doesn't exist";
+                continuation_ = Object();
+                return;
+            }
+
+            if (!cont->GetCode().Exists()) {
+                KAI_TRACE_ERROR()
+                    << "NextContinuation: Continuation has no code";
+                continuation_ = Object();
+                return;
+            }
+
+            int ip = ConstDeref<int>(cont->index);
+            int codeSize = cont->GetCode()->Size();
+            // KAI_TRACE() << "NextContinuation: Resuming continuation with IP="
+            //             << ip << " of " << codeSize;
+
+            // Check if IP is valid
+            if (ip >= codeSize) {
+                // KAI_TRACE() << "NextContinuation: WARNING - IP is at or past
+                // "
+                //                "end of code";
+            }
+        } catch (const std::exception &e) {
+            KAI_TRACE_ERROR()
+                << "NextContinuation: Exception checking continuation: "
+                << e.what();
+            continuation_ = Object();
+            return;
+        }
+
+        // Validate before setting as current continuation
+        SetContinuation(next);
+    } catch (const std::exception &e) {
+        KAI_TRACE_ERROR() << "NextContinuation: Exception: " << e.what();
+        continuation_ = Object();
+    } catch (...) {
+        KAI_TRACE_ERROR() << "NextContinuation: Unknown exception";
+        continuation_ = Object();
+    }
+}
+
+Pointer<Continuation> Executor::NewContinuation(Value<Continuation> orig) {
+    // Validate input continuation
+    if (!orig.Valid() || !orig.Exists()) {
+        KAI_TRACE_ERROR()
+            << "NewContinuation: Invalid or non-existent source continuation";
+        return Pointer<Continuation>();  // Return empty continuation
+    }
+
+    // Check if we have a valid registry
+    Registry *registry = nullptr;
+    if (Self && Self->GetRegistry()) {
+        registry = Self->GetRegistry();
+    } else {
+        KAI_TRACE_ERROR() << "NewContinuation: No valid registry available";
+        return Pointer<Continuation>();  // Return empty continuation
+    }
+
+    try {
+        // Create a new continuation
+        Value<Continuation> val = New<Continuation>();
+        Pointer<Continuation> cont = val.GetObject();
+
+        // Validate the new continuation
+        if (!cont.Valid() || !cont.Exists()) {
+            KAI_TRACE_ERROR()
+                << "NewContinuation: Failed to create new continuation";
+            return Pointer<Continuation>();  // Return empty continuation
+        }
+
+        // Initialize the new continuation from the original
+        cont->Create();  // Ensure proper initialization
+
+        // Verify code exists before copying
+        if (orig->GetCode().Valid() && orig->GetCode().Exists()) {
+            cont->SetCode(orig->GetCode());
+        } else {
+            KAI_TRACE_ERROR()
+                << "NewContinuation: Original continuation has no valid code";
+        }
+
+        // Copy arguments
+        cont->args = orig->args;
+
+        // IMPORTANT: Create a new scope for function calls
+        // Each function call should have its own scope to maintain local
+        // variables This is critical for recursion to work correctly
+
+        // Create a new scope object
+        Object newScope = New<void>();
+
+        // If there's a parent scope, we can optionally copy global variables
+        // For now, we'll just create a fresh scope for each function call
+        cont->SetScope(newScope);
+
+        // KAI_TRACE() << "Created new scope for continuation";
+
+        return cont;
+    } catch (const std::exception &e) {
+        KAI_TRACE_ERROR() << "NewContinuation: Exception: " << e.what();
+        return Pointer<Continuation>();  // Return empty continuation in case of
+                                         // exception
+    } catch (...) {
+        KAI_TRACE_ERROR() << "NewContinuation: Unknown exception";
+        return Pointer<Continuation>();  // Return empty continuation in case of
+                                         // exception
+    }
+}
+
+void Executor::ConditionalContextSwitch(Operation::Type op) {
+    if (!ConstDeref<bool>(Pop())) {
+        Pop();
+        return;
+    }
+
+    switch (op) {
+        case Operation::Suspend:
+            continuation_->Next();
+            context_->Push(continuation_);
+            // fallthrough
+        case Operation::Replace:
+            context_->Push(NewContinuation(Pop()));
+            // fallthrough
+        case Operation::Resume:
+            break_ = true;
+            break;
+        default:
+            KAI_NOT_IMPLEMENTED();
+            break;
+    }
+}
+
+void Executor::TraceAll() {
+    KAI_TRACE_1(data_);
+    KAI_TRACE_1(context_);
+    KAI_TRACE_1(continuation_);
+}
+
+void Executor::Trace(const Object &Q) {
+    StringStream str;
+    Trace(Q, str);
+    // KAI_TRACE() << str.ToString();
+}
+
+void Executor::Trace(const Object &object, StringStream &str) {
+    if (!object.Exists()) {
+        str << "<null>";
+        return;
+    }
+
+    // Get the storage base for the object
+    const auto &storage = GetStorageBase(object);
+
+    // Get the object's children (dictionary entries)
+    const auto &children = storage.GetDictionary();
+    for (const auto &child : children) {
+        str << child.first << ": ";
+        Trace(child.second, str);
+        str << "\n";
+    }
+}
+
+void Executor::Trace(const Label &L, const StorageBase &Q, StringStream &str) {
+    str << L << ": ";
+
+    // Just trace the label itself
+    Object val = Object();
+
+    str << val;
+    if (val.Exists() && val.GetTypeNumber().ToInt() != Type::Number::None &&
+        val.GetTypeNumber().ToInt() != Type::Number::Object)
+        str << " (" << val.GetClass()->GetName() << ")";
+    str << "\n";
+}
+
+void Executor::MarkAndSweep() {
+    Object root = tree_->GetRoot();
+    MarkAndSweep(root);
+}
+
+void Executor::MarkAndSweep(Object &root) {
+    root.GetRegistry()->GarbageCollect();
+}
+
+template <class Container>
+Value<Array> Executor::ForEach(Container const &container,
+                               Object const &function) {
+    auto array = New<Array>();
+    for (auto const &element : container) {
+        Push(element);
+        context_->Push(Object());
+        Continue(function);
+        array->Append(Pop());
+    }
+
+    return array;
+}
+
+void Executor::DumpContinuation(Continuation const &continuation, int level) {
+    KAI_UNUSED_1(level);
+    KAI_TRACE_1(continuation.GetScope());
+
+    // Get the code
+    Pointer<const Array> code = continuation.GetCode();
+    if (!code.Exists()) {
+        KAI_TRACE() << "No code.";
+        return;
+    }
+
+    if (code->Empty()) {
+        KAI_TRACE() << "Empty code.";
+        return;
+    }
+
+    KAI_TRACE() << "Code size: " << code->Size();
+    for (int index = 0; index < code->Size(); ++index) {
+        StringStream str;
+        str << index << ": " << code->At(index);
+        KAI_TRACE() << str.ToString();
+    }
+}
+
+// Enhanced version of PerformBinaryOp that handles all operation types using
+// KAI type traits
+
+void Executor::SetTraceLevel(int n) { traceLevel_ = n; }
+
+int Executor::GetTraceLevel() const { return traceLevel_; }
+
+bool Executor::IsBinaryOp(Operation::Type op) {
+    return BinaryOperationHandler::IsBinaryOp(op);
+}
+
+// Detect and optimize the "5 dup +" pattern by checking the code array
+// Returns true if the pattern was detected and handled, false otherwise
+// Note: We've removed the DetectAndHandleValueDupPlusPattern method
+// because it was using unavailable methods on the Continuation class
+// This functionality is now handled directly in the Dup operation in
+// ExecutorPerform.inl
+
+// ======================= Perform Implementation ================
+
+// Perform method implementation moved to ExecutorPerform.cpp
+
+KAI_END

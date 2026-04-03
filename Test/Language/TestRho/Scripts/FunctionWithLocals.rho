@@ -1,0 +1,6 @@
+calculate = fun(x, y)
+    temp = x * 2
+    result = temp + y
+    return result
+
+calculate(3, 4)

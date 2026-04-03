@@ -1,6 +1,28 @@
-/.current
+/Ext
+/tmp
+/test_graph
+/.index
+/CMakeCache.txt
+*.d
+*.o
+*.internal
+/Build
+/_build*
+/[bB]uild*
+/ninja_build*
 
-_config.yml
+*.make
+*.d
+/test*
+/Logs/*
+/test-out
+/build_warnings
+/CMakeFiles
+/.current
+/build
+/Build
+/build.ninja
+*.log
 
 .vscode/
 
@@ -16,6 +38,7 @@ CMake/CMakeCache.txt
 CMakeSettings.json
 
 /Doc/html
+
 /tmp/
 b/
 
@@ -212,3 +235,9 @@ Projects/Controls/ConsoleView/CLRDebug/
 Lib/
 
 *.o
+/Bin
+
+
+**/.claude/settings.local.json
+**/CMakeFiles/
+**/cmake_install.cmake

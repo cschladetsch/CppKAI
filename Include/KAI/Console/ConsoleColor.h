@@ -1,41 +1,41 @@
 #pragma once
 
 #include <KAI/Core/Config/Base.h>
-#include <sstream>
+
 #include <memory>
+#include <sstream>
 #include <string>
 
 KAI_BEGIN
 
-class ConsoleColor
-{
-	struct Impl;
-	std::unique_ptr<Impl> _impl;
+class ConsoleColor {
+    struct Impl;
+    std::unique_ptr<Impl> impl_;
 
-public:
-	enum EType
-	{
-		Normal,
-		Error,
-		Warning,
-		Trace,
-		StackNumber,
-		Prompt,
-		LanguageName,
-		Pathname,
-		Input,
+   public:
+    enum EType {
+        Normal,
+        Error,
+        Warning,
+        Trace,
+        StackNumber,
+        Prompt,
+        LanguageName,
+        Pathname,
+        Input,
 
-		Last,
-	};
+        Last,
+    };
 
-	enum EConsoleColor
-	{
-		Red, Green, Blue,
-	};
+    enum EConsoleColor {
+        Red,
+        Green,
+        Blue,
+    };
 
-	std::string GetConsoleColor(EType type) const;
+    std::string GetConsoleColor(EType type) const;
 };
 
-std::ostream& operator<<(std::ostream &S, ConsoleColor::EType C);
+std::ostream& operator<<(std::ostream& S, ConsoleColor::EType C);
 
 KAI_END

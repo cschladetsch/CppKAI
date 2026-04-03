@@ -1,0 +1,24 @@
+// Class demonstrating visibility modifiers
+class ClassWithVisibility
+{
+    // Public members
+    public:
+    int publicValue;
+    string publicName;
+    
+    public void PublicMethod();
+    
+    // Private members
+    private:
+    int privateValue;
+    float privateRatio;
+    
+    private void PrivateHelper();
+    
+    // Protected members
+    protected:
+    bool protectedFlag;
+    string protectedId;
+    
+    protected void ProtectedOperation();
+}

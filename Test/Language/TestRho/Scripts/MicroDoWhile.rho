@@ -1,0 +1,5 @@
+// Micro test for do-while loops with proper indentation syntax
+i = 0
+do
+    i = i + 1
+while (i < 3)

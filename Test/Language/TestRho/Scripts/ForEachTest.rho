@@ -1,0 +1,30 @@
+// Test basic foreach with array
+arr = [1, 2, 3, 4, 5]
+sum = 0
+
+foreach x in arr
+    sum = sum + x
+
+print("Sum of array: ")
+print(sum)
+
+// Test foreach with string
+str = "hello"
+result = ""
+
+foreach ch in str
+    result = result + ch + " "
+
+print("Characters: ")
+print(result)
+
+// Test nested foreach
+matrix = [[1, 2], [3, 4]]
+total = 0
+
+foreach row in matrix
+    foreach val in row
+        total = total + val
+
+print("Matrix total: ")
+print(total)

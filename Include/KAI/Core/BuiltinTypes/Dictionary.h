@@ -1,8 +1,9 @@
 #pragma once
 
-#include <map>
 #include <KAI/Core/Config/Base.h>
 #include <KAI/Core/Object/Label.h>
+
+#include <map>
 
 KAI_BEGIN
 
@@ -10,4 +11,3 @@ KAI_BEGIN
 typedef std::map<Label, Object> Dictionary;
 
 KAI_END
-

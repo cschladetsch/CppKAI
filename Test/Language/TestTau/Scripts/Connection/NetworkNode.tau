@@ -1,0 +1,57 @@
+// Network node interfaces and classes for testing
+
+namespace KAI { namespace Network
+{
+    // Node interface
+    interface INode
+    {
+        // Constants
+        const int DefaultPort = 14589;
+        
+        // Connection management
+        void Listen(int port);
+        void Listen(SystemAddress address, int port);
+        void Connect(SystemAddress address, int port);
+        void Disconnect();
+        void Shutdown();
+        
+        // Status methods
+        bool IsRunning();
+        bool Update();
+        
+        // Peer discovery
+        void StartDiscovery(int discoveryPort = DefaultPort);
+        void StopDiscovery();
+        bool IsDiscovering();
+        SystemAddress[] GetDiscoveredPeers();
+        
+        // Connection methods
+        SystemAddress[] GetConnections();
+        bool IsConnectedTo(SystemAddress address, int port);
+        int GetConnectionCount();
+        int GetPing(SystemAddress address, int port);
+        
+        // Messaging methods
+        async void Send(int handle, Object data);
+        async Object Receive(int handle);
+        void Broadcast(Object data);
+        
+        // Events
+        event ConnectionEstablished(SystemAddress address);
+        event ConnectionLost(SystemAddress address, string reason);
+        event MessageReceived(SystemAddress source, Object data);
+    }
+    
+    // Network service discovery interface
+    interface IPeerDiscovery
+    {
+        void Start(int port);
+        void Stop();
+        bool IsDiscovering();
+        SystemAddress[] GetDiscoveredPeers();
+        void Update();
+        
+        // Events
+        event PeerDiscovered(SystemAddress address);
+    }
+}}

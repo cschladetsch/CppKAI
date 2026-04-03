@@ -1,0 +1,14 @@
+{
+    "listenPort": 14596,
+    "autoListen": true,
+    "interactive": true,
+    "peers": [
+        {
+            "host": "127.0.0.1",
+            "port": 14595
+        }
+    ],
+    "commands": {
+        "test": "echo Testing from peer2"
+    }
+}

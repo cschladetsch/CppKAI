@@ -1,7 +1,18 @@
 
+// Start with a clean state
+clear
+
+// Test empty array
 depth toarray [] == assert
+
+// Test single element array
 1 depth toarray [1] == assert
+
+// Test multiple element array
 1 2 3 depth toarray [1 2 3] == assert
+
+// Clean up before next test
+clear
 
 // expand the array, leaving the size of the expanded array on the stack
 [11 22 33] expand 3 == assert
@@ -12,6 +23,7 @@ depth 3 == assert
 clear
 depth 0 == assert
 
+// Test complex array manipulation
 1 2 3 4
 2 toarray	// stack: 1 2 [3 4]
 rot			// stack: 2 [3 4] 1
@@ -21,4 +33,8 @@ rot			// stack: [3 4] 1 2
 [1 2] == assert
 [3 4] == assert
 
+// Verify stack is empty at the end
 depth 0 == assert
+
+// Clean up at the end
+clear

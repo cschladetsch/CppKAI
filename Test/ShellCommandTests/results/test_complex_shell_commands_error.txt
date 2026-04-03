@@ -1,0 +1,4 @@
+grep: write error: Broken pipe
+ls: write error: Broken pipe
+grep: write error: Broken pipe
+ls: write error: Broken pipe

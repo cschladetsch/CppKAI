@@ -1,20 +1,17 @@
-#include "TestCommon.h"
 #include "KAI/Core/StringStream.h"
+#include "TestCommon.h"
 
 USING_NAMESPACE_KAI
 
-class TestMap : public TestCommon
-{
-protected:
-    void AddTestClasses() override
-    {
+class TestMap : public TestCommon {
+   protected:
+    void AddRequiredClasses() override {
         Reg().AddClass<Map>();
         Reg().AddClass<StringStream>();
     }
 };
 
-TEST_F(TestMap, TestCreation)
-{
+TEST_F(TestMap, TestCreation) {
     Pointer<Map> map = Reg().New<Map>();
     ASSERT_TRUE(map.Exists());
     ASSERT_TRUE(map->Size() == 0);
@@ -25,14 +22,13 @@ TEST_F(TestMap, TestCreation)
     ASSERT_FALSE(map.Exists());
 }
 
-TEST_F(TestMap, TestInsertDelete)
-{
+TEST_F(TestMap, TestInsertDelete) {
     Pointer<Map> map = Reg().New<Map>();
     Pointer<Map> dangling = Reg().New<Map>();
-    
-    // add the map to the root of the object tree, so it can be
+
+    // add the map to the root_ of the object tree_, so it can be
     // found and hence not GC'd
-    _root.Set("map", map);
+    root_.Set("map", map);
     Reg().GarbageCollect();
 
     // the map will still exist after the GC - but the `dangling` map
@@ -62,14 +58,13 @@ TEST_F(TestMap, TestInsertDelete)
 
     // now, neither the key nor value should exist,
     // but the map itself should exist because it was added
-    // to the root of the tree above
+    // to the root_ of the tree_ above
     ASSERT_TRUE(map.Exists());
     ASSERT_FALSE(n.Exists());
     ASSERT_FALSE(found.Exists());
 }
 
-TEST_F(TestMap, TestComparison)
-{
+TEST_F(TestMap, TestComparison) {
     Pointer<Map> m0 = Reg().New<Map>();
     Pointer<Map> m1 = Reg().New<Map>();
 
@@ -84,9 +79,10 @@ TEST_F(TestMap, TestComparison)
     // get a reference to the class for maps to make things easier to type
     ClassBase const &k = *m0.GetClass();
 
-    // test that both maps are the same size and have same set of key/value pairs (by object value)
+    // test that both maps are the same size and have same set of key/value
+    // pairs (by object value)
     ASSERT_TRUE(k.Equiv(m0, m1));
-    
+
     // change the value that the second map has for it's key valued 42
     *s1 = "Hello";
     ASSERT_FALSE(k.Equiv(m0, m1));
@@ -96,8 +92,7 @@ TEST_F(TestMap, TestComparison)
     ASSERT_TRUE(k.Equiv(m0, m1));
 }
 
-TEST_F(TestMap, TestStringStream)
-{
+TEST_F(TestMap, TestStringStream) {
     Pointer<Map> m = Reg().New<Map>();
     Pointer<int> n = Reg().New(42);
     Pointer<String> s = Reg().New<String>("Hello");
@@ -109,12 +104,12 @@ TEST_F(TestMap, TestStringStream)
     *t << m;
 
     std::cout << t->ToString().c_str() << std::endl;
-    
+
     // here, we extract a map back out of the stream.
     //
-    // not happy about this approach. we have to make the map with a Reg().stry, before extracting
-    // it from a StringStream.
-    // It seems we should be able to just say:
+    // not happy about this approach. we have to make the map with a Reg().stry,
+    // before extracting it from a StringStream. It seems we should be able to
+    // just say:
     //        Object q;
     //        *t >> q;
     //        ASSERT_TRUE(q.GetClass().GetType() == Type::Traits<Map>::Number);
@@ -125,8 +120,7 @@ TEST_F(TestMap, TestStringStream)
     // ASSERT_EQ(*m, *m1);
 }
 
-TEST_F(TestMap, TestBinaryStream)
-{
+TEST_F(TestMap, TestBinaryStream) {
     Pointer<Map> m0 = Reg().New<Map>();
     Pointer<Map> m1 = Reg().New<Map>();
     Pointer<int> n = Reg().New(42);
@@ -144,8 +138,8 @@ TEST_F(TestMap, TestBinaryStream)
     // this means that the following fails, as it attempts to extract from
     // a BinaryPacket with a null Registry.
     //
-    // There should be a way to inject custom code on construction. If it 
-    // doesn't exist in the current Traits system, it has to be added.
+    // There should be a way to inject custom code on construction. If it
+    // doesn't exist in the current_ Traits system, it has to be added.
     //
     // The main functionality is to be able to pass arguments to base class
     // on construction...

@@ -1,0 +1,37 @@
+// Test error handling in Tau
+
+namespace ErrorTests
+{
+    // Missing closing brace
+    class MissingBrace {
+        int value;
+    
+    // Duplicate class name
+    class MissingBrace {
+        string name;
+    }
+    
+    // Invalid type
+    class InvalidType {
+        NonExistentType invalidProperty;
+        
+        UnknownReturnType InvalidMethod();
+    }
+    
+    // Missing semicolons
+    class MissingSemicolons {
+        int value
+        string name
+        
+        void TestMethod()
+    }
+    
+    // Syntax errors
+    class SyntaxErrors {
+        // Missing parenthesis
+        void MissingParenthesis(;
+        
+        // Invalid parameter syntax
+        void BadParameters(int a, b);
+    }
+}

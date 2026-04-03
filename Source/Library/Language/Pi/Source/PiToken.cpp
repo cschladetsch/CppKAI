@@ -1,19 +1,21 @@
-#include <algorithm>
+#include <KAI/Language/Pi/PiToken.h>
 #include <ctype.h>
 
-#include <KAI/Language/Pi/PiToken.h>
+#include <algorithm>
 
 using namespace std;
 
 KAI_BEGIN
 
-const char *PiTokenEnumType::ToString(Enum t)
-{
-    switch (t)
-    {
-#define CASE(N) case PiTokens::N : return #N;
+const char *PiTokenEnumType::ToString(Enum t) {
+    switch (t) {
+#define CASE(N)       \
+    case PiTokens::N: \
+        return #N;
 #define CASE_LOWER(N) CASE(N)
-#define CASE_REPLACE(N, M) case PiTokens::N : return M;
+#define CASE_REPLACE(N, M) \
+    case PiTokens::N:      \
+        return M;
 
 #ifdef TRACE_WS
         CASE_LOWER(Whitespace)
@@ -28,6 +30,7 @@ const char *PiTokenEnumType::ToString(Enum t)
 
         CASE_LOWER(Freeze)
         CASE_LOWER(Thaw)
+        CASE_LOWER(Send)
         CASE_LOWER(Bool)
         CASE_LOWER(Greater)
         CASE_LOWER(Debug)
@@ -37,6 +40,7 @@ const char *PiTokenEnumType::ToString(Enum t)
         CASE_LOWER(True)
         CASE_LOWER(False)
         CASE_LOWER(Size)
+        CASE_LOWER(Print)
         CASE_REPLACE(Suspend, "&")
         CASE_REPLACE(Resume, "...")
         CASE_REPLACE(Replace, "!")
@@ -47,6 +51,9 @@ const char *PiTokenEnumType::ToString(Enum t)
         CASE_LOWER(If)
         CASE_LOWER(IfElse)
         CASE_LOWER(For)
+        CASE_LOWER(ForEach)
+        CASE_LOWER(Break)
+        CASE_LOWER(Continue)
         CASE_LOWER(While)
         CASE_REPLACE(OpenBrace, "{")
         CASE_REPLACE(CloseBrace, "}")
@@ -89,6 +96,9 @@ const char *PiTokenEnumType::ToString(Enum t)
         CASE_LOWER(Pathname)
         CASE_LOWER(Drop)
         CASE_LOWER(Dup)
+        CASE_LOWER(Dup2)
+        CASE_LOWER(Drop2)
+        CASE_LOWER(Roll)
         CASE_LOWER(Over)
         CASE_LOWER(OverM)
         CASE_LOWER(PickN)
@@ -145,38 +155,55 @@ const char *PiTokenEnumType::ToString(Enum t)
         CASE_LOWER(Store)
         CASE_REPLACE(ToRho, "rho")
         CASE_REPLACE(ToRhoSequence, "rho{")
+        CASE_LOWER(Modulo)
+        CASE_LOWER(Min)
+        CASE_LOWER(Max)
+        CASE_LOWER(ShellCommand)
+        CASE_REPLACE(ToStr, ">str")
     }
 
     KAI_TRACE() << " PiToken #" << (int)t;
     KAI_NOT_IMPLEMENTED();
 }
 
-std::ostream &operator<<(std::ostream &out, PiToken const &node)
-{
-    if (node.type == PiTokenEnumType::None)
-        return out << "<NONE>";
+KAI_END
 
-    switch (node.type)
-    {
-    case PiTokenEnumType::True: { out << "true"; return out; }
-    case PiTokenEnumType::False: { out << "false"; return out; }
+// Define in global namespace for friend declaration
+std::ostream &operator<<(std::ostream &out,
+                         kai::PiTokenEnumType::Type const &node) {
+    if (node.type == kai::PiTokenEnumType::None) return out << "<NONE>";
+
+    switch (node.type) {
+        case kai::PiTokenEnumType::True: {
+            out << "true";
+            return out;
+        }
+        case kai::PiTokenEnumType::False: {
+            out << "false";
+            return out;
+        }
     }
 
-    out << PiTokenEnumType::ToString(node.type);
+    out << kai::PiTokenEnumType::ToString(node.type);
 
-    switch (node.type)
-    {
-    case PiTokenEnumType::Int:
-    case PiTokenEnumType::Float:
-    case PiTokenEnumType::Pathname:
-    case PiTokenEnumType::String:
-    case PiTokenEnumType::Ident:
-    case PiTokenEnumType::QuotedIdent:
-        out << "='" << node.Text() << "'";
-        break;
+    switch (node.type) {
+        case kai::PiTokenEnumType::Int:
+        case kai::PiTokenEnumType::Float:
+        case kai::PiTokenEnumType::Pathname:
+        case kai::PiTokenEnumType::String:
+        case kai::PiTokenEnumType::Ident:
+        case kai::PiTokenEnumType::QuotedIdent:
+        case kai::PiTokenEnumType::ShellCommand:
+            out << "='" << node.Text() << "'";
+            break;
     }
 
     return out;
 }
 
-KAI_END
+// Also define in kai namespace for ADL
+namespace kai {
+std::ostream &operator<<(std::ostream &out, PiTokenEnumType::Type const &node) {
+    return ::operator<<(out, node);
+}
+}  // namespace kai

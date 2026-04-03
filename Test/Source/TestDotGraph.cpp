@@ -1,14 +1,13 @@
-#include "TestCommon.h"
-#include "KAI/Core/Tree.h"
+#include "KAI/Core/BuiltinTypes.h"
 #include "KAI/Core/DotGraph.h"
 #include "KAI/Core/Object/ClassBuilder.h"
-#include "KAI/Core/BuiltinTypes.h"
+#include "KAI/Core/Tree.h"
+#include "TestCommon.h"
 
 using namespace kai;
 using namespace std;
 
-struct TestOwned
-{
+struct TestOwned {
     Pointer<List> list;
     Pointer<int> num;
 };
@@ -19,18 +18,15 @@ KAI_TYPE_TRAITS(TestOwned, 666, 0);
 
 KAI_END
 
-TEST(TestDotGraph, Test)
-{
+TEST(TestDotGraph, Test) {
     Registry R;
     R.AddClass<void>();
     R.AddClass<int>();
     R.AddClass<List>();
     ClassBuilder<TestOwned>(R, "TestOwned")
-        .Methods
-        .Properties
+        .Methods.Properties
         //("list", &TestOwned::list, "", CreateParams::Create)
-        ("num", &TestOwned::num)
-        ;
+        ("num", &TestOwned::num);
 
     Tree tree;
     Object root = R.New<void>();

@@ -1,0 +1,34 @@
+KAI Console v0.3.0
+Built on Feb  5 2026 at 03:16:24
+Type 'help' for available commands.
+
+Pi λ # Test 31: Switch to Rho language and test shell commands
+Pi λ 2 rho
+Pi λ 
+Pi λ # Test 32: Shell command in Rho
+Pi λ `echo "Testing in Rho"`
+Testing in Rho
+Pi λ 
+Pi λ # Test 33: Embedded command in Rho assignment
+Pi λ result = `echo 42`
+Pi λ 
+Pi λ # Test 34: Use embedded command result in Rho
+Pi λ value = 10 + `echo 5`
+Pi λ 
+Pi λ # Test 35: Shell command without closing backtick in Rho
+Pi λ `echo "Rho test without closing"
+Rho test without closing
+Pi λ 
+Pi λ # Test 36: Multiple operations in Rho with embedded commands
+Pi λ x = `echo 3`
+Pi λ y = `echo 7`
+Pi λ sum = x + y
+Pi λ 
+Pi λ # Test 37: Back to Pi language
+Pi λ 1 pi
+Pi λ 
+Pi λ # Test 38: Verify Pi still works with embedded commands
+Pi λ 1 `echo 1` +
+Pi λ .
+Pi λ exit
+Pi λ 

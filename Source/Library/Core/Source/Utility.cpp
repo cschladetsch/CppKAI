@@ -1,50 +1,49 @@
-#include <iostream>
+#include <KAI/Core/BuiltinTypes/Dictionary.h>
+#include <KAI/Core/Exception.h>
+#include <KAI/Core/Object/ClassBase.h>
+#include <KAI/Core/Object/PropertyBase.h>
+
+#include <algorithm>
 #include <fstream>
+#include <iostream>
+#include <ranges>
+#include <string>
+#include <string_view>
+#include <vector>
 
 #include "KAI/Core/BuiltinTypes.h"
-#include "KAI/Core/Value.h"
 #include "KAI/Core/Object/Reflected.h"
-#include "KAI/Executor/Operation.h"
+#include "KAI/Core/Value.h"
 #include "KAI/Executor/Continuation.h"
-#include <KAI/Core/BuiltinTypes/Dictionary.h>
-#include <KAI/Core/Object/PropertyBase.h>
-#include <KAI/Core/Object/ClassBase.h>
-#include <KAI/Core/Exception.h>
+#include "KAI/Executor/Operation.h"
 
 KAI_BEGIN
 
-const char *ToLower(const char *text)
-{
-    char *out = (char *)(malloc(strlen(text) + 1));
-    size_t n;
-    for (n = 0; n < strlen(text); ++n)
-        out[n] = (char)tolower(text[n]);
-
-    out[n] = 0;
+std::string ToLower(std::string_view text) {
+    std::string out;
+    out.reserve(text.size());
+    std::ranges::transform(text, std::back_inserter(out),
+                           [](unsigned char c) { return std::tolower(c); });
     return out;
 }
 
-StringStream& operator<<(StringStream& S, ObjectColor::Color C)
-{
-    switch (C)
-    {
-    case ObjectColor::White:
-        return S << "White";
+StringStream &operator<<(StringStream &S, ObjectColor::Color C) {
+    switch (C) {
+        case ObjectColor::White:
+            return S << "White";
 
-    case ObjectColor::Grey:
-        return S << "Grey";
+        case ObjectColor::Grey:
+            return S << "Grey";
 
-    case ObjectColor::Black:
-        return S << "Black";
+        case ObjectColor::Black:
+            return S << "Black";
     }
 
     return S << "UnknownColor";
 }
 
-void ToStringStream(const Object &Q, StringStream &S, int level)
-{
-    if (!Q.Valid())
-    {
+void ToStringStream(const Object &Q, StringStream &S, int level) {
+    if (!Q.Valid()) {
         S << "[Invalid]\n";
         return;
     }
@@ -55,45 +54,45 @@ void ToStringStream(const Object &Q, StringStream &S, int level)
         Q.GetClass()->Insert(S, base);
 }
 
-void ToXmlStream(const Object &Q, StringStream &S, int level)
-{
-    StringStream indent;
-    for (int N = 0; N < level; ++N)
-    {
-        indent.Append(' ');
-        indent.Append(' ');
-    }
+// Create indentation string using C++23 views::repeat
+std::string CreateIndent(int level) {
+    auto spaces = std::views::repeat(' ', 2 * level);
+    return std::string(spaces.begin(), spaces.end());
+}
 
-    if (!Q.Valid())
-        return;
+void ToXmlStream(const Object &Q, StringStream &S, int level) {
+    StringStream indent;
+    indent.Append(std::string_view(CreateIndent(level)));
+
+    if (!Q.Valid()) return;
 
     StorageBase const &base = Q.GetStorageBase();
     ClassBase const &klass = *Q.GetClass();
-    S << indent.ToString() << "<Object type='" << klass.GetName()
-        << "' name='" << base.GetLabel().ToString()
-        //<< "' handle='" << (int)Q.GetHandle().GetValue()
-        << "'>\n";
+    S << indent.ToString() << "<Object type='" << klass.GetName() << "' name='"
+      << base.GetLabel().ToString()
+      //<< "' handle='" << (int)Q.GetHandle().GetValue()
+      << "'>\n";
 
-    if (Q.GetClass()->HasTraitsProperty(Type::Properties::StringStreamInsert))
-    {
+    if (Q.GetClass()->HasTraitsProperty(Type::Properties::StringStreamInsert)) {
         S << indent.ToString() << "  <Value>";
         if (klass.HasOperation(Type::Properties::StringStreamInsert))
             klass.Insert(S, base);
         S << "</Value>\n";
     }
 
-    for (auto const &prop_iter : klass.GetProperties())
-    {
-        PropertyBase const &property = *prop_iter.second;
-        S << indent.ToString() <<"<Property name='" << property.GetFieldName() << "'>";
-        //ToXmlStream(child.second, S, level + 1);
+    // Using C++23 views::enumerate to keep track of property index
+    const auto &properties = klass.GetProperties();
+    for (const auto &[index, prop_pair] : std::views::enumerate(properties)) {
+        PropertyBase const &property = *prop_pair.second;
+        S << indent.ToString() << "<Property index='" << static_cast<int>(index)
+          << "' name='" << property.GetFieldName() << "'>";
+        // ToXmlStream(child.second, S, level + 1);
         S << property.GetValue(base);
         S << "</Property>\n";
     }
 
     const Dictionary &dict = base.GetDictionary();
-    for (auto const &child : dict)
-        ToXmlStream(child.second, S, level + 1);
+    for (auto const &child : dict) ToXmlStream(child.second, S, level + 1);
 
     S << indent.ToString() << "</Object>\n";
 
@@ -101,4 +100,3 @@ void ToXmlStream(const Object &Q, StringStream &S, int level)
 }
 
 KAI_END
-

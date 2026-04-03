@@ -1,0 +1,60 @@
+// WhileLoopDiagnostic.rho
+// This script is designed to help diagnose issues with while loops in Rho
+
+// Enable maximum diagnostic output
+print("Enabling maximum diagnostic output")
+setTraceLevel(5)
+
+// Basic initialization
+print("Initializing variables for while loop test")
+counter = 0
+max = 5
+results = []
+
+// Print initial state
+print("Initial state: counter = " + counter + ", max = " + max)
+
+// Simple while loop
+print("Starting basic while loop test")
+print("while (counter < max) { counter = counter + 1; results.append(counter) }")
+
+// The actual while loop - this may fail with type mismatch errors
+while (counter < max) {
+    // Print diagnostic info before each iteration
+    print("  Iteration: counter = " + counter)
+    
+    // Increment counter
+    counter = counter + 1
+    
+    // Add to results
+    results.append(counter)
+    
+    // Print after increment
+    print("  After increment: counter = " + counter)
+}
+
+// Print final results
+print("While loop complete. Final counter = " + counter)
+print("Results array: " + results)
+
+// A second test with a condition that's immediately false
+print("\nTesting while loop with initially false condition")
+x = 10
+print("while (x < 5) { print('This should not execute') }")
+while (x < 5) {
+    print("This should not execute")
+}
+print("Second test complete")
+
+// Test with complex condition
+print("\nTesting while loop with complex condition")
+a = 1
+b = 10
+print("while (a < b && a * a < 20) { a = a + 1 }")
+while (a < b && a * a < 20) {
+    print("  a = " + a + ", a*a = " + (a*a))
+    a = a + 1
+}
+print("Complex condition test complete. Final a = " + a)
+
+print("\nWhile loop diagnostic script complete")

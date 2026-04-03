@@ -1,0 +1,104 @@
+// Test file for do-while loops in Rho
+
+// These tests may not run immediately - we're implementing the core iteration constructs
+
+// Function to record a test result
+recordResult = fun(name, passed) {
+    if passed
+        print("Test passed: " + name)
+    else
+        print("TEST FAILED: " + name)
+}
+
+// Test 1: Basic do-while with counter
+{
+    var counter = 0
+    var sum = 0
+    
+    do {
+        sum = sum + counter
+        counter = counter + 1
+    } while (counter < 5)
+    
+    recordResult("Basic Do-While", sum == 10 && counter == 5)
+}
+
+// Test 2: Do-while loop that executes only once
+{
+    var x = 10
+    var executed = false
+    
+    do {
+        executed = true
+        x = 5
+    } while (false)
+    
+    recordResult("Do-While Once", executed == true && x == 5)
+}
+
+// Test 3: Do-while with early exit (break)
+{
+    var counter = 0
+    var sum = 0
+    
+    do {
+        counter = counter + 1
+        if (counter > 2) {
+            break
+        }
+        sum = sum + counter
+    } while (counter < 5)
+    
+    recordResult("Do-While Break", sum == 3 && counter == 3)
+}
+
+// Test 4: Do-while with continue statement
+{
+    var counter = 0
+    var sum = 0
+    
+    do {
+        counter = counter + 1
+        if (counter % 2 == 0) {
+            continue
+        }
+        sum = sum + counter
+    } while (counter < 5)
+    
+    recordResult("Do-While Continue", sum == 9 && counter == 5)
+}
+
+// Test 5: Nested do-while loops
+{
+    var outer = 0
+    var inner = 0
+    var total = 0
+    
+    do {
+        outer = outer + 1
+        do {
+            inner = inner + 1
+            total = total + 1
+        } while (inner < 3)
+        inner = 0
+    } while (outer < 2)
+    
+    recordResult("Nested Do-While", total == 6 && outer == 2 && inner == 0)
+}
+
+// Test 6: Do-while with complex condition
+{
+    var a = 1
+    var b = 10
+    var iterations = 0
+    
+    do {
+        a = a + 1
+        b = b - 1
+        iterations = iterations + 1
+    } while (a < 5 && b > 5)
+    
+    recordResult("Complex Condition", a == 5 && b == 6 && iterations == 4)
+}
+
+print("All do-while tests completed")

@@ -4,8 +4,6 @@
 
 KAI_NET_BEGIN
 
-struct TimeSpan
-{
-};
+struct TimeSpan {};
 
 KAI_NET_END

@@ -1,0 +1,73 @@
+// GameServer.tau - Multiplayer game service example
+// Demonstrates nested namespaces, inheritance, and complex data structures
+
+namespace Gaming::Multiplayer {
+    // Game entity base types
+    struct Vector3 {
+        float x;
+        float y; 
+        float z;
+    }
+    
+    struct Transform {
+        Vector3 position;
+        Vector3 rotation;
+        Vector3 scale;
+    }
+    
+    // Player information
+    struct Player {
+        int playerId;
+        string playerName;
+        int level;
+        float health;
+        float energy;
+        Transform transform;
+        bool isAlive;
+    }
+    
+    // Game state
+    struct GameState {
+        string gameId;
+        string gameName;
+        int maxPlayers;
+        int currentPlayers;
+        bool isActive;
+        float gameTime;
+        string currentMap;
+    }
+    
+    // Base game service interface
+    interface IGameService {
+        // Connection management
+        bool connectPlayer(string playerName, string gameId);
+        void disconnectPlayer(int playerId);
+        GameState getGameState();
+        
+        // Events
+        event PlayerConnected(Player player);
+        event PlayerDisconnected(int playerId);
+        event GameStateChanged(GameState state);
+    }
+    
+    // Extended interface for match-based games
+    interface IMatchService : IGameService {
+        // Match management
+        string createMatch(string matchName, int maxPlayers);
+        bool joinMatch(int playerId, string matchId);
+        bool leaveMatch(int playerId);
+        bool startMatch(string matchId);
+        bool endMatch(string matchId);
+        
+        // Player actions
+        bool movePlayer(int playerId, Vector3 newPosition);
+        bool playerAction(int playerId, string actionType, string[] parameters);
+        
+        // Match events
+        event MatchCreated(string matchId, string matchName);
+        event MatchStarted(string matchId);
+        event MatchEnded(string matchId, int[] winnerIds);
+        event PlayerMoved(int playerId, Vector3 position);
+        event PlayerAction(int playerId, string actionType, string[] parameters);
+    }
+}

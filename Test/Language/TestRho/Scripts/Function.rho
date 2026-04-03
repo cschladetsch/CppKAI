@@ -1,10 +1,10 @@
-fun a = b, c
+a = fun(b, c)
 	return b + c
 
 assert a(1, 2) == 3
 
-fun d = e
-	fun f = g
+d = fun(e)
+	f = fun(g)
 		return g*2
 	return f(e)
 assert d(2) == 4
@@ -13,6 +13,6 @@ assert exists a
 assert exists d
 assert !(exists f)
 
-fun h = i,j,k
+h = fun(i,j,k)
 	return a(i,d(j)*k)
 assert h(1,2,3) == 16

@@ -5,10 +5,12 @@
 KAI_BEGIN
 
 struct StorageBase;
-template <class T> class Storage;
+template <class T>
+class Storage;
 
 class ClassBase;
-template <class T> class Class;
+template <class T>
+class Class;
 
 class Object;
 class String;
@@ -19,7 +21,7 @@ struct Registry;
 class Reflected;
 
 template <class T>
-struct FwdBasePointer { };
+struct FwdBasePointer {};
 
 const char *ToLower(const char *str);
 

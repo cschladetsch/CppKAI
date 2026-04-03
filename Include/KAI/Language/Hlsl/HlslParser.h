@@ -7,27 +7,26 @@
 KAI_BEGIN
 
 // parser specific to the in-fix Hlsl language
-class HlslParser : public ParserCommon<HlslLexer, HlslAstNodeEnumType>
-{
-public:
+class HlslParser : public ParserCommon<HlslLexer, HlslAstNodeEnumType> {
+   public:
     typedef ParserCommon<HlslLexer, HlslAstNodeEnumType> Parent;
-    using Parent::TokenEnum;
-    using Parent::TokenNode;
-    using Parent::Lexer;
     using Parent::AstNode;
     using Parent::AstNodePtr;
+    using Parent::Lexer;
+    using Parent::TokenEnum;
+    using Parent::TokenNode;
 
-    typedef HlslAstNodeEnumType NodeType; 
+    typedef HlslAstNodeEnumType NodeType;
     typedef HlslTokenEnumType TokenType;
 
-    HlslParser(Registry &r) : Parent(r) { }
+    HlslParser(Registry &r) : Parent(r) {}
 
     bool Process(std::shared_ptr<Lexer> lex, Structure st) override;
 
-protected:
+   protected:
     void Process(Structure);
 
-private:
+   private:
     bool Run(Structure st);
     bool Program();
     bool Statement(AstNodePtr);

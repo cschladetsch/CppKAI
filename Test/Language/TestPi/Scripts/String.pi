@@ -1,4 +1,15 @@
+// Start with a clean state
+clear
+
+// Test non-empty string as boolean
 "foo" assert
 
+// Test string concatenation
 "foo" "bar" + "foobar" == assert
+
+// Verify stack is empty at the end
+depth 0 == assert
+
+// Clean up at the end
+clear
 

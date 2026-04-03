@@ -2,17 +2,12 @@
 
 USING_NAMESPACE_KAI
 
-class TestList : public TestCommon
-{
-protected:
-    void AddTestClasses() override
-    {
-        Reg().AddClass<List>();
-    }
+class TestList : public TestCommon {
+   protected:
+    void AddRequiredClasses() override { Reg().AddClass<List>(); }
 };
 
-TEST_F(TestList, TestCreation)
-{
+TEST_F(TestList, TestCreation) {
     Pointer<List> list = Reg().New<List>();
     ASSERT_TRUE(list.Exists());
     ASSERT_TRUE(list->Size() == 0);
@@ -23,10 +18,9 @@ TEST_F(TestList, TestCreation)
     ASSERT_FALSE(list.Exists());
 }
 
-TEST_F(TestList, TestInsertDelete)
-{
+TEST_F(TestList, TestInsertDelete) {
     Pointer<List> list = Reg().New<List>();
-    _root.Set("list", list);
+    root_.Set("list", list);
 
     Object n = Reg().New(42);
     list->PushBack(n);
@@ -46,12 +40,11 @@ TEST_F(TestList, TestInsertDelete)
     ASSERT_FALSE(n.Exists());
 }
 
-TEST_F(TestList, TestComparison)
-{
+TEST_F(TestList, TestComparison) {
     Pointer<List> l0 = Reg().New<List>();
     Pointer<List> l1 = Reg().New<List>();
-    _root.Set("list0", l0);
-    _root.Set("list1", l1);
+    root_.Set("list0", l0);
+    root_.Set("list1", l1);
 
     l0->PushBack(Reg().New(42));
     l0->PushBack(Reg().New<String>("Hello"));
@@ -62,19 +55,17 @@ TEST_F(TestList, TestComparison)
     // assert same value
     ASSERT_EQ(*l0, *l1);
 
-    // change the first value to be 2, which is less than 42, so it should be less than
+    // change the first value to be 2, which is less than 42, so it should be
+    // less than
     Deref<int>(l0->Front()) = 2;
 
     // assert less than
     ASSERT_LT(*l0, *l1);
 }
 
-TEST_F(TestList, TestStringStream)
-{
-}
+TEST_F(TestList, TestStringStream) {}
 
-TEST_F(TestList, TestBinaryStream)
-{
+TEST_F(TestList, TestBinaryStream) {
     Pointer<List> l = Reg().New<List>();
     Pointer<BinaryStream> s = Reg().New<BinaryStream>();
 

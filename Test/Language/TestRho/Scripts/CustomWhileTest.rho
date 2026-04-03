@@ -1,0 +1,13 @@
+// Basic while loop test
+i = 0
+sum = 0
+
+// Basic while loop
+while (i < 5) {
+    sum = sum + i
+    i = i + 1
+}
+
+// Verify the result (should be 10)
+assert sum == 10
+EOF < /dev/null

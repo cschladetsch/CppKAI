@@ -2,17 +2,12 @@
 
 USING_NAMESPACE_KAI
 
-class TestStack : public TestCommon
-{
-protected:
-    void AddTestClasses() override
-    {
-        Reg().AddClass<Stack>();
-    }
+class TestStack : public TestCommon {
+   protected:
+    void AddRequiredClasses() override { Reg().AddClass<Stack>(); }
 };
 
-TEST_F(TestStack, TestCreation)
-{
+TEST_F(TestStack, TestCreation) {
     Pointer<Stack> stack = Reg().New<Stack>();
     ASSERT_TRUE(stack.Exists());
     ASSERT_TRUE(stack->Size() == 0);
@@ -23,13 +18,12 @@ TEST_F(TestStack, TestCreation)
     ASSERT_FALSE(stack.Exists());
 }
 
-TEST_F(TestStack, TestInsertDelete)
-{
+TEST_F(TestStack, TestInsertDelete) {
     // stacks are not Containers that track their contents, so this
     // test will always fail.
 
     // Pointer<Stack> stack = reg.New<Stack>();
-    // tree.GetRoot().Set("stack", stack);
+    // tree_.GetRoot().Set("stack", stack);
 
     // Object n = reg.New(42);
     // stack->Push(n);
@@ -45,15 +39,8 @@ TEST_F(TestStack, TestInsertDelete)
     // ASSERT_FALSE(n.Exists());
 }
 
-TEST_F(TestStack, TestComparison)
-{
-}
+TEST_F(TestStack, TestComparison) {}
 
-TEST_F(TestStack, TestStringStream)
-{
-}
+TEST_F(TestStack, TestStringStream) {}
 
-TEST_F(TestStack, TestBinaryStream)
-{
-}
-
+TEST_F(TestStack, TestBinaryStream) {}

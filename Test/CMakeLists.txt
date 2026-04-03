@@ -1,21 +1,27 @@
 include_directories(${TEST_HOME}/Include})
 
-if (KAI_BUILD_CORE_TEST)
-    add_subdirectory(Source)
-else()
-    message(WARNING Not building unit tests)
-endif()
+add_subdirectory(Source)
+add_subdirectory(Language)
+#add_subdirectory(Common)
 
-if (KAI_BUILD_TEST_LANG)
-    add_subdirectory(Language)
-else()
-    message(WARNING Not building Language unit tests)
-endif()
+# Add Console tests
+add_subdirectory(Console)
 
-if (KAI_BUILD_TEST_NETWORK)
+# Add our logging test
+add_subdirectory(LogTest)
+
+# Add example programs
+add_subdirectory(Examples)
+
+# Add Window tests
+add_subdirectory(Window)
+
+# Add Performance benchmark tests
+add_subdirectory(Performance)
+
+if(KAI_NETWORKING)
     add_subdirectory(Network)
-else()
-    message(WARNING Not building Network unit tests)
+    add_subdirectory(Network/ProxyTest)
 endif()
 
 

@@ -1,0 +1,6 @@
+// Test correct Rho syntax for if statement
+result = 0
+if true {
+    result = 42
+}
+result

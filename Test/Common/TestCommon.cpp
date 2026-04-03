@@ -1,53 +1,43 @@
 #include "TestCommon.h"
+
 #include <KAI/Core/BuiltinTypes/All.h>
 #include <KAI/Core/Tree.h>
+
 #include "KAI/Core/Console.h"
+#include "KAI/Core/StringStream.h"
 
 KAI_BEGIN
 
-void TestCommon::SetUp()
-{
-    _reg = new Registry();
-    _tree = new kai::Tree();
+void TestCommon::SetUp() {
+    reg_ = new Registry();
+    tree_ = new kai::Tree();
 
-    _reg->AddClass<void>();
-    _reg->AddClass<bool>();
-    _reg->AddClass<int>();
-    _reg->AddClass<float>();
-    _reg->AddClass<String>();
-    //_reg->AddClass<StringStream>();
-    _reg->AddClass<BinaryStream>();
+    reg_->AddClass<void>();
+    reg_->AddClass<bool>();
+    reg_->AddClass<int>();
+    reg_->AddClass<float>();
+    reg_->AddClass<String>();
+    reg_->AddClass<StringStream>();
+    reg_->AddClass<BinaryStream>();
+    reg_->AddClass<Array>();
+    reg_->AddClass<Map>();
 
-    _root = _reg->New<void>();
-    _tree->SetRoot(_root);
-    _reg->SetTree(*_tree);
+    root_ = reg_->New<void>();
+    tree_->SetRoot(root_);
+    reg_->SetTree(*tree_);
 
-    AddTestClasses();
+    AddRequiredClasses();
 }
 
-Registry &TestCommon::Reg()
-{
-    return *_reg;
-}
+Registry &TestCommon::Reg() const { return *reg_; }
 
-Tree &TestCommon::GetTree()
-{
-    return *_tree;
-}
+Tree &TestCommon::GetTree() const { return *tree_; }
 
-Object TestCommon::Root() const
-{
-    return _root;
-}
+Object TestCommon::Root() const { return root_; }
 
-void TestCommon::AddTestClasses()
-{
-}
-
-void TestCommon::TearDown()
-{
-    delete _reg;
-    delete _tree;
+void TestCommon::TearDown() {
+    delete reg_;
+    delete tree_;
 }
 
 KAI_END

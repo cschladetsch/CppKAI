@@ -2,46 +2,35 @@
 
 KAI_BEGIN
 
-String Label::ToString() const
-{
-    if (!_quoted)
-        return _value;
+String Label::ToString() const {
+    if (!quoted_) return value_;
 
-    return String("'") + _value;
+    return String("'") + value_;
 }
 
-void Label::FromString2(String text)
-{
-    FromString(text);
-}
+void Label::FromString2(String text) { FromString(text); }
 
-void Label::FromString(const Value &S)
-{
-    _quoted = false;
-    _value = "";
-    if (S.empty())
-        return;
+void Label::FromString(const Value &S) {
+    quoted_ = false;
+    value_ = "";
+    if (S.empty()) return;
 
     const String::Char *str = S.c_str();
-    if (str[0] == '\'')
-    {
-        _quoted = true;
+    if (str[0] == '\'') {
+        quoted_ = true;
         str++;
     }
 
-    _value = str;
+    value_ = str;
 }
 
-StringStream &operator<<(StringStream &S, const Label &L)
-{
+StringStream &operator<<(StringStream &S, const Label &L) {
     return S << L.ToString();
 }
 
-StringStream &operator>>(StringStream &S, Label &L)
-{
+StringStream &operator>>(StringStream &S, Label &L) {
     bool quoted = S.Peek() == '\'';
-    if (quoted)
-    {
+    if (quoted) {
         char ch;
         S.Extract(ch);
     }
@@ -53,27 +42,25 @@ StringStream &operator>>(StringStream &S, Label &L)
     return S;
 }
 
-BinaryStream &operator<<(BinaryStream &S, Label const &L)
-{
+BinaryStream &operator<<(BinaryStream &S, Label const &L) {
     return S << L.ToString();
 }
 
-BinaryStream &operator>>(BinaryStream &S, Label &L)
-{
+BinaryStream &operator>>(BinaryStream &S, Label &L) {
     String value;
     S >> value;
     L.FromString(value);
     return S;
 }
 
-void Label::Register(Registry &R)
-{
+std::ostream &operator<<(std::ostream &S, const Label &L) {
+    return S << L.ToString();
+}
+
+void Label::Register(Registry &R) {
     ClassBuilder<Label>(R, Label("Label"))
-        .Methods
-            ("ToString", &Label::ToString, "ToString")
-            ("FromString", &Label::FromString2, "FromString")
-        ;
+        .Methods("ToString", &Label::ToString, "ToString")(
+            "FromString", &Label::FromString2, "FromString");
 }
 
 KAI_END
-

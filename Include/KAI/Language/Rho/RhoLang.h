@@ -1,24 +1,26 @@
 #pragma once
 
 #include <KAI/Language/Common/LangCommon.h>
-#include <KAI/Language/Rho/RhoTranslator.h>
 #include <KAI/Language/Common/Structure.h>
+#include <KAI/Language/Rho/RhoTranslator.h>
 
 KAI_BEGIN
 
-class RhoLang : Lang<RhoTranslator>
-{
+class RhoLang : Lang<RhoTranslator> {
     typedef Lang<RhoTranslator> Parent;
 
-    RhoLang(Registry &r) : Parent(r) { }
+    RhoLang(Registry &r) : Parent(r) {}
 
-    Pointer<Executor> Exec(const char *text, Structure st = Structure::Expression);
-    Pointer<Continuation> Translate(const char *text, Structure st = Structure::Expression);
-    Pointer<Continuation> TranslateFile(const char *name, Structure st = Structure::Program);
+    Pointer<Executor> Exec(const char *text,
+                           Structure st = Structure::Expression);
+    Pointer<Continuation> Translate(const char *text,
+                                    Structure st = Structure::Expression);
+    Pointer<Continuation> TranslateFile(const char *name,
+                                        Structure st = Structure::Program);
 
     void Print() const;
 
-protected:
+   protected:
     using Parent::reg;
 };
 

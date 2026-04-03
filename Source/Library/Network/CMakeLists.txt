@@ -1,13 +1,4 @@
-cmake_minimum_required(VERSION 3.6)
+# The Network library is created by the def_library macro in the main CMakeLists.txt
 
-set(name Network)
-project(${name})
-
-set(source_path ${LIBRARY_HOME}/${name}/Source)
-set(header_path ${INCLUDE_HOME}/${name})
-file(GLOB_RECURSE sources ${source_path}/*.cpp)
-file(GLOB_RECURSE headers ${header_path}/*.h)
-link_libraries(Executor Core PiLang RhoLang RakNetLibStatic)
-add_library(${name} ${sources} ${headers})
-cotire(${name})
-
+# Add network-specific compile definitions
+add_definitions(-DKAI_NETWORK_DLL)

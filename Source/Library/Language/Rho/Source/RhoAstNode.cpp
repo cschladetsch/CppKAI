@@ -6,13 +6,17 @@ KAI_BEGIN
 #undef CASE_LOWER
 #undef CASE_REPLACE
 
-const char *RhoAstNodes::ToString(Enum ty)
-{
-    switch (ty)
-    {
-        #define CASE(N) case RhoAstNodes::N : return #N;
-        #define CASE_LOWER(N) case RhoAstNodes::N : return ToLower(#N);
-        #define CASE_REPLACE(N, M) case RhoAstNodes::N : return M;
+const char *RhoAstNodeEnumType::ToString(Enum ty) {
+    switch (ty) {
+#define CASE(N)          \
+    case RhoAstNodes::N: \
+        return #N;
+#define CASE_LOWER(N)    \
+    case RhoAstNodes::N: \
+        return ToLower(#N);
+#define CASE_REPLACE(N, M) \
+    case RhoAstNodes::N:   \
+        return M;
         CASE(None)
         CASE(Program)
         CASE(Ident)
@@ -24,13 +28,16 @@ const char *RhoAstNodes::ToString(Enum ty)
         CASE(Call)
         CASE(ArgList)
         CASE(IndexOp)
-        CASE(ForEach)
-        CASE(For)
         CASE(List)
         CASE(Map)
         CASE(Continuation)
         CASE(TokenType)
         CASE(Pathname)
+        CASE(While)
+        CASE(For)
+        CASE(DoWhile)
+        CASE(ForEach)
+        CASE(ToPiLang)
     }
 
     static char buff[BUFSIZ];

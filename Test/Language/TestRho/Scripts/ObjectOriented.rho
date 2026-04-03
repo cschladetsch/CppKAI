@@ -1,0 +1,82 @@
+// Test for Rho object-oriented features (if supported)
+
+// Note: This test assumes Rho has object-oriented support.
+// If it doesn't, it can be marked as a WIP (Work In Progress) script.
+
+// Creating an object (simple struct/record)
+person = {
+    name: "John",
+    age: 30,
+    occupation: "Developer"
+}
+
+assert person.name == "John"
+assert person.age == 30
+assert person.occupation == "Developer"
+
+// Modifying object properties
+person.age = 31
+assert person.age == 31
+
+person.location = "New York"
+assert person.location == "New York"
+
+// Object as function parameters
+function getDescription = p
+    return p.name + " is a " + p.age + "-year-old " + p.occupation
+
+assert getDescription(person) == "John is a 31-year-old Developer"
+
+// Creating an object with methods
+calculator = {
+    value: 0,
+    add: function(x)
+        this.value = this.value + x
+        return this
+    ,
+    subtract: function(x)
+        this.value = this.value - x
+        return this
+    ,
+    multiply: function(x)
+        this.value = this.value * x
+        return this
+    ,
+    divide: function(x)
+        if x == 0
+            return "Error: Division by zero"
+        this.value = this.value / x
+        return this
+    ,
+    getValue: function()
+        return this.value
+}
+
+// Method chaining
+result = calculator.add(5).multiply(2).subtract(3).getValue()
+assert result == 7
+
+// Reset calculator
+calculator.value = 0
+
+// More complex operations
+calculator.add(10)
+assert calculator.getValue() == 10
+
+calculator.divide(2)
+assert calculator.getValue() == 5
+
+// "Inheritance" via composition
+enhancedCalculator = {
+    calc: calculator,
+    square: function()
+        this.calc.value = this.calc.value * this.calc.value
+        return this
+    ,
+    getValue: function()
+        return this.calc.getValue()
+}
+
+enhancedCalculator.calc.value = 3
+enhancedCalculator.square()
+assert enhancedCalculator.getValue() == 9

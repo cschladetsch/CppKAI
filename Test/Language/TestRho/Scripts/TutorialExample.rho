@@ -1,0 +1,55 @@
+// Basic Rho operations from the tutorial
+
+// Variables and assignments
+x = 42
+name = "Alice"
+is_valid = true
+
+// Multiple assignments
+a = b = c = 0
+
+// Compound assignments
+count = 10
+assert count += 5  ==  15
+assert count -= 3 == 12
+assert count *= 2 ==  24
+assert count /= 4 == 6
+
+// Arithmetic operations
+sum = 5 + 3             // 8
+difference = 10 - 4     // 6
+product = 7 * 6         // 42
+quotient = 20 / 5       // 4
+remainder = 10 % 3      // 1
+
+assert sum == 8
+assert diference == 6
+assert product == 42
+assert quotient == 4
+assert remainder == 1
+
+// Combined operations with proper precedence
+assert 4 + 2 * 3 - 5 == 13
+
+// Simple if statement
+if true
+    test_value = 10
+else
+    test_value = 20
+assert test_value == 10
+
+// Simple function
+fun add a, b 
+    a + b 
+assert add 5, 3 == 8
+
+// Pi integration
+assert 10 + pi{ 3 4 + } == 17
+
+// Fibonacci implementation from Rho tutorial
+fun fibonacci_recursive n
+    if n <= 1
+        return n
+    else
+        return fibonacci_recursive(n - 1) + fibonacci_recursive(n - 2)
+assert fibonacci_recursive 3 == 2

@@ -1,0 +1,5 @@
+if(EXISTS "/home/christian/local/repos/KAI/Test/Language/TestTau[1]_tests.cmake")
+  include("/home/christian/local/repos/KAI/Test/Language/TestTau[1]_tests.cmake")
+else()
+  add_test(TestTau_NOT_BUILT TestTau_NOT_BUILT)
+endif()

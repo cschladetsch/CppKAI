@@ -1,0 +1,79 @@
+// DistributedCalculator.tau
+// Distributed Mathematical Service demonstrating async operations and Future support
+
+namespace Calculator {
+    // Operation types for tracking
+    enum Operation {
+        None,
+        Add,
+        Subtract,
+        Multiply,
+        Divide,
+        Modulo,
+        Power,
+        SquareRoot,
+        Factorial
+    }
+
+    // Result structure for extended information
+    struct CalculationResult {
+        Operation operation;
+        int result;
+        bool success;
+        string error;
+    }
+
+    // Main calculator interface with async support
+    interface ICalculator {
+        // Basic arithmetic operations - async for Future<int> support
+        async int Add(int a, int b);
+        async int Subtract(int a, int b);
+        async int Multiply(int a, int b);
+        async int Divide(int a, int b);
+        async int Modulo(int a, int b);
+
+        // Advanced operations
+        async int Power(int base, int exponent);
+        async int SquareRoot(int value);
+        async int Factorial(int n);
+
+        // Batch operations
+        async int Sum(int[] values);
+        async int Product(int[] values);
+
+        // Expression evaluation (bonus: infix parser)
+        async int Evaluate(string expression);
+
+        // Synchronous utility methods
+        void Clear();
+        int GetLastResult();
+        Operation GetLastOperation();
+
+        // Statistics
+        int GetOperationCount();
+        void ResetStatistics();
+
+        // Events for monitoring
+        event OnCalculationComplete(Operation op, int result);
+        event OnError(string message);
+        event OnBatchComplete(int count, int result);
+    }
+
+    // Advanced calculator with history
+    interface ICalculatorWithHistory {
+        // All basic calculator operations
+        async int Add(int a, int b);
+        async int Subtract(int a, int b);
+        async int Multiply(int a, int b);
+        async int Divide(int a, int b);
+
+        // History management
+        CalculationResult[] GetHistory();
+        void ClearHistory();
+        int GetHistoryCount();
+        CalculationResult GetHistoryItem(int index);
+
+        // Events
+        event OnHistoryUpdated(int count);
+    }
+}

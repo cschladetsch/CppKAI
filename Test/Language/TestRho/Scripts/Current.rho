@@ -1,12 +1,12 @@
 'a = 0
-assert(a == 0)
+assert a == 0
 
 'a = 1
-assert(a == 1)
+assert a == 1
 
 'a = "foo"
-assert(a == "foo")
-assert('a == 'a)
-assert('a != 'b)
+assert a == "foo"
+assert 'a == 'a
+assert 'a != 'b
 
 

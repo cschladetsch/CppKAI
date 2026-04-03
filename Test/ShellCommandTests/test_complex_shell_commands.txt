@@ -1,0 +1,29 @@
+# Test 11: Command with pipes and closing backtick
+`ls -la | head -3`
+
+# Test 12: Command with pipes without closing backtick
+`ls -la | head -3
+
+# Test 13: Command with nested command substitution and closing backtick
+`echo "Current directory: $(pwd)"`
+
+# Test 14: Command with nested command substitution without closing backtick
+`echo "Current directory: $(pwd)"
+
+# Test 15: Multi-word echo with quotes and closing backtick
+`echo "This is a test with multiple words"`
+
+# Test 16: Multi-word echo with quotes without closing backtick
+`echo "This is a test with multiple words"
+
+# Test 17: Command with environment variable and closing backtick
+`echo "User: $USER"`
+
+# Test 18: Command with environment variable without closing backtick
+`echo "User: $USER"
+
+# Test 19: Complex ls command with options and closing backtick
+`ls -la /tmp | grep -v "^d" | head -2`
+
+# Test 20: Complex ls command with options without closing backtick
+`ls -la /tmp | grep -v "^d" | head -2

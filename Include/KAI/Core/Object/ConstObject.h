@@ -23,4 +23,3 @@ struct ConstObject : Object
 */
 
 KAI_END
-

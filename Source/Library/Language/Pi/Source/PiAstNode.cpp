@@ -1,17 +1,18 @@
-#include <stdlib.h>
+#include "KAI/Language/Pi/PiAstNode.h"
+
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "KAI/Executor/Executor.h"
 #include "KAI/Language/Pi/PiToken.h"
-#include "KAI/Language/Pi/PiAstNode.h"
 
 KAI_BEGIN
 
-const char *PiAstNodeEnumType::ToString(Enum ty)
-{
-    switch (ty)
-    {
-#define CASE(X) case PiAstNodeEnumType::Enum::X: return #X;
+const char* PiAstNodeEnumType::ToString(Enum ty) {
+    switch (ty) {
+#define CASE(X)                      \
+    case PiAstNodeEnumType::Enum::X: \
+        return #X;
         CASE(Program)
         CASE(Operation)
         CASE(List)
@@ -34,11 +35,8 @@ const char *PiAstNodeEnumType::ToString(Enum ty)
     return b;
 }
 
-std::ostream& operator<<(std::ostream& out, const PiAstNode &node)
-{
+std::ostream& operator<<(std::ostream& out, const PiAstNode& node) {
     return out << node.ToString();
 }
 
 KAI_END
-
-

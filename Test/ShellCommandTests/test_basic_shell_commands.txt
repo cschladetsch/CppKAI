@@ -1,0 +1,29 @@
+# Test 1: Basic pwd command with closing backtick
+`pwd`
+
+# Test 2: Basic pwd command without closing backtick
+`pwd
+
+# Test 3: Simple echo command with closing backtick
+`echo "Hello World"`
+
+# Test 4: Simple echo command without closing backtick
+`echo "Hello World"
+
+# Test 5: whoami command with closing backtick
+`whoami`
+
+# Test 6: whoami command without closing backtick
+`whoami
+
+# Test 7: date command with closing backtick
+`date`
+
+# Test 8: date command without closing backtick  
+`date
+
+# Test 9: ls command with closing backtick
+`ls`
+
+# Test 10: ls command without closing backtick
+`ls

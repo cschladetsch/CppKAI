@@ -1,0 +1,30 @@
+// Test file for advanced Pi language array operations
+// First clear any leftover stack items
+clear
+
+// Create arrays
+[1 2 3] 'arr1 #
+[4 5 6] 'arr2 #
+
+// Test array size if supported
+// arr1 size 3 == assert
+// arr2 size 3 == assert
+
+// Test array copying
+arr1 'arr_copy #
+arr_copy arr1 == assert
+arr_copy [1 2 3] == assert
+
+// Test nested arrays if supported
+// [arr1 arr2] 'nested #
+// nested size 2 == assert
+
+// Test creating array from stack
+1 2 3 3 toarray [1 2 3] == assert
+
+// Test array equality comparisons
+[1 2 3] [1 2 3] == assert
+[1 2 3] [4 5 6] == not assert
+
+// Clean up
+clear

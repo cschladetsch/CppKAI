@@ -1,0 +1,9 @@
+// Test script for foreach operation
+clear
+
+// Test 1: Simple multiplication
+[1 2 3] { 2 * } foreach
+// Expected: each element multiplied by 2
+
+// Print result (assuming print operation exists)
+// The exact result handling depends on Pi implementation

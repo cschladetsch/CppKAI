@@ -1,0 +1,12 @@
+// Simple do-while loop test with indentation-based syntax
+i = 0
+sum = 0
+
+// Basic do-while loop with proper indentation
+do
+    sum = sum + i
+    i = i + 1
+while (i < 5)
+
+// Verify result - should be 0+1+2+3+4 = 10
+assert sum == 10

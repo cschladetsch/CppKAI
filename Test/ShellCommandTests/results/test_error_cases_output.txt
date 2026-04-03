@@ -1,0 +1,50 @@
+KAI Console v0.3.0
+Built on Feb  5 2026 at 03:16:24
+Type 'help' for available commands.
+
+Pi λ # Test 39: Empty shell command with closing backtick
+Pi λ ``
+Error: Empty shell command
+Pi λ 
+Pi λ # Test 40: Empty shell command without closing backtick
+Pi λ `
+Error: Empty shell command
+Pi λ 
+Pi λ # Test 41: Shell command with only spaces and closing backtick
+Pi λ `   `
+Error: Empty shell command
+Pi λ 
+Pi λ # Test 42: Shell command with only spaces without closing backtick
+Pi λ `   
+Error: Empty shell command
+Pi λ 
+Pi λ # Test 43: Invalid command (should show error but not crash)
+Exception: [Pathname.cpp:78] InvalidPathname: text=crash)
+Pi λ `nonexistentcommand123`
+
+Command exited with code: 32512
+Pi λ 
+Pi λ # Test 44: Invalid command without closing backtick
+Pi λ `nonexistentcommand123
+
+Command exited with code: 32512
+Pi λ 
+Pi λ # Test 45: Command that returns non-zero exit code
+Exception: [Pathname.cpp:78] InvalidPathname: text=non-zero
+Pi λ `false`
+
+Command exited with code: 256
+Pi λ 
+Pi λ # Test 46: Embedded command without closing backtick (should fail parsing)
+Exception: [Pathname.cpp:78] InvalidPathname: text=parsing)
+Pi λ 10 `echo 5 +
+Pi λ 
+Pi λ # Test 47: Multiple unclosed backticks in expression (should fail parsing)
+Exception: [Pathname.cpp:78] InvalidPathname: text=parsing)
+Pi λ 10 `echo 5 + `echo 3
+Pi λ 
+Pi λ # Test 48: Normal language processing after shell commands
+Pi λ 5 5 +
+Pi λ .
+Pi λ exit
+Pi λ 

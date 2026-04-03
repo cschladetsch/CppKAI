@@ -1,0 +1,20 @@
+// Test Pi assert ion inside Rho
+// This will execute a Pi block that adds 1+1 and assert s that it equals 2
+// With our changes, this should now work correctly
+
+pi { 1 1 + 2 == assert }
+
+// Now let's try a more complex example:
+// Define a function that uses Pi to check a condition
+testAssert = fun(value) {
+    // Use Pi to evaluate an expression and assert it
+    pi { value 10 < assert }
+    
+    // Return the value if no assert ion error
+    return value;
+}
+
+// Try with valid value (should succeed)
+x = testAssert(5);
+
+// The output should show x = 5 and no errors

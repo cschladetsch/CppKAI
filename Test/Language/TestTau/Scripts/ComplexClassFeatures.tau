@@ -1,0 +1,87 @@
+// ComplexClassFeatures.tau - Testing advanced class features
+
+namespace Complex
+{
+    // Class with multiple field types and initializers
+    class AdvancedClass
+    {
+        // Basic fields with initializers
+        int intValue = 42;
+        float floatValue = 3.14159;
+        string stringValue = "Hello World";
+        bool boolValue = true;
+        
+        // Scientific notation
+        float avogadro = 6.022e23;
+        float planck = 6.626e-34;
+        
+        // Methods with default parameters
+        void Configure(string option = "default", int priority = 1, float timeout = 5.0);
+        bool Process(string data, int maxAttempts = 3);
+        string FormatOutput(string input, bool verbose = false, string format = "standard");
+        
+        // Methods with various return types
+        int GetIntValue();
+        float GetFloatValue();
+        string GetStringValue();
+        bool GetBoolValue();
+        
+        // Methods with complex parameters
+        AdvancedClass Clone();
+        AdvancedClass Merge(AdvancedClass other);
+        int Compare(AdvancedClass other);
+    }
+    
+    // Class with array types
+    class ArrayContainer
+    {
+        int[] numbers;
+        string[] names;
+        float[] coordinates;
+        bool[] flags;
+        
+        int[] GetNumbers();
+        void SetNumbers(int[] newNumbers);
+        void AddNumber(int number);
+        
+        string[] GetNames();
+        void SetNames(string[] newNames);
+        void AddName(string name);
+        
+        float[] GetCoordinates();
+        void SetCoordinates(float[] newCoordinates);
+        void AddCoordinate(float x, float y, float z);
+        
+        bool[] GetFlags();
+        void SetFlags(bool[] newFlags);
+        void AddFlag(bool flag);
+    }
+    
+    // Class demonstrating more complex method signatures
+    class ApiService
+    {
+        string apiKey = "";
+        string baseUrl = "https://api.example.com";
+        int timeout = 30000;
+        bool useSsl = true;
+        
+        // Authentication
+        bool Authenticate(string username, string password, int expiry = 3600);
+        void SetApiKey(string key);
+        string GetApiKey();
+        
+        // API interaction
+        string Get(string endpoint, string params = "");
+        string Post(string endpoint, string data, string contentType = "application/json");
+        bool Delete(string endpoint, string params = "");
+        string Put(string endpoint, string data, string contentType = "application/json");
+        
+        // Configuration
+        void SetTimeout(int milliseconds);
+        int GetTimeout();
+        void SetBaseUrl(string url);
+        string GetBaseUrl();
+        void SetSslEnabled(bool enabled);
+        bool IsSslEnabled();
+    }
+}

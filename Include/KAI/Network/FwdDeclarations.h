@@ -11,4 +11,3 @@ struct Representative;
 struct Domain;
 
 KAI_NET_END
-

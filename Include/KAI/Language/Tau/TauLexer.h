@@ -5,13 +5,12 @@
 
 TAU_BEGIN
 
-struct TauLexer : LexerCommon<TauTokenEnumType>
-{
+struct TauLexer : LexerCommon<TauTokenEnumType> {
     typedef LexerCommon<TauTokenEnumType> Parent;
     typedef TokenBase<TauTokenEnumType> TokenNode;
     typedef TauTokenEnumType TokenEnumType;
 
-    TauLexer(const char *text, Registry &r) : Parent(text, r) { }
+    TauLexer(const char *text, Registry &r) : Parent(text, r) {}
 
     virtual void AddKeyWords();
     virtual bool NextToken();
@@ -19,4 +18,3 @@ struct TauLexer : LexerCommon<TauTokenEnumType>
 };
 
 TAU_END
-

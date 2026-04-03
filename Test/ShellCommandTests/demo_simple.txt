@@ -1,0 +1,7 @@
+`echo "=== Simple Shell Command Demo ==="`
+`pwd
+`whoami`
+`echo "Hello from shell!"`
+10 20 +
+5 `echo 3` *
+1 2 3 4 5

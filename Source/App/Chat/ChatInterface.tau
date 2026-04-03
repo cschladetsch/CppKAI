@@ -1,0 +1,122 @@
+// Chat application Tau interface definition  
+// Peer-to-peer distributed chat system - no client/server distinction
+// All nodes are equal peers that can communicate directly
+
+namespace KAI { namespace Demo { namespace Chat
+{
+    // Peer information structure
+    struct PeerInfo
+    {
+        string peerId;
+        string username;
+        string displayName;
+        string status;
+        int64 lastSeen;
+        string[] joinedChannels;
+    }
+
+    // Chat message structure  
+    struct ChatMessage
+    {
+        string senderId;
+        string senderName;
+        string content;
+        string channel;
+        int64 timestamp;
+        string messageId;
+    }
+
+    // Channel state for distributed management
+    struct ChannelState
+    {
+        string name;
+        string description;
+        string[] members;
+        int64 createdAt;
+        string creatorId;
+    }
+
+    // Peer-to-peer chat node interface
+    // Every node implements this interface and can communicate with other peers
+    interface IChatPeer
+    {
+        // Peer discovery and connection
+        void AnnouncePresence(PeerInfo myInfo);
+        void RequestPeerInfo();
+        PeerInfo GetPeerInfo();
+        void PeerDisconnecting(string peerId);
+        
+        // Message passing between peers
+        void ReceiveMessage(ChatMessage message);
+        void ReceivePrivateMessage(ChatMessage message);
+        void ForwardMessage(ChatMessage message, string[] excludePeers);
+        
+        // Channel coordination
+        void JoinChannelRequest(string channelName, PeerInfo peerInfo);
+        void LeaveChannelNotification(string channelName, string peerId);
+        void ChannelStateUpdate(ChannelState state);
+        void RequestChannelState(string channelName);
+        
+        // Peer status updates
+        void PeerStatusChanged(string peerId, string newStatus);
+        void PeerJoinedChannel(string peerId, string channelName);
+        void PeerLeftChannel(string peerId, string channelName);
+        
+        // Distributed channel management
+        void ProposeChannelCreation(ChannelState newChannel);
+        void VoteChannelCreation(string channelName, bool approve);
+        void ChannelCreationResult(string channelName, bool created);
+        
+        // Network maintenance
+        void Heartbeat(string peerId, int64 timestamp);
+        void RequestPeerList();
+        void SharePeerList(PeerInfo[] knownPeers);
+        
+        // Events for local UI updates
+        event MessageReceived(ChatMessage message);
+        event PrivateMessageReceived(ChatMessage message);
+        event PeerJoined(PeerInfo peer);
+        event PeerLeft(string peerId);
+        event PeerStatusUpdated(string peerId, string status);
+        event ChannelMembershipChanged(string channelName, string[] members);
+        event ChannelCreated(ChannelState channel);
+    }
+
+    // Local chat management interface
+    // This handles the local peer's state and UI interactions
+    interface IChatManager
+    {
+        // Local peer management
+        void Initialize(string username, string displayName);
+        void SetStatus(string status);
+        PeerInfo GetMyInfo();
+        
+        // Channel operations
+        void CreateChannel(string name, string description);
+        void JoinChannel(string channelName);
+        void LeaveChannel(string channelName);
+        string[] GetMyChannels();
+        
+        // Messaging
+        void SendMessage(string content, string channel);
+        void SendPrivateMessage(string content, string targetPeerId);
+        ChatMessage[] GetChannelMessages(string channel);
+        ChatMessage[] GetPrivateMessages(string peerId);
+        
+        // Peer discovery
+        PeerInfo[] GetKnownPeers();
+        PeerInfo[] GetPeersInChannel(string channel);
+        void RefreshPeerList();
+        
+        // Network operations
+        void StartNetworking();
+        void StopNetworking();
+        bool IsNetworkActive();
+        
+        // Events for UI
+        event NetworkStatusChanged(bool active);
+        event MessageAdded(ChatMessage message);
+        event ChannelListUpdated(string[] channels);
+        event PeerListUpdated(PeerInfo[] peers);
+    }
+}}}

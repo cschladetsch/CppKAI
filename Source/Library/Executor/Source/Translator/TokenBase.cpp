@@ -2,8 +2,6 @@
 
 KAI_BEGIN
 
-void DontWarnAboutEmptyFile()
-{
-}
+void DontWarnAboutEmptyFile() {}
 
 KAI_END

@@ -1,0 +1,51 @@
+// Test for Rho collections (arrays/lists)
+
+// Create an array
+arr = [1, 2, 3, 4, 5]
+
+// Test array equality
+assert arr == [1, 2, 3, 4, 5]
+
+// Test array access if supported
+// assert arr[0] == 1
+// assert arr[4] == 5
+
+// Test array length if supported
+// assert length(arr) == 5
+
+// Test array copy
+arr2 = arr
+assert arr2 == arr
+
+// Test modified copy doesn't affect original
+// arr2[0] = 10
+// assert arr2[0] == 10
+// assert arr[0] == 1
+
+// Test nested arrays
+nested = [[1, 2], [3, 4]]
+assert nested == [[1, 2], [3, 4]]
+
+// Function to process arrays
+sumArray = fun(a)
+    sum = 0
+    // if Rho supports for loops
+    // for i in a
+    //     sum = sum + i
+    // However, since we're not sure about loop support, we'll do this manually
+    sum = a[0] + a[1] + a[2]
+    return sum
+
+assert sumArray([10, 20, 30]) == 60
+
+// Create empty array
+empty = []
+assert empty == []
+
+// Test array concatenation if supported
+// combined = arr + [6, 7]
+// assert combined == [1, 2, 3, 4, 5, 6, 7]
+
+// Test array with different types
+mixed = [1, "two", true]
+assert mixed == [1, "two", true]

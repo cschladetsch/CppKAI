@@ -1,0 +1,29 @@
+// Test class inheritance in Tau
+
+class BaseClass
+{
+    int baseProperty;
+    string baseString;
+    
+    void BaseMethod();
+    int GetBaseProperty();
+}
+
+class DerivedClass
+{
+    int derivedProperty;
+    float derivedFloat;
+    
+    void DerivedMethod();
+    float ComputeValue();
+    
+    // Override base method
+    void BaseMethod();
+}
+
+class FurtherDerived
+{
+    string additionalData;
+    
+    string GetFullData();
+}

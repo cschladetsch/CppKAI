@@ -5,10 +5,8 @@
 KAI_BEGIN
 
 // A token in the Hlsl language
-struct HlslTokenEnumType
-{
-    enum Enum
-    {
+struct HlslTokenEnumType {
+    enum Enum {
         None = 0,
         Whitespace,
         Semi,
@@ -198,16 +196,11 @@ struct HlslTokenEnumType
 
     };
 
-    struct Type : TokenBase<HlslTokenEnumType>
-    {
-        Type()
-        {
-        }
+    struct Type : TokenBase<HlslTokenEnumType> {
+        Type() {}
 
         Type(Enum val, const LexerBase& lexer, int ln, Slice slice)
-            : TokenBase<HlslTokenEnumType>(val, lexer, ln, slice)
-        {
-        }
+            : TokenBase<HlslTokenEnumType>(val, lexer, ln, slice) {}
     };
 
     static const char* ToString(Enum val);

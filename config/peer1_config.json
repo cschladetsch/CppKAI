@@ -1,0 +1,10 @@
+{
+    "listenPort": 14595,
+    "autoListen": true,
+    "interactive": true,
+    "peers": [],
+    "commands": {
+        "add": "calc 1+2",
+        "hello": "echo Hello from peer1"
+    }
+}

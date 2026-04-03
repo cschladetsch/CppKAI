@@ -2,7 +2,7 @@
 
 // This is the basis for the language-agnostic execution system.
 //
-// There is one Translator<> type, that uses a combination of 
+// There is one Translator<> type, that uses a combination of
 // each of these other templates to transform a text string
 // into an executable stream for an Executor.
 //
@@ -21,7 +21,7 @@ class TokenBase;
 template <class Token>
 class LexerCommon;
 
-// a node in the AST tree given the AST type
+// a node in the AST tree_ given the AST type
 // TODO: rename to AstCommon. Current tools make this hard.
 template <class AstEnum>
 class NodeBase;

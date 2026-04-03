@@ -1,0 +1,53 @@
+KAI Console v0.3.0
+Built on Feb  5 2026 at 03:16:24
+Type 'help' for available commands.
+
+Pi λ # Test 11: Command with pipes and closing backtick
+Pi λ `ls -la | head -3`
+total 13672
+drwxr-xr-x 20 christian christian     4096 Feb  5 02:45 .
+drwxr-xr-x 56 christian christian     4096 Feb  3 10:30 ..
+Pi λ 
+Pi λ # Test 12: Command with pipes without closing backtick
+Pi λ `ls -la | head -3
+total 13672
+drwxr-xr-x 20 christian christian     4096 Feb  5 02:45 .
+drwxr-xr-x 56 christian christian     4096 Feb  3 10:30 ..
+Pi λ 
+Pi λ # Test 13: Command with nested command substitution and closing backtick
+Pi λ `echo "Current directory: $(pwd)"`
+Current directory: /home/christian/local/repos/KAI
+Pi λ 
+Pi λ # Test 14: Command with nested command substitution without closing backtick
+Pi λ `echo "Current directory: $(pwd)"
+Current directory: /home/christian/local/repos/KAI
+Pi λ 
+Pi λ # Test 15: Multi-word echo with quotes and closing backtick
+Exception: [Pathname.cpp:78] InvalidPathname: text=Multi-word
+Pi λ `echo "This is a test with multiple words"`
+This is a test with multiple words
+Pi λ 
+Pi λ # Test 16: Multi-word echo with quotes without closing backtick
+Exception: [Pathname.cpp:78] InvalidPathname: text=Multi-word
+Pi λ `echo "This is a test with multiple words"
+This is a test with multiple words
+Pi λ 
+Pi λ # Test 17: Command with environment variable and closing backtick
+Pi λ `echo "User: $USER"`
+User: christian
+Pi λ 
+Pi λ # Test 18: Command with environment variable without closing backtick
+Pi λ `echo "User: $USER"
+User: christian
+Pi λ 
+Pi λ # Test 19: Complex ls command with options and closing backtick
+Pi λ `ls -la /tmp | grep -v "^d" | head -2`
+total 44196
+-rw-------   1 christian christian   91970 Nov 17 01:19 .p10k.zsh.5C7DA1ou9h
+Pi λ 
+Pi λ # Test 20: Complex ls command with options without closing backtick
+Pi λ `ls -la /tmp | grep -v "^d" | head -2
+total 44196
+-rw-------   1 christian christian   91970 Nov 17 01:19 .p10k.zsh.5C7DA1ou9h
+Pi λ exit
+Pi λ 

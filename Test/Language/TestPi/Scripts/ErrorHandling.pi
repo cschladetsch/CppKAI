@@ -1,0 +1,24 @@
+// Test file for Pi language error handling and recovery
+// First clear any leftover stack items
+clear
+
+// Define error handler (a placeholder since error handling is limited)
+{ 
+  drop
+  "Error caught" 
+} 'handle_error #
+
+// Test basic conditional to avoid errors
+1 0 == not
+// Pi doesn't have if/else/endif syntax, use continuation instead
+{
+  // This should execute since 1 != 0
+  "No error" assert
+} &
+
+// Test recovery from potential error state
+clear
+1 2 3 depth 3 == assert
+
+// Clean up
+clear

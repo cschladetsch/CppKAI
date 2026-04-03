@@ -1,0 +1,47 @@
+// Test for Rho string operations
+
+// Basic string concatenation
+a = "Hello"
+b = " World"
+c = a + b
+assert c == "Hello World"
+
+// String with numbers
+d = "The answer is " + 42
+assert d == "The answer is 42"
+
+// String comparisons
+assert "abc" == "abc"
+assert "abc" != "def"
+assert "abc" + "def" == "abcdef"
+
+// Empty string
+empty = ""
+assert empty + "not empty" == "not empty"
+
+// String as boolean
+if "non-empty string"
+    result = true
+else
+    result = false
+assert result == true
+
+if ""
+    result = true
+else
+    result = false
+assert result == false
+
+// String repetition if supported
+// s = "a" * 3
+// assert s == "aaa"
+
+// Function returning a string
+greeting = fun(name)
+    return "Hello, " + name + "!"
+assert greeting("Alice") == "Hello, Alice!"
+
+// Function with multiple string operations
+formatName = fun(first, last)
+    return last + ", " + first
+assert formatName("John", "Doe") == "Doe, John"

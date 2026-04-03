@@ -1,0 +1,21 @@
+// EnableDiagnostics.rho
+// This script enables diagnostic tracing for Rho language features
+
+// First check if RhoDiagnostics is available
+try {
+    // Try to enable RhoDiagnostics at Verbose level
+    RhoDiagnostics::SetTraceLevel(RhoDiagnostics::TraceLevel::Verbose)
+    print("RhoDiagnostics enabled at Verbose level")
+}
+catch (e) {
+    print("WARNING: RhoDiagnostics is not available. Diagnostics will be limited.")
+    print("Error: " + e)
+}
+
+// Set executor trace level to maximum
+_exec.SetTraceLevel(5)
+print("Executor trace level set to 5")
+
+// Return success
+print("Diagnostic setup complete")
+true

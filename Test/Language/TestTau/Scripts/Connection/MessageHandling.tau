@@ -1,0 +1,70 @@
+// Message handling interfaces and classes for testing
+
+namespace KAI { namespace Network { namespace Messaging
+{
+    // Message types
+    enum MessageType
+    {
+        ObjectMessage = 0,
+        FunctionCall = 1,
+        EventNotification = 2,
+        SystemMessage = 3,
+        CustomMessage = 4
+    }
+    
+    // Message header
+    struct MessageHeader 
+    {
+        MessageType type;
+        int messageId;
+        int sourceId;
+        int targetId;
+        int64 timestamp;
+        bool requiresResponse = false;
+    }
+    
+    // Message base interface
+    interface IMessage
+    {
+        MessageHeader GetHeader();
+        bytes Serialize();
+        void Deserialize(bytes data);
+    }
+    
+    // Object message
+    struct ObjectMessage 
+    {
+        MessageHeader header;
+        string typeName;
+        Object data;
+    }
+    
+    // Function call message
+    struct FunctionCallMessage
+    {
+        MessageHeader header;
+        string functionName;
+        Object[] parameters;
+        string returnType;
+    }
+    
+    // Event notification message
+    struct EventMessage
+    {
+        MessageHeader header;
+        string eventName;
+        Object eventData;
+    }
+    
+    // Message handler interface
+    interface IMessageHandler
+    {
+        void RegisterMessageProcessor(MessageType type, callback processor);
+        void ProcessMessage(bytes messageData);
+        void SendMessage(IMessage message, SystemAddress target);
+        void BroadcastMessage(IMessage message);
+        
+        // Events
+        event MessageProcessed(MessageHeader header, bool success);
+    }
+}}}

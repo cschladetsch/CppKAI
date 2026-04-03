@@ -1,0 +1,230 @@
+// ForLoopEdgeCases.rho
+// Tests edge cases for semicolon usage in for loops in the Rho language
+
+// Enable debug tracing
+print("Testing for loop edge cases with semicolons")
+setTraceLevel(3)
+
+// Initialize test metrics
+test_count = 0
+pass_count = 0
+fail_count = 0
+
+// Helper function to run and verify a test
+run_test = fun(name, test_func, expected) {
+    test_count = test_count + 1
+    print("\nTest " + test_count + ": " + name)
+    
+    try {
+        result = test_func()
+        passed = result == expected
+        
+        if (passed) {
+            pass_count = pass_count + 1
+            print("  ✅ PASSED: Got expected result: " + result)
+        } else {
+            fail_count = fail_count + 1
+            print("  ❌ FAILED: Expected " + expected + " but got " + result)
+        }
+        
+        return passed
+    } catch (error) {
+        fail_count = fail_count + 1
+        print("  ❌ FAILED with exception: " + error)
+        return false
+    }
+}
+
+// =============================================================================
+// TEST 1: Whitespace around semicolons
+// =============================================================================
+test_semicolon_whitespace = fun() {
+    count = 0
+    
+    // Test various whitespace around semicolons
+    for (i = 0 ; i < 3 ; i = i + 1) {
+        count = count + 1
+    }
+    
+    return count
+}
+
+run_test("Whitespace around semicolons", test_semicolon_whitespace, 3)
+
+// =============================================================================
+// TEST 2: Expressions with internal semicolons
+// =============================================================================
+test_internal_semicolons = fun() {
+    result = 0
+    
+    // Function with a semicolon in it
+    complex_func = fun() {
+        x = 5; 
+        return x
+    }
+    
+    // For loop with function calls that contain semicolons
+    for (i = complex_func(); i > 0; i = i - 1) {
+        result = result + i
+    }
+    
+    return result  // 5+4+3+2+1 = 15
+}
+
+run_test("Expressions with internal semicolons", test_internal_semicolons, 15)
+
+// =============================================================================
+// TEST 3: Newlines between for loop sections
+// =============================================================================
+test_newline_sections = fun() {
+    sum = 0
+    
+    // For loop with newlines between sections, but semicolons still used
+    for (
+        i = 0; 
+        i < 5; 
+        i = i + 1
+    ) {
+        sum = sum + i
+    }
+    
+    return sum  // 0+1+2+3+4 = 10
+}
+
+run_test("Newlines between sections", test_newline_sections, 10)
+
+// =============================================================================
+// TEST 4: Multiple statements in increment section
+// =============================================================================
+test_multiple_statements = fun() {
+    results = []
+    
+    // Multiple increments with comma separator
+    for (i = 0, j = 10; i < 3; i = i + 1, j = j - 2) {
+        results.append([i, j])
+    }
+    
+    // Check the final values
+    // Should be [0,10], [1,8], [2,6]
+    return results[2][1]  // Should be 6
+}
+
+run_test("Multiple statements in increment", test_multiple_statements, 6)
+
+// =============================================================================
+// TEST 5: Empty body for loop
+// =============================================================================
+test_empty_body = fun() {
+    count = 0
+    
+    // Empty body for loop (use semicolon directly after close paren)
+    for (count = 0; count < 5; count = count + 1);
+    
+    return count  // Should be 5 after the loop completes
+}
+
+run_test("Empty body for loop", test_empty_body, 5)
+
+// =============================================================================
+// TEST 6: Conditional break/continue with semicolons
+// =============================================================================
+test_conditional_break = fun() {
+    sum = 0
+    
+    // For loop with conditional break that contains semicolons
+    for (i = 0; i < 10; i = i + 1) {
+        if (i > 5) { break; }  // Semicolon after inner statement
+        sum = sum + i
+    }
+    
+    return sum  // 0+1+2+3+4+5 = 15
+}
+
+run_test("Conditional break with semicolons", test_conditional_break, 15)
+
+// =============================================================================
+// TEST 7: Nested for loops with shared variables
+// =============================================================================
+test_nested_shared_vars = fun() {
+    sum = 0
+    
+    // Nested for loops sharing the same counter variable
+    for (i = 0; i < 3; i = i + 1) {
+        for (i = 0; i < 2; i = i + 1) {
+            sum = sum + 1
+        }
+    }
+    
+    // This should execute the inner loop 3 times, each with 2 iterations
+    return sum  // Should be 6 (2 iterations × 3 outer loops)
+}
+
+run_test("Nested for loops with shared variables", test_nested_shared_vars, 6)
+
+// =============================================================================
+// TEST 8: For loop with variable declaration in initialization
+// =============================================================================
+test_var_declaration = fun() {
+    sum = 0
+    
+    // Declare variable in the initialization section
+    for (var = 1; var <= 3; var = var + 1) {
+        sum = sum + var
+    }
+    
+    return sum  // 1+2+3 = 6
+}
+
+run_test("Variable declaration in initialization", test_var_declaration, 6)
+
+// =============================================================================
+// TEST 9: For loop with comma operator in all sections
+// =============================================================================
+test_comma_all_sections = fun() {
+    results = []
+    
+    // Using comma operators in all for sections
+    for (i = 0, j = 5; i < 3, j > 2; i = i + 1, j = j - 1) {
+        results.append([i, j])
+    }
+    
+    // Should create pairs: [0,5], [1,4], [2,3]
+    // Then stop because j > 2 becomes false
+    return results.size()  // Should be 3 pairs
+}
+
+run_test("Comma operator in all sections", test_comma_all_sections, 3)
+
+// =============================================================================
+// TEST 10: For loop with external increment
+// =============================================================================
+test_external_increment = fun() {
+    values = []
+    
+    // Increment happens in the loop body instead of the for statement
+    for (i = 0; i < 3; ) {
+        values.append(i)
+        i = i + 1
+    }
+    
+    // Should contain [0, 1, 2]
+    return values.size()  // Should be 3 values
+}
+
+run_test("External increment", test_external_increment, 3)
+
+// =============================================================================
+// Print final results
+// =============================================================================
+print("\n==== FOR LOOP EDGE CASE TEST RESULTS ====")
+print("Total tests: " + test_count)
+print("Passed: " + pass_count)
+print("Failed: " + fail_count)
+
+if (fail_count == 0) {
+    print("\nAll for loop edge case tests passed successfully! ✅")
+} else {
+    print("\nSome tests failed. Please check the output for details. ❌")
+}
+
+print("\nFor loop edge case tests completed")

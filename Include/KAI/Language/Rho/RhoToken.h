@@ -5,10 +5,8 @@
 KAI_BEGIN
 
 // A token in the Rho language
-struct RhoTokenEnumType
-{
-    enum Enum
-    {
+struct RhoTokenEnumType {
+    enum Enum {
         None = 0,
         Whitespace = 1,
         Semi = 2,
@@ -18,19 +16,17 @@ struct RhoTokenEnumType
         True = 6,
         False = 7,
         Return = 8,
-        Ident = 9,
+        Label = 9,  // Renamed from Ident for consistency
         Dot = 10,
         Comma = 11,
         If = 12,
         Else = 13,
-        For = 14,
-        While = 15,
         OpenBrace = 16,
         CloseBrace = 17,
         OpenParan = 18,
         CloseParan = 19,
         Plus = 20,
-        Minus  = 21,
+        Minus = 21,
         Mul = 22,
         Divide = 23,
         Assign = 24,
@@ -51,13 +47,16 @@ struct RhoTokenEnumType
         BitAnd = 39,
         BitOr = 40,
         BitXor = 41,
+        BitNot = 81,
+        LeftShift = 82,
+        RightShift = 83,
         Self = 42,
         Lookup = 43,
         Tab = 44,
         NewLine = 45,
         Fun = 46,
         Comment = 47,
-        Yield  = 48,
+        Yield = 48,
         Suspend = 49,
         Replace = 50,
         Resume = 51,
@@ -65,7 +64,6 @@ struct RhoTokenEnumType
         MinusAssign = 61,
         MulAssign = 62,
         DivAssign = 63,
-        In = 64,
         Assert = 65,
         ToPi = 66,
         PiSequence = 67,
@@ -73,14 +71,27 @@ struct RhoTokenEnumType
         Debug = 69,
         Quote = 70,
         Sep = 71,
+        AcrossAllNodes = 72,
+        Mod = 73,
+        Colon = 74,
+        Question = 88,
+        ModAssign = 75,
+        DoubleColon = 76,
+        While = 77,
+        For = 78,
+        DoWhile = 79,
+        ForEach = 80,
+        Break = 84,
+        Continue = 85,
+        ShellCommand = 86,  // shell command wrapped in backticks `command`
+        In = 87,  // 'in' keyword for iterator-style for loops
     };
 
-    struct Type : TokenBase<RhoTokenEnumType>
-    {
-        Type() { }
+    struct Type : TokenBase<RhoTokenEnumType> {
+        Type() {}
 
-        Type(Enum val, const LexerBase &lexer, int ln, Slice slice) 
-            : TokenBase<RhoTokenEnumType>(val, lexer, ln, slice) { }
+        Type(Enum val, const LexerBase &lexer, int ln, Slice slice)
+            : TokenBase<RhoTokenEnumType>(val, lexer, ln, slice) {}
     };
 
     static const char *ToString(Enum val);

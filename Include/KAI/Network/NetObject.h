@@ -5,16 +5,12 @@
 
 KAI_NET_BEGIN
 
-struct NetObject : Object
-{
-	NetHandle _netHandle;
-	Domain *_domain;
+struct NetObject : Object {
+    NetHandle netHandle_;
+    Domain *domain_;
 
-public:
-	NetHandle GetNetHandle() const;
+   public:
+    NetHandle GetNetHandle() const;
 };
 
 KAI_NET_END
-
-
-

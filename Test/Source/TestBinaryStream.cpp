@@ -3,8 +3,7 @@
 using namespace kai;
 using namespace std;
 
-TEST(TestBinaryStream, Builtins)
-{
+TEST(TestBinaryStream, Builtins) {
     BinaryStream S;
 
     S << 42;
@@ -26,8 +25,7 @@ TEST(TestBinaryStream, Builtins)
     EXPECT_EQ(T, "Hello, world");
 }
 
-TEST(TestBinaryStream, TestObject)
-{
+TEST(TestBinaryStream, TestObject) {
     Registry R;
     R.AddClass<int>();
 
@@ -57,8 +55,7 @@ TEST(TestBinaryStream, TestObject)
     EXPECT_EQ(ConstDeref<int>(M.Get(lab)), 123);
 }
 
-TEST(TestBinaryStream, TestArray)
-{
+TEST(TestBinaryStream, TestArray) {
     Registry R;
     R.AddClass<Array>();
     R.AddClass<int>();
@@ -86,8 +83,7 @@ TEST(TestBinaryStream, TestArray)
     EXPECT_EQ(ConstDeref<int>(B.At(3)), 3);
 }
 
-struct TestPropertiesStruct
-{
+struct TestPropertiesStruct {
     int num;
     String str;
     bool foo;
@@ -99,25 +95,20 @@ KAI_TYPE_TRAITS(TestPropertiesStruct, 555, 0);
 
 KAI_END
 
-
-TEST(TestBinaryStream, TestProperties)
-{
+TEST(TestBinaryStream, TestProperties) {
     Registry R;
     R.AddClass<void>();
     R.AddClass<int>();
     R.AddClass<bool>();
     R.AddClass<String>();
     ClassBuilder<TestPropertiesStruct>(R, "TestPropertiesStruct")
-        .Methods
-        .Properties
-        ("num", &TestPropertiesStruct::num)
-        ("str", &TestPropertiesStruct::str)
-        ("foo", &TestPropertiesStruct::foo)
-        ;
+        .Methods.Properties("num", &TestPropertiesStruct::num)(
+            "str", &TestPropertiesStruct::str)("foo",
+                                               &TestPropertiesStruct::foo);
     Pointer<TestPropertiesStruct> tps = R.New<TestPropertiesStruct>();
     tps->num = 42;
     tps->str = "hello";
-    //tps->foo = R.New<TestPropertiesStruct>();
+    // tps->foo = R.New<TestPropertiesStruct>();
     tps->foo = true;
     KAI_TRACE_1(tps);
 
@@ -132,12 +123,11 @@ TEST(TestBinaryStream, TestProperties)
     ASSERT_TRUE(result.IsType<TestPropertiesStruct>());
     EXPECT_EQ(ConstDeref<int>(result.Get(Label("num"))), 42);
     EXPECT_STREQ(ConstDeref<String>(result.Get(Label("str"))).c_str(), "hello");
-    //ASSERT_TRUE(result.Get("foo").IsType<TestPropertiesStruct>());
+    // ASSERT_TRUE(result.Get("foo").IsType<TestPropertiesStruct>());
     ASSERT_TRUE(result.Get("foo").IsType<bool>());
 }
 
-TEST(TestBinaryStream, TestList)
-{
+TEST(TestBinaryStream, TestList) {
     Registry R;
     List::Register(R);
     R.AddClass<void>();
@@ -172,15 +162,8 @@ TEST(TestBinaryStream, TestList)
     EXPECT_EQ(ConstDeref<List>(result_list).Size(), 0);
 }
 
-TEST(TestBinaryStream, TestMap)
-{
-}
+TEST(TestBinaryStream, TestMap) {}
 
-TEST(TestBinaryStream, TestSet)
-{
-}
+TEST(TestBinaryStream, TestSet) {}
 
-TEST(TestBinaryStream, TestStreams)
-{
-}
-
+TEST(TestBinaryStream, TestStreams) {}

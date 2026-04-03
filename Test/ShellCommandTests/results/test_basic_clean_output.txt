@@ -1,0 +1,118 @@
+KAI Console v0.3.0
+Built on Feb  5 2026 at 03:16:24
+Type 'help' for available commands.
+
+Pi λ `pwd`
+/home/christian/local/repos/KAI
+Pi λ `pwd
+/home/christian/local/repos/KAI
+Pi λ `echo "Hello World"`
+Hello World
+Pi λ `echo "Hello World"
+Hello World
+Pi λ `whoami`
+christian
+Pi λ `whoami
+christian
+Pi λ `date`
+Thu Feb  5 03:40:28 AEDT 2026
+Pi λ `date
+Thu Feb  5 03:40:28 AEDT 2026
+Pi λ `ls`
+Bin
+CLAUDE.md
+CMake
+CMakeCache.txt
+CMakeFiles
+CMakeLists.txt
+CMakeLists.txt.in
+CMakeSettings.json
+COMPARE_RUST.md
+CONSOLE_NETWORKING.md
+Doc
+Examples
+Ext
+Images
+Include
+LICENSE
+Logs
+Makefile
+PROJECT_ANALYSIS.md
+README.md
+REVIEW.md
+Scripts
+Source
+TEST_BASELINE_REPORT.md
+TEST_SUMMARY.md
+TODO.md
+Test
+Testing
+Window
+_config.yml
+appveyor.yml
+architecture.dot
+architecture.png
+b
+build
+cmake_install.cmake
+config
+ctest_output.txt
+demo_console_communication.sh
+demo_network.sh
+r
+resources
+run_all_tests.sh
+test.graph
+test_detail.xml
+testpi.xml
+tidy
+Pi λ `ls
+Bin
+CLAUDE.md
+CMake
+CMakeCache.txt
+CMakeFiles
+CMakeLists.txt
+CMakeLists.txt.in
+CMakeSettings.json
+COMPARE_RUST.md
+CONSOLE_NETWORKING.md
+Doc
+Examples
+Ext
+Images
+Include
+LICENSE
+Logs
+Makefile
+PROJECT_ANALYSIS.md
+README.md
+REVIEW.md
+Scripts
+Source
+TEST_BASELINE_REPORT.md
+TEST_SUMMARY.md
+TODO.md
+Test
+Testing
+Window
+_config.yml
+appveyor.yml
+architecture.dot
+architecture.png
+b
+build
+cmake_install.cmake
+config
+ctest_output.txt
+demo_console_communication.sh
+demo_network.sh
+r
+resources
+run_all_tests.sh
+test.graph
+test_detail.xml
+testpi.xml
+tidy
+Pi λ exit
+Pi λ 

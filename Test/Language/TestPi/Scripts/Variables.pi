@@ -1,0 +1,39 @@
+// Test file for Pi language variables and scoping
+// First clear any leftover stack items
+clear
+
+// Test basic variable assignment and retrieval
+42 'answer #
+answer 42 == assert
+
+// Test variable reassignment
+10 'x #
+x 10 == assert
+20 'x #
+x 20 == assert
+
+// Test using variables in expressions
+5 'a #
+10 'b #
+a b + 15 == assert
+
+// Test variable scoping
+{ 
+  // Local variable that shouldn't affect outer scope
+  99 'local #
+  local 99 == assert
+} &
+
+// Verify local variable isn't available outside its scope
+'local exists not assert
+
+// Test function-like variables
+{ 1 2 + } 'add3 #
+3 add3 & + 6 == assert
+
+// Test variables as arguments to continuations
+{ 'n # n n * } 'square #
+5 square & 25 == assert
+
+// Clean up
+clear

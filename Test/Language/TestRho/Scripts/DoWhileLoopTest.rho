@@ -1,0 +1,42 @@
+// Test file for do-while loops in the Rho language
+
+// Initialize variables
+print("Testing basic do-while loop")
+i = 0
+sum = 0
+
+// Basic do-while loop with braces
+do {
+    print("Iteration " + i)
+    sum = sum + i
+    i = i + 1
+} while (i < 5)
+
+print("Sum should be 10: " + sum)
+
+// Test a do-while loop that runs once even with a false condition
+print("Testing do-while with initially false condition")
+x = 10
+result = ""
+
+do {
+    result = result + x + " "
+    x = x - 1
+} while (x > 10)
+
+print("Result should show only '10 ': " + result)
+print("x should be 9: " + x)
+
+// Another do-while example with multiple iterations
+print("Testing multi-iteration do-while")
+counter = 5
+output = ""
+
+do {
+    output = output + counter + " "
+    counter = counter - 1
+} while (counter > 0)
+
+print("Output should be '5 4 3 2 1 ': " + output)
+
+print("Do-while loop tests complete")

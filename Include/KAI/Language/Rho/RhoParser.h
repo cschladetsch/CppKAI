@@ -7,51 +7,58 @@
 KAI_BEGIN
 
 // parser specific to the in-fix Rho language
-class RhoParser : public ParserCommon<RhoLexer, RhoAstNodeEnumType>
-{
-public:
+class RhoParser : public ParserCommon<RhoLexer, RhoAstNodeEnumType> {
+   public:
     typedef ParserCommon<RhoLexer, RhoAstNodeEnumType> Parent;
-    using typename Parent::TokenEnum;
-    using typename Parent::TokenNode;
-    using typename Parent::Lexer;
     using typename Parent::AstNode;
     using typename Parent::AstNodePtr;
+    using typename Parent::Lexer;
+    using typename Parent::TokenEnum;
+    using typename Parent::TokenNode;
 
-    typedef RhoAstNodeEnumType NodeType; 
+    typedef RhoAstNodeEnumType NodeType;
     typedef RhoTokenEnumType TokenType;
 
-    RhoParser(Registry &r) : Parent(r) { }
+    RhoParser(Registry &r) : Parent(r) {}
+    virtual ~RhoParser() = default;
 
     virtual bool Process(std::shared_ptr<Lexer> lex, Structure st) override;
     String Print() const;
 
-protected:
+   protected:
     void Process(Structure);
 
-private:
+   private:
     bool Run(Structure st);
     bool Program();
     bool Statement(AstNodePtr);
     bool Expression();
     bool Logical();
+    bool Bitwise();
     bool Relational();
+    bool Shift();
     bool Additive();
     bool Term();
     bool Factor();
-    void ConsumeNewLines();
-    void Block(AstNodePtr block);
+    bool ConsumeNewLines();
+    bool Block(AstNodePtr block);
     bool ParsePathname();
     bool ParsePathname(AstNodePtr path);
     bool ParseFactorIdent();
-    void ParseGetMember();
-    void ParseMethodCall();
-    void Function(AstNodePtr);
-    void AddBlock(AstNodePtr fun);
-    void IfCondition(AstNodePtr);
-    void ParseIndexOp();
-    void Assignment(AstNodePtr);
-    void For(AstNodePtr);
-    void While(AstNodePtr);
+    bool ParseGetMember();
+    bool ParseMethodCall();
+    bool AddBlock(AstNodePtr fun);
+    bool IfCondition(AstNodePtr);
+    bool WhileLoop(AstNodePtr);
+    bool DoWhileLoop(AstNodePtr);
+    bool ForLoop(AstNodePtr);
+    bool ForEachLoop(AstNodePtr);
+    bool ParseIndexOp();
+    bool Assignment(AstNodePtr);
+    bool FunctionDefinition(AstNodePtr);
+
+    // Helper methods
+    void ConsumeWhitespace();
 
     bool CreateError(const char *);
 };

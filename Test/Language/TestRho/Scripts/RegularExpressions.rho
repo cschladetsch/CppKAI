@@ -1,0 +1,51 @@
+// Test for Rho regular expressions (if supported)
+
+// Note: This test assumes Rho has regex support.
+// If it doesn't, it can be marked as a WIP (Work In Progress) script.
+
+// Simple pattern matching
+function isValidEmail = email
+    // Basic email regex pattern
+    pattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+    return regex_match(email, pattern)
+
+assert isValidEmail("user@example.com") == true
+assert isValidEmail("invalid-email") == false
+
+// String extraction with regex
+function extractDomain = email
+    pattern = "@([a-zA-Z0-9.-]+\\.[a-zA-Z]{2,})"
+    matches = regex_extract(email, pattern)
+    if length(matches) > 0
+        return matches[0]
+    else
+        return "No domain found"
+
+assert extractDomain("user@example.com") == "example.com"
+assert extractDomain("invalid-email") == "No domain found"
+
+// String replacement with regex
+function maskPhoneNumber = phone
+    pattern = "(\\d{3})(\\d{3})(\\d{4})"
+    return regex_replace(phone, pattern, "$1-***-$3")
+
+assert maskPhoneNumber("1234567890") == "123-***-7890"
+
+// Complex pattern matching
+function isValidPassword = password
+    // Password must be 8+ chars with at least one lowercase, uppercase, number, and special char
+    pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*])[A-Za-z\\d!@#$%^&*]{8,}$"
+    return regex_match(password, pattern)
+
+assert isValidPassword("Password123!") == true
+assert isValidPassword("weak") == false
+assert isValidPassword("NoSpecialChar123") == false
+
+// String splitting with regex
+function splitCSV = csv
+    return regex_split(csv, ",\\s*")
+
+result = splitCSV("apple, banana, cherry")
+assert result[0] == "apple"
+assert result[1] == "banana"
+assert result[2] == "cherry"

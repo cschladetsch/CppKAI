@@ -5,10 +5,8 @@
 
 KAI_BEGIN
 
-struct HlslAstNodeEnumType
-{
-    enum Enum : int
-    {
+struct HlslAstNodeEnumType {
+    enum Enum : int {
         None = 0,
         Program = 1,
         Ident = 2,
@@ -36,7 +34,7 @@ struct HlslAstNodeEnumType
         Less = 24,
         Equiv = 25,
         NotEquiv = 26,
-        Greater= 27,
+        Greater = 27,
         Object = 28,
         Continuation = 29,
         Pathname = 30,
@@ -44,16 +42,15 @@ struct HlslAstNodeEnumType
         Declaration,
     };
 
-    struct Node : AstNodeBase<HlslToken, HlslAstNodeEnumType>
-    {
+    struct Node : AstNodeBase<HlslToken, HlslAstNodeEnumType> {
         typedef AstNodeBase<HlslToken, HlslAstNodeEnumType> Parent;
         using typename Parent::Token;
         KAI_NAMESPACE(Object) object;
 
-        Node() : Parent(Enum::None) {  }
-        Node(Enum e) : Parent(e) { }
-        Node(Enum e, Token &tok) : Parent(e, tok) { }
-        Node(Parent::Token tok) : Parent(tok) { }
+        Node() : Parent(Enum::None) {}
+        Node(Enum e) : Parent(e) {}
+        Node(Enum e, Token &tok) : Parent(e, tok) {}
+        Node(Parent::Token tok) : Parent(tok) {}
     };
 
     static const char *ToString(Enum val);

@@ -5,9 +5,8 @@
 
 KAI_BEGIN
 
-class HlslTranslator : public TranslatorBase<HlslParser>
-{
-public:
+class HlslTranslator : public TranslatorBase<HlslParser> {
+   public:
     typedef TranslatorBase<HlslParser> Parent;
     typedef typename Parent::Parser Parser;
     typedef typename Parent::TokenNode TokenNode;
@@ -17,13 +16,13 @@ public:
     typedef typename Parent::AstNodePtr AstNodePtr;
 
     HlslTranslator(const HlslTranslator&) = delete;
-    HlslTranslator(Registry &r) : Parent(r) { }
+    HlslTranslator(Registry& r) : Parent(r) {}
 
-protected:
+   protected:
     virtual void TranslateNode(AstNodePtr node) override;
-    using Parent::_reg;
+    using Parent::reg_;
 
-private:
+   private:
     void TranslateToken(AstNodePtr node);
     void TranslateFunction(const AstNodePtr& node);
     void TranslateBlock(const AstNodePtr& node);

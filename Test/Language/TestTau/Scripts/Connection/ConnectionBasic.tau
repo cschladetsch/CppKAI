@@ -1,0 +1,66 @@
+// Basic connection interfaces and classes for testing
+
+namespace KAI { namespace Network
+{
+    // Connection state enum
+    enum ConnectionState 
+    {
+        Disconnected = 0,
+        Connecting = 1,
+        Connected = 2,
+        Failed = 3
+    }
+    
+    // Connection event enum
+    enum ConnectionEvent
+    {
+        Connected = 0,
+        Disconnected = 1,
+        ConnectionFailed = 2,
+        ConnectionLost = 3,
+        Timeout = 4
+    }
+    
+    // System address representation
+    struct SystemAddress
+    {
+        string ip;
+        int port;
+    }
+    
+    // Connection info structure
+    struct ConnectionInfo
+    {
+        SystemAddress address;
+        ConnectionState state = ConnectionState.Disconnected;
+        int64 lastActivity = 0;
+        int ping = 0;
+    }
+    
+    // Connection manager interface
+    interface IConnectionManager
+    {
+        // Add and remove connections
+        int AddConnection(SystemAddress address);
+        void RemoveConnection(int id);
+        void RemoveConnectionByAddress(SystemAddress address);
+        
+        // Connection state management
+        ConnectionState GetConnectionState(int id);
+        void SetConnectionState(int id, ConnectionState state);
+        
+        // Connection monitoring
+        void Update();
+        void UpdateActivity(int id);
+        int GetPing(int id);
+        SystemAddress GetSystemAddress(int id);
+        int GetConnectionCount();
+        bool IsConnected(int id);
+        
+        // Timeout management
+        void SetConnectionTimeout(int timeout);
+        
+        // Event handling
+        event ConnectionStatusChanged(int id, ConnectionEvent event);
+    }
+}}
