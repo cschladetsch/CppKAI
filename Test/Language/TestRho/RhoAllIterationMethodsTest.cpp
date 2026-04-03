@@ -1175,9 +1175,62 @@ sum
 )", 1 + 8 + 27, "Function_CallInForLoopRange");  // 36
 }
 
+// Diagnostic: sum_list called directly, no outer foreach
+TEST_F(RhoAllIterationMethodsTest, Debug_SumListAlone) {
+    RunAndExpect<int>(R"(
+fun sum_list(lst)
+    s = 0
+    for x in lst
+        s = s + x
+    s
+sum_list([1,2])
+)", 3, "Debug_SumListAlone");
+}
+
+// Diagnostic: store sum_list result then read it
+TEST_F(RhoAllIterationMethodsTest, Debug_StoreAndRetrieve) {
+    RunAndExpect<int>(R"(
+fun sum_list(lst)
+    s = 0
+    for x in lst
+        s = s + x
+    s
+total = sum_list([1,2])
+total
+)", 3, "Debug_StoreAndRetrieve");
+}
+
+// Diagnostic: call sum_list twice, add results
+TEST_F(RhoAllIterationMethodsTest, Debug_TwoIndependentCalls) {
+    RunAndExpect<int>(R"(
+fun sum_list(lst)
+    s = 0
+    for x in lst
+        s = s + x
+    s
+r1 = sum_list([1,2])
+r2 = sum_list([3,4])
+r1 + r2
+)", 10, "Debug_TwoIndependentCalls");
+}
+
+// Diagnostic: sum_list called twice sequentially
+TEST_F(RhoAllIterationMethodsTest, Debug_SumListTwice) {
+    RunAndExpect<int>(R"(
+fun sum_list(lst)
+    s = 0
+    for x in lst
+        s = s + x
+    s
+total = sum_list([1,2])
+total = total + sum_list([3,4])
+total
+)", 10, "Debug_SumListTwice");
+}
+
 TEST_F(RhoAllIterationMethodsTest, Function_CallInForEachNested) {
     RunAndExpect<int>(R"(
-fun sum_list(lst) 
+fun sum_list(lst)
     s = 0
     for x in lst
         s = s + x
@@ -1288,6 +1341,33 @@ for y in mapped
     result = reduce_sum(result, y)
 result
 )", 12, "Function_CallInMapReduce");  // 2+4+6
+}
+
+TEST_F(RhoAllIterationMethodsTest, Debug_AndOperator_2mod2) {
+    // 2 % 2 == 0 should be true; verify and works with two bools
+    RunAndExpect<bool>(R"(
+fun even_pos(x) { x > 0 and x % 2 == 0 }
+even_pos(2)
+)", true, "Debug_AndOperator_2mod2");
+}
+
+TEST_F(RhoAllIterationMethodsTest, Debug_Modulo2) {
+    // 2 % 2 should be 0
+    RunAndExpect<int>(R"(
+2 % 2
+)", 0, "Debug_Modulo2");
+}
+
+TEST_F(RhoAllIterationMethodsTest, Debug_CondInLoop) {
+    // Test calling a function with and inside a for loop
+    RunAndExpect<int>(R"(
+fun even_pos(x) { x > 0 and x % 2 == 0 }
+sum = 0
+for v in [1, 2, 3, 4]
+    if even_pos(v)
+        sum = sum + v
+sum
+)", 2 + 4, "Debug_CondInLoop");
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInComplexConditionals) {

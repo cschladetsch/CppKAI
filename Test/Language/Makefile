@@ -1025,6 +1025,30 @@ TestRho/AdvancedBinaryOpTests.cpp.s:
 	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/AdvancedBinaryOpTests.cpp.s
 .PHONY : TestRho/AdvancedBinaryOpTests.cpp.s
 
+TestRho/AdvancedForLoopTests.o: TestRho/AdvancedForLoopTests.cpp.o
+.PHONY : TestRho/AdvancedForLoopTests.o
+
+# target to build an object file
+TestRho/AdvancedForLoopTests.cpp.o:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/AdvancedForLoopTests.cpp.o
+.PHONY : TestRho/AdvancedForLoopTests.cpp.o
+
+TestRho/AdvancedForLoopTests.i: TestRho/AdvancedForLoopTests.cpp.i
+.PHONY : TestRho/AdvancedForLoopTests.i
+
+# target to preprocess a source file
+TestRho/AdvancedForLoopTests.cpp.i:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/AdvancedForLoopTests.cpp.i
+.PHONY : TestRho/AdvancedForLoopTests.cpp.i
+
+TestRho/AdvancedForLoopTests.s: TestRho/AdvancedForLoopTests.cpp.s
+.PHONY : TestRho/AdvancedForLoopTests.s
+
+# target to generate assembly for a file
+TestRho/AdvancedForLoopTests.cpp.s:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/AdvancedForLoopTests.cpp.s
+.PHONY : TestRho/AdvancedForLoopTests.cpp.s
+
 TestRho/AssertSyntaxTest.o: TestRho/AssertSyntaxTest.cpp.o
 .PHONY : TestRho/AssertSyntaxTest.o
 
@@ -3872,6 +3896,9 @@ help:
 	@echo "... TestRho/AdvancedBinaryOpTests.o"
 	@echo "... TestRho/AdvancedBinaryOpTests.i"
 	@echo "... TestRho/AdvancedBinaryOpTests.s"
+	@echo "... TestRho/AdvancedForLoopTests.o"
+	@echo "... TestRho/AdvancedForLoopTests.i"
+	@echo "... TestRho/AdvancedForLoopTests.s"
 	@echo "... TestRho/AssertSyntaxTest.o"
 	@echo "... TestRho/AssertSyntaxTest.i"
 	@echo "... TestRho/AssertSyntaxTest.s"

@@ -2047,6 +2047,8 @@ void Console::AddToHistory(const std::string &command) {
     }
 }
 
+#ifdef KAI_USE_ENET
+
 // Network functionality implementation
 bool Console::StartNetworking(int listenPort) {
     if (networkingEnabled_) {
@@ -2896,6 +2898,47 @@ void Console::ClearPeerExecutors() {
     peerExecutors_.clear();
     peerConsoleIds_.clear();
 }
+
+#else  // !KAI_USE_ENET — stub out all networking methods
+
+bool Console::StartNetworking(int) { return false; }
+bool Console::ConnectToPeer(const std::string&, int) { return false; }
+void Console::StopNetworking() {}
+bool Console::SendCommandToPeer(const std::string&, const std::string&) { return false; }
+bool Console::SendBinaryToPeer(const std::string&, const BinaryStream&) { return false; }
+void Console::BroadcastCommand(const std::string&) {}
+std::vector<std::string> Console::GetConnectedPeers() const { return {}; }
+std::vector<NetworkConsoleMessage> Console::GetNetworkHistory() const { return {}; }
+void Console::SetNetworkMessageCallback(std::function<void(const NetworkConsoleMessage&)>) {}
+String Console::ProcessNetworkCommand(const String&) { return String("Networking not enabled"); }
+void Console::ShowNetworkHelp() const {}
+
+void Console::ProcessNetworkMessages() {}
+void Console::HandleNetworkPacket(const net::NetPacket&) {}
+void Console::HandleConsoleCommand(const net::NetPacket&) {}
+void Console::HandleConsoleResult(const net::NetPacket&) {}
+void Console::HandleConsoleBroadcast(const net::NetPacket&) {}
+void Console::HandleLanguageSwitch(const net::NetPacket&) {}
+void Console::HandleConsoleBinary(const net::NetPacket&) {}
+void Console::SendResultToPeer(const net::NetAddress&, const std::string&, const std::string&) {}
+void Console::AddPeer(const net::NetAddress&) {}
+void Console::RemovePeer(const net::NetAddress&) {}
+void Console::LogNetworkMessage(const NetworkConsoleMessage&) {}
+std::string Console::GenerateConsoleId() { return ""; }
+std::string Console::AddressToString(const net::NetAddress&) const { return ""; }
+net::NetAddress Console::FindPeerByAddress(const std::string&) const { return net::NetAddress(); }
+std::string Console::MakePeerKey(const net::NetAddress&) const { return ""; }
+Pointer<Executor> Console::GetOrCreatePeerExecutor(const net::NetAddress&) { return Pointer<Executor>(); }
+Pointer<Executor> Console::GetOrCreatePeerExecutor(const std::string&) { return Pointer<Executor>(); }
+void Console::AssignPeerConsoleId(const net::NetAddress&, const std::string&) {}
+Pointer<Executor> Console::GetPeerExecutorByConsoleId(const std::string&) const { return Pointer<Executor>(); }
+void Console::RemovePeerExecutor(const net::NetAddress&) {}
+void Console::ClearPeerExecutors() {}
+void Console::CopyMainStackToExecutor(Pointer<Executor>) const {}
+void Console::CopyExecutorStackToMain(Pointer<Executor>) {}
+std::string Console::SimplifyStackDump(const std::string& dump) const { return dump; }
+
+#endif  // KAI_USE_ENET
 
 KAI_END
 

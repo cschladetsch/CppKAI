@@ -2208,6 +2208,10 @@ void Executor::Perform(Operation::Type op) {
                             << " elements";
 
                 for (int i = 0; i < arr.Size(); ++i) {
+                    // Record stack depth before pushing element so we can
+                    // restore it after the body without consuming caller values.
+                    int stackDepthBefore = data_->Size();
+
                     // Push the current element
                     Push(arr.At(i));
 
@@ -2255,8 +2259,9 @@ void Executor::Perform(Operation::Type op) {
                         continue;
                     }
 
-                    // Pop any result left by the body (we don't collect it)
-                    if (!data_->Empty()) {
+                    // Discard any values the body left above the pre-iteration
+                    // baseline. This avoids consuming caller-owned stack values.
+                    while (data_->Size() > stackDepthBefore) {
                         Pop();
                     }
                 }
@@ -2267,6 +2272,8 @@ void Executor::Perform(Operation::Type op) {
 
                 int idx = 0;
                 for (auto it = list.Begin(); it != list.End(); ++it, ++idx) {
+                    int stackDepthBefore = data_->Size();
+
                     // Push the current element
                     Push(*it);
 
@@ -2313,8 +2320,7 @@ void Executor::Perform(Operation::Type op) {
                         continue;
                     }
 
-                    // Pop any result left by the body (we don't collect it)
-                    if (!data_->Empty()) {
+                    while (data_->Size() > stackDepthBefore) {
                         Pop();
                     }
                 }
@@ -2324,6 +2330,8 @@ void Executor::Perform(Operation::Type op) {
                             << " characters";
 
                 for (char ch : str) {
+                    int stackDepthBefore = data_->Size();
+
                     // Push the current character as a string
                     Push(New<String>(std::string(1, ch)));
 
@@ -2347,8 +2355,7 @@ void Executor::Perform(Operation::Type op) {
                         continue;
                     }
 
-                    // Pop any result left by the body (we don't collect it)
-                    if (!data_->Empty()) {
+                    while (data_->Size() > stackDepthBefore) {
                         Pop();
                     }
                 }
@@ -2358,6 +2365,8 @@ void Executor::Perform(Operation::Type op) {
                             << " entries";
 
                 for (auto it = map.Begin(); it != map.End(); ++it) {
+                    int stackDepthBefore = data_->Size();
+
                     // Push key-value pair as an array
                     auto pair = New<Array>();
                     pair->Append(it->first);
@@ -2384,8 +2393,7 @@ void Executor::Perform(Operation::Type op) {
                         continue;
                     }
 
-                    // Pop any result left by the body (we don't collect it)
-                    if (!data_->Empty()) {
+                    while (data_->Size() > stackDepthBefore) {
                         Pop();
                     }
                 }
