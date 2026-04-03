@@ -15,8 +15,6 @@ using namespace kai;
 using namespace kai::net;
 using namespace std::chrono_literals;
 
-static constexpr int kBasePort = 15600;
-
 // Pump both nodes until predicate is true or timeout expires.
 static bool PollUntil(Node &a, Node &b, std::function<bool()> pred,
                       std::chrono::milliseconds timeout = 3000ms) {
@@ -30,6 +28,16 @@ static bool PollUntil(Node &a, Node &b, std::function<bool()> pred,
         std::this_thread::sleep_for(1ms);
     }
     return true;
+}
+
+static int ListenOnAvailablePort(Node &node, int beginPort, int endPort) {
+    for (int candidate = beginPort; candidate < endPort; ++candidate) {
+        node.Listen(IpAddress("127.0.0.1"), candidate);
+        if (node.IsRunning()) {
+            return candidate;
+        }
+    }
+    return 0;
 }
 
 class NodeEndToEndTest : public ::testing::Test {
@@ -64,11 +72,10 @@ class NodeEndToEndTest : public ::testing::Test {
 // Two nodes in the same process: client calls Add(3,4) on server agent,
 // expects 7 back via Future.
 TEST_F(NodeEndToEndTest, RemoteMethodCallReturnsCorrectValue) {
-    const int port = kBasePort;
-
     Node server;
     server.SetRegistry(reg_);
-    server.Listen(port);
+    const int port = ListenOnAvailablePort(server, 16400, 16500);
+    ASSERT_NE(port, 0) << "Failed to bind a local port for server";
 
     // Register an Add method on the server.
     NetHandle agentHandle = server.AttachAgent(nullptr);
@@ -106,11 +113,10 @@ TEST_F(NodeEndToEndTest, RemoteMethodCallReturnsCorrectValue) {
 
 // Server broadcasts a named event; client subscriber receives it.
 TEST_F(NodeEndToEndTest, EventBroadcastReachesSubscriber) {
-    const int port = kBasePort + 1;
-
     Node server;
     server.SetRegistry(reg_);
-    server.Listen(port);
+    const int port = ListenOnAvailablePort(server, 16500, 16600);
+    ASSERT_NE(port, 0) << "Failed to bind a local port for server";
 
     Node client;
     client.SetRegistry(reg_);
@@ -146,11 +152,10 @@ TEST_F(NodeEndToEndTest, EventBroadcastReachesSubscriber) {
 
 // Server broadcasts a KAI object; client object-message subscriber receives it.
 TEST_F(NodeEndToEndTest, ObjectMessageReachesSubscriber) {
-    const int port = kBasePort + 2;
-
     Node server;
     server.SetRegistry(reg_);
-    server.Listen(port);
+    const int port = ListenOnAvailablePort(server, 16600, 16700);
+    ASSERT_NE(port, 0) << "Failed to bind a local port for server";
 
     Node client;
     client.SetRegistry(reg_);
@@ -189,11 +194,10 @@ TEST_F(NodeEndToEndTest, ObjectMessageReachesSubscriber) {
 
 // Server broadcasts an event with an int payload; client decodes it.
 TEST_F(NodeEndToEndTest, EventPayloadDecodedCorrectly) {
-    const int port = kBasePort + 3;
-
     Node server;
     server.SetRegistry(reg_);
-    server.Listen(port);
+    const int port = ListenOnAvailablePort(server, 16700, 16800);
+    ASSERT_NE(port, 0) << "Failed to bind a local port for server";
 
     Node client;
     client.SetRegistry(reg_);
@@ -234,11 +238,10 @@ TEST_F(NodeEndToEndTest, EventPayloadDecodedCorrectly) {
 
 // Client fetches a property from a server-side agent over the network.
 TEST_F(NodeEndToEndTest, RemotePropertyGetReturnsValue) {
-    const int port = kBasePort + 4;
-
     Node server;
     server.SetRegistry(reg_);
-    server.Listen(port);
+    const int port = ListenOnAvailablePort(server, 16800, 16900);
+    ASSERT_NE(port, 0) << "Failed to bind a local port for server";
 
     int serverValue = 55;
     NetHandle agentHandle = server.AttachAgent(nullptr);
@@ -273,11 +276,10 @@ TEST_F(NodeEndToEndTest, RemotePropertyGetReturnsValue) {
 
 // Client sets a property on a server-side agent over the network.
 TEST_F(NodeEndToEndTest, RemotePropertySetUpdatesValue) {
-    const int port = kBasePort + 5;
-
     Node server;
     server.SetRegistry(reg_);
-    server.Listen(port);
+    const int port = ListenOnAvailablePort(server, 16900, 17000);
+    ASSERT_NE(port, 0) << "Failed to bind a local port for server";
 
     int serverValue = 0;
     NetHandle agentHandle = server.AttachAgent(nullptr);
