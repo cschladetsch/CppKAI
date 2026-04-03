@@ -23,7 +23,7 @@ list(APPEND sources ${TEST_HOME}/Common/MyTestStruct.cpp)
 include_directories(${header_path})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${BIN_HOME}/Test")
 add_executable(${name} ${sources})
-target_link_libraries(${name} PiLang RhoLang TauLang Executor CommonLang Core ${GTEST_BOTH_LIBRARIES} ${Boost_LIBRARIES} gtest_main)
+target_link_libraries(${name} ConsoleLib PiLang RhoLang TauLang Executor CommonLang Core ${GTEST_BOTH_LIBRARIES} ${Boost_LIBRARIES} gtest_main)
 
 # New TestCore target - just core functionality tests
 set(core_name TestCore)
@@ -71,7 +71,7 @@ list(APPEND core_sources ${TEST_HOME}/Common/TestCommon.cpp)
 list(APPEND core_sources ${TEST_HOME}/Common/MyTestStruct.cpp)
 
 add_executable(${core_name} ${core_sources})
-target_link_libraries(${core_name} PiLang RhoLang TauLang Executor CommonLang Core ${GTEST_BOTH_LIBRARIES} ${Boost_LIBRARIES} gtest_main)
+target_link_libraries(${core_name} ConsoleLib PiLang RhoLang TauLang Executor CommonLang Core ${GTEST_BOTH_LIBRARIES} ${Boost_LIBRARIES} gtest_main)
 
 # Add our fixed Core test suite
 set(fixed_core_name FixedCoreSuite)

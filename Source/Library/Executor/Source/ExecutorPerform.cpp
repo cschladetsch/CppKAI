@@ -748,41 +748,45 @@ void Executor::Perform(Operation::Type op) {
 
             Object bound;
 
+            // Helper: only the global (tree) scope may be updated from within a
+            // function.  Intermediate function-local scopes on the context stack
+            // are private to each invocation, so recursive calls cannot clobber
+            // each other's locals.
+            Object treeScope = (tree_ != nullptr) ? tree_->GetScope() : Object();
+            Handle treeScopeHandle = treeScope.Exists() ? treeScope.GetHandle() : Handle();
+
+            auto storeLabel = [&](const Label& label) {
+                if (scope.Has(label)) {
+                    scope.Set(label, value);
+                    KAI_TRACE() << "Updated '" << label.ToString() << "' in current scope";
+                    return;
+                }
+                bool foundInParent = false;
+                Stack const& scopes = *context_;
+                for (int N = 0; N < scopes.Size(); ++N) {
+                    Pointer<Continuation> cont = scopes.At(N);
+                    if (!cont.Exists()) continue;
+                    Object parentScope = cont->GetScope();
+                    if (!parentScope.Exists()) continue;
+                    if (!parentScope.Has(label)) continue;
+                    // Only update the global (tree) scope; skip intermediate
+                    // function-local scopes to maintain per-invocation isolation.
+                    bool isGlobalScope = treeScopeHandle && parentScope.GetHandle() == treeScopeHandle;
+                    if (!isGlobalScope) continue;
+                    parentScope.Set(label, value);
+                    foundInParent = true;
+                    KAI_TRACE() << "Updated '" << label.ToString() << "' in global scope";
+                    break;
+                }
+                if (!foundInParent) {
+                    scope.Add(label, value);
+                    KAI_TRACE() << "Added '" << label.ToString() << "' to current scope";
+                }
+            };
+
             if (name.IsType<Label>()) {
                 Label label = ConstDeref<Label>(name);
-
-                // First check if it exists in current scope
-                if (scope.Has(label)) {
-                    // Update in current scope
-                    scope.Set(label, value);
-                    KAI_TRACE() << "Updated '" << label.ToString()
-                                << "' in current scope";
-                } else {
-                    // Search in parent scopes
-                    bool foundInParent = false;
-                    Stack const& scopes = *context_;
-                    for (int N = 0; N < scopes.Size(); ++N) {
-                        Pointer<Continuation> cont = scopes.At(N);
-                        if (!cont.Exists()) continue;
-
-                        Object parentScope = cont->GetScope();
-                        if (parentScope.Exists() && parentScope.Has(label)) {
-                            // Update in the parent scope where it was found
-                            parentScope.Set(label, value);
-                            foundInParent = true;
-                            KAI_TRACE() << "Updated '" << label.ToString()
-                                        << "' in parent scope at level " << N;
-                            break;
-                        }
-                    }
-
-                    if (!foundInParent) {
-                        // Not found anywhere, add to current scope
-                        scope.Add(label, value);
-                        KAI_TRACE() << "Added new variable '"
-                                    << label.ToString() << "' to current scope";
-                    }
-                }
+                storeLabel(label);
             } else if (name.IsType<Pathname>()) {
                 Pathname path = ConstDeref<Pathname>(name);
                 KAI_TRACE() << "Store with Pathname: " << path.ToString()
@@ -793,42 +797,7 @@ void Executor::Perform(Operation::Type op) {
                 if (pathStr.Size() > 0 && pathStr[0] == '\'') {
                     pathStr = String(pathStr.begin() + 1, pathStr.end());
                 }
-                Label label(pathStr);
-
-                // First check if it exists in current scope
-                if (scope.Has(label)) {
-                    // Update in current scope
-                    scope.Set(label, value);
-                    KAI_TRACE()
-                        << "Updated '" << pathStr << "' in current scope";
-                } else {
-                    // Search in parent scopes
-                    bool foundInParent = false;
-                    Stack const& scopes = *context_;
-                    for (int N = 0; N < scopes.Size(); ++N) {
-                        Pointer<Continuation> cont = scopes.At(N);
-                        if (!cont.Exists()) continue;
-
-                        Object parentScope = cont->GetScope();
-                        if (parentScope.Exists() && parentScope.Has(label)) {
-                            // Update in the parent scope where it was found
-                            parentScope.Set(label, value);
-                            foundInParent = true;
-                            KAI_TRACE() << "Updated '" << pathStr
-                                        << "' in parent scope at level " << N;
-                            break;
-                        }
-                    }
-
-                    if (!foundInParent) {
-                        // Not found anywhere, add to current scope
-                        scope.Add(label, value);
-                        KAI_TRACE()
-                            << "Added '" << pathStr
-                            << "' to scope (from pathname: " << path.ToString()
-                            << ")";
-                    }
-                }
+                storeLabel(Label(pathStr));
             } else {
                 KAI_THROW_1(Base, "Invalid name type for Store operation");
             }

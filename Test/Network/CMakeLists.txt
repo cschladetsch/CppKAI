@@ -62,8 +62,8 @@ project(Test_Network)
     set_target_properties(ConsoleConnectionTest PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/Bin"
     )
-    target_link_libraries(ConsoleConnectionTest 
-        Core Network Executor
+    target_link_libraries(ConsoleConnectionTest
+        ConsoleLib Core Network Executor PiLang RhoLang CommonLang
         ${GTEST_BOTH_LIBRARIES}
         ${Boost_LIBRARIES}
         pthread
@@ -78,8 +78,8 @@ project(Test_Network)
     set_target_properties(IntegratedConsoleTest PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/Bin"
     )
-    target_link_libraries(IntegratedConsoleTest 
-        Core Network Executor
+    target_link_libraries(IntegratedConsoleTest
+        ConsoleLib Core Network Executor PiLang RhoLang CommonLang
         ${GTEST_BOTH_LIBRARIES}
         ${Boost_LIBRARIES}
         pthread

@@ -125,9 +125,8 @@ TEST_F(RhoRecursionTracing, TraceSimpleCountdown) {
 
     // Verify result
     ASSERT_EQ(data_->Size(), 1);
-    // Expected: 3 + 2 + 1 + 0 = 6, but Rho returns 5 due to recursion
-    // implementation
-    EXPECT_EQ(kai::ConstDeref<int>(data_->Top()), 5);
+    // Expected: 3 + 2 + 1 + 0 = 6
+    EXPECT_EQ(kai::ConstDeref<int>(data_->Top()), 6);
 
     // Print the trace log
     std::cout << "\n=== EXECUTION TRACE ===\n" << traceLog.str() << std::endl;
@@ -556,11 +555,9 @@ TEST_F(RhoRecursionTracing, TraceRecursionErrorHandling) {
 
     AddTrace("\nFinal result: " + GetStackState());
 
-    // Result should be 10/3 + 10/2 + 10/1 + 0 = 3 + 5 + 10 = 18 (integer
-    // division) But the actual implementation seems to return 5, possibly due
-    // to recursion issues
+    // Result: 10/3 + 10/2 + 10/1 + 0 = 3 + 5 + 10 = 18 (integer division)
     ASSERT_EQ(data_->Size(), 1);
-    EXPECT_EQ(kai::ConstDeref<int>(data_->Top()), 5);
+    EXPECT_EQ(kai::ConstDeref<int>(data_->Top()), 18);
 
     // Print the trace log
     std::cout << "\n=== EXECUTION TRACE ===\n" << traceLog.str() << std::endl;

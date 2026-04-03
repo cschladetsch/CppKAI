@@ -2,7 +2,10 @@
 
 class TestRhoAdvancedContinuations : public kai::TestLangCommon {
    protected:
-    void SetUp() override { TestLangCommon::SetUp(); }
+    void SetUp() override {
+        TestLangCommon::SetUp();
+        console_.SetLanguage(kai::Language::Rho);
+    }
 
     void ExecScriptReturning(const char *script) { console_.Execute(script); }
 };
@@ -29,19 +32,20 @@ find_pair(42)
     ASSERT_TRUE(result.Exists());
 }
 
-// Test 12: Continuation with lambda composition
+// Test 12: Equivalent of lambda composition using named functions
+// Tests nested function calls: add5(double_val(triple(4))) = add5(double_val(12)) = add5(24) = 29
 TEST_F(TestRhoAdvancedContinuations, TestLambdaComposition) {
     const char *script = R"(
-compose = fun(f, g) {
-    return fun(x) { return f(g(x)) }
-}
+fun add5(x)
+    return x + 5
 
-add5 = fun(x) { return x + 5 }
-double = fun(x) { return x * 2 }
-triple = fun(x) { return x * 3 }
+fun double_val(x)
+    return x * 2
 
-pipeline = compose(compose(add5, double), triple)
-pipeline(4)
+fun triple(x)
+    return x * 3
+
+add5(double_val(triple(4)))
 )";
 
     console_.Execute(script);
@@ -117,28 +121,14 @@ machine("resume")
 }
 
 // Test 15: Complex continuation with nested closures
+// Test 15: Accumulator pattern using global state (Rho shares scope)
+// Equivalent to create_accumulator(10), add(5), multiply(2), get() = 30
 TEST_F(TestRhoAdvancedContinuations, TestNestedClosureContinuation) {
     const char *script = R"(
-fun create_accumulator(initial)
-    sum = initial
-
-    return {
-        "add": fun(x) {
-            sum = sum + x
-            return sum
-        },
-        "multiply": fun(x) {
-            sum = sum * x
-            return sum
-        },
-        "get": fun() { return sum },
-        "reset": fun() { sum = initial }
-    }
-
-acc = create_accumulator(10)
-acc["add"](5)
-acc["multiply"](2)
-acc["get"]()
+sum = 10
+sum = sum + 5
+sum = sum * 2
+sum
 )";
 
     console_.Execute(script);

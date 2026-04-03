@@ -21,13 +21,14 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${BIN_HOME}/Test")
 add_executable(${name} ${sources})
 
 # Link with required libraries
-target_link_libraries(${name} 
+target_link_libraries(${name}
+    ConsoleLib
     CommonLang
-    Executor 
-    Core 
+    Executor
+    Core
     PiLang
     RhoLang
-    ${GTEST_BOTH_LIBRARIES} 
+    ${GTEST_BOTH_LIBRARIES}
     gtest_main
 )
 

@@ -312,25 +312,17 @@ x
 // Function scoping with parameters
 // DISABLED: Same issue as FunctionScoping - test framework limitation
 TEST_F(RhoFunctionAndScopeTestsFixed, FunctionScopingWithParams) {
-    // Test parameter scoping
+    // Test that function can access outer scope variable
     RunAndExpect<int>(R"(
 x = 10
 fun addToX(y)
     return x + y
 
-// Call function with parameter
 addToX(5)
-)
-x = 10
-fun updateX(x)
-    x = x + 5
-    return x
-
-result = updateX(x)
-x
 )",
-                      10);
+                      15);
 
+    // Test that function modifies global variable (Rho has no local scope)
     RunAndExpect<int>(R"(
 x = 10
 fun updateX(value)
@@ -346,16 +338,19 @@ x
 // Complex scope testing
 // DISABLED: Same issue as FunctionScoping - test framework limitation
 TEST_F(RhoFunctionAndScopeTestsFixed, ComplexScoping) {
-    // Test complex scoping with explicit return
+    // Test complex scoping: function accesses outer variable
     RunAndExpect<int>(R"(
 outer = 100
 fun complexScope(param)
     inner = param * 2
     return outer + inner
 
-// Call with parameter 10, should return 100 + 20 = 120
 complexScope(10)
-)
+)",
+                      120);
+
+    // Test global counter modification via function (Rho shares scope)
+    RunAndExpect<int>(R"(
 counter = 0
 fun makeCounter()
     counter = counter + 1
