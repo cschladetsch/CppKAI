@@ -8,7 +8,6 @@
 #include "KAI/Core/BuiltinTypes.h"
 #include "KAI/Core/Console.h"
 #include "KAI/Executor/Operation.h"
-#include "SimpleRhoPiTests.h"
 #include "TestLangCommon.h"
 
 using namespace kai;
@@ -35,27 +34,20 @@ class AdvancedForLoopTests : public TestLangCommon {
         reg_->AddClass<Map>(Label("Map"));
     }
 
-    // Helper to execute a Rho script and store the result
+    // Execute a Rho script and return the top of the data stack.
     Object ExecuteScript(const std::string& script) {
         data_->Clear();
-
         try {
-            KAI_TRACE() << "Executing Rho script:\n" << script;
-            bool success = console_.Execute(script);
-            ASSERT_TRUE(success) << "Failed to execute Rho script";
-
-            // The result should be on top of the stack
+            console_.Execute(script, Structure::Program);
             if (!data_->Empty()) {
-                // Unwrap any continuations to get the primitive value
-                UnwrapStackValues(data_, exec_);
-                return data_->Top();
+                UnwrapStackValues();
+                if (!data_->Empty())
+                    return data_->Top();
             }
         } catch (const std::exception& e) {
-            KAI_TRACE_ERROR() << "Error executing Rho script: " << e.what();
-            FAIL() << "Exception during Rho execution: " << e.what();
+            ADD_FAILURE() << "Exception during Rho execution: " << e.what();
         }
-
-        return Object();  // Empty object if no result was produced
+        return Object();
     }
 
     // Helper to verify an integer result
@@ -130,7 +122,7 @@ TEST_F(AdvancedForLoopTests, NestedForLoopsWithComplexConditions) {
 }
 
 // For Loop with Early Termination (break)
-TEST_F(ForLoopWithBreak) {
+TEST_F(AdvancedForLoopTests, ForLoopWithBreak) {
     const std::string script = R"(
         // Find the first number whose square is greater than 100
         result = 0
@@ -152,7 +144,7 @@ TEST_F(ForLoopWithBreak) {
 }
 
 // For Loop with Continue Statement
-TEST_F(ForLoopWithContinue) {
+TEST_F(AdvancedForLoopTests, ForLoopWithContinue) {
     const std::string script = R"(
         // Sum all numbers from 1 to 10 except multiples of 3
         result = 0
@@ -213,7 +205,7 @@ TEST_F(AdvancedForLoopTests, LoopVariableReuseAfterLoop) {
 }
 
 // Infinite Loop Detection with Condition Always True
-TEST_F(InfiniteLoopDetection) {
+TEST_F(AdvancedForLoopTests, InfiniteLoopDetection) {
     const std::string script = R"(
         // Potentially infinite loop, but we use a safety counter
         result = 0
@@ -255,7 +247,7 @@ TEST_F(AdvancedForLoopTests, EmptyForLoop) {
 }
 
 // For Loop to Generate Prime Numbers
-TEST_F(GeneratePrimeNumbers) {
+TEST_F(AdvancedForLoopTests, GeneratePrimeNumbers) {
     const std::string script = R"(
         // Find prime numbers up to 20
         primes = []

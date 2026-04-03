@@ -122,6 +122,7 @@ foreach (lang ${langs})
             ${source_path}/ModuloTest.cpp                    # Test modulo operator
             ${source_path}/SimpleDoWhileContinueTest.cpp     # Test do-while continue
             ${source_path}/ExtensiveContainerTests.cpp       # Extensive container tests
+            ${source_path}/AdvancedForLoopTests.cpp          # Advanced for loop tests
         )
     elseif(lang STREQUAL "Pi")
         # Explicitly list Pi tests to avoid including unwanted files

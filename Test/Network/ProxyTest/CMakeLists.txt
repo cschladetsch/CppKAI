@@ -22,8 +22,11 @@ target_include_directories(Test_ProxyGeneration PRIVATE
 set_target_properties(Test_ProxyGeneration PROPERTIES COMPILE_FLAGS "-g -Wno-deprecated")
 
 # Link libraries - include only the libraries needed for proxy generation testing
-target_link_libraries(Test_ProxyGeneration 
+target_link_libraries(Test_ProxyGeneration
     Network
+    TauLang
+    CommonLang
+    Executor
     Core
     ${GTEST_BOTH_LIBRARIES}
     ${Boost_LIBRARIES}
