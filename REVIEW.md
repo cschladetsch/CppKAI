@@ -369,3 +369,53 @@ The system is ready for:
 ---
 
 *This review was conducted through comprehensive analysis of source code, build systems, test suites, documentation, and operational validation. All assessments are based on direct examination of system components and functionality.*
+
+---
+
+## Update: April 3, 2026
+
+### Test Status After Bug-Fix Round
+
+| Suite | Passed | Total | Rate |
+|-------|--------|-------|------|
+| KaiTest | 173 | 173 | 100% |
+| Core | 147 | 147 | 100% |
+| Pi | 330 | 330 | 100% |
+| Tau | 308 | 308 | 100% |
+| Console | 11 | 11 | 100% |
+| ProxyGeneration | 1 | 1 | 100% |
+| Rho | 717 | 859 | 83% (pre-existing) |
+
+### Fixes Applied
+
+**GC deletion cycle (`Object.cpp`)**
+
+`Object::Valid()` was extended to check `StorageBase::IsMarked()`, which
+correctly rejects objects that have been queued for GC deletion. This exposed a
+re-entrancy bug: `GetTypeNumber()` was calling `Valid()`, and because `IsMarked`
+is set at the start of the deletion cascade (before class teardown completes),
+`GetTypeNumber()` returned `None` mid-delete and triggered a TypeMismatch.
+Fix: `GetTypeNumber()` now reads `class_base` directly, bypassing `Valid()`.
+
+Also removed the excessive defensive coding in `Object.cpp` (multiple layers of
+`catch(...)`, `volatile void*` pointer tests, "ULTIMATE defensive check"
+comments). These added noise without providing any real safety benefit; the
+actual invariants are now expressed directly.
+
+**ENet graceful disconnect (`EnetTransport.cpp`)**
+
+`enet_host_destroy()` tears down the local host immediately without sending
+disconnect notifications to remote peers. Added an explicit `enet_peer_disconnect()`
+pass before destroy, followed by a short service loop to process ACKs. Remote
+peers now receive a `ConnectionLost` event rather than inferring disconnect by
+timeout.
+
+**Tau proxy/agent code generation**
+
+- `GenerateProxy`: method bodies now call `_node->Send()` / `_node->SendWithResponse()`
+  with `NetworkException` wrapping.
+- `GenerateAgent`: `AgentDecl::ToString()` generates `AgentBase<ClassName>`
+  (was missing the template argument). Constructor simplified to
+  `AgentName(Node &node, NetHandle handle) : AgentBase(node, handle) {}`.
+- `TauParser` strict mode: semicolons required after method declarations;
+  return type must be a known identifier.
