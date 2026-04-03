@@ -356,9 +356,8 @@ TEST_F(CoreObjectTests, TestObjectLifetimeManagement) {
     // Garbage collect - now the object should be gone
     Reg().GarbageCollect();
 
-    // Try to recreate an object with the old handle
-    Object testObj = Reg().GetObject(handle);
-    ASSERT_FALSE(testObj.Exists());
+    // The object should be gone after GC
+    ASSERT_FALSE(Reg().ContainsHandle(handle));
 }
 
 // Test Object marking for garbage collection

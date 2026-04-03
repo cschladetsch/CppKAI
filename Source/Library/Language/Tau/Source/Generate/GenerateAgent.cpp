@@ -47,14 +47,10 @@ bool GenerateAgent::Generate(TauParser const &parser, string &output) {
 string GenerateAgent::Prepend() const {
     stringstream str;
     str << "#include <KAI/Network/AgentDecl.h>\n";
-    str << "#include <KAI/Network/Node.h>\n";
     str << "#include <KAI/Network/NetworkException.h>\n";
-    str << "#include <KAI/Network/Serialization.h>\n";
-    str << "#include <KAI/Network/Transport.h>\n";
-    str << "#include <KAI/Core/BinaryStream.h>\n";
-    str << "#include <memory>\n";
+    str << "#include <stdexcept>\n";
     str << "#include <string>\n";
-    str << "#include <utility>\n";
+    str << "#include <KAI/Core/BinaryStream.h>\n";
     str << "\n";
     return str.str();
 }
@@ -115,7 +111,7 @@ struct GenerateAgent::AgentDecl {
 
     string ToString() const {
         stringstream decl;
-        decl << "class " << AgentName << ": public AgentBase";
+        decl << "class " << AgentName << ": public AgentBase<" << RootName << ">";
         return decl.str();
     }
 };
@@ -180,67 +176,10 @@ std::string GenerateAgent::ReturnType(std::string const &text) const {
 
 void GenerateAgent::AddAgentBoilerplate(AgentDecl const &agent,
                                         TauParser::AstNode const &cl) {
-    Output() << agent.AgentName << "(Node &node, std::shared_ptr<"
-             << agent.RootName
-             << "> impl = std::make_shared<" << agent.RootName << ">())"
-             << " : AgentBase(node), _impl(std::move(impl)), _node(&node)"
+    Output() << agent.AgentName
+             << "(Node &node, NetHandle handle) : AgentBase(node, handle) { }"
              << EndLine();
-    StartBlock();
-
-    for (const auto &member : cl.GetChildren()) {
-        if (member->GetType() == TauAstEnumType::Method) {
-            const auto name = member->GetTokenText();
-            const auto &returnType = member->GetChild(0)->GetTokenText();
-            const auto &args = member->GetChild(1)->GetChildren();
-
-            Output() << "_node->RegisterMethod<" << returnType << ">("
-                     << "GetHandle(), \"" << name << "\", "
-                     << "std::function<" << returnType << "(";
-
-            bool first = true;
-            for (auto const &a : args) {
-                if (!first) Output() << ", ";
-                auto &ty = a->GetChild(0);
-                Output() << ty->GetTokenText();
-                first = false;
-            }
-            Output() << ")>([this](";
-
-            first = true;
-            for (auto const &a : args) {
-                if (!first) Output() << ", ";
-                auto &ty = a->GetChild(0);
-                auto &id = a->GetChild(1);
-                Output() << ty->GetTokenText() << " " << id->GetTokenText();
-                first = false;
-            }
-            Output() << ") { ";
-
-            if (returnType != "void") {
-                Output() << "return _impl->" << name << "(";
-            } else {
-                Output() << "_impl->" << name << "(";
-            }
-
-            first = true;
-            for (auto const &a : args) {
-                if (!first) Output() << ", ";
-                auto &id = a->GetChild(1);
-                Output() << id->GetTokenText();
-                first = false;
-            }
-            Output() << "); ";
-
-            if (returnType == "void") {
-                Output() << "return; ";
-            }
-
-            Output() << "}));" << EndLine();
-        }
-    }
-
     Output() << EndLine();
-    EndBlock();
 }
 
 void GenerateAgent::GenerateHandlerMethod(TauParser::AstNode const &method) {
@@ -274,12 +213,7 @@ void GenerateAgent::GenerateHandlerMethod(TauParser::AstNode const &method) {
         auto &id = a->GetChild(1);
         Output() << ty->GetTokenText() << " " << id->GetTokenText() << ";"
                  << EndLine();
-        if (IsStdStringType(ty->GetTokenText())) {
-            Output() << "kai::net::NetworkSerializer::ReadString(bs, "
-                     << id->GetTokenText() << ");" << EndLine();
-        } else {
-            Output() << "bs >> " << id->GetTokenText() << ";" << EndLine();
-        }
+        Output() << "bs >> " << id->GetTokenText() << ";" << EndLine();
     }
 
     // Call the implementation method

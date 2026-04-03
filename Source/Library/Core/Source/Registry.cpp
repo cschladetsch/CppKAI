@@ -252,7 +252,8 @@ Object Registry::GetObject(Handle handle) const {
     if (handle == Handle(0)) return Object();
 
     const auto found = instances_.find(handle);
-    if (found == instances_.end()) return Object();
+    if (found == instances_.end())
+        KAI_THROW_1(Base, "Object not found for handle");
 
     return static_cast<Object>(*found->second);
 }

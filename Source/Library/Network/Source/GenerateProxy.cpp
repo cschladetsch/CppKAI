@@ -137,8 +137,8 @@ class ProxyGenerator {
             ss << ") {\n";
 
             // Method implementation
-            ss << "        auto future = _node->Invoke<" << method.returnType
-               << ">(_handle, \"" << method.name << "\"";
+            ss << "        auto future = _node->SendWithResponse(_handle, \""
+               << method.name << "\"";
             for (const auto& param : method.params) {
                 ss << ", " << param.second;
             }

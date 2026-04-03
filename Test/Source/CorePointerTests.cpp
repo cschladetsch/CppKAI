@@ -119,18 +119,8 @@ TEST_F(CorePointerTests, TestPointerAssignment) {
     // After garbage collection, the original ptr1 object should be gone
     Reg().GarbageCollect();
 
-    // Try to access the original objects
-    Object obj1 = Reg().GetObject(handle1);
-
-    // The behavior here depends on the specific garbage collection
-    // implementation What matters is:
-    // ptr1 was assigned to ptr2, so it now references handle2
-    // handle1 is no longer referenced by any variable
-    // handle2 is still referenced by both ptr1 and ptr2
-
-    // What we can verify for sure:
     // Original ptr1 object should be gone since nothing references it
-    ASSERT_FALSE(obj1.Exists());
+    ASSERT_FALSE(Reg().ContainsHandle(handle1));
 
     // ptr1 and ptr2 should now point to the same object
     ASSERT_EQ(ptr1.GetHandle(), ptr2.GetHandle());
@@ -295,8 +285,7 @@ TEST_F(CorePointerTests, TestPointerLifetimeDuringGC) {
     Reg().GarbageCollect();
 
     // Verify the object was collected
-    Object obj = Reg().GetObject(handle);
-    ASSERT_FALSE(obj.Exists());
+    ASSERT_FALSE(Reg().ContainsHandle(handle));
 }
 
 // Test Pointer<T> comparison operators

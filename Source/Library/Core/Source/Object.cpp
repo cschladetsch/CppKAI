@@ -210,9 +210,12 @@ String Object::ToXmlString() const {
 }
 
 Type::Number Object::GetTypeNumber() const {
-    if (!Valid()) return Type::Number::None;
-
-    return GetClass()->GetTypeNumber();
+    // Use class_base directly rather than Valid() to avoid a false negative
+    // for objects that are marked-for-GC during the deletion sequence.
+    // (Valid() checks IsMarked(), but GetTypeNumber() is called mid-deletion
+    //  before the class's SetSwitch cascade completes.)
+    if (class_base == nullptr) return Type::Number::None;
+    return class_base->GetTypeNumber();
 }
 
 bool Object::Valid() const {
@@ -276,6 +279,11 @@ bool Object::Valid() const {
     } catch (...) {
         return false;
     }
+
+    // Check if object has been deleted (marked for GC).
+    // GetStorageBase returns nullptr for unknown handles, does not throw.
+    StorageBase *base = registry->GetStorageBase(handle);
+    if (base && base->IsMarked()) return false;
 
     // All checks passed, object is valid
     return true;
@@ -793,6 +801,10 @@ bool operator==(Object const &A, Object const &B) {
     if (!A.Exists()) return !B.Exists();
 
     if (!B.Exists()) return false;
+
+    // Same object by identity - always equal, and avoids infinite recursion
+    // when objects share sub-objects (e.g. continuations with shared code arrays)
+    if (A.GetHandle() == B.GetHandle()) return true;
 
     // test value
     ClassBase const &klass = *A.GetClass();

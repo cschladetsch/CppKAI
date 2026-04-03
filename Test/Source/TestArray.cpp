@@ -169,14 +169,9 @@ TEST_F(TestArray, TestArrayClear) {
     // Verify elements are no longer in the registry after GC
     Reg().GarbageCollect();
 
-    // GetObject is used to retrieve an object by handle
-    Object obj1 = Reg().GetObject(h1);
-    Object obj2 = Reg().GetObject(h2);
-    Object obj3 = Reg().GetObject(h3);
-
-    ASSERT_FALSE(obj1.Exists());
-    ASSERT_FALSE(obj2.Exists());
-    ASSERT_FALSE(obj3.Exists());
+    ASSERT_FALSE(Reg().ContainsHandle(h1));
+    ASSERT_FALSE(Reg().ContainsHandle(h2));
+    ASSERT_FALSE(Reg().ContainsHandle(h3));
 }
 
 // Test additional array operations
@@ -462,18 +457,18 @@ TEST_F(TestArray, TestArrayInsertMemoryManagement) {
     array->Insert(1, obj3);  // Insert between first and second
 
     // Verify objects are still alive
-    ASSERT_TRUE(Reg().GetObject(h1).Exists());
-    ASSERT_TRUE(Reg().GetObject(h2).Exists());
-    ASSERT_TRUE(Reg().GetObject(h3).Exists());
+    ASSERT_TRUE(Reg().ContainsHandle(h1));
+    ASSERT_TRUE(Reg().ContainsHandle(h2));
+    ASSERT_TRUE(Reg().ContainsHandle(h3));
 
     // Clear array and run GC
     array->Clear();
     Reg().GarbageCollect();
 
     // Objects should be collected
-    ASSERT_FALSE(Reg().GetObject(h1).Exists());
-    ASSERT_FALSE(Reg().GetObject(h2).Exists());
-    ASSERT_FALSE(Reg().GetObject(h3).Exists());
+    ASSERT_FALSE(Reg().ContainsHandle(h1));
+    ASSERT_FALSE(Reg().ContainsHandle(h2));
+    ASSERT_FALSE(Reg().ContainsHandle(h3));
 
     // Clean up
     Root().Remove(Label("test_insert_array"));

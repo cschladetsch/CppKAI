@@ -403,8 +403,7 @@ TEST_F(TestMap, TestMapErase) {
     // Verify value was removed from registry after GC
     Reg().GarbageCollect();
 
-    Object value = Reg().GetObject(valueHandle);
-    ASSERT_FALSE(value.Exists());
+    ASSERT_FALSE(Reg().ContainsHandle(valueHandle));
 }
 
 // Test Map iteration

@@ -44,8 +44,7 @@ bool GenerateProxy::Generate(TauParser const &p, string &output) {
 
 string GenerateProxy::Prepend() const {
     stringstream str;
-    str << "#include <KAI/Network/ProxyBase.h>\n";
-    str << "#include <KAI/Network/Node.h>\n";
+    str << "#include <KAI/Network/ProxyDecl.h>\n";
     str << "#include <KAI/Network/NetworkException.h>\n";
     str << "#include <functional>\n";
     str << "#include <stdexcept>\n";
@@ -291,40 +290,31 @@ void GenerateProxy::MethodBody(const string &returnType,
                                const Node::ChildrenType &args,
                                const string &name) {
     StartBlock();
-
-    auto isFuture = [](const string &type, string &inner) {
-        const string prefix = "Future<";
-        if (type.size() <= prefix.size() + 1) return false;
-        if (type.rfind(prefix, 0) != 0) return false;
-        if (type.back() != '>') return false;
-        inner = type.substr(prefix.size(), type.size() - prefix.size() - 1);
-        return true;
-    };
-
-    string innerType;
-    bool returnsFuture = isFuture(returnType, innerType);
+    Output() << "try {" << EndLine();
 
     if (returnType == "void") {
-        Output() << "auto future = Exec<void>(\"" << name << "\"";
-        for (auto const &a : args) {
-            Output() << ", " << a->GetChild(1)->GetTokenText();
-        }
-        Output() << ");" << EndLine();
-        Output() << "GetNode().WaitFor(future);" << EndLine();
-    } else if (returnsFuture) {
-        Output() << "return Exec<" << innerType << ">(\"" << name << "\"";
+        Output() << "_node->Send(\"" << name << "\"";
         for (auto const &a : args) {
             Output() << ", " << a->GetChild(1)->GetTokenText();
         }
         Output() << ");" << EndLine();
     } else {
-        Output() << "auto future = Exec<" << returnType << ">(\"" << name << "\"";
+        Output() << "return _node->SendWithResponse(\"" << name << "\"";
         for (auto const &a : args) {
             Output() << ", " << a->GetChild(1)->GetTokenText();
         }
         Output() << ");" << EndLine();
-        Output() << "return GetNode().WaitFor(future);" << EndLine();
     }
+
+    Output() << "} catch (const std::exception& e) {" << EndLine();
+    if (returnType == "void") {
+        Output() << "throw NetworkException(\"Failed to send '" << name
+                 << "': \" + std::string(e.what()));" << EndLine();
+    } else {
+        Output() << "throw NetworkException(\"Failed to call '" << name
+                 << "': \" + std::string(e.what()));" << EndLine();
+    }
+    Output() << "}" << EndLine();
 
     EndBlock();
 }

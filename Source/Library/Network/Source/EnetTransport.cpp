@@ -91,8 +91,24 @@ class EnetPeer final : public NetPeer {
             return;
         }
 
-        if (timeoutMs > 0) {
-            enet_host_flush(host_);
+        // Send graceful disconnect notification to all connected peers so they
+        // can update their peer lists promptly rather than waiting for timeout.
+        if (timeoutMs > 0 && !peersByAddress_.empty()) {
+            for (auto& [key, peer] : peersByAddress_) {
+                enet_peer_disconnect(peer, 0);
+            }
+            // Give ENet time to send the disconnect packets and receive acks.
+            ENetEvent event;
+            int waited = 0;
+            const int pollMs = 10;
+            while (waited < timeoutMs && !peersByAddress_.empty()) {
+                if (enet_host_service(host_, &event, pollMs) > 0) {
+                    if (event.type == ENET_EVENT_TYPE_DISCONNECT) {
+                        peersByAddress_.erase(AddressKey(event.peer->address));
+                    }
+                }
+                waited += pollMs;
+            }
         }
 
         enet_host_destroy(host_);

@@ -1,6 +1,8 @@
 #include <KAI/Language/Common/ParserCommon.h>
 #include <KAI/Language/Tau/TauParser.h>
 #include <assert.h>
+#include <cctype>
+#include <unordered_set>
 
 using namespace std;
 
@@ -506,8 +508,29 @@ bool TauParser::Class(AstNodePtr root) {
     return true;
 }
 
+static bool IsValidTypeName(const std::string& name) {
+    static const std::unordered_set<std::string> primitives = {
+        "void", "int", "float", "double", "bool", "char", "string",
+        "int8", "int16", "int32", "int64",
+        "uint8", "uint16", "uint32", "uint64",
+        "byte", "short", "long", "uint", "ushort", "ulong"
+    };
+    if (primitives.count(name)) return true;
+    if (name.find('<') != std::string::npos) return true;
+    if (!name.empty() && std::isupper(static_cast<unsigned char>(name[0]))) return true;
+    return false;
+}
+
 bool TauParser::Method(AstNodePtr klass, TokenNode const &returnType,
                        TokenNode const &name) {
+    if (strictMode_) {
+        std::string typeText = returnType.Text();
+        if (!IsValidTypeName(typeText)) {
+            Failed = true;
+            Error = "Invalid return type '" + typeText + "' in method declaration";
+            return false;
+        }
+    }
     auto method = NewNode(AstEnum::Method, name);
     auto args = NewNode(AstEnum::Arglist);
 
@@ -556,9 +579,12 @@ bool TauParser::Method(AstNodePtr klass, TokenNode const &returnType,
         }
     }
 
-    // Allow optional semicolon - more resilient parsing
     if (CurrentIs(TokenType::Semi)) {
         Consume();
+    } else if (strictMode_) {
+        Failed = true;
+        Error = "Expected ';' after method declaration for '" + name.Text() + "'";
+        return false;
     }
 
     klass->Add(method);

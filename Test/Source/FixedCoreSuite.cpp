@@ -192,8 +192,7 @@ TEST_F(FixedCorePointerTests, TestFixedPointerGC) {
     Reg().GarbageCollect();
 
     // Verify object no longer exists
-    Object obj = Reg().GetObject(handle);
-    ASSERT_FALSE(obj.Exists());
+    ASSERT_FALSE(Reg().ContainsHandle(handle));
 }
 
 // We don't need a main function here as it's in Main.cpp
