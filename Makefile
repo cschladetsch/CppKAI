@@ -85,6 +85,51 @@ rebuild_cache:
 rebuild_cache/fast: rebuild_cache
 .PHONY : rebuild_cache/fast
 
+# Special rule for the target list_install_components
+list_install_components:
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Available install components are: \"Unspecified\""
+.PHONY : list_install_components
+
+# Special rule for the target list_install_components
+list_install_components/fast: list_install_components
+.PHONY : list_install_components/fast
+
+# Special rule for the target install
+install: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Install the project..."
+	/usr/bin/cmake -P cmake_install.cmake
+.PHONY : install
+
+# Special rule for the target install
+install/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Install the project..."
+	/usr/bin/cmake -P cmake_install.cmake
+.PHONY : install/fast
+
+# Special rule for the target install/local
+install/local: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing only the local directory..."
+	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local
+
+# Special rule for the target install/local
+install/local/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing only the local directory..."
+	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local/fast
+
+# Special rule for the target install/strip
+install/strip: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing the project stripped..."
+	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip
+
+# Special rule for the target install/strip
+install/strip/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing the project stripped..."
+	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip/fast
+
 # The main all target
 all: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/christian/local/repos/KAI/CMakeFiles /home/christian/local/repos/KAI//CMakeFiles/progress.marks
@@ -143,6 +188,19 @@ Executor/fast:
 .PHONY : Executor/fast
 
 #=============================================================================
+# Target rules for targets named Network
+
+# Build rule for target.
+Network: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Network
+.PHONY : Network
+
+# fast build rule for target.
+Network/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/build
+.PHONY : Network/fast
+
+#=============================================================================
 # Target rules for targets named ConsoleLib
 
 # Build rule for target.
@@ -167,6 +225,32 @@ Console: cmake_check_build_system
 Console/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Console.dir/build.make CMakeFiles/Console.dir/build
 .PHONY : Console/fast
+
+#=============================================================================
+# Target rules for targets named NetworkGenerate
+
+# Build rule for target.
+NetworkGenerate: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 NetworkGenerate
+.PHONY : NetworkGenerate
+
+# fast build rule for target.
+NetworkGenerate/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/NetworkGenerate.dir/build.make CMakeFiles/NetworkGenerate.dir/build
+.PHONY : NetworkGenerate/fast
+
+#=============================================================================
+# Target rules for targets named enet
+
+# Build rule for target.
+enet: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 enet
+.PHONY : enet
+
+# fast build rule for target.
+enet/fast:
+	$(MAKE) $(MAKESILENT) -f Ext/ENet/CMakeFiles/enet.dir/build.make Ext/ENet/CMakeFiles/enet.dir/build
+.PHONY : enet/fast
 
 #=============================================================================
 # Target rules for targets named CommonLang
@@ -208,6 +292,19 @@ RhoLang/fast:
 .PHONY : RhoLang/fast
 
 #=============================================================================
+# Target rules for targets named TauLang
+
+# Build rule for target.
+TauLang: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 TauLang
+.PHONY : TauLang
+
+# fast build rule for target.
+TauLang/fast:
+	$(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/TauLang.dir/build.make Source/Library/Language/CMakeFiles/TauLang.dir/build
+.PHONY : TauLang/fast
+
+#=============================================================================
 # Target rules for targets named KaiTest
 
 # Build rule for target.
@@ -245,6 +342,19 @@ FixedCoreSuite: cmake_check_build_system
 FixedCoreSuite/fast:
 	$(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/FixedCoreSuite.dir/build.make Test/Source/CMakeFiles/FixedCoreSuite.dir/build
 .PHONY : FixedCoreSuite/fast
+
+#=============================================================================
+# Target rules for targets named TestTau
+
+# Build rule for target.
+TestTau: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 TestTau
+.PHONY : TestTau
+
+# fast build rule for target.
+TestTau/fast:
+	$(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/build
+.PHONY : TestTau/fast
 
 #=============================================================================
 # Target rules for targets named TestRho
@@ -350,6 +460,71 @@ PerformanceTests/fast:
 	$(MAKE) $(MAKESILENT) -f Test/Performance/CMakeFiles/PerformanceTests.dir/build.make Test/Performance/CMakeFiles/PerformanceTests.dir/build
 .PHONY : PerformanceTests/fast
 
+#=============================================================================
+# Target rules for targets named Test_Network
+
+# Build rule for target.
+Test_Network: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test_Network
+.PHONY : Test_Network
+
+# fast build rule for target.
+Test_Network/fast:
+	$(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/Test_Network.dir/build.make Test/Network/CMakeFiles/Test_Network.dir/build
+.PHONY : Test_Network/fast
+
+#=============================================================================
+# Target rules for targets named ConsoleConnectionTest
+
+# Build rule for target.
+ConsoleConnectionTest: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ConsoleConnectionTest
+.PHONY : ConsoleConnectionTest
+
+# fast build rule for target.
+ConsoleConnectionTest/fast:
+	$(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/ConsoleConnectionTest.dir/build.make Test/Network/CMakeFiles/ConsoleConnectionTest.dir/build
+.PHONY : ConsoleConnectionTest/fast
+
+#=============================================================================
+# Target rules for targets named IntegratedConsoleTest
+
+# Build rule for target.
+IntegratedConsoleTest: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 IntegratedConsoleTest
+.PHONY : IntegratedConsoleTest
+
+# fast build rule for target.
+IntegratedConsoleTest/fast:
+	$(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/IntegratedConsoleTest.dir/build.make Test/Network/CMakeFiles/IntegratedConsoleTest.dir/build
+.PHONY : IntegratedConsoleTest/fast
+
+#=============================================================================
+# Target rules for targets named CalculationTest
+
+# Build rule for target.
+CalculationTest: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CalculationTest
+.PHONY : CalculationTest
+
+# fast build rule for target.
+CalculationTest/fast:
+	$(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/CalculationTest.dir/build.make Test/Network/CMakeFiles/CalculationTest.dir/build
+.PHONY : CalculationTest/fast
+
+#=============================================================================
+# Target rules for targets named Test_ProxyGeneration
+
+# Build rule for target.
+Test_ProxyGeneration: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test_ProxyGeneration
+.PHONY : Test_ProxyGeneration
+
+# fast build rule for target.
+Test_ProxyGeneration/fast:
+	$(MAKE) $(MAKESILENT) -f Test/Network/ProxyTest/CMakeFiles/Test_ProxyGeneration.dir/build.make Test/Network/ProxyTest/CMakeFiles/Test_ProxyGeneration.dir/build
+.PHONY : Test_ProxyGeneration/fast
+
 Source/App/Console/Source/Main.o: Source/App/Console/Source/Main.cpp.o
 .PHONY : Source/App/Console/Source/Main.o
 
@@ -373,6 +548,30 @@ Source/App/Console/Source/Main.s: Source/App/Console/Source/Main.cpp.s
 Source/App/Console/Source/Main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Console.dir/build.make CMakeFiles/Console.dir/Source/App/Console/Source/Main.cpp.s
 .PHONY : Source/App/Console/Source/Main.cpp.s
+
+Source/App/NetworkGenerate/Source/Main.o: Source/App/NetworkGenerate/Source/Main.cpp.o
+.PHONY : Source/App/NetworkGenerate/Source/Main.o
+
+# target to build an object file
+Source/App/NetworkGenerate/Source/Main.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/NetworkGenerate.dir/build.make CMakeFiles/NetworkGenerate.dir/Source/App/NetworkGenerate/Source/Main.cpp.o
+.PHONY : Source/App/NetworkGenerate/Source/Main.cpp.o
+
+Source/App/NetworkGenerate/Source/Main.i: Source/App/NetworkGenerate/Source/Main.cpp.i
+.PHONY : Source/App/NetworkGenerate/Source/Main.i
+
+# target to preprocess a source file
+Source/App/NetworkGenerate/Source/Main.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/NetworkGenerate.dir/build.make CMakeFiles/NetworkGenerate.dir/Source/App/NetworkGenerate/Source/Main.cpp.i
+.PHONY : Source/App/NetworkGenerate/Source/Main.cpp.i
+
+Source/App/NetworkGenerate/Source/Main.s: Source/App/NetworkGenerate/Source/Main.cpp.s
+.PHONY : Source/App/NetworkGenerate/Source/Main.s
+
+# target to generate assembly for a file
+Source/App/NetworkGenerate/Source/Main.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/NetworkGenerate.dir/build.make CMakeFiles/NetworkGenerate.dir/Source/App/NetworkGenerate/Source/Main.cpp.s
+.PHONY : Source/App/NetworkGenerate/Source/Main.cpp.s
 
 Source/Library/Core/Source/BinaryPacket.o: Source/Library/Core/Source/BinaryPacket.cpp.o
 .PHONY : Source/Library/Core/Source/BinaryPacket.o
@@ -1454,6 +1653,150 @@ Source/Library/Executor/Source/Tree.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Executor.dir/build.make CMakeFiles/Executor.dir/Source/Library/Executor/Source/Tree.cpp.s
 .PHONY : Source/Library/Executor/Source/Tree.cpp.s
 
+Source/Library/Network/Source/AgentBase.o: Source/Library/Network/Source/AgentBase.cpp.o
+.PHONY : Source/Library/Network/Source/AgentBase.o
+
+# target to build an object file
+Source/Library/Network/Source/AgentBase.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/AgentBase.cpp.o
+.PHONY : Source/Library/Network/Source/AgentBase.cpp.o
+
+Source/Library/Network/Source/AgentBase.i: Source/Library/Network/Source/AgentBase.cpp.i
+.PHONY : Source/Library/Network/Source/AgentBase.i
+
+# target to preprocess a source file
+Source/Library/Network/Source/AgentBase.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/AgentBase.cpp.i
+.PHONY : Source/Library/Network/Source/AgentBase.cpp.i
+
+Source/Library/Network/Source/AgentBase.s: Source/Library/Network/Source/AgentBase.cpp.s
+.PHONY : Source/Library/Network/Source/AgentBase.s
+
+# target to generate assembly for a file
+Source/Library/Network/Source/AgentBase.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/AgentBase.cpp.s
+.PHONY : Source/Library/Network/Source/AgentBase.cpp.s
+
+Source/Library/Network/Source/ConnectionManager.o: Source/Library/Network/Source/ConnectionManager.cpp.o
+.PHONY : Source/Library/Network/Source/ConnectionManager.o
+
+# target to build an object file
+Source/Library/Network/Source/ConnectionManager.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/ConnectionManager.cpp.o
+.PHONY : Source/Library/Network/Source/ConnectionManager.cpp.o
+
+Source/Library/Network/Source/ConnectionManager.i: Source/Library/Network/Source/ConnectionManager.cpp.i
+.PHONY : Source/Library/Network/Source/ConnectionManager.i
+
+# target to preprocess a source file
+Source/Library/Network/Source/ConnectionManager.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/ConnectionManager.cpp.i
+.PHONY : Source/Library/Network/Source/ConnectionManager.cpp.i
+
+Source/Library/Network/Source/ConnectionManager.s: Source/Library/Network/Source/ConnectionManager.cpp.s
+.PHONY : Source/Library/Network/Source/ConnectionManager.s
+
+# target to generate assembly for a file
+Source/Library/Network/Source/ConnectionManager.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/ConnectionManager.cpp.s
+.PHONY : Source/Library/Network/Source/ConnectionManager.cpp.s
+
+Source/Library/Network/Source/EnetTransport.o: Source/Library/Network/Source/EnetTransport.cpp.o
+.PHONY : Source/Library/Network/Source/EnetTransport.o
+
+# target to build an object file
+Source/Library/Network/Source/EnetTransport.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/EnetTransport.cpp.o
+.PHONY : Source/Library/Network/Source/EnetTransport.cpp.o
+
+Source/Library/Network/Source/EnetTransport.i: Source/Library/Network/Source/EnetTransport.cpp.i
+.PHONY : Source/Library/Network/Source/EnetTransport.i
+
+# target to preprocess a source file
+Source/Library/Network/Source/EnetTransport.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/EnetTransport.cpp.i
+.PHONY : Source/Library/Network/Source/EnetTransport.cpp.i
+
+Source/Library/Network/Source/EnetTransport.s: Source/Library/Network/Source/EnetTransport.cpp.s
+.PHONY : Source/Library/Network/Source/EnetTransport.s
+
+# target to generate assembly for a file
+Source/Library/Network/Source/EnetTransport.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/EnetTransport.cpp.s
+.PHONY : Source/Library/Network/Source/EnetTransport.cpp.s
+
+Source/Library/Network/Source/NetworkLogger.o: Source/Library/Network/Source/NetworkLogger.cpp.o
+.PHONY : Source/Library/Network/Source/NetworkLogger.o
+
+# target to build an object file
+Source/Library/Network/Source/NetworkLogger.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/NetworkLogger.cpp.o
+.PHONY : Source/Library/Network/Source/NetworkLogger.cpp.o
+
+Source/Library/Network/Source/NetworkLogger.i: Source/Library/Network/Source/NetworkLogger.cpp.i
+.PHONY : Source/Library/Network/Source/NetworkLogger.i
+
+# target to preprocess a source file
+Source/Library/Network/Source/NetworkLogger.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/NetworkLogger.cpp.i
+.PHONY : Source/Library/Network/Source/NetworkLogger.cpp.i
+
+Source/Library/Network/Source/NetworkLogger.s: Source/Library/Network/Source/NetworkLogger.cpp.s
+.PHONY : Source/Library/Network/Source/NetworkLogger.s
+
+# target to generate assembly for a file
+Source/Library/Network/Source/NetworkLogger.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/NetworkLogger.cpp.s
+.PHONY : Source/Library/Network/Source/NetworkLogger.cpp.s
+
+Source/Library/Network/Source/Node.o: Source/Library/Network/Source/Node.cpp.o
+.PHONY : Source/Library/Network/Source/Node.o
+
+# target to build an object file
+Source/Library/Network/Source/Node.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/Node.cpp.o
+.PHONY : Source/Library/Network/Source/Node.cpp.o
+
+Source/Library/Network/Source/Node.i: Source/Library/Network/Source/Node.cpp.i
+.PHONY : Source/Library/Network/Source/Node.i
+
+# target to preprocess a source file
+Source/Library/Network/Source/Node.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/Node.cpp.i
+.PHONY : Source/Library/Network/Source/Node.cpp.i
+
+Source/Library/Network/Source/Node.s: Source/Library/Network/Source/Node.cpp.s
+.PHONY : Source/Library/Network/Source/Node.s
+
+# target to generate assembly for a file
+Source/Library/Network/Source/Node.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/Node.cpp.s
+.PHONY : Source/Library/Network/Source/Node.cpp.s
+
+Source/Library/Network/Source/PeerDiscovery.o: Source/Library/Network/Source/PeerDiscovery.cpp.o
+.PHONY : Source/Library/Network/Source/PeerDiscovery.o
+
+# target to build an object file
+Source/Library/Network/Source/PeerDiscovery.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/PeerDiscovery.cpp.o
+.PHONY : Source/Library/Network/Source/PeerDiscovery.cpp.o
+
+Source/Library/Network/Source/PeerDiscovery.i: Source/Library/Network/Source/PeerDiscovery.cpp.i
+.PHONY : Source/Library/Network/Source/PeerDiscovery.i
+
+# target to preprocess a source file
+Source/Library/Network/Source/PeerDiscovery.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/PeerDiscovery.cpp.i
+.PHONY : Source/Library/Network/Source/PeerDiscovery.cpp.i
+
+Source/Library/Network/Source/PeerDiscovery.s: Source/Library/Network/Source/PeerDiscovery.cpp.s
+.PHONY : Source/Library/Network/Source/PeerDiscovery.s
+
+# target to generate assembly for a file
+Source/Library/Network/Source/PeerDiscovery.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Network.dir/build.make CMakeFiles/Network.dir/Source/Library/Network/Source/PeerDiscovery.cpp.s
+.PHONY : Source/Library/Network/Source/PeerDiscovery.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -1461,28 +1804,45 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
+	@echo "... install"
+	@echo "... install/local"
+	@echo "... install/strip"
+	@echo "... list_install_components"
 	@echo "... rebuild_cache"
+	@echo "... CalculationTest"
 	@echo "... CommonLang"
 	@echo "... Console"
+	@echo "... ConsoleConnectionTest"
 	@echo "... ConsoleLib"
 	@echo "... Core"
 	@echo "... Executor"
 	@echo "... FixedCoreSuite"
+	@echo "... IntegratedConsoleTest"
 	@echo "... KaiTest"
 	@echo "... LogTest"
+	@echo "... Network"
+	@echo "... NetworkGenerate"
 	@echo "... PerformanceTests"
 	@echo "... PiLang"
 	@echo "... RhoLang"
 	@echo "... SimpleColorExample"
+	@echo "... TauLang"
 	@echo "... TestConsole"
 	@echo "... TestCore"
 	@echo "... TestPi"
 	@echo "... TestRho"
 	@echo "... TestSimpleMock"
+	@echo "... TestTau"
 	@echo "... TestWindow"
+	@echo "... Test_Network"
+	@echo "... Test_ProxyGeneration"
+	@echo "... enet"
 	@echo "... Source/App/Console/Source/Main.o"
 	@echo "... Source/App/Console/Source/Main.i"
 	@echo "... Source/App/Console/Source/Main.s"
+	@echo "... Source/App/NetworkGenerate/Source/Main.o"
+	@echo "... Source/App/NetworkGenerate/Source/Main.i"
+	@echo "... Source/App/NetworkGenerate/Source/Main.s"
 	@echo "... Source/Library/Core/Source/BinaryPacket.o"
 	@echo "... Source/Library/Core/Source/BinaryPacket.i"
 	@echo "... Source/Library/Core/Source/BinaryPacket.s"
@@ -1618,6 +1978,24 @@ help:
 	@echo "... Source/Library/Executor/Source/Tree.o"
 	@echo "... Source/Library/Executor/Source/Tree.i"
 	@echo "... Source/Library/Executor/Source/Tree.s"
+	@echo "... Source/Library/Network/Source/AgentBase.o"
+	@echo "... Source/Library/Network/Source/AgentBase.i"
+	@echo "... Source/Library/Network/Source/AgentBase.s"
+	@echo "... Source/Library/Network/Source/ConnectionManager.o"
+	@echo "... Source/Library/Network/Source/ConnectionManager.i"
+	@echo "... Source/Library/Network/Source/ConnectionManager.s"
+	@echo "... Source/Library/Network/Source/EnetTransport.o"
+	@echo "... Source/Library/Network/Source/EnetTransport.i"
+	@echo "... Source/Library/Network/Source/EnetTransport.s"
+	@echo "... Source/Library/Network/Source/NetworkLogger.o"
+	@echo "... Source/Library/Network/Source/NetworkLogger.i"
+	@echo "... Source/Library/Network/Source/NetworkLogger.s"
+	@echo "... Source/Library/Network/Source/Node.o"
+	@echo "... Source/Library/Network/Source/Node.i"
+	@echo "... Source/Library/Network/Source/Node.s"
+	@echo "... Source/Library/Network/Source/PeerDiscovery.o"
+	@echo "... Source/Library/Network/Source/PeerDiscovery.i"
+	@echo "... Source/Library/Network/Source/PeerDiscovery.s"
 .PHONY : help
 
 

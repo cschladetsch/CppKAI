@@ -2062,12 +2062,17 @@ bool Console::StartNetworking(int listenPort) {
     cout << rang::fg::cyan << "Starting network console on port " << listenPort_ 
          << rang::fg::reset << endl;
     
-    if (!peer_->Startup(32, net::NetAddress("0.0.0.0",
-                                           static_cast<unsigned short>(listenPort_)))) {
-        cerr << rang::fg::red << "Failed to start network listener" 
-             << rang::fg::reset << endl;
-        peer_.reset();
-        return false;
+    net::NetAddress bindAddress("0.0.0.0",
+                                static_cast<unsigned short>(listenPort_));
+    if (!peer_->Startup(32, bindAddress)) {
+        bindAddress = net::NetAddress("127.0.0.1",
+                                      static_cast<unsigned short>(listenPort_));
+        if (!peer_->Startup(32, bindAddress)) {
+            cerr << rang::fg::red << "Failed to start network listener"
+                 << rang::fg::reset << endl;
+            peer_.reset();
+            return false;
+        }
     }
     
     peer_->SetMaximumIncomingConnections(32);
@@ -2076,8 +2081,9 @@ bool Console::StartNetworking(int listenPort) {
     
     messageThread_ = thread(&Console::ProcessNetworkMessages, this);
     
-    cout << rang::fg::green << "Network console listening on port " << listenPort_ 
-         << " (ID: " << consoleId_ << ")" << rang::fg::reset << endl;
+    cout << rang::fg::green << "Network console listening on "
+         << bindAddress.host << ":" << listenPort_ << " (ID: " << consoleId_
+         << ")" << rang::fg::reset << endl;
     return true;
 }
 

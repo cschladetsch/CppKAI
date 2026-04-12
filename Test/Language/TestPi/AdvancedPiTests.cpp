@@ -347,12 +347,7 @@ TEST_F(AdvancedPiTests, DivisionByZero) {
     data_->Push(num);
     data_->Push(zero);
 
-    // Division by zero behavior may vary - test that operation completes
-    exec_->Perform(Operation::Divide);
-
-    // The operation completed (errors may be logged but not thrown as
-    // exceptions) This is acceptable behavior for this system
-    SUCCEED();
+    EXPECT_THROW(exec_->Perform(Operation::Divide), Exception::Base);
 }
 
 // Test floating point comparison with epsilon

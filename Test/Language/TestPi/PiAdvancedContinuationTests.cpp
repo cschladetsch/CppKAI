@@ -180,8 +180,8 @@ TEST_F(TestPiAdvancedContinuations, TestFilterChainContinuation) {
 // Test 10: Mutual recursion with continuations
 TEST_F(TestPiAdvancedContinuations, TestMutualRecursion) {
     const std::string script = R"(
-        { dup 2 % 0 == } 'is_even #
-        { dup 2 % 0 == not } 'is_odd #
+        { 2 % 0 == } 'is_even #
+        { 2 % 0 == not } 'is_odd #
         
         7 is_odd &
         8 is_even &

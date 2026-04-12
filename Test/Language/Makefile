@@ -85,6 +85,51 @@ rebuild_cache:
 rebuild_cache/fast: rebuild_cache
 .PHONY : rebuild_cache/fast
 
+# Special rule for the target list_install_components
+list_install_components:
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Available install components are: \"Unspecified\""
+.PHONY : list_install_components
+
+# Special rule for the target list_install_components
+list_install_components/fast: list_install_components
+.PHONY : list_install_components/fast
+
+# Special rule for the target install
+install: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Install the project..."
+	/usr/bin/cmake -P cmake_install.cmake
+.PHONY : install
+
+# Special rule for the target install
+install/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Install the project..."
+	/usr/bin/cmake -P cmake_install.cmake
+.PHONY : install/fast
+
+# Special rule for the target install/local
+install/local: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing only the local directory..."
+	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local
+
+# Special rule for the target install/local
+install/local/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing only the local directory..."
+	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local/fast
+
+# Special rule for the target install/strip
+install/strip: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing the project stripped..."
+	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip
+
+# Special rule for the target install/strip
+install/strip/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing the project stripped..."
+	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip/fast
+
 # The main all target
 all: cmake_check_build_system
 	cd /home/christian/local/repos/KAI && $(CMAKE_COMMAND) -E cmake_progress_start /home/christian/local/repos/KAI/CMakeFiles /home/christian/local/repos/KAI/Test/Language//CMakeFiles/progress.marks
@@ -115,6 +160,20 @@ preinstall/fast:
 depend:
 	cd /home/christian/local/repos/KAI && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
+
+# Convenience name for target.
+Test/Language/CMakeFiles/TestTau.dir/rule:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/Language/CMakeFiles/TestTau.dir/rule
+.PHONY : Test/Language/CMakeFiles/TestTau.dir/rule
+
+# Convenience name for target.
+TestTau: Test/Language/CMakeFiles/TestTau.dir/rule
+.PHONY : TestTau
+
+# fast build rule for target.
+TestTau/fast:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/build
+.PHONY : TestTau/fast
 
 # Convenience name for target.
 Test/Language/CMakeFiles/TestRho.dir/rule:
@@ -149,6 +208,7 @@ TestLangCommon.o: TestLangCommon.cpp.o
 
 # target to build an object file
 TestLangCommon.cpp.o:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestLangCommon.cpp.o
 	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestLangCommon.cpp.o
 	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/TestLangCommon.cpp.o
 .PHONY : TestLangCommon.cpp.o
@@ -158,6 +218,7 @@ TestLangCommon.i: TestLangCommon.cpp.i
 
 # target to preprocess a source file
 TestLangCommon.cpp.i:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestLangCommon.cpp.i
 	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestLangCommon.cpp.i
 	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/TestLangCommon.cpp.i
 .PHONY : TestLangCommon.cpp.i
@@ -167,6 +228,7 @@ TestLangCommon.s: TestLangCommon.cpp.s
 
 # target to generate assembly for a file
 TestLangCommon.cpp.s:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestLangCommon.cpp.s
 	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestLangCommon.cpp.s
 	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/TestLangCommon.cpp.s
 .PHONY : TestLangCommon.cpp.s
@@ -3147,11 +3209,492 @@ TestRho/WhileLoopTest.cpp.s:
 	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/TestRho/WhileLoopTest.cpp.s
 .PHONY : TestRho/WhileLoopTest.cpp.s
 
+TestTau/ChatP2PConsoleTest.o: TestTau/ChatP2PConsoleTest.cpp.o
+.PHONY : TestTau/ChatP2PConsoleTest.o
+
+# target to build an object file
+TestTau/ChatP2PConsoleTest.cpp.o:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/ChatP2PConsoleTest.cpp.o
+.PHONY : TestTau/ChatP2PConsoleTest.cpp.o
+
+TestTau/ChatP2PConsoleTest.i: TestTau/ChatP2PConsoleTest.cpp.i
+.PHONY : TestTau/ChatP2PConsoleTest.i
+
+# target to preprocess a source file
+TestTau/ChatP2PConsoleTest.cpp.i:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/ChatP2PConsoleTest.cpp.i
+.PHONY : TestTau/ChatP2PConsoleTest.cpp.i
+
+TestTau/ChatP2PConsoleTest.s: TestTau/ChatP2PConsoleTest.cpp.s
+.PHONY : TestTau/ChatP2PConsoleTest.s
+
+# target to generate assembly for a file
+TestTau/ChatP2PConsoleTest.cpp.s:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/ChatP2PConsoleTest.cpp.s
+.PHONY : TestTau/ChatP2PConsoleTest.cpp.s
+
+TestTau/NetworkConnectionTests.o: TestTau/NetworkConnectionTests.cpp.o
+.PHONY : TestTau/NetworkConnectionTests.o
+
+# target to build an object file
+TestTau/NetworkConnectionTests.cpp.o:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/NetworkConnectionTests.cpp.o
+.PHONY : TestTau/NetworkConnectionTests.cpp.o
+
+TestTau/NetworkConnectionTests.i: TestTau/NetworkConnectionTests.cpp.i
+.PHONY : TestTau/NetworkConnectionTests.i
+
+# target to preprocess a source file
+TestTau/NetworkConnectionTests.cpp.i:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/NetworkConnectionTests.cpp.i
+.PHONY : TestTau/NetworkConnectionTests.cpp.i
+
+TestTau/NetworkConnectionTests.s: TestTau/NetworkConnectionTests.cpp.s
+.PHONY : TestTau/NetworkConnectionTests.s
+
+# target to generate assembly for a file
+TestTau/NetworkConnectionTests.cpp.s:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/NetworkConnectionTests.cpp.s
+.PHONY : TestTau/NetworkConnectionTests.cpp.s
+
+TestTau/TauAdvancedTypeTests.o: TestTau/TauAdvancedTypeTests.cpp.o
+.PHONY : TestTau/TauAdvancedTypeTests.o
+
+# target to build an object file
+TestTau/TauAdvancedTypeTests.cpp.o:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauAdvancedTypeTests.cpp.o
+.PHONY : TestTau/TauAdvancedTypeTests.cpp.o
+
+TestTau/TauAdvancedTypeTests.i: TestTau/TauAdvancedTypeTests.cpp.i
+.PHONY : TestTau/TauAdvancedTypeTests.i
+
+# target to preprocess a source file
+TestTau/TauAdvancedTypeTests.cpp.i:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauAdvancedTypeTests.cpp.i
+.PHONY : TestTau/TauAdvancedTypeTests.cpp.i
+
+TestTau/TauAdvancedTypeTests.s: TestTau/TauAdvancedTypeTests.cpp.s
+.PHONY : TestTau/TauAdvancedTypeTests.s
+
+# target to generate assembly for a file
+TestTau/TauAdvancedTypeTests.cpp.s:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauAdvancedTypeTests.cpp.s
+.PHONY : TestTau/TauAdvancedTypeTests.cpp.s
+
+TestTau/TauAsyncTests.o: TestTau/TauAsyncTests.cpp.o
+.PHONY : TestTau/TauAsyncTests.o
+
+# target to build an object file
+TestTau/TauAsyncTests.cpp.o:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauAsyncTests.cpp.o
+.PHONY : TestTau/TauAsyncTests.cpp.o
+
+TestTau/TauAsyncTests.i: TestTau/TauAsyncTests.cpp.i
+.PHONY : TestTau/TauAsyncTests.i
+
+# target to preprocess a source file
+TestTau/TauAsyncTests.cpp.i:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauAsyncTests.cpp.i
+.PHONY : TestTau/TauAsyncTests.cpp.i
+
+TestTau/TauAsyncTests.s: TestTau/TauAsyncTests.cpp.s
+.PHONY : TestTau/TauAsyncTests.s
+
+# target to generate assembly for a file
+TestTau/TauAsyncTests.cpp.s:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauAsyncTests.cpp.s
+.PHONY : TestTau/TauAsyncTests.cpp.s
+
+TestTau/TauAttributeTests.o: TestTau/TauAttributeTests.cpp.o
+.PHONY : TestTau/TauAttributeTests.o
+
+# target to build an object file
+TestTau/TauAttributeTests.cpp.o:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauAttributeTests.cpp.o
+.PHONY : TestTau/TauAttributeTests.cpp.o
+
+TestTau/TauAttributeTests.i: TestTau/TauAttributeTests.cpp.i
+.PHONY : TestTau/TauAttributeTests.i
+
+# target to preprocess a source file
+TestTau/TauAttributeTests.cpp.i:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauAttributeTests.cpp.i
+.PHONY : TestTau/TauAttributeTests.cpp.i
+
+TestTau/TauAttributeTests.s: TestTau/TauAttributeTests.cpp.s
+.PHONY : TestTau/TauAttributeTests.s
+
+# target to generate assembly for a file
+TestTau/TauAttributeTests.cpp.s:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauAttributeTests.cpp.s
+.PHONY : TestTau/TauAttributeTests.cpp.s
+
+TestTau/TauClassTests.o: TestTau/TauClassTests.cpp.o
+.PHONY : TestTau/TauClassTests.o
+
+# target to build an object file
+TestTau/TauClassTests.cpp.o:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauClassTests.cpp.o
+.PHONY : TestTau/TauClassTests.cpp.o
+
+TestTau/TauClassTests.i: TestTau/TauClassTests.cpp.i
+.PHONY : TestTau/TauClassTests.i
+
+# target to preprocess a source file
+TestTau/TauClassTests.cpp.i:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauClassTests.cpp.i
+.PHONY : TestTau/TauClassTests.cpp.i
+
+TestTau/TauClassTests.s: TestTau/TauClassTests.cpp.s
+.PHONY : TestTau/TauClassTests.s
+
+# target to generate assembly for a file
+TestTau/TauClassTests.cpp.s:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauClassTests.cpp.s
+.PHONY : TestTau/TauClassTests.cpp.s
+
+TestTau/TauCodeGenTests.o: TestTau/TauCodeGenTests.cpp.o
+.PHONY : TestTau/TauCodeGenTests.o
+
+# target to build an object file
+TestTau/TauCodeGenTests.cpp.o:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauCodeGenTests.cpp.o
+.PHONY : TestTau/TauCodeGenTests.cpp.o
+
+TestTau/TauCodeGenTests.i: TestTau/TauCodeGenTests.cpp.i
+.PHONY : TestTau/TauCodeGenTests.i
+
+# target to preprocess a source file
+TestTau/TauCodeGenTests.cpp.i:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauCodeGenTests.cpp.i
+.PHONY : TestTau/TauCodeGenTests.cpp.i
+
+TestTau/TauCodeGenTests.s: TestTau/TauCodeGenTests.cpp.s
+.PHONY : TestTau/TauCodeGenTests.s
+
+# target to generate assembly for a file
+TestTau/TauCodeGenTests.cpp.s:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauCodeGenTests.cpp.s
+.PHONY : TestTau/TauCodeGenTests.cpp.s
+
+TestTau/TauCodeGenerationExtensiveTests.o: TestTau/TauCodeGenerationExtensiveTests.cpp.o
+.PHONY : TestTau/TauCodeGenerationExtensiveTests.o
+
+# target to build an object file
+TestTau/TauCodeGenerationExtensiveTests.cpp.o:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauCodeGenerationExtensiveTests.cpp.o
+.PHONY : TestTau/TauCodeGenerationExtensiveTests.cpp.o
+
+TestTau/TauCodeGenerationExtensiveTests.i: TestTau/TauCodeGenerationExtensiveTests.cpp.i
+.PHONY : TestTau/TauCodeGenerationExtensiveTests.i
+
+# target to preprocess a source file
+TestTau/TauCodeGenerationExtensiveTests.cpp.i:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauCodeGenerationExtensiveTests.cpp.i
+.PHONY : TestTau/TauCodeGenerationExtensiveTests.cpp.i
+
+TestTau/TauCodeGenerationExtensiveTests.s: TestTau/TauCodeGenerationExtensiveTests.cpp.s
+.PHONY : TestTau/TauCodeGenerationExtensiveTests.s
+
+# target to generate assembly for a file
+TestTau/TauCodeGenerationExtensiveTests.cpp.s:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauCodeGenerationExtensiveTests.cpp.s
+.PHONY : TestTau/TauCodeGenerationExtensiveTests.cpp.s
+
+TestTau/TauCodeGenerationTests.o: TestTau/TauCodeGenerationTests.cpp.o
+.PHONY : TestTau/TauCodeGenerationTests.o
+
+# target to build an object file
+TestTau/TauCodeGenerationTests.cpp.o:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauCodeGenerationTests.cpp.o
+.PHONY : TestTau/TauCodeGenerationTests.cpp.o
+
+TestTau/TauCodeGenerationTests.i: TestTau/TauCodeGenerationTests.cpp.i
+.PHONY : TestTau/TauCodeGenerationTests.i
+
+# target to preprocess a source file
+TestTau/TauCodeGenerationTests.cpp.i:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauCodeGenerationTests.cpp.i
+.PHONY : TestTau/TauCodeGenerationTests.cpp.i
+
+TestTau/TauCodeGenerationTests.s: TestTau/TauCodeGenerationTests.cpp.s
+.PHONY : TestTau/TauCodeGenerationTests.s
+
+# target to generate assembly for a file
+TestTau/TauCodeGenerationTests.cpp.s:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauCodeGenerationTests.cpp.s
+.PHONY : TestTau/TauCodeGenerationTests.cpp.s
+
+TestTau/TauComprehensiveTests.o: TestTau/TauComprehensiveTests.cpp.o
+.PHONY : TestTau/TauComprehensiveTests.o
+
+# target to build an object file
+TestTau/TauComprehensiveTests.cpp.o:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauComprehensiveTests.cpp.o
+.PHONY : TestTau/TauComprehensiveTests.cpp.o
+
+TestTau/TauComprehensiveTests.i: TestTau/TauComprehensiveTests.cpp.i
+.PHONY : TestTau/TauComprehensiveTests.i
+
+# target to preprocess a source file
+TestTau/TauComprehensiveTests.cpp.i:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauComprehensiveTests.cpp.i
+.PHONY : TestTau/TauComprehensiveTests.cpp.i
+
+TestTau/TauComprehensiveTests.s: TestTau/TauComprehensiveTests.cpp.s
+.PHONY : TestTau/TauComprehensiveTests.s
+
+# target to generate assembly for a file
+TestTau/TauComprehensiveTests.cpp.s:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauComprehensiveTests.cpp.s
+.PHONY : TestTau/TauComprehensiveTests.cpp.s
+
+TestTau/TauEdgeCaseTests.o: TestTau/TauEdgeCaseTests.cpp.o
+.PHONY : TestTau/TauEdgeCaseTests.o
+
+# target to build an object file
+TestTau/TauEdgeCaseTests.cpp.o:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauEdgeCaseTests.cpp.o
+.PHONY : TestTau/TauEdgeCaseTests.cpp.o
+
+TestTau/TauEdgeCaseTests.i: TestTau/TauEdgeCaseTests.cpp.i
+.PHONY : TestTau/TauEdgeCaseTests.i
+
+# target to preprocess a source file
+TestTau/TauEdgeCaseTests.cpp.i:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauEdgeCaseTests.cpp.i
+.PHONY : TestTau/TauEdgeCaseTests.cpp.i
+
+TestTau/TauEdgeCaseTests.s: TestTau/TauEdgeCaseTests.cpp.s
+.PHONY : TestTau/TauEdgeCaseTests.s
+
+# target to generate assembly for a file
+TestTau/TauEdgeCaseTests.cpp.s:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauEdgeCaseTests.cpp.s
+.PHONY : TestTau/TauEdgeCaseTests.cpp.s
+
+TestTau/TauFutureProxyTests.o: TestTau/TauFutureProxyTests.cpp.o
+.PHONY : TestTau/TauFutureProxyTests.o
+
+# target to build an object file
+TestTau/TauFutureProxyTests.cpp.o:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauFutureProxyTests.cpp.o
+.PHONY : TestTau/TauFutureProxyTests.cpp.o
+
+TestTau/TauFutureProxyTests.i: TestTau/TauFutureProxyTests.cpp.i
+.PHONY : TestTau/TauFutureProxyTests.i
+
+# target to preprocess a source file
+TestTau/TauFutureProxyTests.cpp.i:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauFutureProxyTests.cpp.i
+.PHONY : TestTau/TauFutureProxyTests.cpp.i
+
+TestTau/TauFutureProxyTests.s: TestTau/TauFutureProxyTests.cpp.s
+.PHONY : TestTau/TauFutureProxyTests.s
+
+# target to generate assembly for a file
+TestTau/TauFutureProxyTests.cpp.s:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauFutureProxyTests.cpp.s
+.PHONY : TestTau/TauFutureProxyTests.cpp.s
+
+TestTau/TauGenerateStructTests.o: TestTau/TauGenerateStructTests.cpp.o
+.PHONY : TestTau/TauGenerateStructTests.o
+
+# target to build an object file
+TestTau/TauGenerateStructTests.cpp.o:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauGenerateStructTests.cpp.o
+.PHONY : TestTau/TauGenerateStructTests.cpp.o
+
+TestTau/TauGenerateStructTests.i: TestTau/TauGenerateStructTests.cpp.i
+.PHONY : TestTau/TauGenerateStructTests.i
+
+# target to preprocess a source file
+TestTau/TauGenerateStructTests.cpp.i:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauGenerateStructTests.cpp.i
+.PHONY : TestTau/TauGenerateStructTests.cpp.i
+
+TestTau/TauGenerateStructTests.s: TestTau/TauGenerateStructTests.cpp.s
+.PHONY : TestTau/TauGenerateStructTests.s
+
+# target to generate assembly for a file
+TestTau/TauGenerateStructTests.cpp.s:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauGenerateStructTests.cpp.s
+.PHONY : TestTau/TauGenerateStructTests.cpp.s
+
+TestTau/TauInterfaceTests.o: TestTau/TauInterfaceTests.cpp.o
+.PHONY : TestTau/TauInterfaceTests.o
+
+# target to build an object file
+TestTau/TauInterfaceTests.cpp.o:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauInterfaceTests.cpp.o
+.PHONY : TestTau/TauInterfaceTests.cpp.o
+
+TestTau/TauInterfaceTests.i: TestTau/TauInterfaceTests.cpp.i
+.PHONY : TestTau/TauInterfaceTests.i
+
+# target to preprocess a source file
+TestTau/TauInterfaceTests.cpp.i:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauInterfaceTests.cpp.i
+.PHONY : TestTau/TauInterfaceTests.cpp.i
+
+TestTau/TauInterfaceTests.s: TestTau/TauInterfaceTests.cpp.s
+.PHONY : TestTau/TauInterfaceTests.s
+
+# target to generate assembly for a file
+TestTau/TauInterfaceTests.cpp.s:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauInterfaceTests.cpp.s
+.PHONY : TestTau/TauInterfaceTests.cpp.s
+
+TestTau/TauNamespaceTests.o: TestTau/TauNamespaceTests.cpp.o
+.PHONY : TestTau/TauNamespaceTests.o
+
+# target to build an object file
+TestTau/TauNamespaceTests.cpp.o:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauNamespaceTests.cpp.o
+.PHONY : TestTau/TauNamespaceTests.cpp.o
+
+TestTau/TauNamespaceTests.i: TestTau/TauNamespaceTests.cpp.i
+.PHONY : TestTau/TauNamespaceTests.i
+
+# target to preprocess a source file
+TestTau/TauNamespaceTests.cpp.i:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauNamespaceTests.cpp.i
+.PHONY : TestTau/TauNamespaceTests.cpp.i
+
+TestTau/TauNamespaceTests.s: TestTau/TauNamespaceTests.cpp.s
+.PHONY : TestTau/TauNamespaceTests.s
+
+# target to generate assembly for a file
+TestTau/TauNamespaceTests.cpp.s:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauNamespaceTests.cpp.s
+.PHONY : TestTau/TauNamespaceTests.cpp.s
+
+TestTau/TauProxyAgentCommunicationTest.o: TestTau/TauProxyAgentCommunicationTest.cpp.o
+.PHONY : TestTau/TauProxyAgentCommunicationTest.o
+
+# target to build an object file
+TestTau/TauProxyAgentCommunicationTest.cpp.o:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauProxyAgentCommunicationTest.cpp.o
+.PHONY : TestTau/TauProxyAgentCommunicationTest.cpp.o
+
+TestTau/TauProxyAgentCommunicationTest.i: TestTau/TauProxyAgentCommunicationTest.cpp.i
+.PHONY : TestTau/TauProxyAgentCommunicationTest.i
+
+# target to preprocess a source file
+TestTau/TauProxyAgentCommunicationTest.cpp.i:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauProxyAgentCommunicationTest.cpp.i
+.PHONY : TestTau/TauProxyAgentCommunicationTest.cpp.i
+
+TestTau/TauProxyAgentCommunicationTest.s: TestTau/TauProxyAgentCommunicationTest.cpp.s
+.PHONY : TestTau/TauProxyAgentCommunicationTest.s
+
+# target to generate assembly for a file
+TestTau/TauProxyAgentCommunicationTest.cpp.s:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauProxyAgentCommunicationTest.cpp.s
+.PHONY : TestTau/TauProxyAgentCommunicationTest.cpp.s
+
+TestTau/TauSeparateGenerationTests.o: TestTau/TauSeparateGenerationTests.cpp.o
+.PHONY : TestTau/TauSeparateGenerationTests.o
+
+# target to build an object file
+TestTau/TauSeparateGenerationTests.cpp.o:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauSeparateGenerationTests.cpp.o
+.PHONY : TestTau/TauSeparateGenerationTests.cpp.o
+
+TestTau/TauSeparateGenerationTests.i: TestTau/TauSeparateGenerationTests.cpp.i
+.PHONY : TestTau/TauSeparateGenerationTests.i
+
+# target to preprocess a source file
+TestTau/TauSeparateGenerationTests.cpp.i:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauSeparateGenerationTests.cpp.i
+.PHONY : TestTau/TauSeparateGenerationTests.cpp.i
+
+TestTau/TauSeparateGenerationTests.s: TestTau/TauSeparateGenerationTests.cpp.s
+.PHONY : TestTau/TauSeparateGenerationTests.s
+
+# target to generate assembly for a file
+TestTau/TauSeparateGenerationTests.cpp.s:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauSeparateGenerationTests.cpp.s
+.PHONY : TestTau/TauSeparateGenerationTests.cpp.s
+
+TestTau/TauStressTests.o: TestTau/TauStressTests.cpp.o
+.PHONY : TestTau/TauStressTests.o
+
+# target to build an object file
+TestTau/TauStressTests.cpp.o:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauStressTests.cpp.o
+.PHONY : TestTau/TauStressTests.cpp.o
+
+TestTau/TauStressTests.i: TestTau/TauStressTests.cpp.i
+.PHONY : TestTau/TauStressTests.i
+
+# target to preprocess a source file
+TestTau/TauStressTests.cpp.i:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauStressTests.cpp.i
+.PHONY : TestTau/TauStressTests.cpp.i
+
+TestTau/TauStressTests.s: TestTau/TauStressTests.cpp.s
+.PHONY : TestTau/TauStressTests.s
+
+# target to generate assembly for a file
+TestTau/TauStressTests.cpp.s:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauStressTests.cpp.s
+.PHONY : TestTau/TauStressTests.cpp.s
+
+TestTau/TauTemplateTests.o: TestTau/TauTemplateTests.cpp.o
+.PHONY : TestTau/TauTemplateTests.o
+
+# target to build an object file
+TestTau/TauTemplateTests.cpp.o:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauTemplateTests.cpp.o
+.PHONY : TestTau/TauTemplateTests.cpp.o
+
+TestTau/TauTemplateTests.i: TestTau/TauTemplateTests.cpp.i
+.PHONY : TestTau/TauTemplateTests.i
+
+# target to preprocess a source file
+TestTau/TauTemplateTests.cpp.i:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauTemplateTests.cpp.i
+.PHONY : TestTau/TauTemplateTests.cpp.i
+
+TestTau/TauTemplateTests.s: TestTau/TauTemplateTests.cpp.s
+.PHONY : TestTau/TauTemplateTests.s
+
+# target to generate assembly for a file
+TestTau/TauTemplateTests.cpp.s:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TauTemplateTests.cpp.s
+.PHONY : TestTau/TauTemplateTests.cpp.s
+
+TestTau/TestTau.o: TestTau/TestTau.cpp.o
+.PHONY : TestTau/TestTau.o
+
+# target to build an object file
+TestTau/TestTau.cpp.o:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TestTau.cpp.o
+.PHONY : TestTau/TestTau.cpp.o
+
+TestTau/TestTau.i: TestTau/TestTau.cpp.i
+.PHONY : TestTau/TestTau.i
+
+# target to preprocess a source file
+TestTau/TestTau.cpp.i:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TestTau.cpp.i
+.PHONY : TestTau/TestTau.cpp.i
+
+TestTau/TestTau.s: TestTau/TestTau.cpp.s
+.PHONY : TestTau/TestTau.s
+
+# target to generate assembly for a file
+TestTau/TestTau.cpp.s:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/TestTau/TestTau.cpp.s
+.PHONY : TestTau/TestTau.cpp.s
+
 __/Common/MyTestStruct.o: __/Common/MyTestStruct.cpp.o
 .PHONY : __/Common/MyTestStruct.o
 
 # target to build an object file
 __/Common/MyTestStruct.cpp.o:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/__/Common/MyTestStruct.cpp.o
 	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/__/Common/MyTestStruct.cpp.o
 	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/__/Common/MyTestStruct.cpp.o
 .PHONY : __/Common/MyTestStruct.cpp.o
@@ -3161,6 +3704,7 @@ __/Common/MyTestStruct.i: __/Common/MyTestStruct.cpp.i
 
 # target to preprocess a source file
 __/Common/MyTestStruct.cpp.i:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/__/Common/MyTestStruct.cpp.i
 	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/__/Common/MyTestStruct.cpp.i
 	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/__/Common/MyTestStruct.cpp.i
 .PHONY : __/Common/MyTestStruct.cpp.i
@@ -3170,6 +3714,7 @@ __/Common/MyTestStruct.s: __/Common/MyTestStruct.cpp.s
 
 # target to generate assembly for a file
 __/Common/MyTestStruct.cpp.s:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/__/Common/MyTestStruct.cpp.s
 	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/__/Common/MyTestStruct.cpp.s
 	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/__/Common/MyTestStruct.cpp.s
 .PHONY : __/Common/MyTestStruct.cpp.s
@@ -3179,6 +3724,7 @@ __/Common/TestCommon.o: __/Common/TestCommon.cpp.o
 
 # target to build an object file
 __/Common/TestCommon.cpp.o:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/__/Common/TestCommon.cpp.o
 	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/__/Common/TestCommon.cpp.o
 	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/__/Common/TestCommon.cpp.o
 .PHONY : __/Common/TestCommon.cpp.o
@@ -3188,6 +3734,7 @@ __/Common/TestCommon.i: __/Common/TestCommon.cpp.i
 
 # target to preprocess a source file
 __/Common/TestCommon.cpp.i:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/__/Common/TestCommon.cpp.i
 	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/__/Common/TestCommon.cpp.i
 	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/__/Common/TestCommon.cpp.i
 .PHONY : __/Common/TestCommon.cpp.i
@@ -3197,6 +3744,7 @@ __/Common/TestCommon.s: __/Common/TestCommon.cpp.s
 
 # target to generate assembly for a file
 __/Common/TestCommon.cpp.s:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/__/Common/TestCommon.cpp.s
 	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/__/Common/TestCommon.cpp.s
 	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/__/Common/TestCommon.cpp.s
 .PHONY : __/Common/TestCommon.cpp.s
@@ -3206,6 +3754,7 @@ __/Source/Main.o: __/Source/Main.cpp.o
 
 # target to build an object file
 __/Source/Main.cpp.o:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/__/Source/Main.cpp.o
 	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/__/Source/Main.cpp.o
 	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/__/Source/Main.cpp.o
 .PHONY : __/Source/Main.cpp.o
@@ -3215,6 +3764,7 @@ __/Source/Main.i: __/Source/Main.cpp.i
 
 # target to preprocess a source file
 __/Source/Main.cpp.i:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/__/Source/Main.cpp.i
 	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/__/Source/Main.cpp.i
 	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/__/Source/Main.cpp.i
 .PHONY : __/Source/Main.cpp.i
@@ -3224,6 +3774,7 @@ __/Source/Main.s: __/Source/Main.cpp.s
 
 # target to generate assembly for a file
 __/Source/Main.cpp.s:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestTau.dir/build.make Test/Language/CMakeFiles/TestTau.dir/__/Source/Main.cpp.s
 	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestRho.dir/build.make Test/Language/CMakeFiles/TestRho.dir/__/Source/Main.cpp.s
 	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Language/CMakeFiles/TestPi.dir/build.make Test/Language/CMakeFiles/TestPi.dir/__/Source/Main.cpp.s
 .PHONY : __/Source/Main.cpp.s
@@ -3235,9 +3786,14 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
+	@echo "... install"
+	@echo "... install/local"
+	@echo "... install/strip"
+	@echo "... list_install_components"
 	@echo "... rebuild_cache"
 	@echo "... TestPi"
 	@echo "... TestRho"
+	@echo "... TestTau"
 	@echo "... TestLangCommon.o"
 	@echo "... TestLangCommon.i"
 	@echo "... TestLangCommon.s"
@@ -3613,6 +4169,66 @@ help:
 	@echo "... TestRho/WhileLoopTest.o"
 	@echo "... TestRho/WhileLoopTest.i"
 	@echo "... TestRho/WhileLoopTest.s"
+	@echo "... TestTau/ChatP2PConsoleTest.o"
+	@echo "... TestTau/ChatP2PConsoleTest.i"
+	@echo "... TestTau/ChatP2PConsoleTest.s"
+	@echo "... TestTau/NetworkConnectionTests.o"
+	@echo "... TestTau/NetworkConnectionTests.i"
+	@echo "... TestTau/NetworkConnectionTests.s"
+	@echo "... TestTau/TauAdvancedTypeTests.o"
+	@echo "... TestTau/TauAdvancedTypeTests.i"
+	@echo "... TestTau/TauAdvancedTypeTests.s"
+	@echo "... TestTau/TauAsyncTests.o"
+	@echo "... TestTau/TauAsyncTests.i"
+	@echo "... TestTau/TauAsyncTests.s"
+	@echo "... TestTau/TauAttributeTests.o"
+	@echo "... TestTau/TauAttributeTests.i"
+	@echo "... TestTau/TauAttributeTests.s"
+	@echo "... TestTau/TauClassTests.o"
+	@echo "... TestTau/TauClassTests.i"
+	@echo "... TestTau/TauClassTests.s"
+	@echo "... TestTau/TauCodeGenTests.o"
+	@echo "... TestTau/TauCodeGenTests.i"
+	@echo "... TestTau/TauCodeGenTests.s"
+	@echo "... TestTau/TauCodeGenerationExtensiveTests.o"
+	@echo "... TestTau/TauCodeGenerationExtensiveTests.i"
+	@echo "... TestTau/TauCodeGenerationExtensiveTests.s"
+	@echo "... TestTau/TauCodeGenerationTests.o"
+	@echo "... TestTau/TauCodeGenerationTests.i"
+	@echo "... TestTau/TauCodeGenerationTests.s"
+	@echo "... TestTau/TauComprehensiveTests.o"
+	@echo "... TestTau/TauComprehensiveTests.i"
+	@echo "... TestTau/TauComprehensiveTests.s"
+	@echo "... TestTau/TauEdgeCaseTests.o"
+	@echo "... TestTau/TauEdgeCaseTests.i"
+	@echo "... TestTau/TauEdgeCaseTests.s"
+	@echo "... TestTau/TauFutureProxyTests.o"
+	@echo "... TestTau/TauFutureProxyTests.i"
+	@echo "... TestTau/TauFutureProxyTests.s"
+	@echo "... TestTau/TauGenerateStructTests.o"
+	@echo "... TestTau/TauGenerateStructTests.i"
+	@echo "... TestTau/TauGenerateStructTests.s"
+	@echo "... TestTau/TauInterfaceTests.o"
+	@echo "... TestTau/TauInterfaceTests.i"
+	@echo "... TestTau/TauInterfaceTests.s"
+	@echo "... TestTau/TauNamespaceTests.o"
+	@echo "... TestTau/TauNamespaceTests.i"
+	@echo "... TestTau/TauNamespaceTests.s"
+	@echo "... TestTau/TauProxyAgentCommunicationTest.o"
+	@echo "... TestTau/TauProxyAgentCommunicationTest.i"
+	@echo "... TestTau/TauProxyAgentCommunicationTest.s"
+	@echo "... TestTau/TauSeparateGenerationTests.o"
+	@echo "... TestTau/TauSeparateGenerationTests.i"
+	@echo "... TestTau/TauSeparateGenerationTests.s"
+	@echo "... TestTau/TauStressTests.o"
+	@echo "... TestTau/TauStressTests.i"
+	@echo "... TestTau/TauStressTests.s"
+	@echo "... TestTau/TauTemplateTests.o"
+	@echo "... TestTau/TauTemplateTests.i"
+	@echo "... TestTau/TauTemplateTests.s"
+	@echo "... TestTau/TestTau.o"
+	@echo "... TestTau/TestTau.i"
+	@echo "... TestTau/TestTau.s"
 	@echo "... __/Common/MyTestStruct.o"
 	@echo "... __/Common/MyTestStruct.i"
 	@echo "... __/Common/MyTestStruct.s"

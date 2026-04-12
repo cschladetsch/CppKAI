@@ -95,7 +95,7 @@ project(Test_Network)
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/Bin"
     )
     target_link_libraries(CalculationTest 
-        Core Network Executor
+        ConsoleLib Core Network Executor PiLang RhoLang CommonLang
         ${GTEST_BOTH_LIBRARIES}
         ${Boost_LIBRARIES}
         pthread

@@ -48,19 +48,25 @@ void Node::Listen(IpAddress const &address, int port) {
 
     NetAddress bindAddress(address.ToString(), static_cast<unsigned short>(port));
     if (!peer_->Startup(32, bindAddress)) {
-        std::string errorMsg =
-            "Failed to start network server on " + address.ToString() + ":" +
-            std::to_string(port);
-        std::cerr << errorMsg << std::endl;
-        NetworkLogger::LogStatus(errorMsg);
-        return;
+        const bool wildcardBind = address.ToString() == "0.0.0.0";
+        const NetAddress loopback("127.0.0.1",
+                                  static_cast<unsigned short>(port));
+        if (!wildcardBind || !peer_->Startup(32, loopback)) {
+            std::string errorMsg =
+                "Failed to start network server on " + address.ToString() +
+                ":" + std::to_string(port);
+            std::cerr << errorMsg << std::endl;
+            NetworkLogger::LogStatus(errorMsg);
+            return;
+        }
+        bindAddress = loopback;
     }
 
     peer_->SetMaximumIncomingConnections(32);
     isRunning_ = true;
 
     // Log that we're listening
-    std::string logMessage = "Network node listening on " + address.ToString() +
+    std::string logMessage = "Network node listening on " + bindAddress.host +
                              ":" + std::to_string(port);
     std::cout << logMessage << std::endl;
     NetworkLogger::LogStatus(logMessage);
@@ -81,7 +87,8 @@ void Node::Connect(IpAddress const &ip, int port) {
     // If not started yet, start with any available port
     if (!isRunning_) {
         NetAddress bindAddress("0.0.0.0", 0);
-        if (!peer_->Startup(32, bindAddress)) {
+        if (!peer_->Startup(32, bindAddress) &&
+            !peer_->Startup(32, NetAddress("127.0.0.1", 0))) {
             std::string errorMsg =
                 "Failed to start network client for " + ip.ToString();
             std::cerr << errorMsg << std::endl;
