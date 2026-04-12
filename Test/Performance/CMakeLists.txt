@@ -20,8 +20,7 @@ set_target_properties(PerformanceTests PROPERTIES
 )
 
 # Link libraries - include all language libraries for comprehensive testing
-target_link_libraries(PerformanceTests 
-    TauLang
+set(PERF_LIBS
     RhoLang 
     PiLang
     Executor
@@ -30,6 +29,12 @@ target_link_libraries(PerformanceTests
     ${Boost_LIBRARIES}
     pthread
 )
+
+if(KAI_NETWORKING)
+    list(APPEND PERF_LIBS TauLang)
+endif()
+
+target_link_libraries(PerformanceTests ${PERF_LIBS})
 
 # Add include directories
 target_include_directories(PerformanceTests PRIVATE

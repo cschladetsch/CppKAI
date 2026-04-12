@@ -85,51 +85,6 @@ rebuild_cache:
 rebuild_cache/fast: rebuild_cache
 .PHONY : rebuild_cache/fast
 
-# Special rule for the target list_install_components
-list_install_components:
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Available install components are: \"Unspecified\""
-.PHONY : list_install_components
-
-# Special rule for the target list_install_components
-list_install_components/fast: list_install_components
-.PHONY : list_install_components/fast
-
-# Special rule for the target install
-install: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Install the project..."
-	/usr/bin/cmake -P cmake_install.cmake
-.PHONY : install
-
-# Special rule for the target install
-install/fast: preinstall/fast
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Install the project..."
-	/usr/bin/cmake -P cmake_install.cmake
-.PHONY : install/fast
-
-# Special rule for the target install/local
-install/local: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing only the local directory..."
-	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
-.PHONY : install/local
-
-# Special rule for the target install/local
-install/local/fast: preinstall/fast
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing only the local directory..."
-	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
-.PHONY : install/local/fast
-
-# Special rule for the target install/strip
-install/strip: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing the project stripped..."
-	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
-.PHONY : install/strip
-
-# Special rule for the target install/strip
-install/strip/fast: preinstall/fast
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing the project stripped..."
-	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
-.PHONY : install/strip/fast
-
 # The main all target
 all: cmake_check_build_system
 	cd /home/christian/local/repos/KAI && $(CMAKE_COMMAND) -E cmake_progress_start /home/christian/local/repos/KAI/CMakeFiles /home/christian/local/repos/KAI/Source/Library/Language//CMakeFiles/progress.marks
@@ -202,20 +157,6 @@ RhoLang: Source/Library/Language/CMakeFiles/RhoLang.dir/rule
 RhoLang/fast:
 	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/RhoLang.dir/build.make Source/Library/Language/CMakeFiles/RhoLang.dir/build
 .PHONY : RhoLang/fast
-
-# Convenience name for target.
-Source/Library/Language/CMakeFiles/TauLang.dir/rule:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Source/Library/Language/CMakeFiles/TauLang.dir/rule
-.PHONY : Source/Library/Language/CMakeFiles/TauLang.dir/rule
-
-# Convenience name for target.
-TauLang: Source/Library/Language/CMakeFiles/TauLang.dir/rule
-.PHONY : TauLang
-
-# fast build rule for target.
-TauLang/fast:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/TauLang.dir/build.make Source/Library/Language/CMakeFiles/TauLang.dir/build
-.PHONY : TauLang/fast
 
 Common/Source/Language.o: Common/Source/Language.cpp.o
 .PHONY : Common/Source/Language.o
@@ -553,198 +494,6 @@ Rho/Source/RhoTranslator.cpp.s:
 	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/RhoLang.dir/build.make Source/Library/Language/CMakeFiles/RhoLang.dir/Rho/Source/RhoTranslator.cpp.s
 .PHONY : Rho/Source/RhoTranslator.cpp.s
 
-Tau/Source/Generate/GenerateAgent.o: Tau/Source/Generate/GenerateAgent.cpp.o
-.PHONY : Tau/Source/Generate/GenerateAgent.o
-
-# target to build an object file
-Tau/Source/Generate/GenerateAgent.cpp.o:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/TauLang.dir/build.make Source/Library/Language/CMakeFiles/TauLang.dir/Tau/Source/Generate/GenerateAgent.cpp.o
-.PHONY : Tau/Source/Generate/GenerateAgent.cpp.o
-
-Tau/Source/Generate/GenerateAgent.i: Tau/Source/Generate/GenerateAgent.cpp.i
-.PHONY : Tau/Source/Generate/GenerateAgent.i
-
-# target to preprocess a source file
-Tau/Source/Generate/GenerateAgent.cpp.i:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/TauLang.dir/build.make Source/Library/Language/CMakeFiles/TauLang.dir/Tau/Source/Generate/GenerateAgent.cpp.i
-.PHONY : Tau/Source/Generate/GenerateAgent.cpp.i
-
-Tau/Source/Generate/GenerateAgent.s: Tau/Source/Generate/GenerateAgent.cpp.s
-.PHONY : Tau/Source/Generate/GenerateAgent.s
-
-# target to generate assembly for a file
-Tau/Source/Generate/GenerateAgent.cpp.s:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/TauLang.dir/build.make Source/Library/Language/CMakeFiles/TauLang.dir/Tau/Source/Generate/GenerateAgent.cpp.s
-.PHONY : Tau/Source/Generate/GenerateAgent.cpp.s
-
-Tau/Source/Generate/GenerateProcess.o: Tau/Source/Generate/GenerateProcess.cpp.o
-.PHONY : Tau/Source/Generate/GenerateProcess.o
-
-# target to build an object file
-Tau/Source/Generate/GenerateProcess.cpp.o:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/TauLang.dir/build.make Source/Library/Language/CMakeFiles/TauLang.dir/Tau/Source/Generate/GenerateProcess.cpp.o
-.PHONY : Tau/Source/Generate/GenerateProcess.cpp.o
-
-Tau/Source/Generate/GenerateProcess.i: Tau/Source/Generate/GenerateProcess.cpp.i
-.PHONY : Tau/Source/Generate/GenerateProcess.i
-
-# target to preprocess a source file
-Tau/Source/Generate/GenerateProcess.cpp.i:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/TauLang.dir/build.make Source/Library/Language/CMakeFiles/TauLang.dir/Tau/Source/Generate/GenerateProcess.cpp.i
-.PHONY : Tau/Source/Generate/GenerateProcess.cpp.i
-
-Tau/Source/Generate/GenerateProcess.s: Tau/Source/Generate/GenerateProcess.cpp.s
-.PHONY : Tau/Source/Generate/GenerateProcess.s
-
-# target to generate assembly for a file
-Tau/Source/Generate/GenerateProcess.cpp.s:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/TauLang.dir/build.make Source/Library/Language/CMakeFiles/TauLang.dir/Tau/Source/Generate/GenerateProcess.cpp.s
-.PHONY : Tau/Source/Generate/GenerateProcess.cpp.s
-
-Tau/Source/Generate/GenerateProxy.o: Tau/Source/Generate/GenerateProxy.cpp.o
-.PHONY : Tau/Source/Generate/GenerateProxy.o
-
-# target to build an object file
-Tau/Source/Generate/GenerateProxy.cpp.o:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/TauLang.dir/build.make Source/Library/Language/CMakeFiles/TauLang.dir/Tau/Source/Generate/GenerateProxy.cpp.o
-.PHONY : Tau/Source/Generate/GenerateProxy.cpp.o
-
-Tau/Source/Generate/GenerateProxy.i: Tau/Source/Generate/GenerateProxy.cpp.i
-.PHONY : Tau/Source/Generate/GenerateProxy.i
-
-# target to preprocess a source file
-Tau/Source/Generate/GenerateProxy.cpp.i:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/TauLang.dir/build.make Source/Library/Language/CMakeFiles/TauLang.dir/Tau/Source/Generate/GenerateProxy.cpp.i
-.PHONY : Tau/Source/Generate/GenerateProxy.cpp.i
-
-Tau/Source/Generate/GenerateProxy.s: Tau/Source/Generate/GenerateProxy.cpp.s
-.PHONY : Tau/Source/Generate/GenerateProxy.s
-
-# target to generate assembly for a file
-Tau/Source/Generate/GenerateProxy.cpp.s:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/TauLang.dir/build.make Source/Library/Language/CMakeFiles/TauLang.dir/Tau/Source/Generate/GenerateProxy.cpp.s
-.PHONY : Tau/Source/Generate/GenerateProxy.cpp.s
-
-Tau/Source/Generate/GenerateStruct.o: Tau/Source/Generate/GenerateStruct.cpp.o
-.PHONY : Tau/Source/Generate/GenerateStruct.o
-
-# target to build an object file
-Tau/Source/Generate/GenerateStruct.cpp.o:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/TauLang.dir/build.make Source/Library/Language/CMakeFiles/TauLang.dir/Tau/Source/Generate/GenerateStruct.cpp.o
-.PHONY : Tau/Source/Generate/GenerateStruct.cpp.o
-
-Tau/Source/Generate/GenerateStruct.i: Tau/Source/Generate/GenerateStruct.cpp.i
-.PHONY : Tau/Source/Generate/GenerateStruct.i
-
-# target to preprocess a source file
-Tau/Source/Generate/GenerateStruct.cpp.i:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/TauLang.dir/build.make Source/Library/Language/CMakeFiles/TauLang.dir/Tau/Source/Generate/GenerateStruct.cpp.i
-.PHONY : Tau/Source/Generate/GenerateStruct.cpp.i
-
-Tau/Source/Generate/GenerateStruct.s: Tau/Source/Generate/GenerateStruct.cpp.s
-.PHONY : Tau/Source/Generate/GenerateStruct.s
-
-# target to generate assembly for a file
-Tau/Source/Generate/GenerateStruct.cpp.s:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/TauLang.dir/build.make Source/Library/Language/CMakeFiles/TauLang.dir/Tau/Source/Generate/GenerateStruct.cpp.s
-.PHONY : Tau/Source/Generate/GenerateStruct.cpp.s
-
-Tau/Source/Tau/TauAstNode.o: Tau/Source/Tau/TauAstNode.cpp.o
-.PHONY : Tau/Source/Tau/TauAstNode.o
-
-# target to build an object file
-Tau/Source/Tau/TauAstNode.cpp.o:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/TauLang.dir/build.make Source/Library/Language/CMakeFiles/TauLang.dir/Tau/Source/Tau/TauAstNode.cpp.o
-.PHONY : Tau/Source/Tau/TauAstNode.cpp.o
-
-Tau/Source/Tau/TauAstNode.i: Tau/Source/Tau/TauAstNode.cpp.i
-.PHONY : Tau/Source/Tau/TauAstNode.i
-
-# target to preprocess a source file
-Tau/Source/Tau/TauAstNode.cpp.i:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/TauLang.dir/build.make Source/Library/Language/CMakeFiles/TauLang.dir/Tau/Source/Tau/TauAstNode.cpp.i
-.PHONY : Tau/Source/Tau/TauAstNode.cpp.i
-
-Tau/Source/Tau/TauAstNode.s: Tau/Source/Tau/TauAstNode.cpp.s
-.PHONY : Tau/Source/Tau/TauAstNode.s
-
-# target to generate assembly for a file
-Tau/Source/Tau/TauAstNode.cpp.s:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/TauLang.dir/build.make Source/Library/Language/CMakeFiles/TauLang.dir/Tau/Source/Tau/TauAstNode.cpp.s
-.PHONY : Tau/Source/Tau/TauAstNode.cpp.s
-
-Tau/Source/Tau/TauLexer.o: Tau/Source/Tau/TauLexer.cpp.o
-.PHONY : Tau/Source/Tau/TauLexer.o
-
-# target to build an object file
-Tau/Source/Tau/TauLexer.cpp.o:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/TauLang.dir/build.make Source/Library/Language/CMakeFiles/TauLang.dir/Tau/Source/Tau/TauLexer.cpp.o
-.PHONY : Tau/Source/Tau/TauLexer.cpp.o
-
-Tau/Source/Tau/TauLexer.i: Tau/Source/Tau/TauLexer.cpp.i
-.PHONY : Tau/Source/Tau/TauLexer.i
-
-# target to preprocess a source file
-Tau/Source/Tau/TauLexer.cpp.i:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/TauLang.dir/build.make Source/Library/Language/CMakeFiles/TauLang.dir/Tau/Source/Tau/TauLexer.cpp.i
-.PHONY : Tau/Source/Tau/TauLexer.cpp.i
-
-Tau/Source/Tau/TauLexer.s: Tau/Source/Tau/TauLexer.cpp.s
-.PHONY : Tau/Source/Tau/TauLexer.s
-
-# target to generate assembly for a file
-Tau/Source/Tau/TauLexer.cpp.s:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/TauLang.dir/build.make Source/Library/Language/CMakeFiles/TauLang.dir/Tau/Source/Tau/TauLexer.cpp.s
-.PHONY : Tau/Source/Tau/TauLexer.cpp.s
-
-Tau/Source/Tau/TauParser.o: Tau/Source/Tau/TauParser.cpp.o
-.PHONY : Tau/Source/Tau/TauParser.o
-
-# target to build an object file
-Tau/Source/Tau/TauParser.cpp.o:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/TauLang.dir/build.make Source/Library/Language/CMakeFiles/TauLang.dir/Tau/Source/Tau/TauParser.cpp.o
-.PHONY : Tau/Source/Tau/TauParser.cpp.o
-
-Tau/Source/Tau/TauParser.i: Tau/Source/Tau/TauParser.cpp.i
-.PHONY : Tau/Source/Tau/TauParser.i
-
-# target to preprocess a source file
-Tau/Source/Tau/TauParser.cpp.i:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/TauLang.dir/build.make Source/Library/Language/CMakeFiles/TauLang.dir/Tau/Source/Tau/TauParser.cpp.i
-.PHONY : Tau/Source/Tau/TauParser.cpp.i
-
-Tau/Source/Tau/TauParser.s: Tau/Source/Tau/TauParser.cpp.s
-.PHONY : Tau/Source/Tau/TauParser.s
-
-# target to generate assembly for a file
-Tau/Source/Tau/TauParser.cpp.s:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/TauLang.dir/build.make Source/Library/Language/CMakeFiles/TauLang.dir/Tau/Source/Tau/TauParser.cpp.s
-.PHONY : Tau/Source/Tau/TauParser.cpp.s
-
-Tau/Source/Tau/TauToken.o: Tau/Source/Tau/TauToken.cpp.o
-.PHONY : Tau/Source/Tau/TauToken.o
-
-# target to build an object file
-Tau/Source/Tau/TauToken.cpp.o:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/TauLang.dir/build.make Source/Library/Language/CMakeFiles/TauLang.dir/Tau/Source/Tau/TauToken.cpp.o
-.PHONY : Tau/Source/Tau/TauToken.cpp.o
-
-Tau/Source/Tau/TauToken.i: Tau/Source/Tau/TauToken.cpp.i
-.PHONY : Tau/Source/Tau/TauToken.i
-
-# target to preprocess a source file
-Tau/Source/Tau/TauToken.cpp.i:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/TauLang.dir/build.make Source/Library/Language/CMakeFiles/TauLang.dir/Tau/Source/Tau/TauToken.cpp.i
-.PHONY : Tau/Source/Tau/TauToken.cpp.i
-
-Tau/Source/Tau/TauToken.s: Tau/Source/Tau/TauToken.cpp.s
-.PHONY : Tau/Source/Tau/TauToken.s
-
-# target to generate assembly for a file
-Tau/Source/Tau/TauToken.cpp.s:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Source/Library/Language/CMakeFiles/TauLang.dir/build.make Source/Library/Language/CMakeFiles/TauLang.dir/Tau/Source/Tau/TauToken.cpp.s
-.PHONY : Tau/Source/Tau/TauToken.cpp.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -752,15 +501,10 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
-	@echo "... install"
-	@echo "... install/local"
-	@echo "... install/strip"
-	@echo "... list_install_components"
 	@echo "... rebuild_cache"
 	@echo "... CommonLang"
 	@echo "... PiLang"
 	@echo "... RhoLang"
-	@echo "... TauLang"
 	@echo "... Common/Source/Language.o"
 	@echo "... Common/Source/Language.i"
 	@echo "... Common/Source/Language.s"
@@ -803,30 +547,6 @@ help:
 	@echo "... Rho/Source/RhoTranslator.o"
 	@echo "... Rho/Source/RhoTranslator.i"
 	@echo "... Rho/Source/RhoTranslator.s"
-	@echo "... Tau/Source/Generate/GenerateAgent.o"
-	@echo "... Tau/Source/Generate/GenerateAgent.i"
-	@echo "... Tau/Source/Generate/GenerateAgent.s"
-	@echo "... Tau/Source/Generate/GenerateProcess.o"
-	@echo "... Tau/Source/Generate/GenerateProcess.i"
-	@echo "... Tau/Source/Generate/GenerateProcess.s"
-	@echo "... Tau/Source/Generate/GenerateProxy.o"
-	@echo "... Tau/Source/Generate/GenerateProxy.i"
-	@echo "... Tau/Source/Generate/GenerateProxy.s"
-	@echo "... Tau/Source/Generate/GenerateStruct.o"
-	@echo "... Tau/Source/Generate/GenerateStruct.i"
-	@echo "... Tau/Source/Generate/GenerateStruct.s"
-	@echo "... Tau/Source/Tau/TauAstNode.o"
-	@echo "... Tau/Source/Tau/TauAstNode.i"
-	@echo "... Tau/Source/Tau/TauAstNode.s"
-	@echo "... Tau/Source/Tau/TauLexer.o"
-	@echo "... Tau/Source/Tau/TauLexer.i"
-	@echo "... Tau/Source/Tau/TauLexer.s"
-	@echo "... Tau/Source/Tau/TauParser.o"
-	@echo "... Tau/Source/Tau/TauParser.i"
-	@echo "... Tau/Source/Tau/TauParser.s"
-	@echo "... Tau/Source/Tau/TauToken.o"
-	@echo "... Tau/Source/Tau/TauToken.i"
-	@echo "... Tau/Source/Tau/TauToken.s"
 .PHONY : help
 
 

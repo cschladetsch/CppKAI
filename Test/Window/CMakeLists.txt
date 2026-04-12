@@ -49,10 +49,9 @@ set_target_properties(TestWindow PROPERTIES
 )
 
 # Link libraries (using the same order as other tests)
-target_link_libraries(TestWindow
+set(WINDOW_TEST_LIBS
     PiLang
     RhoLang
-    TauLang
     Executor
     CommonLang
     Core
@@ -60,6 +59,12 @@ target_link_libraries(TestWindow
     ${GTEST_MAIN_LIBRARIES}
     pthread
 )
+
+if(KAI_NETWORKING)
+    list(APPEND WINDOW_TEST_LIBS TauLang)
+endif()
+
+target_link_libraries(TestWindow ${WINDOW_TEST_LIBS})
 
 # Add test
 add_test(NAME TestWindow COMMAND TestWindow)

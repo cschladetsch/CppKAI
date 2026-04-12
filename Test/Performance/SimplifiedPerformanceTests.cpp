@@ -85,6 +85,7 @@ protected:
     }
     
     bool ParseTauCode(const string& code) {
+#ifdef KAI_NETWORKING
         try {
             Registry localRegistry;
             auto lexer = make_shared<tau::TauLexer>(code.c_str(), localRegistry);
@@ -97,29 +98,43 @@ protected:
         } catch (const exception&) {
             return false;
         }
+#else
+        return false;
+#endif
     }
     
     bool GenerateTauProxy(const string& code, string& output) {
+#ifdef KAI_NETWORKING
         try {
             tau::Generate::GenerateProxy generator(code.c_str(), output);
             return !generator.Failed;
         } catch (const exception&) {
             return false;
         }
+#else
+        return false;
+#endif
     }
     
     bool GenerateTauAgent(const string& code, string& output) {
+#ifdef KAI_NETWORKING
         try {
             tau::Generate::GenerateAgent generator(code.c_str(), output);
             return !generator.Failed;
         } catch (const exception&) {
             return false;
         }
+#else
+        return false;
+#endif
     }
 };
 
 // Benchmark Tau parsing performance
 TEST_F(SimplifiedPerformanceTests, TauParsingPerformance) {
+#ifndef KAI_NETWORKING
+    GTEST_SKIP() << "KAI_NETWORKING is disabled";
+#endif
     // Simple interface
     string simpleInterface = R"(
         namespace Simple {
@@ -181,6 +196,9 @@ TEST_F(SimplifiedPerformanceTests, TauParsingPerformance) {
 
 // Benchmark Tau code generation performance
 TEST_F(SimplifiedPerformanceTests, TauCodeGenerationPerformance) {
+#ifndef KAI_NETWORKING
+    GTEST_SKIP() << "KAI_NETWORKING is disabled";
+#endif
     string testInterface = R"(
         namespace CodeGen {
             struct RequestData {
@@ -275,6 +293,9 @@ TEST_F(SimplifiedPerformanceTests, MemoryAllocationPerformance) {
 
 // Benchmark large interface scalability
 TEST_F(SimplifiedPerformanceTests, ScalabilityBenchmark) {
+#ifndef KAI_NETWORKING
+    GTEST_SKIP() << "KAI_NETWORKING is disabled";
+#endif
     cout << "\n=== Tau Scalability Benchmark ===\n";
     
     vector<int> methodCounts = {10, 25, 50, 100};
@@ -335,6 +356,9 @@ TEST_F(SimplifiedPerformanceTests, ScalabilityBenchmark) {
 
 // Overall system throughput benchmark
 TEST_F(SimplifiedPerformanceTests, SystemThroughputBenchmark) {
+#ifndef KAI_NETWORKING
+    GTEST_SKIP() << "KAI_NETWORKING is disabled";
+#endif
     cout << "\n=== KAI Tau System Throughput Benchmark ===\n";
     
     string benchmarkInterface = R"(
