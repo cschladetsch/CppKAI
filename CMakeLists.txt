@@ -248,6 +248,7 @@ if(KAI_NETWORKING)
 else()
     message(STATUS "Networking disabled (enable with -DKAI_NETWORKING=ON)")
 endif()
+
 include_directories(${EXTERNAL}/rang/include)
 
 # Macro to define a new library

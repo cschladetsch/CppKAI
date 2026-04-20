@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include <gtest/gtest.h>
 
 #include <fstream>
@@ -11,10 +12,17 @@
 #include "KAI/Language/Tau/Generate/GenerateProxy.h"
 #include "KAI/Language/Tau/TauParser.h"
 #include "TestLangCommon.h"
+=======
+#include <KAI/Language/Tau/Generate/GenerateProxy.h>
+#include <KAI/Language/Tau/TauParser.h>
+
+#include "TestCommon.h"
+>>>>>>> 04102e9d (Fix some basic Tau issues due to refactoring.)
 
 using namespace kai;
 using namespace std;
 
+<<<<<<< HEAD
 // Simplified test fixture focused on IDL functionality
 struct TestTau : TestLangCommon {
     void TestIDL(const std::string& script, const std::string& testName) {
@@ -229,3 +237,41 @@ TEST_F(TestTau, TestDataTransferObjects) {
 
     TestIDL(script, "DataTransferObjects");
 }
+=======
+namespace {
+const char *kTauModule = R"(namespace MLB
+{
+	class C
+	{
+		int n;
+		String s;
+	}
+}
+)";
+
+TEST(TauParser, ParsesInlineModule) {
+    Registry reg;
+    auto lex = make_shared<tau::TauLexer>(kTauModule, reg);
+    ASSERT_TRUE(lex->Process()) << lex->Error << "\nTokens: " << lex->Print();
+    ASSERT_FALSE(lex->Failed) << lex->Error << "\nTokens: " << lex->Print();
+
+    auto parser = make_shared<tau::TauParser>(reg);
+    ASSERT_TRUE(parser->Process(lex, Structure::Module)) << parser->Error;
+    ASSERT_FALSE(parser->Failed) << parser->Error;
+
+    auto root = parser->GetRoot();
+    ASSERT_EQ(root->GetType(), tau::TauAstEnumType::Module);
+    ASSERT_FALSE(root->GetChildren().empty());
+}
+
+TEST(TauGenerate, GeneratesProxyFromInlineModule) {
+    string output;
+    tau::Generate::GenerateProxy proxy(kTauModule, output);
+
+    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(output.empty());
+    ASSERT_NE(output.find("namespace MLB"), string::npos);
+    ASSERT_NE(output.find("class C"), string::npos);
+}
+}  // namespace
+>>>>>>> 04102e9d (Fix some basic Tau issues due to refactoring.)

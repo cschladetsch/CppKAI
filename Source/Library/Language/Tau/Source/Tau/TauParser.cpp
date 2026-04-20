@@ -48,6 +48,7 @@ void TauParser::StripTokens() {
             case TokenEnum::Tab:
             case TokenEnum::Comment:
             case TokenEnum::NewLine:
+            case TokenEnum::None:
                 continue;
         }
 

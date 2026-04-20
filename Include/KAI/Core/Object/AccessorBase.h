@@ -1,6 +1,7 @@
 #pragma once
 
 #include <KAI/Core/Config/Base.h>
+#include <KAI/Core/Object/Object.h>
 #include <KAI/Core/Type/Number.h>
 
 #include "KAI/Core/Object/Label.h"

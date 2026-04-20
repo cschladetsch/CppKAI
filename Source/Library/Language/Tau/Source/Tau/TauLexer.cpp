@@ -1,5 +1,7 @@
 #include <KAI/Language/Tau/TauLexer.h>
 
+#include <cctype>
+
 using namespace std;
 
 TAU_BEGIN
@@ -113,6 +115,9 @@ bool TauLexer::NextToken() {
         case '\t':
             return Add(Enum::Tab);
         case '\n':
+            return Add(Enum::NewLine);
+        case '\r':
+            if (Peek() == '\n') Next();
             return Add(Enum::NewLine);
         case '/':
             if (Peek() == '/') {
