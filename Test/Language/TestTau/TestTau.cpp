@@ -253,8 +253,11 @@ TEST(TauParser, ParsesInlineModule) {
     ASSERT_FALSE(parser->Failed) << parser->Error;
 
     auto root = parser->GetRoot();
-    ASSERT_EQ(root->GetType(), tau::TauAstEnumType::Module);
     ASSERT_FALSE(root->GetChildren().empty());
+
+    auto module = root->GetChildren().front();
+    ASSERT_EQ(module->GetType(), tau::TauAstEnumType::Module);
+    ASSERT_FALSE(module->GetChildren().empty());
 }
 
 TEST(TauGenerate, GeneratesProxyFromInlineModule) {
