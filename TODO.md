@@ -1,6 +1,6 @@
 # KAI Project TODO
 
-Last updated: 2026-04-01
+Last updated: 2026-04-25
 
 ## Current Status
 
@@ -17,6 +17,7 @@ gantt
     IPv6 support                :active, net6, 2026-04-01, 2026-06-01
     section Language
     Tau Future<T> parser fix    :done,   tau1, 2026-03-15, 2026-04-01
+    Tau EOF parser fix          :done,   tau2, 2026-04-25, 2026-04-25
     Rho for-loop inline fns     :active, rho1, 2026-04-01, 2026-05-01
     section Testing
     Network E2E tests (17)      :done,   tst1, 2026-02-01, 2026-04-01
@@ -51,6 +52,8 @@ gantt
 
 ### Tau
 - [x] `Future<T>` return types in IDL interfaces (lexer fix — `Future<int>` is one token)
+- [x] EOF-safe `Expect()` handling in shared parser utilities (fixed Tau `Next token index out of range` failures)
+- [x] Inline module parser test aligned with actual AST shape (`root -> Module -> children`)
 - [x] `GenerateProxy` / `GenerateAgent` produce correct class names
 - [ ] Struct fields serialized over network (currently structs are code-gen only)
 - [ ] Event parameters deserialized in generated agent handlers
@@ -86,6 +89,7 @@ gantt
 
 - [ ] Clean up duplicate library inclusions in CMake
 - [ ] Resolve clang-tidy warnings in ImGui
+- [x] Ignore generated bracket-indexed CTest files such as `TestTau[1]_tests.cmake`
 
 ## GUI / Window
 
@@ -105,3 +109,4 @@ gantt
 - Total TODO/FIXME/HACK comments in codebase: ~76
 - Shell (backtick) syntax disabled by default; enable with `-DENABLE_SHELL_SYNTAX=ON`
 - Network tests only built/run with `./b --network`
+- Full suite passes with networking-enabled build; some network tests are still environment-skipped when local sockets are unavailable
