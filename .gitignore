@@ -54,6 +54,8 @@ cmake-build-debug/*
 [Ll]ib/
 [Bb]in/
 [Bb]uild/
+*\[[0-9]\]*
+*\[[0-9][0-9]\]*
 
 .vs/
 .vscode/
