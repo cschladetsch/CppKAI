@@ -1,0 +1,13 @@
+namespace test {
+
+class Calculator {
+    int Add(int a, int b);
+    int Subtract(int a, int b);
+};
+
+class DataService {
+    void StoreData(string key, string value);
+    string GetData(string key);
+};
+
+} // namespace test

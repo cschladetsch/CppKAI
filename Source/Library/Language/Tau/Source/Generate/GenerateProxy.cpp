@@ -46,6 +46,7 @@ string GenerateProxy::Prepend() const {
     stringstream str;
     str << "#include <KAI/Network/ProxyDecl.h>\n";
     str << "#include <KAI/Network/NetworkException.h>\n";
+    str << "#include <KAI/Network/Future.h>\n";
     str << "#include <functional>\n";
     str << "#include <stdexcept>\n";
     str << "#include <string>\n";
@@ -290,36 +291,23 @@ void GenerateProxy::MethodBody(const string &returnType,
                                const Node::ChildrenType &args,
                                const string &name) {
     StartBlock();
-    Output() << "try {" << EndLine();
-
     if (returnType == "void") {
-        Output() << "_node->Send(\"" << name << "\"";
-        for (auto const &a : args) {
-            Output() << ", " << a->GetChild(1)->GetTokenText();
-        }
-        Output() << ");" << EndLine();
+        Output() << "return _node->SendAsync(\"" << name << "\"";
     } else {
-        Output() << "return _node->SendWithResponse(\"" << name << "\"";
-        for (auto const &a : args) {
-            Output() << ", " << a->GetChild(1)->GetTokenText();
-        }
-        Output() << ");" << EndLine();
+        Output() << "return _node->SendWithResponseAsync<" << returnType << ">(\"" << name << "\"";
     }
-
-    Output() << "} catch (const std::exception& e) {" << EndLine();
-    if (returnType == "void") {
-        Output() << "throw NetworkException(\"Failed to send '" << name
-                 << "': \" + std::string(e.what()));" << EndLine();
-    } else {
-        Output() << "throw NetworkException(\"Failed to call '" << name
-                 << "': \" + std::string(e.what()));" << EndLine();
+    for (auto const &a : args) {
+        Output() << ", " << a->GetChild(1)->GetTokenText();
     }
-    Output() << "}" << EndLine();
-
+    Output() << ");" << EndLine();
     EndBlock();
 }
 
-string GenerateProxy::ReturnType(string const &text) const { return text; }
+string GenerateProxy::ReturnType(string const &text) const {
+    if (text == "void")
+        return "Future<void>";
+    return "Future<" + text + ">";
+}
 
 string GenerateProxy::ArgType(string const &text) const {
     return "const " + text + "&";

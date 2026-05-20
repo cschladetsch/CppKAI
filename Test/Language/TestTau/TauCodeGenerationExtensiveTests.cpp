@@ -199,13 +199,9 @@ TEST_F(TauCodeGenerationExtensiveTests, ProxyErrorHandling) {
 
     // Check for proper error handling
     vector<string> expectedPatterns = {
-        "try {",
-        "_node->Send(\"send\")",
-        "} catch (const std::exception& e) {",
-        "throw NetworkException(\"Failed to send 'send': \" + std::string(e.what()))",
-
-        "_node->SendWithResponse(\"receive\")",
-        "throw NetworkException(\"Failed to call 'receive': \" + std::string(e.what()))"
+        "SendAsync(",
+        "_node->SendAsync(\"send\")",
+        "_node->SendWithResponseAsync<int>(\"receive\")"
     };
 
     EXPECT_TRUE(ContainsPatterns(output, expectedPatterns))
@@ -587,7 +583,7 @@ TEST_F(TauCodeGenerationExtensiveTests, VoidMethodsOnly) {
     ASSERT_TRUE(GenerateAgentCode(tauCode, agentOutput, error)) << "Agent Error: " << error;
 
     // Check void methods use Send instead of SendWithResponse in proxy
-    EXPECT_TRUE(proxyOutput.find("_node->Send(\"initialize\")") != string::npos)
+    EXPECT_TRUE(proxyOutput.find("_node->SendAsync(\"initialize\")") != string::npos)
         << "Proxy void method should use Send:\n" << proxyOutput;
     EXPECT_TRUE(proxyOutput.find("SendWithResponse") == string::npos)
         << "Proxy void methods should not use SendWithResponse:\n" << proxyOutput;
@@ -707,8 +703,8 @@ TEST_F(TauCodeGenerationExtensiveTests, CodeQualityMetrics) {
         << "Insufficient documentation comments in agent";
 
     // 2. Error handling coverage
-    EXPECT_GE(CountPatternOccurrences(proxyOutput, "try {"), 1)
-        << "Missing error handling in proxy";
+    EXPECT_GE(CountPatternOccurrences(proxyOutput, "SendWithResponseAsync"), 1)
+        << "Missing async call in proxy";
     EXPECT_GE(CountPatternOccurrences(proxyOutput, "NetworkException"), 1)
         << "Missing NetworkException usage in proxy";
 
