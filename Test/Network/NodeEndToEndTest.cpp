@@ -10,9 +10,11 @@
 #include "KAI/Core/Tree.h"
 #include "KAI/Network/ConnectionEvent.h"
 #include "KAI/Network/Node.h"
+#include "KAI/Console/Console.h"
 
 using namespace kai;
 using namespace kai::net;
+using kai::Language;
 using namespace std::chrono_literals;
 
 // Pump both nodes until predicate is true or timeout expires.
@@ -312,3 +314,49 @@ TEST_F(NodeEndToEndTest, RemotePropertySetUpdatesValue) {
     EXPECT_TRUE(future.Succeeded());
     EXPECT_EQ(serverValue, 77);
 }
+
+TEST_F(NodeEndToEndTest, RemotePiExecutionReturnsResult) {
+    Node server;
+    server.SetRegistry(reg_);
+    const int port = ListenOnAvailablePort(server, 17000, 17100);
+    if (port == 0) GTEST_SKIP() << "Local networking is unavailable in this environment";
+
+    // Server-side console to execute Pi code
+    Console serverConsole;
+    serverConsole.SetLanguage(Language::Pi);
+
+    NetHandle agentHandle = server.AttachAgent(nullptr);
+    server.RegisterMethod<int, String>(
+        agentHandle, "ExecPi",
+        std::function<int(String)>([&serverConsole](String code) {
+            serverConsole.Execute(code);
+            auto stack = serverConsole.GetExecutor()->GetDataStack();
+            if (stack->Empty()) return 0;
+            return ConstDeref<int>(stack->Top());
+        }));
+
+    Node client;
+    client.SetRegistry(reg_);
+    client.SetUpdatePump([&server]() { server.Update(); });
+
+    bool connected = false;
+    client.SetConnectionEventCallback(
+        [&](ConnectionEvent ev, const NetAddress &) {
+            if (ev == ConnectionEvent::Connected) connected = true;
+        });
+
+    client.Connect(IpAddress("127.0.0.1"), port);
+
+    bool ok = PollUntil(server, client, [&] { return connected; });
+    if (!ok) GTEST_SKIP() << "Connection did not complete in time";
+
+    NetAddress serverAddr("127.0.0.1", static_cast<unsigned short>(port));
+    client.BindProxyAddress(agentHandle, serverAddr);
+
+    auto future = client.Invoke<int>(agentHandle, "ExecPi", String("1 2 +"));
+    int result = client.WaitFor(future, 2000ms);
+
+    EXPECT_TRUE(future.Succeeded());
+    EXPECT_EQ(result, 3);
+}
+

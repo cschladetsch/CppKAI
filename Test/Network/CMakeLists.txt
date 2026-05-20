@@ -28,7 +28,8 @@ project(Test_Network)
     )
 
     # Link libraries
-    target_link_libraries(Test_Network 
+    target_link_libraries(Test_Network
+        ConsoleLib 
         Network
         TauLang
         Executor
