@@ -28,7 +28,7 @@ echo ""
 echo "=== Summary ==="
 for bin in ./Bin/Test/TestTau ./Bin/Test/TestCore ./Bin/Test/TestPi ./Bin/Test/TestRho ./Bin/Test/Test_ProxyGeneration; do
     if [ -f "$bin" ]; then
-        result=$($bin 2>&1 | grep -E "PASSED|FAILED" | tail -1)
+        result=$($bin 2>&1 | strings | grep -E "PASSED|FAILED" | tail -1)
         echo "$bin: $result"
     fi
 done

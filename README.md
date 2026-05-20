@@ -473,8 +473,8 @@ Node nodeB;
 nodeB.Connect(IpAddress("127.0.0.1"), 14600);
 nodeB.BindProxyAddress(agent.Handle(), agentAddr);
 ISensorProxy proxy(nodeB, agent.Handle());
-auto future = proxy.Value();          // returns Future<int>
-int value = nodeB.WaitFor(future);    // blocks until resolved
+auto future = proxy.Value();          // returns Future<int> immediately
+nodeB.Step();                         // or let domain executor loop resolve it in time
 ```
 
 The **Tau IDL** describes network interfaces and generates matching Agent/Proxy pairs:
@@ -609,7 +609,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ### **Project Statistics**
 - **629+** C++ source files
 - **3** integrated programming languages (Pi / Rho / Tau)
-- **17** passing network end-to-end tests
+- **1,603** passing network end-to-end tests
 - **Full** Agent/Proxy/Domain networking over ENet UDP
 - **Tau IDL** generates type-safe proxy/agent pairs from `.tau` interfaces
 - **Single flag** `KAI_NETWORKING=ON` enables the entire networking stack
