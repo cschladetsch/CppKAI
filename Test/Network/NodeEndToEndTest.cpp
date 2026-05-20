@@ -11,6 +11,7 @@
 #include "KAI/Network/ConnectionEvent.h"
 #include "KAI/Network/Node.h"
 #include "KAI/Console/Console.h"
+#include "KAI/Executor/BinBase.h"
 
 using namespace kai;
 using namespace kai::net;
@@ -358,5 +359,74 @@ TEST_F(NodeEndToEndTest, RemotePiExecutionReturnsResult) {
 
     EXPECT_TRUE(future.Succeeded());
     EXPECT_EQ(result, 3);
+}
+
+TEST_F(NodeEndToEndTest, RemoteContinuationMigration) {
+    Node server;
+    server.SetRegistry(reg_);
+    const int port = ListenOnAvailablePort(server, 17100, 17200);
+    if (port == 0) GTEST_SKIP() << "Local networking is unavailable in this environment";
+
+    Console serverConsole;
+    serverConsole.SetLanguage(kai::Language::Pi);
+
+    NetHandle agentHandle = server.AttachAgent(nullptr);
+
+    // Server receives a frozen continuation as BinaryStream,
+    // thaws it and resumes execution, returns top of stack.
+    server.RegisterMethod<int, BinaryStream>(
+        agentHandle, "ThawAndResume",
+        std::function<int(BinaryStream)>([&serverConsole](BinaryStream bs) {
+            Object frozen;
+            bs >> frozen;
+            std::cout << "[SERVER] Received frozen continuation, thawing..." << std::endl;
+            Object cont = Bin::Thaw(frozen);
+            std::cout << "[SERVER] Thawed, resuming on server node..." << std::endl;
+            serverConsole.GetExecutor()->Continue(
+                Value<Continuation>(cont));
+            auto stack = serverConsole.GetExecutor()->GetDataStack();
+            if (stack->Empty()) {
+                std::cout << "[SERVER] Stack empty after resume" << std::endl;
+                return 0;
+            }
+            int result = ConstDeref<int>(stack->Top());
+            std::cout << "[SERVER] Continuation resumed, result = " << result << std::endl;
+            return result;
+        }));
+
+    Node client;
+    client.SetRegistry(reg_);
+    client.SetUpdatePump([&server]() { server.Update(); });
+
+    bool connected = false;
+    client.SetConnectionEventCallback(
+        [&](ConnectionEvent ev, const NetAddress &) {
+            if (ev == ConnectionEvent::Connected) connected = true;
+        });
+
+    client.Connect(IpAddress("127.0.0.1"), port);
+
+    bool ok = PollUntil(server, client, [&] { return connected; });
+    if (!ok) GTEST_SKIP() << "Connection did not complete in time";
+
+    NetAddress serverAddr("127.0.0.1", static_cast<unsigned short>(port));
+    client.BindProxyAddress(agentHandle, serverAddr);
+
+    // Client compiles a tail-recursive Pi sum: sum(5) = 15
+    Console clientConsole;
+    clientConsole.SetLanguage(kai::Language::Pi);
+    auto cont = clientConsole.Compile(
+        "{ dup 0 == { drop 0 } { dup 1 - recurse + } if } 'sum # 5 sum &",
+        Structure::Program);
+
+    Object frozen = Bin::Freeze(*cont->Self);
+    BinaryStream bs;
+    bs << frozen;
+
+    auto future = client.Invoke<int>(agentHandle, "ThawAndResume", bs);
+    int result = client.WaitFor(future, 2000ms);
+
+    EXPECT_TRUE(future.Succeeded());
+    EXPECT_EQ(result, 15);
 }
 

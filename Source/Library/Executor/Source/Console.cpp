@@ -45,8 +45,8 @@ class MultiLangTranslator : public TranslatorCommon {
                         shared_ptr<RhoTranslator> rho,
                         Pointer<Compiler> comp)
         : TranslatorCommon(reg),
-          pi_(move(pi)),
-          rho_(move(rho)),
+          pi_(std::move(pi)),
+          rho_(std::move(rho)),
           compiler_(comp) {}
 
     Pointer<Continuation> Translate(const char *text,
