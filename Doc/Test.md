@@ -10,7 +10,7 @@ Test programs are located in the `Bin/Test/` directory after building the projec
 - `TestPi`: Pi language tests
 - `TestRho`: Rho language tests
 - `TestTau`: Tau language tests
-- `Test_Network`: Networking and Tau-over-network tests when `KAI_NETWORKING=ON`
+- `TestNetwork`: Networking and Tau-over-network tests when `KAI_NETWORKING=ON`
 
 To run the full suite from the repository root:
 

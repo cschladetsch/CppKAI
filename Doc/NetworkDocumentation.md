@@ -55,15 +55,15 @@ The `KAI_NETWORKING` option controls:
 - `Network` library
 - `TauLang` (needed for IDL code generation)
 - `NetworkGenerate` executable
-- `Test_Network` test binary
+- `TestNetwork` test binary
 - `TestTau` language tests
 
 ## Running Network Tests
 
 ```bash
-./Bin/Test/Test_Network                                     # all 17 tests
-./Bin/Test/Test_Network --gtest_filter="NodeEndToEndTest*"  # 6 E2E tests
-./Bin/Test/Test_Network --gtest_filter="TauDomain*"         # 3 domain tests
+./Bin/Test/TestNetwork                                     # all 17 tests
+./Bin/Test/TestNetwork --gtest_filter="NodeEndToEndTest*"  # 6 E2E tests
+./Bin/Test/TestNetwork --gtest_filter="TauDomain*"         # 3 domain tests
 ```
 
 ## FAQ

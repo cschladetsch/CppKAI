@@ -4,11 +4,19 @@
 
 #include <gtest/gtest.h>
 
+#include <cstdint>
 #include <chrono>
 #include <functional>
 #include <memory>
 #include <string>
 #include <thread>
+
+#if defined(__linux__) || defined(__APPLE__)
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#endif
 
 #include "KAI/Core/BuiltinTypes/All.h"
 #include "KAI/Core/Registry.h"
@@ -75,6 +83,51 @@ static bool PollUntil(Node &a, Node &b, std::function<bool()> pred,
     return true;
 }
 
+struct ListenResult {
+    int port = 0;
+    const char *skipReason = nullptr;
+};
+
+static bool CanBindLoopbackPort(int port) {
+#if defined(__linux__) || defined(__APPLE__)
+    const int fd = ::socket(AF_INET, SOCK_STREAM, 0);
+    if (fd < 0) {
+        return false;
+    }
+
+    sockaddr_in addr{};
+    addr.sin_family = AF_INET;
+    addr.sin_port = htons(static_cast<uint16_t>(port));
+    addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+
+    const bool ok = ::bind(fd, reinterpret_cast<const sockaddr *>(&addr),
+                           sizeof(addr)) == 0;
+    ::close(fd);
+    return ok;
+#else
+    KAI_UNUSED_1(port);
+    return true;
+#endif
+}
+
+static ListenResult ListenOnAvailablePort(Node &node, int beginPort,
+                                          int endPort) {
+#if defined(__linux__) || defined(__APPLE__)
+    if (!CanBindLoopbackPort(beginPort)) {
+        return {0, "Loopback socket bind is not permitted in this environment"};
+    }
+#endif
+
+    for (int candidate = beginPort; candidate < endPort; ++candidate) {
+        node.Listen(IpAddress("127.0.0.1"), candidate);
+        if (node.IsRunning()) {
+            return {candidate, nullptr};
+        }
+    }
+
+    return {0, "No available loopback port found in the requested range"};
+}
+
 }  // namespace
 
 // Verify that the .tau IDL is parsed and generates the expected class names.
@@ -109,15 +162,9 @@ TEST(TauDomainPropertyTest, DomainBProxyFetchesPropertyFromDomainA) {
     Node nodeA;
     nodeA.SetRegistry(&registry);
 
-    int port = 0;
-    for (int candidate = 16100; candidate < 16200; ++candidate) {
-        nodeA.Listen(IpAddress("127.0.0.1"), candidate);
-        if (nodeA.IsRunning()) {
-            port = candidate;
-            break;
-        }
-    }
-    if (port == 0) GTEST_SKIP() << "Local networking is unavailable in this environment";
+    const auto listen = ListenOnAvailablePort(nodeA, 16100, 16200);
+    if (listen.port == 0) GTEST_SKIP() << listen.skipReason;
+    const int port = listen.port;
 
     // Domain B: the proxy lives here. Pump Domain A whenever Domain B ticks.
     Node nodeB;
@@ -167,15 +214,9 @@ TEST(TauDomainPropertyTest, DomainBProxySetsPropertyOnDomainA) {
     Node nodeA;
     nodeA.SetRegistry(&registry);
 
-    int port = 0;
-    for (int candidate = 16200; candidate < 16300; ++candidate) {
-        nodeA.Listen(IpAddress("127.0.0.1"), candidate);
-        if (nodeA.IsRunning()) {
-            port = candidate;
-            break;
-        }
-    }
-    if (port == 0) GTEST_SKIP() << "Local networking is unavailable in this environment";
+    const auto listen = ListenOnAvailablePort(nodeA, 16200, 16300);
+    if (listen.port == 0) GTEST_SKIP() << listen.skipReason;
+    const int port = listen.port;
 
     Node nodeB;
     nodeB.SetRegistry(&registry);

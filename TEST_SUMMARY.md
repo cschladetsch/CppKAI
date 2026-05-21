@@ -48,14 +48,14 @@ Generated: 2026-04-04
 
 # Run network tests (requires --network build)
 ./b --network
-./Bin/Test/Test_Network
+./Bin/Test/TestNetwork
 
 # Filter specific tests
 ./Bin/Test/TestRho --gtest_filter="*ForLoop*"
-./Bin/Test/Test_Network --gtest_filter="TauDomainPropertyTest*"
+./Bin/Test/TestNetwork --gtest_filter="TauDomainPropertyTest*"
 ```
 
-## Network Tests (Test_Network)
+## Network Tests (TestNetwork)
 
 Built only when `KAI_NETWORKING=ON` (use `./b --network`).
 

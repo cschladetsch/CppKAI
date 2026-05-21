@@ -178,10 +178,10 @@ The generated `ICalcProxy` inherits from `ProxyBase` and the generated `ICalcAge
 ./b --network
 
 # Run network tests
-./Bin/Test/Test_Network
+./Bin/Test/TestNetwork
 
 # Run specific suite
-./Bin/Test/Test_Network --gtest_filter="TauDomainPropertyTest*"
+./Bin/Test/TestNetwork --gtest_filter="TauDomainPropertyTest*"
 ```
 
 ## Wire Protocol

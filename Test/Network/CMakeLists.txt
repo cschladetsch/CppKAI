@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28...3.30)
 
 # Network test project
-project(Test_Network)
+project(TestNetwork)
 
 # Always build network tests
 # if(KAI_BUILD_TEST_NETWORK)
@@ -20,15 +20,16 @@ project(Test_Network)
     )
 
     # Create the GTest-based test executable
-    add_executable(Test_Network ${GTEST_SOURCES})
+    add_executable(TestNetwork ${GTEST_SOURCES})
     
     # Set the runtime output directory for the test executable
-    set_target_properties(Test_Network PROPERTIES
+    set_target_properties(TestNetwork PROPERTIES
+        OUTPUT_NAME "TestNetwork"
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/Bin"
     )
 
     # Link libraries
-    target_link_libraries(Test_Network
+    target_link_libraries(TestNetwork
         ConsoleLib 
         Network
         TauLang
@@ -40,23 +41,23 @@ project(Test_Network)
     )
 
     # Add include directories
-    target_include_directories(Test_Network PRIVATE
+    target_include_directories(TestNetwork PRIVATE
         ${KAI_HOME}/Include
         ${TEST_HOME}/Include
         ${GTEST_INCLUDE_DIRS}
     )
 
     # Expose the binary output directory so tests can locate built tools.
-    target_compile_definitions(Test_Network PRIVATE
+    target_compile_definitions(TestNetwork PRIVATE
         KAI_BIN_DIR="${BIN_HOME}"
     )
 
     # Set compile flags
-    set_target_properties(Test_Network PROPERTIES COMPILE_FLAGS "-g -Wno-deprecated")
+    set_target_properties(TestNetwork PROPERTIES COMPILE_FLAGS "-g -Wno-deprecated")
 
     # Add the test to CTest
-    add_test(NAME Test_Network COMMAND Test_Network)
-    
+    add_test(NAME TestNetwork COMMAND TestNetwork)
+
     # Build standalone test programs separately
     # Console Connection Test
     add_executable(ConsoleConnectionTest ConsoleConnectionTest.cpp)

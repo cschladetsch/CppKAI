@@ -13,7 +13,7 @@ This directory contains comprehensive documentation for the KAI distributed obje
 ## Current Branch Notes
 
 - On `develop`, core and language tests are enabled by default.
-- Network features and `Test_Network` are enabled with `-DKAI_NETWORKING=ON`.
+- Network features and `TestNetwork` are enabled with `-DKAI_NETWORKING=ON`.
 - See **[../TEST_SUMMARY.md](../TEST_SUMMARY.md)** for the current test status snapshot.
 
 ### Language Tutorials
