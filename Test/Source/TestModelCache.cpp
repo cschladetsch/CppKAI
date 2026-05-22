@@ -16,17 +16,22 @@ using namespace std;
 
 namespace {
 
-class ScopedEnvOverride {
+class ScopedEnvVar {
    public:
-    ScopedEnvOverride(const char* key, std::string value) : key_(key) {
+    ScopedEnvVar(const char* key, std::optional<std::string> value)
+        : key_(key) {
         const char* current = std::getenv(key_.c_str());
         if (current) {
             previous_ = current;
         }
-        Set(value);
+        if (value) {
+            Set(*value);
+        } else {
+            Unset();
+        }
     }
 
-    ~ScopedEnvOverride() {
+    ~ScopedEnvVar() {
         if (previous_) {
             Set(*previous_);
         } else {
@@ -63,7 +68,7 @@ TEST(TestModelCache, EnsureUsesConfiguredHome) {
     std::error_code ec;
     std::filesystem::remove_all(temp_root, ec);
 
-    ScopedEnvOverride override_home("DEEPSEEK_MODEL_HOME", temp_root.string());
+    ScopedEnvVar override_home("DEEPSEEK_MODEL_HOME", temp_root.string());
 
     EXPECT_EQ(LLM::ModelCache::ResolveHome(), temp_root.string());
     EXPECT_EQ(LLM::ModelCache::ResolvePath("llama-test"),
@@ -76,4 +81,19 @@ TEST(TestModelCache, EnsureUsesConfiguredHome) {
     EXPECT_TRUE(LLM::ModelCache::Exists("llama-test"));
 
     std::filesystem::remove_all(temp_root, ec);
+}
+
+TEST(TestModelCache, DefaultsToCacheHome) {
+    const auto cache_root =
+        std::filesystem::temp_directory_path() / "kai-model-cache-home";
+    std::error_code ec;
+    std::filesystem::remove_all(cache_root, ec);
+
+    ScopedEnvVar unset_override("DEEPSEEK_MODEL_HOME", std::nullopt);
+    ScopedEnvVar cache_home("XDG_CACHE_HOME", cache_root.string());
+
+    EXPECT_EQ(LLM::ModelCache::ResolveHome(),
+              (cache_root / "deepseek" / "models").string());
+
+    std::filesystem::remove_all(cache_root, ec);
 }

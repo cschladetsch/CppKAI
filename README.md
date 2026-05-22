@@ -625,6 +625,8 @@ export KAI_ROOT=/path/to/KAI
 - **Tau IDL** generates type-safe proxy/agent pairs from `.tau` interfaces
 - **Single flag** `KAI_NETWORKING=ON` enables the entire networking stack
 - **Single flag** `KAI_BUILD_LLM=ON` enables the local model-cache layer for llama.cpp integrations
+- **Model storage**: models live under `~/.cache/deepseek/models` by default, or `XDG_CACHE_HOME/deepseek/models` if set
+- **Backend**: the cache layer is provided by `Ext/CppLmmModelStore`
 - **Repo knowledge base**: `./Bin/RepoIndex` builds a local code/test index under the model cache
 
 **Start exploring**: Begin with the **[Documentation Guide](Doc/Documentation.md)** or dive into **[System Architecture](resources/README.md)** for technical details.

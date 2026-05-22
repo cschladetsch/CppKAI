@@ -103,6 +103,8 @@ cmake .. -DKAI_NETWORKING=OFF             # Skip networking components and netwo
 
 On the current `develop` branch, core, language, and network tests are enabled by default. Set `-DKAI_NETWORKING=OFF` only when you want to exclude the networking stack. Use `-DKAI_BUILD_LLM=ON` when you want the local model cache wrapper for llama.cpp-based features.
 
+When LLM support is enabled, models are stored in `~/.cache/deepseek/models` by default, or in `$XDG_CACHE_HOME/deepseek/models` if `XDG_CACHE_HOME` is set. The cache is backed by `Ext/CppLmmModelStore`.
+
 #### Security Configuration
 
 **Shell Command Integration**: By default, shell commands are disabled for security reasons. To enable shell integration in the Console:
