@@ -180,7 +180,8 @@ graph TB
 
 - Build from the repository root with `./b`
 - Run the current full suite with `./run_all_tests.sh`
-- Enable networking features with `./b --network`
+- Networking is enabled by default; use `./b` for the standard build or `./b --network` if your wrapper exposes it explicitly
+- Test binaries are written to `./Bin/Test`, including `TestNetwork`
 - Run `./Scripts/run_rho_demo.sh` for a comprehensive demo of Rho language features
 - Run `./Scripts/calc_test.sh` for a demonstration of network calculation
 - Run `./Scripts/network/run_continuation_migration_demo.sh` to prove continuation migration across two processes

@@ -3,6 +3,8 @@
 # Exit on error
 set -e
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 run_test() {
     local name="$1"
     shift
@@ -15,25 +17,20 @@ run_test() {
     done
 
     echo "Error: ${name} binary not found" >&2
-
-    BIN="${SCRIPT_DIR}/build/Bin/TestNetwork"
-    if [ -x "$BIN" ]; then
-        "$BIN"
-    else
-        echo "Error: Test binary not found" >&2
-    fi
+    return 1
 }
 
-# Run all test executables. Prefer the out-of-source build tree, then fall
-# back to legacy in-tree output paths.
-run_test TestCore ./build/Bin/Test/TestCore ./Bin/Test/TestCore
-run_test TestPi ./build/Bin/Test/TestPi ./Bin/Test/TestPi
-run_test TestRho ./build/Bin/Test/TestRho ./Bin/Test/TestRho
-run_test TestTau ./build/Bin/Test/TestTau ./Bin/Test/TestTau
+# Run all test executables from the in-tree output paths used by this
+# repository.
+run_test TestCore \
+    "$SCRIPT_DIR/Bin/Test/TestCore"
+run_test TestPi \
+    "$SCRIPT_DIR/Bin/Test/TestPi"
+run_test TestRho \
+    "$SCRIPT_DIR/Bin/Test/TestRho"
+run_test TestTau \
+    "$SCRIPT_DIR/Bin/Test/TestTau"
 run_test TestNetwork \
-    ./build/Bin/Test/TestNetwork \
-    ./build/Bin/TestNetwork \
-    ./Bin/Test/TestNetwork \
-    ./Bin/TestNetwork
+    "$SCRIPT_DIR/Bin/Test/TestNetwork"
 
 echo "All tests passed!"

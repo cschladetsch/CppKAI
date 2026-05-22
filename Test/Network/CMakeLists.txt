@@ -25,7 +25,7 @@ project(TestNetwork)
     
     # Set the runtime output directory for the test executable
     set_target_properties(TestNetwork PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/Bin/Test"
+        RUNTIME_OUTPUT_DIRECTORY "${BIN_HOME}/Test"
     )
 
     # Link libraries

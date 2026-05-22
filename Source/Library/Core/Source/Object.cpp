@@ -1,7 +1,6 @@
 #include <iostream>
 
 #include "KAI/Core/BuiltinTypes.h"
-#include "KAI/Executor/Continuation.h"
 
 KAI_BEGIN
 
@@ -420,16 +419,6 @@ BinaryStream &operator<<(BinaryStream &stream, const Object &object) {
     const StorageBase &base = GetStorageBase(object);
     stream << base.GetTypeNumber().ToInt();
 
-    if (object.GetTypeNumber() == Type::Traits<Continuation>::Number) {
-        stream << ConstDeref<Continuation>(object);
-
-        const Dictionary &dict = base.GetDictionary();
-        stream << (int)dict.size();
-        for (auto const &child : dict) stream << child.first << child.second;
-
-        return stream;
-    }
-
     // insert the value
     ClassBase const &klass = *base.GetClass();
     if (klass.HasOperation(Type::Properties::BinaryStreamInsert))
@@ -462,23 +451,6 @@ BinaryStream &operator>>(BinaryStream &stream, Object &extracted) {
 
     ClassBase const *klass = registry.GetClass(Type::Number(type_number));
     if (klass == 0) KAI_THROW_1(UnknownClass<>, type_number);
-
-    if (type_number == (int)Type::Traits<Continuation>::Number) {
-        Value<Continuation> continuation = registry.New<Continuation>();
-        stream >> *continuation;
-        extracted = continuation.GetObject();
-
-        int num_children = 0;
-        stream >> num_children;
-        for (int N = 0; N < num_children; ++N) {
-            Label label;
-            Object child;
-            stream >> label >> child;
-            extracted.Set(label, child);
-        }
-
-        return stream;
-    }
 
     // extract the object value
     if (klass->HasOperation(Type::Properties::BinaryStreamExtract))
