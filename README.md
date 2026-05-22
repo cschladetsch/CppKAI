@@ -8,14 +8,6 @@ _KAI_ is a network distributed **Object Model** for C++ with full runtime reflec
 
 Objects and *compute* can be distributed across Nodes in a Domain.
 
-## Environment Conventions
-
-Docs and scripts may refer to `$KAI_ROOT` as the repository root. Set it once per shell:
-
-```sh
-export KAI_ROOT=/path/to/KAI
-```
-
 ## Demo
 
 ![DistributedDemo](resources/cppkai_continuation_flow.gif)
@@ -616,6 +608,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **[Linux](Include/KAI/Platform/Linux/README.md)** - Linux-specific documentation
 - **[Windows](Include/KAI/Platform/Windows/README.md)** - Windows support and configuration
 - **[macOS](Include/KAI/Platform/OSX/README.md)** - macOS development setup
+
+## Environment Conventions
+
+Docs and scripts may refer to `$KAI_ROOT` as the repository root. Set it once per shell:
+
+```sh
+export KAI_ROOT=/path/to/KAI
+```
 
 ### **Project Statistics**
 - **629+** C++ source files
