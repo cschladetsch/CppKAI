@@ -184,6 +184,7 @@ graph TB
 - Run `./Scripts/run_rho_demo.sh` for a comprehensive demo of Rho language features
 - Run `./Scripts/calc_test.sh` for a demonstration of network calculation
 - Run `./Scripts/network/run_continuation_migration_demo.sh` to prove continuation migration across two processes
+- Run `./Scripts/network/run_continuation_migration_tmux_demo.sh` for a tmux-recordable migration demo
 - Run `./demo_console_communication.sh` for interactive console-to-console networking demo
 - Example scripts in `Test/Language/*/Scripts` directories
 
