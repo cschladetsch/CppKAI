@@ -48,6 +48,7 @@ This directory contains comprehensive documentation for the KAI distributed obje
 ### Performance and Analysis
 - **[NetworkPerformance.md](NetworkPerformance.md)** - Performance optimization
 - **[Rho-Analysis.md](Rho-Analysis.md)** - Rho language analysis
+- **[RhoModelTrainingPlan.md](RhoModelTrainingPlan.md)** - Plan for training a small model for Rho work
 - **[TestStatusFinal.md](TestStatusFinal.md)** - Test suite status
 
 ### Language-Specific Documentation
