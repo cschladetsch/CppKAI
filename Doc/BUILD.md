@@ -96,11 +96,11 @@ cmake .. -DENABLE_SHELL_SYNTAX=ON         # Enable shell command integration (de
 cmake .. -DKAI_BUILD_TEST_ALL=ON          # Build test targets (default: ON)
 cmake .. -DKAI_BUILD_CORE_TEST=ON         # Build core/unit tests (default: ON)
 cmake .. -DKAI_BUILD_TEST_LANG=ON         # Build language tests (default: ON)
-cmake .. -DKAI_NETWORKING=OFF             # Skip networking components and network tests (default)
-cmake .. -DKAI_NETWORKING=ON              # Enable networking, Tau network codegen, and TestNetwork
+cmake .. -DKAI_NETWORKING=ON              # Enable networking, Tau network codegen, and TestNetwork (default)
+cmake .. -DKAI_NETWORKING=OFF             # Skip networking components and network tests
 ```
 
-On the current `develop` branch, core and language tests are enabled by default. Network features remain opt-in via `-DKAI_NETWORKING=ON`.
+On the current `develop` branch, core, language, and network tests are enabled by default. Set `-DKAI_NETWORKING=OFF` only when you want to exclude the networking stack.
 
 #### Security Configuration
 
@@ -186,7 +186,7 @@ Console --help                   # Available system-wide
 
 ### Running Tests
 
-After building, test binaries are written to `Bin/` at the repository root:
+After building, test binaries are written to `Bin/Test/` at the repository root:
 
 ```bash
 # Full suite from the repository root
@@ -198,7 +198,7 @@ After building, test binaries are written to `Bin/` at the repository root:
 ./Bin/Test/TestRho
 ./Bin/Test/TestTau
 
-# Network tests are available only when KAI_NETWORKING=ON
+# Network tests are included by default and can be disabled with `-DKAI_NETWORKING=OFF`
 ./Bin/Test/TestNetwork
 ```
 
