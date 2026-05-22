@@ -14,6 +14,7 @@ file(GLOB_RECURSE all_source_files ${source_path}/*.cpp)
 list(REMOVE_ITEM all_source_files ${source_path}/TestContainer/TestMap.cpp)
 if(NOT KAI_BUILD_LLM)
     list(REMOVE_ITEM all_source_files ${source_path}/TestModelCache.cpp)
+    list(REMOVE_ITEM all_source_files ${source_path}/TestRepoIndexer.cpp)
 endif()
 
 # Use all source files
@@ -77,6 +78,7 @@ set(core_sources
 )
 if(KAI_BUILD_LLM)
     list(APPEND core_sources ${source_path}/TestModelCache.cpp)
+    list(APPEND core_sources ${source_path}/TestRepoIndexer.cpp)
 endif()
 
 # Add common test files

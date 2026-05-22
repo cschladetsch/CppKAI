@@ -8,6 +8,10 @@ if(KAI_BUILD_WINDOW)
     list(APPEND apps Window)
 endif()
 
+if(KAI_BUILD_LLM)
+    list(APPEND apps RepoIndex)
+endif()
+
 foreach (app ${apps})
     include(${APP_HOME}/${app}/CMakeLists.txt)
 endforeach()
