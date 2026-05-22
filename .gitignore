@@ -78,6 +78,7 @@ test.graph
 *.bak
 *.pch.*
 *.pch-.*
+imgui.ini
 
 # User-specific files
 *.suo
