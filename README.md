@@ -628,5 +628,6 @@ export KAI_ROOT=/path/to/KAI
 - **Model storage**: models live under `~/.cache/deepseek/models` by default, or `XDG_CACHE_HOME/deepseek/models` if set
 - **Backend**: the cache layer is provided by `Ext/CppLmmModelStore`
 - **Repo knowledge base**: `./Bin/RepoIndex` builds a local code/test index under the model cache
+- **Current workflow**: use `RepoIndex` for grounded repo retrieval; a llama.cpp inference runtime still needs to be added on top of the cache layer
 
 **Start exploring**: Begin with the **[Documentation Guide](Doc/Documentation.md)** or dive into **[System Architecture](resources/README.md)** for technical details.

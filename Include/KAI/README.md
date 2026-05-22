@@ -50,6 +50,12 @@ Distributed computing and networking:
 ### LLM/
 Optional local model-cache utilities for llama.cpp-based integrations:
 - **ModelCache.h** - Resolve and create model cache directories
+- **Session.h** - Load a model path and route prompts through an injected backend handler
+
+Current best path:
+- Build `RepoIndex` to create a local code/test knowledge base under the cache
+- Use `LLM::ModelCache` to locate or create model directories
+- Use `LLM::Session` as the seam for a llama.cpp runtime or any other backend handler
 
 ### Console/
 Interactive console system:
