@@ -491,7 +491,17 @@ void Node::ProcessFunctionCall(const NetPacket &packet) {
         responseStream.Write(futureId);
         responseStream.Write(static_cast<int>(response));
         NetworkSerializer::WriteString(responseStream, errorMessage);
-        NetworkSerializer::SerializeObject(responseStream, result);
+        if (!NetworkSerializer::SerializeObject(responseStream, result)) {
+            responseStream.Clear();
+            responseStream.Write(static_cast<unsigned char>(
+                NetworkSerializer::ID_KAI_FUNCTION_RESPONSE));
+            responseStream.Write(futureId);
+            responseStream.Write(static_cast<int>(ResponseType::BadRequest));
+            NetworkSerializer::WriteString(
+                responseStream, "Failed to serialize function response");
+            Object empty;
+            NetworkSerializer::SerializeObject(responseStream, empty);
+        }
 
         peer_->Send(responseStream, SendReliability::Reliable, BufferOffset(0),
                     packet.address, SendRouting::Unicast);
@@ -658,7 +668,12 @@ void Node::SendFunctionCall(NetHandle handle, const std::string &name,
     bs.Write(handle.value);
     bs.Write(futureId);
     NetworkSerializer::WriteString(bs, name);
-    NetworkSerializer::SerializeObject(bs, args);
+    if (!NetworkSerializer::SerializeObject(bs, args)) {
+        NetworkLogger::LogMessage(
+            "SendFunctionCall: failed to serialize arguments for '" + name +
+            "'");
+        return;
+    }
 
     peer_->Send(bs, SendReliability::Reliable, BufferOffset(0), targetAddress,
                 SendRouting::Unicast);
@@ -717,7 +732,10 @@ void Node::SendObject(const Object &obj) {
     BinaryStream bs;
     bs.Write(
         static_cast<unsigned char>(NetworkSerializer::ID_KAI_OBJECT_MESSAGE));
-    NetworkSerializer::SerializeObject(bs, obj);
+    if (!NetworkSerializer::SerializeObject(bs, obj)) {
+        NetworkLogger::LogMessage("SendObject: failed to serialize object");
+        return;
+    }
 
     peer_->Send(bs, SendReliability::Reliable, BufferOffset(0), NetAddress(),
                 SendRouting::Broadcast);
@@ -767,7 +785,11 @@ void Node::SendPropertySet(NetHandle handle, int futureId,
     bs.Write(handle.value);
     bs.Write(futureId);
     NetworkSerializer::WriteString(bs, name);
-    NetworkSerializer::SerializeObject(bs, value);
+    if (!NetworkSerializer::SerializeObject(bs, value)) {
+        NetworkLogger::LogMessage(
+            "SendPropertySet: failed to serialize property '" + name + "'");
+        return;
+    }
 
     NetAddress target = RouteAddress(handle);
     if (target.IsValid()) {
@@ -843,7 +865,17 @@ void Node::ProcessPropertyGet(const NetPacket &packet) {
     responseStream.Write(futureId);
     responseStream.Write(static_cast<int>(response));
     NetworkSerializer::WriteString(responseStream, errorMessage);
-    NetworkSerializer::SerializeObject(responseStream, result);
+    if (!NetworkSerializer::SerializeObject(responseStream, result)) {
+        responseStream.Clear();
+        responseStream.Write(static_cast<unsigned char>(
+            NetworkSerializer::ID_KAI_FUNCTION_RESPONSE));
+        responseStream.Write(futureId);
+        responseStream.Write(static_cast<int>(ResponseType::BadRequest));
+        NetworkSerializer::WriteString(
+            responseStream, "Failed to serialize property response");
+        Object empty;
+        NetworkSerializer::SerializeObject(responseStream, empty);
+    }
 
     peer_->Send(responseStream, SendReliability::Reliable, BufferOffset(0),
                 packet.address, SendRouting::Unicast);
@@ -904,7 +936,16 @@ void Node::ProcessPropertySet(const NetPacket &packet) {
     responseStream.Write(futureId);
     responseStream.Write(static_cast<int>(response));
     NetworkSerializer::WriteString(responseStream, errorMessage);
-    NetworkSerializer::SerializeObject(responseStream, empty);
+    if (!NetworkSerializer::SerializeObject(responseStream, empty)) {
+        responseStream.Clear();
+        responseStream.Write(static_cast<unsigned char>(
+            NetworkSerializer::ID_KAI_FUNCTION_RESPONSE));
+        responseStream.Write(futureId);
+        responseStream.Write(static_cast<int>(ResponseType::BadRequest));
+        NetworkSerializer::WriteString(
+            responseStream, "Failed to serialize property response");
+        NetworkSerializer::SerializeObject(responseStream, Object());
+    }
 
     peer_->Send(responseStream, SendReliability::Reliable, BufferOffset(0),
                 packet.address, SendRouting::Unicast);

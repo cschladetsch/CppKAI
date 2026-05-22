@@ -16,7 +16,8 @@ bool BinaryPacket::Read(int len, Byte *dest) {
 }
 
 bool BinaryPacket::CanRead(int len) const {
-    return len > 0 && current + len <= last;
+    if (len <= 0) return false;
+    return len <= (last - current);
 }
 
 void BinaryStream::Clear() {

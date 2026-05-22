@@ -112,7 +112,7 @@ TEST_F(ContinuationSerializationTest, NetworkSerializerRoundTrip) {
     Object frozen = Bin::Freeze(cont);
 
     BinaryStream transport;
-    kai::net::NetworkSerializer::SerializeObject(transport, frozen);
+    ASSERT_TRUE(kai::net::NetworkSerializer::SerializeObject(transport, frozen));
 
     BinaryPacket packet(transport.Begin(), transport.Begin() + transport.Size(),
                         &console_.GetRegistry());
@@ -131,4 +131,27 @@ TEST_F(ContinuationSerializationTest, NetworkSerializerRoundTrip) {
     auto stack = console_.GetExecutor()->GetDataStack();
     ASSERT_FALSE(stack->Empty());
     EXPECT_EQ(ConstDeref<int>(stack->Top()), 13);
+}
+
+TEST_F(ContinuationSerializationTest, DeserializeObjectRejectsTruncatedPayload) {
+    BinaryStream transport;
+    transport.Write(128);
+
+    BinaryPacket packet(transport.Begin(), transport.Last(),
+                        &console_.GetRegistry());
+    Object received = kai::net::NetworkSerializer::DeserializeObject(
+        packet, console_.GetRegistry());
+
+    EXPECT_FALSE(received.Exists());
+}
+
+TEST_F(ContinuationSerializationTest, ReadStringRejectsTruncatedPayload) {
+    BinaryStream transport;
+    transport.Write(16);
+
+    BinaryPacket packet(transport.Begin(), transport.Last(),
+                        &console_.GetRegistry());
+    std::string value;
+
+    EXPECT_FALSE(kai::net::NetworkSerializer::ReadString(packet, value));
 }

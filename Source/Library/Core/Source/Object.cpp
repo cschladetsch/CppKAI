@@ -1,4 +1,5 @@
-#include <iostream>
+#include <algorithm>
+#include <vector>
 
 #include "KAI/Core/BuiltinTypes.h"
 
@@ -395,25 +396,24 @@ HashValue GetHash(Object const &Q) {
     return 13;
 }
 
-// Helper to track serialization depth
-static thread_local int serialization_depth = 0;
-static const int MAX_SERIALIZATION_DEPTH = 10;
+// Track the current serialization stack to avoid infinite recursion on cycles.
+static thread_local std::vector<Handle> serialization_stack;
 
 BinaryStream &operator<<(BinaryStream &stream, const Object &object) {
     if (!object.Exists()) return stream << 0;
 
-    // Check for circular references by limiting depth
-    if (serialization_depth >= MAX_SERIALIZATION_DEPTH) {
-        // Write a null object marker when max depth is reached
+    const Handle handle = object.GetHandle();
+    if (std::find(serialization_stack.begin(), serialization_stack.end(),
+                  handle) != serialization_stack.end()) {
+        // Break actual cycles without truncating acyclic deep graphs.
         return stream << 0;
     }
 
-    // Increment depth counter
-    serialization_depth++;
+    serialization_stack.push_back(handle);
 
     // Use RAII to ensure depth is decremented on exit
-    struct DepthGuard {
-        ~DepthGuard() { serialization_depth--; }
+    struct StackGuard {
+        ~StackGuard() { serialization_stack.pop_back(); }
     } guard;
 
     const StorageBase &base = GetStorageBase(object);
@@ -443,9 +443,6 @@ BinaryStream &operator>>(BinaryStream &stream, Object &extracted) {
     Registry &registry = *stream.GetRegistry();
     int type_number = 0;
     stream >> type_number;
-    std::cerr << "[THAW] type_number=" << type_number
-              << " registry=" << (stream.GetRegistry() != nullptr)
-              << " canread=" << stream.CanRead(1) << "\n";
     if (type_number == 0) {
         extracted = Object();
         return stream;

@@ -15,58 +15,45 @@ KAI_NET_BEGIN
 class NetworkSerializer {
    public:
     // Serialize an object to a BinaryStream using KAI's serialization system
-    static void SerializeObject(BinaryStream &stream, const Object &object) {
+    static bool SerializeObject(BinaryStream &stream, const Object &object) {
+        if (!object.Exists()) {
+            // Write a size of 0 for null objects.
+            int size = 0;
+            stream.Write(size);
+            return true;
+        }
+
+        // Create a BinaryStream with the object's registry.
+        Registry *reg = object.GetRegistry();
+        if (!reg) {
+            KAI_TRACE_ERROR() << "Error serializing object: null registry";
+            return false;
+        }
+
         try {
-            if (!object.Exists()) {
-                // Write a size of 0 for null objects
-                int size = 0;
-                stream.Write(size);
-                return;
-            }
-
-            // Create a BinaryStream with the object's registry
-            Registry *reg = object.GetRegistry();
-            if (!reg) {
-                int size = 0;
-                stream.Write(size);
-                return;
-            }
-
             BinaryStream objectStream(*reg);
 
-            // Serialize the object to the BinaryStream (includes type info)
+            // Serialize the object to the BinaryStream (includes type info).
             objectStream << object;
 
-            // Write the size of the serialized data
+            // Write the size of the serialized data.
             int size = objectStream.Size();
             stream.Write(size);
 
-            // Write the serialized data
+            // Write the serialized data.
             if (size > 0) {
                 stream.Write(size, objectStream.Begin());
             }
+            return true;
         } catch (const Exception::Base &e) {
-            // Handle KAI serialization errors
-            int size = 0;
-            stream.Write(size);
-
-            // Optionally, log the error
             KAI_TRACE_ERROR() << "Error serializing object: " << e.ToString();
         } catch (const std::exception &e) {
-            // Handle standard exceptions
-            int size = 0;
-            stream.Write(size);
-
-            // Optionally, log the error
             KAI_TRACE_ERROR() << "Error serializing object: " << e.what();
         } catch (...) {
-            // Handle unknown serialization errors
-            int size = 0;
-            stream.Write(size);
-
-            // Optionally, log the error
             KAI_TRACE_ERROR() << "Unknown error serializing object";
         }
+
+        return false;
     }
 
     // Deserialize an object from a BinaryPacket using KAI's serialization
@@ -77,7 +64,7 @@ class NetworkSerializer {
             return Object();
         }
 
-        if (size <= 0) {
+        if (size <= 0 || !packet.CanRead(size)) {
             return Object();
         }
 
@@ -109,7 +96,7 @@ class NetworkSerializer {
             return false;
         }
 
-        if (size < 0) {
+        if (size < 0 || !packet.CanRead(size)) {
             return false;
         }
 
