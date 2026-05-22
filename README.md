@@ -624,5 +624,6 @@ export KAI_ROOT=/path/to/KAI
 - **Full** Agent/Proxy/Domain networking over ENet UDP
 - **Tau IDL** generates type-safe proxy/agent pairs from `.tau` interfaces
 - **Single flag** `KAI_NETWORKING=ON` enables the entire networking stack
+- **Single flag** `KAI_BUILD_LLM=ON` enables the local model-cache layer for llama.cpp integrations
 
 **Start exploring**: Begin with the **[Documentation Guide](Doc/Documentation.md)** or dive into **[System Architecture](resources/README.md)** for technical details.

@@ -12,6 +12,9 @@ file(GLOB_RECURSE all_source_files ${source_path}/*.cpp)
 
 # Remove duplicate TestMap.cpp from TestContainer
 list(REMOVE_ITEM all_source_files ${source_path}/TestContainer/TestMap.cpp)
+if(NOT KAI_BUILD_LLM)
+    list(REMOVE_ITEM all_source_files ${source_path}/TestModelCache.cpp)
+endif()
 
 # Use all source files
 set(sources ${all_source_files})
@@ -26,6 +29,9 @@ add_executable(${name} ${sources})
 set(KAI_TEST_LIBS ConsoleLib PiLang RhoLang Executor CommonLang Core ${GTEST_BOTH_LIBRARIES} ${Boost_LIBRARIES} gtest_main)
 if(KAI_NETWORKING)
     list(APPEND KAI_TEST_LIBS TauLang)
+endif()
+if(KAI_BUILD_LLM)
+    list(APPEND KAI_TEST_LIBS LLM)
 endif()
 target_link_libraries(${name} ${KAI_TEST_LIBS})
 
@@ -69,6 +75,9 @@ set(core_sources
     ${source_path}/TestSerialization.cpp
     # TestAdvancedCore.cpp - Disabled - requires proper type traits
 )
+if(KAI_BUILD_LLM)
+    list(APPEND core_sources ${source_path}/TestModelCache.cpp)
+endif()
 
 # Add common test files
 list(APPEND core_sources ${TEST_HOME}/Common/TestCommon.cpp)
@@ -78,6 +87,9 @@ add_executable(${core_name} ${core_sources})
 set(CORE_TEST_LIBS ConsoleLib PiLang RhoLang Executor CommonLang Core ${GTEST_BOTH_LIBRARIES} ${Boost_LIBRARIES} gtest_main)
 if(KAI_NETWORKING)
     list(APPEND CORE_TEST_LIBS TauLang)
+endif()
+if(KAI_BUILD_LLM)
+    list(APPEND CORE_TEST_LIBS LLM)
 endif()
 target_link_libraries(${core_name} ${CORE_TEST_LIBS})
 

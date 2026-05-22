@@ -4,6 +4,11 @@ def_library(Core)
 
 add_subdirectory(${LIBRARY_HOME}/ImGui)
 
+if(KAI_BUILD_LLM)
+    def_library(LLM)
+    target_link_libraries(LLM PUBLIC ModelStore)
+endif()
+
 # Executor: build all sources except Console.cpp, which needs language deps
 project(Executor)
 set(exec_root ${LIBRARY_HOME}/Executor)

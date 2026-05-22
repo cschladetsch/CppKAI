@@ -96,11 +96,12 @@ cmake .. -DENABLE_SHELL_SYNTAX=ON         # Enable shell command integration (de
 cmake .. -DKAI_BUILD_TEST_ALL=ON          # Build test targets (default: ON)
 cmake .. -DKAI_BUILD_CORE_TEST=ON         # Build core/unit tests (default: ON)
 cmake .. -DKAI_BUILD_TEST_LANG=ON         # Build language tests (default: ON)
+cmake .. -DKAI_BUILD_LLM=ON               # Build local model-cache support for llama.cpp integrations
 cmake .. -DKAI_NETWORKING=ON              # Enable networking, Tau network codegen, and TestNetwork (default)
 cmake .. -DKAI_NETWORKING=OFF             # Skip networking components and network tests
 ```
 
-On the current `develop` branch, core, language, and network tests are enabled by default. Set `-DKAI_NETWORKING=OFF` only when you want to exclude the networking stack.
+On the current `develop` branch, core, language, and network tests are enabled by default. Set `-DKAI_NETWORKING=OFF` only when you want to exclude the networking stack. Use `-DKAI_BUILD_LLM=ON` when you want the local model cache wrapper for llama.cpp-based features.
 
 #### Security Configuration
 

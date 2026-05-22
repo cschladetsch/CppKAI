@@ -47,6 +47,10 @@ Distributed computing and networking:
 - **Agent.h** - Network agents and proxies
 - **Connection.h** - Network connection management
 
+### LLM/
+Optional local model-cache utilities for llama.cpp-based integrations:
+- **ModelCache.h** - Resolve and create model cache directories
+
 ### Console/
 Interactive console system:
 - **Console.h** - Main console interface with networking support
