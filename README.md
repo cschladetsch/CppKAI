@@ -16,6 +16,10 @@ Docs and scripts may refer to `$KAI_ROOT` as the repository root. Set it once pe
 export KAI_ROOT=/path/to/KAI
 ```
 
+## Demo
+
+![DistibutedDemo](resource/cppkai_continuation_flow.gif)
+
 ## System Architecture Overview
 
 The KAI system provides a multi-layered architecture that enables distributed object programming with multiple language frontends:
