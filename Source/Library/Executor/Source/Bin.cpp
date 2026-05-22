@@ -114,16 +114,23 @@ void Assert(bool B) {
 }
 
 Object Freeze(Object Q) {
+    std::cerr << "[FREEZE] Q.Exists=" << Q.Exists() << "\n";
     Value<BinaryStream> S = Q.GetRegistry()->New<BinaryStream>();
     *S << Q;
-    return S.GetObject();
+    auto r = S.GetObject();
+    std::cerr << "[FREEZE] result.Exists=" << r.Exists() << "\n";
+    return r;
 }
 
 Object Thaw(Object Q) {
+    std::cerr << "[THAW] Q.Exists=" << Q.Exists() << "\n";
     BinaryStream &S = Deref<BinaryStream>(Q);
+    std::cerr << "[THAW] Deref ok, size=" << S.Size() << "\n";
     S.SetRegistry(Q.GetRegistry());
+    std::cerr << "[THAW] registry=" << (S.GetRegistry()!=nullptr) << "\n";
     Object N;
     S >> N;
+    std::cerr << "[THAW] N.Exists=" << N.Exists() << "\n";
     return N;
 }
 

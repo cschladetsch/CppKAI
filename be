@@ -1,3 +1,3 @@
-cmake -DKAI_NETWORKING=ON -B build
-./b
+#!/usr/bin/env bash
+./b --network "$@"
 ./run_all_tests.sh

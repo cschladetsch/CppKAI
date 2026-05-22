@@ -15,7 +15,13 @@ run_test() {
     done
 
     echo "Error: ${name} binary not found" >&2
-    exit 1
+
+    BIN="${SCRIPT_DIR}/build/Bin/TestNetwork"
+    if [ -x "$BIN" ]; then
+        "$BIN"
+    else
+        echo "Error: Test binary not found" >&2
+    fi
 }
 
 # Run all test executables. Prefer the out-of-source build tree, then fall

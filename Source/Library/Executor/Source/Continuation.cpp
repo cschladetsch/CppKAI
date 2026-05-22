@@ -19,6 +19,8 @@ const static int MaxLen = 80;
 
 void Continuation::Create() {
     args = New<Array>();
+    source_code = New<String>();
+    scopeBreak = New(false);
     index = New(0);
     // Initialize other members and ensure they exist
     entered = New(false);
@@ -131,15 +133,15 @@ StringStream &operator>>(StringStream &, Continuation &) {
 }
 
 BinaryStream &operator<<(BinaryStream &stream, const Continuation &cont) {
-    // TODO: instruction pointer and scope!
-    return stream << cont.GetCode();
+    // code, scope, args, source_code are handled by the reflected property system.
+    // Only the instruction pointer needs explicit serialisation.
+    return stream << cont.GetInstructionPointer();
 }
 
 BinaryStream &operator>>(BinaryStream &stream, Continuation &cont) {
-    Object code;
-    // TODO: instruction pointer and scope!
-    stream >> code;
-    cont.SetCode(code);
+    int ip = 0;
+    stream >> ip;
+    cont.SetInstructionPointer(ip);
     return stream;
 }
 

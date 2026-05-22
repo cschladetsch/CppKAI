@@ -12,6 +12,7 @@ project(TestNetwork)
         TauNetworkCommunicationTest.cpp
         TauPiSerializationTest.cpp
         TauDomainPropertyTest.cpp
+        ContinuationSerializationTest.cpp
         # TestAgentProxy.cpp
         # ICQStyleChatTest.cpp
         # ChatProxyGenerationTest.cpp
@@ -24,8 +25,7 @@ project(TestNetwork)
     
     # Set the runtime output directory for the test executable
     set_target_properties(TestNetwork PROPERTIES
-        OUTPUT_NAME "TestNetwork"
-        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/Bin"
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/Bin/Test"
     )
 
     # Link libraries
@@ -57,7 +57,6 @@ project(TestNetwork)
 
     # Add the test to CTest
     add_test(NAME TestNetwork COMMAND TestNetwork)
-
     # Build standalone test programs separately
     # Console Connection Test
     add_executable(ConsoleConnectionTest ConsoleConnectionTest.cpp)
