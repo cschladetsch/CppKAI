@@ -183,6 +183,7 @@ graph TB
 - Enable networking features with `./b --network`
 - Run `./Scripts/run_rho_demo.sh` for a comprehensive demo of Rho language features
 - Run `./Scripts/calc_test.sh` for a demonstration of network calculation
+- Run `./Scripts/network/run_continuation_migration_demo.sh` to prove continuation migration across two processes
 - Run `./demo_console_communication.sh` for interactive console-to-console networking demo
 - Example scripts in `Test/Language/*/Scripts` directories
 
@@ -456,6 +457,8 @@ Networking is optional and must be enabled at build time:
 This builds the ENet transport layer, the Tau IDL code generator (`NetworkGenerate`), and all network tests.
 
 Continuations are serialized as binary payloads, so suspended execution can be frozen on one node, transferred over the network, and resumed on another node.
+
+For a runnable proof, see [Scripts/network/run_continuation_migration_demo.sh](Scripts/network/run_continuation_migration_demo.sh).
 
 The core networking model uses **Domains**, **Agents**, and **Proxies**:
 
