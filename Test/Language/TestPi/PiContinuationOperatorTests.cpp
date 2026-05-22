@@ -189,17 +189,14 @@ TEST_F(PiContinuationOperatorTest, BitwiseOrPrecedence) {
 TEST_F(PiContinuationOperatorTest, BitwiseOrErrorHandling) {
     console_.SetLanguage(kai::Language::Pi);
     auto exec = console_.GetExecutor();
-
-    // Test with insufficient operands
-    console_.Execute("5 |");  // Should fail or use some default
-    // Behavior depends on implementation - might throw or use 0
-
     auto stack = exec->GetDataStack();
-    stack->Clear();
 
-    // Test with non-integer types (if type checking is strict)
-    console_.Execute("\"hello\" 5 |");  // Should fail or convert
-    // Behavior depends on implementation
+    EXPECT_ANY_THROW(console_.Execute("5 |"));
+    EXPECT_TRUE(stack->Empty());
+
+    EXPECT_NO_THROW(console_.Execute("\"hello\" 5 |"));
+    EXPECT_LE(stack->Size(), 1);
+    stack->Clear();
 }
 
 // Test & and ! if they're actual operators

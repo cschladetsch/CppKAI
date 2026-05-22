@@ -12,7 +12,7 @@ using namespace std;
 // Test fixture for Pi language Suspend (&), Resume (...), and Replace (!) tests
 struct PiSuspendResumeReplaceTests : TestLangCommon {
     template <class T>
-    void AssertResult(const char *script, T expected) {
+    void AssertResult(const char* script, T expected) {
         try {
             console_.SetLanguage(Language::Pi);
             console_.Execute(script, Structure::Program);
@@ -43,7 +43,8 @@ struct PiSuspendResumeReplaceTests : TestLangCommon {
 
 // Test 1: Basic Suspend (&) - simple subroutine call
 TEST_F(PiSuspendResumeReplaceTests, BasicSuspend) {
-    // { 2 3 + } & should push current continuation, execute the block, and return
+    // { 2 3 + } & should push current continuation, execute the block, and
+    // return
     AssertResult<int>("{ 2 3 + } &", 5);
 }
 
@@ -82,8 +83,10 @@ TEST_F(PiSuspendResumeReplaceTests, BasicReplace) {
 
 // Test 7: Replace for tail call optimization
 TEST_F(PiSuspendResumeReplaceTests, ReplaceTailCall) {
-    // Simulating tail call: compute something then replace with result continuation
-    AssertResult<int>("{ 5 3 * { 2 + } ! } &", 17);  // 5*3=15, then replace with {2+} => 17
+    // Simulating tail call: compute something then replace with result
+    // continuation
+    AssertResult<int>("{ 5 3 * { 2 + } ! } &",
+                      17);  // 5*3=15, then replace with {2+} => 17
 }
 
 // Test 8: Resume vs Replace difference

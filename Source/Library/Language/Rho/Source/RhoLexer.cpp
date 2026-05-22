@@ -196,7 +196,7 @@ bool RhoLexer::LexSingleQuotedStringIfPresent() {
     const int start = offset;
     int cursor = offset + 1;
     bool escaped = false;
-    const std::string &line = Line();
+    const std::string& line = Line();
 
     while (cursor < static_cast<int>(line.size())) {
         const char ch = line[cursor];

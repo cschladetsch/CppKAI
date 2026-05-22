@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <chrono>
+#include <cstdint>
 #include <memory>
 #include <string>
 
@@ -48,6 +49,23 @@ class ICalcProxy : public ProxyBase {
 
     Future<int> Add(int a, int b) { return Exec<int>("Add", a, b); }
 };
+
+struct ListenResult {
+    int port = 0;
+    std::string skipReason;
+};
+
+static ListenResult ListenOnAvailablePort(Node &node, int beginPort,
+                                          int endPort) {
+    for (int candidate = beginPort; candidate < endPort; ++candidate) {
+        node.Listen(IpAddress("127.0.0.1"), candidate);
+        if (node.IsRunning()) {
+            return {candidate, {}};
+        }
+    }
+
+    return {0, "No available loopback port found in the requested range"};
+}
 }  // namespace
 
 TEST(TauPiSerializationTest, LocalNodeRoundTrip) {
@@ -67,25 +85,16 @@ TEST(TauPiSerializationTest, LocalNodeRoundTrip) {
     nodeA.SetRegistry(&registry);
     nodeB.SetRegistry(&registry);
 
-    int port = 0;
-    for (int candidate = 20000; candidate < 20100; ++candidate) {
-        nodeA.Listen(IpAddress("127.0.0.1"), candidate);
-        if (nodeA.IsRunning()) {
-            port = candidate;
-            break;
-        }
-    }
-    if (port == 0) {
-        GTEST_SKIP() << "Failed to bind a local port for nodeA";
-    }
+    const auto listen = ListenOnAvailablePort(nodeA, 20000, 20100);
+    if (listen.port == 0) GTEST_SKIP() << listen.skipReason;
+    const int port = listen.port;
     nodeB.Connect(IpAddress("127.0.0.1"), port);
 
     nodeA.SetUpdatePump([&]() { nodeB.Update(); });
     nodeB.SetUpdatePump([&]() { nodeA.Update(); });
 
     const auto start = std::chrono::steady_clock::now();
-    while (nodeA.GetConnectionCount() == 0 ||
-           nodeB.GetConnectionCount() == 0) {
+    while (nodeA.GetConnectionCount() == 0 || nodeB.GetConnectionCount() == 0) {
         nodeA.Update();
         nodeB.Update();
         if (std::chrono::steady_clock::now() - start >

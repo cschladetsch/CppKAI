@@ -62,7 +62,7 @@ class Console : public Reflected {
     int listenPort_;
     std::string consoleId_;
     std::vector<NetworkConsoleMessage> messageHistory_;
-    std::function<void(const NetworkConsoleMessage&)> messageCallback_;
+    std::function<void(const NetworkConsoleMessage &)> messageCallback_;
     mutable std::mutex peerExecutorsMutex_;
     std::unordered_map<std::string, Pointer<Executor>> peerExecutors_;
     std::unordered_map<std::string, std::string> peerConsoleIds_;
@@ -144,18 +144,20 @@ class Console : public Reflected {
 
     // Network functionality
     bool StartNetworking(int listenPort = 14600);
-    bool ConnectToPeer(const std::string& host, int port);
+    bool ConnectToPeer(const std::string &host, int port);
     void StopNetworking();
-    bool SendCommandToPeer(const std::string& peerAddr, const std::string& command);
-    void BroadcastCommand(const std::string& command);
+    bool SendCommandToPeer(const std::string &peerAddr,
+                           const std::string &command);
+    void BroadcastCommand(const std::string &command);
     std::vector<std::string> GetConnectedPeers() const;
     std::vector<NetworkConsoleMessage> GetNetworkHistory() const;
-    void SetNetworkMessageCallback(std::function<void(const NetworkConsoleMessage&)> callback);
-    bool SendBinaryToPeer(const std::string& peerAddr,
-                          const BinaryStream& payload);
-    String ProcessNetworkCommand(const String& command);
+    void SetNetworkMessageCallback(
+        std::function<void(const NetworkConsoleMessage &)> callback);
+    bool SendBinaryToPeer(const std::string &peerAddr,
+                          const BinaryStream &payload);
+    String ProcessNetworkCommand(const String &command);
     void ShowNetworkHelp() const;
-    String WriteStackForPeer(const std::string& peerId) const;
+    String WriteStackForPeer(const std::string &peerId) const;
     bool IsNetworkingEnabled() const { return networkingEnabled_; }
 
     int Run();
@@ -171,31 +173,33 @@ class Console : public Reflected {
 
     // Network protected methods
     void ProcessNetworkMessages();
-    void HandleNetworkPacket(const net::NetPacket& packet);
-    void HandleConsoleCommand(const net::NetPacket& packet);
-    void HandleConsoleResult(const net::NetPacket& packet);
-    void HandleConsoleBroadcast(const net::NetPacket& packet);
-    void HandleLanguageSwitch(const net::NetPacket& packet);
-    void HandleConsoleBinary(const net::NetPacket& packet);
-    void SendResultToPeer(const net::NetAddress& peer, const std::string& command, 
-                         const std::string& result);
-    void AddPeer(const net::NetAddress& address);
-    void RemovePeer(const net::NetAddress& address);
-    void LogNetworkMessage(const NetworkConsoleMessage& message);
+    void HandleNetworkPacket(const net::NetPacket &packet);
+    void HandleConsoleCommand(const net::NetPacket &packet);
+    void HandleConsoleResult(const net::NetPacket &packet);
+    void HandleConsoleBroadcast(const net::NetPacket &packet);
+    void HandleLanguageSwitch(const net::NetPacket &packet);
+    void HandleConsoleBinary(const net::NetPacket &packet);
+    void SendResultToPeer(const net::NetAddress &peer,
+                          const std::string &command,
+                          const std::string &result);
+    void AddPeer(const net::NetAddress &address);
+    void RemovePeer(const net::NetAddress &address);
+    void LogNetworkMessage(const NetworkConsoleMessage &message);
     std::string GenerateConsoleId();
-    std::string AddressToString(const net::NetAddress& addr) const;
-    net::NetAddress FindPeerByAddress(const std::string& addr) const;
-    std::string MakePeerKey(const net::NetAddress& addr) const;
-    Pointer<Executor> GetOrCreatePeerExecutor(const net::NetAddress& addr);
-    Pointer<Executor> GetOrCreatePeerExecutor(const std::string& peerKey);
-    void AssignPeerConsoleId(const net::NetAddress& addr,
-                             const std::string& consoleId);
-    Pointer<Executor> GetPeerExecutorByConsoleId(const std::string& consoleId) const;
-    void RemovePeerExecutor(const net::NetAddress& addr);
+    std::string AddressToString(const net::NetAddress &addr) const;
+    net::NetAddress FindPeerByAddress(const std::string &addr) const;
+    std::string MakePeerKey(const net::NetAddress &addr) const;
+    Pointer<Executor> GetOrCreatePeerExecutor(const net::NetAddress &addr);
+    Pointer<Executor> GetOrCreatePeerExecutor(const std::string &peerKey);
+    void AssignPeerConsoleId(const net::NetAddress &addr,
+                             const std::string &consoleId);
+    Pointer<Executor> GetPeerExecutorByConsoleId(
+        const std::string &consoleId) const;
+    void RemovePeerExecutor(const net::NetAddress &addr);
     void ClearPeerExecutors();
     void CopyMainStackToExecutor(Pointer<Executor> target) const;
     void CopyExecutorStackToMain(Pointer<Executor> source);
-    std::string SimplifyStackDump(const std::string& dump) const;
+    std::string SimplifyStackDump(const std::string &dump) const;
 
    private:
     bool end_ = false;

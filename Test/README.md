@@ -33,6 +33,7 @@ After building the project, you'll find these test executables in the `Bin/Test/
 * **TestPi**: Tests for the Pi stack-based language
 * **TestRho**: Tests for the Rho expression-based language
 * **TestTau**: Tests for the Tau network description language
+* **TestNetwork**: Networking, continuation migration, and Tau-over-network tests
 
 ## Selecting Tests
 

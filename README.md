@@ -8,13 +8,9 @@ _KAI_ is a network distributed **Object Model** for C++ with full runtime reflec
 
 Objects and *compute* can be distributed across Nodes in a Domain.
 
-## Environment Conventions
+## Demo
 
-Docs and scripts may refer to `$KAI_ROOT` as the repository root. Set it once per shell:
-
-```sh
-export KAI_ROOT=/path/to/KAI
-```
+![DistributedDemo](resources/cppkai_continuation_flow.gif)
 
 ## System Architecture Overview
 
@@ -121,7 +117,7 @@ graph TB
 - **Multi-Language Frontend**: Rho (infix), Pi (stack-based), and Tau (IDL) languages with seamless interoperability
 - **Interactive Console**: Real-time REPL with peer-to-peer networking capabilities  
 - **Distributed Object Model**: Network-transparent objects with type safety across node boundaries
-- **Stack-based Execution**: High-performance virtual machine with continuation support
+- **Stack-based Execution**: High-performance virtual machine with continuation support and binary migration between nodes
 - **Incremental Garbage Collection**: Smooth memory management without performance spikes
 - **Code Generation**: Tau IDL generates proxy/agent pairs for network communication
 - **Cross-platform Support**: Unified development experience across major operating systems
@@ -178,8 +174,14 @@ graph TB
 
 ### **Quick Start Examples**
 
+- Build from the repository root with `./b`
+- Run the current full suite with `./run_all_tests.sh`
+- Networking is enabled by default; use `./b` for the standard build or `./b --network` if your wrapper exposes it explicitly
+- Test binaries are written to `./Bin/Test`, including `TestNetwork`
 - Run `./Scripts/run_rho_demo.sh` for a comprehensive demo of Rho language features
 - Run `./Scripts/calc_test.sh` for a demonstration of network calculation
+- Run `./Scripts/network/run_continuation_migration_demo.sh` to prove continuation migration across two processes
+- Run `./Scripts/network/run_continuation_migration_tmux_demo.sh` for a tmux-recordable migration demo
 - Run `./demo_console_communication.sh` for interactive console-to-console networking demo
 - Example scripts in `Test/Language/*/Scripts` directories
 
@@ -452,6 +454,10 @@ Networking is optional and must be enabled at build time:
 
 This builds the ENet transport layer, the Tau IDL code generator (`NetworkGenerate`), and all network tests.
 
+Continuations are serialized as binary payloads, so suspended execution can be frozen on one node, transferred over the network, and resumed on another node.
+
+For a runnable proof, see [Scripts/network/run_continuation_migration_demo.sh](Scripts/network/run_continuation_migration_demo.sh).
+
 The core networking model uses **Domains**, **Agents**, and **Proxies**:
 
 - **Node** — a network endpoint that can listen or connect
@@ -470,8 +476,8 @@ Node nodeB;
 nodeB.Connect(IpAddress("127.0.0.1"), 14600);
 nodeB.BindProxyAddress(agent.Handle(), agentAddr);
 ISensorProxy proxy(nodeB, agent.Handle());
-auto future = proxy.Value();          // returns Future<int>
-int value = nodeB.WaitFor(future);    // blocks until resolved
+auto future = proxy.Value();          // returns Future<int> immediately
+nodeB.Step();                         // or let domain executor loop resolve it in time
 ```
 
 The **Tau IDL** describes network interfaces and generates matching Agent/Proxy pairs:
@@ -603,12 +609,24 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **[Windows](Include/KAI/Platform/Windows/README.md)** - Windows support and configuration
 - **[macOS](Include/KAI/Platform/OSX/README.md)** - macOS development setup
 
+## Environment Conventions
+
+Docs and scripts may refer to `$KAI_ROOT` as the repository root. Set it once per shell:
+
+```sh
+export KAI_ROOT=/path/to/KAI
+```
+
 ### **Project Statistics**
 - **629+** C++ source files
 - **3** integrated programming languages (Pi / Rho / Tau)
-- **17** passing network end-to-end tests
+- **1,603** passing network end-to-end tests
 - **Full** Agent/Proxy/Domain networking over ENet UDP
 - **Tau IDL** generates type-safe proxy/agent pairs from `.tau` interfaces
 - **Single flag** `KAI_NETWORKING=ON` enables the entire networking stack
+- **Single flag** `KAI_BUILD_LLM=ON` enables the local model-cache layer for llama.cpp integrations
+- **Model storage**: models live under `~/.cache/deepseek/models` by default, or `XDG_CACHE_HOME/deepseek/models` if set
+- **Backend**: the cache layer is provided by `Ext/CppLmmModelStore`
+- **Repo knowledge base**: `./Bin/RepoIndex` builds a local code/test index under the model cache
 
 **Start exploring**: Begin with the **[Documentation Guide](Doc/Documentation.md)** or dive into **[System Architecture](resources/README.md)** for technical details.

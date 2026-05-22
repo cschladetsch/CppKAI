@@ -35,12 +35,12 @@ To run all tests and see the summary:
 
 ```bash
 cd $KAI_ROOT
-./run_all_tests_fixed
+./run_all_tests.sh
 ```
 
 ## Implementation Details
 
-The summary feature is implemented in `run_all_tests_fixed` using these key components:
+The summary feature is implemented around the current shell runners and log files using these key components:
 
 1. Test counting function `extract_test_count()` that parses GoogleTest output
 2. Capture and redirect of test output using command substitution

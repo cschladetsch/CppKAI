@@ -167,10 +167,33 @@ bool operator==(const Pathname &A, const Pathname &B) {
     return A.elements == B.elements;
 }
 
-BinaryPacket &operator>>(BinaryPacket &, Pathname &) { KAI_NOT_IMPLEMENTED(); }
+BinaryPacket &operator>>(BinaryPacket &packet, Pathname &path) {
+    int length = 0;
+    if (!packet.Read(length)) {
+        KAI_THROW_0(PacketExtraction);
+    }
+    if (length < 0) {
+        KAI_THROW_1(BadIndex, length);
+    }
 
-BinaryStream &operator<<(BinaryStream &, const Pathname &) {
-    KAI_NOT_IMPLEMENTED();
+    String value;
+    if (length == 0) {
+        path.FromString(value);
+        return packet;
+    }
+
+    std::string buffer(static_cast<std::size_t>(length), '\0');
+    if (!packet.Read(length, &buffer[0])) {
+        KAI_THROW_0(PacketExtraction);
+    }
+
+    value = buffer;
+    path.FromString(value);
+    return packet;
+}
+
+BinaryStream &operator<<(BinaryStream &stream, const Pathname &path) {
+    return stream << path.ToString();
 }
 
 StringStream &operator>>(StringStream &, Pathname &) { KAI_NOT_IMPLEMENTED(); }

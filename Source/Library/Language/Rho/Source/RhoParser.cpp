@@ -8,13 +8,14 @@ KAI_BEGIN
 
 // Pi keywords that cannot be used as Rho variable names
 static const std::unordered_set<std::string> piKeywords = {
-    "if", "ife", "for", "foreach", "break", "continue", "true", "false", "self",
-    "while", "assert", "div", "rho", "rho{", "to_str", "not", "and", "or", "xor",
-    "exists", "drop", "dup", "dup2", "drop2", "pick", "over", "swap", "rot", "rotn",
-    "roll", "toarray", "gc", "clear", "expand", "cd", "pwd", "type",
-    "size", "depth", "new", "print", "dropn", "tolist", "tomap", "toset", "mul",
-    "mod", "noteq", "lls", "ls", "freeze", "thaw", "at"
-};
+    "if",     "ife",    "for",     "foreach", "break", "continue", "true",
+    "false",  "self",   "while",   "assert",  "div",   "rho",      "rho{",
+    "to_str", "not",    "and",     "or",      "xor",   "exists",   "drop",
+    "dup",    "dup2",   "drop2",   "pick",    "over",  "swap",     "rot",
+    "rotn",   "roll",   "toarray", "gc",      "clear", "expand",   "cd",
+    "pwd",    "type",   "size",    "depth",   "new",   "print",    "dropn",
+    "tolist", "tomap",  "toset",   "mul",     "mod",   "noteq",    "lls",
+    "ls",     "freeze", "thaw",    "at"};
 
 static bool IsPiKeyword(const std::string& name) {
     return piKeywords.find(name) != piKeywords.end();
@@ -360,11 +361,13 @@ bool RhoParser::Statement(AstNodePtr block) {
             current = saved;
 
             if (isNamedFunction) {
-                KAI_TRACE() << "RhoParser::Statement - Named function definition";
+                KAI_TRACE()
+                    << "RhoParser::Statement - Named function definition";
                 return FunctionDefinition(block);
             }
 
-            KAI_TRACE() << "RhoParser::Statement - Anonymous function expression";
+            KAI_TRACE()
+                << "RhoParser::Statement - Anonymous function expression";
             break;
         }
 
@@ -459,8 +462,10 @@ bool RhoParser::Expression() {
         if (ident && ident->GetToken().type == TokenType::Label) {
             std::string varName = ident->GetTokenText();
             if (IsPiKeyword(varName)) {
-                return CreateError(("Variable name '" + varName +
-                    "' conflicts with Pi keyword and cannot be used").c_str());
+                return CreateError(
+                    ("Variable name '" + varName +
+                     "' conflicts with Pi keyword and cannot be used")
+                        .c_str());
             }
         }
 
@@ -1045,7 +1050,7 @@ bool RhoParser::ParseIndexOp() {
     return Push(index);
 }
 
-bool RhoParser::CreateError(const char *text) {
+bool RhoParser::CreateError(const char* text) {
     return Fail(Lexer::CreateErrorMessage(Current(), text));
 }
 
@@ -1079,7 +1084,8 @@ bool RhoParser::WhileLoop(AstNodePtr block) {
     } else if (Try(TokenType::NewLine)) {
         Consume();
     } else {
-        return CreateError("Expected newline, ';', or '{' after while condition");
+        return CreateError(
+            "Expected newline, ';', or '{' after while condition");
     }
 
     auto bodyClause = NewNode(NodeType::Block);
@@ -1094,7 +1100,8 @@ bool RhoParser::WhileLoop(AstNodePtr block) {
         if (!Block(bodyClause)) {
             return CreateError("Block Expected inside while loop braces");
         }
-        while (Try(TokenType::NewLine) || Try(TokenType::Whitespace) || Try(TokenType::Tab)) {
+        while (Try(TokenType::NewLine) || Try(TokenType::Whitespace) ||
+               Try(TokenType::Tab)) {
             Consume();
         }
         if (!Try(TokenType::CloseBrace)) {
@@ -1280,15 +1287,18 @@ bool RhoParser::ForLoop(AstNodePtr block) {
         // Validate that loop variable name is not a Pi keyword
         std::string loopVarName = loopVar->GetTokenText();
         if (IsPiKeyword(loopVarName)) {
-            return CreateError(("Loop variable name '" + loopVarName +
-                "' conflicts with Pi keyword and cannot be used").c_str());
+            return CreateError(
+                ("Loop variable name '" + loopVarName +
+                 "' conflicts with Pi keyword and cannot be used")
+                    .c_str());
         }
 
         // Check if next token is 'in'
         if (Try(TokenType::In)) {
             // Iterator-style: for x in container
-            KAI_TRACE() << "RhoParser::ForLoop - Iterator-style 'for x in collection'";
-            Consume(); // consume 'in'
+            KAI_TRACE()
+                << "RhoParser::ForLoop - Iterator-style 'for x in collection'";
+            Consume();  // consume 'in'
 
             // Parse the collection expression
             if (!Expression()) {
@@ -1315,14 +1325,16 @@ bool RhoParser::ForLoop(AstNodePtr block) {
                 return CreateError("Block expected for for-loop body");
             }
 
-            // Create ForEach node (iterator-style for loops use foreach internally)
+            // Create ForEach node (iterator-style for loops use foreach
+            // internally)
             auto forEachNode = NewNode(NodeType::ForEach);
-            forEachNode->Add(loopVar);      // loop variable
-            forEachNode->Add(collection);   // collection
-            forEachNode->Add(bodyClause);   // body
+            forEachNode->Add(loopVar);     // loop variable
+            forEachNode->Add(collection);  // collection
+            forEachNode->Add(bodyClause);  // body
             block->Add(forEachNode);
 
-            KAI_TRACE() << "RhoParser::ForLoop - Iterator-style for-loop complete";
+            KAI_TRACE()
+                << "RhoParser::ForLoop - Iterator-style for-loop complete";
             return true;
         }
 
@@ -1341,7 +1353,8 @@ bool RhoParser::ForLoop(AstNodePtr block) {
 
     // Expect semicolon after initialization
     if (!Try(TokenType::Semi)) {
-        return CreateError("Expected semicolon after initialization in for loop");
+        return CreateError(
+            "Expected semicolon after initialization in for loop");
     }
     Consume();
 
@@ -1365,7 +1378,8 @@ bool RhoParser::ForLoop(AstNodePtr block) {
     KAI_TRACE() << "RhoParser::ForLoop - Parsing increment";
     AstNodePtr incrExpr = nullptr;
     // Increment expression is optional (can be empty before newline)
-    if (!Try(TokenType::NewLine) && !(headerHasParens && Try(TokenType::CloseParan))) {
+    if (!Try(TokenType::NewLine) &&
+        !(headerHasParens && Try(TokenType::CloseParan))) {
         if (!Expression()) {
             return CreateError("Expected increment expression in for loop");
         }
@@ -1420,7 +1434,8 @@ bool RhoParser::ForLoop(AstNodePtr block) {
             return CreateError("Statement expected for for loop body");
         }
     } else {
-        return CreateError("Expected '{', newline, or ';' after for loop header");
+        return CreateError(
+            "Expected '{', newline, or ';' after for loop header");
     }
 
     KAI_TRACE() << "RhoParser::ForLoop - Parsed body block";
@@ -1577,32 +1592,33 @@ bool RhoParser::ConsumeNewLines() {
 }
 
 bool RhoParser::FunctionDefinition(AstNodePtr block) {
-    KAI_TRACE() << "RhoParser::FunctionDefinition - Processing named function definition";
-    
+    KAI_TRACE() << "RhoParser::FunctionDefinition - Processing named function "
+                   "definition";
+
     // Consume the 'fun' token
     if (!Try(TokenType::Fun)) {
         return CreateError("Expected 'fun' keyword");
     }
     Consume();
-    
+
     // Create function node
     auto fun = NewNode(AstEnum::Function);
-    
+
     // Parse function name
     if (!Try(TokenType::Label)) {
         return CreateError("Expected function name after 'fun'");
     }
     fun->Add(Consume());  // Add function name
-    
+
     // Parse parameters with parentheses
     if (!Try(TokenType::OpenParan)) {
         return CreateError("Expected '(' after function name");
     }
     Expect(TokenType::OpenParan);
-    
+
     auto args = NewNode(AstEnum::None);
     fun->Add(args);
-    
+
     if (Try(TokenType::Label)) {
         args->Add(Consume());
         while (Try(TokenType::Comma)) {
@@ -1610,12 +1626,12 @@ bool RhoParser::FunctionDefinition(AstNodePtr block) {
             args->Add(Expect(TokenType::Label));
         }
     }
-    
+
     if (!Try(TokenType::CloseParan)) {
         return CreateError("Expected ')' after function parameters");
     }
     Expect(TokenType::CloseParan);
-    
+
     auto functionBlock = NewNode(RhoAstNodeEnumType::Block);
 
     // Rho supports two function body styles:
@@ -1626,33 +1642,40 @@ bool RhoParser::FunctionDefinition(AstNodePtr block) {
     //    fun name(args) { expr }
 
     if (Try(TokenType::OpenBrace)) {
-        KAI_TRACE() << "RhoParser::FunctionDefinition - Parsing brace-delimited function body";
+        KAI_TRACE() << "RhoParser::FunctionDefinition - Parsing "
+                       "brace-delimited function body";
         Consume();  // consume '{'
 
-        // Check if this is a multi-line block (newline after '{') or inline expression
+        // Check if this is a multi-line block (newline after '{') or inline
+        // expression
         if (Try(TokenType::NewLine)) {
             // Multi-line brace block: parse as indented block, then consume '}'
             if (!Block(functionBlock)) {
                 return CreateError("Failed to parse multi-line function body");
             }
             // Skip any trailing whitespace/newlines before '}'
-            while (Try(TokenType::NewLine) || Try(TokenType::Whitespace) || Try(TokenType::Tab)) {
+            while (Try(TokenType::NewLine) || Try(TokenType::Whitespace) ||
+                   Try(TokenType::Tab)) {
                 Consume();
             }
             if (!Try(TokenType::CloseBrace)) {
-                return CreateError("Expected '}' to close multi-line function body");
+                return CreateError(
+                    "Expected '}' to close multi-line function body");
             }
             Consume();  // consume '}'
         } else {
             // Inline brace block: parse statements until '}'
-            // Handles both simple expressions and complex statements (if/else, etc.)
+            // Handles both simple expressions and complex statements (if/else,
+            // etc.)
             while (!Try(TokenType::CloseBrace) && !Try(TokenType::None)) {
-                while (Try(TokenType::Whitespace) || Try(TokenType::Tab) || Try(TokenType::NewLine)) {
+                while (Try(TokenType::Whitespace) || Try(TokenType::Tab) ||
+                       Try(TokenType::NewLine)) {
                     Consume();
                 }
                 if (Try(TokenType::CloseBrace)) break;
                 if (!Statement(functionBlock)) {
-                    return CreateError("Expected statement in inline function body");
+                    return CreateError(
+                        "Expected statement in inline function body");
                 }
             }
             if (!Try(TokenType::CloseBrace)) {
@@ -1663,7 +1686,8 @@ bool RhoParser::FunctionDefinition(AstNodePtr block) {
     } else {
         // Python-like indentation-style function bodies
         if (!Try(TokenType::NewLine)) {
-            return CreateError("Expected newline or '{' after function declaration");
+            return CreateError(
+                "Expected newline or '{' after function declaration");
         }
         Expect(TokenType::NewLine);
 
@@ -1672,11 +1696,12 @@ bool RhoParser::FunctionDefinition(AstNodePtr block) {
             return CreateError("Failed to parse function body");
         }
     }
-    
+
     fun->Add(functionBlock);
     block->Add(fun);
-    
-    KAI_TRACE() << "RhoParser::FunctionDefinition - Successfully parsed function definition";
+
+    KAI_TRACE() << "RhoParser::FunctionDefinition - Successfully parsed "
+                   "function definition";
     return true;
 }
 

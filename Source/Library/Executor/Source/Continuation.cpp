@@ -19,6 +19,8 @@ const static int MaxLen = 80;
 
 void Continuation::Create() {
     args = New<Array>();
+    source_code = New<String>();
+    scopeBreak = New(false);
     index = New(0);
     // Initialize other members and ensure they exist
     entered = New(false);
@@ -128,19 +130,6 @@ StringStream &operator<<(StringStream &str, const Continuation &cont) {
 
 StringStream &operator>>(StringStream &, Continuation &) {
     KAI_NOT_IMPLEMENTED();
-}
-
-BinaryStream &operator<<(BinaryStream &stream, const Continuation &cont) {
-    // TODO: instruction pointer and scope!
-    return stream << cont.GetCode();
-}
-
-BinaryStream &operator>>(BinaryStream &stream, Continuation &cont) {
-    Object code;
-    // TODO: instruction pointer and scope!
-    stream >> code;
-    cont.SetCode(code);
-    return stream;
 }
 
 void Continuation::Register(Registry &registry) {

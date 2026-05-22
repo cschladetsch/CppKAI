@@ -54,6 +54,8 @@ cmake-build-debug/*
 [Ll]ib/
 [Bb]in/
 [Bb]uild/
+*\[[0-9]\]*
+*\[[0-9][0-9]\]*
 
 .vs/
 .vscode/
@@ -76,6 +78,7 @@ test.graph
 *.bak
 *.pch.*
 *.pch-.*
+imgui.ini
 
 # User-specific files
 *.suo

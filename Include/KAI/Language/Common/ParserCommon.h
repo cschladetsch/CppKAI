@@ -126,7 +126,6 @@ class ParserCommon : public ProcessCommon {
         // First check if tokens vector is empty
         if (tokens.empty()) {
             KAI_TRACE_ERROR_1(Fail("No tokens to process in Next()"));
-            KAI_THROW_1(LogicError, "No tokens to process");
         }
 
         // Increment token index
@@ -135,7 +134,6 @@ class ParserCommon : public ProcessCommon {
         // Check if the new index is valid
         if (current >= tokens.size()) {
             KAI_TRACE_ERROR_1(Fail("Next token index out of range"));
-            KAI_THROW_1(LogicError, "Next token index out of range");
         }
 
         return tokens[current];
@@ -145,13 +143,11 @@ class ParserCommon : public ProcessCommon {
         // Check if tokens vector is empty
         if (tokens.empty()) {
             KAI_TRACE_ERROR_1(Fail("No tokens to process in Last()"));
-            KAI_THROW_1(LogicError, "No tokens to process in Last()");
         }
 
         // Check if we can access the previous token
         if (current <= 0) {
             KAI_TRACE_ERROR_1(Fail("No previous token available"));
-            KAI_THROW_1(LogicError, "No previous token available");
         }
 
         return tokens[current - 1];
@@ -161,12 +157,10 @@ class ParserCommon : public ProcessCommon {
         // First check if tokens vector is empty to avoid range check error
         if (tokens.empty()) {
             KAI_TRACE_ERROR_1(Fail("No tokens to process"));
-            KAI_THROW_1(LogicError, "No tokens to process");
         }
 
         if (current >= tokens.size()) {
             KAI_TRACE_ERROR_1(Fail("Token index out of range"));
-            KAI_THROW_1(LogicError, "Token index out of range");
         }
 
         return tokens[current];
@@ -186,12 +180,10 @@ class ParserCommon : public ProcessCommon {
         // Check if tokens vector is empty
         if (tokens.empty()) {
             KAI_TRACE_ERROR_1(Fail("No tokens to process in Peek()"));
-            KAI_THROW_1(LogicError, "No tokens to process in Peek()");
         }
 
         if (current + 1 >= tokens.size()) {
             KAI_TRACE_ERROR() << "Unexpected end of tokens stream";
-            KAI_THROW_1(LogicError, "Peek: No more tokens in stream");
         }
 
         return tokens[current + 1];
@@ -222,7 +214,6 @@ class ParserCommon : public ProcessCommon {
     TokenNode const &Consume() {
         if (current == tokens.size()) {
             KAI_TRACE_ERROR_1(Fail("Unexpected end of file"));
-            KAI_THROW_1(LogicError, "Expected something");
         }
 
         return tokens[current++];
@@ -252,8 +243,8 @@ class ParserCommon : public ProcessCommon {
             return nullptr;
         }
 
-        Next();
-        return std::make_shared<AstNode>(Last());
+        auto consumed = Consume();
+        return std::make_shared<AstNode>(consumed);
     }
 
     AstNodePtr NewNode(AstEnum t) { return std::make_shared<AstNode>(t); }

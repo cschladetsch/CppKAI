@@ -10,19 +10,17 @@ KAI_BEGIN
 
 String String::LowerCase() const {
     String result((int)string_.size(), ' ');
-    std::transform(string_.begin(), string_.end(), result.begin(),
-                   [](unsigned char ch) {
-                       return static_cast<char>(std::tolower(ch));
-                   });
+    std::transform(
+        string_.begin(), string_.end(), result.begin(),
+        [](unsigned char ch) { return static_cast<char>(std::tolower(ch)); });
     return result;
 }
 
 String String::UpperCase() const {
     String result((int)string_.size(), ' ');
-    std::transform(string_.begin(), string_.end(), result.begin(),
-                   [](unsigned char ch) {
-                       return static_cast<char>(std::toupper(ch));
-                   });
+    std::transform(
+        string_.begin(), string_.end(), result.begin(),
+        [](unsigned char ch) { return static_cast<char>(std::toupper(ch)); });
     return result;
 }
 

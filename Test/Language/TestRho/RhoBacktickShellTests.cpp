@@ -33,37 +33,25 @@ TEST_F(RhoBacktickShellTest, SimpleAddition) {
 }
 
 TEST_F(RhoBacktickShellTest, MultipleShellCommands) {
-    const char* code = R"(
-        sum = `echo 10` + `echo 20`;
-        sum
-    )";
+    const char* code = "sum = `echo 10` + `echo 20`; sum";
     RunRhoScript(code);
     EXPECT_EQ(GetTop<int>(), 30);
 }
 
 TEST_F(RhoBacktickShellTest, SubtractionWithShell) {
-    const char* code = R"(
-        diff = `echo 100` - `echo 25`;
-        diff
-    )";
+    const char* code = "diff = `echo 100` - `echo 25`; diff";
     RunRhoScript(code);
     EXPECT_EQ(GetTop<int>(), 75);
 }
 
 TEST_F(RhoBacktickShellTest, MultiplicationWithShell) {
-    const char* code = R"(
-        product = 5 * `echo 3`;
-        product
-    )";
+    const char* code = "product = 5 * `echo 3`; product";
     RunRhoScript(code);
     EXPECT_EQ(GetTop<int>(), 15);
 }
 
 TEST_F(RhoBacktickShellTest, DivisionWithShell) {
-    const char* code = R"(
-        quotient = `echo 20` / `echo 4`;
-        quotient
-    )";
+    const char* code = "quotient = `echo 20` / `echo 4`; quotient";
     RunRhoScript(code);
     EXPECT_EQ(GetTop<int>(), 5);
 }

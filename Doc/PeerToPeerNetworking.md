@@ -2,10 +2,10 @@
 
 KAI's networking layer provides a symmetric peer-to-peer model: every `Node` can both listen for incoming connections and connect outward. There are no designated servers or clients — any node can host agents and any node can hold proxies.
 
-The transport is **ENet over UDP**. Networking is optional and only built when `KAI_NETWORKING=ON`:
+The transport is **ENet over UDP**. Networking is built by default and can be disabled with `KAI_NETWORKING=OFF`:
 
 ```bash
-./b --network
+./b
 ```
 
 ## Core Abstractions
@@ -178,10 +178,10 @@ The generated `ICalcProxy` inherits from `ProxyBase` and the generated `ICalcAge
 ./b --network
 
 # Run network tests
-./Bin/Test_Network
+./Bin/Test/TestNetwork
 
 # Run specific suite
-./Bin/Test_Network --gtest_filter="TauDomainPropertyTest*"
+./Bin/Test/TestNetwork --gtest_filter="TauDomainPropertyTest*"
 ```
 
 ## Wire Protocol

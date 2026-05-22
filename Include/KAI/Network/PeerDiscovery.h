@@ -4,7 +4,6 @@
 #include <vector>
 
 #include "KAI/Network/Network.h"
-
 #include "KAI/Network/Transport.h"
 
 KAI_NET_BEGIN

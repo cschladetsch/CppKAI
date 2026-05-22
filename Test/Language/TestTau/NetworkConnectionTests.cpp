@@ -4,8 +4,6 @@
 #include <regex>
 #include <sstream>
 
-#include "TestTauFileUtils.h"
-
 #include "KAI/Core/Config/Base.h"
 #include "KAI/Core/Debug.h"
 #include "KAI/Core/Logger.h"
@@ -14,6 +12,7 @@
 #include "KAI/Language/Tau/Generate/GenerateProxy.h"
 #include "KAI/Language/Tau/TauParser.h"
 #include "TestLangCommon.h"
+#include "TestTauFileUtils.h"
 
 using namespace kai;
 using namespace std;
@@ -24,8 +23,7 @@ struct TestNetworkConnection : TestLangCommon {
         const std::string relative = std::string("Connection/") + filename;
         const auto script = tau_test_utils::LoadScriptText(relative);
         if (script.empty()) {
-            const auto resolved =
-                tau_test_utils::ResolveScriptPath(relative);
+            const auto resolved = tau_test_utils::ResolveScriptPath(relative);
             KAI_LOG_ERROR("Failed to open file: " + resolved.string());
         }
         return script;

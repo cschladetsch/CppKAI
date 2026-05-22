@@ -22,24 +22,6 @@ class Reflected {
     }  // called immediately before resources are released
 
     Registry &Reg() const;
-
-    //    template <class T>
-    //    Pointer<T> New();
-    //
-    //    template <class T>
-    //    Pointer<T> New(const T& val);
 };
-
-// template <class T>
-// Pointer<T> Reflected::New()
-//{
-//     return Reg().New<T>();
-// }
-//
-// template <class T>
-// Pointer<T> Reflected::New(const T& val)
-//{
-//     return Reg().New(val);
-// }
 
 KAI_END

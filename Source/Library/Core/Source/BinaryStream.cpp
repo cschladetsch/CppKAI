@@ -6,19 +6,14 @@
 KAI_BEGIN
 
 BinaryStream &operator<<(BinaryStream &S, const BinaryPacket &T) {
-    // Write the binary packet's data to the stream
-    if (T.Size() > 0) {
-        S.Write(T.Size(), T.Begin());
-    }
+    int size = T.Size();
+    S << size;
+    if (size > 0) S.Write(size, T.Begin());
     return S;
 }
 
 BinaryStream &operator<<(BinaryStream &S, const BinaryStream &T) {
-    // Write the binary stream's data to the stream
-    if (T.Size() > 0) {
-        S.Write(T.Size(), T.Begin());
-    }
-    return S;
+    return S << static_cast<const BinaryPacket &>(T);
 }
 
 void BinaryStream::Register(Registry &registry) {

@@ -1,8 +1,8 @@
 #pragma once
 
 #include <KAI/Network/Future.h>
-#include <KAI/Network/Representative.h>
 #include <KAI/Network/Node.h>
+#include <KAI/Network/Representative.h>
 
 KAI_NET_BEGIN
 

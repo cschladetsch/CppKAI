@@ -35,9 +35,11 @@ TEST(NetworkProxyTest, GeneratesValidProxyFromTauFile) {
     WriteTestTauFile(tauFile);
 
     std::string proxyOut, agentOut, error;
-    ASSERT_TRUE(GenerateProxy::GenerateFromFile(tauFile.c_str(), proxyOut, error))
+    ASSERT_TRUE(
+        GenerateProxy::GenerateFromFile(tauFile.c_str(), proxyOut, error))
         << "Proxy generation failed: " << error;
-    ASSERT_TRUE(GenerateAgent::GenerateFromFile(tauFile.c_str(), agentOut, error))
+    ASSERT_TRUE(
+        GenerateAgent::GenerateFromFile(tauFile.c_str(), agentOut, error))
         << "Agent generation failed: " << error;
 
     const std::string combined = proxyOut + agentOut;

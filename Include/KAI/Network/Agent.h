@@ -1,14 +1,14 @@
 #pragma once
 
-#include "KAI/Network/AgentBase.h"
-#include "KAI/Network/Future.h"
-#include "KAI/Network/NetHandle.h"
-
 #include <functional>
 #include <memory>
 #include <string>
 #include <type_traits>
 #include <utility>
+
+#include "KAI/Network/AgentBase.h"
+#include "KAI/Network/Future.h"
+#include "KAI/Network/NetHandle.h"
 
 KAI_NET_BEGIN
 
@@ -27,19 +27,23 @@ struct Agent : AgentBase {
     template <typename R, typename... Args>
     void BindMethod(const std::string &name, R (T::*method)(Args...)) {
         auto bound = [servant = servant_, method](Args... args) -> R {
-            return std::invoke(method, servant.get(), std::forward<Args>(args)...);
+            return std::invoke(method, servant.get(),
+                               std::forward<Args>(args)...);
         };
-        this->GetNode().RegisterMethod(this->GetHandle(), name,
-                                       std::function<R(Args...)>(std::move(bound)));
+        this->GetNode().RegisterMethod(
+            this->GetHandle(), name,
+            std::function<R(Args...)>(std::move(bound)));
     }
 
     template <typename R, typename... Args>
     void BindMethod(const std::string &name, R (T::*method)(Args...) const) {
         auto bound = [servant = servant_, method](Args... args) -> R {
-            return std::invoke(method, servant.get(), std::forward<Args>(args)...);
+            return std::invoke(method, servant.get(),
+                               std::forward<Args>(args)...);
         };
-        this->GetNode().RegisterMethod(this->GetHandle(), name,
-                                       std::function<R(Args...)>(std::move(bound)));
+        this->GetNode().RegisterMethod(
+            this->GetHandle(), name,
+            std::function<R(Args...)>(std::move(bound)));
     }
 
     template <typename R, typename... Args>
@@ -49,7 +53,8 @@ struct Agent : AgentBase {
 
     template <typename Getter, typename Setter>
     void BindProperty(const std::string &name, Getter getter, Setter setter) {
-        using ValueType = std::decay_t<decltype((std::declval<T &>().*getter)())>;
+        using ValueType =
+            std::decay_t<decltype((std::declval<T &>().*getter)())>;
 
         auto getterFn = [servant = servant_, getter]() -> ValueType {
             return std::invoke(getter, servant.get());
@@ -66,7 +71,8 @@ struct Agent : AgentBase {
 
     template <typename Getter>
     void BindProperty(const std::string &name, Getter getter) {
-        using ValueType = std::decay_t<decltype((std::declval<T &>().*getter)())>;
+        using ValueType =
+            std::decay_t<decltype((std::declval<T &>().*getter)())>;
 
         auto getterFn = [servant = servant_, getter]() -> ValueType {
             return std::invoke(getter, servant.get());

@@ -168,8 +168,8 @@ tmux send-keys -t $SESSION_NAME:0.2 "echo '  /nethistory        - Show message h
 tmux send-keys -t $SESSION_NAME:0.2 "echo '  rho / pi           - Switch languages'" C-m
 tmux send-keys -t $SESSION_NAME:0.2 "echo ''" C-m
 tmux send-keys -t $SESSION_NAME:0.2 "echo 'Navigation:'" C-m
-tmux send-keys -t $SESSION_NAME:0.2 "echo '  Ctrl+b, arrow keys - Switch between panes'" C-m
-tmux send-keys -t $SESSION_NAME:0.2 "echo '  Ctrl+b, d         - Detach from session'" C-m
+tmux send-keys -t $SESSION_NAME:0.2 "echo '  Ctrl+a, arrow keys - Switch between panes'" C-m
+tmux send-keys -t $SESSION_NAME:0.2 "echo '  Ctrl+a, d         - Detach from session'" C-m
 tmux send-keys -t $SESSION_NAME:0.2 "echo '  exit (in console) - Exit console'" C-m
 tmux send-keys -t $SESSION_NAME:0.2 "echo ''" C-m
 tmux send-keys -t $SESSION_NAME:0.2 "echo 'To exit demo: type \"exit\" in both consoles'" C-m
@@ -183,8 +183,8 @@ echo ""
 echo -e "${YELLOW}Tmux Session: $SESSION_NAME${NC}"
 echo ""
 echo -e "${CYAN}Controls:${NC}"
-echo "• Ctrl+b, arrow keys - Navigate between panes"
-echo "• Ctrl+b, d - Detach from session (keeps running)"
+echo "• Ctrl+a, arrow keys - Navigate between panes"
+echo "• Ctrl+a, d - Detach from session (keeps running)"
 echo "• tmux attach -t $SESSION_NAME - Reattach to session"
 echo "• Type 'exit' in both consoles to end demo"
 echo ""

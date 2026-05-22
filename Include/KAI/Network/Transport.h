@@ -13,7 +13,7 @@
 KAI_NET_BEGIN
 
 enum class SendReliability { Unreliable, Reliable };
-enum class SendRouting    { Unicast, Broadcast };
+enum class SendRouting { Unicast, Broadcast };
 
 struct BufferOffset {
     explicit BufferOffset(std::size_t value) : value(value) {}
@@ -74,21 +74,20 @@ class NetPeer {
     virtual bool Connect(const NetAddress& remoteAddress) = 0;
     virtual void SetMaximumIncomingConnections(int maxConnections) = 0;
     virtual std::unique_ptr<NetPacket> Receive() = 0;
-    virtual bool Send(const unsigned char* data, std::size_t size, bool reliable,
-                      int channel, const NetAddress& target,
+    virtual bool Send(const unsigned char* data, std::size_t size,
+                      bool reliable, int channel, const NetAddress& target,
                       bool broadcast) = 0;
 
     // Convenience overload: takes a BinaryStream and named enums instead of
     // raw pointer/size and boolean flags.
     bool Send(const BinaryStream& stream, SendReliability reliability,
-              BufferOffset channel, const NetAddress& target, SendRouting routing) {
-        return Send(
-            reinterpret_cast<const unsigned char *>(stream.Begin()),
-            static_cast<std::size_t>(stream.Size()),
-            reliability == SendReliability::Reliable,
-            static_cast<int>(channel.value),
-            target,
-            routing == SendRouting::Broadcast);
+              BufferOffset channel, const NetAddress& target,
+              SendRouting routing) {
+        return Send(reinterpret_cast<const unsigned char*>(stream.Begin()),
+                    static_cast<std::size_t>(stream.Size()),
+                    reliability == SendReliability::Reliable,
+                    static_cast<int>(channel.value), target,
+                    routing == SendRouting::Broadcast);
     }
     virtual NetAddress GetInternalAddress() const = 0;
     virtual int GetAveragePing(const NetAddress& address) const = 0;

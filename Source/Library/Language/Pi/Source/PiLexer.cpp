@@ -1,4 +1,5 @@
 #include <KAI/Language/Pi/PiLexer.h>
+
 #include <iostream>
 #include <map>
 
@@ -267,7 +268,8 @@ bool PiLexer::PathnameOrKeyword() {
                 return false;
             }
 
-            KAI_TRACE() << "[PiLexer] Adding keyword token: type=" << result.type;
+            KAI_TRACE() << "[PiLexer] Adding keyword token: type="
+                        << result.type;
             Add(result);
             return true;
         }

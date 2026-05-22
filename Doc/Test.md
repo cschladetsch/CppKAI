@@ -1,8 +1,6 @@
 # Unit Tests
 
-See the [Unit Tests](https://github.com/cschladetsch/KAI/tree/master/Source/Test/Source) here. Locally they are just in ${KAI_HOME}/Source/Test.
-
-There is a Readme in there too, and new Readme in each test folder.
+KAI uses GoogleTest-based executables under `Bin/Test/`. The source tree for tests lives under `Test/`, with additional guides in [Test/README.md](../Test/README.md) and the per-folder READMEs there.
 
 ## Running Tests
 
@@ -12,6 +10,13 @@ Test programs are located in the `Bin/Test/` directory after building the projec
 - `TestPi`: Pi language tests
 - `TestRho`: Rho language tests
 - `TestTau`: Tau language tests
+- `TestNetwork`: Networking and Tau-over-network tests
+
+To run the full suite from the repository root:
+
+```bash
+./run_all_tests.sh
+```
 
 ### Command-Line Options
 

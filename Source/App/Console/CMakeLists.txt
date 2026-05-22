@@ -19,8 +19,8 @@ add_custom_command(TARGET ${name} POST_BUILD
     COMMENT "Copying Console to ~/bin if directory exists"
 )
 
-# Network examples - only build if network apps are enabled
-if (KAI_BUILD_NETWORK_APPS)
+# Network examples - only build when networking is enabled
+if (KAI_NETWORKING)
     add_executable(SimpleServer ${source_path}/SimpleServer.cpp)
     target_link_libraries(SimpleServer Executor Core Network ${Boost_LIBRARIES})
     # Set the output directory explicitly for SimpleServer
@@ -32,6 +32,15 @@ if (KAI_BUILD_NETWORK_APPS)
     target_link_libraries(SimpleClient Executor Core Network ${Boost_LIBRARIES})
     # Set the output directory explicitly for SimpleClient
     set_target_properties(SimpleClient PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${BIN_HOME}"
+    )
+
+    add_executable(ContinuationMigrationDemo
+        ${source_path}/ContinuationMigrationDemo.cpp)
+    target_link_libraries(ContinuationMigrationDemo
+        ConsoleLib PiLang RhoLang Executor CommonLang Core Network
+        ${Boost_LIBRARIES})
+    set_target_properties(ContinuationMigrationDemo PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${BIN_HOME}"
     )
 endif()

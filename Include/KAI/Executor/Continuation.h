@@ -109,6 +109,7 @@ BinaryStream &operator<<(BinaryStream &, const Continuation &);
 BinaryStream &operator>>(BinaryStream &, Continuation &);
 
 KAI_TYPE_TRAITS(Continuation, Number::Continuation,
-                Properties::Streaming | Properties::Reflected);
+                Properties::Streaming | Properties::BinaryStreaming |
+                    Properties::Reflected);
 
 KAI_END

@@ -19,7 +19,7 @@ TEST(RhoLanguage, TestDoWhileLoops) {
     // Initialize console
     Console console;
     console.SetLanguage(Language::Rho);
-    
+
     // Set up the translator for Rho language
     Registry& reg = console.GetRegistry();
     auto translator = std::make_shared<RhoTranslator>(reg);
@@ -45,8 +45,7 @@ TEST(RhoLanguage, TestDoWhileLoops) {
         // Load and run the simplest do-while test script
         vector<string> possiblePaths = {
             "./Test/Language/TestRho/Scripts/SimplestDoWhile.rho",
-            "Test/Language/TestRho/Scripts/SimplestDoWhile.rho"
-        };
+            "Test/Language/TestRho/Scripts/SimplestDoWhile.rho"};
         if (const char* kaiRootEnv = std::getenv("KAI_ROOT")) {
             possiblePaths.push_back(
                 std::string(kaiRootEnv) +
@@ -56,7 +55,7 @@ TEST(RhoLanguage, TestDoWhileLoops) {
         string scriptContent;
         string scriptPath;
         bool found = false;
-        
+
         for (const auto& path : possiblePaths) {
             try {
                 scriptContent = String(File::ReadAllText(path)).c_str();

@@ -92,7 +92,7 @@ TEST_F(RhoElseBranchRecursionTest, ElseScopeIssue) {
     data_->Clear();
     console_.Execute("outer");
     auto global_outer = kai::ConstDeref<int>(data_->Top());
-    std::cout << "Global outer = " << global_outer << " (Rho modifies global: expected 200)"
-              << std::endl;
+    std::cout << "Global outer = " << global_outer
+              << " (Rho modifies global: expected 200)" << std::endl;
     EXPECT_EQ(global_outer, 200);
 }

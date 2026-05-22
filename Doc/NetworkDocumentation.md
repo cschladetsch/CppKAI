@@ -41,13 +41,13 @@ graph LR
 
 ## Build
 
-Networking is off by default:
+Networking is enabled by default:
 
 ```bash
-./b --network          # build with ENet, Tau IDL, NetworkGenerate, network tests
-./b --network --clean  # clean rebuild with networking
+./b                     # standard build includes ENet, Tau IDL, NetworkGenerate, and network tests
+./b --clean             # clean rebuild with networking included
 
-cmake .. -DKAI_NETWORKING=ON   # equivalent CMake flag
+cmake .. -DKAI_NETWORKING=OFF   # equivalent CMake flag to disable networking
 ```
 
 The `KAI_NETWORKING` option controls:
@@ -55,15 +55,15 @@ The `KAI_NETWORKING` option controls:
 - `Network` library
 - `TauLang` (needed for IDL code generation)
 - `NetworkGenerate` executable
-- `Test_Network` test binary
+- `TestNetwork` test binary
 - `TestTau` language tests
 
 ## Running Network Tests
 
 ```bash
-./Bin/Test_Network                                     # all 17 tests
-./Bin/Test_Network --gtest_filter="NodeEndToEndTest*"  # 6 E2E tests
-./Bin/Test_Network --gtest_filter="TauDomain*"         # 3 domain tests
+./Bin/Test/TestNetwork
+./Bin/Test/TestNetwork --gtest_filter="NodeEndToEndTest*"
+./Bin/Test/TestNetwork --gtest_filter="TauDomain*"
 ```
 
 ## FAQ

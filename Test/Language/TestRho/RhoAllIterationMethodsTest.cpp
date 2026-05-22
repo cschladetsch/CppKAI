@@ -17,7 +17,8 @@ struct RhoAllIterationMethodsTest : TestLangCommon {
     }
 
     template <typename T>
-    void RunAndExpect(const string& code, T expected, const string& testName = "") {
+    void RunAndExpect(const string& code, T expected,
+                      const string& testName = "") {
         try {
             console_.SetLanguage(Language::Rho);
             console_.Execute(code, Structure::Program);
@@ -30,29 +31,34 @@ struct RhoAllIterationMethodsTest : TestLangCommon {
             ASSERT_FALSE(dataStack->Empty())
                 << "No result on stack after execution"
                 << (testName.empty() ? "" : "\nTest: " + testName)
-                << "\nCode:\n" << code;
+                << "\nCode:\n"
+                << code;
 
             auto result = dataStack->Top();
             ASSERT_TRUE(result.IsType<T>())
                 << "Result type mismatch. Expected " << typeid(T).name()
                 << " but got "
-                << (result.GetClass() ? result.GetClass()->GetName().ToString() : "null")
+                << (result.GetClass() ? result.GetClass()->GetName().ToString()
+                                      : "null")
                 << (testName.empty() ? "" : "\nTest: " + testName);
 
             T actual = ConstDeref<T>(result);
             ASSERT_EQ(actual, expected)
                 << "Value mismatch"
                 << (testName.empty() ? "" : "\nTest: " + testName)
-                << "\nCode:\n" << code;
+                << "\nCode:\n"
+                << code;
 
         } catch (const Exception::Base& e) {
             FAIL() << "Exception: " << e.ToString()
                    << (testName.empty() ? "" : "\nTest: " + testName)
-                   << "\nCode:\n" << code;
+                   << "\nCode:\n"
+                   << code;
         } catch (const std::exception& e) {
             FAIL() << "std::exception: " << e.what()
                    << (testName.empty() ? "" : "\nTest: " + testName)
-                   << "\nCode:\n" << code;
+                   << "\nCode:\n"
+                   << code;
         }
     }
 };
@@ -69,7 +75,8 @@ i = 0
 while i < 5
     i = i + 1
 i
-)", 5, "While_BasicCount");
+)",
+                      5, "While_BasicCount");
 }
 
 TEST_F(RhoAllIterationMethodsTest, While_Accumulate) {
@@ -80,7 +87,8 @@ while i < 10
     sum = sum + i
     i = i + 1
 sum
-)", 45, "While_Accumulate");
+)",
+                      45, "While_Accumulate");
 }
 
 TEST_F(RhoAllIterationMethodsTest, While_WithBreak) {
@@ -93,7 +101,8 @@ while i < 100
     if sum > 20
         break
 sum
-)", 21, "While_WithBreak");
+)",
+                      21, "While_WithBreak");
 }
 
 TEST_F(RhoAllIterationMethodsTest, While_Nested) {
@@ -107,7 +116,8 @@ while i < 3
         j = j + 1
     i = i + 1
 sum
-)", 12, "While_Nested");
+)",
+                      12, "While_Nested");
 }
 
 // --- FOR LOOPS ---
@@ -118,7 +128,8 @@ sum = 0
 for i = 0; i < 10; i = i + 1
     sum = sum + i
 sum
-)", 45, "For_BasicIteration");
+)",
+                      45, "For_BasicIteration");
 }
 
 TEST_F(RhoAllIterationMethodsTest, For_WithStep) {
@@ -127,7 +138,8 @@ sum = 0
 for i = 0; i < 10; i = i + 2
     sum = sum + i
 sum
-)", 20, "For_WithStep");  // 0+2+4+6+8
+)",
+                      20, "For_WithStep");  // 0+2+4+6+8
 }
 
 TEST_F(RhoAllIterationMethodsTest, For_Countdown) {
@@ -136,7 +148,8 @@ sum = 0
 for i = 10; i > 0; i = i - 1
     sum = sum + i
 sum
-)", 55, "For_Countdown");
+)",
+                      55, "For_Countdown");
 }
 
 TEST_F(RhoAllIterationMethodsTest, For_WithBreak) {
@@ -147,7 +160,8 @@ for i = 0; i < 100; i = i + 1
     if sum > 30
         break
 sum
-)", 36, "For_WithBreak");
+)",
+                      36, "For_WithBreak");
 }
 
 // --- DO-WHILE LOOPS ---
@@ -161,11 +175,13 @@ do
     i = i + 1
 while i < 5
 sum
-)", 10, "DoWhile_BasicIteration");  // 0+1+2+3+4
+)",
+                      10, "DoWhile_BasicIteration");  // 0+1+2+3+4
 }
 
 TEST_F(RhoAllIterationMethodsTest, DoWhile_ExecutesOnce) {
-    RunAndExpect<int>(R"(
+    RunAndExpect<int>(
+        R"(
 count = 0
 i = 100
 do
@@ -173,7 +189,9 @@ do
     i = i + 1
 while i < 10
 count
-)", 1, "DoWhile_ExecutesOnce");  // Executes once even though condition false
+)",
+        1,
+        "DoWhile_ExecutesOnce");  // Executes once even though condition false
 }
 
 TEST_F(RhoAllIterationMethodsTest, DoWhile_WithBreak) {
@@ -187,7 +205,8 @@ do
         break
 while i < 100
 sum
-)", 21, "DoWhile_WithBreak");
+)",
+                      21, "DoWhile_WithBreak");
 }
 
 // --- RANGE-BASED PATTERNS ---
@@ -201,7 +220,8 @@ while i < 5
     sum = sum + arr[i]
     i = i + 1
 sum
-)", 15, "RangeStyle_WithArray");
+)",
+                      15, "RangeStyle_WithArray");
 }
 
 TEST_F(RhoAllIterationMethodsTest, RangeStyle_ForLoop) {
@@ -211,7 +231,8 @@ sum = 0
 for i = 0; i < 3; i = i + 1
     sum = sum + arr[i]
 sum
-)", 60, "RangeStyle_ForLoop");
+)",
+                      60, "RangeStyle_ForLoop");
 }
 
 // --- INFINITE LOOP WITH BREAK ---
@@ -224,7 +245,8 @@ while true
     if i >= 5
         break
 i
-)", 5, "InfiniteLoop_WithBreak");
+)",
+                      5, "InfiniteLoop_WithBreak");
 }
 
 TEST_F(RhoAllIterationMethodsTest, InfiniteLoop_ConditionalBreak) {
@@ -237,7 +259,8 @@ while true
     if i == 10
         break
 sum
-)", 45, "InfiniteLoop_ConditionalBreak");
+)",
+                      45, "InfiniteLoop_ConditionalBreak");
 }
 
 // ============================================================================
@@ -251,7 +274,8 @@ sum = 0
 for x in arr
     sum = sum + x
 sum
-)", 15, "ForEach_Array");
+)",
+                      15, "ForEach_Array");
 }
 
 TEST_F(RhoAllIterationMethodsTest, ForEach_EmptyArray) {
@@ -261,7 +285,8 @@ count = 0
 for x in arr
     count = count + 1
 count
-)", 0, "ForEach_EmptyArray");
+)",
+                      0, "ForEach_EmptyArray");
 }
 
 TEST_F(RhoAllIterationMethodsTest, ForEach_Nested) {
@@ -272,7 +297,8 @@ for row in matrix
     for val in row
         sum = sum + val
 sum
-)", 10, "ForEach_Nested");
+)",
+                      10, "ForEach_Nested");
 }
 
 TEST_F(RhoAllIterationMethodsTest, ForEach_WithBreak) {
@@ -284,7 +310,8 @@ for x in arr
         break
     sum = sum + x
 sum
-)", 6, "ForEach_WithBreak");  // 1+2+3
+)",
+                      6, "ForEach_WithBreak");  // 1+2+3
 }
 
 TEST_F(RhoAllIterationMethodsTest, ForEach_WithContinue) {
@@ -296,7 +323,8 @@ for x in arr
         continue
     sum = sum + x
 sum
-)", 12, "ForEach_WithContinue");  // 1+2+4+5
+)",
+                      12, "ForEach_WithContinue");  // 1+2+4+5
 }
 
 TEST_F(RhoAllIterationMethodsTest, ForEach_WithFunction) {
@@ -307,7 +335,8 @@ sum = 0
 for x in arr
     sum = sum + double(x)
 sum
-)", 12, "ForEach_WithFunction");  // 2+4+6
+)",
+                      12, "ForEach_WithFunction");  // 2+4+6
 }
 
 TEST_F(RhoAllIterationMethodsTest, ForEach_WithConditional) {
@@ -318,7 +347,8 @@ for x in arr
     if x % 2 == 0
         sum = sum + x
 sum
-)", 30, "ForEach_WithConditional");  // 2+4+6+8+10
+)",
+                      30, "ForEach_WithConditional");  // 2+4+6+8+10
 }
 
 TEST_F(RhoAllIterationMethodsTest, ForEach_CountingElements) {
@@ -328,7 +358,8 @@ count = 0
 for x in arr
     count = count + 1
 count
-)", 5, "ForEach_CountingElements");
+)",
+                      5, "ForEach_CountingElements");
 }
 
 TEST_F(RhoAllIterationMethodsTest, ForEach_SumOfSquares) {
@@ -338,7 +369,8 @@ sum = 0
 for x in arr
     sum = sum + x * x
 sum
-)", 30, "ForEach_SumOfSquares");  // 1+4+9+16
+)",
+                      30, "ForEach_SumOfSquares");  // 1+4+9+16
 }
 
 TEST_F(RhoAllIterationMethodsTest, ForEach_MultipleArrays) {
@@ -351,7 +383,8 @@ for x in arr1
 for y in arr2
     sum = sum + y
 sum
-)", 66, "ForEach_MultipleArrays");  // 6 + 60
+)",
+                      66, "ForEach_MultipleArrays");  // 6 + 60
 }
 
 TEST_F(RhoAllIterationMethodsTest, ForEach_NestedWithBreak) {
@@ -366,7 +399,8 @@ for row in matrix
     if sum > 10
         break
 sum
-)", 15, "ForEach_NestedWithBreak");  // 1+2+3+4+5
+)",
+                      15, "ForEach_NestedWithBreak");  // 1+2+3+4+5
 }
 
 TEST_F(RhoAllIterationMethodsTest, ForEach_FilteringPattern) {
@@ -378,7 +412,9 @@ for x in arr
         if x > 3
             count = count + 1
 count
-)", 3, "ForEach_FilteringPattern");  // 5, 7, 9 are odd and > 3 (3 items, not 4)
+)",
+                      3, "ForEach_FilteringPattern");  // 5, 7, 9 are odd and >
+                                                       // 3 (3 items, not 4)
 }
 
 TEST_F(RhoAllIterationMethodsTest, ForEach_Accumulator) {
@@ -388,7 +424,8 @@ product = 1
 for x in arr
     product = product * x
 product
-)", 1875, "ForEach_Accumulator");  // 5*15*25
+)",
+                      1875, "ForEach_Accumulator");  // 5*15*25
 }
 
 TEST_F(RhoAllIterationMethodsTest, ForEach_MaxValue) {
@@ -399,7 +436,8 @@ for x in arr
     if x > maxVal
         maxVal = x
 maxVal
-)", 9, "ForEach_MaxValue");
+)",
+                      9, "ForEach_MaxValue");
 }
 
 TEST_F(RhoAllIterationMethodsTest, ForEach_MinValue) {
@@ -410,7 +448,8 @@ for x in arr
     if x < minVal
         minVal = x
 minVal
-)", 2, "ForEach_MinValue");
+)",
+                      2, "ForEach_MinValue");
 }
 
 TEST_F(RhoAllIterationMethodsTest, ForEach_TripleNested) {
@@ -422,11 +461,13 @@ for layer in cube
         for val in row
             sum = sum + val
 sum
-)", 36, "ForEach_TripleNested");  // 1+2+3+4+5+6+7+8
+)",
+                      36, "ForEach_TripleNested");  // 1+2+3+4+5+6+7+8
 }
 
 TEST_F(RhoAllIterationMethodsTest, ForEach_WithIndex) {
-    RunAndExpect<int>(R"(
+    RunAndExpect<int>(
+        R"(
 arr = [10, 20, 30, 40, 50]
 sum = 0
 i = 0
@@ -434,7 +475,8 @@ for x in arr
     sum = sum + x + i
     i = i + 1
 sum
-)", 160, "ForEach_WithIndex");  // (10+0)+(20+1)+(30+2)+(40+3)+(50+4)
+)",
+        160, "ForEach_WithIndex");  // (10+0)+(20+1)+(30+2)+(40+3)+(50+4)
 }
 
 TEST_F(RhoAllIterationMethodsTest, ForEach_EvenOddCount) {
@@ -448,7 +490,8 @@ for x in arr
     else
         odd = odd + 1
 even + odd
-)", 8, "ForEach_EvenOddCount");
+)",
+                      8, "ForEach_EvenOddCount");
 }
 
 TEST_F(RhoAllIterationMethodsTest, ForEach_ConditionalSum) {
@@ -462,7 +505,8 @@ for x in arr
     else
         sum2 = sum2 + x
 sum1 + sum2
-)", 55, "ForEach_ConditionalSum");
+)",
+                      55, "ForEach_ConditionalSum");
 }
 
 TEST_F(RhoAllIterationMethodsTest, ForEach_WithModulo) {
@@ -473,7 +517,8 @@ for x in arr
     if x % 3 == 0
         count = count + 1
 count
-)", 4, "ForEach_WithModulo");  // 3, 6, 9, 12
+)",
+                      4, "ForEach_WithModulo");  // 3, 6, 9, 12
 }
 
 // ============================================================================
@@ -489,7 +534,8 @@ while i < 5
     sum = sum + arr[i]
     i = i + 1
 sum
-)", 15, "Mixed_WhileWithArray");
+)",
+                      15, "Mixed_WhileWithArray");
 }
 
 TEST_F(RhoAllIterationMethodsTest, Mixed_ForEachThenWhile) {
@@ -503,7 +549,8 @@ while i < 3
     sum = sum + 1
     i = i + 1
 sum
-)", 9, "Mixed_ForEachThenWhile");  // 6 + 3
+)",
+                      9, "Mixed_ForEachThenWhile");  // 6 + 3
 }
 
 TEST_F(RhoAllIterationMethodsTest, Mixed_NestedForEachInWhile) {
@@ -516,7 +563,8 @@ while i < 3
         sum = sum + x
     i = i + 1
 sum
-)", 21, "Mixed_NestedForEachInWhile");
+)",
+                      21, "Mixed_NestedForEachInWhile");
 }
 
 TEST_F(RhoAllIterationMethodsTest, Mixed_WhileInsideForEach) {
@@ -529,7 +577,8 @@ for limit in limits
         sum = sum + 1
         i = i + 1
 sum
-)", 9, "Mixed_WhileInsideForEach");  // 2+3+4
+)",
+                      9, "Mixed_WhileInsideForEach");  // 2+3+4
 }
 
 TEST_F(RhoAllIterationMethodsTest, Mixed_ForAndForEach) {
@@ -541,7 +590,8 @@ for i = 0; i < 3; i = i + 1
 for x in arr
     sum = sum + x
 sum
-)", 120, "Mixed_ForAndForEach");  // 60 + 60
+)",
+                      120, "Mixed_ForAndForEach");  // 60 + 60
 }
 
 TEST_F(RhoAllIterationMethodsTest, Mixed_DoWhileWithArray) {
@@ -554,7 +604,8 @@ do
     i = i + 1
 while i < 3
 sum
-)", 45, "Mixed_DoWhileWithArray");
+)",
+                      45, "Mixed_DoWhileWithArray");
 }
 
 TEST_F(RhoAllIterationMethodsTest, Mixed_AllThreeLoops) {
@@ -572,7 +623,8 @@ do
     k = k + 1
 while k < 2
 sum
-)", 6, "Mixed_AllThreeLoops");  // 2+2+2
+)",
+                      6, "Mixed_AllThreeLoops");  // 2+2+2
 }
 
 TEST_F(RhoAllIterationMethodsTest, Mixed_BreakInMultipleLevels) {
@@ -589,7 +641,8 @@ while i < 3
         break
     i = i + 1
 sum
-)", 21, "Mixed_BreakInMultipleLevels");
+)",
+                      21, "Mixed_BreakInMultipleLevels");
 }
 
 TEST_F(RhoAllIterationMethodsTest, Mixed_ContinueInForEach) {
@@ -603,7 +656,9 @@ for x in arr
         continue
     sum = sum + x
 sum
-)", 13, "Mixed_ContinueInForEach");  // 1+5+7 = 13 (skip evens and multiples of 3)
+)",
+                      13, "Mixed_ContinueInForEach");  // 1+5+7 = 13 (skip evens
+                                                       // and multiples of 3)
 }
 
 TEST_F(RhoAllIterationMethodsTest, Mixed_ComplexNesting) {
@@ -617,7 +672,8 @@ for i = 0; i < 2; i = i + 1
             result = result + 1
         j = j + 1
 result
-)", 8, "Mixed_ComplexNesting");  // 2*2*2
+)",
+                      8, "Mixed_ComplexNesting");  // 2*2*2
 }
 
 // ============================================================================
@@ -635,7 +691,8 @@ sum = 0
 for y in result
     sum = sum + y
 sum
-)", 30, "Function_MapPattern");  // 2+4+6+8+10
+)",
+                      30, "Function_MapPattern");  // 2+4+6+8+10
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_FilterPattern) {
@@ -650,7 +707,8 @@ sum = 0
 for y in result
     sum = sum + y
 sum
-)", 20, "Function_FilterPattern");  // 2+4+6+8
+)",
+                      20, "Function_FilterPattern");  // 2+4+6+8
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_ReducePattern) {
@@ -661,7 +719,8 @@ acc = 0
 for x in arr
     acc = add(acc, x)
 acc
-)", 15, "Function_ReducePattern");
+)",
+                      15, "Function_ReducePattern");
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_NestedCallsInLoop) {
@@ -673,7 +732,8 @@ sum = 0
 for x in arr
     sum = sum + square(double(x))
 sum
-)", 56, "Function_NestedCallsInLoop");  // 4+16+36
+)",
+                      56, "Function_NestedCallsInLoop");  // 4+16+36
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_RecursiveHelper) {
@@ -689,7 +749,8 @@ sum = 0
 for x in arr
     sum = sum + factorial(x)
 sum
-)", 33, "Function_RecursiveHelper");  // 1+2+6+24
+)",
+                      33, "Function_RecursiveHelper");  // 1+2+6+24
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_ConditionalTransform) {
@@ -705,7 +766,9 @@ sum = 0
 for x in arr
     sum = sum + transform(x)
 sum
-)", 51, "Function_ConditionalTransform");  // 11+4+13+8+15 = 51
+)",
+                      51,
+                      "Function_ConditionalTransform");  // 11+4+13+8+15 = 51
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_ChainedOperations) {
@@ -718,7 +781,9 @@ sum = 0
 for x in arr
     sum = sum + square(double(inc(x)))
 sum
-)", 116, "Function_ChainedOperations");  // square(double(inc(1)))+square(double(inc(2)))+square(double(inc(3))) = 16+36+64 = 116
+)",
+                      116, "Function_ChainedOperations");  // square(double(inc(1)))+square(double(inc(2)))+square(double(inc(3)))
+                                                           // = 16+36+64 = 116
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_PredicateFilter) {
@@ -738,7 +803,8 @@ for x in arr
     if inRange(x)
         count = count + 1
 count
-)", 5, "Function_PredicateFilter");  // 3,4,5,6,7
+)",
+                      5, "Function_PredicateFilter");  // 3,4,5,6,7
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_Accumulator) {
@@ -749,7 +815,8 @@ result = 0
 for x in arr
     result = combine(result, x)
 result
-)", 30, "Function_Accumulator");  // 1+4+9+16
+)",
+                      30, "Function_Accumulator");  // 1+4+9+16
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_WithLocalState) {
@@ -762,7 +829,8 @@ state = 0
 for x in arr
     state = processWithState(x, state)
 state
-)", 30, "Function_WithLocalState");  // 0+2+4+6+8+10
+)",
+                      30, "Function_WithLocalState");  // 0+2+4+6+8+10
 }
 
 // ============================================================================
@@ -775,7 +843,8 @@ i = 0
 while i < 0
     i = i + 1
 i
-)", 0, "Edge_EmptyLoop");
+)",
+                      0, "Edge_EmptyLoop");
 }
 
 TEST_F(RhoAllIterationMethodsTest, Edge_SingleIteration) {
@@ -786,7 +855,8 @@ while i < 1
     count = count + 1
     i = i + 1
 count
-)", 1, "Edge_SingleIteration");
+)",
+                      1, "Edge_SingleIteration");
 }
 
 TEST_F(RhoAllIterationMethodsTest, Edge_LargeCount) {
@@ -797,7 +867,8 @@ while i < 100
     count = count + 1
     i = i + 1
 count
-)", 100, "Edge_LargeCount");
+)",
+                      100, "Edge_LargeCount");
 }
 
 TEST_F(RhoAllIterationMethodsTest, Edge_ImmediateBreak) {
@@ -807,7 +878,8 @@ while true
     break
     i = i + 1
 i
-)", 0, "Edge_ImmediateBreak");
+)",
+                      0, "Edge_ImmediateBreak");
 }
 
 TEST_F(RhoAllIterationMethodsTest, Edge_MultipleBreaks) {
@@ -822,7 +894,8 @@ while i < 100
     sum = sum + i
     i = i + 1
 sum
-)", 3, "Edge_MultipleBreaks");  // 0+1+2
+)",
+                      3, "Edge_MultipleBreaks");  // 0+1+2
 }
 
 TEST_F(RhoAllIterationMethodsTest, Edge_AllContinues) {
@@ -833,7 +906,8 @@ for x in arr
     continue
     count = count + 1
 count
-)", 0, "Edge_AllContinues");  // Never increments
+)",
+                      0, "Edge_AllContinues");  // Never increments
 }
 
 TEST_F(RhoAllIterationMethodsTest, Edge_BreakOnFirstElement) {
@@ -844,7 +918,8 @@ for x in arr
     break
     sum = sum + x
 sum
-)", 0, "Edge_BreakOnFirstElement");
+)",
+                      0, "Edge_BreakOnFirstElement");
 }
 
 TEST_F(RhoAllIterationMethodsTest, Edge_NestedBreakOuter) {
@@ -862,7 +937,8 @@ while i < 10
         break
     i = i + 1
 outer
-)", 5, "Edge_NestedBreakOuter");
+)",
+                      5, "Edge_NestedBreakOuter");
 }
 
 TEST_F(RhoAllIterationMethodsTest, Edge_ZeroToZero) {
@@ -871,7 +947,8 @@ sum = 0
 for i = 0; i < 0; i = i + 1
     sum = sum + i
 sum
-)", 0, "Edge_ZeroToZero");
+)",
+                      0, "Edge_ZeroToZero");
 }
 
 TEST_F(RhoAllIterationMethodsTest, Edge_NegativeStep) {
@@ -882,7 +959,8 @@ while i > 0
     sum = sum + i
     i = i - 2
 sum
-)", 30, "Edge_NegativeStep");  // 10+8+6+4+2
+)",
+                      30, "Edge_NegativeStep");  // 10+8+6+4+2
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInForEach_VerifyFix) {
@@ -896,7 +974,8 @@ sum = 0
 for y in result
     sum = sum + y
 sum
-)", 12, "Function_CallInForEach_VerifyFix");  // 2+4+6
+)",
+                      12, "Function_CallInForEach_VerifyFix");  // 2+4+6
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInWhileLoop) {
@@ -908,7 +987,8 @@ while i < 5
     sum = sum + inc(i)
     i = i + 1
 sum
-)", 15, "Function_CallInWhileLoop");  // 1+2+3+4+5
+)",
+                      15, "Function_CallInWhileLoop");  // 1+2+3+4+5
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInForLoop) {
@@ -918,7 +998,8 @@ sum = 0
 for i = 1; i <= 3; i = i + 1
     sum = sum + square(i)
 sum
-)", 14, "Function_CallInForLoop");  // 1+4+9
+)",
+                      14, "Function_CallInForLoop");  // 1+4+9
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInDoWhileLoop) {
@@ -931,7 +1012,8 @@ do
     i = i + 1
 while i <= 3
 sum
-)", 18, "Function_CallInDoWhileLoop");  // 3+6+9
+)",
+                      18, "Function_CallInDoWhileLoop");  // 3+6+9
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInNestedLoops) {
@@ -942,7 +1024,9 @@ for i = 1; i <= 2; i = i + 1
     for j = 1; j <= 2; j = j + 1
         sum = sum + add(i, j)
 sum
-)", 12, "Function_CallInNestedLoops");  // add(1,1)+add(1,2)+add(2,1)+add(2,2) = 2+3+3+4 = 12
+)",
+                      12, "Function_CallInNestedLoops");  // add(1,1)+add(1,2)+add(2,1)+add(2,2)
+                                                          // = 2+3+3+4 = 12
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_WithReturnInLoop) {
@@ -957,7 +1041,8 @@ sum = 0
 for y in result
     sum = sum + y
 sum
-)", 6, "Function_WithReturnInLoop");  // 1+2+3
+)",
+                      6, "Function_WithReturnInLoop");  // 1+2+3
 }
 
 TEST_F(RhoAllIterationMethodsTest, InlineFunction_InLoop) {
@@ -968,7 +1053,8 @@ sum = 0
 for x in arr
     sum = sum + double_inline(x)
 sum
-)", 12, "InlineFunction_InLoop");  // 2+4+6
+)",
+                      12, "InlineFunction_InLoop");  // 2+4+6
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_WithMultipleParams_InLoop) {
@@ -978,7 +1064,8 @@ sum = 0
 for i = 1; i <= 3; i = i + 1
     sum = sum + multiply(i, 2)
 sum
-)", 12, "Function_WithMultipleParams_InLoop");  // 2+4+6
+)",
+                      12, "Function_WithMultipleParams_InLoop");  // 2+4+6
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInMapPattern) {
@@ -992,7 +1079,8 @@ sum = 0
 for y in result
     sum = sum + y
 sum
-)", 12, "Function_CallInMapPattern");  // 2+4+6
+)",
+                      12, "Function_CallInMapPattern");  // 2+4+6
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInFilterPattern) {
@@ -1007,7 +1095,8 @@ sum = 0
 for y in result
     sum = sum + y
 sum
-)", 6, "Function_CallInFilterPattern");  // 2+4
+)",
+                      6, "Function_CallInFilterPattern");  // 2+4
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInReducePattern) {
@@ -1018,7 +1107,8 @@ result = 0
 for x in arr
     result = add(result, x)
 result
-)", 10, "Function_CallInReducePattern");  // 1+2+3+4
+)",
+                      10, "Function_CallInReducePattern");  // 1+2+3+4
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInComprehension) {
@@ -1031,7 +1121,8 @@ sum = 0
 for y in result
     sum = sum + y
 sum
-)", 14, "Function_CallInComprehension");  // 1+4+9
+)",
+                      14, "Function_CallInComprehension");  // 1+4+9
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInWhileWithBreak) {
@@ -1045,7 +1136,8 @@ while i < 10
     if sum > 10
         break
 sum
-)", 15, "Function_CallInWhileWithBreak");  // 1+2+3+4+5
+)",
+                      15, "Function_CallInWhileWithBreak");  // 1+2+3+4+5
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInForEachWithContinue) {
@@ -1058,7 +1150,8 @@ for x in arr
         continue
     sum = sum + double(x)
 sum
-)", 8, "Function_CallInForEachWithContinue");  // 2+6
+)",
+                      8, "Function_CallInForEachWithContinue");  // 2+6
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInMixedLoops) {
@@ -1071,11 +1164,14 @@ for i = 1; i <= 2; i = i + 1
         sum = sum + add(i, j)
         j = j + 1
 sum
-)", 12, "Function_CallInMixedLoops");  // add(1,1)+add(1,2)+add(2,1)+add(2,2) = 2+3+3+4 = 12
+)",
+                      12, "Function_CallInMixedLoops");  // add(1,1)+add(1,2)+add(2,1)+add(2,2)
+                                                         // = 2+3+3+4 = 12
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInAllThreeLoops) {
-    RunAndExpect<int>(R"(
+    RunAndExpect<int>(
+        R"(
 fun inc(x) { x + 1 }
 sum = 0
 i = 0
@@ -1087,7 +1183,10 @@ for j = 2; j < 4; j = j + 1
 for k in [3, 4]
     sum = sum + inc(k)
 sum
-)", 19, "Function_CallInAllThreeLoops");  // inc(0)+inc(1) + inc(2)+inc(3) + inc(3)+inc(4) = 1+2+3+4+4+5 = 19
+)",
+        19,
+        "Function_CallInAllThreeLoops");  // inc(0)+inc(1) + inc(2)+inc(3) +
+                                          // inc(3)+inc(4) = 1+2+3+4+4+5 = 19
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInEdgeCases) {
@@ -1101,7 +1200,8 @@ for x in [0]
 for x in [1, -1]
     sum = sum + identity(x)
 sum
-)", 0, "Function_CallInEdgeCases");  // 0 + 0 + 1 + (-1) = 0
+)",
+                      0, "Function_CallInEdgeCases");  // 0 + 0 + 1 + (-1) = 0
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallWithFloats) {
@@ -1111,22 +1211,27 @@ sum = 0.0
 for x in [2.0, 4.0, 6.0]
     sum = sum + half(x)
 sum
-)", 6.0f, "Function_CallWithFloats");  // 1.0 + 2.0 + 3.0
+)",
+                        6.0f, "Function_CallWithFloats");  // 1.0 + 2.0 + 3.0
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallNestedFunctions) {
-    RunAndExpect<int>(R"(
+    RunAndExpect<int>(
+        R"(
 fun square(x) { x * x }
 fun sum_squares(a, b) { square(a) + square(b) }
 total = 0
 for i in [1, 2]
     total = total + sum_squares(i, i + 1)
 total
-)", 1 + 4 + 4 + 9, "Function_CallNestedFunctions");  // 1^2 + 2^2 + 2^2 + 3^2 = 1+4+4+9=18
+)",
+        1 + 4 + 4 + 9,
+        "Function_CallNestedFunctions");  // 1^2 + 2^2 + 2^2 + 3^2 = 1+4+4+9=18
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInDoWhileComplex) {
-    RunAndExpect<int>(R"(
+    RunAndExpect<int>(
+        R"(
 fun fib(n)
     if n <= 1
         n
@@ -1139,7 +1244,9 @@ do
     i = i + 1
 while i <= 3
 sum
-)", 1 + 1 + 2, "Function_CallInDoWhileComplex");  // fib(1)=1, fib(2)=1, fib(3)=2
+)",
+        1 + 1 + 2,
+        "Function_CallInDoWhileComplex");  // fib(1)=1, fib(2)=1, fib(3)=2
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallWithArrays) {
@@ -1149,11 +1256,13 @@ sum = 0
 for arr in [[1,2], [3,4,5], [6]]
     sum = sum + length(arr)
 sum
-)", 2 + 3 + 1, "Function_CallWithArrays");  // 6
+)",
+                      2 + 3 + 1, "Function_CallWithArrays");  // 6
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInWhileWithCondition) {
-    RunAndExpect<int>(R"(
+    RunAndExpect<int>(
+        R"(
 fun is_positive(x) { x > 0 }
 count = 0
 i = -2
@@ -1162,7 +1271,10 @@ while i < 5
         count = count + 1
     i = i + 1
 count
-)", 4, "Function_CallInWhileWithCondition");  // i in [-2..4] (i<5), positive values: 1,2,3,4 → count=4
+)",
+        4,
+        "Function_CallInWhileWithCondition");  // i in [-2..4] (i<5), positive
+                                               // values: 1,2,3,4 → count=4
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInForLoopRange) {
@@ -1172,7 +1284,8 @@ sum = 0
 for i = 1; i <= 3; i = i + 1
     sum = sum + cube(i)
 sum
-)", 1 + 8 + 27, "Function_CallInForLoopRange");  // 36
+)",
+                      1 + 8 + 27, "Function_CallInForLoopRange");  // 36
 }
 
 // Diagnostic: sum_list called directly, no outer foreach
@@ -1184,7 +1297,8 @@ fun sum_list(lst)
         s = s + x
     s
 sum_list([1,2])
-)", 3, "Debug_SumListAlone");
+)",
+                      3, "Debug_SumListAlone");
 }
 
 // Diagnostic: store sum_list result then read it
@@ -1197,7 +1311,8 @@ fun sum_list(lst)
     s
 total = sum_list([1,2])
 total
-)", 3, "Debug_StoreAndRetrieve");
+)",
+                      3, "Debug_StoreAndRetrieve");
 }
 
 // Diagnostic: call sum_list twice, add results
@@ -1211,7 +1326,8 @@ fun sum_list(lst)
 r1 = sum_list([1,2])
 r2 = sum_list([3,4])
 r1 + r2
-)", 10, "Debug_TwoIndependentCalls");
+)",
+                      10, "Debug_TwoIndependentCalls");
 }
 
 // Diagnostic: sum_list called twice sequentially
@@ -1225,7 +1341,8 @@ fun sum_list(lst)
 total = sum_list([1,2])
 total = total + sum_list([3,4])
 total
-)", 10, "Debug_SumListTwice");
+)",
+                      10, "Debug_SumListTwice");
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInForEachNested) {
@@ -1239,7 +1356,8 @@ total = 0
 for lst in [[1,2], [3,4]]
     total = total + sum_list(lst)
 total
-)", 3 + 7, "Function_CallInForEachNested");  // 10
+)",
+                      3 + 7, "Function_CallInForEachNested");  // 10
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallWithDefaultArgs) {
@@ -1249,7 +1367,8 @@ sum = 0
 for b in [2, 3]
     sum = sum + power(b, 2)
 sum
-)", 4 + 9, "Function_CallWithDefaultArgs");  // 13
+)",
+                      4 + 9, "Function_CallWithDefaultArgs");  // 13
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInMixedTypes) {
@@ -1259,7 +1378,8 @@ sum = 0
 for x in [1, 2, 3, 4]
     sum = sum + process(x)
 sum
-)", 3 + 1 + 9 + 2, "Function_CallInMixedTypes");  // 15
+)",
+                      3 + 1 + 9 + 2, "Function_CallInMixedTypes");  // 15
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInErrorHandling) {
@@ -1271,7 +1391,8 @@ for pair in [[10, 2], [8, 0], [6, 3]]
     b = pair[1]
     sum = sum + safe_div(a, b)
 sum
-)", 5 + 0 + 2, "Function_CallInErrorHandling");  // 7
+)",
+                      5 + 0 + 2, "Function_CallInErrorHandling");  // 7
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInRecursionLimit) {
@@ -1279,7 +1400,8 @@ TEST_F(RhoAllIterationMethodsTest, Function_CallInRecursionLimit) {
 fun countdown(n) { if n == 0 { 0 } else { n + countdown(n - 1) } }
 result = countdown(5)
 result
-)", 15, "Function_CallInRecursionLimit");  // 5+4+3+2+1+0 = 15
+)",
+                      15, "Function_CallInRecursionLimit");  // 5+4+3+2+1+0 = 15
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallWithClosures) {
@@ -1289,7 +1411,8 @@ sum = 0
 for x in [1, 2, 3]
     sum = sum + add5(x)
 sum
-)", 6 + 7 + 8, "Function_CallWithClosures");  // 21
+)",
+                      6 + 7 + 8, "Function_CallWithClosures");  // 21
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInParallelStructures) {
@@ -1303,7 +1426,9 @@ sum = 0
 for x in result
     sum = sum + x
 sum
-)", 1+1+2+2+3+3, "Function_CallInParallelStructures");  // 12
+)",
+                      1 + 1 + 2 + 2 + 3 + 3,
+                      "Function_CallInParallelStructures");  // 12
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInStatefulLoop) {
@@ -1313,7 +1438,8 @@ state = 0
 for x in [10, 20, 30]
     state = update_state(state, x)
 state
-)", 60, "Function_CallInStatefulLoop");
+)",
+                      60, "Function_CallInStatefulLoop");
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInConditionalLoop) {
@@ -1325,7 +1451,8 @@ while should_continue(x)
     sum = sum + x
     x = x + 1
 sum
-)", 45, "Function_CallInConditionalLoop");  // 1+2+...+9 = 45
+)",
+                      45, "Function_CallInConditionalLoop");  // 1+2+...+9 = 45
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInMapReduce) {
@@ -1339,7 +1466,8 @@ result = 0
 for y in mapped
     result = reduce_sum(result, y)
 result
-)", 12, "Function_CallInMapReduce");  // 2+4+6
+)",
+                      12, "Function_CallInMapReduce");  // 2+4+6
 }
 
 TEST_F(RhoAllIterationMethodsTest, Debug_AndOperator_2mod2) {
@@ -1347,14 +1475,16 @@ TEST_F(RhoAllIterationMethodsTest, Debug_AndOperator_2mod2) {
     RunAndExpect<bool>(R"(
 fun even_pos(x) { x > 0 and x % 2 == 0 }
 even_pos(2)
-)", true, "Debug_AndOperator_2mod2");
+)",
+                       true, "Debug_AndOperator_2mod2");
 }
 
 TEST_F(RhoAllIterationMethodsTest, Debug_Modulo2) {
     // 2 % 2 should be 0
     RunAndExpect<int>(R"(
 2 % 2
-)", 0, "Debug_Modulo2");
+)",
+                      0, "Debug_Modulo2");
 }
 
 TEST_F(RhoAllIterationMethodsTest, Debug_CondInLoop) {
@@ -1366,7 +1496,8 @@ for v in [1, 2, 3, 4]
     if even_pos(v)
         sum = sum + v
 sum
-)", 2 + 4, "Debug_CondInLoop");
+)",
+                      2 + 4, "Debug_CondInLoop");
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInComplexConditionals) {
@@ -1377,7 +1508,8 @@ for x in [0, 1, 2, 3, 4]
     if complex_cond(x)
         sum = sum + x
 sum
-)", 2 + 4, "Function_CallInComplexConditionals");  // 6
+)",
+                      2 + 4, "Function_CallInComplexConditionals");  // 6
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInDynamicLoop) {
@@ -1391,7 +1523,8 @@ while i <= limit
     sum = sum + inc(i - 1)
     i = i + 1
 sum
-)", 1 + 2 + 3, "Function_CallInDynamicLoop");  // 6
+)",
+                      1 + 2 + 3, "Function_CallInDynamicLoop");  // 6
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInNestedRecursion) {
@@ -1405,5 +1538,6 @@ fun ackermann(m, n)
         ackermann(m - 1, ackermann(m, n - 1))
 result = ackermann(1, 1)
 result
-)", 3, "Function_CallInNestedRecursion");
+)",
+                      3, "Function_CallInNestedRecursion");
 }

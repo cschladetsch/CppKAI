@@ -37,13 +37,10 @@ class ChatProxyGenerationTest : public ::testing::Test {
 
     // Load Tau interface file
     string LoadTauInterface(const string& filename) {
-        const std::string relative =
-            std::string("Connection/") + filename;
-        const std::string content =
-            tau_test_utils::LoadScriptText(relative);
+        const std::string relative = std::string("Connection/") + filename;
+        const std::string content = tau_test_utils::LoadScriptText(relative);
         if (content.empty()) {
-            const auto resolved =
-                tau_test_utils::ResolveScriptPath(relative);
+            const auto resolved = tau_test_utils::ResolveScriptPath(relative);
             ADD_FAILURE() << "Failed to open Tau file: " << resolved.string();
         }
         return content;

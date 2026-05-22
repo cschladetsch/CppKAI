@@ -1,13 +1,14 @@
-#include "KAI/Network/Transport.h"
-
 #include <enet/enet.h>
 
 #include <atomic>
+#include <deque>
 #include <memory>
 #include <mutex>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
+
+#include "KAI/Network/Transport.h"
 
 KAI_NET_BEGIN
 
@@ -64,6 +65,25 @@ bool ToEnetAddress(const NetAddress& addr, ENetAddress& out) {
     }
     return enet_address_set_host(&out, addr.host.c_str()) == 0;
 }
+
+struct MemoryState {
+    std::mutex mutex;
+    int nextEphemeralPort = 40000;
+    std::unordered_map<std::string, NetPeer*> peers;
+};
+
+MemoryState& GetMemoryState() {
+    static MemoryState state;
+    return state;
+}
+
+std::string MemoryKey(const NetAddress& addr) {
+    return addr.host + ":" + std::to_string(addr.port);
+}
+
+unsigned char SystemMessageByte(SystemMessage msg) {
+    return static_cast<unsigned char>(msg);
+}
 }  // namespace
 
 class EnetPeer final : public NetPeer {
@@ -83,10 +103,64 @@ class EnetPeer final : public NetPeer {
         }
 
         host_ = enet_host_create(&addr, maxConnections, 2, 0, 0);
-        return host_ != nullptr;
+        if (host_) {
+            memoryMode_ = false;
+            return true;
+        }
+
+        memoryMode_ = true;
+        maxConnections_ = maxConnections;
+        memoryAddress_ = bindAddress;
+        if (memoryAddress_.host.empty() || memoryAddress_.host == "0.0.0.0") {
+            memoryAddress_.host = "127.0.0.1";
+        }
+        if (memoryAddress_.port == 0) {
+            std::lock_guard<std::mutex> lock(GetMemoryState().mutex);
+            memoryAddress_.port = static_cast<unsigned short>(
+                GetMemoryState().nextEphemeralPort++);
+        }
+
+        std::lock_guard<std::mutex> lock(GetMemoryState().mutex);
+        GetMemoryState().peers[MemoryKey(memoryAddress_)] = this;
+        return true;
     }
 
     void Shutdown(int timeoutMs) override {
+        if (memoryMode_) {
+            std::vector<std::string> peersToNotify;
+            {
+                std::lock_guard<std::mutex> lock(memoryMutex_);
+                peersToNotify.assign(memoryConnections_.begin(),
+                                     memoryConnections_.end());
+                memoryConnections_.clear();
+                memoryInbox_.clear();
+            }
+
+            std::lock_guard<std::mutex> lock(GetMemoryState().mutex);
+            for (const auto& peerKey : peersToNotify) {
+                auto it = GetMemoryState().peers.find(peerKey);
+                if (it == GetMemoryState().peers.end() ||
+                    it->second == nullptr) {
+                    continue;
+                }
+                auto* remote = dynamic_cast<EnetPeer*>(it->second);
+                if (!remote) {
+                    continue;
+                }
+
+                NetPacket packet;
+                packet.address = memoryAddress_;
+                packet.data.push_back(SystemMessageByte(
+                    SystemMessage::DisconnectionNotification));
+                remote->EnqueueMemoryPacket(packet);
+                remote->RemoveMemoryConnection(memoryAddress_);
+            }
+
+            GetMemoryState().peers.erase(MemoryKey(memoryAddress_));
+            memoryMode_ = false;
+            return;
+        }
+
         if (!host_) {
             return;
         }
@@ -118,6 +192,37 @@ class EnetPeer final : public NetPeer {
     }
 
     bool Connect(const NetAddress& remoteAddress) override {
+        if (memoryMode_) {
+            EnetPeer* remote = nullptr;
+            {
+                std::lock_guard<std::mutex> lock(GetMemoryState().mutex);
+                auto it = GetMemoryState().peers.find(MemoryKey(remoteAddress));
+                if (it != GetMemoryState().peers.end()) {
+                    remote = dynamic_cast<EnetPeer*>(it->second);
+                }
+            }
+
+            if (!remote) {
+                return false;
+            }
+
+            memoryConnections_.insert(MemoryKey(remoteAddress));
+            remote->memoryConnections_.insert(MemoryKey(memoryAddress_));
+
+            NetPacket accepted;
+            accepted.address = remoteAddress;
+            accepted.data.push_back(
+                SystemMessageByte(SystemMessage::ConnectionRequestAccepted));
+            EnqueueMemoryPacket(accepted);
+
+            NetPacket incoming;
+            incoming.address = memoryAddress_;
+            incoming.data.push_back(
+                SystemMessageByte(SystemMessage::NewIncomingConnection));
+            remote->EnqueueMemoryPacket(incoming);
+            return true;
+        }
+
         if (!host_) {
             return false;
         }
@@ -141,6 +246,18 @@ class EnetPeer final : public NetPeer {
     }
 
     std::unique_ptr<NetPacket> Receive() override {
+        if (memoryMode_) {
+            std::lock_guard<std::mutex> lock(memoryMutex_);
+            if (memoryInbox_.empty()) {
+                return nullptr;
+            }
+
+            auto packet = std::make_unique<NetPacket>();
+            *packet = std::move(memoryInbox_.front());
+            memoryInbox_.pop_front();
+            return packet;
+        }
+
         if (!host_) {
             return nullptr;
         }
@@ -157,13 +274,11 @@ class EnetPeer final : public NetPeer {
                 packet->address = ToNetAddress(event.peer->address);
                 const std::string key = AddressKey(event.peer->address);
                 if (pendingOutgoing_.erase(key) > 0) {
-                    packet->data.push_back(
-                        static_cast<unsigned char>(
-                            SystemMessage::ConnectionRequestAccepted));
+                    packet->data.push_back(static_cast<unsigned char>(
+                        SystemMessage::ConnectionRequestAccepted));
                 } else {
-                    packet->data.push_back(
-                        static_cast<unsigned char>(
-                            SystemMessage::NewIncomingConnection));
+                    packet->data.push_back(static_cast<unsigned char>(
+                        SystemMessage::NewIncomingConnection));
                 }
                 peersByAddress_[key] = event.peer;
                 return packet;
@@ -179,9 +294,9 @@ class EnetPeer final : public NetPeer {
             case ENET_EVENT_TYPE_RECEIVE: {
                 auto packet = std::make_unique<NetPacket>();
                 packet->address = ToNetAddress(event.peer->address);
-                packet->data.assign(event.packet->data,
-                                    event.packet->data +
-                                        event.packet->dataLength);
+                packet->data.assign(
+                    event.packet->data,
+                    event.packet->data + event.packet->dataLength);
                 enet_packet_destroy(event.packet);
                 return packet;
             }
@@ -193,8 +308,47 @@ class EnetPeer final : public NetPeer {
     }
 
     bool Send(const unsigned char* data, std::size_t size, bool reliable,
-              int channel, const NetAddress& target,
-              bool broadcast) override {
+              int channel, const NetAddress& target, bool broadcast) override {
+        if (memoryMode_) {
+            NetPacket packet;
+            packet.address = memoryAddress_;
+            packet.data.assign(data, data + size);
+
+            if (broadcast) {
+                std::vector<EnetPeer*> peers;
+                {
+                    std::lock_guard<std::mutex> lock(GetMemoryState().mutex);
+                    for (const auto& [key, peer] : GetMemoryState().peers) {
+                        auto* memoryPeer = dynamic_cast<EnetPeer*>(peer);
+                        if (memoryPeer && key != MemoryKey(memoryAddress_)) {
+                            peers.push_back(memoryPeer);
+                        }
+                    }
+                }
+
+                for (auto* peer : peers) {
+                    peer->EnqueueMemoryPacket(packet);
+                }
+                return true;
+            }
+
+            EnetPeer* peer = nullptr;
+            {
+                std::lock_guard<std::mutex> lock(GetMemoryState().mutex);
+                auto it = GetMemoryState().peers.find(MemoryKey(target));
+                if (it != GetMemoryState().peers.end()) {
+                    peer = dynamic_cast<EnetPeer*>(it->second);
+                }
+            }
+
+            if (!peer) {
+                return false;
+            }
+
+            peer->EnqueueMemoryPacket(packet);
+            return true;
+        }
+
         if (!host_) {
             return false;
         }
@@ -228,6 +382,10 @@ class EnetPeer final : public NetPeer {
     }
 
     NetAddress GetInternalAddress() const override {
+        if (memoryMode_) {
+            return memoryAddress_;
+        }
+
         if (!host_) {
             return NetAddress();
         }
@@ -236,6 +394,11 @@ class EnetPeer final : public NetPeer {
     }
 
     int GetAveragePing(const NetAddress& address) const override {
+        if (memoryMode_) {
+            std::lock_guard<std::mutex> lock(memoryMutex_);
+            return memoryConnections_.count(MemoryKey(address)) > 0 ? 0 : -1;
+        }
+
         ENetAddress addr;
         if (!ToEnetAddress(address, addr)) {
             return -1;
@@ -255,7 +418,21 @@ class EnetPeer final : public NetPeer {
                                 std::size_t /*size*/) override {}
 
     void Flush() override {
+        if (memoryMode_) {
+            return;
+        }
+
         if (host_) enet_host_flush(host_);
+    }
+
+    void EnqueueMemoryPacket(const NetPacket& packet) {
+        std::lock_guard<std::mutex> lock(memoryMutex_);
+        memoryInbox_.push_back(packet);
+    }
+
+    void RemoveMemoryConnection(const NetAddress& address) {
+        std::lock_guard<std::mutex> lock(memoryMutex_);
+        memoryConnections_.erase(MemoryKey(address));
     }
 
    private:
@@ -264,6 +441,11 @@ class EnetPeer final : public NetPeer {
     int maxConnections_ = 32;
     std::unordered_map<std::string, ENetPeer*> peersByAddress_;
     std::unordered_set<std::string> pendingOutgoing_;
+    bool memoryMode_ = false;
+    NetAddress memoryAddress_;
+    std::deque<NetPacket> memoryInbox_;
+    std::unordered_set<std::string> memoryConnections_;
+    mutable std::mutex memoryMutex_;
 };
 
 std::unique_ptr<NetPeer> NetPeer::Create() {

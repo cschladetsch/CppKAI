@@ -1,9 +1,9 @@
-#include <gtest/gtest.h>
-#include <KAI/Language/Tau/Generate/GenerateProxy.h>
-#include <KAI/Language/Tau/Generate/GenerateAgent.h>
-#include <KAI/Language/Tau/TauParser.h>
-#include <KAI/Language/Tau/TauLexer.h>
 #include <KAI/Core/Registry.h>
+#include <KAI/Language/Tau/Generate/GenerateAgent.h>
+#include <KAI/Language/Tau/Generate/GenerateProxy.h>
+#include <KAI/Language/Tau/TauLexer.h>
+#include <KAI/Language/Tau/TauParser.h>
+#include <gtest/gtest.h>
 
 #include "TestLangCommon.h"
 

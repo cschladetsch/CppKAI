@@ -1,7 +1,7 @@
 #include <KAI/Core/BuiltinTypes.h>
 #include <KAI/Core/Registry.h>
-#include <KAI/Language/Tau/Generate/GenerateProxy.h>
 #include <KAI/Language/Tau/Generate/GenerateAgent.h>
+#include <KAI/Language/Tau/Generate/GenerateProxy.h>
 #include <KAI/Language/Tau/TauLexer.h>
 #include <KAI/Language/Tau/TauParser.h>
 #include <gtest/gtest.h>
@@ -111,12 +111,15 @@ TEST(TauInterface, InterfaceInheritance) {
     ASSERT_FALSE(proxyOutput.empty()) << "Proxy output is empty";
 
     // Verify both interfaces are present in output
-    EXPECT_NE(proxyOutput.find("IBase"), string::npos) << "IBase not found in proxy";
-    EXPECT_NE(proxyOutput.find("IDerived"), string::npos) << "IDerived not found in proxy";
-    EXPECT_NE(proxyOutput.find("BaseMethod"), string::npos) << "BaseMethod not found";
+    EXPECT_NE(proxyOutput.find("IBase"), string::npos)
+        << "IBase not found in proxy";
+    EXPECT_NE(proxyOutput.find("IDerived"), string::npos)
+        << "IDerived not found in proxy";
+    EXPECT_NE(proxyOutput.find("BaseMethod"), string::npos)
+        << "BaseMethod not found";
 
-    // Note: Current implementation may not fully expand inherited methods in derived class
-    // This is acceptable as the interface hierarchy is maintained
+    // Note: Current implementation may not fully expand inherited methods in
+    // derived class This is acceptable as the interface hierarchy is maintained
 
     // Test agent generation
     string agentOutput;

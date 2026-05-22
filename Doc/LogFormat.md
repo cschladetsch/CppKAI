@@ -116,11 +116,11 @@ grep "PASS" Logs/summary.log
 The test runner automatically clears previous logs at the start of each test run. To preserve logs from a particular run, you can use the built-in archiving feature:
 
 ```bash
-# Run tests and archive the results
-./run_all_tests_fixed --archive
+# Run the current full suite
+./run_all_tests.sh
 ```
 
-This will create a timestamped directory in `Logs/archive/` and copy all log files there. You can use these archived logs for historical analysis or troubleshooting.
+If you want archived logs, copy the log files into `Logs/archive/` after the run or use a dedicated wrapper script.
 
 If you want to manually preserve specific logs, copy them to a different location before running tests again:
 

@@ -129,7 +129,9 @@ struct Registry {
     StorageBase *GetStorageBase(Handle) const;
 
     Object GetObject(Handle) const;
-    bool ContainsHandle(Handle handle) const { return instances_.find(handle) != instances_.end(); }
+    bool ContainsHandle(Handle handle) const {
+        return instances_.find(handle) != instances_.end();
+    }
 
     template <class T>
     Pointer<T> GetPointer(Handle handle) const {

@@ -18,7 +18,8 @@ struct RhoMoreControlFixedTests : TestLangCommon {
     template <typename T>
     void RunAndExpect(const string& code, T expected) {
         try {
-            // Set language before execution (matching AssertDirectSimulation pattern)
+            // Set language before execution (matching AssertDirectSimulation
+            // pattern)
             console_.SetLanguage(Language::Rho);
 
             // Execute as a complete program
@@ -312,9 +313,11 @@ TEST_F(RhoMoreControlFixedTests, DEBUG_SimpleComparison) {
 
     ASSERT_FALSE(dataStack->Empty()) << "Stack empty after comparison";
     auto result = dataStack->Top();
-    std::cout << "Comparison result type: " << result.GetTypeNumber().ToString() << std::endl;
+    std::cout << "Comparison result type: " << result.GetTypeNumber().ToString()
+              << std::endl;
     if (result.IsType<bool>()) {
-        std::cout << "Comparison x > y result: " << ConstDeref<bool>(result) << " (expected: false)" << std::endl;
+        std::cout << "Comparison x > y result: " << ConstDeref<bool>(result)
+                  << " (expected: false)" << std::endl;
         EXPECT_EQ(ConstDeref<bool>(result), false);
     }
 }
@@ -328,7 +331,8 @@ if true
 else
     max = 24
 max
-)", 42);
+)",
+                      42);
 }
 
 // DEBUG: Test if-else with comparison
@@ -342,5 +346,6 @@ if x > y
 else
     max = y
 max
-)", 20);
+)",
+                      20);
 }

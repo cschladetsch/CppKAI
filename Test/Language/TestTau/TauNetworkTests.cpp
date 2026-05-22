@@ -20,10 +20,9 @@ class TauNetworkTest : public TestLangCommon {
         const std::string relative = std::string("Connection/") + path;
         const auto script = tau_test_utils::LoadScriptText(relative);
         if (script.empty()) {
-            const auto resolved =
-                tau_test_utils::ResolveScriptPath(relative);
+            const auto resolved = tau_test_utils::ResolveScriptPath(relative);
             ADD_FAILURE() << "Failed to open script file: "
-                           << resolved.string();
+                          << resolved.string();
         }
         return script;
     }

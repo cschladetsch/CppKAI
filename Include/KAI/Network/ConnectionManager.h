@@ -71,8 +71,7 @@ class ConnectionManager {
     bool IsConnected(const NetAddress& address) const;
 
     // Handle connection events for a system address
-    void OnConnectionEvent(const NetAddress& address,
-                           ConnectionEvent event);
+    void OnConnectionEvent(const NetAddress& address, ConnectionEvent event);
 
     // Update activity timestamp for a connection
     void UpdateActivity(ConnectionId id);

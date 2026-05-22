@@ -1,4 +1,5 @@
 #include "KAI/Network/AgentBase.h"
+
 #include "KAI/Network/Node.h"
 
 KAI_NET_BEGIN

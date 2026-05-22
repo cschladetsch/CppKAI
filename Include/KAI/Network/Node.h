@@ -1,29 +1,28 @@
 #pragma once
 
-#include "KAI/Network/FwdDeclarations.h"
-#include "KAI/Network/Future.h"
-#include "KAI/Network/NetHandle.h"
-#include "KAI/Network/Transport.h"
-#include "KAI/Core/BuiltinTypes/Array.h"
-#include "KAI/Core/BinaryStream.h"
-#include "KAI/Core/Object.h"
-#include "KAI/Core/Value.h"
-
 #include <any>
 #include <atomic>
+#include <chrono>
 #include <functional>
-#include <utility>
-#include <mutex>
 #include <memory>
+#include <mutex>
 #include <optional>
 #include <stdexcept>
-#include <chrono>
 #include <thread>
 #include <type_traits>
 #include <typeindex>
 #include <unordered_map>
-#include <vector>
 #include <utility>
+#include <vector>
+
+#include "KAI/Core/BinaryStream.h"
+#include "KAI/Core/BuiltinTypes/Array.h"
+#include "KAI/Core/Object.h"
+#include "KAI/Core/Value.h"
+#include "KAI/Network/Future.h"
+#include "KAI/Network/FwdDeclarations.h"
+#include "KAI/Network/NetHandle.h"
+#include "KAI/Network/Transport.h"
 
 KAI_NET_BEGIN
 
@@ -33,9 +32,9 @@ struct ProxyBase;
 struct AgentBase;
 
 namespace detail {
-    struct MethodInvokerBase;
-    struct PropertyAccessorBase;
-}
+struct MethodInvokerBase;
+struct PropertyAccessorBase;
+}  // namespace detail
 
 // A peer on the network. Nominally, there are no servers or clients. Just
 // a collection of nodes that connect and communicate with each other.
@@ -61,7 +60,9 @@ struct Node {
     void SetRegistry(Registry *registry) { registry_ = registry; }
     Registry *GetRegistry() const { return registry_; }
 
-    void SetUpdatePump(std::function<void()> pump) { updatePump_ = std::move(pump); }
+    void SetUpdatePump(std::function<void()> pump) {
+        updatePump_ = std::move(pump);
+    }
 
     void Listen(int port);
     void Listen(IpAddress const &address, int port);
@@ -93,7 +94,7 @@ struct Node {
     // Get ping to a specific address
     int GetPing(const IpAddress &address, int port) const;
 
-   template <class T = void>
+    template <class T = void>
     Future<T> Send(NetHandle handle, const Object &obj);
 
     template <class T = void>
@@ -121,22 +122,18 @@ struct Node {
                           std::function<Value()> getter);
 
     template <typename R, typename... Args>
-    Future<R> Invoke(NetHandle handle, const std::string &name,
-                     Args &&...args);
+    Future<R> Invoke(NetHandle handle, const std::string &name, Args &&...args);
 
     template <typename T>
-    T WaitFor(Future<T> &future,
-              std::chrono::milliseconds timeout =
-                  std::chrono::milliseconds(5000));
+    T WaitFor(Future<T> &future, std::chrono::milliseconds timeout =
+                                     std::chrono::milliseconds(5000));
 
-    void WaitFor(Future<void> &future,
-                 std::chrono::milliseconds timeout =
-                     std::chrono::milliseconds(5000));
+    void WaitFor(Future<void> &future, std::chrono::milliseconds timeout =
+                                           std::chrono::milliseconds(5000));
 
     // Compatibility helpers for generated agents
     void SendResponse(const NetAddress &peer, BinaryStream &response);
-    void BroadcastEvent(const std::string &name,
-                        BinaryStream &eventData);
+    void BroadcastEvent(const std::string &name, BinaryStream &eventData);
     void BroadcastEvent(const std::string &name);
 
     // Event subscription: handler receives a BinaryPacket positioned after the
@@ -206,9 +203,11 @@ struct Node {
 
     struct AgentEntry {
         AgentBase *agent = nullptr;
-        std::unordered_map<std::string, std::shared_ptr<detail::MethodInvokerBase>>
+        std::unordered_map<std::string,
+                           std::shared_ptr<detail::MethodInvokerBase>>
             methods;
-        std::unordered_map<std::string, std::shared_ptr<detail::PropertyAccessorBase>>
+        std::unordered_map<std::string,
+                           std::shared_ptr<detail::PropertyAccessorBase>>
             properties;
     };
 
@@ -218,8 +217,7 @@ struct Node {
     std::atomic<int> nextFutureId_{1};
 
     struct PendingResponse {
-        std::function<void(const Object &, ResponseType,
-                           const std::string &)>
+        std::function<void(const Object &, ResponseType, const std::string &)>
             complete;
     };
 
@@ -245,114 +243,114 @@ struct Node {
 // Inline implementation details
 
 namespace detail {
-    struct MethodInvokerBase {
-        virtual ~MethodInvokerBase() = default;
-        virtual Object Invoke(const std::vector<Object> &args) = 0;
-    };
+struct MethodInvokerBase {
+    virtual ~MethodInvokerBase() = default;
+    virtual Object Invoke(const std::vector<Object> &args) = 0;
+};
 
-    template <typename R, typename... Args>
-    struct MethodInvoker : MethodInvokerBase {
-        MethodInvoker(Registry *registry, std::function<R(Args...)> fn)
-            : registry_(registry), fn_(std::move(fn)) {}
+template <typename R, typename... Args>
+struct MethodInvoker : MethodInvokerBase {
+    MethodInvoker(Registry *registry, std::function<R(Args...)> fn)
+        : registry_(registry), fn_(std::move(fn)) {}
 
-        Object Invoke(const std::vector<Object> &args) override {
-            if (args.size() != sizeof...(Args)) {
-                throw std::invalid_argument("Incorrect number of arguments");
+    Object Invoke(const std::vector<Object> &args) override {
+        if (args.size() != sizeof...(Args)) {
+            throw std::invalid_argument("Incorrect number of arguments");
+        }
+        return InvokeImpl(args, std::index_sequence_for<Args...>{});
+    }
+
+   private:
+    template <typename T>
+    static std::decay_t<T> ExtractArg(const Object &obj) {
+        if constexpr (std::is_same_v<std::decay_t<T>, Object>) {
+            return obj;
+        } else {
+            return ConstDeref<std::decay_t<T>>(obj);
+        }
+    }
+
+    template <std::size_t... Indices>
+    Object InvokeImpl(const std::vector<Object> &args,
+                      std::index_sequence<Indices...>) {
+        if constexpr (std::is_void_v<R>) {
+            fn_(ExtractArg<Args>(args[Indices])...);
+            return Object();
+        } else {
+            if (!registry_) {
+                throw std::runtime_error("Null registry for return value");
             }
-            return InvokeImpl(args, std::index_sequence_for<Args...>{});
+            R result = fn_(ExtractArg<Args>(args[Indices])...);
+            return registry_->New(result);
         }
+    }
 
-       private:
-        template <typename T>
-        static std::decay_t<T> ExtractArg(const Object &obj) {
-            if constexpr (std::is_same_v<std::decay_t<T>, Object>) {
-                return obj;
-            } else {
-                return ConstDeref<std::decay_t<T>>(obj);
-            }
-        }
+    Registry *registry_;
+    std::function<R(Args...)> fn_;
+};
 
-        template <std::size_t... Indices>
-        Object InvokeImpl(const std::vector<Object> &args,
-                          std::index_sequence<Indices...>) {
-            if constexpr (std::is_void_v<R>) {
-                fn_(ExtractArg<Args>(args[Indices])...);
-                return Object();
-            } else {
-                if (!registry_) {
-                    throw std::runtime_error("Null registry for return value");
-                }
-                R result = fn_(ExtractArg<Args>(args[Indices])...);
-                return registry_->New(result);
-            }
-        }
+struct PropertyAccessorBase {
+    virtual ~PropertyAccessorBase() = default;
+    virtual std::any Get() = 0;
+    virtual void Set(const std::any &value) {
+        KAI_UNUSED_1(value);
+        throw std::runtime_error("Property is read-only");
+    }
+    virtual bool CanWrite() const { return false; }
+    // Object-level accessors used by the remote property get/set path.
+    virtual Object GetAsObject(Registry *reg) = 0;
+    virtual void SetFromObject(const Object &obj) {
+        KAI_UNUSED_1(obj);
+        throw std::runtime_error("Property is read-only");
+    }
+    std::type_index type{typeid(void)};
+};
 
-        Registry *registry_;
-        std::function<R(Args...)> fn_;
-    };
+template <typename Value>
+struct PropertyAccessor : PropertyAccessorBase {
+    PropertyAccessor(std::function<Value()> getter,
+                     std::function<void(Value)> setter)
+        : getter_(std::move(getter)), setter_(std::move(setter)) {
+        this->type = typeid(Value);
+    }
 
-    struct PropertyAccessorBase {
-        virtual ~PropertyAccessorBase() = default;
-        virtual std::any Get() = 0;
-        virtual void Set(const std::any &value) {
-            KAI_UNUSED_1(value);
-            throw std::runtime_error("Property is read-only");
-        }
-        virtual bool CanWrite() const { return false; }
-        // Object-level accessors used by the remote property get/set path.
-        virtual Object GetAsObject(Registry *reg) = 0;
-        virtual void SetFromObject(const Object &obj) {
-            KAI_UNUSED_1(obj);
-            throw std::runtime_error("Property is read-only");
-        }
-        std::type_index type{typeid(void)};
-    };
+    std::any Get() override { return std::any(getter_()); }
 
-    template <typename Value>
-    struct PropertyAccessor : PropertyAccessorBase {
-        PropertyAccessor(std::function<Value()> getter,
-                         std::function<void(Value)> setter)
-            : getter_(std::move(getter)), setter_(std::move(setter)) {
-            this->type = typeid(Value);
-        }
+    void Set(const std::any &value) override {
+        setter_(std::any_cast<Value>(value));
+    }
 
-        std::any Get() override { return std::any(getter_()); }
+    bool CanWrite() const override { return static_cast<bool>(setter_); }
 
-        void Set(const std::any &value) override {
-            setter_(std::any_cast<Value>(value));
-        }
+    Object GetAsObject(Registry *reg) override {
+        if (!reg) throw std::runtime_error("Null registry in GetAsObject");
+        return reg->New(getter_());
+    }
 
-        bool CanWrite() const override { return static_cast<bool>(setter_); }
+    void SetFromObject(const Object &obj) override {
+        setter_(ConstDeref<std::decay_t<Value>>(obj));
+    }
 
-        Object GetAsObject(Registry *reg) override {
-            if (!reg) throw std::runtime_error("Null registry in GetAsObject");
-            return reg->New(getter_());
-        }
+    std::function<Value()> getter_;
+    std::function<void(Value)> setter_;
+};
 
-        void SetFromObject(const Object &obj) override {
-            setter_(ConstDeref<std::decay_t<Value>>(obj));
-        }
+template <typename Value>
+struct ReadOnlyAccessor : PropertyAccessorBase {
+    explicit ReadOnlyAccessor(std::function<Value()> getter)
+        : getter_(std::move(getter)) {
+        this->type = typeid(Value);
+    }
 
-        std::function<Value()> getter_;
-        std::function<void(Value)> setter_;
-    };
+    std::any Get() override { return std::any(getter_()); }
 
-    template <typename Value>
-    struct ReadOnlyAccessor : PropertyAccessorBase {
-        explicit ReadOnlyAccessor(std::function<Value()> getter)
-            : getter_(std::move(getter)) {
-            this->type = typeid(Value);
-        }
+    Object GetAsObject(Registry *reg) override {
+        if (!reg) throw std::runtime_error("Null registry in GetAsObject");
+        return reg->New(getter_());
+    }
 
-        std::any Get() override { return std::any(getter_()); }
-
-        Object GetAsObject(Registry *reg) override {
-            if (!reg) throw std::runtime_error("Null registry in GetAsObject");
-            return reg->New(getter_());
-        }
-
-        std::function<Value()> getter_;
-    };
+    std::function<Value()> getter_;
+};
 }  // namespace detail
 
 inline NetHandle Node::AttachAgent(AgentBase *agent) {
@@ -384,9 +382,8 @@ void Node::RegisterProperty(NetHandle handle, const std::string &name,
                             std::function<Value()> getter,
                             std::function<void(Value)> setter) {
     std::lock_guard<std::mutex> lock(agentMutex_);
-    auto accessor =
-        std::make_shared<detail::PropertyAccessor<Value>>(std::move(getter),
-                                                          std::move(setter));
+    auto accessor = std::make_shared<detail::PropertyAccessor<Value>>(
+        std::move(getter), std::move(setter));
     agentEntries_[handle.value].properties[name] = accessor;
 }
 

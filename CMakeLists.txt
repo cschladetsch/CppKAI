@@ -97,10 +97,12 @@ add_definitions(-DKAI_LOG_DIR="./Logs")
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # Enable necessary options
-option(KAI_BUILD_TEST_ALL "Build all tests" OFF)
-option(KAI_BUILD_CORE_TEST "Build unit tests" OFF)
-option(KAI_BUILD_TEST_LANG "Build language tests" OFF)
-option(KAI_NETWORKING "Build networking library, Tau IDL, NetworkGenerate tool, and network tests" OFF)
+option(KAI_BUILD_TEST_ALL "Build all tests" ON)
+option(KAI_BUILD_CORE_TEST "Build unit tests" ON)
+option(KAI_BUILD_TEST_LANG "Build language tests" ON)
+option(KAI_BUILD_WINDOW "Build the ImGui window client" OFF)
+option(KAI_BUILD_LLM "Build the local LLM support libraries" OFF)
+option(KAI_NETWORKING "Build networking library, Tau IDL, NetworkGenerate tool, and network tests" ON)
 
 # Security option: Enable shell syntax (backtick operations)
 # Default to OFF for security reasons
@@ -248,6 +250,16 @@ if(KAI_NETWORKING)
 else()
     message(STATUS "Networking disabled (enable with -DKAI_NETWORKING=ON)")
 endif()
+
+if(KAI_BUILD_LLM)
+    set(MODELSTORE_BUILD_TESTS OFF CACHE BOOL "Build ModelStore tests" FORCE)
+    set(MODELSTORE_AUTO_ENSURE_MODELS OFF CACHE BOOL "Run ensure_models as part of the default build" FORCE)
+    add_subdirectory(${EXTERNAL}/CppLmmModelStore)
+    message(STATUS "LLM support enabled: CppLmmModelStore")
+else()
+    message(STATUS "LLM support disabled (enable with -DKAI_BUILD_LLM=ON)")
+endif()
+
 include_directories(${EXTERNAL}/rang/include)
 
 # Macro to define a new library

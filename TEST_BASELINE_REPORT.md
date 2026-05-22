@@ -290,7 +290,7 @@ diff baseline_rho_iter.log current_rho_iter.log
 ### Full Validation
 ```bash
 # Run all tests
-./Scripts/run_all_tests.sh
+./run_all_tests.sh
 
 # Or test by language
 ./Scripts/run_rho_tests.sh

@@ -16,7 +16,8 @@ bool BinaryPacket::Read(int len, Byte *dest) {
 }
 
 bool BinaryPacket::CanRead(int len) const {
-    return len > 0 && current + len <= last;
+    if (len <= 0) return false;
+    return len <= (last - current);
 }
 
 void BinaryStream::Clear() {
@@ -55,19 +56,22 @@ BinaryStream &BinaryStream::Write(int len, const Byte *src) {
 }
 
 BinaryPacket &operator>>(BinaryPacket &S, BinaryPacket &T) {
-    // Read data from S into T
-    // First read the size of data to transfer
-    int size = S.Size() - (S.Current() - S.Begin());
-    if (size <= 0) {
-        return S;  // Nothing to read
+    int size = 0;
+    if (!S.Read(size)) {
+        return S;
     }
 
-    // Create a new BinaryPacket with the read data
-    // This assumes T is properly initialized and can store the data
+    if (size <= 0) {
+        return S;
+    }
+
+    if (!S.CanRead(size)) {
+        KAI_THROW_0(PacketExtraction);
+    }
+
     const BinaryPacket::Byte *data = S.Current();
     T = BinaryPacket(data, data + size, S.GetRegistry());
 
-    // Advance S's current position
     for (int i = 0; i < size; ++i) {
         BinaryPacket::Byte dummy;
         S.Read(dummy);
@@ -77,18 +81,23 @@ BinaryPacket &operator>>(BinaryPacket &S, BinaryPacket &T) {
 }
 
 BinaryPacket &operator>>(BinaryPacket &S, BinaryStream &T) {
-    // Read data from S into T
-    // First read the size of data to transfer
-    int size = S.Size() - (S.Current() - S.Begin());
-    if (size <= 0) {
-        return S;  // Nothing to read
+    int size = 0;
+    if (!S.Read(size)) {
+        return S;
     }
 
-    // Clear T and then write the data
+    if (size <= 0) {
+        T.Clear();
+        return S;
+    }
+
+    if (!S.CanRead(size)) {
+        KAI_THROW_0(PacketExtraction);
+    }
+
     T.Clear();
     T.Write(size, S.Current());
 
-    // Advance S's current position
     for (int i = 0; i < size; ++i) {
         BinaryPacket::Byte dummy;
         S.Read(dummy);

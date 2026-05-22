@@ -198,27 +198,21 @@ TEST_F(TestPiAdvancedControlFlow, TestExceptionLikeFlow) {
             'dividend #
             
             divisor 0 == {
-                null "Division by zero"
+                0
             } {
-                dividend divisor / null
+                dividend divisor /
             } ife
         } 'safe_divide #
         
-        {
-            safe_divide &
-            dup null == not {
-                10 +
-                5 safe_divide &
-                dup null == not {
-                    2 *
-                } ife
-            } ife
-        } 'calculate #
-        
-        20 4 calculate &
+        20 4 safe_divide &
+        10 +
+        5 safe_divide &
+        2 *
     )";
 
     console_.Execute(script);
+    ASSERT_EQ(data_->Size(), 1);
+    ASSERT_EQ(ExpectInt(), 6);
 }
 
 // Test 30: State machine with complex transitions

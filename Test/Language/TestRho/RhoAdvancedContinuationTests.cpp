@@ -33,7 +33,8 @@ find_pair(42)
 }
 
 // Test 12: Equivalent of lambda composition using named functions
-// Tests nested function calls: add5(double_val(triple(4))) = add5(double_val(12)) = add5(24) = 29
+// Tests nested function calls: add5(double_val(triple(4))) =
+// add5(double_val(12)) = add5(24) = 29
 TEST_F(TestRhoAdvancedContinuations, TestLambdaComposition) {
     const char *script = R"(
 fun add5(x)

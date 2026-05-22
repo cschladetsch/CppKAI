@@ -1,5 +1,7 @@
 #include <KAI/Language/Tau/TauLexer.h>
 
+#include <cctype>
+
 using namespace std;
 
 TAU_BEGIN
@@ -32,8 +34,10 @@ bool TauLexer::NextToken() {
             while (depth > 0 && Current() != 0) {
                 if (Current() == '<') depth++;
                 if (Current() == '>') depth--;
-                if (depth > 0) Next();
-                else break;
+                if (depth > 0)
+                    Next();
+                else
+                    break;
             }
             if (Current() == '>') Next();  // consume '>'
             return Add(Enum::Ident, Slice(start, offset));
@@ -114,13 +118,15 @@ bool TauLexer::NextToken() {
             return Add(Enum::Tab);
         case '\n':
             return Add(Enum::NewLine);
+        case '\r':
+            if (Peek() == '\n') Next();
+            return Add(Enum::NewLine);
         case '/':
             if (Peek() == '/') {
                 Next();  // consume second '/'
                 int start = offset;
                 // Consume until and including the newline (same as Rho and Pi)
-                while (Next() != '\n' && Current() != 0)
-                    ;
+                while (Next() != '\n' && Current() != 0);
 
                 // Create the comment token
                 Add(Enum::Comment, Slice(start, offset));

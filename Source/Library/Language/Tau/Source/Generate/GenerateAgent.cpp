@@ -13,7 +13,8 @@ GenerateAgent::GenerateAgent(const char *input, string &output) {
     GenerateProcess::Generate(input, output);
 }
 
-bool GenerateAgent::GenerateFromFile(const char *filename, string &output, string &error) {
+bool GenerateAgent::GenerateFromFile(const char *filename, string &output,
+                                     string &error) {
     std::ifstream file(filename);
     if (!file) {
         error = string("Could not open file: ") + filename;
@@ -111,18 +112,24 @@ struct GenerateAgent::AgentDecl {
 
     string ToString() const {
         stringstream decl;
-        decl << "class " << AgentName << ": public AgentBase<" << RootName << ">";
+        decl << "class " << AgentName << ": public AgentBase<" << RootName
+             << ">";
         return decl.str();
     }
 };
 
 bool GenerateAgent::Class(TauParser::AstNode const &cl) {
     auto className = cl.GetToken().Text();
-    
+
     // Generate documentation comment
-    Output() << "/// Network agent for " << className << " interface" << EndLine();
-    Output() << "/// Handles incoming network requests and dispatches to implementation" << EndLine();
-    Output() << "/// All handler methods deserialize parameters and call implementation" << EndLine();
+    Output() << "/// Network agent for " << className << " interface"
+             << EndLine();
+    Output() << "/// Handles incoming network requests and dispatches to "
+                "implementation"
+             << EndLine();
+    Output() << "/// All handler methods deserialize parameters and call "
+                "implementation"
+             << EndLine();
 
     auto agentDecl = AgentDecl(className);
     StartBlock(agentDecl.ToString());
@@ -138,7 +145,8 @@ bool GenerateAgent::Class(TauParser::AstNode const &cl) {
                 GenerateEventTrigger(*member);
                 break;
             case TauAstEnumType::Property:
-                // Properties are handled through messages, no special generation needed
+                // Properties are handled through messages, no special
+                // generation needed
                 break;
             default:
                 // Skip other member types
@@ -189,17 +197,21 @@ void GenerateAgent::GenerateHandlerMethod(TauParser::AstNode const &method) {
 
     // Generate documentation for handler method
     Output() << "/// Handler for remote method call: " << name << EndLine();
-    Output() << "/// Deserializes parameters from BinaryStream and calls implementation" << EndLine();
+    Output() << "/// Deserializes parameters from BinaryStream and calls "
+                "implementation"
+             << EndLine();
     if (!args.empty()) {
         Output() << "/// Parameters deserialized from network:" << EndLine();
         for (auto const &a : args) {
             auto &ty = a->GetChild(0);
             auto &id = a->GetChild(1);
-            Output() << "///   " << id->GetTokenText() << " (" << ty->GetTokenText() << ")" << EndLine();
+            Output() << "///   " << id->GetTokenText() << " ("
+                     << ty->GetTokenText() << ")" << EndLine();
         }
     }
     if (returnType != "void") {
-        Output() << "/// Sends " << returnType << " response back to sender" << EndLine();
+        Output() << "/// Sends " << returnType << " response back to sender"
+                 << EndLine();
     }
 
     // Generate the Handle_MethodName signature
@@ -237,7 +249,9 @@ void GenerateAgent::GenerateHandlerMethod(TauParser::AstNode const &method) {
     if (returnType != "void") {
         Output() << "BinaryStream response;" << EndLine();
         if (IsStdStringType(returnType)) {
-            Output() << "kai::net::NetworkSerializer::WriteString(response, result);" << EndLine();
+            Output()
+                << "kai::net::NetworkSerializer::WriteString(response, result);"
+                << EndLine();
         } else {
             Output() << "response << result;" << EndLine();
         }
@@ -260,7 +274,8 @@ void GenerateAgent::GenerateEventTrigger(TauParser::AstNode const &event) {
         for (auto const &a : args) {
             auto &ty = a->GetChild(0);
             auto &id = a->GetChild(1);
-            Output() << "///   " << id->GetTokenText() << " (" << ty->GetTokenText() << ")" << EndLine();
+            Output() << "///   " << id->GetTokenText() << " ("
+                     << ty->GetTokenText() << ")" << EndLine();
         }
     }
 
@@ -273,9 +288,9 @@ void GenerateAgent::GenerateEventTrigger(TauParser::AstNode const &event) {
         auto &ty = a->GetChild(0);
         auto &id = a->GetChild(1);
         string typeText = ty->GetTokenText();
-        
+
         // Use appropriate parameter passing for different types
-        if (typeText == "int" || typeText == "float" || typeText == "bool" || 
+        if (typeText == "int" || typeText == "float" || typeText == "bool" ||
             typeText == "double" || typeText == "char") {
             // Pass by value for primitive types
             Output() << typeText << " " << id->GetTokenText();
@@ -287,9 +302,9 @@ void GenerateAgent::GenerateEventTrigger(TauParser::AstNode const &event) {
         first = false;
     }
     Output() << ")";
-    
+
     StartBlock();
-    
+
     // Serialize event parameters
     if (!args.empty()) {
         Output() << "BinaryStream eventData;" << EndLine();
@@ -297,17 +312,20 @@ void GenerateAgent::GenerateEventTrigger(TauParser::AstNode const &event) {
             auto &ty = a->GetChild(0);
             auto &id = a->GetChild(1);
             if (IsStdStringType(ty->GetTokenText())) {
-                Output() << "kai::net::NetworkSerializer::WriteString(eventData, "
-                         << id->GetTokenText() << ");" << EndLine();
+                Output()
+                    << "kai::net::NetworkSerializer::WriteString(eventData, "
+                    << id->GetTokenText() << ");" << EndLine();
             } else {
-                Output() << "eventData << " << id->GetTokenText() << ";" << EndLine();
+                Output() << "eventData << " << id->GetTokenText() << ";"
+                         << EndLine();
             }
         }
-        Output() << "_node->BroadcastEvent(\"" << name << "\", eventData);" << EndLine();
+        Output() << "_node->BroadcastEvent(\"" << name << "\", eventData);"
+                 << EndLine();
     } else {
         Output() << "_node->BroadcastEvent(\"" << name << "\");" << EndLine();
     }
-    
+
     EndBlock();
     Output() << EndLine();
 }

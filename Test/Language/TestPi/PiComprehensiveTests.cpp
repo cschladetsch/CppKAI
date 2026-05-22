@@ -12,7 +12,7 @@ using namespace std;
 // Comprehensive test fixture for Pi language with 50 new tests
 struct PiComprehensiveTests : TestLangCommon {
     template <class T>
-    void AssertResult(const char *script, T expected) {
+    void AssertResult(const char* script, T expected) {
         try {
             console_.SetLanguage(Language::Pi);
             console_.Execute(script, Structure::Program);
@@ -88,7 +88,7 @@ TEST_F(PiComprehensiveTests, ReplaceVsResumeCompare) {
 
 // Test 11-15: Nested Suspend and Resume
 TEST_F(PiComprehensiveTests, TripleNestedSuspend) {
-    AssertResult<int>("{ { { 8 } & 2 + } & 3 * } &", 30); // ((8+2)*3) = 30
+    AssertResult<int>("{ { { 8 } & 2 + } & 3 * } &", 30);  // ((8+2)*3) = 30
 }
 
 TEST_F(PiComprehensiveTests, NestedResumeInner) {
@@ -104,7 +104,7 @@ TEST_F(PiComprehensiveTests, MixedSuspendResume) {
 }
 
 TEST_F(PiComprehensiveTests, SuspendWithMultipleOps) {
-    AssertResult<int>("{ 3 4 + 2 * } &", 14); // (3+4)*2 = 14
+    AssertResult<int>("{ 3 4 + 2 * } &", 14);  // (3+4)*2 = 14
 }
 
 // Test 16-20: Stack manipulation with continuations
@@ -113,7 +113,7 @@ TEST_F(PiComprehensiveTests, DupInContinuation) {
 }
 
 TEST_F(PiComprehensiveTests, SwapInContinuation) {
-    AssertResult<int>("{ 10 3 swap - } &", -7); // 3 - 10 = -7
+    AssertResult<int>("{ 10 3 swap - } &", -7);  // 3 - 10 = -7
 }
 
 TEST_F(PiComprehensiveTests, RotInContinuation) {
@@ -169,7 +169,7 @@ TEST_F(PiComprehensiveTests, NotEqualsInSuspend) {
 }
 
 TEST_F(PiComprehensiveTests, ComplexComparisonInSuspend) {
-    AssertResult<bool>("{ 5 3 + 10 2 - == } &", true); // (5+3) == (10-2)
+    AssertResult<bool>("{ 5 3 + 10 2 - == } &", true);  // (5+3) == (10-2)
 }
 
 // Test 31-35: Conditional operations
@@ -202,7 +202,9 @@ TEST_F(PiComprehensiveTests, SimpleWhileLoop) {
 
 TEST_F(PiComprehensiveTests, WhileWithAccumulator) {
     // Sum 1+2+3+4+5 = 15
-    AssertResult<int>("0 'sum # 1 'i # { i 6 < } { sum i + 'sum # i 1 + 'i # } while sum", 15);
+    AssertResult<int>(
+        "0 'sum # 1 'i # { i 6 < } { sum i + 'sum # i 1 + 'i # } while sum",
+        15);
 }
 
 TEST_F(PiComprehensiveTests, WhileZeroIterations) {
@@ -216,18 +218,27 @@ TEST_F(PiComprehensiveTests, WhileWithBreak) {
 
 TEST_F(PiComprehensiveTests, WhileWithContinue) {
     // This test ensures continue works
-    AssertResult<int>("0 'i # 0 'count # { i 3 < } { i 1 + 'i # i 2 == { continue } if count 1 + 'count # } while count", 2);
+    AssertResult<int>(
+        "0 'i # 0 'count # { i 3 < } { i 1 + 'i # i 2 == { continue } if count "
+        "1 + 'count # } while count",
+        2);
 }
 
 // Test 41-45: For loops
 TEST_F(PiComprehensiveTests, SimpleForLoop) {
     // for(i=0; i<5; i++) count++
-    AssertResult<int>("0 'count # { 0 'i # } { i 5 < } { i 1 + 'i # } { count 1 + 'count # } for count", 5);
+    AssertResult<int>(
+        "0 'count # { 0 'i # } { i 5 < } { i 1 + 'i # } { count 1 + 'count # } "
+        "for count",
+        5);
 }
 
 TEST_F(PiComprehensiveTests, ForLoopWithAccumulator) {
     // for(i=0; i<10; i++) sum += i
-    AssertResult<int>("0 'sum # { 0 'i # } { i 10 < } { i 1 + 'i # } { sum i + 'sum # } for sum", 45);
+    AssertResult<int>(
+        "0 'sum # { 0 'i # } { i 10 < } { i 1 + 'i # } { sum i + 'sum # } for "
+        "sum",
+        45);
 }
 
 TEST_F(PiComprehensiveTests, ForLoopEmptyInit) {
@@ -236,12 +247,17 @@ TEST_F(PiComprehensiveTests, ForLoopEmptyInit) {
 }
 
 TEST_F(PiComprehensiveTests, ForLoopWithBreak) {
-    AssertResult<int>("{ 0 'i # } { i 10 < } { i 1 + 'i # } { i 3 == { break } if } for i", 3);
+    AssertResult<int>(
+        "{ 0 'i # } { i 10 < } { i 1 + 'i # } { i 3 == { break } if } for i",
+        3);
 }
 
 TEST_F(PiComprehensiveTests, ForLoopWithContinue) {
     // Count iterations but skip when i==5
-    AssertResult<int>("0 'count # { 0 'i # } { i 10 < } { i 1 + 'i # } { i 5 == { continue } if count 1 + 'count # } for count", 9);
+    AssertResult<int>(
+        "0 'count # { 0 'i # } { i 10 < } { i 1 + 'i # } { i 5 == { continue } "
+        "if count 1 + 'count # } for count",
+        9);
 }
 
 // Test 46-50: Advanced combinations
@@ -249,31 +265,41 @@ TEST_F(PiComprehensiveTests, SuspendInsideIf) {
     AssertResult<int>("true { { 42 } & } { { 99 } & } ife", 42);
 }
 
-// TODO: These tests don't work as expected - Resume/Replace inside loops have complex semantics
-// TEST_F(PiComprehensiveTests, ResumeInsideLoop) {
+// TODO: These tests don't work as expected - Resume/Replace inside loops have
+// complex semantics TEST_F(PiComprehensiveTests, ResumeInsideLoop) {
 //     // While loop that exits via resume
-//     AssertResult<int>("0 'i # { true } { i 1 + 'i # i 3 == { 100 ... } if } while 0", 100);
+//     AssertResult<int>("0 'i # { true } { i 1 + 'i # i 3 == { 100 ... } if }
+//     while 0", 100);
 // }
 
 // TEST_F(PiComprehensiveTests, ReplaceInsideLoop) {
 //     // Replace breaks out of loop entirely and jumps to new continuation
-//     // The loop body calls Replace when i==2, which replaces entire continuation with {200}
-//     AssertResult<int>("0 'i # { true } { i 1 + 'i # i 2 == { { 200 } ! } if break } while i", 200);
+//     // The loop body calls Replace when i==2, which replaces entire
+//     continuation with {200} AssertResult<int>("0 'i # { true } { i 1 + 'i # i
+//     2 == { { 200 } ! } if break } while i", 200);
 // }
 
 TEST_F(PiComprehensiveTests, SimpleForLoopNoSuspend) {
     // Simple for loop without suspend to verify basic loop works
     // Expected: i=0: sum=0+0=0, i=1: sum=0+1=1, i=2: sum=1+2=3
-    AssertResult<int>("0 'sum # { 0 'i # } { i 3 < } { i 1 + 'i # } { sum i + 'sum # } for sum", 3);
+    AssertResult<int>(
+        "0 'sum # { 0 'i # } { i 3 < } { i 1 + 'i # } { sum i + 'sum # } for "
+        "sum",
+        3);
 }
 
 TEST_F(PiComprehensiveTests, NestedSuspendInLoop) {
     // For loop calling suspended continuation
     // Expected: i=0: sum=0+0=0, i=1: sum=0+2=2, i=2: sum=2+4=6
-    AssertResult<int>("{ dup 2 * } 'double # 0 'sum # { 0 'i # } { i 3 < } { i 1 + 'i # } { sum i double & + 'sum # } for sum", 6); // 0+2+4 = 6
+    AssertResult<int>(
+        "{ dup 2 * } 'double # 0 'sum # { 0 'i # } { i 3 < } { i 1 + 'i # } { "
+        "sum i double & + 'sum # } for sum",
+        6);  // 0+2+4 = 6
 }
 
 TEST_F(PiComprehensiveTests, ComplexNesting) {
     // Nested: for -> if -> suspend -> resume
-    AssertResult<int>("{ 0 'i # } { i 1 < } { i 1 + 'i # } { true { { 777 ... } & } if } for", 777);
+    AssertResult<int>(
+        "{ 0 'i # } { i 1 < } { i 1 + 'i # } { true { { 777 ... } & } if } for",
+        777);
 }
