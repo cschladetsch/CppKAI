@@ -15,6 +15,7 @@ These scripts serve multiple purposes:
 
 - **run_peers.sh**: Provides instructions for running and testing peer-to-peer communication manually
 - **automated_demo.sh**: Builds and verifies the NetworkPeer application readiness
+- **run_continuation_migration_demo.sh**: Launches a server/client pair and proves a frozen continuation can cross the network and execute on the remote node
 
 ## Script Details
 
@@ -52,6 +53,22 @@ The script will:
 4. Show instructions for manual testing
 
 This ensures that the network components are correctly built and available.
+
+### Continuation Migration Demo (`run_continuation_migration_demo.sh`)
+
+This script starts a server process and a client process, sends a frozen Pi continuation over the network, thaws it on the server, and checks that the remote execution returns `10`.
+
+```bash
+./Scripts/network/run_continuation_migration_demo.sh
+```
+
+The script will:
+1. Build the `ContinuationMigrationDemo` executable
+2. Start the server process and wait for the ready marker
+3. Launch the client process and send the frozen continuation
+4. Verify that both sides report success
+
+This is the best automated proof that continuations can be binary moved between nodes.
 
 ## Configuration
 
