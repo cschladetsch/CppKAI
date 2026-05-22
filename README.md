@@ -118,6 +118,7 @@ graph TB
 - **Interactive Console**: Real-time REPL with peer-to-peer networking capabilities  
 - **Distributed Object Model**: Network-transparent objects with type safety across node boundaries
 - **Stack-based Execution**: High-performance virtual machine with continuation support and binary migration between nodes
+- **LLM Tooling**: `RepoIndex` builds a local repo knowledge base and `RhoDataset` exports training data for Rho-focused model work under `~/.cache/deepseek/models`
 - **Incremental Garbage Collection**: Smooth memory management without performance spikes
 - **Code Generation**: Tau IDL generates proxy/agent pairs for network communication
 - **Cross-platform Support**: Unified development experience across major operating systems
@@ -157,6 +158,7 @@ graph TB
 - **Project Status**: [TODO](TODO.md) | [Test Summary](TEST_SUMMARY.md)
 
 ### **Component Documentation**
+- **LLM Overview**: [LmmReadme.md](LmmReadme.md) - Cache, repo indexing, and Rho dataset export
 - **Core System**: [Core README](Include/KAI/Core/README.md) | [Registry](Include/KAI/Core/Object/README.md) | [Config](Include/KAI/Core/Config/README.md)
 - **Executor**: [Executor README](Include/KAI/Executor/README.md) - Virtual machine and execution engine
 - **Console**: [Console README](Include/KAI/Console/README.md) - Interactive shell with networking

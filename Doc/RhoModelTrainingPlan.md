@@ -38,6 +38,10 @@ Create instruction-style JSONL records:
 
 Keep examples short and direct. Prefer one behavior per record.
 
+KAI now ships a first-pass exporter for this shape as `RhoDataset`, which
+collects Rho `AssertResult(...)` examples plus short script/document summaries
+into JSONL under the model cache.
+
 ## Training Approach
 
 Use llama.cpp as the runtime target, but train externally with LoRA:
@@ -69,4 +73,3 @@ The KAI-facing integration point is:
 - `RepoIndex` for grounding prompts in the repository
 
 The actual llama.cpp inference backend can be added later without changing those entry points.
-

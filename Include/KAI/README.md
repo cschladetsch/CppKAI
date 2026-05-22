@@ -51,9 +51,11 @@ Distributed computing and networking:
 Optional local model-cache utilities for llama.cpp-based integrations:
 - **ModelCache.h** - Resolve and create model cache directories
 - **Session.h** - Load a model path and route prompts through an injected backend handler
+- **RhoDataset.h** - Build a local JSONL training set from Rho tests, docs, and scripts
 
 Current best path:
 - Build `RepoIndex` to create a local code/test knowledge base under the cache
+- Build `RhoDataset` to export Rho-focused training examples under the same cache tree
 - Use `LLM::ModelCache` to locate or create model directories
 - Use `LLM::Session` as the seam for a llama.cpp runtime or any other backend handler
 

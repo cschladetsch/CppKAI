@@ -9,7 +9,7 @@ if(KAI_BUILD_WINDOW)
 endif()
 
 if(KAI_BUILD_LLM)
-    list(APPEND apps RepoIndex)
+    list(APPEND apps RepoIndex RhoDataset)
 endif()
 
 foreach (app ${apps})

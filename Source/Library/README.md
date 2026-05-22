@@ -10,5 +10,5 @@ These are the source codes for the libraries of the KAI system.
   * *RhoLang*. In-fix language that looks and smells a lot like Python. Compiles to Pi code.
   * *TauLang*. An Interface Defition Language (IDL) used to generate Proxy and Agent code for Network library
 1. **Network** Cross-platform networking system with distributed object model, type-safe RPC and Future results.
-1. **LLM** Optional local model cache utilities for llama.cpp integrations. Models default to `~/.cache/deepseek/models` and are backed by `Ext/CppLmmModelStore`. `Session` is the minimal backend seam for loading a model and handling prompts.
+1. **LLM** Optional local model cache utilities for llama.cpp integrations. Models default to `~/.cache/deepseek/models` and are backed by `Ext/CppLmmModelStore`. `Session` is the minimal backend seam for loading a model and handling prompts, and `RhoDataset` exports Rho-focused training examples into the same cache tree.
 1. **Platform** Platform-specific code.
