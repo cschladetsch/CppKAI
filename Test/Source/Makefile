@@ -791,6 +791,33 @@ TestGarbageCollection.cpp.s:
 	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestGarbageCollection.cpp.s
 .PHONY : TestGarbageCollection.cpp.s
 
+TestLLMSession.o: TestLLMSession.cpp.o
+.PHONY : TestLLMSession.o
+
+# target to build an object file
+TestLLMSession.cpp.o:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestLLMSession.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestLLMSession.cpp.o
+.PHONY : TestLLMSession.cpp.o
+
+TestLLMSession.i: TestLLMSession.cpp.i
+.PHONY : TestLLMSession.i
+
+# target to preprocess a source file
+TestLLMSession.cpp.i:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestLLMSession.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestLLMSession.cpp.i
+.PHONY : TestLLMSession.cpp.i
+
+TestLLMSession.s: TestLLMSession.cpp.s
+.PHONY : TestLLMSession.s
+
+# target to generate assembly for a file
+TestLLMSession.cpp.s:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestLLMSession.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestLLMSession.cpp.s
+.PHONY : TestLLMSession.cpp.s
+
 TestMap.o: TestMap.cpp.o
 .PHONY : TestMap.o
 
@@ -844,6 +871,33 @@ TestMemoryManagement.cpp.s:
 	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestMemoryManagement.cpp.s
 	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestMemoryManagement.cpp.s
 .PHONY : TestMemoryManagement.cpp.s
+
+TestModelCache.o: TestModelCache.cpp.o
+.PHONY : TestModelCache.o
+
+# target to build an object file
+TestModelCache.cpp.o:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestModelCache.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestModelCache.cpp.o
+.PHONY : TestModelCache.cpp.o
+
+TestModelCache.i: TestModelCache.cpp.i
+.PHONY : TestModelCache.i
+
+# target to preprocess a source file
+TestModelCache.cpp.i:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestModelCache.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestModelCache.cpp.i
+.PHONY : TestModelCache.cpp.i
+
+TestModelCache.s: TestModelCache.cpp.s
+.PHONY : TestModelCache.s
+
+# target to generate assembly for a file
+TestModelCache.cpp.s:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestModelCache.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestModelCache.cpp.s
+.PHONY : TestModelCache.cpp.s
 
 TestPathname.o: TestPathname.cpp.o
 .PHONY : TestPathname.o
@@ -925,6 +979,33 @@ TestRegistryOperations.cpp.s:
 	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestRegistryOperations.cpp.s
 	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestRegistryOperations.cpp.s
 .PHONY : TestRegistryOperations.cpp.s
+
+TestRepoIndexer.o: TestRepoIndexer.cpp.o
+.PHONY : TestRepoIndexer.o
+
+# target to build an object file
+TestRepoIndexer.cpp.o:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestRepoIndexer.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestRepoIndexer.cpp.o
+.PHONY : TestRepoIndexer.cpp.o
+
+TestRepoIndexer.i: TestRepoIndexer.cpp.i
+.PHONY : TestRepoIndexer.i
+
+# target to preprocess a source file
+TestRepoIndexer.cpp.i:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestRepoIndexer.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestRepoIndexer.cpp.i
+.PHONY : TestRepoIndexer.cpp.i
+
+TestRepoIndexer.s: TestRepoIndexer.cpp.s
+.PHONY : TestRepoIndexer.s
+
+# target to generate assembly for a file
+TestRepoIndexer.cpp.s:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/KaiTest.dir/build.make Test/Source/CMakeFiles/KaiTest.dir/TestRepoIndexer.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Source/CMakeFiles/TestCore.dir/build.make Test/Source/CMakeFiles/TestCore.dir/TestRepoIndexer.cpp.s
+.PHONY : TestRepoIndexer.cpp.s
 
 TestSerialization.o: TestSerialization.cpp.o
 .PHONY : TestSerialization.o
@@ -1142,12 +1223,18 @@ help:
 	@echo "... TestGarbageCollection.o"
 	@echo "... TestGarbageCollection.i"
 	@echo "... TestGarbageCollection.s"
+	@echo "... TestLLMSession.o"
+	@echo "... TestLLMSession.i"
+	@echo "... TestLLMSession.s"
 	@echo "... TestMap.o"
 	@echo "... TestMap.i"
 	@echo "... TestMap.s"
 	@echo "... TestMemoryManagement.o"
 	@echo "... TestMemoryManagement.i"
 	@echo "... TestMemoryManagement.s"
+	@echo "... TestModelCache.o"
+	@echo "... TestModelCache.i"
+	@echo "... TestModelCache.s"
 	@echo "... TestPathname.o"
 	@echo "... TestPathname.i"
 	@echo "... TestPathname.s"
@@ -1157,6 +1244,9 @@ help:
 	@echo "... TestRegistryOperations.o"
 	@echo "... TestRegistryOperations.i"
 	@echo "... TestRegistryOperations.s"
+	@echo "... TestRepoIndexer.o"
+	@echo "... TestRepoIndexer.i"
+	@echo "... TestRepoIndexer.s"
 	@echo "... TestSerialization.o"
 	@echo "... TestSerialization.i"
 	@echo "... TestSerialization.s"

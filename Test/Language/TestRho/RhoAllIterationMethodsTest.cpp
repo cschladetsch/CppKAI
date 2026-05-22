@@ -772,7 +772,8 @@ sum
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_ChainedOperations) {
-    RunAndExpect<int>(R"(
+    RunAndExpect<int>(
+        R"(
 fun inc(x) { x + 1 }
 fun double(x) { x * 2 }
 fun square(x) { x * x }
@@ -782,8 +783,9 @@ for x in arr
     sum = sum + square(double(inc(x)))
 sum
 )",
-                      116, "Function_ChainedOperations");  // square(double(inc(1)))+square(double(inc(2)))+square(double(inc(3)))
-                                                           // = 16+36+64 = 116
+        116,
+        "Function_ChainedOperations");  // square(double(inc(1)))+square(double(inc(2)))+square(double(inc(3)))
+                                        // = 16+36+64 = 116
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_PredicateFilter) {
@@ -1017,7 +1019,8 @@ sum
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInNestedLoops) {
-    RunAndExpect<int>(R"(
+    RunAndExpect<int>(
+        R"(
 fun add(a, b) { a + b }
 sum = 0
 for i = 1; i <= 2; i = i + 1
@@ -1025,8 +1028,9 @@ for i = 1; i <= 2; i = i + 1
         sum = sum + add(i, j)
 sum
 )",
-                      12, "Function_CallInNestedLoops");  // add(1,1)+add(1,2)+add(2,1)+add(2,2)
-                                                          // = 2+3+3+4 = 12
+        12,
+        "Function_CallInNestedLoops");  // add(1,1)+add(1,2)+add(2,1)+add(2,2)
+                                        // = 2+3+3+4 = 12
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_WithReturnInLoop) {
@@ -1155,7 +1159,8 @@ sum
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInMixedLoops) {
-    RunAndExpect<int>(R"(
+    RunAndExpect<int>(
+        R"(
 fun add(a, b) { a + b }
 sum = 0
 for i = 1; i <= 2; i = i + 1
@@ -1165,8 +1170,9 @@ for i = 1; i <= 2; i = i + 1
         j = j + 1
 sum
 )",
-                      12, "Function_CallInMixedLoops");  // add(1,1)+add(1,2)+add(2,1)+add(2,2)
-                                                         // = 2+3+3+4 = 12
+        12,
+        "Function_CallInMixedLoops");  // add(1,1)+add(1,2)+add(2,1)+add(2,2)
+                                       // = 2+3+3+4 = 12
 }
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInAllThreeLoops) {

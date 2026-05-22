@@ -1,14 +1,12 @@
 #include <KAI/Core/Base.h>
-#include <KAI/LLM/RhoDataset.h>
-
 #include <KAI/LLM/ModelCache.h>
-
-#include <nlohmann/json.hpp>
+#include <KAI/LLM/RhoDataset.h>
 
 #include <algorithm>
 #include <cctype>
 #include <cstring>
 #include <fstream>
+#include <nlohmann/json.hpp>
 #include <sstream>
 
 KAI_BEGIN
@@ -27,12 +25,13 @@ struct Record {
 };
 
 std::string Trim(std::string text) {
-    const auto begin = std::find_if_not(text.begin(), text.end(), [](unsigned char ch) {
-        return std::isspace(ch) != 0;
-    });
-    const auto end = std::find_if_not(text.rbegin(), text.rend(), [](unsigned char ch) {
-        return std::isspace(ch) != 0;
-    }).base();
+    const auto begin = std::find_if_not(
+        text.begin(), text.end(),
+        [](unsigned char ch) { return std::isspace(ch) != 0; });
+    const auto end =
+        std::find_if_not(text.rbegin(), text.rend(), [](unsigned char ch) {
+            return std::isspace(ch) != 0;
+        }).base();
     if (begin >= end) {
         return {};
     }
@@ -44,7 +43,8 @@ bool StartsWith(const std::string& text, const std::string& prefix) {
            std::equal(prefix.begin(), prefix.end(), text.begin());
 }
 
-std::vector<std::string> ReadLines(const fs::path& path, std::string* error_out) {
+std::vector<std::string> ReadLines(const fs::path& path,
+                                   std::string* error_out) {
     std::ifstream in(path);
     if (!in) {
         if (error_out) {
@@ -109,7 +109,8 @@ std::string RemoveCommentPrefix(std::string line) {
     return Trim(std::move(line));
 }
 
-std::string ExtractLeadingCommentSummary(const std::vector<std::string>& lines) {
+std::string ExtractLeadingCommentSummary(
+    const std::vector<std::string>& lines) {
     std::vector<std::string> collected;
     bool started = false;
 
@@ -350,9 +351,9 @@ std::vector<Record> BuildTextRecords(const fs::path& path,
                                      size_t max_input_chars) {
     std::vector<Record> records;
     const std::string text = ReadText(path, nullptr);
-    const std::string summary =
-        path.extension() == ".md" ? ExtractMarkdownSummary(lines)
-                                  : ExtractLeadingCommentSummary(lines);
+    const std::string summary = path.extension() == ".md"
+                                    ? ExtractMarkdownSummary(lines)
+                                    : ExtractLeadingCommentSummary(lines);
     if (summary.empty()) {
         return records;
     }
@@ -388,11 +389,9 @@ std::filesystem::path RhoDatasetBuilder::DefaultOutputRoot() {
     return fs::path(ModelCache::ResolveHome()) / "kai-rho-training";
 }
 
-std::filesystem::path RhoDatasetBuilder::Build(std::filesystem::path root,
-                                               std::filesystem::path output_root,
-                                               size_t max_input_chars,
-                                               size_t max_records,
-                                               std::string* error_out) {
+std::filesystem::path RhoDatasetBuilder::Build(
+    std::filesystem::path root, std::filesystem::path output_root,
+    size_t max_input_chars, size_t max_records, std::string* error_out) {
     RhoDatasetOptions options;
     options.root = std::move(root);
     options.output_root = std::move(output_root);
@@ -416,8 +415,9 @@ std::filesystem::path RhoDatasetBuilder::Build(const RhoDatasetOptions& options,
     fs::create_directories(output_root, ec);
     if (ec) {
         if (error_out) {
-            *error_out = "Failed to create output directory: " + output_root.string() +
-                         " (" + ec.message() + ")";
+            *error_out =
+                "Failed to create output directory: " + output_root.string() +
+                " (" + ec.message() + ")";
         }
         return {};
     }
@@ -477,9 +477,11 @@ std::filesystem::path RhoDatasetBuilder::Build(const RhoDatasetOptions& options,
 
             std::vector<Record> file_records;
             if (path.extension() == ".cpp") {
-                file_records = BuildCppRecords(path, lines, options.max_input_chars);
+                file_records =
+                    BuildCppRecords(path, lines, options.max_input_chars);
             } else {
-                file_records = BuildTextRecords(path, lines, options.max_input_chars);
+                file_records =
+                    BuildTextRecords(path, lines, options.max_input_chars);
             }
 
             if (file_records.empty()) {
@@ -492,12 +494,14 @@ std::filesystem::path RhoDatasetBuilder::Build(const RhoDatasetOptions& options,
             manifest["files"].push_back(std::move(file_entry));
 
             for (auto& record : file_records) {
-                if (options.max_records != 0 && records.size() >= options.max_records) {
+                if (options.max_records != 0 &&
+                    records.size() >= options.max_records) {
                     break;
                 }
                 records.push_back(std::move(record));
             }
-            if (options.max_records != 0 && records.size() >= options.max_records) {
+            if (options.max_records != 0 &&
+                records.size() >= options.max_records) {
                 break;
             }
         }

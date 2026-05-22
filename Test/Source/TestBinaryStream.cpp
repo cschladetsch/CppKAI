@@ -1,6 +1,6 @@
-#include "TestCommon.h"
-
 #include <KAI/Network/Serialization.h>
+
+#include "TestCommon.h"
 
 using namespace kai;
 using namespace std;
@@ -58,8 +58,9 @@ TEST(TestBinaryStream, FunctionResponseRoundTrip) {
     Object parsed =
         kai::net::NetworkSerializer::DeserializeObject(packet, registry);
 
-    EXPECT_EQ(msgId, static_cast<unsigned char>(
-                          kai::net::NetworkSerializer::ID_KAI_FUNCTION_RESPONSE));
+    EXPECT_EQ(msgId,
+              static_cast<unsigned char>(
+                  kai::net::NetworkSerializer::ID_KAI_FUNCTION_RESPONSE));
     EXPECT_EQ(futureId, 42);
     EXPECT_EQ(responseValue,
               static_cast<int>(kai::net::ResponseType::Returned));

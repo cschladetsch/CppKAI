@@ -1,14 +1,12 @@
 #include <KAI/Core/Base.h>
-#include <KAI/LLM/RepoIndexer.h>
-
 #include <KAI/LLM/ModelCache.h>
-
-#include <nlohmann/json.hpp>
+#include <KAI/LLM/RepoIndexer.h>
 
 #include <algorithm>
 #include <cctype>
 #include <fstream>
 #include <iomanip>
+#include <nlohmann/json.hpp>
 #include <sstream>
 #include <vector>
 
@@ -22,7 +20,7 @@ namespace {
 bool HasAllowedExtension(const fs::path& path) {
     const std::string ext = path.extension().string();
     static const std::vector<std::string> allowed = {
-        ".cpp", ".cc", ".cxx", ".h",   ".hpp", ".md",  ".txt",
+        ".cpp",   ".cc",  ".cxx", ".h",    ".hpp", ".md", ".txt",
         ".cmake", ".tau", ".sh",  ".json", ".py",  ".in", ".am"};
     return std::find(allowed.begin(), allowed.end(), ext) != allowed.end() ||
            path.filename() == "README" || path.filename() == "LICENSE";
@@ -63,7 +61,8 @@ std::string SanitizeName(const fs::path& relative) {
     return name;
 }
 
-std::vector<std::string> ReadLines(const fs::path& path, std::string* error_out) {
+std::vector<std::string> ReadLines(const fs::path& path,
+                                   std::string* error_out) {
     std::ifstream in(path);
     if (!in) {
         if (error_out) {
@@ -125,8 +124,9 @@ std::filesystem::path RepoIndexer::Build(const RepoIndexOptions& options,
     fs::create_directories(chunks_root, ec);
     if (ec) {
         if (error_out) {
-            *error_out = "Failed to create output directory: " + output_root.string() +
-                         " (" + ec.message() + ")";
+            *error_out =
+                "Failed to create output directory: " + output_root.string() +
+                " (" + ec.message() + ")";
         }
         return {};
     }
@@ -187,21 +187,24 @@ std::filesystem::path RepoIndexer::Build(const RepoIndexOptions& options,
 
         json chunks = json::array();
         size_t chunk_index = 0;
-        for (size_t start = 0; start < lines.size(); start += options.chunk_lines) {
+        for (size_t start = 0; start < lines.size();
+             start += options.chunk_lines) {
             const size_t end =
                 std::min(start + options.chunk_lines, lines.size());
             const size_t start_line = start + 1;
             const size_t end_line = end;
 
-            const fs::path chunk_name =
-                SanitizeName(relative) + "." + std::to_string(++chunk_index) + ".md";
+            const fs::path chunk_name = SanitizeName(relative) + "." +
+                                        std::to_string(++chunk_index) + ".md";
             const fs::path chunk_path = chunks_root / chunk_name;
             std::vector<std::string> chunk_lines(lines.begin() + start,
                                                  lines.begin() + end);
-            WriteChunkFile(chunk_path, relative, start_line, end_line, chunk_lines);
+            WriteChunkFile(chunk_path, relative, start_line, end_line,
+                           chunk_lines);
 
             json chunk = json::object();
-            chunk["path"] = fs::relative(chunk_path, output_root, ec).generic_string();
+            chunk["path"] =
+                fs::relative(chunk_path, output_root, ec).generic_string();
             if (ec) {
                 ec.clear();
                 chunk["path"] = chunk_path.generic_string();

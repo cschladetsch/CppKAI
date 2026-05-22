@@ -13,7 +13,8 @@ namespace {
 
 void PrintHelp() {
     cout << "KAI RhoDataset\n"
-         << "Usage: RhoDataset [--root PATH] [--out PATH] [--max-input-chars N] [--max-records N]\n"
+         << "Usage: RhoDataset [--root PATH] [--out PATH] [--max-input-chars "
+            "N] [--max-records N]\n"
          << "\n"
          << "Builds a JSONL training set from Rho tests, scripts, and docs.\n";
 }

@@ -175,6 +175,19 @@ Core/fast:
 .PHONY : Core/fast
 
 #=============================================================================
+# Target rules for targets named LLM
+
+# Build rule for target.
+LLM: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 LLM
+.PHONY : LLM
+
+# fast build rule for target.
+LLM/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/LLM.dir/build.make CMakeFiles/LLM.dir/build
+.PHONY : LLM/fast
+
+#=============================================================================
 # Target rules for targets named Executor
 
 # Build rule for target.
@@ -227,6 +240,58 @@ Console/fast:
 .PHONY : Console/fast
 
 #=============================================================================
+# Target rules for targets named SimpleServer
+
+# Build rule for target.
+SimpleServer: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 SimpleServer
+.PHONY : SimpleServer
+
+# fast build rule for target.
+SimpleServer/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimpleServer.dir/build.make CMakeFiles/SimpleServer.dir/build
+.PHONY : SimpleServer/fast
+
+#=============================================================================
+# Target rules for targets named SimpleClient
+
+# Build rule for target.
+SimpleClient: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 SimpleClient
+.PHONY : SimpleClient
+
+# fast build rule for target.
+SimpleClient/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimpleClient.dir/build.make CMakeFiles/SimpleClient.dir/build
+.PHONY : SimpleClient/fast
+
+#=============================================================================
+# Target rules for targets named ContinuationMigrationDemo
+
+# Build rule for target.
+ContinuationMigrationDemo: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ContinuationMigrationDemo
+.PHONY : ContinuationMigrationDemo
+
+# fast build rule for target.
+ContinuationMigrationDemo/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ContinuationMigrationDemo.dir/build.make CMakeFiles/ContinuationMigrationDemo.dir/build
+.PHONY : ContinuationMigrationDemo/fast
+
+#=============================================================================
+# Target rules for targets named RepoIndex
+
+# Build rule for target.
+RepoIndex: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 RepoIndex
+.PHONY : RepoIndex
+
+# fast build rule for target.
+RepoIndex/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RepoIndex.dir/build.make CMakeFiles/RepoIndex.dir/build
+.PHONY : RepoIndex/fast
+
+#=============================================================================
 # Target rules for targets named NetworkGenerate
 
 # Build rule for target.
@@ -251,6 +316,45 @@ enet: cmake_check_build_system
 enet/fast:
 	$(MAKE) $(MAKESILENT) -f Ext/ENet/CMakeFiles/enet.dir/build.make Ext/ENet/CMakeFiles/enet.dir/build
 .PHONY : enet/fast
+
+#=============================================================================
+# Target rules for targets named ModelStore
+
+# Build rule for target.
+ModelStore: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ModelStore
+.PHONY : ModelStore
+
+# fast build rule for target.
+ModelStore/fast:
+	$(MAKE) $(MAKESILENT) -f Ext/CppLmmModelStore/CMakeFiles/ModelStore.dir/build.make Ext/CppLmmModelStore/CMakeFiles/ModelStore.dir/build
+.PHONY : ModelStore/fast
+
+#=============================================================================
+# Target rules for targets named ensure_models
+
+# Build rule for target.
+ensure_models: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ensure_models
+.PHONY : ensure_models
+
+# fast build rule for target.
+ensure_models/fast:
+	$(MAKE) $(MAKESILENT) -f Ext/CppLmmModelStore/CMakeFiles/ensure_models.dir/build.make Ext/CppLmmModelStore/CMakeFiles/ensure_models.dir/build
+.PHONY : ensure_models/fast
+
+#=============================================================================
+# Target rules for targets named ImGui
+
+# Build rule for target.
+ImGui: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ImGui
+.PHONY : ImGui
+
+# fast build rule for target.
+ImGui/fast:
+	$(MAKE) $(MAKESILENT) -f Source/Library/ImGui/CMakeFiles/ImGui.dir/build.make Source/Library/ImGui/CMakeFiles/ImGui.dir/build
+.PHONY : ImGui/fast
 
 #=============================================================================
 # Target rules for targets named CommonLang
@@ -461,17 +565,17 @@ PerformanceTests/fast:
 .PHONY : PerformanceTests/fast
 
 #=============================================================================
-# Target rules for targets named Test_Network
+# Target rules for targets named TestNetwork
 
 # Build rule for target.
-Test_Network: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test_Network
-.PHONY : Test_Network
+TestNetwork: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 TestNetwork
+.PHONY : TestNetwork
 
 # fast build rule for target.
-Test_Network/fast:
-	$(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/Test_Network.dir/build.make Test/Network/CMakeFiles/Test_Network.dir/build
-.PHONY : Test_Network/fast
+TestNetwork/fast:
+	$(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/TestNetwork.dir/build.make Test/Network/CMakeFiles/TestNetwork.dir/build
+.PHONY : TestNetwork/fast
 
 #=============================================================================
 # Target rules for targets named ConsoleConnectionTest
@@ -525,6 +629,30 @@ Test_ProxyGeneration/fast:
 	$(MAKE) $(MAKESILENT) -f Test/Network/ProxyTest/CMakeFiles/Test_ProxyGeneration.dir/build.make Test/Network/ProxyTest/CMakeFiles/Test_ProxyGeneration.dir/build
 .PHONY : Test_ProxyGeneration/fast
 
+Source/App/Console/Source/ContinuationMigrationDemo.o: Source/App/Console/Source/ContinuationMigrationDemo.cpp.o
+.PHONY : Source/App/Console/Source/ContinuationMigrationDemo.o
+
+# target to build an object file
+Source/App/Console/Source/ContinuationMigrationDemo.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ContinuationMigrationDemo.dir/build.make CMakeFiles/ContinuationMigrationDemo.dir/Source/App/Console/Source/ContinuationMigrationDemo.cpp.o
+.PHONY : Source/App/Console/Source/ContinuationMigrationDemo.cpp.o
+
+Source/App/Console/Source/ContinuationMigrationDemo.i: Source/App/Console/Source/ContinuationMigrationDemo.cpp.i
+.PHONY : Source/App/Console/Source/ContinuationMigrationDemo.i
+
+# target to preprocess a source file
+Source/App/Console/Source/ContinuationMigrationDemo.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ContinuationMigrationDemo.dir/build.make CMakeFiles/ContinuationMigrationDemo.dir/Source/App/Console/Source/ContinuationMigrationDemo.cpp.i
+.PHONY : Source/App/Console/Source/ContinuationMigrationDemo.cpp.i
+
+Source/App/Console/Source/ContinuationMigrationDemo.s: Source/App/Console/Source/ContinuationMigrationDemo.cpp.s
+.PHONY : Source/App/Console/Source/ContinuationMigrationDemo.s
+
+# target to generate assembly for a file
+Source/App/Console/Source/ContinuationMigrationDemo.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ContinuationMigrationDemo.dir/build.make CMakeFiles/ContinuationMigrationDemo.dir/Source/App/Console/Source/ContinuationMigrationDemo.cpp.s
+.PHONY : Source/App/Console/Source/ContinuationMigrationDemo.cpp.s
+
 Source/App/Console/Source/Main.o: Source/App/Console/Source/Main.cpp.o
 .PHONY : Source/App/Console/Source/Main.o
 
@@ -549,6 +677,54 @@ Source/App/Console/Source/Main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Console.dir/build.make CMakeFiles/Console.dir/Source/App/Console/Source/Main.cpp.s
 .PHONY : Source/App/Console/Source/Main.cpp.s
 
+Source/App/Console/Source/SimpleClient.o: Source/App/Console/Source/SimpleClient.cpp.o
+.PHONY : Source/App/Console/Source/SimpleClient.o
+
+# target to build an object file
+Source/App/Console/Source/SimpleClient.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimpleClient.dir/build.make CMakeFiles/SimpleClient.dir/Source/App/Console/Source/SimpleClient.cpp.o
+.PHONY : Source/App/Console/Source/SimpleClient.cpp.o
+
+Source/App/Console/Source/SimpleClient.i: Source/App/Console/Source/SimpleClient.cpp.i
+.PHONY : Source/App/Console/Source/SimpleClient.i
+
+# target to preprocess a source file
+Source/App/Console/Source/SimpleClient.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimpleClient.dir/build.make CMakeFiles/SimpleClient.dir/Source/App/Console/Source/SimpleClient.cpp.i
+.PHONY : Source/App/Console/Source/SimpleClient.cpp.i
+
+Source/App/Console/Source/SimpleClient.s: Source/App/Console/Source/SimpleClient.cpp.s
+.PHONY : Source/App/Console/Source/SimpleClient.s
+
+# target to generate assembly for a file
+Source/App/Console/Source/SimpleClient.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimpleClient.dir/build.make CMakeFiles/SimpleClient.dir/Source/App/Console/Source/SimpleClient.cpp.s
+.PHONY : Source/App/Console/Source/SimpleClient.cpp.s
+
+Source/App/Console/Source/SimpleServer.o: Source/App/Console/Source/SimpleServer.cpp.o
+.PHONY : Source/App/Console/Source/SimpleServer.o
+
+# target to build an object file
+Source/App/Console/Source/SimpleServer.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimpleServer.dir/build.make CMakeFiles/SimpleServer.dir/Source/App/Console/Source/SimpleServer.cpp.o
+.PHONY : Source/App/Console/Source/SimpleServer.cpp.o
+
+Source/App/Console/Source/SimpleServer.i: Source/App/Console/Source/SimpleServer.cpp.i
+.PHONY : Source/App/Console/Source/SimpleServer.i
+
+# target to preprocess a source file
+Source/App/Console/Source/SimpleServer.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimpleServer.dir/build.make CMakeFiles/SimpleServer.dir/Source/App/Console/Source/SimpleServer.cpp.i
+.PHONY : Source/App/Console/Source/SimpleServer.cpp.i
+
+Source/App/Console/Source/SimpleServer.s: Source/App/Console/Source/SimpleServer.cpp.s
+.PHONY : Source/App/Console/Source/SimpleServer.s
+
+# target to generate assembly for a file
+Source/App/Console/Source/SimpleServer.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimpleServer.dir/build.make CMakeFiles/SimpleServer.dir/Source/App/Console/Source/SimpleServer.cpp.s
+.PHONY : Source/App/Console/Source/SimpleServer.cpp.s
+
 Source/App/NetworkGenerate/Source/Main.o: Source/App/NetworkGenerate/Source/Main.cpp.o
 .PHONY : Source/App/NetworkGenerate/Source/Main.o
 
@@ -572,6 +748,30 @@ Source/App/NetworkGenerate/Source/Main.s: Source/App/NetworkGenerate/Source/Main
 Source/App/NetworkGenerate/Source/Main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/NetworkGenerate.dir/build.make CMakeFiles/NetworkGenerate.dir/Source/App/NetworkGenerate/Source/Main.cpp.s
 .PHONY : Source/App/NetworkGenerate/Source/Main.cpp.s
+
+Source/App/RepoIndex/Source/Main.o: Source/App/RepoIndex/Source/Main.cpp.o
+.PHONY : Source/App/RepoIndex/Source/Main.o
+
+# target to build an object file
+Source/App/RepoIndex/Source/Main.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RepoIndex.dir/build.make CMakeFiles/RepoIndex.dir/Source/App/RepoIndex/Source/Main.cpp.o
+.PHONY : Source/App/RepoIndex/Source/Main.cpp.o
+
+Source/App/RepoIndex/Source/Main.i: Source/App/RepoIndex/Source/Main.cpp.i
+.PHONY : Source/App/RepoIndex/Source/Main.i
+
+# target to preprocess a source file
+Source/App/RepoIndex/Source/Main.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RepoIndex.dir/build.make CMakeFiles/RepoIndex.dir/Source/App/RepoIndex/Source/Main.cpp.i
+.PHONY : Source/App/RepoIndex/Source/Main.cpp.i
+
+Source/App/RepoIndex/Source/Main.s: Source/App/RepoIndex/Source/Main.cpp.s
+.PHONY : Source/App/RepoIndex/Source/Main.s
+
+# target to generate assembly for a file
+Source/App/RepoIndex/Source/Main.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RepoIndex.dir/build.make CMakeFiles/RepoIndex.dir/Source/App/RepoIndex/Source/Main.cpp.s
+.PHONY : Source/App/RepoIndex/Source/Main.cpp.s
 
 Source/Library/Core/Source/BinaryPacket.o: Source/Library/Core/Source/BinaryPacket.cpp.o
 .PHONY : Source/Library/Core/Source/BinaryPacket.o
@@ -860,6 +1060,30 @@ Source/Library/Core/Source/ClassBase.s: Source/Library/Core/Source/ClassBase.cpp
 Source/Library/Core/Source/ClassBase.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Core.dir/build.make CMakeFiles/Core.dir/Source/Library/Core/Source/ClassBase.cpp.s
 .PHONY : Source/Library/Core/Source/ClassBase.cpp.s
+
+Source/Library/Core/Source/ContinuationBinary.o: Source/Library/Core/Source/ContinuationBinary.cpp.o
+.PHONY : Source/Library/Core/Source/ContinuationBinary.o
+
+# target to build an object file
+Source/Library/Core/Source/ContinuationBinary.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Core.dir/build.make CMakeFiles/Core.dir/Source/Library/Core/Source/ContinuationBinary.cpp.o
+.PHONY : Source/Library/Core/Source/ContinuationBinary.cpp.o
+
+Source/Library/Core/Source/ContinuationBinary.i: Source/Library/Core/Source/ContinuationBinary.cpp.i
+.PHONY : Source/Library/Core/Source/ContinuationBinary.i
+
+# target to preprocess a source file
+Source/Library/Core/Source/ContinuationBinary.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Core.dir/build.make CMakeFiles/Core.dir/Source/Library/Core/Source/ContinuationBinary.cpp.i
+.PHONY : Source/Library/Core/Source/ContinuationBinary.cpp.i
+
+Source/Library/Core/Source/ContinuationBinary.s: Source/Library/Core/Source/ContinuationBinary.cpp.s
+.PHONY : Source/Library/Core/Source/ContinuationBinary.s
+
+# target to generate assembly for a file
+Source/Library/Core/Source/ContinuationBinary.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Core.dir/build.make CMakeFiles/Core.dir/Source/Library/Core/Source/ContinuationBinary.cpp.s
+.PHONY : Source/Library/Core/Source/ContinuationBinary.cpp.s
 
 Source/Library/Core/Source/Debug.o: Source/Library/Core/Source/Debug.cpp.o
 .PHONY : Source/Library/Core/Source/Debug.o
@@ -1653,6 +1877,78 @@ Source/Library/Executor/Source/Tree.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Executor.dir/build.make CMakeFiles/Executor.dir/Source/Library/Executor/Source/Tree.cpp.s
 .PHONY : Source/Library/Executor/Source/Tree.cpp.s
 
+Source/Library/LLM/Source/ModelCache.o: Source/Library/LLM/Source/ModelCache.cpp.o
+.PHONY : Source/Library/LLM/Source/ModelCache.o
+
+# target to build an object file
+Source/Library/LLM/Source/ModelCache.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/LLM.dir/build.make CMakeFiles/LLM.dir/Source/Library/LLM/Source/ModelCache.cpp.o
+.PHONY : Source/Library/LLM/Source/ModelCache.cpp.o
+
+Source/Library/LLM/Source/ModelCache.i: Source/Library/LLM/Source/ModelCache.cpp.i
+.PHONY : Source/Library/LLM/Source/ModelCache.i
+
+# target to preprocess a source file
+Source/Library/LLM/Source/ModelCache.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/LLM.dir/build.make CMakeFiles/LLM.dir/Source/Library/LLM/Source/ModelCache.cpp.i
+.PHONY : Source/Library/LLM/Source/ModelCache.cpp.i
+
+Source/Library/LLM/Source/ModelCache.s: Source/Library/LLM/Source/ModelCache.cpp.s
+.PHONY : Source/Library/LLM/Source/ModelCache.s
+
+# target to generate assembly for a file
+Source/Library/LLM/Source/ModelCache.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/LLM.dir/build.make CMakeFiles/LLM.dir/Source/Library/LLM/Source/ModelCache.cpp.s
+.PHONY : Source/Library/LLM/Source/ModelCache.cpp.s
+
+Source/Library/LLM/Source/RepoIndexer.o: Source/Library/LLM/Source/RepoIndexer.cpp.o
+.PHONY : Source/Library/LLM/Source/RepoIndexer.o
+
+# target to build an object file
+Source/Library/LLM/Source/RepoIndexer.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/LLM.dir/build.make CMakeFiles/LLM.dir/Source/Library/LLM/Source/RepoIndexer.cpp.o
+.PHONY : Source/Library/LLM/Source/RepoIndexer.cpp.o
+
+Source/Library/LLM/Source/RepoIndexer.i: Source/Library/LLM/Source/RepoIndexer.cpp.i
+.PHONY : Source/Library/LLM/Source/RepoIndexer.i
+
+# target to preprocess a source file
+Source/Library/LLM/Source/RepoIndexer.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/LLM.dir/build.make CMakeFiles/LLM.dir/Source/Library/LLM/Source/RepoIndexer.cpp.i
+.PHONY : Source/Library/LLM/Source/RepoIndexer.cpp.i
+
+Source/Library/LLM/Source/RepoIndexer.s: Source/Library/LLM/Source/RepoIndexer.cpp.s
+.PHONY : Source/Library/LLM/Source/RepoIndexer.s
+
+# target to generate assembly for a file
+Source/Library/LLM/Source/RepoIndexer.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/LLM.dir/build.make CMakeFiles/LLM.dir/Source/Library/LLM/Source/RepoIndexer.cpp.s
+.PHONY : Source/Library/LLM/Source/RepoIndexer.cpp.s
+
+Source/Library/LLM/Source/Session.o: Source/Library/LLM/Source/Session.cpp.o
+.PHONY : Source/Library/LLM/Source/Session.o
+
+# target to build an object file
+Source/Library/LLM/Source/Session.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/LLM.dir/build.make CMakeFiles/LLM.dir/Source/Library/LLM/Source/Session.cpp.o
+.PHONY : Source/Library/LLM/Source/Session.cpp.o
+
+Source/Library/LLM/Source/Session.i: Source/Library/LLM/Source/Session.cpp.i
+.PHONY : Source/Library/LLM/Source/Session.i
+
+# target to preprocess a source file
+Source/Library/LLM/Source/Session.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/LLM.dir/build.make CMakeFiles/LLM.dir/Source/Library/LLM/Source/Session.cpp.i
+.PHONY : Source/Library/LLM/Source/Session.cpp.i
+
+Source/Library/LLM/Source/Session.s: Source/Library/LLM/Source/Session.cpp.s
+.PHONY : Source/Library/LLM/Source/Session.s
+
+# target to generate assembly for a file
+Source/Library/LLM/Source/Session.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/LLM.dir/build.make CMakeFiles/LLM.dir/Source/Library/LLM/Source/Session.cpp.s
+.PHONY : Source/Library/LLM/Source/Session.cpp.s
+
 Source/Library/Network/Source/AgentBase.o: Source/Library/Network/Source/AgentBase.cpp.o
 .PHONY : Source/Library/Network/Source/AgentBase.o
 
@@ -1809,40 +2105,60 @@ help:
 	@echo "... install/strip"
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
+	@echo "... ensure_models"
 	@echo "... CalculationTest"
 	@echo "... CommonLang"
 	@echo "... Console"
 	@echo "... ConsoleConnectionTest"
 	@echo "... ConsoleLib"
+	@echo "... ContinuationMigrationDemo"
 	@echo "... Core"
 	@echo "... Executor"
 	@echo "... FixedCoreSuite"
+	@echo "... ImGui"
 	@echo "... IntegratedConsoleTest"
 	@echo "... KaiTest"
+	@echo "... LLM"
 	@echo "... LogTest"
+	@echo "... ModelStore"
 	@echo "... Network"
 	@echo "... NetworkGenerate"
 	@echo "... PerformanceTests"
 	@echo "... PiLang"
+	@echo "... RepoIndex"
 	@echo "... RhoLang"
+	@echo "... SimpleClient"
 	@echo "... SimpleColorExample"
+	@echo "... SimpleServer"
 	@echo "... TauLang"
 	@echo "... TestConsole"
 	@echo "... TestCore"
+	@echo "... TestNetwork"
 	@echo "... TestPi"
 	@echo "... TestRho"
 	@echo "... TestSimpleMock"
 	@echo "... TestTau"
 	@echo "... TestWindow"
-	@echo "... Test_Network"
 	@echo "... Test_ProxyGeneration"
 	@echo "... enet"
+	@echo "... Source/App/Console/Source/ContinuationMigrationDemo.o"
+	@echo "... Source/App/Console/Source/ContinuationMigrationDemo.i"
+	@echo "... Source/App/Console/Source/ContinuationMigrationDemo.s"
 	@echo "... Source/App/Console/Source/Main.o"
 	@echo "... Source/App/Console/Source/Main.i"
 	@echo "... Source/App/Console/Source/Main.s"
+	@echo "... Source/App/Console/Source/SimpleClient.o"
+	@echo "... Source/App/Console/Source/SimpleClient.i"
+	@echo "... Source/App/Console/Source/SimpleClient.s"
+	@echo "... Source/App/Console/Source/SimpleServer.o"
+	@echo "... Source/App/Console/Source/SimpleServer.i"
+	@echo "... Source/App/Console/Source/SimpleServer.s"
 	@echo "... Source/App/NetworkGenerate/Source/Main.o"
 	@echo "... Source/App/NetworkGenerate/Source/Main.i"
 	@echo "... Source/App/NetworkGenerate/Source/Main.s"
+	@echo "... Source/App/RepoIndex/Source/Main.o"
+	@echo "... Source/App/RepoIndex/Source/Main.i"
+	@echo "... Source/App/RepoIndex/Source/Main.s"
 	@echo "... Source/Library/Core/Source/BinaryPacket.o"
 	@echo "... Source/Library/Core/Source/BinaryPacket.i"
 	@echo "... Source/Library/Core/Source/BinaryPacket.s"
@@ -1879,6 +2195,9 @@ help:
 	@echo "... Source/Library/Core/Source/ClassBase.o"
 	@echo "... Source/Library/Core/Source/ClassBase.i"
 	@echo "... Source/Library/Core/Source/ClassBase.s"
+	@echo "... Source/Library/Core/Source/ContinuationBinary.o"
+	@echo "... Source/Library/Core/Source/ContinuationBinary.i"
+	@echo "... Source/Library/Core/Source/ContinuationBinary.s"
 	@echo "... Source/Library/Core/Source/Debug.o"
 	@echo "... Source/Library/Core/Source/Debug.i"
 	@echo "... Source/Library/Core/Source/Debug.s"
@@ -1978,6 +2297,15 @@ help:
 	@echo "... Source/Library/Executor/Source/Tree.o"
 	@echo "... Source/Library/Executor/Source/Tree.i"
 	@echo "... Source/Library/Executor/Source/Tree.s"
+	@echo "... Source/Library/LLM/Source/ModelCache.o"
+	@echo "... Source/Library/LLM/Source/ModelCache.i"
+	@echo "... Source/Library/LLM/Source/ModelCache.s"
+	@echo "... Source/Library/LLM/Source/RepoIndexer.o"
+	@echo "... Source/Library/LLM/Source/RepoIndexer.i"
+	@echo "... Source/Library/LLM/Source/RepoIndexer.s"
+	@echo "... Source/Library/LLM/Source/Session.o"
+	@echo "... Source/Library/LLM/Source/Session.i"
+	@echo "... Source/Library/LLM/Source/Session.s"
 	@echo "... Source/Library/Network/Source/AgentBase.o"
 	@echo "... Source/Library/Network/Source/AgentBase.i"
 	@echo "... Source/Library/Network/Source/AgentBase.s"

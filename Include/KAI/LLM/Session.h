@@ -1,6 +1,7 @@
 #pragma once
 
 #include <KAI/Core/Base.h>
+#include <KAI/LLM/ModelCache.h>
 
 #include <functional>
 #include <optional>
@@ -8,15 +9,14 @@
 #include <string_view>
 #include <utility>
 
-#include <KAI/LLM/ModelCache.h>
-
 KAI_BEGIN
 namespace LLM {
 
 class Session {
    public:
     using PromptHandler = std::function<std::optional<std::string>(
-        const Session& session, std::string_view prompt, std::string* error_out)>;
+        const Session& session, std::string_view prompt,
+        std::string* error_out)>;
 
     Session() = default;
 
@@ -24,7 +24,9 @@ class Session {
 
     bool Load(std::string model_name, std::string* error_out = nullptr);
 
-    bool IsLoaded() const { return !model_name_.empty() && !model_path_.empty(); }
+    bool IsLoaded() const {
+        return !model_name_.empty() && !model_path_.empty();
+    }
     const std::string& ModelName() const { return model_name_; }
     const std::string& ModelPath() const { return model_path_; }
 

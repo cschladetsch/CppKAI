@@ -8,8 +8,8 @@ bool Session::Load(std::string model_name, std::string* error_out) {
     auto ensured = ModelCache::Ensure(model_name, &error);
     if (!ensured) {
         if (error_out) {
-            *error_out = error.empty() ? "Failed to resolve LLM model cache"
-                                       : error;
+            *error_out =
+                error.empty() ? "Failed to resolve LLM model cache" : error;
         }
         model_name_.clear();
         model_path_.clear();
@@ -32,8 +32,7 @@ std::optional<std::string> Session::Prompt(std::string_view prompt,
 
     if (!prompt_handler_) {
         if (error_out) {
-            *error_out =
-                "No LLM prompt handler configured for this session";
+            *error_out = "No LLM prompt handler configured for this session";
         }
         return std::nullopt;
     }

@@ -1,9 +1,9 @@
-#include "TestCommon.h"
-
 #include <KAI/LLM/Session.h>
 
 #include <filesystem>
 #include <optional>
+
+#include "TestCommon.h"
 
 using namespace kai;
 using namespace std;

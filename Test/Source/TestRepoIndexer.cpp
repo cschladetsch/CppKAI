@@ -1,11 +1,10 @@
-#include "TestCommon.h"
-
 #include <KAI/LLM/RepoIndexer.h>
 
 #include <filesystem>
 #include <fstream>
-
 #include <nlohmann/json.hpp>
+
+#include "TestCommon.h"
 
 using namespace kai;
 using namespace std;
@@ -49,7 +48,8 @@ TEST(TestRepoIndexer, BuildsChunkedKnowledgeBase) {
     ASSERT_TRUE(index.contains("entries"));
     EXPECT_EQ(index["entries"].size(), 3);
 
-    const auto first_chunk = built / index["entries"][0]["chunks"][0]["path"].get<string>();
+    const auto first_chunk =
+        built / index["entries"][0]["chunks"][0]["path"].get<string>();
     ASSERT_TRUE(fs::exists(first_chunk));
 
     fs::remove_all(root, ec);

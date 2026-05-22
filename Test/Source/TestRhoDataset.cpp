@@ -1,12 +1,10 @@
 #include <KAI/LLM/RhoDataset.h>
-
 #include <gtest/gtest.h>
-
-#include <nlohmann/json.hpp>
 
 #include <chrono>
 #include <filesystem>
 #include <fstream>
+#include <nlohmann/json.hpp>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -18,8 +16,10 @@ namespace fs = std::filesystem;
 namespace {
 
 fs::path UniqueTempRoot() {
-    const auto now = std::chrono::steady_clock::now().time_since_epoch().count();
-    return fs::temp_directory_path() / ("kai-rho-dataset-" + std::to_string(now));
+    const auto now =
+        std::chrono::steady_clock::now().time_since_epoch().count();
+    return fs::temp_directory_path() /
+           ("kai-rho-dataset-" + std::to_string(now));
 }
 
 void WriteFile(const fs::path& path, const std::string& text) {
@@ -47,7 +47,8 @@ TEST(TestRhoDataset, BuildsJsonlCorpusFromRhoSources) {
     const fs::path output = root / "out";
     fs::remove_all(root);
 
-    WriteFile(root / "Test/Language/TestRho/Sample.cpp", R"(// Sample Rho dataset fixture
+    WriteFile(root / "Test/Language/TestRho/Sample.cpp",
+              R"(// Sample Rho dataset fixture
 // Covers arithmetic and booleans.
 
 TEST(RhoSynthetic, Arithmetic) {
@@ -113,13 +114,16 @@ x = 1 + 2
         } else if (kind == "script") {
             saw_script = true;
             EXPECT_EQ(record["instruction"], "Explain this Rho example.");
-            EXPECT_NE(record["output"].get<std::string>().find("Sample Rho script"),
-                      std::string::npos);
+            EXPECT_NE(
+                record["output"].get<std::string>().find("Sample Rho script"),
+                std::string::npos);
         } else if (kind == "doc") {
             saw_doc = true;
-            EXPECT_EQ(record["instruction"], "Summarize this Rho documentation excerpt.");
-            EXPECT_NE(record["output"].get<std::string>().find("Sample Rho Doc"),
-                      std::string::npos);
+            EXPECT_EQ(record["instruction"],
+                      "Summarize this Rho documentation excerpt.");
+            EXPECT_NE(
+                record["output"].get<std::string>().find("Sample Rho Doc"),
+                std::string::npos);
         }
     }
 

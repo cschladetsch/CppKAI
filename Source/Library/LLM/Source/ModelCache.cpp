@@ -2,7 +2,6 @@
 #include <KAI/LLM/ModelCache.h>
 
 #include <ModelStore.hpp>
-
 #include <cstdlib>
 
 KAI_BEGIN
@@ -35,9 +34,7 @@ void EnsureDefaultEnv() {
 
 }  // namespace
 
-std::string ModelCache::ResolveHome() {
-    return ComputeDefaultHome();
-}
+std::string ModelCache::ResolveHome() { return ComputeDefaultHome(); }
 
 std::string ModelCache::ResolvePath(std::string_view model_name) {
     EnsureDefaultEnv();
