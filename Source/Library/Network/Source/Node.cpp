@@ -2,11 +2,11 @@
 
 #include <iostream>
 
+#include "KAI/Core/BuiltinTypes/Array.h"
 #include "KAI/Network/ConnectionManager.h"
 #include "KAI/Network/NetworkLogger.h"
 #include "KAI/Network/PeerDiscovery.h"
 #include "KAI/Network/Serialization.h"
-#include "KAI/Core/BuiltinTypes/Array.h"
 
 KAI_NET_BEGIN
 
@@ -46,15 +46,16 @@ void Node::Listen(IpAddress const &address, int port) {
         return;
     }
 
-    NetAddress bindAddress(address.ToString(), static_cast<unsigned short>(port));
+    NetAddress bindAddress(address.ToString(),
+                           static_cast<unsigned short>(port));
     if (!peer_->Startup(32, bindAddress)) {
         const bool wildcardBind = address.ToString() == "0.0.0.0";
         const NetAddress loopback("127.0.0.1",
                                   static_cast<unsigned short>(port));
         if (!wildcardBind || !peer_->Startup(32, loopback)) {
-            std::string errorMsg =
-                "Failed to start network server on " + address.ToString() +
-                ":" + std::to_string(port);
+            std::string errorMsg = "Failed to start network server on " +
+                                   address.ToString() + ":" +
+                                   std::to_string(port);
             std::cerr << errorMsg << std::endl;
             NetworkLogger::LogStatus(errorMsg);
             return;
@@ -107,8 +108,8 @@ void Node::Connect(IpAddress const &ip, int port) {
     }
 
     // Connect to remote peer
-    if (!peer_->Connect(NetAddress(ip.ToString(),
-                                   static_cast<unsigned short>(port)))) {
+    if (!peer_->Connect(
+            NetAddress(ip.ToString(), static_cast<unsigned short>(port)))) {
         std::string errorMsg = "Failed to connect to " + ip.ToString() + ":" +
                                std::to_string(port);
         std::cerr << errorMsg << std::endl;
@@ -306,12 +307,12 @@ void Node::ProcessPacket(const NetPacket &packet) {
         case static_cast<unsigned char>(
             SystemMessage::ConnectionRequestAccepted): {
             // We connected to another system
-            OnConnectionEvent(
-                connectionManager_->AddConnection(packet.address),
-                ConnectionEvent::Connected);
+            OnConnectionEvent(connectionManager_->AddConnection(packet.address),
+                              ConnectionEvent::Connected);
             break;
         }
-        case static_cast<unsigned char>(SystemMessage::ConnectionAttemptFailed): {
+        case static_cast<unsigned char>(
+            SystemMessage::ConnectionAttemptFailed): {
             // Connection attempt failed
             OnConnectionEvent(0, ConnectionEvent::ConnectionFailed);
             break;
@@ -324,12 +325,10 @@ void Node::ProcessPacket(const NetPacket &packet) {
                 ConnectionEvent::Connected);
             break;
         }
-        case static_cast<unsigned char>(
-            SystemMessage::NewIncomingConnection): {
+        case static_cast<unsigned char>(SystemMessage::NewIncomingConnection): {
             // A remote system connected to us
-            OnConnectionEvent(
-                connectionManager_->AddConnection(packet.address),
-                ConnectionEvent::Connected);
+            OnConnectionEvent(connectionManager_->AddConnection(packet.address),
+                              ConnectionEvent::Connected);
             break;
         }
         case static_cast<unsigned char>(
@@ -361,7 +360,8 @@ void Node::ProcessPacket(const NetPacket &packet) {
                 if (packetId == NetworkSerializer::ID_KAI_OBJECT_MESSAGE) {
                     // Process object message (serialized object)
                     ProcessObjectMessage(packet);
-                } else if (packetId == NetworkSerializer::ID_KAI_FUNCTION_CALL) {
+                } else if (packetId ==
+                           NetworkSerializer::ID_KAI_FUNCTION_CALL) {
                     // Process function call
                     ProcessFunctionCall(packet);
                 } else if (packetId ==
@@ -371,11 +371,9 @@ void Node::ProcessPacket(const NetPacket &packet) {
                 } else if (packetId ==
                            NetworkSerializer::ID_KAI_FUNCTION_RESPONSE) {
                     ProcessFunctionResponse(packet);
-                } else if (packetId ==
-                           NetworkSerializer::ID_KAI_PROPERTY_GET) {
+                } else if (packetId == NetworkSerializer::ID_KAI_PROPERTY_GET) {
                     ProcessPropertyGet(packet);
-                } else if (packetId ==
-                           NetworkSerializer::ID_KAI_PROPERTY_SET) {
+                } else if (packetId == NetworkSerializer::ID_KAI_PROPERTY_SET) {
                     ProcessPropertySet(packet);
                 }
             }
@@ -390,20 +388,22 @@ void Node::ProcessObjectMessage(const NetPacket &packet) {
         return;
     }
 
-    BinaryPacket stream(reinterpret_cast<const char *>(packet.data.data()),
-                        reinterpret_cast<const char *>(packet.data.data() +
-                                                      packet.data.size()),
-                        registry_);
+    BinaryPacket stream(
+        reinterpret_cast<const char *>(packet.data.data()),
+        reinterpret_cast<const char *>(packet.data.data() + packet.data.size()),
+        registry_);
 
     unsigned char msgId = 0;
     if (!stream.Read(msgId)) {
-        NetworkLogger::LogMessage("ProcessObjectMessage: failed to read header");
+        NetworkLogger::LogMessage(
+            "ProcessObjectMessage: failed to read header");
         return;
     }
 
     Object obj = NetworkSerializer::DeserializeObject(stream, *registry_);
     if (!obj.Exists()) {
-        NetworkLogger::LogMessage("ProcessObjectMessage: failed to deserialize object");
+        NetworkLogger::LogMessage(
+            "ProcessObjectMessage: failed to deserialize object");
         return;
     }
 
@@ -425,10 +425,10 @@ void Node::ProcessFunctionCall(const NetPacket &packet) {
         return;
     }
 
-    BinaryPacket stream(reinterpret_cast<const char *>(packet.data.data()),
-                        reinterpret_cast<const char *>(packet.data.data() +
-                                                      packet.data.size()),
-                        registry_);
+    BinaryPacket stream(
+        reinterpret_cast<const char *>(packet.data.data()),
+        reinterpret_cast<const char *>(packet.data.data() + packet.data.size()),
+        registry_);
 
     unsigned char msgId = 0;
     if (!stream.Read(msgId)) {
@@ -486,31 +486,31 @@ void Node::ProcessFunctionCall(const NetPacket &packet) {
 
     if (futureId != 0) {
         BinaryStream responseStream;
-        responseStream.Write(
-            static_cast<unsigned char>(
-                NetworkSerializer::ID_KAI_FUNCTION_RESPONSE));
+        responseStream.Write(static_cast<unsigned char>(
+            NetworkSerializer::ID_KAI_FUNCTION_RESPONSE));
         responseStream.Write(futureId);
         responseStream.Write(static_cast<int>(response));
         NetworkSerializer::WriteString(responseStream, errorMessage);
         NetworkSerializer::SerializeObject(responseStream, result);
 
-        peer_->Send(responseStream, SendReliability::Reliable,
-                    BufferOffset(0), packet.address, SendRouting::Unicast);
+        peer_->Send(responseStream, SendReliability::Reliable, BufferOffset(0),
+                    packet.address, SendRouting::Unicast);
         peer_->Flush();
     }
 }
 
 void Node::ProcessEventNotification(const NetPacket &packet) {
-    BinaryPacket stream(reinterpret_cast<const char *>(packet.data.data()),
-                        reinterpret_cast<const char *>(packet.data.data() +
-                                                      packet.data.size()),
-                        registry_);
+    BinaryPacket stream(
+        reinterpret_cast<const char *>(packet.data.data()),
+        reinterpret_cast<const char *>(packet.data.data() + packet.data.size()),
+        registry_);
 
     unsigned char msgId = 0;
     std::string eventName;
     if (!stream.Read(msgId) ||
         !NetworkSerializer::ReadString(stream, eventName)) {
-        NetworkLogger::LogMessage("ProcessEventNotification: failed to read header");
+        NetworkLogger::LogMessage(
+            "ProcessEventNotification: failed to read header");
         return;
     }
 
@@ -523,9 +523,9 @@ void Node::ProcessEventNotification(const NetPacket &packet) {
         }
     }
 
-    NetworkLogger::LogMessage("ProcessEventNotification: dispatching event '" +
-                              eventName + "' to " +
-                              std::to_string(handlers.size()) + " subscriber(s)");
+    NetworkLogger::LogMessage(
+        "ProcessEventNotification: dispatching event '" + eventName + "' to " +
+        std::to_string(handlers.size()) + " subscriber(s)");
 
     for (auto &handler : handlers) {
         handler(stream);
@@ -549,11 +549,11 @@ void Node::SendResponse(const NetAddress &peer, BinaryStream &response) {
         bs.Write(size, response.Begin());
     }
 
-    peer_->Send(bs, SendReliability::Reliable, BufferOffset(0), peer, SendRouting::Unicast);
+    peer_->Send(bs, SendReliability::Reliable, BufferOffset(0), peer,
+                SendRouting::Unicast);
 }
 
-void Node::BroadcastEvent(const std::string &name,
-                          BinaryStream &eventData) {
+void Node::BroadcastEvent(const std::string &name, BinaryStream &eventData) {
     if (!peer_ || !isRunning_) return;
 
     BinaryStream bs;
@@ -566,7 +566,8 @@ void Node::BroadcastEvent(const std::string &name,
         bs.Write(eventData.Size(), eventData.Begin());
     }
 
-    peer_->Send(bs, SendReliability::Reliable, BufferOffset(0), NetAddress(), SendRouting::Broadcast);
+    peer_->Send(bs, SendReliability::Reliable, BufferOffset(0), NetAddress(),
+                SendRouting::Broadcast);
     peer_->Flush();
 }
 
@@ -582,10 +583,10 @@ void Node::ProcessFunctionResponse(const NetPacket &packet) {
         return;
     }
 
-    BinaryPacket stream(reinterpret_cast<const char *>(packet.data.data()),
-                        reinterpret_cast<const char *>(packet.data.data() +
-                                                      packet.data.size()),
-                        registry_);
+    BinaryPacket stream(
+        reinterpret_cast<const char *>(packet.data.data()),
+        reinterpret_cast<const char *>(packet.data.data() + packet.data.size()),
+        registry_);
 
     unsigned char msgId = 0;
     int futureId = 0;
@@ -645,32 +646,46 @@ void Node::SendFunctionCall(NetHandle handle, const std::string &name,
     }
 
     if (!found) {
-        NetworkLogger::LogMessage("No active connection for SendFunctionCall to handle " +
-                                  std::to_string(handle.value));
+        NetworkLogger::LogMessage(
+            "No active connection for SendFunctionCall to handle " +
+            std::to_string(handle.value));
         return;
     }
 
     BinaryStream bs;
-    bs.Write(static_cast<unsigned char>(
-        NetworkSerializer::ID_KAI_FUNCTION_CALL));
+    bs.Write(
+        static_cast<unsigned char>(NetworkSerializer::ID_KAI_FUNCTION_CALL));
     bs.Write(handle.value);
     bs.Write(futureId);
     NetworkSerializer::WriteString(bs, name);
     NetworkSerializer::SerializeObject(bs, args);
 
-    peer_->Send(bs, SendReliability::Reliable, BufferOffset(0), targetAddress, SendRouting::Unicast);
+    peer_->Send(bs, SendReliability::Reliable, BufferOffset(0), targetAddress,
+                SendRouting::Unicast);
     peer_->Flush();
 }
 
 void Node::OnConnectionEvent(int connectionId, ConnectionEvent event) {
     std::string eventType;
     switch (event) {
-        case ConnectionEvent::Connected:       eventType = "Connected";       break;
-        case ConnectionEvent::Disconnected:    eventType = "Disconnected";    break;
-        case ConnectionEvent::ConnectionFailed:eventType = "ConnectionFailed";break;
-        case ConnectionEvent::ConnectionLost:  eventType = "ConnectionLost";  break;
-        case ConnectionEvent::Timeout:         eventType = "Timeout";         break;
-        default:                               eventType = "Unknown";         break;
+        case ConnectionEvent::Connected:
+            eventType = "Connected";
+            break;
+        case ConnectionEvent::Disconnected:
+            eventType = "Disconnected";
+            break;
+        case ConnectionEvent::ConnectionFailed:
+            eventType = "ConnectionFailed";
+            break;
+        case ConnectionEvent::ConnectionLost:
+            eventType = "ConnectionLost";
+            break;
+        case ConnectionEvent::Timeout:
+            eventType = "Timeout";
+            break;
+        default:
+            eventType = "Unknown";
+            break;
     }
 
     NetworkLogger::LogConnection("Connection event: " + eventType +
@@ -700,11 +715,12 @@ void Node::SendObject(const Object &obj) {
     if (!peer_ || !isRunning_) return;
 
     BinaryStream bs;
-    bs.Write(static_cast<unsigned char>(
-        NetworkSerializer::ID_KAI_OBJECT_MESSAGE));
+    bs.Write(
+        static_cast<unsigned char>(NetworkSerializer::ID_KAI_OBJECT_MESSAGE));
     NetworkSerializer::SerializeObject(bs, obj);
 
-    peer_->Send(bs, SendReliability::Reliable, BufferOffset(0), NetAddress(), SendRouting::Broadcast);
+    peer_->Send(bs, SendReliability::Reliable, BufferOffset(0), NetAddress(),
+                SendRouting::Broadcast);
     peer_->Flush();
 }
 
@@ -727,15 +743,16 @@ void Node::SendPropertyGet(NetHandle handle, int futureId,
     if (!peer_ || !isRunning_) return;
 
     BinaryStream bs;
-    bs.Write(static_cast<unsigned char>(
-        NetworkSerializer::ID_KAI_PROPERTY_GET));
+    bs.Write(
+        static_cast<unsigned char>(NetworkSerializer::ID_KAI_PROPERTY_GET));
     bs.Write(handle.value);
     bs.Write(futureId);
     NetworkSerializer::WriteString(bs, name);
 
     NetAddress target = RouteAddress(handle);
     if (target.IsValid()) {
-        peer_->Send(bs, SendReliability::Reliable, BufferOffset(0), target, SendRouting::Unicast);
+        peer_->Send(bs, SendReliability::Reliable, BufferOffset(0), target,
+                    SendRouting::Unicast);
         peer_->Flush();
     }
 }
@@ -745,8 +762,8 @@ void Node::SendPropertySet(NetHandle handle, int futureId,
     if (!peer_ || !isRunning_) return;
 
     BinaryStream bs;
-    bs.Write(static_cast<unsigned char>(
-        NetworkSerializer::ID_KAI_PROPERTY_SET));
+    bs.Write(
+        static_cast<unsigned char>(NetworkSerializer::ID_KAI_PROPERTY_SET));
     bs.Write(handle.value);
     bs.Write(futureId);
     NetworkSerializer::WriteString(bs, name);
@@ -754,7 +771,8 @@ void Node::SendPropertySet(NetHandle handle, int futureId,
 
     NetAddress target = RouteAddress(handle);
     if (target.IsValid()) {
-        peer_->Send(bs, SendReliability::Reliable, BufferOffset(0), target, SendRouting::Unicast);
+        peer_->Send(bs, SendReliability::Reliable, BufferOffset(0), target,
+                    SendRouting::Unicast);
         peer_->Flush();
     }
 }
@@ -776,10 +794,10 @@ NetAddress Node::RouteAddress(NetHandle handle) const {
 void Node::ProcessPropertyGet(const NetPacket &packet) {
     if (!registry_) return;
 
-    BinaryPacket stream(reinterpret_cast<const char *>(packet.data.data()),
-                        reinterpret_cast<const char *>(packet.data.data() +
-                                                      packet.data.size()),
-                        registry_);
+    BinaryPacket stream(
+        reinterpret_cast<const char *>(packet.data.data()),
+        reinterpret_cast<const char *>(packet.data.data() + packet.data.size()),
+        registry_);
 
     unsigned char msgId = 0;
     int handleValue = 0;
@@ -827,18 +845,18 @@ void Node::ProcessPropertyGet(const NetPacket &packet) {
     NetworkSerializer::WriteString(responseStream, errorMessage);
     NetworkSerializer::SerializeObject(responseStream, result);
 
-    peer_->Send(responseStream, SendReliability::Reliable,
-                BufferOffset(0), packet.address, SendRouting::Unicast);
+    peer_->Send(responseStream, SendReliability::Reliable, BufferOffset(0),
+                packet.address, SendRouting::Unicast);
     peer_->Flush();
 }
 
 void Node::ProcessPropertySet(const NetPacket &packet) {
     if (!registry_) return;
 
-    BinaryPacket stream(reinterpret_cast<const char *>(packet.data.data()),
-                        reinterpret_cast<const char *>(packet.data.data() +
-                                                      packet.data.size()),
-                        registry_);
+    BinaryPacket stream(
+        reinterpret_cast<const char *>(packet.data.data()),
+        reinterpret_cast<const char *>(packet.data.data() + packet.data.size()),
+        registry_);
 
     unsigned char msgId = 0;
     int handleValue = 0;
@@ -888,8 +906,8 @@ void Node::ProcessPropertySet(const NetPacket &packet) {
     NetworkSerializer::WriteString(responseStream, errorMessage);
     NetworkSerializer::SerializeObject(responseStream, empty);
 
-    peer_->Send(responseStream, SendReliability::Reliable,
-                BufferOffset(0), packet.address, SendRouting::Unicast);
+    peer_->Send(responseStream, SendReliability::Reliable, BufferOffset(0),
+                packet.address, SendRouting::Unicast);
     peer_->Flush();
 }
 

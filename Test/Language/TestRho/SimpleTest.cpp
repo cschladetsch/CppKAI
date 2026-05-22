@@ -14,7 +14,7 @@ TEST(SimpleTest, BasicPi) {
     // Create a console
     Console console;
     console.SetLanguage(Language::Pi);
-    
+
     // Set up the translator for Pi language
     Registry& reg = console.GetRegistry();
     auto translator = std::make_shared<PiTranslator>(reg);

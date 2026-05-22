@@ -200,12 +200,14 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
                 }
                 // Int * Bool = Int (treat bool as 0 or 1)
                 else if (A.IsType<int>() && B.IsType<bool>()) {
-                    int result = ConstDeref<int>(A) * (ConstDeref<bool>(B) ? 1 : 0);
+                    int result =
+                        ConstDeref<int>(A) * (ConstDeref<bool>(B) ? 1 : 0);
                     return createNew(result);
                 }
                 // Bool * Int = Int (treat bool as 0 or 1)
                 else if (A.IsType<bool>() && B.IsType<int>()) {
-                    int result = (ConstDeref<bool>(A) ? 1 : 0) * ConstDeref<int>(B);
+                    int result =
+                        (ConstDeref<bool>(A) ? 1 : 0) * ConstDeref<int>(B);
                     return createNew(result);
                 }
                 // For other types, use the ClassBase's operation methods
@@ -679,19 +681,15 @@ Object Executor::PerformBinaryOp(Object const &A, Object const &B,
 
         // If we reach here, no typed branch matched for this operation.
         if (A.Valid() && A.GetClass() && B.Valid() && B.GetClass()) {
-            KAI_THROW_1(
-                Base,
-                ("Unsupported types for operation: " +
-                 A.GetClass()->GetName().ToString() + " and " +
-                 B.GetClass()->GetName().ToString() + " for operation " +
-                 Operation::ToString(op))
-                    .c_str());
+            KAI_THROW_1(Base, ("Unsupported types for operation: " +
+                               A.GetClass()->GetName().ToString() + " and " +
+                               B.GetClass()->GetName().ToString() +
+                               " for operation " + Operation::ToString(op))
+                                  .c_str());
         } else {
-            KAI_THROW_1(
-                Base,
-                (String("Invalid objects for operation: ") +
-                 String(Operation::ToString(op)))
-                    .c_str());
+            KAI_THROW_1(Base, (String("Invalid objects for operation: ") +
+                               String(Operation::ToString(op)))
+                                  .c_str());
         }
     } catch (const Exception::Base &e) {
         KAI_TRACE_ERROR() << "PerformBinaryOp: KAI exception: " << e.ToString();

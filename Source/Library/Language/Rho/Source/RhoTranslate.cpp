@@ -111,10 +111,11 @@ void RhoTranslator::TranslateNode(AstNodePtr node) {
             // Translate the value (right-hand side)
             TranslateNode(valueNode);
 
-            // For function assignments, TranslateFunction already handles storage
-            // so we don't need to add another Store operation
+            // For function assignments, TranslateFunction already handles
+            // storage so we don't need to add another Store operation
             if (valueNode->GetType() == AstNodeEnum::Function) {
-                KAI_TRACE() << "Assignment of function - storage handled by TranslateFunction";
+                KAI_TRACE() << "Assignment of function - storage handled by "
+                               "TranslateFunction";
                 break;
             }
 
@@ -126,7 +127,8 @@ void RhoTranslator::TranslateNode(AstNodePtr node) {
                 TranslateNode(objectNode);
                 if (memberNode->GetType() == AstNodeEnum::TokenType &&
                     memberNode->GetToken().type == TokenEnum::Label) {
-                    Append(reg_->New<String>(String(memberNode->GetTokenText())));
+                    Append(
+                        reg_->New<String>(String(memberNode->GetTokenText())));
                 } else {
                     TranslateNode(memberNode);
                 }
@@ -148,7 +150,8 @@ void RhoTranslator::TranslateNode(AstNodePtr node) {
                 auto pathObj = reg_->New<Pathname>(Pathname(quotedPath));
                 Append(pathObj);
             } else {
-                // For complex targets (e.g., array indexing), translate normally
+                // For complex targets (e.g., array indexing), translate
+                // normally
                 TranslateNode(targetNode);
             }
 
@@ -169,7 +172,8 @@ void RhoTranslator::TranslateNode(AstNodePtr node) {
                 auto memberNode = node->GetChild(1);
                 if (memberNode->GetType() == AstNodeEnum::TokenType &&
                     memberNode->GetToken().type == TokenEnum::Label) {
-                    Append(reg_->New<String>(String(memberNode->GetTokenText())));
+                    Append(
+                        reg_->New<String>(String(memberNode->GetTokenText())));
                 } else {
                     TranslateNode(memberNode);
                 }
@@ -201,6 +205,5 @@ void RhoTranslator::TranslateNode(AstNodePtr node) {
 Pointer<Continuation> RhoTranslator::Translate(const char* text, Structure st) {
     return Parent::Translate(text, st);
 }
-
 
 KAI_END

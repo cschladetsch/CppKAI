@@ -222,7 +222,8 @@ fun double(n)
 
 double(increment(increment(double(2))))
 )",
-                      12);  // double(inc(inc(double(2)))) = double(inc(inc(4))) = double(inc(5)) = double(6) = 12
+                      12);  // double(inc(inc(double(2)))) = double(inc(inc(4)))
+                            // = double(inc(5)) = double(6) = 12
 }
 
 // Recursion

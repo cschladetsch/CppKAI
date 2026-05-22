@@ -50,8 +50,8 @@ class MultiLanguageTranslator : public TranslatorCommon {
         rhoTranslator = std::make_shared<RhoTranslator>(r);
     }
 
-    Pointer<Continuation> Translate(const char *text,
-                                      Structure st = Structure::Statement) override {
+    Pointer<Continuation> Translate(
+        const char *text, Structure st = Structure::Statement) override {
         if (!compiler.Exists()) {
             KAI_TRACE_ERROR() << "Compiler is null in MultiLanguageTranslator";
             return Object();
@@ -87,7 +87,7 @@ class MultiLanguageTranslator : public TranslatorCommon {
 };
 
 // Static helper to set up translators for any Console
-void TestLangCommon::SetupTranslatorsForConsole(Console& console) {
+void TestLangCommon::SetupTranslatorsForConsole(Console &console) {
     auto compiler = console.GetCompiler();
     if (!compiler.Exists()) {
         std::cerr << "ERROR: Compiler is null in SetupTranslatorsForConsole"
@@ -95,8 +95,9 @@ void TestLangCommon::SetupTranslatorsForConsole(Console& console) {
         return;
     }
 
-    Registry& reg = console.GetRegistry();
-    auto multiTranslator = std::make_shared<MultiLanguageTranslator>(reg, compiler);
+    Registry &reg = console.GetRegistry();
+    auto multiTranslator =
+        std::make_shared<MultiLanguageTranslator>(reg, compiler);
     console.SetTranslator(multiTranslator);
 }
 

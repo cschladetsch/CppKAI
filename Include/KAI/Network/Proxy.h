@@ -1,10 +1,10 @@
 #pragma once
 
+#include <string>
+
 #include "KAI/Network/Config.h"
 #include "KAI/Network/Future.h"
 #include "KAI/Network/ProxyBase.h"
-
-#include <string>
 
 // Forward declare Node to avoid circular dependency
 KAI_NET_BEGIN

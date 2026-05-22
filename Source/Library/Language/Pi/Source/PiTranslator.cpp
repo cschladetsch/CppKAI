@@ -185,12 +185,13 @@ void PiTranslator::TranslateNode(AstNodePtr node) {
             }
 
             // For non-empty continuations, translate all child nodes
-            KAI_TRACE() << "[PiTranslator] Translating non-empty continuation with "
-                      << node->GetChildren().size() << " children";
+            KAI_TRACE()
+                << "[PiTranslator] Translating non-empty continuation with "
+                << node->GetChildren().size() << " children";
             PushNew();
             for (auto const &ch : node->GetChildren()) {
                 KAI_TRACE() << "[PiTranslator]   Child type: "
-                          << PiAstNodeEnumType::ToString(ch->GetType());
+                            << PiAstNodeEnumType::ToString(ch->GetType());
                 TranslateNode(ch);
             }
 
@@ -198,7 +199,7 @@ void PiTranslator::TranslateNode(AstNodePtr node) {
             Pointer<Continuation> innerCont = Pop();
             if (innerCont->GetCode().Exists()) {
                 KAI_TRACE() << "[PiTranslator]   Inner cont has "
-                          << innerCont->GetCode()->Size() << " operations";
+                            << innerCont->GetCode()->Size() << " operations";
             }
 
             // Copy all operations to our new continuation

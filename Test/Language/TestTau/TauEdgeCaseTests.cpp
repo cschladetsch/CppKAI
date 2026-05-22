@@ -1,14 +1,15 @@
 #include <gtest/gtest.h>
-#include <string>
-#include <sstream>
+
 #include <memory>
+#include <sstream>
+#include <string>
 
 #include "KAI/Core/Config/Base.h"
 #include "KAI/Core/Debug.h"
-#include "KAI/Language/Tau/TauParser.h"
-#include "KAI/Language/Tau/TauLexer.h"
-#include "KAI/Language/Tau/Generate/GenerateProxy.h"
 #include "KAI/Language/Tau/Generate/GenerateAgent.h"
+#include "KAI/Language/Tau/Generate/GenerateProxy.h"
+#include "KAI/Language/Tau/TauLexer.h"
+#include "KAI/Language/Tau/TauParser.h"
 
 using namespace kai;
 using namespace std;
@@ -18,14 +19,14 @@ using namespace std;
  * Tests boundary conditions, malformed input, and complex scenarios
  */
 class TauEdgeCaseTests : public ::testing::Test {
-protected:
+   protected:
     Registry registry;
-    
+
     void SetUp() override {
         // Ensure registry is clean for each test
         registry.Clear();
     }
-    
+
     bool ParseTauContent(const string& content) {
         if (content.find_first_not_of(" \t\r\n") == string::npos) {
             return false;
@@ -36,7 +37,7 @@ protected:
             if (!lexer->Process()) {
                 return false;
             }
-            
+
             auto parser = make_shared<tau::TauParser>(registry);
             parser->SetStrictMode(true);
             const bool result = parser->Process(lexer, Structure::Module);
@@ -54,7 +55,7 @@ protected:
             return false;
         }
     }
-    
+
     bool GenerateProxyFromContent(const string& content, string& output) {
         try {
             tau::Generate::GenerateProxy generator(content.c_str(), output);
@@ -63,7 +64,7 @@ protected:
             return false;
         }
     }
-    
+
     bool GenerateAgentFromContent(const string& content, string& output) {
         try {
             tau::Generate::GenerateAgent generator(content.c_str(), output);
@@ -339,20 +340,20 @@ TEST_F(TauEdgeCaseTests, LargeInterfaceDefinitions) {
     stringstream large;
     large << "namespace Large {\n";
     large << "    interface ILargeInterface {\n";
-    
+
     // Generate 100 methods
     for (int i = 0; i < 100; ++i) {
         large << "        void Method" << i << "(int param" << i << ");\n";
     }
-    
+
     // Generate 50 events
     for (int i = 0; i < 50; ++i) {
         large << "        event Event" << i << "(string data" << i << ");\n";
     }
-    
+
     large << "    }\n";
     large << "}\n";
-    
+
     EXPECT_TRUE(ParseTauContent(large.str()));
 }
 
@@ -369,10 +370,11 @@ TEST_F(TauEdgeCaseTests, CircularDependencies) {
             }
         }
     )";
-    // This should either parse successfully (if cycles are allowed) or fail gracefully
+    // This should either parse successfully (if cycles are allowed) or fail
+    // gracefully
     bool result = ParseTauContent(circular);
     // We don't assert either way since behavior may be implementation-dependent
-    (void)result; // Suppress unused variable warning
+    (void)result;  // Suppress unused variable warning
 }
 
 // Test generation with edge cases
@@ -392,16 +394,16 @@ TEST_F(TauEdgeCaseTests, GenerationWithEdgeCases) {
             }
         }
     )";
-    
+
     string proxyOutput, agentOutput;
     EXPECT_TRUE(GenerateProxyFromContent(edgeCase, proxyOutput));
     EXPECT_TRUE(GenerateAgentFromContent(edgeCase, agentOutput));
-    
+
     // Verify generated code contains expected elements
     EXPECT_TRUE(proxyOutput.find("ComplexStruct") != string::npos);
     EXPECT_TRUE(proxyOutput.find("Process") != string::npos);
     EXPECT_TRUE(proxyOutput.find("MultipleArrays") != string::npos);
-    
+
     EXPECT_TRUE(agentOutput.find("ComplexStruct") != string::npos);
     EXPECT_TRUE(agentOutput.find("Handle") != string::npos);
 }
@@ -411,7 +413,7 @@ TEST_F(TauEdgeCaseTests, WhitespaceTolerance) {
     // Minimal whitespace
     string minimal = "namespace Test{interface ITest{void Method();}}";
     EXPECT_TRUE(ParseTauContent(minimal));
-    
+
     // Excessive whitespace
     string excessive = R"(
         
@@ -433,9 +435,11 @@ TEST_F(TauEdgeCaseTests, WhitespaceTolerance) {
         
     )";
     EXPECT_TRUE(ParseTauContent(excessive));
-    
+
     // Mixed tabs and spaces
-    string mixed = "namespace\tTest\t{\n\tinterface\tITest\t{\n\t\tvoid\tMethod();\n\t}\n}";
+    string mixed =
+        "namespace\tTest\t{\n\tinterface\tITest\t{\n\t\tvoid\tMethod();\n\t}"
+        "\n}";
     EXPECT_TRUE(ParseTauContent(mixed));
 }
 

@@ -121,7 +121,8 @@ void Logger::Init(const std::string& logDirectory) {
             logFile.close();
         }
     } catch (const std::exception& e) {
-        std::cerr << "Failed to create log directory: " << e.what() << std::endl;
+        std::cerr << "Failed to create log directory: " << e.what()
+                  << std::endl;
         s_initialized = false;
     }
 }
@@ -191,7 +192,7 @@ void Logger::Log(Level level, const std::string& message) {
         // Always output warnings, errors, and fatal to console
         outputToConsole = true;
     } else if ((level == Level::Info || level == Level::Debug) &&
-                s_consoleOutputForInfoDebug) {
+               s_consoleOutputForInfoDebug) {
         // Only output info/debug to console if explicitly enabled
         outputToConsole = true;
     }

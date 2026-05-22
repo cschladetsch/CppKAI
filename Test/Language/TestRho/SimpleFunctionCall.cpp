@@ -21,10 +21,13 @@ TEST_F(SimpleFunctionCall, BasicCall) {
         console_.Execute(script.c_str(), kai::Structure::Program);
 
         // The function call result should be on the stack
-        ASSERT_FALSE(data_->Empty()) << "Stack should not be empty after function call";
+        ASSERT_FALSE(data_->Empty())
+            << "Stack should not be empty after function call";
 
         auto result = data_->Top();
-        ASSERT_TRUE(result.IsType<int>()) << "Result should be an integer, got: " + result.GetClass()->GetName().ToString();
+        ASSERT_TRUE(result.IsType<int>())
+            << "Result should be an integer, got: " +
+                   result.GetClass()->GetName().ToString();
         ASSERT_EQ(kai::ConstDeref<int>(result), 6)
             << "double(3) should return 6";
 

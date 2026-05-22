@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include <cstdint>
 #include <chrono>
+#include <cstdint>
 #include <memory>
 #include <string>
 
@@ -94,8 +94,7 @@ TEST(TauPiSerializationTest, LocalNodeRoundTrip) {
     nodeB.SetUpdatePump([&]() { nodeA.Update(); });
 
     const auto start = std::chrono::steady_clock::now();
-    while (nodeA.GetConnectionCount() == 0 ||
-           nodeB.GetConnectionCount() == 0) {
+    while (nodeA.GetConnectionCount() == 0 || nodeB.GetConnectionCount() == 0) {
         nodeA.Update();
         nodeB.Update();
         if (std::chrono::steady_clock::now() - start >

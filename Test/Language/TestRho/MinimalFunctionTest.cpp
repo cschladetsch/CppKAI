@@ -9,9 +9,9 @@ TEST(MinimalFunction, JustStore) {
     Console console;
 
     // Push a value and a name, then store
-    console.Execute("42");     // Push 42
-    console.Execute("'x");     // Push pathname 'x
-    console.Execute("#");      // Store 42 as x
+    console.Execute("42");  // Push 42
+    console.Execute("'x");  // Push pathname 'x
+    console.Execute("#");   // Store 42 as x
 
     // Now retrieve x
     console.Execute("x");

@@ -5,15 +5,15 @@
 #include <string>
 #include <thread>
 
+#include "KAI/Console/Console.h"
 #include "KAI/Core/BuiltinTypes/All.h"
+#include "KAI/Core/Exception.h"
 #include "KAI/Core/Registry.h"
 #include "KAI/Core/StringStreamTraits.h"
 #include "KAI/Core/Tree.h"
+#include "KAI/Executor/BinBase.h"
 #include "KAI/Network/ConnectionEvent.h"
 #include "KAI/Network/Node.h"
-#include "KAI/Console/Console.h"
-#include "KAI/Executor/BinBase.h"
-#include "KAI/Core/Exception.h"
 
 using namespace kai;
 using namespace kai::net;
@@ -119,7 +119,8 @@ TEST_F(NodeEndToEndTest, RemoteMethodCallReturnsCorrectValue) {
     client.Connect(IpAddress("127.0.0.1"), port);
 
     bool ok = PollUntil(server, client, [&] { return connected; });
-    if (!ok) GTEST_SKIP() << "Client/server connection did not complete in time";
+    if (!ok)
+        GTEST_SKIP() << "Client/server connection did not complete in time";
 
     // Tell the client which peer holds this agent handle.
     NetAddress serverAddr("127.0.0.1", static_cast<unsigned short>(port));
@@ -162,9 +163,8 @@ TEST_F(NodeEndToEndTest, EventBroadcastReachesSubscriber) {
     if (!ok) GTEST_SKIP() << "Nodes did not both connect within timeout";
 
     bool eventReceived = false;
-    client.SubscribeEvent("Ping", [&](BinaryPacket &) {
-        eventReceived = true;
-    });
+    client.SubscribeEvent("Ping",
+                          [&](BinaryPacket &) { eventReceived = true; });
 
     server.BroadcastEvent("Ping");
 
@@ -203,8 +203,7 @@ TEST_F(NodeEndToEndTest, ObjectMessageReachesSubscriber) {
 
     int received = 0;
     client.SubscribeObjectMessage([&](const Object &obj) {
-        if (obj.Exists() && obj.IsType<int>())
-            received = ConstDeref<int>(obj);
+        if (obj.Exists() && obj.IsType<int>()) received = ConstDeref<int>(obj);
     });
 
     Object payload = reg_->New<int>(42);
@@ -287,7 +286,8 @@ TEST_F(NodeEndToEndTest, RemotePropertyGetReturnsValue) {
     client.Connect(IpAddress("127.0.0.1"), port);
 
     bool ok = PollUntil(server, client, [&] { return connected; });
-    if (!ok) GTEST_SKIP() << "Client/server connection did not complete in time";
+    if (!ok)
+        GTEST_SKIP() << "Client/server connection did not complete in time";
 
     NetAddress serverAddr("127.0.0.1", static_cast<unsigned short>(port));
     client.BindProxyAddress(agentHandle, serverAddr);
@@ -327,7 +327,8 @@ TEST_F(NodeEndToEndTest, RemotePropertySetUpdatesValue) {
     client.Connect(IpAddress("127.0.0.1"), port);
 
     bool ok = PollUntil(server, client, [&] { return connected; });
-    if (!ok) GTEST_SKIP() << "Client/server connection did not complete in time";
+    if (!ok)
+        GTEST_SKIP() << "Client/server connection did not complete in time";
 
     NetAddress serverAddr("127.0.0.1", static_cast<unsigned short>(port));
     client.BindProxyAddress(agentHandle, serverAddr);
@@ -413,11 +414,12 @@ TEST_F(NodeEndToEndTest, RemoteContinuationMigration) {
                 int result = ConstDeref<int>(stack->Top());
                 return result;
             } catch (const Exception::Base &e) {
-                throw std::runtime_error("Server ThawAndResume KAI exception: " +
-                                         e.ToString());
+                throw std::runtime_error(
+                    "Server ThawAndResume KAI exception: " + e.ToString());
             } catch (const std::exception &e) {
-                throw std::runtime_error("Server ThawAndResume std::exception: " +
-                                         std::string(e.what()));
+                throw std::runtime_error(
+                    "Server ThawAndResume std::exception: " +
+                    std::string(e.what()));
             }
         }));
 

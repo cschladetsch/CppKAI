@@ -1,5 +1,3 @@
-#include "KAI/Network/Transport.h"
-
 #include <enet/enet.h>
 
 #include <atomic>
@@ -9,6 +7,8 @@
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
+
+#include "KAI/Network/Transport.h"
 
 KAI_NET_BEGIN
 
@@ -139,7 +139,8 @@ class EnetPeer final : public NetPeer {
             std::lock_guard<std::mutex> lock(GetMemoryState().mutex);
             for (const auto& peerKey : peersToNotify) {
                 auto it = GetMemoryState().peers.find(peerKey);
-                if (it == GetMemoryState().peers.end() || it->second == nullptr) {
+                if (it == GetMemoryState().peers.end() ||
+                    it->second == nullptr) {
                     continue;
                 }
                 auto* remote = dynamic_cast<EnetPeer*>(it->second);
@@ -210,8 +211,8 @@ class EnetPeer final : public NetPeer {
 
             NetPacket accepted;
             accepted.address = remoteAddress;
-            accepted.data.push_back(SystemMessageByte(
-                SystemMessage::ConnectionRequestAccepted));
+            accepted.data.push_back(
+                SystemMessageByte(SystemMessage::ConnectionRequestAccepted));
             EnqueueMemoryPacket(accepted);
 
             NetPacket incoming;
@@ -273,13 +274,11 @@ class EnetPeer final : public NetPeer {
                 packet->address = ToNetAddress(event.peer->address);
                 const std::string key = AddressKey(event.peer->address);
                 if (pendingOutgoing_.erase(key) > 0) {
-                    packet->data.push_back(
-                        static_cast<unsigned char>(
-                            SystemMessage::ConnectionRequestAccepted));
+                    packet->data.push_back(static_cast<unsigned char>(
+                        SystemMessage::ConnectionRequestAccepted));
                 } else {
-                    packet->data.push_back(
-                        static_cast<unsigned char>(
-                            SystemMessage::NewIncomingConnection));
+                    packet->data.push_back(static_cast<unsigned char>(
+                        SystemMessage::NewIncomingConnection));
                 }
                 peersByAddress_[key] = event.peer;
                 return packet;
@@ -295,9 +294,9 @@ class EnetPeer final : public NetPeer {
             case ENET_EVENT_TYPE_RECEIVE: {
                 auto packet = std::make_unique<NetPacket>();
                 packet->address = ToNetAddress(event.peer->address);
-                packet->data.assign(event.packet->data,
-                                    event.packet->data +
-                                        event.packet->dataLength);
+                packet->data.assign(
+                    event.packet->data,
+                    event.packet->data + event.packet->dataLength);
                 enet_packet_destroy(event.packet);
                 return packet;
             }
@@ -309,8 +308,7 @@ class EnetPeer final : public NetPeer {
     }
 
     bool Send(const unsigned char* data, std::size_t size, bool reliable,
-              int channel, const NetAddress& target,
-              bool broadcast) override {
+              int channel, const NetAddress& target, bool broadcast) override {
         if (memoryMode_) {
             NetPacket packet;
             packet.address = memoryAddress_;

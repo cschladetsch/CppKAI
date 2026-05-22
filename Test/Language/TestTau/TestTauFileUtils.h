@@ -11,8 +11,8 @@ inline std::filesystem::path ResolveScriptPath(const std::string &relative) {
     namespace fs = std::filesystem;
     fs::path current = fs::current_path();
     for (int depth = 0; depth < 10; ++depth) {
-        const fs::path candidate = current / "Test" / "Language" /
-                                  "TestTau" / "Scripts" / fs::path(relative);
+        const fs::path candidate = current / "Test" / "Language" / "TestTau" /
+                                   "Scripts" / fs::path(relative);
         if (fs::exists(candidate)) {
             return candidate;
         }

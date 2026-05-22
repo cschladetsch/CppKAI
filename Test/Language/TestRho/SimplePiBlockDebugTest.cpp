@@ -34,7 +34,8 @@ TEST(PiBlockDebug, SimplePiBlock) {
     stack->Clear();
 
     // Test 4: Direct boolean in if
-    console.Execute("if pi { 1 1 == }\n    result2 = 99\nelse\n    result2 = 88");
+    console.Execute(
+        "if pi { 1 1 == }\n    result2 = 99\nelse\n    result2 = 88");
     stack->Clear();
     console.Execute("result2");
     ASSERT_EQ(stack->Size(), 1) << "Stack should have result2";

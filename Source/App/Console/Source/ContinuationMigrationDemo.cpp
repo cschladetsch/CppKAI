@@ -1,10 +1,10 @@
 #include <atomic>
-#include <cstdlib>
 #include <chrono>
+#include <cstdlib>
 #include <iostream>
+#include <stdexcept>
 #include <string>
 #include <thread>
-#include <stdexcept>
 
 #include "KAI/Console/Console.h"
 #include "KAI/Executor/BinBase.h"
@@ -27,10 +27,9 @@ struct Options {
 };
 
 void PrintUsage(const char *program) {
-    std::cerr
-        << "Usage: " << program
-        << " --server|--client [--host HOST] [--port PORT] [--handle N]"
-        << " [--timeout MS]\n";
+    std::cerr << "Usage: " << program
+              << " --server|--client [--host HOST] [--port PORT] [--handle N]"
+              << " [--timeout MS]\n";
 }
 
 Options ParseOptions(int argc, char **argv) {
@@ -88,8 +87,8 @@ int RunServer(const Options &options) {
     node.SetRegistry(&console.GetRegistry());
     node.Listen(IpAddress(options.host), options.port);
     if (!node.IsRunning()) {
-        std::cerr << "SERVER_ERROR: failed to listen on " << options.host
-                  << ":" << options.port << "\n";
+        std::cerr << "SERVER_ERROR: failed to listen on " << options.host << ":"
+                  << options.port << "\n";
         return 1;
     }
 
@@ -133,7 +132,8 @@ int RunServer(const Options &options) {
     while (!completed) {
         node.Update();
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        if (clock::now() - start > std::chrono::milliseconds(options.timeout_ms)) {
+        if (clock::now() - start >
+            std::chrono::milliseconds(options.timeout_ms)) {
             std::cerr << "SERVER_ERROR: timed out waiting for migration\n";
             return 1;
         }
@@ -151,11 +151,12 @@ int RunClient(const Options &options) {
     node.SetRegistry(&console.GetRegistry());
 
     bool connected = false;
-    node.SetConnectionEventCallback([&](ConnectionEvent ev, const NetAddress &) {
-        if (ev == ConnectionEvent::Connected) {
-            connected = true;
-        }
-    });
+    node.SetConnectionEventCallback(
+        [&](ConnectionEvent ev, const NetAddress &) {
+            if (ev == ConnectionEvent::Connected) {
+                connected = true;
+            }
+        });
 
     node.Connect(IpAddress(options.host), options.port);
     if (!WaitForConnection(node, connected, options.timeout_ms)) {
@@ -165,8 +166,7 @@ int RunClient(const Options &options) {
     }
 
     NetHandle agentHandle(options.handle);
-    node.BindProxyAddress(agentHandle,
-                          NetAddress(options.host, options.port));
+    node.BindProxyAddress(agentHandle, NetAddress(options.host, options.port));
 
     const char *expression = "{ 2 * } 'double # 5 double &";
     auto cont = console.Compile(expression, Structure::Program);
@@ -187,7 +187,8 @@ int RunClient(const Options &options) {
     while (!future.IsComplete()) {
         node.Update();
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        if (clock::now() - start > std::chrono::milliseconds(options.timeout_ms)) {
+        if (clock::now() - start >
+            std::chrono::milliseconds(options.timeout_ms)) {
             std::cerr << "CLIENT_ERROR: timed out waiting for response\n";
             return 1;
         }

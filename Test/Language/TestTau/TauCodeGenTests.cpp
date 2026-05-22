@@ -21,8 +21,7 @@ using namespace std;
 struct TauCodeGenTests : TestLangCommon {
     // Helper method to load a script file
     std::string LoadScriptText(const char* filename) {
-        const auto script =
-            tau_test_utils::LoadScriptText(filename);
+        const auto script = tau_test_utils::LoadScriptText(filename);
         if (script.empty()) {
             const auto resolved = tau_test_utils::ResolveScriptPath(filename);
             KAI_LOG_ERROR("Failed to open file: " + resolved.string());

@@ -1,11 +1,12 @@
 // Tests the Tau IDL -> Agent/Proxy workflow across two named domains.
 // Domain A hosts an ISensorAgent that exposes a single integer property.
-// Domain B holds an ISensorProxy and fetches that property value over the network.
+// Domain B holds an ISensorProxy and fetches that property value over the
+// network.
 
 #include <gtest/gtest.h>
 
-#include <cstdint>
 #include <chrono>
+#include <cstdint>
 #include <functional>
 #include <memory>
 #include <string>
@@ -44,11 +45,12 @@ struct SensorImpl {
     int value = 42;
 };
 
-// Agent in Domain A: registers SensorImpl.value as a network-accessible property.
+// Agent in Domain A: registers SensorImpl.value as a network-accessible
+// property.
 class ISensorAgent : public Agent<SensorImpl> {
    public:
-    explicit ISensorAgent(Node &node,
-                          std::shared_ptr<SensorImpl> impl = std::make_shared<SensorImpl>())
+    explicit ISensorAgent(Node &node, std::shared_ptr<SensorImpl> impl =
+                                          std::make_shared<SensorImpl>())
         : Agent<SensorImpl>(node, std::move(impl)) {
         BindMemberProperty("Value", &SensorImpl::value);
     }
@@ -99,15 +101,19 @@ static ListenResult ListenOnAvailablePort(Node &node, int beginPort,
 TEST(TauDomainPropertyTest, IdlGeneratesExpectedClassNames) {
     std::string proxyOut;
     tau::Generate::GenerateProxy proxyGen(kSensorTau.c_str(), proxyOut);
-    ASSERT_FALSE(proxyGen.Failed) << "Proxy generation failed: " << proxyGen.Error;
+    ASSERT_FALSE(proxyGen.Failed)
+        << "Proxy generation failed: " << proxyGen.Error;
     EXPECT_NE(proxyOut.find("ISensorProxy"), std::string::npos)
-        << "Generated proxy should contain ISensorProxy:\n" << proxyOut;
+        << "Generated proxy should contain ISensorProxy:\n"
+        << proxyOut;
 
     std::string agentOut;
     tau::Generate::GenerateAgent agentGen(kSensorTau.c_str(), agentOut);
-    ASSERT_FALSE(agentGen.Failed) << "Agent generation failed: " << agentGen.Error;
+    ASSERT_FALSE(agentGen.Failed)
+        << "Agent generation failed: " << agentGen.Error;
     EXPECT_NE(agentOut.find("ISensorAgent"), std::string::npos)
-        << "Generated agent should contain ISensorAgent:\n" << agentOut;
+        << "Generated agent should contain ISensorAgent:\n"
+        << agentOut;
 }
 
 // Domain A hosts the agent; Domain B connects and fetches the property value.
@@ -137,14 +143,16 @@ TEST(TauDomainPropertyTest, DomainBProxyFetchesPropertyFromDomainA) {
     nodeB.SetUpdatePump([&]() { nodeA.Update(); });
 
     bool connected = false;
-    nodeB.SetConnectionEventCallback([&](ConnectionEvent ev, const NetAddress &) {
-        if (ev == ConnectionEvent::Connected) connected = true;
-    });
+    nodeB.SetConnectionEventCallback(
+        [&](ConnectionEvent ev, const NetAddress &) {
+            if (ev == ConnectionEvent::Connected) connected = true;
+        });
 
     nodeB.Connect(IpAddress("127.0.0.1"), port);
 
     bool ok = PollUntil(nodeA, nodeB, [&] { return connected; });
-    if (!ok) GTEST_SKIP() << "Domain B did not connect to Domain A within timeout";
+    if (!ok)
+        GTEST_SKIP() << "Domain B did not connect to Domain A within timeout";
 
     // Create the agent in Domain A. Initial property value is 42.
     ISensorAgent agent(nodeA);
@@ -188,14 +196,16 @@ TEST(TauDomainPropertyTest, DomainBProxySetsPropertyOnDomainA) {
     nodeB.SetUpdatePump([&]() { nodeA.Update(); });
 
     bool connected = false;
-    nodeB.SetConnectionEventCallback([&](ConnectionEvent ev, const NetAddress &) {
-        if (ev == ConnectionEvent::Connected) connected = true;
-    });
+    nodeB.SetConnectionEventCallback(
+        [&](ConnectionEvent ev, const NetAddress &) {
+            if (ev == ConnectionEvent::Connected) connected = true;
+        });
 
     nodeB.Connect(IpAddress("127.0.0.1"), port);
 
     bool ok = PollUntil(nodeA, nodeB, [&] { return connected; });
-    if (!ok) GTEST_SKIP() << "Domain B did not connect to Domain A within timeout";
+    if (!ok)
+        GTEST_SKIP() << "Domain B did not connect to Domain A within timeout";
 
     // Create agent with default value 42, then Domain B overwrites it.
     ISensorAgent agent(nodeA);

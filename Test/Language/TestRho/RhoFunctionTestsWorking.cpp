@@ -45,8 +45,8 @@ struct RhoFunctionTestsWorking : kai::TestLangCommon {
     }
 };
 
-// Basic function definition and call - DISABLED: Rho function implementation incomplete
-// TEST_F(RhoFunctionTestsWorking, BasicFunction) {
+// Basic function definition and call - DISABLED: Rho function implementation
+// incomplete TEST_F(RhoFunctionTestsWorking, BasicFunction) {
 //     RunAndExpect<int>(R"(
 // fun add(a, b) {
 // a + b

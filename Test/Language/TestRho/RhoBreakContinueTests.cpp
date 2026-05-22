@@ -25,7 +25,8 @@ struct RhoBreakContinueTests : TestLangCommon {
             auto dataStack = executor->GetDataStack();
 
             ASSERT_FALSE(dataStack->Empty())
-                << "No result on stack after execution\nCode:\n" << code;
+                << "No result on stack after execution\nCode:\n"
+                << code;
 
             auto result = dataStack->Top();
             ASSERT_TRUE(result.IsType<T>())
@@ -56,7 +57,8 @@ while i < 10
     sum = sum + i
     i = i + 1
 sum
-)", 10);  // 0 + 1 + 2 + 3 + 4 = 10
+)",
+                      10);  // 0 + 1 + 2 + 3 + 4 = 10
 }
 
 // Test 2: Simple continue in while loop
@@ -70,7 +72,8 @@ while i < 10
         continue
     sum = sum + i
 sum
-)", 25);  // 1 + 3 + 5 + 7 + 9 = 25
+)",
+                      25);  // 1 + 3 + 5 + 7 + 9 = 25
 }
 
 // Test 3: Break in for loop
@@ -82,7 +85,8 @@ for i = 0; i < 20; i = i + 1
         break
     sum = sum + i
 sum
-)", 21);  // 0 + 1 + 2 + 3 + 4 + 5 + 6 = 21
+)",
+                      21);  // 0 + 1 + 2 + 3 + 4 + 5 + 6 = 21
 }
 
 // Test 4: Continue in for loop
@@ -94,7 +98,8 @@ for i = 0; i < 10; i = i + 1
         continue
     sum = sum + i
 sum
-)", 35);  // 5 + 6 + 7 + 8 + 9 = 35
+)",
+                      35);  // 5 + 6 + 7 + 8 + 9 = 35
 }
 
 // Test 5: Break immediately exits loop
@@ -108,7 +113,8 @@ while true
         break
     i = i + 1
 count
-)", 3);
+)",
+                      3);
 }
 
 // Test 6: Continue skips rest of iteration
@@ -122,7 +128,8 @@ while i < 5
         continue
     count = count + 1
 count
-)", 4);  // Increments for i=1,2,4,5 but not i=3
+)",
+                      4);  // Increments for i=1,2,4,5 but not i=3
 }
 
 // Test 7: Multiple breaks in nested conditions
@@ -139,7 +146,8 @@ while i < 100
         if result >= 30
             break
 result
-)", 30);
+)",
+                      30);
 }
 
 // Test 8: Multiple continues with different conditions
@@ -155,7 +163,9 @@ while i < 20
         continue
     sum = sum + i
 sum
-)", 73);  // Sum of numbers 1-19 that are neither divisible by 2 nor 3: 1+5+7+11+13+17+19=73
+)",
+                      73);  // Sum of numbers 1-19 that are neither divisible by
+                            // 2 nor 3: 1+5+7+11+13+17+19=73
 }
 
 // Test 9: Break with value accumulation before break
@@ -169,7 +179,8 @@ while i < 100
     if sum > 50
         break
 sum
-)", 55);  // 0+1+2+...+10 = 55 (first sum > 50)
+)",
+                      55);  // 0+1+2+...+10 = 55 (first sum > 50)
 }
 
 // Test 10: Continue in loop with multiple increments
@@ -184,7 +195,8 @@ while i < 10
     sum = sum + i
     i = i + 1
 sum
-)", 24);  // 6 + 8 + 10 = 24 (skips 1-5, processes 6,8,10)
+)",
+                      24);  // 6 + 8 + 10 = 24 (skips 1-5, processes 6,8,10)
 }
 
 // Test 11: Break in do-while loop
@@ -199,7 +211,8 @@ do
         break
 while i < 10
 sum
-)", 10);  // 0 + 1 + 2 + 3 + 4 = 10
+)",
+                      10);  // 0 + 1 + 2 + 3 + 4 = 10
 }
 
 // Test 12: Continue in do-while loop
@@ -216,5 +229,6 @@ do
     sum = sum + i
 while i < 7
 sum
-)", 16);  // 1 + 3 + 5 + 7 = 16
+)",
+                      16);  // 1 + 3 + 5 + 7 = 16
 }

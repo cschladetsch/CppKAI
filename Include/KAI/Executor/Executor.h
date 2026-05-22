@@ -36,7 +36,7 @@ struct Executor : Reflected {
 
     void SetSingleStep(bool enable) { singleStep_ = enable; }
     bool GetSingleStep() const { return singleStep_; }
-    
+
     bool Step();
 
     Object GetCompiler() const { return compiler_; }
@@ -189,18 +189,20 @@ struct Executor : Reflected {
     void ContinuePi();
     void EvalContinuation(Object const &Q);
     bool IsBinaryOp(Operation::Type op);
-    Object PerformBinaryOp(Object const &A, Object const &B, Operation::Type op);
+    Object PerformBinaryOp(Object const &A, Object const &B,
+                           Operation::Type op);
     Object Resolve(Object, bool ignoreQuote = false) const;
     Object Resolve(const Label &) const;
     Object Resolve(const Pathname &) const;
-    Object TryResolveOrCreate(Label const &label, Type::Number type = Type::Number::None);
+    Object TryResolveOrCreate(Label const &label,
+                              Type::Number type = Type::Number::None);
     Object ExtractValueFromContinuation(Object const &value);
     Object UnwrapValue(const Object &value);
 
-public:
+   public:
     void Perform(Operation::Type op);
 
-protected:
+   protected:
     bool PopBool();
 
     void ToArray();
@@ -218,7 +220,7 @@ protected:
     void DumpStack(Stack const &);
     static void DumpContinuation(Continuation const &, int);
 
-private:
+   private:
     template <class C>
     Value<Array> ForEach(C const &, Object const &);
     template <class Cont>
@@ -236,14 +238,14 @@ private:
     Object TryResolve(Label const &label) const;
     Object TryResolve(Pathname const &label) const;
 
-private:
+   private:
     Value<Continuation> continuation_;
     Value<Stack> context_;
     Value<Stack> data_;
     Object compiler_;
-    bool break_;      // Set by Break operation to exit loops
-    bool continue_;   // Set by Continue operation to skip to next loop iteration
-    bool replace_;    // Set by Replace operation to replace current continuation
+    bool break_;     // Set by Break operation to exit loops
+    bool continue_;  // Set by Continue operation to skip to next loop iteration
+    bool replace_;   // Set by Replace operation to replace current continuation
     Tree *tree_;
     int traceLevel_;
     int stepNumber_;
@@ -255,4 +257,3 @@ BinaryStream &operator<<(BinaryStream &, Executor const &);
 BinaryPacket &operator>>(BinaryPacket &, Executor &);
 
 KAI_END
-

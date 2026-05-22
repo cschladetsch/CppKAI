@@ -69,9 +69,9 @@ class NetworkSerializer {
         }
     }
 
-    // Deserialize an object from a BinaryPacket using KAI's serialization system
-    static Object DeserializeObject(BinaryPacket &packet,
-                                    Registry &registry) {
+    // Deserialize an object from a BinaryPacket using KAI's serialization
+    // system
+    static Object DeserializeObject(BinaryPacket &packet, Registry &registry) {
         int size = 0;
         if (!packet.Read(size)) {
             return Object();
@@ -124,12 +124,12 @@ class NetworkSerializer {
 
     // Network message types
     enum MessageTypes {
-        ID_KAI_OBJECT_MESSAGE    = kUserPacketStart,
-        ID_KAI_FUNCTION_CALL     = kUserPacketStart + 1,
+        ID_KAI_OBJECT_MESSAGE = kUserPacketStart,
+        ID_KAI_FUNCTION_CALL = kUserPacketStart + 1,
         ID_KAI_EVENT_NOTIFICATION = kUserPacketStart + 2,
         ID_KAI_FUNCTION_RESPONSE = kUserPacketStart + 3,
-        ID_KAI_PROPERTY_GET      = kUserPacketStart + 4,
-        ID_KAI_PROPERTY_SET      = kUserPacketStart + 5,
+        ID_KAI_PROPERTY_GET = kUserPacketStart + 4,
+        ID_KAI_PROPERTY_SET = kUserPacketStart + 5,
     };
 };
 

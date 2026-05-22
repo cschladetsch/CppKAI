@@ -1,14 +1,14 @@
 #pragma once
 
-#include "KAI/Network/Config.h"
-#include "KAI/Network/DateTime.h"
-#include "KAI/Network/NetHandle.h"
-#include "KAI/Network/ResponseType.h"
-
 #include <memory>
 #include <optional>
 #include <stdexcept>
 #include <string>
+
+#include "KAI/Network/Config.h"
+#include "KAI/Network/DateTime.h"
+#include "KAI/Network/NetHandle.h"
+#include "KAI/Network/ResponseType.h"
 
 KAI_NET_BEGIN
 

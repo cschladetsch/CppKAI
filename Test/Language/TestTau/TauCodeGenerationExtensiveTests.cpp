@@ -1,8 +1,9 @@
 #include <gtest/gtest.h>
+
 #include <regex>
+#include <sstream>
 #include <string>
 #include <vector>
-#include <sstream>
 
 #include "KAI/Core/Config/Base.h"
 #include "KAI/Core/Debug.h"
@@ -16,13 +17,14 @@ using namespace std;
 
 /// Comprehensive test fixture for Tau code generation
 class TauCodeGenerationExtensiveTests : public ::testing::Test {
-protected:
+   protected:
     void SetUp() override {
         // Test setup - no dependencies needed for code generation tests
     }
 
     /// Helper to generate proxy code from Tau IDL
-    bool GenerateProxyCode(const string& tauCode, string& output, string& error) {
+    bool GenerateProxyCode(const string& tauCode, string& output,
+                           string& error) {
         try {
             tau::Generate::GenerateProxy generator(tauCode.c_str(), output);
             if (generator.Failed) {
@@ -37,7 +39,8 @@ protected:
     }
 
     /// Helper to generate agent code from Tau IDL
-    bool GenerateAgentCode(const string& tauCode, string& output, string& error) {
+    bool GenerateAgentCode(const string& tauCode, string& output,
+                           string& error) {
         try {
             tau::Generate::GenerateAgent generator(tauCode.c_str(), output);
             if (generator.Failed) {
@@ -52,7 +55,8 @@ protected:
     }
 
     /// Helper to check if output contains expected patterns
-    bool ContainsPatterns(const string& output, const vector<string>& patterns) {
+    bool ContainsPatterns(const string& output,
+                          const vector<string>& patterns) {
         for (const auto& pattern : patterns) {
             if (output.find(pattern) == string::npos) {
                 return false;
@@ -62,7 +66,8 @@ protected:
     }
 
     /// Helper to check if output matches regex patterns
-    bool MatchesRegexPatterns(const string& output, const vector<string>& regexPatterns) {
+    bool MatchesRegexPatterns(const string& output,
+                              const vector<string>& regexPatterns) {
         for (const auto& pattern : regexPatterns) {
             regex r(pattern);
             if (!regex_search(output, r)) {
@@ -98,7 +103,8 @@ TEST_F(TauCodeGenerationExtensiveTests, ProxyHeaderGeneration) {
     )";
 
     string output, error;
-    ASSERT_TRUE(GenerateProxyCode(tauCode, output, error)) << "Error: " << error;
+    ASSERT_TRUE(GenerateProxyCode(tauCode, output, error))
+        << "Error: " << error;
 
     // Check for proper header structure
     vector<string> expectedHeaders = {
@@ -112,11 +118,11 @@ TEST_F(TauCodeGenerationExtensiveTests, ProxyHeaderGeneration) {
         "#include <stdexcept>",
         "#include <string>",
         "#include <future>",
-        "#include <KAI/Core/BinaryStream.h>"
-    };
+        "#include <KAI/Core/BinaryStream.h>"};
 
-    EXPECT_TRUE(ContainsPatterns(output, expectedHeaders)) 
-        << "Missing expected header patterns in output:\n" << output;
+    EXPECT_TRUE(ContainsPatterns(output, expectedHeaders))
+        << "Missing expected header patterns in output:\n"
+        << output;
 }
 
 TEST_F(TauCodeGenerationExtensiveTests, ProxyClassGeneration) {
@@ -130,21 +136,24 @@ TEST_F(TauCodeGenerationExtensiveTests, ProxyClassGeneration) {
     )";
 
     string output, error;
-    ASSERT_TRUE(GenerateProxyCode(tauCode, output, error)) << "Error: " << error;
+    ASSERT_TRUE(GenerateProxyCode(tauCode, output, error))
+        << "Error: " << error;
 
     // Check for proper class structure
     vector<string> expectedPatterns = {
         "namespace Services",
         "/// Network proxy for ICalculator interface",
         "/// Provides type-safe remote method calls over the network",
-        "/// All methods are synchronous and may throw NetworkException on failure",
+        "/// All methods are synchronous and may throw NetworkException on "
+        "failure",
         "class ICalculatorProxy: public ProxyBase",
         "using ProxyBase::StreamType;",
-        "ICalculatorProxy(Node &node, NetHandle handle) : ProxyBase(node, handle) { }"
-    };
+        "ICalculatorProxy(Node &node, NetHandle handle) : ProxyBase(node, "
+        "handle) { }"};
 
     EXPECT_TRUE(ContainsPatterns(output, expectedPatterns))
-        << "Missing expected class patterns in output:\n" << output;
+        << "Missing expected class patterns in output:\n"
+        << output;
 }
 
 TEST_F(TauCodeGenerationExtensiveTests, ProxyMethodGeneration) {
@@ -159,7 +168,8 @@ TEST_F(TauCodeGenerationExtensiveTests, ProxyMethodGeneration) {
     )";
 
     string output, error;
-    ASSERT_TRUE(GenerateProxyCode(tauCode, output, error)) << "Error: " << error;
+    ASSERT_TRUE(GenerateProxyCode(tauCode, output, error))
+        << "Error: " << error;
 
     // Check method generation with documentation
     vector<string> expectedPatterns = {
@@ -168,7 +178,7 @@ TEST_F(TauCodeGenerationExtensiveTests, ProxyMethodGeneration) {
         "/// @throws NetworkException on communication failure",
         "int getValue()",
 
-        "/// Remote method call: setValue", 
+        "/// Remote method call: setValue",
         "/// Parameters:",
         "///   @param value int",
         "/// @throws NetworkException on communication failure",
@@ -177,11 +187,11 @@ TEST_F(TauCodeGenerationExtensiveTests, ProxyMethodGeneration) {
         "/// Remote method call: processData",
         "///   @param input string",
         "///   @param flags int",
-        "string processData(const string& input, int flags)"
-    };
+        "string processData(const string& input, int flags)"};
 
     EXPECT_TRUE(ContainsPatterns(output, expectedPatterns))
-        << "Missing expected method patterns in output:\n" << output;
+        << "Missing expected method patterns in output:\n"
+        << output;
 }
 
 TEST_F(TauCodeGenerationExtensiveTests, ProxyErrorHandling) {
@@ -195,17 +205,17 @@ TEST_F(TauCodeGenerationExtensiveTests, ProxyErrorHandling) {
     )";
 
     string output, error;
-    ASSERT_TRUE(GenerateProxyCode(tauCode, output, error)) << "Error: " << error;
+    ASSERT_TRUE(GenerateProxyCode(tauCode, output, error))
+        << "Error: " << error;
 
     // Check for proper error handling
     vector<string> expectedPatterns = {
-        "SendAsync(",
-        "_node->SendAsync(\"send\")",
-        "_node->SendWithResponseAsync<int>(\"receive\")"
-    };
+        "SendAsync(", "_node->SendAsync(\"send\")",
+        "_node->SendWithResponseAsync<int>(\"receive\")"};
 
     EXPECT_TRUE(ContainsPatterns(output, expectedPatterns))
-        << "Missing expected error handling patterns in output:\n" << output;
+        << "Missing expected error handling patterns in output:\n"
+        << output;
 }
 
 TEST_F(TauCodeGenerationExtensiveTests, ProxyEventHandling) {
@@ -220,11 +230,13 @@ TEST_F(TauCodeGenerationExtensiveTests, ProxyEventHandling) {
     )";
 
     string output, error;
-    ASSERT_TRUE(GenerateProxyCode(tauCode, output, error)) << "Error: " << error;
+    ASSERT_TRUE(GenerateProxyCode(tauCode, output, error))
+        << "Error: " << error;
 
     // Check for event registration/unregistration methods
     vector<string> expectedPatterns = {
-        "void RegisterDataReadyHandler(std::function<void(string, int)> handler)",
+        "void RegisterDataReadyHandler(std::function<void(string, int)> "
+        "handler)",
         "RegisterEventHandler(\"DataReady\", handler)",
         "void UnregisterDataReadyHandler()",
         "UnregisterEventHandler(\"DataReady\")",
@@ -232,15 +244,15 @@ TEST_F(TauCodeGenerationExtensiveTests, ProxyEventHandling) {
         "void RegisterStatusChangedHandler(std::function<void(bool)> handler)",
         "RegisterEventHandler(\"StatusChanged\", handler)",
         "void UnregisterStatusChangedHandler()",
-        "UnregisterEventHandler(\"StatusChanged\")"
-    };
+        "UnregisterEventHandler(\"StatusChanged\")"};
 
     EXPECT_TRUE(ContainsPatterns(output, expectedPatterns))
-        << "Missing expected event handling patterns in output:\n" << output;
+        << "Missing expected event handling patterns in output:\n"
+        << output;
 }
 
 // =============================================================================
-// AGENT GENERATION TESTS  
+// AGENT GENERATION TESTS
 // =============================================================================
 
 TEST_F(TauCodeGenerationExtensiveTests, AgentHeaderGeneration) {
@@ -253,23 +265,24 @@ TEST_F(TauCodeGenerationExtensiveTests, AgentHeaderGeneration) {
     )";
 
     string output, error;
-    ASSERT_TRUE(GenerateAgentCode(tauCode, output, error)) << "Error: " << error;
+    ASSERT_TRUE(GenerateAgentCode(tauCode, output, error))
+        << "Error: " << error;
 
     // Check for proper header structure
     vector<string> expectedHeaders = {
         "// Auto-generated by KAI Tau IDL Code Generator",
-        "// DO NOT MODIFY - Changes will be overwritten on next generation", 
+        "// DO NOT MODIFY - Changes will be overwritten on next generation",
         "// Generated from Tau interface definition",
         "#pragma once",
         "#include <KAI/Network/AgentDecl.h>",
         "#include <KAI/Network/NetworkException.h>",
         "#include <stdexcept>",
         "#include <string>",
-        "#include <KAI/Core/BinaryStream.h>"
-    };
+        "#include <KAI/Core/BinaryStream.h>"};
 
     EXPECT_TRUE(ContainsPatterns(output, expectedHeaders))
-        << "Missing expected header patterns in agent output:\n" << output;
+        << "Missing expected header patterns in agent output:\n"
+        << output;
 }
 
 TEST_F(TauCodeGenerationExtensiveTests, AgentClassGeneration) {
@@ -283,20 +296,24 @@ TEST_F(TauCodeGenerationExtensiveTests, AgentClassGeneration) {
     )";
 
     string output, error;
-    ASSERT_TRUE(GenerateAgentCode(tauCode, output, error)) << "Error: " << error;
+    ASSERT_TRUE(GenerateAgentCode(tauCode, output, error))
+        << "Error: " << error;
 
     // Check for proper agent class structure
     vector<string> expectedPatterns = {
         "namespace Services",
         "/// Network agent for ICalculator interface",
-        "/// Handles incoming network requests and dispatches to implementation",
-        "/// All handler methods deserialize parameters and call implementation",
+        "/// Handles incoming network requests and dispatches to "
+        "implementation",
+        "/// All handler methods deserialize parameters and call "
+        "implementation",
         "class ICalculatorAgent: public AgentBase<ICalculator>",
-        "ICalculatorAgent(Node &node, NetHandle handle) : AgentBase(node, handle) { }"
-    };
+        "ICalculatorAgent(Node &node, NetHandle handle) : AgentBase(node, "
+        "handle) { }"};
 
     EXPECT_TRUE(ContainsPatterns(output, expectedPatterns))
-        << "Missing expected agent class patterns in output:\n" << output;
+        << "Missing expected agent class patterns in output:\n"
+        << output;
 }
 
 TEST_F(TauCodeGenerationExtensiveTests, AgentHandlerGeneration) {
@@ -311,21 +328,24 @@ TEST_F(TauCodeGenerationExtensiveTests, AgentHandlerGeneration) {
     )";
 
     string output, error;
-    ASSERT_TRUE(GenerateAgentCode(tauCode, output, error)) << "Error: " << error;
+    ASSERT_TRUE(GenerateAgentCode(tauCode, output, error))
+        << "Error: " << error;
 
-    // Check handler method generation with documentation  
+    // Check handler method generation with documentation
     vector<string> expectedPatterns = {
         "/// Handler for remote method call: calculate",
-        "/// Deserializes parameters from BinaryStream and calls implementation",
+        "/// Deserializes parameters from BinaryStream and calls "
+        "implementation",
         "/// Parameters deserialized from network:",
         "///   input (float)",
-        "///   mode (int)", 
+        "///   mode (int)",
         "/// Sends int response back to sender",
-        "void Handle_calculate(BinaryStream& bs, const kai::net::NetAddress& sender)",
+        "void Handle_calculate(BinaryStream& bs, const kai::net::NetAddress& "
+        "sender)",
 
         "float input;",
         "bs >> input;",
-        "int mode;", 
+        "int mode;",
         "bs >> mode;",
         "int result = _impl->calculate(input, mode);",
         "BinaryStream response;",
@@ -333,12 +353,13 @@ TEST_F(TauCodeGenerationExtensiveTests, AgentHandlerGeneration) {
         "_node->SendResponse(sender, response);",
 
         "/// Handler for remote method call: reset",
-        "void Handle_reset(BinaryStream& bs, const kai::net::NetAddress& sender)",
-        "_impl->reset();"
-    };
+        "void Handle_reset(BinaryStream& bs, const kai::net::NetAddress& "
+        "sender)",
+        "_impl->reset();"};
 
     EXPECT_TRUE(ContainsPatterns(output, expectedPatterns))
-        << "Missing expected handler patterns in output:\n" << output;
+        << "Missing expected handler patterns in output:\n"
+        << output;
 }
 
 TEST_F(TauCodeGenerationExtensiveTests, AgentEventTriggers) {
@@ -353,7 +374,8 @@ TEST_F(TauCodeGenerationExtensiveTests, AgentEventTriggers) {
     )";
 
     string output, error;
-    ASSERT_TRUE(GenerateAgentCode(tauCode, output, error)) << "Error: " << error;
+    ASSERT_TRUE(GenerateAgentCode(tauCode, output, error))
+        << "Error: " << error;
 
     // Check for event trigger generation
     vector<string> expectedPatterns = {
@@ -363,7 +385,8 @@ TEST_F(TauCodeGenerationExtensiveTests, AgentEventTriggers) {
         "///   result (string)",
         "///   score (float)",
         "///   success (bool)",
-        "void TriggerDataProcessed(const string& result, float score, bool success)",
+        "void TriggerDataProcessed(const string& result, float score, bool "
+        "success)",
         "BinaryStream eventData;",
         "kai::net::NetworkSerializer::WriteString(eventData, result);",
         "eventData << score;",
@@ -372,11 +395,11 @@ TEST_F(TauCodeGenerationExtensiveTests, AgentEventTriggers) {
 
         "/// Trigger event: ErrorOccurred",
         "void TriggerErrorOccurred(const string& message)",
-        "_node->BroadcastEvent(\"ErrorOccurred\", eventData);"
-    };
+        "_node->BroadcastEvent(\"ErrorOccurred\", eventData);"};
 
     EXPECT_TRUE(ContainsPatterns(output, expectedPatterns))
-        << "Missing expected event trigger patterns in output:\n" << output;
+        << "Missing expected event trigger patterns in output:\n"
+        << output;
 }
 
 // =============================================================================
@@ -394,34 +417,28 @@ TEST_F(TauCodeGenerationExtensiveTests, PrimitiveTypeParameters) {
     )";
 
     string proxyOutput, agentOutput, error;
-    ASSERT_TRUE(GenerateProxyCode(tauCode, proxyOutput, error)) << "Proxy Error: " << error;
-    ASSERT_TRUE(GenerateAgentCode(tauCode, agentOutput, error)) << "Agent Error: " << error;
+    ASSERT_TRUE(GenerateProxyCode(tauCode, proxyOutput, error))
+        << "Proxy Error: " << error;
+    ASSERT_TRUE(GenerateAgentCode(tauCode, agentOutput, error))
+        << "Agent Error: " << error;
 
     // Check proxy uses pass-by-value for primitives
     vector<string> proxyPatterns = {
         "void testPrimitives(int i, float f, bool b, double d, char c)",
-        "int primitiveReturn(float input)"
-    };
+        "int primitiveReturn(float input)"};
 
     EXPECT_TRUE(ContainsPatterns(proxyOutput, proxyPatterns))
-        << "Proxy primitive parameter handling incorrect:\n" << proxyOutput;
+        << "Proxy primitive parameter handling incorrect:\n"
+        << proxyOutput;
 
     // Check agent deserializes primitives correctly
     vector<string> agentPatterns = {
-        "int i;",
-        "bs >> i;",
-        "float f;", 
-        "bs >> f;",
-        "bool b;",
-        "bs >> b;",
-        "double d;",
-        "bs >> d;",
-        "char c;",
-        "bs >> c;"
-    };
+        "int i;",   "bs >> i;",  "float f;", "bs >> f;", "bool b;",
+        "bs >> b;", "double d;", "bs >> d;", "char c;",  "bs >> c;"};
 
     EXPECT_TRUE(ContainsPatterns(agentOutput, agentPatterns))
-        << "Agent primitive deserialization incorrect:\n" << agentOutput;
+        << "Agent primitive deserialization incorrect:\n"
+        << agentOutput;
 }
 
 TEST_F(TauCodeGenerationExtensiveTests, ComplexTypeParameters) {
@@ -436,31 +453,29 @@ TEST_F(TauCodeGenerationExtensiveTests, ComplexTypeParameters) {
     )";
 
     string proxyOutput, agentOutput, error;
-    ASSERT_TRUE(GenerateProxyCode(tauCode, proxyOutput, error)) << "Proxy Error: " << error;
-    ASSERT_TRUE(GenerateAgentCode(tauCode, agentOutput, error)) << "Agent Error: " << error;
+    ASSERT_TRUE(GenerateProxyCode(tauCode, proxyOutput, error))
+        << "Proxy Error: " << error;
+    ASSERT_TRUE(GenerateAgentCode(tauCode, agentOutput, error))
+        << "Agent Error: " << error;
 
     // Check proxy uses const reference for complex types
     vector<string> proxyPatterns = {
         "void processString(const string& data)",
         "void processArray(const Array& items)",
-        "string complexReturn(const string& input, const Array& config)"
-    };
+        "string complexReturn(const string& input, const Array& config)"};
 
     EXPECT_TRUE(ContainsPatterns(proxyOutput, proxyPatterns))
-        << "Proxy complex parameter handling incorrect:\n" << proxyOutput;
+        << "Proxy complex parameter handling incorrect:\n"
+        << proxyOutput;
 
     // Check agent deserializes complex types correctly
-    vector<string> agentPatterns = {
-        "string data;",
-        "bs >> data;",
-        "Array items;",
-        "bs >> items;",
-        "string input;",
-        "Array config;"
-    };
+    vector<string> agentPatterns = {"string data;",  "bs >> data;",
+                                    "Array items;",  "bs >> items;",
+                                    "string input;", "Array config;"};
 
     EXPECT_TRUE(ContainsPatterns(agentOutput, agentPatterns))
-        << "Agent complex deserialization incorrect:\n" << agentOutput;
+        << "Agent complex deserialization incorrect:\n"
+        << agentOutput;
 }
 
 // =============================================================================
@@ -477,15 +492,14 @@ TEST_F(TauCodeGenerationExtensiveTests, NestedNamespaces) {
     )";
 
     string proxyOutput, agentOutput, error;
-    ASSERT_TRUE(GenerateProxyCode(tauCode, proxyOutput, error)) << "Proxy Error: " << error;
-    ASSERT_TRUE(GenerateAgentCode(tauCode, agentOutput, error)) << "Agent Error: " << error;
+    ASSERT_TRUE(GenerateProxyCode(tauCode, proxyOutput, error))
+        << "Proxy Error: " << error;
+    ASSERT_TRUE(GenerateAgentCode(tauCode, agentOutput, error))
+        << "Agent Error: " << error;
 
     // Both should handle nested namespaces correctly
-    vector<string> expectedNamespaces = {
-        "namespace Outer",
-        "namespace Inner",
-        "namespace Deep"
-    };
+    vector<string> expectedNamespaces = {"namespace Outer", "namespace Inner",
+                                         "namespace Deep"};
 
     for (const auto& pattern : expectedNamespaces) {
         EXPECT_NE(proxyOutput.find(pattern), string::npos)
@@ -495,9 +509,11 @@ TEST_F(TauCodeGenerationExtensiveTests, NestedNamespaces) {
     }
 
     EXPECT_NE(proxyOutput.find("class INestedServiceProxy"), string::npos)
-        << "Proxy nested namespace handling incorrect:\n" << proxyOutput;
+        << "Proxy nested namespace handling incorrect:\n"
+        << proxyOutput;
     EXPECT_NE(agentOutput.find("class INestedServiceAgent"), string::npos)
-        << "Agent nested namespace handling incorrect:\n" << agentOutput;
+        << "Agent nested namespace handling incorrect:\n"
+        << agentOutput;
 }
 
 TEST_F(TauCodeGenerationExtensiveTests, MultipleInterfaces) {
@@ -516,32 +532,29 @@ TEST_F(TauCodeGenerationExtensiveTests, MultipleInterfaces) {
     )";
 
     string proxyOutput, agentOutput, error;
-    ASSERT_TRUE(GenerateProxyCode(tauCode, proxyOutput, error)) << "Proxy Error: " << error;
-    ASSERT_TRUE(GenerateAgentCode(tauCode, agentOutput, error)) << "Agent Error: " << error;
+    ASSERT_TRUE(GenerateProxyCode(tauCode, proxyOutput, error))
+        << "Proxy Error: " << error;
+    ASSERT_TRUE(GenerateAgentCode(tauCode, agentOutput, error))
+        << "Agent Error: " << error;
 
     // Check both interfaces are generated
-    vector<string> proxyPatterns = {
-        "class IService1Proxy",
-        "void method1()",
-        "void RegisterEvent1Handler",
-        "class IService2Proxy",
-        "int method2(const string& input)",
-        "void RegisterEvent2Handler"
-    };
+    vector<string> proxyPatterns = {"class IService1Proxy",
+                                    "void method1()",
+                                    "void RegisterEvent1Handler",
+                                    "class IService2Proxy",
+                                    "int method2(const string& input)",
+                                    "void RegisterEvent2Handler"};
 
     vector<string> agentPatterns = {
-        "class IService1Agent",
-        "void Handle_method1",
-        "void TriggerEvent1",
-        "class IService2Agent", 
-        "void Handle_method2",
-        "void TriggerEvent2"
-    };
+        "class IService1Agent", "void Handle_method1", "void TriggerEvent1",
+        "class IService2Agent", "void Handle_method2", "void TriggerEvent2"};
 
     EXPECT_TRUE(ContainsPatterns(proxyOutput, proxyPatterns))
-        << "Proxy multiple interface handling incorrect:\n" << proxyOutput;
+        << "Proxy multiple interface handling incorrect:\n"
+        << proxyOutput;
     EXPECT_TRUE(ContainsPatterns(agentOutput, agentPatterns))
-        << "Agent multiple interface handling incorrect:\n" << agentOutput;
+        << "Agent multiple interface handling incorrect:\n"
+        << agentOutput;
 }
 
 // =============================================================================
@@ -557,14 +570,18 @@ TEST_F(TauCodeGenerationExtensiveTests, EmptyInterface) {
     )";
 
     string proxyOutput, agentOutput, error;
-    ASSERT_TRUE(GenerateProxyCode(tauCode, proxyOutput, error)) << "Proxy Error: " << error;
-    ASSERT_TRUE(GenerateAgentCode(tauCode, agentOutput, error)) << "Agent Error: " << error;
+    ASSERT_TRUE(GenerateProxyCode(tauCode, proxyOutput, error))
+        << "Proxy Error: " << error;
+    ASSERT_TRUE(GenerateAgentCode(tauCode, agentOutput, error))
+        << "Agent Error: " << error;
 
     // Should still generate class structure
     EXPECT_NE(proxyOutput.find("class IEmptyProxy"), string::npos)
-        << "Proxy empty interface handling incorrect:\n" << proxyOutput;
+        << "Proxy empty interface handling incorrect:\n"
+        << proxyOutput;
     EXPECT_NE(agentOutput.find("class IEmptyAgent"), string::npos)
-        << "Agent empty interface handling incorrect:\n" << agentOutput;
+        << "Agent empty interface handling incorrect:\n"
+        << agentOutput;
 }
 
 TEST_F(TauCodeGenerationExtensiveTests, VoidMethodsOnly) {
@@ -579,20 +596,27 @@ TEST_F(TauCodeGenerationExtensiveTests, VoidMethodsOnly) {
     )";
 
     string proxyOutput, agentOutput, error;
-    ASSERT_TRUE(GenerateProxyCode(tauCode, proxyOutput, error)) << "Proxy Error: " << error;
-    ASSERT_TRUE(GenerateAgentCode(tauCode, agentOutput, error)) << "Agent Error: " << error;
+    ASSERT_TRUE(GenerateProxyCode(tauCode, proxyOutput, error))
+        << "Proxy Error: " << error;
+    ASSERT_TRUE(GenerateAgentCode(tauCode, agentOutput, error))
+        << "Agent Error: " << error;
 
     // Check void methods use Send instead of SendWithResponse in proxy
-    EXPECT_TRUE(proxyOutput.find("_node->SendAsync(\"initialize\")") != string::npos)
-        << "Proxy void method should use Send:\n" << proxyOutput;
+    EXPECT_TRUE(proxyOutput.find("_node->SendAsync(\"initialize\")") !=
+                string::npos)
+        << "Proxy void method should use Send:\n"
+        << proxyOutput;
     EXPECT_TRUE(proxyOutput.find("SendWithResponse") == string::npos)
-        << "Proxy void methods should not use SendWithResponse:\n" << proxyOutput;
+        << "Proxy void methods should not use SendWithResponse:\n"
+        << proxyOutput;
 
     // Check agent handlers don't send responses for void methods
     EXPECT_TRUE(agentOutput.find("_impl->initialize()") != string::npos)
-        << "Agent should call implementation for void methods:\n" << agentOutput;
+        << "Agent should call implementation for void methods:\n"
+        << agentOutput;
     EXPECT_TRUE(agentOutput.find("Handle_initialize") != string::npos)
-        << "Agent should have handler for void methods:\n" << agentOutput;
+        << "Agent should have handler for void methods:\n"
+        << agentOutput;
 }
 
 TEST_F(TauCodeGenerationExtensiveTests, MethodNameEdgeCases) {
@@ -607,26 +631,26 @@ TEST_F(TauCodeGenerationExtensiveTests, MethodNameEdgeCases) {
     )";
 
     string proxyOutput, agentOutput, error;
-    ASSERT_TRUE(GenerateProxyCode(tauCode, proxyOutput, error)) << "Proxy Error: " << error;
-    ASSERT_TRUE(GenerateAgentCode(tauCode, agentOutput, error)) << "Agent Error: " << error;
+    ASSERT_TRUE(GenerateProxyCode(tauCode, proxyOutput, error))
+        << "Proxy Error: " << error;
+    ASSERT_TRUE(GenerateAgentCode(tauCode, agentOutput, error))
+        << "Agent Error: " << error;
 
     // Check all method name styles are handled correctly
     vector<string> proxyPatterns = {
-        "void _underscore_method()",
-        "int CamelCaseMethod(int paramName)",
-        "float snake_case_method(float param_value)"
-    };
+        "void _underscore_method()", "int CamelCaseMethod(int paramName)",
+        "float snake_case_method(float param_value)"};
 
-    vector<string> agentPatterns = {
-        "void Handle__underscore_method",
-        "void Handle_CamelCaseMethod", 
-        "void Handle_snake_case_method"
-    };
+    vector<string> agentPatterns = {"void Handle__underscore_method",
+                                    "void Handle_CamelCaseMethod",
+                                    "void Handle_snake_case_method"};
 
     EXPECT_TRUE(ContainsPatterns(proxyOutput, proxyPatterns))
-        << "Proxy method name edge cases incorrect:\n" << proxyOutput;
+        << "Proxy method name edge cases incorrect:\n"
+        << proxyOutput;
     EXPECT_TRUE(ContainsPatterns(agentOutput, agentPatterns))
-        << "Agent method name edge cases incorrect:\n" << agentOutput;
+        << "Agent method name edge cases incorrect:\n"
+        << agentOutput;
 }
 
 // =============================================================================
@@ -655,28 +679,33 @@ TEST_F(TauCodeGenerationExtensiveTests, CompleteServiceExample) {
     )";
 
     string proxyOutput, agentOutput, error;
-    ASSERT_TRUE(GenerateProxyCode(tauCode, proxyOutput, error)) << "Proxy Error: " << error;
-    ASSERT_TRUE(GenerateAgentCode(tauCode, agentOutput, error)) << "Agent Error: " << error;
+    ASSERT_TRUE(GenerateProxyCode(tauCode, proxyOutput, error))
+        << "Proxy Error: " << error;
+    ASSERT_TRUE(GenerateAgentCode(tauCode, agentOutput, error))
+        << "Agent Error: " << error;
 
     // Verify complete service generation
     EXPECT_GT(proxyOutput.length(), 1000) << "Proxy output seems too short";
     EXPECT_GT(agentOutput.length(), 1000) << "Agent output seems too short";
 
     // Count methods and events
-    EXPECT_EQ(CountPatternOccurrences(proxyOutput, "/// Remote method call:"), 5)
+    EXPECT_EQ(CountPatternOccurrences(proxyOutput, "/// Remote method call:"),
+              5)
         << "Should have 5 method documentations in proxy";
     EXPECT_EQ(CountPatternOccurrences(proxyOutput, "RegisterEventHandler"), 3)
         << "Should have 3 event registrations in proxy";
-    
+
     EXPECT_EQ(CountPatternOccurrences(agentOutput, "void Handle_"), 5)
         << "Should have 5 handler methods in agent";
     EXPECT_EQ(CountPatternOccurrences(agentOutput, "void Trigger"), 3)
         << "Should have 3 event triggers in agent";
 
     // Verify namespace and class names
-    EXPECT_TRUE(ContainsPatterns(proxyOutput, {"namespace FileService", "class IFileManagerProxy"}))
+    EXPECT_TRUE(ContainsPatterns(
+        proxyOutput, {"namespace FileService", "class IFileManagerProxy"}))
         << "Proxy missing correct namespace/class";
-    EXPECT_TRUE(ContainsPatterns(agentOutput, {"namespace FileService", "class IFileManagerAgent"}))
+    EXPECT_TRUE(ContainsPatterns(
+        agentOutput, {"namespace FileService", "class IFileManagerAgent"}))
         << "Agent missing correct namespace/class";
 }
 
@@ -691,11 +720,13 @@ TEST_F(TauCodeGenerationExtensiveTests, CodeQualityMetrics) {
     )";
 
     string proxyOutput, agentOutput, error;
-    ASSERT_TRUE(GenerateProxyCode(tauCode, proxyOutput, error)) << "Proxy Error: " << error;
-    ASSERT_TRUE(GenerateAgentCode(tauCode, agentOutput, error)) << "Agent Error: " << error;
+    ASSERT_TRUE(GenerateProxyCode(tauCode, proxyOutput, error))
+        << "Proxy Error: " << error;
+    ASSERT_TRUE(GenerateAgentCode(tauCode, agentOutput, error))
+        << "Agent Error: " << error;
 
     // Quality metrics checks
-    
+
     // 1. Documentation coverage
     EXPECT_GE(CountPatternOccurrences(proxyOutput, "///"), 6)
         << "Insufficient documentation comments in proxy";
@@ -710,17 +741,14 @@ TEST_F(TauCodeGenerationExtensiveTests, CodeQualityMetrics) {
 
     // 3. Include completeness
     vector<string> requiredProxyIncludes = {
-        "#include <KAI/Network/ProxyDecl.h>",
-        "#include <functional>",
-        "#include <KAI/Core/BinaryStream.h>"  
-    };
+        "#include <KAI/Network/ProxyDecl.h>", "#include <functional>",
+        "#include <KAI/Core/BinaryStream.h>"};
     EXPECT_TRUE(ContainsPatterns(proxyOutput, requiredProxyIncludes))
         << "Missing required includes in proxy";
 
     vector<string> requiredAgentIncludes = {
         "#include <KAI/Network/AgentDecl.h>",
-        "#include <KAI/Core/BinaryStream.h>"
-    };
+        "#include <KAI/Core/BinaryStream.h>"};
     EXPECT_TRUE(ContainsPatterns(agentOutput, requiredAgentIncludes))
         << "Missing required includes in agent";
 
@@ -739,38 +767,43 @@ TEST_F(TauCodeGenerationExtensiveTests, LargeInterfaceGeneration) {
     stringstream tauCode;
     tauCode << "namespace Large {\n";
     tauCode << "    interface IBigService {\n";
-    
+
     // Generate 50 methods
     for (int i = 0; i < 50; ++i) {
         tauCode << "        int method" << i << "(string param" << i << ");\n";
     }
-    
+
     // Generate 20 events
     for (int i = 0; i < 20; ++i) {
         tauCode << "        event Event" << i << "(int data" << i << ");\n";
     }
-    
+
     tauCode << "    }\n";
     tauCode << "}\n";
 
     string proxyOutput, agentOutput, error;
-    ASSERT_TRUE(GenerateProxyCode(tauCode.str(), proxyOutput, error)) << "Proxy Error: " << error;
-    ASSERT_TRUE(GenerateAgentCode(tauCode.str(), agentOutput, error)) << "Agent Error: " << error;
+    ASSERT_TRUE(GenerateProxyCode(tauCode.str(), proxyOutput, error))
+        << "Proxy Error: " << error;
+    ASSERT_TRUE(GenerateAgentCode(tauCode.str(), agentOutput, error))
+        << "Agent Error: " << error;
 
     // Verify all methods and events are generated
-    EXPECT_EQ(CountPatternOccurrences(proxyOutput, "/// Remote method call:"), 50)
+    EXPECT_EQ(CountPatternOccurrences(proxyOutput, "/// Remote method call:"),
+              50)
         << "Should generate all 50 methods in proxy";
     EXPECT_EQ(CountPatternOccurrences(proxyOutput, "RegisterEvent"), 40)
         << "Each event should register and include handler invocation";
-    
+
     EXPECT_EQ(CountPatternOccurrences(agentOutput, "void Handle_method"), 50)
         << "Should generate all 50 handlers in agent";
     EXPECT_EQ(CountPatternOccurrences(agentOutput, "void TriggerEvent"), 20)
         << "Should generate all 20 event triggers in agent";
 
     // Performance check - large interfaces should still be manageable
-    EXPECT_LT(proxyOutput.length(), 100000) << "Proxy output seems excessively large";
-    EXPECT_LT(agentOutput.length(), 100000) << "Agent output seems excessively large";
+    EXPECT_LT(proxyOutput.length(), 100000)
+        << "Proxy output seems excessively large";
+    EXPECT_LT(agentOutput.length(), 100000)
+        << "Agent output seems excessively large";
 }
 
 TEST_F(TauCodeGenerationExtensiveTests, DeepNestedNamespaces) {
@@ -784,16 +817,14 @@ TEST_F(TauCodeGenerationExtensiveTests, DeepNestedNamespaces) {
     )";
 
     string proxyOutput, agentOutput, error;
-    ASSERT_TRUE(GenerateProxyCode(tauCode, proxyOutput, error)) << "Proxy Error: " << error;
-    ASSERT_TRUE(GenerateAgentCode(tauCode, agentOutput, error)) << "Agent Error: " << error;
+    ASSERT_TRUE(GenerateProxyCode(tauCode, proxyOutput, error))
+        << "Proxy Error: " << error;
+    ASSERT_TRUE(GenerateAgentCode(tauCode, agentOutput, error))
+        << "Agent Error: " << error;
 
     const vector<string> deepNamespaces = {
-        "namespace Level1",
-        "namespace Level2",
-        "namespace Level3",
-        "namespace Level4",
-        "namespace Level5"
-    };
+        "namespace Level1", "namespace Level2", "namespace Level3",
+        "namespace Level4", "namespace Level5"};
 
     for (const auto& ns : deepNamespaces) {
         EXPECT_NE(proxyOutput.find(ns), string::npos)
@@ -824,8 +855,10 @@ TEST_F(TauCodeGenerationExtensiveTests, BackwardsCompatibility) {
     )";
 
     string proxyOutput, agentOutput, error;
-    ASSERT_TRUE(GenerateProxyCode(legacyTauCode, proxyOutput, error)) << "Proxy Error: " << error;
-    ASSERT_TRUE(GenerateAgentCode(legacyTauCode, agentOutput, error)) << "Agent Error: " << error;
+    ASSERT_TRUE(GenerateProxyCode(legacyTauCode, proxyOutput, error))
+        << "Proxy Error: " << error;
+    ASSERT_TRUE(GenerateAgentCode(legacyTauCode, agentOutput, error))
+        << "Agent Error: " << error;
 
     // Should generate both class and interface
     EXPECT_TRUE(proxyOutput.find("class OldServiceProxy") != string::npos)

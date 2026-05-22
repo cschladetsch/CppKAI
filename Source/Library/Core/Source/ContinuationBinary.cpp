@@ -6,7 +6,8 @@ KAI_BEGIN
 
 BinaryStream &operator<<(BinaryStream &stream, const Continuation &cont) {
     const bool entered = cont.entered.Exists() ? *cont.entered : false;
-    const bool scope_break = cont.scopeBreak.Exists() ? *cont.scopeBreak : false;
+    const bool scope_break =
+        cont.scopeBreak.Exists() ? *cont.scopeBreak : false;
 
     stream << cont.scope;
     stream << static_cast<const Object &>(cont.code);

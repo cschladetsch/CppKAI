@@ -443,7 +443,9 @@ BinaryStream &operator>>(BinaryStream &stream, Object &extracted) {
     Registry &registry = *stream.GetRegistry();
     int type_number = 0;
     stream >> type_number;
-    std::cerr << "[THAW] type_number=" << type_number << " registry=" << (stream.GetRegistry()!=nullptr) << " canread=" << stream.CanRead(1) << "\n";
+    std::cerr << "[THAW] type_number=" << type_number
+              << " registry=" << (stream.GetRegistry() != nullptr)
+              << " canread=" << stream.CanRead(1) << "\n";
     if (type_number == 0) {
         extracted = Object();
         return stream;
@@ -554,7 +556,8 @@ bool operator==(Object const &A, Object const &B) {
     if (!B.Exists()) return false;
 
     // Same object by identity - always equal, and avoids infinite recursion
-    // when objects share sub-objects (e.g. continuations with shared code arrays)
+    // when objects share sub-objects (e.g. continuations with shared code
+    // arrays)
     if (A.GetHandle() == B.GetHandle()) return true;
 
     // test value

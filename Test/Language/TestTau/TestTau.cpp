@@ -8,11 +8,8 @@
 #include "KAI/Language/Tau/Generate/GenerateProcess.h"
 #include "KAI/Language/Tau/Generate/GenerateProxy.h"
 #include "KAI/Language/Tau/TauParser.h"
-#include "TestLangCommon.h"
-#include "KAI/Language/Tau/Generate/GenerateProxy.h"
-#include "KAI/Language/Tau/TauParser.h"
-
 #include "TestCommon.h"
+#include "TestLangCommon.h"
 
 using namespace kai;
 using namespace std;
@@ -232,7 +229,7 @@ TEST_F(TestTau, TestDataTransferObjects) {
     TestIDL(script, "DataTransferObjects");
 }
 namespace {
-const char *kTauModule = R"(namespace MLB
+const char* kTauModule = R"(namespace MLB
 {
 	class C
 	{

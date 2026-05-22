@@ -7,8 +7,8 @@
 #include <concepts>
 #include <format>
 #include <ranges>
-#include <string>
 #include <stdexcept>
+#include <string>
 #include <vector>
 
 KAI_BEGIN
@@ -421,7 +421,8 @@ void RhoTranslator::TranslateFor(AstNodePtr node) {
 }
 
 void RhoTranslator::TranslateForEach(AstNodePtr node) {
-    KAI_TRACE() << "TranslateForEach: Starting translation for 'for x in collection'";
+    KAI_TRACE()
+        << "TranslateForEach: Starting translation for 'for x in collection'";
 
     // ForEach node structure:
     // - Child 0: loop variable (identifier)
@@ -487,7 +488,8 @@ void RhoTranslator::TranslateDoWhile(AstNodePtr node) {
 }
 
 void RhoTranslator::TranslateIf(AstNodePtr node) {
-    KAI_TRACE() << "TranslateIf: Starting, children count: " << static_cast<int>(node->GetChildren().size());
+    KAI_TRACE() << "TranslateIf: Starting, children count: "
+                << static_cast<int>(node->GetChildren().size());
 
     // If statements need at least condition and then-block
     if (node->GetChildren().size() < 2) {
@@ -735,8 +737,8 @@ void RhoTranslator::TranslatePiBlock(AstNodePtr node) {
         }
     };
 
-    for (const auto &tokenNode : tokenList->GetChildren()) {
-        const auto &rhoTok = tokenNode->GetToken();
+    for (const auto& tokenNode : tokenList->GetChildren()) {
+        const auto& rhoTok = tokenNode->GetToken();
         auto tokenType = rhoTok.type;
 
         // Skip layout tokens from the Rho lexer.

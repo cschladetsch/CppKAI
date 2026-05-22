@@ -45,13 +45,11 @@ class AdvancedForLoopTests : public TestLangCommon {
             // with assignments, not bare expressions, so the data stack may
             // contain unrelated intermediate values.
             Object result = tree_->Resolve(Label("result"));
-            if (result.Exists())
-                return result;
+            if (result.Exists()) return result;
             // Fallback: check data stack (for scripts that do push a value)
             if (!data_->Empty()) {
                 UnwrapStackValues();
-                if (!data_->Empty())
-                    return data_->Top();
+                if (!data_->Empty()) return data_->Top();
             }
         } catch (const std::exception& e) {
             ADD_FAILURE() << "Exception during Rho execution: " << e.what();

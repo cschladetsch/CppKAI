@@ -1,6 +1,7 @@
 #include <KAI/Language/Common/ParserCommon.h>
 #include <KAI/Language/Tau/TauParser.h>
 #include <assert.h>
+
 #include <cctype>
 #include <unordered_set>
 
@@ -227,7 +228,8 @@ bool TauParser::Namespace(AstNodePtr root) {
             return Fail("Unexpected end of input while parsing namespace");
         }
 
-        // If we're still here, we haven't found the opening brace - this is an error
+        // If we're still here, we haven't found the opening brace - this is an
+        // error
         return Fail(Lexer::CreateErrorMessage(
             Current(), "Expected '{' after namespace name, got %s",
             TokenEnumType::ToString(Current().type)));
@@ -509,16 +511,15 @@ bool TauParser::Class(AstNodePtr root) {
     return true;
 }
 
-static bool IsValidTypeName(const std::string& name) {
+static bool IsValidTypeName(const std::string &name) {
     static const std::unordered_set<std::string> primitives = {
-        "void", "int", "float", "double", "bool", "char", "string",
-        "int8", "int16", "int32", "int64",
-        "uint8", "uint16", "uint32", "uint64",
-        "byte", "short", "long", "uint", "ushort", "ulong"
-    };
+        "void",   "int",   "float", "double", "bool",  "char",   "string",
+        "int8",   "int16", "int32", "int64",  "uint8", "uint16", "uint32",
+        "uint64", "byte",  "short", "long",   "uint",  "ushort", "ulong"};
     if (primitives.count(name)) return true;
     if (name.find('<') != std::string::npos) return true;
-    if (!name.empty() && std::isupper(static_cast<unsigned char>(name[0]))) return true;
+    if (!name.empty() && std::isupper(static_cast<unsigned char>(name[0])))
+        return true;
     return false;
 }
 
@@ -528,7 +529,8 @@ bool TauParser::Method(AstNodePtr klass, TokenNode const &returnType,
         std::string typeText = returnType.Text();
         if (!IsValidTypeName(typeText)) {
             Failed = true;
-            Error = "Invalid return type '" + typeText + "' in method declaration";
+            Error =
+                "Invalid return type '" + typeText + "' in method declaration";
             return false;
         }
     }
@@ -584,7 +586,8 @@ bool TauParser::Method(AstNodePtr klass, TokenNode const &returnType,
         Consume();
     } else if (strictMode_) {
         Failed = true;
-        Error = "Expected ';' after method declaration for '" + name.Text() + "'";
+        Error =
+            "Expected ';' after method declaration for '" + name.Text() + "'";
         return false;
     }
 

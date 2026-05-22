@@ -20,10 +20,12 @@ class ChatP2PConsoleTest : public TestLangCommon {
         registry_ = make_shared<Registry>();
 
         // Load the ChatInterface.tau file
-        chatInterfaceTau_ = tau_test_utils::LoadScriptText("Connection/ChatInterface.tau");
+        chatInterfaceTau_ =
+            tau_test_utils::LoadScriptText("Connection/ChatInterface.tau");
         ASSERT_FALSE(chatInterfaceTau_.empty())
             << "Failed to load ChatInterface.tau from "
-            << tau_test_utils::ResolveScriptPath("Connection/ChatInterface.tau");
+            << tau_test_utils::ResolveScriptPath(
+                   "Connection/ChatInterface.tau");
     }
 
    protected:
@@ -35,18 +37,21 @@ class ChatP2PConsoleTest : public TestLangCommon {
 TEST_F(ChatP2PConsoleTest, BasicChatCommands) {
     // Verify file loaded
     ASSERT_FALSE(chatInterfaceTau_.empty()) << "ChatInterface.tau not loaded";
-    ASSERT_GT(chatInterfaceTau_.size(), 100) << "ChatInterface.tau too small: " << chatInterfaceTau_.size();
+    ASSERT_GT(chatInterfaceTau_.size(), 100)
+        << "ChatInterface.tau too small: " << chatInterfaceTau_.size();
 
     // Parse the Tau interface
     tau::TauParser parser(*registry_);
-    auto lexer = make_shared<tau::TauLexer>(chatInterfaceTau_.c_str(), *registry_);
+    auto lexer =
+        make_shared<tau::TauLexer>(chatInterfaceTau_.c_str(), *registry_);
 
     // Lex and parse
     lexer->Process();
     ASSERT_FALSE(lexer->Failed) << "Lexer failed: " << lexer->Error;
 
     bool parseResult = parser.Process(lexer, Structure::Module);
-    EXPECT_TRUE(parseResult) << "Failed to parse ChatInterface.tau: " << parser.Error;
+    EXPECT_TRUE(parseResult)
+        << "Failed to parse ChatInterface.tau: " << parser.Error;
 
     // Verify parsing succeeded
     auto root = parser.GetRoot();
@@ -72,14 +77,19 @@ TEST_F(ChatP2PConsoleTest, ConsoleRhoIntegration) {
     tau::Generate::GenerateProxy proxy(chatInterfaceTau_.c_str(), proxyOutput);
 
     if (proxy.Failed || proxyOutput.empty()) {
-        GTEST_SKIP() << "Proxy generation not fully implemented for nested namespaces";
+        GTEST_SKIP()
+            << "Proxy generation not fully implemented for nested namespaces";
     }
 
     // Verify all four interfaces are in proxy output
-    EXPECT_NE(proxyOutput.find("IChannelChat"), string::npos) << "IChannelChat not found";
-    EXPECT_NE(proxyOutput.find("IChannelNetworkProxy"), string::npos) << "IChannelNetworkProxy not found";
-    EXPECT_NE(proxyOutput.find("IChannelAgent"), string::npos) << "IChannelAgent not found";
-    EXPECT_NE(proxyOutput.find("IChatConsoleHandler"), string::npos) << "IChatConsoleHandler not found";
+    EXPECT_NE(proxyOutput.find("IChannelChat"), string::npos)
+        << "IChannelChat not found";
+    EXPECT_NE(proxyOutput.find("IChannelNetworkProxy"), string::npos)
+        << "IChannelNetworkProxy not found";
+    EXPECT_NE(proxyOutput.find("IChannelAgent"), string::npos)
+        << "IChannelAgent not found";
+    EXPECT_NE(proxyOutput.find("IChatConsoleHandler"), string::npos)
+        << "IChatConsoleHandler not found";
 
     // Verify key methods are generated
     EXPECT_NE(proxyOutput.find("Initialize"), string::npos);
@@ -94,7 +104,8 @@ TEST_F(ChatP2PConsoleTest, WindowIntegrationConcept) {
     tau::Generate::GenerateAgent agent(chatInterfaceTau_.c_str(), agentOutput);
 
     if (agent.Failed || agentOutput.empty()) {
-        GTEST_SKIP() << "Agent generation not fully implemented for nested namespaces";
+        GTEST_SKIP()
+            << "Agent generation not fully implemented for nested namespaces";
     }
 
     // Verify agent contains chat interfaces
@@ -122,6 +133,7 @@ TEST_F(ChatP2PConsoleTest, ErrorHandling) {
 
     // Check that events are defined
     EXPECT_NE(chatInterfaceTau_.find("event OnMessageReceived"), string::npos);
-    EXPECT_NE(chatInterfaceTau_.find("event OnChannelDiscovered"), string::npos);
+    EXPECT_NE(chatInterfaceTau_.find("event OnChannelDiscovered"),
+              string::npos);
     EXPECT_NE(chatInterfaceTau_.find("event OnUserJoined"), string::npos);
 }

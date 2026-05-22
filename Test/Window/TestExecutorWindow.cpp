@@ -272,19 +272,23 @@ TEST_F(ExecutorWindowTest, RhoTab_Loops) {
 }
 
 TEST_F(ExecutorWindowTest, RhoTab_Arrays) {
-    GTEST_SKIP() << "Mock executor window does not model Rho array evaluation reliably";
+    GTEST_SKIP()
+        << "Mock executor window does not model Rho array evaluation reliably";
 }
 
 TEST_F(ExecutorWindowTest, RhoTab_MultilineInput) {
-    GTEST_SKIP() << "Mock executor window does not execute multiline Rho definitions";
+    GTEST_SKIP()
+        << "Mock executor window does not execute multiline Rho definitions";
 }
 
 TEST_F(ExecutorWindowTest, RhoTab_ErrorHandling) {
-    GTEST_SKIP() << "Mock executor window does not surface Rho parser errors consistently";
+    GTEST_SKIP() << "Mock executor window does not surface Rho parser errors "
+                    "consistently";
 }
 
 TEST_F(ExecutorWindowTest, RhoTab_PiBlockExecution) {
-    GTEST_SKIP() << "Mock executor window does not execute embedded Pi blocks in Rho";
+    GTEST_SKIP()
+        << "Mock executor window does not execute embedded Pi blocks in Rho";
 }
 
 // =============================================================================

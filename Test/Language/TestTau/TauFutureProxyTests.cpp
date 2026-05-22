@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include "KAI/Language/Tau/TauParser.h"
-#include "KAI/Language/Tau/Generate/GenerateProxy.h"
 #include "KAI/Language/Tau/Generate/GenerateAgent.h"
+#include "KAI/Language/Tau/Generate/GenerateProxy.h"
+#include "KAI/Language/Tau/TauParser.h"
 #include "TestLangCommon.h"
 
 using namespace kai;
@@ -15,9 +15,7 @@ using namespace std;
 // Purpose: Validate the core distributed system syntax and ensure
 // proper code generation for network-transparent RPC calls
 struct TauFutureProxyTests : TestLangCommon {
-    void SetUp() override {
-        TestLangCommon::SetUp();
-    }
+    void SetUp() override { TestLangCommon::SetUp(); }
 
     // Helper to parse Tau IDL and verify no errors
     bool ParseTauCode(const string& code) {

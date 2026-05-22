@@ -30,9 +30,9 @@ int main(int argc, const char* const argv[]) {
     string proxyName = "%s.proxy.h";
     string agentName = "%s.agent.h";
 
-    desc.add_options()("help,h", "Show this help message")
-                      ("version,v", "Show version information")
-                      ("input,i", value<path>(), "Input TAU file (required)")(
+    desc.add_options()("help,h", "Show this help message")(
+        "version,v", "Show version information")("input,i", value<path>(),
+                                                 "Input TAU file (required)")(
         "proxy_dir", value<path>(&proxy_out_dir)->default_value(proxyOutputDir),
         "Set output dir for proxy")(
         "agent_dir", value<path>(&agent_out_dir)->default_value(agentOutputDir),
@@ -63,22 +63,30 @@ int main(int argc, const char* const argv[]) {
 
     if (vm.count("help")) {
         cout << "NetworkGenerate - Tau IDL Code Generator" << endl;
-        cout << "Generates C++ proxy and agent classes from Tau interface definitions" << endl << endl;
+        cout << "Generates C++ proxy and agent classes from Tau interface "
+                "definitions"
+             << endl
+             << endl;
         cout << "Usage: NetworkGenerate [options] <input.tau>" << endl << endl;
         cout << desc << endl;
         cout << "Examples:" << endl;
         cout << "  NetworkGenerate Calculator.tau" << endl;
         cout << "  NetworkGenerate Calculator.tau --out=./generated" << endl;
-        cout << "  NetworkGenerate Calculator.tau --proxy_dir=./client --agent_dir=./server" << endl << endl;
-        cout << "For more information, see the NetworkGenerate README.md" << endl;
+        cout << "  NetworkGenerate Calculator.tau --proxy_dir=./client "
+                "--agent_dir=./server"
+             << endl
+             << endl;
+        cout << "For more information, see the NetworkGenerate README.md"
+             << endl;
         return 0;
     }
 
     if (vm.count("version")) {
         cout << "NetworkGenerate version 1.0.0" << endl;
         cout << "Part of the KAI distributed object model system" << endl;
-        cout << "Built with Boost " << BOOST_VERSION / 100000 << "." 
-             << BOOST_VERSION / 100 % 1000 << "." << BOOST_VERSION % 100 << endl;
+        cout << "Built with Boost " << BOOST_VERSION / 100000 << "."
+             << BOOST_VERSION / 100 % 1000 << "." << BOOST_VERSION % 100
+             << endl;
         return 0;
     }
 
@@ -99,16 +107,20 @@ int main(int argc, const char* const argv[]) {
 
     // Validate input file extension
     if (input.extension() != ".tau") {
-        cout << "Warning: Input file does not have .tau extension. Proceeding anyway..." << endl;
+        cout << "Warning: Input file does not have .tau extension. Proceeding "
+                "anyway..."
+             << endl;
     }
 
     // Read the input file contents
     ifstream inputFile(input.string());
     if (!inputFile) {
-        cerr << "Error: Could not open input file '" << input << "' for reading" << endl;
+        cerr << "Error: Could not open input file '" << input << "' for reading"
+             << endl;
         return 1;
     }
-    string fileContents((istreambuf_iterator<char>(inputFile)), istreambuf_iterator<char>());
+    string fileContents((istreambuf_iterator<char>(inputFile)),
+                        istreambuf_iterator<char>());
     inputFile.close();
 
     if (fileContents.empty()) {

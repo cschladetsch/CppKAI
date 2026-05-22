@@ -127,7 +127,7 @@ Object Thaw(Object Q) {
     BinaryStream &S = Deref<BinaryStream>(Q);
     std::cerr << "[THAW] Deref ok, size=" << S.Size() << "\n";
     S.SetRegistry(Q.GetRegistry());
-    std::cerr << "[THAW] registry=" << (S.GetRegistry()!=nullptr) << "\n";
+    std::cerr << "[THAW] registry=" << (S.GetRegistry() != nullptr) << "\n";
     Object N;
     S >> N;
     std::cerr << "[THAW] N.Exists=" << N.Exists() << "\n";

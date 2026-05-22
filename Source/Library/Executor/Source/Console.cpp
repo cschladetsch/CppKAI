@@ -1,8 +1,5 @@
 #include "KAI/Console/Console.h"
 
-#include "KAI/Language/Pi/PiTranslator.h"
-#include "KAI/Language/Rho/RhoTranslator.h"
-
 #include <algorithm>
 #include <cctype>
 #include <chrono>
@@ -14,6 +11,9 @@
 #include <regex>
 #include <sstream>
 #include <thread>
+
+#include "KAI/Language/Pi/PiTranslator.h"
+#include "KAI/Language/Rho/RhoTranslator.h"
 
 #ifdef __linux__
 #include <termios.h>
@@ -33,24 +33,22 @@ using namespace std;
 
 KAI_BEGIN
 
-// Translator that dispatches to Pi or Rho based on the compiler's active language.
+// Translator that dispatches to Pi or Rho based on the compiler's active
+// language.
 class MultiLangTranslator : public TranslatorCommon {
     shared_ptr<PiTranslator> pi_;
     shared_ptr<RhoTranslator> rho_;
     Pointer<Compiler> compiler_;
 
    public:
-    MultiLangTranslator(Registry &reg,
-                        shared_ptr<PiTranslator> pi,
-                        shared_ptr<RhoTranslator> rho,
-                        Pointer<Compiler> comp)
+    MultiLangTranslator(Registry &reg, shared_ptr<PiTranslator> pi,
+                        shared_ptr<RhoTranslator> rho, Pointer<Compiler> comp)
         : TranslatorCommon(reg),
           pi_(std::move(pi)),
           rho_(std::move(rho)),
           compiler_(comp) {}
 
-    Pointer<Continuation> Translate(const char *text,
-                                    Structure st) override {
+    Pointer<Continuation> Translate(const char *text, Structure st) override {
         if (!compiler_.Exists()) return Object();
         switch (static_cast<Language>(compiler_->GetLanguage())) {
             case Language::Pi: {
@@ -153,10 +151,8 @@ void Console::SetLanguage(Language lang) {
 
     if (!translator) {
         SetTranslator(std::make_shared<MultiLangTranslator>(
-            *reg_,
-            std::make_shared<PiTranslator>(*reg_),
-            std::make_shared<RhoTranslator>(*reg_),
-            compiler));
+            *reg_, std::make_shared<PiTranslator>(*reg_),
+            std::make_shared<RhoTranslator>(*reg_), compiler));
     }
 }
 
@@ -367,10 +363,11 @@ void Console::CreateTree() {
     Set(root, Pathname("/Executor"), executor);
 
     Bin::AddFunctions(bin);
-    std::function<void(Object, Object)> sendBinaryFn =
-        [this](Object payloadObj, Object peerSpec) {
+    std::function<void(Object, Object)> sendBinaryFn = [this](Object payloadObj,
+                                                              Object peerSpec) {
         if (!networkingEnabled_) {
-            KAI_THROW_1(Base, "Network not enabled. Use '/network start' first.");
+            KAI_THROW_1(Base,
+                        "Network not enabled. Use '/network start' first.");
         }
 
         Object payload = payloadObj;
@@ -393,11 +390,11 @@ void Console::CreateTree() {
             targetPeer =
                 FindPeerByAddress(ConstDeref<String>(peerSpec).StdString());
         } else if (peerSpec.IsType<Label>()) {
-            targetPeer =
-                FindPeerByAddress(ConstDeref<Label>(peerSpec).ToString().StdString());
+            targetPeer = FindPeerByAddress(
+                ConstDeref<Label>(peerSpec).ToString().StdString());
         } else if (peerSpec.IsType<Pathname>()) {
-            targetPeer =
-                FindPeerByAddress(ConstDeref<Pathname>(peerSpec).ToString().StdString());
+            targetPeer = FindPeerByAddress(
+                ConstDeref<Pathname>(peerSpec).ToString().StdString());
         }
 
         if (!targetPeer.IsValid()) {
@@ -509,8 +506,10 @@ void Console::ExecuteWithExecutor(Pointer<Continuation> cont,
         KAI_TRACE_ERROR_1(E);
         // For debugging: log stack state when exception occurs
         KAI_TRACE() << "Exception occurred. Stack state:";
-        if (targetExecutor.Exists() && targetExecutor->GetDataStack().Exists()) {
-            KAI_TRACE() << "  Stack size: " << targetExecutor->GetDataStack()->Size();
+        if (targetExecutor.Exists() &&
+            targetExecutor->GetDataStack().Exists()) {
+            KAI_TRACE() << "  Stack size: "
+                        << targetExecutor->GetDataStack()->Size();
         }
         throw;
     }
@@ -1286,9 +1285,7 @@ void Console::ShowColoredStack() const {
     }
 }
 
-String Console::WriteStack() const {
-    return WriteStackForExecutor(executor);
-}
+String Console::WriteStack() const { return WriteStackForExecutor(executor); }
 
 String Console::WriteStackForExecutor(Pointer<Executor> exec) const {
     if (!exec.Exists()) {
@@ -1316,7 +1313,7 @@ String Console::WriteStackForExecutor(Pointer<Executor> exec) const {
     return result.ToString();
 }
 
-String Console::WriteStackForPeer(const std::string& peerId) const {
+String Console::WriteStackForPeer(const std::string &peerId) const {
     std::string consoleId = peerId;
     const std::string broadcastSuffix = " [BROADCAST]";
     if (consoleId.size() > broadcastSuffix.size()) {
@@ -2048,20 +2045,22 @@ void Console::AddToHistory(const std::string &command) {
 // Network functionality implementation
 bool Console::StartNetworking(int listenPort) {
     if (networkingEnabled_) {
-        cout << rang::fg::yellow << "Networking already enabled" << rang::fg::reset << endl;
+        cout << rang::fg::yellow << "Networking already enabled"
+             << rang::fg::reset << endl;
         return true;
     }
-    
+
     listenPort_ = listenPort;
     peer_ = net::NetPeer::Create();
     if (!peer_) {
-        cerr << rang::fg::red << "Failed to create network peer" << rang::fg::reset << endl;
+        cerr << rang::fg::red << "Failed to create network peer"
+             << rang::fg::reset << endl;
         return false;
     }
-    
-    cout << rang::fg::cyan << "Starting network console on port " << listenPort_ 
+
+    cout << rang::fg::cyan << "Starting network console on port " << listenPort_
          << rang::fg::reset << endl;
-    
+
     net::NetAddress bindAddress("0.0.0.0",
                                 static_cast<unsigned short>(listenPort_));
     if (!peer_->Startup(32, bindAddress)) {
@@ -2074,35 +2073,37 @@ bool Console::StartNetworking(int listenPort) {
             return false;
         }
     }
-    
+
     peer_->SetMaximumIncomingConnections(32);
     networkingEnabled_ = true;
     networkRunning_ = true;
-    
+
     messageThread_ = thread(&Console::ProcessNetworkMessages, this);
-    
+
     cout << rang::fg::green << "Network console listening on "
          << bindAddress.host << ":" << listenPort_ << " (ID: " << consoleId_
          << ")" << rang::fg::reset << endl;
     return true;
 }
 
-bool Console::ConnectToPeer(const std::string& host, int port) {
+bool Console::ConnectToPeer(const std::string &host, int port) {
     if (!networkingEnabled_ || !peer_) {
-        cout << rang::fg::red << "Networking not enabled. Use '/network start' first." 
+        cout << rang::fg::red
+             << "Networking not enabled. Use '/network start' first."
              << rang::fg::reset << endl;
         return false;
     }
-    
-    cout << rang::fg::yellow << "Connecting to peer at " << host << ":" << port 
+
+    cout << rang::fg::yellow << "Connecting to peer at " << host << ":" << port
          << rang::fg::reset << endl;
-    
-    if (!peer_->Connect(net::NetAddress(host, static_cast<unsigned short>(port)))) {
-        cerr << rang::fg::red << "Failed to connect to " << host << ":" << port 
+
+    if (!peer_->Connect(
+            net::NetAddress(host, static_cast<unsigned short>(port)))) {
+        cerr << rang::fg::red << "Failed to connect to " << host << ":" << port
              << rang::fg::reset << endl;
         return false;
     }
-    
+
     return true;
 }
 
@@ -2114,7 +2115,7 @@ void Console::StopNetworking() {
     if (messageThread_.joinable()) {
         messageThread_.join();
     }
-    
+
     if (peer_) {
         peer_->Shutdown(300);
         peer_.reset();
@@ -2122,43 +2123,46 @@ void Console::StopNetworking() {
 
     networkingEnabled_ = false;
     ClearPeerExecutors();
-    cout << rang::fg::yellow << "Network console stopped" << rang::fg::reset << endl;
+    cout << rang::fg::yellow << "Network console stopped" << rang::fg::reset
+         << endl;
 }
 
-bool Console::SendCommandToPeer(const std::string& peerAddr, const std::string& command) {
+bool Console::SendCommandToPeer(const std::string &peerAddr,
+                                const std::string &command) {
     if (!networkingEnabled_) return false;
-    
+
     net::NetAddress targetPeer = FindPeerByAddress(peerAddr);
-    
+
     if (!targetPeer.IsValid()) {
-        cout << rang::fg::red << "Peer not found: " << peerAddr << rang::fg::reset << endl;
+        cout << rang::fg::red << "Peer not found: " << peerAddr
+             << rang::fg::reset << endl;
         return false;
     }
-    
+
     BinaryStream bs;
     bs.Write(static_cast<unsigned char>(NetworkMessageType::CONSOLE_COMMAND));
     net::NetworkSerializer::WriteString(bs, consoleId_);
     net::NetworkSerializer::WriteString(bs, command);
     bs.Write(static_cast<int>(GetLanguage()));
-    
-    peer_->Send(reinterpret_cast<const unsigned char*>(bs.Begin()),
-                static_cast<std::size_t>(bs.Size()),
-                true, 0, targetPeer, false);
-    
-    cout << rang::fg::cyan << "-> [" << AddressToString(targetPeer) << "] " 
+
+    peer_->Send(reinterpret_cast<const unsigned char *>(bs.Begin()),
+                static_cast<std::size_t>(bs.Size()), true, 0, targetPeer,
+                false);
+
+    cout << rang::fg::cyan << "-> [" << AddressToString(targetPeer) << "] "
          << command << rang::fg::reset << endl;
-    
+
     return true;
 }
 
-bool Console::SendBinaryToPeer(const std::string& peerAddr,
-                               const BinaryStream& payload) {
+bool Console::SendBinaryToPeer(const std::string &peerAddr,
+                               const BinaryStream &payload) {
     if (!networkingEnabled_) return false;
 
     net::NetAddress targetPeer = FindPeerByAddress(peerAddr);
     if (!targetPeer.IsValid()) {
-        cout << rang::fg::red << "Peer not found: " << peerAddr << rang::fg::reset
-             << endl;
+        cout << rang::fg::red << "Peer not found: " << peerAddr
+             << rang::fg::reset << endl;
         return false;
     }
 
@@ -2171,9 +2175,9 @@ bool Console::SendBinaryToPeer(const std::string& peerAddr,
         bs.Write(size, payload.Begin());
     }
 
-    peer_->Send(reinterpret_cast<const unsigned char*>(bs.Begin()),
-                static_cast<std::size_t>(bs.Size()),
-                true, 0, targetPeer, false);
+    peer_->Send(reinterpret_cast<const unsigned char *>(bs.Begin()),
+                static_cast<std::size_t>(bs.Size()), true, 0, targetPeer,
+                false);
 
     cout << rang::fg::cyan << "-> [" << AddressToString(targetPeer)
          << "] <binary " << size << " bytes>" << rang::fg::reset << endl;
@@ -2181,29 +2185,31 @@ bool Console::SendBinaryToPeer(const std::string& peerAddr,
     return true;
 }
 
-void Console::BroadcastCommand(const std::string& command) {
+void Console::BroadcastCommand(const std::string &command) {
     if (!networkingEnabled_) return;
-    
+
     lock_guard<mutex> lock(peersMutex_);
-    
+
     if (connectedPeers_.empty()) {
-        cout << rang::fg::yellow << "No peers connected for broadcast" << rang::fg::reset << endl;
+        cout << rang::fg::yellow << "No peers connected for broadcast"
+             << rang::fg::reset << endl;
         return;
     }
-    
+
     BinaryStream bs;
     bs.Write(static_cast<unsigned char>(NetworkMessageType::CONSOLE_BROADCAST));
     net::NetworkSerializer::WriteString(bs, consoleId_);
     net::NetworkSerializer::WriteString(bs, command);
     bs.Write(static_cast<int>(GetLanguage()));
-    
-    for (const auto& peerAddr : connectedPeers_) {
-        peer_->Send(reinterpret_cast<const unsigned char*>(bs.Begin()),
-                    static_cast<std::size_t>(bs.Size()),
-                    true, 0, peerAddr, false);
+
+    for (const auto &peerAddr : connectedPeers_) {
+        peer_->Send(reinterpret_cast<const unsigned char *>(bs.Begin()),
+                    static_cast<std::size_t>(bs.Size()), true, 0, peerAddr,
+                    false);
     }
-    
-    cout << rang::fg::magenta << ">> [BROADCAST] " << command << rang::fg::reset << endl;
+
+    cout << rang::fg::magenta << ">> [BROADCAST] " << command << rang::fg::reset
+         << endl;
 
     NetworkConsoleMessage msg;
     msg.senderId = consoleId_ + " [BROADCAST]";
@@ -2215,10 +2221,10 @@ void Console::BroadcastCommand(const std::string& command) {
 }
 
 std::vector<std::string> Console::GetConnectedPeers() const {
-    lock_guard<mutex> lock(const_cast<mutex&>(peersMutex_));
+    lock_guard<mutex> lock(const_cast<mutex &>(peersMutex_));
     vector<string> peers;
 
-    for (const auto& peer : connectedPeers_) {
+    for (const auto &peer : connectedPeers_) {
         peers.push_back(AddressToString(peer));
     }
 
@@ -2229,65 +2235,69 @@ std::vector<NetworkConsoleMessage> Console::GetNetworkHistory() const {
     return messageHistory_;
 }
 
-void Console::SetNetworkMessageCallback(std::function<void(const NetworkConsoleMessage&)> callback) {
+void Console::SetNetworkMessageCallback(
+    std::function<void(const NetworkConsoleMessage &)> callback) {
     messageCallback_ = callback;
 }
 
-String Console::ProcessNetworkCommand(const String& command) {
+String Console::ProcessNetworkCommand(const String &command) {
     string cmd = command.c_str();
     stringstream ss(cmd);
     string verb;
     ss >> verb;
-    
+
     if (verb == "/network") {
         string subCmd;
         ss >> subCmd;
-        
+
         if (subCmd == "start") {
             int port = 14600;
             ss >> port;  // Optional port override
             bool success = StartNetworking(port);
-            return success ? String("Network started") : String("Failed to start network");
+            return success ? String("Network started")
+                           : String("Failed to start network");
         }
-        
+
         if (subCmd == "stop") {
             StopNetworking();
             return String("Network stopped");
         }
-        
+
         if (subCmd == "status") {
             if (networkingEnabled_) {
                 auto peers = GetConnectedPeers();
-                return String("Network enabled, port ") + std::to_string(listenPort_) + 
-                       String(", peers: ") + std::to_string(static_cast<int>(peers.size()));
+                return String("Network enabled, port ") +
+                       std::to_string(listenPort_) + String(", peers: ") +
+                       std::to_string(static_cast<int>(peers.size()));
             }
             return String("Network disabled");
         }
-        
+
         return String("Usage: /network {start|stop|status} [port]");
     }
-    
+
     if (!networkingEnabled_) {
         return String("Network not enabled. Use '/network start' first.");
     }
-    
+
     if (verb == "/connect") {
         string host;
         int port;
         if (ss >> host >> port) {
             bool success = ConnectToPeer(host, port);
-            return success ? String("Connecting...") : String("Connection failed");
+            return success ? String("Connecting...")
+                           : String("Connection failed");
         } else {
             return String("Usage: /connect <host> <port>");
         }
     }
-    
+
     if (verb == "/peers") {
         auto peers = GetConnectedPeers();
         if (peers.empty()) {
             return String("No peers connected");
         }
-        
+
         stringstream result;
         result << "Connected peers (" << peers.size() << "):";
         for (size_t i = 0; i < peers.size(); ++i) {
@@ -2295,22 +2305,22 @@ String Console::ProcessNetworkCommand(const String& command) {
         }
         return String(result.str().c_str());
     }
-    
+
     if (verb == "/broadcast") {
         string broadcastCmd;
         getline(ss, broadcastCmd);
         if (!broadcastCmd.empty() && broadcastCmd[0] == ' ') {
             broadcastCmd = broadcastCmd.substr(1);
         }
-        
+
         if (broadcastCmd.empty()) {
             return String("Usage: /broadcast <command>");
         }
-        
+
         BroadcastCommand(broadcastCmd);
         return String("");
     }
-    
+
     if (verb.find("/@") == 0) {
         string peerAddr = verb.substr(2);
         string remoteCmd;
@@ -2318,24 +2328,24 @@ String Console::ProcessNetworkCommand(const String& command) {
         if (!remoteCmd.empty() && remoteCmd[0] == ' ') {
             remoteCmd = remoteCmd.substr(1);
         }
-        
+
         if (remoteCmd.empty()) {
             return String("Usage: /@<peer> <command>");
         }
-        
+
         bool success = SendCommandToPeer(peerAddr, remoteCmd);
         return success ? String("") : String("Failed to send command");
     }
-    
+
     if (verb == "/nethistory") {
         auto history = GetNetworkHistory();
         if (history.empty()) {
             return String("No network message history");
         }
-        
+
         stringstream result;
         result << "Network History (" << history.size() << " messages):";
-        for (const auto& msg : history) {
+        for (const auto &msg : history) {
             result << "\n[" << msg.senderId << "] " << msg.command;
             if (!msg.result.empty()) {
                 result << " -> " << msg.result;
@@ -2343,18 +2353,21 @@ String Console::ProcessNetworkCommand(const String& command) {
         }
         return String(result.str().c_str());
     }
-    
+
     return String("Unknown network command: ") + command;
 }
 
 void Console::ShowNetworkHelp() const {
-    cout << rang::style::bold << "Network Console Commands:" << rang::style::reset << endl;
-    cout << "  /network start [port]   - Start networking (default port 14600)" << endl;
-    cout << "  /network stop           - Stop networking" << endl; 
+    cout << rang::style::bold
+         << "Network Console Commands:" << rang::style::reset << endl;
+    cout << "  /network start [port]   - Start networking (default port 14600)"
+         << endl;
+    cout << "  /network stop           - Stop networking" << endl;
     cout << "  /network status         - Show network status" << endl;
     cout << "  /connect <host> <port>  - Connect to a peer console" << endl;
     cout << "  /peers                  - List connected peers" << endl;
-    cout << "  /broadcast <command>    - Broadcast command to all peers" << endl;
+    cout << "  /broadcast <command>    - Broadcast command to all peers"
+         << endl;
     cout << "  /@<peer> <command>      - Send command to specific peer" << endl;
     cout << "  /nethistory             - Show network message history" << endl;
 }
@@ -2369,16 +2382,17 @@ void Console::ProcessNetworkMessages() {
             }
             HandleNetworkPacket(*packet);
         }
-        
+
         this_thread::sleep_for(chrono::milliseconds(10));
     }
 }
 
-void Console::HandleNetworkPacket(const net::NetPacket& packet) {
+void Console::HandleNetworkPacket(const net::NetPacket &packet) {
     if (packet.data.empty()) return;
-    
-    NetworkMessageType msgType = static_cast<NetworkMessageType>(packet.data[0]);
-    
+
+    NetworkMessageType msgType =
+        static_cast<NetworkMessageType>(packet.data[0]);
+
     switch (msgType) {
         case NetworkMessageType::CONSOLE_COMMAND:
             HandleConsoleCommand(packet);
@@ -2396,37 +2410,46 @@ void Console::HandleNetworkPacket(const net::NetPacket& packet) {
             HandleConsoleBinary(packet);
             break;
         default:
-            if (packet.data[0] == static_cast<unsigned char>(
-                                     net::SystemMessage::NewIncomingConnection)) {
-                cout << rang::fg::green << "<- Peer connected: " 
-                     << AddressToString(packet.address) << rang::fg::reset << endl;
+            if (packet.data[0] ==
+                static_cast<unsigned char>(
+                    net::SystemMessage::NewIncomingConnection)) {
+                cout << rang::fg::green
+                     << "<- Peer connected: " << AddressToString(packet.address)
+                     << rang::fg::reset << endl;
                 AddPeer(packet.address);
-            } else if (packet.data[0] == static_cast<unsigned char>(
-                                               net::SystemMessage::ConnectionRequestAccepted)) {
-                cout << rang::fg::green << "<- Connected to peer: " 
-                     << AddressToString(packet.address) << rang::fg::reset << endl;
+            } else if (packet.data[0] ==
+                       static_cast<unsigned char>(
+                           net::SystemMessage::ConnectionRequestAccepted)) {
+                cout << rang::fg::green << "<- Connected to peer: "
+                     << AddressToString(packet.address) << rang::fg::reset
+                     << endl;
                 AddPeer(packet.address);
-            } else if (packet.data[0] == static_cast<unsigned char>(
-                                               net::SystemMessage::ConnectionAttemptFailed)) {
+            } else if (packet.data[0] ==
+                       static_cast<unsigned char>(
+                           net::SystemMessage::ConnectionAttemptFailed)) {
                 cout << rang::fg::red << "<- Connection attempt failed: "
-                     << AddressToString(packet.address) << rang::fg::reset << endl;
-            } else if (packet.data[0] == static_cast<unsigned char>(
-                                               net::SystemMessage::DisconnectionNotification) ||
-                      packet.data[0] == static_cast<unsigned char>(
-                                               net::SystemMessage::ConnectionLost)) {
-                cout << rang::fg::yellow << "<- Peer disconnected: " 
-                     << AddressToString(packet.address) << rang::fg::reset << endl;
+                     << AddressToString(packet.address) << rang::fg::reset
+                     << endl;
+            } else if (packet.data[0] ==
+                           static_cast<unsigned char>(
+                               net::SystemMessage::DisconnectionNotification) ||
+                       packet.data[0] ==
+                           static_cast<unsigned char>(
+                               net::SystemMessage::ConnectionLost)) {
+                cout << rang::fg::yellow << "<- Peer disconnected: "
+                     << AddressToString(packet.address) << rang::fg::reset
+                     << endl;
                 RemovePeer(packet.address);
             }
             break;
     }
 }
 
-void Console::HandleConsoleCommand(const net::NetPacket& packet) {
-    BinaryPacket packetStream(reinterpret_cast<const char*>(packet.data.data()),
-                        reinterpret_cast<const char*>(packet.data.data() +
-                                                      packet.data.size()),
-                        reg_);
+void Console::HandleConsoleCommand(const net::NetPacket &packet) {
+    BinaryPacket packetStream(
+        reinterpret_cast<const char *>(packet.data.data()),
+        reinterpret_cast<const char *>(packet.data.data() + packet.data.size()),
+        reg_);
     unsigned char msgId = 0;
     if (!packetStream.Read(msgId)) {
         return;
@@ -2449,7 +2472,8 @@ void Console::HandleConsoleCommand(const net::NetPacket& packet) {
     int initialSize = (mainStackBefore.Exists()) ? mainStackBefore->Size() : 0;
     bool shareMainStack = (initialSize > 0) || (remoteLang != originalLang);
 
-    cout << rang::fg::cyan << "<- [" << senderId << "] " << command << rang::fg::reset << endl;
+    cout << rang::fg::cyan << "<- [" << senderId << "] " << command
+         << rang::fg::reset << endl;
 
     try {
         auto peerExecutor = GetOrCreatePeerExecutor(packet.address);
@@ -2482,7 +2506,7 @@ void Console::HandleConsoleCommand(const net::NetPacket& packet) {
         msg.timestamp = chrono::system_clock::now().time_since_epoch().count();
         LogNetworkMessage(msg);
 
-    } catch (const Exception::Base& e) {
+    } catch (const Exception::Base &e) {
         string error = "Error: " + string(e.ToString().c_str());
         SendResultToPeer(packet.address, command, error);
 
@@ -2492,11 +2516,11 @@ void Console::HandleConsoleCommand(const net::NetPacket& packet) {
     }
 }
 
-void Console::HandleConsoleResult(const net::NetPacket& packet) {
-    BinaryPacket stream(reinterpret_cast<const char*>(packet.data.data()),
-                        reinterpret_cast<const char*>(packet.data.data() +
-                                                      packet.data.size()),
-                        reg_);
+void Console::HandleConsoleResult(const net::NetPacket &packet) {
+    BinaryPacket stream(
+        reinterpret_cast<const char *>(packet.data.data()),
+        reinterpret_cast<const char *>(packet.data.data() + packet.data.size()),
+        reg_);
     unsigned char msgId = 0;
     if (!stream.Read(msgId)) {
         return;
@@ -2509,7 +2533,7 @@ void Console::HandleConsoleResult(const net::NetPacket& packet) {
         return;
     }
 
-    cout << rang::fg::green << "<- [" << senderId << "] Result: " << result 
+    cout << rang::fg::green << "<- [" << senderId << "] Result: " << result
          << rang::fg::reset << endl;
 
     NetworkConsoleMessage msg;
@@ -2520,11 +2544,11 @@ void Console::HandleConsoleResult(const net::NetPacket& packet) {
     LogNetworkMessage(msg);
 }
 
-void Console::HandleConsoleBroadcast(const net::NetPacket& packet) {
-    BinaryPacket stream(reinterpret_cast<const char*>(packet.data.data()),
-                        reinterpret_cast<const char*>(packet.data.data() +
-                                                      packet.data.size()),
-                        reg_);
+void Console::HandleConsoleBroadcast(const net::NetPacket &packet) {
+    BinaryPacket stream(
+        reinterpret_cast<const char *>(packet.data.data()),
+        reinterpret_cast<const char *>(packet.data.data() + packet.data.size()),
+        reg_);
     unsigned char msgId = 0;
     if (!stream.Read(msgId)) {
         return;
@@ -2540,7 +2564,7 @@ void Console::HandleConsoleBroadcast(const net::NetPacket& packet) {
 
     AssignPeerConsoleId(packet.address, senderId);
 
-    cout << rang::fg::magenta << "<< [BROADCAST from " << senderId << "] " 
+    cout << rang::fg::magenta << "<< [BROADCAST from " << senderId << "] "
          << command << rang::fg::reset << endl;
 
     Language originalLang = GetLanguage();
@@ -2571,7 +2595,7 @@ void Console::HandleConsoleBroadcast(const net::NetPacket& packet) {
         if (remoteLang != originalLang) {
             SetLanguage(originalLang);
         }
-        
+
         NetworkConsoleMessage msg;
         msg.senderId = senderId + " [BROADCAST]";
         msg.command = command;
@@ -2579,45 +2603,45 @@ void Console::HandleConsoleBroadcast(const net::NetPacket& packet) {
         msg.language = remoteLang;
         msg.timestamp = chrono::system_clock::now().time_since_epoch().count();
         LogNetworkMessage(msg);
-        
-    } catch (const Exception::Base& e) {
-        cout << rang::fg::red << "   Error: " << e.ToString().c_str() 
+
+    } catch (const Exception::Base &e) {
+        cout << rang::fg::red << "   Error: " << e.ToString().c_str()
              << rang::fg::reset << endl;
-        
+
         if (remoteLang != originalLang) {
             SetLanguage(originalLang);
         }
     }
 }
 
-void Console::HandleLanguageSwitch(const net::NetPacket& packet) {
-    BinaryPacket stream(reinterpret_cast<const char*>(packet.data.data()),
-                        reinterpret_cast<const char*>(packet.data.data() +
-                                                      packet.data.size()),
-                        reg_);
+void Console::HandleLanguageSwitch(const net::NetPacket &packet) {
+    BinaryPacket stream(
+        reinterpret_cast<const char *>(packet.data.data()),
+        reinterpret_cast<const char *>(packet.data.data() + packet.data.size()),
+        reg_);
     unsigned char msgId = 0;
     if (!stream.Read(msgId)) {
         return;
     }
-    
+
     string senderId;
     int languageInt = 0;
     if (!net::NetworkSerializer::ReadString(stream, senderId) ||
         !stream.Read(languageInt)) {
         return;
     }
-    
+
     Language newLang = static_cast<Language>(languageInt);
-    cout << rang::fg::blue << "<- [" << senderId << "] switched to " 
-         << (newLang == Language::Pi ? "Pi" : "Rho") << " language" 
+    cout << rang::fg::blue << "<- [" << senderId << "] switched to "
+         << (newLang == Language::Pi ? "Pi" : "Rho") << " language"
          << rang::fg::reset << endl;
 }
 
-void Console::HandleConsoleBinary(const net::NetPacket& packet) {
-    BinaryPacket packetStream(reinterpret_cast<const char*>(packet.data.data()),
-                        reinterpret_cast<const char*>(packet.data.data() +
-                                                      packet.data.size()),
-                        reg_);
+void Console::HandleConsoleBinary(const net::NetPacket &packet) {
+    BinaryPacket packetStream(
+        reinterpret_cast<const char *>(packet.data.data()),
+        reinterpret_cast<const char *>(packet.data.data() + packet.data.size()),
+        reg_);
     unsigned char msgId = 0;
     if (!packetStream.Read(msgId)) {
         return;
@@ -2636,8 +2660,7 @@ void Console::HandleConsoleBinary(const net::NetPacket& packet) {
     if (size > 0) {
         buffer.resize(size);
         if (!packetStream.Read(size, buffer.data())) {
-            cout << rang::fg::red
-                 << "<- [binary] Failed to read payload bytes"
+            cout << rang::fg::red << "<- [binary] Failed to read payload bytes"
                  << rang::fg::reset << endl;
             return;
         }
@@ -2650,9 +2673,8 @@ void Console::HandleConsoleBinary(const net::NetPacket& packet) {
 
     executor->Push(stream.GetObject());
 
-    cout << rang::fg::magenta << "<- [" << senderId << "] "
-         << "<binary " << size << " bytes pushed to stack>"
-         << rang::fg::reset << endl;
+    cout << rang::fg::magenta << "<- [" << senderId << "] " << "<binary "
+         << size << " bytes pushed to stack>" << rang::fg::reset << endl;
 
     NetworkConsoleMessage msg;
     msg.senderId = senderId;
@@ -2663,22 +2685,22 @@ void Console::HandleConsoleBinary(const net::NetPacket& packet) {
     LogNetworkMessage(msg);
 }
 
-void Console::SendResultToPeer(const net::NetAddress& peer, 
-                              const std::string& command, const std::string& result) {
+void Console::SendResultToPeer(const net::NetAddress &peer,
+                               const std::string &command,
+                               const std::string &result) {
     if (!peer_) return;
-    
+
     BinaryStream bs;
     bs.Write(static_cast<unsigned char>(NetworkMessageType::CONSOLE_RESULT));
     net::NetworkSerializer::WriteString(bs, consoleId_);
     net::NetworkSerializer::WriteString(bs, command);
     net::NetworkSerializer::WriteString(bs, result);
-    
-    peer_->Send(reinterpret_cast<const unsigned char*>(bs.Begin()),
-                static_cast<std::size_t>(bs.Size()),
-                true, 0, peer, false);
+
+    peer_->Send(reinterpret_cast<const unsigned char *>(bs.Begin()),
+                static_cast<std::size_t>(bs.Size()), true, 0, peer, false);
 }
 
-void Console::AddPeer(const net::NetAddress& address) {
+void Console::AddPeer(const net::NetAddress &address) {
     {
         lock_guard<mutex> lock(peersMutex_);
         connectedPeers_.push_back(address);
@@ -2687,7 +2709,7 @@ void Console::AddPeer(const net::NetAddress& address) {
     GetOrCreatePeerExecutor(address);
 }
 
-void Console::RemovePeer(const net::NetAddress& address) {
+void Console::RemovePeer(const net::NetAddress &address) {
     {
         lock_guard<mutex> lock(peersMutex_);
         connectedPeers_.erase(
@@ -2698,7 +2720,7 @@ void Console::RemovePeer(const net::NetAddress& address) {
     RemovePeerExecutor(address);
 }
 
-void Console::LogNetworkMessage(const NetworkConsoleMessage& message) {
+void Console::LogNetworkMessage(const NetworkConsoleMessage &message) {
     messageHistory_.push_back(message);
     if (messageHistory_.size() > 1000) {
         messageHistory_.erase(messageHistory_.begin());
@@ -2726,11 +2748,12 @@ void Console::CopyMainStackToExecutor(Pointer<Executor> target) const {
     }
 
     std::vector<Object> items;
-    for (auto it = mainStack->Begin(), end = mainStack->End(); it != end; ++it) {
+    for (auto it = mainStack->Begin(), end = mainStack->End(); it != end;
+         ++it) {
         items.push_back(*it);
     }
 
-    for (const auto& obj : items) {
+    for (const auto &obj : items) {
         target->Push(obj);
     }
 }
@@ -2753,16 +2776,17 @@ void Console::CopyExecutorStackToMain(Pointer<Executor> source) {
     }
 
     std::vector<Object> items;
-    for (auto it = sourceStack->Begin(), end = sourceStack->End(); it != end; ++it) {
+    for (auto it = sourceStack->Begin(), end = sourceStack->End(); it != end;
+         ++it) {
         items.push_back(*it);
     }
 
-    for (const auto& obj : items) {
+    for (const auto &obj : items) {
         executor->Push(obj);
     }
 }
 
-std::string Console::SimplifyStackDump(const std::string& dump) const {
+std::string Console::SimplifyStackDump(const std::string &dump) const {
     if (dump.empty()) {
         return dump;
     }
@@ -2777,11 +2801,14 @@ std::string Console::SimplifyStackDump(const std::string& dump) const {
         }
     }
 
-    auto trim = [](std::string& text) {
-        auto first = std::find_if_not(text.begin(), text.end(),
-                                      [](unsigned char ch) { return std::isspace(ch); });
-        auto last = std::find_if_not(text.rbegin(), text.rend(),
-                                     [](unsigned char ch) { return std::isspace(ch); }).base();
+    auto trim = [](std::string &text) {
+        auto first =
+            std::find_if_not(text.begin(), text.end(),
+                             [](unsigned char ch) { return std::isspace(ch); });
+        auto last =
+            std::find_if_not(text.rbegin(), text.rend(), [](unsigned char ch) {
+                return std::isspace(ch);
+            }).base();
         if (first >= last) {
             text.clear();
         } else {
@@ -2813,16 +2840,17 @@ std::string Console::GenerateConsoleId() {
     return "Console-" + to_string(dis(gen));
 }
 
-std::string Console::AddressToString(const net::NetAddress& addr) const {
+std::string Console::AddressToString(const net::NetAddress &addr) const {
     return addr.ToString();
 }
 
-net::NetAddress Console::FindPeerByAddress(const std::string& addr) const {
-    lock_guard<mutex> lock(const_cast<mutex&>(peersMutex_));
+net::NetAddress Console::FindPeerByAddress(const std::string &addr) const {
+    lock_guard<mutex> lock(const_cast<mutex &>(peersMutex_));
 
-    for (const auto& peer : connectedPeers_) {
+    for (const auto &peer : connectedPeers_) {
         string peerStr = AddressToString(peer);
-        if (peerStr.find(addr) != string::npos || addr == to_string(&peer - &connectedPeers_[0])) {
+        if (peerStr.find(addr) != string::npos ||
+            addr == to_string(&peer - &connectedPeers_[0])) {
             return peer;
         }
     }
@@ -2830,15 +2858,16 @@ net::NetAddress Console::FindPeerByAddress(const std::string& addr) const {
     return net::NetAddress();
 }
 
-std::string Console::MakePeerKey(const net::NetAddress& addr) const {
+std::string Console::MakePeerKey(const net::NetAddress &addr) const {
     return AddressToString(addr);
 }
 
-Pointer<Executor> Console::GetOrCreatePeerExecutor(const net::NetAddress& addr) {
+Pointer<Executor> Console::GetOrCreatePeerExecutor(
+    const net::NetAddress &addr) {
     return GetOrCreatePeerExecutor(MakePeerKey(addr));
 }
 
-Pointer<Executor> Console::GetOrCreatePeerExecutor(const std::string& peerKey) {
+Pointer<Executor> Console::GetOrCreatePeerExecutor(const std::string &peerKey) {
     lock_guard<std::mutex> lock(peerExecutorsMutex_);
     auto it = peerExecutors_.find(peerKey);
     if (it != peerExecutors_.end()) {
@@ -2854,8 +2883,8 @@ Pointer<Executor> Console::GetOrCreatePeerExecutor(const std::string& peerKey) {
     return newExecutor;
 }
 
-void Console::AssignPeerConsoleId(const net::NetAddress& addr,
-                                  const std::string& consoleId) {
+void Console::AssignPeerConsoleId(const net::NetAddress &addr,
+                                  const std::string &consoleId) {
     if (consoleId.empty()) {
         return;
     }
@@ -2865,7 +2894,8 @@ void Console::AssignPeerConsoleId(const net::NetAddress& addr,
     peerConsoleIds_[consoleId] = key;
 }
 
-Pointer<Executor> Console::GetPeerExecutorByConsoleId(const std::string& consoleId) const {
+Pointer<Executor> Console::GetPeerExecutorByConsoleId(
+    const std::string &consoleId) const {
     lock_guard<std::mutex> lock(peerExecutorsMutex_);
     auto idIt = peerConsoleIds_.find(consoleId);
     if (idIt == peerConsoleIds_.end()) {
@@ -2880,7 +2910,7 @@ Pointer<Executor> Console::GetPeerExecutorByConsoleId(const std::string& console
     return execIt->second;
 }
 
-void Console::RemovePeerExecutor(const net::NetAddress& addr) {
+void Console::RemovePeerExecutor(const net::NetAddress &addr) {
     std::string key = MakePeerKey(addr);
     lock_guard<std::mutex> lock(peerExecutorsMutex_);
 
@@ -2904,41 +2934,65 @@ void Console::ClearPeerExecutors() {
 #else  // !KAI_USE_ENET — stub out all networking methods
 
 bool Console::StartNetworking(int) { return false; }
-bool Console::ConnectToPeer(const std::string&, int) { return false; }
+bool Console::ConnectToPeer(const std::string &, int) { return false; }
 void Console::StopNetworking() {}
-bool Console::SendCommandToPeer(const std::string&, const std::string&) { return false; }
-bool Console::SendBinaryToPeer(const std::string&, const BinaryStream&) { return false; }
-void Console::BroadcastCommand(const std::string&) {}
+bool Console::SendCommandToPeer(const std::string &, const std::string &) {
+    return false;
+}
+bool Console::SendBinaryToPeer(const std::string &, const BinaryStream &) {
+    return false;
+}
+void Console::BroadcastCommand(const std::string &) {}
 std::vector<std::string> Console::GetConnectedPeers() const { return {}; }
-std::vector<NetworkConsoleMessage> Console::GetNetworkHistory() const { return {}; }
-void Console::SetNetworkMessageCallback(std::function<void(const NetworkConsoleMessage&)>) {}
-String Console::ProcessNetworkCommand(const String&) { return String("Networking not enabled"); }
+std::vector<NetworkConsoleMessage> Console::GetNetworkHistory() const {
+    return {};
+}
+void Console::SetNetworkMessageCallback(
+    std::function<void(const NetworkConsoleMessage &)>) {}
+String Console::ProcessNetworkCommand(const String &) {
+    return String("Networking not enabled");
+}
 void Console::ShowNetworkHelp() const {}
 
 void Console::ProcessNetworkMessages() {}
-void Console::HandleNetworkPacket(const net::NetPacket&) {}
-void Console::HandleConsoleCommand(const net::NetPacket&) {}
-void Console::HandleConsoleResult(const net::NetPacket&) {}
-void Console::HandleConsoleBroadcast(const net::NetPacket&) {}
-void Console::HandleLanguageSwitch(const net::NetPacket&) {}
-void Console::HandleConsoleBinary(const net::NetPacket&) {}
-void Console::SendResultToPeer(const net::NetAddress&, const std::string&, const std::string&) {}
-void Console::AddPeer(const net::NetAddress&) {}
-void Console::RemovePeer(const net::NetAddress&) {}
-void Console::LogNetworkMessage(const NetworkConsoleMessage&) {}
+void Console::HandleNetworkPacket(const net::NetPacket &) {}
+void Console::HandleConsoleCommand(const net::NetPacket &) {}
+void Console::HandleConsoleResult(const net::NetPacket &) {}
+void Console::HandleConsoleBroadcast(const net::NetPacket &) {}
+void Console::HandleLanguageSwitch(const net::NetPacket &) {}
+void Console::HandleConsoleBinary(const net::NetPacket &) {}
+void Console::SendResultToPeer(const net::NetAddress &, const std::string &,
+                               const std::string &) {}
+void Console::AddPeer(const net::NetAddress &) {}
+void Console::RemovePeer(const net::NetAddress &) {}
+void Console::LogNetworkMessage(const NetworkConsoleMessage &) {}
 std::string Console::GenerateConsoleId() { return ""; }
-std::string Console::AddressToString(const net::NetAddress&) const { return ""; }
-net::NetAddress Console::FindPeerByAddress(const std::string&) const { return net::NetAddress(); }
-std::string Console::MakePeerKey(const net::NetAddress&) const { return ""; }
-Pointer<Executor> Console::GetOrCreatePeerExecutor(const net::NetAddress&) { return Pointer<Executor>(); }
-Pointer<Executor> Console::GetOrCreatePeerExecutor(const std::string&) { return Pointer<Executor>(); }
-void Console::AssignPeerConsoleId(const net::NetAddress&, const std::string&) {}
-Pointer<Executor> Console::GetPeerExecutorByConsoleId(const std::string&) const { return Pointer<Executor>(); }
-void Console::RemovePeerExecutor(const net::NetAddress&) {}
+std::string Console::AddressToString(const net::NetAddress &) const {
+    return "";
+}
+net::NetAddress Console::FindPeerByAddress(const std::string &) const {
+    return net::NetAddress();
+}
+std::string Console::MakePeerKey(const net::NetAddress &) const { return ""; }
+Pointer<Executor> Console::GetOrCreatePeerExecutor(const net::NetAddress &) {
+    return Pointer<Executor>();
+}
+Pointer<Executor> Console::GetOrCreatePeerExecutor(const std::string &) {
+    return Pointer<Executor>();
+}
+void Console::AssignPeerConsoleId(const net::NetAddress &,
+                                  const std::string &) {}
+Pointer<Executor> Console::GetPeerExecutorByConsoleId(
+    const std::string &) const {
+    return Pointer<Executor>();
+}
+void Console::RemovePeerExecutor(const net::NetAddress &) {}
 void Console::ClearPeerExecutors() {}
 void Console::CopyMainStackToExecutor(Pointer<Executor>) const {}
 void Console::CopyExecutorStackToMain(Pointer<Executor>) {}
-std::string Console::SimplifyStackDump(const std::string& dump) const { return dump; }
+std::string Console::SimplifyStackDump(const std::string &dump) const {
+    return dump;
+}
 
 #endif  // KAI_USE_ENET
 

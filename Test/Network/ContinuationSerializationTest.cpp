@@ -1,22 +1,20 @@
 #include <gtest/gtest.h>
 
+#include "KAI/Console/Console.h"
 #include "KAI/Core/BuiltinTypes/All.h"
 #include "KAI/Core/Registry.h"
 #include "KAI/Core/Tree.h"
 #include "KAI/Executor/BinBase.h"
 #include "KAI/Executor/Continuation.h"
-#include "KAI/Console/Console.h"
 #include "KAI/Network/Serialization.h"
 
 using namespace kai;
 
 class ContinuationSerializationTest : public ::testing::Test {
-protected:
+   protected:
     Console console_;
 
-    void SetUp() override {
-        console_.SetLanguage(Language::Pi);
-    }
+    void SetUp() override { console_.SetLanguage(Language::Pi); }
 
     // Compile a Pi program and return the top-level continuation.
     Value<Continuation> Compile(const char *src) {

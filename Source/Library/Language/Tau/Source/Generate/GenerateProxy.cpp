@@ -11,7 +11,8 @@ GenerateProxy::GenerateProxy(const char *input, string &output) {
     GenerateProcess::Generate(input, output);
 }
 
-bool GenerateProxy::GenerateFromFile(const char *filename, string &output, string &error) {
+bool GenerateProxy::GenerateFromFile(const char *filename, string &output,
+                                     string &error) {
     std::ifstream file(filename);
     if (!file) {
         error = string("Could not open file: ") + filename;
@@ -128,9 +129,13 @@ bool GenerateProxy::Class(Node const &cl) {
     auto className = cl.GetToken().Text();
 
     // Generate documentation comment
-    Output() << "/// Network proxy for " << className << " interface" << EndLine();
-    Output() << "/// Provides type-safe remote method calls over the network" << EndLine();
-    Output() << "/// All methods are synchronous and may throw NetworkException on failure" << EndLine();
+    Output() << "/// Network proxy for " << className << " interface"
+             << EndLine();
+    Output() << "/// Provides type-safe remote method calls over the network"
+             << EndLine();
+    Output() << "/// All methods are synchronous and may throw "
+                "NetworkException on failure"
+             << EndLine();
 
     // Generate Proxy class only
     auto proxyDecl = ProxyDecl(className);
@@ -255,14 +260,16 @@ void GenerateProxy::MethodDecl(const string &returnType,
         for (auto const &a : args) {
             auto &ty = a->GetChild(0);
             auto &id = a->GetChild(1);
-            Output() << "///   @param " << id->GetTokenText() << " " << ty->GetTokenText() << EndLine();
+            Output() << "///   @param " << id->GetTokenText() << " "
+                     << ty->GetTokenText() << EndLine();
         }
     }
     if (returnType != "void") {
         Output() << "/// @return " << returnType << EndLine();
     }
-    Output() << "/// @throws NetworkException on communication failure" << EndLine();
-    
+    Output() << "/// @throws NetworkException on communication failure"
+             << EndLine();
+
     Output() << returnType << " " << name << "(";
     bool first = true;
     for (auto const &a : args) {
@@ -271,9 +278,9 @@ void GenerateProxy::MethodDecl(const string &returnType,
         auto &ty = a->GetChild(0);
         auto &id = a->GetChild(1);
         string typeText = ty->GetTokenText();
-        
+
         // Use appropriate parameter passing for different types
-        if (typeText == "int" || typeText == "float" || typeText == "bool" || 
+        if (typeText == "int" || typeText == "float" || typeText == "bool" ||
             typeText == "double" || typeText == "char") {
             // Pass by value for primitive types
             Output() << typeText << " " << id->GetTokenText();
@@ -294,7 +301,8 @@ void GenerateProxy::MethodBody(const string &returnType,
     if (returnType == "void") {
         Output() << "return _node->SendAsync(\"" << name << "\"";
     } else {
-        Output() << "return _node->SendWithResponseAsync<" << returnType << ">(\"" << name << "\"";
+        Output() << "return _node->SendWithResponseAsync<" << returnType
+                 << ">(\"" << name << "\"";
     }
     for (auto const &a : args) {
         Output() << ", " << a->GetChild(1)->GetTokenText();
@@ -304,8 +312,7 @@ void GenerateProxy::MethodBody(const string &returnType,
 }
 
 string GenerateProxy::ReturnType(string const &text) const {
-    if (text == "void")
-        return "Future<void>";
+    if (text == "void") return "Future<void>";
     return "Future<" + text + ">";
 }
 

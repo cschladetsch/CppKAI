@@ -1,6 +1,7 @@
 #pragma once
 
 #include <KAI/Language/Tau/Generate/GenerateProcess.h>
+
 #include <fstream>
 #include <sstream>
 
@@ -14,7 +15,8 @@ struct GenerateProxy : GenerateProcess {
     GenerateProxy(const char *input, string &output);
 
     // Convenience: Generate from TAU IDL file
-    static bool GenerateFromFile(const char *filename, string &output, string &error);
+    static bool GenerateFromFile(const char *filename, string &output,
+                                 string &error);
 
    protected:
     bool Generate(TauParser const &p, string &output) override;

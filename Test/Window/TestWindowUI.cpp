@@ -322,7 +322,8 @@ TEST_F(WindowUITest, ErrorDisplay_Pi) {
 }
 
 TEST_F(WindowUITest, ErrorDisplay_Rho) {
-    GTEST_SKIP() << "Mock executor window does not surface Rho parser errors consistently";
+    GTEST_SKIP() << "Mock executor window does not surface Rho parser errors "
+                    "consistently";
 }
 
 // =============================================================================

@@ -62,9 +62,11 @@ void Executor::Perform(Operation::Type op) {
             auto label = Pop();
             std::cerr << "[Lookup] Looking up: ";
             if (label.IsType<Label>()) {
-                std::cerr << "Label '" << ConstDeref<Label>(label).ToString() << "'";
+                std::cerr << "Label '" << ConstDeref<Label>(label).ToString()
+                          << "'";
             } else if (label.IsType<Pathname>()) {
-                std::cerr << "Pathname '" << ConstDeref<Pathname>(label).ToString() << "'";
+                std::cerr << "Pathname '"
+                          << ConstDeref<Pathname>(label).ToString() << "'";
             } else {
                 std::cerr << "Unknown type";
             }
@@ -402,7 +404,8 @@ void Executor::Perform(Operation::Type op) {
             if (continuation_.Exists()) {
                 continuation_->InitialStackDepth = data_->Size();
                 // Create a fresh scope per invocation so parameters/locals
-                // don't clobber caller scope (dynamic scoping via context stack).
+                // don't clobber caller scope (dynamic scoping via context
+                // stack).
                 continuation_->SetScope(New<void>());
                 continuation_->Enter(this);
                 KAI_TRACE() << "  Called Enter on new continuation";
@@ -420,8 +423,9 @@ void Executor::Perform(Operation::Type op) {
                 obj = Resolve(obj);
             }
 
-            // For tail call optimization: create new continuation but reuse scope
-            // This avoids context growth while maintaining proper state isolation
+            // For tail call optimization: create new continuation but reuse
+            // scope This avoids context growth while maintaining proper state
+            // isolation
             if (obj.IsType<Continuation>()) {
                 Value<Continuation> orig = obj;
                 Value<Continuation> val = New<Continuation>();
@@ -432,8 +436,10 @@ void Executor::Perform(Operation::Type op) {
                     cont->SetCode(orig->GetCode());
                     cont->args = orig->args;
 
-                    // Reuse current continuation's scope instead of creating new one
-                    if (continuation_.Exists() && continuation_->GetScope().Exists()) {
+                    // Reuse current continuation's scope instead of creating
+                    // new one
+                    if (continuation_.Exists() &&
+                        continuation_->GetScope().Exists()) {
                         cont->SetScope(continuation_->GetScope());
                     } else {
                         cont->SetScope(orig->GetScope());
@@ -454,9 +460,10 @@ void Executor::Perform(Operation::Type op) {
                 continuation_->Enter(this);
             }
 
-            // Set replace_ = true to signal that continuation has been replaced.
-            // Set break_ = true to exit any inline execution (like ExecuteContinuationInline)
-            // The Continue() loop will see replace_=true and continue with new continuation
+            // Set replace_ = true to signal that continuation has been
+            // replaced. Set break_ = true to exit any inline execution (like
+            // ExecuteContinuationInline) The Continue() loop will see
+            // replace_=true and continue with new continuation
             replace_ = true;
             break_ = true;
             break;
@@ -750,16 +757,19 @@ void Executor::Perform(Operation::Type op) {
             Object bound;
 
             // Helper: only the global (tree) scope may be updated from within a
-            // function.  Intermediate function-local scopes on the context stack
-            // are private to each invocation, so recursive calls cannot clobber
-            // each other's locals.
-            Object treeScope = (tree_ != nullptr) ? tree_->GetScope() : Object();
-            Handle treeScopeHandle = treeScope.Exists() ? treeScope.GetHandle() : Handle();
+            // function.  Intermediate function-local scopes on the context
+            // stack are private to each invocation, so recursive calls cannot
+            // clobber each other's locals.
+            Object treeScope =
+                (tree_ != nullptr) ? tree_->GetScope() : Object();
+            Handle treeScopeHandle =
+                treeScope.Exists() ? treeScope.GetHandle() : Handle();
 
             auto storeLabel = [&](const Label& label) {
                 if (scope.Has(label)) {
                     scope.Set(label, value);
-                    KAI_TRACE() << "Updated '" << label.ToString() << "' in current scope";
+                    KAI_TRACE() << "Updated '" << label.ToString()
+                                << "' in current scope";
                     return;
                 }
                 bool foundInParent = false;
@@ -771,17 +781,22 @@ void Executor::Perform(Operation::Type op) {
                     if (!parentScope.Exists()) continue;
                     if (!parentScope.Has(label)) continue;
                     // Only update the global (tree) scope; skip intermediate
-                    // function-local scopes to maintain per-invocation isolation.
-                    bool isGlobalScope = treeScopeHandle && parentScope.GetHandle() == treeScopeHandle;
+                    // function-local scopes to maintain per-invocation
+                    // isolation.
+                    bool isGlobalScope =
+                        treeScopeHandle &&
+                        parentScope.GetHandle() == treeScopeHandle;
                     if (!isGlobalScope) continue;
                     parentScope.Set(label, value);
                     foundInParent = true;
-                    KAI_TRACE() << "Updated '" << label.ToString() << "' in global scope";
+                    KAI_TRACE() << "Updated '" << label.ToString()
+                                << "' in global scope";
                     break;
                 }
                 if (!foundInParent) {
                     scope.Add(label, value);
-                    KAI_TRACE() << "Added '" << label.ToString() << "' to current scope";
+                    KAI_TRACE() << "Added '" << label.ToString()
+                                << "' to current scope";
                 }
             };
 
@@ -899,9 +914,11 @@ void Executor::Perform(Operation::Type op) {
             // Run A if condition is true, else run B.
             KAI_TRACE() << "IfElse: Stack size before pops: " << data_->Size();
             auto B = Pop();
-            KAI_TRACE() << "IfElse: Popped B (else block), type: " << B.GetTypeNumber().ToString();
+            KAI_TRACE() << "IfElse: Popped B (else block), type: "
+                        << B.GetTypeNumber().ToString();
             auto A = Pop();
-            KAI_TRACE() << "IfElse: Popped A (then block), type: " << A.GetTypeNumber().ToString();
+            KAI_TRACE() << "IfElse: Popped A (then block), type: "
+                        << A.GetTypeNumber().ToString();
             bool condition = PopBool();
             KAI_TRACE() << "IfElse: condition=" << condition << ", choosing "
                         << (condition ? "then" : "else") << " block";
@@ -915,9 +932,10 @@ void Executor::Perform(Operation::Type op) {
                     cont->SetScope(continuation_->GetScope());
                 }
                 ExecuteContinuationInline(cont);
-                // If Replace happened inside ExecuteContinuationInline, replace_ will be true
-                // and continuation_ will be the new continuation. Don't clear it here -
-                // let the Continue() loop handle it
+                // If Replace happened inside ExecuteContinuationInline,
+                // replace_ will be true and continuation_ will be the new
+                // continuation. Don't clear it here - let the Continue() loop
+                // handle it
             } else {
                 // Handle non-continuation objects by pushing them onto the
                 // stack This allows IfElse to work with simple
@@ -1248,7 +1266,7 @@ void Executor::Perform(Operation::Type op) {
                     keys->Append(it->first);
                 }
             } else if (obj.Exists()) {
-                for (const auto &entry : obj.GetDictionary()) {
+                for (const auto& entry : obj.GetDictionary()) {
                     keys->Append(New<String>(entry.first.ToString()));
                 }
             }
@@ -1322,7 +1340,8 @@ void Executor::Perform(Operation::Type op) {
                 int size = static_cast<int>(src.size());
                 start = std::max(0, std::min(start, size));
                 end = std::max(0, std::min(end, size));
-                Push(New<String>(String(src.begin() + start, src.begin() + end)));
+                Push(New<String>(
+                    String(src.begin() + start, src.begin() + end)));
             } else {
                 KAI_TRACE_ERROR() << "ArraySlice: Unsupported container type";
                 Push(Object());
@@ -1604,8 +1623,8 @@ void Executor::Perform(Operation::Type op) {
                                         << ", current=" << i;
                         }
 
-                    // Execute body inline (handles suspend/replace/resume)
-                    ExecuteContinuationInline(bodyCont);
+                        // Execute body inline (handles suspend/replace/resume)
+                        ExecuteContinuationInline(bodyCont);
 
                         // Handle control flow
                         if (break_) {
@@ -1678,9 +1697,10 @@ void Executor::Perform(Operation::Type op) {
                             break;
                         }
 
-                        // Reset continue flag before increment so increment always runs
-                        // This is correct C-style for loop semantics: continue should
-                        // skip the rest of the body but still execute the increment
+                        // Reset continue flag before increment so increment
+                        // always runs This is correct C-style for loop
+                        // semantics: continue should skip the rest of the body
+                        // but still execute the increment
                         continue_ = false;
 
                         // Execute increment (even with continue)
@@ -1743,7 +1763,8 @@ void Executor::Perform(Operation::Type op) {
                         break;           // Exit the do-while loop
                     }
 
-                    // Continue should jump to the condition check (C/C++ semantics)
+                    // Continue should jump to the condition check (C/C++
+                    // semantics)
                     if (continue_) {
                         continue_ = false;
                     }
@@ -2302,7 +2323,8 @@ void Executor::Perform(Operation::Type op) {
 
                 for (int i = 0; i < arr.Size(); ++i) {
                     // Record stack depth before pushing element so we can
-                    // restore it after the body without consuming caller values.
+                    // restore it after the body without consuming caller
+                    // values.
                     int stackDepthBefore = data_->Size();
 
                     // Push the current element
@@ -2310,7 +2332,8 @@ void Executor::Perform(Operation::Type op) {
 
                     // Execute the function (must be a continuation)
                     if (!function.IsType<Continuation>()) {
-                        KAI_TRACE_ERROR() << "ForEach: Function must be a continuation";
+                        KAI_TRACE_ERROR()
+                            << "ForEach: Function must be a continuation";
                         KAI_THROW_1(Base, "ForEach requires continuation");
                     }
 
@@ -2330,14 +2353,18 @@ void Executor::Perform(Operation::Type op) {
                     try {
                         ExecuteContinuationInline(cont);
                     } catch (const Exception::Base& e) {
-                        KAI_TRACE_ERROR() << "ForEach: KAI exception in iteration " << i
-                                          << ": " << e.ToString();
-                        // Don't re-throw - continue to check break/continue flags
+                        KAI_TRACE_ERROR()
+                            << "ForEach: KAI exception in iteration " << i
+                            << ": " << e.ToString();
+                        // Don't re-throw - continue to check break/continue
+                        // flags
                     } catch (const std::exception& e) {
-                        KAI_TRACE_ERROR() << "ForEach: std::exception in iteration " << i
-                                          << ": " << e.what();
+                        KAI_TRACE_ERROR()
+                            << "ForEach: std::exception in iteration " << i
+                            << ": " << e.what();
                     } catch (...) {
-                        KAI_TRACE_ERROR() << "ForEach: Unknown exception in iteration " << i;
+                        KAI_TRACE_ERROR()
+                            << "ForEach: Unknown exception in iteration " << i;
                     }
 
                     // Check for break
@@ -2353,7 +2380,8 @@ void Executor::Perform(Operation::Type op) {
                     }
 
                     // Discard any values the body left above the pre-iteration
-                    // baseline. This avoids consuming caller-owned stack values.
+                    // baseline. This avoids consuming caller-owned stack
+                    // values.
                     while (data_->Size() > stackDepthBefore) {
                         Pop();
                     }
@@ -2372,7 +2400,8 @@ void Executor::Perform(Operation::Type op) {
 
                     // Execute the function
                     if (!function.IsType<Continuation>()) {
-                        KAI_TRACE_ERROR() << "ForEach: Function must be a continuation";
+                        KAI_TRACE_ERROR()
+                            << "ForEach: Function must be a continuation";
                         KAI_THROW_1(Base, "ForEach requires continuation");
                     }
 
@@ -2392,13 +2421,17 @@ void Executor::Perform(Operation::Type op) {
                     try {
                         ExecuteContinuationInline(cont);
                     } catch (const Exception::Base& e) {
-                        KAI_TRACE_ERROR() << "ForEach: KAI exception in iteration " << idx
-                                          << ": " << e.ToString();
+                        KAI_TRACE_ERROR()
+                            << "ForEach: KAI exception in iteration " << idx
+                            << ": " << e.ToString();
                     } catch (const std::exception& e) {
-                        KAI_TRACE_ERROR() << "ForEach: std::exception in iteration " << idx
-                                          << ": " << e.what();
+                        KAI_TRACE_ERROR()
+                            << "ForEach: std::exception in iteration " << idx
+                            << ": " << e.what();
                     } catch (...) {
-                        KAI_TRACE_ERROR() << "ForEach: Unknown exception in iteration " << idx;
+                        KAI_TRACE_ERROR()
+                            << "ForEach: Unknown exception in iteration "
+                            << idx;
                     }
 
                     // Check for break
@@ -2525,7 +2558,8 @@ void Executor::ExecuteContinuationInline(Pointer<Continuation> cont) {
             Pointer<Continuation> cont;
             Object originalScope;
             ScopeGuard(Pointer<Continuation> c)
-                : cont(c), originalScope(c.Exists() ? c->GetScope() : Object()) {}
+                : cont(c),
+                  originalScope(c.Exists() ? c->GetScope() : Object()) {}
             ~ScopeGuard() {
                 if (cont.Exists()) {
                     cont->SetScope(originalScope);
@@ -2577,8 +2611,7 @@ void Executor::ExecuteContinuationInline(Pointer<Continuation> cont) {
 
                     int resumeIndex = ConstDeref<int>(cont->index);
                     bool savedBreak = break_;
-                    Pointer<Continuation> suspendedCont =
-                        Object(continuation_);
+                    Pointer<Continuation> suspendedCont = Object(continuation_);
 
                     executeInline(suspendedCont, false);
 

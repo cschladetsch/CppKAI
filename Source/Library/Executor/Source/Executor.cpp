@@ -333,12 +333,15 @@ Object Executor::TryResolve(Label const &label) const {
 
     // DEBUG: Log ALL resolution attempts to understand the issue
     KAI_TRACE() << "[TryResolve] Looking for '" << label.ToString() << "'";
-    KAI_TRACE() << "  continuation exists: " << (continuation_.Exists() ? "yes" : "no");
+    KAI_TRACE() << "  continuation exists: "
+                << (continuation_.Exists() ? "yes" : "no");
     if (continuation_.Exists()) {
         Object scope = continuation_->GetScope();
-        KAI_TRACE() << "  continuation scope exists: " << (scope.Exists() ? "yes" : "no");
+        KAI_TRACE() << "  continuation scope exists: "
+                    << (scope.Exists() ? "yes" : "no");
         if (scope.Exists()) {
-            KAI_TRACE() << "  scope.Has('" << label.ToString() << "'): " << (scope.Has(label) ? "YES" : "NO");
+            KAI_TRACE() << "  scope.Has('" << label.ToString()
+                        << "'): " << (scope.Has(label) ? "YES" : "NO");
         }
     }
     KAI_TRACE() << "  context stack size: " << context_->Size();
@@ -346,8 +349,10 @@ Object Executor::TryResolve(Label const &label) const {
         Pointer<Continuation> cont = context_->At(i);
         if (cont.Exists()) {
             Object scope = cont->GetScope();
-            KAI_TRACE() << "  context[" << i << "] scope exists: " << (scope.Exists() ? "yes" : "no")
-                        << ", Has('" << label.ToString() << "'): " << (scope.Has(label) ? "YES" : "NO");
+            KAI_TRACE() << "  context[" << i
+                        << "] scope exists: " << (scope.Exists() ? "yes" : "no")
+                        << ", Has('" << label.ToString()
+                        << "'): " << (scope.Has(label) ? "YES" : "NO");
         }
     }
     KAI_TRACE() << "  tree exists: " << (tree_ ? "yes" : "no");
@@ -366,8 +371,7 @@ Object Executor::TryResolve(Label const &label) const {
 
         Object scope = cont->GetScope();
         // Try both Has (direct children) and HasChild (recursive search)
-        if (scope.Exists() && scope.Has(label))
-            return scope.Get(label);
+        if (scope.Exists() && scope.Has(label)) return scope.Get(label);
         if (scope.Exists() && scope.HasChild(label))
             return scope.GetChild(label);
     }
@@ -513,7 +517,6 @@ void Executor::Eval(Object const &Q) {
         return;
     }
 
-
     // Removed noisy trace for cleaner Console output
 
     // Simplified: Treat evaluation as a simple dispatch based on type
@@ -632,32 +635,32 @@ void Executor::ContinueOneInstruction() {
     }
 
     Object next;
-    
+
     try {
         if (!continuation_->Next(next)) {
             NextContinuation();
             return;
         }
-        
+
         if (!next.Valid()) {
             KAI_TRACE_ERROR() << "Continue: Invalid next object";
             break_ = true;
             return;
         }
-        
+
         Eval(next);
-        
+
         if (replace_) {
             replace_ = false;
             break_ = false;
             return;
         }
-        
+
         if (break_) {
             NextContinuation();
             return;
         }
-        
+
     } catch (const Exception::Base &e) {
         KAI_TRACE_ERROR() << "Continue: KAI Exception: " << e.ToString();
         break_ = true;
@@ -674,43 +677,43 @@ bool Executor::Step() {
     if (!continuation_.Valid() || !continuation_.Exists()) {
         return false;
     }
-    
+
     stepNumber_++;
-    
+
     bool oldMode = singleStep_;
     singleStep_ = true;
     Continue();
     singleStep_ = oldMode;
-    
+
     return !break_ && continuation_.Valid() && continuation_.Exists();
 }
 /*
 void Executor::ContinueOneInstruction() {
     // This is the refactored single-instruction executor
-    
+
     if (!continuation_.Valid() || !continuation_.Exists()) {
         break_ = true;
         return;
     }
 
     Object next;
-    
+
     try {
         if (!continuation_->Next(next)) {
             // No more instructions in current continuation
             NextContinuation();
             return;
         }
-        
+
         if (!next.Valid()) {
             KAI_TRACE_ERROR() << "Continue: Invalid next object";
             break_ = true;
             return;
         }
-        
+
         // Execute this ONE instruction
         Eval(next);
-        
+
         // Check what happened during execution
         if (replace_) {
             // Replace operation changed continuation
@@ -718,13 +721,13 @@ void Executor::ContinueOneInstruction() {
             break_ = false;
             return;
         }
-        
+
         if (break_) {
             // Resume/Break operation
             NextContinuation();
             return;
         }
-        
+
     } catch (const Exception::Base &e) {
         KAI_TRACE_ERROR() << "Continue: KAI Exception: " << e.ToString();
         break_ = true;
@@ -741,11 +744,11 @@ void Executor::Run() {
     // Execute continuously until done or suspended
     stepNumber_ = 0;
     break_ = false;
-    
+
     while (!break_ && continuation_.Valid() && continuation_.Exists()) {
         stepNumber_++;
         Continue();  // Execute ONE instruction
-        
+
         // If someone explicitly set break_, stop
         if (break_) {
             break;
@@ -958,8 +961,9 @@ void Executor::ConditionalContextSwitch(Operation::Type op) {
             break_ = true;
             break;
         case Operation::Replace:
-            // Replace does NOT push to context - that's the whole point for tail calls
-            // Create new continuation but reuse scope to avoid context growth
+            // Replace does NOT push to context - that's the whole point for
+            // tail calls Create new continuation but reuse scope to avoid
+            // context growth
             if (obj.IsType<Continuation>()) {
                 Value<Continuation> orig = obj;
                 Value<Continuation> val = New<Continuation>();
@@ -971,7 +975,8 @@ void Executor::ConditionalContextSwitch(Operation::Type op) {
                     cont->args = orig->args;
 
                     // Reuse current continuation's scope
-                    if (continuation_.Exists() && continuation_->GetScope().Exists()) {
+                    if (continuation_.Exists() &&
+                        continuation_->GetScope().Exists()) {
                         cont->SetScope(continuation_->GetScope());
                     } else {
                         cont->SetScope(orig->GetScope());
