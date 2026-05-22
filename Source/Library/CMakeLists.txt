@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.28...3.30)
 
 def_library(Core)
 
+add_subdirectory(${LIBRARY_HOME}/ImGui)
+
 # Executor: build all sources except Console.cpp, which needs language deps
 project(Executor)
 set(exec_root ${LIBRARY_HOME}/Executor)

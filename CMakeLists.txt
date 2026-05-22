@@ -100,6 +100,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 option(KAI_BUILD_TEST_ALL "Build all tests" ON)
 option(KAI_BUILD_CORE_TEST "Build unit tests" ON)
 option(KAI_BUILD_TEST_LANG "Build language tests" ON)
+option(KAI_BUILD_WINDOW "Build the ImGui window client" OFF)
 option(KAI_NETWORKING "Build networking library, Tau IDL, NetworkGenerate tool, and network tests" ON)
 
 # Security option: Enable shell syntax (backtick operations)
