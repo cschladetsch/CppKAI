@@ -10,3 +10,6 @@
 [submodule "Ext/ENet"]
 	path = Ext/ENet
 	url = https://github.com/lsalzman/enet.git
+[submodule "Ext/CppLmmModelStore"]
+	path = Ext/CppLmmModelStore
+	url = https://github.com/cschladetsch/CppLmmModelStore
