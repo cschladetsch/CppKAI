@@ -18,7 +18,8 @@ export KAI_ROOT=/path/to/KAI
 
 ## Demo
 
-![DistibutedDemo](resource/cppkai_continuation_flow.gif)
+![DistributedDemo](resource/cppkai_continuation_flow.gif)
+
 
 ## System Architecture Overview
 
