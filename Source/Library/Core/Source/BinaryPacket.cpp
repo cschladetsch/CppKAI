@@ -30,9 +30,10 @@ BinaryStream &BinaryStream::Write(int len, const Byte *src) {
         return *this;  // Nothing to write
     }
 
-    // Calculate current state
-    std::size_t cursor = current - first;
-    std::size_t cur_size = last - first;
+    // `first`, `current`, and `last` start as null on a fresh stream.
+    // Avoid pointer arithmetic on null by treating that case as an empty buffer.
+    std::size_t cursor = first ? static_cast<std::size_t>(current - first) : 0;
+    std::size_t cur_size = first ? static_cast<std::size_t>(last - first) : 0;
 
     // Reserve space efficiently - avoid frequent reallocations
     // If we need to grow, use exponential growth strategy

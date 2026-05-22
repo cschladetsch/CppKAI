@@ -96,13 +96,17 @@ class NetworkSerializer {
             return false;
         }
 
-        if (size < 0 || !packet.CanRead(size)) {
+        if (size < 0) {
             return false;
         }
 
         value.clear();
         if (size == 0) {
             return true;
+        }
+
+        if (!packet.CanRead(size)) {
+            return false;
         }
 
         value.resize(static_cast<std::size_t>(size));

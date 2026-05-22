@@ -1,5 +1,7 @@
 #include "TestCommon.h"
 
+#include <KAI/Network/Serialization.h>
+
 using namespace kai;
 using namespace std;
 
@@ -23,6 +25,49 @@ TEST(TestBinaryStream, Builtins) {
     S >> T;
     EXPECT_FALSE(S.CanRead(1));
     EXPECT_EQ(T, "Hello, world");
+}
+
+TEST(TestBinaryStream, FunctionResponseRoundTrip) {
+    Registry registry;
+    registry.AddClass<int>();
+    registry.AddClass<String>();
+
+    BinaryStream stream;
+    stream.Write(static_cast<unsigned char>(
+        kai::net::NetworkSerializer::ID_KAI_FUNCTION_RESPONSE));
+    stream.Write(42);
+    stream.Write(static_cast<int>(kai::net::ResponseType::Returned));
+    kai::net::NetworkSerializer::WriteString(stream, std::string());
+
+    Object result = registry.New<int>(77);
+    ASSERT_TRUE(kai::net::NetworkSerializer::SerializeObject(stream, result));
+
+    BinaryPacket packet(stream.Begin(), stream.Begin() + stream.Size(),
+                        &registry);
+
+    unsigned char msgId = 0;
+    int futureId = 0;
+    int responseValue = 0;
+    std::string errorMessage;
+
+    ASSERT_TRUE(packet.Read(msgId));
+    ASSERT_TRUE(packet.Read(futureId));
+    ASSERT_TRUE(packet.Read(responseValue));
+    ASSERT_TRUE(kai::net::NetworkSerializer::ReadString(packet, errorMessage));
+
+    Object parsed =
+        kai::net::NetworkSerializer::DeserializeObject(packet, registry);
+
+    EXPECT_EQ(msgId, static_cast<unsigned char>(
+                          kai::net::NetworkSerializer::ID_KAI_FUNCTION_RESPONSE));
+    EXPECT_EQ(futureId, 42);
+    EXPECT_EQ(responseValue,
+              static_cast<int>(kai::net::ResponseType::Returned));
+    EXPECT_TRUE(errorMessage.empty());
+    ASSERT_TRUE(parsed.Exists());
+    EXPECT_TRUE(parsed.IsType<int>());
+    EXPECT_EQ(ConstDeref<int>(parsed), 77);
+    EXPECT_FALSE(packet.CanRead(1));
 }
 
 TEST(TestBinaryStream, TestObject) {
