@@ -6,6 +6,7 @@
 #include "KAI/Executor/BinBase.h"
 #include "KAI/Executor/Continuation.h"
 #include "KAI/Console/Console.h"
+#include "KAI/Network/Serialization.h"
 
 using namespace kai;
 
@@ -106,3 +107,30 @@ TEST_F(ContinuationSerializationTest, BinaryStreamRoundTrip) {
     EXPECT_EQ(restored.GetCode()->Size(), cont->GetCode()->Size());
 }
 
+// Frozen continuations should survive the same binary object transport used by
+// the network layer.
+TEST_F(ContinuationSerializationTest, NetworkSerializerRoundTrip) {
+    auto cont = Compile("6 7 +");
+    Object frozen = Bin::Freeze(cont);
+
+    BinaryStream transport;
+    kai::net::NetworkSerializer::SerializeObject(transport, frozen);
+
+    BinaryPacket packet(transport.Begin(), transport.Begin() + transport.Size(),
+                        &console_.GetRegistry());
+    Object received = kai::net::NetworkSerializer::DeserializeObject(
+        packet, console_.GetRegistry());
+
+    ASSERT_TRUE(received.Exists());
+    ASSERT_TRUE(received.IsType<BinaryStream>());
+
+    Object thawed = Bin::Thaw(received);
+    ASSERT_TRUE(thawed.Exists());
+    ASSERT_TRUE(thawed.IsType<Continuation>());
+
+    console_.GetExecutor()->Continue(Value<Continuation>(thawed));
+
+    auto stack = console_.GetExecutor()->GetDataStack();
+    ASSERT_FALSE(stack->Empty());
+    EXPECT_EQ(ConstDeref<int>(stack->Top()), 13);
+}

@@ -5,13 +5,6 @@
 #include <memory>
 #include <string>
 
-#if defined(__linux__) || defined(__APPLE__)
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#endif
-
 #include "KAI/Core/BinaryStream.h"
 #include "KAI/Core/BuiltinTypes/Array.h"
 #include "KAI/Core/BuiltinTypes/String.h"
@@ -59,43 +52,15 @@ class ICalcProxy : public ProxyBase {
 
 struct ListenResult {
     int port = 0;
-    const char *skipReason = nullptr;
+    std::string skipReason;
 };
-
-static bool CanBindLoopbackPort(int port) {
-#if defined(__linux__) || defined(__APPLE__)
-    const int fd = ::socket(AF_INET, SOCK_STREAM, 0);
-    if (fd < 0) {
-        return false;
-    }
-
-    sockaddr_in addr{};
-    addr.sin_family = AF_INET;
-    addr.sin_port = htons(static_cast<uint16_t>(port));
-    addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-
-    const bool ok = ::bind(fd, reinterpret_cast<const sockaddr *>(&addr),
-                           sizeof(addr)) == 0;
-    ::close(fd);
-    return ok;
-#else
-    KAI_UNUSED_1(port);
-    return true;
-#endif
-}
 
 static ListenResult ListenOnAvailablePort(Node &node, int beginPort,
                                           int endPort) {
-#if defined(__linux__) || defined(__APPLE__)
-    if (!CanBindLoopbackPort(beginPort)) {
-        return {0, "Loopback socket bind is not permitted in this environment"};
-    }
-#endif
-
     for (int candidate = beginPort; candidate < endPort; ++candidate) {
         node.Listen(IpAddress("127.0.0.1"), candidate);
         if (node.IsRunning()) {
-            return {candidate, nullptr};
+            return {candidate, {}};
         }
     }
 

@@ -121,7 +121,7 @@ graph TB
 - **Multi-Language Frontend**: Rho (infix), Pi (stack-based), and Tau (IDL) languages with seamless interoperability
 - **Interactive Console**: Real-time REPL with peer-to-peer networking capabilities  
 - **Distributed Object Model**: Network-transparent objects with type safety across node boundaries
-- **Stack-based Execution**: High-performance virtual machine with continuation support
+- **Stack-based Execution**: High-performance virtual machine with continuation support and binary migration between nodes
 - **Incremental Garbage Collection**: Smooth memory management without performance spikes
 - **Code Generation**: Tau IDL generates proxy/agent pairs for network communication
 - **Cross-platform Support**: Unified development experience across major operating systems
@@ -454,6 +454,8 @@ Networking is optional and must be enabled at build time:
 ```
 
 This builds the ENet transport layer, the Tau IDL code generator (`NetworkGenerate`), and all network tests.
+
+Continuations are serialized as binary payloads, so suspended execution can be frozen on one node, transferred over the network, and resumed on another node.
 
 The core networking model uses **Domains**, **Agents**, and **Proxies**:
 

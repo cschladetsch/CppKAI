@@ -1,16 +1,9 @@
 #include <gtest/gtest.h>
 
-#include <cerrno>
 #include <chrono>
 #include <functional>
+#include <string>
 #include <thread>
-
-#if defined(__linux__) || defined(__APPLE__)
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#endif
 
 #include "KAI/Core/BuiltinTypes/All.h"
 #include "KAI/Core/Registry.h"
@@ -44,47 +37,27 @@ static bool PollUntil(Node &a, Node &b, std::function<bool()> pred,
 
 struct ListenResult {
     int port = 0;
-    const char *skipReason = nullptr;
+    std::string skipReason;
 };
-
-static bool CanBindLoopbackPort(int port) {
-#if defined(__linux__) || defined(__APPLE__)
-    const int fd = ::socket(AF_INET, SOCK_STREAM, 0);
-    if (fd < 0) {
-        return false;
-    }
-
-    sockaddr_in addr{};
-    addr.sin_family = AF_INET;
-    addr.sin_port = htons(static_cast<uint16_t>(port));
-    addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-
-    const bool ok = ::bind(fd, reinterpret_cast<const sockaddr *>(&addr),
-                           sizeof(addr)) == 0;
-    ::close(fd);
-    return ok;
-#else
-    KAI_UNUSED_1(port);
-    return true;
-#endif
-}
 
 static ListenResult ListenOnAvailablePort(Node &node, int beginPort,
                                           int endPort) {
-#if defined(__linux__) || defined(__APPLE__)
-    if (!CanBindLoopbackPort(beginPort)) {
-        return {0, "Loopback socket bind is not permitted in this environment"};
-    }
-#endif
-
+    std::string lastFailure;
     for (int candidate = beginPort; candidate < endPort; ++candidate) {
         node.Listen(IpAddress("127.0.0.1"), candidate);
         if (node.IsRunning()) {
-            return {candidate, nullptr};
+            return {candidate, {}};
         }
+
+        lastFailure = "Node::Listen failed to start on 127.0.0.1:" +
+                      std::to_string(candidate);
     }
 
-    return {0, "No available loopback port found in the requested range"};
+    if (lastFailure.empty()) {
+        lastFailure = "No available loopback port found in the requested range";
+    }
+
+    return {0, std::move(lastFailure)};
 }
 
 class NodeEndToEndTest : public ::testing::Test {
@@ -471,34 +444,16 @@ TEST_F(NodeEndToEndTest, RemoteContinuationMigration) {
 
     // Client compiles a simple Pi continuation that can be frozen on one node
     // and resumed on another: double(5) = 10.
-    try {
-        auto cont = clientConsole.Compile(
-            "{ 2 * } 'double # 5 double &",
-            Structure::Program);
+    auto cont = clientConsole.Compile("{ 2 * } 'double # 5 double &",
+                                      Structure::Program);
+    ASSERT_TRUE(cont.Exists());
 
-        Object frozen = Bin::Freeze(*cont->Self);
+    Object frozen = Bin::Freeze(*cont->Self);
+    ASSERT_TRUE(frozen.Exists());
 
-        // Preflight the local object serialization path first. If frozen
-        // continuations cannot survive a plain BinaryStream round-trip yet,
-        // the remote migration path is not supportable either.
-        BinaryStream probe;
-        probe << frozen;
-        probe.SetRegistry(&clientConsole.GetRegistry());
-        Object roundTripped;
-        probe >> roundTripped;
+    auto future = client.Invoke<int>(agentHandle, "ThawAndResume", frozen);
+    int result = client.WaitFor(future, 2000ms);
 
-        auto future = client.Invoke<int>(agentHandle, "ThawAndResume", frozen);
-        int result = client.WaitFor(future, 2000ms);
-
-        EXPECT_TRUE(future.Succeeded());
-        EXPECT_EQ(result, 10);
-    } catch (const Exception::Base &e) {
-        GTEST_SKIP() << "Frozen continuation migration is not fully supported "
-                        "by the runtime yet: "
-                     << e.ToString();
-    } catch (const std::exception &e) {
-        GTEST_SKIP() << "Frozen continuation migration is not fully supported "
-                        "by the runtime yet: "
-                     << e.what();
-    }
+    EXPECT_TRUE(future.Succeeded());
+    EXPECT_EQ(result, 10);
 }
