@@ -118,6 +118,7 @@ graph TB
 - **Interactive Console**: Real-time REPL with peer-to-peer networking capabilities  
 - **Distributed Object Model**: Network-transparent objects with type safety across node boundaries
 - **Stack-based Execution**: High-performance virtual machine with continuation support and binary migration between nodes
+- **LLM Tooling**: `RepoIndex` builds a local repo knowledge base and `RhoDataset` exports training data for Rho-focused model work under `~/.cache/deepseek/models`
 - **Incremental Garbage Collection**: Smooth memory management without performance spikes
 - **Code Generation**: Tau IDL generates proxy/agent pairs for network communication
 - **Cross-platform Support**: Unified development experience across major operating systems
@@ -157,6 +158,7 @@ graph TB
 - **Project Status**: [TODO](TODO.md) | [Test Summary](TEST_SUMMARY.md)
 
 ### **Component Documentation**
+- **LLM Overview**: [LmmReadme.md](LmmReadme.md) - Cache, repo indexing, and Rho dataset export
 - **Core System**: [Core README](Include/KAI/Core/README.md) | [Registry](Include/KAI/Core/Object/README.md) | [Config](Include/KAI/Core/Config/README.md)
 - **Executor**: [Executor README](Include/KAI/Executor/README.md) - Virtual machine and execution engine
 - **Console**: [Console README](Include/KAI/Console/README.md) - Interactive shell with networking
@@ -617,6 +619,12 @@ Docs and scripts may refer to `$KAI_ROOT` as the repository root. Set it once pe
 export KAI_ROOT=/path/to/KAI
 ```
 
+For local editing helpers, use `fsed`:
+
+```bash
+fsed 's/old/new/g' path/to/file
+```
+
 ### **Project Statistics**
 - **629+** C++ source files
 - **3** integrated programming languages (Pi / Rho / Tau)
@@ -628,5 +636,6 @@ export KAI_ROOT=/path/to/KAI
 - **Model storage**: models live under `~/.cache/deepseek/models` by default, or `XDG_CACHE_HOME/deepseek/models` if set
 - **Backend**: the cache layer is provided by `Ext/CppLmmModelStore`
 - **Repo knowledge base**: `./Bin/RepoIndex` builds a local code/test index under the model cache
+- **Current workflow**: use `RepoIndex` for grounded repo retrieval; a llama.cpp inference runtime still needs to be added on top of the cache layer
 
 **Start exploring**: Begin with the **[Documentation Guide](Doc/Documentation.md)** or dive into **[System Architecture](resources/README.md)** for technical details.

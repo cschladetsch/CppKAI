@@ -1,9 +1,9 @@
-#include "TestCommon.h"
-
 #include <KAI/LLM/ModelCache.h>
 
 #include <filesystem>
 #include <optional>
+
+#include "TestCommon.h"
 
 #if defined(_WIN32)
 #include <cstdlib>

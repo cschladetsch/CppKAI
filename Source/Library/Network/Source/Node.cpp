@@ -871,8 +871,8 @@ void Node::ProcessPropertyGet(const NetPacket &packet) {
             NetworkSerializer::ID_KAI_FUNCTION_RESPONSE));
         responseStream.Write(futureId);
         responseStream.Write(static_cast<int>(ResponseType::BadRequest));
-        NetworkSerializer::WriteString(
-            responseStream, "Failed to serialize property response");
+        NetworkSerializer::WriteString(responseStream,
+                                       "Failed to serialize property response");
         Object empty;
         NetworkSerializer::SerializeObject(responseStream, empty);
     }
@@ -942,8 +942,8 @@ void Node::ProcessPropertySet(const NetPacket &packet) {
             NetworkSerializer::ID_KAI_FUNCTION_RESPONSE));
         responseStream.Write(futureId);
         responseStream.Write(static_cast<int>(ResponseType::BadRequest));
-        NetworkSerializer::WriteString(
-            responseStream, "Failed to serialize property response");
+        NetworkSerializer::WriteString(responseStream,
+                                       "Failed to serialize property response");
         NetworkSerializer::SerializeObject(responseStream, Object());
     }
 

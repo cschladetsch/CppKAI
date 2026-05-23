@@ -162,18 +162,18 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
-Test/Network/CMakeFiles/Test_Network.dir/rule:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/Network/CMakeFiles/Test_Network.dir/rule
-.PHONY : Test/Network/CMakeFiles/Test_Network.dir/rule
+Test/Network/CMakeFiles/TestNetwork.dir/rule:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Test/Network/CMakeFiles/TestNetwork.dir/rule
+.PHONY : Test/Network/CMakeFiles/TestNetwork.dir/rule
 
 # Convenience name for target.
-Test_Network: Test/Network/CMakeFiles/Test_Network.dir/rule
-.PHONY : Test_Network
+TestNetwork: Test/Network/CMakeFiles/TestNetwork.dir/rule
+.PHONY : TestNetwork
 
 # fast build rule for target.
-Test_Network/fast:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/Test_Network.dir/build.make Test/Network/CMakeFiles/Test_Network.dir/build
-.PHONY : Test_Network/fast
+TestNetwork/fast:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/TestNetwork.dir/build.make Test/Network/CMakeFiles/TestNetwork.dir/build
+.PHONY : TestNetwork/fast
 
 # Convenience name for target.
 Test/Network/CMakeFiles/ConsoleConnectionTest.dir/rule:
@@ -265,6 +265,30 @@ ConsoleConnectionTest.cpp.s:
 	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/ConsoleConnectionTest.dir/build.make Test/Network/CMakeFiles/ConsoleConnectionTest.dir/ConsoleConnectionTest.cpp.s
 .PHONY : ConsoleConnectionTest.cpp.s
 
+ContinuationSerializationTest.o: ContinuationSerializationTest.cpp.o
+.PHONY : ContinuationSerializationTest.o
+
+# target to build an object file
+ContinuationSerializationTest.cpp.o:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/TestNetwork.dir/build.make Test/Network/CMakeFiles/TestNetwork.dir/ContinuationSerializationTest.cpp.o
+.PHONY : ContinuationSerializationTest.cpp.o
+
+ContinuationSerializationTest.i: ContinuationSerializationTest.cpp.i
+.PHONY : ContinuationSerializationTest.i
+
+# target to preprocess a source file
+ContinuationSerializationTest.cpp.i:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/TestNetwork.dir/build.make Test/Network/CMakeFiles/TestNetwork.dir/ContinuationSerializationTest.cpp.i
+.PHONY : ContinuationSerializationTest.cpp.i
+
+ContinuationSerializationTest.s: ContinuationSerializationTest.cpp.s
+.PHONY : ContinuationSerializationTest.s
+
+# target to generate assembly for a file
+ContinuationSerializationTest.cpp.s:
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/TestNetwork.dir/build.make Test/Network/CMakeFiles/TestNetwork.dir/ContinuationSerializationTest.cpp.s
+.PHONY : ContinuationSerializationTest.cpp.s
+
 IntegratedConsoleTest.o: IntegratedConsoleTest.cpp.o
 .PHONY : IntegratedConsoleTest.o
 
@@ -294,7 +318,7 @@ NodeEndToEndTest.o: NodeEndToEndTest.cpp.o
 
 # target to build an object file
 NodeEndToEndTest.cpp.o:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/Test_Network.dir/build.make Test/Network/CMakeFiles/Test_Network.dir/NodeEndToEndTest.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/TestNetwork.dir/build.make Test/Network/CMakeFiles/TestNetwork.dir/NodeEndToEndTest.cpp.o
 .PHONY : NodeEndToEndTest.cpp.o
 
 NodeEndToEndTest.i: NodeEndToEndTest.cpp.i
@@ -302,7 +326,7 @@ NodeEndToEndTest.i: NodeEndToEndTest.cpp.i
 
 # target to preprocess a source file
 NodeEndToEndTest.cpp.i:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/Test_Network.dir/build.make Test/Network/CMakeFiles/Test_Network.dir/NodeEndToEndTest.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/TestNetwork.dir/build.make Test/Network/CMakeFiles/TestNetwork.dir/NodeEndToEndTest.cpp.i
 .PHONY : NodeEndToEndTest.cpp.i
 
 NodeEndToEndTest.s: NodeEndToEndTest.cpp.s
@@ -310,7 +334,7 @@ NodeEndToEndTest.s: NodeEndToEndTest.cpp.s
 
 # target to generate assembly for a file
 NodeEndToEndTest.cpp.s:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/Test_Network.dir/build.make Test/Network/CMakeFiles/Test_Network.dir/NodeEndToEndTest.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/TestNetwork.dir/build.make Test/Network/CMakeFiles/TestNetwork.dir/NodeEndToEndTest.cpp.s
 .PHONY : NodeEndToEndTest.cpp.s
 
 TauDomainPropertyTest.o: TauDomainPropertyTest.cpp.o
@@ -318,7 +342,7 @@ TauDomainPropertyTest.o: TauDomainPropertyTest.cpp.o
 
 # target to build an object file
 TauDomainPropertyTest.cpp.o:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/Test_Network.dir/build.make Test/Network/CMakeFiles/Test_Network.dir/TauDomainPropertyTest.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/TestNetwork.dir/build.make Test/Network/CMakeFiles/TestNetwork.dir/TauDomainPropertyTest.cpp.o
 .PHONY : TauDomainPropertyTest.cpp.o
 
 TauDomainPropertyTest.i: TauDomainPropertyTest.cpp.i
@@ -326,7 +350,7 @@ TauDomainPropertyTest.i: TauDomainPropertyTest.cpp.i
 
 # target to preprocess a source file
 TauDomainPropertyTest.cpp.i:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/Test_Network.dir/build.make Test/Network/CMakeFiles/Test_Network.dir/TauDomainPropertyTest.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/TestNetwork.dir/build.make Test/Network/CMakeFiles/TestNetwork.dir/TauDomainPropertyTest.cpp.i
 .PHONY : TauDomainPropertyTest.cpp.i
 
 TauDomainPropertyTest.s: TauDomainPropertyTest.cpp.s
@@ -334,7 +358,7 @@ TauDomainPropertyTest.s: TauDomainPropertyTest.cpp.s
 
 # target to generate assembly for a file
 TauDomainPropertyTest.cpp.s:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/Test_Network.dir/build.make Test/Network/CMakeFiles/Test_Network.dir/TauDomainPropertyTest.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/TestNetwork.dir/build.make Test/Network/CMakeFiles/TestNetwork.dir/TauDomainPropertyTest.cpp.s
 .PHONY : TauDomainPropertyTest.cpp.s
 
 TauNetworkCommunicationTest.o: TauNetworkCommunicationTest.cpp.o
@@ -342,7 +366,7 @@ TauNetworkCommunicationTest.o: TauNetworkCommunicationTest.cpp.o
 
 # target to build an object file
 TauNetworkCommunicationTest.cpp.o:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/Test_Network.dir/build.make Test/Network/CMakeFiles/Test_Network.dir/TauNetworkCommunicationTest.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/TestNetwork.dir/build.make Test/Network/CMakeFiles/TestNetwork.dir/TauNetworkCommunicationTest.cpp.o
 .PHONY : TauNetworkCommunicationTest.cpp.o
 
 TauNetworkCommunicationTest.i: TauNetworkCommunicationTest.cpp.i
@@ -350,7 +374,7 @@ TauNetworkCommunicationTest.i: TauNetworkCommunicationTest.cpp.i
 
 # target to preprocess a source file
 TauNetworkCommunicationTest.cpp.i:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/Test_Network.dir/build.make Test/Network/CMakeFiles/Test_Network.dir/TauNetworkCommunicationTest.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/TestNetwork.dir/build.make Test/Network/CMakeFiles/TestNetwork.dir/TauNetworkCommunicationTest.cpp.i
 .PHONY : TauNetworkCommunicationTest.cpp.i
 
 TauNetworkCommunicationTest.s: TauNetworkCommunicationTest.cpp.s
@@ -358,7 +382,7 @@ TauNetworkCommunicationTest.s: TauNetworkCommunicationTest.cpp.s
 
 # target to generate assembly for a file
 TauNetworkCommunicationTest.cpp.s:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/Test_Network.dir/build.make Test/Network/CMakeFiles/Test_Network.dir/TauNetworkCommunicationTest.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/TestNetwork.dir/build.make Test/Network/CMakeFiles/TestNetwork.dir/TauNetworkCommunicationTest.cpp.s
 .PHONY : TauNetworkCommunicationTest.cpp.s
 
 TauPiSerializationTest.o: TauPiSerializationTest.cpp.o
@@ -366,7 +390,7 @@ TauPiSerializationTest.o: TauPiSerializationTest.cpp.o
 
 # target to build an object file
 TauPiSerializationTest.cpp.o:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/Test_Network.dir/build.make Test/Network/CMakeFiles/Test_Network.dir/TauPiSerializationTest.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/TestNetwork.dir/build.make Test/Network/CMakeFiles/TestNetwork.dir/TauPiSerializationTest.cpp.o
 .PHONY : TauPiSerializationTest.cpp.o
 
 TauPiSerializationTest.i: TauPiSerializationTest.cpp.i
@@ -374,7 +398,7 @@ TauPiSerializationTest.i: TauPiSerializationTest.cpp.i
 
 # target to preprocess a source file
 TauPiSerializationTest.cpp.i:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/Test_Network.dir/build.make Test/Network/CMakeFiles/Test_Network.dir/TauPiSerializationTest.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/TestNetwork.dir/build.make Test/Network/CMakeFiles/TestNetwork.dir/TauPiSerializationTest.cpp.i
 .PHONY : TauPiSerializationTest.cpp.i
 
 TauPiSerializationTest.s: TauPiSerializationTest.cpp.s
@@ -382,7 +406,7 @@ TauPiSerializationTest.s: TauPiSerializationTest.cpp.s
 
 # target to generate assembly for a file
 TauPiSerializationTest.cpp.s:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/Test_Network.dir/build.make Test/Network/CMakeFiles/Test_Network.dir/TauPiSerializationTest.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/TestNetwork.dir/build.make Test/Network/CMakeFiles/TestNetwork.dir/TauPiSerializationTest.cpp.s
 .PHONY : TauPiSerializationTest.cpp.s
 
 TestGenerateProxy.o: TestGenerateProxy.cpp.o
@@ -390,7 +414,7 @@ TestGenerateProxy.o: TestGenerateProxy.cpp.o
 
 # target to build an object file
 TestGenerateProxy.cpp.o:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/Test_Network.dir/build.make Test/Network/CMakeFiles/Test_Network.dir/TestGenerateProxy.cpp.o
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/TestNetwork.dir/build.make Test/Network/CMakeFiles/TestNetwork.dir/TestGenerateProxy.cpp.o
 .PHONY : TestGenerateProxy.cpp.o
 
 TestGenerateProxy.i: TestGenerateProxy.cpp.i
@@ -398,7 +422,7 @@ TestGenerateProxy.i: TestGenerateProxy.cpp.i
 
 # target to preprocess a source file
 TestGenerateProxy.cpp.i:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/Test_Network.dir/build.make Test/Network/CMakeFiles/Test_Network.dir/TestGenerateProxy.cpp.i
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/TestNetwork.dir/build.make Test/Network/CMakeFiles/TestNetwork.dir/TestGenerateProxy.cpp.i
 .PHONY : TestGenerateProxy.cpp.i
 
 TestGenerateProxy.s: TestGenerateProxy.cpp.s
@@ -406,7 +430,7 @@ TestGenerateProxy.s: TestGenerateProxy.cpp.s
 
 # target to generate assembly for a file
 TestGenerateProxy.cpp.s:
-	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/Test_Network.dir/build.make Test/Network/CMakeFiles/Test_Network.dir/TestGenerateProxy.cpp.s
+	cd /home/christian/local/repos/KAI && $(MAKE) $(MAKESILENT) -f Test/Network/CMakeFiles/TestNetwork.dir/build.make Test/Network/CMakeFiles/TestNetwork.dir/TestGenerateProxy.cpp.s
 .PHONY : TestGenerateProxy.cpp.s
 
 # Help Target
@@ -424,13 +448,16 @@ help:
 	@echo "... CalculationTest"
 	@echo "... ConsoleConnectionTest"
 	@echo "... IntegratedConsoleTest"
-	@echo "... Test_Network"
+	@echo "... TestNetwork"
 	@echo "... CalculationTest.o"
 	@echo "... CalculationTest.i"
 	@echo "... CalculationTest.s"
 	@echo "... ConsoleConnectionTest.o"
 	@echo "... ConsoleConnectionTest.i"
 	@echo "... ConsoleConnectionTest.s"
+	@echo "... ContinuationSerializationTest.o"
+	@echo "... ContinuationSerializationTest.i"
+	@echo "... ContinuationSerializationTest.s"
 	@echo "... IntegratedConsoleTest.o"
 	@echo "... IntegratedConsoleTest.i"
 	@echo "... IntegratedConsoleTest.s"

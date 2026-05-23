@@ -112,7 +112,8 @@ TEST_F(ContinuationSerializationTest, NetworkSerializerRoundTrip) {
     Object frozen = Bin::Freeze(cont);
 
     BinaryStream transport;
-    ASSERT_TRUE(kai::net::NetworkSerializer::SerializeObject(transport, frozen));
+    ASSERT_TRUE(
+        kai::net::NetworkSerializer::SerializeObject(transport, frozen));
 
     BinaryPacket packet(transport.Begin(), transport.Begin() + transport.Size(),
                         &console_.GetRegistry());
@@ -133,7 +134,8 @@ TEST_F(ContinuationSerializationTest, NetworkSerializerRoundTrip) {
     EXPECT_EQ(ConstDeref<int>(stack->Top()), 13);
 }
 
-TEST_F(ContinuationSerializationTest, DeserializeObjectRejectsTruncatedPayload) {
+TEST_F(ContinuationSerializationTest,
+       DeserializeObjectRejectsTruncatedPayload) {
     BinaryStream transport;
     transport.Write(128);
 
