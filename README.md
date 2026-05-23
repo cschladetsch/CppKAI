@@ -619,6 +619,12 @@ Docs and scripts may refer to `$KAI_ROOT` as the repository root. Set it once pe
 export KAI_ROOT=/path/to/KAI
 ```
 
+For local editing helpers, use `fsed`:
+
+```bash
+fsed 's/old/new/g' path/to/file
+```
+
 ### **Project Statistics**
 - **629+** C++ source files
 - **3** integrated programming languages (Pi / Rho / Tau)
