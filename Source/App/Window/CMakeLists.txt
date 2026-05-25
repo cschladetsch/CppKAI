@@ -20,12 +20,11 @@ endforeach()
 include_directories(/opt/local/include ${EXTERNAL}/imgui ${SOURCE_HOME}/App/${name}/Source)
 link_directories(/opt/local/lib)
 
-# Include source files. This client uses the legacy immediate-mode OpenGL
-# renderer in Main.cpp, so it does not need the Dear ImGui OpenGL3 helper or a
-# separate GL loader such as GLEW.
 set(SOURCE_FILES
     ${SOURCE_HOME}/App/${name}/Source/ExecutorWindow.cpp
     ${SOURCE_HOME}/App/${name}/Source/Main.cpp
+    ${SOURCE_HOME}/App/${name}/Source/imgui_impl_glfw.cpp
+    ${SOURCE_HOME}/App/${name}/Source/imgui_impl_opengl3.cpp
 )
 
 add_executable(${name} ${SOURCE_FILES})
@@ -44,3 +43,6 @@ find_package(OpenGL REQUIRED)
 
 # Link libraries
 target_link_libraries(${name} PiLang RhoLang Executor ConsoleLib CommonLang Core ImGui glfw OpenGL::GL)
+
+# Use the local GL headers directly instead of depending on GLEW.
+target_compile_definitions(${name} PRIVATE IMGUI_IMPL_OPENGL_LOADER_CUSTOM GL_GLEXT_PROTOTYPES)

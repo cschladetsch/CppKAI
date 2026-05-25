@@ -105,6 +105,9 @@
 #include <GL/glew.h>
 #elif defined(IMGUI_IMPL_OPENGL_LOADER_GLAD)
 #include <glad/glad.h>
+#elif defined(IMGUI_IMPL_OPENGL_LOADER_CUSTOM)
+#include <GL/gl.h>
+#include <GL/glext.h>
 #else
 // Default to GLEW if no loader is specified
 #include <GL/glew.h>

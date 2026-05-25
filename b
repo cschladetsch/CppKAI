@@ -8,6 +8,7 @@
 #   --no-color    Disable colored output
 #   --no-ninja    Use default CMake generator instead of Ninja
 #   --gcc         Use GCC instead of Clang++
+#   --window      Enable the ImGui frontend (KAI_BUILD_WINDOW=ON)
 
 # Check if help is requested
 for arg in "$@"; do
@@ -19,6 +20,7 @@ for arg in "$@"; do
     echo "  --no-color    Disable colored output"
     echo "  --no-ninja    Use default CMake generator instead of Ninja"
     echo "  --gcc         Use GCC instead of Clang++"
+    echo "  --window      Enable the ImGui frontend (KAI_BUILD_WINDOW=ON)"
     echo "  --network     Enable networking (KAI_NETWORKING=ON)"
     echo "  --help, -h    Show this help message"
     exit 0
@@ -29,6 +31,7 @@ done
 USE_COLOR=true
 USE_NINJA=true
 USE_GCC=false
+USE_WINDOW=false
 USE_NETWORKING=false
 
 for arg in "$@"; do
@@ -40,6 +43,9 @@ for arg in "$@"; do
   fi
   if [ "$arg" == "--gcc" ]; then
     USE_GCC=true
+  fi
+  if [ "$arg" == "--window" ]; then
+    USE_WINDOW=true
   fi
   if [ "$arg" == "--network" ]; then
     USE_NETWORKING=true
@@ -95,9 +101,9 @@ if [ ! -f "CMakeCache.txt" ]; then
   NEED_CONFIGURE=true
 fi
 
-# Also reconfigure if --reconfigure or --network flag is provided
+# Also reconfigure if a feature flag is provided.
 for arg in "$@"; do
-  if [ "$arg" == "--reconfigure" ] || [ "$arg" == "--network" ]; then
+  if [ "$arg" == "--reconfigure" ] || [ "$arg" == "--network" ] || [ "$arg" == "--window" ]; then
     NEED_CONFIGURE=true
   fi
 done
@@ -116,6 +122,11 @@ CMAKE_ARGS="-DCMAKE_BUILD_TYPE=Debug \
 if [ "$USE_NETWORKING" = true ]; then
   echo -e "${BLUE}Networking enabled (KAI_NETWORKING=ON)${NC}"
   CMAKE_ARGS="$CMAKE_ARGS -DKAI_NETWORKING=ON"
+fi
+
+if [ "$USE_WINDOW" = true ]; then
+  echo -e "${BLUE}Window frontend enabled (KAI_BUILD_WINDOW=ON)${NC}"
+  CMAKE_ARGS="$CMAKE_ARGS -DKAI_BUILD_WINDOW=ON"
 fi
 
 # Set compiler to clang++ by default unless --gcc flag was provided

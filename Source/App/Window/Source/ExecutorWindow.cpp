@@ -23,6 +23,7 @@ struct ExecutorWindow {
     char MultilineInputBuf[4096];  // Larger buffer for multi-line Rho input
     int HistoryPos;  // -1: new line, 0..History.Size-1 browsing history.
     bool ScrollToBottom;
+    bool FocusInputNextFrame;
 
     // Output for each language
     map<Language, vector<string>> Items;
@@ -48,6 +49,7 @@ struct ExecutorWindow {
         HistoryPos = -1;
         CurrentLanguage = Language::Pi;
         CurrentTab = ConsoleTab::Pi;
+        FocusInputNextFrame = true;
 
         // Initialize input buffers
         memset(InputBuf, 0, sizeof(InputBuf));
@@ -119,6 +121,7 @@ struct ExecutorWindow {
             // Clear the input buffers when switching languages
             InputBuf[0] = '\0';
             MultilineInputBuf[0] = '\0';
+            FocusInputNextFrame = true;
         }
     }
 
@@ -137,6 +140,7 @@ struct ExecutorWindow {
             // Clear the input buffers when switching tabs
             InputBuf[0] = '\0';
             MultilineInputBuf[0] = '\0';
+            FocusInputNextFrame = true;
         }
     }
 
@@ -380,6 +384,11 @@ struct ExecutorWindow {
             ImGuiInputTextFlags input_text_flags =
                 ImGuiInputTextFlags_EnterReturnsTrue;
 
+            if (FocusInputNextFrame) {
+                ImGui::SetKeyboardFocusHere();
+                FocusInputNextFrame = false;
+            }
+
             if (ImGui::InputText("Pi>", InputBuf, sizeof(InputBuf),
                                  input_text_flags)) {
                 char* input_end = InputBuf + strlen(InputBuf);
@@ -397,26 +406,15 @@ struct ExecutorWindow {
                 }
 
                 strcpy(InputBuf, "");
-                reclaim_focus = true;
+                FocusInputNextFrame = true;
             }
         } else {
             // Rho uses multi-line input
             ImGui::Text("Rho> (Multi-line input - Press button to execute)");
             ImGui::Separator();
 
-            // Create a child window for better layout control
-            ImGui::BeginChild(
-                "RhoInputArea",
-                ImVec2(0, ImGui::GetTextLineHeightWithSpacing() * 7), false);
-
             ImGuiInputTextFlags multiline_flags =
                 ImGuiInputTextFlags_AllowTabInput;
-
-            // Calculate width to leave room for Execute button
-            float buttonWidth = 80.0f;
-            float spacing = ImGui::GetStyle().ItemSpacing.x;
-            float inputWidth =
-                ImGui::GetContentRegionAvailWidth() - buttonWidth - spacing;
 
             // Add a helpful hint
             ImGui::TextColored(
@@ -428,19 +426,19 @@ struct ExecutorWindow {
             ImGui::PushStyleColor(ImGuiCol_FrameBg,
                                   ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
 
-            ImGui::PushItemWidth(inputWidth);
+            if (FocusInputNextFrame) {
+                ImGui::SetKeyboardFocusHere();
+                FocusInputNextFrame = false;
+            }
             ImGui::InputTextMultiline(
                 "##RhoInput", MultilineInputBuf, sizeof(MultilineInputBuf),
-                ImVec2(inputWidth, ImGui::GetTextLineHeightWithSpacing() * 5),
+                ImVec2(-1.0f, ImGui::GetTextLineHeightWithSpacing() * 6),
                 multiline_flags);
-            ImGui::PopItemWidth();
 
             ImGui::PopStyleColor();
             ImGui::PopStyleVar();
 
-            // Execute button aligned to the right
-            ImGui::SameLine();
-            ImGui::BeginGroup();
+            float buttonWidth = 100.0f;
 
             // Style the execute button
             ImGui::PushStyleColor(ImGuiCol_Button,
@@ -468,25 +466,18 @@ struct ExecutorWindow {
                 }
 
                 strcpy(MultilineInputBuf, "");
-                reclaim_focus = true;
+                FocusInputNextFrame = true;
             }
 
             ImGui::PopStyleColor(3);
-
-            // Clear button below Execute
+            ImGui::SameLine();
             if (ImGui::Button("Clear", ImVec2(buttonWidth, 0))) {
                 strcpy(MultilineInputBuf, "");
-                reclaim_focus = true;
+                FocusInputNextFrame = true;
             }
-
-            ImGui::EndGroup();
-            ImGui::EndChild();
         }
 
-        // Auto-focus on window apparition
-        ImGui::SetItemDefaultFocus();
-        if (reclaim_focus)
-            ImGui::SetKeyboardFocusHere(-1);  // Auto focus previous widget
+        (void)reclaim_focus;
     }
 
     void DrawDebuggerContent() {

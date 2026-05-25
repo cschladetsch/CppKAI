@@ -28,6 +28,9 @@ KAI provides convenient scripts for building:
 # Build with Clang++ (default)
 ./b
 
+# Build with the ImGui frontend enabled
+./b --window
+
 # Build with GCC
 ./b --gcc
 
@@ -96,6 +99,7 @@ cmake .. -DENABLE_SHELL_SYNTAX=ON         # Enable shell command integration (de
 cmake .. -DKAI_BUILD_TEST_ALL=ON          # Build test targets (default: ON)
 cmake .. -DKAI_BUILD_CORE_TEST=ON         # Build core/unit tests (default: ON)
 cmake .. -DKAI_BUILD_TEST_LANG=ON         # Build language tests (default: ON)
+cmake .. -DKAI_BUILD_WINDOW=ON            # Build the ImGui frontend (Bin/Window)
 cmake .. -DKAI_BUILD_LLM=ON               # Build local model-cache support for llama.cpp integrations
 cmake .. -DKAI_NETWORKING=ON              # Enable networking, Tau network codegen, and TestNetwork (default)
 cmake .. -DKAI_NETWORKING=OFF             # Skip networking components and network tests
@@ -129,6 +133,9 @@ cmake .. -DENABLE_SHELL_SYNTAX=ON
 ```bash
 # Using helper script (recommended)
 ./b
+
+# Include the ImGui frontend
+./b --window
 
 # Manual build
 mkdir -p build && cd build
@@ -185,6 +192,23 @@ The Console provides an interactive REPL environment:
 
 # If installed to ~/bin:
 Console --help                   # Available system-wide
+```
+
+### Window Application
+
+The ImGui frontend is built as `Bin/Window` when `KAI_BUILD_WINDOW=ON`:
+
+```bash
+# Recommended helper path
+./b --window
+
+# Manual configure/build
+mkdir -p build && cd build
+cmake .. -DKAI_BUILD_WINDOW=ON
+cmake --build . --target Window
+
+# Run from the repo root
+./Bin/Window
 ```
 
 ### Running Tests
