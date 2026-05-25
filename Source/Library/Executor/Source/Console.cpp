@@ -1182,19 +1182,13 @@ String Console::Process(const String &text) {
         // First expand any backtick shell commands
         String expandedText = ExpandShellCommands(text);
 
-        // Determine the appropriate structure based on the content
+        // Determine the appropriate structure based on the active language.
+        // Rho snippets are generally exercised through Structure::Program in
+        // tests and support single expressions as program bodies, so send the
+        // Window/REPL path through Program instead of Expression.
         Structure structure = Structure::Expression;
-
-        // For Rho, check if this looks like a statement (contains control
-        // structures)
         if (language == Language::Rho) {
-            std::string str = expandedText.StdString();
-            if (str.find("for") != std::string::npos ||
-                str.find("while") != std::string::npos ||
-                str.find("do") != std::string::npos ||
-                str.find("if") != std::string::npos) {
-                structure = Structure::Statement;
-            }
+            structure = Structure::Program;
         }
 
         // Translate the text into a continuation

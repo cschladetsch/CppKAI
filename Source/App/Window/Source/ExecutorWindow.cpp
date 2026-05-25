@@ -349,8 +349,15 @@ struct ExecutorWindow {
         ImGui::Separator();
 
         // Output region
+        float reserved_input_height = ImGui::GetFrameHeightWithSpacing();
+        if (CurrentLanguage == Language::Rho) {
+            reserved_input_height =
+                ImGui::GetTextLineHeightWithSpacing() * 11 +
+                ImGui::GetFrameHeightWithSpacing() * 2 +
+                ImGui::GetStyle().ItemSpacing.y * 6;
+        }
         ImGui::BeginChild("ScrollingRegion",
-                          ImVec2(0, -ImGui::GetItemsLineHeightWithSpacing()),
+                          ImVec2(0, -reserved_input_height),
                           false, ImGuiWindowFlags_HorizontalScrollbar);
 
         if (ImGui::BeginPopupContextWindow()) {
@@ -409,8 +416,11 @@ struct ExecutorWindow {
                 FocusInputNextFrame = true;
             }
         } else {
-            // Rho uses multi-line input
-            ImGui::Text("Rho> (Multi-line input - Press button to execute)");
+            ImGui::Text("Rho> (multi-line editor, Ctrl+Enter or Execute)");
+            if (FocusInputNextFrame) {
+                ImGui::SetKeyboardFocusHere();
+                FocusInputNextFrame = false;
+            }
             ImGui::Separator();
 
             ImGuiInputTextFlags multiline_flags =
@@ -426,14 +436,13 @@ struct ExecutorWindow {
             ImGui::PushStyleColor(ImGuiCol_FrameBg,
                                   ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
 
-            if (FocusInputNextFrame) {
-                ImGui::SetKeyboardFocusHere();
-                FocusInputNextFrame = false;
-            }
             ImGui::InputTextMultiline(
                 "##RhoInput", MultilineInputBuf, sizeof(MultilineInputBuf),
                 ImVec2(-1.0f, ImGui::GetTextLineHeightWithSpacing() * 6),
                 multiline_flags);
+            bool execute_rho =
+                ImGui::IsItemActive() && ImGui::GetIO().KeyCtrl &&
+                ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Enter));
 
             ImGui::PopStyleColor();
             ImGui::PopStyleVar();
@@ -452,6 +461,10 @@ struct ExecutorWindow {
                     "Execute",
                     ImVec2(buttonWidth,
                            ImGui::GetTextLineHeightWithSpacing() * 2))) {
+                execute_rho = true;
+            }
+
+            if (execute_rho) {
                 char* input_end = MultilineInputBuf + strlen(MultilineInputBuf);
                 while (input_end > MultilineInputBuf && input_end[-1] == ' ')
                     input_end--;

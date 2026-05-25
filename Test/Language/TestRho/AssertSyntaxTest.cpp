@@ -91,3 +91,17 @@ true
     ASSERT_TRUE(result.IsType<bool>());
     EXPECT_TRUE(ConstDeref<bool>(result));
 }
+
+TEST_F(AssertSyntaxTest, CompactFunctionAssertLeavesStackEmpty) {
+    console_.SetLanguage(Language::Rho);
+
+    data_->Clear();
+
+    const char* code =
+        "fun foo(a,b) a+b\n\tassert(foo(1,2) == 3)";
+
+    console_.Execute(code, Structure::Program);
+
+    EXPECT_TRUE(data_->Empty())
+        << "Successful assert should leave no value on the data stack";
+}
