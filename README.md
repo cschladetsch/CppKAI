@@ -10,7 +10,7 @@ Objects and *compute* can be distributed across Nodes in a Domain.
 
 ## Demo
 
-![DistributedDemo](resources/cppkai_continuation_flow.gif)
+![Continuation Mobility Demo](resources/Snap2.png)
 
 ![Continuation Mobility Demo](resources/demo2.png)
 
