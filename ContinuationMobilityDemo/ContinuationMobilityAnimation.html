@@ -597,24 +597,10 @@
     <section class="hero">
       <article class="card hero-copy">
         <h1 class="title">Animated Migration View</h1>
-        <p class="subtitle">
-          This page visualizes the single-file Rho demo at
-          <strong>Test/Language/TestRho/Scripts/ContinuationMobilityDemo.rho</strong>.
-          Each dot is a live agent. It glides between logical hosts as patrols,
-          Pi reroutes, balancing, and snapshot recovery happen. Hover any agent
-          to inspect its current state, including region, steps, migrations,
-          plans, and whether it was restored after the NodeB failure drill.
-        </p>
+        <p class="subtitle">Each dot is a live agent moving between logical hosts. Hover to inspect state. Orange ring = restored from snapshot.</p>
         <div class="chips">
-          <div class="chip">Tick 56: agents 1-3 are forced onto Market</div>
-          <div class="chip">Tick 60: NodeB fails and recovery begins</div>
-          <div class="chip">Restored agents are ringed in orange</div>
-        </div>
-        <div class="reading-guide">
-          <div class="guide-item"><strong>How to read it:</strong> each node is a logical host, and each dot is a live agent currently running there.</div>
-          <div class="guide-item"><strong>What moves mean:</strong> patrols, Pi reroutes, load balancing, and recovery all use the same moving-agent visual language.</div>
-          <div class="guide-item"><strong>What orange means:</strong> a ring marks an agent reconstructed from snapshot after the simulated failure.</div>
-          <div class="guide-item"><strong>How to inspect state:</strong> hover a dot for a fast read, or use the persistent selected-agent panel on the right for a stable summary.</div>
+          <div class="chip">Tick 56: agents 1-3 forced onto Market</div>
+          <div class="chip">Tick 60: NodeB fails, recovery begins</div>
         </div>
       </article>
 
