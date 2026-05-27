@@ -3,303 +3,294 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ContinuationMobilityDemo — Description</title>
+  <title>RhoMog Model — Description</title>
+  <link rel="stylesheet" href="./style.css">
   <style>
-    :root {
-      --bg: #f3efe6;
-      --paper: rgba(255, 252, 245, 0.86);
-      --panel: rgba(255, 255, 255, 0.72);
-      --ink: #1f2329;
-      --muted: #55606f;
-      --accent: #c54f1b;
-      --accent-soft: rgba(197, 79, 27, 0.14);
-      --line: rgba(31, 35, 41, 0.12);
-      --node-a: #244b73;
-      --node-b: #8e3b2e;
-      --node-c: #2e6a57;
-      --node-d: #6a4c93;
-      --shadow: 0 22px 60px rgba(31, 35, 41, 0.12);
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      color: var(--ink);
-      background:
-        radial-gradient(circle at top left, rgba(197, 79, 27, 0.12), transparent 28%),
-        radial-gradient(circle at top right, rgba(36, 75, 115, 0.12), transparent 34%),
-        linear-gradient(180deg, #f8f4eb 0%, #efe8db 100%);
-      font-family: "IBM Plex Sans", "Avenir Next", "Segoe UI", sans-serif;
-    }
-    .page {
-      width: min(1440px, calc(100vw - 32px));
-      margin: 16px auto 28px;
-      padding: 18px;
-      border: 1px solid rgba(255, 255, 255, 0.58);
-      border-radius: 28px;
-      background: var(--paper);
-      backdrop-filter: blur(20px);
-      box-shadow: var(--shadow);
-    }
-    .page-nav {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-    .page-link {
-      display: inline-flex;
-      align-items: center;
-      padding: 10px 14px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.74);
-      color: var(--ink);
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.01em;
-    }
-    .page-link.active {
-      background: #1f2329;
-      border-color: #1f2329;
-      color: white;
-    }
-    .content {
-      max-width: 860px;
-      margin: 0 auto;
-    }
-    h1 {
-      font-size: clamp(28px, 3vw, 42px);
-      font-weight: 800;
-      letter-spacing: -0.04em;
-      margin: 0 0 8px;
-    }
-    .lead {
-      font-size: 17px;
-      color: var(--muted);
-      line-height: 1.7;
-      margin: 0 0 36px;
-      max-width: 72ch;
-    }
+    .content { max-width: 880px; margin: 0 auto; }
+
+    h1.page-title { margin-bottom: 6px; }
+
     h2 {
-      font-size: 20px;
-      font-weight: 700;
-      letter-spacing: -0.02em;
+      font-family: "Cinzel", serif;
+      font-size: 17px; font-weight: 700;
+      color: var(--gold); letter-spacing: 0.05em;
       margin: 36px 0 10px;
       padding-bottom: 8px;
       border-bottom: 1px solid var(--line);
     }
-    p {
-      font-size: 15px;
-      line-height: 1.75;
-      color: var(--ink);
-      margin: 0 0 14px;
+    h3 {
+      font-family: "Cinzel", serif;
+      font-size: 14px; font-weight: 700;
+      color: var(--amber); letter-spacing: 0.04em;
+      margin: 20px 0 6px;
     }
+    p { color: var(--ink); font-size: 15px; line-height: 1.75; margin-bottom: 14px; }
+    p:last-child { margin-bottom: 0; }
+
     code {
-      font-family: "IBM Plex Mono", "Fira Code", monospace;
-      font-size: 13px;
-      background: rgba(31, 35, 41, 0.07);
-      padding: 2px 6px;
-      border-radius: 5px;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 12.5px;
+      background: rgba(212,168,67,0.08);
+      border: 1px solid var(--line);
+      padding: 1px 6px; border-radius: 3px;
+      color: var(--gold);
     }
-    .node-pill {
+
+    .callout {
+      background: rgba(212,168,67,0.05);
+      border-left: 3px solid var(--gold);
+      border-radius: 0 8px 8px 0;
+      padding: 14px 18px;
+      margin: 20px 0;
+      font-size: 14px; line-height: 1.75;
+      color: var(--ink);
+    }
+    .callout strong { color: var(--gold); }
+
+    /* Realm pills */
+    .realm-pill {
       display: inline-block;
-      padding: 2px 10px;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: 700;
-      color: white;
-      vertical-align: middle;
+      padding: 2px 10px; border-radius: 3px;
+      font-family: "Cinzel", serif;
+      font-size: 12px; font-weight: 700;
+      color: white; vertical-align: middle;
     }
-    .na { background: var(--node-a); }
-    .nb { background: var(--node-b); }
-    .nc { background: var(--node-c); }
-    .nd { background: var(--node-d); }
+    .ra { background: var(--node-a); }
+    .rb { background: var(--node-b); }
+    .rc { background: var(--node-c); }
+    .rd { background: var(--node-d); }
+
+    /* Hero roster */
+    .hero-roster {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px; margin: 14px 0 20px;
+    }
+    .hero-card {
+      padding: 10px 14px;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      background: rgba(212,168,67,0.03);
+      font-size: 13px;
+    }
+    .hero-card .glyph { font-size: 20px; margin-right: 8px; }
+    .hero-card .hname { font-family:"Cinzel",serif; color:var(--gold); font-weight:700; font-size:13px; }
+    .hero-card .hclass { color:var(--muted); font-style:italic; font-size:12px; }
+    .hero-card .htech { font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--faint); margin-top:4px; }
+
+    /* Timeline table */
     .timeline-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-      margin: 16px 0 24px;
+      width: 100%; border-collapse: collapse;
+      font-size: 13px; margin: 14px 0 24px;
     }
     .timeline-table th {
-      text-align: left;
-      padding: 8px 12px;
-      background: rgba(31, 35, 41, 0.05);
-      font-weight: 700;
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
+      text-align: left; padding: 8px 12px;
+      background: rgba(212,168,67,0.07);
+      font-family: "Cinzel", serif; font-size: 11px;
+      font-weight: 700; letter-spacing: 0.07em;
+      text-transform: uppercase; color: var(--muted);
     }
     .timeline-table td {
       padding: 10px 12px;
       border-top: 1px solid var(--line);
-      vertical-align: top;
-      line-height: 1.6;
+      vertical-align: top; line-height: 1.65;
+      color: var(--ink);
     }
-    .timeline-table tr:hover td { background: rgba(255,255,255,0.5); }
-    .tick { font-weight: 700; font-variant-numeric: tabular-nums; }
-    .callout {
-      background: var(--accent-soft);
-      border-left: 3px solid var(--accent);
-      border-radius: 0 10px 10px 0;
-      padding: 14px 18px;
-      margin: 20px 0;
-      font-size: 15px;
-      line-height: 1.7;
+    .timeline-table tr:hover td { background: rgba(212,168,67,0.03); }
+    .tick-cell {
+      font-family: "Cinzel", serif;
+      font-weight: 700; color: var(--gold);
+      white-space: nowrap;
     }
+
+    /* Phase key */
+    .phase-key {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px,1fr));
+      gap: 10px; margin: 14px 0;
+    }
+    .phase-item {
+      padding: 10px 14px;
+      border-radius: 6px; border: 1px solid var(--line);
+      background: rgba(212,168,67,0.03);
+    }
+    .phase-fantasy { font-family:"Cinzel",serif; color:var(--gold); font-weight:700; font-size:13px; }
+    .phase-tech { font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--muted); margin-top:3px; }
+    .phase-desc { font-size:13px; color:var(--ink); margin-top:6px; font-style:italic; line-height:1.5; }
+
+    /* Source files */
+    .file-list { display:flex; flex-direction:column; gap:6px; margin: 12px 0; }
+    .file-entry {
+      display: flex; align-items: baseline; gap: 10px;
+      padding: 8px 12px; border-radius:5px;
+      border: 1px solid var(--line);
+      background: rgba(212,168,67,0.02);
+    }
+    .file-entry code { flex-shrink:0; }
+    .file-entry span { font-size:13px; color:var(--muted); font-style:italic; }
   </style>
 </head>
 <body>
   <div class="page">
     <nav class="page-nav">
-      <a class="page-link" href="./ContinuationMobilityAnimation.html">Migration View</a>
-      <a class="page-link" href="./ContinuationMobilityDemo.html">System View</a>
-      <a class="page-link active" href="./Description.html">Description</a>
+      <a class="page-link" href="./ContinuationMobilityAnimation.html">⚔ Migration View</a>
+      <a class="page-link" href="./ContinuationMobilityDemo.html">📜 System View</a>
+      <a class="page-link active" href="./Description.html">📖 The RhoMog Model</a>
     </nav>
 
     <div class="content">
-      <h1>What this demo shows</h1>
-      <p class="lead">
-        This is an executable model of continuation mobility in a distributed object system.
-        It demonstrates how compute — not just data — can be suspended, moved between hosts,
-        and resumed transparently, with full state recovery after a host failure.
-        The canonical source is a single Rho script:
-        <code>Test/Language/TestRho/Scripts/ContinuationMobilityDemo.rho</code>.
+      <h1 class="page-title">✦ The RhoMog Model ✦</h1>
+      <p class="page-subtitle" style="margin-bottom:0">A living demonstration of continuation mobility in a distributed object system — told as a fantasy world so the mechanics are immediately legible.</p>
+
+      <h2>What is the RhoMog Model?</h2>
+      <p>
+        <strong>RhoMog</strong> stands for <strong>Rho Mobile Object Graph</strong>. Rho is KAI's infix scripting language. Mobile refers to the central property being demonstrated: that running computations — not just data — can be suspended, relocated across hosts, and resumed with complete fidelity. Object Graph is what KAI manages: a distributed graph of typed, reflectable objects whose identity persists across node boundaries.
+      </p>
+      <p>
+        The canonical source of truth for this model is a single Rho script: <code>ContinuationMobilityDemo.rho</code>. Everything else — the C++ reference executable, the animated Migration View, this page — exists to make the script's behaviour legible to a human reader without requiring them to run it.
       </p>
 
-      <h2>Background: KAI and the continuation model</h2>
-      <p>
-        KAI is a distributed object model for C++. Its executor is stack-based: execution state
-        at any point in time is fully described by the contents of the stack plus the remaining
-        continuation — the work still to be done. Because this state is serialisable, a suspended
-        computation can be captured as a binary payload, transmitted over the network, and resumed
-        on a different node with no change to the program logic. The computation doesn't know it moved.
-      </p>
-      <p>
-        This property — network-transparent continuation migration — is what the demo is modelling.
-        The current implementation models the behaviour explicitly using agent snapshots and
-        explicit restore logic. The intent is to show clearly what a fully integrated runtime
-        would do automatically.
-      </p>
-
-      <h2>The world</h2>
-      <p>
-        The demo creates four logical regions, each hosted on a different node:
-      </p>
-      <p>
-        <span class="node-pill na">NodeA</span> hosts the <code>Start</code> region —
-        the initial placement for most agents.<br>
-        <span class="node-pill nb">NodeB</span> hosts the <code>Market</code> region —
-        high initial load, and the target of the failure drill.<br>
-        <span class="node-pill nc">NodeC</span> hosts the <code>Harbor</code> region —
-        Pi routes agents here when Market is congested.<br>
-        <span class="node-pill nd">NodeD</span> hosts the <code>Backup</code> region —
-        the load-balancing overflow and the recovery target.
-      </p>
-      <p>
-        Ten agents are distributed across Start, Market, and Harbor at initialisation.
-        Each agent carries identity, region placement, step count, plan count, migration count,
-        and a flag indicating whether it was recovered from a snapshot.
-      </p>
-
-      <h2>What drives agent movement</h2>
-      <p>
-        Agents move for three reasons, and the demo exercises all three in sequence:
-      </p>
-      <p>
-        <strong>Autonomous patrol.</strong> Every agent independently patrols adjacent regions.
-        This models background compute that migrates for locality or resource reasons without
-        external instruction.
-      </p>
-      <p>
-        <strong>Pi-guided routing.</strong> Every five steps an agent consults Pi, the planning
-        language. Pi evaluates the current host load and can redirect the agent. In this demo,
-        Pi detects Market congestion and reroutes the four Market agents to Harbor at tick 20.
-        This models policy-driven migration: a planner decides where compute should run based
-        on runtime conditions.
-      </p>
-      <p>
-        <strong>Load balancing.</strong> Every 25 ticks the world measures host load and shifts
-        agents from the busiest host to the least loaded. This is the scheduler-driven form of
-        migration — the system relocating compute to equalise resource pressure.
-      </p>
-
-      <h2>The failure scenario</h2>
-      <p>
-        The critical sequence runs between ticks 56 and 60:
-      </p>
       <div class="callout">
-        At tick 56, a deterministic drill forces agents 1, 2, and 3 onto Market (NodeB).
-        This makes the failure drill reproducible — the same three agents are always on the
-        failed host regardless of where patrol and balancing have moved other agents.
-        At tick 60, a snapshot of the full world is captured. NodeB then fails.
-        Agents 1, 2, and 3 are removed from the live set. The snapshot is replayed:
-        any agent whose snapshot region resolves to NodeB and who is not in the live set
-        is reconstructed on NodeD with its full state intact — step count, plan count,
-        migration history — plus a <code>restored</code> flag and an incremented migration counter.
-        The world continues running with all ten agents present.
+        <strong>The core claim:</strong> in a fully integrated KAI runtime, a suspended continuation is a serialisable binary payload. It can be frozen on one node, transmitted over ENet UDP, and resumed on another node. The computation does not know it moved. The RhoMog Model demonstrates what this looks like at the agent and host level, using explicit snapshot-and-restore mechanics as a stand-in for the real continuation migration hooks that are the next implementation step.
       </div>
+
+      <h2>The Four Realms</h2>
+      <p>Each realm is a logical region hosted on a network node. Hover the realm names in the Migration View to see the technical node identifier.</p>
+
       <p>
-        The recovery model is intentionally explicit. There is no magic. The snapshot is a
-        plain data structure; recovery is a linear scan. This makes the mechanism inspectable
-        and verifiable, which is the point of a reference implementation.
+        <span class="realm-pill ra">⚔ Ironhold</span> &nbsp;
+        <span style="color:var(--muted);font-size:13px">NodeA / Start region</span><br>
+        The starting fortress. Most heroes begin here. Initial load is high; the War Council later redistributes forces away from it. In technical terms: NodeA hosts the <code>Start</code> region, which receives the majority of initial agent placement.
+      </p>
+      <p>
+        <span class="realm-pill rb">💀 Ashmarket</span> &nbsp;
+        <span style="color:var(--muted);font-size:13px">NodeB / Market region — fails at tick 60</span><br>
+        A cursed trading post, prosperous at first and then doomed. The Oracle detects congestion early and reroutes heroes away. At tick 56, three heroes are drawn back by fate. At tick 60, the node fails and they are lost — temporarily. This is the failure scenario: a live host going dark with agents on it.
+      </p>
+      <p>
+        <span class="realm-pill rc">🌊 Harborveil</span> &nbsp;
+        <span style="color:var(--muted);font-size:13px">NodeC / Harbor region — Pi host</span><br>
+        The mist-shrouded port where the Oracle dwells. When the Oracle perceives congestion in Ashmarket, it redirects heroes here. In technical terms: Pi's planning logic runs on NodeC and routes agents to <code>Harbor</code> when <code>Market</code> load is excessive.
+      </p>
+      <p>
+        <span class="realm-pill rd">✨ The Refuge</span> &nbsp;
+        <span style="color:var(--muted);font-size:13px">NodeD / Backup region — recovery target</span><br>
+        The sanctuary that receives overflow and the fallen alike. The War Council sends excess heroes here during load balancing. After Ashmarket falls, the resurrected heroes appear here. In technical terms: NodeD hosts the <code>Backup</code> region and is the designated recovery host for the snapshot restore.
       </p>
 
-      <h2>Tick-by-tick timeline</h2>
+      <h2>The Ten Heroes</h2>
+      <p>Each hero is a mobile agent — a running computation with identity, placement, and history. Their glyph is their class icon in the Migration View. Hover any hero to see their technical identifier (<code>Agent_1</code> through <code>Agent_10</code>) alongside their chronicle.</p>
+
+      <div class="hero-roster">
+        <div class="hero-card"><span class="glyph">⚔</span><span class="hname">Aldric</span><br><span class="hclass">Knight</span><div class="htech">Agent_1 · failure drill target</div></div>
+        <div class="hero-card"><span class="glyph">🔮</span><span class="hname">Seraphine</span><br><span class="hclass">Mage</span><div class="htech">Agent_2 · failure drill target</div></div>
+        <div class="hero-card"><span class="glyph">🗡</span><span class="hname">Corvin</span><br><span class="hclass">Rogue</span><div class="htech">Agent_3 · failure drill target</div></div>
+        <div class="hero-card"><span class="glyph">🏹</span><span class="hname">Brynn</span><br><span class="hclass">Ranger</span><div class="htech">Agent_4 · patrol / balance</div></div>
+        <div class="hero-card"><span class="glyph">☠</span><span class="hname">Thorn</span><br><span class="hclass">Warlock</span><div class="htech">Agent_5 · Market → Harbor via Pi</div></div>
+        <div class="hero-card"><span class="glyph">✝</span><span class="hname">Isolde</span><br><span class="hclass">Cleric</span><div class="htech">Agent_6 · Market → Harbor via Pi</div></div>
+        <div class="hero-card"><span class="glyph">♪</span><span class="hname">Dax</span><br><span class="hclass">Bard</span><div class="htech">Agent_7 · Market → Harbor via Pi</div></div>
+        <div class="hero-card"><span class="glyph">🌑</span><span class="hname">Vex</span><br><span class="hclass">Assassin</span><div class="htech">Agent_8 · Market → Harbor via Pi</div></div>
+        <div class="hero-card"><span class="glyph">🌿</span><span class="hname">Mira</span><br><span class="hclass">Druid</span><div class="htech">Agent_9 · Harbor from init</div></div>
+        <div class="hero-card"><span class="glyph">🔥</span><span class="hname">Gorath</span><br><span class="hclass">Berserker</span><div class="htech">Agent_10 · Harbor from init</div></div>
+      </div>
+
+      <h2>The Three Forces That Move Heroes</h2>
+
+      <h3>Wandering — Autonomous Patrol</h3>
+      <p>
+        Every eleven ticks (modulo agent id), a hero moves to a region on a different host than their current one. No external instruction drives this — it is the agent's own behaviour. This models compute that migrates for locality or resource reasons without being told to. In the Rho script: <code>autonomous patrol</code> via <code>moveAgent</code>.
+      </p>
+
+      <h3>Oracle's Vision — Pi-Guided Routing</h3>
+      <p>
+        Every five steps, a hero consults the Oracle. The Oracle is Pi — KAI's stack-based planning language — running on Harborveil (NodeC). Pi evaluates current host load and can redirect the hero. In this demonstration, Pi detects that Ashmarket is overcrowded and reroutes the four heroes there to Harborveil. Later, when a host reaches saturation, Pi sends its denizens to The Refuge. This is policy-driven migration: an external planner deciding where compute should run based on runtime conditions.
+      </p>
+
+      <h3>War Council — Load Balancing</h3>
+      <p>
+        Every 25 ticks, the world measures host load across all four realms. If the busiest host has more than one more hero than the least loaded, the War Council intervenes and relocates heroes to equalise pressure. This is scheduler-driven migration — the system relocating compute without agent awareness. In the Rho script: <code>balanceLoad()</code>, comparing <code>hostLoad</code> entries.
+      </p>
+
+      <h2>The Phases</h2>
+      <div class="phase-key">
+        <div class="phase-item">
+          <div class="phase-fantasy">Wandering</div>
+          <div class="phase-tech">autonomous patrol</div>
+          <div class="phase-desc">Heroes move between realms on their own schedule, driven by their step count and id.</div>
+        </div>
+        <div class="phase-item">
+          <div class="phase-fantasy">Oracle's Vision</div>
+          <div class="phase-tech">Pi language routing decision</div>
+          <div class="phase-desc">The Oracle evaluates host load and issues movement directives to individual heroes.</div>
+        </div>
+        <div class="phase-item">
+          <div class="phase-fantasy">Memory Crystal</div>
+          <div class="phase-tech">world snapshot captured</div>
+          <div class="phase-desc">Every 20 ticks, the full state of all heroes is preserved. This becomes the recovery baseline.</div>
+        </div>
+        <div class="phase-item">
+          <div class="phase-fantasy">War Council</div>
+          <div class="phase-tech">load balancing across hosts</div>
+          <div class="phase-desc">Every 25 ticks, overloaded hosts shed heroes to underloaded ones.</div>
+        </div>
+        <div class="phase-item">
+          <div class="phase-fantasy">Shadow Falls</div>
+          <div class="phase-tech">host failure / node removed</div>
+          <div class="phase-desc">Ashmarket (NodeB) is removed from the live set at tick 60. Heroes on it are lost from the world.</div>
+        </div>
+        <div class="phase-item">
+          <div class="phase-fantasy">Resurrection</div>
+          <div class="phase-tech">snapshot restore / agent recovery</div>
+          <div class="phase-desc">Lost heroes are reconstructed from the last memory crystal at The Refuge, with all state intact.</div>
+        </div>
+      </div>
+
+      <h2>The Failure and Recovery Sequence</h2>
+      <p>This is the central demonstration. The sequence is deterministic and runs the same way every time:</p>
+
       <table class="timeline-table">
-        <thead>
-          <tr><th>Tick</th><th>Event</th><th>What it demonstrates</th></tr>
-        </thead>
+        <thead><tr><th>Tick</th><th>Event (Fantasy)</th><th>Event (Technical)</th></tr></thead>
         <tbody>
-          <tr><td class="tick">0</td><td>World initialised. 10 agents placed across Start, Market, Harbor.</td><td>Initial distribution of compute across a heterogeneous host topology.</td></tr>
-          <tr><td class="tick">20</td><td>Pi reroutes 4 Market agents to Harbor. First snapshot captured.</td><td>Policy-driven migration. Pi detects congestion and relocates compute. Snapshot establishes the first recovery baseline.</td></tr>
-          <tr><td class="tick">25</td><td>Load balancer moves 2 agents from NodeA to NodeD.</td><td>Scheduler-driven migration. The system rebalances without agent awareness.</td></tr>
-          <tr><td class="tick">40</td><td>Second snapshot captured.</td><td>Recovery baseline updated to reflect current placement after balancing.</td></tr>
-          <tr><td class="tick">56</td><td>Failure drill: agents 1, 2, 3 forced onto Market (NodeB).</td><td>Deterministic setup for the failure event. Ensures recovery is always exercised with the same three agents.</td></tr>
-          <tr><td class="tick">60</td><td>Snapshot captured. NodeB fails. Agents 1–3 removed. Restored onto NodeD from snapshot.</td><td>Full failure and recovery cycle. Agents resume on a different host with state intact. The <code>restored</code> flag and orange ring in the Migration View identify them.</td></tr>
-          <tr><td class="tick">61–80</td><td>World continues. Restored agents participate normally.</td><td>Post-recovery stabilisation. Restored agents are indistinguishable from never-failed agents except for the flag.</td></tr>
+          <tr><td class="tick-cell">0</td><td>Ten heroes summoned across three realms</td><td>10 agents initialised: 4 on NodeA, 4 on NodeB, 2 on NodeC</td></tr>
+          <tr><td class="tick-cell">20</td><td>Oracle reroutes Ashmarket heroes to Harborveil. First memory crystal forged.</td><td>Pi routing: agents 5–8 moved from Market→Harbor. Snapshot captured.</td></tr>
+          <tr><td class="tick-cell">25</td><td>War Council dispatches two heroes from Ironhold to The Refuge</td><td>Load balance: 2 agents moved from NodeA→NodeD</td></tr>
+          <tr><td class="tick-cell">40</td><td>Second memory crystal forged</td><td>Snapshot updated — new recovery baseline reflecting post-balance positions</td></tr>
+          <tr><td class="tick-cell">56</td><td>Fate draws Aldric, Seraphine, and Corvin into Ashmarket's shadow</td><td>Failure drill: agents 1, 2, 3 forced onto NodeB (Market region)</td></tr>
+          <tr><td class="tick-cell">60</td><td>Memory crystal forged. Ashmarket falls. Three heroes lost. Three heroes reborn at The Refuge.</td><td>Snapshot captured. NodeB fails: agents 1–3 removed. Snapshot restore: agents 1–3 reconstructed on NodeD with restored=true, migrations+1.</td></tr>
+          <tr><td class="tick-cell">61–80</td><td>The reborn rejoin the living. The realm stabilises.</td><td>Post-recovery: restored agents participate in patrol, Pi routing, and balancing normally.</td></tr>
         </tbody>
       </table>
 
-      <h2>What the two views show</h2>
+      <div class="callout">
+        <strong>Why is the drill deterministic?</strong> Agents 1, 2, and 3 are explicitly moved to NodeB at tick 56. Without this, patrol and balancing may have scattered them across other hosts, making the failure event unpredictable and the recovery hard to observe. The drill exists to make the scenario readable — the same three heroes fall, the same three are reborn, every run.
+      </div>
+
+      <h2>What the Views Show</h2>
       <p>
-        <strong>Migration View</strong> is the animated dot canvas. Each dot is a live agent.
-        Transitions are animated as smooth movement between node positions. Orange rings identify
-        restored agents. The phase strip tracks which phase of the scenario the simulation is in.
-        Use this view to develop an intuition for how frequently and why agents move.
+        <strong>Migration View</strong> animates the hero glyphs moving between realm cards in real time. Each glyph is a running agent. The phase strip tracks the current operation. The event banner narrates the latest action in fantasy language with technical terms bracketed. Hover any hero to inspect their full chronicle. Gold glow = resurrected from snapshot.
       </p>
       <p>
-        <strong>System View</strong> shows the same simulation as structured data — host and
-        region state, agent lists, migration and plan counters, a timeline of key moments, and
-        a rolling event log. Use this view to read the exact state at any tick and verify that
-        recovery produces the expected outcome.
+        <strong>System View</strong> presents the same simulation as structured data — host and region state, agent lists, counters, a key-moment timeline, and a rolling event log. Use it to read exact agent state at any tick and verify recovery produces the expected outcome.
       </p>
 
-      <h2>Relationship to the KAI runtime</h2>
+      <h2>Relationship to the KAI Runtime</h2>
       <p>
-        This demo does not use the KAI executor, Registry, or network stack directly. It is a
-        reference model: a clean, self-contained simulation of the intended behaviour that can
-        be read, run, and tested without building the full framework. The canonical narrative
-        lives in the Rho script; the HTML views are explanations of that narrative.
+        This demonstration does not use the KAI executor, Registry, or ENet network stack directly. It is a reference model: a self-contained, testable simulation of the intended behaviour. The Rho script is the canonical narrative. The C++ executable is a deterministic reference implementation of the same logic, covered by a GoogleTest suite. The HTML views are explanations of that narrative.
       </p>
       <p>
-        The next step — not yet implemented — is to wire the Rho script's migration events
-        directly to real KAI continuation hooks, so that the <code>Suspend / Migrate / Resume</code>
-        sequence in the demo becomes an actual cross-process continuation transfer over ENet UDP.
-        The reference model exists precisely to make that target behaviour unambiguous before
-        the plumbing is added.
+        The next step — not yet implemented — is to wire the Rho script's migration events to real KAI continuation hooks, so that the Suspend / Migrate / Resume sequence becomes an actual cross-process continuation transfer over ENet UDP. The RhoMog Model defines that target behaviour unambiguously, so the implementation has a clear contract to fulfil.
       </p>
 
-      <h2>Source files</h2>
-      <p>
-        <code>Test/Language/TestRho/Scripts/ContinuationMobilityDemo.rho</code> — canonical narrative, source of truth.<br>
-        <code>ContinuationMobilityDemo/ContinuationMobilityDemo.cpp</code> — C++ reference executable, same logic, deterministic output.<br>
-        <code>ContinuationMobilityDemo/ContinuationMobilityAnimation.html</code> — animated Migration View.<br>
-        <code>ContinuationMobilityDemo/ContinuationMobilityDemo.html</code> — structured System View.<br>
-        <code>Test/Examples/ContinuationMobilityDemoTests.cpp</code> — GoogleTest suite for the C++ model.<br>
-        <code>Test/Language/TestRho/ContinuationMobilityDemoScriptTest.cpp</code> — smoke test that the Rho script executes successfully.
-      </p>
+      <h2>Source Files</h2>
+      <div class="file-list">
+        <div class="file-entry"><code>Test/Language/TestRho/Scripts/ContinuationMobilityDemo.rho</code><span>Canonical narrative. Source of truth for all views.</span></div>
+        <div class="file-entry"><code>ContinuationMobilityDemo/ContinuationMobilityDemo.cpp</code><span>C++ reference executable. Same logic, deterministic output, CI-testable.</span></div>
+        <div class="file-entry"><code>ContinuationMobilityDemo/ContinuationMobilityAnimation.html</code><span>Animated Migration View. Fantasy skin with technical hover labels.</span></div>
+        <div class="file-entry"><code>ContinuationMobilityDemo/ContinuationMobilityDemo.html</code><span>System View. Structured data display of the same simulation.</span></div>
+        <div class="file-entry"><code>ContinuationMobilityDemo/style.css</code><span>Shared stylesheet for all HTML views.</span></div>
+        <div class="file-entry"><code>Test/Examples/ContinuationMobilityDemoTests.cpp</code><span>GoogleTest suite for the C++ reference model.</span></div>
+        <div class="file-entry"><code>Test/Language/TestRho/ContinuationMobilityDemoScriptTest.cpp</code><span>Smoke test: verifies the Rho script executes successfully.</span></div>
+      </div>
     </div>
   </div>
 </body>
