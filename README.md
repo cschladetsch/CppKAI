@@ -1,8 +1,8 @@
 # KAI - Distributed Object Model for C++ ![Image](Images/kai_logo.png)
 
-[![Build status](https://ci.appveyor.com/api/projects/status/github/cschladetsch/kai?svg=true)](https://ci.appveyor.com/project/cschladetsch/kai)
-[![CodeFactor](https://www.codefactor.io/repository/github/cschladetsch/kai/badge)](https://www.codefactor.io/repository/github/cschladetsch/kai)
-[![License](https://img.shields.io/github/license/cschladetsch/flow.svg?label=License&maxAge=86400)](./LICENSE)
+[![Build status](https://ci.appveyor.com/api/projects/status/github/cschladetsch/CppKAI?svg=true)](https://ci.appveyor.com/project/cschladetsch/cppkai)
+[![CodeFactor](https://www.codefactor.io/repository/github/cschladetsch/cppkai/badge)](https://www.codefactor.io/repository/github/cschladetsch/cppkai)
+[![License](https://img.shields.io/github/license/cschladetsch/CppKAI.svg?label=License&maxAge=86400)](./LICENSE)
 
 _KAI_ is a network distributed **Object Model** for C++ with full runtime reflection, persistence, and incremental garbage collection. No macros are needed to expose fields or methods to the scripting runtime, including external code from other libraries.
 
