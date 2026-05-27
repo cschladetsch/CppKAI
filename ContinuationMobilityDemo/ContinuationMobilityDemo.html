@@ -486,6 +486,7 @@
     <nav class="page-nav">
       <a class="page-link" href="./ContinuationMobilityAnimation.html">Migration View</a>
       <a class="page-link active" href="./ContinuationMobilityDemo.html">System View</a>
+      <a class="page-link" href="./Description.html">Description</a>
     </nav>
     <section class="hero">
       <article class="hero-card">
@@ -560,7 +561,7 @@
       <article class="panel">
         <div class="panel-head">
           <h2 class="panel-title">Host and Region State</h2>
-          <span class="panel-note" id="phase-label">Waiting to start</span>
+          <span class="panel-note" id="phase-label"></span>
         </div>
         <div class="hosts" id="hosts"></div>
       </article>
@@ -897,7 +898,7 @@
     let timer = null;
 
     function currentPhaseLabel() {
-      if (world.tickCount === 0) return "Waiting to start";
+      if (world.tickCount === 0) return "";
       if (world.tickCount < 20) return "Early movement and Pi rerouting";
       if (world.tickCount < 56) return "Snapshots and balancing";
       if (world.tickCount < 60) return "Failure drill in progress";

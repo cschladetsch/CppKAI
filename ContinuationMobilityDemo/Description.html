@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ContinuationMobilityDemo — Description</title>
+  <style>
+    :root {
+      --bg: #f3efe6;
+      --paper: rgba(255, 252, 245, 0.86);
+      --panel: rgba(255, 255, 255, 0.72);
+      --ink: #1f2329;
+      --muted: #55606f;
+      --accent: #c54f1b;
+      --accent-soft: rgba(197, 79, 27, 0.14);
+      --line: rgba(31, 35, 41, 0.12);
+      --node-a: #244b73;
+      --node-b: #8e3b2e;
+      --node-c: #2e6a57;
+      --node-d: #6a4c93;
+      --shadow: 0 22px 60px rgba(31, 35, 41, 0.12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(197, 79, 27, 0.12), transparent 28%),
+        radial-gradient(circle at top right, rgba(36, 75, 115, 0.12), transparent 34%),
+        linear-gradient(180deg, #f8f4eb 0%, #efe8db 100%);
+      font-family: "IBM Plex Sans", "Avenir Next", "Segoe UI", sans-serif;
+    }
+    .page {
+      width: min(1440px, calc(100vw - 32px));
+      margin: 16px auto 28px;
+      padding: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.58);
+      border-radius: 28px;
+      background: var(--paper);
+      backdrop-filter: blur(20px);
+      box-shadow: var(--shadow);
+    }
+    .page-nav {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .page-link {
+      display: inline-flex;
+      align-items: center;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.74);
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+    .page-link.active {
+      background: #1f2329;
+      border-color: #1f2329;
+      color: white;
+    }
+    .content {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+    h1 {
+      font-size: clamp(28px, 3vw, 42px);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      margin: 0 0 8px;
+    }
+    .lead {
+      font-size: 17px;
+      color: var(--muted);
+      line-height: 1.7;
+      margin: 0 0 36px;
+      max-width: 72ch;
+    }
+    h2 {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin: 36px 0 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--line);
+    }
+    p {
+      font-size: 15px;
+      line-height: 1.75;
+      color: var(--ink);
+      margin: 0 0 14px;
+    }
+    code {
+      font-family: "IBM Plex Mono", "Fira Code", monospace;
+      font-size: 13px;
+      background: rgba(31, 35, 41, 0.07);
+      padding: 2px 6px;
+      border-radius: 5px;
+    }
+    .node-pill {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      color: white;
+      vertical-align: middle;
+    }
+    .na { background: var(--node-a); }
+    .nb { background: var(--node-b); }
+    .nc { background: var(--node-c); }
+    .nd { background: var(--node-d); }
+    .timeline-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin: 16px 0 24px;
+    }
+    .timeline-table th {
+      text-align: left;
+      padding: 8px 12px;
+      background: rgba(31, 35, 41, 0.05);
+      font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .timeline-table td {
+      padding: 10px 12px;
+      border-top: 1px solid var(--line);
+      vertical-align: top;
+      line-height: 1.6;
+    }
+    .timeline-table tr:hover td { background: rgba(255,255,255,0.5); }
+    .tick { font-weight: 700; font-variant-numeric: tabular-nums; }
+    .callout {
+      background: var(--accent-soft);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 10px 10px 0;
+      padding: 14px 18px;
+      margin: 20px 0;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <nav class="page-nav">
+      <a class="page-link" href="./ContinuationMobilityAnimation.html">Migration View</a>
+      <a class="page-link" href="./ContinuationMobilityDemo.html">System View</a>
+      <a class="page-link active" href="./Description.html">Description</a>
+    </nav>
+
+    <div class="content">
+      <h1>What this demo shows</h1>
+      <p class="lead">
+        This is an executable model of continuation mobility in a distributed object system.
+        It demonstrates how compute — not just data — can be suspended, moved between hosts,
+        and resumed transparently, with full state recovery after a host failure.
+        The canonical source is a single Rho script:
+        <code>Test/Language/TestRho/Scripts/ContinuationMobilityDemo.rho</code>.
+      </p>
+
+      <h2>Background: KAI and the continuation model</h2>
+      <p>
+        KAI is a distributed object model for C++. Its executor is stack-based: execution state
+        at any point in time is fully described by the contents of the stack plus the remaining
+        continuation — the work still to be done. Because this state is serialisable, a suspended
+        computation can be captured as a binary payload, transmitted over the network, and resumed
+        on a different node with no change to the program logic. The computation doesn't know it moved.
+      </p>
+      <p>
+        This property — network-transparent continuation migration — is what the demo is modelling.
+        The current implementation models the behaviour explicitly using agent snapshots and
+        explicit restore logic. The intent is to show clearly what a fully integrated runtime
+        would do automatically.
+      </p>
+
+      <h2>The world</h2>
+      <p>
+        The demo creates four logical regions, each hosted on a different node:
+      </p>
+      <p>
+        <span class="node-pill na">NodeA</span> hosts the <code>Start</code> region —
+        the initial placement for most agents.<br>
+        <span class="node-pill nb">NodeB</span> hosts the <code>Market</code> region —
+        high initial load, and the target of the failure drill.<br>
+        <span class="node-pill nc">NodeC</span> hosts the <code>Harbor</code> region —
+        Pi routes agents here when Market is congested.<br>
+        <span class="node-pill nd">NodeD</span> hosts the <code>Backup</code> region —
+        the load-balancing overflow and the recovery target.
+      </p>
+      <p>
+        Ten agents are distributed across Start, Market, and Harbor at initialisation.
+        Each agent carries identity, region placement, step count, plan count, migration count,
+        and a flag indicating whether it was recovered from a snapshot.
+      </p>
+
+      <h2>What drives agent movement</h2>
+      <p>
+        Agents move for three reasons, and the demo exercises all three in sequence:
+      </p>
+      <p>
+        <strong>Autonomous patrol.</strong> Every agent independently patrols adjacent regions.
+        This models background compute that migrates for locality or resource reasons without
+        external instruction.
+      </p>
+      <p>
+        <strong>Pi-guided routing.</strong> Every five steps an agent consults Pi, the planning
+        language. Pi evaluates the current host load and can redirect the agent. In this demo,
+        Pi detects Market congestion and reroutes the four Market agents to Harbor at tick 20.
+        This models policy-driven migration: a planner decides where compute should run based
+        on runtime conditions.
+      </p>
+      <p>
+        <strong>Load balancing.</strong> Every 25 ticks the world measures host load and shifts
+        agents from the busiest host to the least loaded. This is the scheduler-driven form of
+        migration — the system relocating compute to equalise resource pressure.
+      </p>
+
+      <h2>The failure scenario</h2>
+      <p>
+        The critical sequence runs between ticks 56 and 60:
+      </p>
+      <div class="callout">
+        At tick 56, a deterministic drill forces agents 1, 2, and 3 onto Market (NodeB).
+        This makes the failure drill reproducible — the same three agents are always on the
+        failed host regardless of where patrol and balancing have moved other agents.
+        At tick 60, a snapshot of the full world is captured. NodeB then fails.
+        Agents 1, 2, and 3 are removed from the live set. The snapshot is replayed:
+        any agent whose snapshot region resolves to NodeB and who is not in the live set
+        is reconstructed on NodeD with its full state intact — step count, plan count,
+        migration history — plus a <code>restored</code> flag and an incremented migration counter.
+        The world continues running with all ten agents present.
+      </div>
+      <p>
+        The recovery model is intentionally explicit. There is no magic. The snapshot is a
+        plain data structure; recovery is a linear scan. This makes the mechanism inspectable
+        and verifiable, which is the point of a reference implementation.
+      </p>
+
+      <h2>Tick-by-tick timeline</h2>
+      <table class="timeline-table">
+        <thead>
+          <tr><th>Tick</th><th>Event</th><th>What it demonstrates</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="tick">0</td><td>World initialised. 10 agents placed across Start, Market, Harbor.</td><td>Initial distribution of compute across a heterogeneous host topology.</td></tr>
+          <tr><td class="tick">20</td><td>Pi reroutes 4 Market agents to Harbor. First snapshot captured.</td><td>Policy-driven migration. Pi detects congestion and relocates compute. Snapshot establishes the first recovery baseline.</td></tr>
+          <tr><td class="tick">25</td><td>Load balancer moves 2 agents from NodeA to NodeD.</td><td>Scheduler-driven migration. The system rebalances without agent awareness.</td></tr>
+          <tr><td class="tick">40</td><td>Second snapshot captured.</td><td>Recovery baseline updated to reflect current placement after balancing.</td></tr>
+          <tr><td class="tick">56</td><td>Failure drill: agents 1, 2, 3 forced onto Market (NodeB).</td><td>Deterministic setup for the failure event. Ensures recovery is always exercised with the same three agents.</td></tr>
+          <tr><td class="tick">60</td><td>Snapshot captured. NodeB fails. Agents 1–3 removed. Restored onto NodeD from snapshot.</td><td>Full failure and recovery cycle. Agents resume on a different host with state intact. The <code>restored</code> flag and orange ring in the Migration View identify them.</td></tr>
+          <tr><td class="tick">61–80</td><td>World continues. Restored agents participate normally.</td><td>Post-recovery stabilisation. Restored agents are indistinguishable from never-failed agents except for the flag.</td></tr>
+        </tbody>
+      </table>
+
+      <h2>What the two views show</h2>
+      <p>
+        <strong>Migration View</strong> is the animated dot canvas. Each dot is a live agent.
+        Transitions are animated as smooth movement between node positions. Orange rings identify
+        restored agents. The phase strip tracks which phase of the scenario the simulation is in.
+        Use this view to develop an intuition for how frequently and why agents move.
+      </p>
+      <p>
+        <strong>System View</strong> shows the same simulation as structured data — host and
+        region state, agent lists, migration and plan counters, a timeline of key moments, and
+        a rolling event log. Use this view to read the exact state at any tick and verify that
+        recovery produces the expected outcome.
+      </p>
+
+      <h2>Relationship to the KAI runtime</h2>
+      <p>
+        This demo does not use the KAI executor, Registry, or network stack directly. It is a
+        reference model: a clean, self-contained simulation of the intended behaviour that can
+        be read, run, and tested without building the full framework. The canonical narrative
+        lives in the Rho script; the HTML views are explanations of that narrative.
+      </p>
+      <p>
+        The next step — not yet implemented — is to wire the Rho script's migration events
+        directly to real KAI continuation hooks, so that the <code>Suspend / Migrate / Resume</code>
+        sequence in the demo becomes an actual cross-process continuation transfer over ENet UDP.
+        The reference model exists precisely to make that target behaviour unambiguous before
+        the plumbing is added.
+      </p>
+
+      <h2>Source files</h2>
+      <p>
+        <code>Test/Language/TestRho/Scripts/ContinuationMobilityDemo.rho</code> — canonical narrative, source of truth.<br>
+        <code>ContinuationMobilityDemo/ContinuationMobilityDemo.cpp</code> — C++ reference executable, same logic, deterministic output.<br>
+        <code>ContinuationMobilityDemo/ContinuationMobilityAnimation.html</code> — animated Migration View.<br>
+        <code>ContinuationMobilityDemo/ContinuationMobilityDemo.html</code> — structured System View.<br>
+        <code>Test/Examples/ContinuationMobilityDemoTests.cpp</code> — GoogleTest suite for the C++ model.<br>
+        <code>Test/Language/TestRho/ContinuationMobilityDemoScriptTest.cpp</code> — smoke test that the Rho script executes successfully.
+      </p>
+    </div>
+  </div>
+</body>
+</html>

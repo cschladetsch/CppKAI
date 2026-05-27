@@ -184,7 +184,10 @@
     }
 
     .metric {
-      padding: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
       border-radius: 18px;
       border: 1px solid var(--line);
       background: rgba(255, 255, 255, 0.78);
@@ -198,8 +201,7 @@
     }
 
     .metric-value {
-      margin-top: 8px;
-      font-size: 30px;
+      font-size: 24px;
       font-weight: 700;
       letter-spacing: -0.05em;
     }
@@ -592,6 +594,8 @@
     <nav class="page-nav">
       <a class="page-link active" href="./ContinuationMobilityAnimation.html">Migration View</a>
       <a class="page-link" href="./ContinuationMobilityDemo.html">System View</a>
+      <a class="page-link" href="./Description.html">Description</a>
+          <a class="page-link" href="./Description.html">Description</a>
     </nav>
 
     <section class="hero">
@@ -605,19 +609,10 @@
       </article>
 
       <aside class="card controls">
-        <div class="metric">
-          <div class="metric-label">Current Tick</div>
-          <div class="metric-value" id="tick-value">0</div>
-        </div>
-        <div class="controls-grid">
-          <div class="metric">
-            <div class="metric-label">Transitions</div>
-            <div class="metric-value" id="transition-count">0</div>
-          </div>
-          <div class="metric">
-            <div class="metric-label">Restored Agents</div>
-            <div class="metric-value" id="restored-count">0</div>
-          </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <div class="metric"><div class="metric-label">Tick</div><div class="metric-value" id="tick-value">0</div></div>
+          <div class="metric"><div class="metric-label">Transitions</div><div class="metric-value" id="transition-count">0</div></div>
+          <div class="metric"><div class="metric-label">Restored</div><div class="metric-value" id="restored-count">0</div></div>
         </div>
         <div class="button-row">
           <button class="primary" id="play-pause">Start</button>
@@ -639,7 +634,7 @@
           <div class="phase-chip">Resume</div>
         </div>
         <p class="hint" id="phase-label">
-          Waiting to start.
+          
         </p>
       </aside>
     </section>
@@ -664,7 +659,7 @@
             <path d="M250 610 C 430 680, 530 680, 710 610" fill="none" stroke="url(#flowB)" stroke-width="6" stroke-dasharray="12 12"></path>
           </svg>
 
-          <div class="node" style="left: 90px; top: 90px; --node-color: var(--node-a);" id="node-NodeA">
+          <div class="node" style="left: 30px; top: 30px; --node-color: var(--node-a);" id="node-NodeA">
             <div class="node-title">
               <span class="swatch"></span>
               <div class="node-name">NodeA</div>
@@ -673,7 +668,7 @@
             <div class="node-count" id="count-NodeA">4</div>
           </div>
 
-          <div class="node" style="right: 90px; top: 90px; --node-color: var(--node-b);" id="node-NodeB">
+          <div class="node" style="right: 30px; top: 30px; --node-color: var(--node-b);" id="node-NodeB">
             <div class="node-title">
               <span class="swatch"></span>
               <div class="node-name">NodeB</div>
@@ -682,7 +677,7 @@
             <div class="node-count" id="count-NodeB">4</div>
           </div>
 
-          <div class="node" style="left: 90px; bottom: 90px; --node-color: var(--node-d);" id="node-NodeD">
+          <div class="node" style="left: 30px; bottom: 30px; --node-color: var(--node-d);" id="node-NodeD">
             <div class="node-title">
               <span class="swatch"></span>
               <div class="node-name">NodeD</div>
@@ -691,7 +686,7 @@
             <div class="node-count" id="count-NodeD">0</div>
           </div>
 
-          <div class="node" style="right: 90px; bottom: 90px; --node-color: var(--node-c);" id="node-NodeC">
+          <div class="node" style="right: 30px; bottom: 30px; --node-color: var(--node-c);" id="node-NodeC">
             <div class="node-title">
               <span class="swatch"></span>
               <div class="node-name">NodeC</div>
@@ -1017,7 +1012,7 @@
     let timer = null;
 
     function phaseLabel() {
-      if (world.tickCount === 0) return "Waiting to start.";
+      if (world.tickCount === 0) return "";
       if (world.tickCount < 20) return "Early movement: Market agents get pushed toward Harbor and Backup.";
       if (world.tickCount < 56) return "Middle phase: patrols, snapshots, and balancing keep redistributing load.";
       if (world.tickCount < 60) return "Failure drill: agents 1, 2, and 3 are pinned onto NodeB.";
