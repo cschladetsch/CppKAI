@@ -3,167 +3,151 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Realm of Continuations — Migration View</title>
+  <title>RhoMog Model — Migration View</title>
+  <link rel="stylesheet" href="./style.css">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=IM+Fell+English:ital@0;1&display=swap');
-    :root {
-      --bg: #0d0a07; --paper: rgba(20,15,8,0.95); --panel: rgba(30,22,12,0.92);
-      --ink: #e8d5a3; --muted: #8a7a5a; --line: rgba(180,140,60,0.2);
-      --accent: #c8872a; --gold: #d4a843;
-      --node-a: #1a3a5c; --node-b: #5c1a1a; --node-c: #1a3d2b; --node-d: #3d1a5c;
-      --shadow: 0 22px 60px rgba(0,0,0,0.8);
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      min-height: 100vh; color: var(--ink);
-      background: radial-gradient(ellipse at top, rgba(26,58,92,0.3) 0%, transparent 50%),
-        radial-gradient(ellipse at bottom right, rgba(61,26,92,0.2) 0%, transparent 50%),
-        linear-gradient(180deg, #0d0a07 0%, #0a0705 100%);
-      font-family: "IM Fell English", Georgia, serif;
-    }
-    .page {
-      position: relative; z-index: 1;
-      width: min(1460px, calc(100vw - 24px)); margin: 12px auto 24px;
-      padding: 16px; border-radius: 12px;
-      border: 1px solid rgba(212,168,67,0.3); background: var(--paper);
-      box-shadow: var(--shadow), inset 0 0 60px rgba(212,168,67,0.03);
-    }
-    .page-nav { display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; border-bottom:1px solid var(--line); padding-bottom:12px; }
-    .page-link {
-      display:inline-flex; align-items:center; padding:7px 14px; border-radius:4px;
-      border:1px solid var(--line); background:rgba(212,168,67,0.05); color:var(--muted);
-      text-decoration:none; font-family:"Cinzel",serif; font-size:11px; font-weight:700;
-      letter-spacing:0.08em; text-transform:uppercase; transition:all 0.2s;
-    }
-    .page-link:hover { color:var(--gold); border-color:var(--gold); background:rgba(212,168,67,0.1); }
-    .page-link.active { background:rgba(212,168,67,0.15); border-color:var(--gold); color:var(--gold); }
-    .hero { display:grid; grid-template-columns:1.2fr 0.9fr; gap:14px; margin-bottom:14px; }
-    .layout { display:grid; grid-template-columns:1.3fr 0.95fr; gap:14px; }
-    .card { border-radius:8px; border:1px solid var(--line); background:var(--panel); overflow:hidden; }
-    .title { font-family:"Cinzel",serif; font-size:clamp(16px,2vw,26px); font-weight:900; color:var(--gold); letter-spacing:0.04em; text-shadow:0 0 20px rgba(212,168,67,0.4); margin-bottom:6px; }
-    .subtitle { font-size:13px; color:var(--muted); line-height:1.6; font-style:italic; }
-    .chips { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
-    .chip {
-      padding:5px 12px; border-radius:3px; border:1px solid var(--line);
-      background:rgba(212,168,67,0.07); font-size:11px; color:var(--muted);
-      font-style:italic; cursor:help; position:relative;
-    }
-    .chip[data-tech]:hover::after {
-      content:attr(data-tech); position:absolute; bottom:calc(100% + 6px); left:50%;
-      transform:translateX(-50%); background:#1a1208; border:1px solid var(--gold);
-      color:var(--gold); padding:4px 10px; border-radius:4px; font-size:11px;
-      white-space:nowrap; font-style:normal; font-family:"IBM Plex Mono",monospace; z-index:100;
-    }
-    .metric { display:flex; align-items:center; gap:8px; padding:6px 12px; border-radius:4px; border:1px solid var(--line); background:rgba(212,168,67,0.05); }
-    .metric-label { color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:0.08em; font-family:"Cinzel",serif; }
-    .metric-value { font-size:22px; font-weight:700; color:var(--gold); font-family:"Cinzel",serif; }
-    .button-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
-    button, select {
-      padding:8px 16px; border-radius:4px; border:1px solid var(--line);
-      background:rgba(212,168,67,0.08); color:var(--ink); font-family:"Cinzel",serif;
-      font-size:12px; font-weight:700; letter-spacing:0.05em; cursor:pointer; transition:all 0.2s;
-    }
-    button:hover, select:hover { background:rgba(212,168,67,0.18); border-color:var(--gold); color:var(--gold); }
-    button.primary { background:rgba(212,168,67,0.2); border-color:var(--gold); color:var(--gold); }
-    select option { background:#1a1208; color:var(--ink); }
-    .phase-strip { display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; }
-    .phase-chip {
-      padding:4px 10px; border-radius:3px; border:1px solid var(--line);
-      font-size:10px; color:var(--muted); font-family:"Cinzel",serif;
-      letter-spacing:0.06em; cursor:help; position:relative;
-    }
-    .phase-chip.active { background:rgba(212,168,67,0.15); border-color:var(--gold); color:var(--gold); text-shadow:0 0 10px rgba(212,168,67,0.5); }
-    .phase-chip[data-tech]:hover::after {
-      content:attr(data-tech); position:absolute; bottom:calc(100% + 6px); left:50%;
-      transform:translateX(-50%); background:#1a1208; border:1px solid var(--gold);
-      color:var(--gold); padding:4px 10px; border-radius:4px; font-size:11px;
-      white-space:nowrap; font-family:"IBM Plex Mono",monospace; z-index:100;
-    }
-    .hint { margin-top:10px; font-size:12px; color:var(--muted); font-style:italic; line-height:1.5; min-height:1em; }
-    .canvas-panel { overflow:hidden; }
+    /* ── Canvas layout ── */
+    .canvas-panel { overflow: hidden; }
     .canvas-wrap {
-      position:relative; min-height:700px;
-      background: radial-gradient(ellipse at 25% 25%, rgba(26,58,92,0.15) 0%, transparent 40%),
-        radial-gradient(ellipse at 75% 25%, rgba(92,26,26,0.15) 0%, transparent 40%),
-        radial-gradient(ellipse at 25% 75%, rgba(61,26,92,0.15) 0%, transparent 40%),
-        radial-gradient(ellipse at 75% 75%, rgba(26,61,43,0.15) 0%, transparent 40%),
-        rgba(10,7,3,0.6);
-      border-radius:8px; overflow:hidden;
+      position: relative;
+      min-height: 680px;
+      background:
+        radial-gradient(ellipse at 25% 25%, rgba(26,58,92,0.14) 0%, transparent 38%),
+        radial-gradient(ellipse at 75% 25%, rgba(92,26,26,0.14) 0%, transparent 38%),
+        radial-gradient(ellipse at 25% 75%, rgba(61,26,92,0.14) 0%, transparent 38%),
+        radial-gradient(ellipse at 75% 75%, rgba(26,61,43,0.14) 0%, transparent 38%),
+        rgba(8,5,2,0.7);
+      border-radius: 8px;
+      overflow: hidden;
     }
     .canvas-wrap svg { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+
+    /* ── Realm nodes ── */
     .node {
-      position:absolute; width:200px; padding:12px; border-radius:8px;
-      border:1px solid color-mix(in srgb, var(--node-color) 60%, transparent);
-      background:color-mix(in srgb, var(--node-color) 20%, rgba(10,7,3,0.9));
-      box-shadow:0 0 30px color-mix(in srgb, var(--node-color) 20%, transparent);
-      cursor:help; position:absolute;
-    }
-    .node[data-tech]:hover::after {
-      content:attr(data-tech); position:absolute; top:calc(100% + 6px); left:50%;
-      transform:translateX(-50%); background:#1a1208; border:1px solid var(--gold);
-      color:var(--gold); padding:4px 10px; border-radius:4px; font-size:11px;
-      white-space:nowrap; font-family:"IBM Plex Mono",monospace; z-index:100;
+      position: absolute;
+      width: 196px;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid color-mix(in srgb, var(--node-color) 55%, transparent);
+      background: color-mix(in srgb, var(--node-color) 18%, rgba(8,5,2,0.92));
+      box-shadow: 0 0 28px color-mix(in srgb, var(--node-color) 18%, transparent),
+                  inset 0 0 16px color-mix(in srgb, var(--node-color) 8%, transparent);
+      cursor: help;
     }
     .node-title { display:flex; align-items:center; gap:8px; margin-bottom:4px; }
-    .swatch { width:10px; height:10px; border-radius:50%; background:var(--node-color); box-shadow:0 0 8px var(--node-color); flex-shrink:0; }
-    .node-name { font-family:"Cinzel",serif; font-size:13px; font-weight:700; color:var(--gold); letter-spacing:0.06em; }
-    .node-sub { font-size:11px; color:var(--muted); font-style:italic; line-height:1.4; margin-bottom:6px; }
-    .node-count { font-family:"Cinzel",serif; font-size:28px; font-weight:900; color:color-mix(in srgb, var(--node-color) 80%, var(--gold)); text-shadow:0 0 15px color-mix(in srgb, var(--node-color) 60%, transparent); }
-    .agent-layer { position:absolute; inset:0; pointer-events:none; }
-    .agent {
-      position:absolute; transform:translate(-50%,-50%); width:34px; height:34px;
-      border-radius:50%; border:2px solid var(--node-color);
-      background:color-mix(in srgb, var(--node-color) 40%, #0d0a07);
-      cursor:pointer; pointer-events:all; display:flex; align-items:center;
-      justify-content:center; font-size:14px;
-      transition:left 0.45s cubic-bezier(0.4,0,0.2,1), top 0.45s cubic-bezier(0.4,0,0.2,1);
-      box-shadow:0 0 12px color-mix(in srgb, var(--node-color) 50%, transparent); z-index:10;
+    .swatch {
+      width:9px; height:9px; border-radius:50%;
+      background: var(--node-color);
+      box-shadow: 0 0 8px var(--node-color);
+      flex-shrink: 0;
     }
-    .agent:hover { z-index:20; box-shadow:0 0 20px var(--gold); border-color:var(--gold); }
-    .agent::after {
-      content:attr(data-label); position:absolute; bottom:calc(100% + 6px); left:50%;
-      transform:translateX(-50%); background:#1a1208; border:1px solid var(--gold);
-      color:var(--ink); padding:6px 10px; border-radius:4px; font-size:11px;
-      white-space:pre; font-family:"IBM Plex Mono",monospace; opacity:0;
-      pointer-events:none; transition:opacity 0.15s; z-index:30; line-height:1.5;
+    .node-name {
+      font-family: "Cinzel", serif;
+      font-size: 13px; font-weight: 700;
+      color: var(--gold); letter-spacing: 0.06em;
     }
-    .agent:hover::after { opacity:1; }
-    .agent.restored { border-color:var(--gold); animation:resurrectionGlow 1.5s ease-in-out infinite alternate; }
-    .agent.suspended { opacity:0.15; }
-    @keyframes resurrectionGlow {
-      from { box-shadow:0 0 15px rgba(212,168,67,0.5), 0 0 30px rgba(212,168,67,0.2); }
-      to   { box-shadow:0 0 25px rgba(212,168,67,0.9), 0 0 50px rgba(212,168,67,0.5); }
+    .node-sub { font-size: 11px; color: var(--muted); font-style:italic; line-height:1.4; margin-bottom:6px; }
+    .node-count {
+      font-family: "Cinzel", serif;
+      font-size: 30px; font-weight: 900;
+      color: color-mix(in srgb, var(--node-color) 75%, var(--gold));
+      text-shadow: 0 0 14px color-mix(in srgb, var(--node-color) 55%, transparent);
     }
+
+    /* ── Hero dots ── */
+    .agent-layer  { position:absolute; inset:0; pointer-events:none; }
     .effect-layer { position:absolute; inset:0; pointer-events:none; z-index:20; }
+
+    .agent {
+      position: absolute;
+      transform: translate(-50%,-50%);
+      width: 34px; height: 34px; border-radius: 50%;
+      border: 2px solid var(--node-color);
+      background: color-mix(in srgb, var(--node-color) 38%, #0a0703);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; cursor: pointer; pointer-events: all;
+      transition: left 0.44s cubic-bezier(0.4,0,0.2,1),
+                  top  0.44s cubic-bezier(0.4,0,0.2,1);
+      box-shadow: 0 0 10px color-mix(in srgb, var(--node-color) 45%, transparent);
+      z-index: 10;
+    }
+    .agent:hover {
+      z-index: 20;
+      box-shadow: 0 0 22px rgba(212,168,67,0.7);
+      border-color: var(--gold);
+    }
+    .agent::after {
+      content: attr(data-label);
+      position: absolute; bottom: calc(100% + 7px); left: 50%;
+      transform: translateX(-50%);
+      background: #14100a; border: 1px solid var(--gold);
+      color: var(--ink); padding: 7px 11px; border-radius: 5px;
+      font-size: 11px; font-family: "IBM Plex Mono", monospace;
+      white-space: pre; line-height: 1.55;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.14s; z-index: 30;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.7);
+    }
+    .agent:hover::after { opacity: 1; }
+    .agent.restored {
+      border-color: var(--gold);
+      animation: resurrGlow 1.6s ease-in-out infinite alternate;
+    }
+    .agent.suspended { opacity: 0.12; }
+
+    @keyframes resurrGlow {
+      from { box-shadow: 0 0 12px rgba(212,168,67,0.45), 0 0 28px rgba(212,168,67,0.15); }
+      to   { box-shadow: 0 0 24px rgba(212,168,67,0.9),  0 0 50px rgba(212,168,67,0.45); }
+    }
+
     .effect {
-      position:absolute; transform:translate(-50%,-50%);
-      animation:effectRise 1.4s ease-out forwards;
-      font-family:"Cinzel",serif; font-size:13px; font-weight:700;
-      color:var(--accent); text-shadow:0 0 10px var(--accent); text-align:center;
+      position: absolute; transform: translate(-50%,-50%);
+      animation: effectRise 1.5s ease-out forwards;
+      font-family: "Cinzel", serif; font-size: 13px; font-weight: 700;
+      color: var(--amber); text-shadow: 0 0 10px var(--amber); text-align: center;
     }
-    .effect.restore { color:var(--gold); text-shadow:0 0 15px var(--gold); }
+    .effect.restore { color: var(--gold); text-shadow: 0 0 16px var(--gold); }
     @keyframes effectRise {
-      from { opacity:1; transform:translate(-50%,-50%); }
-      to   { opacity:0; transform:translate(-50%,-120%); }
+      from { opacity: 1; transform: translate(-50%,-50%); }
+      to   { opacity: 0; transform: translate(-50%,-130%); }
     }
+
+    /* ── Legend / state panel ── */
     .legend-panel { display:flex; flex-direction:column; gap:12px; padding:14px; }
-    .event-banner { padding:10px 14px; border-radius:6px; border:1px solid var(--line); background:rgba(212,168,67,0.05); font-size:13px; color:var(--gold); font-style:italic; line-height:1.5; }
+    .event-banner {
+      padding: 10px 14px; border-radius:6px;
+      border: 1px solid var(--line);
+      background: rgba(212,168,67,0.04);
+      font-size: 13px; color: var(--gold); font-style: italic; line-height: 1.55;
+    }
     .state-panel { flex:1; overflow:hidden; display:flex; flex-direction:column; gap:10px; }
-    .selected-agent { padding:12px; border-radius:6px; border:1px solid var(--line); background:rgba(212,168,67,0.03); font-size:13px; line-height:1.6; }
-    .selected-agent h3 { font-family:"Cinzel",serif; font-size:15px; color:var(--gold); margin-bottom:6px; }
-    .selected-agent p { color:var(--muted); font-style:italic; }
-    .selected-badges { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; }
-    .status-badge { padding:2px 8px; border-radius:3px; border:1px solid var(--line); font-size:11px; font-family:"Cinzel",serif; letter-spacing:0.05em; color:var(--muted); }
-    .status-badge.hot { border-color:var(--gold); color:var(--gold); }
-    .lifecycle { margin-top:8px; display:flex; flex-direction:column; gap:4px; }
-    .lifecycle-item { font-size:11px; color:var(--muted); font-style:italic; padding:3px 0; border-bottom:1px solid rgba(212,168,67,0.08); }
-    .state-list { flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:6px; max-height:260px; }
-    .state-row { padding:7px 10px; border-radius:4px; border:1px solid var(--line); font-size:12px; color:var(--muted); line-height:1.5; font-style:italic; }
-    .state-row strong { color:var(--gold); font-style:normal; font-family:"Cinzel",serif; }
+    .selected-agent {
+      padding: 12px; border-radius:6px;
+      border: 1px solid var(--line);
+      background: rgba(212,168,67,0.02);
+      font-size: 13px; line-height: 1.6;
+    }
+    .selected-agent h3 {
+      font-family: "Cinzel", serif; font-size:15px;
+      color: var(--gold); margin-bottom: 6px;
+    }
+    .selected-agent p { color: var(--muted); font-style: italic; }
+    .state-list {
+      flex:1; overflow-y:auto;
+      display:flex; flex-direction:column; gap:5px;
+      max-height: 240px;
+    }
+    .state-row {
+      padding: 7px 10px; border-radius:4px;
+      border: 1px solid var(--line);
+      font-size: 12px; color: var(--muted);
+      line-height: 1.5; font-style: italic;
+    }
+    .state-row strong { color: var(--gold); font-style:normal; font-family:"Cinzel",serif; }
+
     @media (max-width:900px) {
-      .hero, .layout { grid-template-columns:1fr; }
-      .canvas-wrap { min-height:500px; }
-      .node { width:140px; }
+      .canvas-wrap { min-height: 500px; }
+      .node { width: 140px; }
     }
   </style>
 </head>
@@ -172,67 +156,80 @@
     <nav class="page-nav">
       <a class="page-link active" href="./ContinuationMobilityAnimation.html">⚔ Migration View</a>
       <a class="page-link" href="./ContinuationMobilityDemo.html">📜 System View</a>
-      <a class="page-link" href="./Description.html">📖 Description</a>
+      <a class="page-link" href="./Description.html">📖 The RhoMog Model</a>
     </nav>
 
-    <section class="hero">
+    <section class="grid-hero">
       <article class="card" style="padding:14px;">
-        <h1 class="title">✦ Realm of Continuations ✦</h1>
-        <p class="subtitle">Ten heroes traverse four realms. The Oracle guides their paths. When darkness claims Ashmarket, the fallen are resurrected at The Refuge — memories and deeds intact.</p>
+        <h1 class="page-title">✦ Realm of Continuations ✦</h1>
+        <p class="page-subtitle">Ten heroes traverse four realms. The Oracle guides their paths. When darkness claims Ashmarket, the fallen rise again at The Refuge — their memories and deeds intact.</p>
         <div class="chips">
           <div class="chip" data-tech="tick 56: agents 1–3 forced onto NodeB (failure drill)">⚔ Tick 56: Three heroes drawn into Ashmarket's shadow</div>
-          <div class="chip" data-tech="tick 60: NodeB fails, recovery from snapshot">💀 Tick 60: Ashmarket falls — resurrection follows</div>
-          <div class="chip" data-tech="restored=true agents have gold glow">✨ Gold glow marks the resurrected</div>
+          <div class="chip" data-tech="tick 60: NodeB host failure, snapshot restore begins">💀 Tick 60: Ashmarket falls — resurrection follows</div>
+          <div class="chip" data-tech="agent.restored === true, gold glow animation">✨ Gold glow marks the resurrected</div>
         </div>
       </article>
 
       <aside class="card" style="padding:14px;">
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <div class="metric"><div class="metric-label" title="world tick">Age</div><div class="metric-value" id="tick-value">0</div></div>
-          <div class="metric"><div class="metric-label" title="cross-host migrations">Journeys</div><div class="metric-value" id="transition-count">0</div></div>
-          <div class="metric"><div class="metric-label" title="restored from snapshot">Reborn</div><div class="metric-value" id="restored-count">0</div></div>
+        <div class="metrics-row">
+          <div class="metric" data-tech="world.tickCount">
+            <span class="metric-label">Age</span>
+            <span class="metric-value" id="tick-value">0</span>
+          </div>
+          <div class="metric" data-tech="totalTransitions (cross-host migrations)">
+            <span class="metric-label">Journeys</span>
+            <span class="metric-value" id="transition-count">0</span>
+          </div>
+          <div class="metric" data-tech="restoredCount (snapshot recoveries)">
+            <span class="metric-label">Reborn</span>
+            <span class="metric-value" id="restored-count">0</span>
+          </div>
         </div>
+
         <div class="button-row">
           <button class="primary" id="play-pause">Begin</button>
-          <button id="step">Step</button>
-          <button id="reset">Reset</button>
-          <select id="speed">
-            <option value="900">Slow</option>
-            <option value="520" selected>Normal</option>
-            <option value="260">Fast</option>
-            <option value="100">Turbo</option>
-          </select>
+          <button id="step-btn">Step</button>
+          <button id="reset-btn">Reset</button>
         </div>
+
+        <div class="pace-control" data-tech="tick interval: right=fast, left=slow">
+          <span class="pace-label">Tale Pace</span>
+          <span class="pace-ends">Slow</span>
+          <input type="range" id="speed-slider" min="1" max="100" value="50">
+          <span class="pace-ends">Fast</span>
+        </div>
+
         <div class="phase-strip" id="phase-strip">
-          <div class="phase-chip" data-tech="autonomous patrol">Wandering</div>
-          <div class="phase-chip" data-tech="Pi language routing">Oracle's Vision</div>
-          <div class="phase-chip" data-tech="world snapshot">Memory Crystal</div>
-          <div class="phase-chip" data-tech="load balancing">War Council</div>
-          <div class="phase-chip" data-tech="host failure">Shadow Falls</div>
-          <div class="phase-chip" data-tech="snapshot restore">Resurrection</div>
+          <div class="phase-chip" data-tech="autonomous patrol (stepAgent)">Wandering</div>
+          <div class="phase-chip" data-tech="Pi language routing decision">Oracle's Vision</div>
+          <div class="phase-chip" data-tech="world snapshot captured">Memory Crystal</div>
+          <div class="phase-chip" data-tech="load balancing across hosts">War Council</div>
+          <div class="phase-chip" data-tech="host failure / node removed">Shadow Falls</div>
+          <div class="phase-chip" data-tech="snapshot restore / agent recovery">Resurrection</div>
         </div>
+
         <p class="hint" id="phase-label"></p>
       </aside>
     </section>
 
-    <section class="layout">
+    <section class="grid-layout">
       <article class="card canvas-panel">
         <div class="canvas-wrap">
           <svg viewBox="0 0 1200 760" preserveAspectRatio="none" aria-hidden="true">
             <defs>
               <linearGradient id="flowA" x1="0%" x2="100%">
-                <stop offset="0%" stop-color="#4a8ab8" stop-opacity="0.2"/>
-                <stop offset="100%" stop-color="#8a4ab8" stop-opacity="0.2"/>
+                <stop offset="0%" stop-color="#4a8ab8" stop-opacity="0.18"/>
+                <stop offset="100%" stop-color="#8a4ab8" stop-opacity="0.18"/>
               </linearGradient>
               <linearGradient id="flowB" x1="0%" x2="100%">
-                <stop offset="0%" stop-color="#b84a4a" stop-opacity="0.18"/>
-                <stop offset="100%" stop-color="#4ab87a" stop-opacity="0.18"/>
+                <stop offset="0%" stop-color="#b84a4a" stop-opacity="0.16"/>
+                <stop offset="100%" stop-color="#4ab87a" stop-opacity="0.16"/>
               </linearGradient>
             </defs>
-            <path d="M250 190 C 440 130, 520 130, 710 190" fill="none" stroke="url(#flowA)" stroke-width="4" stroke-dasharray="10 10"/>
-            <path d="M250 190 C 360 350, 360 480, 250 610" fill="none" stroke="url(#flowB)" stroke-width="4" stroke-dasharray="10 10"/>
-            <path d="M710 190 C 840 350, 840 470, 710 610" fill="none" stroke="url(#flowA)" stroke-width="4" stroke-dasharray="10 10"/>
-            <path d="M250 610 C 430 680, 530 680, 710 610" fill="none" stroke="url(#flowB)" stroke-width="4" stroke-dasharray="10 10"/>
+            <path d="M250 190 C 440 130,520 130,710 190" fill="none" stroke="url(#flowA)" stroke-width="4" stroke-dasharray="10 10"/>
+            <path d="M250 190 C 360 350,360 480,250 610" fill="none" stroke="url(#flowB)" stroke-width="4" stroke-dasharray="10 10"/>
+            <path d="M710 190 C 840 350,840 470,710 610" fill="none" stroke="url(#flowA)" stroke-width="4" stroke-dasharray="10 10"/>
+            <path d="M250 610 C 430 680,530 680,710 610" fill="none" stroke="url(#flowB)" stroke-width="4" stroke-dasharray="10 10"/>
           </svg>
 
           <div class="node" style="left:30px;top:30px;--node-color:var(--node-a);" id="node-NodeA" data-tech="NodeA / Start region">
@@ -266,9 +263,9 @@
 
       <aside class="legend-panel card">
         <div class="event-banner" id="event-banner">The age begins. Ten heroes are summoned across Ironhold, Ashmarket, and Harborveil.</div>
-        <p class="hint">Hover any hero glyph to inspect their chronicle. Gold glow marks the resurrected.</p>
+        <p class="hint">Hover any hero glyph to inspect their chronicle. Gold glow marks the resurrected. All labels show technical names in brackets.</p>
         <div class="state-panel">
-          <h2 style="font-family:'Cinzel',serif;font-size:15px;color:var(--gold);letter-spacing:0.06em;">Hero Chronicle</h2>
+          <h2 class="section-title">Hero Chronicle</h2>
           <div class="selected-agent" id="selected-agent">
             <h3>No hero selected</h3>
             <p>Hover or click a hero to read their chronicle.</p>
@@ -280,8 +277,8 @@
   </div>
 
   <script>
-    const REALM = { NodeA:"Ironhold", NodeB:"Ashmarket", NodeC:"Harborveil", NodeD:"The Refuge" };
-    const REGION = { Start:"Ironhold Keep", Market:"Ashmarket Bazaar", Harbor:"Harborveil Docks", Backup:"The Refuge" };
+    const REALM  = {NodeA:"Ironhold",NodeB:"Ashmarket",NodeC:"Harborveil",NodeD:"The Refuge"};
+    const REGION = {Start:"Ironhold Keep",Market:"Ashmarket Bazaar",Harbor:"Harborveil Docks",Backup:"The Refuge"};
     const HEROES = [
       {name:"Aldric",   cls:"Knight",    g:"⚔"},
       {name:"Seraphine",cls:"Mage",      g:"🔮"},
@@ -294,14 +291,17 @@
       {name:"Mira",     cls:"Druid",     g:"🌿"},
       {name:"Gorath",   cls:"Berserker", g:"🔥"}
     ];
-    const nodeColors = { NodeA:"var(--node-a)", NodeB:"var(--node-b)", NodeC:"var(--node-c)", NodeD:"var(--node-d)" };
-    const positions  = { NodeA:{x:140,y:180}, NodeB:{x:1060,y:180}, NodeD:{x:140,y:580}, NodeC:{x:1060,y:580} };
+    const nodeColors = {NodeA:"var(--node-a)",NodeB:"var(--node-b)",NodeC:"var(--node-c)",NodeD:"var(--node-d)"};
+    const positions  = {NodeA:{x:140,y:178},NodeB:{x:1060,y:178},NodeD:{x:140,y:574},NodeC:{x:1060,y:574}};
+
+    // Slider: map 1–100 to 1000ms–50ms (logarithmic feel)
+    function sliderToMs(v) { return Math.round(1000 * Math.pow(50/1000, (v-1)/99)); }
 
     class DemoWorld {
       constructor() { this.reset(); }
       reset() {
         this.regions = new Map([
-          ["Start",{name:"Start",host:"NodeA",visits:0}],
+          ["Start", {name:"Start",host:"NodeA",visits:0}],
           ["Market",{name:"Market",host:"NodeB",visits:0}],
           ["Harbor",{name:"Harbor",host:"NodeC",visits:0}],
           ["Backup",{name:"Backup",host:"NodeD",visits:0}]
@@ -310,15 +310,16 @@
         for (let i=0;i<10;i++) {
           const h=HEROES[i];
           this.agents.push({id:i+1,name:`Agent_${i+1}`,heroName:h.name,heroClass:h.cls,glyph:h.g,
-            regionName:i<4?"Start":i<8?"Market":"Harbor",steps:0,plansRequested:0,migrations:0,restored:false});
+            regionName:i<4?"Start":i<8?"Market":"Harbor",
+            steps:0,plansRequested:0,migrations:0,restored:false});
         }
-        this.hostLoad=new Map(); this.lastSnapshot=[]; this.tickCount=0;
-        this.totalTransitions=0; this.restoredCount=0; this.currentOperation="Patrol";
-        this.lifecycleById=new Map(); this.removedAgentIds=new Set();
-        this.lastEvent="The age begins. Ten heroes are summoned across Ironhold, Ashmarket, and Harborveil.";
-        for (const a of this.agents) {
-          this.lifecycleById.set(a.id,[`Tick 0: summoned to ${REGION[a.regionName]}`]);
-        }
+        this.hostLoad=new Map(); this.lastSnapshot=[];
+        this.tickCount=0; this.totalTransitions=0; this.restoredCount=0;
+        this.currentOperation="Patrol"; this.lifecycleById=new Map();
+        this.removedAgentIds=new Set();
+        this.lastEvent="The age begins. Ten heroes summoned across Ironhold, Ashmarket, and Harborveil.";
+        for (const a of this.agents)
+          this.lifecycleById.set(a.id,[`Tick 0: summoned to ${REGION[a.regionName]} [${a.regionName} on NodeA/NodeB/NodeC]`]);
         this.updateHostLoad();
       }
       hostForRegion(r) { const x=this.regions.get(r); return x?x.host:"Unknown"; }
@@ -333,14 +334,18 @@
         h.unshift(`Tick ${this.tickCount}: ${msg}`);
         this.lifecycleById.set(id,h.slice(0,8));
       }
-      snapshotAgent(a) { return {...a}; }
       moveAgent(a,targetRegion,reason) {
-        const ch=this.hostForRegion(a.regionName), th=this.hostForRegion(targetRegion);
-        const fr={"Pi plan":"Oracle's vision","load balancing":"War Council decree","autonomous patrol":"wandering","scheduled failure drill":"shadow's pull"}[reason]||reason;
+        const ch=this.hostForRegion(a.regionName),th=this.hostForRegion(targetRegion);
+        const fr={
+          "Pi plan":"Oracle's vision [Pi routing]",
+          "load balancing":"War Council decree [load balancing]",
+          "autonomous patrol":"wandering [autonomous patrol]",
+          "scheduled failure drill":"shadow's pull [failure drill]"
+        }[reason]||reason;
         if (ch!==th) {
           a.migrations++; this.totalTransitions++;
           this.record(`${a.heroName} the ${a.heroClass} journeys from ${REALM[ch]} to ${REALM[th]} (${fr})`);
-          this.addLifecycle(a.id,`journeyed ${REALM[ch]} → ${REALM[th]} [${reason}]`);
+          this.addLifecycle(a.id,`journeyed ${REALM[ch]}→${REALM[th]} [${ch}→${th}] via ${fr}`);
         } else if (a.regionName!==targetRegion) {
           this.record(`${a.heroName} moves within ${REALM[th]} (${fr})`);
           this.addLifecycle(a.id,`moved within ${REALM[th]} [${reason}]`);
@@ -349,20 +354,20 @@
         const reg=this.regions.get(targetRegion); if(reg) reg.visits++;
       }
       askPi(a) {
-        const ch=this.hostForRegion(a.regionName), cl=this.hostLoad.get(ch)||0;
+        const ch=this.hostForRegion(a.regionName),cl=this.hostLoad.get(ch)||0;
         if (a.regionName==="Market"&&this.tickCount>=56&&this.tickCount<=60)
-          return {summary:"hold — shadow approaches",targetRegion:null};
+          return {summary:"hold — shadow approaches [hold position, failure imminent]",targetRegion:null};
         if (a.regionName==="Market")
-          return {summary:"Ashmarket grows dark — flee to Harborveil",targetRegion:"Harbor"};
+          return {summary:"Ashmarket grows dark — flee to Harborveil [Pi: re-route to Harbor]",targetRegion:"Harbor"};
         if (cl>=4)
-          return {summary:"realm overcrowded — seek The Refuge",targetRegion:this.regionOnHost("NodeD","Backup")};
-        return {summary:`continue vigil in ${REGION[a.regionName]}`,targetRegion:null};
+          return {summary:"realm overcrowded — seek The Refuge [Pi: saturated, move to NodeD]",targetRegion:this.regionOnHost("NodeD","Backup")};
+        return {summary:`continue vigil in ${REGION[a.regionName]} [Pi: no action]`,targetRegion:null};
       }
       snapshot() {
-        this.lastSnapshot=this.agents.map(a=>this.snapshotAgent(a));
+        this.lastSnapshot=this.agents.map(a=>({...a}));
         this.currentOperation="Snapshot";
-        this.record(`memory crystals forged — ${this.lastSnapshot.length} heroes preserved`);
-        for (const a of this.agents) this.addLifecycle(a.id,"soul preserved in memory crystal");
+        this.record(`Memory crystals forged — ${this.lastSnapshot.length} heroes preserved [world snapshot]`);
+        for (const a of this.agents) this.addLifecycle(a.id,"soul preserved in memory crystal [snapshot]");
       }
       balanceLoad() {
         this.updateHostLoad();
@@ -373,7 +378,7 @@
         this.currentOperation="Balance";
         const tr=this.regionOnHost(mn[0],"Backup");
         let n=Math.floor((mx[1]-mn[1])/2);
-        this.record(`War Council dispatches ${n} heroes from ${REALM[mx[0]]} to ${REALM[mn[0]]}`);
+        this.record(`War Council dispatches ${n} heroes from ${REALM[mx[0]]} to ${REALM[mn[0]]} [load balance: ${mx[0]}→${mn[0]}]`);
         for (const a of this.agents) {
           if (n<=0) break;
           if (this.hostForRegion(a.regionName)!==mx[0]) continue;
@@ -385,12 +390,11 @@
         const rr=this.regionOnHost(rh,"Backup");
         this.currentOperation="Resume";
         for (const s of this.lastSnapshot) {
-          if (alive.has(s.id)) continue;
-          if (this.hostForRegion(s.regionName)!==fh) continue;
+          if (alive.has(s.id)||this.hostForRegion(s.regionName)!==fh) continue;
           const rec={...s,regionName:rr,migrations:s.migrations+1,restored:true};
           this.agents.push(rec); this.totalTransitions++; this.restoredCount++;
-          this.record(`${rec.heroName} rises again at ${REALM[rh]} — memories and deeds restored`);
-          this.addLifecycle(rec.id,`fell in ${REALM[fh]} — resurrected at ${REALM[rh]} [snapshot restore]`);
+          this.record(`${rec.heroName} rises again at ${REALM[rh]} — memories restored [snapshot restore onto ${rh}]`);
+          this.addLifecycle(rec.id,`fell in ${REALM[fh]} [${fh}] — resurrected at ${REALM[rh]} [${rh}] via snapshot`);
         }
       }
       simulateFailure(fh,rh) {
@@ -399,11 +403,11 @@
         for (const a of this.agents) {
           if (this.hostForRegion(a.regionName)===fh) {
             removed++; this.removedAgentIds.add(a.id);
-            this.addLifecycle(a.id,`fell as ${REALM[fh]} was consumed by shadow [host failure]`);
+            this.addLifecycle(a.id,`fell as ${REALM[fh]} was consumed by shadow [${fh} host failure]`);
           } else survivors.push(a);
         }
         this.agents=survivors;
-        this.record(`${REALM[fh]} falls to shadow — ${removed} heroes lost before resurrection`);
+        this.record(`${REALM[fh]} falls to shadow — ${removed} heroes lost before resurrection [${fh} failure]`);
         this.recoverAgentsToHost(fh,rh);
       }
       stepAgent(a) {
@@ -411,14 +415,14 @@
         if (this.tickCount===56&&a.id>=1&&a.id<=3) {
           this.currentOperation="Failure";
           this.moveAgent(a,"Market","scheduled failure drill");
-          this.addLifecycle(a.id,"drawn into Ashmarket by fate [failure drill]");
+          this.addLifecycle(a.id,"drawn into Ashmarket by fate [failure drill tick 56]");
           return;
         }
         if (a.steps%5===0) {
           a.plansRequested++; this.currentOperation="Pi";
           const plan=this.askPi(a);
           this.record(`${a.heroName} receives the Oracle's vision: ${plan.summary}`);
-          this.addLifecycle(a.id,`Oracle speaks: ${plan.summary} [Pi routing]`);
+          this.addLifecycle(a.id,`Oracle speaks: ${plan.summary}`);
           if (plan.targetRegion) { this.moveAgent(a,plan.targetRegion,"Pi plan"); return; }
         }
         if ((this.tickCount+a.id)%11===0) {
@@ -445,9 +449,9 @@
       transitionCount: document.getElementById("transition-count"),
       restoredCount:   document.getElementById("restored-count"),
       playPause:       document.getElementById("play-pause"),
-      step:            document.getElementById("step"),
-      reset:           document.getElementById("reset"),
-      speed:           document.getElementById("speed"),
+      stepBtn:         document.getElementById("step-btn"),
+      resetBtn:        document.getElementById("reset-btn"),
+      speedSlider:     document.getElementById("speed-slider"),
       phaseLabel:      document.getElementById("phase-label"),
       phaseStrip:      document.getElementById("phase-strip"),
       eventBanner:     document.getElementById("event-banner"),
@@ -460,45 +464,39 @@
     const world=new DemoWorld(), agentEls=new Map();
     let selectedAgentId=null, timer=null;
 
+    function currentMs() { return sliderToMs(Number(dom.speedSlider.value)); }
+
     function phaseLabel() {
       if (world.tickCount===0) return "";
-      if (world.tickCount<20) return "Heroes wander. Ashmarket fills. The Oracle watches.";
+      if (world.tickCount<20) return "Heroes wander. Ashmarket fills. The Oracle watches from Harborveil.";
       if (world.tickCount<56) return "Memory crystals form. The War Council redistributes forces.";
       if (world.tickCount<60) return "Fate draws Aldric, Seraphine, and Corvin into Ashmarket's shadow...";
       if (world.tickCount===60) return "Ashmarket falls. The Refuge glows as the fallen are reborn.";
       if (world.tickCount<80) return "The reborn rejoin the living. Their deeds carry forward unchanged.";
       return "The age is complete. The realm endures.";
     }
-
     function phaseIndex() {
       return Math.max(0,["Patrol","Pi","Snapshot","Balance","Failure","Resume"].indexOf(world.currentOperation));
     }
-
     function agentStatus(a) {
-      if (world.removedAgentIds.has(a.id)) return "Fallen";
-      if (a.restored&&world.tickCount===60) return "Reborn";
-      if (a.restored) return "Resurrected";
-      if (world.tickCount>=56&&world.tickCount<=60&&a.id>=1&&a.id<=3&&world.hostForRegion(a.regionName)==="NodeB") return "Fated";
-      if (a.steps>0&&a.steps%5===0) return "Guided";
-      if (world.hostForRegion(a.regionName)==="NodeD"&&a.migrations>0) return "Dispatched";
-      return "Wandering";
+      if (world.removedAgentIds.has(a.id)) return ["Fallen","removed (host failure)"];
+      if (a.restored&&world.tickCount===60) return ["Reborn","restored from snapshot"];
+      if (a.restored) return ["Resurrected","post-recovery"];
+      if (world.tickCount>=56&&world.tickCount<=60&&a.id>=1&&a.id<=3&&world.hostForRegion(a.regionName)==="NodeB") return ["Fated","failure drill target"];
+      if (a.steps>0&&a.steps%5===0) return ["Guided","Pi routing"];
+      if (world.hostForRegion(a.regionName)==="NodeD"&&a.migrations>0) return ["Dispatched","load balanced"];
+      return ["Wandering","autonomous patrol"];
     }
-
-    const STATUS_TECH = {Fallen:"removed (host failure)",Reborn:"restored from snapshot",Resurrected:"post-recovery",Fated:"failure drill target",Guided:"Pi routing",Dispatched:"load balanced",Wandering:"autonomous patrol"};
-
     function clusterOffset(idx,total) {
       const cols=Math.max(1,Math.ceil(Math.sqrt(total)));
-      const row=Math.floor(idx/cols), col=idx%cols;
-      return {x:(col-(cols-1)/2)*38, y:(row-(Math.ceil(total/cols)-1)/2)*38};
+      return {x:(idx%cols-(cols-1)/2)*38, y:(Math.floor(idx/cols)-(Math.ceil(total/cols)-1)/2)*38};
     }
-
     function updateCounts() {
       for (const h of ["NodeA","NodeB","NodeC","NodeD"]) {
         const el=document.getElementById(`count-${h}`);
         if(el) el.textContent=String(world.hostLoad.get(h)||0);
       }
     }
-
     function ensureAgentElements() {
       for (const a of world.agents) {
         if (agentEls.has(a.id)) continue;
@@ -509,7 +507,6 @@
         agentEls.set(a.id,el); dom.agentLayer.appendChild(el);
       }
     }
-
     function renderAgents() {
       ensureAgentElements();
       const groups=new Map([["NodeA",[]],["NodeB",[]],["NodeC",[]],["NodeD",[]]]);
@@ -517,65 +514,60 @@
       for (const [host,agents] of groups.entries()) {
         agents.sort((a,b)=>a.id-b.id);
         agents.forEach((a,idx)=>{
-          const pos=positions[host], off=clusterOffset(idx,agents.length);
+          const pos=positions[host],off=clusterOffset(idx,agents.length);
           const el=agentEls.get(a.id); if(!el) return;
           el.style.left=`${pos.x+off.x}px`; el.style.top=`${pos.y+off.y}px`;
           el.style.setProperty("--node-color",nodeColors[host]);
           el.classList.toggle("restored",a.restored);
           el.classList.toggle("suspended",world.removedAgentIds.has(a.id));
-          const st=agentStatus(a);
+          const [st,tech]=agentStatus(a);
           el.dataset.label=
             `${a.heroName} the ${a.heroClass}  [Agent_${a.id}]\n`+
             `Realm: ${REALM[host]}  [${host}]\n`+
-            `Status: ${st}  [${STATUS_TECH[st]||st}]\n`+
-            `Steps: ${a.steps} · Visions: ${a.plansRequested}  [plans]\n`+
+            `Status: ${st}  [${tech}]\n`+
+            `Steps: ${a.steps}  Visions: ${a.plansRequested}  [plansRequested]\n`+
             `Journeys: ${a.migrations}  [migrations]`+
             (a.restored?`\n✨ Resurrected  [snapshot@60 NodeB→NodeD]`:"");
         });
       }
     }
-
     function renderStateList() {
       dom.stateList.innerHTML=[...world.agents].sort((a,b)=>a.id-b.id).map(a=>{
-        const h=world.hostForRegion(a.regionName),st=agentStatus(a);
-        return `<div class="state-row"><strong>${a.glyph} ${a.heroName}</strong> <span style="font-size:10px;color:var(--muted)">${a.heroClass} · Agent_${a.id}</span><br>${REALM[h]} · ${st}${a.restored?" · <span style='color:var(--gold)'>✨ reborn</span>":""}</div>`;
+        const h=world.hostForRegion(a.regionName),[st]=agentStatus(a);
+        return `<div class="state-row"><strong>${a.glyph} ${a.heroName}</strong> <span style="font-size:10px;color:var(--faint)">${a.heroClass} · Agent_${a.id}</span><br>${REALM[h]} · ${st}${a.restored?" · <span style='color:var(--gold)'>✨ reborn</span>":""}</div>`;
       }).join("");
     }
-
     function renderSelectedAgent() {
       const a=world.agents.find(e=>e.id===selectedAgentId);
       if (!a) { dom.selectedAgent.innerHTML=`<h3>No hero selected</h3><p>Hover or click a hero glyph to read their chronicle.</p>`; return; }
-      const h=world.hostForRegion(a.regionName),st=agentStatus(a),tech=STATUS_TECH[st]||st;
+      const h=world.hostForRegion(a.regionName),[st,tech]=agentStatus(a);
       const history=world.lifecycleById.get(a.id)||[];
       dom.selectedAgent.innerHTML=`
         <h3>${a.glyph} ${a.heroName} the ${a.heroClass}</h3>
-        <div style="font-size:10px;color:var(--muted);margin-bottom:6px;font-family:'Cinzel',serif;">Agent_${a.id}</div>
+        <div style="font-size:10px;color:var(--faint);margin-bottom:6px;font-family:'Cinzel',serif;">Agent_${a.id}</div>
         <div class="selected-badges">
           <span class="status-badge hot">${st}</span>
           <span class="status-badge" title="${h}">${REALM[h]}</span>
           ${a.restored?'<span class="status-badge hot">✨ Reborn</span>':""}
         </div>
         <p style="font-size:12px;color:var(--muted);">
-          <em>${st}</em> <span style="font-size:10px;">[${tech}]</span><br>
+          <em>${st}</em> <span style="font-size:10px;font-family:'IBM Plex Mono',monospace">[${tech}]</span><br>
           ${a.migrations} journey${a.migrations!==1?"s":""} [migrations] · ${a.plansRequested} vision${a.plansRequested!==1?"s":""} [Pi plans]
-          ${a.restored?"<br>✨ Fell in Ashmarket · reborn at The Refuge [snapshot restore]":""}
+          ${a.restored?"<br>✨ Fell in Ashmarket · reborn at The Refuge <span style='font-family:monospace;font-size:10px'>[snapshot restore]</span>":""}
         </p>
         <div class="lifecycle">${history.map(item=>`<div class="lifecycle-item">${item}</div>`).join("")}</div>`;
     }
-
     function spawnEffect(host,label,kind="") {
-      const pos=positions[host], e=document.createElement("div");
+      const pos=positions[host],e=document.createElement("div");
       e.className=`effect ${kind}`.trim();
       e.style.left=`${pos.x}px`; e.style.top=`${pos.y}px`;
       e.textContent=label;
       dom.effectLayer.appendChild(e);
-      setTimeout(()=>e.remove(),1450);
+      setTimeout(()=>e.remove(),1500);
     }
-
     function renderPhaseStrip() {
       [...dom.phaseStrip.children].forEach((c,i)=>c.classList.toggle("active",i===phaseIndex()));
     }
-
     function render() {
       dom.tickValue.textContent=String(world.tickCount);
       dom.transitionCount.textContent=String(world.totalTransitions);
@@ -584,29 +576,35 @@
       dom.eventBanner.textContent=world.lastEvent;
       updateCounts(); renderAgents(); renderPhaseStrip(); renderSelectedAgent(); renderStateList();
     }
-
-    function stop() { if(timer!==null){clearInterval(timer);timer=null;} dom.playPause.textContent=world.tickCount>=80?"Replay":"Begin"; }
+    function stop() {
+      if(timer!==null){clearInterval(timer);timer=null;}
+      dom.playPause.textContent=world.tickCount>=80?"Replay":"Begin";
+    }
     function start() {
       stop(); dom.playPause.textContent="Pause";
       timer=setInterval(()=>{
-        const bt=world.tickCount, adv=world.tick();
-        if (world.tickCount===60&&bt!==60) {
+        const bt=world.tickCount,adv=world.tick();
+        if(world.tickCount===60&&bt!==60){
           spawnEffect("NodeB","☠ Shadow Falls","");
           spawnEffect("NodeD","✨ Resurrection","restore");
         }
-        render(); if(!adv||world.tickCount>=80) stop();
-      },Number(dom.speed.value));
+        render();
+        if(!adv||world.tickCount>=80) stop();
+      },currentMs());
     }
-
-    dom.playPause.addEventListener("click",()=>{ if(timer!==null){stop();return;} if(world.tickCount>=80){world.reset();render();} start(); });
-    dom.step.addEventListener("click",()=>{
-      if(timer!==null)return;
+    dom.playPause.addEventListener("click",()=>{
+      if(timer!==null){stop();return;}
+      if(world.tickCount>=80){world.reset();render();}
+      start();
+    });
+    dom.stepBtn.addEventListener("click",()=>{
+      if(timer!==null) return;
       if(world.tickCount>=80){world.reset();}
       else{const bt=world.tickCount;world.tick();if(world.tickCount===60&&bt!==60){spawnEffect("NodeB","☠ Shadow Falls","");spawnEffect("NodeD","✨ Resurrection","restore");}}
       render();
     });
-    dom.reset.addEventListener("click",()=>{stop();world.reset();selectedAgentId=null;render();});
-    dom.speed.addEventListener("change",()=>{if(timer!==null)start();});
+    dom.resetBtn.addEventListener("click",()=>{stop();world.reset();selectedAgentId=null;render();});
+    dom.speedSlider.addEventListener("input",()=>{if(timer!==null)start();});
     render();
   </script>
 </body>
