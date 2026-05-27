@@ -12,6 +12,8 @@ Objects and *compute* can be distributed across Nodes in a Domain.
 
 ![DistributedDemo](resources/cppkai_continuation_flow.gif)
 
+**[Continuation Mobility Demo](ContinuationMobilityDemo/index.html)** — animated walk-through of agent migration, Pi-guided routing, load balancing, and snapshot-based recovery after a simulated node failure. Source of truth: [`ContinuationMobilityDemo.rho`](Test/Language/TestRho/Scripts/ContinuationMobilityDemo.rho).
+
 ## System Architecture Overview
 
 The KAI system provides a multi-layered architecture that enables distributed object programming with multiple language frontends:
