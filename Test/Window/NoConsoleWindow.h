@@ -43,67 +43,67 @@ struct NoConsoleWindow : public SimpleMockWindow {
         // Simple Pi command simulation with more realistic output
         if (text == "2 3 +") {
             AddLog("Stack:");
-            AddLog("  5");
+            AddLog("  [0]: 5");
         } else if (text == "4 5 *") {
             AddLog("Stack:");
-            AddLog("  20");
+            AddLog("  [0]: 20");
         } else if (text == "10 3 -") {
             AddLog("Stack:");
-            AddLog("  7");
+            AddLog("  [0]: 7");
         } else if (text == "20 4 /") {
             AddLog("Stack:");
-            AddLog("  5");
+            AddLog("  [0]: 5");
         } else if (text == "1 2 +") {
             AddLog("Stack:");
-            AddLog("  3");
+            AddLog("  [0]: 3");
         } else if (text == "5 dup") {
             AddLog("Stack:");
-            AddLog("  5");
-            AddLog("  5");
+            AddLog("  [0]: 5");
+            AddLog("  [1]: 5");
         } else if (text == "1 2 swap") {
             AddLog("Stack:");
-            AddLog("  2");
-            AddLog("  1");
+            AddLog("  [0]: 2");
+            AddLog("  [1]: 1");
         } else if (text == "drop") {
             AddLog("Stack:");
-            AddLog("  (previous item dropped)");
+            AddLog("  [0]: (previous item dropped)");
         } else if (text.find("'answer =") != std::string::npos) {
             // Variable assignment
             AddLog("Variable 'answer' assigned");
         } else if (text == "answer") {
             AddLog("Stack:");
-            AddLog("  42");
+            AddLog("  [0]: 42");
         } else if (text == "clear 1 2 3 drop") {
             AddLog("Stack:");
-            AddLog("  1");
-            AddLog("  2");
+            AddLog("  [0]: 1");
+            AddLog("  [1]: 2");
         } else if (text == "10 'x =") {
             AddLog("Variable 'x' assigned");
         } else if (text == "20 'y =") {
             AddLog("Variable 'y' assigned");
         } else if (text == "x y +") {
             AddLog("Stack:");
-            AddLog("  30");
+            AddLog("  [0]: 30");
         } else if (text == "2 2 = { \"equal\" } { \"not equal\" } ifelse") {
             AddLog("Stack:");
-            AddLog("  \"equal\"");
+            AddLog("  [0]: \"equal\"");
         } else if (text == "2 3 = { \"equal\" } { \"not equal\" } ifelse") {
             AddLog("Stack:");
-            AddLog("  \"not equal\"");
+            AddLog("  [0]: \"not equal\"");
         } else if (text == "\"Hello\" \", \" + \"World!\" +") {
             AddLog("Stack:");
-            AddLog("  \"Hello, World!\"");
+            AddLog("  [0]: \"Hello, World!\"");
         } else if (text == "{ 2 * } 'double =") {
             AddLog("Function 'double' defined");
         } else if (text == "5 double") {
             AddLog("Stack:");
-            AddLog("  10");
+            AddLog("  [0]: 10");
         } else if (text ==
                    "{ dup 0 > { dup 1 - fact * } { drop 1 } ifelse } 'fact =") {
             AddLog("Function 'fact' defined");
         } else if (text == "5 fact") {
             AddLog("Stack:");
-            AddLog("  120");
+            AddLog("  [0]: 120");
         } else if (text.find("'") != std::string::npos &&
                    text.find("=") != std::string::npos) {
             // Variable assignment
@@ -114,7 +114,7 @@ struct NoConsoleWindow : public SimpleMockWindow {
             AddLog("Array created: [1 2 3 4 5]");
         } else if (text == "\"Hello, World!\"") {
             AddLog("Stack:");
-            AddLog("  \"Hello, World!\"");
+            AddLog("  [0]: \"Hello, World!\"");
         } else if (text.find("\"") != std::string::npos) {
             AddLog("String created");
         } else if (text.find("$") == 0) {
@@ -132,56 +132,56 @@ struct NoConsoleWindow : public SimpleMockWindow {
         // Simple Rho command simulation with more realistic output
         if (text == "20 + 30") {
             AddLog("Stack:");
-            AddLog("  50");
+            AddLog("  [0]: 50");
         } else if (text == "100 - 25") {
             AddLog("Stack:");
-            AddLog("  75");
+            AddLog("  [0]: 75");
         } else if (text == "10 * 5") {
             AddLog("Stack:");
-            AddLog("  50");
+            AddLog("  [0]: 50");
         } else if (text == "6 * 7") {
             AddLog("Stack:");
-            AddLog("  42");
+            AddLog("  [0]: 42");
         } else if (text == "y = 20") {
             AddLog("Variable 'y' assigned value 20");
         } else if (text == "x + y") {
             AddLog("Stack:");
-            AddLog("  30");
+            AddLog("  [0]: 30");
         } else if (text == "x = 10") {
             AddLog("Variable 'x' assigned value 10");
         } else if (text == "x") {
             AddLog("Stack:");
-            AddLog("  10");
+            AddLog("  [0]: 10");
         } else if (text == "fun add(a, b) { a + b }") {
             AddLog("Function 'add' defined");
         } else if (text == "add(5, 3)") {
             AddLog("Stack:");
-            AddLog("  8");
+            AddLog("  [0]: 8");
         } else if (text ==
                    "fun multiply_and_add(x, y, z) { result = x * y; result + z "
                    "}") {
             AddLog("Function 'multiply_and_add' defined");
         } else if (text == "multiply_and_add(3, 4, 5)") {
             AddLog("Stack:");
-            AddLog("  17");
+            AddLog("  [0]: 17");
         } else if (text ==
                    "x = 5; if (x > 3) { \"greater\" } else { \"less\" }") {
             AddLog("Stack:");
-            AddLog("  \"greater\"");
+            AddLog("  [0]: \"greater\"");
         } else if (text.find("y = 10; if (y > 5)") != std::string::npos) {
             AddLog("Stack:");
-            AddLog("  \"very big\"");
+            AddLog("  [0]: \"very big\"");
         } else if (text.find("sum = 0; for (i = 1; i <= 5") !=
                    std::string::npos) {
             AddLog("Stack:");
-            AddLog("  15");
+            AddLog("  [0]: 15");
         } else if (text.find("count = 0; while (count < 3)") !=
                    std::string::npos) {
             AddLog("Stack:");
-            AddLog("  3");
+            AddLog("  [0]: 3");
         } else if (text.find("if (x > 3)") != std::string::npos) {
             AddLog("Stack:");
-            AddLog("  \"greater\"");
+            AddLog("  [0]: \"greater\"");
         } else if (text == "undefined_variable") {
             AddLog("Error: undefined variable 'undefined_variable'");
         } else if (text.find("=") != std::string::npos &&
@@ -206,7 +206,7 @@ struct NoConsoleWindow : public SimpleMockWindow {
                    text.find("/") != std::string::npos) {
             // Arithmetic
             AddLog("Stack:");
-            AddLog("  50");  // Default result
+            AddLog("  [0]: 50");  // Default result
         } else if (text == "clear") {
             ClearLog();
         } else if (text.find("[") != std::string::npos) {

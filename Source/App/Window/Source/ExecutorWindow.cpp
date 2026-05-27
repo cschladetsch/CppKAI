@@ -13,6 +13,21 @@ using namespace std;
 
 KAI_BEGIN
 
+namespace {
+std::string FormatStackValue(const Object& object) {
+    std::string text = object.ToString().StdString();
+    while (!text.empty() && (text.back() == '\n' || text.back() == '\r')) {
+        text.pop_back();
+    }
+
+    if (object.GetTypeNumber() == Type::Number::String) {
+        return "\"" + text + "\"";
+    }
+
+    return text;
+}
+}  // namespace
+
 // Enum for the available tabs in the console window
 enum class ConsoleTab { Pi, Rho, Debugger };
 
@@ -635,8 +650,10 @@ struct ExecutorWindow {
 
             for (int i = 0; i < exec_->GetDataStack()->Size(); i++) {
                 auto obj = exec_->GetDataStack()->At(i);
+                int displayIndex = exec_->GetDataStack()->Size() - 1 - i;
                 StringStream st;
-                st << i << ": " << obj;
+                st << "[" << displayIndex << "]: "
+                   << FormatStackValue(obj).c_str();
 
                 if (ImGui::Selectable(st.ToString().c_str(), WatchIndex == i)) {
                     WatchIndex = i;
@@ -807,8 +824,10 @@ struct ExecutorWindow {
             AddLog("Stack:");
             for (int i = 0; i < exec_->GetDataStack()->Size(); i++) {
                 auto obj = exec_->GetDataStack()->At(i);
+                int displayIndex = exec_->GetDataStack()->Size() - 1 - i;
                 StringStream itemSt;
-                itemSt << "  " << i << ": " << obj;
+                itemSt << "  [" << displayIndex << "]: "
+                       << FormatStackValue(obj).c_str();
                 AddLog("%s", itemSt.ToString().c_str());
             }
         }
@@ -939,9 +958,11 @@ struct ExecutorWindow {
             // Report stack contents
             if (exec_->GetDataStack()->Size() > 0) {
                 AddLog("Stack:");
+                int stackIndex = 0;
                 for (auto obj : *exec_->GetDataStack()) {
                     StringStream st;
-                    st << "  " << obj;
+                    st << "  [" << stackIndex++ << "]: "
+                       << FormatStackValue(obj).c_str();
                     AddLog("%s", st.ToString().c_str());
                 }
             } else {

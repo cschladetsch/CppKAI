@@ -8,7 +8,8 @@
 #   --no-color    Disable colored output
 #   --no-ninja    Use default CMake generator instead of Ninja
 #   --gcc         Use GCC instead of Clang++
-#   --window      Enable the ImGui frontend (KAI_BUILD_WINDOW=ON)
+#   --imgui       Enable the ImGui frontend (KAI_BUILD_IMGUI=ON)
+#   --window      Deprecated alias for --imgui
 
 # Check if help is requested
 for arg in "$@"; do
@@ -20,7 +21,8 @@ for arg in "$@"; do
     echo "  --no-color    Disable colored output"
     echo "  --no-ninja    Use default CMake generator instead of Ninja"
     echo "  --gcc         Use GCC instead of Clang++"
-    echo "  --window      Enable the ImGui frontend (KAI_BUILD_WINDOW=ON)"
+    echo "  --imgui       Enable the ImGui frontend (KAI_BUILD_IMGUI=ON)"
+    echo "  --window      Deprecated alias for --imgui"
     echo "  --network     Enable networking (KAI_NETWORKING=ON)"
     echo "  --help, -h    Show this help message"
     exit 0
@@ -31,7 +33,7 @@ done
 USE_COLOR=true
 USE_NINJA=true
 USE_GCC=false
-USE_WINDOW=false
+USE_IMGUI=false
 USE_NETWORKING=false
 
 for arg in "$@"; do
@@ -44,8 +46,8 @@ for arg in "$@"; do
   if [ "$arg" == "--gcc" ]; then
     USE_GCC=true
   fi
-  if [ "$arg" == "--window" ]; then
-    USE_WINDOW=true
+  if [ "$arg" == "--imgui" ] || [ "$arg" == "--window" ]; then
+    USE_IMGUI=true
   fi
   if [ "$arg" == "--network" ]; then
     USE_NETWORKING=true
@@ -103,7 +105,7 @@ fi
 
 # Also reconfigure if a feature flag is provided.
 for arg in "$@"; do
-  if [ "$arg" == "--reconfigure" ] || [ "$arg" == "--network" ] || [ "$arg" == "--window" ]; then
+  if [ "$arg" == "--reconfigure" ] || [ "$arg" == "--network" ] || [ "$arg" == "--imgui" ] || [ "$arg" == "--window" ]; then
     NEED_CONFIGURE=true
   fi
 done
@@ -124,9 +126,9 @@ if [ "$USE_NETWORKING" = true ]; then
   CMAKE_ARGS="$CMAKE_ARGS -DKAI_NETWORKING=ON"
 fi
 
-if [ "$USE_WINDOW" = true ]; then
-  echo -e "${BLUE}Window frontend enabled (KAI_BUILD_WINDOW=ON)${NC}"
-  CMAKE_ARGS="$CMAKE_ARGS -DKAI_BUILD_WINDOW=ON"
+if [ "$USE_IMGUI" = true ]; then
+  echo -e "${BLUE}ImGui frontend enabled (KAI_BUILD_IMGUI=ON)${NC}"
+  CMAKE_ARGS="$CMAKE_ARGS -DKAI_BUILD_IMGUI=ON"
 fi
 
 # Set compiler to clang++ by default unless --gcc flag was provided

@@ -27,8 +27,9 @@ static void error_callback(int error, const char* description) {
 
 enum class ThemePreset { Dark, Minimal, Industrial, Neon, System };
 
-static const char* kLayoutIniPath = "./Bin/Window.imgui.ini";
-static const char* kThemeSettingsPath = "./Bin/Window.theme";
+static const char* kLayoutIniPath = "./Bin/ImGui.imgui.ini";
+static const char* kThemeSettingsPath = "./Bin/ImGui.theme";
+static constexpr float kDefaultFontScale = 1.10f;
 
 static const char* ThemeName(ThemePreset preset) {
     switch (preset) {
@@ -164,7 +165,7 @@ static std::string MakeWindowTitle() {
     char version[32];
     std::strftime(version, sizeof(version), "v%y-%m-%d-%H", &local_time);
 
-    return std::string("KAI Window ") + version;
+    return std::string("KAI ImGui ") + version;
 }
 
 static GLFWwindow* SetupGui() {
@@ -215,12 +216,10 @@ static GLFWwindow* SetupGui() {
 }
 
 static void LoadFont() {
-    ImFontConfig config;
-    config.OversampleH = 3;
-    config.OversampleV = 1;
-    config.GlyphExtraSpacing.x = 1.0f;
-    (void)config;
-    // Use default font for now. The backend uploads it automatically.
+    ImGuiIO& io = ImGui::GetIO();
+    // Scale the shared default font up slightly so every theme inherits the
+    // same larger baseline text size.
+    io.FontGlobalScale = kDefaultFontScale;
 }
 
 int main(int argc, char** argv) {

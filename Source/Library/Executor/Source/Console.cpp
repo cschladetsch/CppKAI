@@ -75,6 +75,47 @@ class MultiLangTranslator : public TranslatorCommon {
     }
 };
 
+namespace {
+bool IsBareIdentifier(std::string_view text) {
+    if (text.empty()) return false;
+
+    const auto is_ident_start = [](unsigned char ch) {
+        return std::isalpha(ch) || ch == '_';
+    };
+    const auto is_ident_char = [](unsigned char ch) {
+        return std::isalnum(ch) || ch == '_';
+    };
+
+    if (!is_ident_start(static_cast<unsigned char>(text.front()))) {
+        return false;
+    }
+
+    for (size_t i = 1; i < text.size(); ++i) {
+        if (!is_ident_char(static_cast<unsigned char>(text[i]))) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+int RemoveTrailingInvalidStackEntries(Pointer<Executor> exec,
+                                      int initialStackSize) {
+    if (!exec.Exists()) return 0;
+
+    Value<Stack> data = exec->GetDataStack();
+    if (!data.Exists()) return 0;
+
+    int removed = 0;
+    while (data->Size() > initialStackSize && !data->Top().Valid()) {
+        data->Pop();
+        ++removed;
+    }
+
+    return removed;
+}
+}  // namespace
+
 Console::Console() {
     alloc = make_shared<Memory::StandardAllocator>();
     peer_.reset();
@@ -1181,6 +1222,10 @@ String Console::Process(const String &text) {
     KAI_TRY {
         // First expand any backtick shell commands
         String expandedText = ExpandShellCommands(text);
+        const int initialStackSize =
+            executor.Exists() && executor->GetDataStack().Exists()
+                ? executor->GetDataStack()->Size()
+                : 0;
 
         // Determine the appropriate structure based on the active language.
         // Rho snippets are generally exercised through Structure::Program in
@@ -1207,7 +1252,17 @@ String Console::Process(const String &text) {
             Execute(cont);
         }
 
-        return "";
+        const int removedInvalidEntries =
+            RemoveTrailingInvalidStackEntries(executor, initialStackSize);
+        if (removedInvalidEntries > 0) {
+            if (IsBareIdentifier(trimmed)) {
+                result << "Unresolved: " << trimmed << "\n";
+            } else {
+                result << "Unresolved\n";
+            }
+        }
+
+        return result.ToString();
     }
     KAI_CATCH(Exception::Base, E) {
         result << "Exception: " << E.ToString() << "\n";

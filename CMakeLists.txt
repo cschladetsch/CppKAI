@@ -100,9 +100,15 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 option(KAI_BUILD_TEST_ALL "Build all tests" ON)
 option(KAI_BUILD_CORE_TEST "Build unit tests" ON)
 option(KAI_BUILD_TEST_LANG "Build language tests" ON)
-option(KAI_BUILD_WINDOW "Build the ImGui window client" OFF)
+option(KAI_BUILD_IMGUI "Build the ImGui client" OFF)
+option(KAI_BUILD_WINDOW "Deprecated alias for KAI_BUILD_IMGUI" OFF)
 option(KAI_BUILD_LLM "Build the local LLM support libraries" OFF)
 option(KAI_NETWORKING "Build networking library, Tau IDL, NetworkGenerate tool, and network tests" ON)
+
+if(KAI_BUILD_WINDOW AND NOT KAI_BUILD_IMGUI)
+    message(STATUS "KAI_BUILD_WINDOW is deprecated; enabling KAI_BUILD_IMGUI")
+    set(KAI_BUILD_IMGUI ON CACHE BOOL "Build the ImGui client" FORCE)
+endif()
 
 # Security option: Enable shell syntax (backtick operations)
 # Default to OFF for security reasons

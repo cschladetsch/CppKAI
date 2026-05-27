@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.6)
 
-project(ImGui)
+project(ImGuiLib)
 
 # Use external imgui source
 set(IMGUI_ROOT ${EXTERNAL}/imgui)
@@ -18,7 +18,8 @@ set(IMGUI_SOURCES
 )
 
 # Create the ImGui library
-add_library(ImGui STATIC ${IMGUI_SOURCES})
+add_library(ImGuiLib STATIC ${IMGUI_SOURCES})
+set_target_properties(ImGuiLib PROPERTIES OUTPUT_NAME ImGui)
 
 # Install the library
-install(TARGETS ImGui DESTINATION lib)
+install(TARGETS ImGuiLib DESTINATION lib)

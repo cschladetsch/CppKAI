@@ -29,7 +29,7 @@ KAI provides convenient scripts for building:
 ./b
 
 # Build with the ImGui frontend enabled
-./b --window
+./b --imgui
 
 # Build with GCC
 ./b --gcc
@@ -99,7 +99,7 @@ cmake .. -DENABLE_SHELL_SYNTAX=ON         # Enable shell command integration (de
 cmake .. -DKAI_BUILD_TEST_ALL=ON          # Build test targets (default: ON)
 cmake .. -DKAI_BUILD_CORE_TEST=ON         # Build core/unit tests (default: ON)
 cmake .. -DKAI_BUILD_TEST_LANG=ON         # Build language tests (default: ON)
-cmake .. -DKAI_BUILD_WINDOW=ON            # Build the ImGui frontend (Bin/Window)
+cmake .. -DKAI_BUILD_IMGUI=ON             # Build the ImGui frontend (Bin/ImGui)
 cmake .. -DKAI_BUILD_LLM=ON               # Build local model-cache support for llama.cpp integrations
 cmake .. -DKAI_NETWORKING=ON              # Enable networking, Tau network codegen, and TestNetwork (default)
 cmake .. -DKAI_NETWORKING=OFF             # Skip networking components and network tests
@@ -135,7 +135,7 @@ cmake .. -DENABLE_SHELL_SYNTAX=ON
 ./b
 
 # Include the ImGui frontend
-./b --window
+./b --imgui
 
 # Manual build
 mkdir -p build && cd build
@@ -196,19 +196,19 @@ Console --help                   # Available system-wide
 
 ### Window Application
 
-The ImGui frontend is built as `Bin/Window` when `KAI_BUILD_WINDOW=ON`:
+The ImGui frontend is built as `Bin/ImGui` when `KAI_BUILD_IMGUI=ON`:
 
 ```bash
 # Recommended helper path
-./b --window
+./b --imgui
 
 # Manual configure/build
 mkdir -p build && cd build
-cmake .. -DKAI_BUILD_WINDOW=ON
-cmake --build . --target Window
+cmake .. -DKAI_BUILD_IMGUI=ON
+cmake --build . --target ImGui
 
 # Run from the repo root
-./Bin/Window
+./Bin/ImGui
 ```
 
 ### Running Tests

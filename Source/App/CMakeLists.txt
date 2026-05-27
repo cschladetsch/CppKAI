@@ -4,8 +4,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${dir}/Bin")
 
 set(apps Console)
 
-if(KAI_BUILD_WINDOW)
-    list(APPEND apps Window)
+if(KAI_BUILD_IMGUI)
+    list(APPEND apps ImGui)
 endif()
 
 if(KAI_BUILD_LLM)
@@ -13,7 +13,11 @@ if(KAI_BUILD_LLM)
 endif()
 
 foreach (app ${apps})
-    include(${APP_HOME}/${app}/CMakeLists.txt)
+    if(app STREQUAL ImGui)
+        include(${APP_HOME}/Window/CMakeLists.txt)
+    else()
+        include(${APP_HOME}/${app}/CMakeLists.txt)
+    endif()
 endforeach()
 
 if(KAI_NETWORKING)

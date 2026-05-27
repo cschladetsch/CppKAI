@@ -66,17 +66,25 @@ TEST_F(ExecutorWindowTest, PiTab_BasicArithmetic) {
 TEST_F(ExecutorWindowTest, PiTab_StackOperations) {
     // Test dup
     window->ExecCommand("5 dup");
-    EXPECT_TRUE(CaptureOutput().find("  5") != std::string::npos);
+    EXPECT_TRUE(CaptureOutput().find("  [0]: 5") != std::string::npos);
+    EXPECT_TRUE(CaptureOutput().find("  [1]: 5") != std::string::npos);
 
     // Test swap
     window->ExecCommand("1 2 swap");
     auto output = CaptureOutput();
-    EXPECT_TRUE(output.find("  2") != std::string::npos);
-    EXPECT_TRUE(output.find("  1") != std::string::npos);
+    EXPECT_TRUE(output.find("  [0]: 2") != std::string::npos);
+    EXPECT_TRUE(output.find("  [1]: 1") != std::string::npos);
 
     // Test drop
     window->ExecCommand("clear 1 2 3 drop");
-    EXPECT_EQ(GetLastOutput(), "  2");
+    EXPECT_EQ(GetLastOutput(), "  [1]: 2");
+}
+
+TEST_F(ExecutorWindowTest, PiTab_StackOutputUsesIndexedPrefixes) {
+    window->ExecCommand("2 3 +");
+    auto output = CaptureOutput();
+    EXPECT_TRUE(output.find("Stack:") != std::string::npos);
+    EXPECT_TRUE(output.find("  [0]: 5") != std::string::npos);
 }
 
 TEST_F(ExecutorWindowTest, PiTab_Variables) {
