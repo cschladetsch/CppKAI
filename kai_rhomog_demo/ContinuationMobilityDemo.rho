@@ -1,0 +1,164 @@
+// ContinuationMobilityDemo.rho
+// Source of truth for the migration / continuation story.
+// The HTML views are visual explanations of this script.
+System.Print("===== CONTINUATION MOBILITY DEMO =====")
+
+makeAgent = fun(id, name, region)
+    return { id: id, name: name, region: region, steps: 0, plans: 0, migrations: 0, restored: false }
+
+makeSnapshot = fun(agent, tick)
+    return { tick: tick, state: { id: agent.id, name: agent.name, region: agent.region,
+        steps: agent.steps, plans: agent.plans, migrations: agent.migrations, restored: agent.restored } }
+
+hostForRegion = fun(region)
+    if (region == "Start")  { return "NodeA" }
+    if (region == "Market") { return "NodeB" }
+    if (region == "Harbor") { return "NodeC" }
+    if (region == "Backup") { return "NodeD" }
+    return "Unknown"
+
+countOnHost = fun(agents, host)
+    count = 0
+    for (i = 0; i < agents.Count; i = i + 1) {
+        if (hostForRegion(agents[i].region) == host) { count = count + 1 }
+    }
+    return count
+
+countRestored = fun(agents)
+    count = 0
+    for (i = 0; i < agents.Count; i = i + 1) {
+        if (agents[i].restored) { count = count + 1 }
+    }
+    return count
+
+describeAgent = fun(agent)
+    return agent.name + " region=" + agent.region + " host=" + hostForRegion(agent.region) +
+        " steps=" + agent.steps + " plans=" + agent.plans +
+        " migrations=" + agent.migrations + " restored=" + agent.restored
+
+logLoads = fun(agents, label)
+    System.Print(label + " | NodeA=" + countOnHost(agents, "NodeA") +
+        " NodeB=" + countOnHost(agents, "NodeB") +
+        " NodeC=" + countOnHost(agents, "NodeC") +
+        " NodeD=" + countOnHost(agents, "NodeD"))
+
+moveAgent = fun(agent, targetRegion, reason)
+    currentHost = hostForRegion(agent.region)
+    targetHost  = hostForRegion(targetRegion)
+    if (agent.region == targetRegion) {
+        System.Print(agent.name + " stays in " + targetRegion + " (" + reason + ")")
+        return
+    }
+    if (currentHost != targetHost) {
+        agent.migrations = agent.migrations + 1
+        System.Print("Suspend " + agent.name + " on " + currentHost +
+            " -> resume on " + targetHost + " (" + reason + ")")
+    } else {
+        System.Print(agent.name + " moves within " + targetHost +
+            " from " + agent.region + " to " + targetRegion + " (" + reason + ")")
+    }
+    agent.region = targetRegion
+
+moveAgentById = fun(agents, id, targetRegion, reason)
+    for (i = 0; i < agents.Count; i = i + 1) {
+        if (agents[i].id == id) { moveAgent(agents[i], targetRegion, reason); return }
+    }
+    System.Print("moveAgentById: no agent with id=" + id)
+
+snapshotAgents = fun(agents, tick)
+    snapshots = []
+    for (i = 0; i < agents.Count; i = i + 1) { snapshots.append(makeSnapshot(agents[i], tick)) }
+    return snapshots
+
+removeAgentsOnHost = fun(agents, failedHost)
+    survivors = []
+    lost = 0
+    for (i = 0; i < agents.Count; i = i + 1) {
+        if (hostForRegion(agents[i].region) == failedHost) {
+            System.Print("Lost " + agents[i].name + " on " + failedHost)
+            lost = lost + 1
+        } else {
+            survivors.append(agents[i])
+        }
+    }
+    System.Print("Host failure on " + failedHost + ": " + lost + " agents lost")
+    return survivors
+
+restoreFromSnapshots = fun(liveAgents, snapshots, failedHost, recoveryRegion)
+    result = []
+    for (i = 0; i < liveAgents.Count; i = i + 1) { result.append(liveAgents[i]) }
+    isLive = fun(id)
+        for (j = 0; j < liveAgents.Count; j = j + 1) {
+            if (liveAgents[j].id == id) { return true }
+        }
+        return false
+    restored = 0
+    for (i = 0; i < snapshots.Count; i = i + 1) {
+        state = snapshots[i].state
+        if (hostForRegion(state.region) == failedHost && !isLive(state.id)) {
+            result.append({ id: state.id, name: state.name, region: recoveryRegion,
+                steps: state.steps, plans: state.plans,
+                migrations: state.migrations + 1, restored: true })
+            System.Print("Recovered " + state.name + " from snapshot onto " + recoveryRegion)
+            restored = restored + 1
+        }
+    }
+    System.Print("Recovery complete: " + restored + " agents restored onto " + recoveryRegion)
+    return result
+
+// ----- world -----
+
+agents = []
+agents.append(makeAgent(1,  "Agent_1",  "Start"))
+agents.append(makeAgent(2,  "Agent_2",  "Start"))
+agents.append(makeAgent(3,  "Agent_3",  "Start"))
+agents.append(makeAgent(4,  "Agent_4",  "Start"))
+agents.append(makeAgent(5,  "Agent_5",  "Market"))
+agents.append(makeAgent(6,  "Agent_6",  "Market"))
+agents.append(makeAgent(7,  "Agent_7",  "Market"))
+agents.append(makeAgent(8,  "Agent_8",  "Market"))
+agents.append(makeAgent(9,  "Agent_9",  "Harbor"))
+agents.append(makeAgent(10, "Agent_10", "Harbor"))
+
+timeline = []
+timeline.append("tick  0: 10 agents across Start / Market / Harbor")
+logLoads(agents, "initial")
+
+// tick 20: Pi reroutes Market crowd to Harbor
+System.Print("Pi policy: reroute Market crowd to Harbor")
+for (i = 4; i < 8; i = i + 1) {
+    agents[i].plans = agents[i].plans + 1
+    moveAgent(agents[i], "Harbor", "Pi reroute")
+}
+timeline.append("tick 20: Pi reroutes Market traffic to Harbor")
+snapshot20 = snapshotAgents(agents, 20)
+
+// tick 25: balancer shifts two agents from NodeA to NodeD
+System.Print("Balancer shifts NodeA pressure to NodeD")
+moveAgent(agents[0], "Backup", "load balancing")
+moveAgent(agents[1], "Backup", "load balancing")
+timeline.append("tick 25: load balancing shifts two agents to Backup")
+
+// tick 56: failure drill forces agents 1-3 onto NodeB
+System.Print("Failure drill: move agents 1-3 onto Market")
+moveAgentById(agents, 1, "Market", "failure drill")
+moveAgentById(agents, 2, "Market", "failure drill")
+moveAgentById(agents, 3, "Market", "failure drill")
+timeline.append("tick 56: drill moves agents 1-3 into Market")
+
+// tick 60: snapshot, then NodeB failure, then restore
+snapshot60 = snapshotAgents(agents, 60)
+timeline.append("tick 60: snapshot captured before failure")
+System.Print("NodeB fails")
+agents = removeAgentsOnHost(agents, "NodeB")
+agents = restoreFromSnapshots(agents, snapshot60, "NodeB", "Backup")
+timeline.append("tick 60: failure and restore complete")
+
+// ----- report -----
+
+System.Print("Final agent state")
+for (i = 0; i < agents.Count; i = i + 1) { System.Print("  - " + describeAgent(agents[i])) }
+System.Print("Timeline")
+for (i = 0; i < timeline.Count; i = i + 1) { System.Print("  * " + timeline[i]) }
+System.Print("Restored agents: " + countRestored(agents))
+countRestored(agents)
