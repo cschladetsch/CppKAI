@@ -12,11 +12,9 @@ Objects and *compute* can be distributed across Nodes in a Domain.
 
 ![DistributedDemo](resources/cppkai_continuation_flow.gif)
 
-### [▶ Interactive Continuation Mobility Demo](https://cschladetsch.github.io/CppKAI/ContinuationMobilityDemo/)
+![Continuation Mobility Demo](resources/demo2.png)
 
-Animated walk-through of agent migration across nodes, Pi-guided routing, load balancing, and snapshot-based recovery after a simulated host failure. Source of truth: [`ContinuationMobilityDemo.rho`](Test/Language/TestRho/Scripts/ContinuationMobilityDemo.rho).
-
-> Requires GitHub Pages enabled on this repo (Settings → Pages → Deploy from branch `master` / root).
+**[▶ Live Interactive Demo](https://cschladetsch.github.io/CppKAI/ContinuationMobilityDemo/)**
 
 ## System Architecture Overview
 
