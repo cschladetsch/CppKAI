@@ -2,7 +2,6 @@
 set -e
 REPO="$HOME/local/repos/CppKAI"
 DEST="$REPO/ContinuationMobilityDemo"
-SCRIPTS="$REPO/Test/Language/TestRho/Scripts"
 SRC="$(cd "$(dirname "$0")" && pwd)"
 
 echo "RhoMog Model installer"
@@ -21,7 +20,7 @@ for f in style.css ContinuationMobilityAnimation.html ContinuationMobilityDemo.h
 done
 
 [ -f "$SRC/ContinuationMobilityDemo.rho" ] && {
-    cp "$SRC/ContinuationMobilityDemo.rho" "$SCRIPTS/ContinuationMobilityDemo.rho"
+    cp "$SRC/ContinuationMobilityDemo.rho" "$DEST/ContinuationMobilityDemo.rho"
     echo "  ✓ ContinuationMobilityDemo.rho"
 }
 
@@ -35,7 +34,7 @@ git -C "$REPO" add \
     ContinuationMobilityDemo/ContinuationMobilityAnimation.html \
     ContinuationMobilityDemo/ContinuationMobilityDemo.html \
     ContinuationMobilityDemo/Description.html \
-    Test/Language/TestRho/Scripts/ContinuationMobilityDemo.rho \
+    ContinuationMobilityDemo/ContinuationMobilityDemo.rho \
     README.md 2>/dev/null || true
 
 git -C "$REPO" commit -m "RhoMog Model: shared CSS, fantasy reskin, Description page, speed slider"

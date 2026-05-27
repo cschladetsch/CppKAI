@@ -7,8 +7,9 @@ _Rho_ is internally translated to _Pi_ for use in a single _Executor_ that suppo
 
 ## ContinuationMobilityDemo
 
-[ContinuationMobilityDemo.rho](./ContinuationMobilityDemo.rho) is the clearest
-single-file example of the migration story in this tree.
+The clearest single-file example of the migration story in this tree now lives
+at
+[ContinuationMobilityDemo/ContinuationMobilityDemo.rho](../../../../ContinuationMobilityDemo/ContinuationMobilityDemo.rho).
 
 It is intentionally explicit:
 

@@ -2,7 +2,7 @@
 
 `ContinuationMobilityDemo` is a documentation and visualization bundle for the
 single-file Rho demo at
-[Test/Language/TestRho/Scripts/ContinuationMobilityDemo.rho](../Test/Language/TestRho/Scripts/ContinuationMobilityDemo.rho).
+[ContinuationMobilityDemo.rho](./ContinuationMobilityDemo.rho).
 
 That Rho script is the source of truth. Everything else in this folder exists to
 make the same scenario easier to inspect:

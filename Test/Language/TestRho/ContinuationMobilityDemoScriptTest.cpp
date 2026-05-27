@@ -2,12 +2,19 @@
 
 #include <KAI/Console/Console.h>
 
-#include "TestRhoUtils.h"
+#include <fstream>
+#include <sstream>
 
 TEST(ContinuationMobilityDemoScriptTest, ScriptExecutesSuccessfully) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
 
-    std::string script = kai::test::LoadRhoScript("ContinuationMobilityDemo.rho");
+    std::ifstream file("ContinuationMobilityDemo/ContinuationMobilityDemo.rho");
+    ASSERT_TRUE(file.is_open());
+
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    std::string script = buffer.str();
+
     EXPECT_NO_THROW(console.Execute(script.c_str(), kai::Structure::Program));
 }

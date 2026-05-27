@@ -1,6 +1,6 @@
 // Reference executable model for the continuation mobility story.
 // The canonical version of the demo now lives in
-// Test/Language/TestRho/Scripts/ContinuationMobilityDemo.rho.
+// ContinuationMobilityDemo/ContinuationMobilityDemo.rho.
 
 #include <algorithm>
 #include <iomanip>

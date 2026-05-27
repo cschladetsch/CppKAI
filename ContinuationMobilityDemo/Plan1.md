@@ -1,7 +1,7 @@
 # ContinuationMobilityDemo Plan
 
 This directory now serves as a companion bundle for the single-file Rho demo:
-[Test/Language/TestRho/Scripts/ContinuationMobilityDemo.rho](../Test/Language/TestRho/Scripts/ContinuationMobilityDemo.rho).
+[ContinuationMobilityDemo.rho](./ContinuationMobilityDemo.rho).
 
 The intent is to show one scenario clearly:
 
