@@ -44,8 +44,8 @@ graph LR
 Networking is enabled by default:
 
 ```bash
-./b                     # standard build includes ENet, Tau IDL, NetworkGenerate, and network tests
-./b --clean             # clean rebuild with networking included
+./Scripts/b                     # standard build includes ENet, Tau IDL, NetworkGenerate, and network tests
+./Scripts/b --clean             # clean rebuild with networking included
 
 cmake .. -DKAI_NETWORKING=OFF   # equivalent CMake flag to disable networking
 ```

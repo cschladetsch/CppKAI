@@ -28,16 +28,16 @@ This is the recommended build script for most users. It:
 Usage:
 ```bash
 # Build with Clang++ (default)
-./b
+./Scripts/b
 
 # Build with GCC
-./b --gcc
+./Scripts/b --gcc
 
 # Build without Ninja
-./b --no-ninja
+./Scripts/b --no-ninja
 
 # Combined options
-./b --gcc --no-ninja
+./Scripts/b --gcc --no-ninja
 ```
 
 The executables will be available in `build/Bin/`.
@@ -53,13 +53,13 @@ This script is designed to run the Rho language tests one by one to help isolate
 Usage:
 ```bash
 # Run tests with Clang++ (default)
-./r
+./Scripts/r
 
 # Run tests with GCC
-./r --gcc
+./Scripts/r --gcc
 
 # Run tests without colored output
-./r --no-color
+./Scripts/r --no-color
 ```
 
 ## Manual Out-of-Source Build
@@ -83,7 +83,7 @@ cmake --build .
 After building, you can run the test suite:
 
 ```bash
-./run_all_tests.sh
+./Scripts/run_all_tests.sh
 ```
 
 The root test runner executes the main built test binaries. If networking is not enabled, the network binary will not be present.

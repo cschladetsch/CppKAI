@@ -37,9 +37,9 @@ Please see [BUILD.md](./BUILD.md) for detailed instructions on building KAI.
 
 ```bash
 # Using helper script (recommended)
-./b    # Build with Clang++ (default)
+./Scripts/b    # Build with Clang++ (default)
 # or
-./b --gcc  # Build with GCC
+./Scripts/b --gcc  # Build with GCC
 
 # Alternative: Use the Makefile
 make       # Build with Clang++ (default)

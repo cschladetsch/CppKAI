@@ -117,7 +117,7 @@ The test runner automatically clears previous logs at the start of each test run
 
 ```bash
 # Run the current full suite
-./run_all_tests.sh
+./Scripts/run_all_tests.sh
 ```
 
 If you want archived logs, copy the log files into `Logs/archive/` after the run or use a dedicated wrapper script.

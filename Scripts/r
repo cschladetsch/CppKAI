@@ -1,5 +1,5 @@
 python3 - << 'EOF'
-path = "demo_console_communication.sh"
+path = "Test/demo_console_communication.sh"
 with open(path, 'r') as f:
     content = f.read()
 

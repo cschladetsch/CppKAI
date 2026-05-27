@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Build script for KAI project
-# Usage: ./b [options]
+# Usage: ./Scripts/b [options]
 # Options:
 #   --clean       Clean build directory before building
 #   --reconfigure Force CMake reconfiguration
@@ -14,7 +14,7 @@
 # Check if help is requested
 for arg in "$@"; do
   if [ "$arg" == "--help" ] || [ "$arg" == "-h" ]; then
-    echo "Usage: ./b [options]"
+    echo "Usage: ./Scripts/b [options]"
     echo "Options:"
     echo "  --clean       Clean build directory before building"
     echo "  --reconfigure Force CMake reconfiguration"

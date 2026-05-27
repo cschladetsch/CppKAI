@@ -71,10 +71,13 @@ Utility for cleaning up AI-generated comments and references.
 ### calc_test.sh
 Calculator functionality testing script.
 
-## Demo Scripts
+## Helper Scripts
 
-Located in project root:
-- **demo_console_communication.sh** - Interactive console networking demo using tmux
+- **b** - Root-oriented CMake build wrapper. Run it from the repository root as `./Scripts/b`.
+- **be** - Build with networking enabled and run the scripted test suite.
+- **run_tests** - Run the in-tree test binaries from `Bin/Test`.
+- **tidy** - Apply `clang-format` to source and test C++ files.
+- **r** - Repair encoding artifacts in `Test/demo_console_communication.sh`.
 
 ## Usage Examples
 

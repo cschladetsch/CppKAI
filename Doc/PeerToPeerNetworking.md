@@ -5,7 +5,7 @@ KAI's networking layer provides a symmetric peer-to-peer model: every `Node` can
 The transport is **ENet over UDP**. Networking is built by default and can be disabled with `KAI_NETWORKING=OFF`:
 
 ```bash
-./b
+./Scripts/b
 ```
 
 ## Core Abstractions
@@ -175,7 +175,7 @@ The generated `ICalcProxy` inherits from `ProxyBase` and the generated `ICalcAge
 
 ```bash
 # Enable networking
-./b --network
+./Scripts/b --network
 
 # Run network tests
 ./Bin/Test/TestNetwork

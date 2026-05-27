@@ -186,9 +186,9 @@ graph TB
 
 ### **Quick Start Examples**
 
-- Build from the repository root with `./b`
-- Run the current full suite with `./run_all_tests.sh`
-- Networking is enabled by default; use `./b` for the standard build or `./b --network` if your wrapper exposes it explicitly
+- Build from the repository root with `./Scripts/b`
+- Run the current full suite with `./Scripts/run_all_tests.sh`
+- Networking is enabled by default; use `./Scripts/b` for the standard build or `./Scripts/b --network` if your wrapper exposes it explicitly
 - Test binaries are written to `./Bin/Test`, including `TestNetwork`
 - Run `./Scripts/run_rho_demo.sh` for a comprehensive demo of Rho language features
 - Run `./Scripts/calc_test.sh` for a demonstration of network calculation
@@ -315,22 +315,22 @@ Build scripts that follow best practices for out-of-source builds:
 
 ```bash
 # Quick build (using Clang++ by default)
-./b
+./Scripts/b
 
 # Build with networking support (ENet, Tau IDL, NetworkGenerate, network tests)
-./b --network
+./Scripts/b --network
 
 # Build with GCC
-./b --gcc
+./Scripts/b --gcc
 
 # Build without Ninja
-./b --no-ninja
+./Scripts/b --no-ninja
 
 # Force CMake reconfiguration (required when switching --network on/off)
-./b --reconfigure
+./Scripts/b --reconfigure
 
 # Clean everything and rebuild
-./b --clean
+./Scripts/b --clean
 
 # Using Makefile (Clang++ by default)
 make
@@ -375,7 +375,7 @@ Shell operations (backtick syntax) are disabled by default for security. To enab
 cmake .. -DENABLE_SHELL_SYNTAX=ON
 
 # Or with the build script
-./b --enable-shell
+./Scripts/b --enable-shell
 ```
 
 ## Applications
@@ -461,7 +461,7 @@ See [Console Documentation](Doc/Console.md) for comprehensive usage guide.
 Networking is optional and must be enabled at build time:
 
 ```bash
-./b --network
+./Scripts/b --network
 ```
 
 This builds the ENet transport layer, the Tau IDL code generator (`NetworkGenerate`), and all network tests.

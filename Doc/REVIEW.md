@@ -55,7 +55,7 @@ Execution Engine → Core Object Model → Platform & Runtime
 - **Test Suite** - Comprehensive test executables for all components
 
 ### Build Script Analysis
-The `./b` build script provides:
+The `./Scripts/b` build script provides:
 - Intelligent configuration detection
 - Parallel compilation (24 cores utilized)
 - Multiple compiler support (Clang++/GCC)

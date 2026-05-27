@@ -26,16 +26,16 @@ KAI provides convenient scripts for building:
 
 ```bash
 # Build with Clang++ (default)
-./b
+./Scripts/b
 
 # Build with the ImGui frontend enabled
-./b --imgui
+./Scripts/b --imgui
 
 # Build with GCC
-./b --gcc
+./Scripts/b --gcc
 
 # Build without using Ninja
-./b --no-ninja
+./Scripts/b --no-ninja
 ```
 
 ### Using the Makefile
@@ -118,7 +118,7 @@ When LLM support is enabled, models are stored in `~/.cache/deepseek/models` by 
 cmake .. -DENABLE_SHELL_SYNTAX=ON
 
 # Or use the helper script
-./b --enable-shell
+./Scripts/b --enable-shell
 ```
 
 **Important**: Only enable shell syntax in trusted environments. When enabled:
@@ -132,10 +132,10 @@ cmake .. -DENABLE_SHELL_SYNTAX=ON
 
 ```bash
 # Using helper script (recommended)
-./b
+./Scripts/b
 
 # Include the ImGui frontend
-./b --imgui
+./Scripts/b --imgui
 
 # Manual build
 mkdir -p build && cd build
@@ -200,7 +200,7 @@ The ImGui frontend is built as `Bin/ImGui` when `KAI_BUILD_IMGUI=ON`:
 
 ```bash
 # Recommended helper path
-./b --imgui
+./Scripts/b --imgui
 
 # Manual configure/build
 mkdir -p build && cd build
@@ -217,7 +217,7 @@ After building, test binaries are written to `Bin/Test/` at the repository root:
 
 ```bash
 # Full suite from the repository root
-./run_all_tests.sh
+./Scripts/run_all_tests.sh
 
 # Individual test binaries
 ./Bin/Test/TestCore

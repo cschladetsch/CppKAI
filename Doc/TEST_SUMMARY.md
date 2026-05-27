@@ -35,10 +35,10 @@ Generated: 2026-04-04
 
 ```bash
 # Configure and build from the repository root
-./b
+./Scripts/b
 
 # Run the full current suite
-./run_all_tests.sh
+./Scripts/run_all_tests.sh
 
 # Run individual suites
 ./Bin/Test/TestCore
@@ -47,7 +47,7 @@ Generated: 2026-04-04
 ./Bin/Test/TestTau
 
 # Run network tests (requires --network build)
-./b --network
+./Scripts/b --network
 ./Bin/Test/TestNetwork
 
 # Filter specific tests
@@ -57,7 +57,7 @@ Generated: 2026-04-04
 
 ## Network Tests (TestNetwork)
 
-Built only when `KAI_NETWORKING=ON` (use `./b --network`).
+Built only when `KAI_NETWORKING=ON` (use `./Scripts/b --network`).
 
 ### NodeEndToEndTest (6 tests)
 | Test | Description |

@@ -15,7 +15,7 @@ Test programs are located in the `Bin/Test/` directory after building the projec
 To run the full suite from the repository root:
 
 ```bash
-./run_all_tests.sh
+./Scripts/run_all_tests.sh
 ```
 
 ### Command-Line Options

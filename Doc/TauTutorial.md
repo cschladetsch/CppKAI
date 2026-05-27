@@ -525,7 +525,7 @@ Use `NetworkGenerate` to turn a `.tau` file into C++ proxy and agent headers:
 
 ```bash
 # Build with networking enabled
-./b --network
+./Scripts/b --network
 
 # Generate proxy/agent headers
 ./Bin/NetworkGenerate MyService.tau

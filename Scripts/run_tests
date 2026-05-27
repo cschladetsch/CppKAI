@@ -5,7 +5,7 @@ set -e
 
 rm -rf build
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 run_test() {
     local name="$1"
@@ -25,14 +25,14 @@ run_test() {
 # Run all test executables from the in-tree output paths used by this
 # repository.
 run_test TestCore \
-    "$SCRIPT_DIR/Bin/Test/TestCore"
+    "$ROOT_DIR/Bin/Test/TestCore"
 run_test TestPi \
-    "$SCRIPT_DIR/Bin/Test/TestPi"
+    "$ROOT_DIR/Bin/Test/TestPi"
 run_test TestRho \
-    "$SCRIPT_DIR/Bin/Test/TestRho"
+    "$ROOT_DIR/Bin/Test/TestRho"
 run_test TestTau \
-    "$SCRIPT_DIR/Bin/Test/TestTau"
+    "$ROOT_DIR/Bin/Test/TestTau"
 run_test TestNetwork \
-    "$SCRIPT_DIR/Bin/Test/TestNetwork"
+    "$ROOT_DIR/Bin/Test/TestNetwork"
 
 echo "All tests passed!"
