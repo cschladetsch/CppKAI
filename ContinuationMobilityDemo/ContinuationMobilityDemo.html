@@ -2,273 +2,79 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <link rel="stylesheet" href="./style.css">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ContinuationMobilityDemo</title>
+  <title>RhoMog Model — System View</title>
+  <link rel="stylesheet" href="./style.css">
   <style>
-    :root {
-      --bg: #f3efe6;
-      --paper: rgba(255, 252, 245, 0.86);
-      --panel: rgba(255, 255, 255, 0.72);
-      --ink: #1f2329;
-      --muted: #55606f;
-      --accent: #c54f1b;
-      --accent-soft: rgba(197, 79, 27, 0.14);
-      --line: rgba(31, 35, 41, 0.12);
-      --node-a: #244b73;
-      --node-b: #8e3b2e;
-      --node-c: #2e6a57;
-      --node-d: #6a4c93;
-      --shadow: 0 22px 60px rgba(31, 35, 41, 0.12);
-    }
+    /* ── System View page-specific styles ── */
 
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      color: var(--ink);
-      background:
-        radial-gradient(circle at top left, rgba(197, 79, 27, 0.12), transparent 28%),
-        radial-gradient(circle at top right, rgba(36, 75, 115, 0.12), transparent 34%),
-        linear-gradient(180deg, #f8f4eb 0%, #efe8db 100%);
-      font-family: "IBM Plex Sans", "Avenir Next", "Segoe UI", sans-serif;
-    }
-
-    .page {
-      width: min(1440px, calc(100vw - 32px));
-      margin: 16px auto 28px;
-      padding: 18px;
-      border: 1px solid rgba(255, 255, 255, 0.58);
-      border-radius: 28px;
-      background: var(--paper);
-      backdrop-filter: blur(20px);
-      box-shadow: var(--shadow);
-    }
-
-    .page-nav {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 14px;
-      flex-wrap: wrap;
-    }
-
-    .page-link {
-      display: inline-flex;
-      align-items: center;
-      padding: 10px 14px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.74);
-      color: var(--ink);
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.01em;
-    }
-
-    .page-link.active {
-      background: #1f2329;
-      border-color: #1f2329;
-      color: white;
-    }
-
-    .hero {
+    .sv-hero {
       display: grid;
       grid-template-columns: 1.3fr 1fr;
-      gap: 18px;
-      margin-bottom: 18px;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    .sv-layout {
+      display: grid;
+      grid-template-columns: 1.35fr 0.95fr;
+      gap: 14px;
+    }
+    @media (max-width: 1080px) {
+      .sv-hero, .sv-layout { grid-template-columns: 1fr; }
     }
 
-    .hero-card,
-    .panel,
-    .host-card,
-    .timeline-item {
-      border: 1px solid var(--line);
-      border-radius: 22px;
-      background: var(--panel);
-      box-shadow: 0 10px 28px rgba(31, 35, 41, 0.06);
-    }
-
-    [data-hint] {
-      position: relative;
-    }
-
-    [data-hint]::before,
-    [data-hint]::after {
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 140ms ease, transform 140ms ease;
-      position: absolute;
-      z-index: 20;
-    }
-
-    [data-hint]::before {
-      content: attr(data-hint);
-      left: 50%;
-      bottom: calc(100% + 14px);
-      width: min(240px, 72vw);
-      padding: 10px 12px;
-      border-radius: 12px;
-      background: rgba(31, 35, 41, 0.94);
-      color: white;
-      font-size: 12px;
-      line-height: 1.45;
-      text-align: left;
-      box-shadow: 0 14px 28px rgba(31, 35, 41, 0.22);
-      transform: translate(-50%, 8px);
-      white-space: normal;
-    }
-
-    [data-hint]::after {
-      content: "";
-      left: 50%;
-      bottom: calc(100% + 8px);
-      width: 10px;
-      height: 10px;
-      background: rgba(31, 35, 41, 0.94);
-      transform: translate(-50%, 8px) rotate(45deg);
-      border-radius: 2px;
-    }
-
-    [data-hint]:hover::before,
-    [data-hint]:hover::after,
-    [data-hint]:focus-visible::before,
-    [data-hint]:focus-visible::after {
-      opacity: 1;
-      transform: translate(-50%, 0);
-    }
-
+    /* Hero intro card */
     .hero-card {
-      padding: 24px;
-      background:
-        linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(250, 241, 228, 0.92));
-    }
-
-    h1,
-    h2,
-    h3,
-    p {
-      margin: 0;
-    }
-
-    .title {
-      max-width: 11ch;
-      font-size: clamp(38px, 5vw, 76px);
-      line-height: 0.95;
-      letter-spacing: -0.06em;
-    }
-
-    .subtitle {
-      max-width: 52ch;
-      margin-top: 16px;
-      color: var(--muted);
-      font-size: 16px;
-      line-height: 1.55;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: var(--panel);
     }
 
     .key-points {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(2, 1fr);
       gap: 10px;
-      margin-top: 20px;
+      margin-top: 16px;
     }
+    @media (max-width: 760px) { .key-points { grid-template-columns: 1fr; } }
 
     .key-point {
-      padding: 12px 14px;
+      padding: 10px 14px;
+      border-radius: 6px;
       border: 1px solid var(--line);
-      border-radius: 16px;
-      background: rgba(255, 255, 255, 0.58);
-      font-size: 14px;
-      line-height: 1.4;
+      background: rgba(212,168,67,0.04);
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--ink);
     }
+    .key-point strong { color: var(--gold); font-family: "Cinzel", serif; }
 
+    /* Status card */
     .status-card {
-      padding: 22px;
-      display: grid;
-      gap: 16px;
-      align-content: start;
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
 
     .status-grid {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
     }
+    @media (max-width: 760px) { .status-grid { grid-template-columns: 1fr; } }
 
-    .metric {
-      padding: 14px;
-      border-radius: 18px;
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.68);
-    }
-
-    .metric-label {
-      color: var(--muted);
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    .metric-value {
-      margin-top: 8px;
-      font-size: 28px;
-      font-weight: 700;
-      letter-spacing: -0.05em;
-    }
-
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-    }
-
-    button,
-    select {
-      appearance: none;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      background: rgba(255, 255, 255, 0.9);
-      color: var(--ink);
-      font: inherit;
-    }
-
-    button {
-      padding: 12px 16px;
-      cursor: pointer;
-      transition: transform 120ms ease, background 120ms ease;
-    }
-
-    button:hover,
-    button:focus-visible {
-      background: white;
-      transform: translateY(-1px);
-      outline: none;
-    }
-
-    button.primary {
-      border-color: transparent;
-      background: linear-gradient(135deg, #1f2329, #3a424d);
-      color: white;
-    }
-
-    select {
-      padding: 12px 34px 12px 14px;
-    }
-
-    .layout {
-      display: grid;
-      grid-template-columns: 1.35fr 0.95fr;
-      gap: 18px;
-    }
-
+    /* Panel */
     .panel {
-      padding: 18px;
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: var(--panel);
     }
-
     .panel-head {
       display: flex;
       justify-content: space-between;
@@ -276,209 +82,203 @@
       gap: 12px;
       margin-bottom: 14px;
     }
-
     .panel-title {
-      font-size: 19px;
-      letter-spacing: -0.04em;
+      font-family: "Cinzel", serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 0.05em;
     }
-
     .panel-note {
+      font-size: 12px;
       color: var(--muted);
-      font-size: 13px;
+      font-style: italic;
+      white-space: nowrap;
     }
 
+    /* Host cards */
     .hosts {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
     }
+    @media (max-width: 760px) { .hosts { grid-template-columns: 1fr; } }
 
     .host-card {
-      padding: 16px;
+      padding: 14px;
+      border-radius: 8px;
+      border: 1px solid color-mix(in srgb, var(--host-color) 40%, transparent);
+      background: color-mix(in srgb, var(--host-color) 12%, rgba(8,5,2,0.9));
       position: relative;
       overflow: hidden;
-      min-height: 224px;
+      min-height: 180px;
+      cursor: help;
     }
-
     .host-card::after {
       content: "";
       position: absolute;
-      inset: auto -18px -18px auto;
-      width: 92px;
-      height: 92px;
+      inset: auto -16px -16px auto;
+      width: 80px; height: 80px;
       border-radius: 50%;
-      background: color-mix(in srgb, var(--host-color) 12%, transparent);
+      background: color-mix(in srgb, var(--host-color) 10%, transparent);
       pointer-events: none;
+    }
+    /* data-tech tooltip: bottom for host cards */
+    .host-card[data-tech]:hover::after {
+      content: attr(data-tech);
+      position: absolute;
+      top: calc(100% + 6px); bottom: auto;
+      left: 50%; right: auto;
+      transform: translateX(-50%);
+      width: auto; height: auto;
+      background: #14100a;
+      border: 1px solid var(--gold);
+      border-radius: 4px;
+      color: var(--gold);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 11px;
+      padding: 4px 10px;
+      white-space: nowrap;
+      z-index: 100;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.7);
     }
 
     .host-title {
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
-
     .host-swatch {
-      width: 12px;
-      height: 12px;
+      width: 10px; height: 10px;
       border-radius: 50%;
       background: var(--host-color);
-      box-shadow: 0 0 0 4px color-mix(in srgb, var(--host-color) 18%, transparent);
+      box-shadow: 0 0 8px var(--host-color);
+      flex-shrink: 0;
     }
-
     .host-name {
-      font-size: 20px;
-      font-weight: 700;
-      letter-spacing: -0.04em;
+      font-family: "Cinzel", serif;
+      font-size: 14px; font-weight: 700;
+      color: var(--gold); letter-spacing: 0.04em;
     }
-
     .host-meta {
+      font-size: 11px;
       color: var(--muted);
-      font-size: 13px;
+      font-style: italic;
+      line-height: 1.4;
     }
 
     .load-bar {
-      margin: 14px 0;
-      width: 100%;
-      height: 10px;
-      border-radius: 999px;
-      background: rgba(31, 35, 41, 0.08);
+      margin: 10px 0;
+      width: 100%; height: 6px;
+      border-radius: 3px;
+      background: rgba(212,168,67,0.1);
       overflow: hidden;
     }
-
     .load-bar > span {
-      display: block;
-      height: 100%;
+      display: block; height: 100%;
       width: calc(var(--load) * 10%);
       border-radius: inherit;
-      background: linear-gradient(90deg, var(--host-color), color-mix(in srgb, var(--host-color) 55%, white));
-      transition: width 220ms ease;
+      background: linear-gradient(90deg, var(--host-color), color-mix(in srgb, var(--host-color) 55%, var(--gold)));
+      transition: width 200ms ease;
     }
 
     .agent-cloud {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 6px;
+      margin-top: 8px;
     }
-
     .agent-chip {
-      padding: 7px 10px;
-      border-radius: 999px;
-      border: 1px solid color-mix(in srgb, var(--host-color) 22%, rgba(0, 0, 0, 0));
-      background: color-mix(in srgb, var(--host-color) 12%, white);
+      padding: 4px 9px;
+      border-radius: 4px;
+      border: 1px solid color-mix(in srgb, var(--host-color) 30%, transparent);
+      background: color-mix(in srgb, var(--host-color) 15%, rgba(0,0,0,0.5));
       font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.01em;
+      color: var(--ink);
+      font-family: "Cinzel", serif;
+      letter-spacing: 0.03em;
     }
-
     .agent-chip.restored {
-      outline: 2px solid rgba(197, 79, 27, 0.35);
+      border-color: rgba(212,168,67,0.5);
+      color: var(--gold);
+      box-shadow: 0 0 8px rgba(212,168,67,0.25);
     }
 
-    .stack {
-      display: grid;
-      gap: 18px;
-    }
+    /* Stack */
+    .stack { display: flex; flex-direction: column; gap: 14px; }
 
-    .timeline {
-      display: grid;
-      gap: 10px;
-    }
-
+    /* Timeline */
+    .timeline { display: flex; flex-direction: column; gap: 8px; }
     .timeline-item {
-      padding: 14px 16px;
-      position: relative;
-      transition: border-color 160ms ease, transform 160ms ease, background 160ms ease;
-    }
-
-    .timeline-item.active {
-      border-color: rgba(197, 79, 27, 0.4);
-      background: linear-gradient(135deg, rgba(197, 79, 27, 0.14), rgba(255, 255, 255, 0.8));
-      transform: translateX(4px);
-    }
-
-    .timeline-kicker {
-      color: var(--accent);
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      font-weight: 700;
-    }
-
-    .timeline-title {
-      margin-top: 6px;
-      font-size: 16px;
-      font-weight: 700;
-      letter-spacing: -0.03em;
-    }
-
-    .timeline-body {
-      margin-top: 6px;
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.45;
-    }
-
-    .event-log {
-      max-height: 388px;
-      overflow: auto;
-      padding-right: 6px;
-      display: grid;
-      gap: 10px;
-    }
-
-    .event {
       padding: 12px 14px;
-      border-radius: 16px;
+      border-radius: 6px;
       border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.66);
+      background: rgba(212,168,67,0.02);
+      cursor: help;
+      transition: border-color 150ms, background 150ms, transform 150ms;
     }
-
-    .event-tick {
-      color: var(--accent);
-      font-size: 12px;
-      font-weight: 700;
+    .timeline-item.active {
+      border-color: rgba(212,168,67,0.4);
+      background: rgba(212,168,67,0.07);
+      transform: translateX(3px);
+    }
+    .timeline-kicker {
+      font-family: "Cinzel", serif;
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--amber);
       text-transform: uppercase;
-      letter-spacing: 0.08em;
     }
-
-    .event-body {
-      margin-top: 6px;
-      font-size: 14px;
-      line-height: 1.45;
+    .timeline-title {
+      font-family: "Cinzel", serif;
+      font-size: 13px; font-weight: 700;
+      color: var(--gold);
+      margin-top: 4px; letter-spacing: 0.03em;
     }
-
-    .footer-note {
-      margin-top: 16px;
+    .timeline-body {
+      margin-top: 4px;
+      font-size: 12px;
       color: var(--muted);
-      font-size: 13px;
+      font-style: italic;
       line-height: 1.5;
     }
 
-    @media (max-width: 1080px) {
-      .hero,
-      .layout {
-        grid-template-columns: 1fr;
-      }
+    /* Event log */
+    .event-log {
+      max-height: 360px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-right: 4px;
+    }
+    .event {
+      padding: 10px 12px;
+      border-radius: 5px;
+      border: 1px solid var(--line);
+      background: rgba(212,168,67,0.02);
+    }
+    .event-tick {
+      font-family: "Cinzel", serif;
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--amber);
+      text-transform: uppercase;
+    }
+    .event-body {
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--muted);
+      font-style: italic;
+      line-height: 1.5;
     }
 
-    @media (max-width: 760px) {
-      .page {
-        width: calc(100vw - 16px);
-        margin: 8px auto 18px;
-        padding: 12px;
-      }
-
-      .hosts,
-      .key-points,
-      .status-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .title {
-        max-width: none;
-        font-size: 42px;
-      }
+    .footer-note {
+      font-size: 12px;
+      color: var(--faint);
+      font-style: italic;
+      line-height: 1.5;
     }
   </style>
 </head>
@@ -489,79 +289,69 @@
       <a class="page-link active" href="./ContinuationMobilityDemo.html">📜 System View</a>
       <a class="page-link" href="./Description.html">📖 The RhoMog Model</a>
     </nav>
-    <section class="hero">
+
+    <section class="sv-hero">
       <article class="hero-card">
-        <h1 class="title">Continuation Mobility</h1>
-        <p class="subtitle">
-          A system-level explanation of the single-file Rho demo at
-          <strong>Test/Language/TestRho/Scripts/ContinuationMobilityDemo.rho</strong>.
-          It shows ten agents, four logical hosts, Pi-guided routing, periodic
-          snapshots, load balancing, and a forced failure on
-          <strong>NodeB</strong> at tick <strong>60</strong> that restores
-          three agents onto <strong>NodeD</strong>.
-        </p>
+        <h1 class="page-title">✦ Realm of Continuations ✦</h1>
+        <p class="page-subtitle">A structured view of the RhoMog Model — ten heroes, four realms, Pi-guided routing, memory crystals, and the fall of Ashmarket at tick 60.</p>
         <div class="key-points">
-          <div class="key-point"><strong>Agents move</strong><br>Autonomous patrol and Pi planning change region placement over time.</div>
-          <div class="key-point"><strong>State persists</strong><br>Snapshots capture each agent before failure and drive recovery.</div>
-          <div class="key-point"><strong>Load balances</strong><br>The busiest host sheds agents to the least loaded host every 25 ticks.</div>
-          <div class="key-point"><strong>Recovery is deterministic</strong><br>Agents 1, 2, and 3 are forced onto NodeB before failure so the drill stays readable.</div>
+          <div class="key-point"><strong>Heroes move</strong><br>Wandering and Oracle's Vision relocate heroes across realms over time. <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted)">[patrol / Pi routing]</span></div>
+          <div class="key-point"><strong>State persists</strong><br>Memory crystals capture hero state before failure and drive resurrection. <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted)">[snapshot / restore]</span></div>
+          <div class="key-point"><strong>Load balances</strong><br>The War Council redistributes heroes every 25 ticks. <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted)">[load balancing]</span></div>
+          <div class="key-point"><strong>Recovery is deterministic</strong><br>Aldric, Seraphine, and Corvin are drawn to Ashmarket at tick 56 so the drill is always readable. <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted)">[failure drill]</span></div>
         </div>
       </article>
 
-      <aside class="hero-card status-card">
+      <aside class="status-card">
         <div class="panel-head">
           <h2 class="panel-title">Simulation Controls</h2>
           <span class="panel-note" id="run-state">Paused</span>
         </div>
-        <div class="controls">
-          <button class="primary" id="play-pause" data-hint="Run or pause the 80-tick deterministic simulation. When the run finishes, this becomes a replay control.">Start</button>
-          <button id="step-once" data-hint="Advance the world by exactly one tick. Useful for inspecting balancing and recovery transitions closely.">Step</button>
-          <button id="reset" data-hint="Return the simulation to tick 0, restore the original agent layout, and clear derived counters.">Reset</button>
-          <select id="speed" data-hint="Change how quickly automatic playback advances between ticks.">
-            <option value="850">Slow</option>
-            <option value="460" selected>Normal</option>
-            <option value="220">Fast</option>
-            <option value="80">Turbo</option>
-          </select>
+        <div class="button-row">
+          <button class="primary" id="play-pause" data-tech="run / pause 80-tick simulation">Begin</button>
+          <button id="step-once" data-tech="advance one tick">Step</button>
+          <button id="reset-btn" data-tech="reset to tick 0">Reset</button>
+        </div>
+        <div class="pace-control" data-tech="tick interval: right=fast, left=slow">
+          <span class="pace-label">Tale Pace</span>
+          <span class="pace-ends">Slow</span>
+          <input type="range" id="speed-slider" min="1" max="100" value="50">
+          <span class="pace-ends">Fast</span>
         </div>
         <div class="status-grid">
-          <div class="metric" data-hint="The current world tick. The demo starts at 0 and ends after tick 80.">
-            <div class="metric-label">Tick</div>
-            <div class="metric-value" id="tick-value">0</div>
+          <div class="metric" data-tech="world.tickCount">
+            <span class="metric-label">Age</span>
+            <span class="metric-value" id="tick-value">0</span>
           </div>
-          <div class="metric" data-hint="The number of live agents currently in the world. Recovery should keep this at 10 after NodeB fails.">
-            <div class="metric-label">Agents</div>
-            <div class="metric-value" id="agent-count">10</div>
+          <div class="metric" data-tech="agents.length (live)">
+            <span class="metric-label">Heroes</span>
+            <span class="metric-value" id="agent-count">10</span>
           </div>
-          <div class="metric" data-hint="How many Pi planning decisions have been requested so far across all agents.">
-            <div class="metric-label">Pi Plans</div>
-            <div class="metric-value" id="plan-count">0</div>
+          <div class="metric" data-tech="totalPlans (Pi decisions)">
+            <span class="metric-label">Visions</span>
+            <span class="metric-value" id="plan-count">0</span>
           </div>
-          <div class="metric" data-hint="Cross-host moves increment migrations. This includes normal relocation, balancing, and restored agents resuming on NodeD.">
-            <div class="metric-label">Migrations</div>
-            <div class="metric-value" id="migration-count">0</div>
+          <div class="metric" data-tech="totalMigrations (cross-host moves)">
+            <span class="metric-label">Journeys</span>
+            <span class="metric-value" id="migration-count">0</span>
           </div>
-          <div class="metric" data-hint="World snapshots are taken every 20 ticks and become the recovery source of truth.">
-            <div class="metric-label">Snapshots</div>
-            <div class="metric-value" id="snapshot-count">0</div>
+          <div class="metric" data-tech="totalSnapshots captured">
+            <span class="metric-label">Crystals</span>
+            <span class="metric-value" id="snapshot-count">0</span>
           </div>
-          <div class="metric" data-hint="The number of agents reconstructed from snapshots after the simulated NodeB failure.">
-            <div class="metric-label">Restored</div>
-            <div class="metric-value" id="restored-count">0</div>
+          <div class="metric" data-tech="restoredCount (snapshot recoveries)">
+            <span class="metric-label">Reborn</span>
+            <span class="metric-value" id="restored-count">0</span>
           </div>
         </div>
-        <p class="footer-note">
-          This page explains the demo’s state model rather than pretending to be
-          the runtime. The goal is to make the key transitions legible at a
-          glance.
-        </p>
+        <p class="footer-note">This page shows the state model directly. Hover metric labels and realm cards for technical details.</p>
       </aside>
     </section>
 
-    <section class="layout">
+    <section class="sv-layout">
       <article class="panel">
         <div class="panel-head">
-          <h2 class="panel-title">Host and Region State</h2>
+          <h2 class="panel-title">Realm &amp; Region State</h2>
           <span class="panel-note" id="phase-label"></span>
         </div>
         <div class="hosts" id="hosts"></div>
@@ -570,16 +360,15 @@
       <aside class="stack">
         <section class="panel">
           <div class="panel-head">
-            <h2 class="panel-title" data-hint="Milestones baked into the deterministic run. Highlighted cards indicate the phases already reached.">Key Moments</h2>
-            <span class="panel-note">What the run is doing right now</span>
+            <h2 class="panel-title" data-tech="deterministic milestones in the 80-tick run">Key Moments</h2>
+            <span class="panel-note">Current phase highlighted</span>
           </div>
           <div class="timeline" id="timeline"></div>
         </section>
-
         <section class="panel">
           <div class="panel-head">
-            <h2 class="panel-title" data-hint="A rolling feed of the latest decisions and transitions, with the newest event at the top.">Event Log</h2>
-            <span class="panel-note">Latest transitions first</span>
+            <h2 class="panel-title" data-tech="rolling event log, newest first">Chronicle</h2>
+            <span class="panel-note">Latest events first</span>
           </div>
           <div class="event-log" id="event-log"></div>
         </section>
@@ -588,464 +377,276 @@
   </div>
 
   <script>
+    const REALM  = {NodeA:"Ironhold",NodeB:"Ashmarket",NodeC:"Harborveil",NodeD:"The Refuge"};
+    const REGION = {Start:"Ironhold Keep",Market:"Ashmarket Bazaar",Harbor:"Harborveil Docks",Backup:"The Refuge"};
+    const REALM_ICON = {NodeA:"⚔",NodeB:"💀",NodeC:"🌊",NodeD:"✨"};
+    const HEROES = [
+      {name:"Aldric",g:"⚔"},{name:"Seraphine",g:"🔮"},{name:"Corvin",g:"🗡"},
+      {name:"Brynn",g:"🏹"},{name:"Thorn",g:"☠"},{name:"Isolde",g:"✝"},
+      {name:"Dax",g:"♪"},{name:"Vex",g:"🌑"},{name:"Mira",g:"🌿"},{name:"Gorath",g:"🔥"}
+    ];
+
     const hostColors = {
-      NodeA: "var(--node-a)",
-      NodeB: "var(--node-b)",
-      NodeC: "var(--node-c)",
-      NodeD: "var(--node-d)"
+      NodeA:"var(--node-a)",NodeB:"var(--node-b)",NodeC:"var(--node-c)",NodeD:"var(--node-d)"
     };
 
     const timelinePoints = [
-      { tick: 0, title: "Initialization", body: "Ten agents are spread across Start, Market, and Harbor." },
-      { tick: 20, title: "Snapshot", body: "The first world snapshot captures all agent state." },
-      { tick: 25, title: "Rebalance", body: "The busiest host sheds agents to the least loaded host." },
-      { tick: 40, title: "Snapshot", body: "A second snapshot updates the recovery baseline." },
-      { tick: 56, title: "Failure Drill", body: "Agents 1, 2, and 3 are deliberately moved onto Market." },
-      { tick: 60, title: "Failure and Recovery", body: "NodeB fails, three agents are removed, then restored onto NodeD." },
-      { tick: 80, title: "Run Complete", body: "The demo ends with a stable 10-agent world and visible restored agents." }
+      {tick:0,  fantasy:"The Age Begins",          tech:"initialization",         body:"Ten heroes summoned across Ironhold, Ashmarket, and Harborveil."},
+      {tick:20, fantasy:"First Memory Crystal",     tech:"snapshot @ tick 20",     body:"The Oracle forges the first crystal — all hero state preserved."},
+      {tick:25, fantasy:"War Council Convenes",     tech:"load balance @ tick 25", body:"The War Council redistributes forces from the heaviest realm to the lightest."},
+      {tick:40, fantasy:"Second Memory Crystal",    tech:"snapshot @ tick 40",     body:"A second crystal updates the recovery baseline."},
+      {tick:56, fantasy:"Shadow Draws Three Heroes",tech:"failure drill @ tick 56", body:"Aldric, Seraphine, and Corvin are pulled into Ashmarket's shadow."},
+      {tick:60, fantasy:"Ashmarket Falls — Resurrection", tech:"NodeB failure + snapshot restore @ tick 60", body:"Ashmarket is consumed. Three heroes fall, then rise again at The Refuge."},
+      {tick:80, fantasy:"The Age Ends",             tech:"run complete @ tick 80",  body:"The realm is stable. Ten heroes walk, three bearing the mark of resurrection."}
     ];
 
-    class DemoWorld {
-      constructor() {
-        this.reset();
-      }
+    function sliderToMs(v) { return Math.round(1000 * Math.pow(50/1000,(v-1)/99)); }
 
+    class DemoWorld {
+      constructor() { this.reset(); }
       reset() {
         this.regions = new Map([
-          ["Start", { name: "Start", host: "NodeA", visits: 0 }],
-          ["Market", { name: "Market", host: "NodeB", visits: 0 }],
-          ["Harbor", { name: "Harbor", host: "NodeC", visits: 0 }],
-          ["Backup", { name: "Backup", host: "NodeD", visits: 0 }]
+          ["Start", {name:"Start",host:"NodeA",visits:0}],
+          ["Market",{name:"Market",host:"NodeB",visits:0}],
+          ["Harbor",{name:"Harbor",host:"NodeC",visits:0}],
+          ["Backup",{name:"Backup",host:"NodeD",visits:0}]
         ]);
         this.agents = [];
-        for (let i = 0; i < 10; i += 1) {
-          this.agents.push({
-            id: i + 1,
-            name: `Agent_${i + 1}`,
-            regionName: i < 4 ? "Start" : i < 8 ? "Market" : "Harbor",
-            steps: 0,
-            plansRequested: 0,
-            migrations: 0,
-            restored: false
-          });
+        for (let i=0;i<10;i++) {
+          const h=HEROES[i];
+          this.agents.push({id:i+1,name:`Agent_${i+1}`,heroName:h.name,glyph:h.g,
+            regionName:i<4?"Start":i<8?"Market":"Harbor",
+            steps:0,plansRequested:0,migrations:0,restored:false});
         }
-        this.hostLoad = new Map();
-        this.lastSnapshot = [];
-        this.tickCount = 0;
-        this.events = [];
-        this.totalPlans = 0;
-        this.totalMigrations = 0;
-        this.totalSnapshots = 0;
-        this.restoredCount = 0;
-        this.log("World initialized with 4 regions and 10 mobile agents");
+        this.hostLoad=new Map(); this.lastSnapshot=[];
+        this.tickCount=0; this.events=[];
+        this.totalPlans=0; this.totalMigrations=0;
+        this.totalSnapshots=0; this.restoredCount=0;
+        this.log("The age begins. Ten heroes summoned to Ironhold, Ashmarket, and Harborveil. [world initialized]");
         this.updateHostLoad();
       }
-
-      snapshotAgent(agent) {
-        return {
-          id: agent.id,
-          name: agent.name,
-          regionName: agent.regionName,
-          steps: agent.steps,
-          plansRequested: agent.plansRequested,
-          migrations: agent.migrations,
-          restored: agent.restored
-        };
-      }
-
-      log(message) {
-        this.events.unshift({ tick: this.tickCount, message });
-        this.events = this.events.slice(0, 40);
-      }
-
-      findRegion(name) {
-        return this.regions.get(name) || null;
-      }
-
-      hostForRegion(regionName) {
-        const region = this.findRegion(regionName);
-        return region ? region.host : "Unknown";
-      }
-
+      log(msg) { this.events.unshift({tick:this.tickCount,message:msg}); this.events=this.events.slice(0,40); }
+      hostForRegion(r) { const x=this.regions.get(r); return x?x.host:"Unknown"; }
       updateHostLoad() {
-        this.hostLoad = new Map();
-        for (const region of this.regions.values()) {
-          if (!this.hostLoad.has(region.host)) {
-            this.hostLoad.set(region.host, 0);
-          }
-        }
-        for (const agent of this.agents) {
-          const host = this.hostForRegion(agent.regionName);
-          this.hostLoad.set(host, (this.hostLoad.get(host) || 0) + 1);
-        }
+        this.hostLoad=new Map();
+        for (const r of this.regions.values()) if(!this.hostLoad.has(r.host)) this.hostLoad.set(r.host,0);
+        for (const a of this.agents) { const h=this.hostForRegion(a.regionName); this.hostLoad.set(h,(this.hostLoad.get(h)||0)+1); }
       }
-
-      regionOnHost(host, fallbackRegion) {
-        for (const region of this.regions.values()) {
-          if (region.host === host) return region.name;
-        }
-        return fallbackRegion;
-      }
-
-      moveAgent(agent, targetRegion, reason) {
-        const currentHost = this.hostForRegion(agent.regionName);
-        const targetHost = this.hostForRegion(targetRegion);
-        if (targetHost === "Unknown") {
-          this.log(`MoveAgent aborted for ${agent.name}: unknown target ${targetRegion}`);
-          return;
-        }
-
-        if (agent.regionName === targetRegion) {
-          this.log(`${agent.name} stays in ${targetRegion} (${reason})`);
-          return;
-        }
-
-        if (currentHost !== targetHost) {
-          agent.migrations += 1;
-          this.totalMigrations += 1;
-          this.log(`Suspending ${agent.name} on ${currentHost} and resuming on ${targetHost} (${reason})`);
+      regionOnHost(host,fb) { for (const r of this.regions.values()) if(r.host===host) return r.name; return fb; }
+      snapshotAgent(a) { return {...a}; }
+      moveAgent(a,targetRegion,reason) {
+        const ch=this.hostForRegion(a.regionName),th=this.hostForRegion(targetRegion);
+        if (th==="Unknown") return;
+        if (a.regionName===targetRegion) return;
+        if (ch!==th) {
+          a.migrations++; this.totalMigrations++;
+          this.log(`${a.heroName} journeys from ${REALM[ch]} to ${REALM[th]} — ${reason} [${ch}→${th}]`);
         } else {
-          this.log(`${agent.name} moves within ${targetHost} from ${agent.regionName} to ${targetRegion} (${reason})`);
+          this.log(`${a.heroName} moves within ${REALM[th]} — ${reason}`);
         }
-
-        agent.regionName = targetRegion;
-        const region = this.findRegion(targetRegion);
-        if (region) region.visits += 1;
+        a.regionName=targetRegion;
+        const reg=this.regions.get(targetRegion); if(reg) reg.visits++;
       }
-
-      askPi(agent) {
-        const currentHost = this.hostForRegion(agent.regionName);
-        const currentLoad = this.hostLoad.get(currentHost) || 0;
-
-        if (agent.regionName === "Market" && this.tickCount >= 56 && this.tickCount <= 60) {
-          return {
-            summary: "hold position in Market so failure recovery can be tested",
-            targetRegion: null
-          };
-        }
-
-        if (agent.regionName === "Market") {
-          return {
-            summary: "market congestion detected; re-route to Harbor",
-            targetRegion: "Harbor"
-          };
-        }
-
-        if (currentLoad >= 4) {
-          return {
-            summary: "host is saturated; move to backup capacity",
-            targetRegion: this.regionOnHost("NodeD", "Backup")
-          };
-        }
-
-        return {
-          summary: `continue local survey on ${agent.regionName}`,
-          targetRegion: null
-        };
+      askPi(a) {
+        const ch=this.hostForRegion(a.regionName),cl=this.hostLoad.get(ch)||0;
+        if (a.regionName==="Market"&&this.tickCount>=56&&this.tickCount<=60)
+          return {summary:"hold — shadow approaches [hold for failure drill]",targetRegion:null};
+        if (a.regionName==="Market")
+          return {summary:"Ashmarket is congested — Oracle redirects to Harborveil [Pi: Market→Harbor]",targetRegion:"Harbor"};
+        if (cl>=4)
+          return {summary:"realm is overcrowded — Oracle sends to The Refuge [Pi: saturated→NodeD]",targetRegion:this.regionOnHost("NodeD","Backup")};
+        return {summary:`continue vigil in ${REGION[a.regionName]} [Pi: no action]`,targetRegion:null};
       }
-
       balanceLoad() {
         this.updateHostLoad();
-        const entries = [...this.hostLoad.entries()];
-        if (entries.length < 2) return;
-
-        let maxEntry = entries[0];
-        let minEntry = entries[0];
-        for (const entry of entries) {
-          if (entry[1] > maxEntry[1]) maxEntry = entry;
-          if (entry[1] < minEntry[1]) minEntry = entry;
-        }
-
-        if (maxEntry[1] - minEntry[1] <= 1) return;
-
-        const targetRegion = this.regionOnHost(minEntry[0], "Backup");
-        let toMove = Math.floor((maxEntry[1] - minEntry[1]) / 2);
-        this.log(`Balancer moving ${toMove} agents from ${maxEntry[0]} to ${minEntry[0]}`);
-
-        for (const agent of this.agents) {
-          if (toMove <= 0) break;
-          if (this.hostForRegion(agent.regionName) !== maxEntry[0]) continue;
-          this.moveAgent(agent, targetRegion, "load balancing");
-          toMove -= 1;
+        const e=[...this.hostLoad.entries()];
+        let mx=e[0],mn=e[0];
+        for (const x of e) { if(x[1]>mx[1])mx=x; if(x[1]<mn[1])mn=x; }
+        if (mx[1]-mn[1]<=1) return;
+        const tr=this.regionOnHost(mn[0],"Backup");
+        let n=Math.floor((mx[1]-mn[1])/2);
+        this.log(`War Council dispatches ${n} heroes from ${REALM[mx[0]]} to ${REALM[mn[0]]} [load balance ${mx[0]}→${mn[0]}]`);
+        for (const a of this.agents) {
+          if (n<=0) break;
+          if (this.hostForRegion(a.regionName)!==mx[0]) continue;
+          this.moveAgent(a,tr,"War Council decree [load balancing]"); n--;
         }
       }
-
       snapshot() {
-        this.lastSnapshot = this.agents.map((agent) => this.snapshotAgent(agent));
-        this.totalSnapshots += 1;
-        this.log(`Snapshot stored for ${this.lastSnapshot.length} agents`);
+        this.lastSnapshot=this.agents.map(a=>this.snapshotAgent(a));
+        this.totalSnapshots++;
+        this.log(`Memory crystal forged — ${this.lastSnapshot.length} heroes preserved [snapshot #${this.totalSnapshots}]`);
       }
-
-      recoverAgentsToHost(failedHost, recoveryHost) {
-        const alive = new Set(this.agents.map((agent) => agent.id));
-        const recoveryRegion = this.regionOnHost(recoveryHost, "Backup");
-        let restored = 0;
-
-        for (const snapshot of this.lastSnapshot) {
-          if (alive.has(snapshot.id)) continue;
-          if (this.hostForRegion(snapshot.regionName) !== failedHost) continue;
-
-          const recovered = {
-            id: snapshot.id,
-            name: snapshot.name,
-            regionName: recoveryRegion,
-            steps: snapshot.steps,
-            plansRequested: snapshot.plansRequested,
-            migrations: snapshot.migrations + 1,
-            restored: true
-          };
-          this.agents.push(recovered);
-          this.totalMigrations += 1;
-          this.restoredCount += 1;
-          restored += 1;
-          this.log(`Recovered ${recovered.name} from snapshot onto ${recoveryHost} via region ${recoveryRegion}`);
+      recoverAgentsToHost(fh,rh) {
+        const alive=new Set(this.agents.map(a=>a.id));
+        const rr=this.regionOnHost(rh,"Backup"); let restored=0;
+        for (const s of this.lastSnapshot) {
+          if (alive.has(s.id)||this.hostForRegion(s.regionName)!==fh) continue;
+          const rec={...s,regionName:rr,migrations:s.migrations+1,restored:true};
+          this.agents.push(rec); this.totalMigrations++; this.restoredCount++; restored++;
+          this.log(`${rec.heroName} rises again at ${REALM[rh]} — all memories intact [snapshot restore onto ${rh}]`);
         }
-
-        this.log(`Recovery finished: ${restored} agents restored`);
+        this.log(`Resurrection complete: ${restored} heroes reborn [${restored} agents restored]`);
       }
-
-      simulateFailure(failedHost, recoveryHost) {
-        const removedIds = [];
-        const survivors = [];
-
-        for (const agent of this.agents) {
-          if (this.hostForRegion(agent.regionName) === failedHost) {
-            removedIds.push(agent.id);
-          } else {
-            survivors.push(agent);
-          }
+      simulateFailure(fh,rh) {
+        const removed=[],survivors=[];
+        for (const a of this.agents) {
+          if (this.hostForRegion(a.regionName)===fh) removed.push(a);
+          else survivors.push(a);
         }
-
-        this.agents = survivors;
-        this.log(`Simulated failure on ${failedHost}, removed ${removedIds.length} agents [${removedIds.join(", ")}]`);
-        this.recoverAgentsToHost(failedHost, recoveryHost);
+        this.agents=survivors;
+        this.log(`${REALM[fh]} falls to shadow — ${removed.length} heroes lost [${fh} failure: agents ${removed.map(a=>a.id).join(",")}]`);
+        this.recoverAgentsToHost(fh,rh);
       }
-
-      stepAgent(agent) {
-        agent.steps += 1;
-
-        if (this.tickCount === 56 && agent.id >= 1 && agent.id <= 3) {
-          this.moveAgent(agent, "Market", "scheduled failure drill");
-          return;
+      stepAgent(a) {
+        a.steps++;
+        if (this.tickCount===56&&a.id>=1&&a.id<=3) {
+          this.moveAgent(a,"Market","drawn by shadow [failure drill]"); return;
         }
-
-        if (agent.steps % 5 === 0) {
-          agent.plansRequested += 1;
-          this.totalPlans += 1;
-          const plan = this.askPi(agent);
-          this.log(`${agent.name} consults Pi on NodeC: ${plan.summary}`);
-          if (plan.targetRegion) {
-            this.moveAgent(agent, plan.targetRegion, "Pi plan");
-            return;
-          }
+        if (a.steps%5===0) {
+          a.plansRequested++; this.totalPlans++;
+          const plan=this.askPi(a);
+          this.log(`${a.heroName} consults the Oracle: ${plan.summary}`);
+          if (plan.targetRegion) { this.moveAgent(a,plan.targetRegion,"Oracle's vision [Pi plan]"); return; }
         }
-
-        if ((this.tickCount + agent.id) % 11 === 0) {
-          const currentHost = this.hostForRegion(agent.regionName);
-          let nextRegion = agent.regionName;
-          for (const region of this.regions.values()) {
-            if (region.host !== currentHost) {
-              nextRegion = region.name;
-              break;
-            }
-          }
-          this.moveAgent(agent, nextRegion, "autonomous patrol");
+        if ((this.tickCount+a.id)%11===0) {
+          const ch=this.hostForRegion(a.regionName); let nr=a.regionName;
+          for (const r of this.regions.values()) { if(r.host!==ch){nr=r.name;break;} }
+          this.moveAgent(a,nr,"wandering [autonomous patrol]");
         }
       }
-
       tick() {
-        if (this.tickCount >= 80) return false;
-
-        this.tickCount += 1;
-        this.updateHostLoad();
-
-        if (this.tickCount % 10 === 0) {
-          const loadParts = [...this.hostLoad.entries()].map(([host, load]) => `${host}=${load}`);
-          this.log(`Host load ${loadParts.join(" ")}`);
+        if (this.tickCount>=80) return false;
+        this.tickCount++; this.updateHostLoad();
+        if (this.tickCount%10===0) {
+          const lp=[...this.hostLoad.entries()].map(([h,l])=>`${REALM[h]}=${l} [${h}]`);
+          this.log(`Host load: ${lp.join(" · ")}`);
         }
-
-        for (const agent of this.agents) {
-          this.stepAgent(agent);
-        }
-
-        if (this.tickCount % 20 === 0) this.snapshot();
-        if (this.tickCount % 25 === 0) this.balanceLoad();
-        if (this.tickCount === 60) this.simulateFailure("NodeB", "NodeD");
-
-        this.updateHostLoad();
-        return true;
+        for (const a of this.agents) this.stepAgent(a);
+        if (this.tickCount%20===0) this.snapshot();
+        if (this.tickCount%25===0) this.balanceLoad();
+        if (this.tickCount===60) this.simulateFailure("NodeB","NodeD");
+        this.updateHostLoad(); return true;
       }
     }
 
     const dom = {
-      playPause: document.getElementById("play-pause"),
-      stepOnce: document.getElementById("step-once"),
-      reset: document.getElementById("reset"),
-      speed: document.getElementById("speed"),
-      runState: document.getElementById("run-state"),
-      tickValue: document.getElementById("tick-value"),
-      agentCount: document.getElementById("agent-count"),
-      planCount: document.getElementById("plan-count"),
-      migrationCount: document.getElementById("migration-count"),
+      playPause:     document.getElementById("play-pause"),
+      stepOnce:      document.getElementById("step-once"),
+      resetBtn:      document.getElementById("reset-btn"),
+      speedSlider:   document.getElementById("speed-slider"),
+      runState:      document.getElementById("run-state"),
+      tickValue:     document.getElementById("tick-value"),
+      agentCount:    document.getElementById("agent-count"),
+      planCount:     document.getElementById("plan-count"),
+      migrationCount:document.getElementById("migration-count"),
       snapshotCount: document.getElementById("snapshot-count"),
       restoredCount: document.getElementById("restored-count"),
-      phaseLabel: document.getElementById("phase-label"),
-      hosts: document.getElementById("hosts"),
-      timeline: document.getElementById("timeline"),
-      eventLog: document.getElementById("event-log")
+      phaseLabel:    document.getElementById("phase-label"),
+      hosts:         document.getElementById("hosts"),
+      timeline:      document.getElementById("timeline"),
+      eventLog:      document.getElementById("event-log")
     };
 
-    const world = new DemoWorld();
-    let timer = null;
+    const world=new DemoWorld(); let timer=null;
 
-    function currentPhaseLabel() {
-      if (world.tickCount === 0) return "";
-      if (world.tickCount < 20) return "Early movement and Pi rerouting";
-      if (world.tickCount < 56) return "Snapshots and balancing";
-      if (world.tickCount < 60) return "Failure drill in progress";
-      if (world.tickCount === 60) return "Failure and recovery";
-      if (world.tickCount < 80) return "Post-recovery stabilization";
-      return "Run complete";
+    function currentMs() { return sliderToMs(Number(dom.speedSlider.value)); }
+    function phaseLabel() {
+      if (world.tickCount===0) return "";
+      if (world.tickCount<20) return "Early wandering — Oracle watches from Harborveil";
+      if (world.tickCount<56) return "Memory crystals form. War Council redistributes.";
+      if (world.tickCount<60) return "Shadow draws three heroes toward Ashmarket...";
+      if (world.tickCount===60) return "Ashmarket falls — resurrection begins";
+      if (world.tickCount<80) return "Post-resurrection stabilisation";
+      return "The age is complete";
     }
 
     function renderHosts() {
-      const hostNames = ["NodeA", "NodeB", "NodeC", "NodeD"];
-      dom.hosts.innerHTML = "";
-
-      for (const hostName of hostNames) {
-        const region = [...world.regions.values()].find((item) => item.host === hostName);
-        const agents = world.agents
-          .filter((agent) => world.hostForRegion(agent.regionName) === hostName)
-          .sort((left, right) => left.id - right.id);
-
-        const card = document.createElement("section");
-        card.className = "host-card";
-        card.style.setProperty("--host-color", hostColors[hostName]);
-        card.dataset.hint = `${region.name} is hosted on ${hostName}. Load shows how many agents are currently running there; visits track how many arrivals the region has handled.`;
-
-        const load = world.hostLoad.get(hostName) || 0;
-        card.innerHTML = `
+      dom.hosts.innerHTML="";
+      for (const hostName of ["NodeA","NodeB","NodeC","NodeD"]) {
+        const region=[...world.regions.values()].find(r=>r.host===hostName);
+        const agents=world.agents.filter(a=>world.hostForRegion(a.regionName)===hostName).sort((a,b)=>a.id-b.id);
+        const load=world.hostLoad.get(hostName)||0;
+        const card=document.createElement("section");
+        card.className="host-card";
+        card.style.setProperty("--host-color",hostColors[hostName]);
+        card.dataset.tech=`${hostName} / ${region.name} region`;
+        card.innerHTML=`
           <div class="host-title">
             <span class="host-swatch"></span>
             <div>
-              <div class="host-name">${hostName}</div>
-              <div class="host-meta">${region.name} region · visits ${region.visits}</div>
+              <div class="host-name">${REALM_ICON[hostName]} ${REALM[hostName]}</div>
+              <div class="host-meta">${hostName} · ${REGION[region.name]} · ${region.visits} visit${region.visits!==1?"s":""}</div>
             </div>
           </div>
-          <div class="load-bar" aria-label="${hostName} load"><span style="--load:${load}"></span></div>
-          <div class="host-meta">Current load ${load} / 10</div>
+          <div class="load-bar"><span style="--load:${load}"></span></div>
+          <div class="host-meta" style="margin-bottom:6px">Load ${load} / 10</div>
           <div class="agent-cloud">
-            ${agents.map((agent) => `<span class="agent-chip ${agent.restored ? "restored" : ""}">${agent.name}${agent.restored ? " *" : ""}</span>`).join("") || "<span class='host-meta'>No agents present</span>"}
-          </div>
-        `;
-
+            ${agents.map(a=>`<span class="agent-chip ${a.restored?"restored":""}" title="Agent_${a.id}">${a.glyph} ${a.heroName}${a.restored?" ✨":""}</span>`).join("")||`<span class="host-meta">No heroes present</span>`}
+          </div>`;
         dom.hosts.appendChild(card);
       }
     }
 
     function renderTimeline() {
-      dom.timeline.innerHTML = "";
+      dom.timeline.innerHTML="";
       for (const item of timelinePoints) {
-        const node = document.createElement("article");
-        node.className = "timeline-item";
-        node.dataset.hint = `Tick ${item.tick}: ${item.body}`;
-        if (world.tickCount >= item.tick) node.classList.add("active");
-        node.innerHTML = `
-          <div class="timeline-kicker">Tick ${item.tick}</div>
-          <div class="timeline-title">${item.title}</div>
-          <div class="timeline-body">${item.body}</div>
-        `;
+        const node=document.createElement("article");
+        node.className="timeline-item";
+        node.dataset.tech=`tick ${item.tick}: ${item.tech}`;
+        if (world.tickCount>=item.tick) node.classList.add("active");
+        node.innerHTML=`
+          <div class="timeline-kicker">Tick ${item.tick} · <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;opacity:0.7">${item.tech}</span></div>
+          <div class="timeline-title">${item.fantasy}</div>
+          <div class="timeline-body">${item.body}</div>`;
         dom.timeline.appendChild(node);
       }
     }
 
     function renderEvents() {
-      dom.eventLog.innerHTML = world.events
-        .map((event) => `
-          <article class="event">
-            <div class="event-tick">Tick ${event.tick}</div>
-            <div class="event-body">${event.message}</div>
-          </article>
-        `)
-        .join("");
-    }
-
-    function renderMetrics() {
-      dom.tickValue.textContent = String(world.tickCount);
-      dom.agentCount.textContent = String(world.agents.length);
-      dom.planCount.textContent = String(world.totalPlans);
-      dom.migrationCount.textContent = String(world.totalMigrations);
-      dom.snapshotCount.textContent = String(world.totalSnapshots);
-      dom.restoredCount.textContent = String(world.restoredCount);
-      dom.phaseLabel.textContent = currentPhaseLabel();
+      dom.eventLog.innerHTML=world.events.map(e=>`
+        <article class="event">
+          <div class="event-tick">Age ${e.tick}</div>
+          <div class="event-body">${e.message}</div>
+        </article>`).join("");
     }
 
     function render() {
-      renderMetrics();
-      renderHosts();
-      renderTimeline();
-      renderEvents();
+      dom.tickValue.textContent=String(world.tickCount);
+      dom.agentCount.textContent=String(world.agents.length);
+      dom.planCount.textContent=String(world.totalPlans);
+      dom.migrationCount.textContent=String(world.totalMigrations);
+      dom.snapshotCount.textContent=String(world.totalSnapshots);
+      dom.restoredCount.textContent=String(world.restoredCount);
+      dom.phaseLabel.textContent=phaseLabel();
+      renderHosts(); renderTimeline(); renderEvents();
     }
 
     function stopTimer() {
-      if (timer !== null) {
-        window.clearInterval(timer);
-        timer = null;
-      }
-      dom.runState.textContent = world.tickCount >= 80 ? "Completed" : "Paused";
-      dom.playPause.textContent = world.tickCount >= 80 ? "Replay" : "Start";
+      if (timer!==null){clearInterval(timer);timer=null;}
+      dom.runState.textContent=world.tickCount>=80?"Complete":"Paused";
+      dom.playPause.textContent=world.tickCount>=80?"Replay":"Begin";
     }
-
     function startTimer() {
-      stopTimer();
-      dom.runState.textContent = "Running";
-      dom.playPause.textContent = "Pause";
-      timer = window.setInterval(() => {
-        const advanced = world.tick();
-        render();
-        if (!advanced || world.tickCount >= 80) {
-          stopTimer();
-        }
-      }, Number(dom.speed.value));
+      stopTimer(); dom.runState.textContent="Running"; dom.playPause.textContent="Pause";
+      timer=setInterval(()=>{
+        const adv=world.tick(); render();
+        if(!adv||world.tickCount>=80) stopTimer();
+      },currentMs());
     }
 
-    dom.playPause.addEventListener("click", () => {
-      if (timer !== null) {
-        stopTimer();
-        return;
-      }
-
-      if (world.tickCount >= 80) {
-        world.reset();
-        render();
-      }
-
+    dom.playPause.addEventListener("click",()=>{
+      if(timer!==null){stopTimer();return;}
+      if(world.tickCount>=80){world.reset();render();}
       startTimer();
     });
-
-    dom.stepOnce.addEventListener("click", () => {
-      if (timer !== null) return;
-      if (world.tickCount >= 80) {
-        world.reset();
-      } else {
-        world.tick();
-      }
-      render();
-      if (world.tickCount >= 80) stopTimer();
+    dom.stepOnce.addEventListener("click",()=>{
+      if(timer!==null) return;
+      if(world.tickCount>=80) world.reset(); else world.tick();
+      render(); if(world.tickCount>=80) stopTimer();
     });
-
-    dom.reset.addEventListener("click", () => {
-      stopTimer();
-      world.reset();
-      render();
-    });
-
-    dom.speed.addEventListener("change", () => {
-      if (timer !== null) {
-        startTimer();
-      }
-    });
-
+    dom.resetBtn.addEventListener("click",()=>{stopTimer();world.reset();render();});
+    dom.speedSlider.addEventListener("input",()=>{if(timer!==null)startTimer();});
     render();
   </script>
 </body>
