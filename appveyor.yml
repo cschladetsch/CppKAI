@@ -1,7 +1,37 @@
 version: 1.0.{build}
-before_build:
-  - nuget restore
-image: Visual Studio 2017
-build:
-  project: KAI.sln
-  verbosity: minimal
+
+image: Visual Studio 2022
+
+clone_folder: C:\projects\cppkai
+
+environment:
+  CMAKE_BUILD_PARALLEL_LEVEL: 2
+
+install:
+  - ps: choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y
+  - ps: refreshenv
+  - ps: |
+      $boost = Get-ChildItem C:\Libraries -Directory -Filter 'boost_*' |
+        Sort-Object Name -Descending |
+        Select-Object -First 1
+      if ($boost) {
+        $env:BOOST_ROOT = $boost.FullName
+        $libDir = Get-ChildItem $boost.FullName -Directory -Filter 'lib*-msvc-*' |
+          Sort-Object Name -Descending |
+          Select-Object -First 1
+        if ($libDir) {
+          $env:BOOST_LIBRARYDIR = $libDir.FullName
+        }
+        Write-Host "BOOST_ROOT=$env:BOOST_ROOT"
+        Write-Host "BOOST_LIBRARYDIR=$env:BOOST_LIBRARYDIR"
+      } else {
+        Write-Warning "No preinstalled Boost directory found under C:\Libraries"
+      }
+
+build_script:
+  - cmake --version
+  - cmake -S . -B build -G "Visual Studio 17 2022" -A x64 -DKAI_NETWORKING=OFF -DKAI_BUILD_IMGUI=OFF -DKAI_BUILD_LLM=OFF
+  - cmake --build build --config Debug --parallel 2
+
+test_script:
+  - ctest --test-dir build -C Debug --output-on-failure
