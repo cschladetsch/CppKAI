@@ -20,6 +20,8 @@ Animated walk-through of agent migration, Pi-guided routing, load balancing,
 and snapshot-based recovery after a simulated host failure. Source of truth:
 [`ContinuationMobilityDemo.rho`](ContinuationMobilityDemo/ContinuationMobilityDemo.rho).
 
+Requires GitHub Pages enabled from the `master` branch root.
+
 ## System Architecture Overview
 
 The KAI system provides a multi-layered architecture that enables distributed object programming with multiple language frontends:
