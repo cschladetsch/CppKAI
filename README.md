@@ -641,3 +641,4 @@ fsed 's/old/new/g' path/to/file
 - **Current workflow**: use `RepoIndex` for grounded repo retrieval; a llama.cpp inference runtime still needs to be added on top of the cache layer
 
 **Start exploring**: Begin with the **[Documentation Guide](Doc/Documentation.md)** or dive into **[System Architecture](resources/README.md)** for technical details.
+
