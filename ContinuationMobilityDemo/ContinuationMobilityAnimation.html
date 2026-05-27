@@ -3,619 +3,197 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ContinuationMobilityDemo Migration View</title>
+  <title>Realm of Continuations — Migration View</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=IM+Fell+English:ital@0;1&display=swap');
     :root {
-      --bg: #f1ede3;
-      --paper: rgba(255, 251, 243, 0.88);
-      --panel: rgba(255, 255, 255, 0.76);
-      --ink: #1f2329;
-      --muted: #5a6677;
-      --line: rgba(31, 35, 41, 0.12);
-      --accent: #c54f1b;
-      --node-a: #244b73;
-      --node-b: #8e3b2e;
-      --node-c: #2e6a57;
-      --node-d: #6a4c93;
-      --shadow: 0 22px 60px rgba(31, 35, 41, 0.12);
+      --bg: #0d0a07; --paper: rgba(20,15,8,0.95); --panel: rgba(30,22,12,0.92);
+      --ink: #e8d5a3; --muted: #8a7a5a; --line: rgba(180,140,60,0.2);
+      --accent: #c8872a; --gold: #d4a843;
+      --node-a: #1a3a5c; --node-b: #5c1a1a; --node-c: #1a3d2b; --node-d: #3d1a5c;
+      --shadow: 0 22px 60px rgba(0,0,0,0.8);
     }
-
-    * {
-      box-sizing: border-box;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      margin: 0;
-      min-height: 100vh;
-      color: var(--ink);
-      background:
-        radial-gradient(circle at left top, rgba(36, 75, 115, 0.12), transparent 30%),
-        radial-gradient(circle at right top, rgba(197, 79, 27, 0.12), transparent 30%),
-        linear-gradient(180deg, #f8f4eb 0%, #efe7da 100%);
-      font-family: "IBM Plex Sans", "Avenir Next", "Segoe UI", sans-serif;
+      min-height: 100vh; color: var(--ink);
+      background: radial-gradient(ellipse at top, rgba(26,58,92,0.3) 0%, transparent 50%),
+        radial-gradient(ellipse at bottom right, rgba(61,26,92,0.2) 0%, transparent 50%),
+        linear-gradient(180deg, #0d0a07 0%, #0a0705 100%);
+      font-family: "IM Fell English", Georgia, serif;
     }
-
     .page {
-      width: min(1460px, calc(100vw - 32px));
-      margin: 16px auto 28px;
-      padding: 18px;
-      border-radius: 28px;
-      border: 1px solid rgba(255, 255, 255, 0.6);
-      background: var(--paper);
-      backdrop-filter: blur(18px);
-      box-shadow: var(--shadow);
+      position: relative; z-index: 1;
+      width: min(1460px, calc(100vw - 24px)); margin: 12px auto 24px;
+      padding: 16px; border-radius: 12px;
+      border: 1px solid rgba(212,168,67,0.3); background: var(--paper);
+      box-shadow: var(--shadow), inset 0 0 60px rgba(212,168,67,0.03);
     }
-
-    .page-nav {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 14px;
-      flex-wrap: wrap;
-    }
-
+    .page-nav { display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; border-bottom:1px solid var(--line); padding-bottom:12px; }
     .page-link {
-      display: inline-flex;
-      align-items: center;
-      padding: 10px 14px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.74);
-      color: var(--ink);
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 700;
+      display:inline-flex; align-items:center; padding:7px 14px; border-radius:4px;
+      border:1px solid var(--line); background:rgba(212,168,67,0.05); color:var(--muted);
+      text-decoration:none; font-family:"Cinzel",serif; font-size:11px; font-weight:700;
+      letter-spacing:0.08em; text-transform:uppercase; transition:all 0.2s;
     }
-
-    .page-link.active {
-      background: #1f2329;
-      border-color: #1f2329;
-      color: white;
-    }
-
-    .hero,
-    .layout {
-      display: grid;
-      gap: 18px;
-    }
-
-    .hero {
-      grid-template-columns: 1.2fr 0.9fr;
-      margin-bottom: 18px;
-    }
-
-    .layout {
-      grid-template-columns: 1.3fr 0.95fr;
-    }
-
-    .card {
-      border-radius: 24px;
-      border: 1px solid var(--line);
-      background: var(--panel);
-      box-shadow: 0 10px 28px rgba(31, 35, 41, 0.06);
-      overflow: hidden;
-    }
-
-    .hero-copy,
-    .controls,
-    .state-panel,
-    .legend-panel {
-      padding: 14px;
-    }
-
-    .title {
-      margin: 0;
-      font-size: clamp(22px, 2.5vw, 36px);
-      line-height: 0.95;
-      letter-spacing: -0.06em;
-      max-width: 20ch;
-    }
-
-    .subtitle {
-      margin: 8px 0 0;
-      max-width: 54ch;
-      color: var(--muted);
-      line-height: 1.6;
-      font-size: 16px;
-    }
-
-    .chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 18px;
-    }
-
+    .page-link:hover { color:var(--gold); border-color:var(--gold); background:rgba(212,168,67,0.1); }
+    .page-link.active { background:rgba(212,168,67,0.15); border-color:var(--gold); color:var(--gold); }
+    .hero { display:grid; grid-template-columns:1.2fr 0.9fr; gap:14px; margin-bottom:14px; }
+    .layout { display:grid; grid-template-columns:1.3fr 0.95fr; gap:14px; }
+    .card { border-radius:8px; border:1px solid var(--line); background:var(--panel); overflow:hidden; }
+    .title { font-family:"Cinzel",serif; font-size:clamp(16px,2vw,26px); font-weight:900; color:var(--gold); letter-spacing:0.04em; text-shadow:0 0 20px rgba(212,168,67,0.4); margin-bottom:6px; }
+    .subtitle { font-size:13px; color:var(--muted); line-height:1.6; font-style:italic; }
+    .chips { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
     .chip {
-      padding: 10px 12px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.72);
-      border: 1px solid var(--line);
-      font-size: 13px;
-      font-weight: 700;
+      padding:5px 12px; border-radius:3px; border:1px solid var(--line);
+      background:rgba(212,168,67,0.07); font-size:11px; color:var(--muted);
+      font-style:italic; cursor:help; position:relative;
     }
-
-    .reading-guide {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-      margin-top: 18px;
+    .chip[data-tech]:hover::after {
+      content:attr(data-tech); position:absolute; bottom:calc(100% + 6px); left:50%;
+      transform:translateX(-50%); background:#1a1208; border:1px solid var(--gold);
+      color:var(--gold); padding:4px 10px; border-radius:4px; font-size:11px;
+      white-space:nowrap; font-style:normal; font-family:"IBM Plex Mono",monospace; z-index:100;
     }
-
-    .guide-item {
-      padding: 12px 14px;
-      border-radius: 16px;
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.7);
-      font-size: 13px;
-      line-height: 1.45;
+    .metric { display:flex; align-items:center; gap:8px; padding:6px 12px; border-radius:4px; border:1px solid var(--line); background:rgba(212,168,67,0.05); }
+    .metric-label { color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:0.08em; font-family:"Cinzel",serif; }
+    .metric-value { font-size:22px; font-weight:700; color:var(--gold); font-family:"Cinzel",serif; }
+    .button-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+    button, select {
+      padding:8px 16px; border-radius:4px; border:1px solid var(--line);
+      background:rgba(212,168,67,0.08); color:var(--ink); font-family:"Cinzel",serif;
+      font-size:12px; font-weight:700; letter-spacing:0.05em; cursor:pointer; transition:all 0.2s;
     }
-
-    .controls-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-      margin-top: 14px;
-    }
-
-    .phase-strip {
-      display: grid;
-      grid-template-columns: repeat(6, minmax(0, 1fr));
-      gap: 8px;
-      margin-top: 16px;
-    }
-
+    button:hover, select:hover { background:rgba(212,168,67,0.18); border-color:var(--gold); color:var(--gold); }
+    button.primary { background:rgba(212,168,67,0.2); border-color:var(--gold); color:var(--gold); }
+    select option { background:#1a1208; color:var(--ink); }
+    .phase-strip { display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; }
     .phase-chip {
-      padding: 10px 8px;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.72);
-      color: var(--muted);
-      font-size: 11px;
-      font-weight: 700;
-      text-align: center;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
+      padding:4px 10px; border-radius:3px; border:1px solid var(--line);
+      font-size:10px; color:var(--muted); font-family:"Cinzel",serif;
+      letter-spacing:0.06em; cursor:help; position:relative;
     }
-
-    .phase-chip.active {
-      background: linear-gradient(135deg, rgba(197, 79, 27, 0.16), rgba(255, 255, 255, 0.88));
-      border-color: rgba(197, 79, 27, 0.28);
-      color: var(--ink);
+    .phase-chip.active { background:rgba(212,168,67,0.15); border-color:var(--gold); color:var(--gold); text-shadow:0 0 10px rgba(212,168,67,0.5); }
+    .phase-chip[data-tech]:hover::after {
+      content:attr(data-tech); position:absolute; bottom:calc(100% + 6px); left:50%;
+      transform:translateX(-50%); background:#1a1208; border:1px solid var(--gold);
+      color:var(--gold); padding:4px 10px; border-radius:4px; font-size:11px;
+      white-space:nowrap; font-family:"IBM Plex Mono",monospace; z-index:100;
     }
-
-    .metric {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 14px;
-      border-radius: 18px;
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.78);
-    }
-
-    .metric-label {
-      color: var(--muted);
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    .metric-value {
-      font-size: 24px;
-      font-weight: 700;
-      letter-spacing: -0.05em;
-    }
-
-    .button-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 16px;
-    }
-
-    button,
-    select {
-      appearance: none;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.92);
-      color: var(--ink);
-      font: inherit;
-    }
-
-    button {
-      padding: 12px 16px;
-      cursor: pointer;
-    }
-
-    button.primary {
-      border-color: transparent;
-      background: linear-gradient(135deg, #1f2329, #3a424d);
-      color: white;
-    }
-
-    select {
-      padding: 12px 14px;
-    }
-
-    .canvas-panel {
-      position: relative;
-      min-height: 700px;
-      padding: 0;
-    }
-
+    .hint { margin-top:10px; font-size:12px; color:var(--muted); font-style:italic; line-height:1.5; min-height:1em; }
+    .canvas-panel { overflow:hidden; }
     .canvas-wrap {
-      position: relative;
-      height: 100%;
-      min-height: 700px;
-      background:
-        radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.92), rgba(245, 239, 228, 0.96)),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.48), rgba(255, 255, 255, 0.3));
+      position:relative; min-height:700px;
+      background: radial-gradient(ellipse at 25% 25%, rgba(26,58,92,0.15) 0%, transparent 40%),
+        radial-gradient(ellipse at 75% 25%, rgba(92,26,26,0.15) 0%, transparent 40%),
+        radial-gradient(ellipse at 25% 75%, rgba(61,26,92,0.15) 0%, transparent 40%),
+        radial-gradient(ellipse at 75% 75%, rgba(26,61,43,0.15) 0%, transparent 40%),
+        rgba(10,7,3,0.6);
+      border-radius:8px; overflow:hidden;
     }
-
-    svg {
-      display: block;
-      width: 100%;
-      height: 100%;
-    }
-
+    .canvas-wrap svg { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
     .node {
-      position: absolute;
-      width: 210px;
-      min-height: 164px;
-      padding: 18px;
-      border-radius: 22px;
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.82);
-      box-shadow: 0 12px 26px rgba(31, 35, 41, 0.08);
+      position:absolute; width:200px; padding:12px; border-radius:8px;
+      border:1px solid color-mix(in srgb, var(--node-color) 60%, transparent);
+      background:color-mix(in srgb, var(--node-color) 20%, rgba(10,7,3,0.9));
+      box-shadow:0 0 30px color-mix(in srgb, var(--node-color) 20%, transparent);
+      cursor:help; position:absolute;
     }
-
-    .node::after {
-      content: "";
-      position: absolute;
-      inset: auto 18px 18px auto;
-      width: 74px;
-      height: 74px;
-      border-radius: 50%;
-      background: color-mix(in srgb, var(--node-color) 14%, transparent);
+    .node[data-tech]:hover::after {
+      content:attr(data-tech); position:absolute; top:calc(100% + 6px); left:50%;
+      transform:translateX(-50%); background:#1a1208; border:1px solid var(--gold);
+      color:var(--gold); padding:4px 10px; border-radius:4px; font-size:11px;
+      white-space:nowrap; font-family:"IBM Plex Mono",monospace; z-index:100;
     }
-
-    .node-title {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .swatch {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: var(--node-color);
-      box-shadow: 0 0 0 4px color-mix(in srgb, var(--node-color) 16%, transparent);
-    }
-
-    .node-name {
-      font-size: 22px;
-      font-weight: 700;
-      letter-spacing: -0.04em;
-    }
-
-    .node-sub {
-      margin-top: 8px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.45;
-      position: relative;
-      z-index: 1;
-    }
-
-    .node-count {
-      margin-top: 16px;
-      font-size: 32px;
-      font-weight: 700;
-      letter-spacing: -0.05em;
-      position: relative;
-      z-index: 1;
-    }
-
-    .agent-layer {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-    }
-
-    .effect-layer {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      overflow: hidden;
-    }
-
+    .node-title { display:flex; align-items:center; gap:8px; margin-bottom:4px; }
+    .swatch { width:10px; height:10px; border-radius:50%; background:var(--node-color); box-shadow:0 0 8px var(--node-color); flex-shrink:0; }
+    .node-name { font-family:"Cinzel",serif; font-size:13px; font-weight:700; color:var(--gold); letter-spacing:0.06em; }
+    .node-sub { font-size:11px; color:var(--muted); font-style:italic; line-height:1.4; margin-bottom:6px; }
+    .node-count { font-family:"Cinzel",serif; font-size:28px; font-weight:900; color:color-mix(in srgb, var(--node-color) 80%, var(--gold)); text-shadow:0 0 15px color-mix(in srgb, var(--node-color) 60%, transparent); }
+    .agent-layer { position:absolute; inset:0; pointer-events:none; }
     .agent {
-      position: absolute;
-      width: 16px;
-      height: 16px;
-      margin-left: -8px;
-      margin-top: -8px;
-      border-radius: 50%;
-      background: var(--node-color);
-      box-shadow: 0 0 0 4px color-mix(in srgb, var(--node-color) 16%, transparent), 0 6px 18px rgba(31, 35, 41, 0.2);
-      pointer-events: auto;
-      transition: transform 340ms ease, left 340ms ease, top 340ms ease, background 340ms ease;
-      cursor: pointer;
+      position:absolute; transform:translate(-50%,-50%); width:34px; height:34px;
+      border-radius:50%; border:2px solid var(--node-color);
+      background:color-mix(in srgb, var(--node-color) 40%, #0d0a07);
+      cursor:pointer; pointer-events:all; display:flex; align-items:center;
+      justify-content:center; font-size:14px;
+      transition:left 0.45s cubic-bezier(0.4,0,0.2,1), top 0.45s cubic-bezier(0.4,0,0.2,1);
+      box-shadow:0 0 12px color-mix(in srgb, var(--node-color) 50%, transparent); z-index:10;
     }
-
-    .agent.restored {
-      outline: 3px solid rgba(197, 79, 27, 0.32);
-    }
-
-    .agent.suspended {
-      opacity: 0.38;
-      filter: grayscale(0.25);
-    }
-
-    .agent:hover {
-      transform: scale(1.2);
-      z-index: 4;
-    }
-
-    .agent::before {
-      content: attr(data-label);
-      position: absolute;
-      left: 50%;
-      bottom: calc(100% + 16px);
-      transform: translateX(-50%);
-      opacity: 0;
-      width: 200px;
-      padding: 10px 12px;
-      border-radius: 12px;
-      background: rgba(31, 35, 41, 0.96);
-      color: white;
-      font-size: 12px;
-      line-height: 1.45;
-      box-shadow: 0 14px 30px rgba(31, 35, 41, 0.24);
-      pointer-events: none;
-      transition: opacity 140ms ease, transform 140ms ease;
-      white-space: pre-line;
-    }
-
+    .agent:hover { z-index:20; box-shadow:0 0 20px var(--gold); border-color:var(--gold); }
     .agent::after {
-      content: "";
-      position: absolute;
-      left: 50%;
-      bottom: calc(100% + 10px);
-      width: 10px;
-      height: 10px;
-      transform: translateX(-50%) rotate(45deg);
-      background: rgba(31, 35, 41, 0.96);
-      border-radius: 2px;
-      opacity: 0;
-      transition: opacity 140ms ease;
-      pointer-events: none;
+      content:attr(data-label); position:absolute; bottom:calc(100% + 6px); left:50%;
+      transform:translateX(-50%); background:#1a1208; border:1px solid var(--gold);
+      color:var(--ink); padding:6px 10px; border-radius:4px; font-size:11px;
+      white-space:pre; font-family:"IBM Plex Mono",monospace; opacity:0;
+      pointer-events:none; transition:opacity 0.15s; z-index:30; line-height:1.5;
     }
-
-    .agent:hover::before,
-    .agent:hover::after,
-    .agent:focus-visible::before,
-    .agent:focus-visible::after {
-      opacity: 1;
-      transform: translateX(-50%) translateY(-2px);
+    .agent:hover::after { opacity:1; }
+    .agent.restored { border-color:var(--gold); animation:resurrectionGlow 1.5s ease-in-out infinite alternate; }
+    .agent.suspended { opacity:0.15; }
+    @keyframes resurrectionGlow {
+      from { box-shadow:0 0 15px rgba(212,168,67,0.5), 0 0 30px rgba(212,168,67,0.2); }
+      to   { box-shadow:0 0 25px rgba(212,168,67,0.9), 0 0 50px rgba(212,168,67,0.5); }
     }
-
-    .hint {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.5;
-      margin-top: 12px;
-    }
-
-    .state-list {
-      display: grid;
-      gap: 10px;
-      max-height: 480px;
-      overflow: auto;
-    }
-
-    .selected-agent {
-      margin-bottom: 14px;
-      padding: 14px 16px;
-      border-radius: 18px;
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.82);
-    }
-
-    .selected-agent h3 {
-      margin: 0 0 8px;
-      font-size: 18px;
-      letter-spacing: -0.03em;
-    }
-
-    .selected-agent p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    .selected-badges {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      padding: 7px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.78);
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.01em;
-    }
-
-    .status-badge.hot {
-      background: rgba(197, 79, 27, 0.14);
-      border-color: rgba(197, 79, 27, 0.28);
-      color: #8f3910;
-    }
-
-    .lifecycle {
-      margin-top: 14px;
-      display: grid;
-      gap: 8px;
-    }
-
-    .lifecycle-item {
-      padding: 10px 12px;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.7);
-      font-size: 13px;
-      line-height: 1.45;
-    }
-
-    .lifecycle-item strong {
-      color: var(--accent);
-    }
-
-    .state-row {
-      padding: 12px 14px;
-      border-radius: 16px;
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.72);
-      font-size: 14px;
-      line-height: 1.45;
-    }
-
-    .state-row strong {
-      display: inline-block;
-      min-width: 74px;
-    }
-
-    .event-banner {
-      padding: 14px 16px;
-      border-radius: 18px;
-      background: linear-gradient(135deg, rgba(197, 79, 27, 0.12), rgba(255, 255, 255, 0.82));
-      border: 1px solid rgba(197, 79, 27, 0.2);
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
+    .effect-layer { position:absolute; inset:0; pointer-events:none; z-index:20; }
     .effect {
-      position: absolute;
-      width: 18px;
-      height: 18px;
-      margin-left: -9px;
-      margin-top: -9px;
-      border-radius: 50%;
-      border: 3px solid rgba(197, 79, 27, 0.55);
-      opacity: 0;
-      animation: pulseFade 1400ms ease-out forwards;
+      position:absolute; transform:translate(-50%,-50%);
+      animation:effectRise 1.4s ease-out forwards;
+      font-family:"Cinzel",serif; font-size:13px; font-weight:700;
+      color:var(--accent); text-shadow:0 0 10px var(--accent); text-align:center;
     }
-
-    .effect.restore {
-      border-color: rgba(46, 106, 87, 0.55);
+    .effect.restore { color:var(--gold); text-shadow:0 0 15px var(--gold); }
+    @keyframes effectRise {
+      from { opacity:1; transform:translate(-50%,-50%); }
+      to   { opacity:0; transform:translate(-50%,-120%); }
     }
-
-    .effect-label {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -150%);
-      padding: 8px 10px;
-      border-radius: 999px;
-      background: rgba(31, 35, 41, 0.92);
-      color: white;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      white-space: nowrap;
-      opacity: 0;
-      animation: labelFade 1400ms ease-out forwards;
-    }
-
-    @keyframes pulseFade {
-      0% { transform: scale(0.4); opacity: 0.92; }
-      100% { transform: scale(7.4); opacity: 0; }
-    }
-
-    @keyframes labelFade {
-      0% { opacity: 0; transform: translate(-50%, -130%); }
-      18% { opacity: 1; transform: translate(-50%, -150%); }
-      100% { opacity: 0; transform: translate(-50%, -175%); }
-    }
-
-    @media (max-width: 1120px) {
-      .hero,
-      .layout {
-        grid-template-columns: 1fr;
-      }
-
-      .reading-guide {
-        grid-template-columns: 1fr;
-      }
-
-      .canvas-panel,
-      .canvas-wrap {
-        min-height: 860px;
-      }
-    }
-
-    @media (max-width: 760px) {
-      .page {
-        width: calc(100vw - 16px);
-        margin: 8px auto 18px;
-        padding: 12px;
-      }
-
-      .controls-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .node {
-        width: 180px;
-      }
-
-      .canvas-panel,
-      .canvas-wrap {
-        min-height: 980px;
-      }
+    .legend-panel { display:flex; flex-direction:column; gap:12px; padding:14px; }
+    .event-banner { padding:10px 14px; border-radius:6px; border:1px solid var(--line); background:rgba(212,168,67,0.05); font-size:13px; color:var(--gold); font-style:italic; line-height:1.5; }
+    .state-panel { flex:1; overflow:hidden; display:flex; flex-direction:column; gap:10px; }
+    .selected-agent { padding:12px; border-radius:6px; border:1px solid var(--line); background:rgba(212,168,67,0.03); font-size:13px; line-height:1.6; }
+    .selected-agent h3 { font-family:"Cinzel",serif; font-size:15px; color:var(--gold); margin-bottom:6px; }
+    .selected-agent p { color:var(--muted); font-style:italic; }
+    .selected-badges { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; }
+    .status-badge { padding:2px 8px; border-radius:3px; border:1px solid var(--line); font-size:11px; font-family:"Cinzel",serif; letter-spacing:0.05em; color:var(--muted); }
+    .status-badge.hot { border-color:var(--gold); color:var(--gold); }
+    .lifecycle { margin-top:8px; display:flex; flex-direction:column; gap:4px; }
+    .lifecycle-item { font-size:11px; color:var(--muted); font-style:italic; padding:3px 0; border-bottom:1px solid rgba(212,168,67,0.08); }
+    .state-list { flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:6px; max-height:260px; }
+    .state-row { padding:7px 10px; border-radius:4px; border:1px solid var(--line); font-size:12px; color:var(--muted); line-height:1.5; font-style:italic; }
+    .state-row strong { color:var(--gold); font-style:normal; font-family:"Cinzel",serif; }
+    @media (max-width:900px) {
+      .hero, .layout { grid-template-columns:1fr; }
+      .canvas-wrap { min-height:500px; }
+      .node { width:140px; }
     }
   </style>
 </head>
 <body>
   <div class="page">
     <nav class="page-nav">
-      <a class="page-link active" href="./ContinuationMobilityAnimation.html">Migration View</a>
-      <a class="page-link" href="./ContinuationMobilityDemo.html">System View</a>
-      <a class="page-link" href="./Description.html">Description</a>
-          <a class="page-link" href="./Description.html">Description</a>
+      <a class="page-link active" href="./ContinuationMobilityAnimation.html">⚔ Migration View</a>
+      <a class="page-link" href="./ContinuationMobilityDemo.html">📜 System View</a>
+      <a class="page-link" href="./Description.html">📖 Description</a>
     </nav>
 
     <section class="hero">
-      <article class="card hero-copy">
-        <h1 class="title">Animated Migration View</h1>
-        <p class="subtitle">Each dot is a live agent moving between logical hosts. Hover to inspect state. Orange ring = restored from snapshot.</p>
+      <article class="card" style="padding:14px;">
+        <h1 class="title">✦ Realm of Continuations ✦</h1>
+        <p class="subtitle">Ten heroes traverse four realms. The Oracle guides their paths. When darkness claims Ashmarket, the fallen are resurrected at The Refuge — memories and deeds intact.</p>
         <div class="chips">
-          <div class="chip">Tick 56: agents 1-3 forced onto Market</div>
-          <div class="chip">Tick 60: NodeB fails, recovery begins</div>
+          <div class="chip" data-tech="tick 56: agents 1–3 forced onto NodeB (failure drill)">⚔ Tick 56: Three heroes drawn into Ashmarket's shadow</div>
+          <div class="chip" data-tech="tick 60: NodeB fails, recovery from snapshot">💀 Tick 60: Ashmarket falls — resurrection follows</div>
+          <div class="chip" data-tech="restored=true agents have gold glow">✨ Gold glow marks the resurrected</div>
         </div>
       </article>
 
-      <aside class="card controls">
-        <div style="display:flex;gap:10px;flex-wrap:wrap;">
-          <div class="metric"><div class="metric-label">Tick</div><div class="metric-value" id="tick-value">0</div></div>
-          <div class="metric"><div class="metric-label">Transitions</div><div class="metric-value" id="transition-count">0</div></div>
-          <div class="metric"><div class="metric-label">Restored</div><div class="metric-value" id="restored-count">0</div></div>
+      <aside class="card" style="padding:14px;">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <div class="metric"><div class="metric-label" title="world tick">Age</div><div class="metric-value" id="tick-value">0</div></div>
+          <div class="metric"><div class="metric-label" title="cross-host migrations">Journeys</div><div class="metric-value" id="transition-count">0</div></div>
+          <div class="metric"><div class="metric-label" title="restored from snapshot">Reborn</div><div class="metric-value" id="restored-count">0</div></div>
         </div>
         <div class="button-row">
-          <button class="primary" id="play-pause">Start</button>
+          <button class="primary" id="play-pause">Begin</button>
           <button id="step">Step</button>
           <button id="reset">Reset</button>
           <select id="speed">
@@ -626,16 +204,14 @@
           </select>
         </div>
         <div class="phase-strip" id="phase-strip">
-          <div class="phase-chip">Patrol</div>
-          <div class="phase-chip">Pi</div>
-          <div class="phase-chip">Snapshot</div>
-          <div class="phase-chip">Balance</div>
-          <div class="phase-chip">Failure</div>
-          <div class="phase-chip">Resume</div>
+          <div class="phase-chip" data-tech="autonomous patrol">Wandering</div>
+          <div class="phase-chip" data-tech="Pi language routing">Oracle's Vision</div>
+          <div class="phase-chip" data-tech="world snapshot">Memory Crystal</div>
+          <div class="phase-chip" data-tech="load balancing">War Council</div>
+          <div class="phase-chip" data-tech="host failure">Shadow Falls</div>
+          <div class="phase-chip" data-tech="snapshot restore">Resurrection</div>
         </div>
-        <p class="hint" id="phase-label">
-          
-        </p>
+        <p class="hint" id="phase-label"></p>
       </aside>
     </section>
 
@@ -645,53 +221,41 @@
           <svg viewBox="0 0 1200 760" preserveAspectRatio="none" aria-hidden="true">
             <defs>
               <linearGradient id="flowA" x1="0%" x2="100%">
-                <stop offset="0%" stop-color="#244b73" stop-opacity="0.16"></stop>
-                <stop offset="100%" stop-color="#6a4c93" stop-opacity="0.16"></stop>
+                <stop offset="0%" stop-color="#4a8ab8" stop-opacity="0.2"/>
+                <stop offset="100%" stop-color="#8a4ab8" stop-opacity="0.2"/>
               </linearGradient>
               <linearGradient id="flowB" x1="0%" x2="100%">
-                <stop offset="0%" stop-color="#8e3b2e" stop-opacity="0.14"></stop>
-                <stop offset="100%" stop-color="#2e6a57" stop-opacity="0.14"></stop>
+                <stop offset="0%" stop-color="#b84a4a" stop-opacity="0.18"/>
+                <stop offset="100%" stop-color="#4ab87a" stop-opacity="0.18"/>
               </linearGradient>
             </defs>
-            <path d="M250 190 C 440 130, 520 130, 710 190" fill="none" stroke="url(#flowA)" stroke-width="6" stroke-dasharray="12 12"></path>
-            <path d="M250 190 C 360 350, 360 480, 250 610" fill="none" stroke="url(#flowB)" stroke-width="6" stroke-dasharray="12 12"></path>
-            <path d="M710 190 C 840 350, 840 470, 710 610" fill="none" stroke="url(#flowA)" stroke-width="6" stroke-dasharray="12 12"></path>
-            <path d="M250 610 C 430 680, 530 680, 710 610" fill="none" stroke="url(#flowB)" stroke-width="6" stroke-dasharray="12 12"></path>
+            <path d="M250 190 C 440 130, 520 130, 710 190" fill="none" stroke="url(#flowA)" stroke-width="4" stroke-dasharray="10 10"/>
+            <path d="M250 190 C 360 350, 360 480, 250 610" fill="none" stroke="url(#flowB)" stroke-width="4" stroke-dasharray="10 10"/>
+            <path d="M710 190 C 840 350, 840 470, 710 610" fill="none" stroke="url(#flowA)" stroke-width="4" stroke-dasharray="10 10"/>
+            <path d="M250 610 C 430 680, 530 680, 710 610" fill="none" stroke="url(#flowB)" stroke-width="4" stroke-dasharray="10 10"/>
           </svg>
 
-          <div class="node" style="left: 30px; top: 30px; --node-color: var(--node-a);" id="node-NodeA">
-            <div class="node-title">
-              <span class="swatch"></span>
-              <div class="node-name">NodeA</div>
-            </div>
-            <div class="node-sub">Start region. Heavy initial load, then later a balancing target.</div>
+          <div class="node" style="left:30px;top:30px;--node-color:var(--node-a);" id="node-NodeA" data-tech="NodeA / Start region">
+            <div class="node-title"><span class="swatch"></span><div class="node-name">⚔ Ironhold</div></div>
+            <div class="node-sub">The starting fortress. Heavy with new arrivals, later rebalanced by the War Council.</div>
             <div class="node-count" id="count-NodeA">4</div>
           </div>
 
-          <div class="node" style="right: 30px; top: 30px; --node-color: var(--node-b);" id="node-NodeB">
-            <div class="node-title">
-              <span class="swatch"></span>
-              <div class="node-name">NodeB</div>
-            </div>
-            <div class="node-sub">Market region. Quieted by Pi, then used for the forced failure drill.</div>
+          <div class="node" style="right:30px;top:30px;--node-color:var(--node-b);" id="node-NodeB" data-tech="NodeB / Market region — fails at tick 60">
+            <div class="node-title"><span class="swatch"></span><div class="node-name">💀 Ashmarket</div></div>
+            <div class="node-sub">Cursed trading post. The Oracle empties it, then shadow claims it at tick 60.</div>
             <div class="node-count" id="count-NodeB">4</div>
           </div>
 
-          <div class="node" style="left: 30px; bottom: 30px; --node-color: var(--node-d);" id="node-NodeD">
-            <div class="node-title">
-              <span class="swatch"></span>
-              <div class="node-name">NodeD</div>
-            </div>
-            <div class="node-sub">Backup region. Main landing zone for reroutes and recovery.</div>
+          <div class="node" style="left:30px;bottom:30px;--node-color:var(--node-d);" id="node-NodeD" data-tech="NodeD / Backup region — recovery target">
+            <div class="node-title"><span class="swatch"></span><div class="node-name">✨ The Refuge</div></div>
+            <div class="node-sub">Sacred sanctuary. The fallen are reborn here, all memories intact.</div>
             <div class="node-count" id="count-NodeD">0</div>
           </div>
 
-          <div class="node" style="right: 30px; bottom: 30px; --node-color: var(--node-c);" id="node-NodeC">
-            <div class="node-title">
-              <span class="swatch"></span>
-              <div class="node-name">NodeC</div>
-            </div>
-            <div class="node-sub">Harbor region and Pi host. Receives market reroutes and post-patrol traffic.</div>
+          <div class="node" style="right:30px;bottom:30px;--node-color:var(--node-c);" id="node-NodeC" data-tech="NodeC / Harbor region — Pi host">
+            <div class="node-title"><span class="swatch"></span><div class="node-name">🌊 Harborveil</div></div>
+            <div class="node-sub">Mist-shrouded port. The Oracle dwells here, redirecting the weary.</div>
             <div class="node-count" id="count-NodeC">2</div>
           </div>
 
@@ -701,18 +265,13 @@
       </article>
 
       <aside class="legend-panel card">
-        <div class="event-banner" id="event-banner">
-          Tick 0: ten agents are staged across Start, Market, and Harbor.
-        </div>
-        <p class="hint">
-          Hover any moving dot to inspect its live state. Orange-ringed dots
-          were reconstructed from snapshots after the simulated host failure.
-        </p>
+        <div class="event-banner" id="event-banner">The age begins. Ten heroes are summoned across Ironhold, Ashmarket, and Harborveil.</div>
+        <p class="hint">Hover any hero glyph to inspect their chronicle. Gold glow marks the resurrected.</p>
         <div class="state-panel">
-          <h2 style="margin:0 0 12px; font-size: 22px; letter-spacing: -0.04em;">Agent State</h2>
+          <h2 style="font-family:'Cinzel',serif;font-size:15px;color:var(--gold);letter-spacing:0.06em;">Hero Chronicle</h2>
           <div class="selected-agent" id="selected-agent">
-            <h3>No agent selected</h3>
-            <p>Hover or click an agent dot to pin a stable explanation here instead of relying only on a transient tooltip.</p>
+            <h3>No hero selected</h3>
+            <p>Hover or click a hero to read their chronicle.</p>
           </div>
           <div class="state-list" id="state-list"></div>
         </div>
@@ -721,543 +280,333 @@
   </div>
 
   <script>
-    const nodeColors = {
-      NodeA: "var(--node-a)",
-      NodeB: "var(--node-b)",
-      NodeC: "var(--node-c)",
-      NodeD: "var(--node-d)"
-    };
-
-    const positions = {
-      NodeA: { x: 195, y: 250 },
-      NodeB: { x: 1005, y: 250 },
-      NodeD: { x: 195, y: 615 },
-      NodeC: { x: 1005, y: 615 }
-    };
+    const REALM = { NodeA:"Ironhold", NodeB:"Ashmarket", NodeC:"Harborveil", NodeD:"The Refuge" };
+    const REGION = { Start:"Ironhold Keep", Market:"Ashmarket Bazaar", Harbor:"Harborveil Docks", Backup:"The Refuge" };
+    const HEROES = [
+      {name:"Aldric",   cls:"Knight",    g:"⚔"},
+      {name:"Seraphine",cls:"Mage",      g:"🔮"},
+      {name:"Corvin",   cls:"Rogue",     g:"🗡"},
+      {name:"Brynn",    cls:"Ranger",    g:"🏹"},
+      {name:"Thorn",    cls:"Warlock",   g:"☠"},
+      {name:"Isolde",   cls:"Cleric",    g:"✝"},
+      {name:"Dax",      cls:"Bard",      g:"♪"},
+      {name:"Vex",      cls:"Assassin",  g:"🌑"},
+      {name:"Mira",     cls:"Druid",     g:"🌿"},
+      {name:"Gorath",   cls:"Berserker", g:"🔥"}
+    ];
+    const nodeColors = { NodeA:"var(--node-a)", NodeB:"var(--node-b)", NodeC:"var(--node-c)", NodeD:"var(--node-d)" };
+    const positions  = { NodeA:{x:140,y:180}, NodeB:{x:1060,y:180}, NodeD:{x:140,y:580}, NodeC:{x:1060,y:580} };
 
     class DemoWorld {
-      constructor() {
-        this.reset();
-      }
-
+      constructor() { this.reset(); }
       reset() {
         this.regions = new Map([
-          ["Start", { name: "Start", host: "NodeA", visits: 0 }],
-          ["Market", { name: "Market", host: "NodeB", visits: 0 }],
-          ["Harbor", { name: "Harbor", host: "NodeC", visits: 0 }],
-          ["Backup", { name: "Backup", host: "NodeD", visits: 0 }]
+          ["Start",{name:"Start",host:"NodeA",visits:0}],
+          ["Market",{name:"Market",host:"NodeB",visits:0}],
+          ["Harbor",{name:"Harbor",host:"NodeC",visits:0}],
+          ["Backup",{name:"Backup",host:"NodeD",visits:0}]
         ]);
         this.agents = [];
-        for (let i = 0; i < 10; i += 1) {
-          this.agents.push({
-            id: i + 1,
-            name: `Agent_${i + 1}`,
-            regionName: i < 4 ? "Start" : i < 8 ? "Market" : "Harbor",
-            steps: 0,
-            plansRequested: 0,
-            migrations: 0,
-            restored: false
-          });
+        for (let i=0;i<10;i++) {
+          const h=HEROES[i];
+          this.agents.push({id:i+1,name:`Agent_${i+1}`,heroName:h.name,heroClass:h.cls,glyph:h.g,
+            regionName:i<4?"Start":i<8?"Market":"Harbor",steps:0,plansRequested:0,migrations:0,restored:false});
         }
-        this.hostLoad = new Map();
-        this.lastSnapshot = [];
-        this.tickCount = 0;
-        this.totalTransitions = 0;
-        this.restoredCount = 0;
-        this.currentOperation = "Patrol";
-        this.lifecycleById = new Map();
-        this.removedAgentIds = new Set();
-        this.lastEvent = "Tick 0: ten agents are staged across Start, Market, and Harbor.";
-        for (const agent of this.agents) {
-          this.lifecycleById.set(
-            agent.id,
-            [`Tick 0: created in ${agent.regionName} on ${this.hostForRegion(agent.regionName)}`]
-          );
+        this.hostLoad=new Map(); this.lastSnapshot=[]; this.tickCount=0;
+        this.totalTransitions=0; this.restoredCount=0; this.currentOperation="Patrol";
+        this.lifecycleById=new Map(); this.removedAgentIds=new Set();
+        this.lastEvent="The age begins. Ten heroes are summoned across Ironhold, Ashmarket, and Harborveil.";
+        for (const a of this.agents) {
+          this.lifecycleById.set(a.id,[`Tick 0: summoned to ${REGION[a.regionName]}`]);
         }
         this.updateHostLoad();
       }
-
-      hostForRegion(regionName) {
-        const region = this.regions.get(regionName);
-        return region ? region.host : "Unknown";
-      }
-
+      hostForRegion(r) { const x=this.regions.get(r); return x?x.host:"Unknown"; }
       updateHostLoad() {
-        this.hostLoad = new Map([
-          ["NodeA", 0],
-          ["NodeB", 0],
-          ["NodeC", 0],
-          ["NodeD", 0]
-        ]);
-        for (const agent of this.agents) {
-          const host = this.hostForRegion(agent.regionName);
-          this.hostLoad.set(host, (this.hostLoad.get(host) || 0) + 1);
-        }
+        this.hostLoad=new Map([["NodeA",0],["NodeB",0],["NodeC",0],["NodeD",0]]);
+        for (const a of this.agents) { const h=this.hostForRegion(a.regionName); this.hostLoad.set(h,(this.hostLoad.get(h)||0)+1); }
       }
-
-      regionOnHost(host, fallbackRegion) {
-        for (const region of this.regions.values()) {
-          if (region.host === host) return region.name;
-        }
-        return fallbackRegion;
+      regionOnHost(host,fb) { for (const r of this.regions.values()) if(r.host===host) return r.name; return fb; }
+      record(msg) { this.lastEvent=`Tick ${this.tickCount}: ${msg}`; }
+      addLifecycle(id,msg) {
+        const h=this.lifecycleById.get(id)||[];
+        h.unshift(`Tick ${this.tickCount}: ${msg}`);
+        this.lifecycleById.set(id,h.slice(0,8));
       }
-
-      record(message) {
-        this.lastEvent = `Tick ${this.tickCount}: ${message}`;
+      snapshotAgent(a) { return {...a}; }
+      moveAgent(a,targetRegion,reason) {
+        const ch=this.hostForRegion(a.regionName), th=this.hostForRegion(targetRegion);
+        const fr={"Pi plan":"Oracle's vision","load balancing":"War Council decree","autonomous patrol":"wandering","scheduled failure drill":"shadow's pull"}[reason]||reason;
+        if (ch!==th) {
+          a.migrations++; this.totalTransitions++;
+          this.record(`${a.heroName} the ${a.heroClass} journeys from ${REALM[ch]} to ${REALM[th]} (${fr})`);
+          this.addLifecycle(a.id,`journeyed ${REALM[ch]} → ${REALM[th]} [${reason}]`);
+        } else if (a.regionName!==targetRegion) {
+          this.record(`${a.heroName} moves within ${REALM[th]} (${fr})`);
+          this.addLifecycle(a.id,`moved within ${REALM[th]} [${reason}]`);
+        } else return;
+        a.regionName=targetRegion;
+        const reg=this.regions.get(targetRegion); if(reg) reg.visits++;
       }
-
-      addLifecycle(agentId, message) {
-        const history = this.lifecycleById.get(agentId) || [];
-        history.unshift(`Tick ${this.tickCount}: ${message}`);
-        this.lifecycleById.set(agentId, history.slice(0, 8));
+      askPi(a) {
+        const ch=this.hostForRegion(a.regionName), cl=this.hostLoad.get(ch)||0;
+        if (a.regionName==="Market"&&this.tickCount>=56&&this.tickCount<=60)
+          return {summary:"hold — shadow approaches",targetRegion:null};
+        if (a.regionName==="Market")
+          return {summary:"Ashmarket grows dark — flee to Harborveil",targetRegion:"Harbor"};
+        if (cl>=4)
+          return {summary:"realm overcrowded — seek The Refuge",targetRegion:this.regionOnHost("NodeD","Backup")};
+        return {summary:`continue vigil in ${REGION[a.regionName]}`,targetRegion:null};
       }
-
-      snapshotAgent(agent) {
-        return {
-          id: agent.id,
-          name: agent.name,
-          regionName: agent.regionName,
-          steps: agent.steps,
-          plansRequested: agent.plansRequested,
-          migrations: agent.migrations,
-          restored: agent.restored
-        };
-      }
-
-      moveAgent(agent, targetRegion, reason) {
-        const currentHost = this.hostForRegion(agent.regionName);
-        const targetHost = this.hostForRegion(targetRegion);
-        if (currentHost !== targetHost) {
-          agent.migrations += 1;
-          this.totalTransitions += 1;
-          this.record(`${agent.name} migrates from ${currentHost} to ${targetHost} (${reason})`);
-          this.addLifecycle(agent.id, `migrated ${currentHost} -> ${targetHost} via ${reason}`);
-        } else if (agent.regionName !== targetRegion) {
-          this.record(`${agent.name} moves inside ${targetHost} (${reason})`);
-          this.addLifecycle(agent.id, `moved within ${targetHost} via ${reason}`);
-        } else {
-          this.record(`${agent.name} holds in ${targetRegion} (${reason})`);
-          this.addLifecycle(agent.id, `held position in ${targetRegion} via ${reason}`);
-          return;
-        }
-
-        agent.regionName = targetRegion;
-        const region = this.regions.get(targetRegion);
-        if (region) region.visits += 1;
-      }
-
-      askPi(agent) {
-        const currentHost = this.hostForRegion(agent.regionName);
-        const currentLoad = this.hostLoad.get(currentHost) || 0;
-
-        if (agent.regionName === "Market" && this.tickCount >= 56 && this.tickCount <= 60) {
-          return { summary: "hold position in Market so failure recovery can be tested", targetRegion: null };
-        }
-        if (agent.regionName === "Market") {
-          return { summary: "market congestion detected; re-route to Harbor", targetRegion: "Harbor" };
-        }
-        if (currentLoad >= 4) {
-          return { summary: "host is saturated; move to backup capacity", targetRegion: this.regionOnHost("NodeD", "Backup") };
-        }
-        return { summary: `continue local survey on ${agent.regionName}`, targetRegion: null };
-      }
-
       snapshot() {
-        this.lastSnapshot = this.agents.map((agent) => this.snapshotAgent(agent));
-        this.currentOperation = "Snapshot";
-        this.record(`snapshot stored for ${this.lastSnapshot.length} agents`);
-        for (const agent of this.agents) {
-          this.addLifecycle(agent.id, "state captured in snapshot");
-        }
+        this.lastSnapshot=this.agents.map(a=>this.snapshotAgent(a));
+        this.currentOperation="Snapshot";
+        this.record(`memory crystals forged — ${this.lastSnapshot.length} heroes preserved`);
+        for (const a of this.agents) this.addLifecycle(a.id,"soul preserved in memory crystal");
       }
-
       balanceLoad() {
         this.updateHostLoad();
-        const entries = [...this.hostLoad.entries()];
-        let maxEntry = entries[0];
-        let minEntry = entries[0];
-        for (const entry of entries) {
-          if (entry[1] > maxEntry[1]) maxEntry = entry;
-          if (entry[1] < minEntry[1]) minEntry = entry;
-        }
-        if (maxEntry[1] - minEntry[1] <= 1) return;
-        this.currentOperation = "Balance";
-        const targetRegion = this.regionOnHost(minEntry[0], "Backup");
-        let toMove = Math.floor((maxEntry[1] - minEntry[1]) / 2);
-        this.record(`balancer shifts ${toMove} agents from ${maxEntry[0]} to ${minEntry[0]}`);
-        for (const agent of this.agents) {
-          if (toMove <= 0) break;
-          if (this.hostForRegion(agent.regionName) !== maxEntry[0]) continue;
-          this.moveAgent(agent, targetRegion, "load balancing");
-          toMove -= 1;
+        const e=[...this.hostLoad.entries()];
+        let mx=e[0],mn=e[0];
+        for (const x of e) { if(x[1]>mx[1])mx=x; if(x[1]<mn[1])mn=x; }
+        if (mx[1]-mn[1]<=1) return;
+        this.currentOperation="Balance";
+        const tr=this.regionOnHost(mn[0],"Backup");
+        let n=Math.floor((mx[1]-mn[1])/2);
+        this.record(`War Council dispatches ${n} heroes from ${REALM[mx[0]]} to ${REALM[mn[0]]}`);
+        for (const a of this.agents) {
+          if (n<=0) break;
+          if (this.hostForRegion(a.regionName)!==mx[0]) continue;
+          this.moveAgent(a,tr,"load balancing"); n--;
         }
       }
-
-      recoverAgentsToHost(failedHost, recoveryHost) {
-        const alive = new Set(this.agents.map((agent) => agent.id));
-        const recoveryRegion = this.regionOnHost(recoveryHost, "Backup");
-        this.currentOperation = "Resume";
-        for (const snapshot of this.lastSnapshot) {
-          if (alive.has(snapshot.id)) continue;
-          if (this.hostForRegion(snapshot.regionName) !== failedHost) continue;
-          const recovered = {
-            id: snapshot.id,
-            name: snapshot.name,
-            regionName: recoveryRegion,
-            steps: snapshot.steps,
-            plansRequested: snapshot.plansRequested,
-            migrations: snapshot.migrations + 1,
-            restored: true
-          };
-          this.agents.push(recovered);
-          this.totalTransitions += 1;
-          this.restoredCount += 1;
-          this.record(`${recovered.name} restored onto ${recoveryHost} from snapshot`);
-          this.addLifecycle(recovered.id, `restored from snapshot taken on ${failedHost}`);
-          this.addLifecycle(recovered.id, `resumed on ${recoveryHost} via region ${recoveryRegion}`);
+      recoverAgentsToHost(fh,rh) {
+        const alive=new Set(this.agents.map(a=>a.id));
+        const rr=this.regionOnHost(rh,"Backup");
+        this.currentOperation="Resume";
+        for (const s of this.lastSnapshot) {
+          if (alive.has(s.id)) continue;
+          if (this.hostForRegion(s.regionName)!==fh) continue;
+          const rec={...s,regionName:rr,migrations:s.migrations+1,restored:true};
+          this.agents.push(rec); this.totalTransitions++; this.restoredCount++;
+          this.record(`${rec.heroName} rises again at ${REALM[rh]} — memories and deeds restored`);
+          this.addLifecycle(rec.id,`fell in ${REALM[fh]} — resurrected at ${REALM[rh]} [snapshot restore]`);
         }
       }
-
-      simulateFailure(failedHost, recoveryHost) {
-        const survivors = [];
-        let removed = 0;
-        this.currentOperation = "Failure";
-        for (const agent of this.agents) {
-          if (this.hostForRegion(agent.regionName) === failedHost) {
-            removed += 1;
-            this.removedAgentIds.add(agent.id);
-            this.addLifecycle(agent.id, `removed by ${failedHost} failure while on ${agent.regionName}`);
-          } else {
-            survivors.push(agent);
-          }
+      simulateFailure(fh,rh) {
+        const survivors=[]; let removed=0;
+        this.currentOperation="Failure";
+        for (const a of this.agents) {
+          if (this.hostForRegion(a.regionName)===fh) {
+            removed++; this.removedAgentIds.add(a.id);
+            this.addLifecycle(a.id,`fell as ${REALM[fh]} was consumed by shadow [host failure]`);
+          } else survivors.push(a);
         }
-        this.agents = survivors;
-        this.record(`${failedHost} fails; ${removed} agents are removed before recovery`);
-        this.recoverAgentsToHost(failedHost, recoveryHost);
+        this.agents=survivors;
+        this.record(`${REALM[fh]} falls to shadow — ${removed} heroes lost before resurrection`);
+        this.recoverAgentsToHost(fh,rh);
       }
-
-      stepAgent(agent) {
-        agent.steps += 1;
-        if (this.tickCount === 56 && agent.id >= 1 && agent.id <= 3) {
-          this.currentOperation = "Failure";
-          this.moveAgent(agent, "Market", "scheduled failure drill");
-          this.addLifecycle(agent.id, "forced into failure drill on Market");
+      stepAgent(a) {
+        a.steps++;
+        if (this.tickCount===56&&a.id>=1&&a.id<=3) {
+          this.currentOperation="Failure";
+          this.moveAgent(a,"Market","scheduled failure drill");
+          this.addLifecycle(a.id,"drawn into Ashmarket by fate [failure drill]");
           return;
         }
-        if (agent.steps % 5 === 0) {
-          agent.plansRequested += 1;
-          this.currentOperation = "Pi";
-          const plan = this.askPi(agent);
-          this.record(`${agent.name} consults Pi: ${plan.summary}`);
-          this.addLifecycle(agent.id, `Pi decision: ${plan.summary}`);
-          if (plan.targetRegion) {
-            this.moveAgent(agent, plan.targetRegion, "Pi plan");
-            return;
-          }
+        if (a.steps%5===0) {
+          a.plansRequested++; this.currentOperation="Pi";
+          const plan=this.askPi(a);
+          this.record(`${a.heroName} receives the Oracle's vision: ${plan.summary}`);
+          this.addLifecycle(a.id,`Oracle speaks: ${plan.summary} [Pi routing]`);
+          if (plan.targetRegion) { this.moveAgent(a,plan.targetRegion,"Pi plan"); return; }
         }
-        if ((this.tickCount + agent.id) % 11 === 0) {
-          this.currentOperation = "Patrol";
-          const currentHost = this.hostForRegion(agent.regionName);
-          let nextRegion = agent.regionName;
-          for (const region of this.regions.values()) {
-            if (region.host !== currentHost) {
-              nextRegion = region.name;
-              break;
-            }
-          }
-          this.moveAgent(agent, nextRegion, "autonomous patrol");
+        if ((this.tickCount+a.id)%11===0) {
+          this.currentOperation="Patrol";
+          const ch=this.hostForRegion(a.regionName); let nr=a.regionName;
+          for (const r of this.regions.values()) { if(r.host!==ch){nr=r.name;break;} }
+          this.moveAgent(a,nr,"autonomous patrol");
         }
       }
-
       tick() {
-        if (this.tickCount >= 80) return false;
-        this.tickCount += 1;
-        this.currentOperation = "Patrol";
-        this.removedAgentIds.clear();
-        this.updateHostLoad();
-
-        for (const agent of this.agents) {
-          this.stepAgent(agent);
-        }
-
-        if (this.tickCount % 20 === 0) this.snapshot();
-        if (this.tickCount % 25 === 0) this.balanceLoad();
-        if (this.tickCount === 60) this.simulateFailure("NodeB", "NodeD");
-
-        this.updateHostLoad();
-        return true;
+        if (this.tickCount>=80) return false;
+        this.tickCount++; this.currentOperation="Patrol";
+        this.removedAgentIds.clear(); this.updateHostLoad();
+        for (const a of this.agents) this.stepAgent(a);
+        if (this.tickCount%20===0) this.snapshot();
+        if (this.tickCount%25===0) this.balanceLoad();
+        if (this.tickCount===60) this.simulateFailure("NodeB","NodeD");
+        this.updateHostLoad(); return true;
       }
     }
 
     const dom = {
-      tickValue: document.getElementById("tick-value"),
+      tickValue:       document.getElementById("tick-value"),
       transitionCount: document.getElementById("transition-count"),
-      restoredCount: document.getElementById("restored-count"),
-      playPause: document.getElementById("play-pause"),
-      step: document.getElementById("step"),
-      reset: document.getElementById("reset"),
-      speed: document.getElementById("speed"),
-      phaseLabel: document.getElementById("phase-label"),
-      phaseStrip: document.getElementById("phase-strip"),
-      eventBanner: document.getElementById("event-banner"),
-      selectedAgent: document.getElementById("selected-agent"),
-      stateList: document.getElementById("state-list"),
-      agentLayer: document.getElementById("agent-layer"),
-      effectLayer: document.getElementById("effect-layer")
+      restoredCount:   document.getElementById("restored-count"),
+      playPause:       document.getElementById("play-pause"),
+      step:            document.getElementById("step"),
+      reset:           document.getElementById("reset"),
+      speed:           document.getElementById("speed"),
+      phaseLabel:      document.getElementById("phase-label"),
+      phaseStrip:      document.getElementById("phase-strip"),
+      eventBanner:     document.getElementById("event-banner"),
+      selectedAgent:   document.getElementById("selected-agent"),
+      stateList:       document.getElementById("state-list"),
+      agentLayer:      document.getElementById("agent-layer"),
+      effectLayer:     document.getElementById("effect-layer")
     };
 
-    const world = new DemoWorld();
-    const agentEls = new Map();
-    let selectedAgentId = null;
-    let timer = null;
+    const world=new DemoWorld(), agentEls=new Map();
+    let selectedAgentId=null, timer=null;
 
     function phaseLabel() {
-      if (world.tickCount === 0) return "";
-      if (world.tickCount < 20) return "Early movement: Market agents get pushed toward Harbor and Backup.";
-      if (world.tickCount < 56) return "Middle phase: patrols, snapshots, and balancing keep redistributing load.";
-      if (world.tickCount < 60) return "Failure drill: agents 1, 2, and 3 are pinned onto NodeB.";
-      if (world.tickCount === 60) return "Failure window: NodeB drops out and restored agents appear on NodeD.";
-      if (world.tickCount < 80) return "Post-recovery: restored agents continue moving like any others.";
-      return "Run complete.";
+      if (world.tickCount===0) return "";
+      if (world.tickCount<20) return "Heroes wander. Ashmarket fills. The Oracle watches.";
+      if (world.tickCount<56) return "Memory crystals form. The War Council redistributes forces.";
+      if (world.tickCount<60) return "Fate draws Aldric, Seraphine, and Corvin into Ashmarket's shadow...";
+      if (world.tickCount===60) return "Ashmarket falls. The Refuge glows as the fallen are reborn.";
+      if (world.tickCount<80) return "The reborn rejoin the living. Their deeds carry forward unchanged.";
+      return "The age is complete. The realm endures.";
     }
 
     function phaseIndex() {
-      const order = ["Patrol", "Pi", "Snapshot", "Balance", "Failure", "Resume"];
-      return Math.max(0, order.indexOf(world.currentOperation));
+      return Math.max(0,["Patrol","Pi","Snapshot","Balance","Failure","Resume"].indexOf(world.currentOperation));
     }
 
-    function agentStatus(agent) {
-      if (world.removedAgentIds.has(agent.id)) return "Failed";
-      if (agent.restored && world.tickCount === 60) return "Restored";
-      if (agent.restored) return "Resumed";
-      if (world.tickCount >= 56 && world.tickCount <= 60 &&
-          agent.id >= 1 && agent.id <= 3 &&
-          world.hostForRegion(agent.regionName) === "NodeB") return "Drill";
-      if (agent.steps > 0 && agent.steps % 5 === 0) return "Pi";
-      if (world.hostForRegion(agent.regionName) === "NodeD" && agent.migrations > 0) return "Balanced";
-      return "Patrol";
+    function agentStatus(a) {
+      if (world.removedAgentIds.has(a.id)) return "Fallen";
+      if (a.restored&&world.tickCount===60) return "Reborn";
+      if (a.restored) return "Resurrected";
+      if (world.tickCount>=56&&world.tickCount<=60&&a.id>=1&&a.id<=3&&world.hostForRegion(a.regionName)==="NodeB") return "Fated";
+      if (a.steps>0&&a.steps%5===0) return "Guided";
+      if (world.hostForRegion(a.regionName)==="NodeD"&&a.migrations>0) return "Dispatched";
+      return "Wandering";
     }
 
-    function clusterOffset(index, total) {
-      const cols = Math.max(1, Math.ceil(Math.sqrt(total)));
-      const row = Math.floor(index / cols);
-      const col = index % cols;
-      return {
-        x: (col - (cols - 1) / 2) * 24,
-        y: (row - (Math.ceil(total / cols) - 1) / 2) * 24
-      };
+    const STATUS_TECH = {Fallen:"removed (host failure)",Reborn:"restored from snapshot",Resurrected:"post-recovery",Fated:"failure drill target",Guided:"Pi routing",Dispatched:"load balanced",Wandering:"autonomous patrol"};
+
+    function clusterOffset(idx,total) {
+      const cols=Math.max(1,Math.ceil(Math.sqrt(total)));
+      const row=Math.floor(idx/cols), col=idx%cols;
+      return {x:(col-(cols-1)/2)*38, y:(row-(Math.ceil(total/cols)-1)/2)*38};
     }
 
     function updateCounts() {
-      for (const host of ["NodeA", "NodeB", "NodeC", "NodeD"]) {
-        const el = document.getElementById(`count-${host}`);
-        el.textContent = String(world.hostLoad.get(host) || 0);
+      for (const h of ["NodeA","NodeB","NodeC","NodeD"]) {
+        const el=document.getElementById(`count-${h}`);
+        if(el) el.textContent=String(world.hostLoad.get(h)||0);
       }
     }
 
     function ensureAgentElements() {
-      for (const agent of world.agents) {
-        if (agentEls.has(agent.id)) continue;
-        const el = document.createElement("button");
-        el.type = "button";
-        el.className = "agent";
-        el.addEventListener("mouseenter", () => {
-          selectedAgentId = agent.id;
-          renderSelectedAgent();
-        });
-        el.addEventListener("focus", () => {
-          selectedAgentId = agent.id;
-          renderSelectedAgent();
-        });
-        el.addEventListener("click", () => {
-          selectedAgentId = agent.id;
-          renderSelectedAgent();
-        });
-        agentEls.set(agent.id, el);
-        dom.agentLayer.appendChild(el);
+      for (const a of world.agents) {
+        if (agentEls.has(a.id)) continue;
+        const el=document.createElement("button");
+        el.type="button"; el.className="agent"; el.textContent=a.glyph;
+        el.addEventListener("mouseenter",()=>{selectedAgentId=a.id;renderSelectedAgent();});
+        el.addEventListener("click",()=>{selectedAgentId=a.id;renderSelectedAgent();});
+        agentEls.set(a.id,el); dom.agentLayer.appendChild(el);
       }
     }
 
     function renderAgents() {
       ensureAgentElements();
-      const groups = new Map([
-        ["NodeA", []],
-        ["NodeB", []],
-        ["NodeC", []],
-        ["NodeD", []]
-      ]);
-
-      for (const agent of world.agents) {
-        groups.get(world.hostForRegion(agent.regionName)).push(agent);
-      }
-
-      for (const [host, agents] of groups.entries()) {
-        agents.sort((a, b) => a.id - b.id);
-        agents.forEach((agent, index) => {
-          const pos = positions[host];
-          const offset = clusterOffset(index, agents.length);
-          const el = agentEls.get(agent.id);
-          el.style.left = `${pos.x + offset.x}px`;
-          el.style.top = `${pos.y + offset.y}px`;
-          el.style.setProperty("--node-color", nodeColors[host]);
-          el.classList.toggle("restored", agent.restored);
-          el.classList.toggle("suspended", world.removedAgentIds.has(agent.id));
-          const status = agentStatus(agent);
-          el.dataset.label =
-            `${agent.name}\n` +
-            `host ${host} · region ${agent.regionName}\n` +
-            `status ${status}\n` +
-            `steps ${agent.steps} · plans ${agent.plansRequested}\n` +
-            `migrations ${agent.migrations}\n` +
-            `restored ${agent.restored ? "yes" : "no"}${agent.restored ? "\nprovenance snapshot@60 NodeB -> NodeD" : ""}`;
+      const groups=new Map([["NodeA",[]],["NodeB",[]],["NodeC",[]],["NodeD",[]]]);
+      for (const a of world.agents) groups.get(world.hostForRegion(a.regionName)).push(a);
+      for (const [host,agents] of groups.entries()) {
+        agents.sort((a,b)=>a.id-b.id);
+        agents.forEach((a,idx)=>{
+          const pos=positions[host], off=clusterOffset(idx,agents.length);
+          const el=agentEls.get(a.id); if(!el) return;
+          el.style.left=`${pos.x+off.x}px`; el.style.top=`${pos.y+off.y}px`;
+          el.style.setProperty("--node-color",nodeColors[host]);
+          el.classList.toggle("restored",a.restored);
+          el.classList.toggle("suspended",world.removedAgentIds.has(a.id));
+          const st=agentStatus(a);
+          el.dataset.label=
+            `${a.heroName} the ${a.heroClass}  [Agent_${a.id}]\n`+
+            `Realm: ${REALM[host]}  [${host}]\n`+
+            `Status: ${st}  [${STATUS_TECH[st]||st}]\n`+
+            `Steps: ${a.steps} · Visions: ${a.plansRequested}  [plans]\n`+
+            `Journeys: ${a.migrations}  [migrations]`+
+            (a.restored?`\n✨ Resurrected  [snapshot@60 NodeB→NodeD]`:"");
         });
       }
     }
 
     function renderStateList() {
-      const agents = [...world.agents].sort((a, b) => a.id - b.id);
-      dom.stateList.innerHTML = agents.map((agent) => `
-        <div class="state-row">
-          <strong>${agent.name}</strong>
-          status ${agentStatus(agent)} · host ${world.hostForRegion(agent.regionName)} · region ${agent.regionName}<br>
-          steps ${agent.steps} · plans ${agent.plansRequested} · migrations ${agent.migrations} · restored ${agent.restored ? "yes" : "no"}${agent.restored ? " · snapshot@60 NodeB -> NodeD" : ""}
-        </div>
-      `).join("");
+      dom.stateList.innerHTML=[...world.agents].sort((a,b)=>a.id-b.id).map(a=>{
+        const h=world.hostForRegion(a.regionName),st=agentStatus(a);
+        return `<div class="state-row"><strong>${a.glyph} ${a.heroName}</strong> <span style="font-size:10px;color:var(--muted)">${a.heroClass} · Agent_${a.id}</span><br>${REALM[h]} · ${st}${a.restored?" · <span style='color:var(--gold)'>✨ reborn</span>":""}</div>`;
+      }).join("");
     }
 
     function renderSelectedAgent() {
-      const agent = world.agents.find((entry) => entry.id === selectedAgentId);
-      if (!agent) {
-        dom.selectedAgent.innerHTML = `
-          <h3>No agent selected</h3>
-          <p>Hover or click an agent dot to pin a stable explanation here instead of relying only on a transient tooltip.</p>
-        `;
-        return;
-      }
-
-      const host = world.hostForRegion(agent.regionName);
-      const status = agentStatus(agent);
-      const history = world.lifecycleById.get(agent.id) || [];
-      const reason = agent.restored
-        ? "This agent passed through failure, snapshot restore, and resumed execution on NodeD."
-        : "This agent is following the normal patrol / Pi / balancing flow and has not needed snapshot recovery.";
-      dom.selectedAgent.innerHTML = `
-        <h3>${agent.name}</h3>
+      const a=world.agents.find(e=>e.id===selectedAgentId);
+      if (!a) { dom.selectedAgent.innerHTML=`<h3>No hero selected</h3><p>Hover or click a hero glyph to read their chronicle.</p>`; return; }
+      const h=world.hostForRegion(a.regionName),st=agentStatus(a),tech=STATUS_TECH[st]||st;
+      const history=world.lifecycleById.get(a.id)||[];
+      dom.selectedAgent.innerHTML=`
+        <h3>${a.glyph} ${a.heroName} the ${a.heroClass}</h3>
+        <div style="font-size:10px;color:var(--muted);margin-bottom:6px;font-family:'Cinzel',serif;">Agent_${a.id}</div>
         <div class="selected-badges">
-          <span class="status-badge hot">${status}</span>
-          <span class="status-badge">${host}</span>
-          <span class="status-badge">${agent.regionName}</span>
-          ${agent.restored ? '<span class="status-badge hot">snapshot@60</span>' : ''}
+          <span class="status-badge hot">${st}</span>
+          <span class="status-badge" title="${h}">${REALM[h]}</span>
+          ${a.restored?'<span class="status-badge hot">✨ Reborn</span>':""}
         </div>
-        <p>
-          Host <strong>${host}</strong>, region <strong>${agent.regionName}</strong>,
-          steps <strong>${agent.steps}</strong>, Pi plans <strong>${agent.plansRequested}</strong>,
-          migrations <strong>${agent.migrations}</strong>, restored <strong>${agent.restored ? "yes" : "no"}</strong>.<br>
-          ${agent.restored ? 'Provenance <strong>NodeB -> snapshot@60 -> NodeD</strong>.<br>' : ''}
-          ${reason}
+        <p style="font-size:12px;color:var(--muted);">
+          <em>${st}</em> <span style="font-size:10px;">[${tech}]</span><br>
+          ${a.migrations} journey${a.migrations!==1?"s":""} [migrations] · ${a.plansRequested} vision${a.plansRequested!==1?"s":""} [Pi plans]
+          ${a.restored?"<br>✨ Fell in Ashmarket · reborn at The Refuge [snapshot restore]":""}
         </p>
-        <div class="lifecycle">
-          ${history.map((item) => `<div class="lifecycle-item"><strong>${item.slice(0, item.indexOf(":"))}</strong>${item.slice(item.indexOf(":"))}</div>`).join("")}
-        </div>
-      `;
+        <div class="lifecycle">${history.map(item=>`<div class="lifecycle-item">${item}</div>`).join("")}</div>`;
     }
 
-    function spawnEffect(host, label, kind = "") {
-      const pos = positions[host];
-      const effect = document.createElement("div");
-      effect.className = `effect ${kind}`.trim();
-      effect.style.left = `${pos.x}px`;
-      effect.style.top = `${pos.y}px`;
-      const text = document.createElement("div");
-      text.className = "effect-label";
-      text.textContent = label;
-      effect.appendChild(text);
-      dom.effectLayer.appendChild(effect);
-      setTimeout(() => effect.remove(), 1450);
+    function spawnEffect(host,label,kind="") {
+      const pos=positions[host], e=document.createElement("div");
+      e.className=`effect ${kind}`.trim();
+      e.style.left=`${pos.x}px`; e.style.top=`${pos.y}px`;
+      e.textContent=label;
+      dom.effectLayer.appendChild(e);
+      setTimeout(()=>e.remove(),1450);
     }
 
     function renderPhaseStrip() {
-      const chips = [...dom.phaseStrip.children];
-      const active = phaseIndex();
-      chips.forEach((chip, index) => chip.classList.toggle("active", index === active));
+      [...dom.phaseStrip.children].forEach((c,i)=>c.classList.toggle("active",i===phaseIndex()));
     }
 
     function render() {
-      dom.tickValue.textContent = String(world.tickCount);
-      dom.transitionCount.textContent = String(world.totalTransitions);
-      dom.restoredCount.textContent = String(world.restoredCount);
-      dom.phaseLabel.textContent = phaseLabel();
-      dom.eventBanner.textContent = world.lastEvent;
-      updateCounts();
-      renderAgents();
-      renderPhaseStrip();
-      renderSelectedAgent();
-      renderStateList();
+      dom.tickValue.textContent=String(world.tickCount);
+      dom.transitionCount.textContent=String(world.totalTransitions);
+      dom.restoredCount.textContent=String(world.restoredCount);
+      dom.phaseLabel.textContent=phaseLabel();
+      dom.eventBanner.textContent=world.lastEvent;
+      updateCounts(); renderAgents(); renderPhaseStrip(); renderSelectedAgent(); renderStateList();
     }
 
-    function stop() {
-      if (timer !== null) {
-        clearInterval(timer);
-        timer = null;
-      }
-      dom.playPause.textContent = world.tickCount >= 80 ? "Replay" : "Start";
-    }
-
+    function stop() { if(timer!==null){clearInterval(timer);timer=null;} dom.playPause.textContent=world.tickCount>=80?"Replay":"Begin"; }
     function start() {
-      stop();
-      dom.playPause.textContent = "Pause";
-      timer = setInterval(() => {
-        const beforeTick = world.tickCount;
-        const advanced = world.tick();
-        if (world.tickCount === 60 && beforeTick !== 60) {
-          spawnEffect("NodeB", "Failure");
-          spawnEffect("NodeD", "Restore", "restore");
+      stop(); dom.playPause.textContent="Pause";
+      timer=setInterval(()=>{
+        const bt=world.tickCount, adv=world.tick();
+        if (world.tickCount===60&&bt!==60) {
+          spawnEffect("NodeB","☠ Shadow Falls","");
+          spawnEffect("NodeD","✨ Resurrection","restore");
         }
-        render();
-        if (!advanced || world.tickCount >= 80) {
-          stop();
-        }
-      }, Number(dom.speed.value));
+        render(); if(!adv||world.tickCount>=80) stop();
+      },Number(dom.speed.value));
     }
 
-    dom.playPause.addEventListener("click", () => {
-      if (timer !== null) {
-        stop();
-        return;
-      }
-      if (world.tickCount >= 80) {
-        world.reset();
-        render();
-      }
-      start();
-    });
-
-    dom.step.addEventListener("click", () => {
-      if (timer !== null) return;
-      if (world.tickCount >= 80) {
-        world.reset();
-      } else {
-        const beforeTick = world.tickCount;
-        world.tick();
-        if (world.tickCount === 60 && beforeTick !== 60) {
-          spawnEffect("NodeB", "Failure");
-          spawnEffect("NodeD", "Restore", "restore");
-        }
-      }
+    dom.playPause.addEventListener("click",()=>{ if(timer!==null){stop();return;} if(world.tickCount>=80){world.reset();render();} start(); });
+    dom.step.addEventListener("click",()=>{
+      if(timer!==null)return;
+      if(world.tickCount>=80){world.reset();}
+      else{const bt=world.tickCount;world.tick();if(world.tickCount===60&&bt!==60){spawnEffect("NodeB","☠ Shadow Falls","");spawnEffect("NodeD","✨ Resurrection","restore");}}
       render();
     });
-
-    dom.reset.addEventListener("click", () => {
-      stop();
-      world.reset();
-      selectedAgentId = null;
-      render();
-    });
-
-    dom.speed.addEventListener("change", () => {
-      if (timer !== null) start();
-    });
-
+    dom.reset.addEventListener("click",()=>{stop();world.reset();selectedAgentId=null;render();});
+    dom.speed.addEventListener("change",()=>{if(timer!==null)start();});
     render();
   </script>
 </body>
