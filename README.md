@@ -12,8 +12,6 @@ Objects and *compute* can be distributed across Nodes in a Domain.
 
 ![Continuation Mobility Demo](resources/Snap2.png)
 
-![Continuation Mobility Demo](resources/demo2.png)
-
 **[▶ Live Interactive Demo](https://cschladetsch.github.io/CppKAI/ContinuationMobilityDemo/)**
 
 Animated walk-through of agent migration, Pi-guided routing, load balancing,
