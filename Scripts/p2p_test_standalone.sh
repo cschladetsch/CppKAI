@@ -95,10 +95,10 @@ trap cleanup EXIT
 
 # Try to build the NetworkPeer executable
 echo "Building NetworkPeer..."
-cmake --build . --target NetworkTest -- -j$(nproc)
+cmake --build . --target TestNetwork -- -j$(nproc)
 
 # Check for successful build
-if [ ! -f "$ROOT_DIR/Bin/NetworkTest" ]; then
+if [ ! -f "$ROOT_DIR/Bin/Test/TestNetwork" ]; then
     echo "ERROR: Failed to build NetworkTest"
     exit 1
 fi
