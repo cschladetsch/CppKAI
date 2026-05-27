@@ -145,7 +145,7 @@ struct ExecutorWindow {
     }
 
     void Draw(const char* title, bool* p_open) {
-        ImGui::SetNextWindowSize(ImVec2(700, 600), ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSize(ImVec2(1080, 820), ImGuiCond_FirstUseEver);
         if (!ImGui::Begin(title, p_open)) {
             ImGui::End();
             return;

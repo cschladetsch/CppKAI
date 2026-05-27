@@ -5,6 +5,18 @@ The 'return value' for a Rho function is whatever is left on the stack(s).
 
 _Rho_ is internally translated to _Pi_ for use in a single _Executor_ that supports continuations natively.
 
+## ContinuationMobilityDemo
+
+[ContinuationMobilityDemo.rho](./ContinuationMobilityDemo.rho) is the clearest
+single-file example of the migration story in this tree.
+
+It is intentionally explicit:
+
+- the script owns the narrative
+- the HTML pages are just explanatory views
+- the executable model is a reference implementation, not the source of truth
+- the script concludes by evaluating the restored-agent count
+
 Example:
 
 ```

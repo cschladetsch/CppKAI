@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ContinuationMobilityDemo Migration View</title>
+  <style>
+    :root {
+      --bg: #f1ede3;
+      --paper: rgba(255, 251, 243, 0.88);
+      --panel: rgba(255, 255, 255, 0.76);
+      --ink: #1f2329;
+      --muted: #5a6677;
+      --line: rgba(31, 35, 41, 0.12);
+      --accent: #c54f1b;
+      --node-a: #244b73;
+      --node-b: #8e3b2e;
+      --node-c: #2e6a57;
+      --node-d: #6a4c93;
+      --shadow: 0 22px 60px rgba(31, 35, 41, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at left top, rgba(36, 75, 115, 0.12), transparent 30%),
+        radial-gradient(circle at right top, rgba(197, 79, 27, 0.12), transparent 30%),
+        linear-gradient(180deg, #f8f4eb 0%, #efe7da 100%);
+      font-family: "IBM Plex Sans", "Avenir Next", "Segoe UI", sans-serif;
+    }
+
+    .page {
+      width: min(1460px, calc(100vw - 32px));
+      margin: 16px auto 28px;
+      padding: 18px;
+      border-radius: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      background: var(--paper);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+    }
+
+    .page-nav {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .page-link {
+      display: inline-flex;
+      align-items: center;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.74);
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .page-link.active {
+      background: #1f2329;
+      border-color: #1f2329;
+      color: white;
+    }
+
+    .hero,
+    .layout {
+      display: grid;
+      gap: 18px;
+    }
+
+    .hero {
+      grid-template-columns: 1.2fr 0.9fr;
+      margin-bottom: 18px;
+    }
+
+    .layout {
+      grid-template-columns: 1.3fr 0.95fr;
+    }
+
+    .card {
+      border-radius: 24px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      box-shadow: 0 10px 28px rgba(31, 35, 41, 0.06);
+      overflow: hidden;
+    }
+
+    .hero-copy,
+    .controls,
+    .state-panel,
+    .legend-panel {
+      padding: 22px;
+    }
+
+    .title {
+      margin: 0;
+      font-size: clamp(40px, 5vw, 72px);
+      line-height: 0.95;
+      letter-spacing: -0.06em;
+      max-width: 10ch;
+    }
+
+    .subtitle {
+      margin: 16px 0 0;
+      max-width: 54ch;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 16px;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .chip {
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid var(--line);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .reading-guide {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .guide-item {
+      padding: 12px 14px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.7);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .phase-strip {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .phase-chip {
+      padding: 10px 8px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.72);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .phase-chip.active {
+      background: linear-gradient(135deg, rgba(197, 79, 27, 0.16), rgba(255, 255, 255, 0.88));
+      border-color: rgba(197, 79, 27, 0.28);
+      color: var(--ink);
+    }
+
+    .metric {
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.78);
+    }
+
+    .metric-label {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .metric-value {
+      margin-top: 8px;
+      font-size: 30px;
+      font-weight: 700;
+      letter-spacing: -0.05em;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    button,
+    select {
+      appearance: none;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--ink);
+      font: inherit;
+    }
+
+    button {
+      padding: 12px 16px;
+      cursor: pointer;
+    }
+
+    button.primary {
+      border-color: transparent;
+      background: linear-gradient(135deg, #1f2329, #3a424d);
+      color: white;
+    }
+
+    select {
+      padding: 12px 14px;
+    }
+
+    .canvas-panel {
+      position: relative;
+      min-height: 700px;
+      padding: 0;
+    }
+
+    .canvas-wrap {
+      position: relative;
+      height: 100%;
+      min-height: 700px;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.92), rgba(245, 239, 228, 0.96)),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.48), rgba(255, 255, 255, 0.3));
+    }
+
+    svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .node {
+      position: absolute;
+      width: 210px;
+      min-height: 164px;
+      padding: 18px;
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.82);
+      box-shadow: 0 12px 26px rgba(31, 35, 41, 0.08);
+    }
+
+    .node::after {
+      content: "";
+      position: absolute;
+      inset: auto 18px 18px auto;
+      width: 74px;
+      height: 74px;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--node-color) 14%, transparent);
+    }
+
+    .node-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--node-color);
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--node-color) 16%, transparent);
+    }
+
+    .node-name {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+    }
+
+    .node-sub {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      position: relative;
+      z-index: 1;
+    }
+
+    .node-count {
+      margin-top: 16px;
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.05em;
+      position: relative;
+      z-index: 1;
+    }
+
+    .agent-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .effect-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .agent {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      margin-left: -8px;
+      margin-top: -8px;
+      border-radius: 50%;
+      background: var(--node-color);
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--node-color) 16%, transparent), 0 6px 18px rgba(31, 35, 41, 0.2);
+      pointer-events: auto;
+      transition: transform 340ms ease, left 340ms ease, top 340ms ease, background 340ms ease;
+      cursor: pointer;
+    }
+
+    .agent.restored {
+      outline: 3px solid rgba(197, 79, 27, 0.32);
+    }
+
+    .agent.suspended {
+      opacity: 0.38;
+      filter: grayscale(0.25);
+    }
+
+    .agent:hover {
+      transform: scale(1.2);
+      z-index: 4;
+    }
+
+    .agent::before {
+      content: attr(data-label);
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 16px);
+      transform: translateX(-50%);
+      opacity: 0;
+      width: 200px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(31, 35, 41, 0.96);
+      color: white;
+      font-size: 12px;
+      line-height: 1.45;
+      box-shadow: 0 14px 30px rgba(31, 35, 41, 0.24);
+      pointer-events: none;
+      transition: opacity 140ms ease, transform 140ms ease;
+      white-space: pre-line;
+    }
+
+    .agent::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 10px);
+      width: 10px;
+      height: 10px;
+      transform: translateX(-50%) rotate(45deg);
+      background: rgba(31, 35, 41, 0.96);
+      border-radius: 2px;
+      opacity: 0;
+      transition: opacity 140ms ease;
+      pointer-events: none;
+    }
+
+    .agent:hover::before,
+    .agent:hover::after,
+    .agent:focus-visible::before,
+    .agent:focus-visible::after {
+      opacity: 1;
+      transform: translateX(-50%) translateY(-2px);
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+      margin-top: 12px;
+    }
+
+    .state-list {
+      display: grid;
+      gap: 10px;
+      max-height: 480px;
+      overflow: auto;
+    }
+
+    .selected-agent {
+      margin-bottom: 14px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.82);
+    }
+
+    .selected-agent h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      letter-spacing: -0.03em;
+    }
+
+    .selected-agent p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .selected-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.78);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+
+    .status-badge.hot {
+      background: rgba(197, 79, 27, 0.14);
+      border-color: rgba(197, 79, 27, 0.28);
+      color: #8f3910;
+    }
+
+    .lifecycle {
+      margin-top: 14px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .lifecycle-item {
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.7);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .lifecycle-item strong {
+      color: var(--accent);
+    }
+
+    .state-row {
+      padding: 12px 14px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.72);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .state-row strong {
+      display: inline-block;
+      min-width: 74px;
+    }
+
+    .event-banner {
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(197, 79, 27, 0.12), rgba(255, 255, 255, 0.82));
+      border: 1px solid rgba(197, 79, 27, 0.2);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .effect {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      margin-left: -9px;
+      margin-top: -9px;
+      border-radius: 50%;
+      border: 3px solid rgba(197, 79, 27, 0.55);
+      opacity: 0;
+      animation: pulseFade 1400ms ease-out forwards;
+    }
+
+    .effect.restore {
+      border-color: rgba(46, 106, 87, 0.55);
+    }
+
+    .effect-label {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -150%);
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(31, 35, 41, 0.92);
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      opacity: 0;
+      animation: labelFade 1400ms ease-out forwards;
+    }
+
+    @keyframes pulseFade {
+      0% { transform: scale(0.4); opacity: 0.92; }
+      100% { transform: scale(7.4); opacity: 0; }
+    }
+
+    @keyframes labelFade {
+      0% { opacity: 0; transform: translate(-50%, -130%); }
+      18% { opacity: 1; transform: translate(-50%, -150%); }
+      100% { opacity: 0; transform: translate(-50%, -175%); }
+    }
+
+    @media (max-width: 1120px) {
+      .hero,
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .reading-guide {
+        grid-template-columns: 1fr;
+      }
+
+      .canvas-panel,
+      .canvas-wrap {
+        min-height: 860px;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .page {
+        width: calc(100vw - 16px);
+        margin: 8px auto 18px;
+        padding: 12px;
+      }
+
+      .controls-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .node {
+        width: 180px;
+      }
+
+      .canvas-panel,
+      .canvas-wrap {
+        min-height: 980px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <nav class="page-nav">
+      <a class="page-link active" href="./ContinuationMobilityAnimation.html">Migration View</a>
+      <a class="page-link" href="./ContinuationMobilityDemo.html">System View</a>
+    </nav>
+
+    <section class="hero">
+      <article class="card hero-copy">
+        <h1 class="title">Animated Migration View</h1>
+        <p class="subtitle">
+          This page visualizes the single-file Rho demo at
+          <strong>Test/Language/TestRho/Scripts/ContinuationMobilityDemo.rho</strong>.
+          Each dot is a live agent. It glides between logical hosts as patrols,
+          Pi reroutes, balancing, and snapshot recovery happen. Hover any agent
+          to inspect its current state, including region, steps, migrations,
+          plans, and whether it was restored after the NodeB failure drill.
+        </p>
+        <div class="chips">
+          <div class="chip">Tick 56: agents 1-3 are forced onto Market</div>
+          <div class="chip">Tick 60: NodeB fails and recovery begins</div>
+          <div class="chip">Restored agents are ringed in orange</div>
+        </div>
+        <div class="reading-guide">
+          <div class="guide-item"><strong>How to read it:</strong> each node is a logical host, and each dot is a live agent currently running there.</div>
+          <div class="guide-item"><strong>What moves mean:</strong> patrols, Pi reroutes, load balancing, and recovery all use the same moving-agent visual language.</div>
+          <div class="guide-item"><strong>What orange means:</strong> a ring marks an agent reconstructed from snapshot after the simulated failure.</div>
+          <div class="guide-item"><strong>How to inspect state:</strong> hover a dot for a fast read, or use the persistent selected-agent panel on the right for a stable summary.</div>
+        </div>
+      </article>
+
+      <aside class="card controls">
+        <div class="metric">
+          <div class="metric-label">Current Tick</div>
+          <div class="metric-value" id="tick-value">0</div>
+        </div>
+        <div class="controls-grid">
+          <div class="metric">
+            <div class="metric-label">Transitions</div>
+            <div class="metric-value" id="transition-count">0</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Restored Agents</div>
+            <div class="metric-value" id="restored-count">0</div>
+          </div>
+        </div>
+        <div class="button-row">
+          <button class="primary" id="play-pause">Start</button>
+          <button id="step">Step</button>
+          <button id="reset">Reset</button>
+          <select id="speed">
+            <option value="900">Slow</option>
+            <option value="520" selected>Normal</option>
+            <option value="260">Fast</option>
+            <option value="100">Turbo</option>
+          </select>
+        </div>
+        <div class="phase-strip" id="phase-strip">
+          <div class="phase-chip">Patrol</div>
+          <div class="phase-chip">Pi</div>
+          <div class="phase-chip">Snapshot</div>
+          <div class="phase-chip">Balance</div>
+          <div class="phase-chip">Failure</div>
+          <div class="phase-chip">Resume</div>
+        </div>
+        <p class="hint" id="phase-label">
+          Waiting to start.
+        </p>
+      </aside>
+    </section>
+
+    <section class="layout">
+      <article class="card canvas-panel">
+        <div class="canvas-wrap">
+          <svg viewBox="0 0 1200 760" preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="flowA" x1="0%" x2="100%">
+                <stop offset="0%" stop-color="#244b73" stop-opacity="0.16"></stop>
+                <stop offset="100%" stop-color="#6a4c93" stop-opacity="0.16"></stop>
+              </linearGradient>
+              <linearGradient id="flowB" x1="0%" x2="100%">
+                <stop offset="0%" stop-color="#8e3b2e" stop-opacity="0.14"></stop>
+                <stop offset="100%" stop-color="#2e6a57" stop-opacity="0.14"></stop>
+              </linearGradient>
+            </defs>
+            <path d="M250 190 C 440 130, 520 130, 710 190" fill="none" stroke="url(#flowA)" stroke-width="6" stroke-dasharray="12 12"></path>
+            <path d="M250 190 C 360 350, 360 480, 250 610" fill="none" stroke="url(#flowB)" stroke-width="6" stroke-dasharray="12 12"></path>
+            <path d="M710 190 C 840 350, 840 470, 710 610" fill="none" stroke="url(#flowA)" stroke-width="6" stroke-dasharray="12 12"></path>
+            <path d="M250 610 C 430 680, 530 680, 710 610" fill="none" stroke="url(#flowB)" stroke-width="6" stroke-dasharray="12 12"></path>
+          </svg>
+
+          <div class="node" style="left: 90px; top: 90px; --node-color: var(--node-a);" id="node-NodeA">
+            <div class="node-title">
+              <span class="swatch"></span>
+              <div class="node-name">NodeA</div>
+            </div>
+            <div class="node-sub">Start region. Heavy initial load, then later a balancing target.</div>
+            <div class="node-count" id="count-NodeA">4</div>
+          </div>
+
+          <div class="node" style="right: 90px; top: 90px; --node-color: var(--node-b);" id="node-NodeB">
+            <div class="node-title">
+              <span class="swatch"></span>
+              <div class="node-name">NodeB</div>
+            </div>
+            <div class="node-sub">Market region. Quieted by Pi, then used for the forced failure drill.</div>
+            <div class="node-count" id="count-NodeB">4</div>
+          </div>
+
+          <div class="node" style="left: 90px; bottom: 90px; --node-color: var(--node-d);" id="node-NodeD">
+            <div class="node-title">
+              <span class="swatch"></span>
+              <div class="node-name">NodeD</div>
+            </div>
+            <div class="node-sub">Backup region. Main landing zone for reroutes and recovery.</div>
+            <div class="node-count" id="count-NodeD">0</div>
+          </div>
+
+          <div class="node" style="right: 90px; bottom: 90px; --node-color: var(--node-c);" id="node-NodeC">
+            <div class="node-title">
+              <span class="swatch"></span>
+              <div class="node-name">NodeC</div>
+            </div>
+            <div class="node-sub">Harbor region and Pi host. Receives market reroutes and post-patrol traffic.</div>
+            <div class="node-count" id="count-NodeC">2</div>
+          </div>
+
+          <div class="agent-layer" id="agent-layer"></div>
+          <div class="effect-layer" id="effect-layer"></div>
+        </div>
+      </article>
+
+      <aside class="legend-panel card">
+        <div class="event-banner" id="event-banner">
+          Tick 0: ten agents are staged across Start, Market, and Harbor.
+        </div>
+        <p class="hint">
+          Hover any moving dot to inspect its live state. Orange-ringed dots
+          were reconstructed from snapshots after the simulated host failure.
+        </p>
+        <div class="state-panel">
+          <h2 style="margin:0 0 12px; font-size: 22px; letter-spacing: -0.04em;">Agent State</h2>
+          <div class="selected-agent" id="selected-agent">
+            <h3>No agent selected</h3>
+            <p>Hover or click an agent dot to pin a stable explanation here instead of relying only on a transient tooltip.</p>
+          </div>
+          <div class="state-list" id="state-list"></div>
+        </div>
+      </aside>
+    </section>
+  </div>
+
+  <script>
+    const nodeColors = {
+      NodeA: "var(--node-a)",
+      NodeB: "var(--node-b)",
+      NodeC: "var(--node-c)",
+      NodeD: "var(--node-d)"
+    };
+
+    const positions = {
+      NodeA: { x: 195, y: 250 },
+      NodeB: { x: 1005, y: 250 },
+      NodeD: { x: 195, y: 615 },
+      NodeC: { x: 1005, y: 615 }
+    };
+
+    class DemoWorld {
+      constructor() {
+        this.reset();
+      }
+
+      reset() {
+        this.regions = new Map([
+          ["Start", { name: "Start", host: "NodeA", visits: 0 }],
+          ["Market", { name: "Market", host: "NodeB", visits: 0 }],
+          ["Harbor", { name: "Harbor", host: "NodeC", visits: 0 }],
+          ["Backup", { name: "Backup", host: "NodeD", visits: 0 }]
+        ]);
+        this.agents = [];
+        for (let i = 0; i < 10; i += 1) {
+          this.agents.push({
+            id: i + 1,
+            name: `Agent_${i + 1}`,
+            regionName: i < 4 ? "Start" : i < 8 ? "Market" : "Harbor",
+            steps: 0,
+            plansRequested: 0,
+            migrations: 0,
+            restored: false
+          });
+        }
+        this.hostLoad = new Map();
+        this.lastSnapshot = [];
+        this.tickCount = 0;
+        this.totalTransitions = 0;
+        this.restoredCount = 0;
+        this.currentOperation = "Patrol";
+        this.lifecycleById = new Map();
+        this.removedAgentIds = new Set();
+        this.lastEvent = "Tick 0: ten agents are staged across Start, Market, and Harbor.";
+        for (const agent of this.agents) {
+          this.lifecycleById.set(
+            agent.id,
+            [`Tick 0: created in ${agent.regionName} on ${this.hostForRegion(agent.regionName)}`]
+          );
+        }
+        this.updateHostLoad();
+      }
+
+      hostForRegion(regionName) {
+        const region = this.regions.get(regionName);
+        return region ? region.host : "Unknown";
+      }
+
+      updateHostLoad() {
+        this.hostLoad = new Map([
+          ["NodeA", 0],
+          ["NodeB", 0],
+          ["NodeC", 0],
+          ["NodeD", 0]
+        ]);
+        for (const agent of this.agents) {
+          const host = this.hostForRegion(agent.regionName);
+          this.hostLoad.set(host, (this.hostLoad.get(host) || 0) + 1);
+        }
+      }
+
+      regionOnHost(host, fallbackRegion) {
+        for (const region of this.regions.values()) {
+          if (region.host === host) return region.name;
+        }
+        return fallbackRegion;
+      }
+
+      record(message) {
+        this.lastEvent = `Tick ${this.tickCount}: ${message}`;
+      }
+
+      addLifecycle(agentId, message) {
+        const history = this.lifecycleById.get(agentId) || [];
+        history.unshift(`Tick ${this.tickCount}: ${message}`);
+        this.lifecycleById.set(agentId, history.slice(0, 8));
+      }
+
+      snapshotAgent(agent) {
+        return {
+          id: agent.id,
+          name: agent.name,
+          regionName: agent.regionName,
+          steps: agent.steps,
+          plansRequested: agent.plansRequested,
+          migrations: agent.migrations,
+          restored: agent.restored
+        };
+      }
+
+      moveAgent(agent, targetRegion, reason) {
+        const currentHost = this.hostForRegion(agent.regionName);
+        const targetHost = this.hostForRegion(targetRegion);
+        if (currentHost !== targetHost) {
+          agent.migrations += 1;
+          this.totalTransitions += 1;
+          this.record(`${agent.name} migrates from ${currentHost} to ${targetHost} (${reason})`);
+          this.addLifecycle(agent.id, `migrated ${currentHost} -> ${targetHost} via ${reason}`);
+        } else if (agent.regionName !== targetRegion) {
+          this.record(`${agent.name} moves inside ${targetHost} (${reason})`);
+          this.addLifecycle(agent.id, `moved within ${targetHost} via ${reason}`);
+        } else {
+          this.record(`${agent.name} holds in ${targetRegion} (${reason})`);
+          this.addLifecycle(agent.id, `held position in ${targetRegion} via ${reason}`);
+          return;
+        }
+
+        agent.regionName = targetRegion;
+        const region = this.regions.get(targetRegion);
+        if (region) region.visits += 1;
+      }
+
+      askPi(agent) {
+        const currentHost = this.hostForRegion(agent.regionName);
+        const currentLoad = this.hostLoad.get(currentHost) || 0;
+
+        if (agent.regionName === "Market" && this.tickCount >= 56 && this.tickCount <= 60) {
+          return { summary: "hold position in Market so failure recovery can be tested", targetRegion: null };
+        }
+        if (agent.regionName === "Market") {
+          return { summary: "market congestion detected; re-route to Harbor", targetRegion: "Harbor" };
+        }
+        if (currentLoad >= 4) {
+          return { summary: "host is saturated; move to backup capacity", targetRegion: this.regionOnHost("NodeD", "Backup") };
+        }
+        return { summary: `continue local survey on ${agent.regionName}`, targetRegion: null };
+      }
+
+      snapshot() {
+        this.lastSnapshot = this.agents.map((agent) => this.snapshotAgent(agent));
+        this.currentOperation = "Snapshot";
+        this.record(`snapshot stored for ${this.lastSnapshot.length} agents`);
+        for (const agent of this.agents) {
+          this.addLifecycle(agent.id, "state captured in snapshot");
+        }
+      }
+
+      balanceLoad() {
+        this.updateHostLoad();
+        const entries = [...this.hostLoad.entries()];
+        let maxEntry = entries[0];
+        let minEntry = entries[0];
+        for (const entry of entries) {
+          if (entry[1] > maxEntry[1]) maxEntry = entry;
+          if (entry[1] < minEntry[1]) minEntry = entry;
+        }
+        if (maxEntry[1] - minEntry[1] <= 1) return;
+        this.currentOperation = "Balance";
+        const targetRegion = this.regionOnHost(minEntry[0], "Backup");
+        let toMove = Math.floor((maxEntry[1] - minEntry[1]) / 2);
+        this.record(`balancer shifts ${toMove} agents from ${maxEntry[0]} to ${minEntry[0]}`);
+        for (const agent of this.agents) {
+          if (toMove <= 0) break;
+          if (this.hostForRegion(agent.regionName) !== maxEntry[0]) continue;
+          this.moveAgent(agent, targetRegion, "load balancing");
+          toMove -= 1;
+        }
+      }
+
+      recoverAgentsToHost(failedHost, recoveryHost) {
+        const alive = new Set(this.agents.map((agent) => agent.id));
+        const recoveryRegion = this.regionOnHost(recoveryHost, "Backup");
+        this.currentOperation = "Resume";
+        for (const snapshot of this.lastSnapshot) {
+          if (alive.has(snapshot.id)) continue;
+          if (this.hostForRegion(snapshot.regionName) !== failedHost) continue;
+          const recovered = {
+            id: snapshot.id,
+            name: snapshot.name,
+            regionName: recoveryRegion,
+            steps: snapshot.steps,
+            plansRequested: snapshot.plansRequested,
+            migrations: snapshot.migrations + 1,
+            restored: true
+          };
+          this.agents.push(recovered);
+          this.totalTransitions += 1;
+          this.restoredCount += 1;
+          this.record(`${recovered.name} restored onto ${recoveryHost} from snapshot`);
+          this.addLifecycle(recovered.id, `restored from snapshot taken on ${failedHost}`);
+          this.addLifecycle(recovered.id, `resumed on ${recoveryHost} via region ${recoveryRegion}`);
+        }
+      }
+
+      simulateFailure(failedHost, recoveryHost) {
+        const survivors = [];
+        let removed = 0;
+        this.currentOperation = "Failure";
+        for (const agent of this.agents) {
+          if (this.hostForRegion(agent.regionName) === failedHost) {
+            removed += 1;
+            this.removedAgentIds.add(agent.id);
+            this.addLifecycle(agent.id, `removed by ${failedHost} failure while on ${agent.regionName}`);
+          } else {
+            survivors.push(agent);
+          }
+        }
+        this.agents = survivors;
+        this.record(`${failedHost} fails; ${removed} agents are removed before recovery`);
+        this.recoverAgentsToHost(failedHost, recoveryHost);
+      }
+
+      stepAgent(agent) {
+        agent.steps += 1;
+        if (this.tickCount === 56 && agent.id >= 1 && agent.id <= 3) {
+          this.currentOperation = "Failure";
+          this.moveAgent(agent, "Market", "scheduled failure drill");
+          this.addLifecycle(agent.id, "forced into failure drill on Market");
+          return;
+        }
+        if (agent.steps % 5 === 0) {
+          agent.plansRequested += 1;
+          this.currentOperation = "Pi";
+          const plan = this.askPi(agent);
+          this.record(`${agent.name} consults Pi: ${plan.summary}`);
+          this.addLifecycle(agent.id, `Pi decision: ${plan.summary}`);
+          if (plan.targetRegion) {
+            this.moveAgent(agent, plan.targetRegion, "Pi plan");
+            return;
+          }
+        }
+        if ((this.tickCount + agent.id) % 11 === 0) {
+          this.currentOperation = "Patrol";
+          const currentHost = this.hostForRegion(agent.regionName);
+          let nextRegion = agent.regionName;
+          for (const region of this.regions.values()) {
+            if (region.host !== currentHost) {
+              nextRegion = region.name;
+              break;
+            }
+          }
+          this.moveAgent(agent, nextRegion, "autonomous patrol");
+        }
+      }
+
+      tick() {
+        if (this.tickCount >= 80) return false;
+        this.tickCount += 1;
+        this.currentOperation = "Patrol";
+        this.removedAgentIds.clear();
+        this.updateHostLoad();
+
+        for (const agent of this.agents) {
+          this.stepAgent(agent);
+        }
+
+        if (this.tickCount % 20 === 0) this.snapshot();
+        if (this.tickCount % 25 === 0) this.balanceLoad();
+        if (this.tickCount === 60) this.simulateFailure("NodeB", "NodeD");
+
+        this.updateHostLoad();
+        return true;
+      }
+    }
+
+    const dom = {
+      tickValue: document.getElementById("tick-value"),
+      transitionCount: document.getElementById("transition-count"),
+      restoredCount: document.getElementById("restored-count"),
+      playPause: document.getElementById("play-pause"),
+      step: document.getElementById("step"),
+      reset: document.getElementById("reset"),
+      speed: document.getElementById("speed"),
+      phaseLabel: document.getElementById("phase-label"),
+      phaseStrip: document.getElementById("phase-strip"),
+      eventBanner: document.getElementById("event-banner"),
+      selectedAgent: document.getElementById("selected-agent"),
+      stateList: document.getElementById("state-list"),
+      agentLayer: document.getElementById("agent-layer"),
+      effectLayer: document.getElementById("effect-layer")
+    };
+
+    const world = new DemoWorld();
+    const agentEls = new Map();
+    let selectedAgentId = null;
+    let timer = null;
+
+    function phaseLabel() {
+      if (world.tickCount === 0) return "Waiting to start.";
+      if (world.tickCount < 20) return "Early movement: Market agents get pushed toward Harbor and Backup.";
+      if (world.tickCount < 56) return "Middle phase: patrols, snapshots, and balancing keep redistributing load.";
+      if (world.tickCount < 60) return "Failure drill: agents 1, 2, and 3 are pinned onto NodeB.";
+      if (world.tickCount === 60) return "Failure window: NodeB drops out and restored agents appear on NodeD.";
+      if (world.tickCount < 80) return "Post-recovery: restored agents continue moving like any others.";
+      return "Run complete.";
+    }
+
+    function phaseIndex() {
+      const order = ["Patrol", "Pi", "Snapshot", "Balance", "Failure", "Resume"];
+      return Math.max(0, order.indexOf(world.currentOperation));
+    }
+
+    function agentStatus(agent) {
+      if (world.removedAgentIds.has(agent.id)) return "Failed";
+      if (agent.restored && world.tickCount === 60) return "Restored";
+      if (agent.restored) return "Resumed";
+      if (world.tickCount >= 56 && world.tickCount <= 60 &&
+          agent.id >= 1 && agent.id <= 3 &&
+          world.hostForRegion(agent.regionName) === "NodeB") return "Drill";
+      if (agent.steps > 0 && agent.steps % 5 === 0) return "Pi";
+      if (world.hostForRegion(agent.regionName) === "NodeD" && agent.migrations > 0) return "Balanced";
+      return "Patrol";
+    }
+
+    function clusterOffset(index, total) {
+      const cols = Math.max(1, Math.ceil(Math.sqrt(total)));
+      const row = Math.floor(index / cols);
+      const col = index % cols;
+      return {
+        x: (col - (cols - 1) / 2) * 24,
+        y: (row - (Math.ceil(total / cols) - 1) / 2) * 24
+      };
+    }
+
+    function updateCounts() {
+      for (const host of ["NodeA", "NodeB", "NodeC", "NodeD"]) {
+        const el = document.getElementById(`count-${host}`);
+        el.textContent = String(world.hostLoad.get(host) || 0);
+      }
+    }
+
+    function ensureAgentElements() {
+      for (const agent of world.agents) {
+        if (agentEls.has(agent.id)) continue;
+        const el = document.createElement("button");
+        el.type = "button";
+        el.className = "agent";
+        el.addEventListener("mouseenter", () => {
+          selectedAgentId = agent.id;
+          renderSelectedAgent();
+        });
+        el.addEventListener("focus", () => {
+          selectedAgentId = agent.id;
+          renderSelectedAgent();
+        });
+        el.addEventListener("click", () => {
+          selectedAgentId = agent.id;
+          renderSelectedAgent();
+        });
+        agentEls.set(agent.id, el);
+        dom.agentLayer.appendChild(el);
+      }
+    }
+
+    function renderAgents() {
+      ensureAgentElements();
+      const groups = new Map([
+        ["NodeA", []],
+        ["NodeB", []],
+        ["NodeC", []],
+        ["NodeD", []]
+      ]);
+
+      for (const agent of world.agents) {
+        groups.get(world.hostForRegion(agent.regionName)).push(agent);
+      }
+
+      for (const [host, agents] of groups.entries()) {
+        agents.sort((a, b) => a.id - b.id);
+        agents.forEach((agent, index) => {
+          const pos = positions[host];
+          const offset = clusterOffset(index, agents.length);
+          const el = agentEls.get(agent.id);
+          el.style.left = `${pos.x + offset.x}px`;
+          el.style.top = `${pos.y + offset.y}px`;
+          el.style.setProperty("--node-color", nodeColors[host]);
+          el.classList.toggle("restored", agent.restored);
+          el.classList.toggle("suspended", world.removedAgentIds.has(agent.id));
+          const status = agentStatus(agent);
+          el.dataset.label =
+            `${agent.name}\n` +
+            `host ${host} · region ${agent.regionName}\n` +
+            `status ${status}\n` +
+            `steps ${agent.steps} · plans ${agent.plansRequested}\n` +
+            `migrations ${agent.migrations}\n` +
+            `restored ${agent.restored ? "yes" : "no"}${agent.restored ? "\nprovenance snapshot@60 NodeB -> NodeD" : ""}`;
+        });
+      }
+    }
+
+    function renderStateList() {
+      const agents = [...world.agents].sort((a, b) => a.id - b.id);
+      dom.stateList.innerHTML = agents.map((agent) => `
+        <div class="state-row">
+          <strong>${agent.name}</strong>
+          status ${agentStatus(agent)} · host ${world.hostForRegion(agent.regionName)} · region ${agent.regionName}<br>
+          steps ${agent.steps} · plans ${agent.plansRequested} · migrations ${agent.migrations} · restored ${agent.restored ? "yes" : "no"}${agent.restored ? " · snapshot@60 NodeB -> NodeD" : ""}
+        </div>
+      `).join("");
+    }
+
+    function renderSelectedAgent() {
+      const agent = world.agents.find((entry) => entry.id === selectedAgentId);
+      if (!agent) {
+        dom.selectedAgent.innerHTML = `
+          <h3>No agent selected</h3>
+          <p>Hover or click an agent dot to pin a stable explanation here instead of relying only on a transient tooltip.</p>
+        `;
+        return;
+      }
+
+      const host = world.hostForRegion(agent.regionName);
+      const status = agentStatus(agent);
+      const history = world.lifecycleById.get(agent.id) || [];
+      const reason = agent.restored
+        ? "This agent passed through failure, snapshot restore, and resumed execution on NodeD."
+        : "This agent is following the normal patrol / Pi / balancing flow and has not needed snapshot recovery.";
+      dom.selectedAgent.innerHTML = `
+        <h3>${agent.name}</h3>
+        <div class="selected-badges">
+          <span class="status-badge hot">${status}</span>
+          <span class="status-badge">${host}</span>
+          <span class="status-badge">${agent.regionName}</span>
+          ${agent.restored ? '<span class="status-badge hot">snapshot@60</span>' : ''}
+        </div>
+        <p>
+          Host <strong>${host}</strong>, region <strong>${agent.regionName}</strong>,
+          steps <strong>${agent.steps}</strong>, Pi plans <strong>${agent.plansRequested}</strong>,
+          migrations <strong>${agent.migrations}</strong>, restored <strong>${agent.restored ? "yes" : "no"}</strong>.<br>
+          ${agent.restored ? 'Provenance <strong>NodeB -> snapshot@60 -> NodeD</strong>.<br>' : ''}
+          ${reason}
+        </p>
+        <div class="lifecycle">
+          ${history.map((item) => `<div class="lifecycle-item"><strong>${item.slice(0, item.indexOf(":"))}</strong>${item.slice(item.indexOf(":"))}</div>`).join("")}
+        </div>
+      `;
+    }
+
+    function spawnEffect(host, label, kind = "") {
+      const pos = positions[host];
+      const effect = document.createElement("div");
+      effect.className = `effect ${kind}`.trim();
+      effect.style.left = `${pos.x}px`;
+      effect.style.top = `${pos.y}px`;
+      const text = document.createElement("div");
+      text.className = "effect-label";
+      text.textContent = label;
+      effect.appendChild(text);
+      dom.effectLayer.appendChild(effect);
+      setTimeout(() => effect.remove(), 1450);
+    }
+
+    function renderPhaseStrip() {
+      const chips = [...dom.phaseStrip.children];
+      const active = phaseIndex();
+      chips.forEach((chip, index) => chip.classList.toggle("active", index === active));
+    }
+
+    function render() {
+      dom.tickValue.textContent = String(world.tickCount);
+      dom.transitionCount.textContent = String(world.totalTransitions);
+      dom.restoredCount.textContent = String(world.restoredCount);
+      dom.phaseLabel.textContent = phaseLabel();
+      dom.eventBanner.textContent = world.lastEvent;
+      updateCounts();
+      renderAgents();
+      renderPhaseStrip();
+      renderSelectedAgent();
+      renderStateList();
+    }
+
+    function stop() {
+      if (timer !== null) {
+        clearInterval(timer);
+        timer = null;
+      }
+      dom.playPause.textContent = world.tickCount >= 80 ? "Replay" : "Start";
+    }
+
+    function start() {
+      stop();
+      dom.playPause.textContent = "Pause";
+      timer = setInterval(() => {
+        const beforeTick = world.tickCount;
+        const advanced = world.tick();
+        if (world.tickCount === 60 && beforeTick !== 60) {
+          spawnEffect("NodeB", "Failure");
+          spawnEffect("NodeD", "Restore", "restore");
+        }
+        render();
+        if (!advanced || world.tickCount >= 80) {
+          stop();
+        }
+      }, Number(dom.speed.value));
+    }
+
+    dom.playPause.addEventListener("click", () => {
+      if (timer !== null) {
+        stop();
+        return;
+      }
+      if (world.tickCount >= 80) {
+        world.reset();
+        render();
+      }
+      start();
+    });
+
+    dom.step.addEventListener("click", () => {
+      if (timer !== null) return;
+      if (world.tickCount >= 80) {
+        world.reset();
+      } else {
+        const beforeTick = world.tickCount;
+        world.tick();
+        if (world.tickCount === 60 && beforeTick !== 60) {
+          spawnEffect("NodeB", "Failure");
+          spawnEffect("NodeD", "Restore", "restore");
+        }
+      }
+      render();
+    });
+
+    dom.reset.addEventListener("click", () => {
+      stop();
+      world.reset();
+      selectedAgentId = null;
+      render();
+    });
+
+    dom.speed.addEventListener("change", () => {
+      if (timer !== null) start();
+    });
+
+    render();
+  </script>
+</body>
+</html>

@@ -15,3 +15,18 @@ set_target_properties(SimpleColorExample PROPERTIES
 target_include_directories(SimpleColorExample PRIVATE
     ${CMAKE_SOURCE_DIR}/Ext/rang/include
 )
+
+set(demo_test_name ContinuationMobilityDemoTests)
+
+add_executable(${demo_test_name} ContinuationMobilityDemoTests.cpp)
+
+set_target_properties(${demo_test_name} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Bin/Test/Examples
+)
+
+target_link_libraries(${demo_test_name}
+    ${GTEST_BOTH_LIBRARIES}
+    gtest_main
+)
+
+add_test(NAME ${demo_test_name} COMMAND ${demo_test_name})

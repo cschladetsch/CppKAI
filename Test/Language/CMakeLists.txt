@@ -121,6 +121,7 @@ foreach (lang ${langs})
             ${source_path}/SimpleForLoopTest.cpp             # Test simple for loops
             ${source_path}/SimpleContinueTest.cpp            # Test continue statement
             ${source_path}/ModuloTest.cpp                    # Test modulo operator
+            ${source_path}/ContinuationMobilityDemoScriptTest.cpp # Single-file Rho demo smoke test
             ${source_path}/SimpleDoWhileContinueTest.cpp     # Test do-while continue
             ${source_path}/ExtensiveContainerTests.cpp       # Extensive container tests
             ${source_path}/AdvancedForLoopTests.cpp          # Advanced for loop tests

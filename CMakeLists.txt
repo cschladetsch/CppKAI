@@ -322,6 +322,9 @@ foreach(top ${TopLevels})
     include(${SOURCE_HOME}/${top}/CMakeLists.txt)
 endforeach()
 
+# Standalone runnable demos
+add_subdirectory(ContinuationMobilityDemo)
+
 # Set up main library dependencies
 if(TARGET Executor)
     target_link_libraries(Executor PUBLIC CommonLang Core)
