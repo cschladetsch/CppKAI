@@ -55,7 +55,7 @@ For full documentation, see [Console Documentation](../../../Doc/Console.md).
 
 ### Quick Start and Usage
 - **[Quick Start Guide](Source/QuickStartGuide.md)** - Get up and running quickly
-- **[Console Networking](../../../CONSOLE_NETWORKING.md)** - Console-to-console communication
+- **[Console Networking](../../../Doc/CONSOLE_NETWORKING.md)** - Console-to-console communication
 - **[Implementation Summary](Source/ImplementationSummary.md)** - Technical implementation details
 
 ### Advanced Features
@@ -76,4 +76,3 @@ Shell command functionality is tested in `Test/ShellCommandTests/` with over 50 
 - Cross-language support
 
 The Pi and Rho language tests also indirectly test the Executor functionality.
-

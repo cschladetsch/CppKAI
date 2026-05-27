@@ -14,7 +14,7 @@ This directory contains comprehensive documentation for the KAI distributed obje
 
 - On `develop`, core and language tests are enabled by default.
 - Network features and `TestNetwork` are enabled by default; use `-DKAI_NETWORKING=OFF` to skip them.
-- See **[../TEST_SUMMARY.md](../TEST_SUMMARY.md)** for the current test status snapshot.
+- See **[TEST_SUMMARY.md](TEST_SUMMARY.md)** for the current test status snapshot.
 
 ### Language Tutorials
 - **[PiTutorial.md](PiTutorial.md)** - Pi stack-based language tutorial
@@ -98,7 +98,7 @@ When contributing documentation:
 ## Related Resources
 
 - **[Main README](../README.md)** - Project overview
-- **[Console Networking Guide](../CONSOLE_NETWORKING.md)** - Console communication
+- **[Console Networking Guide](CONSOLE_NETWORKING.md)** - Console communication
 - **[Examples](../Examples/)** - Code examples
 - **[Test Documentation](../Test/)** - Test guides
 

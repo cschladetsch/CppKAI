@@ -162,13 +162,13 @@ graph TB
 ### **Development Guides**
 - **Building**: [Build Guide](Doc/OUT_OF_SOURCE_BUILD.md) | [Installation](Doc/Install.md) | [CMake Guide](CMake/README.md)
 - **Languages**: [Pi Tutorial](Doc/PiTutorial.md) | [Rho Tutorial](Doc/RhoTutorial.md) | [Tau Tutorial](Doc/TauTutorial.md) | [Language System](Include/KAI/Language/README.md)
-- **Networking**: [Overview](Doc/Networking.md) | [Architecture](Doc/NetworkArchitecture.md) | [Console Networking](CONSOLE_NETWORKING.md)
+- **Networking**: [Overview](Doc/Networking.md) | [Architecture](Doc/NetworkArchitecture.md) | [Console Networking](Doc/CONSOLE_NETWORKING.md)
 - **Testing**: [Test Guide](Doc/Test.md) | [Connection Testing](Doc/ConnectionTesting.md) | [Test Overview](Test/README.md)
 - **Code Generation**: [Tau Code Generation](Doc/TauCodeGeneration.md) | [Tau Generate](Include/KAI/Language/Tau/Generate/README.md)
-- **Project Status**: [TODO](TODO.md) | [Test Summary](TEST_SUMMARY.md)
+- **Project Status**: [TODO](Doc/TODO.md) | [Test Summary](Doc/TEST_SUMMARY.md)
 
 ### **Component Documentation**
-- **LLM Overview**: [LmmReadme.md](LmmReadme.md) - Cache, repo indexing, and Rho dataset export
+- **LLM Overview**: [LmmReadme.md](Doc/LmmReadme.md) - Cache, repo indexing, and Rho dataset export
 - **Core System**: [Core README](Include/KAI/Core/README.md) | [Registry](Include/KAI/Core/Object/README.md) | [Config](Include/KAI/Core/Config/README.md)
 - **Executor**: [Executor README](Include/KAI/Executor/README.md) - Virtual machine and execution engine
 - **Console**: [Console README](Include/KAI/Console/README.md) - Interactive shell with networking
@@ -247,7 +247,7 @@ pi> /broadcast stack      # Show stack on all connected consoles
 - `/broadcast <command>` - Execute command on all peers
 - `/peers` - List connected consoles
 
-See [Console Networking Guide](CONSOLE_NETWORKING.md) for complete documentation.
+See [Console Networking Guide](Doc/CONSOLE_NETWORKING.md) for complete documentation.
 
 ## Example Code
 
@@ -597,7 +597,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **[Executor](Include/KAI/Executor/README.md)** - Virtual machine and execution engine  
 - **[Console](Include/KAI/Console/README.md)** - Interactive shell with networking
 - **[Language System](Include/KAI/Language/README.md)** - Pi, Rho, Tau implementation
-- **[Networking](CONSOLE_NETWORKING.md)** - P2P console communication
+- **[Networking](Doc/CONSOLE_NETWORKING.md)** - P2P console communication
 
 ### **Source Code Structure**
 - **[Include Headers](Include/KAI/README.md)** - All public API headers and interfaces

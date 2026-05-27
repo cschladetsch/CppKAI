@@ -14,7 +14,7 @@ Tests are built in the `Bin/Test/` directory.
 
 - **[Console Networking Tests](Console/README.md)** - Console-to-console communication testing
 - **[Connection Testing Guide](../Doc/ConnectionTesting.md)** - Network connection validation
-- **[Test Status Summary](../TEST_SUMMARY.md)** - Current test suite status
+- **[Test Status Summary](../Doc/TEST_SUMMARY.md)** - Current test suite status
 - **[Main Test Guide](../Doc/Test.md)** - Comprehensive testing documentation
 
 ## Folders

@@ -96,7 +96,7 @@ Network tests use configurable ports and addresses:
 
 ## Related Documentation
 
-- [Console Networking Guide](../../CONSOLE_NETWORKING.md)
+- [Console Networking Guide](../../Doc/CONSOLE_NETWORKING.md)
 - [Network Architecture](../../Doc/NetworkArchitecture.md)
 - [Connection Testing](../../Doc/ConnectionTesting.md)
 - [Peer-to-Peer Documentation](../../Doc/PeerToPeerNetworking.md)

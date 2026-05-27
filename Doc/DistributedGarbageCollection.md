@@ -406,7 +406,7 @@ interface IGCDiagnostics {
 - [Networking.md](Networking.md): Overview of network system
 - [NetworkArchitecture.md](NetworkArchitecture.md): Detailed network architecture
 - [PeerToPeerNetworking.md](PeerToPeerNetworking.md): P2P implementation
-- [PROJECT_ANALYSIS.md](../PROJECT_ANALYSIS.md): Complete project analysis
+- [PROJECT_ANALYSIS.md](PROJECT_ANALYSIS.md): Complete project analysis
 
 ## References
 
