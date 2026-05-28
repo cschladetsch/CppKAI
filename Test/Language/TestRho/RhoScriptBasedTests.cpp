@@ -47,3 +47,9 @@ TEST_F(RhoScriptBasedTests, FunctionWithLocals) {
 TEST_F(RhoScriptBasedTests, PiBlockAdvanced) {
     ExecScriptFile("PiBlockAdvanced.rho");
 }
+
+TEST_F(RhoScriptBasedTests, PiBlockAdvanced) {
+    ExecScriptFile("Nestedloopsrecursion.rho");
+}
+
+

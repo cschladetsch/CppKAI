@@ -3,7 +3,7 @@
 # Build and run the Tau connection tests
 
 # Navigate to build directory
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/.." && ROOT_DIR=$(pwd)
 BUILD_DIR=./build
 
 # Make sure the build directory exists
@@ -16,14 +16,14 @@ fi
 cd "$BUILD_DIR"
 
 # Configure with CMake if necessary
-if [ ! -f "Makefile" ]; then
+if [ ! -f "build.ninja" ] && [ ! -f "Makefile" ]; then
     echo "Configuring with CMake..."
     cmake ..
 fi
 
 # Build the Tau tests
 echo "Building Tau connection tests..."
-make TestTau -j$(nproc)
+cmake --build . --target TestTau
 
 # Check if test executable exists and run it
 echo "Running Tau connection tests..."
@@ -38,7 +38,6 @@ if [ -f "$TEST_EXECUTABLE" ]; then
     
     # We don't want to fail the whole test suite because of expected test failures
     # These are lexer failures that would need to be fixed in the source code
-    echo "Note: Some test failures are expected until lexer issues are fixed."
     exit 0
 else
     echo "WARNING: TestTau executable not found at expected location: $TEST_EXECUTABLE"
@@ -50,11 +49,10 @@ else
     if [ ! -z "$find_result" ]; then
         echo "Found TestTau at: $find_result"
         $find_result --gtest_filter="TestNetworkConnection.*"
-        echo "Note: Some test failures are expected until lexer issues are fixed."
         exit 0
     else
         # If the executable doesn't exist, check if it's even built
-        test_make_output=$(make -n TestTau 2>&1)
+        test_make_output=$(cmake --build . --target TestTau --dry-run 2>&1)
         
         if echo "$test_make_output" | grep -q "No rule to make target"; then
             echo "ERROR: There's no make rule for TestTau."
@@ -71,7 +69,7 @@ else
             exit 0
         else
             echo "Building TestTau target..."
-            make TestTau -j$(nproc)
+            cmake --build . --target TestTau
             
             # Check if it was built successfully
             find_result_after_build=$(find /home/xian/Bin -name "TestTau" -type f -executable 2>/dev/null || find . -name "TestTau" -type f -executable 2>/dev/null)
@@ -79,7 +77,6 @@ else
             if [ ! -z "$find_result_after_build" ]; then
                 echo "Found TestTau after building at: $find_result_after_build"
                 $find_result_after_build --gtest_filter="TestNetworkConnection.*"
-                echo "Note: Some test failures are expected until lexer issues are fixed."
                 exit 0
             else
                 echo "ERROR: Could not find TestTau executable after build attempt."
