@@ -1,0 +1,92 @@
+// Pi/Rho interop: Rho vars in Pi blocks, Pi results in Rho expressions,
+// Pi blocks calling Rho functions
+
+// Rho variable consumed in Pi block
+x = 7
+result = pi { x 3 + }
+assert result == 10
+
+// Pi result used directly in Rho expression
+a = pi { 4 5 * }
+b = pi { 3 2 + }
+assert a + b == 25
+
+// Pi result assigned then used in further Rho
+base = pi { 2 3 * }
+doubled = base * 2
+assert doubled == 12
+
+// Pi block referencing multiple Rho variables
+p = 6
+q = 7
+r = pi { p q * }
+assert r == 42
+
+// Rho function called from within a Pi block
+square = fun(n)
+    return n * n
+
+val = pi { square(4) }
+assert val == 16
+
+// Pi block result fed into Rho function call
+add = fun(a, b)
+    return a + b
+
+lhs = pi { 3 4 + }
+rhs = pi { 2 5 * }
+assert add(lhs, rhs) == 17
+
+// Rho conditional based on Pi result
+threshold = pi { 10 3 * }
+if (threshold > 25) {
+    verdict = "above"
+} else {
+    verdict = "below"
+}
+assert verdict == "above"
+
+// Pi block stored in Rho variable, invoked later
+triple = pi { 3 * }
+nums = [2, 4, 6]
+tripled = []
+for (i = 0; i < nums.Count; i = i + 1) {
+    tripled.append(nums[i] triple @)
+}
+assert tripled[0] == 6
+assert tripled[1] == 12
+assert tripled[2] == 18
+
+// nested Pi/Rho: Pi inside Rho function
+apply_twice = fun(f, x)
+    return (x f @) f @
+
+inc = pi { 1 + }
+assert apply_twice(inc, 5) == 7
+
+dbl = pi { 2 * }
+assert apply_twice(dbl, 3) == 12
+
+// Rho loop building Pi results
+powers = []
+base2 = pi { 2 * }
+v = 1
+for (i = 0; i < 5; i = i + 1) {
+    v = v base2 @
+    powers.append(v)
+}
+assert powers[0] == 2
+assert powers[2] == 8
+assert powers[4] == 32
+
+// Pi block that calls a Rho-defined predicate
+is_big = fun(n)
+    return n > 100
+
+check = pi { is_big(200) }
+assert check == true
+
+check2 = pi { is_big(5) }
+assert check2 == false
+
+System.Print("PiRhoInteropTests: all tests passed")

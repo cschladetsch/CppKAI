@@ -1,0 +1,83 @@
+// Scoping tests: shadowing, closures, nested functions, branch scoping
+
+// basic local variable
+x = 10
+assert x == 10
+
+// variable shadowing in function
+x = 42
+shadow_test = fun()
+    x = 99
+    return x
+
+result = shadow_test()
+assert result == 99
+assert x == 42
+
+// nested function definition
+outer_fun = fun(a)
+    inner_fun = fun(b)
+        return a + b
+    return inner_fun(10)
+
+assert outer_fun(5) == 15
+assert outer_fun(20) == 30
+
+// closure captures enclosing scope
+make_counter = fun(start)
+    counter = fun()
+        return start
+    return counter
+
+c = make_counter(7)
+assert c() == 7
+
+d = make_counter(100)
+assert d() == 100
+
+// variable defined in if branch used after
+flag = true
+}
+
+// variable in else branch
+flag2 = false
+if (flag2) {
+    val = 1
+} else {
+    val = 2
+}
+assert val == 2
+
+// nested function with multiple levels
+level1 = fun(a)
+    level2 = fun(b)
+        level3 = fun(c)
+            return a + b + c
+        return level3(1)
+    return level2(2)
+
+assert level1(3) == 6
+
+// function argument does not leak into outer scope
+leaktest = fun(z)
+    return z * 2
+
+leaktest(99)
+
+// shadowing loop variable
+i = 1000
+for (i = 0; i < 3; i = i + 1) {
+    // i is loop var here
+}
+// after loop i should be 3 (for loop increments past bound)
+assert i == 3
+
+// closure sees updated outer variable
+outer_val = 0
+updater = fun()
+    return outer_val + 1
+
+outer_val = 5
+assert updater() == 6
+
+System.Print("ScopingTests: all tests passed")

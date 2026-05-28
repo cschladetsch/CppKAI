@@ -1280,10 +1280,13 @@ void Console::WritePrompt(ostream &out) const {
             << rang::fg::yellow << " λ " << rang::fg::reset
             << rang::style::bold;
     } else {
-        // Normal Pi/Rho prompt
+        // Language-specific prompt symbol
+        auto lang = static_cast<Language>(compiler->GetLanguage());
+        const char* sym = (lang == Language::Rho) ? " ρ " :
+                          (lang == Language::Pi)  ? " π " : " λ ";
         out << rang::style::bold << rang::fg::cyan
-            << ToString(static_cast<Language>(compiler->GetLanguage()))
-            << rang::fg::yellow << " λ " << rang::fg::reset
+            << ToString(lang)
+            << rang::fg::yellow << sym << rang::fg::reset
             << rang::style::bold;
     }
     out.flush();  // Ensure prompt is displayed immediately

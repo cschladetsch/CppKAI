@@ -36,3 +36,19 @@ TEST_F(RhoScriptBasedTests, PiBlockAdvanced) {
 TEST_F(RhoScriptBasedTests, NestedLoopsRecursion) {
     ExecScriptFile("NestedLoopsRecursion.rho");
 }
+
+TEST_F(RhoScriptBasedTests, ScopingTests) {
+    ExecScriptFile("ScopingTests.rho");
+}
+TEST_F(RhoScriptBasedTests, CollectionTests) {
+    ExecScriptFile("CollectionTests.rho");
+}
+TEST_F(RhoScriptBasedTests, StringTests) {
+    ExecScriptFile("StringTests.rho");
+}
+TEST_F(RhoScriptBasedTests, PiRhoInteropTests) {
+    ExecScriptFile("PiRhoInteropTests.rho");
+}
+TEST_F(RhoScriptBasedTests, HigherOrderTests) {
+    ExecScriptFile("HigherOrderTests.rho");
+}

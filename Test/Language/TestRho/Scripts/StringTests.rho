@@ -1,0 +1,82 @@
+// String tests: concatenation, length, comparison, Pi blocks with strings
+
+// basic string
+s = "hello"
+assert s == "hello"
+
+// string concatenation
+a = "foo"
+b = "bar"
+c = a + b
+assert c == "foobar"
+
+// string length
+assert "hello".Length == 5
+assert "".Length == 0
+assert "KAI".Length == 3
+
+// string comparison
+assert "abc" == "abc"
+assert ("abc" == "def") == false
+assert "abc" < "abd"
+assert "z" > "a"
+
+// string in a variable comparison
+s1 = "Ironhold"
+s2 = "Ironhold"
+assert s1 == s2
+
+s3 = "Ashmarket"
+assert (s1 == s3) == false
+
+// string concatenation in a loop
+result = ""
+for (i = 0; i < 3; i = i + 1) {
+    result = result + "x"
+}
+assert result == "xxx"
+
+// string passed to function
+greet = fun(name)
+    return "Hello, " + name
+
+assert greet("Aldric") == "Hello, Aldric"
+assert greet("KAI") == "Hello, KAI"
+
+// string returned from function
+realm_name = fun(host)
+    if (host == "NodeA") { return "Ironhold" }
+    if (host == "NodeB") { return "Ashmarket" }
+    if (host == "NodeC") { return "Harborveil" }
+    return "The Refuge"
+
+assert realm_name("NodeA") == "Ironhold"
+assert realm_name("NodeB") == "Ashmarket"
+assert realm_name("NodeD") == "The Refuge"
+
+// string in Pi block
+label = "Agent"
+tag = pi { label + "_1" }
+assert tag == "Agent_1"
+
+// string concatenation with number conversion
+build_name = fun(prefix, n)
+    return prefix + "_" + n
+
+assert build_name("Agent", 3) == "Agent_3"
+
+// empty string checks
+empty = ""
+assert empty == ""
+assert empty.Length == 0
+
+// string in collection
+words = ["the", "quick", "brown", "fox"]
+joined = ""
+for (i = 0; i < words.Count; i = i + 1) {
+    if (i > 0) { joined = joined + " " }
+    joined = joined + words[i]
+}
+assert joined == "the quick brown fox"
+
+System.Print("StringTests: all tests passed")
