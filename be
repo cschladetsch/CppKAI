@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
-./Scripts/b --network "$@"
+./b "$@"
 ./Scripts/run_all_tests.sh
