@@ -1,0 +1,134 @@
+// PiBlockAdvanced.rho
+// Tests for Pi blocks as first-class values, closure capture, argument passing,
+// loop bodies, and higher-order function patterns.
+
+// ── 1. Pi block stored as a variable and invoked ─────────────────────────────
+double = pi { 2 * }
+result = 5 double @
+assert result == 10
+
+triple = pi { 3 * }
+result = 7 triple @
+assert result == 21
+
+// ── 2. Pi block passed as argument ───────────────────────────────────────────
+apply = fun(f, x)
+    return x f @
+
+result = apply(pi { 2 * }, 6)
+assert result == 12
+
+result = apply(pi { dup * }, 4)
+assert result == 16
+
+// ── 3. Closure capture from enclosing fun scope ──────────────────────────────
+make_adder = fun(n)
+    return pi { n + }
+
+add5 = make_adder(5)
+result = 10 add5 @
+assert result == 15
+
+add100 = make_adder(100)
+result = 1 add100 @
+assert result == 101
+
+// ── 4. Pi block captures loop variable ───────────────────────────────────────
+// Each iteration builds a block that captures i and executes immediately
+sum = 0
+for (i = 1; i <= 5; i = i + 1) {
+    sum = sum + pi { i }
+}
+assert sum == 15
+
+// ── 5. Pi block as a predicate ────────────────────────────────────────────────
+is_positive = pi { 0 > }
+assert (3 is_positive @) == true
+assert (-1 is_positive @) == false
+
+is_even = pi { 2 % 0 == }
+assert (4 is_even @) == true
+assert (7 is_even @) == false
+
+// ── 6. Passing Pi block with captured argument to another function ────────────
+bar = fun(f)
+    return 10 f @
+
+baz = fun(a)
+    return bar(pi { a 2 + })
+
+result = baz(3)
+assert result == 5
+
+// ── 7. Chained Pi block invocations ──────────────────────────────────────────
+inc = pi { 1 + }
+dec = pi { 1 - }
+
+x = 10
+x = x inc @
+x = x inc @
+x = x dec @
+assert x == 11
+
+// ── 8. Pi block returning another Pi block ────────────────────────────────────
+make_multiplier = fun(n)
+    return pi { n * }
+
+mul3 = make_multiplier(3)
+mul7 = make_multiplier(7)
+
+assert (4 mul3 @) == 12
+assert (4 mul7 @) == 28
+
+// ── 9. Pi block in a while loop condition ─────────────────────────────────────
+n = 1
+while (pi { n 100 < } @) {
+    n = n * 2
+}
+assert n == 128
+
+// ── 10. Nested Pi blocks with outer variable capture ─────────────────────────
+outer = 10
+inner_result = pi {
+    outer
+    pi { 5 + } @
+    2 *
+}
+assert inner_result == 30
+
+// ── 11. Pi block stored in a collection and iterated ─────────────────────────
+ops = []
+ops.append(pi { 1 + })
+ops.append(pi { 2 * })
+ops.append(pi { 3 - })
+
+value = 5
+for (i = 0; i < ops.Count; i = i + 1) {
+    value = value ops[i] @
+}
+// 5 -> 6 -> 12 -> 9
+assert value == 9
+
+// ── 12. Pi block with multiple stack values ───────────────────────────────────
+swap_add = pi { swap + }
+result = pi {
+    3
+    7
+    swap_add @
+}
+assert result == 10
+
+// ── 13. Pi block as default-value factory ────────────────────────────────────
+get_default = fun(val, default_block)
+    if (val == 0) {
+        return default_block @
+    }
+    return val
+
+result = get_default(0, pi { 42 })
+assert result == 42
+
+result = get_default(7, pi { 42 })
+assert result == 7
+
+System.Print("PiBlockAdvanced: all tests passed")

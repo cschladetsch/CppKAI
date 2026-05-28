@@ -23,7 +23,7 @@ for arg in "$@"; do
     echo "  --gcc         Use GCC instead of Clang++"
     echo "  --imgui       Enable the ImGui frontend (KAI_BUILD_IMGUI=ON)"
     echo "  --window      Deprecated alias for --imgui"
-    echo "  --network     Enable networking (KAI_NETWORKING=ON)"
+    echo "  --no-network  Disable networking (KAI_NETWORKING=OFF)"
     echo "  --help, -h    Show this help message"
     exit 0
   fi
@@ -34,7 +34,7 @@ USE_COLOR=true
 USE_NINJA=true
 USE_GCC=false
 USE_IMGUI=false
-USE_NETWORKING=false
+USE_NETWORKING=true
 
 for arg in "$@"; do
   if [ "$arg" == "--no-color" ]; then
@@ -49,8 +49,8 @@ for arg in "$@"; do
   if [ "$arg" == "--imgui" ] || [ "$arg" == "--window" ]; then
     USE_IMGUI=true
   fi
-  if [ "$arg" == "--network" ]; then
-    USE_NETWORKING=true
+  if [ "$arg" == "--no-network" ]; then
+    USE_NETWORKING=false
   fi
 done
 

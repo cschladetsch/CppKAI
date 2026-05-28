@@ -43,3 +43,7 @@ TEST_F(RhoScriptBasedTests, PiBlockBasic) {
 TEST_F(RhoScriptBasedTests, FunctionWithLocals) {
     RunScriptAndExpect<int>("FunctionWithLocals.rho", 10);  // 3*2 + 4
 }
+
+TEST_F(RhoScriptBasedTests, PiBlockAdvanced) {
+    ExecScriptFile("PiBlockAdvanced.rho");
+}
