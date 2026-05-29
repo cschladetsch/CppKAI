@@ -1,0 +1,162 @@
+<style>
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --kai-bg:#0a0a08;
+  --kai-surface:#111110;
+  --kai-border:#2a2a26;
+  --kai-text:#d8d4c8;
+  --kai-muted:#6a6660;
+  --kai-accent:#b8a96a;
+  --kai-dim:#2e2c28;
+}
+body{background:var(--kai-bg);color:var(--kai-text);font-family:'EB Garamond',Georgia,serif;font-size:16px;line-height:1.7}
+.page{max-width:800px;margin:0 auto;padding:2.5rem 2rem 4rem}
+.nav{display:flex;justify-content:space-between;align-items:baseline;padding-bottom:1.5rem;border-bottom:0.5px solid var(--kai-border);margin-bottom:3rem}
+.nav-title{font-family:'JetBrains Mono',monospace;font-size:0.78rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--kai-muted)}
+.nav-links{display:flex;gap:1.75rem}
+.nav-links a{font-family:'JetBrains Mono',monospace;font-size:0.74rem;color:var(--kai-muted);text-decoration:none;letter-spacing:0.05em;transition:color 0.15s}
+.nav-links a:hover{color:var(--kai-accent)}
+.hero{margin-bottom:3.5rem}
+.hero-eyebrow{font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--kai-muted);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:1rem}
+.hero h1{font-size:2rem;font-weight:400;line-height:1.25;margin-bottom:1rem;color:#e0dcd0}
+.hero-sub{font-size:0.97rem;color:#908a7e;max-width:560px;line-height:1.75}
+.hero-cta{display:flex;gap:1.25rem;align-items:center;margin-top:1.75rem}
+.btn-primary{font-family:'JetBrains Mono',monospace;font-size:0.72rem;letter-spacing:0.07em;padding:0.5rem 1.25rem;border:0.5px solid var(--kai-accent);color:var(--kai-accent);background:transparent;cursor:pointer;text-decoration:none;transition:all 0.15s}
+.btn-primary:hover{background:var(--kai-accent);color:var(--kai-bg)}
+.btn-ghost{font-family:'JetBrains Mono',monospace;font-size:0.72rem;letter-spacing:0.07em;color:var(--kai-muted);text-decoration:none;transition:color 0.15s}
+.btn-ghost:hover{color:var(--kai-text)}
+hr{border:none;border-top:0.5px solid var(--kai-border);margin:3rem 0}
+.section-label{font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--kai-muted);letter-spacing:0.14em;text-transform:uppercase;margin-bottom:1.5rem}
+.pillars{display:grid;grid-template-columns:1fr 1fr;gap:1px;margin:1.5rem 0}
+.pillar{background:var(--kai-surface);padding:1.2rem 1.4rem;border:0.5px solid var(--kai-border)}
+.pillar-num{font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--kai-dim);margin-bottom:0.5rem}
+.pillar h3{font-size:0.92rem;font-weight:400;color:#d0ccc0;margin-bottom:0.35rem}
+.pillar p{font-size:0.82rem;color:var(--kai-muted);line-height:1.55}
+.lang-table{width:100%;border-collapse:collapse;margin:1.25rem 0}
+.lang-table td{padding:0.7rem 1rem;font-size:0.84rem;border:0.5px solid var(--kai-border);vertical-align:top;background:var(--kai-surface)}
+.lang-table td:first-child{font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:var(--kai-accent);white-space:nowrap;width:6rem}
+.lang-table td:nth-child(2){color:#c8c4b8;width:9rem}
+.lang-table td:nth-child(3){color:var(--kai-muted);line-height:1.55}
+.example-flow{display:grid;grid-template-columns:1fr auto 1fr;gap:0;align-items:stretch;margin:1.25rem 0}
+.flow-block{background:var(--kai-surface);border:0.5px solid var(--kai-border);padding:1rem 1.2rem}
+.flow-arrow{display:flex;align-items:center;justify-content:center;padding:0 0.75rem;color:var(--kai-muted);font-family:'JetBrains Mono',monospace;font-size:0.8rem;background:var(--kai-dim);border-top:0.5px solid var(--kai-border);border-bottom:0.5px solid var(--kai-border)}
+.flow-label{font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--kai-muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.5rem}
+.flow-block pre{font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:#a0a098;line-height:1.7;white-space:pre}
+.cs{color:#7fa898}.ck{color:var(--kai-accent)}.cn{color:#9090b0}
+.demo-link{display:inline-flex;align-items:center;gap:0.5rem;font-family:'JetBrains Mono',monospace;font-size:0.74rem;color:var(--kai-accent);text-decoration:none;border:0.5px solid var(--kai-border);padding:0.6rem 1rem;background:var(--kai-surface);transition:border-color 0.15s}
+.demo-link:hover{border-color:var(--kai-accent)}
+.footer{margin-top:4rem;padding-top:1.5rem;border-top:0.5px solid var(--kai-border);display:flex;justify-content:space-between;align-items:baseline}
+.footer p{font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--kai-muted)}
+.footer a{color:var(--kai-muted);text-decoration:none}
+.footer a:hover{color:var(--kai-accent)}
+</style>
+
+<div class="page">
+  <h2 style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">KAI distributed computing framework</h2>
+
+  <nav class="nav">
+    <span class="nav-title">KAI</span>
+    <div class="nav-links">
+      <a href="#">Theory</a>
+      <a href="#">Languages</a>
+      <a href="#">Architecture</a>
+      <a href="https://github.com/cschladetsch/CppKAI">GitHub ↗</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <p class="hero-eyebrow">Distributed computing · C++23 · Est. ~2003</p>
+    <h1>KAI is a distributed computing<br>framework written in modern C++.</h1>
+    <p class="hero-sub">Full reflection, network-transparent continuations, and three custom languages — without requiring modification to existing source code.</p>
+    <div class="hero-cta">
+      <a class="btn-primary" href="https://github.com/cschladetsch/CppKAI">View on GitHub</a>
+      <a class="btn-ghost" href="#">Architecture overview →</a>
+    </div>
+  </section>
+
+  <hr>
+
+  <section style="margin-bottom:3rem">
+    <p class="section-label">Core properties</p>
+    <div class="pillars">
+      <div class="pillar">
+        <p class="pillar-num">01</p>
+        <h3>Network-transparent continuations</h3>
+        <p>Computations migrate between processes without the caller's knowledge. The continuation is the unit of distribution.</p>
+      </div>
+      <div class="pillar">
+        <p class="pillar-num">02</p>
+        <h3>Tri-colour incremental GC</h3>
+        <p>Generational, incremental collection across distributed object registries. No stop-the-world pauses.</p>
+      </div>
+      <div class="pillar">
+        <p class="pillar-num">03</p>
+        <h3>Full reflection, zero annotation</h3>
+        <p>Any registered C++ type becomes inspectable, persistable, and network-accessible without source changes.</p>
+      </div>
+      <div class="pillar">
+        <p class="pillar-num">04</p>
+        <h3>Structural persistence</h3>
+        <p>Freeze and thaw are symmetric operations. The object graph serialises to disk or across the network identically.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr>
+
+  <section style="margin-bottom:3rem">
+    <p class="section-label">Languages</p>
+    <p style="font-size:0.93rem;color:#888480;max-width:580px;margin-bottom:1.25rem;line-height:1.7">Three purpose-built languages with a defined compilation relationship. Rho compiles to Pi; Pi is what the executor runs. Tau is orthogonal — it defines distributed interfaces.</p>
+
+    <table class="lang-table">
+      <tr>
+        <td>π &nbsp;Pi</td>
+        <td>Execution substrate</td>
+        <td>RPN stack language. Minimal and imperative. The executor runs Pi directly; the stack and instruction pointer are the complete continuation state.</td>
+      </tr>
+      <tr>
+        <td>ρ &nbsp;Rho</td>
+        <td>Scripting layer</td>
+        <td>Structured syntax that compiles to Pi bytecode. Exists so that humans don't have to write Pi directly.</td>
+      </tr>
+      <tr>
+        <td>τ &nbsp;Tau</td>
+        <td>Interface definition</td>
+        <td>Describes distributed object contracts across process boundaries. Orthogonal to Pi and Rho.</td>
+      </tr>
+    </table>
+
+    <p style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--kai-muted);letter-spacing:0.1em;text-transform:uppercase;margin:2rem 0 1rem">Rho → Pi: adding two numbers</p>
+
+    <div class="example-flow">
+      <div class="flow-block">
+        <p class="flow-label">Rho (source)</p>
+        <pre><span class="cs">// structured syntax</span>
+<span class="ck">let</span> a = 3
+<span class="ck">let</span> b = 4
+<span class="ck">let</span> c = a + b
+<span class="cs">// c == 7</span></pre>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-block">
+        <p class="flow-label">Pi (compiled output)</p>
+        <pre><span class="cs">// RPN stack execution</span>
+<span class="cn">3</span> <span class="cn">4</span> <span class="ck">+</span>
+<span class="cs">// stack: [ 7 ]</span>
+<span class="cs">// executor resumes here</span></pre>
+      </div>
+    </div>
+
+    <p style="font-size:0.82rem;color:var(--kai-muted);margin-top:1rem;max-width:580px;line-height:1.6;margin-bottom:1.75rem">Because Pi's RPN form makes the entire execution state explicit, continuations can be frozen, transmitted, and resumed on a remote executor without loss.</p>
+
+    <a class="demo-link" href="https://cschladetsch.github.io/CppKAI/ContinuationMobilityDemo/ContinuationMobilityAnimation.html">
+      RhoMog model — continuation migration view ↗
+    </a>
+  </section>
+
+  <footer class="footer">
+    <p>Christian Schladetsch · Melbourne · <a href="https://github.com/cschladetsch/CppKAI">github.com/cschladetsch/CppKAI</a></p>
+    <p><a href="mailto:christian.schladetsch@gmail.com">Contact</a></p>
+  </footer>
+</div>
