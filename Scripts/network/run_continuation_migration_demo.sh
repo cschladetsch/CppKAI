@@ -66,7 +66,7 @@ if [ -z "$handle" ]; then
 fi
 
 echo "Starting client against handle $handle..."
-echo "CLIENT: compiling Pi continuation: { 2 * } 'double # 5 double &"
+echo "CLIENT: compiling stateful Pi workflow: step=3 accumulator=21 remaining=[4,5,6,6]"
 echo "CLIENT: freezing continuation and sending it to the server process"
 "$BIN" --client --host "$HOST" --port "$PORT" --handle "$handle" 2>&1 | tee "$CLIENT_LOG"
 
@@ -81,10 +81,10 @@ cat "$SERVER_LOG"
 echo "----- CLIENT LOG -----"
 cat "$CLIENT_LOG"
 
-if ! grep -q "MIGRATION_OK result=10" "$CLIENT_LOG"; then
+if ! grep -q "MIGRATION_OK result=42" "$CLIENT_LOG"; then
     echo "ERROR: migration did not complete successfully"
     exit 1
 fi
 
-echo "PROOF: the continuation moved processes, resumed remotely, and returned result=10."
+echo "PROOF: the stateful workflow moved processes, resumed remotely, and returned result=42."
 echo "Continuation migration demo completed successfully."

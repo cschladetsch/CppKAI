@@ -21,8 +21,8 @@ and snapshot-based recovery after a simulated host failure. Source of truth:
 The demo has three layers: the interactive RhoMog visualization explains the
 idea, `./Bin/ContinuationMobilityDemo` runs the deterministic executable model,
 and `./Scripts/network/run_continuation_migration_demo.sh` proves the runtime
-path by freezing a Pi continuation in one process, sending it to another
-process, thawing it, and resuming it.
+path by freezing a stateful Pi workflow in one process, sending it to another
+process, thawing it, resuming it, and returning `42`.
 
 Requires GitHub Pages enabled from the `master` branch root.
 

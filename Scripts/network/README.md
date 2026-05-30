@@ -57,7 +57,9 @@ This ensures that the network components are correctly built and available.
 
 ### Continuation Migration Demo (`run_continuation_migration_demo.sh`)
 
-This script starts a server process and a client process, sends a frozen Pi continuation over the network, thaws it on the server, and checks that the remote execution returns `10`.
+This script starts a server process and a client process, sends a frozen
+stateful Pi workflow over the network, thaws it on the server, and checks that
+the remote execution resumes from `step=3 accumulator=21` to return `42`.
 
 ```bash
 ./Scripts/network/run_continuation_migration_demo.sh

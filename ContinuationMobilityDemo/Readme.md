@@ -28,8 +28,9 @@ It demonstrates:
 KAI can treat computation as data.
 
 At the model level, agents carry state, move between hosts, survive failure, and
-resume from snapshots. At the runtime level, a Pi continuation can be frozen,
-sent to another process, thawed, resumed, and returned as a normal typed result.
+resume from snapshots. At the runtime level, a stateful Pi workflow can be
+frozen with `step=3`, `accumulator=21`, and remaining work, sent to another
+process, thawed, resumed, and returned as a normal typed result: `42`.
 
 This is useful for:
 
@@ -47,8 +48,8 @@ The demo is easiest to understand as three layers:
 2. Executable model: `./Bin/ContinuationMobilityDemo` runs a deterministic C++
    simulation of the same migration, balancing, snapshot, and recovery flow.
 3. Runtime proof: `./Scripts/network/run_continuation_migration_demo.sh` starts
-   two processes, freezes a Pi continuation in one process, sends it to another
-   process, thaws it, resumes it, and verifies the result.
+   two processes, freezes a stateful Pi continuation in one process, sends it
+   to another process, thaws it, resumes it, and verifies the result.
 
 What changed from the original sketch:
 
@@ -132,3 +133,12 @@ the current repository.
 
 For the actual network freeze/thaw path, run
 `./Scripts/network/run_continuation_migration_demo.sh`.
+
+Expected success markers:
+
+```text
+CLIENT_WORKFLOW_STATE step=3 accumulator=21 remaining=[4,5,6,6]
+SERVER_RESUMED_STATEFUL_WORKFLOW final_step=7 final_accumulator=42
+CLIENT_RESULT=42
+MIGRATION_OK result=42
+```

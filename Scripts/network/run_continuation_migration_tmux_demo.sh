@@ -87,7 +87,7 @@ driver() {
     tmux send-keys -t "$SESSION:demo.1" "$client_cmd" C-m
 
     deadline=$((SECONDS + 30))
-    while ! grep -q "MIGRATION_OK result=10" "$CLIENT_LOG"; do
+    while ! grep -q "MIGRATION_OK result=42" "$CLIENT_LOG"; do
         if ! tmux has-session -t "$SESSION" 2>/dev/null; then
             return 1
         fi
@@ -124,7 +124,7 @@ if [ -f "$SERVER_LOG" ] && [ -f "$CLIENT_LOG" ]; then
     cat "$CLIENT_LOG"
 fi
 
-if ! grep -q "MIGRATION_OK result=10" "$CLIENT_LOG" 2>/dev/null; then
+if ! grep -q "MIGRATION_OK result=42" "$CLIENT_LOG" 2>/dev/null; then
     echo "ERROR: migration did not complete successfully"
     exit 1
 fi

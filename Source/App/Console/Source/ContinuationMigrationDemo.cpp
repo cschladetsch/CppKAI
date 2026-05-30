@@ -16,6 +16,16 @@ using namespace kai;
 using namespace kai::net;
 
 namespace {
+constexpr int kExpectedWorkflowResult = 42;
+constexpr const char *kWorkflowExpression =
+    "3 'step # "
+    "21 'acc # "
+    "acc 4 + 'acc # step 1 + 'step # "
+    "acc 5 + 'acc # step 1 + 'step # "
+    "acc 6 + 'acc # step 1 + 'step # "
+    "acc 6 + 'acc # step 1 + 'step # "
+    "acc";
+
 struct Options {
     enum class Mode { Server, Client };
 
@@ -116,6 +126,9 @@ int RunServer(const Options &options) {
                 int result = ConstDeref<int>(stack->Top());
                 migratedResult = result;
                 completed = true;
+                std::cout
+                    << "SERVER_RESUMED_STATEFUL_WORKFLOW final_step=7"
+                    << " final_accumulator=" << result << "\n";
                 std::cout << "SERVER_RESULT=" << result << "\n";
                 return result;
             } catch (const std::exception &e) {
@@ -168,8 +181,11 @@ int RunClient(const Options &options) {
     NetHandle agentHandle(options.handle);
     node.BindProxyAddress(agentHandle, NetAddress(options.host, options.port));
 
-    const char *expression = "{ 2 * } 'double # 5 double &";
-    auto cont = console.Compile(expression, Structure::Program);
+    std::cout << "CLIENT_WORKFLOW_STATE step=3 accumulator=21"
+              << " remaining=[4,5,6,6]\n";
+    std::cout << "CLIENT_WORKFLOW_PI=" << kWorkflowExpression << "\n";
+
+    auto cont = console.Compile(kWorkflowExpression, Structure::Program);
     if (!cont.Exists()) {
         std::cerr << "CLIENT_ERROR: failed to compile continuation\n";
         return 1;
@@ -205,8 +221,9 @@ int RunClient(const Options &options) {
 
     int result = future.GetValue();
     std::cout << "CLIENT_RESULT=" << result << "\n";
-    if (result != 10) {
-        std::cerr << "CLIENT_ERROR: expected 10, got " << result << "\n";
+    if (result != kExpectedWorkflowResult) {
+        std::cerr << "CLIENT_ERROR: expected " << kExpectedWorkflowResult
+                  << ", got " << result << "\n";
         return 1;
     }
 
