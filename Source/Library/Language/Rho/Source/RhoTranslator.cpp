@@ -1094,8 +1094,21 @@ void RhoTranslator::TranslateCall(AstNodePtr node) {
     // Now translate the function identifier (this pushes the continuation)
     TranslateNode(funcNode);
 
-    // Add the call operation - Suspend expects the continuation on top of stack
-    AppendDirectOperation(Operation::Suspend);
+    Operation::Type callOp = Operation::Suspend;
+    if (node->GetChildren().size() >= 3) {
+        const auto control = node->GetChild(2)->GetToken().type;
+        if (control == RhoTokenEnumType::Not ||
+            control == RhoTokenEnumType::Replace) {
+            callOp = Operation::Replace;
+        } else if (control == RhoTokenEnumType::Resume) {
+            callOp = Operation::Resume;
+        } else {
+            callOp = Operation::Suspend;
+        }
+    }
+
+    // Suspend expects the continuation on top of stack.
+    AppendDirectOperation(callOp);
 
     KAI_TRACE() << "Function call successfully translated";
 }

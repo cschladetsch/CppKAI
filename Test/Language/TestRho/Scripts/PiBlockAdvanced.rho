@@ -2,18 +2,43 @@
 // Tests for Pi blocks as first-class values, closure capture, argument passing,
 // loop bodies, and higher-order function patterns.
 
-// ── 1. Pi block stored as a variable and invoked ─────────────────────────────
+// -- 1. Pi block stored as a variable and invoked -----------------------------
 double = pi { 2 * }
-result = 5 double @
+result = double(5)
 assert result == 10
 
 triple = pi { 3 * }
-result = 7 triple @
+result = triple(7)
 assert result == 21
 
-// ── 2. Pi block passed as argument ───────────────────────────────────────────
+result = triple(8)&
+assert result == 24
+
+resume_into_call = fun(x)
+    triple(x)...
+    return 999
+
+assert resume_into_call(3) == 9
+
+replace_with_call = fun(x)
+    triple(x)!
+    return 999
+
+assert replace_with_call(4) == 12
+
+resume_outer = fun(x)
+    return resume_into_call(x) + 1
+
+assert resume_outer(3) == 10
+
+replace_outer = fun(x)
+    return replace_with_call(x) + 1
+
+assert replace_outer(4) == 12
+
+// -- 2. Pi block passed as argument -------------------------------------------
 apply = fun(f, x)
-    return x f @
+    return f(x)
 
 result = apply(pi { 2 * }, 6)
 assert result == 12
@@ -21,19 +46,19 @@ assert result == 12
 result = apply(pi { dup * }, 4)
 assert result == 16
 
-// ── 3. Closure capture from enclosing fun scope ──────────────────────────────
+// -- 3. Closure capture from enclosing fun scope ------------------------------
 make_adder = fun(n)
     return pi { n + }
 
 add5 = make_adder(5)
-result = 10 add5 @
+result = add5(10)
 assert result == 15
 
 add100 = make_adder(100)
-result = 1 add100 @
+result = add100(1)
 assert result == 101
 
-// ── 4. Pi block captures loop variable ───────────────────────────────────────
+// -- 4. Pi block captures loop variable ---------------------------------------
 // Each iteration builds a block that captures i and executes immediately
 sum = 0
 for (i = 1; i <= 5; i = i + 1) {

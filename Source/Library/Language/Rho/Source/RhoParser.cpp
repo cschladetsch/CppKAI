@@ -905,7 +905,11 @@ bool RhoParser::ParseMethodCall() {
     Push(call);
     Expect(TokenType::CloseParan);
 
-    if (Try(TokenType::Replace)) return call->Add(Consume());
+    if (Try(TokenType::BitAnd) || Try(TokenType::Not) ||
+        Try(TokenType::Resume) || Try(TokenType::Suspend) ||
+        Try(TokenType::Replace)) {
+        return call->Add(Consume());
+    }
     return true;
 }
 

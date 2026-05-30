@@ -153,7 +153,7 @@ bool RhoLexer::NextToken() {
                 Next();
                 if (Peek() == '.') {
                     Next();
-                    return Add(Enum::Replace, 3);
+                    return Add(Enum::Resume, 3);
                 }
                 return Fail("Two dots doesn't work");
             }

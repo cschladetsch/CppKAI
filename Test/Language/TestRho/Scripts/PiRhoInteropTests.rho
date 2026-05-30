@@ -51,7 +51,7 @@ triple = pi { 3 * }
 nums = [2, 4, 6]
 tripled = []
 for (i = 0; i < nums.Count; i = i + 1) {
-    tripled.append(nums[i] triple @)
+    tripled.append(triple(nums[i]))
 }
 assert tripled[0] == 6
 assert tripled[1] == 12
@@ -59,7 +59,7 @@ assert tripled[2] == 18
 
 // nested Pi/Rho: Pi inside Rho function
 apply_twice = fun(f, x)
-    return (x f @) f @
+    return f(f(x))
 
 inc = pi { 1 + }
 assert apply_twice(inc, 5) == 7
@@ -72,7 +72,7 @@ powers = []
 base2 = pi { 2 * }
 v = 1
 for (i = 0; i < 5; i = i + 1) {
-    v = v base2 @
+    v = base2(v)
     powers.append(v)
 }
 assert powers[0] == 2

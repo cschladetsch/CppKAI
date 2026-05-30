@@ -460,6 +460,10 @@ void Executor::Perform(Operation::Type op) {
                 continuation_->Enter(this);
             }
 
+            if (context_.Exists() && !context_->Empty()) {
+                context_->Pop();
+            }
+
             // Set replace_ = true to signal that continuation has been
             // replaced. Set break_ = true to exit any inline execution (like
             // ExecuteContinuationInline) The Continue() loop will see
@@ -470,6 +474,17 @@ void Executor::Perform(Operation::Type op) {
         }
 
         case Operation::Resume:
+            if (!data_->Empty() && data_->Top().IsType<Continuation>()) {
+                Object obj = Pop();
+                continuation_ = NewContinuation(obj);
+                if (continuation_.Exists()) {
+                    continuation_->InitialStackDepth = data_->Size();
+                    continuation_->Enter(this);
+                }
+                break_ = true;
+                break;
+            }
+
             // Non-local exit: unwind the entire context stack and stop.
             // `...` is a "return to top-level" — it escapes all nested
             // continuations, including any outer block that called the current
