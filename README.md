@@ -12,11 +12,11 @@ Objects and *compute* can be distributed across Nodes in a Domain.
 
 ![Continuation Mobility Demo](resources/Snap2.png)
 
-**[▶ Live Interactive Demo](https://cschladetsch.github.io/CppKAI/ContinuationMobilityDemo/)**
+**[▶ Live Interactive Demo](https://cschladetsch.github.io/CppKAI/Demo/ContinuationMobilityDemo/)**
 
 Animated walk-through of agent migration, Pi-guided routing, load balancing,
 and snapshot-based recovery after a simulated host failure. Source of truth:
-[`ContinuationMobilityDemo.rho`](ContinuationMobilityDemo/ContinuationMobilityDemo.rho).
+[`ContinuationMobilityDemo.rho`](Demo/ContinuationMobilityDemo/ContinuationMobilityDemo.rho).
 
 The demo has three layers: the interactive RhoMog visualization explains the
 idea, `./Bin/ContinuationMobilityDemo` runs the deterministic executable model,

@@ -9,7 +9,7 @@ _Rho_ is internally translated to _Pi_ for use in a single _Executor_ that suppo
 
 The clearest single-file example of the migration story in this tree now lives
 at
-[ContinuationMobilityDemo/ContinuationMobilityDemo.rho](../../../../ContinuationMobilityDemo/ContinuationMobilityDemo.rho).
+[Demo/ContinuationMobilityDemo/ContinuationMobilityDemo.rho](../../../../Demo/ContinuationMobilityDemo/ContinuationMobilityDemo.rho).
 
 It is intentionally explicit:
 

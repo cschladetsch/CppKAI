@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PORT="${PORT:-8080}"
+HOST="${HOST:-127.0.0.1}"
+START_PATH="${START_PATH:-/Demo/DemoConintuationLocal/}"
+URL="http://${HOST}:${PORT}${START_PATH}"
+
+if ! command -v python3 >/dev/null 2>&1; then
+  echo "python3 is required to serve the demo." >&2
+  exit 1
+fi
+
+if command -v lsof >/dev/null 2>&1 && lsof -iTCP:"${PORT}" -sTCP:LISTEN >/dev/null 2>&1; then
+  echo "Port ${PORT} is already in use. Set PORT=8081 ./demo to choose another port." >&2
+  exit 1
+fi
+
+echo "Serving combined demo from ${ROOT_DIR}"
+echo "Open: ${URL}"
+echo "Use Ctrl-C to stop."
+
+if [[ "${OPEN_BROWSER:-1}" != "0" ]]; then
+  if command -v xdg-open >/dev/null 2>&1; then
+    xdg-open "${URL}" >/dev/null 2>&1 &
+  elif command -v open >/dev/null 2>&1; then
+    open "${URL}" >/dev/null 2>&1 &
+  fi
+fi
+
+cd "${ROOT_DIR}"
+python3 -m http.server "${PORT}" --bind "${HOST}"

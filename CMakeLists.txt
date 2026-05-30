@@ -329,7 +329,7 @@ foreach(top ${TopLevels})
 endforeach()
 
 # Standalone runnable demos
-add_subdirectory(ContinuationMobilityDemo)
+add_subdirectory(Demo/ContinuationMobilityDemo)
 
 # Set up main library dependencies
 if(TARGET Executor)

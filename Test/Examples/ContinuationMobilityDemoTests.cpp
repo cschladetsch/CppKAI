@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 
 #define KAI_DEMO1_NO_MAIN
-#include "../../ContinuationMobilityDemo/ContinuationMobilityDemo.cpp"
+#include "../../Demo/ContinuationMobilityDemo/ContinuationMobilityDemo.cpp"
 
 namespace {
 

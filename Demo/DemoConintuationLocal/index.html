@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DemoConintuationLocal</title>
+  <link rel="stylesheet" href="../ContinuationMobilityDemo/style.css">
+  <link rel="stylesheet" href="./local.css">
+</head>
+<body>
+  <main class="page local-demo">
+    <nav class="page-nav">
+      <a class="page-link" href="../ContinuationMobilityDemo/ContinuationMobilityDemo.html">System View</a>
+      <a class="page-link" href="../ContinuationMobilityDemo/ContinuationMobilityAnimation.html">Migration View</a>
+      <a class="page-link" href="../ContinuationMobilityDemo/Description.html">RhoMog Model</a>
+      <a class="page-link active" href="./index.html">Local Continuations</a>
+    </nav>
+
+    <section class="local-hero">
+      <div>
+        <h1 class="page-title">DemoConintuationLocal</h1>
+        <p class="page-subtitle">
+          A local debugger for seeing exactly how Rho call forms map onto Pi continuation control:
+          Suspend keeps a return point, Resume switches without adding one, and Replace discards the current top context before switching.
+        </p>
+      </div>
+      <div class="metrics-row">
+        <div class="metric">
+          <span class="metric-label">Mode</span>
+          <span class="metric-value" id="modeMetric">Suspend</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Step</span>
+          <span class="metric-value" id="stepMetric">0</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="toolbar card">
+      <label class="control-group">
+        <span class="control-label">Preset</span>
+        <select id="presetSelect" aria-label="Preset"></select>
+      </label>
+      <div class="segmented" role="group" aria-label="Continuation operation">
+        <button type="button" data-mode="suspend" class="active">Suspend</button>
+        <button type="button" data-mode="resume">Resume</button>
+        <button type="button" data-mode="replace">Replace</button>
+      </div>
+      <div class="button-row">
+        <button type="button" id="resetBtn">Reset</button>
+        <button type="button" id="stepBtn" class="primary">Step</button>
+        <button type="button" id="runBtn">Run</button>
+        <button type="button" id="syncBtn">Read Code</button>
+      </div>
+    </section>
+
+    <section class="editor-grid">
+      <article class="panel">
+        <div class="panel-head">
+          <h2 class="panel-title">Rho Source</h2>
+          <span class="panel-note" id="rhoCursorLabel">line 1</span>
+        </div>
+        <div class="source-shell">
+          <div class="source-cursor" id="rhoCursor"></div>
+          <textarea id="rhoSource" spellcheck="false"></textarea>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head">
+          <h2 class="panel-title">Pi Program</h2>
+          <span class="panel-note" id="piCursorLabel">line 1</span>
+        </div>
+        <div class="source-shell">
+          <div class="source-cursor" id="piCursor"></div>
+          <textarea id="piSource" spellcheck="false"></textarea>
+        </div>
+      </article>
+    </section>
+
+    <section class="panel pi-workbench">
+      <div class="panel-head">
+        <h2 class="panel-title">Interactive Pi Stack</h2>
+      </div>
+      <div class="pi-stack-grid">
+        <div>
+          <h3>Instruction Stream</h3>
+          <div id="piProgram" class="instruction-list"></div>
+        </div>
+        <div>
+          <h3>Stack</h3>
+          <div class="stack-index-head">
+            <span>Index</span>
+            <span>Value</span>
+          </div>
+          <div id="piStack" class="stack-list interactive-stack"></div>
+          <div class="stack-footer">
+            <input id="stackAppendInput" class="stack-input stack-input-wide" type="text" value="42" aria-label="Append stack value">
+            <button type="button" id="stackAppendBtn">Push to Stack</button>
+          </div>
+          <div class="stack-controls">
+            <input id="stackInput" class="stack-input" type="text" value="42" aria-label="Stack value">
+            <button type="button" id="pushStackBtn">Push</button>
+            <button type="button" id="popStackBtn">Pop</button>
+            <button type="button" id="dupStackBtn">Dup</button>
+            <button type="button" id="swapStackBtn">Swap</button>
+            <button type="button" id="dropStackBtn">Drop</button>
+            <button type="button" id="clearStackBtn">Clear</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="debug-grid">
+      <article class="panel timeline-panel">
+        <div class="panel-head">
+          <h2 class="panel-title">Stepper</h2>
+          <span class="panel-note" id="phaseNote">ready</span>
+        </div>
+        <ol class="timeline" id="timeline"></ol>
+      </article>
+
+      <article class="panel machine-panel">
+        <div class="panel-head">
+          <h2 class="panel-title">Executor State</h2>
+          <span class="panel-note">abstract VM</span>
+        </div>
+        <div class="state-grid">
+          <div class="stack-box">
+            <h3>Current Continuation</h3>
+            <div id="currentStack" class="stack-list"></div>
+          </div>
+          <div class="stack-box">
+            <h3>Context Stack</h3>
+            <div id="contextStack" class="stack-list"></div>
+          </div>
+          <div class="stack-box">
+            <h3>Data Stack</h3>
+            <div id="dataStack" class="stack-list"></div>
+          </div>
+        </div>
+
+        <div class="tab-panel">
+          <div class="tab-list" role="tablist" aria-label="Debugger output">
+            <button type="button" class="tab-button active" data-tab="debug">Debug</button>
+            <button type="button" class="tab-button" data-tab="errors">Errors</button>
+          </div>
+          <div class="tab-pane active" id="tab-debug" role="tabpanel">
+            <div id="debugOutput" class="output-list"></div>
+          </div>
+          <div class="tab-pane" id="tab-errors" role="tabpanel">
+            <div id="errorOutput" class="output-list"></div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="panel compare-panel">
+      <div class="panel-head">
+        <h2 class="panel-title">Difference At The Call Site</h2>
+        <span class="panel-note">same callee, different continuation control</span>
+      </div>
+      <div class="compare-grid">
+        <div class="compare-card" data-kind="suspend">
+          <strong>f(a) or f(a)&</strong>
+          <span>Push current continuation and return here when f completes.</span>
+        </div>
+        <div class="compare-card" data-kind="resume">
+          <strong>f(a)...</strong>
+          <span>Switch to f without pushing a return point. Existing context stays intact.</span>
+        </div>
+        <div class="compare-card" data-kind="replace">
+          <strong>f(a)!</strong>
+          <span>Switch to f and drop the current top context stack entry.</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="../ContinuationMobilityDemo/demoStyle.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

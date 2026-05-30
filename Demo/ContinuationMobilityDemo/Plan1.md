@@ -44,9 +44,9 @@ demo:
 
 Automated coverage now lives in two places:
 
-- [ContinuationMobilityDemoScriptTest.cpp](../Test/Language/TestRho/ContinuationMobilityDemoScriptTest.cpp)
+- [ContinuationMobilityDemoScriptTest.cpp](../../Test/Language/TestRho/ContinuationMobilityDemoScriptTest.cpp)
   verifies that the Rho source file executes successfully
-- [ContinuationMobilityDemoTests.cpp](../Test/Examples/ContinuationMobilityDemoTests.cpp)
+- [ContinuationMobilityDemoTests.cpp](../../Test/Examples/ContinuationMobilityDemoTests.cpp)
   verifies the reference executable model
 
 ## Future Direction

@@ -9,7 +9,7 @@ TEST(ContinuationMobilityDemoScriptTest, ScriptExecutesSuccessfully) {
     kai::Console console;
     console.SetLanguage(kai::Language::Rho);
 
-    std::ifstream file("ContinuationMobilityDemo/ContinuationMobilityDemo.rho");
+    std::ifstream file("Demo/ContinuationMobilityDemo/ContinuationMobilityDemo.rho");
     ASSERT_TRUE(file.is_open());
 
     std::stringstream buffer;
