@@ -36,6 +36,7 @@ if [ ! -x "$BIN" ]; then
 fi
 
 echo "Starting server on $HOST:$PORT..."
+echo "SERVER: will thaw and resume the migrated Pi continuation"
 "$BIN" --server --host "$HOST" --port "$PORT" >"$SERVER_LOG" 2>&1 &
 SERVER_PID=$!
 
@@ -65,6 +66,8 @@ if [ -z "$handle" ]; then
 fi
 
 echo "Starting client against handle $handle..."
+echo "CLIENT: compiling Pi continuation: { 2 * } 'double # 5 double &"
+echo "CLIENT: freezing continuation and sending it to the server process"
 "$BIN" --client --host "$HOST" --port "$PORT" --handle "$handle" 2>&1 | tee "$CLIENT_LOG"
 
 wait "$SERVER_PID"
@@ -83,4 +86,5 @@ if ! grep -q "MIGRATION_OK result=10" "$CLIENT_LOG"; then
     exit 1
 fi
 
+echo "PROOF: the continuation moved processes, resumed remotely, and returned result=10."
 echo "Continuation migration demo completed successfully."

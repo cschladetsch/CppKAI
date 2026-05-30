@@ -52,7 +52,9 @@ Comprehensive test runner that executes all test suites:
 Contains specialized networking scripts:
 - **run_peers.sh** - Start multiple peer instances
 - **automated_demo.sh** - Automated network demonstration
-- **run_continuation_migration_demo.sh** - Two-process continuation migration proof
+- **run_continuation_migration_demo.sh** - Two-process proof that freezes a Pi
+  continuation in one process, sends it to another process, thaws it, resumes
+  it, and verifies the returned result
 - **run_continuation_migration_tmux_demo.sh** - tmux-friendly continuation migration demo
 
 ## Analysis Scripts
@@ -104,6 +106,10 @@ Calculator functionality testing script.
 
 # Language feature demo
 ./Scripts/run_rho_demo.sh
+
+# Continuation mobility proof stack
+./Bin/ContinuationMobilityDemo
+./Scripts/network/run_continuation_migration_demo.sh
 ```
 
 ## Script Requirements
