@@ -125,6 +125,7 @@ foreach (lang ${langs})
             ${source_path}/SimpleDoWhileContinueTest.cpp     # Test do-while continue
             ${source_path}/ExtensiveContainerTests.cpp       # Extensive container tests
             ${source_path}/AdvancedForLoopTests.cpp          # Advanced for loop tests
+            ${source_path}/RhoVeryComplexTests.cpp           # Complex nested Rho/Pi integration tests
         )
     elseif(lang STREQUAL "Pi")
         # Explicitly list Pi tests to avoid including unwanted files
@@ -160,6 +161,7 @@ foreach (lang ${langs})
             ${source_path}/PiTailRecursionTests.cpp         # Focused tail recursion tests using ! (Replace)
             ${source_path}/PiComprehensiveTests.cpp         # 50 comprehensive Pi tests covering Resume, Replace, loops, nesting
             ${source_path}/PiAdvancedTests.cpp              # 100 advanced Pi tests: recursion, mutual recursion, tail recursion, nested calls
+            ${source_path}/PiVeryComplexTests.cpp           # Complex continuation and loop tests
             # Larger tests to include if needed:
             #${source_path}/TestPiAdvanced.cpp
             #${source_path}/TestPiAdvanced2.cpp
@@ -190,6 +192,7 @@ foreach (lang ${langs})
             ${source_path}/TauCodeGenerationExtensiveTests.cpp  # Extensive code generation tests
             ${source_path}/TauComprehensiveTests.cpp       # 100 comprehensive tests covering all Tau features
             ${source_path}/TauFutureProxyTests.cpp         # 50 Future<T> proxy->method pattern tests
+            ${source_path}/TauVeryComplexTests.cpp         # Complex nested Tau proxy/agent generation tests
         )
     else()
         # For other languages, use the standard approach
