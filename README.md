@@ -16,7 +16,7 @@ Objects and *compute* can be distributed across Nodes in a Domain.
 
 Animated walk-through of agent migration, Pi-guided routing, load balancing,
 and snapshot-based recovery after a simulated host failure. Source of truth:
-[`ContinuationMobilityDemo.rho`](Demo/ContinuationMobilityDemo/ContinuationMobilityDemo.rho).
+[`ContinuationMobilityDemo.rho`](Demo/ContinuationMobilityDemo/ContinuationMobilityDemo.html).
 
 The demo has three layers: the interactive RhoMog visualization explains the
 idea, `./Bin/ContinuationMobilityDemo` runs the deterministic executable model,
