@@ -8,6 +8,6 @@ fun b
 	sum = 0
 	for x in a()
 		sum += x
-	assert sum == 3
+	assert(sum == 3)
 
 

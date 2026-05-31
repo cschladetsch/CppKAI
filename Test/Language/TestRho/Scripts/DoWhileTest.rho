@@ -9,4 +9,4 @@ do
 while (i < 5)
 
 // Verify result - should be 0+1+2+3+4 = 10
-assert sum == 10
+assert(sum == 10)

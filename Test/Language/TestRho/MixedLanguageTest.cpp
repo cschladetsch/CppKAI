@@ -35,7 +35,7 @@ TEST_F(MixedLanguageTest, PiToRhoTransition) {
 TEST_F(MixedLanguageTest, RhoToPiTransition) {
     // Start with Rho - create a function
     console_.SetLanguage(Language::Rho);
-    console_.Execute("square = fun(x) { x * x }", Structure::Statement);
+    console_.Execute("square = fun(x)\n    x * x", Structure::Statement);
     console_.Execute("myArray = [1, 2, 3, 4, 5]", Structure::Statement);
 
     // Switch to Pi and use Rho-created function
@@ -89,7 +89,7 @@ TEST_F(MixedLanguageTest, SharedDataStructures) {
 TEST_F(MixedLanguageTest, FunctionInterop) {
     // Create functions in both languages
     console_.SetLanguage(Language::Rho);
-    console_.Execute("add = fun(a, b) { a + b }", Structure::Statement);
+    console_.Execute("add = fun(a, b)\n    a + b", Structure::Statement);
 
     console_.SetLanguage(Language::Pi);
     console_.Execute("{ * } 'multiply #", Structure::Statement);

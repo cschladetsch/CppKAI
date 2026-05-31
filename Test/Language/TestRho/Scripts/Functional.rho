@@ -1,4 +1,4 @@
 
 e = fun(f)
 	return e(2)
-assert e()
+assert(e())

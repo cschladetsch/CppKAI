@@ -1,4 +1,4 @@
-assert 1
+assert(1)
 'a = 1+2
-assert a == 3
+assert(a == 3)
 

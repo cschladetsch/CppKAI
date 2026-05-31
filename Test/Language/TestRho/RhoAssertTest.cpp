@@ -28,7 +28,7 @@ TEST(RhoLanguage, AssertTest) {
     console.GetExecutor()->GetDataStack()->Clear();
 
     // Test a passing assertion
-    cout << "Testing Pi assert with true value (should pass)" << endl;
+    cout << "Testing Pi assert(with true value (should pass))" << endl;
 
     // This should succeed without error
     String result1 = console.Process("true assert");
@@ -41,13 +41,13 @@ TEST(RhoLanguage, AssertTest) {
     // exceptions and might return an empty string or a string with an exception
     // message. Either is acceptable as long as the real assertion fails
     // internally.
-    cout << "Testing Pi assert with false value (should fail)" << endl;
+    cout << "Testing Pi assert(with false value (should fail))" << endl;
 
     // Create a small program that asserts false - it should fail
     String result2 = console.Process("false assert");
 
-    // Since we successfully verified that true assert works, and we're seeing
-    // in the logs that false assert generates the correct error, we'll count
+    // Since we successfully verified that true assert(works, and we're seeing)
+    // in the logs that false assert(generates the correct error, we'll count)
     // this test as passing regardless of if the error message is propagated
     // through Process()
 

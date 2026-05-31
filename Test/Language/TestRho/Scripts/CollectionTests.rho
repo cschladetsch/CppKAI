@@ -2,30 +2,30 @@
 
 // basic array
 arr = [1, 2, 3, 4, 5]
-assert arr.Count == 5
-assert arr[0] == 1
-assert arr[4] == 5
+assert(arr.Count == 5)
+assert(arr[0] == 1)
+assert(arr[4] == 5)
 
 // array append
 arr2 = []
 arr2.append(10)
 arr2.append(20)
 arr2.append(30)
-assert arr2.Count == 3
-assert arr2[1] == 20
+assert(arr2.Count == 3)
+assert(arr2[1] == 20)
 
 // array sum via for loop
 total = 0
 for (i = 0; i < arr.Count; i = i + 1) {
     total = total + arr[i]
 }
-assert total == 15
+assert(total == 15)
 
 // nested arrays
 matrix = [[1, 2], [3, 4], [5, 6]]
-assert matrix[0][0] == 1
-assert matrix[1][1] == 4
-assert matrix[2][0] == 5
+assert(matrix[0][0] == 1)
+assert(matrix[1][1] == 4)
+assert(matrix[2][0] == 5)
 
 // nested array sum
 flat_sum = 0
@@ -34,49 +34,49 @@ for (i = 0; i < matrix.Count; i = i + 1) {
         flat_sum = flat_sum + matrix[i][j]
     }
 }
-assert flat_sum == 21
+assert(flat_sum == 21)
 
 // array of Pi blocks
 ops = [pi { 1 + }, pi { 2 * }, pi { 3 - }]
 val = 5
 val = val ops[0] @
-assert val == 6
+assert(val == 6)
 val = val ops[1] @
-assert val == 12
+assert(val == 12)
 val = val ops[2] @
-assert val == 9
+assert(val == 9)
 
 // map literal
 person = { name: "Aldric", level: 10 }
-assert person.name == "Aldric"
-assert person.level == 10
+assert(person.name == "Aldric")
+assert(person.level == 10)
 
 // map mutation
 person.level = 11
-assert person.level == 11
+assert(person.level == 11)
 
 // nested map
 world = { region: { name: "Ironhold", host: "NodeA" }, population: 4 }
-assert world.region.name == "Ironhold"
-assert world.region.host == "NodeA"
-assert world.population == 4
+assert(world.region.name == "Ironhold")
+assert(world.region.host == "NodeA")
+assert(world.population == 4)
 
 // array of maps
 heroes = []
 heroes.append({ name: "Aldric", cls: "Knight" })
 heroes.append({ name: "Seraphine", cls: "Mage" })
 heroes.append({ name: "Corvin", cls: "Rogue" })
-assert heroes.Count == 3
-assert heroes[0].name == "Aldric"
-assert heroes[2].cls == "Rogue"
+assert(heroes.Count == 3)
+assert(heroes[0].name == "Aldric")
+assert(heroes[2].cls == "Rogue")
 
 // build array from map values
 names = []
 for (i = 0; i < heroes.Count; i = i + 1) {
     names.append(heroes[i].name)
 }
-assert names[0] == "Aldric"
-assert names[2] == "Corvin"
+assert(names[0] == "Aldric")
+assert(names[2] == "Corvin")
 
 // array contains check via recursion
 contains = fun(arr, val)
@@ -85,8 +85,8 @@ contains = fun(arr, val)
     }
     return false
 
-assert contains([1, 2, 3], 2) == true
-assert contains([1, 2, 3], 9) == false
+assert(contains([1, 2, 3], 2) == true)
+assert(contains([1, 2, 3], 9) == false)
 
 // array reverse via recursion
 reverse = fun(arr)
@@ -99,7 +99,7 @@ reverse = fun(arr)
     return result
 
 rev = reverse([1, 2, 3, 4, 5])
-assert rev[0] == 5
-assert rev[4] == 1
+assert(rev[0] == 5)
+assert(rev[4] == 1)
 
 System.Print("CollectionTests: all tests passed")

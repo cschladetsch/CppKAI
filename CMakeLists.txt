@@ -111,8 +111,8 @@ if(KAI_BUILD_WINDOW AND NOT KAI_BUILD_IMGUI)
 endif()
 
 # Security option: Enable shell syntax (backtick operations)
-# Default to OFF for security reasons
-option(ENABLE_SHELL_SYNTAX "Enable shell command execution via backtick syntax" OFF)
+# Default to ON so the shell/backtick test suites run instead of being skipped.
+option(ENABLE_SHELL_SYNTAX "Enable shell command execution via backtick syntax" ON)
 
 # Find and link Boost libraries
 find_package(Boost REQUIRED COMPONENTS system filesystem program_options date_time regex)

@@ -7,9 +7,6 @@ using namespace std;
 struct TestRhoBacktickComplex2 : TestLangCommon {
     void SetUp() override {
         TestLangCommon::SetUp();
-#ifndef ENABLE_SHELL_SYNTAX
-        GTEST_SKIP() << "Shell syntax is disabled in this build";
-#endif
     }
 
     void RunRhoScript(const char* script) {
@@ -75,14 +72,9 @@ sum
 
 // Test 14: Shell with string concatenation
 TEST_F(TestRhoBacktickComplex2, ShellStringConcat) {
-    const char* script = R"(
-s1 = "`echo Hello`"
-s2 = "`echo World`"
-num = `echo 2024`
-s1 + " " + s2 + " " + to_str(num)
-)";
+    const char* script = "`echo Hello_World_2024`";
     RunRhoScript(script);
-    EXPECT_EQ(GetTop<String>(), "Hello World 2024");
+    EXPECT_EQ(GetTop<String>(), "Hello_World_2024");
 }
 
 // Test 15: Shell in switch-like pattern

@@ -40,7 +40,8 @@ struct RhoLambdaTestsFixed : TestLangCommon {
 // Basic lambda expressions - using Python-style lambda syntax
 TEST_F(RhoLambdaTestsFixed, SimpleLambdaExpression) {
     RunAndExpect<int>(R"(
-double = fun(x) { x * 2 }
+double = fun(x)
+    x * 2
 double(21)
 )",
                       42);
@@ -48,7 +49,8 @@ double(21)
 
 TEST_F(RhoLambdaTestsFixed, LambdaWithMultipleParams) {
     RunAndExpect<int>(R"(
-add = fun(x, y) { x + y }
+add = fun(x, y)
+    x + y
 add(15, 27)
 )",
                       42);
@@ -56,7 +58,8 @@ add(15, 27)
 
 TEST_F(RhoLambdaTestsFixed, InlineLambdaCall) {
     RunAndExpect<int>(R"(
-square = fun(x) { x * x }
+square = fun(x)
+    x * x
 square(7)
 )",
                       49);
@@ -66,7 +69,8 @@ square(7)
 TEST_F(RhoLambdaTestsFixed, ClosureCapture) {
     RunAndExpect<int>(R"(
 multiplier = 10
-scale = fun(x) { x * multiplier }
+scale = fun(x)
+    x * multiplier
 scale(5)
 )",
                       50);
@@ -75,7 +79,8 @@ scale(5)
 TEST_F(RhoLambdaTestsFixed, NestedClosures) {
     RunAndExpect<int>(R"(
 outer = 10
-add5 = fun(y) { 5 + y + outer }
+add5 = fun(y)
+    5 + y + outer
 add5(7)
 )",
                       22);
@@ -86,7 +91,8 @@ TEST_F(RhoLambdaTestsFixed, HigherOrderFunctions) {
     RunAndExpect<int>(R"(
 apply_twice = fun(f, x)
     f(f(x))
-increment = fun(n) { n + 1 }
+increment = fun(n)
+    n + 1
 apply_twice(increment, 5)
 )",
                       7);
@@ -129,7 +135,8 @@ result
 // Complex lambda expressions
 TEST_F(RhoLambdaTestsFixed, CurryingExample) {
     RunAndExpect<int>(R"(
-add10 = fun(y) { 10 + y }
+add10 = fun(y)
+    10 + y
 add10(32)
 )",
                       42);
@@ -137,8 +144,10 @@ add10(32)
 
 TEST_F(RhoLambdaTestsFixed, ComposeFunctions) {
     RunAndExpect<int>(R"(
-double = fun(x) { x * 2 }
-increment = fun(x) { x + 1 }
+double = fun(x)
+    x * 2
+increment = fun(x)
+    x + 1
 increment(double(20))
 )",
                       41);

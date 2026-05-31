@@ -7,7 +7,7 @@ for (i = 1; i <= 3; i = i + 1) {
         sum = sum + i * j
     }
 }
-assert sum == 36
+assert(sum == 36)
 
 // nested while loops
 outer = 0
@@ -20,7 +20,7 @@ while (i <= 4) {
     }
     i = i + 1
 }
-assert outer == 16
+assert(outer == 16)
 
 // for inside while
 total = 0
@@ -31,7 +31,7 @@ while (n > 0) {
     }
     n = n - 1
 }
-assert total == 10
+assert(total == 10)
 
 // while inside for
 count = 0
@@ -42,7 +42,7 @@ for (i = 0; i < 4; i = i + 1) {
         x = x - 1
     }
 }
-assert count == 6
+assert(count == 6)
 
 // break out of inner loop only
 result = 0
@@ -54,7 +54,7 @@ for (i = 1; i <= 3; i = i + 1) {
         result = result + 1
     }
 }
-assert result == 6
+assert(result == 6)
 
 // continue in inner loop
 result = 0
@@ -66,7 +66,7 @@ for (i = 1; i <= 3; i = i + 1) {
         result = result + 1
     }
 }
-assert result == 9
+assert(result == 9)
 
 // triple nested for
 total = 0
@@ -77,7 +77,7 @@ for (a = 1; a <= 2; a = a + 1) {
         }
     }
 }
-assert total == 8
+assert(total == 8)
 
 // simple recursion - factorial
 factorial = fun(n)
@@ -86,10 +86,10 @@ factorial = fun(n)
     }
     return n * factorial(n - 1)
 
-assert factorial(0) == 1
-assert factorial(1) == 1
-assert factorial(5) == 120
-assert factorial(7) == 5040
+assert(factorial(0) == 1)
+assert(factorial(1) == 1)
+assert(factorial(5) == 120)
+assert(factorial(7) == 5040)
 
 // simple recursion - fibonacci
 fib = fun(n)
@@ -97,35 +97,35 @@ fib = fun(n)
     if (n == 1) { return 1 }
     return fib(n - 1) + fib(n - 2)
 
-assert fib(0) == 0
-assert fib(1) == 1
-assert fib(6) == 8
-assert fib(10) == 55
+assert(fib(0) == 0)
+assert(fib(1) == 1)
+assert(fib(6) == 8)
+assert(fib(10) == 55)
 
 // tail recursive factorial with accumulator
 fact_tail = fun(n, acc)
     if (n <= 1) { return acc }
     return fact_tail(n - 1, n * acc)
 
-assert fact_tail(5, 1) == 120
-assert fact_tail(10, 1) == 3628800
+assert(fact_tail(5, 1) == 120)
+assert(fact_tail(10, 1) == 3628800)
 
 // tail recursive sum
 sum_tail = fun(n, acc)
     if (n <= 0) { return acc }
     return sum_tail(n - 1, acc + n)
 
-assert sum_tail(10, 0) == 55
-assert sum_tail(100, 0) == 5050
+assert(sum_tail(10, 0) == 55)
+assert(sum_tail(100, 0) == 5050)
 
 // tail recursive fibonacci with two accumulators
 fib_tail = fun(n, a, b)
     if (n == 0) { return a }
     return fib_tail(n - 1, b, a + b)
 
-assert fib_tail(0, 0, 1) == 0
-assert fib_tail(6, 0, 1) == 8
-assert fib_tail(10, 0, 1) == 55
+assert(fib_tail(0, 0, 1) == 0)
+assert(fib_tail(6, 0, 1) == 8)
+assert(fib_tail(10, 0, 1) == 55)
 
 // mutual recursion - even/odd
 is_even = fun(n)
@@ -136,11 +136,11 @@ is_odd = fun(n)
     if (n == 0) { return false }
     return is_even(n - 1)
 
-assert is_even(0) == true
-assert is_even(4) == true
-assert is_even(7) == false
-assert is_odd(1) == true
-assert is_odd(6) == false
+assert(is_even(0) == true)
+assert(is_even(4) == true)
+assert(is_even(7) == false)
+assert(is_odd(1) == true)
+assert(is_odd(6) == false)
 
 // mutual recursion - counting down
 count_a = fun(n)
@@ -151,26 +151,26 @@ count_b = fun(n)
     if (n <= 0) { return 0 }
     return count_a(n - 1) + 1
 
-assert count_a(4) == 4
-assert count_b(6) == 6
+assert(count_a(4) == 4)
+assert(count_b(6) == 6)
 
 // recursion building a sum with nested call
 sum_of_factorials = fun(n)
     if (n <= 0) { return 0 }
     return factorial(n) + sum_of_factorials(n - 1)
 
-assert sum_of_factorials(4) == 33
+assert(sum_of_factorials(4) == 33)
 
 // recursion inside a for loop
 results = []
 for (i = 1; i <= 5; i = i + 1) {
     results.append(factorial(i))
 }
-assert results[0] == 1
-assert results[1] == 2
-assert results[2] == 6
-assert results[3] == 24
-assert results[4] == 120
+assert(results[0] == 1)
+assert(results[1] == 2)
+assert(results[2] == 6)
+assert(results[3] == 24)
+assert(results[4] == 120)
 
 // recursion inside a while loop
 total = 0
@@ -179,7 +179,7 @@ while (i <= 5) {
     total = total + fib(i)
     i = i + 1
 }
-assert total == 12
+assert(total == 12)
 
 // nested recursion - ackermann for small values
 ack = fun(m, n)
@@ -187,10 +187,10 @@ ack = fun(m, n)
     if (n == 0) { return ack(m - 1, 1) }
     return ack(m - 1, ack(m, n - 1))
 
-assert ack(0, 0) == 1
-assert ack(1, 1) == 3
-assert ack(2, 2) == 7
-assert ack(3, 2) == 29
+assert(ack(0, 0) == 1)
+assert(ack(1, 1) == 3)
+assert(ack(2, 2) == 7)
+assert(ack(3, 2) == 29)
 
 // pi block used in tail position via recursion
 apply_n = fun(f, x, n)
@@ -198,10 +198,10 @@ apply_n = fun(f, x, n)
     return apply_n(f, f x @, n - 1)
 
 double_block = pi { 2 * }
-assert apply_n(double_block, 1, 4) == 16
+assert(apply_n(double_block, 1, 4) == 16)
 
 inc_block = pi { 1 + }
-assert apply_n(inc_block, 0, 5) == 5
+assert(apply_n(inc_block, 0, 5) == 5)
 
 // recursive accumulation into a list
 collect = fun(n, acc)
@@ -210,9 +210,9 @@ collect = fun(n, acc)
     return collect(n - 1, acc)
 
 gathered = collect(5, [])
-assert gathered.Count == 5
-assert gathered[0] == 5
-assert gathered[4] == 1
+assert(gathered.Count == 5)
+assert(gathered[0] == 5)
+assert(gathered[4] == 1)
 
 // nested for with recursive call
 grid_sum = 0
@@ -221,6 +221,6 @@ for (row = 1; row <= 3; row = row + 1) {
         grid_sum = grid_sum + fib(row + col - 1)
     }
 }
-assert grid_sum == 60
+assert(grid_sum == 60)
 
 System.Print("NestedLoopsRecursion: all tests passed")

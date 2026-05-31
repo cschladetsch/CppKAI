@@ -1,4 +1,4 @@
 include Function
 
 d = fun(a(2))
-assert d(3) == 6
+assert(d(3) == 6)

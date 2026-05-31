@@ -5,46 +5,46 @@
 // -- 1. Pi block stored as a variable and invoked -----------------------------
 double = pi { 2 * }
 result = double(5)
-assert result == 10
+assert(result == 10)
 
 triple = pi { 3 * }
 result = triple(7)
-assert result == 21
+assert(result == 21)
 
 result = triple(8)&
-assert result == 24
+assert(result == 24)
 
 resume_into_call = fun(x)
     triple(x)...
     return 999
 
-assert resume_into_call(3) == 9
+assert(resume_into_call(3) == 9)
 
 replace_with_call = fun(x)
     triple(x)!
     return 999
 
-assert replace_with_call(4) == 12
+assert(replace_with_call(4) == 12)
 
 resume_outer = fun(x)
     return resume_into_call(x) + 1
 
-assert resume_outer(3) == 10
+assert(resume_outer(3) == 10)
 
 replace_outer = fun(x)
     return replace_with_call(x) + 1
 
-assert replace_outer(4) == 12
+assert(replace_outer(4) == 12)
 
 // -- 2. Pi block passed as argument -------------------------------------------
 apply = fun(f, x)
     return f(x)
 
 result = apply(pi { 2 * }, 6)
-assert result == 12
+assert(result == 12)
 
 result = apply(pi { dup * }, 4)
-assert result == 16
+assert(result == 16)
 
 // -- 3. Closure capture from enclosing fun scope ------------------------------
 make_adder = fun(n)
@@ -52,11 +52,11 @@ make_adder = fun(n)
 
 add5 = make_adder(5)
 result = add5(10)
-assert result == 15
+assert(result == 15)
 
 add100 = make_adder(100)
 result = add100(1)
-assert result == 101
+assert(result == 101)
 
 // -- 4. Pi block captures loop variable ---------------------------------------
 // Each iteration builds a block that captures i and executes immediately
@@ -64,7 +64,7 @@ sum = 0
 for (i = 1; i <= 5; i = i + 1) {
     sum = sum + pi { i }
 }
-assert sum == 15
+assert(sum == 15)
 
 // ── 5. Pi block as a predicate ────────────────────────────────────────────────
 is_positive = pi { 0 > }
@@ -83,7 +83,7 @@ baz = fun(a)
     return bar(pi { a 2 + })
 
 result = baz(3)
-assert result == 5
+assert(result == 5)
 
 // ── 7. Chained Pi block invocations ──────────────────────────────────────────
 inc = pi { 1 + }
@@ -93,7 +93,7 @@ x = 10
 x = x inc @
 x = x inc @
 x = x dec @
-assert x == 11
+assert(x == 11)
 
 // ── 8. Pi block returning another Pi block ────────────────────────────────────
 make_multiplier = fun(n)
@@ -110,7 +110,7 @@ n = 1
 while (pi { n 100 < } @) {
     n = n * 2
 }
-assert n == 128
+assert(n == 128)
 
 // ── 10. Nested Pi blocks with outer variable capture ─────────────────────────
 outer = 10
@@ -119,7 +119,7 @@ inner_result = pi {
     pi { 5 + } @
     2 *
 }
-assert inner_result == 30
+assert(inner_result == 30)
 
 // ── 11. Pi block stored in a collection and iterated ─────────────────────────
 ops = []
@@ -132,7 +132,7 @@ for (i = 0; i < ops.Count; i = i + 1) {
     value = value ops[i] @
 }
 // 5 -> 6 -> 12 -> 9
-assert value == 9
+assert(value == 9)
 
 // ── 12. Pi block with multiple stack values ───────────────────────────────────
 swap_add = pi { swap + }
@@ -141,7 +141,7 @@ result = pi {
     7
     swap_add @
 }
-assert result == 10
+assert(result == 10)
 
 // ── 13. Pi block as default-value factory ────────────────────────────────────
 get_default = fun(val, default_block)
@@ -151,9 +151,9 @@ get_default = fun(val, default_block)
     return val
 
 result = get_default(0, pi { 42 })
-assert result == 42
+assert(result == 42)
 
 result = get_default(7, pi { 42 })
-assert result == 7
+assert(result == 7)
 
 System.Print("PiBlockAdvanced: all tests passed")

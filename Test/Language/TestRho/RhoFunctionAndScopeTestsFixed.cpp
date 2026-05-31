@@ -232,15 +232,13 @@ double(increment(increment(double(2))))
 TEST_F(RhoFunctionAndScopeTestsFixed, Recursion) {
     // Test iterative factorial instead of recursive
     RunAndExpect<int>(R"(
-fun factorial_iter(n) {
+fun factorial_iter(n)
     result = 1
     i = 1
-    while (i <= n) {
+    while i <= n
         result = result * i
         i = i + 1
-    }
     return result
-}
 
 factorial_iter(5)
 )",
@@ -254,13 +252,11 @@ TEST_F(RhoFunctionAndScopeTestsFixed, MutualRecursion) {
     // Test non-recursive version
     RunAndExpect<bool>(R"(
 // Since mutual recursion doesn't work, test a simpler case
-fun isEven(n) {
+fun isEven(n)
     return n % 2 == 0
-}
 
-fun isOdd(n) {
+fun isOdd(n)
     return n % 2 == 1
-}
 
 // Test both functions
 result = isEven(10) && isOdd(7) && !isEven(7) && !isOdd(10)
@@ -287,9 +283,8 @@ TEST_F(RhoFunctionAndScopeTestsFixed, FunctionScoping) {
     // Test function scoping by returning result explicitly
     RunAndExpect<int>(R"(
 x = 10
-fun getX() {
+fun getX()
     return x
-}
 
 // Call function and return its result
 getX()

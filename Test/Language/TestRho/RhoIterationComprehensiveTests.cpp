@@ -702,7 +702,8 @@ sum
 
 TEST_F(RhoIterationComprehensiveTests, Mixed_LoopsWithFunctions) {
     RunAndExpect<int>(R"(
-fun double(x) { x * 2 }
+fun double(x)
+    x * 2
 sum = 0
 for (i = 0; i < 5; i = i + 1)
     sum = sum + double(i)
@@ -713,14 +714,13 @@ sum
 
 TEST_F(RhoIterationComprehensiveTests, Mixed_EarlyReturnPattern) {
     RunAndExpect<int>(R"(
-fun findSum(limit) {
+fun findSum(limit)
     sum = 0
     for (i = 0; i < 100; i = i + 1)
         sum = sum + i
         if sum > limit
             break
     sum
-}
 findSum(50)
 )",
                       55);

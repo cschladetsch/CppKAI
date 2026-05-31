@@ -4,8 +4,9 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PORT="${PORT:-8080}"
 HOST="${HOST:-127.0.0.1}"
-START_PATH="${START_PATH:-/Demo/DemoConintuationLocal/}"
-URL="http://${HOST}:${PORT}${START_PATH}"
+START_PATH="${START_PATH:-/Demo/ContinuationMobilityDemo/}"
+CACHE_BUST="${CACHE_BUST:-$(date +%s)}"
+URL="http://${HOST}:${PORT}${START_PATH}?v=${CACHE_BUST}"
 
 if ! command -v python3 >/dev/null 2>&1; then
   echo "python3 is required to serve the demo." >&2

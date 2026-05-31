@@ -1,25 +1,25 @@
 a = 42
-assert a == 42
+assert(a == 42)
 
 if true
 	a = 1
-assert a == 1
+assert(a == 1)
 
 if false
 	a = 2
-assert a == 1
+assert(a == 1)
 
 if true
 	a = 2
 else
 	a = 3
-assert a == 2
+assert(a == 2)
 
 if false
 	a = 2
 else
 	a = 3
-assert a == 3
+assert(a == 3)
 
 if false
 	a = 1
@@ -27,7 +27,7 @@ else if false
 	a = 2
 else
 	a = 3
-assert a == 3
+assert(a == 3)
 
 if false
 	a = 1
@@ -35,7 +35,7 @@ else if true
 	a = 2
 else
 	a = 3
-assert a == 2
+assert(a == 2)
 
 a = 0
 if false
@@ -44,7 +44,7 @@ else if false
 	a = 2
 else if false
 	a = 3
-assert a == 0
+assert(a == 0)
 
 if true
 	if true
@@ -56,4 +56,4 @@ if true
 else
 	a = 4
 
-assert a == 1
+assert(a == 1)

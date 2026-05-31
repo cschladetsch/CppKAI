@@ -101,27 +101,23 @@ count /= 4
 ### Control Structures
 ```rho
 // Conditionals
-if (x > 10) {
+if x > 10
     print("Greater than 10")
-} else {
+else
     print("10 or less")
-}
 
 // Loops
-while (count < 10) {
+while count < 10
     count = count + 1
-}
 
-for (i = 0; i < 10; i = i + 1) {
+for i = 0; i < 10; i = i + 1
     sum = sum + i
-}
 ```
 
 ### Functions
 ```rho
-fun add(a, b) {
+fun add(a, b)
     return a + b
-}
 
 result = add(5, 3)  // 8
 ```

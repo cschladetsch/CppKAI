@@ -204,15 +204,19 @@ TEST_F(AdvancedRhoExtendedOps, FunctionDefinitionAndCalling) {
     // Test function definition and calling
     try {
         // Define a simple function
-        console_.Execute("fun add(a, b) { return a + b; }");
+        console_.Execute("fun add(a, b)\n    return a + b");
 
         // Call the function
         ExecuteAndVerify<int>("add(5, 3)", 8);
 
         // Define and call a more complex function
-        console_.Execute(
-            "fun factorial(n) { if (n <= 1) return 1; else return n * "
-            "factorial(n - 1); }");
+        console_.Execute(R"(
+fun factorial(n)
+    if n <= 1
+        return 1
+    else
+        return n * factorial(n - 1)
+)");
         ExecuteAndVerify<int>("factorial(5)", 120);  // 5! = 120
     } catch (const std::exception& e) {
         std::cout << "Function definition or recursion not fully supported: "

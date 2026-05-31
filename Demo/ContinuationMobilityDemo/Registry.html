@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RhoMog Model - Registry</title>
+  <link rel="stylesheet" href="./style.css">
+  <style>
+    .registry-hero {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .registry-layout {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 14px;
+    }
+
+    .panel {
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .panel-title {
+      font-family: "Cinzel", serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .panel-note {
+      color: var(--muted);
+      font-size: 12px;
+      font-style: italic;
+      white-space: nowrap;
+    }
+
+    .node-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .node-button {
+      display: grid;
+      grid-template-columns: 12px 1fr auto;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      text-align: left;
+    }
+
+    .node-button.active {
+      border-color: rgba(212,168,67,0.55);
+      background: rgba(212,168,67,0.14);
+      color: var(--gold);
+    }
+
+    .node-swatch {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--node-color);
+      box-shadow: 0 0 10px var(--node-color);
+    }
+
+    .registry-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .registry-table-wrap {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      overflow: auto;
+      background: rgba(0,0,0,0.18);
+    }
+
+    .registry-table {
+      width: 100%;
+      min-width: 760px;
+      border-collapse: collapse;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 12px;
+    }
+
+    .registry-table th,
+    .registry-table td {
+      padding: 9px 10px;
+      border-bottom: 1px solid rgba(212,168,67,0.1);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .registry-table th {
+      color: var(--gold);
+      background: rgba(212,168,67,0.07);
+      font-family: "Cinzel", serif;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .registry-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .registry-table td {
+      color: var(--ink);
+    }
+
+    .registry-table tbody tr {
+      cursor: pointer;
+      transition: background 0.15s, outline-color 0.15s;
+    }
+
+    .registry-table tbody tr:hover,
+    .registry-table tbody tr.selected {
+      background: rgba(212,168,67,0.08);
+    }
+
+    .registry-table tbody tr.selected {
+      outline: 1px solid rgba(212,168,67,0.48);
+      outline-offset: -1px;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .object-status {
+      display: inline-flex;
+      padding: 2px 8px;
+      border-radius: 3px;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-family: "Cinzel", serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .object-status.hot {
+      border-color: rgba(212,168,67,0.55);
+      color: var(--gold);
+    }
+
+    .object-status.failed {
+      border-color: rgba(190,80,70,0.55);
+      color: #ffb2a8;
+    }
+
+    .inspector {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .inspector-card {
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      background: rgba(212,168,67,0.025);
+    }
+
+    .inspector-label {
+      color: var(--muted);
+      font-family: "Cinzel", serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .inspector-value {
+      margin-top: 4px;
+      color: var(--gold);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 13px;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+
+    .drilldown-panel {
+      margin-top: 14px;
+      border-top: 1px solid var(--line);
+      padding-top: 14px;
+    }
+
+    .drilldown-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 12px;
+    }
+
+    .field-list,
+    .reference-list {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .field-row,
+    .reference-button {
+      display: grid;
+      grid-template-columns: 150px minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+      padding: 8px 10px;
+      border-radius: 5px;
+      border: 1px solid rgba(212,168,67,0.12);
+      background: rgba(0,0,0,0.18);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .field-name,
+    .reference-handle {
+      color: var(--muted);
+      overflow-wrap: anywhere;
+    }
+
+    .field-value,
+    .reference-label {
+      color: var(--ink);
+      overflow-wrap: anywhere;
+    }
+
+    .reference-button {
+      width: 100%;
+      text-align: left;
+      text-transform: none;
+      letter-spacing: 0;
+      cursor: pointer;
+    }
+
+    .reference-button:hover {
+      border-color: rgba(212,168,67,0.42);
+      background: rgba(212,168,67,0.08);
+    }
+
+    @media (max-width: 900px) {
+      .registry-hero,
+      .registry-layout,
+      .inspector,
+      .drilldown-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <nav class="page-nav">
+      <a class="page-link active" href="./Registry.html">Registry</a>
+      <a class="page-link" href="./ContinuationMobilityAnimation.html">⚔ Migration View</a>
+      <a class="page-link" href="./ContinuationMobilityDemo.html">📜 System View</a>
+      <a class="page-link" href="./Description.html">📖 The RhoMog Model</a>
+      <a class="page-link" href="../DemoConintuationLocal/index.html">⧉ Local Stepper</a>
+    </nav>
+
+    <section class="registry-hero">
+      <article class="panel">
+        <h1 class="page-title">Node Registry</h1>
+        <p class="page-subtitle">
+          Inspect the objects owned by a selected node in the RhoMog demo: agents,
+          regions, continuations, snapshots, and runtime services.
+        </p>
+      </article>
+      <aside class="panel">
+        <div class="metrics-row">
+          <div class="metric" data-tech="selected Registry::GetInstances().size()">
+            <span class="metric-label">Objects</span>
+            <span class="metric-value" id="object-count">0</span>
+          </div>
+          <div class="metric" data-tech="objects with retained=true">
+            <span class="metric-label">Retained</span>
+            <span class="metric-value" id="retained-count">0</span>
+          </div>
+          <div class="metric" data-tech="objects marked as live">
+            <span class="metric-label">Live</span>
+            <span class="metric-value" id="live-count">0</span>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="registry-layout">
+      <aside class="panel">
+        <div class="panel-head">
+          <h2 class="panel-title">Node</h2>
+          <span class="panel-note">select one</span>
+        </div>
+        <div class="node-list" id="node-list"></div>
+      </aside>
+
+      <main class="panel">
+        <div class="panel-head">
+          <h2 class="panel-title" id="registry-title">Registry</h2>
+          <span class="panel-note" id="registry-note">NodeA</span>
+        </div>
+        <div class="registry-toolbar">
+          <button type="button" id="tick-0">Tick 0</button>
+          <button type="button" id="tick-56">Tick 56</button>
+          <button type="button" id="tick-60">Tick 60</button>
+          <button type="button" id="tick-80">Tick 80</button>
+        </div>
+        <div class="registry-table-wrap">
+          <table class="registry-table">
+            <thead>
+              <tr>
+                <th>Handle</th>
+                <th>Class</th>
+                <th>Label</th>
+                <th>Status</th>
+                <th>Refs</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody id="registry-body"></tbody>
+          </table>
+        </div>
+        <div class="inspector">
+          <div class="inspector-card">
+            <div class="inspector-label">Selected Tick</div>
+            <div class="inspector-value" id="tick-label">0</div>
+          </div>
+          <div class="inspector-card">
+            <div class="inspector-label">Registry Owner</div>
+            <div class="inspector-value" id="owner-label">NodeA</div>
+          </div>
+          <div class="inspector-card">
+            <div class="inspector-label">Tree Root</div>
+            <div class="inspector-value" id="root-label">/root/NodeA</div>
+          </div>
+        </div>
+        <section class="drilldown-panel" aria-live="polite">
+          <div class="panel-head">
+            <h2 class="panel-title" id="object-title">Object Detail</h2>
+            <span class="panel-note" id="object-note">select a row</span>
+          </div>
+          <div class="drilldown-grid">
+            <div>
+              <h3 class="panel-title">Fields</h3>
+              <div class="field-list" id="field-list"></div>
+            </div>
+            <div>
+              <h3 class="panel-title">References</h3>
+              <div class="reference-list" id="reference-list"></div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </section>
+  </div>
+
+  <script src="./demoStyle.js"></script>
+  <script>
+    const nodes = {
+      NodeA: {realm: "Ironhold", color: "var(--node-a)", root: "/root/NodeA"},
+      NodeB: {realm: "Ashmarket", color: "var(--node-b)", root: "/root/NodeB"},
+      NodeC: {realm: "Harborveil", color: "var(--node-c)", root: "/root/NodeC"},
+      NodeD: {realm: "The Refuge", color: "var(--node-d)", root: "/root/NodeD"}
+    };
+
+    const agents = [
+      {id: 1, name: "Aldric", cls: "Knight"},
+      {id: 2, name: "Seraphine", cls: "Mage"},
+      {id: 3, name: "Corvin", cls: "Rogue"},
+      {id: 4, name: "Brynn", cls: "Ranger"},
+      {id: 5, name: "Thorn", cls: "Warlock"},
+      {id: 6, name: "Isolde", cls: "Cleric"},
+      {id: 7, name: "Dax", cls: "Bard"},
+      {id: 8, name: "Vex", cls: "Assassin"},
+      {id: 9, name: "Mira", cls: "Druid"},
+      {id: 10, name: "Gorath", cls: "Berserker"}
+    ];
+
+    const placements = {
+      0: {NodeA: [1, 2, 3, 4], NodeB: [5, 6, 7, 8], NodeC: [9, 10], NodeD: []},
+      56: {NodeA: [4], NodeB: [1, 2, 3], NodeC: [5, 6, 7, 8, 9, 10], NodeD: []},
+      60: {NodeA: [4], NodeB: [], NodeC: [5, 6, 7, 8, 9, 10], NodeD: [1, 2, 3]},
+      80: {NodeA: [4, 8], NodeB: [], NodeC: [5, 6, 7, 9, 10], NodeD: [1, 2, 3]}
+    };
+
+    let selectedNode = "NodeA";
+    let selectedTick = 0;
+    let selectedHandle = "";
+
+    const nodeList = document.getElementById("node-list");
+    const registryBody = document.getElementById("registry-body");
+    const fieldList = document.getElementById("field-list");
+    const referenceList = document.getElementById("reference-list");
+
+    function handle(prefix, id) {
+      return `${prefix}-${String(id).padStart(4, "0")}`;
+    }
+
+    function objectsFor(nodeName, tick) {
+      const node = nodes[nodeName];
+      const ids = placements[tick][nodeName] || [];
+      const agentHandles = ids.map((id) => handle("Agent", id));
+      const objects = [
+        {
+          handle: handle(nodeName, 1),
+          klass: "Registry",
+          label: `${nodeName}.registry`,
+          status: "retained",
+          refs: ids.length + 3,
+          value: `${node.realm} object store`,
+          fields: {
+            owner: nodeName,
+            realm: node.realm,
+            instanceCount: "computed from visible rows",
+            allocator: "StandardAllocator",
+            gcTraceLevel: "1"
+          },
+          references: [handle(nodeName, 2), handle(nodeName, 3), ...agentHandles]
+        },
+        {
+          handle: handle(nodeName, 2),
+          klass: "Tree",
+          label: "root",
+          status: "live",
+          refs: 1,
+          value: node.root,
+          fields: {
+            pathname: node.root,
+            rootScope: `${nodeName}.scope`,
+            children: ids.length
+          },
+          references: agentHandles
+        },
+        {
+          handle: handle(nodeName, 3),
+          klass: "Domain",
+          label: `${nodeName}.domain`,
+          status: nodeName === "NodeB" && tick >= 60 ? "failed" : "live",
+          refs: 2,
+          value: `${nodeName} network boundary`,
+          fields: {
+            host: nodeName,
+            transport: "ENet/UDP model",
+            state: nodeName === "NodeB" && tick >= 60 ? "failed" : "online",
+            tick: tick
+          },
+          references: [handle(nodeName, 1), handle(nodeName, 2)]
+        }
+      ];
+
+      ids.forEach((id) => {
+        const agent = agents.find((item) => item.id === id);
+        const restored = tick >= 60 && nodeName === "NodeD" && id <= 3;
+        objects.push({
+          handle: handle("Agent", id),
+          klass: "Agent",
+          label: `Agent_${id}`,
+          status: restored ? "retained" : "live",
+          refs: restored ? 4 : 3,
+          value: `${agent.name} (${agent.cls})${restored ? " restored from snapshot" : ""}`,
+          fields: {
+            id: id,
+            heroName: agent.name,
+            heroClass: agent.cls,
+            host: nodeName,
+            realm: node.realm,
+            restored: restored ? "true" : "false"
+          },
+          references: [handle("Cont", id), handle(nodeName, 2), handle(nodeName, 3)]
+        });
+        objects.push({
+          handle: handle("Cont", id),
+          klass: "Continuation",
+          label: `Agent_${id}.step`,
+          status: "live",
+          refs: 1,
+          value: `tick=${tick}; host=${nodeName}; region=${node.realm}`,
+          fields: {
+            instructionPointer: `tick:${tick}`,
+            owner: `Agent_${id}`,
+            callable: "stepAgent",
+            host: nodeName,
+            region: node.realm
+          },
+          references: [handle("Agent", id)]
+        });
+      });
+
+      if (tick >= 20 && nodeName !== "NodeB") {
+        objects.push({
+          handle: handle("Snap", tick),
+          klass: "Snapshot",
+          label: `MemoryCrystal_${tick}`,
+          status: "retained",
+          refs: ids.length,
+          value: `captures ${ids.length} local agents`,
+          fields: {
+            tick: tick,
+            host: nodeName,
+            capturedAgents: ids.length,
+            restoreTarget: "NodeD"
+          },
+          references: agentHandles
+        });
+      }
+
+      if (nodeName === "NodeB" && tick >= 60) {
+        objects.push({
+          handle: handle("Dead", 60),
+          klass: "Tombstone",
+          label: "NodeB.failure",
+          status: "failed",
+          refs: 0,
+          value: "host removed; agents restored on NodeD",
+          fields: {
+            failedHost: "NodeB",
+            recoveryHost: "NodeD",
+            failedAtTick: "60",
+            restoredAgents: "Agent_1, Agent_2, Agent_3"
+          },
+          references: []
+        });
+      }
+
+      return objects;
+    }
+
+    function renderNodes() {
+      nodeList.innerHTML = "";
+      Object.entries(nodes).forEach(([name, node]) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = `node-button${name === selectedNode ? " active" : ""}`;
+        button.style.setProperty("--node-color", node.color);
+        button.innerHTML = `<span class="node-swatch"></span><span>${node.realm}</span><span>${name}</span>`;
+        button.addEventListener("click", () => {
+          selectedNode = name;
+          selectedHandle = "";
+          render();
+        });
+        nodeList.appendChild(button);
+      });
+    }
+
+    function renderRegistry() {
+      const objects = objectsFor(selectedNode, selectedTick);
+      if (!objects.some((object) => object.handle === selectedHandle)) {
+        selectedHandle = objects[0] ? objects[0].handle : "";
+      }
+      registryBody.innerHTML = "";
+      objects.forEach((object) => {
+        const row = document.createElement("tr");
+        row.className = object.handle === selectedHandle ? "selected" : "";
+        row.tabIndex = 0;
+        row.innerHTML = `
+          <td>${object.handle}</td>
+          <td>${object.klass}</td>
+          <td>${object.label}</td>
+          <td><span class="object-status ${object.status === "retained" ? "hot" : object.status === "failed" ? "failed" : ""}">${object.status}</span></td>
+          <td>${object.refs}</td>
+          <td>${object.value}</td>
+        `;
+        row.addEventListener("click", () => selectObject(object.handle));
+        row.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            selectObject(object.handle);
+          }
+        });
+        registryBody.appendChild(row);
+      });
+
+      document.getElementById("object-count").textContent = String(objects.length);
+      document.getElementById("retained-count").textContent = String(objects.filter((object) => object.status === "retained").length);
+      document.getElementById("live-count").textContent = String(objects.filter((object) => object.status === "live").length);
+      document.getElementById("registry-title").textContent = `${nodes[selectedNode].realm} Registry`;
+      document.getElementById("registry-note").textContent = selectedNode;
+      document.getElementById("tick-label").textContent = String(selectedTick);
+      document.getElementById("owner-label").textContent = selectedNode;
+      document.getElementById("root-label").textContent = nodes[selectedNode].root;
+      renderObjectDetail(objects);
+    }
+
+    function selectObject(nextHandle) {
+      selectedHandle = nextHandle;
+      renderRegistry();
+    }
+
+    function renderObjectDetail(objects) {
+      const object = objects.find((item) => item.handle === selectedHandle);
+      fieldList.innerHTML = "";
+      referenceList.innerHTML = "";
+
+      if (!object) {
+        document.getElementById("object-title").textContent = "Object Detail";
+        document.getElementById("object-note").textContent = "select a row";
+        renderEmpty(fieldList, "no object selected");
+        renderEmpty(referenceList, "no references");
+        return;
+      }
+
+      document.getElementById("object-title").textContent = `${object.klass}: ${object.label}`;
+      document.getElementById("object-note").textContent = object.handle;
+
+      const fields = {
+        handle: object.handle,
+        class: object.klass,
+        label: object.label,
+        status: object.status,
+        refs: object.refs,
+        value: object.value,
+        ...object.fields
+      };
+
+      Object.entries(fields).forEach(([name, value]) => {
+        const row = document.createElement("div");
+        row.className = "field-row";
+        const key = document.createElement("span");
+        key.className = "field-name";
+        key.textContent = name;
+        const val = document.createElement("span");
+        val.className = "field-value";
+        val.textContent = String(value);
+        row.append(key, val);
+        fieldList.appendChild(row);
+      });
+
+      if (!object.references || !object.references.length) {
+        renderEmpty(referenceList, "no references");
+        return;
+      }
+
+      object.references.forEach((referencedHandle) => {
+        const target = objects.find((item) => item.handle === referencedHandle);
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "reference-button";
+        const handleLabel = document.createElement("span");
+        handleLabel.className = "reference-handle";
+        handleLabel.textContent = referencedHandle;
+        const label = document.createElement("span");
+        label.className = "reference-label";
+        label.textContent = target ? `${target.klass}: ${target.label}` : "not in this node registry view";
+        button.append(handleLabel, label);
+        button.disabled = !target;
+        if (target) {
+          button.addEventListener("click", () => selectObject(referencedHandle));
+        }
+        referenceList.appendChild(button);
+      });
+    }
+
+    function renderEmpty(root, text) {
+      const empty = document.createElement("div");
+      empty.className = "field-row muted";
+      empty.textContent = text;
+      root.appendChild(empty);
+    }
+
+    function render() {
+      renderNodes();
+      renderRegistry();
+    }
+
+    [0, 56, 60, 80].forEach((tick) => {
+      document.getElementById(`tick-${tick}`).addEventListener("click", () => {
+        selectedTick = tick;
+        selectedHandle = "";
+        render();
+      });
+    });
+
+    render();
+  </script>
+</body>
+</html>

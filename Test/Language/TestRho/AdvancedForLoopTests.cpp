@@ -99,13 +99,10 @@ class AdvancedForLoopTests : public TestLangCommon {
 TEST_F(AdvancedForLoopTests, NestedForLoopsWithComplexConditions) {
     const std::string script = R"(
 result = 0
-for (i = 0; i < 5; i = i + 1) {
-    for (j = 0; j < 5; j = j + 1) {
-        if (i % 2 == 0 && j % 2 == 0) {
+for i = 0; i < 5; i = i + 1
+    for j = 0; j < 5; j = j + 1
+        if i % 2 == 0 && j % 2 == 0
             result = result + (i * j)
-        }
-    }
-}
 )";
 
     Object result = ExecuteScript(script);
@@ -131,13 +128,11 @@ for (i = 0; i < 5; i = i + 1) {
 TEST_F(AdvancedForLoopTests, ForLoopWithBreak) {
     const std::string script = R"(
 result = 0
-for (i = 1; i <= 20; i = i + 1) {
+for i = 1; i <= 20; i = i + 1
     square = i * i
-    if (square > 100) {
+    if square > 100
         result = i
         break
-    }
-}
 )";
 
     Object result = ExecuteScript(script);
@@ -152,12 +147,10 @@ for (i = 1; i <= 20; i = i + 1) {
 TEST_F(AdvancedForLoopTests, ForLoopWithContinue) {
     const std::string script = R"(
 result = 0
-for (i = 1; i <= 10; i = i + 1) {
-    if (i % 3 == 0) {
+for i = 1; i <= 10; i = i + 1
+    if i % 3 == 0
         continue
-    }
     result = result + i
-}
 )";
 
     Object result = ExecuteScript(script);
@@ -172,13 +165,11 @@ for (i = 1; i <= 10; i = i + 1) {
 TEST_F(AdvancedForLoopTests, ForLoopBuildingString) {
     const std::string script = R"(
 result = ""
-for (i = 0; i < 5; i = i + 1) {
-    if (i % 2 == 0) {
+for i = 0; i < 5; i = i + 1
+    if i % 2 == 0
         result = result + "A"
-    } else {
+    else
         result = result + "B"
-    }
-}
 )";
 
     Object result = ExecuteScript(script);
@@ -192,8 +183,8 @@ for (i = 0; i < 5; i = i + 1) {
 // Loop Variable Reuse After Loop
 TEST_F(AdvancedForLoopTests, LoopVariableReuseAfterLoop) {
     const std::string script = R"(
-for (i = 0; i < 5; i = i + 1) {
-}
+for i = 0; i < 5; i = i + 1
+    result = 0
 result = i
 )";
 
@@ -210,13 +201,11 @@ TEST_F(AdvancedForLoopTests, InfiniteLoopDetection) {
     const std::string script = R"(
 result = 0
 safety_counter = 0
-for (i = 0; true; i = i + 1) {
+for i = 0; true; i = i + 1
     result = result + 1
     safety_counter = safety_counter + 1
-    if (safety_counter >= 100) {
+    if safety_counter >= 100
         break
-    }
-}
 )";
 
     Object result = ExecuteScript(script);
@@ -231,8 +220,8 @@ for (i = 0; true; i = i + 1) {
 TEST_F(AdvancedForLoopTests, EmptyForLoop) {
     const std::string script = R"(
 result = 42
-for (i = 0; i < 10; i = i + 1) {
-}
+for i = 0; i < 10; i = i + 1
+    result = result
 result = result + i
 )";
 
@@ -248,27 +237,26 @@ result = result + i
 TEST_F(AdvancedForLoopTests, GeneratePrimeNumbers) {
     const std::string script = R"(
 primes = []
-for (num = 2; num <= 20; num = num + 1) {
+for num = 2; num <= 20; num = num + 1
     is_prime = true
-    for (i = 2; i * i <= num; i = i + 1) {
-        if (num % i == 0) {
+    for i = 2; i * i <= num; i = i + 1
+        if num % i == 0
             is_prime = false
             break
-        }
-    }
-    if (is_prime) {
+    if is_prime
         primes.push(num)
-    }
-}
 result = primes
 )";
 
     Object result = ExecuteScript(script);
 
-    if (!result.Exists() || !result.IsType<Array>() ||
-        Deref<Array>(result).Size() == 0) {
-        GTEST_SKIP() << "Array push method not yet supported";
-    }
+    ASSERT_TRUE(result.Exists()) << "Prime array result was not produced";
+    ASSERT_TRUE(result.IsType<Array>())
+        << "Expected Array but got "
+        << (result.GetClass() ? result.GetClass()->GetName().ToString()
+                              : "null");
+    ASSERT_GT(Deref<Array>(result).Size(), 0)
+        << "Prime array result should not be empty";
 
     // Expected primes up to 20: [2,3,5,7,11,13,17,19]
     std::vector<int> expectedPrimes = {2, 3, 5, 7, 11, 13, 17, 19};
@@ -281,48 +269,35 @@ result = primes
 TEST_F(AdvancedForLoopTests, ComplexInitializationAndUpdate) {
     const std::string script = R"(
 result = 0
-for (i = 0, j = 10; i < 5 && j > 5; i = i + 1, j = j - 1) {
+for i = 0, j = 10; i < 5 && j > 5; i = i + 1, j = j - 1
     result = result + (i * j)
-}
 )";
 
-    try {
-        Object result = ExecuteScript(script);
+    Object result = ExecuteScript(script);
 
-        if (!result.Exists()) {
-            GTEST_SKIP()
-                << "Comma-separated for-loop initializer not yet supported";
-        }
+    // Expected calculations:
+    // When i=0, j=10: 0*10 = 0
+    // When i=1, j=9:  1*9 = 9
+    // When i=2, j=8:  2*8 = 16
+    // When i=3, j=7:  3*7 = 21
+    // When i=4, j=6:  4*6 = 24
+    // Total: 0+9+16+21+24 = 70
+    VerifyIntResult(result, 70);
 
-        // Expected calculations:
-        // When i=0, j=10: 0*10 = 0
-        // When i=1, j=9:  1*9 = 9
-        // When i=2, j=8:  2*8 = 16
-        // When i=3, j=7:  3*7 = 21
-        // When i=4, j=6:  4*6 = 24
-        // Total: 0+9+16+21+24 = 70
-        VerifyIntResult(result, 70);
-
-        std::cout
-            << "For loop with complex initialization and update test passed"
-            << std::endl;
-    } catch (const std::exception& e) {
-        std::cout << "Complex for loop initialization not supported: "
-                  << e.what() << std::endl;
-    }
+    std::cout
+        << "For loop with complex initialization and update test passed"
+        << std::endl;
 }
 
 // For Loop to Compute a Mathematical Series
 TEST_F(AdvancedForLoopTests, ComputeMathematicalSeries) {
     const std::string script = R"(
 result = 0.0
-for (n = 1; n <= 10; n = n + 1) {
+for n = 1; n <= 10; n = n + 1
     term = 1.0
-    for (i = 0; i < n; i = i + 1) {
+    for i = 0; i < n; i = i + 1
         term = term / 2.0
-    }
     result = result + term
-}
 )";
 
     try {
@@ -348,9 +323,8 @@ for (n = 1; n <= 10; n = n + 1) {
         // Try an integer version as a fallback
         const std::string intScript = R"(
 result = 0
-for (n = 1; n <= 10; n = n + 1) {
+for n = 1; n <= 10; n = n + 1
     result = result + n
-}
 )";
 
         Object intResult = ExecuteScript(intScript);

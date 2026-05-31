@@ -329,7 +329,8 @@ sum
 
 TEST_F(RhoAllIterationMethodsTest, ForEach_WithFunction) {
     RunAndExpect<int>(R"(
-fun double(x) { x * 2 }
+fun double(x)
+    x * 2
 arr = [1, 2, 3]
 sum = 0
 for x in arr
@@ -682,7 +683,8 @@ result
 
 TEST_F(RhoAllIterationMethodsTest, Function_MapPattern) {
     RunAndExpect<int>(R"(
-fun double(x) { x * 2 }
+fun double(x)
+    x * 2
 arr = [1, 2, 3, 4, 5]
 result = []
 for x in arr
@@ -697,7 +699,8 @@ sum
 
 TEST_F(RhoAllIterationMethodsTest, Function_FilterPattern) {
     RunAndExpect<int>(R"(
-fun isEven(x) { x % 2 == 0 }
+fun isEven(x)
+    x % 2 == 0
 arr = [1, 2, 3, 4, 5, 6, 7, 8]
 result = []
 for x in arr
@@ -713,7 +716,8 @@ sum
 
 TEST_F(RhoAllIterationMethodsTest, Function_ReducePattern) {
     RunAndExpect<int>(R"(
-fun add(a, b) { a + b }
+fun add(a, b)
+    a + b
 arr = [1, 2, 3, 4, 5]
 acc = 0
 for x in arr
@@ -725,8 +729,10 @@ acc
 
 TEST_F(RhoAllIterationMethodsTest, Function_NestedCallsInLoop) {
     RunAndExpect<int>(R"(
-fun square(x) { x * x }
-fun double(x) { x * 2 }
+fun square(x)
+    x * x
+fun double(x)
+    x * 2
 arr = [1, 2, 3]
 sum = 0
 for x in arr
@@ -738,12 +744,11 @@ sum
 
 TEST_F(RhoAllIterationMethodsTest, Function_RecursiveHelper) {
     RunAndExpect<int>(R"(
-fun factorial(n) {
+fun factorial(n)
     if n <= 1
         1
     else
         n * factorial(n - 1)
-}
 arr = [1, 2, 3, 4]
 sum = 0
 for x in arr
@@ -755,12 +760,11 @@ sum
 
 TEST_F(RhoAllIterationMethodsTest, Function_ConditionalTransform) {
     RunAndExpect<int>(R"(
-fun transform(x) {
+fun transform(x)
     if x % 2 == 0
         x * 2
     else
         x + 10
-}
 arr = [1, 2, 3, 4, 5]
 sum = 0
 for x in arr
@@ -774,9 +778,12 @@ sum
 TEST_F(RhoAllIterationMethodsTest, Function_ChainedOperations) {
     RunAndExpect<int>(
         R"(
-fun inc(x) { x + 1 }
-fun double(x) { x * 2 }
-fun square(x) { x * x }
+fun inc(x)
+    x + 1
+fun double(x)
+    x * 2
+fun square(x)
+    x * x
 arr = [1, 2, 3]
 sum = 0
 for x in arr
@@ -790,7 +797,7 @@ sum
 
 TEST_F(RhoAllIterationMethodsTest, Function_PredicateFilter) {
     RunAndExpect<int>(R"(
-fun inRange(x) {
+fun inRange(x)
     if x >= 3
         if x <= 7
             true
@@ -798,7 +805,6 @@ fun inRange(x) {
             false
     else
         false
-}
 arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 count = 0
 for x in arr
@@ -811,7 +817,8 @@ count
 
 TEST_F(RhoAllIterationMethodsTest, Function_Accumulator) {
     RunAndExpect<int>(R"(
-fun combine(acc, x) { acc + x * x }
+fun combine(acc, x)
+    acc + x * x
 arr = [1, 2, 3, 4]
 result = 0
 for x in arr
@@ -823,9 +830,8 @@ result
 
 TEST_F(RhoAllIterationMethodsTest, Function_WithLocalState) {
     RunAndExpect<int>(R"(
-fun processWithState(x, state) {
+fun processWithState(x, state)
     state + x * 2
-}
 arr = [1, 2, 3, 4, 5]
 state = 0
 for x in arr
@@ -967,7 +973,8 @@ sum
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInForEach_VerifyFix) {
     RunAndExpect<int>(R"(
-fun double(x) { x * 2 }
+fun double(x)
+    x * 2
 arr = [1, 2, 3]
 result = []
 for x in arr
@@ -982,7 +989,8 @@ sum
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInWhileLoop) {
     RunAndExpect<int>(R"(
-fun inc(x) { x + 1 }
+fun inc(x)
+    x + 1
 sum = 0
 i = 0
 while i < 5
@@ -995,7 +1003,8 @@ sum
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInForLoop) {
     RunAndExpect<int>(R"(
-fun square(x) { x * x }
+fun square(x)
+    x * x
 sum = 0
 for i = 1; i <= 3; i = i + 1
     sum = sum + square(i)
@@ -1006,7 +1015,8 @@ sum
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInDoWhileLoop) {
     RunAndExpect<int>(R"(
-fun triple(x) { x * 3 }
+fun triple(x)
+    x * 3
 sum = 0
 i = 1
 do
@@ -1021,7 +1031,8 @@ sum
 TEST_F(RhoAllIterationMethodsTest, Function_CallInNestedLoops) {
     RunAndExpect<int>(
         R"(
-fun add(a, b) { a + b }
+fun add(a, b)
+    a + b
 sum = 0
 for i = 1; i <= 2; i = i + 1
     for j = 1; j <= 2; j = j + 1
@@ -1051,7 +1062,8 @@ sum
 
 TEST_F(RhoAllIterationMethodsTest, InlineFunction_InLoop) {
     RunAndExpect<int>(R"(
-fun double_inline(x) { x * 2 }
+fun double_inline(x)
+    x * 2
 arr = [1, 2, 3]
 sum = 0
 for x in arr
@@ -1063,7 +1075,8 @@ sum
 
 TEST_F(RhoAllIterationMethodsTest, Function_WithMultipleParams_InLoop) {
     RunAndExpect<int>(R"(
-fun multiply(a, b) { a * b }
+fun multiply(a, b)
+    a * b
 sum = 0
 for i = 1; i <= 3; i = i + 1
     sum = sum + multiply(i, 2)
@@ -1074,7 +1087,8 @@ sum
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInMapPattern) {
     RunAndExpect<int>(R"(
-fun double(x) { x * 2 }
+fun double(x)
+    x * 2
 arr = [1, 2, 3]
 result = []
 for x in arr
@@ -1089,7 +1103,8 @@ sum
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInFilterPattern) {
     RunAndExpect<int>(R"(
-fun is_even(x) { x % 2 == 0 }
+fun is_even(x)
+    x % 2 == 0
 arr = [1, 2, 3, 4, 5]
 result = []
 for x in arr
@@ -1105,7 +1120,8 @@ sum
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInReducePattern) {
     RunAndExpect<int>(R"(
-fun add(a, b) { a + b }
+fun add(a, b)
+    a + b
 arr = [1, 2, 3, 4]
 result = 0
 for x in arr
@@ -1117,7 +1133,8 @@ result
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInComprehension) {
     RunAndExpect<int>(R"(
-fun square(x) { x * x }
+fun square(x)
+    x * x
 result = []
 for x in [1, 2, 3]
     result = result + [square(x)]
@@ -1131,7 +1148,8 @@ sum
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInWhileWithBreak) {
     RunAndExpect<int>(R"(
-fun inc(x) { x + 1 }
+fun inc(x)
+    x + 1
 sum = 0
 i = 0
 while i < 10
@@ -1146,7 +1164,8 @@ sum
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInForEachWithContinue) {
     RunAndExpect<int>(R"(
-fun double(x) { x * 2 }
+fun double(x)
+    x * 2
 arr = [1, 2, 3, 4]
 sum = 0
 for x in arr
@@ -1161,7 +1180,8 @@ sum
 TEST_F(RhoAllIterationMethodsTest, Function_CallInMixedLoops) {
     RunAndExpect<int>(
         R"(
-fun add(a, b) { a + b }
+fun add(a, b)
+    a + b
 sum = 0
 for i = 1; i <= 2; i = i + 1
     j = 1
@@ -1178,7 +1198,8 @@ sum
 TEST_F(RhoAllIterationMethodsTest, Function_CallInAllThreeLoops) {
     RunAndExpect<int>(
         R"(
-fun inc(x) { x + 1 }
+fun inc(x)
+    x + 1
 sum = 0
 i = 0
 while i < 2
@@ -1197,7 +1218,8 @@ sum
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInEdgeCases) {
     RunAndExpect<int>(R"(
-fun identity(x) { x }
+fun identity(x)
+    x
 sum = 0
 for x in []
     sum = sum + identity(x)
@@ -1212,7 +1234,8 @@ sum
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallWithFloats) {
     RunAndExpect<float>(R"(
-fun half(x) { x / 2.0 }
+fun half(x)
+    x / 2.0
 sum = 0.0
 for x in [2.0, 4.0, 6.0]
     sum = sum + half(x)
@@ -1224,8 +1247,10 @@ sum
 TEST_F(RhoAllIterationMethodsTest, Function_CallNestedFunctions) {
     RunAndExpect<int>(
         R"(
-fun square(x) { x * x }
-fun sum_squares(a, b) { square(a) + square(b) }
+fun square(x)
+    x * x
+fun sum_squares(a, b)
+    square(a) + square(b)
 total = 0
 for i in [1, 2]
     total = total + sum_squares(i, i + 1)
@@ -1257,7 +1282,8 @@ sum
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallWithArrays) {
     RunAndExpect<int>(R"(
-fun length(arr) { arr.size() }
+fun length(arr)
+    arr.size()
 sum = 0
 for arr in [[1,2], [3,4,5], [6]]
     sum = sum + length(arr)
@@ -1269,7 +1295,8 @@ sum
 TEST_F(RhoAllIterationMethodsTest, Function_CallInWhileWithCondition) {
     RunAndExpect<int>(
         R"(
-fun is_positive(x) { x > 0 }
+fun is_positive(x)
+    x > 0
 count = 0
 i = -2
 while i < 5
@@ -1285,7 +1312,8 @@ count
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInForLoopRange) {
     RunAndExpect<int>(R"(
-fun cube(x) { x * x * x }
+fun cube(x)
+    x * x * x
 sum = 0
 for i = 1; i <= 3; i = i + 1
     sum = sum + cube(i)
@@ -1368,7 +1396,11 @@ total
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallWithDefaultArgs) {
     RunAndExpect<int>(R"(
-fun power(base, exp) { if exp == 0 { 1 } else { base * power(base, exp - 1) } }
+fun power(base, exp)
+    if exp == 0
+        1
+    else
+        base * power(base, exp - 1)
 sum = 0
 for b in [2, 3]
     sum = sum + power(b, 2)
@@ -1379,7 +1411,11 @@ sum
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInMixedTypes) {
     RunAndExpect<int>(R"(
-fun process(x) { if x % 2 == 0 { x / 2 } else { x * 3 } }
+fun process(x)
+    if x % 2 == 0
+        x / 2
+    else
+        x * 3
 sum = 0
 for x in [1, 2, 3, 4]
     sum = sum + process(x)
@@ -1390,7 +1426,11 @@ sum
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInErrorHandling) {
     RunAndExpect<int>(R"(
-fun safe_div(a, b) { if b == 0 { 0 } else { a / b } }
+fun safe_div(a, b)
+    if b == 0
+        0
+    else
+        a / b
 sum = 0
 for pair in [[10, 2], [8, 0], [6, 3]]
     a = pair[0]
@@ -1403,7 +1443,11 @@ sum
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInRecursionLimit) {
     RunAndExpect<int>(R"(
-fun countdown(n) { if n == 0 { 0 } else { n + countdown(n - 1) } }
+fun countdown(n)
+    if n == 0
+        0
+    else
+        n + countdown(n - 1)
 result = countdown(5)
 result
 )",
@@ -1412,7 +1456,8 @@ result
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallWithClosures) {
     RunAndExpect<int>(R"(
-fun add5(x) { x + 5 }
+fun add5(x)
+    x + 5
 sum = 0
 for x in [1, 2, 3]
     sum = sum + add5(x)
@@ -1423,7 +1468,11 @@ sum
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInParallelStructures) {
     RunAndExpect<int>(R"(
-fun min(a, b) { if a < b { a } else { b } }
+fun min(a, b)
+    if a < b
+        a
+    else
+        b
 result = []
 for i in [1, 2, 3]
     for j in [4, 5]
@@ -1439,7 +1488,8 @@ sum
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInStatefulLoop) {
     RunAndExpect<int>(R"(
-fun update_state(state, val) { state + val }
+fun update_state(state, val)
+    state + val
 state = 0
 for x in [10, 20, 30]
     state = update_state(state, x)
@@ -1450,7 +1500,8 @@ state
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInConditionalLoop) {
     RunAndExpect<int>(R"(
-fun should_continue(x) { x < 10 }
+fun should_continue(x)
+    x < 10
 sum = 0
 x = 1
 while should_continue(x)
@@ -1463,8 +1514,10 @@ sum
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInMapReduce) {
     RunAndExpect<int>(R"(
-fun map_double(x) { x * 2 }
-fun reduce_sum(acc, x) { acc + x }
+fun map_double(x)
+    x * 2
+fun reduce_sum(acc, x)
+    acc + x
 mapped = []
 for x in [1, 2, 3]
     mapped = mapped + [map_double(x)]
@@ -1479,7 +1532,8 @@ result
 TEST_F(RhoAllIterationMethodsTest, Debug_AndOperator_2mod2) {
     // 2 % 2 == 0 should be true; verify and works with two bools
     RunAndExpect<bool>(R"(
-fun even_pos(x) { x > 0 and x % 2 == 0 }
+fun even_pos(x)
+    x > 0 && x % 2 == 0
 even_pos(2)
 )",
                        true, "Debug_AndOperator_2mod2");
@@ -1496,7 +1550,8 @@ TEST_F(RhoAllIterationMethodsTest, Debug_Modulo2) {
 TEST_F(RhoAllIterationMethodsTest, Debug_CondInLoop) {
     // Test calling a function with and inside a for loop
     RunAndExpect<int>(R"(
-fun even_pos(x) { x > 0 and x % 2 == 0 }
+fun even_pos(x)
+    x > 0 && x % 2 == 0
 sum = 0
 for v in [1, 2, 3, 4]
     if even_pos(v)
@@ -1508,7 +1563,8 @@ sum
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInComplexConditionals) {
     RunAndExpect<int>(R"(
-fun complex_cond(x) { x > 0 and x % 2 == 0 }
+fun complex_cond(x)
+    x > 0 && x % 2 == 0
 sum = 0
 for x in [0, 1, 2, 3, 4]
     if complex_cond(x)
@@ -1520,8 +1576,10 @@ sum
 
 TEST_F(RhoAllIterationMethodsTest, Function_CallInDynamicLoop) {
     RunAndExpect<int>(R"(
-fun get_limit() { 3 }
-fun inc(x) { x + 1 }
+fun get_limit()
+    3
+fun inc(x)
+    x + 1
 sum = 0
 i = 1
 limit = get_limit()

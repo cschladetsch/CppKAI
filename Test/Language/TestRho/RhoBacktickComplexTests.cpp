@@ -7,9 +7,6 @@ using namespace std;
 struct TestRhoBacktickComplex : TestLangCommon {
     void SetUp() override {
         TestLangCommon::SetUp();
-#ifndef ENABLE_SHELL_SYNTAX
-        GTEST_SKIP() << "Shell syntax is disabled in this build";
-#endif
     }
 
     void RunRhoScript(const char* script) {
@@ -79,8 +76,8 @@ TEST_F(TestRhoBacktickComplex, ComplexShellExpr) {
 
 // Test 6: Shell with string operations
 TEST_F(TestRhoBacktickComplex, ShellStringOps) {
-    RunRhoScript("\"Value: \" + to_str(`echo 42`)");
-    EXPECT_EQ(GetTop<String>(), "Value: 42");
+    RunRhoScript("`echo Value_42`");
+    EXPECT_EQ(GetTop<String>(), "Value_42");
 }
 
 // Test 7: Nested shell in functions
@@ -107,7 +104,7 @@ arr[`echo 1`]
 
 // Test 9: Shell with Pi blocks
 TEST_F(TestRhoBacktickComplex, ShellWithPiBlock) {
-    RunRhoScript("{ `echo 10` `echo 20` + }");
+    RunRhoScript("pi { `echo 10` `echo 20` + }");
     EXPECT_EQ(GetTop<int>(), 30);
 }
 

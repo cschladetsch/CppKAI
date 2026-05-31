@@ -17,7 +17,7 @@ using namespace kai;
 using namespace std;
 
 // Alternative implementation for the failing RhoPiBasic tests
-// These tests directly create and assert on expected values rather than
+// These tests directly create and assert(on expected values rather than)
 // trying to execute and interpret continuations
 
 // Basic addition test: 2 + 3 = 5

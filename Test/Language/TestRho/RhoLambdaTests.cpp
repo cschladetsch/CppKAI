@@ -9,7 +9,8 @@ TEST(RhoLambda, SimpleLambdaExpression) {
     auto exec = console.GetExecutor();
 
     console.Execute(R"(
-double = fun(x) { x * 2 }
+double = fun(x)
+    x * 2
 double(21)
 )",
                     kai::Structure::Program);
@@ -25,7 +26,8 @@ TEST(RhoLambda, LambdaWithMultipleParams) {
     auto exec = console.GetExecutor();
 
     console.Execute(R"(
-add = fun(x, y) { x + y }
+add = fun(x, y)
+    x + y
 add(15, 27)
 )",
                     kai::Structure::Program);
@@ -42,7 +44,8 @@ TEST(RhoLambda, ClosureCapture) {
 
     console.Execute(R"(
 multiplier = 10
-scale = fun(x) { x * multiplier }
+scale = fun(x)
+    x * multiplier
 scale(5)
 )",
                     kai::Structure::Program);
@@ -60,7 +63,8 @@ TEST(RhoLambda, HigherOrderFunctions) {
     console.Execute(R"(
 apply_twice = fun(f, x)
     f(f(x))
-increment = fun(n) { n + 1 }
+increment = fun(n)
+    n + 1
 apply_twice(increment, 5)
 )",
                     kai::Structure::Program);

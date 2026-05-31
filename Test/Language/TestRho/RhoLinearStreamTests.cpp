@@ -228,7 +228,7 @@ TEST_F(RhoScriptTest, PiStackOperations) {
 
 // Test suite for assertion operations
 TEST_F(RhoScriptTest, BasicAssertion) {
-    ASSERT_TRUE(RunRhoScript("assert true"));
+    ASSERT_TRUE(RunRhoScript("assert(true)"));
     // Successful assertion leaves nothing on stack
     ASSERT_TRUE(data_->Empty());
 }

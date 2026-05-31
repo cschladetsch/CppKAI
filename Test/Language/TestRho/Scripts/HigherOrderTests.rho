@@ -12,20 +12,20 @@ double = fun(x) { return x * 2 }
 squared = fun(x) { return x * x }
 
 doubled = map([1, 2, 3, 4, 5], double)
-assert doubled[0] == 2
-assert doubled[2] == 6
-assert doubled[4] == 10
+assert(doubled[0] == 2)
+assert(doubled[2] == 6)
+assert(doubled[4] == 10)
 
 squares = map([1, 2, 3, 4], squared)
-assert squares[0] == 1
-assert squares[1] == 4
-assert squares[3] == 16
+assert(squares[0] == 1)
+assert(squares[1] == 4)
+assert(squares[3] == 16)
 
 // map with Pi block
 inc_block = fun(x) { return x + 1 }
 incremented = map([10, 20, 30], inc_block)
-assert incremented[0] == 11
-assert incremented[2] == 31
+assert(incremented[0] == 11)
+assert(incremented[2] == 31)
 
 // filter: keep elements matching a predicate
 filter = fun(arr, pred)
@@ -42,18 +42,18 @@ is_odd = fun(n) { return n % 2 == 1 }
 is_positive = fun(n) { return n > 0 }
 
 evens = filter([1, 2, 3, 4, 5, 6], is_even)
-assert evens.Count == 3
-assert evens[0] == 2
-assert evens[2] == 6
+assert(evens.Count == 3)
+assert(evens[0] == 2)
+assert(evens[2] == 6)
 
 odds = filter([1, 2, 3, 4, 5], is_odd)
-assert odds.Count == 3
-assert odds[0] == 1
-assert odds[2] == 5
+assert(odds.Count == 3)
+assert(odds[0] == 1)
+assert(odds[2] == 5)
 
 positives = filter([-2, -1, 0, 1, 2], is_positive)
-assert positives.Count == 2
-assert positives[0] == 1
+assert(positives.Count == 2)
+assert(positives[0] == 1)
 
 // fold/reduce: accumulate array into a single value
 fold = fun(arr, f, init)
@@ -67,10 +67,10 @@ add = fun(a, b) { return a + b }
 mul = fun(a, b) { return a * b }
 maxf = fun(a, b) { if (a > b) { return a } return b }
 
-assert fold([1, 2, 3, 4, 5], add, 0) == 15
-assert fold([1, 2, 3, 4, 5], mul, 1) == 120
-assert fold([3, 1, 4, 1, 5, 9], maxf, 0) == 9
-assert fold([], add, 42) == 42
+assert(fold([1, 2, 3, 4, 5], add, 0) == 15)
+assert(fold([1, 2, 3, 4, 5], mul, 1) == 120)
+assert(fold([3, 1, 4, 1, 5, 9], maxf, 0) == 9)
+assert(fold([], add, 42) == 42)
 
 // compose: apply f then g
 compose = fun(f, g)
@@ -81,11 +81,11 @@ add1 = fun(x) { return x + 1 }
 mul3 = fun(x) { return x * 3 }
 
 add1_then_mul3 = compose(add1, mul3)
-assert add1_then_mul3(4) == 15
-assert add1_then_mul3(0) == 3
+assert(add1_then_mul3(4) == 15)
+assert(add1_then_mul3(0) == 3)
 
 mul3_then_add1 = compose(mul3, add1)
-assert mul3_then_add1(4) == 13
+assert(mul3_then_add1(4) == 13)
 
 // compose chain via fold
 compose2 = fun(f, g)
@@ -94,7 +94,7 @@ compose2 = fun(f, g)
 identity = fun(x) { return x }
 fns = [add1, mul3, add1, mul3]
 composed = fold(fns, compose2, identity)
-assert composed(0) == 12
+assert(composed(0) == 12)
 
 // recursive map
 map_rec = fun(arr, f)
@@ -112,13 +112,13 @@ map_rec = fun(arr, f)
     return result
 
 rec_doubled = map_rec([1, 2, 3], double)
-assert rec_doubled[0] == 2
-assert rec_doubled[2] == 6
+assert(rec_doubled[0] == 2)
+assert(rec_doubled[2] == 6)
 
 // pipeline: map then filter then fold
 data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 even_squares_sum = fold(filter(map(data, squared), is_even), add, 0)
-assert even_squares_sum == 220
+assert(even_squares_sum == 220)
 
 // partial application via closure
 make_adder = fun(n)
@@ -127,11 +127,11 @@ make_adder = fun(n)
 add5 = make_adder(5)
 add10 = make_adder(10)
 
-assert add5(3) == 8
-assert add10(3) == 13
+assert(add5(3) == 8)
+assert(add10(3) == 13)
 
 added = map([1, 2, 3], add5)
-assert added[0] == 6
-assert added[2] == 8
+assert(added[0] == 6)
+assert(added[2] == 8)
 
 System.Print("HigherOrderTests: all tests passed")

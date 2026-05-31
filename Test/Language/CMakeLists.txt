@@ -113,6 +113,7 @@ foreach (lang ${langs})
             ${source_path}/MixedLanguageTest.cpp            # Test Pi/Rho interop
             ${source_path}/FunctionSyntaxTest.cpp           # Test function syntax standardization
             ${source_path}/AssertSyntaxTest.cpp             # Test assert syntax simplification
+            ${source_path}/RhoBraceBlockSyntaxTests.cpp     # Braces are literals/interop only, not block delimiters
             ${source_path}/SimpleStatementTest.cpp           # Test simple statements
             ${source_path}/ExpressionProgramParityTest.cpp   # Ensure 1+2 behaves the same as expression and program
             ${source_path}/SimpleFunctionTest.cpp            # Test simple function calls
