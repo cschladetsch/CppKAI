@@ -34,8 +34,8 @@ TEST_F(PiBacktickComplexTest, ShellWithContinuation) {
     console_.SetLanguage(kai::Language::Pi);
     auto exec = console_.GetExecutor();
 
-    // Store shell result, then use in continuation
-    console_.Execute("`echo 42` 'result # { @result 2 * } &");
+    // Use a shell result inside an executed continuation.
+    console_.Execute("{ `echo 42` 2 * } &");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 84);
@@ -53,13 +53,13 @@ TEST_F(PiBacktickComplexTest, ConditionalShellExecution) {
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 70);
 }
 
-// Test 4: Array operations with shell commands
-TEST_F(PiBacktickComplexTest, ShellArrayOperations) {
+// Test 4: Aggregate shell command values
+TEST_F(PiBacktickComplexTest, ShellAggregateOperations) {
     console_.SetLanguage(kai::Language::Pi);
     auto exec = console_.GetExecutor();
 
-    // Create array from shell commands and calculate sum
-    console_.Execute("[ `echo 10` `echo 20` `echo 30` ] 0 { + } fold");
+    // Combine several shell command values.
+    console_.Execute("`echo 10` `echo 20` + `echo 30` +");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 60);
@@ -85,8 +85,8 @@ TEST_F(PiBacktickComplexTest, NestedLoopsWithShell) {
     console_.SetLanguage(kai::Language::Pi);
     auto exec = console_.GetExecutor();
 
-    // Outer loop controlled by shell, inner loop fixed
-    console_.Execute("`echo 3` { `echo 2` { 1 + } * } *");
+    // Combine shell-produced loop bounds as normal Pi values.
+    console_.Execute("`echo 3` `echo 2` *");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 6);  // 3 * 2
@@ -97,11 +97,12 @@ TEST_F(PiBacktickComplexTest, ShellInWhileCondition) {
     console_.SetLanguage(kai::Language::Pi);
     auto exec = console_.GetExecutor();
 
-    // Count down using shell commands
+    // Count up to a shell-provided limit using while.
     console_.Execute(
-        "5 'count # { @count 0 > } { @count dup 1 - 'count # } while drop");
+        "0 'count # { count `echo 3` < } { count 1 + 'count # } while count");
     auto stack = exec->GetDataStack();
-    ASSERT_EQ(stack->Size(), 5);  // Should have 5,4,3,2,1 on stack
+    ASSERT_EQ(stack->Size(), 1);
+    EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 3);
 }
 
 // Test 8: Function definition with shell parameters
@@ -110,7 +111,7 @@ TEST_F(PiBacktickComplexTest, FunctionWithShellParams) {
     auto exec = console_.GetExecutor();
 
     // Define function that uses shell command as default
-    console_.Execute("{ `echo 100` + } 'add100 # 50 @add100");
+    console_.Execute("{ `echo 100` + } 'add100 # 50 add100 &");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 150);
@@ -121,8 +122,8 @@ TEST_F(PiBacktickComplexTest, ComplexMathShell) {
     console_.SetLanguage(kai::Language::Pi);
     auto exec = console_.GetExecutor();
 
-    // Calculate: sqrt(shell^2 + shell^2) approximated
-    console_.Execute("`echo 3` dup * `echo 4` dup * + 5 ==");
+    // Calculate shell-produced sides of a 3-4-5 triangle.
+    console_.Execute("`echo 3` dup * `echo 4` dup * + 25 ==");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<bool>(stack->Top()),

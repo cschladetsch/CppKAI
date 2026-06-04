@@ -11,10 +11,25 @@
 #include <algorithm>
 #include <functional>
 #include <iostream>
+#include <string>
 
 KAI_BEGIN
 
 // This file contains the Perform method implementation from ExecutorPerform.inl
+namespace {
+std::string ShellQuoteForExecutor(const std::string& text) {
+    std::string quoted = "'";
+    for (char ch : text) {
+        if (ch == '\'') {
+            quoted += "'\\''";
+        } else {
+            quoted += ch;
+        }
+    }
+    quoted += "'";
+    return quoted;
+}
+}  // namespace
 
 void Executor::Perform(Operation::Type op) {
     switch (op) {
@@ -1387,8 +1402,12 @@ void Executor::Perform(Operation::Type op) {
                 if (cmdObj.IsType<String>()) {
                     String command = ConstDeref<String>(cmdObj);
 
-                    // Execute the command and capture output
-                    FILE* pipe = popen(command.c_str(), "r");
+                    // Execute through Bash for predictable command semantics
+                    // such as echo -e, arrays, and arithmetic expansion.
+                    const std::string shellCommand =
+                        "bash -lc " +
+                        ShellQuoteForExecutor(command.StdString());
+                    FILE* pipe = popen(shellCommand.c_str(), "r");
                     if (pipe) {
                         char buffer[1024];
                         std::string result;

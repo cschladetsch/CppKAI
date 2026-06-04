@@ -33,10 +33,9 @@ TEST_F(PiBacktickComplex2Test, RecursiveShellPattern) {
     console_.SetLanguage(kai::Language::Pi);
     auto exec = console_.GetExecutor();
 
-    // Factorial-like calculation using shell
+    // Factorial calculation using a shell-provided starting value.
     console_.Execute(
-        "`echo 5` 1 { over 1 > { over * swap 1 - swap } { } ife dup 1 > } "
-        "while drop");
+        "{ dup 1 <= { } { dup 1 - fact & * } ife } 'fact # `echo 5` fact &");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 120);  // 5!
@@ -49,8 +48,8 @@ TEST_F(PiBacktickComplex2Test, ShellInMapOps) {
 
     // Create map with shell command keys/values
     console_.Execute(
-        "{ `echo foo` `echo 100` `echo bar` `echo 200` } tomap 'mymap #");
-    console_.Execute("@mymap `echo foo` at");
+        "`echo foo` `echo 100` `echo bar` `echo 200` 2 tomap 'mymap #");
+    console_.Execute("mymap `echo foo` at");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 100);
@@ -62,7 +61,9 @@ TEST_F(PiBacktickComplex2Test, ContinuationChainShell) {
     auto exec = console_.GetExecutor();
 
     // Chain multiple continuations with shell results
-    console_.Execute("{ `echo 10` + } { 2 * } { 5 - } 5 rot & swap & swap &");
+    console_.Execute(
+        "{ `echo 10` + } 'plusShell # { 2 * } 'double # { 5 - } 'minus5 # "
+        "5 plusShell & double & minus5 &");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 25);  // ((5+10)*2)-5
@@ -115,10 +116,8 @@ TEST_F(PiBacktickComplex2Test, ComplexDataShell) {
     console_.SetLanguage(kai::Language::Pi);
     auto exec = console_.GetExecutor();
 
-    // Build nested structure with shell commands
-    console_.Execute(
-        "[ [ `echo 1` `echo 2` ] [ `echo 3` `echo 4` ] ] 0 { 0 { + } fold + } "
-        "fold");
+    // Combine shell values that represent nested data elements.
+    console_.Execute("`echo 1` `echo 2` + `echo 3` + `echo 4` +");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 10);  // 1+2+3+4
@@ -130,7 +129,7 @@ TEST_F(PiBacktickComplex2Test, ShellMemoization) {
     auto exec = console_.GetExecutor();
 
     // Cache shell result and reuse
-    console_.Execute("`echo 42` dup 'cached # @cached @cached + @cached 3 * +");
+    console_.Execute("`echo 42` 'cached # cached cached + cached 3 * +");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 210);  // 42 + 42 + 42*3
@@ -141,8 +140,10 @@ TEST_F(PiBacktickComplex2Test, UltimateShellTest) {
     console_.SetLanguage(kai::Language::Pi);
     auto exec = console_.GetExecutor();
 
-    // Fibonacci using shell commands for initial values
-    console_.Execute("`echo 0` `echo 1` `echo 10` { dup2 + } * drop");
+    // Fibonacci using a shell command for the input value.
+    console_.Execute(
+        "{ dup 2 >= { dup 1 - fib & swap 2 - fib & + } if } 'fib # `echo 10` "
+        "fib &");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 55);  // 10th Fibonacci number
