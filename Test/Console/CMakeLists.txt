@@ -9,6 +9,7 @@ set(header_path ${TEST_HOME}/Include)
 # Console test files
 set(sources
     ${source_path}/TestConsoleNetworking.cpp
+    ${source_path}/TestConsoleShell.cpp
 )
 
 # Include test headers

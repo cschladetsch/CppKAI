@@ -9,6 +9,7 @@
 #include <KAI/Network/Transport.h>
 
 #include <functional>
+#include <filesystem>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -51,6 +52,10 @@ class Console : public Reflected {
     std::vector<std::string> commandHistory;
     std::string historyFile;
     static const size_t maxHistorySize = 1000;
+    std::filesystem::path shellCwd_;
+    std::filesystem::path previousShellCwd_;
+    std::unordered_map<std::string, std::string> shellEnvironment_;
+    int lastShellExitCode_ = 0;
 
     // Network members
     std::unique_ptr<net::NetPeer> peer_;
@@ -85,6 +90,8 @@ class Console : public Reflected {
     String GetPrompt() const;
     String Process(const String &);
     String ProcessShellCommand(const String &text);
+    String ExecuteShellCommand(const std::string &command,
+                               bool colorOutput = false);
     String ExpandShellCommands(const String &text);
     String ProcessZshCommand(const String &text);
     String ExpandHistoryReferences(const String &text);
@@ -170,6 +177,11 @@ class Console : public Reflected {
     void CreateTree();
     void RegisterTypes();
     void ExposeTypesToTree(Object types);
+    bool ProcessShellBuiltin(const std::string &command, StringStream &result);
+    String ExecuteExternalShellCommand(const std::string &command,
+                                       bool colorOutput);
+    std::string BuildShellInvocation(const std::string &command) const;
+    static std::string ShellQuote(const std::string &text);
 
     // Network protected methods
     void ProcessNetworkMessages();

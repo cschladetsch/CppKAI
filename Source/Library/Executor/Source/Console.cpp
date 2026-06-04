@@ -4,6 +4,7 @@
 #include <cctype>
 #include <chrono>
 #include <cstdlib>
+#include <filesystem>
 #include <fstream>
 #include <functional>
 #include <iostream>
@@ -16,6 +17,7 @@
 #include "KAI/Language/Rho/RhoTranslator.h"
 
 #ifdef __linux__
+#include <sys/wait.h>
 #include <termios.h>
 #include <unistd.h>
 #endif
@@ -124,6 +126,10 @@ Console::Console() {
     listenPort_ = 14600;
     consoleId_ = GenerateConsoleId();
     Create();
+    std::error_code ec;
+    shellCwd_ = std::filesystem::current_path(ec);
+    if (ec) shellCwd_ = ".";
+    previousShellCwd_ = shellCwd_;
     LoadHistory();
 }
 
@@ -135,6 +141,10 @@ Console::Console(shared_ptr<Memory::IAllocator> alloc) {
     listenPort_ = 14600;
     consoleId_ = GenerateConsoleId();
     Create();
+    std::error_code ec;
+    shellCwd_ = std::filesystem::current_path(ec);
+    if (ec) shellCwd_ = ".";
+    previousShellCwd_ = shellCwd_;
     LoadHistory();
 }
 
@@ -317,11 +327,170 @@ String Console::ReadLineWithDynamicColor() {
 }
 
 void Console::ExecuteShellCommandWithColor(const std::string &command) {
-    // Prepare the command to force color output
+    cout << ExecuteShellCommand(command, true).c_str();
+}
+
+std::string Console::ShellQuote(const std::string &text) {
+    std::string quoted = "'";
+    for (char ch : text) {
+        if (ch == '\'') {
+            quoted += "'\\''";
+        } else {
+            quoted += ch;
+        }
+    }
+    quoted += "'";
+    return quoted;
+}
+
+std::string Console::BuildShellInvocation(const std::string &command) const {
+    std::string invocation = "cd " + ShellQuote(shellCwd_.string()) + " && ";
+    for (const auto &entry : shellEnvironment_) {
+        invocation += entry.first + "=" + ShellQuote(entry.second) + " ";
+    }
+    invocation += command;
+    return invocation;
+}
+
+bool Console::ProcessShellBuiltin(const std::string &command,
+                                  StringStream &result) {
+    std::string trimmed = command;
+    const size_t start = trimmed.find_first_not_of(" \t\n\r");
+    if (start == std::string::npos) return true;
+    trimmed = trimmed.substr(start);
+    const size_t end = trimmed.find_last_not_of(" \t\n\r");
+    if (end != std::string::npos) trimmed = trimmed.substr(0, end + 1);
+
+    if (trimmed == "echo $?") {
+        result << lastShellExitCode_ << "\n";
+        lastShellExitCode_ = 0;
+        return true;
+    }
+
+    const std::vector<std::string> words = SplitIntoWords(trimmed);
+    if (words.empty()) return true;
+
+    if (words[0] == "pwd") {
+        result << shellCwd_.string() << "\n";
+        lastShellExitCode_ = 0;
+        return true;
+    }
+
+    if (words[0] == "cd") {
+        std::filesystem::path target;
+        if (words.size() == 1) {
+            const char *home = std::getenv("HOME");
+            if (!home) {
+                result << "cd: HOME not set\n";
+                lastShellExitCode_ = 1;
+                return true;
+            }
+            target = home;
+        } else if (words[1] == "-") {
+            target = previousShellCwd_;
+        } else {
+            std::string pathText = words[1];
+            if (pathText == "~" || pathText.rfind("~/", 0) == 0) {
+                const char *home = std::getenv("HOME");
+                if (!home) {
+                    result << "cd: HOME not set\n";
+                    lastShellExitCode_ = 1;
+                    return true;
+                }
+                pathText = std::string(home) + pathText.substr(1);
+            }
+            target = pathText;
+            if (target.is_relative()) target = shellCwd_ / target;
+        }
+
+        std::error_code ec;
+        const auto normalized = std::filesystem::weakly_canonical(target, ec);
+        const auto candidate = ec ? std::filesystem::absolute(target, ec)
+                                  : normalized;
+        if (ec || !std::filesystem::is_directory(candidate, ec)) {
+            result << "cd: no such directory: " << target.string() << "\n";
+            lastShellExitCode_ = 1;
+            return true;
+        }
+
+        previousShellCwd_ = shellCwd_;
+        shellCwd_ = candidate;
+        lastShellExitCode_ = 0;
+        return true;
+    }
+
+    const auto isValidName = [](const std::string &name) {
+        if (name.empty()) return false;
+        if (!(std::isalpha(static_cast<unsigned char>(name[0])) ||
+              name[0] == '_')) {
+            return false;
+        }
+        for (char ch : name) {
+            if (!(std::isalnum(static_cast<unsigned char>(ch)) ||
+                  ch == '_')) {
+                return false;
+            }
+        }
+        return true;
+    };
+
+    if (words[0] == "export") {
+        if (words.size() == 1) {
+            for (const auto &entry : shellEnvironment_) {
+                result << "export " << entry.first << "="
+                       << ShellQuote(entry.second) << "\n";
+            }
+            lastShellExitCode_ = 0;
+            return true;
+        }
+
+        for (size_t i = 1; i < words.size(); ++i) {
+            const size_t equals = words[i].find('=');
+            const std::string name =
+                equals == std::string::npos ? words[i] : words[i].substr(0, equals);
+            if (!isValidName(name)) {
+                result << "export: invalid name: " << name << "\n";
+                lastShellExitCode_ = 1;
+                return true;
+            }
+            std::string value;
+            if (equals == std::string::npos) {
+                const char *existing = std::getenv(name.c_str());
+                value = existing ? existing : "";
+            } else {
+                value = words[i].substr(equals + 1);
+            }
+            shellEnvironment_[name] = value;
+            setenv(name.c_str(), value.c_str(), 1);
+        }
+        lastShellExitCode_ = 0;
+        return true;
+    }
+
+    if (words[0] == "unset") {
+        for (size_t i = 1; i < words.size(); ++i) {
+            if (!isValidName(words[i])) {
+                result << "unset: invalid name: " << words[i] << "\n";
+                lastShellExitCode_ = 1;
+                return true;
+            }
+            shellEnvironment_.erase(words[i]);
+            unsetenv(words[i].c_str());
+        }
+        lastShellExitCode_ = 0;
+        return true;
+    }
+
+    return false;
+}
+
+String Console::ExecuteExternalShellCommand(const std::string &command,
+                                            bool colorOutput) {
+    StringStream result;
     std::string colorCommand = command;
 
     // Check if this is an ls command and add color flag if not already present
-    if (command.find("ls") == 0 &&
+    if (colorOutput && command.find("ls") == 0 &&
         command.find("--color") == std::string::npos) {
         // Check if there are any flags
         size_t spacePos = command.find(' ');
@@ -338,7 +507,7 @@ void Console::ExecuteShellCommandWithColor(const std::string &command) {
     // flags grep -> --color=always diff -> --color=always gcc/g++ ->
     // -fdiagnostics-color=always
 
-    if (command.find("grep") == 0 &&
+    if (colorOutput && command.find("grep") == 0 &&
         command.find("--color") == std::string::npos) {
         size_t spacePos = command.find(' ');
         if (spacePos != std::string::npos) {
@@ -346,18 +515,19 @@ void Console::ExecuteShellCommandWithColor(const std::string &command) {
         }
     }
 
-    // Set TERM environment variable and ensure dircolors are loaded
-    // This will respect the user's ~/.dircolors if it exists
-    std::string fullCommand = "TERM=xterm-256color ";
+    std::string fullCommand;
+    if (colorOutput) {
+        fullCommand = "TERM=xterm-256color ";
+    }
 
     // For ls commands, ensure dircolors are properly loaded
-    if (command.find("ls") == 0) {
+    if (colorOutput && command.find("ls") == 0) {
         fullCommand +=
             "eval \"$(dircolors -b ~/.dircolors 2>/dev/null || dircolors -b)\" "
             "&& ";
     }
 
-    fullCommand += colorCommand;
+    fullCommand += BuildShellInvocation(colorCommand);
 
     // Execute the command
     FILE *pipe = popen(fullCommand.c_str(), "r");
@@ -365,17 +535,41 @@ void Console::ExecuteShellCommandWithColor(const std::string &command) {
         // Use larger buffer to handle ANSI escape sequences properly
         char buffer[4096];
         while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
-            cout << buffer;
+            result << buffer;
         }
-        int exitCode = pclose(pipe);
+        int status = pclose(pipe);
+        int exitCode = status;
+#ifdef __linux__
+        if (WIFEXITED(status)) {
+            exitCode = WEXITSTATUS(status);
+        }
+#endif
+        lastShellExitCode_ = exitCode;
         if (exitCode != 0) {
-            cout << rang::fg::red << "Command exited with code: " << exitCode
-                 << rang::fg::reset << endl;
+            if (colorOutput) result << "\033[31m";
+            result << "Command exited with code: " << exitCode;
+            if (colorOutput) result << "\033[0m";
+            result << "\n";
         }
     } else {
-        cout << rang::fg::red << "Failed to execute: " << command
-             << rang::fg::reset << endl;
+        lastShellExitCode_ = 127;
+        if (colorOutput) result << "\033[31m";
+        result << "Failed to execute: " << command;
+        if (colorOutput) result << "\033[0m";
+        result << "\n";
     }
+
+    return result.ToString();
+}
+
+String Console::ExecuteShellCommand(const std::string &command,
+                                    bool colorOutput) {
+    StringStream result;
+    if (ProcessShellBuiltin(command, result)) {
+        return result.ToString();
+    }
+
+    return ExecuteExternalShellCommand(command, colorOutput);
 }
 
 Language Console::GetLanguage() const { return language; }
@@ -624,25 +818,7 @@ String Console::ProcessShellCommand(const String &text) {
     size_t end = commandStd.find_last_not_of(" \t\n\r");
     commandStd = commandStd.substr(start, end - start + 1);
 
-    // Use popen to execute the command and capture output
-    FILE *pipe = popen(commandStd.c_str(), "r");
-    if (!pipe) {
-        return String("Error: Failed to execute shell command\n");
-    }
-
-    std::string result;
-    char buffer[128];
-    while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
-        result += buffer;
-    }
-
-    int returnCode = pclose(pipe);
-    if (returnCode != 0) {
-        result +=
-            "\nCommand exited with code: " + std::to_string(returnCode) + "\n";
-    }
-
-    return String(result);
+    return ExecuteShellCommand(commandStd);
 }
 
 String Console::ExpandShellCommands(const String &text) {
@@ -654,22 +830,11 @@ String Console::ExpandShellCommands(const String &text) {
     while (std::regex_search(result, match, backtick_regex)) {
         std::string command = match[1].str();
 
-        // Execute the command
-        FILE *pipe = popen(command.c_str(), "r");
-        std::string output;
-        if (pipe) {
-            char buffer[128];
-            while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
-                output += buffer;
-            }
-            pclose(pipe);
+        std::string output = ExecuteShellCommand(command).StdString();
 
-            // Remove trailing newline if present
-            if (!output.empty() && output.back() == '\n') {
-                output.pop_back();
-            }
-        } else {
-            output = "[shell command failed]";
+        // Remove trailing newline if present
+        if (!output.empty() && output.back() == '\n') {
+            output.pop_back();
         }
 
         // Replace the backtick expression with the command output
@@ -1200,22 +1365,7 @@ String Console::Process(const String &text) {
             shellCmd = shellCmd.substr(firstNonSpace);
         }
 
-        // Execute the shell command
-        FILE *pipe = popen(shellCmd.c_str(), "r");
-        if (pipe) {
-            char buffer[128];
-            while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
-                result << buffer;
-            }
-            int exitCode = pclose(pipe);
-            if (exitCode != 0) {
-                result << "Command exited with code: " << exitCode << "\n";
-            }
-        } else {
-            result << "Failed to execute: " << shellCmd << "\n";
-        }
-
-        return result.ToString();
+        return ExecuteShellCommand(shellCmd);
     }
 
     // Not a shell command, process as language code
