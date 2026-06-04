@@ -49,6 +49,13 @@ std::string AddressKey(const ENetAddress& addr) {
     return std::string(ip) + ":" + std::to_string(addr.port);
 }
 
+std::string NormalizeHost(std::string host) {
+    if (host == "localhost") {
+        return "127.0.0.1";
+    }
+    return host;
+}
+
 NetAddress ToNetAddress(const ENetAddress& addr) {
     char ip[64] = {0};
     enet_address_get_host_ip(&addr, ip, sizeof(ip));
@@ -59,11 +66,12 @@ bool ToEnetAddress(const NetAddress& addr, ENetAddress& out) {
     out.port = addr.port;
     // ENET_HOST_ANY is only appropriate for bind addresses (listen sockets).
     // Specific hosts — including loopback — must be resolved properly.
-    if (addr.host.empty() || addr.host == "0.0.0.0") {
+    const std::string host = NormalizeHost(addr.host);
+    if (host.empty() || host == "0.0.0.0") {
         out.host = ENET_HOST_ANY;
         return true;
     }
-    return enet_address_set_host(&out, addr.host.c_str()) == 0;
+    return enet_address_set_host(&out, host.c_str()) == 0;
 }
 
 struct MemoryState {
@@ -78,7 +86,7 @@ MemoryState& GetMemoryState() {
 }
 
 std::string MemoryKey(const NetAddress& addr) {
-    return addr.host + ":" + std::to_string(addr.port);
+    return NormalizeHost(addr.host) + ":" + std::to_string(addr.port);
 }
 
 unsigned char SystemMessageByte(SystemMessage msg) {
