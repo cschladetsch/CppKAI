@@ -49,10 +49,36 @@ library (libc++). CommonLang's lexer can optionally use `std::pmr` arena
 allocation (`-DKAI_USE_MONOTONIC_ALLOCATOR`); by default it uses plain
 `std::vector` / `std::map`. Nothing third-party is required.
 
-## Getting the libraries onto the device
+## Running on the device: libkai.so + JNI
 
-The build produces static archives (`.a`). The usual path to running on a
-device (e.g. a Galaxy S26) is to link them into your app's JNI shared library
-via `externalNativeBuild` in Gradle, or to add an aggregate `libkai.so` shared
-target. Ask if you want that aggregate target and a minimal Gradle/JNI consumer
-scaffolded.
+The `KAI_ANDROID` build also produces an aggregate **`libkai.so`** (the CMake
+`kai` target): all the static libraries linked into one shared object with a
+small JNI bridge (`Android/jni/Kai_jni.cpp`). An app loads it with
+`System.loadLibrary("kai")` and drives the runtime through
+`com.kaikaspar.kai.KaiRuntime`:
+
+    val result = KaiRuntime().use { kai -> kai.eval("x = 6; y = 7; x * y") }
+
+The JNI bridge exposes `nativeCreate` / `nativeEval` / `nativeVersion` /
+`nativeDestroy`; `KaiRuntime` wraps them with `eval()`, `version` and
+`AutoCloseable`. Each `KaiRuntime` owns one Rho console, so state persists
+across `eval` calls.
+
+### KaiKaspar consumer
+
+`Android/KaiKaspar/` is a minimal Gradle app showing the integration end to end:
+
+- `app/build.gradle.kts` points `externalNativeBuild` at the repo-root
+  `CMakeLists.txt` with `-DKAI_ANDROID=ON` and `abiFilters = ["arm64-v8a"]`.
+  AGP supplies the NDK toolchain and ABI automatically.
+- `KaiRuntime.kt` is the reusable binding (drop it into your real app).
+- `MainActivity.kt` evaluates Rho on startup and logs the result (tag
+  `KaiKaspar`).
+
+Requirements: an installed NDK r26+ and **CMake >= 3.28** (the KAI root requires
+it - install via `sdkmanager "cmake;3.31.6"` if the bundled CMake is older).
+
+The aggregate also builds (and link-checks) on the host:
+
+    JAVA_HOME=/path/to/jdk cmake -B build-host -G Ninja -DKAI_ANDROID=ON
+    cmake --build build-host --target kai      # -> build-host/Bin/libkai.so

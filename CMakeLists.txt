@@ -111,6 +111,8 @@ option(KAI_NETWORKING "Build networking library, Tau IDL, and network tests" ON)
 option(KAI_ANDROID "Build the Android-reusable library subset" OFF)
 if(KAI_ANDROID)
     add_definitions(-DKAI_ANDROID)
+    # The static libs are linked into the shared libkai.so, so build them PIC.
+    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
     message(STATUS "KAI_ANDROID: building the reusable library subset "
         "(CppKaiCore, CppKaiLanguage, Network); skipping ImGui, LLM, Tau, "
         "desktop apps, demos and tests")
@@ -382,6 +384,30 @@ endif()
 
 if(TARGET TauLang)
     target_link_libraries(TauLang Core CommonLang)
+endif()
+
+# Android: aggregate the runtime into a single loadable libkai.so with a JNI
+# entry point, so an app can System.loadLibrary("kai"). See Android/ and
+# Doc/Android.md. (Built only for the KAI_ANDROID subset.)
+if(KAI_ANDROID)
+    add_library(kai SHARED ${KAI_HOME}/Android/jni/Kai_jni.cpp)
+    target_link_libraries(kai PRIVATE
+        ConsoleLib RhoLang PiLang Executor CommonLang Core)
+    if(TARGET Network)
+        target_link_libraries(kai PRIVATE Network)
+    endif()
+    if(TARGET enet)
+        target_link_libraries(kai PRIVATE enet)
+    endif()
+    if(CMAKE_SYSTEM_NAME STREQUAL "Android")
+        # jni.h comes from the NDK sysroot; link the Android system libraries.
+        target_link_libraries(kai PRIVATE log android)
+    else()
+        # Host link-sanity build: pull JNI headers from an installed JDK.
+        find_package(JNI REQUIRED)
+        target_include_directories(kai PRIVATE ${JNI_INCLUDE_DIRS})
+    endif()
+    set_target_properties(kai PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${BIN_HOME}")
 endif()
 
 # Find or download Google Test if needed for tests
