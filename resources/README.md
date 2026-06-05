@@ -113,7 +113,7 @@ The Mermaid diagrams can be viewed in several ways:
 
 - **Total Source Files**: 629 C++/.h files
 - **Documentation Files**: 70+ README.md files  
-- **Test Cases**: 200+ comprehensive test cases
+- **Test Cases**: 1,780+ tests across Pi, Rho, Tau, console and network suites (TestPi alone has 585+)
 - **Build Targets**: 15+ libraries and executables
 - **Network Protocols**: 4 message types for console communication
 - **Languages**: 3 integrated programming languages (Pi/Rho/Tau)

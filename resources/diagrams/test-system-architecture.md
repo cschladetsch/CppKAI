@@ -16,7 +16,7 @@ graph TB
     end
     
     subgraph "Language System Tests"
-        PI_TESTS[TestPi<br/>Stack-based language<br/>25+ test cases]
+        PI_TESTS[TestPi<br/>Stack-based language<br/>585+ test cases]
         RHO_TESTS[TestRho<br/>Infix language<br/>100+ test cases]
         TAU_TESTS[TestTau<br/>IDL generator<br/>Network interfaces]
     end

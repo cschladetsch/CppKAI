@@ -129,9 +129,11 @@ See the full diagram: **[System Architecture Overview](resources/diagrams/system
 
 ### Languages
 
-- **Pi**: Stack-based RPN language inspired by Forth — prompt: `Pi π`
-- **Rho**: Python-like infix language that compiles to Pi — prompt: `Rho ρ`
+- **Pi**: Stack-based RPN language inspired by Forth — prompt: `[n] π`
+- **Rho**: Python-like infix language that compiles to Pi — prompt: `[n] ρ`
 - **Tau**: Interface Definition Language (IDL) for network components
+
+The prompt shows `[n] <symbol>`, where `n` is the next command number from the active language's persistent history (`~/.kai/{pi,rho}.history`), and the data stack is printed before every prompt.
 
 ### Console Networking
 
@@ -140,15 +142,15 @@ KAI consoles can communicate with each other over the network in real-time:
 ```bash
 # Console 1 (Server)
 ./Console
-Pi π /network start 14600
-Pi π 2 3 +
+[1] π /network start 14600
+[2] π 2 3 +
 
 # Console 2 (Client)
 ./Console
-Pi π /network start 14601
-Pi π /connect localhost 14600
-Pi π /@0 10 *              # Multiply Console 1's result by 10
-Pi π /broadcast stack      # Show stack on all connected consoles
+[1] π /network start 14601
+[2] π /connect localhost 14600
+[3] π /@0 10 *              # Multiply Console 1's result by 10
+[4] π /broadcast stack      # Show stack on all connected consoles
 ```
 
 **Network Commands:**
@@ -242,13 +244,13 @@ cmake .. -DENABLE_SHELL_SYNTAX=ON
 KAI Console v0.3.0
 Type 'help' for available commands.
 
-Pi π 2 3 +
+[1] π 2 3 +
 [0]: 5
 
-Pi π rho
+[2] π rho
 Switched to Rho language mode
 
-Rho ρ x = 42; y = x * 2; y
+[1] ρ x = 42; y = x * 2; y
 [0]: 84
 ```
 
@@ -321,7 +323,7 @@ This project is licensed under the MIT License — see the [LICENSE](LICENSE) fi
 
 - **629+** C++ source files
 - **3** integrated programming languages (Pi / Rho / Tau)
-- **1,600+** passing tests across Pi, Rho, Tau, and network suites
+- **1,780+** passing tests across Pi, Rho, Tau, and network suites (TestPi alone has 585+)
 - **Full** Agent/Proxy/Domain networking over ENet UDP
 - **Tau IDL** generates type-safe proxy/agent pairs from `.tau` interfaces
 - **Networking on by default** — disable with `./b --no-network`

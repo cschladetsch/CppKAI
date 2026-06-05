@@ -5,7 +5,7 @@
 ```mermaid
 graph TB
     subgraph "Console A (Port 14600)"
-        CA_UI["Console Interface<br/>Pi λ /network start 14600"]
+        CA_UI["Console Interface<br/>[1] π /network start 14600"]
         CA_NET["Network Manager<br/>ID: Console-1234"]
         CA_PEER[Peer Handler<br/>ENet Interface]
         CA_MSG[Message Queue<br/>Command/Result/Broadcast]
@@ -16,7 +16,7 @@ graph TB
     end
     
     subgraph "Console B (Port 14601)"
-        CB_UI["Console Interface<br/>Rho λ /connect localhost 14600"]
+        CB_UI["Console Interface<br/>[1] ρ /connect localhost 14600"]
         CB_NET["Network Manager<br/>ID: Console-5678"]
         CB_PEER[Peer Handler<br/>ENet Interface]
         CB_MSG[Message Queue<br/>Command/Result/Broadcast]

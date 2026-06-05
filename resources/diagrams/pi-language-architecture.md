@@ -164,6 +164,9 @@ graph LR
         MUL[MUL<br/>Pop a,b Push a*b]
         DIV[DIV<br/>Pop a,b Push b/a]
         MOD[MOD<br/>Pop a,b Push b%a]
+        MIN[MIN<br/>Pop a,b Push min]
+        MAX[MAX<br/>Pop a,b Push max]
+        ABS[ABS<br/>Pop a Push abs a]
     end
     
     subgraph "Control Operations"
