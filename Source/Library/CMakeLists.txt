@@ -5,7 +5,10 @@ cmake_minimum_required(VERSION 3.28...3.30)
 # they live together in one module rather than as separate libraries here.
 add_subdirectory(${KAI_HOME}/Ext/CppKaiCore ${CMAKE_BINARY_DIR}/CppKaiCore)
 
-add_subdirectory(${LIBRARY_HOME}/ImGui)
+# ImGui core lib (desktop only; the GL/GLFW frontend lives in App/Window).
+if(NOT KAI_ANDROID)
+    add_subdirectory(${LIBRARY_HOME}/ImGui)
+endif()
 
 if(KAI_BUILD_LLM)
     def_library(LLM)

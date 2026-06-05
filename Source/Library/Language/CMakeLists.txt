@@ -8,7 +8,7 @@ set(lang_root_dir ${KAI_SOURCE_ROOT_DIR}/Library/Language)
 # CppKaiCore). Tau is the IDL compiler and requires networking.
 add_subdirectory(${KAI_HOME}/Ext/CppKaiLanguage ${CMAKE_BINARY_DIR}/CppKaiLanguage)
 
-if(KAI_NETWORKING)
+if(KAI_NETWORKING AND NOT KAI_ANDROID)
     def_lang_library(Tau)
     target_link_libraries(TauLang CommonLang Executor)
 endif()

@@ -111,6 +111,15 @@ option(KAI_NETWORKING "Build networking library, Tau IDL, and network tests" ON)
 option(KAI_ANDROID "Build the Android-reusable library subset" OFF)
 if(KAI_ANDROID)
     add_definitions(-DKAI_ANDROID)
+    message(STATUS "KAI_ANDROID: building the reusable library subset "
+        "(CppKaiCore, CppKaiLanguage, Network); skipping ImGui, LLM, Tau, "
+        "desktop apps, demos and tests")
+    set(KAI_BUILD_IMGUI OFF CACHE BOOL "" FORCE)
+    set(KAI_BUILD_WINDOW OFF CACHE BOOL "" FORCE)
+    set(KAI_BUILD_LLM OFF CACHE BOOL "" FORCE)
+    set(KAI_BUILD_TEST_ALL OFF CACHE BOOL "" FORCE)
+    set(KAI_BUILD_CORE_TEST OFF CACHE BOOL "" FORCE)
+    set(KAI_BUILD_TEST_LANG OFF CACHE BOOL "" FORCE)
 endif()
 
 if(KAI_BUILD_WINDOW AND NOT KAI_BUILD_IMGUI)
@@ -340,13 +349,20 @@ macro(def_platform_library name)
 endmacro()
 
 # Loop through top-level directories and include their CMakeLists.txt
-set(TopLevels Library App)
+# Android builds only the libraries; desktop apps are skipped.
+if(KAI_ANDROID)
+    set(TopLevels Library)
+else()
+    set(TopLevels Library App)
+endif()
 foreach(top ${TopLevels})
     include(${SOURCE_HOME}/${top}/CMakeLists.txt)
 endforeach()
 
-# Standalone runnable demos
-add_subdirectory(Demo/ContinuationMobilityDemo)
+# Standalone runnable demos (desktop only)
+if(NOT KAI_ANDROID)
+    add_subdirectory(Demo/ContinuationMobilityDemo)
+endif()
 
 # Set up main library dependencies
 if(TARGET Executor)
@@ -375,7 +391,7 @@ if(TARGET TauLang)
 endif()
 
 # Find or download Google Test if needed for tests
-if(KAI_BUILD_TEST_ALL OR KAI_BUILD_CORE_TEST OR KAI_BUILD_TEST_LANG OR KAI_NETWORKING)
+if(NOT KAI_ANDROID AND (KAI_BUILD_TEST_ALL OR KAI_BUILD_CORE_TEST OR KAI_BUILD_TEST_LANG OR KAI_NETWORKING))
   # First try to find the system's gtest
   find_package(GTest QUIET)
   
@@ -411,6 +427,6 @@ if(KAI_BUILD_TEST_ALL OR KAI_BUILD_CORE_TEST OR KAI_BUILD_TEST_LANG OR KAI_NETWO
 endif()
 
 # Add tests only when explicitly requested or when networking tests are enabled.
-if(KAI_BUILD_TEST_ALL OR KAI_BUILD_CORE_TEST OR KAI_BUILD_TEST_LANG OR KAI_NETWORKING)
+if(NOT KAI_ANDROID AND (KAI_BUILD_TEST_ALL OR KAI_BUILD_CORE_TEST OR KAI_BUILD_TEST_LANG OR KAI_NETWORKING))
     add_subdirectory(Test)
 endif()
