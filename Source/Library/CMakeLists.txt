@@ -31,12 +31,8 @@ add_subdirectory(${LIBRARY_HOME}/Language)
 # include language translators directly without circular dependencies.
 project(ConsoleLib)
 add_library(ConsoleLib ${kai_console_src})
-target_include_directories(ConsoleLib PUBLIC
-    ${KAI_HOME}/Include/KAI/Language/Rho
-    ${KAI_HOME}/Include/KAI/Language/Pi
-    ${LIBRARY_HOME}/Language/Rho/Include
-    ${LIBRARY_HOME}/Language/Pi/Include
-)
+# Pi/Rho headers reach Console.cpp via the linked PiLang/RhoLang targets (their
+# include dirs are PUBLIC) and the global CppKaiLanguage include path.
 target_link_libraries(ConsoleLib PUBLIC Executor PiLang RhoLang CommonLang Core)
 set_target_properties(ConsoleLib PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY "${BIN_HOME}"

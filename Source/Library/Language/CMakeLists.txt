@@ -4,12 +4,9 @@ set(lang_root_dir ${KAI_SOURCE_ROOT_DIR}/Library/Language)
 
 # CommonLang now comes from the CppKaiCore submodule (Core + Executor + Common).
 
-# Pi and Rho are always built. Tau is the IDL compiler and requires networking.
-set(core_langs Pi Rho)
-foreach(l ${core_langs})
-    def_lang_library(${l})
-    target_link_libraries(${l}Lang CommonLang Executor)
-endforeach()
+# Pi and Rho now come from the CppKaiLanguage submodule (downstream of
+# CppKaiCore). Tau is the IDL compiler and requires networking.
+add_subdirectory(${KAI_HOME}/Ext/CppKaiLanguage ${CMAKE_BINARY_DIR}/CppKaiLanguage)
 
 if(KAI_NETWORKING)
     def_lang_library(Tau)

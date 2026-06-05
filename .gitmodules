@@ -19,3 +19,6 @@
 [submodule "Ext/CppKaiCore"]
 	path = Ext/CppKaiCore
 	url = git@github.com:cschladetsch/CppKaiCore.git
+[submodule "Ext/CppKaiLanguage"]
+	path = Ext/CppKaiLanguage
+	url = git@github.com:cschladetsch/CppKaiLanguage.git

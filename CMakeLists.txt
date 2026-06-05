@@ -160,8 +160,10 @@ foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
 endforeach()
 
 include_directories(${KAI_HOME}/Include)
-# Core/Executor/CommonLang headers now live in the CppKaiCore submodule.
+# Core/Executor/CommonLang headers now live in the CppKaiCore submodule, and
+# the Pi/Rho languages in the CppKaiLanguage submodule.
 include_directories(${KAI_HOME}/Ext/CppKaiCore/Include)
+include_directories(${KAI_HOME}/Ext/CppKaiLanguage/Include)
 
 # Link directories for external libraries
 link_directories(${KAI_HOME}/Lib/Debug)
@@ -366,13 +368,7 @@ if(TARGET Network)
     endif()
 endif()
 
-if(TARGET PiLang)
-    target_link_libraries(PiLang Core CommonLang)
-endif()
-
-if(TARGET RhoLang)
-    target_link_libraries(RhoLang Core CommonLang PiLang)
-endif()
+# PiLang / RhoLang link dependencies are declared inside CppKaiLanguage.
 
 if(TARGET TauLang)
     target_link_libraries(TauLang Core CommonLang)
