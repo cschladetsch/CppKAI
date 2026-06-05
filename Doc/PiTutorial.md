@@ -187,6 +187,13 @@ Pi supports standard arithmetic operations, which take their operands from the s
 
 // Modulo: 7 % 4 = 3
 7 4 mod
+
+// Minimum / maximum of the top two values
+5 3 min          // 3
+5 3 max          // 5
+
+// Absolute value of the top value (unary)
+0 5 - abs        // 5
 ```
 
 ## Logical Operations
@@ -223,14 +230,15 @@ Pi allows you to store and retrieve values using a dictionary-like system:
 ### Conditionals
 
 ```pi
-// If-else using ife operation
-// Syntax: then-branch else-branch condition ife
+// If-else using the ife operation
+// Syntax: condition { then-block } { else-block } ife
+// The condition is evaluated first, then the matching block is executed.
 
-// If true, push 1, otherwise push 2
-1 2 true ife   // Result: 1
+// If true, run the then-block (push 1), otherwise the else-block (push 2)
+true { 1 } { 2 } ife   // Result: 1
 
-// If false, push 1, otherwise push 2
-1 2 false ife  // Result: 2
+// If false, run the else-block (push 2)
+false { 1 } { 2 } ife  // Result: 2
 ```
 
 ### Continuations

@@ -99,14 +99,15 @@ TEST(PiTutorial, TutorialExamples) {
     stack->Clear();
 
     // Example: Using conditionals (true branch)
-    console.Execute("1 2 true ife");
+    // Pi ife takes: condition { then-block } { else-block } ife
+    console.Execute("true { 1 } { 2 } ife");
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->At(0)), 1);
 
     stack->Clear();
 
     // Example: Using conditionals (false branch)
-    console.Execute("1 2 false ife");
+    console.Execute("false { 1 } { 2 } ife");
     ASSERT_EQ(stack->Size(), 1);
     ASSERT_EQ(ConstDeref<int>(stack->At(0)), 2);
 

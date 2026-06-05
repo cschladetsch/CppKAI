@@ -616,8 +616,9 @@ TEST_F(PiAdvancedTests, RecursiveMin) {
 }
 
 TEST_F(PiAdvancedTests, RecursiveAbs) {
-    // Absolute value
-    AssertResult<int>("{ dup 0 < { -1 * } { } ife } 'abs # -15 abs &", 15);
+    // Absolute value implemented as a user-defined quotation. Uses the name
+    // 'absFn' because 'abs' is now a reserved builtin operation (like min/max).
+    AssertResult<int>("{ dup 0 < { -1 * } { } ife } 'absFn # -15 absFn &", 15);
 }
 
 // Tests 81-90: Extreme Complexity

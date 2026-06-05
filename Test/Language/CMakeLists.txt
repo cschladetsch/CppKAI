@@ -163,11 +163,14 @@ foreach (lang ${langs})
             ${source_path}/PiComprehensiveTests.cpp         # 50 comprehensive Pi tests covering Resume, Replace, loops, nesting
             ${source_path}/PiAdvancedTests.cpp              # 100 advanced Pi tests: recursion, mutual recursion, tail recursion, nested calls
             ${source_path}/PiVeryComplexTests.cpp           # Complex continuation and loop tests
-            # Larger tests to include if needed:
-            #${source_path}/TestPiAdvanced.cpp
-            #${source_path}/TestPiAdvanced2.cpp
-            #${source_path}/TestPiParser.cpp
-            #${source_path}/TutorialTest.cpp
+            ${source_path}/PiAdditionalOperationsTests.cpp  # 50 arithmetic/comparison/boolean/stack/float/string tests
+            ${source_path}/PiExtendedOperationsTests.cpp    # 100 more arithmetic/comparison/boolean/min-max/stack/compound/float/string tests
+            ${source_path}/PiAbsOperationTests.cpp          # Tests for the abs (absolute value) operation
+            # Previously-disabled larger suites, re-enabled:
+            ${source_path}/TestPiAdvanced.cpp               # String/array/map advanced Pi tests
+            ${source_path}/TestPiAdvanced2.cpp              # Variable, continuation and control-flow tests
+            ${source_path}/TestPiParser.cpp                 # Direct PiLexer/PiParser unit tests
+            ${source_path}/TutorialTest.cpp                 # Pi tutorial example smoke tests
         )
     elseif(lang STREQUAL "Tau")
         # Explicitly list Tau tests including our new network connection tests

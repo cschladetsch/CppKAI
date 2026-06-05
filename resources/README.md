@@ -7,6 +7,7 @@ This directory contains comprehensive architecture documentation and diagrams fo
 ```
 resources/
 ├── diagrams/                    # System architecture diagrams
+│   ├── system-architecture-overview.md     # Layered overview (linked from the main README)
 │   ├── overall-system-architecture.md      # High-level system overview
 │   ├── language-system-architecture.md     # Pi/Rho/Tau language systems overview
 │   ├── pi-language-architecture.md         # Pi stack-based language details
@@ -23,6 +24,11 @@ resources/
 ## Architecture Diagrams
 
 All diagrams are created using Mermaid syntax and can be viewed in any Markdown viewer that supports Mermaid rendering (GitHub, GitLab, VS Code, etc.).
+
+### System Architecture Overview
+- Layered view of the whole system (application, language, console/networking, execution, core, platform)
+- Extracted from the main project README and linked from it
+- Single starting point before the more focused diagrams below
 
 ### 1. Overall System Architecture
 - High-level component relationships

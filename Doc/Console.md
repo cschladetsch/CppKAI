@@ -83,7 +83,10 @@ The Console provides several built-in commands for enhanced usability:
 
 ### Persistent Command History
 
-Commands are automatically saved to `~/.kai_history` and persist across sessions:
+Commands are automatically saved per language to `~/.kai/pi.history` and
+`~/.kai/rho.history`, and persist across sessions. The number shown in the
+prompt (for example `[42] π`) is the next entry number in the active language's
+history file:
 
 ```
 Pi λ history
@@ -98,7 +101,7 @@ Pi λ !help      # Find last command starting with "help"
 ```
 
 **History Features:**
-- Automatic saving to `~/.kai_history`
+- Automatic per-language saving to `~/.kai/pi.history` and `~/.kai/rho.history`
 - Duplicate elimination
 - Size limit management (1000 commands)
 - History expansion: `!!`, `!n`, `!string`, `!?pattern`
@@ -276,7 +279,7 @@ Rho λ temp = get_temp(); print("Temperature: " + temp)
 
 ### History Configuration
 The Console automatically manages command history with these defaults:
-- **History file**: `~/.kai_history`
+- **History files**: `~/.kai/pi.history` and `~/.kai/rho.history` (one per language)
 - **Maximum entries**: 1000 commands
 - **Duplicate handling**: Automatic elimination
 - **Persistence**: Automatic save on exit, load on startup

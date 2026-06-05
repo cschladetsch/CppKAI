@@ -129,7 +129,7 @@ Pi λ !!            # Repeat last command
 Pi λ !1            # Repeat command 1
 [0]: 5
 
-# History is saved to ~/.kai_history automatically
+# History is saved per language to ~/.kai/pi.history and ~/.kai/rho.history automatically
 ```
 
 ## Advanced History Features
@@ -211,7 +211,7 @@ Pi λ help history  # History features
 ```
 
 ### 2. Leverage persistent history
-- Commands save to `~/.kai_history` automatically
+- Commands save per language to `~/.kai/pi.history` and `~/.kai/rho.history` automatically
 - Use `!!`, `!n`, `!string` for quick recalls
 - History persists across sessions
 
