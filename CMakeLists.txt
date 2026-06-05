@@ -109,6 +109,8 @@ option(KAI_NETWORKING "Build networking library, Tau IDL, and network tests" ON)
 # Network) plus boost.monotonic, skipping desktop apps, ImGui, LLM, Tau and the
 # NetworkGenerate tool. The KAI_ANDROID define is also exposed to C++.
 option(KAI_ANDROID "Build the Android-reusable library subset" OFF)
+set(KAI_ANDROID_BOOST_INCLUDE_DIR "" CACHE PATH
+    "Upstream Boost headers tree, needed by boost.monotonic on Android")
 if(KAI_ANDROID)
     add_definitions(-DKAI_ANDROID)
     message(STATUS "KAI_ANDROID: building the reusable library subset "
@@ -271,6 +273,15 @@ set(EXTERNAL ${KAI_HOME}/Ext)
 # boost.monotonic (in-house, header-only) lives in the CppMonotonic submodule.
 # This makes <boost/monotonic/monotonic.hpp> resolve from Ext/CppMonotonic.
 include_directories(${EXTERNAL}/CppMonotonic)
+
+# boost.monotonic itself pulls in a number of upstream Boost headers. On the
+# desktop these are satisfied by the system Boost install; for Android there is
+# no system Boost, so point KAI_ANDROID_BOOST_INCLUDE_DIR at a Boost headers
+# tree (see Doc/Android.md). Without it, CommonLang will not compile for Android.
+if(KAI_ANDROID AND KAI_ANDROID_BOOST_INCLUDE_DIR)
+    message(STATUS "Using upstream Boost headers for Android: ${KAI_ANDROID_BOOST_INCLUDE_DIR}")
+    include_directories(${KAI_ANDROID_BOOST_INCLUDE_DIR})
+endif()
 
 # Set up external dependencies like Boost, ENet, and GoogleTest
 if(KAI_NETWORKING)
