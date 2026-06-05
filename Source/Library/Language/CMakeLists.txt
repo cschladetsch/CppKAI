@@ -2,14 +2,7 @@ cmake_minimum_required(VERSION 3.6)
 project(Languages)
 set(lang_root_dir ${KAI_SOURCE_ROOT_DIR}/Library/Language)
 
-# Add Common language source files explicitly
-set(COMMON_SOURCES 
-    ${CMAKE_CURRENT_SOURCE_DIR}/Common/Source/Language.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Common/Source/Structure.cpp
-)
-
-# Create a separate library for Common language components
-add_library(CommonLang ${COMMON_SOURCES})
+# CommonLang now comes from the CppKaiCore submodule (Core + Executor + Common).
 
 # Pi and Rho are always built. Tau is the IDL compiler and requires networking.
 set(core_langs Pi Rho)

@@ -160,6 +160,8 @@ foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
 endforeach()
 
 include_directories(${KAI_HOME}/Include)
+# Core/Executor/CommonLang headers now live in the CppKaiCore submodule.
+include_directories(${KAI_HOME}/Ext/CppKaiCore/Include)
 
 # Link directories for external libraries
 link_directories(${KAI_HOME}/Lib/Debug)
@@ -355,9 +357,7 @@ if(TARGET Executor)
     endif()
 endif()
 
-if(TARGET CommonLang)
-    target_link_libraries(CommonLang Core)
-endif()
+# CommonLang -> Core is declared inside the CppKaiCore submodule.
 
 if(TARGET Network)
     target_link_libraries(Network PUBLIC Core)

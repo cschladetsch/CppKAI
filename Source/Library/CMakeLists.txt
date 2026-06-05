@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.28...3.30)
 
-def_library(Core)
+# Core, CommonLang and Executor come from the CppKaiCore submodule. They form a
+# dependency cycle and are reused on other platforms (including Android), so
+# they live together in one module rather than as separate libraries here.
+add_subdirectory(${KAI_HOME}/Ext/CppKaiCore ${CMAKE_BINARY_DIR}/CppKaiCore)
 
 add_subdirectory(${LIBRARY_HOME}/ImGui)
 
@@ -9,18 +12,11 @@ if(KAI_BUILD_LLM)
     target_link_libraries(LLM PUBLIC ModelStore)
 endif()
 
-# Executor: build all sources except Console.cpp, which needs language deps
-project(Executor)
-set(exec_root ${LIBRARY_HOME}/Executor)
-set(kai_exec_includes ${KAI_HOME}/Include/KAI/Executor)
-include_directories(${kai_exec_includes})
-file(GLOB_RECURSE exec_srcs ${exec_root}/Source/*.cpp)
-list(FILTER exec_srcs EXCLUDE REGEX ".*Console\\.cpp$")
-add_library(Executor ${exec_srcs})
-set_target_properties(Executor PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY "${BIN_HOME}"
-    LIBRARY_OUTPUT_DIRECTORY "${BIN_HOME}"
-)
+# Console.cpp ships in the CppKaiCore submodule's Executor sources but is glue
+# that depends on the Pi/Rho translators, so the submodule excludes it from its
+# Executor library and it is compiled into ConsoleLib (below) instead.
+set(kai_console_src
+    ${KAI_HOME}/Ext/CppKaiCore/Source/Library/Executor/Source/Console.cpp)
 
 if(KAI_NETWORKING)
     def_library(Network)
@@ -34,12 +30,10 @@ add_subdirectory(${LIBRARY_HOME}/Language)
 # ConsoleLib: Console.cpp sits above Executor and language libs so it can
 # include language translators directly without circular dependencies.
 project(ConsoleLib)
-add_library(ConsoleLib ${exec_root}/Source/Console.cpp)
+add_library(ConsoleLib ${kai_console_src})
 target_include_directories(ConsoleLib PUBLIC
-    ${kai_exec_includes}
     ${KAI_HOME}/Include/KAI/Language/Rho
     ${KAI_HOME}/Include/KAI/Language/Pi
-    ${KAI_HOME}/Include/KAI/Language/Common
     ${LIBRARY_HOME}/Language/Rho/Include
     ${LIBRARY_HOME}/Language/Pi/Include
 )

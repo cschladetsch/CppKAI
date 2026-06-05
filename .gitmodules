@@ -16,3 +16,6 @@
 [submodule "Ext/CppMonotonic"]
 	path = Ext/CppMonotonic
 	url = git@github.com:cschladetsch/CppMonotonic.git
+[submodule "Ext/CppKaiCore"]
+	path = Ext/CppKaiCore
+	url = git@github.com:cschladetsch/CppKaiCore.git
