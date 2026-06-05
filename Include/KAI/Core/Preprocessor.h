@@ -3,8 +3,12 @@
 #ifndef KAI_PRE_PROCESSOR_H
 #define KAI_PRE_PROCESSOR_H
 #
-#define KAI_PP_CAT BOOST_PP_CAT
-#define KAI_PP_STRINGISE BOOST_PP_STRINGIZE
+// Token-paste and stringise helpers (formerly aliased to boost/preprocessor).
+#define KAI_PP_CAT_II(a, b) a##b
+#define KAI_PP_CAT_I(a, b) KAI_PP_CAT_II(a, b)
+#define KAI_PP_CAT(a, b) KAI_PP_CAT_I(a, b)
+#define KAI_PP_STRINGISE_I(x) #x
+#define KAI_PP_STRINGISE(x) KAI_PP_STRINGISE_I(x)
 #
 // KAI_STATIC_MESSAGE
 // usage:

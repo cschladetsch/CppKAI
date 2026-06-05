@@ -1,5 +1,4 @@
 #pragma once
 
-#include "boost/static_assert.hpp"
-
-#define KAI_STATIC_ASSERT BOOST_STATIC_ASSERT
+// Formerly boost/static_assert.hpp; C++ has a first-class static_assert.
+#define KAI_STATIC_ASSERT(Condition) static_assert(Condition)

@@ -4,12 +4,35 @@
 #include <KAI/Core/Exception/ExceptionMacros.h>
 #include <KAI/Core/Meta/Base.h>
 
-#include <boost/type_index.hpp>
+#include <cstdlib>
+#include <memory>
+#include <string>
+#include <typeinfo>
+#if defined(__GNUC__) || defined(__clang__)
+#include <cxxabi.h>
+#endif
 
 #include "KAI/Core/Object/Reflected.h"
 #include "KAI/Core/Type/Properties.h"
 
 KAI_TYPE_BEGIN
+
+// Demangled type name (replaces boost::typeindex::type_id<T>().pretty_name()).
+// Uses the Itanium ABI demangler on GCC/Clang (incl. Android NDK libc++);
+// elsewhere typeid::name() is already human-readable (e.g. MSVC).
+namespace type_name_detail {
+inline std::string Demangle(const char *mangled) {
+#if defined(__GNUC__) || defined(__clang__)
+    int status = 0;
+    std::unique_ptr<char, void (*)(void *)> demangled(
+        abi::__cxa_demangle(mangled, nullptr, nullptr, &status), std::free);
+    return (status == 0 && demangled) ? std::string(demangled.get())
+                                      : std::string(mangled);
+#else
+    return std::string(mangled);
+#endif
+}
+}  // namespace type_name_detail
 
 template <typename T>
 struct NoTraitsDefined;
@@ -40,7 +63,7 @@ struct TraitsBase {
     typedef ConstRef ConstReference;
 
     static std::string Name() {
-        return boost::typeindex::type_id<T>().pretty_name();
+        return type_name_detail::Demangle(typeid(T).name());
     }
 
     // used as a dummy template parameter to avoid nested explicit template

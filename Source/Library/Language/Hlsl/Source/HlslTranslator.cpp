@@ -2,7 +2,7 @@
 #include <KAI/Executor/Operation.h>
 #include <KAI/Language/Hlsl/HlslTranslator.h>
 
-#include <boost/lexical_cast.hpp>
+#include <string>
 
 using namespace std;
 
@@ -114,12 +114,12 @@ void HlslTranslator::TranslateToken(AstNodePtr node) {
             return;
 
         case TokenEnum::Int:
-            Append(New<int>(boost::lexical_cast<int>(node->GetTokenText())));
+            Append(New<int>(std::stoi(node->GetTokenText())));
             return;
 
         case TokenEnum::Float:
             Append(
-                New<float>(boost::lexical_cast<float>(node->GetTokenText())));
+                New<float>(std::stof(node->GetTokenText())));
             return;
 
         case TokenEnum::String:

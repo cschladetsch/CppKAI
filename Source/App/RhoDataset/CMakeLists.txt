@@ -5,7 +5,7 @@ project(${name})
 
 set(source_path ${APP_HOME}/${name}/Source)
 add_executable(${name} ${source_path}/Main.cpp)
-target_link_libraries(${name} LLM Core ${Boost_LIBRARIES})
+target_link_libraries(${name} LLM Core)
 set_target_properties(${name} PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${BIN_HOME}"
 )

@@ -1,15 +1,20 @@
 #include "KAI/Language/Pi/PiTranslator.h"
 
-#include <boost/lexical_cast.hpp>
 #include <iostream>
+#include <string>
 
 #include "KAI/Core/BuiltinTypes.h"
 #include "KAI/Core/BuiltinTypes/List.h"
 #include "KAI/Core/BuiltinTypes/Map.h"
 #include "KAI/Core/BuiltinTypes/String.h"
 
-using namespace boost;
 using namespace std;
+
+// Pi spells booleans with the True/False keywords; the generic Bool token
+// carries its literal text ("true"/"1" => true).
+static bool ParseBool(const std::string &text) {
+    return text == "true" || text == "1";
+}
 
 KAI_BEGIN
 
@@ -110,7 +115,7 @@ void PiTranslator::TranslateNode(AstNodePtr node) {
                     // For integers, handle them directly
                     if (ch->GetToken().type == PiTokenEnumType::Int) {
                         int value =
-                            boost::lexical_cast<int>(ch->GetToken().Text());
+                            std::stoi(ch->GetToken().Text());
                         array.Append(reg_->New<int>(value));
                     }
                     // Handle other literal types as needed
@@ -119,7 +124,7 @@ void PiTranslator::TranslateNode(AstNodePtr node) {
                         array.Append(reg_->New<String>(value));
                     } else if (ch->GetToken().type == PiTokenEnumType::Bool) {
                         bool value =
-                            boost::lexical_cast<bool>(ch->GetToken().Text());
+                            ParseBool(ch->GetToken().Text());
                         array.Append(reg_->New<bool>(value));
                     }
                 }
@@ -258,7 +263,7 @@ void PiTranslator::AppendTokenised(const TokenNode &tok) {
             break;
 
         case PiTokenEnumType::Bool:
-            AppendNew(boost::lexical_cast<bool>(tok.Text()));
+            AppendNew(ParseBool(tok.Text()));
             break;
 
         case PiTokenEnumType::GetType:
@@ -281,11 +286,11 @@ void PiTranslator::AppendTokenised(const TokenNode &tok) {
             break;
 
         case PiTokenEnumType::Int:
-            AppendNew(boost::lexical_cast<int>(tok.Text()));
+            AppendNew(std::stoi(tok.Text()));
             break;
 
         case PiTokenEnumType::Float:
-            AppendNew(boost::lexical_cast<float>(tok.Text()));
+            AppendNew(std::stof(tok.Text()));
             break;
 
         case PiTokenEnumType::Replace:

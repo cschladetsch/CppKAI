@@ -103,7 +103,15 @@ option(KAI_BUILD_TEST_LANG "Build language tests" ON)
 option(KAI_BUILD_IMGUI "Build the ImGui client" OFF)
 option(KAI_BUILD_WINDOW "Deprecated alias for KAI_BUILD_IMGUI" OFF)
 option(KAI_BUILD_LLM "Build the local LLM support libraries" OFF)
-option(KAI_NETWORKING "Build networking library, Tau IDL, NetworkGenerate tool, and network tests" ON)
+option(KAI_NETWORKING "Build networking library, Tau IDL, and network tests" ON)
+
+# Android target: build only the reusable libraries (Core, Language, Executor,
+# Network) plus boost.monotonic, skipping desktop apps, ImGui, LLM, Tau and the
+# NetworkGenerate tool. The KAI_ANDROID define is also exposed to C++.
+option(KAI_ANDROID "Build the Android-reusable library subset" OFF)
+if(KAI_ANDROID)
+    add_definitions(-DKAI_ANDROID)
+endif()
 
 if(KAI_BUILD_WINDOW AND NOT KAI_BUILD_IMGUI)
     message(STATUS "KAI_BUILD_WINDOW is deprecated; enabling KAI_BUILD_IMGUI")
@@ -114,9 +122,10 @@ endif()
 # Default to ON so the shell/backtick test suites run instead of being skipped.
 option(ENABLE_SHELL_SYNTAX "Enable shell command execution via backtick syntax" ON)
 
-# Find and link Boost libraries
-find_package(Boost REQUIRED COMPONENTS system filesystem program_options date_time regex)
-include_directories(${Boost_INCLUDE_DIRS})
+# Boost has been removed from KAI. The only remaining Boost-namespaced
+# dependency is boost.monotonic (an in-house, header-only library vendored as
+# the Ext/CppMonotonic submodule); its include path is added with the other
+# externals below.
 
 # Set the CMake module path
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake;${CMAKE_MODULE_PATH}")
@@ -246,13 +255,17 @@ endif()
 # Add rang external library
 set(EXTERNAL ${KAI_HOME}/Ext)
 
+# boost.monotonic (in-house, header-only) lives in the CppMonotonic submodule.
+# This makes <boost/monotonic/monotonic.hpp> resolve from Ext/CppMonotonic.
+include_directories(${EXTERNAL}/CppMonotonic)
+
 # Set up external dependencies like Boost, ENet, and GoogleTest
 if(KAI_NETWORKING)
     set(ENET_ROOT ${EXTERNAL}/ENet)
     include_directories(${ENET_ROOT}/include)
     add_subdirectory(${ENET_ROOT})
     add_definitions(-DKAI_USE_ENET)
-    message(STATUS "Networking enabled: ENet, Network lib, Tau, NetworkGenerate, and network tests will be built")
+    message(STATUS "Networking enabled: ENet, Network lib, Tau, and network tests will be built")
 else()
     message(STATUS "Networking disabled (enable with -DKAI_NETWORKING=ON)")
 endif()

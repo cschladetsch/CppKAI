@@ -13,3 +13,6 @@
 [submodule "Ext/CppLmmModelStore"]
 	path = Ext/CppLmmModelStore
 	url = https://github.com/cschladetsch/CppLmmModelStore
+[submodule "Ext/CppMonotonic"]
+	path = Ext/CppMonotonic
+	url = git@github.com:cschladetsch/CppMonotonic.git

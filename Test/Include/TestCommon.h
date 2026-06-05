@@ -2,7 +2,7 @@
 
 #include <gtest/gtest.h>
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 #include "KAI/Core/BuiltinTypes.h"
 #include "KAI/Core/Console.h"
@@ -17,7 +17,7 @@
 
 KAI_BEGIN
 
-extern boost::filesystem::path ScriptRoot;
+extern std::filesystem::path ScriptRoot;
 
 std::string LoadScriptText(const char *filename);
 

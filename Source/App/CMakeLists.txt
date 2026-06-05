@@ -20,6 +20,5 @@ foreach (app ${apps})
     endif()
 endforeach()
 
-if(KAI_NETWORKING)
-    include(${APP_HOME}/NetworkGenerate/CMakeLists.txt)
-endif()
+# NetworkGenerate (the Tau IDL command-line tool) has been removed. Tau code
+# generation remains available via the Tau library (tau::Generate::*).

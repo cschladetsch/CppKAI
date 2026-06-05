@@ -1,8 +1,6 @@
 #pragma once
 
-#include <boost/preprocessor/cat.hpp>
-
-#include "boost/preprocessor/stringize.hpp"
+#include <KAI/Core/Preprocessor.h>
 
 //#define KAI_PLATFORM_SOURCE_DIR(X) \
 //    BOOST_PP_CAT("Platform/", KAI_PP_STRINGISE(X))
@@ -26,7 +24,7 @@
     KAI_END
 
 #define KAI_PLATFORM_IMPL_NAME(X) \
-    BOOST_PP_CAT(KAI_NAMESPACED(Platform::KAI_PLATFORM::), X)
+    KAI_PP_CAT(KAI_NAMESPACED(Platform::KAI_PLATFORM::), X)
 
 #define KAI_PLATFORM_IMPL_DECL(X) \
     KAI_PLATFORM_BEGIN            \

@@ -1,3 +1,5 @@
+#include <cstring>
+
 #include "KAI/Core/BuiltinTypes.h"
 
 KAI_BEGIN

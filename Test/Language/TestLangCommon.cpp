@@ -6,7 +6,6 @@
 #include <KAI/Language/Rho/RhoTranslator.h>
 
 #include <algorithm>
-#include <boost/algorithm/string/predicate.hpp>
 #include <cctype>
 #include <cwctype>
 #include <filesystem>
