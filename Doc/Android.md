@@ -42,26 +42,12 @@ and RTTI, so a real STL is required). To invoke CMake directly:
       -DCMAKE_BUILD_TYPE=Release
     cmake --build build-android -j
 
-## Important: boost.monotonic needs upstream Boost headers
+## Dependencies
 
-KAI is Boost-free except for `boost.monotonic` (the in-house CppMonotonic
-submodule), used by the Common lexer. CppMonotonic is **not** self-contained -
-it `#include`s around three dozen upstream Boost headers (`boost/config`,
-`boost/interprocess`, `boost/ptr_container`, `boost/thread`, `boost/unordered`,
-`boost/type_traits`, ...). On the desktop these come from the system Boost
-install. The NDK has no system Boost, so you must supply them:
-
-    export KAI_ANDROID_BOOST_INCLUDE_DIR=/path/to/boost   # dir containing boost/
-    Scripts/build-android.sh
-
-Boost is almost entirely header-only, so a Boost source tree (or a vendored
-subset) on the include path is enough; nothing extra needs to be compiled.
-
-If you would rather drop this dependency for Android, the modern standard-library
-replacement for boost.monotonic's arena allocation is `std::pmr`
-(`std::pmr::monotonic_buffer_resource` with `std::pmr::vector` / `std::pmr::map`)
-in `Include/KAI/Language/Common/LexerCommon.h`. That would make the Android build
-fully self-contained with no Boost headers at all.
+KAI is fully Boost-free. The library subset needs only the NDK's C++ standard
+library (libc++). CommonLang's lexer can optionally use `std::pmr` arena
+allocation (`-DKAI_USE_MONOTONIC_ALLOCATOR`); by default it uses plain
+`std::vector` / `std::map`. Nothing third-party is required.
 
 ## Getting the libraries onto the device
 

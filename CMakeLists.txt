@@ -106,11 +106,9 @@ option(KAI_BUILD_LLM "Build the local LLM support libraries" OFF)
 option(KAI_NETWORKING "Build networking library, Tau IDL, and network tests" ON)
 
 # Android target: build only the reusable libraries (Core, Language, Executor,
-# Network) plus boost.monotonic, skipping desktop apps, ImGui, LLM, Tau and the
-# NetworkGenerate tool. The KAI_ANDROID define is also exposed to C++.
+# Network), skipping desktop apps, ImGui, LLM, Tau and the NetworkGenerate tool.
+# The KAI_ANDROID define is also exposed to C++.
 option(KAI_ANDROID "Build the Android-reusable library subset" OFF)
-set(KAI_ANDROID_BOOST_INCLUDE_DIR "" CACHE PATH
-    "Upstream Boost headers tree, needed by boost.monotonic on Android")
 if(KAI_ANDROID)
     add_definitions(-DKAI_ANDROID)
     message(STATUS "KAI_ANDROID: building the reusable library subset "
@@ -133,10 +131,8 @@ endif()
 # Default to ON so the shell/backtick test suites run instead of being skipped.
 option(ENABLE_SHELL_SYNTAX "Enable shell command execution via backtick syntax" ON)
 
-# Boost has been removed from KAI. The only remaining Boost-namespaced
-# dependency is boost.monotonic (an in-house, header-only library vendored as
-# the Ext/CppMonotonic submodule); its include path is added with the other
-# externals below.
+# Boost has been fully removed from KAI. (CommonLang's optional arena allocator
+# uses std::pmr, not boost.monotonic.)
 
 # Set the CMake module path
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake;${CMAKE_MODULE_PATH}")
@@ -270,20 +266,7 @@ endif()
 # Add rang external library
 set(EXTERNAL ${KAI_HOME}/Ext)
 
-# boost.monotonic (in-house, header-only) lives in the CppMonotonic submodule.
-# This makes <boost/monotonic/monotonic.hpp> resolve from Ext/CppMonotonic.
-include_directories(${EXTERNAL}/CppMonotonic)
-
-# boost.monotonic itself pulls in a number of upstream Boost headers. On the
-# desktop these are satisfied by the system Boost install; for Android there is
-# no system Boost, so point KAI_ANDROID_BOOST_INCLUDE_DIR at a Boost headers
-# tree (see Doc/Android.md). Without it, CommonLang will not compile for Android.
-if(KAI_ANDROID AND KAI_ANDROID_BOOST_INCLUDE_DIR)
-    message(STATUS "Using upstream Boost headers for Android: ${KAI_ANDROID_BOOST_INCLUDE_DIR}")
-    include_directories(${KAI_ANDROID_BOOST_INCLUDE_DIR})
-endif()
-
-# Set up external dependencies like Boost, ENet, and GoogleTest
+# Set up external dependencies like ENet and GoogleTest
 if(KAI_NETWORKING)
     set(ENET_ROOT ${EXTERNAL}/ENet)
     include_directories(${ENET_ROOT}/include)
