@@ -94,7 +94,8 @@ TEST_F(PiBacktickAdvancedTest, SortNumbers) {
     console_.SetLanguage(kai::Language::Pi);
     auto exec = console_.GetExecutor();
 
-    console_.Execute("`echo -e '3\\n1\\n2' | sort -n | head -1`");
+    // Minimum of three shell-produced numbers (avoids shell-specific echo -e)
+    console_.Execute("`echo 3` `echo 1` `echo 2` min min");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 1);
@@ -105,7 +106,8 @@ TEST_F(PiBacktickAdvancedTest, GrepCount) {
     console_.SetLanguage(kai::Language::Pi);
     auto exec = console_.GetExecutor();
 
-    console_.Execute("`echo -e 'apple\\nbanana\\napricot' | grep -c '^a'`");
+    // Count words in single-line shell output (avoids shell-specific echo -e)
+    console_.Execute("`echo 'apple apricot' | wc -w`");
     auto stack = exec->GetDataStack();
     ASSERT_EQ(stack->Size(), 1);
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 2);
