@@ -245,3 +245,4 @@ Lib/
 **/.claude/settings.local.json
 **/CMakeFiles/
 **/cmake_install.cmake
+!Ext/rang
