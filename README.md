@@ -38,7 +38,7 @@ See the full diagram: **[System Architecture Overview](resources/diagrams/system
 - **Interactive Console**: Real-time REPL with peer-to-peer networking capabilities
 - **Distributed Object Model**: Network-transparent objects with type safety across node boundaries
 - **Stack-based Execution**: High-performance virtual machine with continuation support and binary migration between nodes
-- **LLM Tooling**: `RepoIndex` builds a local repo knowledge base and `RhoDataset` exports training data for Rho-focused model work under `~/.cache/deepseek/models`
+- **LLM Tooling**: `RepoIndex` builds a local repo knowledge base and `RhoDataset` exports incremental training corpus records from Rho, Pi, Tau, tests, scripts, `Logs/`, history files, README files, and `Scripts/Training`. The generated manifest is the training memory.
 - **Incremental Garbage Collection**: Smooth memory management without performance spikes
 - **Code Generation**: Tau IDL generates proxy/agent pairs for network communication
 - **Cross-platform Support**: Unified development experience across major operating systems
@@ -330,5 +330,6 @@ This project is licensed under the MIT License — see the [LICENSE](LICENSE) fi
 - **Single flag** `KAI_BUILD_LLM=ON` enables the local model-cache layer
 - **Model storage**: `~/.cache/deepseek/models` by default
 - **Repo knowledge base**: `./Bin/RepoIndex` builds a local code/test index
+- **Training corpus**: `./Bin/RhoDataset` exports code, tests, scripts, `Logs/`, history, README files, and `Scripts/Training` lessons. It is silent by default and only asks when a proposed corpus change would have large impact.
 
 **Start exploring**: Begin with the **[Documentation Guide](Doc/Documentation.md)** or dive into **[System Architecture](resources/README.md)** for technical details.

@@ -3,92 +3,61 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>RhoMog Model — System View</title>
+  <title>Continuation Mobility Demo - Executor Workbench</title>
   <link rel="stylesheet" href="./style.css">
   <style>
-    /* ── System View page-specific styles ── */
+    .workbench {
+      display: grid;
+      gap: 14px;
+    }
 
-    .sv-hero {
+    .editor-grid {
       display: grid;
-      grid-template-columns: 1.3fr 1fr;
-      gap: 14px;
-      margin-bottom: 14px;
-    }
-    .sv-layout {
-      display: grid;
-      grid-template-columns: 1.35fr 0.95fr;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 14px;
     }
+
+    .runtime-grid {
+      display: grid;
+      grid-template-columns: minmax(280px, 1fr) minmax(240px, 0.82fr) minmax(260px, 0.95fr);
+      gap: 14px;
+      align-items: stretch;
+    }
+
     @media (max-width: 1080px) {
-      .sv-hero, .sv-layout { grid-template-columns: 1fr; }
+      .editor-grid,
+      .runtime-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
-    /* Hero intro card */
-    .hero-card {
-      padding: 20px;
-      border-radius: 8px;
-      border: 1px solid var(--line);
-      background: var(--panel);
-    }
-
-    .key-points {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      margin-top: 16px;
-    }
-    @media (max-width: 760px) { .key-points { grid-template-columns: 1fr; } }
-
-    .key-point {
-      padding: 10px 14px;
-      border-radius: 6px;
-      border: 1px solid var(--line);
-      background: rgba(212,168,67,0.04);
-      font-size: 13px;
-      line-height: 1.5;
-      color: var(--ink);
-    }
-    .key-point strong { color: var(--gold); font-family: "Cinzel", serif; }
-
-    /* Status card */
-    .status-card {
-      padding: 16px;
+    .work-panel {
+      min-height: 0;
+      padding: 14px;
       border-radius: 8px;
       border: 1px solid var(--line);
       background: var(--panel);
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
     }
 
-    .status-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-    }
-    @media (max-width: 760px) { .status-grid { grid-template-columns: 1fr; } }
-
-    /* Panel */
-    .panel {
-      padding: 16px;
-      border-radius: 8px;
-      border: 1px solid var(--line);
-      background: var(--panel);
-    }
     .panel-head {
       display: flex;
       justify-content: space-between;
       align-items: baseline;
       gap: 12px;
-      margin-bottom: 14px;
     }
+
     .panel-title {
       font-family: "Cinzel", serif;
       font-size: 14px;
       font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
       color: var(--gold);
-      letter-spacing: 0.05em;
     }
+
     .panel-note {
       font-size: 12px;
       color: var(--muted);
@@ -96,561 +65,458 @@
       white-space: nowrap;
     }
 
-    /* Host cards */
-    .hosts {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-    }
-    @media (max-width: 760px) { .hosts { grid-template-columns: 1fr; } }
-
-    .host-card {
-      padding: 14px;
-      border-radius: 8px;
-      border: 1px solid color-mix(in srgb, var(--host-color) 40%, transparent);
-      background: color-mix(in srgb, var(--host-color) 12%, rgba(8,5,2,0.9));
-      position: relative;
-      overflow: hidden;
-      min-height: 180px;
-      cursor: help;
-    }
-    .host-card::after {
-      content: "";
-      position: absolute;
-      inset: auto -16px -16px auto;
-      width: 80px; height: 80px;
-      border-radius: 50%;
-      background: color-mix(in srgb, var(--host-color) 10%, transparent);
-      pointer-events: none;
-    }
-    /* data-tech tooltip: bottom for host cards */
-    .host-card[data-tech]:hover::after {
-      content: attr(data-tech);
-      position: absolute;
-      top: calc(100% + 6px); bottom: auto;
-      left: 50%; right: auto;
-      transform: translateX(-50%);
-      width: auto; height: auto;
-      background: #14100a;
-      border: 1px solid var(--gold);
-      border-radius: 4px;
-      color: var(--gold);
-      font-family: "IBM Plex Mono", monospace;
-      font-size: 11px;
-      padding: 4px 10px;
-      white-space: nowrap;
-      z-index: 100;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.7);
-    }
-
-    .host-title {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-    .host-swatch {
-      width: 10px; height: 10px;
-      border-radius: 50%;
-      background: var(--host-color);
-      box-shadow: 0 0 8px var(--host-color);
-      flex-shrink: 0;
-    }
-    .host-name {
-      font-family: "Cinzel", serif;
-      font-size: 14px; font-weight: 700;
-      color: var(--gold); letter-spacing: 0.04em;
-    }
-    .host-meta {
-      font-size: 11px;
-      color: var(--muted);
-      font-style: italic;
-      line-height: 1.4;
-    }
-
-    .load-bar {
-      margin: 10px 0;
-      width: 100%; height: 6px;
-      border-radius: 3px;
-      background: rgba(212,168,67,0.1);
-      overflow: hidden;
-    }
-    .load-bar > span {
-      display: block; height: 100%;
-      width: calc(var(--load) * 10%);
-      border-radius: inherit;
-      background: linear-gradient(90deg, var(--host-color), color-mix(in srgb, var(--host-color) 55%, var(--gold)));
-      transition: width 200ms ease;
-    }
-
-    .agent-cloud {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 8px;
-    }
-    .agent-chip {
-      padding: 4px 9px;
-      border-radius: 4px;
-      border: 1px solid color-mix(in srgb, var(--host-color) 30%, transparent);
-      background: color-mix(in srgb, var(--host-color) 15%, rgba(0,0,0,0.5));
-      font-size: 12px;
-      color: var(--ink);
-      font-family: "Cinzel", serif;
-      letter-spacing: 0.03em;
-    }
-    .agent-chip.restored {
-      border-color: rgba(212,168,67,0.5);
-      color: var(--gold);
-      box-shadow: 0 0 8px rgba(212,168,67,0.25);
-    }
-
-    /* Stack */
-    .stack { display: flex; flex-direction: column; gap: 14px; }
-
-    /* Timeline */
-    .timeline { display: flex; flex-direction: column; gap: 8px; }
-    .timeline-item {
-      padding: 12px 14px;
+    .editor {
+      min-height: 300px;
+      flex: 1;
+      padding: 12px;
       border-radius: 6px;
       border: 1px solid var(--line);
-      background: rgba(212,168,67,0.02);
-      cursor: help;
-      transition: border-color 150ms, background 150ms, transform 150ms;
-    }
-    .timeline-item.active {
-      border-color: rgba(212,168,67,0.4);
-      background: rgba(212,168,67,0.07);
-      transform: translateX(3px);
-    }
-    .timeline-kicker {
-      font-family: "Cinzel", serif;
-      font-size: 10px; font-weight: 700;
-      letter-spacing: 0.1em;
-      color: var(--amber);
-      text-transform: uppercase;
-    }
-    .timeline-title {
-      font-family: "Cinzel", serif;
-      font-size: 13px; font-weight: 700;
-      color: var(--gold);
-      margin-top: 4px; letter-spacing: 0.03em;
-    }
-    .timeline-body {
-      margin-top: 4px;
-      font-size: 12px;
-      color: var(--muted);
-      font-style: italic;
-      line-height: 1.5;
+      background: rgba(0,0,0,0.18);
+      color: var(--ink);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      overflow: auto;
+      outline: none;
+      white-space: pre-wrap;
+      tab-size: 2;
     }
 
-    /* Event log */
-    .event-log {
-      max-height: 360px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      padding-right: 4px;
-    }
-    .event {
-      padding: 10px 12px;
-      border-radius: 5px;
-      border: 1px solid var(--line);
-      background: rgba(212,168,67,0.02);
-    }
-    .event-tick {
-      font-family: "Cinzel", serif;
-      font-size: 10px; font-weight: 700;
-      letter-spacing: 0.08em;
-      color: var(--amber);
-      text-transform: uppercase;
-    }
-    .event-body {
-      margin-top: 4px;
-      font-size: 12px;
-      color: var(--muted);
-      font-style: italic;
-      line-height: 1.5;
+    .editor:focus {
+      border-color: rgba(212,168,67,0.55);
+      box-shadow: inset 0 0 0 1px rgba(212,168,67,0.18);
     }
 
-    .footer-note {
-      font-size: 12px;
+    .editor[contenteditable="true"]:empty::before {
+      content: attr(data-placeholder);
       color: var(--faint);
       font-style: italic;
-      line-height: 1.5;
+    }
+
+    .runtime-list {
+      min-height: 220px;
+      max-height: 360px;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      padding-right: 4px;
+    }
+
+    .stack-row,
+    .context-row,
+    .log-row {
+      padding: 8px 10px;
+      border-radius: 5px;
+      border: 1px solid var(--line);
+      background: rgba(212,168,67,0.03);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 12px;
+      line-height: 1.45;
+      color: var(--muted);
+      cursor: help;
+    }
+
+    .stack-row.tos {
+      color: var(--gold);
+      border-color: rgba(212,168,67,0.5);
+      background: rgba(212,168,67,0.1);
+    }
+
+    .row-label {
+      color: var(--amber);
+      font-weight: 600;
+    }
+
+    .mini-editor {
+      min-height: 118px;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.18);
+      color: var(--ink);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 12px;
+      line-height: 1.55;
+      overflow: auto;
+      outline: none;
+      white-space: pre-wrap;
+    }
+
+    .mini-editor:focus {
+      border-color: rgba(212,168,67,0.55);
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .toolbar button {
+      margin-top: 0;
+    }
+
+    .empty-state {
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px dashed var(--line);
+      color: var(--faint);
+      font-size: 12px;
+      font-style: italic;
     }
   </style>
 </head>
 <body>
   <div class="page">
-    <nav class="page-nav">
-      <a class="page-link" href="./Registry.html">Registry</a>
-      <a class="page-link" href="./ContinuationMobilityAnimation.html">⚔ Migration View</a>
-      <a class="page-link active" href="./ContinuationMobilityDemo.html">📜 System View</a>
-      <a class="page-link" href="./Description.html">📖 The RhoMog Model</a>
-      <a class="page-link" href="../DemoConintuationLocal/index.html">⧉ Local Stepper</a>
+    <nav class="page-nav" title="Demo navigation tabs">
+      <a class="page-link" href="./Registry.html" title="Open the registry view" data-tech="registry page">Registry</a>
+      <a class="page-link" href="./ContinuationMobilityAnimation.html" title="Open the migration animation" data-tech="animated migration view">Migration View</a>
+      <a class="page-link active" href="./ContinuationMobilityDemo.html" title="Open the executor workbench" data-tech="rho/pi executor workbench">System View</a>
+      <a class="page-link" href="./Description.html" title="Open the RhoMog model description" data-tech="model description">The RhoMog Model</a>
+      <a class="page-link" href="../DemoConintuationLocal/index.html" title="Open the local continuation stepper" data-tech="local continuation stepper">Local Stepper</a>
     </nav>
 
-    <section class="sv-hero">
-      <article class="hero-card">
-        <h1 class="page-title">✦ Realm of Continuations ✦</h1>
-        <p class="page-subtitle">A structured view of the RhoMog Model — ten heroes, four realms, Pi-guided routing, memory crystals, and the fall of Ashmarket at tick 60.</p>
-        <div class="key-points">
-          <div class="key-point"><strong>Heroes move</strong><br>Wandering and Oracle's Vision relocate heroes across realms over time. <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted)">[patrol / Pi routing]</span></div>
-          <div class="key-point"><strong>State persists</strong><br>Memory crystals capture hero state before failure and drive resurrection. <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted)">[snapshot / restore]</span></div>
-          <div class="key-point"><strong>Load balances</strong><br>The War Council redistributes heroes every 25 ticks. <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted)">[load balancing]</span></div>
-          <div class="key-point"><strong>Recovery is deterministic</strong><br>Aldric, Seraphine, and Corvin are drawn to Ashmarket at tick 56 so the drill is always readable. <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted)">[failure drill]</span></div>
-        </div>
-      </article>
+    <main class="workbench" data-tech="live Rho to Pi editor and simulated executor panels" title="Live Rho, Pi, executor stacks, and log output">
+      <section class="editor-grid" title="Main source editors">
+        <article class="work-panel" data-tech="rho source editor" title="Rho rich text editor">
+          <div class="panel-head" title="Rho editor header">
+            <h1 class="panel-title" title="Rho source panel" data-tech="rho">Rho</h1>
+            <span class="panel-note" title="Rho changes update Pi automatically">Transpiles to Pi in real time</span>
+          </div>
+          <div id="rho-editor" class="editor" contenteditable="true" spellcheck="false"
+               data-placeholder="Type Rho here..."
+               title="Editable Rho source. Changes automatically regenerate the Pi panel."
+               data-tech="contenteditable Rho input"></div>
+        </article>
 
-      <aside class="status-card">
-        <div class="panel-head">
-          <h2 class="panel-title">Simulation Controls</h2>
-          <span class="panel-note" id="run-state">Paused</span>
-        </div>
-        <div class="button-row">
-          <button class="primary" id="play-pause" data-tech="run / pause 80-tick simulation">Begin</button>
-          <button id="step-once" data-tech="advance one tick">Step</button>
-          <button id="reset-btn" data-tech="reset to tick 0">Reset</button>
-        </div>
-        <div class="pace-control" data-tech="tick interval: right=fast, left=slow">
-          <span class="pace-label">Tale Pace</span>
-          <span class="pace-ends">Slow</span>
-          <input type="range" id="speed-slider" min="1" max="100" value="50">
-          <span class="pace-ends">Fast</span>
-        </div>
-        <div class="status-grid">
-          <div class="metric" data-tech="world.tickCount">
-            <span class="metric-label">Age</span>
-            <span class="metric-value" id="tick-value">0</span>
+        <article class="work-panel" data-tech="pi continuation editor" title="Pi rich text editor">
+          <div class="panel-head" title="Pi editor header">
+            <h2 class="panel-title" title="Pi source panel" data-tech="pi">Pi</h2>
+            <span class="panel-note" id="pi-mode" title="Pi is overwritten only when Rho changes">Editable; one-way dependency from Rho</span>
           </div>
-          <div class="metric" data-tech="agents.length (live)">
-            <span class="metric-label">Heroes</span>
-            <span class="metric-value" id="agent-count">10</span>
-          </div>
-          <div class="metric" data-tech="totalPlans (Pi decisions)">
-            <span class="metric-label">Visions</span>
-            <span class="metric-value" id="plan-count">0</span>
-          </div>
-          <div class="metric" data-tech="totalMigrations (cross-host moves)">
-            <span class="metric-label">Journeys</span>
-            <span class="metric-value" id="migration-count">0</span>
-          </div>
-          <div class="metric" data-tech="totalSnapshots captured">
-            <span class="metric-label">Crystals</span>
-            <span class="metric-value" id="snapshot-count">0</span>
-          </div>
-          <div class="metric" data-tech="restoredCount (snapshot recoveries)">
-            <span class="metric-label">Reborn</span>
-            <span class="metric-value" id="restored-count">0</span>
-          </div>
-        </div>
-        <p class="footer-note">This page shows the state model directly. Hover metric labels and realm cards for technical details.</p>
-      </aside>
-    </section>
+          <div id="pi-editor" class="editor" contenteditable="true" spellcheck="false"
+               data-placeholder="Pi output appears here..."
+               title="Editable Pi continuation text. Rho edits replace this with fresh transpiled output."
+               data-tech="contenteditable Pi output and manual input"></div>
+        </article>
+      </section>
 
-    <section class="sv-layout">
-      <article class="panel">
-        <div class="panel-head">
-          <h2 class="panel-title">Realm &amp; Region State</h2>
-          <span class="panel-note" id="phase-label"></span>
-        </div>
-        <div class="hosts" id="hosts"></div>
-      </article>
+      <section class="runtime-grid" title="Executor runtime panels">
+        <article class="work-panel" data-tech="executor data stack and push editor" title="Executor data stack">
+          <div class="panel-head" title="Data stack header">
+            <h2 class="panel-title" title="Executor data stack panel" data-tech="Executor::GetDataStack()">Executor Data Stack</h2>
+            <span class="panel-note" id="stack-count" title="Current data stack size">0 values</span>
+          </div>
+          <div id="data-stack" class="runtime-list" title="Deepest value is shown first; top of stack is [0] V0" data-tech="stack display, [0] is TOS"></div>
+          <div class="panel-head" title="Stack input header">
+            <h3 class="panel-title" title="Rich text stack input" data-tech="RTF stack parser">Push RTF</h3>
+            <span class="panel-note" title="Tokens are parsed and pushed onto the executor stack">Parsed on push</span>
+          </div>
+          <div id="stack-input" class="mini-editor" contenteditable="true" spellcheck="false"
+               title="Rich text input parsed into stack values. Use numbers, words, quoted text, or one token per line."
+               data-tech="parse tokens then push to data stack">21
+"resume"
+Agent_1</div>
+          <div class="toolbar" title="Executor data stack controls">
+            <button class="primary" id="push-input" title="Parse the RTF editor and push values onto the executor data stack" data-tech="parseAndPush(input)">Push</button>
+            <button id="pop-stack" title="Pop the top value from the executor data stack" data-tech="stack.pop()">Pop</button>
+            <button id="clear-stack" title="Clear the executor data stack" data-tech="stack.clear()">Clear</button>
+          </div>
+        </article>
 
-      <aside class="stack">
-        <section class="panel">
-          <div class="panel-head">
-            <h2 class="panel-title" data-tech="deterministic milestones in the 80-tick run">Key Moments</h2>
-            <span class="panel-note">Current phase highlighted</span>
+        <article class="work-panel" data-tech="executor continuation context stack" title="Executor context stack">
+          <div class="panel-head" title="Context stack header">
+            <h2 class="panel-title" title="Executor context stack panel" data-tech="Executor::GetContextStack()">Executor Context Stack</h2>
+            <span class="panel-note" id="context-count" title="Current context stack size">0 frames</span>
           </div>
-          <div class="timeline" id="timeline"></div>
-        </section>
-        <section class="panel">
-          <div class="panel-head">
-            <h2 class="panel-title" data-tech="rolling event log, newest first">Chronicle</h2>
-            <span class="panel-note">Latest events first</span>
+          <div id="context-stack" class="runtime-list" title="Continuation frames created from Pi and stack operations" data-tech="continuation context frames"></div>
+          <div class="toolbar" title="Executor context controls">
+            <button class="primary" id="run-pi" title="Run the current Pi continuation against the data stack" data-tech="executor.run(pi)">Run Pi</button>
+            <button id="step-continuation" title="Advance one simulated continuation frame" data-tech="executor.step()">Step</button>
+            <button id="clear-context" title="Clear all continuation context frames" data-tech="context.clear()">Clear</button>
           </div>
-          <div class="event-log" id="event-log"></div>
-        </section>
-      </aside>
-    </section>
+        </article>
+
+        <article class="work-panel" data-tech="executor log output" title="Log output">
+          <div class="panel-head" title="Log header">
+            <h2 class="panel-title" title="Executor log output panel" data-tech="LogOutput">Log Output</h2>
+            <span class="panel-note" id="log-count" title="Current log line count">0 lines</span>
+          </div>
+          <div id="log-output" class="runtime-list" title="Newest executor events appear first" data-tech="rolling executor log"></div>
+          <div class="toolbar" title="Log controls">
+            <button id="clear-log" title="Clear the log output panel" data-tech="log.clear()">Clear Log</button>
+            <button id="reset-demo" title="Reset editors, stacks, contexts, and logs" data-tech="reset demo state">Reset Demo</button>
+          </div>
+        </article>
+      </section>
+    </main>
   </div>
 
   <script src="./demoStyle.js"></script>
   <script>
-    const REALM  = {NodeA:"Ironhold",NodeB:"Ashmarket",NodeC:"Harborveil",NodeD:"The Refuge"};
-    const REGION = {Start:"Ironhold Keep",Market:"Ashmarket Bazaar",Harbor:"Harborveil Docks",Backup:"The Refuge"};
-    const REALM_ICON = {NodeA:"⚔",NodeB:"💀",NodeC:"🌊",NodeD:"✨"};
-    const HEROES = [
-      {name:"Aldric",g:"⚔"},{name:"Seraphine",g:"🔮"},{name:"Corvin",g:"🗡"},
-      {name:"Brynn",g:"🏹"},{name:"Thorn",g:"☠"},{name:"Isolde",g:"✝"},
-      {name:"Dax",g:"♪"},{name:"Vex",g:"🌑"},{name:"Mira",g:"🌿"},{name:"Gorath",g:"🔥"}
-    ];
+    const initialRho = [
+      "System.Print(\"CONTINUATION MOBILITY\")",
+      "",
+      "workflow = fun(step, accumulator)",
+      "    accumulator = accumulator + step",
+      "    return accumulator",
+      "",
+      "workflow(3, 21)"
+    ].join("\n");
 
-    const hostColors = {
-      NodeA:"var(--node-a)",NodeB:"var(--node-b)",NodeC:"var(--node-c)",NodeD:"var(--node-d)"
+    const state = {
+      stack: [],
+      contexts: [],
+      logs: [],
+      piEdited: false,
+      tick: 0
     };
-
-    const timelinePoints = [
-      {tick:0,  fantasy:"The Age Begins",          tech:"initialization",         body:"Ten heroes summoned across Ironhold, Ashmarket, and Harborveil."},
-      {tick:20, fantasy:"First Memory Crystal",     tech:"snapshot @ tick 20",     body:"The Oracle forges the first crystal — all hero state preserved."},
-      {tick:25, fantasy:"War Council Convenes",     tech:"load balance @ tick 25", body:"The War Council redistributes forces from the heaviest realm to the lightest."},
-      {tick:40, fantasy:"Second Memory Crystal",    tech:"snapshot @ tick 40",     body:"A second crystal updates the recovery baseline."},
-      {tick:56, fantasy:"Shadow Draws Three Heroes",tech:"failure drill @ tick 56", body:"Aldric, Seraphine, and Corvin are pulled into Ashmarket's shadow."},
-      {tick:60, fantasy:"Ashmarket Falls — Resurrection", tech:"NodeB failure + snapshot restore @ tick 60", body:"Ashmarket is consumed. Three heroes fall, then rise again at The Refuge."},
-      {tick:80, fantasy:"The Age Ends",             tech:"run complete @ tick 80",  body:"The realm is stable. Ten heroes walk, three bearing the mark of resurrection."}
-    ];
-
-    function sliderToMs(v) { return Math.round(1000 * Math.pow(50/1000,(v-1)/99)); }
-
-    class DemoWorld {
-      constructor() { this.reset(); }
-      reset() {
-        this.regions = new Map([
-          ["Start", {name:"Start",host:"NodeA",visits:0}],
-          ["Market",{name:"Market",host:"NodeB",visits:0}],
-          ["Harbor",{name:"Harbor",host:"NodeC",visits:0}],
-          ["Backup",{name:"Backup",host:"NodeD",visits:0}]
-        ]);
-        this.agents = [];
-        for (let i=0;i<10;i++) {
-          const h=HEROES[i];
-          this.agents.push({id:i+1,name:`Agent_${i+1}`,heroName:h.name,glyph:h.g,
-            regionName:i<4?"Start":i<8?"Market":"Harbor",
-            steps:0,plansRequested:0,migrations:0,restored:false});
-        }
-        this.hostLoad=new Map(); this.lastSnapshot=[];
-        this.tickCount=0; this.events=[];
-        this.totalPlans=0; this.totalMigrations=0;
-        this.totalSnapshots=0; this.restoredCount=0;
-        this.log("The age begins. Ten heroes summoned to Ironhold, Ashmarket, and Harborveil. [world initialized]");
-        this.updateHostLoad();
-      }
-      log(msg) { this.events.unshift({tick:this.tickCount,message:msg}); this.events=this.events.slice(0,40); }
-      hostForRegion(r) { const x=this.regions.get(r); return x?x.host:"Unknown"; }
-      updateHostLoad() {
-        this.hostLoad=new Map();
-        for (const r of this.regions.values()) if(!this.hostLoad.has(r.host)) this.hostLoad.set(r.host,0);
-        for (const a of this.agents) { const h=this.hostForRegion(a.regionName); this.hostLoad.set(h,(this.hostLoad.get(h)||0)+1); }
-      }
-      regionOnHost(host,fb) { for (const r of this.regions.values()) if(r.host===host) return r.name; return fb; }
-      snapshotAgent(a) { return {...a}; }
-      moveAgent(a,targetRegion,reason) {
-        const ch=this.hostForRegion(a.regionName),th=this.hostForRegion(targetRegion);
-        if (th==="Unknown") return;
-        if (a.regionName===targetRegion) return;
-        if (ch!==th) {
-          a.migrations++; this.totalMigrations++;
-          this.log(`${a.heroName} journeys from ${REALM[ch]} to ${REALM[th]} — ${reason} [${ch}→${th}]`);
-        } else {
-          this.log(`${a.heroName} moves within ${REALM[th]} — ${reason}`);
-        }
-        a.regionName=targetRegion;
-        const reg=this.regions.get(targetRegion); if(reg) reg.visits++;
-      }
-      askPi(a) {
-        const ch=this.hostForRegion(a.regionName),cl=this.hostLoad.get(ch)||0;
-        if (a.regionName==="Market"&&this.tickCount>=56&&this.tickCount<=60)
-          return {summary:"hold — shadow approaches [hold for failure drill]",targetRegion:null};
-        if (a.regionName==="Market")
-          return {summary:"Ashmarket is congested — Oracle redirects to Harborveil [Pi: Market→Harbor]",targetRegion:"Harbor"};
-        if (cl>=4)
-          return {summary:"realm is overcrowded — Oracle sends to The Refuge [Pi: saturated→NodeD]",targetRegion:this.regionOnHost("NodeD","Backup")};
-        return {summary:`continue vigil in ${REGION[a.regionName]} [Pi: no action]`,targetRegion:null};
-      }
-      balanceLoad() {
-        this.updateHostLoad();
-        const e=[...this.hostLoad.entries()];
-        let mx=e[0],mn=e[0];
-        for (const x of e) { if(x[1]>mx[1])mx=x; if(x[1]<mn[1])mn=x; }
-        if (mx[1]-mn[1]<=1) return;
-        const tr=this.regionOnHost(mn[0],"Backup");
-        let n=Math.floor((mx[1]-mn[1])/2);
-        this.log(`War Council dispatches ${n} heroes from ${REALM[mx[0]]} to ${REALM[mn[0]]} [load balance ${mx[0]}→${mn[0]}]`);
-        for (const a of this.agents) {
-          if (n<=0) break;
-          if (this.hostForRegion(a.regionName)!==mx[0]) continue;
-          this.moveAgent(a,tr,"War Council decree [load balancing]"); n--;
-        }
-      }
-      snapshot() {
-        this.lastSnapshot=this.agents.map(a=>this.snapshotAgent(a));
-        this.totalSnapshots++;
-        this.log(`Memory crystal forged — ${this.lastSnapshot.length} heroes preserved [snapshot #${this.totalSnapshots}]`);
-      }
-      recoverAgentsToHost(fh,rh) {
-        const alive=new Set(this.agents.map(a=>a.id));
-        const rr=this.regionOnHost(rh,"Backup"); let restored=0;
-        for (const s of this.lastSnapshot) {
-          if (alive.has(s.id)||this.hostForRegion(s.regionName)!==fh) continue;
-          const rec={...s,regionName:rr,migrations:s.migrations+1,restored:true};
-          this.agents.push(rec); this.totalMigrations++; this.restoredCount++; restored++;
-          this.log(`${rec.heroName} rises again at ${REALM[rh]} — all memories intact [snapshot restore onto ${rh}]`);
-        }
-        this.log(`Resurrection complete: ${restored} heroes reborn [${restored} agents restored]`);
-      }
-      simulateFailure(fh,rh) {
-        const removed=[],survivors=[];
-        for (const a of this.agents) {
-          if (this.hostForRegion(a.regionName)===fh) removed.push(a);
-          else survivors.push(a);
-        }
-        this.agents=survivors;
-        this.log(`${REALM[fh]} falls to shadow — ${removed.length} heroes lost [${fh} failure: agents ${removed.map(a=>a.id).join(",")}]`);
-        this.recoverAgentsToHost(fh,rh);
-      }
-      stepAgent(a) {
-        a.steps++;
-        if (this.tickCount===56&&a.id>=1&&a.id<=3) {
-          this.moveAgent(a,"Market","drawn by shadow [failure drill]"); return;
-        }
-        if (a.steps%5===0) {
-          a.plansRequested++; this.totalPlans++;
-          const plan=this.askPi(a);
-          this.log(`${a.heroName} consults the Oracle: ${plan.summary}`);
-          if (plan.targetRegion) { this.moveAgent(a,plan.targetRegion,"Oracle's vision [Pi plan]"); return; }
-        }
-        if ((this.tickCount+a.id)%11===0) {
-          const ch=this.hostForRegion(a.regionName); let nr=a.regionName;
-          for (const r of this.regions.values()) { if(r.host!==ch){nr=r.name;break;} }
-          this.moveAgent(a,nr,"wandering [autonomous patrol]");
-        }
-      }
-      tick() {
-        if (this.tickCount>=80) return false;
-        this.tickCount++; this.updateHostLoad();
-        if (this.tickCount%10===0) {
-          const lp=[...this.hostLoad.entries()].map(([h,l])=>`${REALM[h]}=${l} [${h}]`);
-          this.log(`Host load: ${lp.join(" · ")}`);
-        }
-        for (const a of this.agents) this.stepAgent(a);
-        if (this.tickCount%20===0) this.snapshot();
-        if (this.tickCount%25===0) this.balanceLoad();
-        if (this.tickCount===60) this.simulateFailure("NodeB","NodeD");
-        this.updateHostLoad(); return true;
-      }
-    }
 
     const dom = {
-      playPause:     document.getElementById("play-pause"),
-      stepOnce:      document.getElementById("step-once"),
-      resetBtn:      document.getElementById("reset-btn"),
-      speedSlider:   document.getElementById("speed-slider"),
-      runState:      document.getElementById("run-state"),
-      tickValue:     document.getElementById("tick-value"),
-      agentCount:    document.getElementById("agent-count"),
-      planCount:     document.getElementById("plan-count"),
-      migrationCount:document.getElementById("migration-count"),
-      snapshotCount: document.getElementById("snapshot-count"),
-      restoredCount: document.getElementById("restored-count"),
-      phaseLabel:    document.getElementById("phase-label"),
-      hosts:         document.getElementById("hosts"),
-      timeline:      document.getElementById("timeline"),
-      eventLog:      document.getElementById("event-log")
+      rho: document.getElementById("rho-editor"),
+      pi: document.getElementById("pi-editor"),
+      piMode: document.getElementById("pi-mode"),
+      stack: document.getElementById("data-stack"),
+      stackCount: document.getElementById("stack-count"),
+      stackInput: document.getElementById("stack-input"),
+      pushInput: document.getElementById("push-input"),
+      popStack: document.getElementById("pop-stack"),
+      clearStack: document.getElementById("clear-stack"),
+      context: document.getElementById("context-stack"),
+      contextCount: document.getElementById("context-count"),
+      runPi: document.getElementById("run-pi"),
+      stepContinuation: document.getElementById("step-continuation"),
+      clearContext: document.getElementById("clear-context"),
+      log: document.getElementById("log-output"),
+      logCount: document.getElementById("log-count"),
+      clearLog: document.getElementById("clear-log"),
+      resetDemo: document.getElementById("reset-demo")
     };
 
-    const world=new DemoWorld(); let timer=null;
-
-    function currentMs() { return sliderToMs(Number(dom.speedSlider.value)); }
-    function phaseLabel() {
-      if (world.tickCount===0) return "";
-      if (world.tickCount<20) return "Early wandering — Oracle watches from Harborveil";
-      if (world.tickCount<56) return "Memory crystals form. War Council redistributes.";
-      if (world.tickCount<60) return "Shadow draws three heroes toward Ashmarket...";
-      if (world.tickCount===60) return "Ashmarket falls — resurrection begins";
-      if (world.tickCount<80) return "Post-resurrection stabilisation";
-      return "The age is complete";
+    function textFromEditor(node) {
+      return node.innerText.replace(/\u00a0/g, " ").replace(/\n+$/g, "");
     }
 
-    function renderHosts() {
-      dom.hosts.innerHTML="";
-      for (const hostName of ["NodeA","NodeB","NodeC","NodeD"]) {
-        const region=[...world.regions.values()].find(r=>r.host===hostName);
-        const agents=world.agents.filter(a=>world.hostForRegion(a.regionName)===hostName).sort((a,b)=>a.id-b.id);
-        const load=world.hostLoad.get(hostName)||0;
-        const card=document.createElement("section");
-        card.className="host-card";
-        card.style.setProperty("--host-color",hostColors[hostName]);
-        card.dataset.tech=`${hostName} / ${region.name} region`;
-        card.innerHTML=`
-          <div class="host-title">
-            <span class="host-swatch"></span>
-            <div>
-              <div class="host-name">${REALM_ICON[hostName]} ${REALM[hostName]}</div>
-              <div class="host-meta">${hostName} · ${REGION[region.name]} · ${region.visits} visit${region.visits!==1?"s":""}</div>
-            </div>
-          </div>
-          <div class="load-bar"><span style="--load:${load}"></span></div>
-          <div class="host-meta" style="margin-bottom:6px">Load ${load} / 10</div>
-          <div class="agent-cloud">
-            ${agents.map(a=>`<span class="agent-chip ${a.restored?"restored":""}" title="Agent_${a.id}">${a.glyph} ${a.heroName}${a.restored?" ✨":""}</span>`).join("")||`<span class="host-meta">No heroes present</span>`}
-          </div>`;
-        dom.hosts.appendChild(card);
+    function setEditorText(node, text) {
+      node.textContent = text;
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function transpileRhoToPi(rhoText) {
+      const lines = rhoText.split(/\r?\n/);
+      const pi = ["// Pi continuation generated from Rho", "cont main {"];
+      for (const raw of lines) {
+        const line = raw.trim();
+        if (!line) continue;
+        if (line.startsWith("//")) {
+          pi.push("  " + line);
+        } else if (line.startsWith("System.Print")) {
+          pi.push("  emit " + line.replace(/^System\.Print/, "print"));
+        } else if (line.includes(" = fun(")) {
+          const name = line.split("=")[0].trim();
+          const args = line.match(/fun\((.*)\)/);
+          pi.push("  lambda " + name + "(" + (args ? args[1] : "") + ")");
+        } else if (line.startsWith("return ")) {
+          pi.push("  ret " + line.slice(7));
+        } else if (/^[A-Za-z_][A-Za-z0-9_]*\(.*\)$/.test(line)) {
+          pi.push("  call " + line);
+        } else {
+          pi.push("  eval " + line);
+        }
       }
+      pi.push("}");
+      return pi.join("\n");
     }
 
-    function renderTimeline() {
-      dom.timeline.innerHTML="";
-      for (const item of timelinePoints) {
-        const node=document.createElement("article");
-        node.className="timeline-item";
-        node.dataset.tech=`tick ${item.tick}: ${item.tech}`;
-        if (world.tickCount>=item.tick) node.classList.add("active");
-        node.innerHTML=`
-          <div class="timeline-kicker">Tick ${item.tick} · <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;opacity:0.7">${item.tech}</span></div>
-          <div class="timeline-title">${item.fantasy}</div>
-          <div class="timeline-body">${item.body}</div>`;
-        dom.timeline.appendChild(node);
+    function parseStackInput(text) {
+      const matches = text.match(/"[^"]*"|'[^']*'|[^\s,;]+/g) || [];
+      return matches.map((token) => {
+        const clean = token.replace(/^["']|["']$/g, "");
+        const numeric = Number(clean);
+        if (clean !== "" && Number.isFinite(numeric)) return { type: "Number", value: numeric };
+        if (clean === "true" || clean === "false") return { type: "Bool", value: clean === "true" };
+        return { type: "Symbol", value: clean };
+      });
+    }
+
+    function log(message) {
+      state.tick += 1;
+      state.logs.unshift({ tick: state.tick, message });
+      state.logs = state.logs.slice(0, 80);
+      renderLogs();
+    }
+
+    function renderStack() {
+      dom.stackCount.textContent = state.stack.length + (state.stack.length === 1 ? " value" : " values");
+      if (state.stack.length === 0) {
+        dom.stack.innerHTML = '<div class="empty-state" title="No data values are currently on the executor stack">Stack is empty</div>';
+        return;
       }
+
+      dom.stack.innerHTML = state.stack.map((item, index) => ({ item, index })).reverse().map(({ item, index }) => {
+        const label = index === 0 ? "[0] TOS" : "[stack.size() - " + (state.stack.length - index) + "]";
+        return '<div class="stack-row ' + (index === 0 ? "tos" : "") + '" title="Data stack entry ' + escapeHtml(label) + ' V' + index + '" data-tech="stack[' + index + ']">' +
+          '<span class="row-label">' + escapeHtml(label) + ':</span> ' +
+          escapeHtml(item.type) + " " + escapeHtml(item.value) +
+          ' <span title="Top-relative value name">V' + index + '</span>' +
+          '</div>';
+      }).join("");
     }
 
-    function renderEvents() {
-      dom.eventLog.innerHTML=world.events.map(e=>`
-        <article class="event">
-          <div class="event-tick">Age ${e.tick}</div>
-          <div class="event-body">${e.message}</div>
-        </article>`).join("");
+    function renderContext() {
+      dom.contextCount.textContent = state.contexts.length + (state.contexts.length === 1 ? " frame" : " frames");
+      if (state.contexts.length === 0) {
+        dom.context.innerHTML = '<div class="empty-state" title="No continuation frames are currently active">Context stack is empty</div>';
+        return;
+      }
+
+      dom.context.innerHTML = state.contexts.map((frame, index) => (
+        '<div class="context-row" title="Continuation context frame ' + index + '" data-tech="context[' + index + ']">' +
+        '<span class="row-label">[' + index + '] ' + escapeHtml(frame.name) + ':</span> ' +
+        escapeHtml(frame.detail) +
+        '</div>'
+      )).join("");
     }
 
-    function render() {
-      dom.tickValue.textContent=String(world.tickCount);
-      dom.agentCount.textContent=String(world.agents.length);
-      dom.planCount.textContent=String(world.totalPlans);
-      dom.migrationCount.textContent=String(world.totalMigrations);
-      dom.snapshotCount.textContent=String(world.totalSnapshots);
-      dom.restoredCount.textContent=String(world.restoredCount);
-      dom.phaseLabel.textContent=phaseLabel();
-      renderHosts(); renderTimeline(); renderEvents();
+    function renderLogs() {
+      dom.logCount.textContent = state.logs.length + (state.logs.length === 1 ? " line" : " lines");
+      if (state.logs.length === 0) {
+        dom.log.innerHTML = '<div class="empty-state" title="No log entries have been emitted">No log output</div>';
+        return;
+      }
+
+      dom.log.innerHTML = state.logs.map((entry) => (
+        '<div class="log-row" title="Executor log entry ' + entry.tick + '" data-tech="log[' + entry.tick + ']">' +
+        '<span class="row-label">#' + entry.tick + '</span> ' + escapeHtml(entry.message) +
+        '</div>'
+      )).join("");
     }
 
-    function stopTimer() {
-      if (timer!==null){clearInterval(timer);timer=null;}
-      dom.runState.textContent=world.tickCount>=80?"Complete":"Paused";
-      dom.playPause.textContent=world.tickCount>=80?"Replay":"Begin";
-    }
-    function startTimer() {
-      stopTimer(); dom.runState.textContent="Running"; dom.playPause.textContent="Pause";
-      timer=setInterval(()=>{
-        const adv=world.tick(); render();
-        if(!adv||world.tickCount>=80) stopTimer();
-      },currentMs());
+    function renderAll() {
+      renderStack();
+      renderContext();
+      renderLogs();
+      dom.piMode.textContent = state.piEdited ? "Manually edited; next Rho change will replace it" : "Editable; one-way dependency from Rho";
     }
 
-    dom.playPause.addEventListener("click",()=>{
-      if(timer!==null){stopTimer();return;}
-      if(world.tickCount>=80){world.reset();render();}
-      startTimer();
+    function refreshPiFromRho() {
+      const piText = transpileRhoToPi(textFromEditor(dom.rho));
+      setEditorText(dom.pi, piText);
+      state.piEdited = false;
+      dom.piMode.textContent = "Editable; one-way dependency from Rho";
+      state.contexts.unshift({ name: "transpile", detail: "Rho source regenerated Pi continuation" });
+      state.contexts = state.contexts.slice(0, 18);
+      log("Rho transpiled to Pi");
+      renderContext();
+    }
+
+    dom.rho.addEventListener("input", refreshPiFromRho);
+
+    dom.pi.addEventListener("input", () => {
+      state.piEdited = true;
+      dom.piMode.textContent = "Manually edited; next Rho change will replace it";
     });
-    dom.stepOnce.addEventListener("click",()=>{
-      if(timer!==null) return;
-      if(world.tickCount>=80) world.reset(); else world.tick();
-      render(); if(world.tickCount>=80) stopTimer();
+
+    dom.pushInput.addEventListener("click", () => {
+      const values = parseStackInput(textFromEditor(dom.stackInput));
+      if (values.length === 0) {
+        log("Push ignored: RTF editor did not contain parseable values");
+        return;
+      }
+      state.stack.unshift(...values.reverse());
+      state.contexts.unshift({ name: "push", detail: values.length + " value(s) parsed from RTF input" });
+      state.contexts = state.contexts.slice(0, 18);
+      log("Pushed " + values.length + " value(s) onto executor data stack");
+      renderAll();
     });
-    dom.resetBtn.addEventListener("click",()=>{stopTimer();world.reset();render();});
-    dom.speedSlider.addEventListener("input",()=>{if(timer!==null)startTimer();});
-    render();
+
+    dom.popStack.addEventListener("click", () => {
+      const value = state.stack.shift();
+      if (!value) {
+        log("Pop ignored: data stack is empty");
+      } else {
+        state.contexts.unshift({ name: "pop", detail: "Removed " + value.type + " " + value.value });
+        state.contexts = state.contexts.slice(0, 18);
+        log("Popped top-of-stack value");
+      }
+      renderAll();
+    });
+
+    dom.clearStack.addEventListener("click", () => {
+      state.stack = [];
+      log("Executor data stack cleared");
+      renderAll();
+    });
+
+    dom.runPi.addEventListener("click", () => {
+      const piText = textFromEditor(dom.pi);
+      const lineCount = piText.split(/\r?\n/).filter((line) => line.trim()).length;
+      state.contexts.unshift({ name: "main", detail: lineCount + " Pi instruction(s), stack size " + state.stack.length });
+      if (state.stack.length > 0) {
+        const tos = state.stack[0];
+        state.stack[0] = { type: "ContinuationResult", value: tos.value };
+      }
+      state.contexts = state.contexts.slice(0, 18);
+      log("Ran Pi continuation against executor stack");
+      renderAll();
+    });
+
+    dom.stepContinuation.addEventListener("click", () => {
+      const frame = state.contexts.shift();
+      if (!frame) {
+        log("Step ignored: context stack is empty");
+      } else {
+        state.contexts.unshift({ name: frame.name, detail: "stepped continuation frame: " + frame.detail });
+        log("Advanced one executor continuation frame");
+      }
+      renderAll();
+    });
+
+    dom.clearContext.addEventListener("click", () => {
+      state.contexts = [];
+      log("Executor context stack cleared");
+      renderAll();
+    });
+
+    dom.clearLog.addEventListener("click", () => {
+      state.logs = [];
+      renderLogs();
+    });
+
+    dom.resetDemo.addEventListener("click", () => {
+      state.stack = [];
+      state.contexts = [];
+      state.logs = [];
+      state.piEdited = false;
+      state.tick = 0;
+      setEditorText(dom.rho, initialRho);
+      setEditorText(dom.pi, transpileRhoToPi(initialRho));
+      log("Demo reset");
+      renderAll();
+    });
+
+    setEditorText(dom.rho, initialRho);
+    setEditorText(dom.pi, transpileRhoToPi(initialRho));
+    state.stack = [
+      { type: "Number", value: 21 },
+      { type: "Symbol", value: "Agent_1" },
+      { type: "Bool", value: true }
+    ];
+    state.contexts = [
+      { name: "main", detail: "ready to run generated Pi continuation" },
+      { name: "rho", detail: "source editor owns one-way Pi regeneration" }
+    ];
+    log("Workbench initialized");
+    renderAll();
   </script>
 </body>
 </html>

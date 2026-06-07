@@ -252,8 +252,8 @@ sequenceDiagram
     AgentNet->>+Agent: Handle_add(BitStream, sender)
     
     Note right of Agent: Deserialization
-    Agent->>Agent: float a; bs >> a
-    Agent->>Agent: float b; bs >> b
+    Agent->>Agent: Read float a from BitStream
+    Agent->>Agent: Read float b from BitStream
     
     Agent->>+Impl: add(5.0, 3.0)
     Impl->>Impl: Perform calculation
@@ -269,7 +269,7 @@ sequenceDiagram
     NetLayer->>-Proxy: Receive response BitStream
     
     Note right of Proxy: Response Deserialization
-    Proxy->>Proxy: float result; response >> result
+    Proxy->>Proxy: Read float result from response
     Proxy->>-App: return 8.0
     
     Note over App,Impl: Event Flow

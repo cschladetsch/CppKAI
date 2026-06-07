@@ -5,7 +5,7 @@
 ```mermaid
 graph TB
     subgraph "Tau Source Code"
-        SRC[Tau IDL<br/>interface Calculator {<br/>  float add(float a, float b);<br/>  float multiply(float a, float b);<br/>}]
+        SRC["Tau IDL<br/>interface Calculator {<br/>  float add(float a, float b);<br/>  float multiply(float a, float b);<br/>}"]
     end
     
     subgraph "Lexical Analysis"
@@ -178,7 +178,7 @@ sequenceDiagram
 ```mermaid
 graph LR
     subgraph "Tau Interface Definition"
-        INTERFACE[interface Calculator {<br/>  float add(float a, float b);<br/>  void reset();<br/>}]
+        INTERFACE["interface Calculator {<br/>  float add(float a, float b);<br/>  void reset();<br/>}"]
     end
     
     subgraph "AST Analysis"
@@ -282,7 +282,7 @@ graph TB
 ```mermaid
 graph TB
     subgraph "Tau Interface"
-        TAU_INTERFACE[interface RemoteService {<br/>  async~Result~ process(Data input);<br/>  void notify(Event event);<br/>}]
+        TAU_INTERFACE["interface RemoteService {<br/>  async~Result~ process(Data input);<br/>  void notify(Event event);<br/>}"]
     end
     
     subgraph "Generated Network Code"
@@ -426,7 +426,7 @@ graph TB
     BUILD --> DEPLOY
     DEPLOY --> MONITOR
     
-    MONITOR -.-> DESIGN : Feedback loop
+    MONITOR -. Feedback loop .-> DESIGN
     
     style DESIGN fill:#e1bee7
     style GENERATE fill:#ff9800

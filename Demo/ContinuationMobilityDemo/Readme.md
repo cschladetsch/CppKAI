@@ -88,6 +88,18 @@ cmake --build ./build --target ContinuationMobilityDemoTests
 ./build/Bin/Test/Examples/ContinuationMobilityDemoTests
 ```
 
+Browser smoke test for the HTML workbench:
+
+```bash
+git submodule update --init --recursive Demo/ContinuationMobilityDemo/ThirdParty/playwright
+cd Demo/ContinuationMobilityDemo/ThirdParty/playwright
+npm ci
+npm run build
+cd ../..
+node ThirdParty/playwright/packages/playwright-core/cli.js install chromium
+node test_workbench_playwright.js
+```
+
 ## Run
 
 ```bash

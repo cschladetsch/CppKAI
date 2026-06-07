@@ -13,10 +13,11 @@ namespace {
 
 void PrintHelp() {
     cout << "KAI RhoDataset\n"
-         << "Usage: RhoDataset [--root PATH] [--out PATH] [--max-input-chars "
-            "N] [--max-records N]\n"
+         << "Usage: RhoDataset [--root PATH] [--out PATH] "
+            "[--max-input-chars N] [--max-records N]\n"
          << "\n"
-         << "Builds a JSONL training set from Rho tests, scripts, and docs.\n";
+         << "Builds a JSONL language dataset from Rho, Pi, Tau, gtests, "
+            "logs, history files, and README documentation.\n";
 }
 
 }  // namespace
@@ -66,6 +67,6 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    cout << "Rho training dataset written to " << built << endl;
+    cout << "KAI language dataset written to " << built << endl;
     return 0;
 }

@@ -16,3 +16,6 @@
 [submodule "Ext/CppKaiLanguage"]
 	path = Ext/CppKaiLanguage
 	url = git@github.com:cschladetsch/CppKaiLanguage.git
+[submodule "Demo/ContinuationMobilityDemo/ThirdParty/playwright"]
+	path = Demo/ContinuationMobilityDemo/ThirdParty/playwright
+	url = https://github.com/microsoft/playwright.git

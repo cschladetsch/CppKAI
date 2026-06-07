@@ -14,7 +14,7 @@ graph TB
         subgraph "Core Libraries"
             CORE[Core Library<br/>Registry, Objects, Memory]
             EXECUTOR[Executor Library<br/>Virtual Machine, Stack]
-            NETWORK[Network Library<br/>Distributed computing<br/>(conditional)]
+            NETWORK[Network Library<br/>Distributed computing<br/>conditional]
         end
         
         subgraph "Language Libraries"
@@ -30,7 +30,7 @@ graph TB
         
         subgraph "Applications"
             CONSOLE[Console<br/>Interactive shell]
-            WINDOW[Window<br/>GUI application<br/>(optional)]
+            WINDOW[Window<br/>GUI application<br/>optional]
             NETTEST[NetworkTest<br/>Network validation]
             NETGEN[NetworkGenerate<br/>Code generation]
         end
@@ -82,7 +82,7 @@ graph LR
     subgraph "External Dependencies"
         BOOST[Boost Libraries<br/>system, filesystem<br/>program_options, regex]
         GTEST[Google Test<br/>Unit testing framework]
-        ENET[ENet<br/>Network communication<br/>(stub implementation)]
+        ENET[ENet<br/>Network communication<br/>stub implementation]
     end
     
     subgraph "Core Layer"
@@ -138,7 +138,7 @@ graph LR
 graph TD
     subgraph "Compiler Selection"
         COMPILER{Compiler Choice}
-        COMPILER --> CLANG[Clang++ (default)<br/>Modern C++ support<br/>Better diagnostics]
+        COMPILER --> CLANG[Clang++ default<br/>Modern C++ support<br/>Better diagnostics]
         COMPILER --> GCC[GCC<br/>Alternative option<br/>-DBUILD_GCC=ON]
     end
     
@@ -151,7 +151,7 @@ graph TD
     
     subgraph "Optional Components"
         OPTIONS[Component Options]
-        OPTIONS --> ENET_OPT[KAI_BUILD_ENET<br/>Enable real ENet<br/>Default: OFF (stub)]
+        OPTIONS --> ENET_OPT[KAI_BUILD_ENET<br/>Enable real ENet<br/>Default: OFF stub]
         OPTIONS --> NETWORK_OPT[KAI_BUILD_NETWORK_APPS<br/>Network applications<br/>Default: OFF]
         OPTIONS --> TESTS_OPT[KAI_BUILD_TEST_ALL<br/>Complete test suite<br/>Default: ON]
         OPTIONS --> SHELL_OPT[ENABLE_SHELL_SYNTAX<br/>Backtick operations<br/>Security setting]

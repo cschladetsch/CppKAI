@@ -12,12 +12,14 @@ file(GLOB_RECURSE all_source_files ${source_path}/*.cpp)
 
 # Remove duplicate TestMap.cpp from TestContainer
 list(REMOVE_ITEM all_source_files ${source_path}/TestContainer/TestMap.cpp)
-if(NOT KAI_BUILD_LLM)
-    list(REMOVE_ITEM all_source_files ${source_path}/TestModelCache.cpp)
-    list(REMOVE_ITEM all_source_files ${source_path}/TestRepoIndexer.cpp)
-    list(REMOVE_ITEM all_source_files ${source_path}/TestLLMSession.cpp)
-    list(REMOVE_ITEM all_source_files ${source_path}/TestRhoDataset.cpp)
-endif()
+set(llm_test_sources
+    ${source_path}/TestModelCache.cpp
+    ${source_path}/TestRepoIndexer.cpp
+    ${source_path}/TestLLMSession.cpp
+    ${source_path}/TestLlmEvaluation.cpp
+    ${source_path}/TestRhoDataset.cpp
+)
+list(REMOVE_ITEM all_source_files ${llm_test_sources})
 
 # Use all source files
 set(sources ${all_source_files})
@@ -32,9 +34,6 @@ add_executable(${name} ${sources})
 set(kaitest_libs ConsoleLib PiLang RhoLang Executor CommonLang Core ${GTEST_BOTH_LIBRARIES} ${Boost_LIBRARIES} gtest_main)
 if(TARGET TauLang)
     list(INSERT kaitest_libs 3 TauLang)
-endif()
-if(KAI_BUILD_LLM)
-    list(APPEND kaitest_libs LLM)
 endif()
 target_link_libraries(${name} ${kaitest_libs})
 
@@ -78,13 +77,6 @@ set(core_sources
     ${source_path}/TestSerialization.cpp
     # TestAdvancedCore.cpp - Disabled - requires proper type traits
 )
-if(KAI_BUILD_LLM)
-    list(APPEND core_sources ${source_path}/TestModelCache.cpp)
-    list(APPEND core_sources ${source_path}/TestRepoIndexer.cpp)
-    list(APPEND core_sources ${source_path}/TestLLMSession.cpp)
-    list(APPEND core_sources ${source_path}/TestRhoDataset.cpp)
-endif()
-
 # Add common test files
 list(APPEND core_sources ${TEST_HOME}/Common/TestCommon.cpp)
 list(APPEND core_sources ${TEST_HOME}/Common/MyTestStruct.cpp)
@@ -94,10 +86,23 @@ set(testcore_libs ConsoleLib PiLang RhoLang Executor CommonLang Core ${GTEST_BOT
 if(TARGET TauLang)
     list(INSERT testcore_libs 3 TauLang)
 endif()
-if(KAI_BUILD_LLM)
-    list(APPEND testcore_libs LLM)
-endif()
 target_link_libraries(${core_name} ${testcore_libs})
+
+if(KAI_BUILD_LLM)
+    set(llm_name LlmTest)
+    add_executable(${llm_name}
+        ${llm_test_sources}
+        ${TEST_HOME}/Common/TestCommon.cpp
+        ${TEST_HOME}/Common/MyTestStruct.cpp
+    )
+    target_link_libraries(${llm_name}
+        LLM
+        Core
+        ${GTEST_BOTH_LIBRARIES}
+        ${Boost_LIBRARIES}
+        gtest_main
+    )
+endif()
 
 # Add our fixed Core test suite
 set(fixed_core_name FixedCoreSuite)

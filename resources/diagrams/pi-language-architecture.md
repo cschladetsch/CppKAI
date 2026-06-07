@@ -5,7 +5,7 @@
 ```mermaid
 graph TB
     subgraph "Pi Source Code"
-        SRC[Pi Source<br/>2 3 + dup *<br/>{ 'square # } &]
+        SRC["Pi Source<br/>2 3 + dup *<br/>{ 'square # } &"]
     end
     
     subgraph "Lexical Analysis"
@@ -172,14 +172,14 @@ graph LR
     subgraph "Control Operations"
         IFE[IFE<br/>Conditional execution]
         CONT[CONTINUATION<br/>Code block creation]
-        EXEC[EXEC (&)<br/>Execute continuation]
+        EXEC["EXEC &<br/>Execute continuation"]
         SUSPEND[SUSPEND<br/>Pause execution]
         RESUME[RESUME<br/>Return to context]
     end
     
     subgraph "Variable Operations"
-        STORE[STORE (#)<br/>Save to registry]
-        FETCH[FETCH (@)<br/>Load from registry]
+        STORE["STORE #<br/>Save to registry"]
+        FETCH["FETCH @<br/>Load from registry"]
         ASSERT[ASSERT<br/>Validate condition]
         TRACE[TRACE<br/>Debug output]
     end
@@ -195,7 +195,7 @@ graph LR
 ```mermaid
 graph TB
     subgraph "Continuation Creation"
-        SRC_CONT[Source: { 2 3 + }]
+        SRC_CONT["Source: { 2 3 + }"]
         LEX_CONT[Lexer: Parse continuation body]
         AST_CONT[AST: Continuation node with body]
         TRANS_CONT[Translator: Create continuation object]
@@ -203,7 +203,7 @@ graph TB
     end
     
     subgraph "Continuation Execution"
-        EXEC_CONT[& operator: Execute continuation]
+        EXEC_CONT["& operator: Execute continuation"]
         PUSH_CONTEXT[Push current context to context stack]
         EXEC_BODY[Execute continuation body operations]
         POP_CONTEXT[Pop context from context stack]

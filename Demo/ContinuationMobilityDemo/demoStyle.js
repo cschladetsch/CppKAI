@@ -22,14 +22,18 @@
   function installSelect(nav) {
     const wrap = document.createElement("label");
     wrap.className = "style-control";
+    wrap.title = "Choose the visual style for all demo pages";
+    wrap.dataset.tech = "demo style selector";
 
     const label = document.createElement("span");
     label.className = "style-label";
     label.textContent = "Style";
+    label.title = "Visual style setting";
 
     const select = document.createElement("select");
     select.dataset.styleSelect = "true";
     select.setAttribute("aria-label", "Demo style");
+    select.title = "Change the demo style";
 
     styles.forEach((style) => {
       const option = document.createElement("option");

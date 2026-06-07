@@ -22,6 +22,7 @@ struct Record {
     std::string output;
     std::string source;
     std::string kind;
+    std::string language;
 };
 
 std::string Trim(std::string text) {
@@ -41,6 +42,36 @@ std::string Trim(std::string text) {
 bool StartsWith(const std::string& text, const std::string& prefix) {
     return text.size() >= prefix.size() &&
            std::equal(prefix.begin(), prefix.end(), text.begin());
+}
+
+bool IsReadmeFile(const fs::path& path) {
+    std::string name = path.filename().string();
+    std::transform(name.begin(), name.end(), name.begin(),
+                   [](unsigned char ch) {
+                       return static_cast<char>(std::tolower(ch));
+                   });
+    return name == "readme" || StartsWith(name, "readme.");
+}
+
+bool IsIgnoredDatasetPath(const fs::path& relative) {
+    const std::string text = relative.generic_string();
+    if (StartsWith(text, ".git/") || text == ".git" ||
+        StartsWith(text, "Bin/") || text == "Bin" ||
+        StartsWith(text, "build/") || text == "build" ||
+        StartsWith(text, "Build/") || text == "Build" ||
+        StartsWith(text, "CMakeFiles/") || text == "CMakeFiles" ||
+        StartsWith(text,
+                   "Demo/ContinuationMobilityDemo/ThirdParty/playwright/") ||
+        text == "Demo/ContinuationMobilityDemo/ThirdParty/playwright") {
+        return true;
+    }
+    for (const auto& part : relative) {
+        const std::string name = part.string();
+        if (name == "node_modules" || name == ".cache") {
+            return true;
+        }
+    }
+    return false;
 }
 
 std::vector<std::string> ReadLines(const fs::path& path,
@@ -77,7 +108,31 @@ std::string ReadText(const fs::path& path, std::string* error_out) {
 
 bool IsRelevantPath(const fs::path& relative) {
     const std::string text = relative.generic_string();
+    if (IsReadmeFile(relative)) {
+        return true;
+    }
     if (StartsWith(text, "Test/Language/TestRho/")) {
+        return true;
+    }
+    if (StartsWith(text, "Test/Language/TestPi/")) {
+        return true;
+    }
+    if (StartsWith(text, "Test/Language/TestTau/")) {
+        return true;
+    }
+    if (StartsWith(text, "Test/Language/MultiLanguage")) {
+        return true;
+    }
+    if (StartsWith(text, "Test/Network/")) {
+        return true;
+    }
+    if (StartsWith(text, "Test/ShellCommandTests/results/")) {
+        return true;
+    }
+    if (StartsWith(text, "Logs/")) {
+        return true;
+    }
+    if (StartsWith(text, "Scripts/Training/")) {
         return true;
     }
     if (StartsWith(text, "Source/App/Console/Source/")) {
@@ -86,15 +141,51 @@ bool IsRelevantPath(const fs::path& relative) {
     if (StartsWith(text, "Doc/")) {
         const std::string filename = relative.filename().string();
         return filename.find("Rho") != std::string::npos ||
+               filename.find("Pi") != std::string::npos ||
+               filename.find("Tau") != std::string::npos ||
                filename.find("Console") != std::string::npos ||
                filename == "LanguageGuide.md";
+    }
+    if (relative.extension() == ".history") {
+        return true;
     }
     return false;
 }
 
 bool HasAllowedExtension(const fs::path& path) {
     const std::string ext = path.extension().string();
-    return ext == ".cpp" || ext == ".rho" || ext == ".md" || ext == ".txt";
+    return IsReadmeFile(path) || ext == ".cpp" || ext == ".rho" || ext == ".pi" ||
+           ext == ".tau" || ext == ".md" || ext == ".txt" || ext == ".log" ||
+           ext == ".history";
+}
+
+std::string LanguageForPath(const fs::path& path) {
+    const std::string text = path.generic_string();
+    const std::string ext = path.extension().string();
+    if (StartsWith(text, "Scripts/Training/") ||
+        text.find("/Scripts/Training/") != std::string::npos) {
+        return "KAI";
+    }
+    if (StartsWith(text, "Test/Language/TestPi/") ||
+        text.find("/Test/Language/TestPi/") != std::string::npos ||
+        ext == ".pi") {
+        return "Pi";
+    }
+    if (StartsWith(text, "Test/Language/TestTau/") ||
+        text.find("/Test/Language/TestTau/") != std::string::npos ||
+        ext == ".tau") {
+        return "Tau";
+    }
+    if (StartsWith(text, "Test/Language/TestRho/") ||
+        text.find("/Test/Language/TestRho/") != std::string::npos ||
+        ext == ".rho") {
+        return "Rho";
+    }
+    if (StartsWith(text, "Test/Network/") ||
+        text.find("/Test/Network/") != std::string::npos) {
+        return "Tau/Pi";
+    }
+    return "KAI";
 }
 
 std::string RemoveCommentPrefix(std::string line) {
@@ -313,14 +404,76 @@ std::optional<Record> ParseAssertResult(const std::string& text, size_t& pos,
     pos = cursor;
 
     Record record;
-    record.instruction = "Evaluate this Rho expression.";
+    const std::string language = LanguageForPath(source);
+    record.instruction = "Evaluate this " + language + " expression.";
     record.input = Trim(std::move(input));
     record.output = Trim(std::move(output));
     record.source = source.generic_string();
     record.kind = "assert";
+    record.language = language;
     if (record.input.empty() || record.output.empty()) {
         return std::nullopt;
     }
+    return record;
+}
+
+std::vector<std::string> ExtractGtestNames(const std::string& text) {
+    std::vector<std::string> names;
+    size_t pos = 0;
+    while (true) {
+        const size_t start = text.find("TEST", pos);
+        if (start == std::string::npos) {
+            break;
+        }
+        const size_t open = text.find('(', start);
+        const size_t comma = text.find(',', open == std::string::npos ? start : open);
+        const size_t close = text.find(')', comma == std::string::npos ? start : comma);
+        if (open == std::string::npos || comma == std::string::npos ||
+            close == std::string::npos) {
+            pos = start + 4;
+            continue;
+        }
+        const std::string suite = Trim(text.substr(open + 1, comma - open - 1));
+        const std::string name = Trim(text.substr(comma + 1, close - comma - 1));
+        if (!suite.empty() && !name.empty()) {
+            names.push_back(suite + "." + name);
+        }
+        pos = close + 1;
+    }
+    return names;
+}
+
+std::optional<Record> BuildGtestRecord(const fs::path& path,
+                                       const std::vector<std::string>& lines,
+                                       size_t max_input_chars) {
+    const std::string text = ReadText(path, nullptr);
+    const auto tests = ExtractGtestNames(text);
+    if (tests.empty()) {
+        return std::nullopt;
+    }
+
+    const std::string language = LanguageForPath(path);
+    std::ostringstream summary;
+    summary << "GTest coverage for " << language << ": ";
+    for (size_t i = 0; i < tests.size() && i < 12; ++i) {
+        if (i != 0) {
+            summary << ", ";
+        }
+        summary << tests[i];
+    }
+    if (tests.size() > 12) {
+        summary << ", ...";
+    }
+
+    const std::string leading = ExtractLeadingCommentSummary(lines);
+    Record record;
+    record.instruction = "Summarize this " + language +
+                         " gtest file as language-training evidence.";
+    record.input = ExtractSnippet(text, max_input_chars);
+    record.output = leading.empty() ? summary.str() : leading + "\n" + summary.str();
+    record.source = path.generic_string();
+    record.kind = "gtest";
+    record.language = language;
     return record;
 }
 
@@ -343,6 +496,36 @@ std::vector<Record> BuildCppRecords(const fs::path& path,
         records.push_back(std::move(*maybe));
     }
 
+    if (auto gtest = BuildGtestRecord(path, lines, max_input_chars)) {
+        records.push_back(std::move(*gtest));
+    }
+
+    return records;
+}
+
+std::vector<Record> BuildLogRecords(const fs::path& path,
+                                    size_t max_input_chars) {
+    std::vector<Record> records;
+    std::string text = ReadText(path, nullptr);
+    text = Trim(std::move(text));
+    if (text.empty()) {
+        return records;
+    }
+
+    Record record;
+    record.instruction =
+        path.extension() == ".history"
+            ? "Extract useful KAI console workflow patterns from this history."
+            : "Extract useful KAI failure or runtime evidence from this log.";
+    record.input = ExtractSnippet(text, max_input_chars);
+    record.output =
+        path.extension() == ".history"
+            ? "Console history for reproducing language workflows, commands, and repair sequences."
+            : "Runtime or test log for diagnosing failures, regressions, and expected behavior.";
+    record.source = path.generic_string();
+    record.kind = path.extension() == ".history" ? "history" : "log";
+    record.language = "KAI";
+    records.push_back(std::move(record));
     return records;
 }
 
@@ -351,21 +534,34 @@ std::vector<Record> BuildTextRecords(const fs::path& path,
                                      size_t max_input_chars) {
     std::vector<Record> records;
     const std::string text = ReadText(path, nullptr);
-    const std::string summary = path.extension() == ".md"
-                                    ? ExtractMarkdownSummary(lines)
-                                    : ExtractLeadingCommentSummary(lines);
+    const std::string summary =
+        (path.extension() == ".md" || IsReadmeFile(path))
+            ? ExtractMarkdownSummary(lines)
+            : ExtractLeadingCommentSummary(lines);
     if (summary.empty()) {
         return records;
     }
 
     Record record;
-    record.instruction = path.extension() == ".md"
-                             ? "Summarize this Rho documentation excerpt."
-                             : "Explain this Rho example.";
+    const std::string language = LanguageForPath(path);
+    if (StartsWith(path.generic_string(), "Scripts/Training/") ||
+        path.generic_string().find("/Scripts/Training/") !=
+            std::string::npos) {
+        record.instruction =
+            "Learn this incremental KAI training note for future Rho, Pi, Tau, "
+            "Executor, and diagnostic assistance.";
+    } else {
+        record.instruction =
+            (path.extension() == ".md" || IsReadmeFile(path))
+                ? "Summarize this " + language + " documentation excerpt."
+                : "Explain this " + language + " example.";
+    }
     record.input = ExtractSnippet(text, max_input_chars);
     record.output = summary;
     record.source = path.generic_string();
-    record.kind = path.extension() == ".md" ? "doc" : "script";
+    record.kind =
+        (path.extension() == ".md" || IsReadmeFile(path)) ? "doc" : "script";
+    record.language = language;
     records.push_back(std::move(record));
     return records;
 }
@@ -379,6 +575,9 @@ void WriteJsonl(const fs::path& path, const std::vector<Record>& records) {
         entry["output"] = record.output;
         entry["source"] = record.source;
         entry["kind"] = record.kind;
+        if (!record.language.empty()) {
+            entry["language"] = record.language;
+        }
         out << entry.dump() << '\n';
     }
 }
@@ -422,11 +621,7 @@ std::filesystem::path RhoDatasetBuilder::Build(const RhoDatasetOptions& options,
         return {};
     }
 
-    const std::vector<fs::path> roots = {
-        options.root / "Test/Language/TestRho",
-        options.root / "Doc",
-        options.root / "Source/App/Console/Source",
-    };
+    const std::vector<fs::path> roots = {options.root};
 
     std::vector<Record> records;
     json manifest = json::object();
@@ -452,16 +647,24 @@ std::filesystem::path RhoDatasetBuilder::Build(const RhoDatasetOptions& options,
                 return {};
             }
 
-            if (!it->is_regular_file()) {
-                continue;
-            }
-
             const fs::path path = it->path();
             const fs::path relative = fs::relative(path, options.root, ec);
             if (ec || relative.empty()) {
                 ec.clear();
                 continue;
             }
+
+            if (it->is_directory()) {
+                if (IsIgnoredDatasetPath(relative)) {
+                    it.disable_recursion_pending();
+                }
+                continue;
+            }
+
+            if (!it->is_regular_file() || IsIgnoredDatasetPath(relative)) {
+                continue;
+            }
+
             if (!IsRelevantPath(relative) || !HasAllowedExtension(path)) {
                 continue;
             }
@@ -479,6 +682,9 @@ std::filesystem::path RhoDatasetBuilder::Build(const RhoDatasetOptions& options,
             if (path.extension() == ".cpp") {
                 file_records =
                     BuildCppRecords(path, lines, options.max_input_chars);
+            } else if (path.extension() == ".log" ||
+                       path.extension() == ".history") {
+                file_records = BuildLogRecords(path, options.max_input_chars);
             } else {
                 file_records =
                     BuildTextRecords(path, lines, options.max_input_chars);
@@ -494,6 +700,7 @@ std::filesystem::path RhoDatasetBuilder::Build(const RhoDatasetOptions& options,
             manifest["files"].push_back(std::move(file_entry));
 
             for (auto& record : file_records) {
+                record.source = relative.generic_string();
                 if (options.max_records != 0 &&
                     records.size() >= options.max_records) {
                     break;
