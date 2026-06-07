@@ -1,9 +1,6 @@
 [submodule "Ext/imgui"]
 	path = Ext/imgui
 	url = git@github.com:cschladetsch/imgui.git
-[submodule "Ext/rang"]
-	path = Ext/rang
-	url = git@github.com:cschladetsch/rang.git
 [submodule "Ext/cpp-httplib"]
 	path = Ext/cpp-httplib
 	url = https://github.com/yhirose/cpp-httplib.git
