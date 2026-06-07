@@ -17,6 +17,7 @@ set(llm_test_sources
     ${source_path}/TestRepoIndexer.cpp
     ${source_path}/TestLLMSession.cpp
     ${source_path}/TestLlmEvaluation.cpp
+    ${source_path}/TestLlmLearningDemo.cpp
     ${source_path}/TestRhoDataset.cpp
 )
 list(REMOVE_ITEM all_source_files ${llm_test_sources})
