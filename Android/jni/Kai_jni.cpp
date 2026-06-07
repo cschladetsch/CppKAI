@@ -1,6 +1,6 @@
 // JNI bridge for the KAI runtime: the native side of libkai.so.
 //
-// Exposes a stateful Rho console to Kotlin/Java via com.kaikaspar.kai.KaiRuntime
+// Exposes a stateful Rho console to Kotlin/Java via org.kai.runtime.KaiRuntime
 // (System.loadLibrary("kai")). Each KaiRuntime instance owns one kai::Console;
 // eval() runs a snippet and returns the resulting data stack as text.
 //
@@ -47,7 +47,7 @@ Console *AsConsole(jlong handle) { return reinterpret_cast<Console *>(handle); }
 extern "C" {
 
 JNIEXPORT jlong JNICALL
-Java_com_kaikaspar_kai_KaiRuntime_nativeCreate(JNIEnv *, jobject) {
+Java_org_kai_runtime_KaiRuntime_nativeCreate(JNIEnv *, jobject) {
     try {
         auto *console = new Console();
         console->SetLanguage(Language::Rho);
@@ -59,11 +59,11 @@ Java_com_kaikaspar_kai_KaiRuntime_nativeCreate(JNIEnv *, jobject) {
 }
 
 JNIEXPORT void JNICALL
-Java_com_kaikaspar_kai_KaiRuntime_nativeDestroy(JNIEnv *, jobject, jlong handle) {
+Java_org_kai_runtime_KaiRuntime_nativeDestroy(JNIEnv *, jobject, jlong handle) {
     delete AsConsole(handle);
 }
 
-JNIEXPORT jstring JNICALL Java_com_kaikaspar_kai_KaiRuntime_nativeEval(
+JNIEXPORT jstring JNICALL Java_org_kai_runtime_KaiRuntime_nativeEval(
     JNIEnv *env, jobject, jlong handle, jstring source) {
     Console *console = AsConsole(handle);
     if (console == nullptr) return ToJString(env, "error: runtime not initialised");
@@ -80,7 +80,7 @@ JNIEXPORT jstring JNICALL Java_com_kaikaspar_kai_KaiRuntime_nativeEval(
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_kaikaspar_kai_KaiRuntime_nativeVersion(JNIEnv *env, jobject) {
+Java_org_kai_runtime_KaiRuntime_nativeVersion(JNIEnv *env, jobject) {
     return ToJString(env, std::to_string(KAI_VERSION_MAJOR) + "." +
                               std::to_string(KAI_VERSION_MINOR) + "." +
                               std::to_string(KAI_VERSION_PATCH));

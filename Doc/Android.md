@@ -54,26 +54,29 @@ allocation (`-DKAI_USE_MONOTONIC_ALLOCATOR`); by default it uses plain
 The `KAI_ANDROID` build also produces an aggregate **`libkai.so`** (the CMake
 `kai` target): all the static libraries linked into one shared object with a
 small JNI bridge (`Android/jni/Kai_jni.cpp`). An app loads it with
-`System.loadLibrary("kai")` and drives the runtime through
-`com.kaikaspar.kai.KaiRuntime`:
+`System.loadLibrary("kai")` and drives the runtime through its own Kotlin or
+Java JNI wrapper:
 
     val result = KaiRuntime().use { kai -> kai.eval("x = 6; y = 7; x * y") }
 
 The JNI bridge exposes `nativeCreate` / `nativeEval` / `nativeVersion` /
-`nativeDestroy`; `KaiRuntime` wraps them with `eval()`, `version` and
-`AutoCloseable`. Each `KaiRuntime` owns one Rho console, so state persists
-across `eval` calls.
+`nativeDestroy`. A downstream wrapper should expose those operations through
+ordinary app-level APIs such as `eval()`, `version`, and lifecycle cleanup. Each
+native runtime handle owns one Rho console, so state persists across `eval`
+calls.
 
-### KaiKaspar consumer
+### Downstream app integration
 
-`Android/KaiKaspar/` is a minimal Gradle app showing the integration end to end:
+An Android app that consumes CppKAI should keep its app code outside this repo
+and configure Gradle to build the CppKAI Android target:
 
-- `app/build.gradle.kts` points `externalNativeBuild` at the repo-root
-  `CMakeLists.txt` with `-DKAI_ANDROID=ON` and `abiFilters = ["arm64-v8a"]`.
-  AGP supplies the NDK toolchain and ABI automatically.
-- `KaiRuntime.kt` is the reusable binding (drop it into your real app).
-- `MainActivity.kt` evaluates Rho on startup and logs the result (tag
-  `KaiKaspar`).
+- Point `externalNativeBuild.cmake.path` at the CppKAI repo-root
+  `CMakeLists.txt`.
+- Pass `-DKAI_ANDROID=ON`.
+- Set the ABI filters needed by the app, for example `arm64-v8a`.
+- Add a Kotlin or Java `org.kai.runtime.KaiRuntime` wrapper around the JNI
+  methods exported by `Android/jni/Kai_jni.cpp`, or update the native symbol
+  names if the app owns a different wrapper package.
 
 Requirements: an installed NDK r26+ and **CMake >= 3.28** (the KAI root requires
 it - install via `sdkmanager "cmake;3.31.6"` if the bundled CMake is older).
