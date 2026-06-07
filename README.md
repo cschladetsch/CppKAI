@@ -30,6 +30,8 @@ Requires GitHub Pages enabled from the `master` branch root.
 
 The KAI system provides a multi-layered architecture that enables distributed object programming with multiple language frontends.
 
+**[Project Overview](Doc/ProjectOverview.md)** - Learn about the core CppKAI runtime and the KAIKaspar Android application.
+
 See the full diagram: **[System Architecture Overview](resources/diagrams/system-architecture-overview.md)** (Mermaid, rendered on GitHub).
 
 ### Key System Components

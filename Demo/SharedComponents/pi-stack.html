@@ -1,0 +1,33 @@
+<!-- Pi Stack Panel -->
+<section class="panel pi-workbench">
+  <div class="panel-head">
+    <h2 class="panel-title">Interactive Pi Stack</h2>
+  </div>
+  <div class="pi-stack-grid">
+    <div>
+      <h3>Instruction Stream</h3>
+      <div id="piProgram" class="instruction-list"></div>
+    </div>
+    <div>
+      <h3>Stack</h3>
+      <div class="stack-index-head">
+        <span>Index</span>
+        <span>Value</span>
+      </div>
+      <div id="piStack" class="stack-list interactive-stack"></div>
+      <div class="stack-footer">
+        <input id="stackAppendInput" class="stack-input stack-input-wide" type="text" value="42" aria-label="Append stack value">
+        <button type="button" id="stackAppendBtn">Push to Stack</button>
+      </div>
+      <div class="stack-controls">
+        <input id="stackInput" class="stack-input" type="text" value="42" aria-label="Stack value">
+        <button type="button" id="pushStackBtn">Push</button>
+        <button type="button" id="popStackBtn">Pop</button>
+        <button type="button" id="dupStackBtn">Dup</button>
+        <button type="button" id="swapStackBtn">Swap</button>
+        <button type="button" id="dropStackBtn">Drop</button>
+        <button type="button" id="clearStackBtn">Clear</button>
+      </div>
+    </div>
+  </div>
+</section>
