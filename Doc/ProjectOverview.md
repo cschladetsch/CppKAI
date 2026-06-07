@@ -7,8 +7,8 @@ CppKAI is the foundational C++ repository implementing a multi-language runtime 
 - **Networking**: Peer-to-peer networking capabilities.
 - **Tooling**: Debugging, logging, and LLM-assisted code analysis tools.
 
-## KAIKaspar (Android Application)
-KAIKaspar is an Android-based application (located in `/Android/KaiKaspar`) designed to leverage the CppKAI runtime within a mobile environment. It utilizes JNI (Java Native Interface) to bridge the Android UI with the core C++ engine.
+## SharedWeb
+SharedWeb contains KAI-aware web components, shared browser styling, and TypeScript runtime adapter interfaces. It sits above the CppKAI runtime and below demos or external KAI applications.
 
 ## Relationship
-CppKAI serves as the core library and runtime, while KAIKaspar acts as a platform-specific application client. Development workflow typically involves maintaining the CppKAI core and exposing functionality to KAIKaspar via JNI wrappers.
+CppKAI serves as the core library and runtime. SharedWeb depends on KAI concepts and provides reusable web-facing surfaces for demos and downstream applications without introducing a dependency from CppKAI back to those consumers.

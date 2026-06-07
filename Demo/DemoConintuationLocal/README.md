@@ -11,5 +11,6 @@ control forms in Rho and their Pi shape.
   top context stack entry.
 
 Open `index.html` in a browser. The demo reuses
-`../ContinuationMobilityDemo/style.css` and keeps local page-specific behavior
-in `local.css` and `app.js`.
+`../ContinuationMobilityDemo/style.css`, shared KAI web styling from
+`../../SharedWeb/styles/kai-shared.css`, and local page-specific behavior in
+`app.js`.
