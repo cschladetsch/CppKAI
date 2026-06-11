@@ -60,6 +60,38 @@ static ListenResult ListenOnAvailablePort(Node &node, int beginPort,
     return {0, std::move(lastFailure)};
 }
 
+static void ExpectLoopbackAliasConnects(Registry *registry,
+                                        const std::string &alias,
+                                        int beginPort, int endPort) {
+    SCOPED_TRACE("loopback alias: " + alias);
+
+    Node server;
+    server.SetRegistry(registry);
+    const auto listen = ListenOnAvailablePort(server, beginPort, endPort);
+    if (listen.port == 0) GTEST_SKIP() << listen.skipReason;
+
+    Node client;
+    client.SetRegistry(registry);
+    client.SetUpdatePump([&server]() { server.Update(); });
+
+    bool clientConnected = false;
+    bool serverConnected = false;
+    client.SetConnectionEventCallback(
+        [&](ConnectionEvent ev, const NetAddress &) {
+            if (ev == ConnectionEvent::Connected) clientConnected = true;
+        });
+    server.SetConnectionEventCallback(
+        [&](ConnectionEvent ev, const NetAddress &) {
+            if (ev == ConnectionEvent::Connected) serverConnected = true;
+        });
+
+    client.Connect(IpAddress(alias), listen.port);
+
+    EXPECT_TRUE(PollUntil(server, client,
+                          [&] { return clientConnected && serverConnected; }))
+        << "Loopback alias did not connect to IPv4 listener";
+}
+
 class NodeEndToEndTest : public ::testing::Test {
    protected:
     Registry *reg_ = nullptr;
@@ -88,6 +120,11 @@ class NodeEndToEndTest : public ::testing::Test {
         delete reg_;
     }
 };
+
+TEST_F(NodeEndToEndTest, LoopbackAliasesConnectToIpv4Listener) {
+    ExpectLoopbackAliasConnects(reg_, "localhost", 17200, 17300);
+    ExpectLoopbackAliasConnects(reg_, "::1", 17300, 17400);
+}
 
 // Two nodes in the same process: client calls Add(3,4) on server agent,
 // expects 7 back via Future.

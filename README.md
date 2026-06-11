@@ -270,7 +270,10 @@ Switched to Rho language mode
 
 ### Network Applications
 
-Networking is enabled by default. The build includes the ENet transport layer, Tau IDL code generator (`NetworkGenerate`), and all network tests.
+Networking is enabled by default. The build includes the ENet transport layer,
+Tau IDL libraries, and all network tests. The old `NetworkGenerate` command-line
+tool has been removed; Tau proxy/agent generation remains available through the
+Tau generator library.
 
 Continuations are serialized as binary payloads — suspended execution can be frozen on one node, transferred over the network, and resumed on another node.
 
@@ -297,9 +300,8 @@ namespace Sensor {
 }
 ```
 
-```bash
-./Bin/NetworkGenerate MySensor.tau     # generates MySensor.proxy.h / MySensor.agent.h
-```
+Embed the Tau generator APIs when proxy/agent headers need to be produced from
+IDL as part of a tool or build step.
 
 ## Project Structure
 

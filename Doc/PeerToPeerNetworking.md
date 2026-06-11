@@ -152,7 +152,8 @@ node.SubscribeEvent("ScoreUpdated", [](BinaryPacket& pkt) {
 
 ## Tau IDL Integration
 
-Define an interface in Tau and let `NetworkGenerate` produce the proxy and agent:
+Define an interface in Tau and use the Tau generator library to produce the
+proxy and agent:
 
 ```tau
 namespace Calc {
@@ -162,11 +163,6 @@ namespace Calc {
         event ResultReady(int result);
     }
 }
-```
-
-```bash
-./Bin/NetworkGenerate Calc.tau
-# produces: Calc.proxy.h  Calc.agent.h
 ```
 
 The generated `ICalcProxy` inherits from `ProxyBase` and the generated `ICalcAgent` inherits from `AgentBase`. Their constructors automatically register all methods and properties with the `Node`.

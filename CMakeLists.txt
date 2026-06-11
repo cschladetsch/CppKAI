@@ -10,7 +10,7 @@ endif()
 # - Uses Ninja generator by default for faster builds
 # - Uses Clang/Clang++ by default (preferred compiler)
 # - Override to use GCC with -DBUILD_GCC=ON
-# - Defaults to C++20 standard with modern C++ features
+# - Defaults to the C++23 standard with modern C++ features
 # - Supports out-of-source builds with output to build/Bin directory
 # - Includes Clang-specific optimizations and colored diagnostics
 
@@ -179,7 +179,7 @@ link_directories(${KAI_HOME}/Lib/Debug)
 link_directories(/usr/local/lib)
 # Don't use HOME/lib, it might not exist or have permission issues
 
-# Modern C++20 compiler flags
+# Modern C++23 compiler flags
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     # Enable modern C++ features and warnings
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall")
@@ -193,7 +193,7 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang
     # Disable additional warnings seen during build
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas -Wno-unused-value -Wno-unused-but-set-variable")
     
-    # Add backward compatibility for format library - use C++20 std::format
+    # Add backward compatibility for the format library shim.
     add_definitions(-D_GLIBCXX_USE_CXX11_ABI=1)
     
     # Add format-like behavior even in older compilers
@@ -214,13 +214,12 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang
             set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fcolor-diagnostics")
         endif()
         
-        # Modern C++20 features - Clang has native C++20 support
-        # No need for -fconcepts flags as they're built into C++20 support
+        # Modern C++ features - Clang has native concepts support.
         
-        message(STATUS "Using Clang-specific optimizations and C++20 features")
+        message(STATUS "Using Clang-specific optimizations and C++23 features")
         
     elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-        # GCC-specific flags for C++20
+        # GCC-specific flags for modern C++ diagnostics.
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fconcepts-diagnostics-depth=3")
         
         # GCC optimizations
@@ -233,15 +232,15 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang
             set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fdiagnostics-color=always")
         endif()
         
-        message(STATUS "Using GCC-specific optimizations and C++20 features")
+        message(STATUS "Using GCC-specific optimizations and C++23 features")
     endif()
     
 elseif(MSVC)
     # MSVC-specific flags
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++20")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest")
     add_definitions(-DKAI_FORMAT_COMPATIBLE)
-    message(STATUS "Using MSVC compiler with C++20")
+    message(STATUS "Using MSVC compiler with C++23-compatible mode")
 else()
     message(WARNING "Unknown compiler: ${CMAKE_CXX_COMPILER_ID}")
 endif()

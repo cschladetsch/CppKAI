@@ -393,8 +393,8 @@ This script:
 
 ```mermaid
 graph TB
-    TAU["Tau IDL<br/>.tau file"] -->|NetworkGenerate| PH["proxy.h"]
-    TAU -->|NetworkGenerate| AH["agent.h"]
+    TAU["Tau IDL<br/>.tau file"] -->|Tau generator library| PH["proxy.h"]
+    TAU -->|Tau generator library| AH["agent.h"]
 
     subgraph "Server Process"
         AH --> AGT["Agent&lt;T&gt;<br/>BindMethod / BindMemberProperty"]

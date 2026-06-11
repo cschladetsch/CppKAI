@@ -120,15 +120,13 @@ sequenceDiagram
 
 ## Usage
 
-To generate code from Tau definitions, use the NetworkGenerate application:
-
-```
-NetworkGenerate --input=MyInterface.tau --output=GeneratedCode --proxy --agent
-```
+To generate code from Tau definitions, use the Tau generator library
+(`tau::Generate::*`) from an application or build tool. The old
+`NetworkGenerate` command-line executable is no longer built.
 
 For detailed usage instructions and syntax guide, see:
 1. [Tau Tutorial](../../../Doc/TauTutorial.md) for comprehensive documentation
-2. [App/NetworkGenerate](../../../Source/App/NetworkGenerate) for the code generation tool
+2. The generator sources under `Source/Library/Language/Tau/Source/Generate`
 
 ## Testing
 

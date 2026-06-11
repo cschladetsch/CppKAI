@@ -136,7 +136,8 @@ fun factorial(n) {
 
 ### Tau — Interface Definition Language
 
-Tau is a declarative IDL for defining network interfaces. `NetworkGenerate` reads `.tau` files and emits C++ headers:
+Tau is a declarative IDL for defining network interfaces. The Tau generator
+library reads `.tau` files and emits C++ headers:
 
 ```tau
 namespace Calc {

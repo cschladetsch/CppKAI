@@ -33,9 +33,9 @@ gantt
 - [x] `BroadcastEvent` with optional payload
 - [x] `SendObject` — broadcast KAI objects to connected peers
 - [x] `ID_KAI_PROPERTY_GET` / `ID_KAI_PROPERTY_SET` message IDs
-- [x] `KAI_NETWORKING` CMake option (default OFF) — controls ENet, Network lib, Tau, NetworkGenerate, tests
+- [x] `KAI_NETWORKING` CMake option — controls ENet, Network lib, Tau libraries, tests
 - [x] `./Scripts/b --network` build script flag
-- [x] `NetworkGenerate` tool built only when `KAI_NETWORKING=ON`
+- [x] Tau code generation available through library APIs
 - [x] 17 network end-to-end tests all passing
 - [x] `TauDomainPropertyTest` — Domain A agent / Domain B proxy / property fetch+set
 

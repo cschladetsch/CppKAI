@@ -47,7 +47,9 @@ The generation process happens in several stages:
 3. Generate code based on the extracted information
 4. Write the generated code to output files
 
-This is handled by the NetworkGenerate application, which provides a command-line interface to the generator.
+This is handled by the Tau generator library. Applications or build tools can
+call the generator APIs directly; the old `NetworkGenerate` command-line
+executable is no longer built.
 
 ## Example
 
@@ -83,6 +85,6 @@ The generator will produce:
 - Better support for complex type hierarchies and inheritance
 
 For practical examples, see:
-1. [NetworkGenerate application](../../../../Source/App/NetworkGenerate)
+1. [Tau generator sources](../../../../Source/Library/Language/Tau/Source/Generate)
 2. [Tau Tutorial](../../../../Doc/TauTutorial.md)
 3. [Tau code generation tests](../../../../Test/Language/TestTau)

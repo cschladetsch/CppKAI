@@ -45,7 +45,10 @@ Tau IDL supports `struct` declarations and generates plain C++ structs, but ther
 
 ### IPv6
 
-The current `IpAddress` and ENet binding only support IPv4. Add an `IpAddress("::1")` constructor and pass `ENET_HOST_ANY6` to `enet_host_create`.
+The current `IpAddress` and ENet binding only support IPv4. The transport
+accepts `::1` as a loopback alias for local testing, but this is normalized to
+`127.0.0.1`; it is not general IPv6 support. Add real IPv6 address handling and
+pass `ENET_HOST_ANY6` to `enet_host_create`.
 
 ### TLS / Authenticated Connections
 

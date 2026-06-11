@@ -6,7 +6,7 @@ Central index for all networking documentation.
 
 ```mermaid
 graph LR
-    TAU[Tau IDL<br/>.tau files] -->|NetworkGenerate| GEN[Generated<br/>proxy.h / agent.h]
+    TAU[Tau IDL<br/>.tau files] -->|Tau generator library| GEN[Generated<br/>proxy.h / agent.h]
     GEN --> PROXY[Proxy&lt;T&gt;<br/>client stub]
     GEN --> AGENT[Agent&lt;T&gt;<br/>server handler]
     PROXY -->|ENet UDP| AGENT
@@ -44,7 +44,7 @@ graph LR
 Networking is enabled by default:
 
 ```bash
-./Scripts/b                     # standard build includes ENet, Tau IDL, NetworkGenerate, and network tests
+./Scripts/b                     # standard build includes ENet, Tau IDL libraries, and network tests
 ./Scripts/b --clean             # clean rebuild with networking included
 
 cmake .. -DKAI_NETWORKING=OFF   # equivalent CMake flag to disable networking
@@ -54,7 +54,7 @@ The `KAI_NETWORKING` option controls:
 - ENet library
 - `Network` library
 - `TauLang` (needed for IDL code generation)
-- `NetworkGenerate` executable
+- Tau generator library APIs
 - `TestNetwork` test binary
 - `TestTau` language tests
 
@@ -77,8 +77,6 @@ ENet over UDP (reliable and unreliable channels both supported via `SendReliabil
 **Q: How do I expose a C++ method over the network?**
 Create an `Agent<MyClass>`, call `BindMethod("Name", &MyClass::Method)`. The other side creates a `Proxy<MyClass>` and calls `proxy.Call<ReturnType>("Name", args...)`.
 
-**Q: How do I generate proxy/agent from a `.tau` file?**
-```bash
-./Bin/NetworkGenerate MyInterface.tau
-# produces MyInterface.proxy.h and MyInterface.agent.h
-```
+**Q: How do I generate proxy/agent code from a `.tau` file?**
+Use the Tau generator library (`tau::Generate::*`) from an application or build
+tool. The old `NetworkGenerate` command-line executable is no longer built.

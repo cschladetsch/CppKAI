@@ -184,4 +184,4 @@ cd ..
 echo -e "${GREEN}Build successful!${NC}"
 echo -e "${YELLOW}Executables can be found in Bin/${NC}"
 echo -e "${BLUE}Main executables:${NC}"
-ls -la Bin/*.exe 2>/dev/null || ls -la Bin/* 2>/dev/null | grep -E '^-..x' | awk '{print "  - " $9}'
+ls -la Bin/*.exe 2>/dev/null || ls -la Bin/* 2>/dev/null | grep -E '^-..x' | awk '{print "  - " $9}' | grep -v '/NetworkGenerate$'

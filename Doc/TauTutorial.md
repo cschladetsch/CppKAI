@@ -521,16 +521,9 @@ Tau is particularly suited for:
 
 ## Code Generation
 
-Use `NetworkGenerate` to turn a `.tau` file into C++ proxy and agent headers:
-
-```bash
-# Build with networking enabled
-./Scripts/b --network
-
-# Generate proxy/agent headers
-./Bin/NetworkGenerate MyService.tau
-# produces: MyService.proxy.h  MyService.agent.h
-```
+Use the Tau generator library to turn a `.tau` file into C++ proxy and agent
+headers. The previous `NetworkGenerate` command-line executable is no longer
+built; applications or build tools should call the generator APIs directly.
 
 The generated proxy inherits from `ProxyBase`; the generated agent inherits from `AgentBase`. Both work with `Node` and `Domain` directly.
 
@@ -538,8 +531,8 @@ The generated proxy inherits from `ProxyBase`; the generated agent inherits from
 
 ```mermaid
 graph LR
-    IDL[MyService.tau] -->|NetworkGenerate| PH[MyService.proxy.h]
-    IDL -->|NetworkGenerate| AH[MyService.agent.h]
+    IDL[MyService.tau] -->|Tau generator library| PH[MyService.proxy.h]
+    IDL -->|Tau generator library| AH[MyService.agent.h]
     PH --> CLIENT[Client code<br/>MyServiceProxy proxy]
     AH --> SERVER[Server code<br/>MyServiceAgent agent]
     CLIENT <-->|ENet UDP| SERVER

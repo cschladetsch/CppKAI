@@ -20,7 +20,9 @@ Recent improvements:
 
 ## Tau Generator Library
 
-This component uses the Tau AST to generate network Proxy and Agent C++ code. It's used by the NetworkGenerate command-line utility to produce working C++ classes from Tau interface definitions.
+This component uses the Tau AST to generate network Proxy and Agent C++ code.
+Applications or build tools can call the generator APIs directly to produce
+working C++ classes from Tau interface definitions.
 
 Key components:
 - **GenerateProcess**: Abstract base class for all code generators
@@ -43,5 +45,5 @@ The Tau implementation includes comprehensive test suites:
 
 For practical examples and documentation, see:
 1. [Tau Tutorial](../../../../../Doc/TauTutorial.md)
-2. [NetworkGenerate application](../../../../../Source/App/NetworkGenerate)
+2. [Generator sources](Generate)
 3. [Test suites](../../../../../Test/Language/TestTau)

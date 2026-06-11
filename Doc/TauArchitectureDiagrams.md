@@ -517,5 +517,5 @@ These Tau components integrate seamlessly with the broader KAI distributed compu
 
 For more information on specific components, see:
 - [Tau Language README](../Include/KAI/Language/Tau/README.md)
-- [NetworkGenerate Tool](../Source/App/NetworkGenerate/README.md)
+- [Tau generator sources](../Source/Library/Language/Tau/Source/Generate)
 - [Tau Test Examples](../Test/Language/TestTau/)
