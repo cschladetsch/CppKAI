@@ -55,6 +55,10 @@ pi> /broadcast stack
 pi> /peers
 ```
 
+For local testing, `localhost`, `::1`, and `127.0.0.1` all resolve to the same
+loopback peer endpoint. This keeps `/connect localhost <port>` equivalent to
+connecting directly to `127.0.0.1`.
+
 ## Network Commands
 
 | Command | Description | Example |
@@ -209,7 +213,9 @@ while leaving the sender's stack untouched.
 ## Usage Notes
 
 1. **Port Management**: Each console needs a unique port for networking
-2. **Peer Addressing**: Use IP:port or peer index (0, 1, 2...) to address peers
+2. **Peer Addressing**: Use host:port or peer index (0, 1, 2...) to address
+   peers. Loopback aliases (`localhost`, `::1`, `127.0.0.1`) are normalized by
+   the transport.
 3. **Language Context**: Commands execute in the sender's language mode
 4. **Error Handling**: Network errors are reported with colored output
 5. **History Tracking**: All network messages are logged with timestamps

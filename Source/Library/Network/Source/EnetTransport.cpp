@@ -50,6 +50,8 @@ std::string AddressKey(const ENetAddress& addr) {
 }
 
 std::string NormalizeHost(std::string host) {
+    // Keep loopback aliases on one key path for both ENet resolution and the
+    // in-memory fallback registry used by local console/network tests.
     if (host == "localhost" || host == "::1") {
         return "127.0.0.1";
     }
@@ -65,7 +67,7 @@ NetAddress ToNetAddress(const ENetAddress& addr) {
 bool ToEnetAddress(const NetAddress& addr, ENetAddress& out) {
     out.port = addr.port;
     // ENET_HOST_ANY is only appropriate for bind addresses (listen sockets).
-    // Specific hosts — including loopback — must be resolved properly.
+    // Specific hosts, including loopback aliases, must be resolved explicitly.
     const std::string host = NormalizeHost(addr.host);
     if (host.empty() || host == "0.0.0.0") {
         out.host = ENET_HOST_ANY;

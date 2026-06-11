@@ -155,6 +155,10 @@ KAI consoles can communicate with each other over the network in real-time:
 [4] π /broadcast stack      # Show stack on all connected consoles
 ```
 
+`localhost`, `::1`, and `127.0.0.1` are treated as the same loopback endpoint
+by the ENet transport, so local console peers can use whichever form is most
+convenient.
+
 **Network Commands:**
 - `/network start [port]` - Enable networking
 - `/connect <host> <port>` - Connect to peer console
