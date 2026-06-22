@@ -6,6 +6,7 @@
 #include <string>
 
 #include "KAI/Console/Console.h"
+#include "KAI/Core/Logger.h"
 #include "KAI/Language/Common/TranslatorFactory.h"
 #include "KAI/Language/Pi/PiTranslator.h"
 #include "KAI/Language/Rho/RhoTranslator.h"
@@ -161,6 +162,9 @@ std::shared_ptr<TranslatorCommon> CreateTranslatorForLanguage(Registry& reg,
 
 int main(int argc, char** argv) {
     try {
+        Logger::Init();
+        Logger::Info("KAI Console starting");
+
         // Parse command line arguments
         ConsoleOptions options = ParseArguments(argc, argv);
 
