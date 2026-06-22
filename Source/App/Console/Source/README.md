@@ -10,6 +10,10 @@ The KAI Console is an interactive REPL (Read-Eval-Print-Loop) for the Pi and Rho
 2. **Integrated Shell Access**: Execute system commands without leaving the Console
 3. **Advanced History**: Zsh-like history expansion for maximum productivity
 4. **Stack Visualization**: See your computation stack after each operation
+5. **Executor Inspection**: Enumerate live Executors and inspect each Executor's
+   own Tree independently
+6. **Native Logging**: Record Console inspection and debugger lifecycle through
+   KAI's `Logger`
 
 ## Documentation Index
 
@@ -38,14 +42,14 @@ The KAI Console is an interactive REPL (Read-Eval-Print-Loop) for the Pi and Rho
 
 ### Basic Pi Programming
 ```console
-Pi λ 2 3 +         # Stack-based: push 2, push 3, add
+π 2 3 +         # Stack-based: push 2, push 3, add
 [0]: 5
 
-Pi λ 10 20 * 
+π 10 20 *
 [0]: 200
 
-Pi λ fun double { 2 * }   # Define a function
-Pi λ 7 double
+π fun double { 2 * }   # Define a function
+π 7 double
 [0]: 14
 ```
 
@@ -55,7 +59,7 @@ Sometimes you need to interact with your system while programming. The Console p
 
 1. **Backticks**: `` `ls -la` `` - Run a shell command and continue in Pi
 2. **Dollar Prefix**: `$ ls -la` - Quick shell command (like a shell alias)
-3. **Shell Mode**: `sh` - Switch to full shell mode (prompt changes to "Bash λ")
+3. **Shell Mode**: `sh` - Switch to full shell mode (prompt changes to "$")
 
 ### History Expansion Features
 
@@ -79,39 +83,39 @@ When programming, you often need to:
 
 ### Shell Command Examples
 ```console
-Pi λ # Calculate something
-Pi λ 100 25 /
+π # Calculate something
+π 100 25 /
 [0]: 4
 
-Pi λ # Save result to file using shell
-Pi λ $ echo "Division result: 4" > calc_result.txt
+π # Save result to file using shell
+π $ echo "Division result: 4" > calc_result.txt
 
-Pi λ # Or use backticks to embed shell output in Pi
-Pi λ print "Current directory: `pwd`"
+π # Or use backticks to embed shell output in Pi
+π print "Current directory: `pwd`"
 [0]: "Current directory: /home/user/KAI"
 
-Pi λ # For extended shell work, use shell mode
-Pi λ sh
+π # For extended shell work, use shell mode
+π sh
 Entering shell mode. Type 'exit' to return to Pi mode.
-Bash λ grep -r "function" *.cpp | wc -l
+$ grep -r "function" *.cpp | wc -l
 42
-Bash λ exit
-Pi λ # Back to Pi programming
+$ exit
+π # Back to Pi programming
 ```
 
 ### History Expansion Examples
 ```console
-Pi λ fun calculate { + * 2 }    # Made a mistake?
-Pi λ ^+^dup +^                  # Quick fix!
+π fun calculate { + * 2 }    # Made a mistake?
+π ^+^dup +^                  # Quick fix!
 => fun calculate { dup + * 2 }
 
-Pi λ process_file input.txt output.json
-Pi λ !!:s/json/xml/            # Change output format
+π process_file input.txt output.json
+π !!:s/json/xml/            # Change output format
 => process_file input.txt output.xml
 
-Pi λ /path/to/some/file.txt
-Pi λ !!:h                      # Get directory: /path/to/some
-Pi λ !!:t                      # Get filename: file.txt
+π /path/to/some/file.txt
+π !!:h                      # Get directory: /path/to/some
+π !!:t                      # Get filename: file.txt
 ```
 
 ## Implementation
@@ -120,6 +124,13 @@ The features are implemented in:
 - `/Include/KAI/Console/Console.h` - Header with new method declarations
 - `/Source/Library/Executor/Source/Console.cpp` - Core implementation
 - `/Source/App/Window/Source/ExecutorWindow.cpp` - Window app integration
+
+The private NodeGLM inspection protocol is implemented in `Console.cpp`. It
+enumerates Registry objects of type `Executor`, identifies each by handle, and
+serializes the selected Executor's own Tree hierarchy. Debug and Tree clients
+must expose an explicit Executor selector. Snapshot traversal is bounded to
+1000 nodes and depth 32. Operational events and failures use KAI `Logger`; only
+machine-readable snapshot payloads use stdout.
 
 ## Testing
 

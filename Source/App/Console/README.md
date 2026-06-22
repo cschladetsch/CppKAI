@@ -6,18 +6,24 @@ Interactive REPL console for the KAI language system with shell command integrat
 
 - **Multi-language Support**: Pi (stack-based), Rho (infix), and Tau languages
 - **Shell Command Integration**: Execute shell commands with backtick syntax
-- **Automatic Stack Display**: Colored stack visualization after each command
+- **Automatic Stack Display**: Top-first stack visualization after each command,
+  with `[0]` on the bottom line
 - **Cross-platform**: Works on Windows, Linux, and macOS
-- **Colored Output**: Type-based coloring for better readability
+- **Colored Output**: Strings and integers retain type cues; floating-point
+  values use the normal neutral value color
+- **Executor Inspection**: Machine-readable snapshots enumerate every live
+  Executor and each Executor's own Tree, root, scope, and stack sizes
+- **KAI Logging**: Console startup, Tree snapshots, debugger attachments/actions,
+  and failures use the native `Logger`
 
 ## Shell Commands
 
 Execute shell commands directly:
 ```
-Pi λ `pwd
+π `pwd
 /home/user/project
 
-Pi λ `ls -la | head -3
+π `ls -la | head -3
 total 60
 drwxr-xr-x  3 user user 4096 May 30 00:15 .
 drwxr-xr-x 11 user user 4096 May 29 23:34 ..
@@ -25,13 +31,13 @@ drwxr-xr-x 11 user user 4096 May 29 23:34 ..
 
 Embed shell output in expressions:
 ```
-Pi λ 10 `echo 5` +
+π 10 `echo 5` +
 [0]: 15
 
-Pi λ 1 `echo 2` + 3 ==
+π 1 `echo 2` + 3 ==
 [0]: true
 
-Rho λ result = `echo 42`
+ρ result = `echo 42`
 [0]: 2
 ```
 
@@ -46,7 +52,8 @@ Run the console after building:
 
 The Console is built on top of the [Executor](/Source/Library/Executor/Source) and provides:
 - Language-agnostic shell command preprocessing
-- Automatic stack visualization with type-based coloring
+- Automatic top-first stack visualization
+- Multi-Executor Tree inspection and handle-targeted debugger operations
 - Integration with Pi, Rho, and Tau language translators
 
 For full documentation, see [Console Documentation](../../../Doc/Console.md).

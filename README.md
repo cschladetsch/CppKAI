@@ -131,11 +131,14 @@ See the full diagram: **[System Architecture Overview](resources/diagrams/system
 
 ### Languages
 
-- **Pi**: Stack-based RPN language inspired by Forth — prompt: `[n] π`
-- **Rho**: Python-like infix language that compiles to Pi — prompt: `[n] ρ`
+- **Pi**: Stack-based RPN language inspired by Forth — prompt: `π`
+- **Rho**: Python-like infix language that compiles to Pi — prompt: `ρ`
 - **Tau**: Interface Definition Language (IDL) for network components
 
-The prompt shows `[n] <symbol>`, where `n` is the next command number from the active language's persistent history (`~/.kai/{pi,rho}.history`), and the data stack is printed before every prompt.
+The prompt shows only the active language symbol. Command numbers remain
+available through `history` and `!n`; history persists in
+`~/.kai/{pi,rho}.history`. The complete data stack is printed after each command,
+top-first, with `[0]` on the bottom line.
 
 ### Console Networking
 
@@ -144,15 +147,15 @@ KAI consoles can communicate with each other over the network in real-time:
 ```bash
 # Console 1 (Server)
 ./Console
-[1] π /network start 14600
-[2] π 2 3 +
+π /network start 14600
+π 2 3 +
 
 # Console 2 (Client)
 ./Console
-[1] π /network start 14601
-[2] π /connect localhost 14600
-[3] π /@0 10 *              # Multiply Console 1's result by 10
-[4] π /broadcast stack      # Show stack on all connected consoles
+π /network start 14601
+π /connect localhost 14600
+π /@0 10 *              # Multiply Console 1's result by 10
+π /broadcast stack      # Show stack on all connected consoles
 ```
 
 `localhost`, `::1`, and `127.0.0.1` are treated as the same loopback endpoint
@@ -250,23 +253,25 @@ cmake .. -DENABLE_SHELL_SYNTAX=ON
 KAI Console v0.3.0
 Type 'help' for available commands.
 
-[1] π 2 3 +
+π 2 3 +
 [0]: 5
 
-[2] π rho
+π rho
 Switched to Rho language mode
 
-[1] ρ x = 42; y = x * 2; y
+ρ x = 42; y = x * 2; y
 [0]: 84
 ```
 
 **Features:**
-- Numbered prompts with the language symbol: `[42] π`, `[7] ρ`, `[3] $`
-- Stack contents shown before every prompt
+- Plain language prompts: `π`, `ρ`, and `$`
+- Stack contents shown after every command, top-first with `[0]` at the bottom
 - Per-language persistent history saved to `~/.kai/pi.history` and `~/.kai/rho.history`
 - Context-sensitive help system
 - Shell integration (backtick expansion when enabled)
-- Color-coded stack display
+- Color-coded stack display; floating-point values use the neutral value color
+- Native KAI Logger initialization for Console lifecycle, inspection, debugger
+  attachment/action, and failure records
 
 ### Network Applications
 

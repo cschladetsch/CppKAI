@@ -22,7 +22,7 @@ $ Console --help               # Available system-wide
 The Console includes a comprehensive help system:
 
 ```console
-Pi λ help
+π help
 KAI Console Help
 
 Available help topics:
@@ -35,55 +35,55 @@ Language-specific help:
   help pi         - Pi language reference
   help rho        - Rho language reference
 
-Pi λ help pi       # Detailed Pi language help
-Pi λ help basics   # Getting started guide
+π help pi       # Detailed Pi language help
+π help basics   # Getting started guide
 ```
 
 ## Built-in Commands
 
 ```console
-Pi λ help          # Show help topics
-Pi λ clear         # Clear screen (or 'cls')
-Pi λ history       # Show command history
-Pi λ stack         # Show current stack
-Pi λ pi            # Switch to Pi mode
-Pi λ rho           # Switch to Rho mode
-Pi λ exit          # Exit console (or 'quit')
+π help          # Show help topics
+π clear         # Clear screen (or 'cls')
+π history       # Show command history
+π stack         # Show current stack
+π pi            # Switch to Pi mode
+π rho           # Switch to Rho mode
+π exit          # Exit console (or 'quit')
 ```
 
 ## Basic Pi Operations
 
 ```console
-Pi λ # Basic arithmetic - Pi uses stack-based operations
-Pi λ 2 3 +
+π # Basic arithmetic - Pi uses stack-based operations
+π 2 3 +
 [0]: 5
 
-Pi λ 10 20 *
+π 10 20 *
 [0]: 200
 
-Pi λ # Stack operations
-Pi λ dup           # Duplicate top
-Pi λ swap          # Swap top two
-Pi λ drop          # Remove top
-Pi λ clear         # Clear stack
+π # Stack operations
+π dup           # Duplicate top
+π swap          # Swap top two
+π drop          # Remove top
+π clear         # Clear the terminal screen (the data stack is unchanged)
 ```
 
 ## Language Switching
 
 ```console
-Pi λ rho           # Switch to Rho mode
+π rho           # Switch to Rho mode
 Switched to Rho language mode
 
-Rho λ x = 42       # Now using infix syntax
+ρ x = 42       # Now using infix syntax
 [0]: 42
 
-Rho λ y = x * 2
+ρ y = x * 2
 [0]: 84
 
-Rho λ pi           # Switch back to Pi
+ρ pi           # Switch back to Pi
 Switched to Pi language mode
 
-Pi λ 2 3 +         # Back to postfix
+π 2 3 +         # Back to postfix
 [0]: 5
 ```
 
@@ -92,22 +92,22 @@ Pi λ 2 3 +         # Back to postfix
 *Note: Shell features require building with `-DENABLE_SHELL_SYNTAX=ON`*
 
 ```console
-Pi λ # Method 1: Use $ prefix for shell commands
-Pi λ $ pwd
+π # Method 1: Use $ prefix for shell commands
+π $ pwd
 /home/user/KAI
 
-Pi λ $ ls *.txt
+π $ ls *.txt
 file1.txt
 file2.txt
 
-Pi λ $ echo "Hello from shell"
+π $ echo "Hello from shell"
 Hello from shell
 
-Pi λ # Method 2: Use backticks to embed in expressions
-Pi λ `echo 10` `echo 20` +
+π # Method 2: Use backticks to embed in expressions
+π `echo 10` `echo 20` +
 [0]: 30
 
-Pi λ "Files: " `ls | wc -l` +
+π "Files: " `ls | wc -l` +
 [0]: "Files: 5"
 ```
 
@@ -116,17 +116,17 @@ Pi λ "Files: " `ls | wc -l` +
 Commands are automatically saved and restored:
 
 ```console
-Pi λ 2 3 +         # Execute a command
+π 2 3 +         # Execute a command
 [0]: 5
 
-Pi λ history       # Show command history
+π history       # Show command history
 Command History:
   1: 2 3 +
 
-Pi λ !!            # Repeat last command
+π !!            # Repeat last command
 [0]: 5
 
-Pi λ !1            # Repeat command 1
+π !1            # Repeat command 1
 [0]: 5
 
 # History is saved per language to ~/.kai/pi.history and ~/.kai/rho.history automatically
@@ -135,26 +135,26 @@ Pi λ !1            # Repeat command 1
 ## Advanced History Features
 
 ```console
-Pi λ # Execute several commands
-Pi λ 5 5 +
+π # Execute several commands
+π 5 5 +
 [0]: 10
 
-Pi λ print "Hello"
+π print "Hello"
 Hello
 
-Pi λ 10 20 *
+π 10 20 *
 [0]: 200
 
-Pi λ # Various history expansions
-Pi λ !!            # Repeat last command
-Pi λ !p            # Find last command starting with 'p'
-Pi λ !?Hello       # Find last command containing 'Hello'
+π # Various history expansions
+π !!            # Repeat last command
+π !p            # Find last command starting with 'p'
+π !?Hello       # Find last command containing 'Hello'
 
-Pi λ # Quick substitution
-Pi λ print "Helo"
+π # Quick substitution
+π print "Helo"
 Hello
 
-Pi λ ^elo^ello     # Fix typo in last command
+π ^elo^ello     # Fix typo in last command
 => print "Hello"
 Hello
 ```
@@ -163,27 +163,27 @@ Hello
 
 ```console
 # Switch to Rho for infix syntax
-Pi λ rho
+π rho
 Switched to Rho language mode
 
-Rho λ x = 42
+ρ x = 42
 [0]: 42
 
-Rho λ if (x > 40) {
+ρ if (x > 40) {
 ...     print("Large number: " + x)
 ... }
 Large number: 42
 
-Rho λ fun square(n) {
+ρ fun square(n) {
 ...     return n * n
 ... }
 
-Rho λ result = square(7)
+ρ result = square(7)
 [0]: 49
 
 # Shell integration in Rho (when enabled)
-Rho λ file_count = `ls | wc -l`
-Rho λ print("Found " + file_count + " files")
+ρ file_count = `ls | wc -l`
+ρ print("Found " + file_count + " files")
 ```
 
 ## Color-Coded Stack Display
@@ -191,23 +191,24 @@ Rho λ print("Found " + file_count + " files")
 The stack automatically displays with color coding:
 
 ```console
-Pi λ 42 "hello" 3.14
-[0]: 42        # Numbers in yellow
-[1]: "hello"   # Strings in green (with quotes)  
-[2]: 3.14      # Floats in magenta
+π 42 "hello" 3.14
+[2]: 3.14      # Floats use the neutral value color
+[1]: "hello"   # Strings in green (with quotes)
+[0]: 42        # The bottom value is printed last
 
-# Stack numbers are orange for better visibility
+# Stack indices are orange; [0] is the physical bottom line
 ```
 
 ## Pro Tips
 
 ### 1. Use the help system extensively
 ```console
-Pi λ help basics   # Learn Console basics
-Pi λ help pi       # Pi language reference
-Pi λ help rho      # Rho language reference
-Pi λ help shell    # Shell integration
-Pi λ help history  # History features
+π help basics   # Learn Console basics
+π help pi       # Pi language reference
+π help rho      # Rho language reference
+π help shell    # Shell integration
+π help history  # History features
+π help stack    # Stack display and operations
 ```
 
 ### 2. Leverage persistent history
@@ -217,15 +218,15 @@ Pi λ help history  # History features
 
 ### 3. Take advantage of built-in commands
 ```console
-Pi λ stack         # Show stack anytime
-Pi λ clear         # Clear screen
-Pi λ history       # Review what you've done
+π stack         # Show stack anytime
+π clear         # Clear screen
+π history       # Review what you've done
 ```
 
 ### 4. Switch languages as needed
 ```console
-Pi λ rho           # For familiar infix syntax
-Rho λ pi           # For stack manipulation
+π rho           # For familiar infix syntax
+ρ pi           # For stack manipulation
 ```
 
 ### 5. Use command-line options
@@ -239,34 +240,34 @@ $ Console -t 3 complex_script.rho  # High trace level for debugging
 
 ### Mistake 1: Trying shell commands without enabling them
 ```console
-WRONG:  Pi λ ls          # Undefined Pi function
+WRONG:  π ls          # Undefined Pi function
 RIGHT:  Build with -DENABLE_SHELL_SYNTAX=ON first
-        Pi λ $ ls        # Then use shell commands
+        π $ ls        # Then use shell commands
 ```
 
 ### Mistake 2: Forgetting Pi is stack-based
 ```console
-WRONG:  Pi λ 2 + 3       # Error: not enough on stack
-RIGHT:  Pi λ 2 3 +       # Pushes 2, then 3, then adds
+WRONG:  π 2 + 3       # Error: not enough on stack
+RIGHT:  π 2 3 +       # Pushes 2, then 3, then adds
 ```
 
 ### Mistake 3: Not using the help system
 ```console
 WRONG:  Struggling with syntax
-RIGHT:  Pi λ help pi     # Get comprehensive reference
+RIGHT:  π help pi     # Get comprehensive reference
 ```
 
 ### Mistake 4: Not leveraging history
 ```console
 SLOW:   Retyping long commands
-FAST:   Pi λ !!          # Repeat last
-        Pi λ !long       # Find command starting with 'long'
+FAST:   π !!          # Repeat last
+        π !long       # Find command starting with 'long'
 ```
 
 ## Essential Commands Summary
 
 1. **Help**: `help`, `help pi`, `help rho`, `help basics`
-2. **Navigation**: `clear`, `history`, `stack`  
+2. **Navigation**: `clear`, `history`, `stack`
 3. **Language**: `pi`, `rho`
 4. **Exit**: `exit`, `quit`, or Ctrl+D
 5. **History**: `!!`, `!n`, `!string`

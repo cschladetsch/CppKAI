@@ -47,12 +47,13 @@ $ ./Console -n script.pi       # Non-interactive mode (no REPL)
 The Console includes a comprehensive help system with contextual topics:
 
 ```
-Pi λ help
+π help
 KAI Console Help
 
 Available help topics:
   help basics     - Basic usage and commands
   help history    - History and command expansion
+  help stack      - Inspect and manipulate the data stack
   help shell      - Shell integration
   help languages  - Pi and Rho language features
 
@@ -64,6 +65,7 @@ Language-specific help:
 **Help Topics:**
 - `help` or `help basics` - Getting started guide with examples
 - `help history` - Command history and expansion features
+- `help stack` - Stack display and common Pi stack operations
 - `help shell` - Shell integration documentation
 - `help languages` - Overview of Pi and Rho languages
 - `help pi` - Comprehensive Pi language reference
@@ -84,20 +86,20 @@ The Console provides several built-in commands for enhanced usability:
 ### Persistent Command History
 
 Commands are automatically saved per language to `~/.kai/pi.history` and
-`~/.kai/rho.history`, and persist across sessions. The number shown in the
-prompt (for example `[42] π`) is the next entry number in the active language's
-history file:
+`~/.kai/rho.history`, and persist across sessions. Prompts show only the active
+language symbol; use `history` to see the stable entry numbers referenced by
+`!n`:
 
 ```
-Pi λ history
+π history
 Command History:
   1: 2 3 +
   2: help pi
   3: x = 42; y = x * 2
 
-Pi λ !!         # Repeat last command
-Pi λ !2         # Repeat command 2
-Pi λ !help      # Find last command starting with "help"
+π !!         # Repeat last command
+π !2         # Repeat command 2
+π !help      # Find last command starting with "help"
 ```
 
 **History Features:**
@@ -110,7 +112,7 @@ Pi λ !help      # Find last command starting with "help"
 ### Enhanced User Experience
 
 - **Professional startup banner** with version and build information
-- **Color-coded output** with orange-colored stack numbers
+- **Color-coded output** with orange-colored stack indices
 - **Context-sensitive prompts** showing current language
 - **User-friendly error messages** with suggestions
 - **Multi-line input support** for complex structures
@@ -121,30 +123,30 @@ Pi λ !help      # Find last command starting with "help"
 ### Pi Language (Stack-based)
 Default mode with postfix notation:
 ```
-Pi λ 2 3 +
+π 2 3 +
 [0]: 5
 
-Pi λ dup *
+π dup *
 [0]: 25
 ```
 
 ### Rho Language (Infix)
 C-like syntax with variables and control structures:
 ```
-Rho λ x = 42
+ρ x = 42
 [0]: 42
 
-Rho λ if (x > 40) { "Large" } else { "Small" }
+ρ if (x > 40) { "Large" } else { "Small" }
 [0]: "Large"
 ```
 
 ### Language Switching
 Switch between languages using built-in commands:
 ```
-Pi λ rho
+π rho
 Switched to Rho language mode
 
-Rho λ pi  
+ρ pi
 Switched to Pi language mode
 ```
 
@@ -155,38 +157,38 @@ Switched to Pi language mode
 ### Standalone Shell Commands with $ Prefix
 Execute shell commands by starting a line with `$`:
 ```
-Pi λ $ pwd
+π $ pwd
 /home/user/project
 
-Pi λ $ ls -la
+π $ ls -la
 total 48
 drwxr-xr-x  12 user  user   384 Jun  5 10:00 .
 
-Pi λ $ echo "Hello from shell!"
+π $ echo "Hello from shell!"
 Hello from shell!
 ```
 
 ### Embedded Shell Commands with Backticks
 Embed shell command output within expressions using backticks `` `command` ``:
 ```
-Pi λ 1 `echo 2` + 3 ==
+π 1 `echo 2` + 3 ==
 [0]: true
 
-Pi λ `echo 10` `echo 20` +
+π `echo 10` `echo 20` +
 [0]: 30
 
-Pi λ "User: " `whoami` +
+π "User: " `whoami` +
 [0]: "User: username"
 ```
 
 ### Shell Mode
 Toggle into shell mode where all commands are executed as shell commands:
 ```
-Pi λ sh
+π sh
 Entering shell mode. Type 'exit' to return to Pi mode.
-Bash λ ls -la
+$ ls -la
 total 48
-Bash λ exit
+$ exit
 Exited shell mode. Back to Pi mode.
 ```
 
@@ -202,24 +204,27 @@ Exited shell mode. Back to Pi mode.
 
 ### Automatic Stack Display
 
-After each command execution, the Console automatically displays the entire stack with enhanced colored output:
+After each command execution, the Console automatically displays the entire
+stack. The top value is printed first and the bottom value, `[0]`, is printed on
+the bottom line:
 
 ```
-Pi λ 1 2 3
-[0]: 1
-[1]: 2  
+π 1 2 3
 [2]: 3
+[1]: 2
+[0]: 1
 ```
 
 ### Color Coding
 Stack elements are color-coded by type for better readability:
 - **Stack numbers**: Orange/bright yellow for better visibility
 - **Integers**: Yellow
-- **Floats**: Magenta
+- **Floats**: Neutral/default value color
 - **Strings**: Green (with quotes)
 - **Other types**: Gray
 
-The stack display format is `[index]: value` where index 0 is the bottom of the stack.
+The stack display format is `[index]: value`; index 0 is the bottom of the stack
+and therefore appears on the final stack line.
 
 ### Stack Operations
 Built-in stack manipulation commands:
@@ -228,51 +233,69 @@ Built-in stack manipulation commands:
 - `drop` - Remove top of stack
 - `swap` - Swap top two elements
 - `over` - Copy second element to top
-- `clear` - Clear the stack
+
+`clear` and `cls` clear the terminal screen; they do not mutate the data stack.
+The NodeGLM Debug panel's handle-targeted `clear` action clears both stacks of
+the explicitly selected Executor.
+
+## Executor Inspection and Logging
+
+The Console can emit a private, bounded snapshot used by NodeGLM's Debug and
+Tree panels. A snapshot enumerates every live `Executor` in the Registry by
+handle. For each Executor it reports that Executor's own `Tree*`, root, scope,
+data/context stack sizes, and up to 1000 child nodes at a maximum depth of 32.
+Consumers must select an Executor explicitly; neither Tree nor Debug assumes a
+single global Executor.
+
+Debugger actions are handle-targeted and limited to `step`, `continue`, `stack`,
+and `clear`. Console startup initializes KAI's native `Logger`. Tree snapshot
+lifecycle, debugger attachment/actions, invalid handles, and snapshot failures
+are logged through `Logger`; the snapshot records themselves remain on stdout
+because they are a machine transport protocol.
 
 ## Advanced Examples
 
 ### Basic Arithmetic with Shell Commands
 ```
-Pi λ `echo 10` `echo 20` +
+π `echo 10` `echo 20` +
 [0]: 30
 
-Pi λ 5 `echo 3` * 2 +
+π 5 `echo 3` * 2 +
 [0]: 17
 ```
 
 ### File Operations
 ```
-Pi λ `ls | wc -l`
+π `ls | wc -l`
 [0]: 10
 
-Pi λ `cat data.txt | head -1`
+π `cat data.txt | head -1`
 [0]: "First line of file"
 ```
 
 ### System Information
 ```
-Pi λ `whoami`
+π `whoami`
 [0]: "username"
 
-Pi λ `uname -s`
+π `uname -s`
 [0]: "Linux"
 ```
 
 ### Complex Rho Examples
 ```
 # Calculate with dynamic values
-Rho λ file_count = `ls | wc -l`
-Rho λ if (file_count > 5) {
+ρ file_count = `ls | wc -l`
+ρ if (file_count > 5) {
 ...     print("Many files: " + file_count)
 ... }
 Many files: 10
 
 # Function definitions with shell integration
-Rho λ fun get_temp() {
+ρ fun get_temp() {
 ...     return `cat /sys/class/thermal/thermal_zone0/temp`
 ... }
-Rho λ temp = get_temp(); print("Temperature: " + temp)
+ρ temp = get_temp(); print("Temperature: " + temp)
 ```
 
 ## Configuration and Customization
