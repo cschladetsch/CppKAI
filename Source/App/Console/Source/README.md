@@ -129,8 +129,9 @@ The private NodeGLM inspection protocol is implemented in `Console.cpp`. It
 enumerates Registry objects of type `Executor`, identifies each by handle, and
 serializes the selected Executor's own Tree hierarchy. Debug and Tree clients
 must expose an explicit Executor selector. Snapshot traversal is bounded to
-1000 nodes and depth 32. Operational events and failures use KAI `Logger`; only
-machine-readable snapshot payloads use stdout.
+1000 nodes and depth 32. Requests and request-ID-correlated newline-delimited
+JSON responses use the duplex `KAI_CONTROL_FD`. Operational events and failures
+use KAI `Logger`; stdout remains the user-facing terminal stream.
 
 ## Testing
 

@@ -248,10 +248,11 @@ Consumers must select an Executor explicitly; neither Tree nor Debug assumes a
 single global Executor.
 
 Debugger actions are handle-targeted and limited to `step`, `continue`, `stack`,
-and `clear`. Console startup initializes KAI's native `Logger`. Tree snapshot
-lifecycle, debugger attachment/actions, invalid handles, and snapshot failures
-are logged through `Logger`; the snapshot records themselves remain on stdout
-because they are a machine transport protocol.
+and `clear`. Private inspection commands and their request-ID-correlated,
+newline-delimited JSON responses use the duplex file descriptor named by
+`KAI_CONTROL_FD`. Console startup initializes KAI's native `Logger`. Tree snapshot lifecycle,
+debugger attachment/actions, invalid handles, and snapshot failures are logged
+through `Logger`; stdout remains exclusively user-facing Console output.
 
 ## Advanced Examples
 
