@@ -125,7 +125,7 @@ The features are implemented in:
 - `/Source/Library/Executor/Source/Console.cpp` - Core implementation
 - `/Source/App/Window/Source/ExecutorWindow.cpp` - Window app integration
 
-The private NodeGLM inspection protocol is implemented in `Console.cpp`. It
+The private KaiWorkbench inspection protocol is implemented in `Console.cpp`. It
 enumerates Registry objects of type `Executor`, identifies each by handle, and
 serializes the selected Executor's own Tree hierarchy. Debug and Tree clients
 must expose an explicit Executor selector. Snapshot traversal is bounded to

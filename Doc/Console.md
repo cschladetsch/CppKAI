@@ -235,12 +235,12 @@ Built-in stack manipulation commands:
 - `over` - Copy second element to top
 
 `clear` and `cls` clear the terminal screen; they do not mutate the data stack.
-The NodeGLM Debug panel's handle-targeted `clear` action clears both stacks of
+The KaiWorkbench Debug panel's handle-targeted `clear` action clears both stacks of
 the explicitly selected Executor.
 
 ## Executor Inspection and Logging
 
-The Console can emit a private, bounded snapshot used by NodeGLM's Debug and
+The Console can emit a private, bounded snapshot used by KaiWorkbench's Debug and
 Tree panels. A snapshot enumerates every live `Executor` in the Registry by
 handle. For each Executor it reports that Executor's own `Tree*`, root, scope,
 data/context stack sizes, and up to 1000 child nodes at a maximum depth of 32.
