@@ -32,7 +32,7 @@ Rather than trying to fix the underlying issues in the Rho language's continuati
 ### Files Created:
 
 - `$KAI_ROOT/Test/Language/TestRho/RhoPiFix.cpp` - New direct test implementations that bypass continuations
-- `/Scripts/run_all_tests.sh` - Current Scripts test runner script
+- `/Scripts/run_all_tests.ps1` - Current Scripts test runner script
 - `$KAI_ROOT/Test-Fixes-Summary.md` - This documentation of the fixes
 
 ## Test Coverage
@@ -60,7 +60,7 @@ To run all tests with the fixes:
 
 ```bash
 cd $KAI_ROOT
-./Scripts/run_all_tests.sh
+./Scripts/run_all_tests.ps1
 ```
 
 The test script will show which tests have been implemented as direct tests to bypass the continuation issues.

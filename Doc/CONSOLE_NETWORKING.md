@@ -17,10 +17,10 @@ The networking functionality is integrated directly into the base `Console` clas
 
 ```bash
 # Make the demo script executable
-chmod +x demo_console_communication.sh
+chmod +x demo_console_communication.ps1
 
 # Run the tmux-based demo
-./demo_console_communication.sh
+./demo_console_communication.ps1
 ```
 
 The demo will automatically:
@@ -207,7 +207,7 @@ while leaving the sender's stack untouched.
   execution, broadcasts, disconnect handling)
 
 ### Demo
-- `demo_console_communication.sh` - Interactive tmux demo
+- `demo_console_communication.ps1` - Interactive tmux demo
 - `console_demo.md` - Usage documentation
 
 ## Usage Notes

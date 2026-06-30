@@ -13,19 +13,19 @@ These scripts serve multiple purposes:
 
 ## Available Scripts
 
-- **run_peers.sh**: Provides instructions for running and testing peer-to-peer communication manually
-- **automated_demo.sh**: Builds and verifies the NetworkPeer application readiness
-- **run_continuation_migration_demo.sh**: Launches a server/client pair and proves a frozen continuation can cross the network and execute on the remote node
-- **run_continuation_migration_tmux_demo.sh**: Opens a tmux session with human-scale pacing for recording the migration demo
+- **run_peers.ps1**: Provides instructions for running and testing peer-to-peer communication manually
+- **automated_demo.ps1**: Builds and verifies the NetworkPeer application readiness
+- **run_continuation_migration_demo.ps1**: Launches a server/client pair and proves a frozen continuation can cross the network and execute on the remote node
+- **run_continuation_migration_tmux_demo.ps1**: Opens a tmux session with human-scale pacing for recording the migration demo
 
 ## Script Details
 
-### Run Peers Script (`run_peers.sh`)
+### Run Peers Script (`run_peers.ps1`)
 
 This script provides step-by-step instructions for manually testing peer-to-peer communication:
 
 ```bash
-./Scripts/network/run_peers.sh
+./Scripts/network/run_peers.ps1
 ```
 
 The script will:
@@ -39,12 +39,12 @@ This approach allows you to:
 - Experiment with different commands
 - Observe the network behavior interactively
 
-### Automated Demo Script (`automated_demo.sh`)
+### Automated Demo Script (`automated_demo.ps1`)
 
 This script builds the NetworkPeer application and verifies it's ready for use:
 
 ```bash
-./Scripts/network/automated_demo.sh
+./Scripts/network/automated_demo.ps1
 ```
 
 The script will:
@@ -55,14 +55,14 @@ The script will:
 
 This ensures that the network components are correctly built and available.
 
-### Continuation Migration Demo (`run_continuation_migration_demo.sh`)
+### Continuation Migration Demo (`run_continuation_migration_demo.ps1`)
 
 This script starts a server process and a client process, sends a frozen
 stateful Pi workflow over the network, thaws it on the server, and checks that
 the remote execution resumes from `step=3 accumulator=21` to return `42`.
 
 ```bash
-./Scripts/network/run_continuation_migration_demo.sh
+./Scripts/network/run_continuation_migration_demo.ps1
 ```
 
 The script will:
@@ -73,12 +73,12 @@ The script will:
 
 This is the best automated proof that continuations can be binary moved between nodes.
 
-### Tmux Migration Demo (`run_continuation_migration_tmux_demo.sh`)
+### Tmux Migration Demo (`run_continuation_migration_tmux_demo.ps1`)
 
 This script opens a tmux session with a server pane and a client pane, pauses between each stage, and is tuned for screen recording.
 
 ```bash
-./Scripts/network/run_continuation_migration_tmux_demo.sh
+./Scripts/network/run_continuation_migration_tmux_demo.ps1
 ```
 
 The script will:
@@ -130,8 +130,8 @@ If you modify these configurations, the scripts will automatically use the updat
 
 The recommended testing workflow is:
 
-1. Run `automated_demo.sh` to verify the build
-2. Run `run_peers.sh` to get manual testing instructions
+1. Run `automated_demo.ps1` to verify the build
+2. Run `run_peers.ps1` to get manual testing instructions
 3. Follow the instructions to test peer-to-peer communication
 
 ## Example Remote Command Session
@@ -153,7 +153,7 @@ peers
 
 ## Output and Logs
 
-The `automated_demo.sh` script creates a `network_test_output/` directory containing:
+The `automated_demo.ps1` script creates a `network_test_output/` directory containing:
 - `peer1_output.log`: Output from the first peer
 - `peer2_output.log`: Output from the second peer
 

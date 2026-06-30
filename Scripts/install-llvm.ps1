@@ -77,7 +77,7 @@ if [ "$#" -ge 1 ] && [ "${1::1}" != "-" ]; then
     if [ "$1" != "all" ]; then
         LLVM_VERSION=$1
     else
-        # special case for ./llvm.sh all
+        # special case for ./llvm.ps1 all
         ALL=1
     fi
     OPTIND=2
@@ -174,7 +174,7 @@ add-apt-repository -y "${REPO_NAME}"
 apt-get update
 PKG="clang-$LLVM_VERSION lldb-$LLVM_VERSION lld-$LLVM_VERSION clangd-$LLVM_VERSION"
 if [[ $ALL -eq 1 ]]; then
-    # same as in test-install.sh
+    # same as in test-install.ps1
     # No worries if we have dups
     PKG="$PKG clang-tidy-$LLVM_VERSION clang-format-$LLVM_VERSION clang-tools-$LLVM_VERSION llvm-$LLVM_VERSION-dev lld-$LLVM_VERSION lldb-$LLVM_VERSION llvm-$LLVM_VERSION-tools libomp-$LLVM_VERSION-dev libc++-$LLVM_VERSION-dev libc++abi-$LLVM_VERSION-dev libclang-common-$LLVM_VERSION-dev libclang-$LLVM_VERSION-dev libclang-cpp$LLVM_VERSION-dev libunwind-$LLVM_VERSION-dev"
     if test $LLVM_VERSION -gt 14; then

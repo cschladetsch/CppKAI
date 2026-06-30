@@ -83,7 +83,7 @@ This directory contains comprehensive documentation for the KAI distributed obje
 - **Images/** - Architecture diagrams and screenshots
 
 ## Utility Scripts
-- **[find-large-files-repo.sh](find-large-files-repo.sh)** - Repository maintenance script
+- **[find-large-files-repo.ps1](find-large-files-repo.ps1)** - Repository maintenance script
 
 ## Documentation Standards
 

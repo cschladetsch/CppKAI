@@ -1,7 +1,7 @@
 #!/bin/bash
 # Mock LLM inference script for test purposes.
 # Takes the prompt as an argument.
-# Usage: ./Scripts/mock_llm_inference.sh "{PROMPT}"
+# Usage: ./Scripts/mock_llm_inference.ps1 "{PROMPT}"
 
 prompt=$1
 

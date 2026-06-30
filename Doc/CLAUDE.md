@@ -15,29 +15,29 @@ KAI is a C++ project implementing a multi-language runtime system with networkin
 
 ### Build Commands
 - "build" → run `cmake --build . --config Release`
-- "clean build" → run `./Scripts/clean_build.sh`
-- "build tau" → run `./Scripts/buildtau.sh`
+- "clean build" → run `./Scripts/clean_build.ps1`
+- "build tau" → run `./Scripts/buildtau.ps1`
 
 ### Test Commands  
-- "test" → run `./Scripts/run_all_tests.sh`
-- "rho tests" → run `./Scripts/run_rho_tests.sh`
-- "tau tests" → run `./Scripts/test_tau.sh`
+- "test" → run `./Scripts/run_all_tests.ps1`
+- "rho tests" → run `./Scripts/run_rho_tests.ps1`
+- "tau tests" → run `./Scripts/test_tau.ps1`
 - "network tests" → run `./Bin/TestNetwork`
-- "connection tests" → run `./Scripts/run_connection_tests.sh`
-- "console tests" → run `./Test/Console/RunConsoleTests.sh`
+- "connection tests" → run `./Scripts/run_connection_tests.ps1`
+- "console tests" → run `./Test/Console/RunConsoleTests.ps1`
 
 ### Demo Commands
-- "console demo" → run `./Scripts/run_console_demo.sh`
-- "rho demo" → run `./Scripts/run_rho_demo.sh` 
-- "p2p demo" → run `./Scripts/p2p_test.sh`
+- "console demo" → run `./Scripts/run_console_demo.ps1`
+- "rho demo" → run `./Scripts/run_rho_demo.ps1` 
+- "p2p demo" → run `./Scripts/p2p_test.ps1`
 
 ## Network
 
 - Focus on getting Networking working.
 
 ### Network Commands
-- "peers" → run `./Scripts/network/run_peers.sh`
-- "automated demo" → run `./Scripts/network/automated_demo.sh`
+- "peers" → run `./Scripts/network/run_peers.ps1`
+- "automated demo" → run `./Scripts/network/automated_demo.ps1`
 
 ## Project Structure
 - `Include/KAI/` - Header files for core system

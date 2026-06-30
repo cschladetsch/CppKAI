@@ -73,7 +73,7 @@ ctest -R Proxy         # Proxy generation tests
 Run the interactive tmux-based demo:
 ```bash
 cd ../..
-./demo_console_communication.sh
+./demo_console_communication.ps1
 ```
 
 ### Chat Demo

@@ -5,7 +5,7 @@
 ```mermaid
 graph TB
     subgraph "Test Execution Framework"
-        RUNNER[Test Runner<br/>Scripts/run_all_tests.sh]
+        RUNNER[Test Runner<br/>Scripts/run_all_tests.ps1]
         TIMEOUT[Timeout Management<br/>10 minutes per suite]
     end
     
@@ -128,12 +128,12 @@ classDiagram
 ```mermaid
 sequenceDiagram
     participant User
-    participant Runner as run_all_tests.sh
+    participant Runner as run_all_tests.ps1
     participant TestSuite as Test Suite
     participant GTest as Google Test
     participant System as KAI System
     
-    User->>Runner: ./Scripts/run_all_tests.sh
+    User->>Runner: ./Scripts/run_all_tests.ps1
     Runner->>Runner: Initialize test environment
     
     loop For each test script

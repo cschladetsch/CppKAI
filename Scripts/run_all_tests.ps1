@@ -19,11 +19,11 @@ echo "==============================================="
 
 # Array of test scripts to run
 TEST_SCRIPTS=(
-    "run_fixed_tests.sh"
-    "run_rho_tests.sh"
-    "run_connection_tests.sh"
-    "run_tau_connection_tests.sh"
-    "p2p_test_standalone.sh"  # Using the reliable standalone version instead of p2p_test_dynamic.sh
+    "run_fixed_tests.ps1"
+    "run_rho_tests.ps1"
+    "run_connection_tests.ps1"
+    "run_tau_connection_tests.ps1"
+    "p2p_test_standalone.ps1"  # Using the reliable standalone version instead of p2p_test_dynamic.ps1
 )
 
 # Counters for test results

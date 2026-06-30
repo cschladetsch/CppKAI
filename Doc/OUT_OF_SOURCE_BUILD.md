@@ -83,7 +83,7 @@ cmake --build .
 After building, you can run the test suite:
 
 ```bash
-./Scripts/run_all_tests.sh
+./Scripts/run_all_tests.ps1
 ```
 
 The root test runner executes the main built test binaries. If networking is not enabled, the network binary will not be present.
@@ -94,7 +94,7 @@ The root test runner executes the main built test binaries. If networking is not
 
 If you see an error like `ninja: error: mkdir(/Bin): Permission denied`, it means CMake is trying to create an absolute path at the root of your filesystem.
 
-Solution: Use the `Scripts/build.sh` script which correctly specifies all output paths with absolute paths relative to the build directory.
+Solution: Use the `Scripts/build.ps1` script which correctly specifies all output paths with absolute paths relative to the build directory.
 
 ### CMake Cache Conflicts
 

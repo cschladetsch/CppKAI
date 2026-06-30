@@ -21,7 +21,7 @@ bool HasAllowedExtension(const fs::path& path) {
     const std::string ext = path.extension().string();
     static const std::vector<std::string> allowed = {
         ".cpp",   ".cc",  ".cxx", ".h",    ".hpp", ".md", ".txt",
-        ".cmake", ".tau", ".sh",  ".json", ".py",  ".in", ".am"};
+        ".cmake", ".tau", ".ps1", ".json", ".py",  ".in", ".am"};
     return std::find(allowed.begin(), allowed.end(), ext) != allowed.end() ||
            path.filename() == "README" || path.filename() == "LICENSE";
 }

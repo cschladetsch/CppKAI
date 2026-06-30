@@ -42,10 +42,10 @@ The minimal connection implementation consists of:
 ## Testing Instructions
 
 ### Testing Interface Definitions
-1. Run `./Scripts/test_tau_interfaces.sh` to validate the Tau interface files
+1. Run `./Scripts/test_tau_interfaces.ps1` to validate the Tau interface files
 
 ### Testing the Connection Implementation
-1. Run `./Scripts/run_console_demo.sh` to build the minimal server and client
+1. Run `./Scripts/run_console_demo.ps1` to build the minimal server and client
 2. Follow the instructions to test the connection:
    ```
    # In Terminal 1

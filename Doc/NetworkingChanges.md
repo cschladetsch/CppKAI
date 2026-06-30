@@ -42,8 +42,8 @@ Implemented a complete demonstration of peer-to-peer calculation where:
 
 Added several new test scripts and test cases:
 
-- **p2p_test.sh**: Test script that demonstrates the peer-to-peer calculation functionality
-- **test_tau_interfaces.sh**: Script to verify the Tau interface definitions
+- **p2p_test.ps1**: Test script that demonstrates the peer-to-peer calculation functionality
+- **test_tau_interfaces.ps1**: Script to verify the Tau interface definitions
 
 ## 5. New Documentation
 
@@ -59,7 +59,7 @@ Added new documentation files:
 
 ```bash
 # Build and run the peer-to-peer calculation test
-./Scripts/p2p_test.sh
+./Scripts/p2p_test.ps1
 ```
 
 ### Tau Pi Serialization (Local Nodes)

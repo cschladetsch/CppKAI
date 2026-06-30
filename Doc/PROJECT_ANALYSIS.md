@@ -181,7 +181,7 @@ Test/
 ```
 
 **Test Execution:**
-- `./Scripts/run_all_tests.sh` - All tests
+- `./Scripts/run_all_tests.ps1` - All tests
 - `./Bin/Test/TestCore` - Core tests only
 - `./Bin/Test/TestRho --gtest_filter="*pattern*"` - Filtered tests
 
@@ -390,8 +390,8 @@ cmake --build build --config Release
 
 **Common Commands:**
 ```bash
-./Scripts/run_all_tests.sh          # All tests
-./Scripts/run_rho_tests.sh          # Rho tests only
+./Scripts/run_all_tests.ps1          # All tests
+./Scripts/run_rho_tests.ps1          # Rho tests only
 ./Bin/Test/TestRho --gtest_filter="RhoControlStructuresTestsFixed.*"
 ```
 

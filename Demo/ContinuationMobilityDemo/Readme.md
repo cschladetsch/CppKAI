@@ -10,7 +10,7 @@ make the same scenario easier to inspect:
 - the C++ executable is a reference simulation of the same story
 - `ContinuationMobilityDemo.html` is the system-level explanation
 - `ContinuationMobilityAnimation.html` is the migration-focused explanation
-- `Scripts/network/run_continuation_migration_demo.sh` is the two-process
+- `Scripts/network/run_continuation_migration_demo.ps1` is the two-process
   runtime proof that a frozen Pi continuation can move across the network
 
 It demonstrates:
@@ -47,7 +47,7 @@ The demo is easiest to understand as three layers:
    agent story in human-readable form.
 2. Executable model: `./Bin/ContinuationMobilityDemo` runs a deterministic C++
    simulation of the same migration, balancing, snapshot, and recovery flow.
-3. Runtime proof: `./Scripts/network/run_continuation_migration_demo.sh` starts
+3. Runtime proof: `./Scripts/network/run_continuation_migration_demo.ps1` starts
    two processes, freezes a stateful Pi continuation in one process, sends it
    to another process, thaws it, resumes it, and verifies the result.
 
@@ -116,7 +116,7 @@ cmake --build ./build --target ContinuationMobilityDemo
 ./Bin/ContinuationMobilityDemo
 
 # 2. Run the two-process runtime proof
-./Scripts/network/run_continuation_migration_demo.sh
+./Scripts/network/run_continuation_migration_demo.ps1
 
 # 3. Run the regression tests
 cmake --build ./build --target ContinuationMobilityDemoTests
@@ -144,7 +144,7 @@ the migration / load-balancing / recovery story concrete and inspectable inside
 the current repository.
 
 For the actual network freeze/thaw path, run
-`./Scripts/network/run_continuation_migration_demo.sh`.
+`./Scripts/network/run_continuation_migration_demo.ps1`.
 
 Expected success markers:
 

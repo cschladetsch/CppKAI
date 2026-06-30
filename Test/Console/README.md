@@ -12,7 +12,7 @@ For complete documentation of all features, see:
 ## Test Files
 
 1. **TestConsoleZshFeatures.cpp** - C++ unit tests using Google Test framework
-2. **RunConsoleTests.sh** - Bash script for automated testing
+2. **RunConsoleTests.ps1** - Bash script for automated testing
 3. **TestConsoleZsh.py** - Python script for comprehensive automated testing
 4. **InteractiveTests.txt** - Manual test cases for interactive testing
 
@@ -62,7 +62,7 @@ make TestConsole
 ### Automated Shell Tests
 ```bash
 cd $KAI_ROOT/Test/Console
-./RunConsoleTests.sh
+./RunConsoleTests.ps1
 ```
 
 ### Python Tests
@@ -108,7 +108,7 @@ The test suite covers:
 To add new tests:
 
 1. **C++ Tests**: Add new TEST_F cases to TestConsoleZshFeatures.cpp
-2. **Shell Tests**: Add new run_test calls to RunConsoleTests.sh
+2. **Shell Tests**: Add new run_test calls to RunConsoleTests.ps1
 3. **Python Tests**: Add new self.test() calls to TestConsoleZsh.py
 4. **Interactive Tests**: Add new test cases to InteractiveTests.txt
 

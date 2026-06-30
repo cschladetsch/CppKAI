@@ -38,7 +38,7 @@ Generated: 2026-04-04
 ./Scripts/b
 
 # Run the full current suite
-./Scripts/run_all_tests.sh
+./Scripts/run_all_tests.ps1
 
 # Run individual suites
 ./Bin/Test/TestCore

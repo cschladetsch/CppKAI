@@ -22,7 +22,7 @@ To get started with Rho:
 
 3. **Explore Examples**: Look through the [example scripts](../Test/Language/TestRho/Scripts/) for working code samples
 
-4. **Run the Demo**: Execute `./Scripts/run_rho_demo.sh` to see Rho in action with a comprehensive demo
+4. **Run the Demo**: Execute `./Scripts/run_rho_demo.ps1` to see Rho in action with a comprehensive demo
 
 5. **Try It Yourself**: Use the KAI Console application to write and execute your own Rho code
    ```bash
@@ -176,7 +176,7 @@ onScoreChanged(score)  // Calls all registered handlers
 
 ## Demo Script
 
-A comprehensive demo script is available at `Test/Language/TestRho/Scripts/Demo.rho`. This script showcases all the major features of Rho and can be run using the provided `Scripts/run_rho_demo.sh` script.
+A comprehensive demo script is available at `Test/Language/TestRho/Scripts/Demo.rho`. This script showcases all the major features of Rho and can be run using the provided `Scripts/run_rho_demo.ps1` script.
 
 ## Advanced Topics
 

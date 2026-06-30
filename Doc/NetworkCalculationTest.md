@@ -55,7 +55,7 @@ Both components use JSON configuration files:
 
 ## Testing
 
-The `calc_test.sh` script demonstrates the calculation functionality:
+The `calc_test.ps1` script demonstrates the calculation functionality:
 1. It builds the configurable server and client
 2. Creates test-specific configuration files
 3. Starts the server in the background
@@ -65,7 +65,7 @@ The `calc_test.sh` script demonstrates the calculation functionality:
 ## Running the Test
 
 ```bash
-./Scripts/calc_test.sh
+./Scripts/calc_test.ps1
 ```
 
 A successful test will output:

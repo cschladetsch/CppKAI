@@ -347,7 +347,7 @@ KAI provides several scripts to test the peer-to-peer functionality:
 #### Interactive Testing
 
 ```bash
-./Scripts/network/run_peers.sh
+./Scripts/network/run_peers.ps1
 ```
 
 This script provides instructions for running two peers in separate terminals and testing the peer-to-peer communication.
@@ -355,7 +355,7 @@ This script provides instructions for running two peers in separate terminals an
 #### Automated Testing
 
 ```bash
-./Scripts/network/automated_demo.sh
+./Scripts/network/automated_demo.ps1
 ```
 
 This script builds the NetworkPeer and verifies it's ready for use.
@@ -363,7 +363,7 @@ This script builds the NetworkPeer and verifies it's ready for use.
 You can also run the legacy test script:
 
 ```bash
-./Scripts/p2p_test.sh
+./Scripts/p2p_test.ps1
 ```
 
 This script:

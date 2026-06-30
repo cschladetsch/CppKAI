@@ -41,7 +41,7 @@ fi
 echo -e "${YELLOW}Setting up build directory...${NC}"
 
 # Create a build script that properly uses the build directory
-cat > build.sh << 'EOF'
+cat > build.ps1 << 'EOF'
 #!/bin/bash
 # Script to build KAI using proper out-of-source build
 
@@ -67,14 +67,14 @@ echo -e "${GREEN}Build successful!${NC}"
 echo -e "${YELLOW}Executables can be found in the Bin/ directory${NC}"
 EOF
 
-chmod +x build.sh
-echo -e "${GREEN}Created build.sh script${NC}"
+chmod +x build.ps1
+echo -e "${GREEN}Created build.ps1 script${NC}"
 
 # Instructions
 echo
 echo -e "${GREEN}Done! CMake artifacts have been cleaned from the source tree.${NC}"
 echo -e "${YELLOW}To build the project:${NC}"
-echo -e "  1. Run ${GREEN}./build.sh${NC}"
+echo -e "  1. Run ${GREEN}./build.ps1${NC}"
 echo -e "  2. All build artifacts will be in the ${GREEN}build/${NC} directory"
 echo -e "  3. Executables will be in the ${GREEN}Bin/${NC} directory"
 echo

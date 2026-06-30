@@ -13,7 +13,7 @@ The enhanced test suite summary feature provides comprehensive reporting and ana
 
 ## Files Modified/Created
 
-- **`run_all_tests.sh`** - Current Scripts test runner, with:
+- **`run_all_tests.ps1`** - Current Scripts test runner, with:
   - Proper log file headers and footers
   - Improved summary format
   - Archive management functionality
@@ -25,7 +25,7 @@ The enhanced test suite summary feature provides comprehensive reporting and ana
   - Information about the archive feature
   - Guidance on data analysis
 
-- **`Scripts/analyze_test_history.sh`** - New tool for analyzing test history:
+- **`Scripts/analyze_test_history.ps1`** - New tool for analyzing test history:
   - Lists recent test runs with pass rates
   - Calculates average pass rates
   - Provides trend analysis (improving/declining)
@@ -82,14 +82,14 @@ Generated: [Timestamp]
 Test runs can now be archived with a simple flag:
 
 ```bash
-./Scripts/run_all_tests.sh
+./Scripts/run_all_tests.ps1
 ```
 
 This preserves all log files in a timestamped directory for historical analysis.
 
 ### Test History Analysis
 
-The new `Scripts/analyze_test_history.sh` script provides insights into test suite health over time:
+The new `Scripts/analyze_test_history.ps1` script provides insights into test suite health over time:
 
 - Recent test runs with pass/fail status
 - Average pass rates across all runs
@@ -100,12 +100,12 @@ The new `Scripts/analyze_test_history.sh` script provides insights into test sui
 
 1. Run the tests and archive the results:
    ```bash
-   ./Scripts/run_all_tests.sh
+   ./Scripts/run_all_tests.ps1
    ```
 
 2. Analyze historical test data:
    ```bash
-   ./Scripts/analyze_test_history.sh
+   ./Scripts/analyze_test_history.ps1
    ```
 
 ## Benefits

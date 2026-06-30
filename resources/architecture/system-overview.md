@@ -115,7 +115,7 @@ KAI is a sophisticated distributed object model that enables:
 
 ### Running Tests
 ```bash
-Scripts/run_all_tests.sh    # Complete test suite
+Scripts/run_all_tests.ps1    # Complete test suite
 ./Bin/Test/TestPi           # Pi language tests
 ./Bin/Test/TestRho          # Rho language tests
 ./Bin/Test/TestConsole      # Console feature tests
@@ -132,7 +132,7 @@ rho> a = 5; print(a)      # Rho programming
 
 ### Network Demonstration
 ```bash
-./demo_console_communication.sh  # Interactive demo
+./demo_console_communication.ps1  # Interactive demo
 # Creates tmux session with two communicating consoles
 ```
 

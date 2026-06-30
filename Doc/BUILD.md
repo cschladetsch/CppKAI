@@ -14,7 +14,7 @@ KAI uses CMake as its build system and supports both in-source and out-of-source
 For all platforms:
 
 ```bash
-./bootstrap.sh  # or .\bootstrap.bat on Windows
+./bootstrap.ps1  # or .\bootstrap.bat on Windows
 ./b2 install debug --date-time --build=complete --with-chrono --with-filesystem --with-system --with-program_options
 ```
 
@@ -217,7 +217,7 @@ After building, test binaries are written to `Bin/Test/` at the repository root:
 
 ```bash
 # Full suite from the repository root
-./Scripts/run_all_tests.sh
+./Scripts/run_all_tests.ps1
 
 # Individual test binaries
 ./Bin/Test/TestCore

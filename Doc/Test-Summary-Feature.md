@@ -35,7 +35,7 @@ To run all tests and see the summary:
 
 ```bash
 cd $KAI_ROOT
-./Scripts/run_all_tests.sh
+./Scripts/run_all_tests.ps1
 ```
 
 ## Implementation Details

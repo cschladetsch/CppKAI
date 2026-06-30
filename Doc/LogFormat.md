@@ -117,7 +117,7 @@ The test runner automatically clears previous logs at the start of each test run
 
 ```bash
 # Run the current full suite
-./Scripts/run_all_tests.sh
+./Scripts/run_all_tests.ps1
 ```
 
 If you want archived logs, copy the log files into `Logs/archive/` after the run or use a dedicated wrapper script.
@@ -136,7 +136,7 @@ The KAI test suite includes tools for analyzing historical test data. After you'
 
 ```bash
 # Analyze historical test data
-./Scripts/analyze_test_history.sh
+./Scripts/analyze_test_history.ps1
 ```
 
 This script provides:

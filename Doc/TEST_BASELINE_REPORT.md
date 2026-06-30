@@ -290,10 +290,10 @@ diff baseline_rho_iter.log current_rho_iter.log
 ### Full Validation
 ```bash
 # Run all tests
-./Scripts/run_all_tests.sh
+./Scripts/run_all_tests.ps1
 
 # Or test by language
-./Scripts/run_rho_tests.sh
+./Scripts/run_rho_tests.ps1
 ./Bin/Test/TestTau
 ./Bin/Test/TestPi
 ./Bin/Test/TestCore

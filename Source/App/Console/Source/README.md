@@ -137,7 +137,7 @@ use KAI `Logger`; stdout remains the user-facing terminal stream.
 
 See `/Test/Console/` for:
 - Unit tests (TestConsoleZshFeatures.cpp, TestAdvancedZshFeatures.cpp)
-- Shell test scripts (RunConsoleTests.sh)
+- Shell test scripts (RunConsoleTests.ps1)
 - Python test suite (TestConsoleZsh.py)
 - Interactive test cases (InteractiveTests.txt)
 

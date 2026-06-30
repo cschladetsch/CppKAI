@@ -44,7 +44,7 @@ This test suite comprehensively tests the shell command functionality added to t
 - `test_error_cases.txt` - Error handling and edge cases
 
 ### Test Runner
-- `run_shell_tests.sh` - Automated test execution script
+- `run_shell_tests.ps1` - Automated test execution script
 - Runs all test files and verification tests
 - Generates detailed logs and summary reports
 - Provides colored output for easy result interpretation
@@ -63,7 +63,7 @@ This test suite comprehensively tests the shell command functionality added to t
 ### Execute Test Suite
 ```bash
 cd $KAI_ROOT/Test/ShellCommandTests
-./run_shell_tests.sh
+./run_shell_tests.ps1
 ```
 
 ### Expected Output

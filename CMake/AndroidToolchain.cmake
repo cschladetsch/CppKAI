@@ -9,7 +9,7 @@
 #     -DKAI_ANDROID=ON
 #
 # Override ANDROID_ABI / ANDROID_PLATFORM / ANDROID_STL on the command line as
-# needed. The Scripts/build-android.sh helper wraps all of this.
+# needed. The Scripts/build-android.ps1 helper wraps all of this.
 
 # --- Locate the NDK ---------------------------------------------------------
 if(NOT DEFINED ANDROID_NDK)

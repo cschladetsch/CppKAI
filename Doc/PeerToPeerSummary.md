@@ -135,10 +135,10 @@ Peer configuration is handled through JSON files:
 
 The network functionality can be tested using:
 
-- **Manual testing**: Follow the instructions in `Scripts/network/run_peers.sh`
-- **Automated testing**: Run `Scripts/network/automated_demo.sh`
+- **Manual testing**: Follow the instructions in `Scripts/network/run_peers.ps1`
+- **Automated testing**: Run `Scripts/network/automated_demo.ps1`
 
-The `p2p_test.sh` script demonstrates the peer-to-peer functionality by:
+The `p2p_test.ps1` script demonstrates the peer-to-peer functionality by:
 1. Creating configuration files for two peers
 2. Starting the first peer as a listener
 3. Starting the second peer that connects to the first

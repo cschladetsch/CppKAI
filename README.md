@@ -20,7 +20,7 @@ and snapshot-based recovery after a simulated host failure. Source of truth:
 
 The demo has three layers: the interactive RhoMog visualization explains the
 idea, `./Bin/ContinuationMobilityDemo` runs the deterministic executable model,
-and `./Scripts/network/run_continuation_migration_demo.sh` proves the runtime
+and `./Scripts/network/run_continuation_migration_demo.ps1` proves the runtime
 path by freezing a stateful Pi workflow in one process, sending it to another
 process, thawing it, resuming it, and returning `42`.
 
@@ -101,12 +101,12 @@ See the full diagram: **[System Architecture Overview](resources/diagrams/system
 
 - Build from the repository root with `./b` (networking enabled by default)
 - Disable networking with `./b --no-network`
-- Run the full test suite with `./run_all_tests.sh`
+- Run the full test suite with `./run_all_tests.ps1`
 - Test binaries are written to `./Bin/Test`, including `TestNetwork` and `TestTau`
-- Run `./Scripts/run_rho_demo.sh` for a comprehensive demo of Rho language features
-- Run `./Scripts/calc_test.sh` for a demonstration of network calculation
-- Run `./Scripts/network/run_continuation_migration_demo.sh` to prove continuation migration across two processes
-- Run `./Scripts/network/run_continuation_migration_tmux_demo.sh` for a tmux-recordable migration demo
+- Run `./Scripts/run_rho_demo.ps1` for a comprehensive demo of Rho language features
+- Run `./Scripts/calc_test.ps1` for a demonstration of network calculation
+- Run `./Scripts/network/run_continuation_migration_demo.ps1` to prove continuation migration across two processes
+- Run `./Scripts/network/run_continuation_migration_tmux_demo.ps1` for a tmux-recordable migration demo
 - Example scripts in `Test/Language/*/Scripts` directories
 
 ## Key Features

@@ -3,7 +3,7 @@
 # Network) for a device using the Android NDK.
 #
 # Usage:
-#   Scripts/build-android.sh [ABI] [API]
+#   Scripts/build-android.ps1 [ABI] [API]
 #     ABI  target ABI    (default: arm64-v8a -- the Galaxy S26 / modern arm64)
 #     API  min API level (default: 26)
 #

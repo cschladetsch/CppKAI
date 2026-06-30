@@ -10,4 +10,3 @@ find . -name '*.cpp' -not -path './old_backups/*' -exec sed -i 's/TEST_F(DISABLE
 find . -name '*.cpp' -not -path './old_backups/*' -exec sed -i 's/, DISABLED_/, /g' {} \;
 
 echo 'All DISABLED_ prefixes have been removed from test names.'
-

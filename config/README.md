@@ -94,8 +94,8 @@ This will execute the "calc 1+2" command on the remote peer and return the resul
 
 The network functionality can be tested using the scripts in the `Scripts/network` directory:
 
-- `run_peers.sh`: Instructions for running two peers in separate terminals for interactive testing
-- `automated_demo.sh`: Automated test of the peer-to-peer functionality
+- `run_peers.ps1`: Instructions for running two peers in separate terminals for interactive testing
+- `automated_demo.ps1`: Automated test of the peer-to-peer functionality
 
 ## Advanced Configuration
 

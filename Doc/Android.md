@@ -22,8 +22,8 @@ from Android builds. This subset is selected by the `KAI_ANDROID` CMake option.
 ## Quick start
 
     git submodule update --init --recursive
-    Scripts/build-android.sh                 # arm64-v8a, API 26 (Galaxy S26)
-    Scripts/build-android.sh arm64-v8a 30    # explicit ABI / API
+    Scripts/build-android.ps1                 # arm64-v8a, API 26 (Galaxy S26)
+    Scripts/build-android.ps1 arm64-v8a 30    # explicit ABI / API
 
 Output archives land in `build-android-<abi>/Bin/`.
 
