@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #include <gtest/gtest.h>
 
 #include <fstream>
@@ -12,17 +11,10 @@
 #include "KAI/Language/Tau/Generate/GenerateProxy.h"
 #include "KAI/Language/Tau/TauParser.h"
 #include "TestLangCommon.h"
-=======
-#include <KAI/Language/Tau/Generate/GenerateProxy.h>
-#include <KAI/Language/Tau/TauParser.h>
-
-#include "TestCommon.h"
->>>>>>> 04102e9d (Fix some basic Tau issues due to refactoring.)
 
 using namespace kai;
 using namespace std;
 
-<<<<<<< HEAD
 // Simplified test fixture focused on IDL functionality
 struct TestTau : TestLangCommon {
     void TestIDL(const std::string& script, const std::string& testName) {
@@ -237,7 +229,7 @@ TEST_F(TestTau, TestDataTransferObjects) {
 
     TestIDL(script, "DataTransferObjects");
 }
-=======
+
 namespace {
 const char *kTauModule = R"(namespace MLB
 {
@@ -274,4 +266,3 @@ TEST(TauGenerate, GeneratesProxyFromInlineModule) {
     ASSERT_NE(output.find("class C"), string::npos);
 }
 }  // namespace
->>>>>>> 04102e9d (Fix some basic Tau issues due to refactoring.)

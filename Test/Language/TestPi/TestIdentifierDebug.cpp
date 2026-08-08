@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "KAI/Test/Include/TestLangCommon.h"
+#include "TestLangCommon.h"
 
 class TestIdentifierDebug : public kai::TestLangCommon {
    protected:

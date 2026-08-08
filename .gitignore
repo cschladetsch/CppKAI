@@ -14,6 +14,9 @@
 *.make
 *.d
 /test*
+# core.ignorecase makes /test* swallow the Test/ source tree; keep it tracked
+# (/Testing, the CTest output dir, stays ignored).
+!/Test/
 /Logs/*
 /test-out
 /build_warnings

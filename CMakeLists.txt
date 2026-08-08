@@ -107,7 +107,7 @@ option(KAI_NETWORKING "Build networking library, Tau IDL, NetworkGenerate tool, 
 option(ENABLE_SHELL_SYNTAX "Enable shell command execution via backtick syntax" OFF)
 
 # Find and link Boost libraries
-find_package(Boost REQUIRED COMPONENTS system filesystem program_options date_time regex)
+find_package(Boost REQUIRED COMPONENTS filesystem program_options date_time regex)
 include_directories(${Boost_INCLUDE_DIRS})
 
 # Set the CMake module path

@@ -1,4 +1,4 @@
-#include "KAI/Test/Include/TestLangCommon.h"
+#include "TestLangCommon.h"
 
 class TestRhoAdvancedContinuations : public kai::TestLangCommon {
    protected:
