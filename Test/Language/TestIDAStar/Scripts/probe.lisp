@@ -1,0 +1,11 @@
+(define calls (array 0))
+(define (f) (set-nth! calls 0 (+ (nth calls 0) 1)) (array 1 2 3))
+(define r (cdr (f)))
+(print (nth calls 0))
+(print (and))
+(print (or))
+(define outer 1)
+(let ((outer 99) (tmp 5)) (+ outer tmp))
+(print outer)
+(print tmp)
+0
