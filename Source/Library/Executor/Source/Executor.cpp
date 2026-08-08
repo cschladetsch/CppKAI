@@ -372,6 +372,23 @@ Object Executor::TryResolve(Label const &label) const {
             return scope.GetChild(label);
     }
 
+    // Then the lexical chain. This runs after the dynamic walk above so that
+    // anything resolving today keeps resolving exactly as it did; it only adds
+    // a result where there was previously none. It is what lets a closure
+    // reach the frame it was created in once that frame has been popped.
+    if (continuation_.Exists()) {
+        Object lexical = continuation_->GetLexicalParent();
+        for (int depth = 0; lexical.Exists() && depth < 128; ++depth) {
+            Pointer<Continuation> lexicalCont = lexical;
+            if (!lexicalCont.Exists()) break;
+
+            Object scope = lexicalCont->GetScope();
+            if (scope.Exists() && scope.Has(label)) return scope.Get(label);
+
+            lexical = lexicalCont->GetLexicalParent();
+        }
+    }
+
     // Finally, search the tree.
     return tree_->Resolve(label);
 }
@@ -499,6 +516,41 @@ Object Executor::Resolve(const Pathname &path) const {
 
 // ======================= Helper Methods ========================
 
+Object Executor::CaptureClosure(Object const &Q) {
+    // Every continuation pushed as a value gets this, including zero-arg ones:
+    // a thunk returned from a function closes over its creator just as much as
+    // a lambda with parameters does. Arms of an if and loop bodies are cloned
+    // too, which is wasted work since they are consumed before their creator
+    // is popped, but it is only a shallow copy -- code and args are shared --
+    // and paying it uniformly beats guessing which continuations escape.
+    Pointer<Continuation> orig = Q;
+    if (!orig.Exists()) return Q;
+    if (!continuation_.Exists()) return Q;
+
+    // Nothing to capture if the creating frame has no bindings of its own.
+    if (!continuation_->GetScope().Exists()) return Q;
+
+    // Clone, so two closures built from the same lambda literal on successive
+    // calls capture their own creator rather than sharing whichever ran last.
+    Value<Continuation> val = New<Continuation>();
+    Pointer<Continuation> cont = val.GetObject();
+    if (!cont.Valid() || !cont.Exists()) return Q;
+
+    cont->Create();
+    if (orig->GetCode().Valid() && orig->GetCode().Exists())
+        cont->SetCode(orig->GetCode());
+    cont->args = orig->args;
+    cont->SetScope(orig->GetScope());
+
+    // Keep any existing chain, so a lambda nested inside a lambda still
+    // reaches all the way out.
+    Object parent = continuation_;
+    if (orig->HasLexicalParent()) parent = orig->GetLexicalParent();
+    cont->SetLexicalParent(parent);
+
+    return cont;
+}
+
 void Executor::Eval(Object const &Q) {
     stepNumber_++;
 
@@ -550,7 +602,7 @@ void Executor::Eval(Object const &Q) {
             // Push continuation to stack instead of executing it
             // This allows operations like IfElse to use continuations as values
             // KAI_TRACE() << "Eval: Pushing continuation to stack";
-            Push(Q);
+            Push(CaptureClosure(Q));
             break;
         }
 
@@ -920,6 +972,10 @@ Pointer<Continuation> Executor::NewContinuation(Value<Continuation> orig) {
             // Fallback to a new empty scope if original has none
             cont->SetScope(New<void>());
         }
+
+        // Carry the lexical chain across the call, or a closure loses its
+        // captured frame at the moment it is actually entered.
+        cont->SetLexicalParent(orig->GetLexicalParent());
 
         return cont;
     } catch (const std::exception &e) {

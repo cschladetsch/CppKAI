@@ -2,6 +2,7 @@
 
 #include "KAI/Language/Pi/PiTranslator.h"
 #include "KAI/Language/Rho/RhoTranslator.h"
+#include "KAI/Language/Lisp/LispTranslator.h"
 
 #include <algorithm>
 #include <cctype>
@@ -37,16 +38,19 @@ KAI_BEGIN
 class MultiLangTranslator : public TranslatorCommon {
     shared_ptr<PiTranslator> pi_;
     shared_ptr<RhoTranslator> rho_;
+    shared_ptr<LispTranslator> lisp_;
     Pointer<Compiler> compiler_;
 
    public:
     MultiLangTranslator(Registry &reg,
                         shared_ptr<PiTranslator> pi,
                         shared_ptr<RhoTranslator> rho,
+                        shared_ptr<LispTranslator> lisp,
                         Pointer<Compiler> comp)
         : TranslatorCommon(reg),
           pi_(move(pi)),
           rho_(move(rho)),
+          lisp_(move(lisp)),
           compiler_(comp) {}
 
     Pointer<Continuation> Translate(const char *text,
@@ -67,6 +71,15 @@ class MultiLangTranslator : public TranslatorCommon {
                 auto result = rho_->Translate(text, st);
                 if (rho_->Failed) {
                     KAI_TRACE_ERROR() << rho_->Error;
+                    return Object();
+                }
+                return result;
+            }
+            case Language::Lisp: {
+                lisp_->trace = compiler_->GetTraceLevel();
+                auto result = lisp_->Translate(text, st);
+                if (lisp_->Failed) {
+                    KAI_TRACE_ERROR() << lisp_->Error;
                     return Object();
                 }
                 return result;
@@ -156,6 +169,7 @@ void Console::SetLanguage(Language lang) {
             *reg_,
             std::make_shared<PiTranslator>(*reg_),
             std::make_shared<RhoTranslator>(*reg_),
+            std::make_shared<LispTranslator>(*reg_),
             compiler));
     }
 }

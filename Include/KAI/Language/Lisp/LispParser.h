@@ -6,7 +6,13 @@
 
 KAI_BEGIN
 
-// parser specific to the in-fix Lisp language
+// Parser for s-expression Lisp.
+//
+// The whole grammar is: a program is a sequence of forms; a form is an atom, a
+// quoted form, or a parenthesised list of forms. Special forms are *not*
+// recognised here -- `(if a b c)` parses as a plain 4-element list and the
+// translator gives it meaning. That is what lets new forms be added without
+// touching the parser.
 class LispParser : public ParserCommon<LispLexer, LispAstNodeEnumType> {
    public:
     typedef ParserCommon<LispLexer, LispAstNodeEnumType> Parent;
@@ -24,33 +30,15 @@ class LispParser : public ParserCommon<LispLexer, LispAstNodeEnumType> {
     virtual bool Process(std::shared_ptr<Lexer> lex, Structure st) override;
     String Print() const;
 
-   protected:
-    void Process(Structure);
-
    private:
     bool Run(Structure st);
-    bool Program();
-    bool Statement(AstNodePtr);
-    bool Expression();
-    bool Logical();
-    bool Relational();
-    bool Additive();
-    bool Term();
-    bool Factor();
-    void ConsumeNewLines();
-    void Block(AstNodePtr block);
-    bool ParsePathname();
-    bool ParsePathname(AstNodePtr path);
-    bool ParseFactorIdent();
-    void ParseGetMember();
-    void ParseMethodCall();
-    void Function(AstNodePtr);
-    void AddBlock(AstNodePtr fun);
-    void IfCondition(AstNodePtr);
-    void ParseIndexOp();
-    void Assignment(AstNodePtr);
-    void For(AstNodePtr);
-    void While(AstNodePtr);
+
+    // Parses one form. Returns null and sets the error state on failure.
+    AstNodePtr ParseForm();
+    AstNodePtr ParseList();
+
+    // Whitespace, tabs, newlines and comments carry no meaning in Lisp.
+    void SkipTrivia();
 
     bool CreateError(const char *);
 };

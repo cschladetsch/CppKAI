@@ -2,11 +2,11 @@ cmake_minimum_required(VERSION 3.10)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${BIN_HOME}/Test")
 if(KAI_NETWORKING)
-    set(core_libs ConsoleLib Executor Core PiLang RhoLang TauLang)
-    set(langs Tau Rho Pi)
+    set(core_libs ConsoleLib Executor Core PiLang RhoLang TauLang LispLang)
+    set(langs Tau Rho Pi Lisp)
 else()
-    set(core_libs ConsoleLib Executor Core PiLang RhoLang)
-    set(langs Rho Pi)
+    set(core_libs ConsoleLib Executor Core PiLang RhoLang LispLang)
+    set(langs Rho Pi Lisp)
 endif()
 
 macro(build_lang_test lang)
@@ -164,6 +164,10 @@ foreach (lang ${langs})
             #${source_path}/TestPiParser.cpp
             #${source_path}/TutorialTest.cpp
         )
+    elseif(lang STREQUAL "Lisp")
+        set(sources
+            ${source_path}/TestLisp.cpp
+        )
     elseif(lang STREQUAL "Tau")
         # Explicitly list Tau tests including our new network connection tests
         set(sources
@@ -207,7 +211,11 @@ foreach (lang ${langs})
     include_directories(${header_path})
     include_directories(${TEST_HOME}/Include)
     include_directories(${CMAKE_SOURCE_DIR}/Include)
-    include_directories(${CMAKE_SOURCE_DIR}/..)
+    # Deliberately not adding ${CMAKE_SOURCE_DIR}/.. -- putting the repo's
+    # parent on the include path made "KAI/Test/Include/TestLangCommon.h" style
+    # includes resolve only when the checkout happened to be named KAI, and
+    # fail everywhere else. Nothing includes through the parent any more, and
+    # it also let sibling directories shadow real headers.
     enable_testing()
     
     message(STATUS ">>>> SOURCES for ${testName}: ${sources} <<<<")
@@ -228,6 +236,28 @@ foreach (lang ${langs})
         KAI_LANG_EXT=.${ext}
     )
 endforeach()
+
+# Cross-language IDA* comparison. The algorithms live in Scripts/ and are read
+# at run time, so they can be edited without rebuilding this target.
+project(TestIDAStar)
+add_executable(TestIDAStar
+    ${TEST_HOME}/Language/TestIDAStar/IDAStarTests.cpp
+    ${TEST_HOME}/Language/TestLangCommon.cpp
+    ${TEST_HOME}/Common/TestCommon.cpp
+    ${TEST_HOME}/Common/MyTestStruct.cpp
+    ${TEST_HOME}/Source/Main.cpp
+)
+target_include_directories(TestIDAStar PRIVATE
+    ${TEST_HOME}/Include
+    ${CMAKE_SOURCE_DIR}/Include
+)
+target_link_libraries(TestIDAStar ${core_libs} ${GTEST_BOTH_LIBRARIES} ${Boost_LIBRARIES})
+target_compile_definitions(TestIDAStar PRIVATE
+    KAI_IDASTAR_SCRIPTS="${TEST_HOME}/Language/TestIDAStar/Scripts"
+)
+if(COMMAND gtest_discover_tests)
+    gtest_discover_tests(TestIDAStar)
+endif()
 
 # Add multi-language integration tests as a separate executable
 # TODO: Fix API compatibility issues before enabling

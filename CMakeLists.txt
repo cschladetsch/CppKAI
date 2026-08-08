@@ -341,6 +341,10 @@ if(TARGET RhoLang)
     target_link_libraries(RhoLang Core CommonLang PiLang)
 endif()
 
+if(TARGET LispLang)
+    target_link_libraries(LispLang Core CommonLang)
+endif()
+
 if(TARGET TauLang)
     target_link_libraries(TauLang Core CommonLang)
 endif()

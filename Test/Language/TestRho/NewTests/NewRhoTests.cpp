@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 
-#include "../TestLangCommon.h"
+#include "TestLangCommon.h"
 #include "KAI/Language/Rho/RhoParser.h"
 
 using namespace kai;

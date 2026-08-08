@@ -17,6 +17,8 @@ const char *ToString(Language lang) {
             return "Hlsl";
         case Language::Sigma:
             return "Sigma";
+        case Language::Lisp:
+            return "Lisp";
         default:
             return "Unknown";
     }

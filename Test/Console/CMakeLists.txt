@@ -27,7 +27,7 @@ target_link_libraries(${name}
     Executor
     Core
     PiLang
-    RhoLang
+    RhoLang LispLang
     ${GTEST_BOTH_LIBRARIES}
     gtest_main
 )

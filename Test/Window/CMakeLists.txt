@@ -51,7 +51,7 @@ set_target_properties(TestWindow PROPERTIES
 # Link libraries (using the same order as other tests)
 set(WINDOW_TEST_LIBS
     PiLang
-    RhoLang
+    RhoLang LispLang
     Executor
     CommonLang
     Core

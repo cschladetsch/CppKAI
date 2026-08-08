@@ -11,8 +11,9 @@ set(COMMON_SOURCES
 # Create a separate library for Common language components
 add_library(CommonLang ${COMMON_SOURCES})
 
-# Pi and Rho are always built. Tau is the IDL compiler and requires networking.
-set(core_langs Pi Rho)
+# Pi, Rho and Lisp are always built. Tau is the IDL compiler and requires
+# networking.
+set(core_langs Pi Rho Lisp)
 foreach(l ${core_langs})
     def_lang_library(${l})
     target_link_libraries(${l}Lang CommonLang Executor)

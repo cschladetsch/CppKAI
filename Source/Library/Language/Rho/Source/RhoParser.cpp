@@ -1339,6 +1339,22 @@ bool RhoParser::ForLoop(AstNodePtr block) {
     }
     AstNodePtr initExpr = Pop();
 
+    // Comma-separated initialisers: for (i = 0, j = 10; ...). Collect them into
+    // a Block, which the translator emits as a plain statement sequence.
+    if (Try(TokenType::Comma)) {
+        auto initBlock = NewNode(NodeType::Block);
+        initBlock->Add(initExpr);
+        while (Try(TokenType::Comma)) {
+            Consume();
+            if (!Expression()) {
+                return CreateError(
+                    "Expected expression after ',' in for-loop initializer");
+            }
+            initBlock->Add(Pop());
+        }
+        initExpr = initBlock;
+    }
+
     // Expect semicolon after initialization
     if (!Try(TokenType::Semi)) {
         return CreateError("Expected semicolon after initialization in for loop");
@@ -1370,6 +1386,21 @@ bool RhoParser::ForLoop(AstNodePtr block) {
             return CreateError("Expected increment expression in for loop");
         }
         incrExpr = Pop();
+
+        // Comma-separated updates: for (...; ...; i = i + 1, j = j - 1)
+        if (Try(TokenType::Comma)) {
+            auto incrBlock = NewNode(NodeType::Block);
+            incrBlock->Add(incrExpr);
+            while (Try(TokenType::Comma)) {
+                Consume();
+                if (!Expression()) {
+                    return CreateError(
+                        "Expected expression after ',' in for-loop update");
+                }
+                incrBlock->Add(Pop());
+            }
+            incrExpr = incrBlock;
+        }
     }
 
     if (headerHasParens) {

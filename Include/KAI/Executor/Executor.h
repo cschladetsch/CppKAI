@@ -232,6 +232,11 @@ private:
     Pointer<Continuation> NewContinuation(Value<Continuation> P);
     void ExecuteContinuationInline(Pointer<Continuation> cont);
 
+    // Records the creating frame on a continuation being pushed as a value, so
+    // a lambda can still reach its free variables after the frame that defined
+    // them is gone. Returns Q untouched when there is nothing to capture.
+    Object CaptureClosure(Object const &Q);
+
     Object TryResolve(Object const &) const;
     Object TryResolve(Label const &label) const;
     Object TryResolve(Pathname const &label) const;

@@ -5,40 +5,20 @@
 
 KAI_BEGIN
 
+// The Lisp AST is deliberately tiny: everything is either an atom or a list.
+// Special forms are not given their own node types -- they are recognised by
+// the translator from the head of a List, which is what makes the grammar
+// extensible without touching the parser.
 struct LispAstNodeEnumType {
     enum Enum : int {
         None = 0,
-        Program = 1,
-        Ident = 2,
-        GetMember = 3,
-        Function = 4,
-        Block = 5,
-        Conditional = 6,
-        Assignment = 7,
-        Call = 8,
-        Increment = 9,
-        Decrement = 10,
-        TokenType = 11,
-        Positive = 12,
-        Negative = 13,
-        ArgList = 14,
-        IndexOp = 15,
-        ForEach = 16,
-        For = 17,
-        List = 18,
-        Map = 19,
-        Plus = 20,
-        Minus = 21,
-        Mul = 22,
-        Divide = 23,
-        Less = 24,
-        Equiv = 25,
-        NotEquiv = 26,
-        Greater = 27,
-        Object = 28,
-        Continuation = 29,
-        Pathname = 30,
-        Home = 31,
+        // A leaf atom carrying its token. AstNodeBase's token constructor
+        // hard-codes this name, so it has to exist.
+        TokenType,
+        Program,
+        List,
+        Quote,
+        Object,
     };
 
     struct Node : AstNodeBase<LispToken, LispAstNodeEnumType> {

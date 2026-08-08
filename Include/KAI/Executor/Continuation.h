@@ -58,6 +58,11 @@ class Continuation : public Reflected {
     Object GetScope() const { return scope; }
     bool HasScope() const { return scope.Exists(); }
 
+    // The continuation this one was created inside; see lexicalParent_ below.
+    void SetLexicalParent(Object const &Q) { lexicalParent_ = Q; }
+    Object GetLexicalParent() const { return lexicalParent_; }
+    bool HasLexicalParent() const { return lexicalParent_.Exists(); }
+
     bool HasCode() const { return code.Exists(); }
 
     int InitialStackDepth;
@@ -101,6 +106,19 @@ class Continuation : public Reflected {
 
     String Show() const;
     static void Register(Registry &);
+
+   private:
+    // Name resolution is otherwise dynamic: it walks the context stack, i.e.
+    // whoever happens to be executing. That is fine for a continuation used
+    // where it was made -- an if/else arm, a loop body -- because its creator
+    // is still on that stack. It breaks for one that outlives its creator,
+    // such as a lambda returned from a function: by the time it runs, the
+    // frame holding its free variables has been popped.
+    //
+    // Recording the creating continuation gives those escapees a lexical chain
+    // to fall back on. Left empty for continuations that never escape, so the
+    // common path is untouched.
+    Object lexicalParent_;
 };
 
 StringStream &operator<<(StringStream &, const Continuation &);

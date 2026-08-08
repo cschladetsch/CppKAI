@@ -36,7 +36,7 @@ target_include_directories(ConsoleLib PUBLIC
     ${LIBRARY_HOME}/Language/Rho/Include
     ${LIBRARY_HOME}/Language/Pi/Include
 )
-target_link_libraries(ConsoleLib PUBLIC Executor PiLang RhoLang CommonLang Core)
+target_link_libraries(ConsoleLib PUBLIC Executor PiLang RhoLang LispLang CommonLang Core)
 set_target_properties(ConsoleLib PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY "${BIN_HOME}"
     LIBRARY_OUTPUT_DIRECTORY "${BIN_HOME}"

@@ -77,8 +77,16 @@ class LexerCommon : public LexerBase {
         tokens.push_back(Token(Enum::String, *this, lineNumber, slice));
     }
 
+    // Not every language admits shell commands: Lisp deliberately has no
+    // ShellCommand token. The override is still required (LexerBase declares it
+    // pure virtual) and virtuals are instantiated with the vtable, so it has to
+    // compile for those enums too.
     void AddShellCommandToken(int lineNumber, Slice slice) override {
-        tokens.push_back(Token(Enum::ShellCommand, *this, lineNumber, slice));
+        if constexpr (requires { Enum::ShellCommand; }) {
+            tokens.push_back(Token(Enum::ShellCommand, *this, lineNumber, slice));
+        } else {
+            LexError("shell commands are not supported in this language");
+        }
     }
 
     void LexErrorBase(const char *msg) override { LexError(msg); }

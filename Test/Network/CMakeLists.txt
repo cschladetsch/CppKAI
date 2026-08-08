@@ -63,7 +63,7 @@ project(Test_Network)
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/Bin"
     )
     target_link_libraries(ConsoleConnectionTest
-        ConsoleLib Core Network Executor PiLang RhoLang CommonLang
+        ConsoleLib Core Network Executor PiLang RhoLang LispLang CommonLang
         ${GTEST_BOTH_LIBRARIES}
         ${Boost_LIBRARIES}
         pthread
@@ -79,7 +79,7 @@ project(Test_Network)
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/Bin"
     )
     target_link_libraries(IntegratedConsoleTest
-        ConsoleLib Core Network Executor PiLang RhoLang CommonLang
+        ConsoleLib Core Network Executor PiLang RhoLang LispLang CommonLang
         ${GTEST_BOTH_LIBRARIES}
         ${Boost_LIBRARIES}
         pthread
@@ -95,7 +95,7 @@ project(Test_Network)
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/Bin"
     )
     target_link_libraries(CalculationTest 
-        ConsoleLib Core Network Executor PiLang RhoLang CommonLang
+        ConsoleLib Core Network Executor PiLang RhoLang LispLang CommonLang
         ${GTEST_BOTH_LIBRARIES}
         ${Boost_LIBRARIES}
         pthread

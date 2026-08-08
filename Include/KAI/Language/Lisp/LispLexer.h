@@ -16,8 +16,13 @@ struct LispLexer : LexerCommon<LispTokenEnumType> {
     void Terminate() override;
     String ToString() const { return Print(); }
 
+    // True for characters that end an atom.
+    static bool IsDelimiter(char ch);
+
    protected:
-    bool LexPathname();
+    // Lexes a number or a symbol; which one is decided by inspecting the text
+    // after gathering it, since `-` and `+` can start either.
+    bool LexAtom();
     using Parent::reg_;
 };
 

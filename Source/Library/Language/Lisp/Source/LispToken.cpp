@@ -1,105 +1,50 @@
-#include "KAI/Language/Rho/RhoToken.h"
+#include "KAI/Language/Lisp/LispToken.h"
+
+#include <ostream>
 
 KAI_BEGIN
 
-#undef CASE
-#undef CASE_LOWER
-#undef CASE_REPLACE
-
-const char *RhoTokenEnumType::ToString(Enum val) {
+const char *LispTokenEnumType::ToString(Enum val) {
     switch (val) {
-#define CASE(N)        \
-    case RhoTokens::N: \
-        return #N;
-#define CASE_LOWER(N)  \
-    case RhoTokens::N: \
-        return ToLower(#N);
-#define CASE_REPLACE(N, M) \
-    case RhoTokens::N:     \
-        return M;
-
-        CASE(None)
-        CASE(Whitespace)
-        CASE(Semi)
-        CASE(Int)
-        CASE(Float)
-        CASE(String)
-        CASE(True)
-        CASE(False)
-        CASE(Return)
-        CASE(Ident)
-        CASE(Dot)
-        CASE(Comma)
-        CASE(If)
-        CASE(Else)
-        CASE(For)
-        CASE(While)
-        CASE(OpenBrace)
-        CASE(CloseBrace)
-        CASE(OpenParan)
-        CASE(CloseParan)
-        CASE(Plus)
-        CASE(Minus)
-        CASE(Mul)
-        CASE(Divide)
-        CASE(Assign)
-        CASE(Less)
-        CASE(Equiv)
-        CASE(NotEquiv)
-        CASE(Greater)
-        CASE(LessEquiv)
-        CASE(GreaterEquiv)
-        CASE(Not)
-        CASE(And)
-        CASE(Or)
-        CASE(Xor)
-        CASE(OpenSquareBracket)
-        CASE(CloseSquareBracket)
-        CASE(Increment)
-        CASE(Decrement)
-        CASE(BitAnd)
-        CASE(BitOr)
-        CASE(BitXor)
-        CASE(Self)
-        CASE(Lookup)
-        CASE(Tab)
-        CASE(NewLine)
-        CASE(Fun)
-        CASE(Comment)
-        CASE(Yield)
-        CASE(Suspend)
-        CASE(Replace)
-        CASE(Resume)
-        CASE(PlusAssign)
-        CASE(MinusAssign)
-        CASE(MulAssign)
-        CASE(DivAssign)
-        CASE(In)
-        CASE(Assert)
-        CASE(ToPi)
-        CASE(PiSequence)
-        CASE(Debug)
-        CASE(Quote)
-        CASE(Sep)
-        CASE(Pathname)
+        case None:
+            return "None";
+        case Whitespace:
+            return "Whitespace";
+        case Tab:
+            return "Tab";
+        case NewLine:
+            return "NewLine";
+        case Comment:
+            return "Comment";
+        case OpenParan:
+            return "OpenParan";
+        case CloseParan:
+            return "CloseParan";
+        case Quote:
+            return "Quote";
+        case Int:
+            return "Int";
+        case Float:
+            return "Float";
+        case String:
+            return "String";
+        case True:
+            return "True";
+        case False:
+            return "False";
+        case Nil:
+            return "Nil";
+        case Ident:
+            return "Ident";
     }
 
-    static char buff[BUFSIZ];
-    sprintf(buff, "Unnamed RhoToken %d", val);
-    return buff;
+    return "UnknownLispToken";
 }
 
-std::ostream &operator<<(std::ostream &out, RhoToken const &node) {
-    if (node.type == RhoTokenEnumType::None) return out;
-
-    out << RhoTokenEnumType::ToString(node.type);
-    switch (node.type) {
-        case RhoTokenEnumType::Int:
-        case RhoTokenEnumType::String:
-        case RhoTokenEnumType::Ident:
-            out << "=" << node.Text();
-    }
-
+std::ostream &operator<<(std::ostream &out, LispToken const &token) {
+    out << LispTokenEnumType::ToString(token.type);
+    const auto text = token.Text();
+    if (!text.empty()) out << "='" << text << "'";
     return out;
 }
 

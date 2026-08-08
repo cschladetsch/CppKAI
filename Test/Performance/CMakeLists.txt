@@ -21,7 +21,7 @@ set_target_properties(PerformanceTests PROPERTIES
 
 # Link libraries - include all language libraries for comprehensive testing
 set(PERF_LIBS
-    RhoLang 
+    RhoLang LispLang 
     PiLang
     Executor
     Core 

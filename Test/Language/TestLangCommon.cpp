@@ -4,6 +4,7 @@
 #include <KAI/Core/Logger.h>
 #include <KAI/Language/Pi/PiTranslator.h>
 #include <KAI/Language/Rho/RhoTranslator.h>
+#include <KAI/Language/Lisp/LispTranslator.h>
 
 #include <algorithm>
 #include <boost/algorithm/string/predicate.hpp>
@@ -41,6 +42,7 @@ class MultiLanguageTranslator : public TranslatorCommon {
    private:
     std::shared_ptr<PiTranslator> piTranslator;
     std::shared_ptr<RhoTranslator> rhoTranslator;
+    std::shared_ptr<LispTranslator> lispTranslator;
     Pointer<Compiler> compiler;
 
    public:
@@ -48,6 +50,7 @@ class MultiLanguageTranslator : public TranslatorCommon {
         : TranslatorCommon(r), compiler(comp) {
         piTranslator = std::make_shared<PiTranslator>(r);
         rhoTranslator = std::make_shared<RhoTranslator>(r);
+        lispTranslator = std::make_shared<LispTranslator>(r);
     }
 
     Pointer<Continuation> Translate(const char *text,
@@ -75,6 +78,15 @@ class MultiLanguageTranslator : public TranslatorCommon {
                 auto result = rhoTranslator->Translate(text, st);
                 if (rhoTranslator->Failed) {
                     KAI_TRACE_ERROR() << rhoTranslator->Error;
+                    return Object();
+                }
+                return result;
+            }
+            case Language::Lisp: {
+                lispTranslator->trace = traceLevel;
+                auto result = lispTranslator->Translate(text, st);
+                if (lispTranslator->Failed) {
+                    KAI_TRACE_ERROR() << lispTranslator->Error;
                     return Object();
                 }
                 return result;

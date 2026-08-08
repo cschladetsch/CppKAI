@@ -1,0 +1,132 @@
+// Iterative Deepening A* on a flat W*H grid, 4-connected, unit step cost.
+//
+// IDA* is a depth-first search bounded by an f = g + h threshold. Each pass
+// raises the threshold to the smallest f that exceeded it last time. Memory is
+// O(depth) -- only the current path is held -- where A* keeps open and closed
+// sets.
+//
+// search() returns -1 for FOUND, otherwise the smallest f it had to reject.
+// That is the textbook formulation and means no mutable global is needed to
+// carry the next threshold out of the recursion.
+//
+// Two prunes sit on top of textbook IDA*:
+//   onPath - never step onto a cell already on the current path. A grid is a
+//            graph, so without this the search cycles.
+//   bestG  - skip a cell reached with a g no better than the best already seen
+//            for it this pass. Kills transpositions, which on a grid are the
+//            difference between terminating and not.
+//
+// Instance: start top-left, goal top-right, one full-height wall at x=W/2 with
+// a single gap. The gap forces a detour below the straight line, so the
+// Manhattan heuristic understates the true cost and the search really does
+// iterate rather than succeeding on the first threshold.
+//
+// Leaves [cost, nodes] on the stack; cost is -1 if no path was found.
+
+W = 20
+H = 20
+WALLX = 10
+GAPY = 6
+INF = 1000000
+
+STARTX = 0
+STARTY = 0
+GOALX = 19
+GOALY = 0
+
+fun blocked(x, y)
+    if x == STARTX && y == STARTY
+        return 0
+    if x == GOALX && y == GOALY
+        return 0
+    if x == WALLX && y != GAPY
+        return 1
+    return 0
+
+fun manhattan(x, y)
+    dx = GOALX - x
+    if dx < 0
+        dx = 0 - dx
+    dy = GOALY - y
+    if dy < 0
+        dy = 0 - dy
+    return dx + dy
+
+grid = []
+i = 0
+while i < W * H
+    grid = grid + [blocked(i % W, i / W)]
+    i = i + 1
+
+// Move order is right, down, up, left, and is identical in every
+// implementation so the node counts can be compared directly.
+dirx = [1, 0, 0, -1]
+diry = [0, 1, -1, 0]
+
+// Returns -1 when the goal was reached inside the threshold, otherwise the
+// smallest f that exceeded it (INF if nothing did).
+fun search(x, y, g, threshold, onPath, bestG, stats)
+    stats[0] = stats[0] + 1
+
+    f = g + manhattan(x, y)
+    if f > threshold
+        return f
+
+    if x == GOALX && y == GOALY
+        return -1
+
+    idx = y * W + x
+    onPath[idx] = 1
+
+    minExceeded = INF
+    found = 0
+    d = 0
+    while d < 4
+        if found == 0
+            nx = x + dirx[d]
+            ny = y + diry[d]
+            if nx >= 0 && nx < W && ny >= 0 && ny < H
+                nidx = ny * W + nx
+                if grid[nidx] == 0 && onPath[nidx] == 0
+                    ng = g + 1
+                    if ng < bestG[nidx]
+                        bestG[nidx] = ng
+                        r = search(nx, ny, ng, threshold, onPath, bestG, stats)
+                        if r == -1
+                            found = 1
+                        else
+                            if r < minExceeded
+                                minExceeded = r
+        d = d + 1
+
+    onPath[idx] = 0
+    if found == 1
+        return -1
+    return minExceeded
+
+stats = [0]
+threshold = manhattan(STARTX, STARTY)
+cost = -1
+searching = 1
+
+while searching == 1
+    onPath = []
+    bestG = []
+    j = 0
+    while j < W * H
+        onPath = onPath + [0]
+        bestG = bestG + [INF]
+        j = j + 1
+    bestG[STARTY * W + STARTX] = 0
+
+    r = search(STARTX, STARTY, 0, threshold, onPath, bestG, stats)
+    if r == -1
+        cost = threshold
+        searching = 0
+    else
+        if r >= INF
+            searching = 0
+        else
+            threshold = r
+
+[cost, stats[0]]
