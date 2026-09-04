@@ -1,3 +1,0 @@
-Internal ctest changing into directory: /home/christian/local/repos/KAI/build
-Test project /home/christian/local/repos/KAI/build
-No tests were found!!!

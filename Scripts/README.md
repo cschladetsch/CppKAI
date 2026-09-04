@@ -71,8 +71,15 @@ Calculator functionality testing script.
 
 ## Demo Scripts
 
-Located in project root:
 - **demo_console_communication.sh** - Interactive console networking demo using tmux
+- **demo_network.sh** - Console-to-console network communication demonstration
+
+## Other Utility Scripts
+
+- **b** - Quick build wrapper (CMake + Ninja)
+- **r** - Run Rho tests one-by-one, isolating segfaults
+- **tidy** - Run clang-format over Source, Include, and Test
+- **setup_kai_build.sh** - Install the WSL toolchain and do a clean build
 
 ## Usage Examples
 

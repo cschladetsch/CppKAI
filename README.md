@@ -178,12 +178,12 @@ graph TB
 
 ### **Quick Start Examples**
 
-- Build from the repository root with `./b`
-- Run the current full suite with `./run_all_tests.sh`
-- Enable networking features with `./b --network`
+- Build from the repository root with `./Scripts/b`
+- Run the current full suite with `./Scripts/run_all_tests.sh`
+- Enable networking features with `./Scripts/b --network`
 - Run `./Scripts/run_rho_demo.sh` for a comprehensive demo of Rho language features
 - Run `./Scripts/calc_test.sh` for a demonstration of network calculation
-- Run `./demo_console_communication.sh` for interactive console-to-console networking demo
+- Run `./Scripts/demo_console_communication.sh` for interactive console-to-console networking demo
 - Example scripts in `Test/Language/*/Scripts` directories
 
 ## Key Features

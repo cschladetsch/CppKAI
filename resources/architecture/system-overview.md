@@ -108,9 +108,9 @@ KAI is a sophisticated distributed object model that enables:
 
 ### Building the Project
 ```bash
-./b                    # Build with Clang++, C++23, Ninja
-./b --gcc             # Build with GCC
-./b --reconfigure     # Force reconfiguration
+./Scripts/b                    # Build with Clang++, C++23, Ninja
+./Scripts/b --gcc             # Build with GCC
+./Scripts/b --reconfigure     # Force reconfiguration
 ```
 
 ### Running Tests
@@ -132,7 +132,7 @@ rho> a = 5; print(a)      # Rho programming
 
 ### Network Demonstration
 ```bash
-./demo_console_communication.sh  # Interactive demo
+./Scripts/demo_console_communication.sh  # Interactive demo
 # Creates tmux session with two communicating consoles
 ```
 

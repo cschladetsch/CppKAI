@@ -1,6 +1,8 @@
 /Ext
 /tmp
 /test_graph
+# built executable from Source/App/Window, not the source dir
+/Window
 /.index
 /CMakeCache.txt
 *.d

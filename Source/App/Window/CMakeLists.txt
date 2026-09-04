@@ -32,7 +32,7 @@ add_executable(${name} ${SOURCE_FILES})
 
 # Set the output directory explicitly
 set_target_properties(${name} PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY "${SAFER_BIN_HOME}"
+    RUNTIME_OUTPUT_DIRECTORY "${BIN_HOME}"
 )
 
 # Find GLFW3
