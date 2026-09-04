@@ -95,10 +95,13 @@ TEST_F(ReflectionTest, DynamicMethodInvocation) {
     // For now, let's skip if we can't get a non-const method to work
     // The object system seems to have issues with const/non-const handling
     try {
-        // Invoke method dynamically
-        kai::Stack stack;
-        stack.Push(reg_->New<int>(123));
-        setValueMethod->Invoke(obj, stack);
+        // Invoke method dynamically. The stack must be registry-managed
+        // (not a bare local) since Stack::Pop() detaches the popped object
+        // from its container, which requires the stack itself to have a
+        // valid registry handle.
+        kai::Value<kai::Stack> stack = reg_->New<kai::Stack>();
+        stack->Push(reg_->New<int>(123));
+        setValueMethod->Invoke(obj, *stack);
 
         EXPECT_EQ(kai::Deref<TestClass>(obj).value, 123);
     } catch (const kai::Exception::ConstError& e) {

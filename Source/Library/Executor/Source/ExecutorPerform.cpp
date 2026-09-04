@@ -2566,7 +2566,13 @@ void Executor::ExecuteContinuationInline(Pointer<Continuation> cont) {
 
                 Eval(obj);
 
-                if (continuation_ != cont) {
+                // Identity check: did Suspend/Replace switch to a different
+                // continuation object? Object::operator== falls back to deep
+                // structural comparison for objects with different handles,
+                // which recurses into unrelated continuations' properties and
+                // sub-objects (mismatched code/scope shapes) and can throw a
+                // spurious type mismatch. Compare handles directly instead.
+                if (continuation_.GetHandle() != cont.GetHandle()) {
                     if (replace_) {
                         if (pushContext && savedCont.Exists() &&
                             !context_->Empty()) {
