@@ -1,4 +1,4 @@
-include_directories(${TEST_HOME}/Include})
+include_directories(${TEST_HOME}/Include)
 
 add_subdirectory(Source)
 add_subdirectory(Language)

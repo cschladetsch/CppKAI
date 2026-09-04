@@ -5,12 +5,12 @@
 
 USING_NAMESPACE_KAI
 
-class TestArray : public TestCommon {
+class TestArrayGC : public TestCommon {
    protected:
     void AddRequiredClasses() override { Reg().AddClass<Array>(); }
 };
 
-TEST_F(TestArray, TestCreation) {
+TEST_F(TestArrayGC, TestCreation) {
     Pointer<Array> cont = Reg().New<Array>();
     ASSERT_TRUE(cont.Exists());
     ASSERT_TRUE(cont->Size() == 0);
@@ -21,7 +21,7 @@ TEST_F(TestArray, TestCreation) {
     ASSERT_FALSE(cont.Exists());
 }
 
-TEST_F(TestArray, TestInsertDelete) {
+TEST_F(TestArrayGC, TestInsertDelete) {
     Pointer<Array> cont = Reg().New<Array>();
     root_.Set("cont", cont);
 
@@ -39,8 +39,8 @@ TEST_F(TestArray, TestInsertDelete) {
     ASSERT_FALSE(n.Exists());
 }
 
-TEST_F(TestArray, TestComparison) {}
+TEST_F(TestArrayGC, TestComparison) {}
 
-TEST_F(TestArray, TestStringStream) {}
+TEST_F(TestArrayGC, TestStringStream) {}
 
-TEST_F(TestArray, TestBinaryStream) {}
+TEST_F(TestArrayGC, TestBinaryStream) {}

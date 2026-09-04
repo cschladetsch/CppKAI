@@ -21,6 +21,12 @@
 #include <unistd.h>
 #endif
 
+#ifdef _WIN32
+#include <cstdio>
+#define popen _popen
+#define pclose _pclose
+#endif
+
 #include "KAI/Core/BinaryStream.h"
 #include "KAI/Core/BuiltinTypes.h"
 #include "KAI/Core/Detail/Function.h"

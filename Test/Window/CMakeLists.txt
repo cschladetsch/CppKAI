@@ -6,8 +6,8 @@ project(TestWindow)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Find required packages
-find_package(GTest REQUIRED)
+# GTest is located (system or downloaded) by the top-level CMakeLists.txt,
+# which sets GTEST_INCLUDE_DIRS / GTEST_LIBRARIES / GTEST_MAIN_LIBRARIES.
 
 # Include directories
 include_directories(

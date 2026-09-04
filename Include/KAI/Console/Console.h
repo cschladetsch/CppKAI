@@ -8,6 +8,10 @@
 #include <KAI/Language/Common/TranslatorCommon.h>
 #include <KAI/Network/Transport.h>
 
+#ifdef _WIN32
+#include <process.h>
+#endif
+
 #include <functional>
 #include <memory>
 #include <mutex>

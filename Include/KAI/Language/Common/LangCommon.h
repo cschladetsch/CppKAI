@@ -4,7 +4,7 @@
 #include <KAI/Executor/Executor.h>
 #include <KAI/Language/Common/Base.h>
 #include <KAI/Language/Common/ParserCommon.h>
-#include <KAI/Language/Common/Process.h>
+#include <KAI/Language/Common/LanguageProcess.h>
 #include <KAI/Language/Common/Structure.h>
 
 KAI_BEGIN

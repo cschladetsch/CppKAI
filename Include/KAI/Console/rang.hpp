@@ -16,9 +16,9 @@
 
 #include <cstring>
 #elif defined(OS_WIN)
+#include <windows.h>
 #include <VersionHelpers.h>
 #include <io.h>
-#include <windows.h>
 #endif
 
 #include <algorithm>

@@ -11,7 +11,7 @@
 #include "KAI/Executor/BinBase.h"
 #include "KAI/Executor/Compiler.h"
 #include "KAI/Executor/SignedContinuation.h"
-#include "KAI/Language/Common/Process.h"
+#include "KAI/Language/Common/LanguageProcess.h"
 
 using namespace std;
 

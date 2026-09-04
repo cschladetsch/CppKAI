@@ -2,7 +2,7 @@
 
 #include <KAI/Core/Registry.h>
 #include <KAI/Core/Value.h>
-#include <KAI/Language/Common/Process.h>
+#include <KAI/Language/Common/LanguageProcess.h>
 
 KAI_BEGIN
 

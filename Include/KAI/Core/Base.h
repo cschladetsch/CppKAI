@@ -2,6 +2,7 @@
 
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
+#define NOGDI
 #define WINDOWS_WHY_OH_WHY
 
 #include <KAI/Core/Config/Base.h>

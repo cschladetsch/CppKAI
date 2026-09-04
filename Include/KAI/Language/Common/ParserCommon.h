@@ -2,7 +2,7 @@
 
 #include <KAI/Language/Common/AstNodeBase.h>
 #include <KAI/Language/Common/ParserBase.h>
-#include <KAI/Language/Common/Process.h>
+#include <KAI/Language/Common/LanguageProcess.h>
 #include <KAI/Language/Common/ProcessCommon.h>
 #include <KAI/Language/Common/Structure.h>
 

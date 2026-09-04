@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <ostream>
 
 #include "KAI/Core/BuiltinTypes.h"
 

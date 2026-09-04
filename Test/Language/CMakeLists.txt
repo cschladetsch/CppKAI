@@ -222,6 +222,12 @@ foreach (lang ${langs})
     
     add_executable(${testName} ${sources} "${TEST_HOME}/Source/Main.cpp")
     target_link_libraries(${testName} ${core_libs} ${GTEST_BOTH_LIBRARIES} ${Boost_LIBRARIES})
+    if(WIN32)
+        # Deeply-recursive interpreter tests (e.g. Lisp/Pi recursion depth
+        # tests) overflow the default 1MB thread stack; give test binaries
+        # more headroom.
+        target_link_options(${testName} PRIVATE "LINKER:/STACK:16777216")
+    endif()
     include(GoogleTest)
     
     # Try to discover tests if the module is available

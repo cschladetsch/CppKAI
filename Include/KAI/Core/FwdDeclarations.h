@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstddef>
+
 #include <KAI/Core/Base.h>
 
 KAI_BEGIN

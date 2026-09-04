@@ -1,7 +1,7 @@
 #pragma once
 
 #include <KAI/Language/Common/LexerBase.h>
-#include <KAI/Language/Common/Process.h>
+#include <KAI/Language/Common/LanguageProcess.h>
 #include <KAI/Language/Common/Slice.h>
 #include <stdarg.h>
 
