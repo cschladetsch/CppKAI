@@ -10,3 +10,6 @@
 [submodule "Ext/ENet"]
 	path = Ext/ENet
 	url = https://github.com/lsalzman/enet.git
+[submodule "CppCoder"]
+	path = CppCoder
+	url = https://github.com/cschladetsch/CppLocalLlmCodeAssist.git
