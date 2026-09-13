@@ -26,7 +26,6 @@ set_target_properties(${demo_test_name} PROPERTIES
 
 target_link_libraries(${demo_test_name}
     ${GTEST_BOTH_LIBRARIES}
-    gtest_main
 )
 
 add_test(NAME ${demo_test_name} COMMAND ${demo_test_name})

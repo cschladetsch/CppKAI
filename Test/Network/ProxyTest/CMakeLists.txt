@@ -37,7 +37,6 @@ target_link_libraries(Test_ProxyGeneration
     Core
     ${GTEST_BOTH_LIBRARIES}
     ${Boost_LIBRARIES}
-    gtest_main
 )
 
 # Set output directory

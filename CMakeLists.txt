@@ -185,7 +185,7 @@ endif()
 # the only extra requirement on native Windows is a working WSL2 distro
 # with bash/coreutils installed and `wsl` on PATH. Override with
 # -DENABLE_SHELL_SYNTAX=ON/OFF to force either behaviour on any platform.
-option(ENABLE_SHELL_SYNTAX "Enable shell command execution via backtick syntax" ON)
+option(ENABLE_SHELL_SYNTAX "Enable shell command execution via backtick syntax" OFF)
 
 # Boost has been fully removed from KAI. (CommonLang's optional arena allocator
 # uses std::pmr, not boost.monotonic.)

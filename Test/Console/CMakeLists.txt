@@ -29,7 +29,6 @@ target_link_libraries(${name}
     PiLang
     RhoLang
     ${GTEST_BOTH_LIBRARIES}
-    gtest_main
 )
 
 # Add test

@@ -91,3 +91,11 @@ Built only when `KAI_NETWORKING=ON` (use `./Scripts/b --network`).
 
 - This summary reflects the current `develop` branch test state as of 2026-04-04.
 - Historical documents that mention partial Rho failures describe older baselines and should not be treated as the current suite status.
+- **This snapshot is older than [`Doc/TODO.md`](TODO.md) (last updated 2026-04-25).** TODO.md's "Language" section lists specific, currently-tracked
+  gaps that postdate this summary - including a failing test
+  (`Mixed_ContinueInForEach`, under "`continue` in `foreach`") and several
+  unimplemented Rho/Pi behaviors (inline function calls inside
+  `for x in container`, and a list of missing Pi operations). Where the two
+  documents disagree, treat TODO.md as current and this file as the last
+  point at which the numbers above were true. Re-run the suites and update
+  both documents together before relying on either in isolation.

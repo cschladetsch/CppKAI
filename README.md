@@ -242,7 +242,7 @@ cd CppKAI
 git submodule init
 git submodule update --recursive
 
-py build.py                     # Release build (Clang + Ninja by default, shell syntax ON)
+py build.py                     # Release build (Clang + Ninja by default, shell syntax OFF)
 py build.py --config Debug      # Debug build
 py build.py --msvc              # Use MSVC + Visual Studio generator + vcpkg instead
 py build.py --no-network        # Disable networking
@@ -282,15 +282,17 @@ To use MSVC + Visual Studio instead, pass `--msvc` to `build.py` (or use
 
 ### Security Configuration
 
-Shell operations (backtick syntax, e.g. `` `pwd` `` in Rho/Pi) are **enabled
-by default** (`ENABLE_SHELL_SYNTAX=ON`). On native Windows this routes
-commands through WSL2's bash (`wsl.exe`), so a WSL2 distro with bash/coreutils
-installed and `wsl` on PATH is required for backtick expressions to work
-there; on Linux/macOS/WSL2 it uses the system shell directly. To disable it:
+Shell operations (backtick syntax, e.g. `` `pwd` `` in Rho/Pi) are **disabled
+by default** (`ENABLE_SHELL_SYNTAX=OFF`) — evaluating Pi/Rho source that
+contains a backtick expression runs a real shell command, so this is opt-in
+rather than opt-out. When enabled, native Windows routes commands through
+WSL2's bash (`wsl.exe`) — a WSL2 distro with bash/coreutils installed and
+`wsl` on PATH is required there for backtick expressions to work — while
+Linux/macOS/WSL2 use the system shell directly. To enable it:
 ```bash
-cmake .. -DENABLE_SHELL_SYNTAX=OFF
+cmake .. -DENABLE_SHELL_SYNTAX=ON
 ```
-On Windows, `py build.py --disable-shell` does the same.
+On Windows, `py build.py --enable-shell` does the same.
 
 ## Applications
 
@@ -323,7 +325,7 @@ Switched to Rho language mode
 - Stack contents shown after every command, top-first with `[0]` at the bottom
 - Per-language persistent history saved to `~/.kai/pi.history` and `~/.kai/rho.history`
 - Context-sensitive help system
-- Shell integration (backtick expansion, enabled by default; native Windows routes commands through WSL2's bash)
+- Shell integration (backtick expansion, disabled by default - opt in with `-DENABLE_SHELL_SYNTAX=ON`; native Windows then routes commands through WSL2's bash)
 - Color-coded stack display; floating-point values use the neutral value color
 - Native KAI Logger initialization for Console lifecycle, inspection, debugger
   attachment/action, and failure records
@@ -393,7 +395,7 @@ This project is licensed under the MIT License — see the [LICENSE](LICENSE) fi
 
 - **629+** C++ source files
 - **3** integrated programming languages (Pi / Rho / Tau)
-- **1,780+** passing tests across Pi, Rho, Tau, and network suites (TestPi alone has 585+)
+- **1,780+** passing tests across Pi, Rho, Tau, and network suites (TestPi alone has 585+) — see [Doc/TEST_SUMMARY.md](Doc/TEST_SUMMARY.md) for the per-suite breakdown and [Doc/TODO.md](Doc/TODO.md) for currently-tracked language gaps and failing tests
 - **Full** Agent/Proxy/Domain networking over ENet UDP
 - **Tau IDL** generates type-safe proxy/agent pairs from `.tau` interfaces
 - **Networking on by default** — disable with `./b --no-network`

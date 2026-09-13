@@ -32,7 +32,7 @@ list(APPEND sources ${TEST_HOME}/Common/MyTestStruct.cpp)
 include_directories(${header_path})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${BIN_HOME}/Test")
 add_executable(${name} ${sources})
-set(kaitest_libs ConsoleLib PiLang RhoLang Executor CommonLang Core ${GTEST_BOTH_LIBRARIES} ${Boost_LIBRARIES} gtest_main)
+set(kaitest_libs ConsoleLib PiLang RhoLang Executor CommonLang Core ${GTEST_BOTH_LIBRARIES} ${Boost_LIBRARIES})
 if(TARGET TauLang)
     list(INSERT kaitest_libs 3 TauLang)
 endif()
@@ -83,7 +83,7 @@ list(APPEND core_sources ${TEST_HOME}/Common/TestCommon.cpp)
 list(APPEND core_sources ${TEST_HOME}/Common/MyTestStruct.cpp)
 
 add_executable(${core_name} ${core_sources})
-set(testcore_libs ConsoleLib PiLang RhoLang Executor CommonLang Core ${GTEST_BOTH_LIBRARIES} ${Boost_LIBRARIES} gtest_main)
+set(testcore_libs ConsoleLib PiLang RhoLang Executor CommonLang Core ${GTEST_BOTH_LIBRARIES} ${Boost_LIBRARIES})
 if(TARGET TauLang)
     list(INSERT testcore_libs 3 TauLang)
 endif()
@@ -101,7 +101,6 @@ if(KAI_BUILD_LLM)
         Core
         ${GTEST_BOTH_LIBRARIES}
         ${Boost_LIBRARIES}
-        gtest_main
     )
 endif()
 
@@ -112,4 +111,4 @@ set(fixed_core_sources
 )
 
 add_executable(${fixed_core_name} ${fixed_core_sources})
-target_link_libraries(${fixed_core_name} PiLang RhoLang Executor CommonLang Core ${GTEST_BOTH_LIBRARIES} ${Boost_LIBRARIES} gtest_main)
+target_link_libraries(${fixed_core_name} PiLang RhoLang Executor CommonLang Core ${GTEST_BOTH_LIBRARIES} ${Boost_LIBRARIES})

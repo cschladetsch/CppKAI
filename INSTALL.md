@@ -22,5 +22,5 @@ Extract this package to your CppKAI repo root, then place files as follows:
 
 - fix_console.py wraps popen/pclose calls in #ifndef _WIN32 guards
 - Main.cpp replaces getopt with a stdlib-only arg parser
-- build.py defaults to Clang + Ninja with shell/backtick syntax enabled; pass `--msvc` for VS 2022/2026 + vcpkg instead
+- build.py defaults to Clang + Ninja with shell/backtick syntax disabled (pass `--enable-shell` to turn it on); pass `--msvc` for VS 2022/2026 + vcpkg instead
 - run.py delegates all build logic to build.py
