@@ -1,10 +1,12 @@
 #include <KAI/Console.h>
 #include <KAI/Core/Exception.h>
+#include <KAI/Core/Logger.h>
 #include <imgui.h>
 
 #include <cstring>
 #include <iomanip>
 #include <map>
+#include <set>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -45,7 +47,7 @@ int RhoTabToSpacesCallback(ImGuiInputTextCallbackData* data) {
 }  // namespace
 
 // Enum for the available tabs in the console window
-enum class ConsoleTab { Pi, Rho, Debugger };
+enum class ConsoleTab { Pi, Rho, Debugger, Tree };
 
 // A tabbed console with Pi, Rho, and Debugger tabs
 struct ExecutorWindow {
@@ -69,6 +71,11 @@ struct ExecutorWindow {
     int DebugStepCount = 0;
     vector<string> DebugLog;
     int WatchIndex = 0;
+
+    // Tree tab state - which node is currently selected, Explorer-style
+    int SelectedTreeHandle = -1;
+    Object SelectedTreeObject;
+    std::string SelectedTreePath;
 
     // KAI console objects
     Console console_;
@@ -183,7 +190,7 @@ struct ExecutorWindow {
         }
 
         // Create styled tab selection buttons with tab-like appearance
-        float tabWidth = ImGui::GetContentRegionAvailWidth() / 3.0f - 4.0f;
+        float tabWidth = ImGui::GetContentRegionAvailWidth() / 4.0f - 4.0f;
         float tabHeight = 30.0f;
 
         // Style adjustments for all tabs
@@ -300,6 +307,38 @@ struct ExecutorWindow {
         }
         ImGui::PopStyleVar();
         ImGui::PopStyleColor(4);
+        ImGui::SameLine();
+
+        // Tree Tab Button
+        ImGui::PushStyleColor(ImGuiCol_Button,
+                              (CurrentTab == ConsoleTab::Tree)
+                                  ? ImVec4(0.3f, 0.6f, 0.8f, 1.0f)
+                                  : ImVec4(0.2f, 0.2f, 0.2f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
+                              (CurrentTab == ConsoleTab::Tree)
+                                  ? ImVec4(0.4f, 0.7f, 0.9f, 1.0f)
+                                  : ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive,
+                              ImVec4(0.5f, 0.8f, 1.0f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+
+        // Custom button styling - only rounded on top for Tree tab
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 4.0f);
+        if (CurrentTab == ConsoleTab::Tree) {
+            // Highlight active tab with bottom border that matches the tab
+            ImGui::GetWindowDrawList()->AddRectFilled(
+                ImGui::GetCursorScreenPos(),
+                ImVec2(ImGui::GetCursorScreenPos().x + tabWidth,
+                       ImGui::GetCursorScreenPos().y + tabHeight + 1),
+                ImGui::GetColorU32(ImVec4(0.3f, 0.6f, 0.8f, 1.0f)), 4.0f,
+                ImDrawCornerFlags_TopLeft | ImDrawCornerFlags_TopRight);
+        }
+
+        if (ImGui::Button("Tree", ImVec2(tabWidth, tabHeight - 4))) {
+            SwitchTab(ConsoleTab::Tree);
+        }
+        ImGui::PopStyleVar();
+        ImGui::PopStyleColor(4);
 
         ImGui::EndChild();
         ImGui::PopStyleColor();  // Pop tab bar background color
@@ -319,6 +358,8 @@ struct ExecutorWindow {
         // Draw content based on current tab
         if (CurrentTab == ConsoleTab::Debugger) {
             DrawDebuggerContent();
+        } else if (CurrentTab == ConsoleTab::Tree) {
+            DrawTreeContent();
         } else {
             DrawConsoleContent();
         }
@@ -867,8 +908,248 @@ struct ExecutorWindow {
                 }
             }
         } catch (Exception::Base& e) {
+            Logger::Error("ImGui Window debug step failed: " +
+                          std::string(e.ToString().c_str()));
             AddLog("Debug operation failed: %s", e.ToString().c_str());
         }
+    }
+
+    // Recursively renders one node of the executor's object tree as a
+    // collapsible ImGui tree item, Explorer-style: objects with children get
+    // an expand arrow, leaves don't, and clicking a row selects it (shown in
+    // the details pane in DrawTreeContent()). `seen` guards against cycles in
+    // the object graph, `depth` is a hard recursion cap for the same reason.
+    // RAII guard so a TreePush from TreeNodeEx() always gets its matching
+    // TreePop, even if something between them throws - see the long comment
+    // in RenderTreeObjectNode for why that matters here.
+    struct TreePopGuard {
+        bool active;
+        explicit TreePopGuard(bool a) : active(a) {}
+        ~TreePopGuard() {
+            if (active) ImGui::TreePop();
+        }
+    };
+
+    void RenderTreeObjectNode(const Object& node, const std::string& label,
+                              const std::string& path, std::set<int>& seen,
+                              int depth) {
+        // Every KAI Object call below (GetDictionary, GetClass, ToString,
+        // ...) can throw for objects the tree wasn't expecting to touch
+        // (internal Type/Class descriptors, continuations mid-execution,
+        // GC-transitional state, etc.) - the rest of this file always
+        // wraps Object access in try/catch for exactly that reason, this
+        // function was the one place that didn't, so any such exception
+        // was propagating out of the ImGui frame uncaught and crashing the
+        // app. Catch per-node so one bad subobject renders an error line
+        // instead of crashing the process or breaking the rest of the tree.
+        // TreePopGuard (not a bare ImGui::TreePop() call at the end)
+        // guarantees the tree/ID stack stays balanced even if a child
+        // throws mid-recursion.
+        bool open = false;
+        bool hasChildren = false;
+        try {
+            if (!node.Exists() || depth > 32) return;
+
+            int handle = node.GetHandle().GetValue();
+            if (!seen.insert(handle).second) {
+                ImGui::TextColored(ImVec4(0.8f, 0.4f, 0.4f, 1.0f),
+                                   "%s  (cycle)", label.c_str());
+                return;
+            }
+
+            const Dictionary& dict = node.GetDictionary();
+            hasChildren = !dict.empty();
+
+            std::string className =
+                node.GetClass()
+                    ? node.GetClass()->GetName().ToString().c_str()
+                    : "?";
+
+            ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow |
+                                       ImGuiTreeNodeFlags_OpenOnDoubleClick;
+            if (!hasChildren) {
+                flags |=
+                    ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+            }
+            if (SelectedTreeHandle == handle) {
+                flags |= ImGuiTreeNodeFlags_Selected;
+            }
+
+            open = ImGui::TreeNodeEx((void*)(intptr_t)handle, flags,
+                                     "%s  (%s)", label.c_str(),
+                                     className.c_str());
+            if (ImGui::IsItemClicked()) {
+                SelectedTreeHandle = handle;
+                SelectedTreeObject = node;
+                SelectedTreePath = path;
+            }
+        } catch (Exception::Base& e) {
+            ImGui::TextColored(ImVec4(0.8f, 0.4f, 0.4f, 1.0f),
+                               "%s  (error: %s)", label.c_str(),
+                               e.ToString().c_str());
+            return;
+        } catch (const std::exception& e) {
+            ImGui::TextColored(ImVec4(0.8f, 0.4f, 0.4f, 1.0f),
+                               "%s  (error: %s)", label.c_str(), e.what());
+            return;
+        } catch (...) {
+            ImGui::TextColored(ImVec4(0.8f, 0.4f, 0.4f, 1.0f),
+                               "%s  (unknown error)", label.c_str());
+            return;
+        }
+
+        // TreeNodeEx already pushed the ID/indent for us when it returned
+        // true on a non-leaf node - this guard pops it on every exit path.
+        TreePopGuard popGuard(open && hasChildren);
+        if (!open || !hasChildren) return;
+
+        try {
+            // Copy (label, child) pairs out first: recursing while holding
+            // a reference into the live dictionary is unsafe if a child's
+            // own rendering mutates this node's storage.
+            std::vector<std::pair<std::string, Object>> children;
+            const Dictionary& dict = node.GetDictionary();
+            children.reserve(dict.size());
+            for (const auto& entry : dict) {
+                children.emplace_back(entry.first.ToString().c_str(),
+                                      entry.second);
+            }
+
+            for (const auto& child : children) {
+                const std::string& childName = child.first;
+                std::string childPath = (path == "/") ? path + childName
+                                                       : path + "/" + childName;
+                // RenderTreeObjectNode catches its own exceptions, so a bad
+                // grandchild can't skip this node's TreePop either.
+                RenderTreeObjectNode(child.second, childName, childPath, seen,
+                                     depth + 1);
+            }
+        } catch (Exception::Base& e) {
+            ImGui::TextColored(ImVec4(0.8f, 0.4f, 0.4f, 1.0f),
+                               "  (error listing children: %s)",
+                               e.ToString().c_str());
+        } catch (const std::exception& e) {
+            ImGui::TextColored(ImVec4(0.8f, 0.4f, 0.4f, 1.0f),
+                               "  (error listing children: %s)", e.what());
+        } catch (...) {
+            ImGui::TextColored(ImVec4(0.8f, 0.4f, 0.4f, 1.0f),
+                               "  (unknown error listing children)");
+        }
+    }
+
+    void DrawTreeContent() {
+        // Header, styled consistently with the Console/Debugger tabs
+        ImGui::PushStyleColor(ImGuiCol_ChildBg,
+                              ImVec4(0.25f, 0.25f, 0.25f, 1.0f));
+        ImGui::BeginChild("TreeHeader",
+                          ImVec2(ImGui::GetContentRegionAvailWidth(), 40),
+                          true);
+        ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);
+        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.4f, 0.8f, 1.0f, 1.0f));
+        float headerTextHeight = ImGui::GetTextLineHeightWithSpacing();
+        ImGui::SetCursorPosY((40 - headerTextHeight) * 0.5f);
+        ImGui::SetCursorPosX(10);
+        ImGui::Text("Executor Tree");
+        ImGui::PopStyleColor();
+        ImGui::PopFont();
+
+        ImGui::SameLine(ImGui::GetContentRegionAvailWidth() - 90);
+        ImGui::SetCursorPosY((40 - ImGui::GetFrameHeightWithSpacing()) * 0.5f);
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
+                              ImVec4(0.4f, 0.4f, 0.4f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive,
+                              ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
+        if (ImGui::Button("Refresh", ImVec2(75, 0))) {
+            // The tree is walked fresh every frame anyway; this button just
+            // clears the selection in case the selected object went away.
+            SelectedTreeHandle = -1;
+            SelectedTreeObject = Object();
+            SelectedTreePath.clear();
+        }
+        ImGui::PopStyleColor(3);
+
+        ImGui::EndChild();
+        ImGui::PopStyleColor();  // ChildBg
+
+        ImGui::Separator();
+
+        // Left pane: the tree itself (Explorer's folder pane)
+        ImGui::BeginChild("TreeView",
+                          ImVec2(ImGui::GetContentRegionAvailWidth() * 0.6f, 0),
+                          true, ImGuiWindowFlags_HorizontalScrollbar);
+
+        Object root = tree_ ? tree_->GetRoot() : Object();
+        if (!root.Exists()) {
+            ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f),
+                               "No tree available for this executor");
+        } else {
+            std::set<int> seen;
+            RenderTreeObjectNode(root, "/", "/", seen, 0);
+        }
+
+        ImGui::EndChild();
+        ImGui::SameLine();
+
+        // Right pane: details of the selected node (Explorer's preview pane)
+        ImGui::BeginChild("TreeDetails", ImVec2(0, 0), true);
+        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.4f, 0.8f, 1.0f, 1.0f));
+        ImGui::Text("Details");
+        ImGui::PopStyleColor();
+        ImGui::Separator();
+
+        if (SelectedTreeObject.Exists()) {
+            // Same reasoning as RenderTreeObjectNode: these are all live
+            // KAI Object calls (GetClass, GetDictionary, ToString via
+            // FormatStackValue) and can throw for internal object types
+            // (Type/Class descriptors, in-flight continuations, etc.).
+            // Don't let a bad selection crash the whole window.
+            try {
+                std::string className =
+                    SelectedTreeObject.GetClass()
+                        ? SelectedTreeObject.GetClass()
+                              ->GetName()
+                              .ToString()
+                              .c_str()
+                        : "?";
+                ImGui::Text("Path:   %s", SelectedTreePath.c_str());
+                ImGui::Text("Type:   %s", className.c_str());
+                ImGui::Text("Handle: %d", SelectedTreeHandle);
+                ImGui::Text("Children: %d",
+                            (int)SelectedTreeObject.GetDictionary().size());
+                ImGui::Separator();
+
+                // Function/Method objects are stored via BasePointerBase,
+                // whose StringStream operator<< is a hard
+                // KAI_NOT_IMPLEMENTED() in StringStream.cpp - that's a gap
+                // in KAI itself, not something fixable from here. Skip the
+                // known-throwing call for those types and say so plainly,
+                // rather than let it fall through the exception path below.
+                if (className == "Function" || className == "Method") {
+                    ImGui::TextColored(
+                        ImVec4(0.6f, 0.6f, 0.6f, 1.0f),
+                        "(callable - no string representation available)");
+                } else {
+                    ImGui::TextWrapped(
+                        "%s", FormatStackValue(SelectedTreeObject).c_str());
+                }
+            } catch (Exception::Base& e) {
+                ImGui::TextColored(ImVec4(0.8f, 0.4f, 0.4f, 1.0f),
+                                   "Error reading this object: %s",
+                                   e.ToString().c_str());
+            } catch (const std::exception& e) {
+                ImGui::TextColored(ImVec4(0.8f, 0.4f, 0.4f, 1.0f),
+                                   "Error reading this object: %s", e.what());
+            } catch (...) {
+                ImGui::TextColored(ImVec4(0.8f, 0.4f, 0.4f, 1.0f),
+                                   "Unknown error reading this object");
+            }
+        } else {
+            ImGui::TextColored(ImVec4(0.6f, 0.6f, 0.6f, 1.0f),
+                               "Select an item in the tree to see details");
+        }
+
+        ImGui::EndChild();
     }
 
     void ExecCommand(const char* command_line) {
@@ -986,6 +1267,14 @@ struct ExecutorWindow {
         } catch (Exception::Base& e) {
             StringStream st;
             st << "Error: " << e.ToString();
+
+            // Same Logger (Logs/kai.log) the Console app and the rest of
+            // KAI use, so command failures here show up alongside
+            // everything else instead of only in this window's in-memory
+            // log.
+            Logger::Error("ImGui Window command failed: " +
+                          std::string(command_line) + " -> " +
+                          e.ToString().c_str());
 
             ImVec4 color(1, 0, 0, 1);
             ImGui::PushStyleColor(ImGuiCol_Text, color);

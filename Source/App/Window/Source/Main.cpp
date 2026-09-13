@@ -1,6 +1,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <KAI/Console/Console.h>
+#include <KAI/Core/Logger.h>
 #include <imgui.h>
 
 #include <ctime>
@@ -23,6 +24,10 @@ KAI_END
 USING_NAMESPACE_KAI
 
 static void error_callback(int error, const char* description) {
+    // Route through KAI's common Logger (Logs/kai.log), same as Console,
+    // instead of a raw cerr print that nothing else ever sees.
+    Logger::Error("GLFW error " + std::to_string(error) + ": " +
+                  (description ? description : "(no description)"));
     cerr << "Error " << error << ": " << description << endl;
 }
 
@@ -242,8 +247,16 @@ int main(int argc, char** argv) {
     (void)argc;
     (void)argv;
 
+    // Use the same Logger (Logs/kai.log) as Console and the rest of KAI,
+    // instead of the Window app's own separate/ad-hoc logging.
+    Logger::Init();
+    Logger::Info("KAI ImGui Window starting");
+
     GLFWwindow* window = SetupGui();
-    if (!window) return -1;
+    if (!window) {
+        Logger::Error("KAI ImGui Window: SetupGui() failed, exiting");
+        return -1;
+    }
 
     LoadFont();
 
@@ -320,6 +333,8 @@ int main(int argc, char** argv) {
     ImGui::DestroyContext();
     glfwDestroyWindow(window);
     glfwTerminate();
+
+    Logger::Info("KAI ImGui Window exiting");
 
     return 0;
 }
