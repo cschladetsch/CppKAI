@@ -1,6 +1,10 @@
 #include <KAI/Console.h>
 #include <KAI/Core/Exception.h>
+#include <KAI/Core/FunctionBase.h>
 #include <KAI/Core/Logger.h>
+#include <KAI/Core/Object/ClassBase.h>
+#include <KAI/Core/Object/GetStorageBase.h>
+#include <KAI/Core/Object/MethodBase.h>
 #include <imgui.h>
 
 #include <cstring>
@@ -17,6 +21,32 @@ KAI_BEGIN
 
 namespace {
 std::string FormatStackValue(const Object& object) {
+    // Function/Method/Class objects are stored via BasePointerBase (or, for
+    // Class, a raw ClassBase*), whose generic StringStream operator<< is a
+    // hard KAI_NOT_IMPLEMENTED() - that's what surfaces as
+    // "Error: [StringStream.cpp:41] Not Implemented" from ordinary console
+    // commands like "info" that print a Function/Method/Class value via the
+    // stack, not just from the Tree tab. Each of those types does have a
+    // working ToString() reachable by deref'ing down to its concrete
+    // BasePointer<T>/ClassBase*, the same way the Tree tab's Details pane
+    // does - use that instead of the generic (and broken) dispatch.
+    if (object.Exists()) {
+        std::string className = object.GetClass()
+                                     ? object.GetClass()->GetName().ToString().c_str()
+                                     : "";
+        if (className == "Function") {
+            return ConstDeref<BasePointer<FunctionBase>>(object)->ToString().c_str();
+        }
+        if (className == "Method") {
+            return ConstDeref<BasePointer<MethodBase>>(object)->ToString().c_str();
+        }
+        if (className == "Class") {
+            const ClassBase* cls = ConstDeref<const ClassBase*>(object);
+            return cls ? ("Class: " + std::string(cls->GetName().ToString().c_str()))
+                       : "Class: (null)";
+        }
+    }
+
     std::string text = object.ToString().StdString();
     while (!text.empty() && (text.back() == '\n' || text.back() == '\r')) {
         text.pop_back();
@@ -1120,15 +1150,104 @@ struct ExecutorWindow {
                 ImGui::Separator();
 
                 // Function/Method objects are stored via BasePointerBase,
-                // whose StringStream operator<< is a hard
+                // whose generic StringStream operator<< is a hard
                 // KAI_NOT_IMPLEMENTED() in StringStream.cpp - that's a gap
-                // in KAI itself, not something fixable from here. Skip the
-                // known-throwing call for those types and say so plainly,
-                // rather than let it fall through the exception path below.
-                if (className == "Function" || className == "Method") {
-                    ImGui::TextColored(
-                        ImVec4(0.6f, 0.6f, 0.6f, 1.0f),
-                        "(callable - no string representation available)");
+                // in KAI's generic-to-specific dispatch, not something
+                // fixable from here. But FunctionBase/MethodBase both have
+                // a working ToString() and rich CallableBase<T> accessors
+                // (name, return type, argument types, description), reached
+                // by deref'ing the Object down to the concrete
+                // BasePointer<T> with ConstDeref<T>(Object) - the same
+                // mechanism the rest of KAI uses to unwrap Objects.
+                if (className == "Function") {
+                    const BasePointer<FunctionBase>& fn =
+                        ConstDeref<BasePointer<FunctionBase>>(
+                            SelectedTreeObject);
+                    ImGui::TextColored(ImVec4(0.6f, 0.9f, 0.6f, 1.0f),
+                                       "Signature:");
+                    ImGui::TextWrapped("%s", fn->ToString().c_str());
+                    ImGui::Separator();
+                    ImGui::Text("Name:        %s",
+                                fn->GetName().ToString().c_str());
+                    ImGui::Text("Return type: %s",
+                                fn->GetReturnType().ToString().c_str());
+                    const auto& args = fn->GetArgumentTypes();
+                    ImGui::Text("Arguments:   %d", (int)args.size());
+                    for (size_t i = 0; i < args.size(); ++i) {
+                        ImGui::BulletText("[%d] %s", (int)i,
+                                          args[i].ToString().c_str());
+                    }
+                    if (!fn->Description.Empty()) {
+                        ImGui::Separator();
+                        ImGui::TextWrapped("Description: %s",
+                                           fn->Description.c_str());
+                    }
+                } else if (className == "Method") {
+                    const BasePointer<MethodBase>& m =
+                        ConstDeref<BasePointer<MethodBase>>(
+                            SelectedTreeObject);
+                    ImGui::TextColored(ImVec4(0.6f, 0.9f, 0.6f, 1.0f),
+                                       "Signature:");
+                    ImGui::TextWrapped("%s", m->ToString().c_str());
+                    ImGui::Separator();
+                    ImGui::Text("Name:        %s",
+                                m->GetName().ToString().c_str());
+                    ImGui::Text("Class type:  %s",
+                                m->GetClassType().ToString().c_str());
+                    ImGui::Text("Return type: %s",
+                                m->GetReturnType().ToString().c_str());
+                    ImGui::Text(
+                        "Const:       %s",
+                        m->GetConstness() == Constness::Const ? "yes" : "no");
+                    const auto& args = m->GetArgumentTypes();
+                    ImGui::Text("Arguments:   %d", (int)args.size());
+                    for (size_t i = 0; i < args.size(); ++i) {
+                        ImGui::BulletText("[%d] %s", (int)i,
+                                          args[i].ToString().c_str());
+                    }
+                    if (!m->Description.Empty()) {
+                        ImGui::Separator();
+                        ImGui::TextWrapped("Description: %s",
+                                           m->Description.c_str());
+                    }
+                } else if (className == "Class") {
+                    // Class objects hold a `const ClassBase *` describing a
+                    // registered KAI type - list its methods and properties,
+                    // Explorer-"properties dialog"-style.
+                    const ClassBase* cls =
+                        ConstDeref<const ClassBase*>(SelectedTreeObject);
+                    if (!cls) {
+                        ImGui::TextColored(ImVec4(0.6f, 0.6f, 0.6f, 1.0f),
+                                           "(null class)");
+                    } else {
+                        ImGui::Text("Class name:  %s",
+                                    cls->GetName().ToString().c_str());
+                        ImGui::Text("Type number: %s",
+                                    cls->GetTypeNumber().ToString().c_str());
+                        ImGui::Separator();
+                        const auto& methods = cls->GetMethods();
+                        ImGui::TextColored(ImVec4(0.6f, 0.9f, 0.6f, 1.0f),
+                                           "Methods (%d):",
+                                           (int)methods.size());
+                        for (const auto& kv : methods) {
+                            MethodBase* mb = kv.second;
+                            if (mb) {
+                                ImGui::BulletText("%s", mb->ToString().c_str());
+                            } else {
+                                ImGui::BulletText(
+                                    "%s", kv.first.ToString().c_str());
+                            }
+                        }
+                        ImGui::Separator();
+                        const auto& props = cls->GetProperties();
+                        ImGui::TextColored(ImVec4(0.6f, 0.9f, 0.6f, 1.0f),
+                                           "Properties (%d):",
+                                           (int)props.size());
+                        for (const auto& kv : props) {
+                            ImGui::BulletText("%s",
+                                              kv.first.ToString().c_str());
+                        }
+                    }
                 } else {
                     ImGui::TextWrapped(
                         "%s", FormatStackValue(SelectedTreeObject).c_str());
