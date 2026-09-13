@@ -73,7 +73,7 @@ See the full diagram: **[System Architecture Overview](resources/diagrams/system
 - **[System Overview](resources/architecture/system-overview.md)** - Complete architectural analysis with statistics
 
 ### **Development Guides**
-- **Building**: [Build Guide](Doc/OUT_OF_SOURCE_BUILD.md) | [Installation](Doc/Install.md) | [CMake Guide](CMake/README.md)
+- **Building**: [Build Guide](Doc/BUILD.md) | [Out-of-Source Build Notes](Doc/OUT_OF_SOURCE_BUILD.md) | [Installation](Doc/Install.md) | [CMake Guide](CMake/README.md)
 - **Languages**: [Pi Tutorial](Doc/PiTutorial.md) | [Rho Tutorial](Doc/RhoTutorial.md) | [Tau Tutorial](Doc/TauTutorial.md) | [Language System](Include/KAI/Language/README.md)
 - **Networking**: [Overview](Doc/Networking.md) | [Architecture](Doc/NetworkArchitecture.md) | [Console Networking](Doc/CONSOLE_NETWORKING.md)
 - **Testing**: [Test Guide](Doc/Test.md) | [Connection Testing](Doc/ConnectionTesting.md) | [Test Overview](Test/README.md)
@@ -100,9 +100,7 @@ See the full diagram: **[System Architecture Overview](resources/diagrams/system
 ### **Quick Start**
 
 **Linux / WSL2 / macOS:**
-- Build from the repository root with `./b` (networking enabled by default)
-- Disable networking with `./b --no-network`
-- Run the full test suite with `./run_all_tests.sh`
+- Build with `./Scripts/build.sh` (quick Debug build), or plain CMake from a `build/` directory for full control over options — networking is enabled by default (`-DKAI_NETWORKING=OFF` to disable)
 - Test binaries are written to `./Bin/Test`, including `TestNetwork` and `TestTau`
 - Run `./Scripts/run_rho_demo.sh` for a comprehensive demo of Rho language features
 - Run `./Scripts/calc_test.sh` for a demonstration of network calculation
@@ -226,12 +224,14 @@ git clone https://github.com/cschladetsch/CppKAI.git
 cd CppKAI
 git submodule init && git submodule update
 
-./b                    # Build with networking (default)
-./b --no-network       # Build without networking
-./b --gcc              # Use GCC instead of Clang
-./b --reconfigure      # Force CMake reconfiguration
-./b --clean            # Clean and rebuild
-./be                   # Build and run all tests
+./Scripts/build.sh                          # Quick Debug build (Clang, Ninja)
+
+# Or plain CMake for full control over options:
+mkdir -p build && cd build
+cmake ..                                    # Networking on by default
+cmake .. -DKAI_NETWORKING=OFF               # Build without networking
+cmake .. -DBUILD_GCC=ON                     # Use GCC instead of Clang
+cmake --build .
 ```
 
 ### Building on Windows (native)

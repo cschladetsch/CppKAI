@@ -1,251 +1,173 @@
 # Building KAI
 
-KAI uses CMake as its build system and supports both in-source and out-of-source builds. For day-to-day development, prefer an out-of-source `build/` directory to keep generated files separate from the source tree.
+KAI uses CMake (3.28+) with a C++23 compiler. Boost has been fully removed
+from KAI — no external dependency needs to be installed before building.
 
 ## Prerequisites
 
-- CMake 3.28 or higher
-- C++23 compatible compiler (GCC 13+, Clang 16+, or MSVC 2022+)
-- Boost 1.72 or higher
-  - Required components: system, filesystem, program_options, date_time, regex
+- CMake 3.28+
+- C++23 compiler: Clang 16+ (default on Linux/macOS; also supported natively
+  on Windows), GCC 13+, or MSVC 19.5+ (VS 2022/2026)
+- Ninja (recommended; used automatically when available)
+- Windows only: Python 3.10+ (drives `build.py`/`run.py`), and vcpkg if using
+  `--msvc`
 
-### Installing Boost
+## Windows (native)
 
-For all platforms:
+This is the primary, actively-used build path. `build.py` configures and
+builds with Clang + Ninja by default (no vcpkg needed for that path); pass
+`--msvc` to use MSVC + Visual Studio + vcpkg instead.
 
-```bash
-./bootstrap.sh  # or .\bootstrap.bat on Windows
-./b2 install debug --date-time --build=complete --with-chrono --with-filesystem --with-system --with-program_options
+```powershell
+git clone https://github.com/cschladetsch/CppKAI.git
+cd CppKAI
+git submodule init
+git submodule update --recursive
+
+py build.py                     # Release build (Clang + Ninja, shell syntax OFF)
+py build.py --config Debug      # Debug build
+py build.py --msvc              # MSVC + Visual Studio generator + vcpkg
+py build.py --no-network        # Disable networking
+py build.py --enable-shell      # Turn on backtick/shell syntax (see Security below)
+py build.py --reconfigure       # Clean and reconfigure
+
+py run.py console               # Build + launch Console (Pi mode)
+py run.py rho                   # Build + launch Console in Rho mode
+py run.py tests                 # Build + run all tests
+py run.py test-pi               # Build + run TestPi only
+py run.py demo                  # Build + run ContinuationMobilityDemo
+py run.py console --no-build    # Just launch (skip build)
 ```
 
-## Building the Project
+Run the Clang+Ninja path from a Developer PowerShell for VS (or the
+`x64 Native Tools Command Prompt`) so Clang can find the MSVC headers/libs it
+still links against on Windows.
 
-### Quick Start with Helper Scripts
+## Linux / macOS
 
-KAI provides convenient scripts for building:
-
-```bash
-# Build with Clang++ (default)
-./Scripts/b
-
-# Build with the ImGui frontend enabled
-./Scripts/b --imgui
-
-# Build with GCC
-./Scripts/b --gcc
-
-# Build without using Ninja
-./Scripts/b --no-ninja
-```
-
-### Using the Makefile
-
-A Makefile is provided for simpler builds:
+There is no top-level convenience script (`./b`, `Makefile`, etc.) in this
+tree — build with plain CMake, optionally via `Scripts/build.sh` for a quick
+Debug build:
 
 ```bash
-# Build with Clang++ (default)
-make
-# or
-make clang
+git clone https://github.com/cschladetsch/CppKAI.git
+cd CppKAI
+git submodule init && git submodule update
 
-# Build with GCC
-make gcc
+# Quick Debug build
+./Scripts/build.sh
 
-# Clean the build directory
-make clean
-```
-
-### Standard Out-of-Source Build
-
-Build from a separate `build` directory when you want an isolated configure/build tree:
-
-```bash
-# Create build directory
-mkdir -p build
-cd build
-
-# Generate build files with Clang++ (default)
+# Or a standard out-of-source build with full control over options
+mkdir -p build && cd build
 cmake ..
-
-# Generate build files with GCC
-cmake .. -DCMAKE_CXX_COMPILER=g++ -DBUILD_GCC=ON
-
-# Build the project
-cmake --build .  # Use this on all platforms
-# or
-make             # On Unix-like systems
+cmake --build . -j"$(nproc)"
 ```
 
-### Build Configuration Options
+Binaries (Console, test suites, etc.) are written to `Bin/` and `Bin/Test/`
+at the repository root regardless of which of the above you use, because
+`BIN_HOME` defaults to `<repo root>/Bin`.
 
-KAI provides several build options that can be configured with CMake:
+## CMake Build Options
 
 ```bash
-# Use GCC instead of Clang++ (default)
-cmake .. -DBUILD_GCC=ON
-
-# Explicitly set compiler
-cmake .. -DCMAKE_CXX_COMPILER=clang++  # Default
-cmake .. -DCMAKE_CXX_COMPILER=g++      # Use GCC
-
-# Configure build types
-cmake .. -DCMAKE_BUILD_TYPE=Debug   # Default
-cmake .. -DCMAKE_BUILD_TYPE=Release
-
-# Security options
-cmake .. -DENABLE_SHELL_SYNTAX=OFF        # Disable shell command integration (default: ON)
-
-# Control which components to build on `develop`
+cmake .. -DBUILD_GCC=ON                   # Use GCC instead of Clang (default: Clang)
+cmake .. -DCMAKE_BUILD_TYPE=Release       # Debug is CMake's implicit default here
 cmake .. -DKAI_BUILD_TEST_ALL=ON          # Build test targets (default: ON)
 cmake .. -DKAI_BUILD_CORE_TEST=ON         # Build core/unit tests (default: ON)
 cmake .. -DKAI_BUILD_TEST_LANG=ON         # Build language tests (default: ON)
-cmake .. -DKAI_BUILD_IMGUI=ON             # Build the ImGui frontend (Bin/ImGui)
-cmake .. -DKAI_BUILD_LLM=ON               # Build local model-cache support for llama.cpp integrations
-cmake .. -DKAI_NETWORKING=ON              # Enable networking, Tau network codegen, and TestNetwork (default)
-cmake .. -DKAI_NETWORKING=OFF             # Skip networking components and network tests
+cmake .. -DKAI_BUILD_IMGUI=ON             # Build the ImGui frontend (default: OFF)
+cmake .. -DKAI_BUILD_LLM=ON               # Build local model-cache support (default: OFF)
+cmake .. -DKAI_NETWORKING=ON              # Networking, Tau network codegen, TestNetwork (default: ON)
+cmake .. -DENABLE_SHELL_SYNTAX=ON         # Backtick/shell command execution (default: OFF)
+cmake .. -DKAI_ENABLE_TRACE=ON            # KAI_TRACE()/KAI_DEBUG_TRACE diagnostic logging to Logs/kai.log (default: OFF)
 ```
 
-On the current `develop` branch, core, language, and network tests are enabled by default. Set `-DKAI_NETWORKING=OFF` only when you want to exclude the networking stack. Use `-DKAI_BUILD_LLM=ON` when you want the local model cache wrapper for llama.cpp-based features.
+`KAI_BUILD_WINDOW` is a deprecated alias for `KAI_BUILD_IMGUI`.
 
-When LLM support is enabled, models are stored in `~/.cache/deepseek/models` by default, or in `$XDG_CACHE_HOME/deepseek/models` if `XDG_CACHE_HOME` is set. The cache is backed by `Ext/CppLmmModelStore`.
+When LLM support is enabled, models are stored in `~/.cache/deepseek/models`
+by default, or `$XDG_CACHE_HOME/deepseek/models` if set. The cache is backed
+by `Ext/CppLmmModelStore`.
 
-#### Security Configuration
+### Security Configuration
 
-**Shell Command Integration**: Shell commands are **enabled by default**
-(`ENABLE_SHELL_SYNTAX=ON`). On native Windows, backtick/shell commands are
-routed through WSL2's bash (`wsl.exe`), so a WSL2 distro with bash/coreutils
-installed and `wsl` on PATH is required there; Linux/macOS/WSL2 use the
-system shell directly. To disable shell integration in the Console:
+**Shell Command Integration is disabled by default** (`ENABLE_SHELL_SYNTAX=OFF`).
+Evaluating Pi/Rho source containing a backtick expression (`` `command` ``) or
+a `$ command` line runs a real shell command with the Console process's
+privileges, so this is opt-in, not opt-out. On native Windows, when enabled,
+backtick/shell commands are routed through WSL2's bash (`wsl.exe`) — a WSL2
+distro with bash/coreutils and `wsl` on PATH is required there. Linux/macOS/WSL2
+use the system shell directly.
 
 ```bash
-cmake .. -DENABLE_SHELL_SYNTAX=OFF
+cmake .. -DENABLE_SHELL_SYNTAX=ON
 
 # Or on Windows
-py build.py --disable-shell
+py build.py --enable-shell
 ```
 
-**Important**: Only enable shell syntax in trusted environments. When enabled:
-- Console supports `$ command` for direct shell execution
-- Console supports `` `command` `` for embedding shell output in expressions
-- Shell commands execute with the same privileges as the Console process
-
-### Platform-Specific Instructions
-
-#### Linux/macOS
-
-```bash
-# Using helper script (recommended)
-./Scripts/b
-
-# Include the ImGui frontend
-./Scripts/b --imgui
-
-# Manual build
-mkdir -p build && cd build
-cmake ..
-cmake --build .
-```
-
-#### Windows
-
-```bash
-mkdir build
-cd build
-cmake ..
-cmake --build .   # For command-line builds
-# or
-start *.sln       # To open in Visual Studio
-```
-
-## Output Directories
-
-All build outputs are organized in the following directories:
-
-- **KAI/Bin** - Executables and test binaries
-- **KAI/Lib** - Static and shared libraries
-
-### Console Installation
-
-The Console application automatically copies itself to `~/bin/Console` if the directory exists, making it available system-wide. This happens during the build process.
-
-```bash
-# After building, the Console is available at:
-./Bin/Console          # Local build directory
-~/bin/Console          # Automatically installed (if ~/bin exists)
-
-# You can also manually install:
-cp ./Bin/Console ~/bin/                    # User installation
-sudo cp ./Bin/Console /usr/local/bin/     # System-wide installation
-```
+Only enable this in trusted environments.
 
 ## Running Applications
 
-### Console Application
-
-The Console provides an interactive REPL environment:
+### Console
 
 ```bash
-# Basic usage
 ./Bin/Console                    # Interactive Pi mode
 ./Bin/Console --help             # Show all options
-./Bin/Console --version          # Show version info
 ./Bin/Console -l rho             # Start in Rho mode
 ./Bin/Console script.pi          # Execute a script
 ./Bin/Console -t 2 script.rho    # Execute with trace level 2
-
-# If installed to ~/bin:
-Console --help                   # Available system-wide
 ```
 
-### Window Application
+The Console automatically copies itself to `~/bin/Console` during the build
+if that directory exists.
 
-The ImGui frontend is built as `Bin/ImGui` when `KAI_BUILD_IMGUI=ON`:
+### Window (ImGui frontend)
+
+Built as `Bin/ImGui` when `KAI_BUILD_IMGUI=ON`:
 
 ```bash
-# Recommended helper path
-./Scripts/b --imgui
-
-# Manual configure/build
 mkdir -p build && cd build
 cmake .. -DKAI_BUILD_IMGUI=ON
 cmake --build . --target ImGui
-
-# Run from the repo root
-./Bin/ImGui
+./Bin/ImGui   # from the repo root
 ```
 
 ### Running Tests
 
-After building, test binaries are written to `Bin/Test/` at the repository root:
+After building, test binaries are written to `Bin/Test/` at the repository
+root:
 
 ```bash
-# Full suite from the repository root
-./Scripts/run_all_tests.sh
-
-# Individual test binaries
 ./Bin/Test/TestCore
 ./Bin/Test/TestPi
 ./Bin/Test/TestRho
 ./Bin/Test/TestTau
+./Bin/Test/TestNetwork          # Only built when KAI_NETWORKING=ON (default)
 
-# Network tests are included by default and can be disabled with `-DKAI_NETWORKING=OFF`
-./Bin/Test/TestNetwork
+# Filter a specific test
+./Bin/Test/TestPi --gtest_filter="*Continuation*"
 ```
+
+See [Doc/Test.md](Test.md) for more on filtering and interpreting failures,
+and [Doc/TEST_SUMMARY.md](TEST_SUMMARY.md) for the current per-suite status.
 
 ## Common Issues
 
-- If you see CMake errors about missing Boost components, make sure you've installed Boost with all required components.
-- If compilation fails with C++23 features not being recognized, ensure you're using a recent enough compiler version.
-- Always clean your build directory if you encounter strange build issues:
+- If compilation fails with C++23 features not recognized, use a newer
+  compiler (Clang 16+, GCC 13+, MSVC 19.5+).
+- If tests fail intermittently or crash on a fresh checkout after a merge,
+  do a clean rebuild:
   ```bash
-  rm -rf build/*  # On Unix-like systems
-  # or
-  rmdir /S /Q build  # On Windows
-  mkdir build
+  rm -rf build          # Unix
+  rmdir /S /Q build     # Windows
   ```
+  or `py build.py --reconfigure` on Windows.
 
 ## Development Best Practices
 
-1. **Always use out-of-source builds** - Never run CMake directly in the source directory
-2. **Commit only source files** - Never commit build artifacts to the repository
-3. **Use a clean build directory** - If you encounter build issues, try with a fresh build directory
+1. Always use an out-of-source `build/` directory — never run CMake directly
+   in the source tree.
+2. Never commit build artifacts.
+3. If you hit strange build issues, try a fresh `build/` directory before
+   anything else.

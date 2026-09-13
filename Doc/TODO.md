@@ -1,6 +1,6 @@
 # KAI Project TODO
 
-Last updated: 2026-04-25
+Last updated: 2026-09-13
 
 ## Current Status
 
@@ -80,6 +80,22 @@ gantt
 
 ## Core System
 
+- [x] `TestPiAdvancedContinuations.TestConditionalContinuation` and
+      `TestPiAdvancedControlFlow.TestContinuationConditional` were failing
+      with a `TypeMismatch` exception thrown from inside
+      `ExecuteContinuationInline` (`ExecutorPerform.cpp`) when a block
+      containing a named-function call (e.g. `{ add10 & }`) was executed
+      inline via `Operation::If`/`IfElse`. Root cause: the loop's
+      `if (continuation_ != cont)` check used `Object::operator!=`, a deep
+      value comparison, not an identity check — comparing two genuinely
+      different continuations walked their code arrays element-wise and
+      threw when two elements at the same index disagreed on type (e.g.
+      `Pathname` vs `int`). Fixed 2026-09-13 by replacing it with an
+      explicit `continuation_.GetHandle() != cont.GetHandle()` identity
+      check. Verified: both tests pass, and the full `TestPi` suite (519
+      tests) is green.
+- [x] `PiAdvancedTests.ExtremeRecursiveSum` segfault — fixed by the
+      `/STACK:16777216` linker flag added to the test/console targets.
 - [ ] Fix garbage collection cycles (Registry.cpp — current HACK avoids cycles)
 - [ ] Complete pathname resolution (Pathname.cpp)
 - [ ] Map serialization with BinaryStream (requires Registry reference)
@@ -104,9 +120,17 @@ gantt
 - `Include/KAI/Core/Thread/*.h` — thread headers are stubs
 - `Include/KAI/Core/Method.cpp0x.h` — C++0x artifact
 
+## Diagnostics
+
+- [ ] The `TypeMismatch`/`operator!=` investigation above is resolved — turn
+      `KAI_ENABLE_TRACE` back OFF (`cmake .. -DKAI_ENABLE_TRACE=OFF`) if it's
+      still on from debugging; it writes verbose `KAI_TRACE()` output to
+      `Logs/kai.log` and slows every run.
+
 ## Notes
 
 - Total TODO/FIXME/HACK comments in codebase: ~76
 - Shell (backtick) syntax disabled by default; enable with `-DENABLE_SHELL_SYNTAX=ON`
-- Network tests only built/run with `./Scripts/b --network`
+  (or `py build.py --enable-shell` on Windows)
+- Networking is built by default (`KAI_NETWORKING=ON`); pass `-DKAI_NETWORKING=OFF` to skip it
 - Full suite passes with networking-enabled build; some network tests are still environment-skipped when local sockets are unavailable

@@ -1,26 +1,20 @@
-# KAI Windows Port - File Placement Guide
+# Installing KAI
 
-Extract this package to your CppKAI repo root, then place files as follows:
+See [Doc/Install.md](Doc/Install.md) for installation instructions and
+[Doc/BUILD.md](Doc/BUILD.md) for the full build reference (CMake options,
+platform-specific steps, running tests).
 
-| File | Destination |
-|------|-------------|
-| build.py | repo root (alongside b, be) |
-| run.py | repo root |
-| README.md | repo root (replaces existing) |
-| Main.cpp | Source/App/Console/Source/Main.cpp |
-| fix_console.py | repo root (run once, then delete) |
+Quick start:
 
-## After extracting
+**Windows (native, Clang + Ninja by default):**
+```powershell
+py build.py
+py run.py console
+```
 
-1. Run the Console fix script once:
-   py fix_console.py
-
-2. Then build:
-   py run.py console
-
-## Notes
-
-- fix_console.py wraps popen/pclose calls in #ifndef _WIN32 guards
-- Main.cpp replaces getopt with a stdlib-only arg parser
-- build.py defaults to Clang + Ninja with shell/backtick syntax disabled (pass `--enable-shell` to turn it on); pass `--msvc` for VS 2022/2026 + vcpkg instead
-- run.py delegates all build logic to build.py
+**Linux / macOS:**
+```bash
+mkdir -p build && cd build
+cmake ..
+cmake --build .
+```

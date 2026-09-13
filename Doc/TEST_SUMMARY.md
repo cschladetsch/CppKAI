@@ -1,6 +1,6 @@
 # KAI Project Test Summary
 
-Generated: 2026-04-04
+Generated: 2026-04-04 (suite counts below); known regressions as of 2026-09-13 noted under Notes.
 
 ## Overall Status
 
@@ -34,30 +34,30 @@ Generated: 2026-04-04
 ## Build Commands
 
 ```bash
-# Configure and build from the repository root
-./Scripts/b
+# Configure and build (Linux/macOS)
+./Scripts/build.sh
+# or: mkdir -p build && cd build && cmake .. && cmake --build .
 
-# Run the full current suite
-./Scripts/run_all_tests.sh
+# Windows (native, Clang + Ninja by default)
+py build.py
 
 # Run individual suites
 ./Bin/Test/TestCore
 ./Bin/Test/TestPi
 ./Bin/Test/TestRho
 ./Bin/Test/TestTau
-
-# Run network tests (requires --network build)
-./Scripts/b --network
-./Bin/Test/TestNetwork
+./Bin/Test/TestNetwork      # Built by default (KAI_NETWORKING=ON); pass -DKAI_NETWORKING=OFF to skip
 
 # Filter specific tests
 ./Bin/Test/TestRho --gtest_filter="*ForLoop*"
 ./Bin/Test/TestNetwork --gtest_filter="TauDomainPropertyTest*"
 ```
 
+See [Doc/BUILD.md](BUILD.md) for the full option reference.
+
 ## Network Tests (TestNetwork)
 
-Built only when `KAI_NETWORKING=ON` (use `./Scripts/b --network`).
+Built by default (`KAI_NETWORKING=ON`); pass `-DKAI_NETWORKING=OFF` to skip.
 
 ### NodeEndToEndTest (6 tests)
 | Test | Description |
@@ -89,13 +89,24 @@ Built only when `KAI_NETWORKING=ON` (use `./Scripts/b --network`).
 
 ## Notes
 
-- This summary reflects the current `develop` branch test state as of 2026-04-04.
-- Historical documents that mention partial Rho failures describe older baselines and should not be treated as the current suite status.
-- **This snapshot is older than [`Doc/TODO.md`](TODO.md) (last updated 2026-04-25).** TODO.md's "Language" section lists specific, currently-tracked
-  gaps that postdate this summary - including a failing test
-  (`Mixed_ContinueInForEach`, under "`continue` in `foreach`") and several
-  unimplemented Rho/Pi behaviors (inline function calls inside
-  `for x in container`, and a list of missing Pi operations). Where the two
-  documents disagree, treat TODO.md as current and this file as the last
-  point at which the numbers above were true. Re-run the suites and update
-  both documents together before relying on either in isolation.
+- The per-suite counts above reflect a `develop` branch snapshot as of
+  2026-04-04. Historical documents that mention partial Rho failures describe
+  older baselines still further back and should not be treated as current.
+- **As of 2026-09-13, two Pi continuation tests that were failing are now
+  fixed**: `TestPiAdvancedContinuations.TestConditionalContinuation` and
+  `TestPiAdvancedControlFlow.TestContinuationConditional` (a `TypeMismatch`
+  thrown from `ExecuteContinuationInline` due to a deep-comparison bug in
+  `Object::operator!=` — see [`Doc/TODO.md`](TODO.md#core-system) for
+  details). `PiAdvancedTests.ExtremeRecursiveSum` was a segfault caused by
+  insufficient stack size, fixed by the `/STACK:16777216` linker flag added
+  to the test/console targets. All three now pass, and the full `TestPi`
+  suite (519 tests) is green.
+- **This snapshot is older than [`Doc/TODO.md`](TODO.md).** TODO.md's
+  "Language" section lists specific, currently-tracked gaps that postdate
+  this summary — including a failing test (`Mixed_ContinueInForEach`, under
+  "`continue` in `foreach`") and several unimplemented Rho/Pi behaviors
+  (inline function calls inside `for x in container`, and a list of missing
+  Pi operations). Where the two documents disagree, treat TODO.md as current
+  and this file as the last point at which the numbers above were true.
+  Re-run the suites and update both documents together before relying on
+  either in isolation.
