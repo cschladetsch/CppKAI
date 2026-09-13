@@ -26,6 +26,22 @@ std::string FormatStackValue(const Object& object) {
 
     return text;
 }
+
+// Rho's multi-line input needs ImGuiInputTextFlags_AllowTabInput so Tab
+// doesn't just move keyboard focus away, but ImGui then inserts a literal
+// '\t' character. Rho code is indentation-sensitive-ish and a raw tab looks
+// inconsistent next to space-indented lines, so replace every tab that ends
+// up immediately before the cursor with 4 spaces, in the same frame it was
+// typed (ImGuiInputTextFlags_CallbackAlways runs after the keypress is
+// applied but before the widget renders).
+int RhoTabToSpacesCallback(ImGuiInputTextCallbackData* data) {
+    if (data->EventFlag == ImGuiInputTextFlags_CallbackAlways &&
+        data->CursorPos > 0 && data->Buf[data->CursorPos - 1] == '\t') {
+        data->DeleteChars(data->CursorPos - 1, 1);
+        data->InsertChars(data->CursorPos, "    ");
+    }
+    return 0;
+}
 }  // namespace
 
 // Enum for the available tabs in the console window
@@ -439,7 +455,8 @@ struct ExecutorWindow {
             ImGui::Separator();
 
             ImGuiInputTextFlags multiline_flags =
-                ImGuiInputTextFlags_AllowTabInput;
+                ImGuiInputTextFlags_AllowTabInput |
+                ImGuiInputTextFlags_CallbackAlways;
 
             // Add a helpful hint
             ImGui::TextColored(
@@ -454,7 +471,7 @@ struct ExecutorWindow {
             ImGui::InputTextMultiline(
                 "##RhoInput", MultilineInputBuf, sizeof(MultilineInputBuf),
                 ImVec2(-1.0f, ImGui::GetTextLineHeightWithSpacing() * 6),
-                multiline_flags);
+                multiline_flags, RhoTabToSpacesCallback);
             bool execute_rho =
                 ImGui::IsItemActive() && ImGui::GetIO().KeyCtrl &&
                 ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Enter));
@@ -821,7 +838,6 @@ struct ExecutorWindow {
 
         // Show all stack items
         if (exec_->GetDataStack()->Size() > 0) {
-            AddLog("Stack:");
             for (int i = 0; i < exec_->GetDataStack()->Size(); i++) {
                 auto obj = exec_->GetDataStack()->At(i);
                 int displayIndex = exec_->GetDataStack()->Size() - 1 - i;
@@ -957,7 +973,6 @@ struct ExecutorWindow {
 
             // Report stack contents
             if (exec_->GetDataStack()->Size() > 0) {
-                AddLog("Stack:");
                 int stackIndex = 0;
                 for (auto obj : *exec_->GetDataStack()) {
                     StringStream st;
@@ -976,6 +991,23 @@ struct ExecutorWindow {
             ImGui::PushStyleColor(ImGuiCol_Text, color);
             AddLog("%s", st.ToString().c_str());
             ImGui::PopStyleColor();
+        }
+
+        // Commands like "pi"/"rho" switch the console's language directly
+        // (Console::SwitchLanguageWithHistory) without going through
+        // SwitchLanguage()/SwitchTab() above, so the GUI's tab and input
+        // widget can get out of sync with the console's actual language.
+        // Resync both from the console's real state after every command.
+        Language consoleLang = console_.GetLanguage();
+        if (consoleLang != CurrentLanguage &&
+            (consoleLang == Language::Pi || consoleLang == Language::Rho)) {
+            CurrentLanguage = consoleLang;
+            exec_ = &*console_.GetExecutor();
+            InputBuf[0] = '\0';
+            MultilineInputBuf[0] = '\0';
+            FocusInputNextFrame = true;
+            CurrentTab = (CurrentLanguage == Language::Pi) ? ConsoleTab::Pi
+                                                            : ConsoleTab::Rho;
         }
     }
 };
