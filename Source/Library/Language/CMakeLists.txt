@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.28...3.30)
 project(Languages)
 set(lang_root_dir ${KAI_SOURCE_ROOT_DIR}/Library/Language)
 

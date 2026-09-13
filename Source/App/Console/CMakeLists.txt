@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.28...3.30)
 set(name Console)
 project(${name})
 set(source_path ${APP_HOME}/${name}/Source)

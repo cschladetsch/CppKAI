@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.7)
+cmake_minimum_required(VERSION 3.28...3.30)
 
 # Set OpenGL policy to NEW to avoid warnings
 if(POLICY CMP0072)
