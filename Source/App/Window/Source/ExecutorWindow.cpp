@@ -448,6 +448,11 @@ struct ExecutorWindow {
         ImGui::EndChild();
         ImGui::PopStyleColor();  // ChildBg
 
+        // Removed the mini stack strip that used to live here: showing it
+        // right next to the command-echo log (which lists "Pi> 1", "Pi> 2",
+        // ... in chronological, not stack, order) read like two disagreeing
+        // stacks. The Debugger tab's Data Stack panel is now the single,
+        // unambiguous place to see the stack.
         ImGui::Separator();
 
         // Output region
@@ -754,15 +759,9 @@ struct ExecutorWindow {
             }
 
             ImGui::PopStyleColor(3);
-        } else {
-            ImGui::SetCursorPosY(ImGui::GetContentRegionAvail().y * 0.5f -
-                                 ImGui::GetTextLineHeight() * 0.5f);
-            ImGui::SetCursorPosX(ImGui::GetContentRegionAvail().x * 0.5f -
-                                 ImGui::CalcTextSize("Stack is empty").x *
-                                     0.5f);
-            ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f),
-                               "Stack is empty");
         }
+        // Empty stack: leave the panel blank rather than showing a
+        // "Stack is empty" placeholder.
 
         ImGui::EndChild();
         ImGui::PopStyleColor();  // Pop the ChildBg color
@@ -1249,8 +1248,79 @@ struct ExecutorWindow {
                         }
                     }
                 } else {
+                    // Any other instance (String, Int, Vector3, a
+                    // user-registered type, ...): show its value, then the
+                    // same Methods/Properties breakdown the "Class"
+                    // descriptor branch above shows - but sourced from
+                    // *this instance's* class, via SelectedTreeObject
+                    // .GetClass(), rather than treating the object itself
+                    // as a class descriptor.
+                    ImGui::TextColored(ImVec4(0.6f, 0.9f, 0.6f, 1.0f),
+                                       "Value:");
                     ImGui::TextWrapped(
                         "%s", FormatStackValue(SelectedTreeObject).c_str());
+
+                    const ClassBase* cls = SelectedTreeObject.GetClass();
+                    if (cls) {
+                        ImGui::Separator();
+                        const auto& methods = cls->GetMethods();
+                        ImGui::TextColored(ImVec4(0.6f, 0.9f, 0.6f, 1.0f),
+                                           "Methods (%d):",
+                                           (int)methods.size());
+                        for (const auto& kv : methods) {
+                            MethodBase* mb = kv.second;
+                            if (!mb) {
+                                ImGui::BulletText(
+                                    "%s", kv.first.ToString().c_str());
+                                continue;
+                            }
+                            // Double-click to invoke: the method pops its
+                            // own arguments off (and pushes its result
+                            // onto) the main data stack - the same one the
+                            // Debugger/Pi/Rho tabs already share, rather
+                            // than a separate scratch stack for arguments.
+                            // A zero-arg method just runs; an N-arg method
+                            // needs N values already pushed (e.g. via the
+                            // Pi tab) before double-clicking. Either way we
+                            // switch to the Pi tab afterward so the result
+                            // (or, on failure, the stack as it stands) is
+                            // immediately visible.
+                            ImGui::Selectable(mb->ToString().c_str());
+                            if (ImGui::IsItemHovered() &&
+                                ImGui::IsMouseDoubleClicked(
+                                    /* ImGuiMouseButton_Left */ 0)) {
+                                try {
+                                    mb->Invoke(SelectedTreeObject,
+                                              *exec_->GetDataStack());
+                                    AddLog("Invoked %s -> result pushed to stack",
+                                          mb->ToString().c_str());
+                                } catch (Exception::Base& e) {
+                                    AddLog(
+                                        "Failed to invoke %s: %s (push the "
+                                        "required arguments onto the stack "
+                                        "first)",
+                                        mb->ToString().c_str(),
+                                        e.ToString().c_str());
+                                } catch (const std::exception& e) {
+                                    AddLog(
+                                        "Failed to invoke %s: %s (push the "
+                                        "required arguments onto the stack "
+                                        "first)",
+                                        mb->ToString().c_str(), e.what());
+                                }
+                                SwitchTab(ConsoleTab::Pi);
+                            }
+                        }
+                        ImGui::Separator();
+                        const auto& props = cls->GetProperties();
+                        ImGui::TextColored(ImVec4(0.6f, 0.9f, 0.6f, 1.0f),
+                                           "Properties (%d):",
+                                           (int)props.size());
+                        for (const auto& kv : props) {
+                            ImGui::BulletText("%s",
+                                              kv.first.ToString().c_str());
+                        }
+                    }
                 }
             } catch (Exception::Base& e) {
                 ImGui::TextColored(ImVec4(0.8f, 0.4f, 0.4f, 1.0f),
@@ -1371,18 +1441,9 @@ struct ExecutorWindow {
                 }
             }
 
-            // Report stack contents
-            if (exec_->GetDataStack()->Size() > 0) {
-                int stackIndex = 0;
-                for (auto obj : *exec_->GetDataStack()) {
-                    StringStream st;
-                    st << "  [" << stackIndex++ << "]: "
-                       << FormatStackValue(obj).c_str();
-                    AddLog("%s", st.ToString().c_str());
-                }
-            } else {
-                AddLog("Stack is empty");
-            }
+            // The Debugger tab's Data Stack panel is the one place the
+            // stack is shown - not echoed here too, since that read as a
+            // second, differently-ordered "stack" sitting in the log.
         } catch (Exception::Base& e) {
             StringStream st;
             st << "Error: " << e.ToString();
