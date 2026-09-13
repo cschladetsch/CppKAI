@@ -1,5 +1,6 @@
-/trace.txt
-/log.txt
+/.ka20:*.d
+/test*
+/Logs/
 /.kai
 /Ext
 /tmp
@@ -255,3 +256,5 @@ Lib/
 !Ext/rang
 
 !Ext/ENet
+!/Test/
+!/Test/**

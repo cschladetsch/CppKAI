@@ -8,6 +8,7 @@ project(TestNetwork)
     # GTest-based test files
     set(GTEST_SOURCES
         NodeEndToEndTest.cpp
+        NetworkAdditionalTests.cpp
         TestGenerateProxy.cpp
         TauNetworkCommunicationTest.cpp
         TauPiSerializationTest.cpp
