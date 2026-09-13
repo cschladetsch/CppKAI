@@ -110,7 +110,8 @@ See the full diagram: **[System Architecture Overview](resources/diagrams/system
 **Windows (native):**
 - `py build.py` — configure and build
 - `py run.py console` — build and launch the Console
-- `py run.py tests` — build and run all tests
+- `py run.py tests` (or `py run_tests.py`) — build and run all tests
+- `py run.py window` (or `py run_window.py`) — build and launch the ImGui/Window frontend (requires `glfw3`, and `GLEW` on Windows — e.g. `vcpkg install glfw3 glew`)
 - `py run.py --help` — full option list
 
 ## Key Features
@@ -246,13 +247,15 @@ py build.py                     # Release build (Clang + Ninja by default, shell
 py build.py --config Debug      # Debug build
 py build.py --msvc              # Use MSVC + Visual Studio generator + vcpkg instead
 py build.py --no-network        # Disable networking
+py build.py --imgui             # Build the ImGui/Window frontend (needs glfw3, and GLEW on Windows)
 py build.py --reconfigure       # Clean and reconfigure
 
 py run.py console               # Build + launch Console (Pi mode)
 py run.py rho                   # Build + launch Console in Rho mode
-py run.py tests                 # Build + run all tests
+py run.py tests                 # Build + run all tests (same as py run_tests.py)
 py run.py test-pi               # Build + run TestPi only
 py run.py demo                  # Build + run ContinuationMobilityDemo
+py run.py window                # Build + launch the ImGui/Window frontend (same as py run_window.py)
 py run.py console --no-build    # Just launch (skip build)
 ```
 
