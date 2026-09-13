@@ -187,6 +187,18 @@ endif()
 # -DENABLE_SHELL_SYNTAX=ON/OFF to force either behaviour on any platform.
 option(ENABLE_SHELL_SYNTAX "Enable shell command execution via backtick syntax" OFF)
 
+# Diagnostic-only: compiles in the KAI_TRACE()/KAI_TRACE_ERROR() calls
+# scattered through Core/Debug.cpp and the Executor (Store/Suspend/EvalIdent/
+# IfElse) which otherwise compile to no-ops. Off by default because it's
+# very noisy and adds a Logger call to every traced instruction; note the
+# calls still land in Logs/kai.log rather than the console unless
+# Logger::s_consoleOutputForInfoDebug is also set at runtime (Info-level
+# traces are file-only by design; only Warn/Error/Fatal print to stdout).
+option(KAI_ENABLE_TRACE "Enable KAI_TRACE()/KAI_DEBUG_TRACE diagnostic logging" OFF)
+if(KAI_ENABLE_TRACE)
+    add_compile_definitions(KAI_DEBUG_TRACE)
+endif()
+
 # Boost has been fully removed from KAI. (CommonLang's optional arena allocator
 # uses std::pmr, not boost.monotonic.)
 

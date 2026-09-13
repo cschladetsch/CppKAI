@@ -223,6 +223,26 @@ foreach (lang ${langs})
     
     add_executable(${testName} ${sources} "${TEST_HOME}/Source/Main.cpp")
     target_link_libraries(${testName} ${core_libs} ${GTEST_BOTH_LIBRARIES} ${Boost_LIBRARIES})
+
+    # ExecuteContinuationInline (KAI/Executor) implements Pi's `if`/`ife`
+    # continuation dispatch via a recursive C++ lambda: every Pi-level
+    # function call reached through it costs several native stack frames
+    # (Object/Pointer<Continuation> smart-pointer machinery, a ScopeGuard,
+    # try/catch), not one. Windows' default 1MB thread stack overflows at
+    # only ~50-100 levels of Pi recursion because of that multiplier (see
+    # PiAdvancedTests.ExtremeRecursiveSum, which segfaults at depth 100).
+    # Give the test binaries headroom until that recursion is made
+    # iterative; this is a mitigation; it doesn't fix the underlying
+    # per-call stack cost.
+    if(WIN32)
+        # clang's driver misparses a bare "/STACK:16777216" as a file path
+        # (leading "/" looks like an absolute path on Windows) and refuses
+        # to link ("no such file or directory"). -Xlinker forces it straight
+        # through to lld-link/link.exe unchanged; MSVC's cl.exe accepts the
+        # same spelling directly, so this works for both toolchains.
+        target_link_options(${testName} PRIVATE -Xlinker /STACK:16777216)
+    endif()
+
     include(GoogleTest)
     
     # Try to discover tests if the module is available
