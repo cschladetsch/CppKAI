@@ -8,8 +8,11 @@ Usage:
   py run.py console              build + launch Console (Pi mode)
   py run.py rho                  build + launch Console in Rho mode
   py run.py tests                build + run all tests
+  py run.py window                build + launch the ImGui/Window frontend
   py run.py console --no-build   skip build, just launch
   py run.py console -- -l rho    pass args to the exe after --
+
+See also: run_tests.py, run_window.py (thin wrappers around 'tests'/'window').
 """
 
 import subprocess
@@ -30,6 +33,7 @@ TARGETS = {
     "test-tau":     "TestTau",
     "test-network": "TestNetwork",
     "demo":         "ContinuationMobilityDemo",
+    "window":       "ImGui",
     "repoindex":    "RepoIndex",
     "rhodataset":   "RhoDataset",
 }
@@ -40,7 +44,7 @@ CONSOLE_MODE_ARGS = {
 }
 
 BUILD_FLAGS = {
-    "--config", "--ninja", "--no-network", "--llm",
+    "--config", "--ninja", "--no-network", "--llm", "--imgui",
     "--enable-shell", "--clean", "--reconfigure", "--no-submodules",
     "--no-build",
 }
@@ -59,6 +63,7 @@ build flags:
   --no-network        KAI_BUILD_NETWORKING=OFF
   --llm               KAI_BUILD_LLM=ON
   --enable-shell      enable backtick shell syntax
+  --imgui             build the ImGui/Window frontend (KAI_BUILD_IMGUI=ON; implied by the 'window' target)
   --clean             wipe build/ before configuring
   --reconfigure       same as --clean
   --no-submodules     skip git submodule update
@@ -67,6 +72,7 @@ examples:
   py run.py console
   py run.py rho
   py run.py tests
+  py run.py window
   py run.py console --config Debug
   py run.py console --no-build
   py run.py console -- script.rho
@@ -165,6 +171,9 @@ def main():
         # pi and rho both build Console
         if target in ("pi", "rho"):
             cmake_target = "Console"
+        # window needs KAI_BUILD_IMGUI=ON to even configure the ImGui target
+        if target == "window" and "--imgui" not in build_flags:
+            build_flags = build_flags + ["--imgui"]
         build(build_flags + ["--config", config] if "--config" not in build_flags else build_flags,
               cmake_target)
 
