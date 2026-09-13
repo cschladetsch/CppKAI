@@ -344,6 +344,15 @@ if(KAI_NETWORKING)
     set(ENET_ROOT ${EXTERNAL}/ENet)
     include_directories(${ENET_ROOT}/include)
     add_subdirectory(${ENET_ROOT})
+    if(WIN32 AND TARGET enet)
+        # ENet's vendored win32.c intentionally uses the legacy
+        # gethostbyname/inet_ntoa/gethostbyaddr APIs - not our code to
+        # rewrite to getaddrinfo()/inet_ntop(). Set this from here rather
+        # than editing Ext/ENet/CMakeLists.txt directly, since that lives in
+        # the ENet submodule and any edit there gets silently discarded by
+        # `git submodule update` or a tree-wide checkout/restore.
+        target_compile_definitions(enet PRIVATE _WINSOCK_DEPRECATED_NO_WARNINGS)
+    endif()
     add_definitions(-DKAI_USE_ENET)
     message(STATUS "Networking enabled: ENet, Network lib, Tau, and network tests will be built")
 else()
