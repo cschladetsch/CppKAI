@@ -322,7 +322,7 @@ int RhoTabToSpacesCallback(ImGuiInputTextCallbackData* data) {
         DrawImGuiWindowControls(WindowLayout);
 
         // Create styled tab selection buttons with tab-like appearance
-        float tabWidth = ImGui::GetContentRegionAvailWidth() / 4.0f - 4.0f;
+        float tabWidth = ImGui::GetContentRegionAvailWidth() / 5.0f - 4.0f;
         float tabHeight = 30.0f;
 
         // Style adjustments for all tabs
@@ -471,6 +471,37 @@ int RhoTabToSpacesCallback(ImGuiInputTextCallbackData* data) {
         }
         ImGui::PopStyleVar();
         ImGui::PopStyleColor(4);
+        ImGui::SameLine();
+
+        // Assistant Tab Button - talks to a local cppcoder chat server, see
+        // ExecutorWindowAssistant.cpp.
+        ImGui::PushStyleColor(ImGuiCol_Button,
+                              (CurrentTab == ConsoleTab::Assistant)
+                                  ? ImVec4(0.3f, 0.6f, 0.8f, 1.0f)
+                                  : ImVec4(0.2f, 0.2f, 0.2f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
+                              (CurrentTab == ConsoleTab::Assistant)
+                                  ? ImVec4(0.4f, 0.7f, 0.9f, 1.0f)
+                                  : ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive,
+                              ImVec4(0.5f, 0.8f, 1.0f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 4.0f);
+        if (CurrentTab == ConsoleTab::Assistant) {
+            ImGui::GetWindowDrawList()->AddRectFilled(
+                ImGui::GetCursorScreenPos(),
+                ImVec2(ImGui::GetCursorScreenPos().x + tabWidth,
+                       ImGui::GetCursorScreenPos().y + tabHeight + 1),
+                ImGui::GetColorU32(ImVec4(0.3f, 0.6f, 0.8f, 1.0f)), 4.0f,
+                ImDrawCornerFlags_TopLeft | ImDrawCornerFlags_TopRight);
+        }
+
+        if (ImGui::Button("Assistant", ImVec2(tabWidth, tabHeight - 4))) {
+            SwitchTab(ConsoleTab::Assistant);
+        }
+        ImGui::PopStyleVar();
+        ImGui::PopStyleColor(4);
 
         ImGui::EndChild();
         ImGui::PopStyleColor();  // Pop tab bar background color
@@ -492,6 +523,8 @@ int RhoTabToSpacesCallback(ImGuiInputTextCallbackData* data) {
             DrawDebuggerContent();
         } else if (CurrentTab == ConsoleTab::Tree) {
             DrawTreeContent();
+        } else if (CurrentTab == ConsoleTab::Assistant) {
+            DrawAssistantContent();
         } else {
             DrawConsoleContent();
         }

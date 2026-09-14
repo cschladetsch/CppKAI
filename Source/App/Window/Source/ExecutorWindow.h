@@ -12,12 +12,15 @@
 
 #include "ImGuiWindowControls.h"
 
+#include <atomic>
 #include <cstring>
 #include <iomanip>
 #include <map>
+#include <mutex>
 #include <set>
 #include <sstream>
 #include <string>
+#include <thread>
 #include <vector>
 
 // ExecutorWindow used to be a single ~1700-line ExecutorWindow.cpp; split
@@ -64,7 +67,14 @@ inline const ImVec4 kPromptColor(0.3f, 0.9f, 0.95f, 1.0f);  // cyan
 inline const ImVec4 kErrorColor(1.0f, 0.35f, 0.35f, 1.0f);  // red, for "[Error] ..." log lines
 
 // Enum for the available tabs in the console window
-enum class ConsoleTab { Pi, Rho, Debugger, Tree };
+enum class ConsoleTab { Pi, Rho, Debugger, Tree, Assistant };
+
+// One turn of the Assistant tab's conversation with a local cppcoder
+// (CppLocalLlmCodeAssist) chat server - see ExecutorWindowAssistant.cpp.
+struct ChatMessage {
+    std::string role;     // "user" or "assistant"
+    std::string content;
+};
 
 // A tabbed console with Pi, Rho, and Debugger tabs
 struct ExecutorWindow {
@@ -123,6 +133,24 @@ struct ExecutorWindow {
     Executor* exec_;
     Registry* reg_;
 
+    // Assistant tab: talks to a locally-running `cppcoder --serve`
+    // (CppLocalLlmCodeAssist) chat server over HTTP - see
+    // ExecutorWindowAssistant.cpp. AssistantMutex guards every field below
+    // it here, since a background std::thread (one per in-flight request)
+    // streams the response into them while Draw() reads them each frame.
+    std::mutex AssistantMutex;
+    std::vector<ChatMessage> AssistantHistory;
+    std::string AssistantStreamBuffer;  // partial reply while streaming in
+    std::string AssistantError;
+    // Not mutex-guarded: only ever set true right before spawning the
+    // request thread and false at the very end of that thread's lambda, so
+    // a plain atomic (not the mutex) is enough for "is a request in
+    // flight" - the actual response data is what needs the mutex.
+    std::atomic<bool> AssistantBusy{false};
+    char AssistantInputBuf[4096] = {};
+    std::string AssistantHost = "127.0.0.1";
+    int AssistantPort = 8765;
+    std::string AssistantModel;  // empty = let the server use its default
 
     ExecutorWindow();
 
@@ -166,6 +194,13 @@ struct ExecutorWindow {
 
     // Defined in ExecutorWindowCommand.cpp
         void ExecCommand(const char* command_line);
+
+    // Defined in ExecutorWindowAssistant.cpp
+        void DrawAssistantContent();
+        // Appends `text` as a user turn and fires off a background request
+        // to the cppcoder chat server; no-op if a request is already
+        // in-flight (check AssistantBusy first if you need to know why).
+        void SendAssistantMessage(const std::string& text);
 };
 
 void ShowExecutorWindow(bool* p_open);
