@@ -2,7 +2,7 @@
 /test*
 /Logs/
 /.kai
-/Ext
+/Ext/*
 /tmp
 /test_graph
 /.index
@@ -256,5 +256,11 @@ Lib/
 !Ext/rang
 
 !Ext/ENet
+!Ext/slint
+!Ext/imgui
+!Ext/cpp-httplib
+!Ext/CppLmmModelStore
+!Ext/CppKaiCore
+!Ext/CppKaiLanguage
 !/Test/
 !/Test/**

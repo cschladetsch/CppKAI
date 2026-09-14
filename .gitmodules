@@ -19,3 +19,6 @@
 [submodule "Demo/ContinuationMobilityDemo/ThirdParty/playwright"]
 	path = Demo/ContinuationMobilityDemo/ThirdParty/playwright
 	url = https://github.com/microsoft/playwright.git
+[submodule "Ext/slint"]
+	path = Ext/slint
+	url = https://github.com/slint-ui/slint.git
