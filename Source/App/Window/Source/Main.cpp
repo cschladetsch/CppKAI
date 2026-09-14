@@ -10,6 +10,7 @@
 #include <iostream>
 #include <string>
 
+#include "ImGuiWindowControls.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
@@ -201,6 +202,35 @@ static GLFWwindow* SetupGui() {
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.IniFilename = kLayoutIniPath;
 
+    // Load the default (ASCII) font, then merge in real Greek glyphs
+    // (U+0370-U+03FF, covers pi U+03C0/rho U+03C1 used by the Pi/Rho
+    // console prompt) from a system font on top of it, into the same
+    // ImFont - the standard ImGui pattern for adding glyphs the base font
+    // doesn't have (same technique used for icon fonts). This has to
+    // happen before ImGui_ImplOpenGL3_Init() below, which builds the GPU
+    // font texture from whatever's in io.Fonts at that point - rebuilding
+    // the atlas *after* Init() (what an earlier attempt here did, via
+    // io.Fonts->Clear()/CreateFontsTexture()) crashed with no useful
+    // diagnostic, so this avoids that path entirely rather than trying to
+    // fix it.
+    io.Fonts->AddFontDefault();
+    static const ImWchar greekRanges[] = {0x0370, 0x03FF, 0};
+    ImFontConfig greekMergeConfig;
+    greekMergeConfig.MergeMode = true;
+    ImFont* greekFont = io.Fonts->AddFontFromFileTTF(
+        "C:\\Windows\\Fonts\\arial.ttf", 13.0f, &greekMergeConfig,
+        greekRanges);
+    if (!greekFont) {
+        // Missing/unreadable font file - AddFontFromFileTTF() returns
+        // nullptr rather than throwing, so this is safe to just log and
+        // continue with ASCII-only glyphs (pi/rho would render as a
+        // missing-glyph box, same as before this change).
+        Logger::Warning(
+            "KAI ImGui Window: could not load "
+            "C:\\Windows\\Fonts\\arial.ttf for Greek glyph support "
+            "(pi/rho prompt symbols will show as missing-glyph boxes)");
+    }
+
     ApplyTheme(LoadThemePreference());
 
     if (!ImGui_ImplGlfw_InitForOpenGL(window, true)) {
@@ -218,9 +248,6 @@ static GLFWwindow* SetupGui() {
         return nullptr;
     }
 
-    glfwMakeContextCurrent(window);
-	glfwSwapInterval(1);
-
 	// Initialize GLEW extension loader to prevent null function pointer crashes
 	glewExperimental = GL_TRUE;
 	if (glewInit() != GLEW_OK) {
@@ -229,9 +256,18 @@ static GLFWwindow* SetupGui() {
 	    return nullptr;
 	}
 
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-
+    // NOTE: this used to call IMGUI_CHECKVERSION()/ImGui::CreateContext()
+    // again here, on top of the context already created and wired up to
+    // the GLFW/OpenGL3 backends above (lines ~197-219). That second call
+    // silently swapped in a fresh, backend-less context as "current" -
+    // nothing noticed before because nothing looked up the OpenGL3
+    // backend's own state directly, but LoadFont() now calls
+    // ImGui_ImplOpenGL3_CreateFontsTexture() explicitly, which does look
+    // it up on the current context and crashed since that second context
+    // was never Init()'d. The redundant glfwMakeContextCurrent()/
+    // glfwSwapInterval() right above it (duplicating lines ~194-195) are
+    // gone too, for the same reason: harmless on their own, but signs of
+    // this function having been pasted together twice.
 
     return window;
 }
@@ -241,6 +277,13 @@ static void LoadFont() {
     // Scale the shared default font up slightly so every theme inherits the
     // same larger baseline text size.
     io.FontGlobalScale = kDefaultFontScale;
+
+    // Previously attempted rebuilding the font atlas here to add a Greek
+    // glyph range (for a symbolic pi/rho console prompt) - reverted after
+    // it caused a silent crash on startup with no useful diagnostic in
+    // Logs/kai.log. Revisit with a real Unicode-covering .ttf file (via
+    // AddFontFromFileTTF()) and a debugger attached, rather than rebuilding
+    // the built-in default font's atlas blind.
 }
 
 int main(int argc, char** argv) {
@@ -274,9 +317,14 @@ int main(int argc, char** argv) {
 
         ShowExecutorWindow(nullptr);
 
-        ImGui::SetNextWindowSize(ImVec2(380, 160), ImGuiCond_FirstUseEver);
-        ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver);
+        // Positioned clear of the Console window's default 900x900 rect at
+        // (20,20) (see ExecutorWindowCore.cpp's Draw()) so the two don't
+        // default to stacking on top of each other.
+        ImGui::SetNextWindowSize(ImVec2(480, 220), ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowPos(ImVec2(940, 20), ImGuiCond_FirstUseEver);
         ImGui::Begin("KAI Settings", nullptr, ImGuiWindowFlags_MenuBar);
+        static ImGuiWindowLayoutState settingsWindowLayout;
+        DrawImGuiWindowControls(settingsWindowLayout);
         if (ImGui::BeginMenuBar()) {
             if (ImGui::BeginMenu("Theme")) {
                 const ThemePreset presets[] = {ThemePreset::Dark,
@@ -309,7 +357,9 @@ int main(int argc, char** argv) {
         ImGui::End();
 
         if (show_demo_window) {
-            ImGui::SetNextWindowPos(ImVec2(650, 150), ImGuiCond_FirstUseEver);
+            // Below KAI Settings (see its pos/size above), clear of both it
+            // and the Console window's default rect.
+            ImGui::SetNextWindowPos(ImVec2(940, 260), ImGuiCond_FirstUseEver);
             ImGui::ShowDemoWindow(&show_demo_window);
         }
 

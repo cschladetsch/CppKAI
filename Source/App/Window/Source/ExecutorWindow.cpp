@@ -5,6 +5,7 @@
 #include <KAI/Core/Object/ClassBase.h>
 #include <KAI/Core/Object/GetStorageBase.h>
 #include <KAI/Core/Object/MethodBase.h>
+#include <KAI/Executor/Continuation.h>
 #include <imgui.h>
 
 #include <cstring>
@@ -59,6 +60,35 @@ std::string FormatStackValue(const Object& object) {
     return text;
 }
 
+// Color-codes a log line by the KAI value type it represents, so ints,
+// floats, strings, bools etc. are visually distinct at a glance rather than
+// all rendering in the same default text color.
+ImVec4 ColorForType(Type::Number t) {
+    switch (t.value) {
+        case Type::Number::Signed32:
+            return ImVec4(0.55f, 0.85f, 0.55f, 1.0f);  // int - green
+        case Type::Number::Single:
+        case Type::Number::Double:
+            return ImVec4(1.0f, 0.7f, 0.35f, 1.0f);  // float/double - orange
+        case Type::Number::String:
+            return ImVec4(1.0f, 0.9f, 0.4f, 1.0f);  // string - yellow
+        case Type::Number::Bool:
+            return ImVec4(0.85f, 0.55f, 1.0f, 1.0f);  // bool - purple
+        default:
+            return ImVec4(0.85f, 0.85f, 0.85f, 1.0f);  // everything else
+    }
+}
+
+// Cyan prompt shown before each echoed command: a real pi/rho glyph
+// (U+03C0/U+03C1). Requires the Greek glyph merge in Main.cpp's SetupGui()
+// (merges a system font's Greek range into the default font atlas *before*
+// ImGui_ImplOpenGL3_Init() builds the GPU texture) - without that merge
+// these render as missing-glyph boxes rather than crashing.
+constexpr const char* kPiPrompt = "\xCF\x80 ";   // UTF-8 for U+03C0 GREEK SMALL LETTER PI
+constexpr const char* kRhoPrompt = "\xCF\x81 ";  // UTF-8 for U+03C1 GREEK SMALL LETTER RHO
+const ImVec4 kPromptColor(0.3f, 0.9f, 0.95f, 1.0f);  // cyan
+const ImVec4 kErrorColor(1.0f, 0.35f, 0.35f, 1.0f);  // red, for "[Error] ..." log lines
+
 // Rho's multi-line input needs ImGuiInputTextFlags_AllowTabInput so Tab
 // doesn't just move keyboard focus away, but ImGui then inserts a literal
 // '\t' character. Rho code is indentation-sensitive-ish and a raw tab looks
@@ -88,8 +118,21 @@ struct ExecutorWindow {
     bool ScrollToBottom;
     bool FocusInputNextFrame;
 
+    // A single log line plus the color it should render in - lets the
+    // console color-code prompts and typed stack values instead of every
+    // line coming out in the same default text color.
+    struct LogLine {
+        std::string text;
+        ImVec4 color = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+        // Optional leading segment rendered in its own (fixed) color before
+        // `text` on the same line - used for the "[N] " stack index, which
+        // should always read grey regardless of the value's type color.
+        std::string prefix;
+        ImVec4 prefixColor = ImVec4(0.6f, 0.6f, 0.6f, 1.0f);
+    };
+
     // Output for each language
-    map<Language, vector<string>> Items;
+    map<Language, vector<LogLine>> Items;
     map<Language, vector<string>> History;
 
     // Current active language and tab
@@ -130,8 +173,8 @@ struct ExecutorWindow {
         tree_ = &console_.GetTree();
 
         // Initialize language-specific logs
-        Items[Language::Pi] = vector<string>();
-        Items[Language::Rho] = vector<string>();
+        Items[Language::Pi] = vector<LogLine>();
+        Items[Language::Rho] = vector<LogLine>();
 
         // Initialize language-specific history
         History[Language::Pi] = vector<string>();
@@ -174,10 +217,74 @@ struct ExecutorWindow {
         if (CurrentTab == ConsoleTab::Debugger) {
             DebugLog.push_back(buf);
         } else {
-            Items[CurrentLanguage].push_back(buf);
+            Items[CurrentLanguage].push_back(LogLine{buf});
         }
 
         ScrollToBottom = true;
+    }
+
+    // Same as AddLog, but the line renders in `color` instead of the default
+    // white - used for the prompt echo and for type-colored stack values.
+    void AddLog(const ImVec4& color, const char* fmt, ...) {
+        char buf[1024];
+        va_list args;
+        va_start(args, fmt);
+        vsnprintf(buf, sizeof(buf), fmt, args);
+        buf[strlen(buf)] = 0;
+        va_end(args);
+
+        if (CurrentTab == ConsoleTab::Debugger) {
+            // Debug Log panel doesn't carry per-line color today - fall back
+            // to the plain line rather than losing the message.
+            DebugLog.push_back(buf);
+        } else {
+            Items[CurrentLanguage].push_back(LogLine{buf, color});
+        }
+
+        ScrollToBottom = true;
+    }
+
+    // Logs one stack slot as "[index] value" on a single line, with the
+    // "[index] " part always grey (LogLine::prefixColor's default) and only
+    // `value`/`valueColor` varying by the value's type - the index is a
+    // fixed frame of reference and shouldn't visually compete with, or be
+    // mistaken for, a type-colored value.
+    void AddStackLog(int index, const std::string& value,
+                     const ImVec4& valueColor) {
+        LogLine line;
+        line.prefix = "[" + std::to_string(index) + "] ";
+        line.text = value;
+        line.color = valueColor;
+        // line.prefixColor left at its grey default.
+
+        if (CurrentTab == ConsoleTab::Debugger) {
+            DebugLog.push_back(line.prefix + line.text);
+        } else {
+            Items[CurrentLanguage].push_back(std::move(line));
+        }
+
+        ScrollToBottom = true;
+    }
+
+    // Console::Process() (Ext/CppKaiCore/.../Console.cpp) catches parse and
+    // execution errors internally and returns them as plain result text
+    // ("Exception: ...", "StdException: ...", "UnknownException:") rather
+    // than letting them propagate - so ExecCommand's own
+    // catch (Exception::Base&) block never sees a syntax error like an
+    // unmatched brace; it only ever sees what Process() decided to hand
+    // back as a normal string. Route that string through here so it still
+    // renders red/"[Error]" like a caught exception would, instead of
+    // silently blending in as a plain white log line.
+    void AddProcessResultLog(const std::string& result) {
+        static const char* kErrorPrefixes[] = {
+            "Exception:", "StdException:", "UnknownException:"};
+        for (const char* prefix : kErrorPrefixes) {
+            if (result.compare(0, strlen(prefix), prefix) == 0) {
+                AddLog(kErrorColor, "[Error] %s", result.c_str());
+                return;
+            }
+        }
+        AddLog("%s", result.c_str());
     }
 
     void SwitchLanguage(Language lang) {
@@ -478,8 +585,16 @@ struct ExecutorWindow {
 
         const auto& currentItems = Items[CurrentLanguage];
         for (size_t i = 0; i < currentItems.size(); i++) {
-            const string& item = currentItems[i];
-            ImGui::TextUnformatted(item.c_str());
+            const LogLine& item = currentItems[i];
+            if (!item.prefix.empty()) {
+                ImGui::PushStyleColor(ImGuiCol_Text, item.prefixColor);
+                ImGui::TextUnformatted(item.prefix.c_str());
+                ImGui::PopStyleColor();
+                ImGui::SameLine(0.0f, 0.0f);
+            }
+            ImGui::PushStyleColor(ImGuiCol_Text, item.color);
+            ImGui::TextUnformatted(item.text.c_str());
+            ImGui::PopStyleColor();
         }
 
         if (ScrollToBottom) ImGui::SetScrollHereY(1.0f);
@@ -766,6 +881,81 @@ struct ExecutorWindow {
         ImGui::EndChild();
         ImGui::PopStyleColor();  // Pop the ChildBg color
         ImGui::PopStyleVar();
+
+        // Continuation header - the executor's current continuation (the
+        // in-flight execution state: instruction pointer, code size,
+        // scope), previously not shown anywhere in this window even though
+        // GetDataStack()/GetContextStack() were. Needed a new
+        // Executor::GetContinuation() accessor (Executor.h) since
+        // continuation_ was private with no getter.
+        ImGui::BeginChild("ContinuationHeader", ImVec2(0, 25), true);
+        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.4f, 0.8f, 1.0f, 1.0f));
+        ImGui::SetCursorPosY((25 - ImGui::GetTextLineHeight()) * 0.5f);
+        ImGui::SetCursorPosX(5);
+        ImGui::Text("Continuation");
+        ImGui::PopStyleColor();
+        ImGui::EndChild();
+
+        ImGui::PushStyleColor(ImGuiCol_ChildBg,
+                              ImVec4(0.18f, 0.18f, 0.18f, 1.0f));
+        ImGui::BeginChild("ContinuationView", ImVec2(0, 90), true);
+        {
+            Value<Continuation> cont = exec_->GetContinuation();
+            if (cont.Exists()) {
+                ImGui::Text("Instruction pointer: %d",
+                           cont->GetInstructionPointer());
+                ImGui::Text(
+                    "Code size: %d",
+                    cont->HasCode() ? (int)cont->GetCode()->Size() : 0);
+                ImGui::Text("Has scope: %s",
+                           cont->HasScope() ? "yes" : "no");
+                Pointer<String> src = cont->GetSourceCode();
+                if (src.Exists() && src->Size() > 0) {
+                    ImGui::TextWrapped("Source: %s", src->c_str());
+                }
+            } else {
+                ImGui::TextColored(ImVec4(0.6f, 0.6f, 0.6f, 1.0f),
+                                   "No active continuation");
+            }
+        }
+        ImGui::EndChild();
+        ImGui::PopStyleColor();
+
+        // Context Stack header - Executor::GetContextStack(), distinct
+        // from the Data Stack above and from the "Context Viewer"
+        // watch/inspector panel below (which despite its name only ever
+        // showed the selected Data Stack item's details, not the
+        // executor's actual context stack).
+        ImGui::BeginChild("ContextStackHeader", ImVec2(0, 25), true);
+        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.4f, 0.8f, 1.0f, 1.0f));
+        ImGui::SetCursorPosY((25 - ImGui::GetTextLineHeight()) * 0.5f);
+        ImGui::SetCursorPosX(5);
+        ImGui::Text("Context Stack");
+        ImGui::PopStyleColor();
+        ImGui::EndChild();
+
+        ImGui::PushStyleColor(ImGuiCol_ChildBg,
+                              ImVec4(0.18f, 0.18f, 0.18f, 1.0f));
+        ImGui::BeginChild("ContextStackView", ImVec2(0, 120), true);
+        {
+            Value<Stack> ctxStack = exec_->GetContextStack();
+            if (ctxStack.Exists() && ctxStack->Size() > 0) {
+                for (int i = 0; i < ctxStack->Size(); i++) {
+                    auto obj = ctxStack->At(i);
+                    int displayIndex = ctxStack->Size() - 1 - i;
+                    ImGui::Text("[%d] %s", displayIndex,
+                               FormatStackValue(obj).c_str());
+                    if (i < ctxStack->Size() - 1) {
+                        ImGui::Separator();
+                    }
+                }
+            }
+            // Empty context stack: leave the panel blank, same as the Data
+            // Stack panel above, rather than a "Context stack is empty"
+            // placeholder.
+        }
+        ImGui::EndChild();
+        ImGui::PopStyleColor();
 
         // Context header
         ImGui::BeginChild("ContextHeader", ImVec2(0, 25), true);
@@ -1296,16 +1486,18 @@ struct ExecutorWindow {
                                           mb->ToString().c_str());
                                 } catch (Exception::Base& e) {
                                     AddLog(
-                                        "Failed to invoke %s: %s (push the "
-                                        "required arguments onto the stack "
-                                        "first)",
+                                        kErrorColor,
+                                        "[Error] Failed to invoke %s: %s "
+                                        "(push the required arguments onto "
+                                        "the stack first)",
                                         mb->ToString().c_str(),
                                         e.ToString().c_str());
                                 } catch (const std::exception& e) {
                                     AddLog(
-                                        "Failed to invoke %s: %s (push the "
-                                        "required arguments onto the stack "
-                                        "first)",
+                                        kErrorColor,
+                                        "[Error] Failed to invoke %s: %s "
+                                        "(push the required arguments onto "
+                                        "the stack first)",
                                         mb->ToString().c_str(), e.what());
                                 }
                                 SwitchTab(ConsoleTab::Pi);
@@ -1342,11 +1534,12 @@ struct ExecutorWindow {
     }
 
     void ExecCommand(const char* command_line) {
-        // Add the command to the log first
+        // Add the command to the log first - a cyan pi/rho glyph instead of
+        // the literal "Pi>"/"Rho>" text prompt.
         string cmdWithPrompt =
-            (CurrentLanguage == Language::Pi) ? "Pi> " : "Rho> ";
+            (CurrentLanguage == Language::Pi) ? kPiPrompt : kRhoPrompt;
         cmdWithPrompt += command_line;
-        AddLog("%s", cmdWithPrompt.c_str());
+        AddLog(kPromptColor, "%s", cmdWithPrompt.c_str());
 
         // If in debugger tab, automatically switch to the corresponding
         // language tab
@@ -1397,7 +1590,7 @@ struct ExecutorWindow {
                         console_.ExpandShellCommands(substituted);
                     String result = console_.Process(expandedText);
                     if (!result.empty()) {
-                        AddLog("%s", result.c_str());
+                        AddProcessResultLog(result.StdString());
                     }
                 } else {
                     AddLog("Substitution failed: no match found");
@@ -1436,18 +1629,26 @@ struct ExecutorWindow {
                         console_.ExpandShellCommands(String(processedText));
                     String result = console_.Process(expandedText);
                     if (!result.empty()) {
-                        AddLog("%s", result.c_str());
+                        AddProcessResultLog(result.StdString());
                     }
                 }
             }
 
-            // The Debugger tab's Data Stack panel is the one place the
-            // stack is shown - not echoed here too, since that read as a
-            // second, differently-ordered "stack" sitting in the log.
+            // Show the Executor's current data stack state right in this
+            // log, top-of-stack first (same order/format as the Debugger
+            // tab's Data Stack panel) - this is the log reporting on the
+            // Executor after the command ran, not a second stack widget
+            // sitting next to the log.
+            if (exec_) {
+                int stackSize = exec_->GetDataStack()->Size();
+                for (int i = 0; i < stackSize; i++) {
+                    int displayIndex = stackSize - 1 - i;
+                    auto obj = exec_->GetDataStack()->At(displayIndex);
+                    AddStackLog(displayIndex, FormatStackValue(obj),
+                               ColorForType(obj.GetTypeNumber()));
+                }
+            }
         } catch (Exception::Base& e) {
-            StringStream st;
-            st << "Error: " << e.ToString();
-
             // Same Logger (Logs/kai.log) the Console app and the rest of
             // KAI use, so command failures here show up alongside
             // everything else instead of only in this window's in-memory
@@ -1456,10 +1657,15 @@ struct ExecutorWindow {
                           std::string(command_line) + " -> " +
                           e.ToString().c_str());
 
-            ImVec4 color(1, 0, 0, 1);
-            ImGui::PushStyleColor(ImGuiCol_Text, color);
-            AddLog("%s", st.ToString().c_str());
-            ImGui::PopStyleColor();
+            // NOTE: this used to wrap the AddLog() call in a
+            // PushStyleColor(ImGuiCol_Text, red)/PopStyleColor() pair, which
+            // is a no-op here - AddLog() only stores the line's text for the
+            // console to render on a later frame, it doesn't draw anything
+            // itself, so an ambient style color pushed during the AddLog()
+            // call has nothing to apply to. Use the colored AddLog()
+            // overload instead, which stores the color alongside the text
+            // so DrawConsoleContent() can render it correctly later.
+            AddLog(kErrorColor, "[Error] %s", e.ToString().c_str());
         }
 
         // Commands like "pi"/"rho" switch the console's language directly

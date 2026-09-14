@@ -21,7 +21,14 @@ include_directories(/opt/local/include ${EXTERNAL}/imgui ${SOURCE_HOME}/App/Wind
 link_directories(/opt/local/lib)
 
 set(SOURCE_FILES
-    ${SOURCE_HOME}/App/Window/Source/ExecutorWindow.cpp
+    # ExecutorWindow.cpp (~1700 lines) split by responsibility on 2026-09-14
+    # into ExecutorWindow.h plus these five .cpp files, since the single
+    # file had grown too large to navigate comfortably.
+    ${SOURCE_HOME}/App/Window/Source/ExecutorWindowCore.cpp
+    ${SOURCE_HOME}/App/Window/Source/ExecutorWindowConsole.cpp
+    ${SOURCE_HOME}/App/Window/Source/ExecutorWindowDebugger.cpp
+    ${SOURCE_HOME}/App/Window/Source/ExecutorWindowTree.cpp
+    ${SOURCE_HOME}/App/Window/Source/ExecutorWindowCommand.cpp
     ${SOURCE_HOME}/App/Window/Source/Main.cpp
     ${SOURCE_HOME}/App/Window/Source/imgui_impl_glfw.cpp
     ${SOURCE_HOME}/App/Window/Source/imgui_impl_opengl3.cpp
