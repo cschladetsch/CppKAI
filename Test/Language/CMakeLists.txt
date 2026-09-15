@@ -127,6 +127,7 @@ foreach (lang ${langs})
             ${source_path}/ExtensiveContainerTests.cpp       # Extensive container tests
             ${source_path}/AdvancedForLoopTests.cpp          # Advanced for loop tests
             ${source_path}/RhoVeryComplexTests.cpp           # Complex nested Rho/Pi integration tests
+            ${source_path}/RhoTranslatorReuseAndNovelTests.cpp # Regression coverage for the translator-reuse bug (a=2, a+4) plus new sequential-session tests
         )
     elseif(lang STREQUAL "Pi")
         # Explicitly list Pi tests to avoid including unwanted files
@@ -171,6 +172,7 @@ foreach (lang ${langs})
             ${source_path}/TestPiAdvanced2.cpp              # Variable, continuation and control-flow tests
             ${source_path}/TestPiParser.cpp                 # Direct PiLexer/PiParser unit tests
             ${source_path}/TutorialTest.cpp                 # Pi tutorial example smoke tests
+            ${source_path}/PiNovelTests.cpp                 # New sequential-session, chained-arithmetic and string novel tests
         )
     elseif(lang STREQUAL "Tau")
         # Explicitly list Tau tests including our new network connection tests
