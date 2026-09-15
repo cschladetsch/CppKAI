@@ -63,15 +63,18 @@ TEST_F(PiForLoopTest, RangeProduct) {
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 24);  // 1*2*3*4
 }
 
-// DISABLED: Array append operation not available in Pi
+// Array append now uses the dedicated `push` operator (Operation::ArrayPush)
+// rather than `+` - `+` correctly rejects Array/non-Array operands outright
+// (see PerformBinaryOp.cpp: "Type error: mixed array/non-array addition is
+// not allowed"). `[1 2 3] 4 +` must never silently become `[1 2 3 4]`.
 TEST_F(PiForLoopTest, CollectSquares) {
     // Create fresh console for this test
     kai::Console console;
     kai::test::SetupConsoleTranslators(console);
     console.SetLanguage(kai::Language::Pi);
 
-    // Collect squares: [] 1 4 { dup * + } for
-    console.Execute("[] 1 4 { dup * + } for");
+    // Collect squares: [] 1 4 { dup * push } for
+    console.Execute("[] 1 4 { dup * push } for");
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
 
@@ -188,15 +191,15 @@ TEST_F(PiForLoopTest, SingleIteration) {
     EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 13);  // 10 + 3
 }
 
-// DISABLED: Array append operation not available in Pi
+// See CollectSquares above - array append now uses `push`, not `+`.
 TEST_F(PiForLoopTest, ArrayBuilding) {
     // Create fresh console for this test
     kai::Console console;
     kai::test::SetupConsoleTranslators(console);
     console.SetLanguage(kai::Language::Pi);
 
-    // Build an array using range loop: acc + i appends i to array acc
-    console.Execute("[] 1 3 { + } for");
+    // Build an array using range loop: acc i push appends i to array acc
+    console.Execute("[] 1 3 { push } for");
     auto exec = console.GetExecutor();
     auto stack = exec->GetDataStack();
 

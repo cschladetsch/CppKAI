@@ -1,0 +1,9 @@
+--- a/Ext/CppKaiLanguage/Source/Library/Language/Pi/Source/PiLexer.cpp
++++ b/Ext/CppKaiLanguage/Source/Library/Language/Pi/Source/PiLexer.cpp
+@@ -78,5 +78,6 @@
+     keywords["send"] = PiTokenEnumType::Send;
+     keywords["call"] = PiTokenEnumType::Suspend;
+     keywords["at"] = PiTokenEnumType::GetChild;
++    keywords["push"] = PiTokenEnumType::Push;
+ }
+ }  // namespace

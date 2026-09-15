@@ -7,13 +7,16 @@ set(source_path ${CMAKE_CURRENT_SOURCE_DIR})
 set(header_path ${TEST_HOME}/Include)
 
 # Console test files
-set(sources:
+set(sources
     ${source_path}/ConsoleRegressionTests.cpp
     ${source_path}/TestConsoleNetworking.cpp
+    ${TEST_HOME}/Language/TestLangCommon.cpp
+    ${TEST_HOME}/Common/TestCommon.cpp
+    ${TEST_HOME}/Common/MyTestStruct.cpp
 )
 
 # Include test headers
-include_directories(${header_path})
+include_directories(${header_path} ${TEST_HOME}/Language)
 
 # Set output directory
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${BIN_HOME}/Test")
