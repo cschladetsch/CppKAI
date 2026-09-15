@@ -510,5 +510,5 @@ For details on connection testing and examples, see the [Connection Testing docu
 - [NetworkCalculationTest.md](NetworkCalculationTest.md): Examples of distributed calculations
 
 ### Implementation Documentation
-- [NetworkTest README](../Source/App/NetworkTest/Readme.md): Network test application details
-- [Scripts/network README](../Scripts/network/Readme.md): Network test scripts documentation
+- NetworkTest README: Network test application details
+- [Scripts/network README](../Scripts/network/README.md): Network test scripts documentation

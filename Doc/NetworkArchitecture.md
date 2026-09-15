@@ -252,4 +252,4 @@ Planned improvements to the architecture include:
 - [PeerToPeerNetworking](PeerToPeerNetworking.md): Peer-to-peer system details
 - [PeerToPeerSummary](PeerToPeerSummary.md): Concise summary of peer-to-peer functionality
 - [ConnectionTesting](ConnectionTesting.md): Connection testing procedures
-- [NetworkTest README](../Source/App/NetworkTest/Readme.md): Network test application details
+- NetworkTest README: Network test application details

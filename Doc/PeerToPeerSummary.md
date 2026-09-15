@@ -181,6 +181,6 @@ Planned improvements include:
 ## Related Documentation
 
 - [Networking](Networking.md): Main networking documentation
-- [NetworkTest README](../Source/App/NetworkTest/Readme.md): Network test application details
-- [Configuration README](../config/Readme.md): Configuration file format details
-- [Test Scripts README](../Scripts/network/Readme.md): Network test scripts documentation
+- NetworkTest README: Network test application details
+- [Configuration README](../config/README.md): Configuration file format details
+- [Test Scripts README](../Scripts/network/README.md): Network test scripts documentation

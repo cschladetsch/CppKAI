@@ -1,9 +1,10 @@
 
-#Source
+# Source
 
-##App Applications : Console,
-                     ImGui,
-                     Peer,
-                     etc.
+## App
 
-                     ##Library The library code supporting the apps.
+Applications: Console, ImGui, Peer, etc.
+
+## Library
+
+The library code supporting the apps.

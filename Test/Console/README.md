@@ -5,9 +5,9 @@ This directory contains tests for the zsh-like history expansion features implem
 ## Full Documentation
 
 For complete documentation of all features, see:
-- [Console Zsh Features Documentation](/Source/App/Console/Source/Readme.md)
-- [Advanced Features Guide](/Source/App/Console/Source/AdvancedZshFeatures.md)
-- [Quick Reference](/Source/App/Console/Source/ZshQuickReference.md)
+- [Console Zsh Features Documentation](../../Source/App/Console/Source/README.md)
+- [Advanced Features Guide](../../Source/App/Console/Source/AdvancedZshFeatures.md)
+- [Quick Reference](../../Source/App/Console/Source/ZshQuickReference.md)
 
 ## Test Files
 

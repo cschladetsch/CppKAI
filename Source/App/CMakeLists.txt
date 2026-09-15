@@ -8,6 +8,10 @@ if(KAI_BUILD_IMGUI)
     list(APPEND apps ImGui)
 endif()
 
+if(KAI_BUILD_SLINT)
+    list(APPEND apps SlintUI)
+endif()
+
 if(KAI_BUILD_LLM)
     list(APPEND apps RepoIndex RhoDataset)
 endif()

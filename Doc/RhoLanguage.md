@@ -184,7 +184,7 @@ For more advanced usage of Rho, refer to these specialized documents:
 
 - [Continuations in Rho](ContinuationControl.md): Advanced control flow
 - [Rho-Pi Integration](CommonLanguageSystem.md): Working across language boundaries
-- [Type System](TypeSystem.md): Understanding type handling in Rho
+- Type System: Understanding type handling in Rho
 - [Event System](EventSystem.md): Using the modern C++23 event system from Rho
 
 ## Contributing

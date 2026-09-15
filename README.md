@@ -82,10 +82,10 @@ See the full diagram: **[System Architecture Overview](resources/diagrams/system
 
 ### **Component Documentation**
 - **LLM Overview**: [LmmReadme.md](Doc/LmmReadme.md) - Cache, repo indexing, and Rho dataset export
-- **Core System**: [Core README](Include/KAI/Core/README.md) | [Registry](Include/KAI/Core/Object/README.md) | [Config](Include/KAI/Core/Config/README.md)
-- **Executor**: [Executor README](Include/KAI/Executor/README.md) - Virtual machine and execution engine
-- **Console**: [Console README](Include/KAI/Console/README.md) - Interactive shell with networking
-- **Languages**: [Common](Include/KAI/Language/Common/README.md) | [Pi](Include/KAI/Language/Pi/README.md) | [Rho](Include/KAI/Language/Rho/README.md) | [Tau](Include/KAI/Language/Tau/README.md)
+- **Core System**: [Core README](Ext/CppKaiCore/Include/KAI/Core/README.md) | [Registry](Ext/CppKaiCore/Include/KAI/Core/Object/README.md) | [Config](Ext/CppKaiCore/Include/KAI/Core/Config/README.md)
+- **Executor**: [Executor README](Ext/CppKaiCore/Include/KAI/Executor/README.md) - Virtual machine and execution engine
+- **Console**: [Console README](Ext/CppKaiCore/Include/KAI/Console/README.md) - Interactive shell with networking
+- **Languages**: [Common](Ext/CppKaiCore/Include/KAI/Language/Common/README.md) | [Pi](Ext/CppKaiLanguage/Include/KAI/Language/Pi/README.md) | [Rho](Ext/CppKaiLanguage/Include/KAI/Language/Rho/README.md) | [Tau](Include/KAI/Language/Tau/README.md)
 - **Platform Support**: [Platforms](Include/KAI/Platform/README.md) | [Linux](Include/KAI/Platform/Linux/README.md) | [Windows](Include/KAI/Platform/Windows/README.md) | [macOS](Include/KAI/Platform/OSX/README.md)
 
 ### **Testing & Examples**

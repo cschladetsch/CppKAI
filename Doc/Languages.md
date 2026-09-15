@@ -1,12 +1,12 @@
 # KAI Languages
 
-The KAI system includes a generic language-construction system, which can be found at [Include/KAI/Language/Common](Include/KAI/Language/Common). For comprehensive guides on each language, see the tutorials linked below.
+The KAI system includes a generic language-construction system, which can be found at [Include/KAI/Language/Common](../Ext/CppKaiCore/Include/KAI/Language/Common). For comprehensive guides on each language, see the tutorials linked below.
 
 ## Pi
 
 Note that it is rare to write Π directly. Rho transpiles to Pi, and you would generally write Rho.
 
-[Pi](Doc/PiTutorial) is a post-fix language inspired by the amazing [HP48](https://en.wikipedia.org/wiki/HP_48_series) calculator and [Forth](https://en.wikipedia.org/wiki/Forth_\(programming_language\)).
+[Pi](PiTutorial.md) is a post-fix language inspired by the amazing [HP48](https://en.wikipedia.org/wiki/HP_48_series) calculator and [Forth](https://en.wikipedia.org/wiki/Forth_\(programming_language\)).
 
 Unlike the more common infix, like "assert(1+2 == 3)", here's what you would say in Pi.
 
@@ -33,11 +33,11 @@ In this case:
 
 The result is an empty stack with the console output of "3".
 
-For more details and examples, see the [Pi Language Tutorial](Doc/PiTutorial.md).
+For more details and examples, see the [Pi Language Tutorial](PiTutorial.md).
 
 ## Rho
 
-[Rho](Include/KAI/Language/Rho) is an *infix* language that translates to Pi code. It has a syntax similar to Python but with native continuations and the ability to embed Pi code directly.
+[Rho](../Ext/CppKaiLanguage/Include/KAI/Language/Rho) is an *infix* language that translates to Pi code. It has a syntax similar to Python but with native continuations and the ability to embed Pi code directly.
 
 Sample Rho code:
 
@@ -52,11 +52,11 @@ This example is functionally equivalent to the Pi example above. It defines a fu
 
 Rho gets translated to Pi code on the fly, making it both expressive and efficient.
 
-For more details and examples, see the [Rho Language Tutorial](Doc/RhoTutorial.md).
+For more details and examples, see the [Rho Language Tutorial](RhoTutorial.md).
 
 ## Tau
 
-[Tau](Include/KAI/Language/Tau) is KAI's Interface Definition Language (IDL) used to describe objects that are visible across a network. 
+[Tau](../Include/KAI/Language/Tau) is KAI's Interface Definition Language (IDL) used to describe objects that are visible across a network. 
 
 Tau solves the problem of seamless network communication by:
 1. Defining interfaces between distributed components
@@ -114,7 +114,7 @@ For a Tau file (foo.tau), the KAI system generates:
 
 If you want to host a service, you implement what's required in the agent files. If you want to use a service from elsewhere, you simply use `kai::Proxy<Service>`.
 
-For syntax reference, see the [Tau Formal Definition](Doc/TauFormalDefinition.md). Detailed guides are available in the [Tau Language Tutorial](Doc/TauTutorial.md) and [Network Tau Interfaces](Doc/NetworkTauInterfaces.md) documentation.
+For syntax reference, see the [Tau Formal Definition](TauFormalDefinition.md). Detailed guides are available in the [Tau Language Tutorial](TauTutorial.md) and [Network Tau Interfaces](NetworkTauInterfaces.md) documentation.
 
 ## Continuations
 

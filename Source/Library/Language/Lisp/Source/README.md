@@ -4,9 +4,9 @@
 [![License](https://img.shields.io/github/license/cschladetsch/flow.svg?label=License&maxAge=86400)](./LICENSE.txt)
 [![Release](https://img.shields.io/github/release/cschladetsch/flow.svg?label=Release&maxAge=60)](https://github.com/cschladetsch/kai/releases/latest)
 
-Rho is an in-fix language that translates to [Pi](/Source/Library/Language/Pi/Readme.md).
+Rho is an in-fix language that translates to [Pi](../../../../Ext/CppKaiLanguage/Source/Library/Language/Pi/README.md).
 
-Both Rho and Pi use the same [Executor](/Source/Library/Executor/Source/Executor.cpp).
+Both Rho and Pi use the same [Executor](../../../../Ext/CppKaiCore/Source/Library/Executor/Source/Executor.cpp).
 
 Rho is much like _Python_, but with an even less verbose syntax.
 
@@ -22,7 +22,7 @@ rho>
 ```
 
 ## Example Test Suite
-This is code taken directly from a [file](/Test/Language/TestRho/Scripts/Function.rho) in the test suite:
+This is code taken directly from a [file](../../../../Test/Language/TestRho/Scripts/Function.rho) in the test suite:
 
 ```
 fun a(b, c)

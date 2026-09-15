@@ -171,5 +171,5 @@ You can extend these scripts and tests by:
 ## Related Documentation
 
 - See the main [Networking documentation](../../Doc/Networking.md) for details on the network architecture
-- Check the [config README](../../config/Readme.md) for configuration file format details
-- Review the [NetworkTest application](../../Source/App/NetworkTest/Readme.md) for implementation details
+- Check the [config README](../../config/README.md) for configuration file format details
+- Review the NetworkTest application for implementation details

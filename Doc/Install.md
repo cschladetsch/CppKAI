@@ -6,7 +6,7 @@ networking, imgui for the optional windowed frontend, and others under
 `Ext/`). Boost has been fully removed — there is nothing else to install
 before building. If a third-party frontend dependency (e.g. imgui) can't be
 found, you'll still get the [TestSuite](/Test) and the colored-text
-[Console](Source/App/Console).
+[Console](../Source/App/Console).
 
 ## Downloading
 

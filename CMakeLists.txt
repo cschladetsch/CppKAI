@@ -147,6 +147,10 @@ option(KAI_BUILD_TEST_LANG "Build language tests" ON)
 option(KAI_BUILD_IMGUI "Build the ImGui client" OFF)
 option(KAI_BUILD_WINDOW "Deprecated alias for KAI_BUILD_IMGUI" OFF)
 option(KAI_BUILD_LLM "Build the local LLM support libraries" OFF)
+# new-ui branch: Slint port of the ImGui console window (Source/App/Window).
+# Off by default and independent of KAI_BUILD_IMGUI - the two UIs can be
+# built side by side while the port is in progress.
+option(KAI_BUILD_SLINT "Build the Slint client (new-ui port, in progress)" OFF)
 option(KAI_NETWORKING "Build networking library, Tau IDL, and network tests" ON)
 
 # Android target: build only the reusable libraries (Core, Language, Executor,

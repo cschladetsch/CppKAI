@@ -61,7 +61,7 @@ In a terminal, these would appear as:
 
 ## Related Files
 
-- [`Main.cpp`]($KAI_ROOT/Test/Source/Main.cpp): Command-line argument handling and global color settings
-- [`TestCommon.h`]($KAI_ROOT/Test/Include/TestCommon.h): TestCout implementation with color support
-- [`Debug.cpp`]($KAI_ROOT/Source/Library/Core/Source/Debug.cpp): Integration with Logger for consistent coloring
-- [`Logger.cpp`]($KAI_ROOT/Source/Library/Core/Source/Logger.cpp): Color formatting for different log levels
+- [`Main.cpp`](../Test/Source/Main.cpp): Command-line argument handling and global color settings
+- [`TestCommon.h`](../Test/Include/TestCommon.h): TestCout implementation with color support
+- [`Debug.cpp`](../Ext/CppKaiCore/Source/Library/Core/Source/Debug.cpp): Integration with Logger for consistent coloring
+- [`Logger.cpp`](../Ext/CppKaiCore/Source/Library/Core/Source/Logger.cpp): Color formatting for different log levels

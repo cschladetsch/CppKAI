@@ -154,6 +154,6 @@ These examples serve as starting points for your own Tau interfaces. Consider:
 ## See Also
 
 - **[Tau Tutorial](../../Doc/TauTutorial.md)** - Complete language reference
-- **[NetworkGenerate README](../../Source/App/NetworkGenerate/README.md)** - Code generation tool
+- **NetworkGenerate README** - Code generation tool
 - **[Tau Code Generation Guide](../../Doc/TauCodeGeneration.md)** - Architecture details
 - **[Test Examples](../../Test/Language/TestTau/)** - Additional test cases
