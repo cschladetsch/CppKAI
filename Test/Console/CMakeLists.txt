@@ -7,7 +7,8 @@ set(source_path ${CMAKE_CURRENT_SOURCE_DIR})
 set(header_path ${TEST_HOME}/Include)
 
 # Console test files
-set(sources
+set(sources:
+    ${source_path}/ConsoleRegressionTests.cpp
     ${source_path}/TestConsoleNetworking.cpp
 )
 
