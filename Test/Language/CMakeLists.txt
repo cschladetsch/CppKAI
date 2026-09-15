@@ -199,6 +199,8 @@ foreach (lang ${langs})
             ${source_path}/TauComprehensiveTests.cpp       # 100 comprehensive tests covering all Tau features
             ${source_path}/TauFutureProxyTests.cpp         # 50 Future<T> proxy->method pattern tests
             ${source_path}/TauVeryComplexTests.cpp         # Complex nested Tau proxy/agent generation tests
+            ${source_path}/TauNodeRoundTripAndFutureTests.cpp  # 100 tests: 1-50 node round trips, continuations, classes with futures, futures over the network
+            ${source_path}/TauFutureArgumentCodeGenTests.cpp   # Regression: Future<T> parameters must generate resolve-before-send / rebuild-on-receive code, not naive pass-through
         )
     else()
         # For other languages, use the standard approach

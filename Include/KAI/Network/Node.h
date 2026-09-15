@@ -162,6 +162,33 @@ struct Node {
     Future<void> StoreProperty(NetHandle handle, const std::string &name,
                                P &&value);
 
+    // Completes a Future<T> that was previously handed to this Node (as an
+    // RPC argument) while still pending, identified by the id it was
+    // registered under via RegisterPendingFutureImport. Called once the far
+    // side (or, for a same-process call, this same Node) reports that the
+    // future has resolved. Safe to call with an unknown id (no-op).
+    void CompletePendingFutureImport(int futureId, const Object &value);
+
+    // Registers a completer for a still-pending Future<T> that this Node
+    // received as a method argument, so that a later resolution (local or
+    // over the network, see ID_KAI_FUTURE_RESOLVE) can complete the exact
+    // same shared Future state that was already handed to the method
+    // implementation.
+    template <typename T>
+    void RegisterPendingFutureImport(int futureId, Future<T> future) {
+        if (futureId == 0) return;
+        std::lock_guard<std::mutex> lock(futureImportMutex_);
+        pendingFutureImports_[futureId] = [future](const Object &value) mutable {
+            if constexpr (!std::is_void_v<T>) {
+                if (value.Exists()) {
+                    future.SetValue(ConstDeref<std::decay_t<T>>(value));
+                }
+            }
+            future.SetResponse(ResponseType::Returned);
+            future.SetComplete(true);
+        };
+    }
+
    private:
     void ProcessPacket(const NetPacket &packet);
     void ProcessObjectMessage(const NetPacket &packet);
@@ -178,6 +205,52 @@ struct Node {
                          const std::string &name);
     void SendPropertySet(NetHandle handle, int futureId,
                          const std::string &name, const Object &value);
+    // Sends a resolution notice for a future that was previously passed as
+    // a still-pending method argument to `target` (see PackInvokeArg).
+    void SendFutureResolution(const NetAddress &target, int futureId,
+                              const Object &value);
+    void ProcessFutureResolution(const NetPacket &packet);
+
+    // Packs one Invoke() argument into an Object suitable for the args
+    // Array. A plain value packs as-is (unchanged behavior). A Future<T>
+    // packs as a 2-element Array: [true, value] if already resolved, or
+    // [false, id] if still pending - in which case `resolveSink` is
+    // attached via Future::OnResolved so that whenever the caller's future
+    // eventually completes, the far side (or this same Node, for a local
+    // call) gets told via `resolveSink(id, resolvedValueObject)`.
+    template <typename T>
+    Object PackInvokeArg(T &&arg,
+                         std::function<void(int, const Object &)> resolveSink) {
+        using D = std::decay_t<T>;
+        if constexpr (is_future_v<D>) {
+            using U = future_value_t<D>;
+            Value<Array> slot = registry_->New<Array>();
+            if (arg.IsComplete()) {
+                slot->Append(registry_->New(true));
+                if constexpr (!std::is_void_v<U>) {
+                    slot->Append(registry_->New(arg.GetValue()));
+                }
+            } else {
+                if (arg.GetId() == 0) arg.SetId(nextFutureId_++);
+                int id = arg.GetId();
+                slot->Append(registry_->New(false));
+                slot->Append(registry_->New(id));
+
+                Registry *reg = registry_;
+                arg.OnResolved([reg, id, arg, resolveSink]() mutable {
+                    (void)reg;  // unused when U is void - value-less resolve
+                    Object valueObj;
+                    if constexpr (!std::is_void_v<U>) {
+                        valueObj = reg->New(arg.GetValue());
+                    }
+                    if (resolveSink) resolveSink(id, valueObj);
+                });
+            }
+            return slot.GetObject();
+        } else {
+            return registry_->New(std::forward<T>(arg));
+        }
+    }
 
     // Returns the routed NetAddress for a handle: checks proxyAddresses_ first,
     // then falls back to the first active connection.
@@ -224,6 +297,13 @@ struct Node {
     std::unordered_map<int, PendingResponse> pendingResponses_;
     std::mutex pendingMutex_;
 
+    // Completers for still-pending Future<T> arguments this Node has
+    // received (locally or over the network), keyed by the future's id.
+    // See RegisterPendingFutureImport / CompletePendingFutureImport.
+    std::unordered_map<int, std::function<void(const Object &)>>
+        pendingFutureImports_;
+    std::mutex futureImportMutex_;
+
     std::unordered_map<std::string,
                        std::vector<std::function<void(BinaryPacket &)>>>
         eventSubscriptions_;
@@ -250,8 +330,8 @@ struct MethodInvokerBase {
 
 template <typename R, typename... Args>
 struct MethodInvoker : MethodInvokerBase {
-    MethodInvoker(Registry *registry, std::function<R(Args...)> fn)
-        : registry_(registry), fn_(std::move(fn)) {}
+    MethodInvoker(Registry *registry, Node *node, std::function<R(Args...)> fn)
+        : registry_(registry), node_(node), fn_(std::move(fn)) {}
 
     Object Invoke(const std::vector<Object> &args) override {
         if (args.size() != sizeof...(Args)) {
@@ -262,11 +342,42 @@ struct MethodInvoker : MethodInvokerBase {
 
    private:
     template <typename T>
-    static std::decay_t<T> ExtractArg(const Object &obj) {
-        if constexpr (std::is_same_v<std::decay_t<T>, Object>) {
+    std::decay_t<T> ExtractArg(const Object &obj) {
+        using D = std::decay_t<T>;
+        if constexpr (std::is_same_v<D, Object>) {
             return obj;
+        } else if constexpr (is_future_v<D>) {
+            // A Future<U> argument travels as a 2-element Array:
+            // [true, value] if the sender had already resolved it, or
+            // [false, id] if it was still pending - see
+            // Node::PackInvokeArg. Either way we reconstruct a real
+            // Future<U> here; a pending one gets registered with the Node
+            // so a later resolution (local or networked) can complete it.
+            using U = future_value_t<D>;
+            D future;
+            if (obj.Exists() && obj.IsType<Array>()) {
+                const Array &arr = ConstDeref<Array>(obj);
+                bool resolved = arr.Size() > 0 && ConstDeref<bool>(arr.At(0));
+                if (resolved) {
+                    if constexpr (!std::is_void_v<U>) {
+                        if (arr.Size() > 1) {
+                            future.SetValue(
+                                ConstDeref<std::decay_t<U>>(arr.At(1)));
+                        }
+                    }
+                    future.SetResponse(ResponseType::Returned);
+                    future.SetComplete(true);
+                } else if (arr.Size() > 1) {
+                    int id = ConstDeref<int>(arr.At(1));
+                    future.SetId(id);
+                    if (node_) {
+                        node_->RegisterPendingFutureImport<U>(id, future);
+                    }
+                }
+            }
+            return future;
         } else {
-            return ConstDeref<std::decay_t<T>>(obj);
+            return ConstDeref<D>(obj);
         }
     }
 
@@ -286,6 +397,7 @@ struct MethodInvoker : MethodInvokerBase {
     }
 
     Registry *registry_;
+    Node *node_;
     std::function<R(Args...)> fn_;
 };
 
@@ -374,7 +486,7 @@ void Node::RegisterMethod(NetHandle handle, const std::string &name,
     std::lock_guard<std::mutex> lock(agentMutex_);
     auto &entry = agentEntries_[handle.value];
     entry.methods[name] = std::make_shared<detail::MethodInvoker<R, Args...>>(
-        registry_, std::move(fn));
+        registry_, this, std::move(fn));
 }
 
 template <typename Value>
@@ -421,9 +533,16 @@ Future<R> Node::Invoke(NetHandle handle, const std::string &name,
             if (!registry_) {
                 throw std::runtime_error("Null registry for local invoke");
             }
+            // Same-process call: a pending Future<T> argument's resolution
+            // is completed directly against this same Node's pending-import
+            // table, no network round trip needed.
+            std::function<void(int, const Object &)> localResolveSink =
+                [this](int futureId, const Object &value) {
+                    CompletePendingFutureImport(futureId, value);
+                };
             if constexpr (sizeof...(Args) > 0) {
                 (packedArgs.emplace_back(
-                     registry_->New(std::forward<Args>(args))),
+                     PackInvokeArg(std::forward<Args>(args), localResolveSink)),
                  ...);
             }
 
@@ -454,8 +573,16 @@ Future<R> Node::Invoke(NetHandle handle, const std::string &name,
     }
 
     Value<Array> argsArray = registry_->New<Array>();
+    // Remote call: a pending Future<T> argument's resolution has to cross
+    // the network back to whichever peer hosts `handle`.
+    std::function<void(int, const Object &)> remoteResolveSink =
+        [this, handle](int futureId, const Object &value) {
+            SendFutureResolution(RouteAddress(handle), futureId, value);
+        };
     if constexpr (sizeof...(Args) > 0) {
-        (argsArray->Append(registry_->New(std::forward<Args>(args))), ...);
+        (argsArray->Append(PackInvokeArg(std::forward<Args>(args),
+                                        remoteResolveSink)),
+         ...);
     }
 
     Object argsObject = argsArray.GetObject();

@@ -6,6 +6,23 @@ using namespace std;
 TAU_BEGIN
 
 namespace Generate {
+namespace {
+// The IDL allows a return type (or property type) to be spelled explicitly
+// as "Future<T>" as a stylistic way of marking a call async (see
+// TauFutureProxyTests.cpp / TauTutorial.md). Every RPC call already comes
+// back as a real Future<T> via Exec<T>/RegisterMethod<T,...>, so an
+// already-Future declared return type must be unwrapped to its inner T
+// first - otherwise it would be wrapped a second time into
+// Future<Future<T>>. This does NOT apply to parameter types: a Future<T>
+// PARAMETER genuinely means "pass a Future<T> value" (see Node::Invoke /
+// PackInvokeArg) and is left exactly as declared.
+std::string UnwrapFutureReturnType(const std::string &text) {
+    if (text.rfind("Future<", 0) == 0 && !text.empty() && text.back() == '>') {
+        return text.substr(7, text.size() - 8);
+    }
+    return text;
+}
+}  // namespace
 
 GenerateProxy::GenerateProxy(const char *input, string &output) {
     GenerateProcess::Generate(input, output);
@@ -216,7 +233,7 @@ bool GenerateProxy::Event(Node const &event) {
 }
 
 bool GenerateProxy::Property(Node const &prop) {
-    auto type = prop.GetChild(0)->GetTokenText();
+    auto type = UnwrapFutureReturnType(prop.GetChild(0)->GetTokenText());
     auto name = prop.GetChild(1)->GetTokenText();
 
     // Generate property getter
@@ -238,7 +255,8 @@ bool GenerateProxy::Property(Node const &prop) {
 }
 
 bool GenerateProxy::Method(Node const &method) {
-    auto const &returnType = method.GetChild(0)->GetTokenText();
+    auto const returnType =
+        UnwrapFutureReturnType(method.GetChild(0)->GetTokenText());
     auto const &args = method.GetChild(1)->GetChildren();
     const auto name = method.GetTokenText();
 
@@ -250,6 +268,15 @@ bool GenerateProxy::Method(Node const &method) {
     return true;
 }
 
+// Generates a method that calls through to ProxyBase::Exec<Ty>, the real
+// RPC path (Exec -> Node::Invoke -> Node::PackInvokeArg / SendFunctionCall).
+// Exec<Ty> already returns Future<Ty>, so the generated method's return
+// type is always wrapped via ReturnType() here, matching how Property()
+// already generates its getters. A Future<T> parameter needs no special
+// handling in the generated code at all - Node::Invoke's argument packing
+// (PackInvokeArg) already knows how to send a Future<T> argument whether
+// it is resolved or still pending, and the far side (Node::RegisterMethod
+// dispatch) reconstructs it correctly on arrival.
 void GenerateProxy::MethodDecl(const string &returnType,
                                const Node::ChildrenType &args,
                                const string &name) {
@@ -264,13 +291,11 @@ void GenerateProxy::MethodDecl(const string &returnType,
                      << ty->GetTokenText() << EndLine();
         }
     }
-    if (returnType != "void") {
-        Output() << "/// @return " << returnType << EndLine();
-    }
+    Output() << "/// @return " << ReturnType(returnType) << EndLine();
     Output() << "/// @throws NetworkException on communication failure"
              << EndLine();
 
-    Output() << returnType << " " << name << "(";
+    Output() << ReturnType(returnType) << " " << name << "(";
     bool first = true;
     for (auto const &a : args) {
         if (!first) Output() << ", ";
@@ -298,14 +323,11 @@ void GenerateProxy::MethodBody(const string &returnType,
                                const Node::ChildrenType &args,
                                const string &name) {
     StartBlock();
-    if (returnType == "void") {
-        Output() << "return _node->SendAsync(\"" << name << "\"";
-    } else {
-        Output() << "return _node->SendWithResponseAsync<" << returnType
-                 << ">(\"" << name << "\"";
-    }
+
+    Output() << "return Exec<" << returnType << ">(\"" << name << "\"";
     for (auto const &a : args) {
-        Output() << ", " << a->GetChild(1)->GetTokenText();
+        auto &id = a->GetChild(1);
+        Output() << ", " << id->GetTokenText();
     }
     Output() << ");" << EndLine();
     EndBlock();

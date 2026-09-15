@@ -121,6 +121,10 @@ class NetworkSerializer {
         ID_KAI_FUNCTION_RESPONSE = kUserPacketStart + 3,
         ID_KAI_PROPERTY_GET = kUserPacketStart + 4,
         ID_KAI_PROPERTY_SET = kUserPacketStart + 5,
+        // Notifies the far side that a future it was handed as a still-
+        // pending method ARGUMENT (see Node::Invoke / Node::PackInvokeArg)
+        // has now resolved, carrying the resolved value (if any).
+        ID_KAI_FUTURE_RESOLVE = kUserPacketStart + 6,
     };
 };
 

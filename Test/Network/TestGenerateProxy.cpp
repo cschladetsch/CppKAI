@@ -53,9 +53,16 @@ TEST(NetworkProxyTest, GeneratesValidProxyFromTauFile) {
     EXPECT_NE(combined.find("CalculatorAgent"), std::string::npos);
     EXPECT_NE(combined.find("DataServiceProxy"), std::string::npos);
     EXPECT_NE(combined.find("DataServiceAgent"), std::string::npos);
-    EXPECT_NE(combined.find("SendWithResponse"), std::string::npos);
-    EXPECT_NE(combined.find("Handle_Add"), std::string::npos);
-    EXPECT_NE(combined.find("AgentBase<Calculator>"), std::string::npos);
+    // Generated code targets the real RPC path (ProxyBase::Exec<T> ->
+    // Node::Invoke, and Node::RegisterMethod<R,Args...> on the agent side) -
+    // there is no hand-rolled SendWithResponse/Handle_MethodName API, and
+    // AgentBase is a plain (non-template) base.
+    EXPECT_NE(combined.find("Exec<int>(\"Add\""), std::string::npos);
+    EXPECT_NE(combined.find("GetNode().RegisterMethod<int, int, int>("),
+              std::string::npos);
+    EXPECT_NE(combined.find("class CalculatorAgent: public AgentBase"),
+              std::string::npos);
+    EXPECT_EQ(combined.find("AgentBase<Calculator>"), std::string::npos);
 
     std::remove(tauFile.c_str());
     std::remove(outFile.c_str());

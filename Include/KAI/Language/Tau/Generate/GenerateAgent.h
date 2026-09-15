@@ -35,6 +35,7 @@ struct GenerateAgent : GenerateProcess {
     struct AgentDecl;
     void AddAgentBoilerplate(AgentDecl const &agent, Node const &cl);
     void GenerateHandlerMethod(Node const &method);
+    void GenerateHandlerProperty(Node const &prop);
     void GenerateEventTrigger(Node const &event);
 };
 }  // namespace Generate

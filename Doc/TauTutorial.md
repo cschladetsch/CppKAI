@@ -551,6 +551,67 @@ interface ICalc {
 
 `Future<T>` is parsed as a single composite token by the Tau lexer, so template parameters are fully supported.
 
+### Future&lt;T&gt; as a Parameter Type
+
+`Future<T>` can also be used as a method **parameter**, not just a return type:
+
+```tau
+interface IAggregator {
+    int Sum(Future<int> a, Future<int> b);
+}
+```
+
+Generated proxy and agent code needs **no special handling at all** for a
+`Future<T>` parameter — it is forwarded exactly like any other argument:
+
+```cpp
+// Generated proxy method body:
+return Exec<int>("Sum", a, b);
+
+// Generated agent registration:
+GetNode().RegisterMethod<int, Future<int>, Future<int>>(
+    GetHandle(), "Sum",
+    std::function<int(Future<int>, Future<int>)>(
+        [this](Future<int> a, Future<int> b) {
+            return _impl->Sum(a, b);
+        }));
+```
+
+All of the interesting behaviour lives in `Node::Invoke`/`Node::RegisterMethod`
+(`Include/KAI/Network/Node.h`), which every proxy call and agent registration
+already goes through:
+
+- **Sending a `Future<T>` argument** (`Node::PackInvokeArg`): if the future is
+  already resolved, its value is sent immediately, tagged as resolved. If it
+  is still **unfulfilled**, the argument is sent as a pending reference (an
+  auto-assigned future id) instead, and the sender registers a callback (via
+  `Future<T>::OnResolved`) that fires the moment the local future completes.
+- **Receiving a `Future<T>` argument** (`detail::MethodInvoker::ExtractArg`):
+  a resolved argument is unwrapped into a completed `Future<T>` immediately;
+  a pending one is turned into a genuinely-still-pending `Future<T>` on the
+  receiving side (via `Node::RegisterPendingFutureImport`), which the
+  implementation receives and can hold onto.
+- **Resolving it later, across the network**: when the sender's future
+  eventually completes, the resolved value is pushed to the receiver over a
+  dedicated `ID_KAI_FUTURE_RESOLVE` message (`Node::SendFutureResolution` /
+  `Node::ProcessFutureResolution`), which completes the receiver's copy of
+  the future in place — no polling required on either side.
+- **`Future<void>`** arguments work the same way, minus a carried value.
+
+This means an **unfulfilled** `Future<T>` can genuinely be passed as an RPC
+argument and resolved later, once, over the wire — see
+`Test/Network/NodeFutureArgumentTest.cpp` for real loopback-network tests of
+exactly this (including the still-pending case arriving intact, and a later
+resolution propagating across two connected `Node`s).
+
+One caveat remains: `kai::net::Future<T>` has no blocking wait (it's a
+shared-state future designed for single-threaded async completion, not a
+thread-blocking one). That only matters for *reading* a future's value once
+you have one — resolving/observing it still requires polling
+`IsComplete()`/`Succeeded()`, calling `OnResolved(...)`, or using
+`Node::WaitFor` in test code; it does not block *sending* an unresolved
+future as an argument, which works as described above.
+
 ## Conclusion
 
 Tau provides a powerful way to define and coordinate distributed components in a KAI system. By focusing on clear interface definitions, it enables transparent cross-network communication while maintaining type safety and versioning. As you build more complex distributed applications with KAI, Tau becomes an essential tool for ensuring robust communication between components.

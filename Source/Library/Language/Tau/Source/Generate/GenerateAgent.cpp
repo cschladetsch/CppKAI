@@ -7,6 +7,22 @@ namespace {
 bool IsStdStringType(const std::string &typeText) {
     return typeText == "string" || typeText == "std::string";
 }
+
+// Mirrors GenerateProxy.cpp's helper of the same name: the IDL allows a
+// method/property return type to be spelled explicitly as "Future<T>". The
+// proxy side unwraps this to T before calling Exec<T>/Fetch<T> (since those
+// already return Future<T>), so the agent side must unwrap it the same way
+// for RegisterMethod<T,...>/RegisterProperty<T> and the implementation's
+// own (plain, synchronous) method/property signature to stay consistent
+// with what the proxy expects on the wire. Parameter types are never
+// unwrapped - a Future<T> parameter genuinely means "pass a Future<T>
+// value" (see Node::Invoke / PackInvokeArg).
+std::string UnwrapFutureReturnType(const std::string &text) {
+    if (text.rfind("Future<", 0) == 0 && !text.empty() && text.back() == '>') {
+        return text.substr(7, text.size() - 8);
+    }
+    return text;
+}
 }  // namespace
 
 GenerateAgent::GenerateAgent(const char *input, string &output) {
@@ -48,10 +64,18 @@ bool GenerateAgent::Generate(TauParser const &parser, string &output) {
 string GenerateAgent::Prepend() const {
     stringstream str;
     str << "#include <KAI/Network/AgentDecl.h>\n";
+    // AgentDecl.h -> AgentBase.h only forward-declares Node (to avoid a
+    // circular include), so the full Node.h is needed explicitly here for
+    // GetNode().RegisterMethod<...>/RegisterProperty<...>/BroadcastEvent.
+    str << "#include <KAI/Network/Node.h>\n";
     str << "#include <KAI/Network/NetworkException.h>\n";
+    str << "#include <functional>\n";
+    str << "#include <memory>\n";
     str << "#include <stdexcept>\n";
     str << "#include <string>\n";
+    str << "#include <utility>\n";
     str << "#include <KAI/Core/BinaryStream.h>\n";
+    str << "#include <KAI/Network/Future.h>\n";
     str << "\n";
     return str.str();
 }
@@ -110,10 +134,12 @@ struct GenerateAgent::AgentDecl {
         AgentName = root + "Agent";
     }
 
+    // AgentBase is a plain (non-template) base - it takes NetHandle
+    // attachment care of itself via Node::AttachAgent. The implementation
+    // type is held separately as `_impl`, not baked into the base class.
     string ToString() const {
         stringstream decl;
-        decl << "class " << AgentName << ": public AgentBase<" << RootName
-             << ">";
+        decl << "class " << AgentName << ": public AgentBase";
         return decl.str();
     }
 };
@@ -124,40 +150,32 @@ bool GenerateAgent::Class(TauParser::AstNode const &cl) {
     // Generate documentation comment
     Output() << "/// Network agent for " << className << " interface"
              << EndLine();
-    Output() << "/// Handles incoming network requests and dispatches to "
-                "implementation"
-             << EndLine();
-    Output() << "/// All handler methods deserialize parameters and call "
-                "implementation"
+    Output() << "/// Registers method and property handlers with the Node "
+                "that dispatch to the implementation"
              << EndLine();
 
     auto agentDecl = AgentDecl(className);
     StartBlock(agentDecl.ToString());
+    Output() << "public:" << EndLine();
+
+    // The constructor itself registers every method/property with the
+    // Node (see AddAgentBoilerplate) - that's how a real incoming call
+    // reaches the implementation (Node::ProcessFunctionCall dispatches to
+    // whatever was registered via RegisterMethod, it does not look for a
+    // hand-written Handle_MethodName function).
     AddAgentBoilerplate(agentDecl, cl);
 
-    // Generate handler methods for each method and event in the class
+    // Event triggers remain plain public methods the implementation (or
+    // its owner) calls directly to broadcast to connected clients.
     for (const auto &member : cl.GetChildren()) {
-        switch (member->GetType()) {
-            case TauAstEnumType::Method:
-                GenerateHandlerMethod(*member);
-                break;
-            case TauAstEnumType::Event:
-                GenerateEventTrigger(*member);
-                break;
-            case TauAstEnumType::Property:
-                // Properties are handled through messages, no special
-                // generation needed
-                break;
-            default:
-                // Skip other member types
-                break;
+        if (member->GetType() == TauAstEnumType::Event) {
+            GenerateEventTrigger(*member);
         }
     }
 
     Output() << "private:" << EndLine();
     Output() << "std::shared_ptr<" << agentDecl.RootName << "> _impl;"
              << EndLine();
-    Output() << "Node* _node = nullptr;" << EndLine();
 
     EndBlock();
     return true;
@@ -184,82 +202,102 @@ std::string GenerateAgent::ReturnType(std::string const &text) const {
 
 void GenerateAgent::AddAgentBoilerplate(AgentDecl const &agent,
                                         TauParser::AstNode const &cl) {
-    Output() << agent.AgentName
-             << "(Node &node, NetHandle handle) : AgentBase(node, handle) { }"
-             << EndLine();
-    Output() << EndLine();
-}
-
-void GenerateAgent::GenerateHandlerMethod(TauParser::AstNode const &method) {
-    auto const &returnType = method.GetChild(0)->GetTokenText();
-    auto const &args = method.GetChild(1)->GetChildren();
-    const auto name = method.GetTokenText();
-
-    // Generate documentation for handler method
-    Output() << "/// Handler for remote method call: " << name << EndLine();
-    Output() << "/// Deserializes parameters from BinaryStream and calls "
-                "implementation"
-             << EndLine();
-    if (!args.empty()) {
-        Output() << "/// Parameters deserialized from network:" << EndLine();
-        for (auto const &a : args) {
-            auto &ty = a->GetChild(0);
-            auto &id = a->GetChild(1);
-            Output() << "///   " << id->GetTokenText() << " ("
-                     << ty->GetTokenText() << ")" << EndLine();
-        }
-    }
-    if (returnType != "void") {
-        Output() << "/// Sends " << returnType << " response back to sender"
-                 << EndLine();
-    }
-
-    // Generate the Handle_MethodName signature
-    Output() << "void Handle_" << name
-             << "(BinaryStream& bs, const kai::net::NetAddress& sender)";
+    // AgentBase(Node&) attaches itself to the Node (via Node::AttachAgent)
+    // and owns the resulting NetHandle - there's no separate handle
+    // parameter to pass in. The implementation is supplied by the caller
+    // and held as _impl; every method/property gets wired to it right here
+    // via Node::RegisterMethod/RegisterProperty so that a real incoming
+    // call (Node::ProcessFunctionCall / ProcessPropertyGet / SetProperty)
+    // has something registered to dispatch to.
+    Output() << agent.AgentName << "(Node &node, std::shared_ptr<"
+             << agent.RootName << "> impl)" << EndLine();
+    Output() << "    : AgentBase(node), _impl(std::move(impl))";
     StartBlock();
 
-    // Deserialize parameters from BinaryStream
-    for (auto const &a : args) {
-        auto &ty = a->GetChild(0);
-        auto &id = a->GetChild(1);
-        Output() << ty->GetTokenText() << " " << id->GetTokenText() << ";"
-                 << EndLine();
-        Output() << "bs >> " << id->GetTokenText() << ";" << EndLine();
-    }
-
-    // Call the implementation method
-    if (returnType != "void") {
-        Output() << returnType << " result = _impl->" << name << "(";
-    } else {
-        Output() << "_impl->" << name << "(";
-    }
-
-    // Pass arguments
-    bool first = true;
-    for (auto const &a : args) {
-        if (!first) Output() << ", ";
-        auto &id = a->GetChild(1);
-        Output() << id->GetTokenText();
-        first = false;
-    }
-    Output() << ");" << EndLine();
-
-    // Send back result for non-void methods
-    if (returnType != "void") {
-        Output() << "BinaryStream response;" << EndLine();
-        if (IsStdStringType(returnType)) {
-            Output()
-                << "kai::net::NetworkSerializer::WriteString(response, result);"
-                << EndLine();
-        } else {
-            Output() << "response << result;" << EndLine();
+    for (const auto &member : cl.GetChildren()) {
+        switch (member->GetType()) {
+            case TauAstEnumType::Method:
+                GenerateHandlerMethod(*member);
+                break;
+            case TauAstEnumType::Property:
+                GenerateHandlerProperty(*member);
+                break;
+            default:
+                break;
         }
-        Output() << "_node->SendResponse(sender, response);" << EndLine();
     }
 
     EndBlock();
     Output() << EndLine();
+}
+
+void GenerateAgent::GenerateHandlerMethod(TauParser::AstNode const &method) {
+    auto const returnType =
+        UnwrapFutureReturnType(method.GetChild(0)->GetTokenText());
+    auto const &args = method.GetChild(1)->GetChildren();
+    const auto name = method.GetTokenText();
+
+    Output() << "/// Registers remote method call: " << name << EndLine();
+    Output() << "GetNode().RegisterMethod<" << returnType;
+    for (auto const &a : args) {
+        auto &ty = a->GetChild(0);
+        Output() << ", " << ty->GetTokenText();
+    }
+    Output() << ">(" << EndLine();
+    Output() << "    GetHandle(), \"" << name << "\"," << EndLine();
+    Output() << "    std::function<" << returnType << "(";
+    {
+        bool first = true;
+        for (auto const &a : args) {
+            if (!first) Output() << ", ";
+            Output() << a->GetChild(0)->GetTokenText();
+            first = false;
+        }
+    }
+    Output() << ")>(" << EndLine();
+    Output() << "        [this](";
+    {
+        bool first = true;
+        for (auto const &a : args) {
+            if (!first) Output() << ", ";
+            Output() << a->GetChild(0)->GetTokenText() << " "
+                     << a->GetChild(1)->GetTokenText();
+            first = false;
+        }
+    }
+    Output() << ") {" << EndLine();
+    Output() << "            return _impl->" << name << "(";
+    {
+        bool first = true;
+        for (auto const &a : args) {
+            if (!first) Output() << ", ";
+            Output() << a->GetChild(1)->GetTokenText();
+            first = false;
+        }
+    }
+    // A method whose return type is "void" still compiles as
+    // `return voidExpr;` inside a lambda returning void, so this line
+    // works unchanged regardless of returnType.
+    Output() << ");" << EndLine();
+    Output() << "        }));" << EndLine();
+}
+
+void GenerateAgent::GenerateHandlerProperty(TauParser::AstNode const &prop) {
+    auto const type = UnwrapFutureReturnType(prop.GetChild(0)->GetTokenText());
+    auto const &name = prop.GetChild(1)->GetTokenText();
+
+    // Mirrors GenerateProxy::Property, which calls Fetch<T>(name) /
+    // Store(name, value) - both resolve, over the network, to exactly this
+    // registration (Node::ProcessPropertyGet / ProcessPropertySet look up
+    // the accessor registered here by name).
+    Output() << "/// Registers remote property accessors: " << name
+             << EndLine();
+    Output() << "GetNode().RegisterProperty<" << type << ">(" << EndLine();
+    Output() << "    GetHandle(), \"" << name << "\"," << EndLine();
+    Output() << "    [this]() { return _impl->" << name << "(); },"
+             << EndLine();
+    Output() << "    [this](" << type << " value) { _impl->Set" << name
+             << "(value); });" << EndLine();
 }
 
 void GenerateAgent::GenerateEventTrigger(TauParser::AstNode const &event) {
@@ -320,10 +358,11 @@ void GenerateAgent::GenerateEventTrigger(TauParser::AstNode const &event) {
                          << EndLine();
             }
         }
-        Output() << "_node->BroadcastEvent(\"" << name << "\", eventData);"
-                 << EndLine();
+        Output() << "GetNode().BroadcastEvent(\"" << name
+                 << "\", eventData);" << EndLine();
     } else {
-        Output() << "_node->BroadcastEvent(\"" << name << "\");" << EndLine();
+        Output() << "GetNode().BroadcastEvent(\"" << name << "\");"
+                 << EndLine();
     }
 
     EndBlock();

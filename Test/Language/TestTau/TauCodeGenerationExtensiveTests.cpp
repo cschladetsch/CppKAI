@@ -171,23 +171,28 @@ TEST_F(TauCodeGenerationExtensiveTests, ProxyMethodGeneration) {
     ASSERT_TRUE(GenerateProxyCode(tauCode, output, error))
         << "Error: " << error;
 
-    // Check method generation with documentation
+    // Check method generation with documentation. Every proxy method returns
+    // a real Future<T> (via Exec<T> -> Node::Invoke), so the declared return
+    // type is always wrapped.
     vector<string> expectedPatterns = {
         "/// Remote method call: getValue",
-        "/// @return int",
+        "/// @return Future<int>",
         "/// @throws NetworkException on communication failure",
-        "int getValue()",
+        "Future<int> getValue()",
+        "return Exec<int>(\"getValue\");",
 
         "/// Remote method call: setValue",
         "/// Parameters:",
         "///   @param value int",
         "/// @throws NetworkException on communication failure",
-        "void setValue(int value)",
+        "Future<void> setValue(int value)",
+        "return Exec<void>(\"setValue\", value);",
 
         "/// Remote method call: processData",
         "///   @param input string",
         "///   @param flags int",
-        "string processData(const string& input, int flags)"};
+        "Future<string> processData(const string& input, int flags)",
+        "return Exec<string>(\"processData\", input, flags);"};
 
     EXPECT_TRUE(ContainsPatterns(output, expectedPatterns))
         << "Missing expected method patterns in output:\n"
@@ -208,10 +213,12 @@ TEST_F(TauCodeGenerationExtensiveTests, ProxyErrorHandling) {
     ASSERT_TRUE(GenerateProxyCode(tauCode, output, error))
         << "Error: " << error;
 
-    // Check for proper error handling
-    vector<string> expectedPatterns = {
-        "SendAsync(", "_node->SendAsync(\"send\")",
-        "_node->SendWithResponseAsync<int>(\"receive\")"};
+    // Every proxy call goes through ProxyBase::Exec<T> -> Node::Invoke, the
+    // real RPC path that can throw NetworkException on failure - there is no
+    // hand-rolled SendAsync/SendWithResponseAsync in generated code.
+    vector<string> expectedPatterns = {"return Exec<void>(\"send\");",
+                                       "return Exec<int>(\"receive\");",
+                                       "#include <KAI/Network/NetworkException.h>"};
 
     EXPECT_TRUE(ContainsPatterns(output, expectedPatterns))
         << "Missing expected error handling patterns in output:\n"
@@ -299,17 +306,16 @@ TEST_F(TauCodeGenerationExtensiveTests, AgentClassGeneration) {
     ASSERT_TRUE(GenerateAgentCode(tauCode, output, error))
         << "Error: " << error;
 
-    // Check for proper agent class structure
+    // Check for proper agent class structure. AgentBase is a plain
+    // (non-template) base attached to the Node via its own constructor; the
+    // implementation is held separately as _impl and wired up to every
+    // RegisterMethod/RegisterProperty call in the constructor body.
     vector<string> expectedPatterns = {
         "namespace Services",
         "/// Network agent for ICalculator interface",
-        "/// Handles incoming network requests and dispatches to "
-        "implementation",
-        "/// All handler methods deserialize parameters and call "
-        "implementation",
-        "class ICalculatorAgent: public AgentBase<ICalculator>",
-        "ICalculatorAgent(Node &node, NetHandle handle) : AgentBase(node, "
-        "handle) { }"};
+        "class ICalculatorAgent: public AgentBase",
+        "ICalculatorAgent(Node &node, std::shared_ptr<ICalculator> impl)",
+        ": AgentBase(node), _impl(std::move(impl))"};
 
     EXPECT_TRUE(ContainsPatterns(output, expectedPatterns))
         << "Missing expected agent class patterns in output:\n"
@@ -331,31 +337,23 @@ TEST_F(TauCodeGenerationExtensiveTests, AgentHandlerGeneration) {
     ASSERT_TRUE(GenerateAgentCode(tauCode, output, error))
         << "Error: " << error;
 
-    // Check handler method generation with documentation
+    // Check handler generation - each method is registered with the Node
+    // via RegisterMethod<R,Args...>, whose lambda dispatches straight to the
+    // implementation. There is no hand-written Handle_MethodName function;
+    // Node::ProcessFunctionCall/MethodInvoker handle (de)serialization.
     vector<string> expectedPatterns = {
-        "/// Handler for remote method call: calculate",
-        "/// Deserializes parameters from BinaryStream and calls "
-        "implementation",
-        "/// Parameters deserialized from network:",
-        "///   input (float)",
-        "///   mode (int)",
-        "/// Sends int response back to sender",
-        "void Handle_calculate(BinaryStream& bs, const kai::net::NetAddress& "
-        "sender)",
+        "/// Registers remote method call: calculate",
+        "GetNode().RegisterMethod<int, float, int>(",
+        "GetHandle(), \"calculate\",",
+        "std::function<int(float, int)>(",
+        "[this](float input, int mode) {",
+        "return _impl->calculate(input, mode);",
 
-        "float input;",
-        "bs >> input;",
-        "int mode;",
-        "bs >> mode;",
-        "int result = _impl->calculate(input, mode);",
-        "BinaryStream response;",
-        "response << result;",
-        "_node->SendResponse(sender, response);",
-
-        "/// Handler for remote method call: reset",
-        "void Handle_reset(BinaryStream& bs, const kai::net::NetAddress& "
-        "sender)",
-        "_impl->reset();"};
+        "/// Registers remote method call: reset",
+        "GetNode().RegisterMethod<void>(",
+        "GetHandle(), \"reset\",",
+        "std::function<void()>(",
+        "return _impl->reset();"};
 
     EXPECT_TRUE(ContainsPatterns(output, expectedPatterns))
         << "Missing expected handler patterns in output:\n"
@@ -391,11 +389,11 @@ TEST_F(TauCodeGenerationExtensiveTests, AgentEventTriggers) {
         "kai::net::NetworkSerializer::WriteString(eventData, result);",
         "eventData << score;",
         "eventData << success;",
-        "_node->BroadcastEvent(\"DataProcessed\", eventData);",
+        "GetNode().BroadcastEvent(\"DataProcessed\", eventData);",
 
         "/// Trigger event: ErrorOccurred",
         "void TriggerErrorOccurred(const string& message)",
-        "_node->BroadcastEvent(\"ErrorOccurred\", eventData);"};
+        "GetNode().BroadcastEvent(\"ErrorOccurred\", eventData);"};
 
     EXPECT_TRUE(ContainsPatterns(output, expectedPatterns))
         << "Missing expected event trigger patterns in output:\n"
@@ -422,22 +420,27 @@ TEST_F(TauCodeGenerationExtensiveTests, PrimitiveTypeParameters) {
     ASSERT_TRUE(GenerateAgentCode(tauCode, agentOutput, error))
         << "Agent Error: " << error;
 
-    // Check proxy uses pass-by-value for primitives
+    // Check proxy uses pass-by-value for primitives, with the return type
+    // wrapped in Future<T> (Exec<T> already returns Future<T>).
     vector<string> proxyPatterns = {
-        "void testPrimitives(int i, float f, bool b, double d, char c)",
-        "int primitiveReturn(float input)"};
+        "Future<void> testPrimitives(int i, float f, bool b, double d, char c)",
+        "Future<int> primitiveReturn(float input)"};
 
     EXPECT_TRUE(ContainsPatterns(proxyOutput, proxyPatterns))
         << "Proxy primitive parameter handling incorrect:\n"
         << proxyOutput;
 
-    // Check agent deserializes primitives correctly
+    // Deserialization of primitives now happens generically in
+    // Node/MethodInvoker, not in generated code - the agent just registers
+    // the plain primitive types and forwards to the implementation.
     vector<string> agentPatterns = {
-        "int i;",   "bs >> i;",  "float f;", "bs >> f;", "bool b;",
-        "bs >> b;", "double d;", "bs >> d;", "char c;",  "bs >> c;"};
+        "GetNode().RegisterMethod<void, int, float, bool, double, char>(",
+        "_impl->testPrimitives(i, f, b, d, c);",
+        "GetNode().RegisterMethod<int, float>(",
+        "_impl->primitiveReturn(input);"};
 
     EXPECT_TRUE(ContainsPatterns(agentOutput, agentPatterns))
-        << "Agent primitive deserialization incorrect:\n"
+        << "Agent primitive parameter handling incorrect:\n"
         << agentOutput;
 }
 
@@ -458,23 +461,30 @@ TEST_F(TauCodeGenerationExtensiveTests, ComplexTypeParameters) {
     ASSERT_TRUE(GenerateAgentCode(tauCode, agentOutput, error))
         << "Agent Error: " << error;
 
-    // Check proxy uses const reference for complex types
+    // Check proxy uses const reference for complex types, return wrapped in
+    // Future<T>.
     vector<string> proxyPatterns = {
-        "void processString(const string& data)",
-        "void processArray(const Array& items)",
-        "string complexReturn(const string& input, const Array& config)"};
+        "Future<void> processString(const string& data)",
+        "Future<void> processArray(const Array& items)",
+        "Future<string> complexReturn(const string& input, const Array& "
+        "config)"};
 
     EXPECT_TRUE(ContainsPatterns(proxyOutput, proxyPatterns))
         << "Proxy complex parameter handling incorrect:\n"
         << proxyOutput;
 
-    // Check agent deserializes complex types correctly
-    vector<string> agentPatterns = {"string data;",  "bs >> data;",
-                                    "Array items;",  "bs >> items;",
-                                    "string input;", "Array config;"};
+    // Complex types are registered and forwarded the same way as
+    // primitives - there is no per-type (de)serialization in generated code.
+    vector<string> agentPatterns = {"GetNode().RegisterMethod<void, string>(",
+                                    "_impl->processString(data);",
+                                    "GetNode().RegisterMethod<void, Array>(",
+                                    "_impl->processArray(items);",
+                                    "GetNode().RegisterMethod<string, string, "
+                                    "Array>(",
+                                    "_impl->complexReturn(input, config);"};
 
     EXPECT_TRUE(ContainsPatterns(agentOutput, agentPatterns))
-        << "Agent complex deserialization incorrect:\n"
+        << "Agent complex parameter handling incorrect:\n"
         << agentOutput;
 }
 
@@ -539,15 +549,15 @@ TEST_F(TauCodeGenerationExtensiveTests, MultipleInterfaces) {
 
     // Check both interfaces are generated
     vector<string> proxyPatterns = {"class IService1Proxy",
-                                    "void method1()",
+                                    "Future<void> method1()",
                                     "void RegisterEvent1Handler",
                                     "class IService2Proxy",
-                                    "int method2(const string& input)",
+                                    "Future<int> method2(const string& input)",
                                     "void RegisterEvent2Handler"};
 
     vector<string> agentPatterns = {
-        "class IService1Agent", "void Handle_method1", "void TriggerEvent1",
-        "class IService2Agent", "void Handle_method2", "void TriggerEvent2"};
+        "class IService1Agent", "_impl->method1();",     "void TriggerEvent1",
+        "class IService2Agent", "_impl->method2(input);", "void TriggerEvent2"};
 
     EXPECT_TRUE(ContainsPatterns(proxyOutput, proxyPatterns))
         << "Proxy multiple interface handling incorrect:\n"
@@ -601,21 +611,25 @@ TEST_F(TauCodeGenerationExtensiveTests, VoidMethodsOnly) {
     ASSERT_TRUE(GenerateAgentCode(tauCode, agentOutput, error))
         << "Agent Error: " << error;
 
-    // Check void methods use Send instead of SendWithResponse in proxy
-    EXPECT_TRUE(proxyOutput.find("_node->SendAsync(\"initialize\")") !=
+    // Void methods still go through Exec<void> - there is no separate
+    // fire-and-forget Send path in generated code (Node::Invoke decides how
+    // to handle a void return internally).
+    EXPECT_TRUE(proxyOutput.find("return Exec<void>(\"initialize\");") !=
                 string::npos)
-        << "Proxy void method should use Send:\n"
+        << "Proxy void method should call Exec<void>:\n"
         << proxyOutput;
     EXPECT_TRUE(proxyOutput.find("SendWithResponse") == string::npos)
-        << "Proxy void methods should not use SendWithResponse:\n"
+        << "Proxy void methods should not reference the old fictional "
+           "SendWithResponse API:\n"
         << proxyOutput;
 
-    // Check agent handlers don't send responses for void methods
-    EXPECT_TRUE(agentOutput.find("_impl->initialize()") != string::npos)
+    // Check agent registers and calls the implementation for void methods
+    EXPECT_TRUE(agentOutput.find("_impl->initialize();") != string::npos)
         << "Agent should call implementation for void methods:\n"
         << agentOutput;
-    EXPECT_TRUE(agentOutput.find("Handle_initialize") != string::npos)
-        << "Agent should have handler for void methods:\n"
+    EXPECT_TRUE(agentOutput.find("GetNode().RegisterMethod<void>(") !=
+                string::npos)
+        << "Agent should register a handler for void methods:\n"
         << agentOutput;
 }
 
@@ -638,12 +652,13 @@ TEST_F(TauCodeGenerationExtensiveTests, MethodNameEdgeCases) {
 
     // Check all method name styles are handled correctly
     vector<string> proxyPatterns = {
-        "void _underscore_method()", "int CamelCaseMethod(int paramName)",
-        "float snake_case_method(float param_value)"};
+        "Future<void> _underscore_method()",
+        "Future<int> CamelCaseMethod(int paramName)",
+        "Future<float> snake_case_method(float param_value)"};
 
-    vector<string> agentPatterns = {"void Handle__underscore_method",
-                                    "void Handle_CamelCaseMethod",
-                                    "void Handle_snake_case_method"};
+    vector<string> agentPatterns = {"GetHandle(), \"_underscore_method\",",
+                                    "GetHandle(), \"CamelCaseMethod\",",
+                                    "GetHandle(), \"snake_case_method\","};
 
     EXPECT_TRUE(ContainsPatterns(proxyOutput, proxyPatterns))
         << "Proxy method name edge cases incorrect:\n"
@@ -695,8 +710,9 @@ TEST_F(TauCodeGenerationExtensiveTests, CompleteServiceExample) {
     EXPECT_EQ(CountPatternOccurrences(proxyOutput, "RegisterEventHandler"), 3)
         << "Should have 3 event registrations in proxy";
 
-    EXPECT_EQ(CountPatternOccurrences(agentOutput, "void Handle_"), 5)
-        << "Should have 5 handler methods in agent";
+    EXPECT_EQ(CountPatternOccurrences(agentOutput, "GetNode().RegisterMethod<"),
+              5)
+        << "Should have 5 registered method handlers in agent";
     EXPECT_EQ(CountPatternOccurrences(agentOutput, "void Trigger"), 3)
         << "Should have 3 event triggers in agent";
 
@@ -733,9 +749,10 @@ TEST_F(TauCodeGenerationExtensiveTests, CodeQualityMetrics) {
     EXPECT_GE(CountPatternOccurrences(agentOutput, "///"), 6)
         << "Insufficient documentation comments in agent";
 
-    // 2. Error handling coverage
-    EXPECT_GE(CountPatternOccurrences(proxyOutput, "SendWithResponseAsync"), 1)
-        << "Missing async call in proxy";
+    // 2. Error handling coverage - every proxy call goes through Exec<T>
+    // (ProxyBase::Exec -> Node::Invoke), which can throw NetworkException.
+    EXPECT_GE(CountPatternOccurrences(proxyOutput, "Exec<"), 1)
+        << "Missing Exec<T> call in proxy";
     EXPECT_GE(CountPatternOccurrences(proxyOutput, "NetworkException"), 1)
         << "Missing NetworkException usage in proxy";
 
@@ -794,8 +811,9 @@ TEST_F(TauCodeGenerationExtensiveTests, LargeInterfaceGeneration) {
     EXPECT_EQ(CountPatternOccurrences(proxyOutput, "RegisterEvent"), 40)
         << "Each event should register and include handler invocation";
 
-    EXPECT_EQ(CountPatternOccurrences(agentOutput, "void Handle_method"), 50)
-        << "Should generate all 50 handlers in agent";
+    EXPECT_EQ(
+        CountPatternOccurrences(agentOutput, "GetNode().RegisterMethod<"), 50)
+        << "Should generate all 50 registered method handlers in agent";
     EXPECT_EQ(CountPatternOccurrences(agentOutput, "void TriggerEvent"), 20)
         << "Should generate all 20 event triggers in agent";
 

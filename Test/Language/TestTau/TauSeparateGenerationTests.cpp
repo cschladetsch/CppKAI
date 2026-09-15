@@ -61,16 +61,18 @@ TEST_F(TauSeparateGenerationTests, TestAgentOnlyGeneratesAgent) {
     ASSERT_FALSE(output.empty());
 
     // Should contain agent class
-    EXPECT_TRUE(output.find("class ServiceAgent: public AgentBase<Service>") !=
+    EXPECT_TRUE(output.find("class ServiceAgent: public AgentBase") !=
                 string::npos);
 
     // Should NOT contain proxy class
     EXPECT_TRUE(output.find("class ServiceProxy") == string::npos);
-    EXPECT_TRUE(output.find("ProxyBase") == string::npos);
 
-    // Should contain handler methods
-    EXPECT_TRUE(output.find("Handle_DoWork") != string::npos);
-    EXPECT_TRUE(output.find("Handle_Calculate") != string::npos);
+    // Should register method handlers with the Node (real dispatch path -
+    // there is no hand-written Handle_MethodName function to look for).
+    EXPECT_TRUE(output.find("RegisterMethod<void>") != string::npos);
+    EXPECT_TRUE(output.find("_impl->DoWork()") != string::npos);
+    EXPECT_TRUE(output.find("RegisterMethod<int, int, int>") != string::npos);
+    EXPECT_TRUE(output.find("_impl->Calculate(a, b)") != string::npos);
 
     // Should NOT contain proxy methods like Fetch or Store
     EXPECT_TRUE(output.find("Fetch<") == string::npos);
@@ -115,10 +117,11 @@ TEST_F(TauSeparateGenerationTests, TestAgentHandlesInterfaces) {
     ASSERT_FALSE(output.empty());
 
     // Should generate agent for interface
-    EXPECT_TRUE(output.find("class ILoggerAgent: public AgentBase<ILogger>") !=
+    EXPECT_TRUE(output.find("class ILoggerAgent: public AgentBase") !=
                 string::npos);
-    EXPECT_TRUE(output.find("Handle_Log") != string::npos);
-    EXPECT_TRUE(output.find("Handle_LogError") != string::npos);
+    EXPECT_TRUE(output.find("RegisterMethod<void, string>") != string::npos);
+    EXPECT_TRUE(output.find("_impl->Log(message)") != string::npos);
+    EXPECT_TRUE(output.find("_impl->LogError(error)") != string::npos);
 }
 
 TEST_F(TauSeparateGenerationTests, TestProxyIgnoresStructs) {
@@ -251,11 +254,13 @@ TEST_F(TauSeparateGenerationTests, TestComplexScenario) {
         // Should NOT have agent for struct
         EXPECT_TRUE(agentOutput.find("class UserDataAgent") == string::npos);
 
-        // Should have handler methods
-        EXPECT_TRUE(agentOutput.find("Handle_GetUser") != string::npos);
-        EXPECT_TRUE(agentOutput.find("Handle_UpdateUser") != string::npos);
-        EXPECT_TRUE(agentOutput.find("Handle_AddUser") != string::npos);
-        EXPECT_TRUE(agentOutput.find("Handle_FindUser") != string::npos);
+        // Should register each method handler with the Node (real dispatch
+        // path - there is no hand-written Handle_MethodName function).
+        EXPECT_TRUE(agentOutput.find("_impl->GetUser(id)") != string::npos);
+        EXPECT_TRUE(agentOutput.find("_impl->UpdateUser(user)") !=
+                    string::npos);
+        EXPECT_TRUE(agentOutput.find("_impl->AddUser(user)") != string::npos);
+        EXPECT_TRUE(agentOutput.find("_impl->FindUser(name)") != string::npos);
     }
 
     // Test struct generation

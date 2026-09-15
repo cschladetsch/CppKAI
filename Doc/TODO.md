@@ -1,6 +1,6 @@
 # KAI Project TODO
 
-Last updated: 2026-09-13
+Last updated: 2026-09-15
 
 ## Current Status
 
@@ -18,6 +18,8 @@ gantt
     section Language
     Tau Future<T> parser fix    :done,   tau1, 2026-03-15, 2026-04-01
     Tau EOF parser fix          :done,   tau2, 2026-04-25, 2026-04-25
+    Tau Future<T> as parameter  :done,   tau3, 2026-09-15, 2026-09-15
+    Rho translator-reuse fix    :done,   rho2, 2026-09-15, 2026-09-15
     Rho for-loop inline fns     :active, rho1, 2026-04-01, 2026-05-01
     section Testing
     Network E2E tests (17)      :done,   tst1, 2026-02-01, 2026-04-01
@@ -55,11 +57,14 @@ gantt
 - [x] EOF-safe `Expect()` handling in shared parser utilities (fixed Tau `Next token index out of range` failures)
 - [x] Inline module parser test aligned with actual AST shape (`root -> Module -> children`)
 - [x] `GenerateProxy` / `GenerateAgent` produce correct class names
+- [x] `Future<T>` as a **parameter** type actually works end to end (previously: parsed fine since the lexer treats `Future<T>` as one token either way, but `GenerateProxy` forwarded the raw `Future` object into the send call and `GenerateAgent` emitted `bs >> Future<T>`, neither of which is meaningful. Fixed: proxy now checks `.Succeeded()` and sends `.GetValue()`; agent deserializes the resolved value and rebuilds a completed `Future<T>` before calling the implementation. `Future<void>` parameters are checked for completion but carry no wire payload. See `Doc/TauTutorial.md` "Future&lt;T&gt; as a Parameter Type" and `Test/Language/TestTau/TauFutureArgumentCodeGenTests.cpp`.)
 - [ ] Struct fields serialized over network (currently structs are code-gen only)
 - [ ] Event parameters deserialized in generated agent handlers
 - [ ] `async` modifier properly reflected in generated code
+- [ ] `kai::net::Future<T>` has no blocking wait (shared-state, single-threaded-async only) — a caller must poll `IsComplete()`/`Succeeded()` themselves before passing a future into a proxy call; there is no way to make the proxy call block until it resolves
 
 ### Rho
+- [x] Persistent `RhoTranslator` reused across sequential `Console` commands accumulated state and corrupted later translations (`a = 2` then `a+4` threw `Empty Stack`/`InvalidPathname`). Fixed by constructing a fresh `RhoTranslator` per call at all four `Console.cpp` call sites (`Process`, `ExecuteWithExecutor`, `Compile`, `SetTranslateFunction`). See `Doc/Rho-Fix-Documentation.md` addendum and `Test/Language/TestRho/RhoTranslatorReuseAndNovelTests.cpp`.
 - [ ] Inline function calls inside `for x in container` loops (currently return 0)
   - `fun double(x) { x * 2 }` works; `for x in arr { sum = sum + double(x) }` does not
   - Root cause: Call nodes in ForEach body don't dispatch correctly

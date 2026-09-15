@@ -375,6 +375,9 @@ void Node::ProcessPacket(const NetPacket &packet) {
                     ProcessPropertyGet(packet);
                 } else if (packetId == NetworkSerializer::ID_KAI_PROPERTY_SET) {
                     ProcessPropertySet(packet);
+                } else if (packetId ==
+                           NetworkSerializer::ID_KAI_FUTURE_RESOLVE) {
+                    ProcessFutureResolution(packet);
                 }
             }
             break;
@@ -627,6 +630,65 @@ void Node::ProcessFunctionResponse(const NetPacket &packet) {
         pending.complete(result, static_cast<ResponseType>(responseValue),
                          errorMessage);
     }
+}
+
+void Node::CompletePendingFutureImport(int futureId, const Object &value) {
+    std::function<void(const Object &)> completer;
+    {
+        std::lock_guard<std::mutex> lock(futureImportMutex_);
+        auto it = pendingFutureImports_.find(futureId);
+        if (it == pendingFutureImports_.end()) {
+            return;
+        }
+        completer = std::move(it->second);
+        pendingFutureImports_.erase(it);
+    }
+    if (completer) {
+        completer(value);
+    }
+}
+
+void Node::SendFutureResolution(const NetAddress &target, int futureId,
+                                const Object &value) {
+    if (!peer_ || !isRunning_) return;
+
+    BinaryStream bs;
+    bs.Write(
+        static_cast<unsigned char>(NetworkSerializer::ID_KAI_FUTURE_RESOLVE));
+    bs.Write(futureId);
+    if (!NetworkSerializer::SerializeObject(bs, value)) {
+        NetworkLogger::LogMessage(
+            "SendFutureResolution: failed to serialize value for future " +
+            std::to_string(futureId));
+        return;
+    }
+
+    peer_->Send(bs, SendReliability::Reliable, BufferOffset(0), target,
+                SendRouting::Unicast);
+    peer_->Flush();
+}
+
+void Node::ProcessFutureResolution(const NetPacket &packet) {
+    if (!registry_) {
+        NetworkLogger::LogMessage(
+            "Processing future resolution failed: null registry");
+        return;
+    }
+
+    BinaryPacket stream(
+        reinterpret_cast<const char *>(packet.data.data()),
+        reinterpret_cast<const char *>(packet.data.data() + packet.data.size()),
+        registry_);
+
+    unsigned char msgId = 0;
+    int futureId = 0;
+    if (!stream.Read(msgId) || !stream.Read(futureId)) {
+        NetworkLogger::LogMessage("Failed to read future resolution header");
+        return;
+    }
+
+    Object value = NetworkSerializer::DeserializeObject(stream, *registry_);
+    CompletePendingFutureImport(futureId, value);
 }
 
 void Node::SendFunctionCall(NetHandle handle, const std::string &name,

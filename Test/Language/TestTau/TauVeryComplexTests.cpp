@@ -88,13 +88,15 @@ TEST(TauVeryComplexTests, GeneratesProxyForDeepRiskAndRoutingModel) {
 
     ASSERT_FALSE(proxy.Failed) << proxy.Error;
     ASSERT_FALSE(output.empty());
+    // Every proxy method returns a real Future<T> (via Exec<T> ->
+    // Node::Invoke), so the declared return type is always wrapped.
     ExpectAll(output,
               {"namespace Trading", "namespace Risk", "namespace V2",
                "IRiskEngineProxy", "IOrderRouterProxy",
-               "RiskDecision PreCheck(const OrderRequest& request)",
-               "RiskSignal Explain(const OrderRequest& request",
-               "OrderAck Submit(const OrderRequest& request)",
-               "void SubscribeState(const string& account)"});
+               "Future<RiskDecision> PreCheck(const OrderRequest& request)",
+               "Explain(const OrderRequest& request",
+               "Future<OrderAck> Submit(const OrderRequest& request)",
+               "Future<void> SubscribeState(const string& account)"});
 }
 
 TEST(TauVeryComplexTests, GeneratesAgentForDeepRiskAndRoutingModel) {
