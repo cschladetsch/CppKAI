@@ -1,7 +1,22 @@
 #include "ExecutorWindow.h"
-
+ 
 KAI_BEGIN
-
+ 
+    // Paths that should start expanded the first time the tree is drawn.
+    // ImGuiCond_Once means this only applies on the node's first
+    // appearance - the user's own expand/collapse afterward always wins.
+    static bool ShouldDefaultExpand(const std::string& path) {
+        static const std::string kDefaultExpandedPath = "/home";
+        if (path == "/") return true;  // always show root's children
+        if (path == kDefaultExpandedPath) return true;
+        // Also expand any ancestor of the target path (harmless no-op
+        // once kDefaultExpandedPath is only one level deep, but keeps
+        // this correct if it's ever changed to something nested).
+        return kDefaultExpandedPath.size() > path.size() &&
+               kDefaultExpandedPath.compare(0, path.size(), path) == 0 &&
+               kDefaultExpandedPath[path.size()] == '/';
+    }
+ 
     void ExecutorWindow::RenderTreeObjectNode(const Object& node, const std::string& label,
                               const std::string& path, std::set<int>& seen,
                               int depth) {
@@ -21,22 +36,22 @@ KAI_BEGIN
         bool hasChildren = false;
         try {
             if (!node.Exists() || depth > 32) return;
-
+ 
             int handle = node.GetHandle().GetValue();
             if (!seen.insert(handle).second) {
                 ImGui::TextColored(ImVec4(0.8f, 0.4f, 0.4f, 1.0f),
                                    "%s  (cycle)", label.c_str());
                 return;
             }
-
+ 
             const Dictionary& dict = node.GetDictionary();
             hasChildren = !dict.empty();
-
+ 
             std::string className =
                 node.GetClass()
                     ? node.GetClass()->GetName().ToString().c_str()
                     : "?";
-
+ 
             ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow |
                                        ImGuiTreeNodeFlags_OpenOnDoubleClick;
             if (!hasChildren) {
@@ -46,7 +61,11 @@ KAI_BEGIN
             if (SelectedTreeHandle == handle) {
                 flags |= ImGuiTreeNodeFlags_Selected;
             }
-
+ 
+            if (hasChildren && ShouldDefaultExpand(path)) {
+                flags |= ImGuiTreeNodeFlags_DefaultOpen;
+            }
+ 
             open = ImGui::TreeNodeEx((void*)(intptr_t)handle, flags,
                                      "%s  (%s)", label.c_str(),
                                      className.c_str());
@@ -69,12 +88,12 @@ KAI_BEGIN
                                "%s  (unknown error)", label.c_str());
             return;
         }
-
+ 
         // TreeNodeEx already pushed the ID/indent for us when it returned
         // true on a non-leaf node - this guard pops it on every exit path.
         TreePopGuard popGuard(open && hasChildren);
         if (!open || !hasChildren) return;
-
+ 
         try {
             // Copy (label, child) pairs out first: recursing while holding
             // a reference into the live dictionary is unsafe if a child's
@@ -86,7 +105,7 @@ KAI_BEGIN
                 children.emplace_back(entry.first.ToString().c_str(),
                                       entry.second);
             }
-
+ 
             for (const auto& child : children) {
                 const std::string& childName = child.first;
                 std::string childPath = (path == "/") ? path + childName
@@ -108,8 +127,8 @@ KAI_BEGIN
                                "  (unknown error listing children)");
         }
     }
-
-
+ 
+ 
     void ExecutorWindow::DrawTreeContent() {
         // Header, styled consistently with the Console/Debugger tabs
         ImGui::PushStyleColor(ImGuiCol_ChildBg,
@@ -125,7 +144,7 @@ KAI_BEGIN
         ImGui::Text("Executor Tree");
         ImGui::PopStyleColor();
         ImGui::PopFont();
-
+ 
         ImGui::SameLine(ImGui::GetContentRegionAvailWidth() - 90);
         ImGui::SetCursorPosY((40 - ImGui::GetFrameHeightWithSpacing()) * 0.5f);
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
@@ -141,17 +160,17 @@ KAI_BEGIN
             SelectedTreePath.clear();
         }
         ImGui::PopStyleColor(3);
-
+ 
         ImGui::EndChild();
         ImGui::PopStyleColor();  // ChildBg
-
+ 
         ImGui::Separator();
-
+ 
         // Left pane: the tree itself (Explorer's folder pane)
         ImGui::BeginChild("TreeView",
                           ImVec2(ImGui::GetContentRegionAvailWidth() * 0.6f, 0),
                           true, ImGuiWindowFlags_HorizontalScrollbar);
-
+ 
         Object root = tree_ ? tree_->GetRoot() : Object();
         if (!root.Exists()) {
             ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f),
@@ -160,17 +179,17 @@ KAI_BEGIN
             std::set<int> seen;
             RenderTreeObjectNode(root, "/", "/", seen, 0);
         }
-
+ 
         ImGui::EndChild();
         ImGui::SameLine();
-
+ 
         // Right pane: details of the selected node (Explorer's preview pane)
         ImGui::BeginChild("TreeDetails", ImVec2(0, 0), true);
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.4f, 0.8f, 1.0f, 1.0f));
         ImGui::Text("Details");
         ImGui::PopStyleColor();
         ImGui::Separator();
-
+ 
         if (SelectedTreeObject.Exists()) {
             // Same reasoning as RenderTreeObjectNode: these are all live
             // KAI Object calls (GetClass, GetDictionary, ToString via
@@ -191,7 +210,7 @@ KAI_BEGIN
                 ImGui::Text("Children: %d",
                             (int)SelectedTreeObject.GetDictionary().size());
                 ImGui::Separator();
-
+ 
                 // Function/Method objects are stored via BasePointerBase,
                 // whose generic StringStream operator<< is a hard
                 // KAI_NOT_IMPLEMENTED() in StringStream.cpp - that's a gap
@@ -303,7 +322,7 @@ KAI_BEGIN
                                        "Value:");
                     ImGui::TextWrapped(
                         "%s", FormatStackValue(SelectedTreeObject).c_str());
-
+ 
                     const ClassBase* cls = SelectedTreeObject.GetClass();
                     if (cls) {
                         ImGui::Separator();
@@ -383,9 +402,10 @@ KAI_BEGIN
             ImGui::TextColored(ImVec4(0.6f, 0.6f, 0.6f, 1.0f),
                                "Select an item in the tree to see details");
         }
-
+ 
         ImGui::EndChild();
     }
-
-
+ 
+ 
 KAI_END
+
