@@ -9,6 +9,7 @@ project(TestNetwork)
     set(GTEST_SOURCES
         NodeEndToEndTest.cpp
         NodeFutureArgumentTest.cpp
+        NodeFutureArgumentThreadTest.cpp
         NetworkAdditionalTests.cpp
         TestGenerateProxy.cpp
         TauNetworkCommunicationTest.cpp

@@ -12,6 +12,7 @@ enum class ResponseType {
     BadRequest,
     UnknownAgent,
     Returned,
+    Error,
 };
 
 KAI_NET_END

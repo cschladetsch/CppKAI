@@ -241,7 +241,9 @@ struct Node {
                     (void)reg;  // unused when U is void - value-less resolve
                     Object valueObj;
                     if constexpr (!std::is_void_v<U>) {
-                        valueObj = reg->New(arg.GetValue());
+                        if (auto opt = arg.GetOptionalValue()) {
+                            valueObj = reg->New(*opt);
+                        }
                     }
                     if (resolveSink) resolveSink(id, valueObj);
                 });
