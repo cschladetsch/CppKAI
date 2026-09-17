@@ -1,6 +1,6 @@
 # KAI React Frontend - Build Prompt
 
-2026-09-17 · @u_eVthD3udXMz5QYKvHHEcpw
+2026-09-17 · @Someone
 
 ## Project Context
 
@@ -36,6 +36,14 @@ KAI Registry / Pi executor
 **Error frames:** `{ "kind": "error", "msg": "…" }` for eval failures or network events.
 
 The axum bridge is stateless between connections - KAI holds all object state. The bridge opens a single connection to the local Registry on startup and multiplexes browser clients onto it.
+
+**Repo layout:** Three separate repos, each on a `webui` branch:
+
+| Repo | Language | Purpose |
+| --- | --- | --- |
+| `CppKAI` | C++ | Any Registry API surface changes for bridge support |
+| `kai-bridge` | Rust/axum | New repo - WebSocket↔KAI protocol bridge |
+| `kai-web` | React/TS | New repo - browser frontend |
 
 ## React App Structure
 
@@ -134,6 +142,66 @@ Do not add routing, authentication, or testing infrastructure. Do not use any ex
 ---
 
 *After the coding assistant produces this scaffold, the next step is the Rust/axum bridge that connects `ws://localhost:7171` to a local KAI Registry process.*
+
+## The Bridge Prompt (`kai-bridge`)
+
+Paste the following into a coding assistant to scaffold the Rust/axum WebSocket bridge:
+
+---
+
+Create a new Rust project called `kai-bridge` on a branch named `webui`. It is a standalone process that bridges browser WebSocket clients to a local KAI Registry process. KAI is a C++ runtime exposing a TCP socket on `127.0.0.1:7272` that accepts newline-delimited text commands (Pi or Rho expressions) and returns newline-delimited text responses. KAI also emits unsolicited State Update Packet (SUP) lines in the format `SUP node:reg:# <json>` whenever object state changes.
+
+**Dependencies (`Cargo.toml`):**
+
+```toml
+[dependencies]
+axum = { version = "0.7", features = ["ws"] }
+tokio = { version = "1", features = ["full"] }
+tokio-tungstenite = "0.21"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+clap = { version = "4", features = ["derive"] }
+```
+
+**CLI args (clap):**
+
+- `--kai-addr` - KAI TCP address, default `127.0.0.1:7272`
+- `--listen` - WebSocket listen address, default `0.0.0.0:7171`
+
+**Behaviour:**
+
+1. On startup, open a single persistent TCP connection to KAI. Reconnect with exponential backoff (1s, 2s, 4s... max 30s) if KAI is not yet running.
+2. Accept WebSocket connections from browsers at `/ws`. Support multiple concurrent browser clients.
+3. Inbound WebSocket frame from browser: JSON `{ "kind": "eval", "src": "...", "lang": "pi" | "rho" }`. Forward `src` as a newline-terminated string to KAI's TCP socket.
+4. Response line from KAI: forward as `{ "kind": "result", "src": "...", "output": "...", "ts": <unix_ms> }` to the browser that sent the eval (not broadcast).
+5. Unsolicited SUP line from KAI (`SUP node:reg:# <json>`): parse and broadcast `{ "kind": "sup", "addr": "node:reg:#", "state": <json>, "ts": <unix_ms> }` to ALL connected browser clients.
+6. On new browser connection: send a `{ "kind": "tree", "domains": [] }` frame immediately (tree population is a later concern - empty is fine for now).
+7. Error from KAI or parse failure: send `{ "kind": "error", "msg": "...", "ts": <unix_ms> }` to the relevant client.
+
+**Concurrency model:** One `tokio::task` owns the KAI TCP connection and holds a `broadcast::Sender<String>` for SUP frames. Each browser WebSocket connection gets its own task; it holds a clone of the broadcast receiver and a `mpsc::Sender` to write evals to the KAI task.
+
+**CORS:** Allow all origins on the `/ws` route (development only).
+
+**Logging:** Use `tracing` with `INFO` default. Log connect/disconnect events for both KAI and browser clients.
+
+**File structure:**
+
+```
+src/
+  main.rs       ← clap setup, axum router, spawn kai_conn task
+  kai_conn.rs   ← TCP connection to KAI, SUP parsing, broadcast
+  ws_handler.rs ← per-browser WebSocket task
+  protocol.rs   ← serde types for all frame variants
+Cargo.toml
+```
+
+Do not implement TLS, authentication, or persistence. Do not attempt to parse KAI's internal binary format - assume all KAI I/O is UTF-8 text over TCP.
+
+---
+
+*Run the bridge with `cargo run -- --kai-addr 127.0.0.1:7272 --listen 0.0.0.0:7171` and point `kai-web` at `ws://localhost:7171/ws`.*
 
 ## Tau-to-TypeScript Stretch Goal
 

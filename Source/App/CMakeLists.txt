@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.28...3.30)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${dir}/Bin")
 
-set(apps Console)
+set(apps Console WebConsole)
 
 if(KAI_BUILD_IMGUI)
     list(APPEND apps ImGui)
