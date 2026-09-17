@@ -8,8 +8,15 @@ param(
 )
 
 $Console   = Join-Path $RepoRoot "CppKAI\Bin\WebConsole.exe"
-$BridgeDir = Join-Path $RepoRoot "kai-bridge"
-$WebDir    = Join-Path $RepoRoot "kai-web"
+$BridgeDir = Join-Path $RepoRoot "KaiBridge"
+$WebDir    = Join-Path $RepoRoot "KaiWeb"
+
+# Kill any existing instances
+# Kill any existing instances silently
+$null = Stop-Process -Name "kai-bridge" -Force -ErrorAction SilentlyContinue
+$null = Stop-Process -Name "WebConsole" -Force -ErrorAction SilentlyContinue  
+$null = Stop-Process -Name "node" -Force -ErrorAction SilentlyContinue
+Start-Sleep -Milliseconds 300
 
 if (-not (Test-Path $Console)) {
     Write-Error "WebConsole.exe not found at $Console - build it first"
