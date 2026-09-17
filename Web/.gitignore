@@ -1,0 +1,10 @@
+# Node
+node_modules/
+dist/
+
+# Rust bridge
+bridge/target/
+
+# Test output
+coverage/
+playwright-report/

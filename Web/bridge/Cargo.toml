@@ -1,0 +1,21 @@
+[package]
+name = "kai-bridge"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "kai-bridge"
+path = "src/main.rs"
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+tokio-tungstenite = { version = "0.20", default-features = false, features = ["handshake"] }
+tungstenite = { version = "0.20", default-features = false, features = ["handshake"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+clap = { version = "=4.4.18", features = ["derive"] }
+anyhow = "1"
+futures-util = "0.3"
+url = "=2.4.1"

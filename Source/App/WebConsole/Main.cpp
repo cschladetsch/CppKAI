@@ -1,14 +1,22 @@
-/// WebConsole - TCP shim exposing a KAI Console over a raw text socket
+/// WebConsole - TCP shim exposing a KAI Console over a binary-framed socket
 ///
-/// Protocol (newline-delimited, UTF-8):
-///   Browser -> bridge -> WebConsole:  <expression>\n
-///   WebConsole -> bridge -> Browser:  RESULT <output>\n  or  ERROR <msg>\n
+/// Protocol:
+///   Greeting (plain text, one line):  READY kai-webconsole\n
+///   Inbound  (plain text):            <expression>\n
+///   Outbound (binary frames):         [4-byte LE length][payload]
+///
+///   Payload kinds:
+///     0x01  Result  - 1-byte kind | src string | top-of-stack Object
+///     0x02  Error   - 1-byte kind | src string | error message string
+///     0x03  Stack   - 1-byte kind | src string | full stack as KAI Array
 ///
 /// Usage: WebConsole [--port PORT] [--lang pi|rho] [--trace N]
 
 #include <iostream>
 #include <string>
 #include <thread>
+#include <vector>
+#include <cstdint>
 
 #ifdef _WIN32
 #  include <winsock2.h>
@@ -26,6 +34,7 @@
    inline void closesocket(SOCKET s) { ::close(s); }
 #endif
 
+#include "KAI/Core/BinaryStream.h"
 #include "KAI/Console/Console.h"
 #include "KAI/Executor/Continuation.h"
 #include "KAI/Language/Common/TranslatorFactory.h"
@@ -38,36 +47,98 @@ using namespace kai;
 REGISTER_TRANSLATOR(Language::Pi,  PiTranslator)
 REGISTER_TRANSLATOR(Language::Rho, RhoTranslator)
 
+// ── helpers ───────────────────────────────────────────────────────────────────
+
+static void SendRaw(SOCKET sock, const void* data, int len) {
+    ::send(sock, reinterpret_cast<const char*>(data), len, 0);
+}
+
 static void SendLine(SOCKET sock, const string& line) {
     string out = line + "\n";
-    ::send(sock, out.data(), static_cast<int>(out.size()), 0);
+    SendRaw(sock, out.data(), static_cast<int>(out.size()));
 }
 
-static string StackTopAsString(Console& console) {
+/// Write a length-prefixed UTF-8 string into a BinaryStream.
+static void WriteString(BinaryStream& bs, const string& s) {
+    uint32_t len = static_cast<uint32_t>(s.size());
+    bs.Write(len);
+    if (len > 0) bs.Write(static_cast<int>(len), s.data());
+}
+
+/// Send a binary frame: 4-byte LE length + payload bytes.
+static void SendFrame(SOCKET sock, BinaryStream& bs) {
+    // BinaryStream inherits Begin()/Last() from BinaryPacket
+    const char* begin = bs.Begin();
+    const char* last  = bs.Last();
+    if (!begin || last <= begin) return;
+
+    uint32_t payloadLen = static_cast<uint32_t>(last - begin);
+    // Write length LE
+    uint8_t header[4];
+    header[0] = payloadLen & 0xff;
+    header[1] = (payloadLen >> 8) & 0xff;
+    header[2] = (payloadLen >> 16) & 0xff;
+    header[3] = (payloadLen >> 24) & 0xff;
+    SendRaw(sock, header, 4);
+    SendRaw(sock, begin, static_cast<int>(payloadLen));
+}
+
+// ── frame builders ────────────────────────────────────────────────────────────
+
+static void SendResultFrame(SOCKET sock, Console& console,
+                            const string& src, Object top) {
+    BinaryStream bs(console.GetRegistry());
+    uint8_t kind = 0x01;
+    bs.Write(kind);
+    WriteString(bs, src);
+    bs << top;
+    SendFrame(sock, bs);
+}
+
+static void SendErrorFrame(SOCKET sock, Console& console,
+                           const string& src, const string& msg) {
+    BinaryStream bs(console.GetRegistry());
+    uint8_t kind = 0x02;
+    bs.Write(kind);
+    WriteString(bs, src);
+    WriteString(bs, msg);
+    SendFrame(sock, bs);
+}
+
+static void SendStackFrame(SOCKET sock, Console& console, const string& src) {
     auto* exec = &*console.GetExecutor();
     int stackSize = exec->GetDataStack()->Size();
-    if (stackSize == 0) return "ok";
 
-    StringStream str;
-    for (int i = 0; i < stackSize; i++) {
-        int displayIndex = stackSize - 1 - i;
-        auto obj = exec->GetDataStack()->At(displayIndex);
-        str << "[" << displayIndex << "]: " << obj << "\n";
+    // Build a KAI Array of stack items (top first)
+    Value<Array> arr = console.GetRegistry().New<Array>();
+    for (int i = stackSize - 1; i >= 0; --i) {
+        arr->Append(exec->GetDataStack()->At(i));
     }
-    String kai_s = str.ToString();
-    string s = kai_s.c_str();
-    while (!s.empty() && (s.back() == '\n' || s.back() == '\r')) s.pop_back();
-    return s;
+
+    BinaryStream bs(console.GetRegistry());
+    uint8_t kind = 0x03;
+    bs.Write(kind);
+    WriteString(bs, src);
+    bs << *arr;
+    SendFrame(sock, bs);
 }
 
-static string Evaluate(Console& console, Language& currentLang, const string& raw) {
+// ── evaluate ──────────────────────────────────────────────────────────────────
+
+static void Evaluate(SOCKET sock, Console& console, Language& currentLang,
+                     const string& raw) {
     string src = raw;
     Language lang = currentLang;
 
-    if (src.starts_with("%rho ") || src == "%rho") { lang = Language::Rho; src = src.substr(5); }
-    else if (src.starts_with("%pi ") || src == "%pi") { lang = Language::Pi; src = src.substr(4); }
+    if (src.size() >= 5 && src.substr(0,5) == "%rho ") { lang = Language::Rho; src = src.substr(5); }
+    else if (src == "%rho") { lang = Language::Rho; src = ""; }
+    else if (src.size() >= 4 && src.substr(0,4) == "%pi ") { lang = Language::Pi; src = src.substr(4); }
+    else if (src == "%pi") { lang = Language::Pi; src = ""; }
 
-    if (src.empty()) return "RESULT ok";
+    if (src.empty()) {
+        SendStackFrame(sock, console, src);
+        return;
+    }
 
     if (lang != console.GetLanguage()) {
         console.SetLanguage(lang);
@@ -78,18 +149,32 @@ static string Evaluate(Console& console, Language& currentLang, const string& ra
 
     try {
         auto cont = console.Compile(src.c_str(), Structure::Program);
-        if (!cont.Exists())
-            return "ERROR compile failed";
+        if (!cont.Exists()) {
+            SendErrorFrame(sock, console, src, "compile failed");
+            return;
+        }
 
         console.GetExecutor()->Continue(Value<Continuation>(cont));
 
-        return "RESULT " + StackTopAsString(console);
+        // Send top-of-stack as result, plus full stack frame
+        auto* exec = &*console.GetExecutor();
+        int stackSize = exec->GetDataStack()->Size();
+        if (stackSize > 0) {
+            Object top = exec->GetDataStack()->At(stackSize - 1);
+            SendResultFrame(sock, console, src, top);
+        } else {
+            SendErrorFrame(sock, console, src, "ok");
+        }
+        SendStackFrame(sock, console, src);
+
     } catch (const exception& e) {
-        return string("ERROR ") + e.what();
+        SendErrorFrame(sock, console, src, e.what());
     } catch (...) {
-        return "ERROR unknown exception";
+        SendErrorFrame(sock, console, src, "unknown exception");
     }
 }
+
+// ── per-connection handler ────────────────────────────────────────────────────
 
 static void HandleClient(SOCKET client, int traceLevel, Language defaultLang) {
     Console console;
@@ -101,7 +186,6 @@ static void HandleClient(SOCKET client, int traceLevel, Language defaultLang) {
     if (translator) console.SetTranslator(translator);
 
     Language currentLang = defaultLang;
-
     SendLine(client, "READY kai-webconsole");
 
     string linebuf;
@@ -110,7 +194,6 @@ static void HandleClient(SOCKET client, int traceLevel, Language defaultLang) {
     while (true) {
         int n = ::recv(client, chunk, sizeof(chunk) - 1, 0);
         if (n <= 0) break;
-
         chunk[n] = '\0';
         linebuf += chunk;
 
@@ -120,14 +203,14 @@ static void HandleClient(SOCKET client, int traceLevel, Language defaultLang) {
             linebuf.erase(0, pos + 1);
             if (!line.empty() && line.back() == '\r') line.pop_back();
             if (line.empty()) continue;
-
-            string response = Evaluate(console, currentLang, line);
-            SendLine(client, response);
+            Evaluate(client, console, currentLang, line);
         }
     }
 
     closesocket(client);
 }
+
+// ── main ──────────────────────────────────────────────────────────────────────
 
 int main(int argc, char** argv) {
 #ifdef _WIN32

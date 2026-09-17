@@ -203,6 +203,151 @@ Do not implement TLS, authentication, or persistence. Do not attempt to parse KA
 
 *Run the bridge with `cargo run -- --kai-addr 127.0.0.1:7272 --listen 0.0.0.0:7171` and point `kai-web` at `ws://localhost:7171/ws`.*
 
+## Binary Protocol Migration
+
+The current text/TCP protocol between `WebConsole` and `kai-bridge` is fragile: KAI values that contain spaces, newlines, string literals, nested continuations, or `{}` blocks cannot be reliably delimited by newlines. The fix is to replace the line-oriented TCP protocol with length-prefixed binary frames using KAI's existing `BinaryStream` serialisation.
+
+### Why binary
+
+KAI already has a complete, battle-tested binary serialisation layer (`BinaryStream`/`BinaryPacket`) used by the ENet network layer. Every KAI object knows how to serialise and deserialise itself. Reusing this for the WebConsole-to-bridge connection means:
+
+- Any KAI value (string, continuation, map, array, nested structure) is represented faithfully
+- No escaping, quoting, or delimiter ambiguity
+- The bridge can decode type tags and convert to JSON for the browser without reimplementing KAI's object model
+
+### Wire format
+
+Each message is:
+
+```
+[4 bytes: uint32 little-endian payload length][N bytes: BinaryStream payload]
+```
+
+The payload is a `BinaryStream`-serialised `KaiMessage` struct:
+
+```cpp
+struct KaiMessage {
+    enum class Kind : uint8_t { Result = 1, Error = 2, Stack = 3 };
+    Kind kind;
+    std::string src;       // the expression that was evaluated (echoed back)
+    Object value;          // the result value (for Result/Stack)
+    std::string error;     // error message (for Error)
+};
+```
+
+For the stack frame, `value` is a `Array` of all stack items top-first.
+
+### Step-by-step prompt
+
+Paste the following into a coding assistant and work through the steps in order. Do not proceed to the next step until the current one compiles and passes its tests.
+
+---
+
+**Step 1 — WebConsole: add a `BinaryStream` response path**
+
+In `CppKAI/Source/App/WebConsole/Main.cpp`, change the TCP protocol from newline-delimited text to length-prefixed binary frames. Keep the existing `READY kai-webconsole\n` greeting as plain text (the bridge already handles it). After that, every response is a binary frame:
+
+1. Define a `send_frame(SOCKET sock, const std::vector<uint8_t>& payload)` helper that writes a 4-byte little-endian length followed by the payload bytes.
+2. Define a `make_result_frame(const std::string& src, Object result, Registry& reg)` function that:
+   - Creates a `BinaryStream`
+   - Writes a 1-byte kind tag (`0x01` = result)
+   - Writes `src` as a length-prefixed UTF-8 string
+   - Writes the result `Object` using KAI's existing `BinaryStream` operator
+   - Returns the bytes as `std::vector<uint8_t>`
+3. Define a `make_error_frame(const std::string& src, const std::string& msg)` function (kind tag `0x02`).
+4. Define a `make_stack_frame(const std::string& src, Executor& exec, Registry& reg)` function (kind tag `0x03`) that serialises the full data stack as a KAI `Array`.
+5. In `Evaluate()`, call `send_frame(client, make_result_frame(...))` instead of `SendLine`.
+6. Keep the recv loop reading raw bytes (not lines); inbound eval commands from the bridge remain as newline-terminated UTF-8 text (the bridge still sends `src\n`).
+
+Do not change the bridge yet. Confirm `WebConsole` compiles before proceeding.
+
+---
+
+**Step 2 — kai-bridge: read length-prefixed binary frames from KAI**
+
+In `KaiBridge/src/kai_conn.rs`, replace the line-reader with a binary frame reader:
+
+1. After reading and discarding the `READY` line (still plain text), switch to frame mode.
+2. Read 4 bytes → `u32` little-endian = payload length.
+3. Read exactly that many bytes → payload.
+4. Parse the payload:
+   - Byte 0: kind tag (`0x01` result, `0x02` error, `0x03` stack)
+   - Bytes 1..N: length-prefixed UTF-8 `src` string
+   - Remaining bytes: kind-specific data
+5. For kind `0x01` (result): read the next field as a KAI value. Decode it to a JSON-compatible `serde_json::Value` using the type-tag decoder from Step 3.
+6. For kind `0x02` (error): read a length-prefixed UTF-8 error string. Dispatch as `ServerFrame::Error`.
+7. For kind `0x03` (stack): read a length-prefixed array of KAI values. Dispatch as `ServerFrame::Stack { items: Vec<serde_json::Value> }`.
+
+Add `Stack` to `ServerFrame` in `protocol.rs`:
+
+```rust
+Stack { src: String, items: Vec<serde_json::Value>, ts: u64 }
+```
+
+Do not change the browser yet. Write a unit test that constructs a synthetic binary frame and asserts the decoder produces the correct `ServerFrame`.
+
+---
+
+**Step 3 — kai-bridge: KAI binary value decoder**
+
+In a new file `KaiBridge/src/kai_binary.rs`, implement a decoder for KAI's `BinaryStream` format. KAI's type system uses numeric type tags. The tags you need for the initial implementation:
+
+| Tag | KAI type | JSON representation |
+| --- | --- | --- |
+| `Int` | 32-bit signed int | `number` |
+| `Float` | 64-bit float | `number` |
+| `Bool` | boolean | `boolean` |
+| `String` | UTF-8 string | `string` |
+| `Array` | sequence | `array` |
+| `Void` / `None` | no value | `null` |
+
+To discover the actual tag values, read `CppKAI/Ext/CppKaiCore/Include/KAI/Core/Type/Traits.h` and look for the `Number` enum. Implement `decode_value(bytes: &[u8]) -> Result<(serde_json::Value, &[u8])>` that reads one typed value and returns the remainder. Write unit tests for each type.
+
+---
+
+**Step 4 — kai-web: handle Stack frame**
+
+In `KaiWeb/src/types/kai.ts`, add:
+
+```typescript
+interface StackFrame {
+  kind: 'stack'
+  src: string
+  items: unknown[]
+  ts: number
+}
+```
+
+In `KaiWeb/src/hooks/useKaiSocket.ts`:
+
+- Add `STACK` action to the reducer: store `items` in a new `stack: unknown[]` field on `KaiState`
+- Dispatch `STACK` when a `stack` frame arrives
+
+In `KaiWeb/src/components/Inspector.tsx`:
+
+- When no object is selected, show the live stack instead of "select an object"
+- Render each stack item as a row: index (0 = top) and value
+- Highlight the top item
+- Update on every `STACK` frame
+
+In `KaiWeb/src/components/Repl.tsx`:
+
+- For `result` entries, show only the top-of-stack value (first item from the stack frame)
+- If the stack is empty show `ok`
+
+---
+
+**Step 5 — integration test**
+
+With all three processes running:
+
+1. Type `1 2 +` in the REPL → REPL shows `3`, Inspector shows `[0] 3`
+2. Type `3 +` → REPL shows `6`, Inspector shows `[0] 6`
+3. Type `1 2 3` → REPL shows `3`, Inspector shows `[0] 3 | [1] 2 | [2] 1` (top first)
+4. Type `"hello world"` → REPL shows `hello world`, Inspector shows `[0] hello world`
+
+If step 4 fails (string with space causes a parse error), the binary decoder in Step 3 is incomplete — add more type tags.
+
 ## Tau-to-TypeScript Stretch Goal
 
 Tau already generates C++ Agent/Proxy pairs from IDL definitions. The same definitions could emit TypeScript interfaces, giving the Inspector typed props that mirror the KAI object model rather than `Record<string, unknown>`.

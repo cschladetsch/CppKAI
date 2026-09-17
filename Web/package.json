@@ -1,0 +1,38 @@
+{
+  "name": "kai-web",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently --names \"bridge,vite\" --prefix-colors \"cyan,green\" \"npm run bridge\" \"vite\"",
+    "bridge": "cargo run --manifest-path bridge/Cargo.toml",
+    "bridge:build": "cargo build --manifest-path bridge/Cargo.toml",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.47.0",
+    "@testing-library/jest-dom": "^6.5.0",
+    "@testing-library/react": "^16.0.1",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.1",
+    "@vitest/coverage-v8": "^2.1.1",
+    "autoprefixer": "^10.4.20",
+    "concurrently": "^9.0.1",
+    "jsdom": "^25.0.1",
+    "postcss": "^8.4.41",
+    "tailwindcss": "^3.4.10",
+    "typescript": "^5.5.3",
+    "vite": "^5.4.2",
+    "vitest": "^2.1.1"
+  }
+}

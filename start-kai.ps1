@@ -1,36 +1,32 @@
-# start-kai.ps1 - run from anywhere
 param(
-    [string]$RepoRoot   = "$HOME\local\repos",
-    [string]$KaiPort    = "7272",
-    [string]$BridgePort = "7171",
-    [string]$Lang       = "pi",
-    [int]   $Trace      = 0
+    [string]$RepoRoot = "$HOME\local\repos\CppKAI",
+    [string]$KaiPort  = "7272",
+    [string]$Lang     = "pi",
+    [int]   $Trace    = 0
 )
 
-$Console   = Join-Path $RepoRoot "CppKAI\Bin\WebConsole.exe"
-$BridgeDir = Join-Path $RepoRoot "KaiBridge"
-$WebDir    = Join-Path $RepoRoot "KaiWeb"
-
-# Kill any existing instances
-# Kill any existing instances silently
-$null = Stop-Process -Name "kai-bridge" -Force -ErrorAction SilentlyContinue
-$null = Stop-Process -Name "WebConsole" -Force -ErrorAction SilentlyContinue  
-$null = Stop-Process -Name "node" -Force -ErrorAction SilentlyContinue
-Start-Sleep -Milliseconds 300
+$Console = Join-Path $RepoRoot "Bin\WebConsole.exe"
+$WebDir  = Join-Path $RepoRoot "Web"
 
 if (-not (Test-Path $Console)) {
-    Write-Error "WebConsole.exe not found at $Console - build it first"
+    Write-Error "WebConsole.exe not found at $Console"
     exit 1
 }
 
-Write-Host "Starting KAI stack..." -ForegroundColor Cyan
+$null = Stop-Process -Name "kai-bridge" -Force -ErrorAction SilentlyContinue
+$null = Stop-Process -Name "WebConsole" -Force -ErrorAction SilentlyContinue
+$null = Stop-Process -Name "node"       -Force -ErrorAction SilentlyContinue
+Start-Sleep -Milliseconds 500
 
-Start-Process powershell -ArgumentList "-NoExit", "-Command", "& '$Console' --port $KaiPort --lang $Lang --trace $Trace"
-Start-Sleep -Milliseconds 800
+# Start WebConsole
+Start-Process powershell -ArgumentList "-NoExit","-Command","& '$Console' --port $KaiPort --lang $Lang --trace $Trace"
+Start-Sleep -Milliseconds 1000
 
-Start-Process powershell -ArgumentList "-NoExit", "-Command", "Set-Location '$BridgeDir'; cargo run -- --kai-addr 127.0.0.1:$KaiPort --listen 0.0.0.0:$BridgePort"
-Start-Sleep -Milliseconds 800
+# Start bridge + vite (bridge compiles first, then vite starts)
+Start-Process powershell -ArgumentList "-NoExit","-Command","Set-Location '$WebDir'; npm run dev"
 
-Start-Process powershell -ArgumentList "-NoExit", "-Command", "Set-Location '$WebDir'; npm run dev"
-
-Write-Host "Done. Open http://localhost:5173" -ForegroundColor Green
+# Wait for bridge to compile and vite to start before opening browser
+Write-Host "Waiting for bridge to compile..." -ForegroundColor Yellow
+Start-Sleep -Seconds 30
+Start-Process "http://localhost:5173"
+Write-Host "Done." -ForegroundColor Green
