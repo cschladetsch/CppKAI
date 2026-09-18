@@ -11,13 +11,14 @@ on:
 # KAI_BUILD_SLINT, KAI_BUILD_LLM, KAI_ANDROID are all OFF by default, so
 # Ext/imgui, Ext/slint, Ext/CppLmmModelStore, Ext/cpp-httplib, and the
 # playwright ThirdParty tree under Demo/ are NOT needed here and are
-# skipped to keep checkout fast).
+# skipped to keep checkout fast). Ext/rang is NOT a submodule - it's a
+# regular vendored directory that comes along with actions/checkout, so
+# it's intentionally left out of this list.
 env:
   KAI_SUBMODULES: >-
     Ext/CppKaiCore
     Ext/CppKaiLanguage
     Ext/ENet
-    Ext/rang
 
 jobs:
   linux-macos:
