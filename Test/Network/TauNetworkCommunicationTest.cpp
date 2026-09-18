@@ -402,13 +402,7 @@ TEST_F(TauNetworkCommunicationTest, NetworkGenerateTool) {
 
     CreateTestTauInterface();
 
-    // Test that NetworkGenerate executable exists
-    if (!fs::exists(networkGenerateExe)) {
-        GTEST_SKIP() << "NetworkGenerate executable not found: "
-                     << networkGenerateExe;
-    }
-
-    // Test NetworkGenerate with our interface
+    // Generate the proxy and agent from the Tau interface
     bool success = GenerateProxyAndAgent();
     EXPECT_TRUE(success)
         << "NetworkGenerate should process Tau file successfully";

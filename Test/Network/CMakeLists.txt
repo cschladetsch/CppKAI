@@ -3,8 +3,6 @@ cmake_minimum_required(VERSION 3.28...3.30)
 # Network test project
 project(TestNetwork)
 
-# Always build network tests
-# if(KAI_BUILD_TEST_NETWORK)
     # GTest-based test files
     set(GTEST_SOURCES
         NodeEndToEndTest.cpp
@@ -17,6 +15,8 @@ project(TestNetwork)
         TauDomainPropertyTest.cpp
         ContinuationSerializationTest.cpp
 	NestedFutureTest.cpp
+        TauCodeGenParamTests.cpp
+        NodeFutureNetworkParamTests.cpp
         # TestAgentProxy.cpp
         # ICQStyleChatTest.cpp
         # ChatProxyGenerationTest.cpp
