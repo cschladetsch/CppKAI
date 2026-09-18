@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KAI — Architecture</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --panel: #111111;
+    --border: #2a2a2a;
+    --fg: #d8d8d8;
+    --fg-dim: #8a8a8a;
+    --fg-faint: #5a5a5a;
+    --accent: #c9a227;
+    --serif: Georgia, 'Times New Roman', serif;
+    --mono: 'Courier New', ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--mono);
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 28px 48px;
+    border-bottom: 1px solid var(--border);
+  }
+  header .logo {
+    font-family: var(--mono);
+    letter-spacing: 0.3em;
+    color: var(--fg);
+    font-size: 14px;
+  }
+  header nav {
+    display: flex;
+    gap: 40px;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    color: var(--fg-dim);
+  }
+  header nav a.current { color: var(--accent); }
+
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 64px 24px 120px;
+  }
+
+  .kicker {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--fg-faint);
+    text-transform: uppercase;
+    margin-bottom: 18px;
+  }
+  h1 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 42px;
+    line-height: 1.25;
+    color: #f2ede2;
+    margin: 0 0 24px;
+  }
+  h2 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 26px;
+    color: #f2ede2;
+    margin: 64px 0 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  h3 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 19px;
+    color: #f2ede2;
+    margin: 36px 0 14px;
+  }
+  p {
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--fg-dim);
+    margin: 0 0 18px;
+  }
+  code {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 13px;
+    color: #e0c675;
+  }
+  pre {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #cfcfcf;
+    margin: 0 0 24px;
+  }
+  pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    color: inherit;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 0 24px;
+    font-size: 13.5px;
+  }
+  th, td {
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--fg-dim);
+  }
+  th {
+    color: var(--fg);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: var(--fg-faint);
+  }
+  td code { font-size: 12.5px; }
+  ul, ol {
+    color: var(--fg-dim);
+    font-size: 15px;
+    line-height: 1.8;
+    padding-left: 22px;
+    margin: 0 0 18px;
+  }
+  li strong { color: var(--fg); }
+
+  .mermaid-wrap {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 24px;
+    margin: 0 0 32px;
+    overflow-x: auto;
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-bottom: 40px;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    color: var(--fg-dim);
+  }
+
+  footer {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+    border-top: 1px solid var(--border);
+    color: var(--fg-faint);
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">KAI</div>
+  <nav>
+    <a href="index.html#theory">Theory</a>
+    <a href="index.html#languages">Languages</a>
+    <a href="architecture.html" class="current">Architecture</a>
+    <a href="https://github.com/cschladetsch/CppKAI" target="_blank" rel="noopener">GitHub ↗</a>
+  </nav>
+</header>
+
+<main>
+  <a class="back-link" href="index.html">← Back to overview</a>
+
+  <div class="kicker">System Design</div>
+  <h1>Architecture</h1>
+  <p>
+    KAI is a distributed object model for C++ with full runtime reflection, incremental
+    garbage collection, and a multi-language execution environment. Three languages —
+    Pi, Rho, and Tau — share a common lexer/parser/executor pipeline, all running on a
+    stack-based virtual machine.
+  </p>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+graph TB
+    subgraph Languages
+        RHO[Rho<br/>infix, Python-like]
+        PI[Pi<br/>stack-based, Forth-like]
+        TAU[Tau<br/>IDL, code generation]
+    end
+
+    subgraph Translation
+        RHOLEX[RhoLexer]
+        RHOPAR[RhoParser]
+        RHOTRANS[RhoTranslator]
+        PILEX[PiLexer]
+        PIPAR[PiParser]
+    end
+
+    subgraph Execution
+        EXEC[Executor<br/>stack VM]
+        CONT[Continuation<br/>code sequence]
+        DATA[Data Stack]
+        CTX[Context Stack]
+    end
+
+    subgraph Core
+        REG[Registry<br/>type factory + GC]
+        OBJ[Object<br/>managed reference]
+        BS[BinaryStream<br/>serialization]
+    end
+
+    subgraph Network
+        NODE[Node<br/>network endpoint]
+        AGENT[Agent<br/>server-side handler]
+        PROXY[Proxy<br/>client-side stub]
+        DOMAIN[Domain<br/>node grouping]
+        ENET[ENet<br/>UDP transport]
+    end
+
+    RHO --> RHOLEX --> RHOPAR --> RHOTRANS --> PIPAR
+    TAU --> PIPAR
+    PI  --> PILEX  --> PIPAR
+    PIPAR --> CONT --> EXEC
+    EXEC --> DATA
+    EXEC --> CTX
+    EXEC --> REG
+    REG  --> OBJ
+    OBJ  --> BS
+    BS   --> NODE
+    NODE --> ENET
+    NODE --> AGENT
+    NODE --> PROXY
+    DOMAIN --> NODE
+    PROXY --> AGENT
+    </div>
+  </div>
+
+  <h2>Core Concepts</h2>
+
+  <h3>Registry and Object Model</h3>
+  <p>
+    The <code>Registry</code> is the central factory and garbage collector. Every value in
+    KAI is wrapped in an <code>Object</code> — a managed, typed reference. Types are
+    registered at startup:
+  </p>
+  <pre><code>reg.AddClass&lt;int&gt;();
+reg.AddClass&lt;String&gt;();
+MyType::Register(reg);</code></pre>
+  <p>
+    No macros are required. The reflection system uses template specialisation and the
+    <code>Traits&lt;T&gt;</code> machinery.
+  </p>
+
+  <h3>Continuation-Based Execution</h3>
+  <p>
+    Rather than a traditional call stack, KAI uses <strong>Continuations</strong> —
+    first-class objects that represent a sequence of operations. This enables:
+  </p>
+  <ul>
+    <li>Suspension and resumption of execution mid-sequence</li>
+    <li>Tail-call replacement (<code>!</code> in Pi)</li>
+    <li>Coroutine-like patterns</li>
+    <li>The <code>for</code>/<code>while</code>/<code>if</code> control structures are all implemented as continuations</li>
+  </ul>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+sequenceDiagram
+    participant Executor
+    participant Continuation
+    participant DataStack
+
+    Executor->>Continuation: fetch next op
+    Continuation-->>Executor: Operation
+    Executor->>DataStack: push/pop values
+    Executor->>Continuation: Suspend (&amp; op)
+    Executor->>Continuation: Resume (... op)
+    Executor->>Continuation: Replace (! op)
+    </div>
+  </div>
+
+  <h3>Translation Pipeline</h3>
+  <p>Rho code is compiled to Pi, which is then executed directly:</p>
+  <pre><code>Rho source
+    → RhoLexer (tokens)
+    → RhoParser (AST)
+    → RhoTranslator (Pi operations)
+    → Pi Continuation
+    → Executor</code></pre>
+  <p>Tau IDL is compiled offline to C++ proxy/agent headers — it does not run through the executor.</p>
+
+  <h2>Language Architecture</h2>
+
+  <h3>Pi — Foundation Language</h3>
+  <p>
+    Pi is an assembly-like stack language. All other languages ultimately emit Pi
+    operations. It uses two stacks:
+  </p>
+  <table>
+    <tr><th>Stack</th><th>Purpose</th></tr>
+    <tr><td>Data stack</td><td>Values and intermediate results</td></tr>
+    <tr><td>Context stack</td><td>Continuations, scopes, control flow</td></tr>
+  </table>
+  <p>
+    Key operations: <code>dup</code>, <code>drop</code>, <code>swap</code>, <code>over</code>,
+    <code>@</code> (dereference), <code>!</code> (replace/store), <code>&amp;</code> (suspend),
+    <code>...</code> (resume).
+  </p>
+
+  <h3>Rho — Application Language</h3>
+  <p>
+    Rho provides infix, Python-like syntax that transpiles to Pi. The translator generates
+    Pi operations — it does not evaluate at translation time. This separation is critical:
+    the executor owns all evaluation.
+  </p>
+  <pre><code>fun factorial(n) {
+    if (n &lt;= 1) { return 1 }
+    else { return n * factorial(n - 1) }
+}</code></pre>
+
+  <h3>Tau — Interface Definition Language</h3>
+  <p>
+    Tau is a declarative IDL for defining network interfaces. The Tau generator library
+    reads <code>.tau</code> files and emits C++ headers:
+  </p>
+  <pre><code>namespace Calc {
+    interface ICalc {
+        Future&lt;int&gt; Add(int a, int b);
+        int Value;
+    }
+}</code></pre>
+  <p>
+    Generates <code>ICalcProxy</code> (for callers) and <code>ICalcAgent</code> (for
+    implementors). Template return types like <code>Future&lt;int&gt;</code> are handled by
+    the lexer as a single composite token.
+  </p>
+
+  <h2>Networking Architecture</h2>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+graph LR
+    subgraph DomainA["Domain A (server)"]
+        NA[Node A] --> AG["Agent<br/>registers methods<br/>and properties"]
+        AG --> IMPL["Servant<br/>C++ object"]
+    end
+
+    subgraph DomainB["Domain B (client)"]
+        NB[Node B] --> PR["Proxy<br/>forwards calls"]
+        PR --> FUT["Future&lt;T&gt;<br/>async result"]
+    end
+
+    NA <-->|ENet UDP| NB
+    PR -->|RPC request| AG
+    AG -->|response| FUT
+    </div>
+  </div>
+
+  <h3>Agent/Proxy Pattern</h3>
+  <ul>
+    <li><strong>Agent</strong> registers on a <code>Node</code> and exposes methods/properties via <code>RegisterMethod</code> / <code>RegisterProperty</code></li>
+    <li><strong>Proxy</strong> holds a <code>NetHandle</code> pointing to a remote agent and forwards typed calls via <code>Invoke&lt;R&gt;(...)</code> or <code>FetchProperty&lt;T&gt;(...)</code></li>
+    <li><strong>Domain</strong> is a thin wrapper that groups a <code>Node</code> with factory methods <code>MakeAgent&lt;T&gt;()</code> / <code>MakeProxy&lt;T&gt;()</code></li>
+    <li><strong><code>Future&lt;T&gt;</code></strong> is returned by all remote calls; <code>Node::WaitFor(future)</code> blocks until resolved</li>
+  </ul>
+
+  <h3>Message Types</h3>
+  <table>
+    <tr><th>ID</th><th>Decimal</th><th>Purpose</th></tr>
+    <tr><td><code>ID_KAI_FUNCTION_CALL</code></td><td>129</td><td>Client → Agent: invoke method</td></tr>
+    <tr><td><code>ID_KAI_FUNCTION_RESPONSE</code></td><td>131</td><td>Agent → Client: return value</td></tr>
+    <tr><td><code>ID_KAI_EVENT</code></td><td>130</td><td>Agent → all: broadcast event</td></tr>
+    <tr><td><code>ID_KAI_OBJECT</code></td><td>128</td><td>Node → all: broadcast KAI object</td></tr>
+    <tr><td><code>ID_KAI_PROPERTY_GET</code></td><td>132</td><td>Client → Agent: read property</td></tr>
+    <tr><td><code>ID_KAI_PROPERTY_SET</code></td><td>133</td><td>Client → Agent: write property</td></tr>
+  </table>
+
+  <h2>Design Patterns</h2>
+  <table>
+    <tr><th>Pattern</th><th>Where used</th></tr>
+    <tr><td>Registry / Factory</td><td><code>Registry::New&lt;T&gt;()</code> for all object creation</td></tr>
+    <tr><td>Visitor</td><td>AST traversal in all language translators</td></tr>
+    <tr><td>Observer</td><td><code>SubscribeEvent</code>, <code>SetConnectionEventCallback</code></td></tr>
+    <tr><td>Command</td><td>Operations are first-class <code>Object</code> values</td></tr>
+    <tr><td>Proxy</td><td><code>ProxyBase</code> / <code>Proxy&lt;T&gt;</code> for remote calls</td></tr>
+    <tr><td>Template Method</td><td><code>GenerateProcess</code> base drives <code>GenerateProxy</code> / <code>GenerateAgent</code></td></tr>
+  </table>
+
+  <h2>Architectural Strengths</h2>
+  <ol>
+    <li><strong>Separation of concerns</strong>: Lexing → Parsing → Translation → Execution are fully decoupled</li>
+    <li><strong>Extensibility</strong>: New languages plug in by implementing the <code>LexerCommon</code> / <code>ParserCommon</code> interfaces</li>
+    <li><strong>Uniform object model</strong>: Every value is an <code>Object</code>; the executor never handles raw C++ types</li>
+    <li><strong>First-class continuations</strong>: <code>Suspend</code>/<code>Resume</code>/<code>Replace</code> enable powerful control-flow primitives without special VM support</li>
+    <li><strong>Zero-macro reflection</strong>: Types are registered via template specialisation, no source modifications needed</li>
+  </ol>
+
+</main>
+
+<footer>
+  KAI — <a href="https://github.com/cschladetsch/CppKAI" target="_blank" rel="noopener">github.com/cschladetsch/CppKAI</a>
+</footer>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      background: '#111111',
+      primaryColor: '#1a1a1a',
+      primaryTextColor: '#d8d8d8',
+      primaryBorderColor: '#c9a227',
+      lineColor: '#8a8a8a',
+      secondaryColor: '#1a1a1a',
+      tertiaryColor: '#1a1a1a',
+      fontFamily: 'Courier New, monospace'
+    }
+  });
+</script>
+
+</body>
+</html>
