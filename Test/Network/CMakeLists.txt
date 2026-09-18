@@ -16,6 +16,7 @@ project(TestNetwork)
         TauPiSerializationTest.cpp
         TauDomainPropertyTest.cpp
         ContinuationSerializationTest.cpp
+	NestedFutureTest.cpp
         # TestAgentProxy.cpp
         # ICQStyleChatTest.cpp
         # ChatProxyGenerationTest.cpp
