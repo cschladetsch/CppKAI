@@ -34,6 +34,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # CppKaiCore/CppKaiLanguage are registered as git@github.com: (SSH)
+      # submodule URLs. The runner has no SSH key for this, so rewrite SSH
+      # GitHub URLs to HTTPS, which actions/checkout has already
+      # authenticated for.
+      - name: Use HTTPS for GitHub submodules
+        run: git config --global url."https://github.com/".insteadOf "git@github.com:"
+
       - name: Init required submodules
         run: git submodule update --init -- ${{ env.KAI_SUBMODULES }}
 
@@ -71,6 +78,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Use HTTPS for GitHub submodules
+        run: git config --global url."https://github.com/".insteadOf "git@github.com:"
+
       - name: Init required submodules
         run: git submodule update --init -- ${{ env.KAI_SUBMODULES }}
 
@@ -100,6 +110,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Use HTTPS for GitHub submodules
+        run: git config --global url."https://github.com/".insteadOf "git@github.com:"
 
       - name: Init required submodules
         run: git submodule update --init -- ${{ env.KAI_SUBMODULES }}
@@ -131,6 +144,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Use HTTPS for GitHub submodules
+        run: git config --global url."https://github.com/".insteadOf "git@github.com:"
 
       - name: Init required submodules
         run: git submodule update --init -- ${{ env.KAI_SUBMODULES }}
