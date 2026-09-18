@@ -7,12 +7,24 @@ on:
     branches: ["master"]
   workflow_dispatch:
 
+# Submodules actually required for the default build (KAI_BUILD_IMGUI,
+# KAI_BUILD_SLINT, KAI_BUILD_LLM, KAI_ANDROID are all OFF by default, so
+# Ext/imgui, Ext/slint, Ext/CppLmmModelStore, Ext/cpp-httplib, and the
+# playwright ThirdParty tree under Demo/ are NOT needed here and are
+# skipped to keep checkout fast).
+env:
+  KAI_SUBMODULES: >-
+    Ext/CppKaiCore
+    Ext/CppKaiLanguage
+    Ext/ENet
+    Ext/rang
+
 jobs:
-  build-and-test:
+  linux-macos:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest]
         build_type: [Debug, Release]
 
     runs-on: ${{ matrix.os }}
@@ -20,26 +32,55 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          submodules: recursive
 
-      - name: Install Linux dependencies
+      - name: Init required submodules
+        run: git submodule update --init -- ${{ env.KAI_SUBMODULES }}
+
+      - name: Install Ninja (Linux)
         if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ninja-build
+        run: sudo apt-get update && sudo apt-get install -y ninja-build
 
-      - name: Install macOS dependencies
+      - name: Install Ninja (macOS)
         if: runner.os == 'macOS'
         run: brew install ninja
 
-      - name: Install Windows dependencies
-        if: runner.os == 'Windows'
-        run: choco install ninja -y
-
-      - name: Configure
+      - name: Configure (Clang + Ninja)
         run: |
-          cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          cmake -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+            -DCMAKE_CXX_COMPILER=clang++ \
+            -DCMAKE_C_COMPILER=clang
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Test
+        working-directory: build
+        run: ctest --output-on-failure
+
+  windows:
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type: [Debug, Release]
+
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Init required submodules
+        run: git submodule update --init -- ${{ env.KAI_SUBMODULES }}
+
+      # Uses the default Visual Studio/MSBuild generator (MSVC) rather than
+      # forcing Ninja+Clang here - see the long comment in the top-level
+      # CMakeLists.txt on why CMAKE_GENERATOR/CMAKE_CXX_COMPILER can't
+      # reliably steer this to Clang from inside the CMake script itself on
+      # Windows. If you want a ClangCL leg too, add a second job with
+      # `-G "Visual Studio 17 2022" -T ClangCL`.
+      - name: Configure
+        run: cmake -B build
 
       - name: Build
         run: cmake --build build --config ${{ matrix.build_type }} --parallel
@@ -58,18 +99,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          submodules: recursive
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ninja-build
+      - name: Init required submodules
+        run: git submodule update --init -- ${{ env.KAI_SUBMODULES }}
+
+      - name: Install Ninja
+        run: sudo apt-get update && sudo apt-get install -y ninja-build
 
       - name: Configure with ${{ matrix.sanitizer }} sanitizer
         run: |
           cmake -B build -G Ninja \
             -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_CXX_COMPILER=clang++ \
+            -DCMAKE_C_COMPILER=clang \
             -DCMAKE_CXX_FLAGS="-fsanitize=${{ matrix.sanitizer }} -fno-omit-frame-pointer" \
             -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=${{ matrix.sanitizer }}"
 
@@ -81,21 +123,24 @@ jobs:
         run: ctest --output-on-failure
 
   coverage:
+    # Built with GCC (-DBUILD_GCC=ON) rather than the project's default
+    # Clang, since lcov's gcov-format parsing is most reliable against
+    # GCC-produced .gcda/.gcno files.
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          submodules: recursive
+
+      - name: Init required submodules
+        run: git submodule update --init -- ${{ env.KAI_SUBMODULES }}
 
       - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ninja-build lcov
+        run: sudo apt-get update && sudo apt-get install -y ninja-build lcov
 
-      - name: Configure with coverage
+      - name: Configure with coverage (GCC)
         run: |
           cmake -B build -G Ninja \
+            -DBUILD_GCC=ON \
             -DCMAKE_BUILD_TYPE=Debug \
             -DCMAKE_CXX_FLAGS="--coverage -O0" \
             -DCMAKE_EXE_LINKER_FLAGS="--coverage"
