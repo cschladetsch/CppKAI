@@ -20,10 +20,16 @@ struct Representative : Reflected {
     Representative(Node &node, NetHandle handle)
         : node_(&node), netHandle_(handle) {}
 
-    virtual ~Representative() = default;
+    ~Representative() override = default;
 
-    Node &GetNode() const { return *node_; }
-    NetHandle GetHandle() const { return netHandle_; }
+    [[nodiscard]] Node& GetNode() const
+    {
+        return *node_;
+    }
+    [[nodiscard]] NetHandle GetHandle() const
+    {
+        return netHandle_;
+    }
 
     void SetHandle(NetHandle handle) { netHandle_ = handle; }
 

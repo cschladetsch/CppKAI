@@ -17,7 +17,7 @@ int main(int argc, char** argv) {
         try {
             port = std::stoi(argv[1]);
         } catch (const std::exception& e) {
-            cerr << "Invalid port number. Using default port " << port << endl;
+            cerr << "Invalid port number. Using default port " << port << '\n';
         }
     }
 
@@ -43,15 +43,14 @@ int main(int argc, char** argv) {
         if (++counter % 20 == 0) {  // Every ~2 seconds
             auto connectionCount = node->GetConnectionCount();
             if (connectionCount > 0) {
-                cout << "Connected clients: " << connectionCount << endl;
+                cout << "Connected clients: " << connectionCount << '\n';
                 auto connections = node->GetConnections();
                 for (const auto& address : connections) {
                     IpAddress ipAddress(address.ToString());
                     int port = address.port;
                     int ping = node->GetPing(ipAddress, port);
 
-                    cout << "  Client: " << address.ToString()
-                         << " (ping: " << ping << "ms)" << endl;
+                    cout << "  Client: " << address.ToString() << " (ping: " << ping << "ms)" << '\n';
                 }
             }
         }

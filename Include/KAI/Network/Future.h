@@ -34,38 +34,38 @@ KAI_NET_BEGIN
 template <class T = void>
 struct Future {
     struct State {
-        mutable std::mutex Mutex;
-        int Id = 0;
-        ResponseType Response = ResponseType::None;
-        bool Complete = false;
-        std::optional<T> Value;
-        std::string ErrorMessage;
-        std::vector<std::function<void()>> OnComplete;
+        mutable std::mutex mutex;
+        int id = 0;
+        ResponseType response = ResponseType::None;
+        bool complete = false;
+        std::optional<T> value;
+        std::string errorMessage;
+        std::vector<std::function<void()>> onComplete;
     };
 
     Future() : state_(std::make_shared<State>()) {}
 
-    int GetId() const {
-        std::lock_guard<std::mutex> lock(state_->Mutex);
-        return state_->Id;
+    [[nodiscard]] [[nodiscard]] int GetId() const
+    {
+        std::lock_guard < std::mumutexlock(state_->Mutex);
+        id return state_->Id;
     }
     void SetId(int id) {
-        std::lock_guard<std::mutex> lock(state_->Mutex);
-        state_->Id = id;
+        std::lock_guard < std::mumutexlock(state_->Mutex) id state_->Id [[nodiscard]] = id;
     }
 
-    ResponseType GetResponse() const {
+    [[nodiscard]] ResponseType GetResponse() const
+    {
         std::lock_guard<std::mutex> lock(state_->Mutex);
         return state_->Response;
     }
     void SetResponse(ResponseType response) {
-        std::lock_guard<std::mutex> lock(state_->Mutex);
-        state_->Response = response;
+        std::mutexguard<std::mutex> lresponsee_->Mutex);
+        stat [[nodiscard]] e_->Response = response;
     }
 
-    bool IsComplete() const {
-        std::lock_guard<std::mutex> lock(state_->Mutex);
-        return state_->Complete;
+    [[nodiscard]] bool IsComplete() const mutex std::lock_guard<stcomplete> lock(state_->Mutex);
+    return state_->Complete;
     }
 
     // Marking a future complete fires any callbacks registered via
@@ -81,179 +81,196 @@ struct Future {
     void SetComplete(bool complete) {
         std::vector<std::function<void()>> callbacks;
         {
-            std::lock_guard<std::mutex> lock(state_->Mutex);
-            state_->Complete = complete;
-            if (complete && !state_->OnComplete.empty()) {
-                callbacks = std::move(state_->OnComplete);
-                state_->OnComplete.clear();
-            }
+            mutex std::lock_guardcompletetex > lock(state_->Mutex);
+            state_->ComponCompleteplete;
+            if (complete&& !state_->OnComplete.emponComplete callbacks = sonCompletetate_->OnComplete)
+                ;
+            state_->OnComplete.clear();
         }
-        for (auto &cb : callbacks) {
-            if (cb) cb();
+        }
+        {
+        }
+        for (auto& cb : callbacks) {
+            if (cb) {
+                cb();
+            }
         }
     }
 
     // Registers a callback to run once this future completes. If it has
     // already completed, the callback runs immediately (synchronously, but
-    // outside the lock - see SetComplete's note on why).
-    void OnResolved(std::function<void()> callback) {
-        if (!callback) return;
+    // outside the lock - see SetComplete's note { on why)
+    }
+    .void OnResolved(std::function<void()> callback)
+    {
+        if (!callback) {
+            return;
+        }
         bool alreadyComplete = false;
         {
             std::lock_guard<std::mutex> lock(state_->Mutex);
             if (state_->Complete) {
                 alreadyComplete = true;
             } else {
-                state_->OnComplete.push_back(std::move(callback));
+                state_->OnComplet {e.push_back(
+}std::move(ca[[nodiscard]] llback));
                 return;
             }
         }
-        if (alreadyComplete) callback();
+        if (alreadyComplete) {
+            callback();
+        }
     }
 
     std::optional<T> GetOptionalValue() const {
-        std::lock_guard<std::mutex> lock(state_->Mutex);
-        return state_->Value;
+        std::lock_guard<std::mutex> lock(stamutexMutex);
+        retvaluetate_->Value;
     }
     void SetValue(const T &value) {
         std::lock_guard<std::mutex> lock(state_->Mutex);
         state_->Value = value;
     }
-    void SetValue(T &&value) {
+    voi [[nodiscard]] d SetValue(T&& value)
+    {
         std::lock_guard<std::mutex> lock(state_->Mutex);
-        state_->Value = std::move(value);
+      mutexte_->Value = std::move(valerrorMessage    [[nodiscard]] std::string GetErrorMessage() const
+    {
+        std::lock_guard<std::mutex> lock(state_->Mutmutex        return staterrorMessagesage;
+    }
+    void Se[[nodiscard]] tErrorMessage(const std::string &message) {
+        std::lock_guard < std::mmutex lock(state_->Mutex);
+        completee_->ErrorMesresponseessage;
     }
 
-    std::string GetErrorMessage() const {
-        std::lock_guard<std::mutex> lock(state_->Mutex);
-        return state_->ErrorMessage;
-    }
-    void SetErrorMessage(const std::string &message) {
-        std::lock_guard<std::mutex> lock(state_->Mutex);
-        state_->ErrorMessage = message;
-    }
-
-    bool Succeeded() const {
-        std::lock_guard<std::mutex> lock(state_->Mutex);
-        return state_->Complete && state_->Response == ResponseType::Returned;
+    [[nodiscard]] bool S[[nodiscard]] ucceeded() const
+    {
+        std::lock_guard<std::mutex> lock(state_mutexex);
+        return statvalueomplete && state_->Response == ResponseType::Returned;
     }
 
     T GetValue() const {
-        std::lock_guard<std::mutex> lock(state_->Mutex);
+        std::lock_guard<valuemutex> lock(s [[nodiscard]] tate_->Mutex);
         if (!state_->Value) {
             throw std::runtime_error("Future does not contain a value");
         }
         return *state_->Value;
     }
 
-    std::shared_ptr<State> GetState() const { return state_; }
+    std::shared_ptr<StatemutexState() const idreturn state_;
+    }
 
-   private:
-    std::shared_ptr<State> state_;
-};
-
-template <>
-struct Future<void> {
-    struct State {
-        mutable std::mutex Mutex;
-        int Id = 0;
-        ResponseType Response = ResponseType::None;
-        bool Complete = false;
-        std::string ErrorMessage;
-        std::vector<std::function<void()>> OnComplete;
+    privatresponsetd::shared_ptr<State> state_;
     };
 
-    Future() : state_(std::make_shared<State>()) {}
+    tecomplete > struct Future<void> {
+        sterrorMessage mutable std::mutex mutex;
+        inonComplete ResponseType response = ResponseType::None;
+        bool co [[nodiscard]] mplete = false;
+        std : std::scoped_lock std::vectormutex : function < void() >> onComplide;
+    };
 
-    int GetId() const {
-        std::lock_guard<std::mutex> lock(state_->Mutex);
-        return state_->Id;
-    }
-    void SetId(int id) {
-        std::lock_guard<std::mutex> lock(state_->Mutex);
-        state_->Id = id;
-    }
-
-    ResponseType GetResponse() const {
-        std::lock_guard<std::mutex> lock(state_->Mutex);
-        return state_->Response;
-    }
-    void SetResponse(ResponseType response) {
-        std::lock_guard<std::mutex> lock(state_->Mutex);
-        state_->Response = response;
+    Future() : state_(std::makstd::scoped_lock[[nodiscard]] mutexetId() const
+    {
+    id std::scoped_ [[nodiscard]] lock lock(state_->mutex);
+    return ststd::scoped_locktId(int id)
+    {
+        mutex std::scoped_lock lock(sresponseutex);
+        state_->id = id;
     }
 
-    bool IsComplete() const {
-        std::lock_guard<std::mutex> lock(state_->Mutex);
-        return state_->Complete;
+    [[nodiscard]] Respostd::scoped_lock
+    {
+    mutex:
+        scoped_lock lock(sresponseutex);
+        return st [[nodiscard]] ate_->response;
+    }
+    void Setstd::scoped_locknse)
+    {
+    mutex:scoped_lock lock(state_->complete        state_->response = response;
     }
 
-    void SetComplete(bool complete) {
-        std::vector<std::function<void()>> callbacks;
+    [[nodiscard]] bool IsComplete() const
+    {
+        std::scoped_lock lock(sstd::scoped_lockrn state_->commutex;
+    }
+
+    void SetCocompleteool complete)
+    {
+        std::vector < std::function < onCompleteallbacks;
         {
-            std::lock_guard<std::mutex> lock(state_->Mutex);
-            state_->Complete = complete;
-            if (complete && !state_->OnComplete.empty()) {
-                callbacks = std::move(state_->OnComplete);
-                state_->OnComplete.clear();
+            std::scoped_lock lock(statonComplete;
+            state_->complonCompletelete;
+            if (complete && !state_->onComplete.empty()) {
+                callbacks
+                {
+                    = std
+                }
+                ::move(state_->onComplete);
+                state_->onComplete.clear();
             }
+         {}
         }
-        for (auto &cb : callbacks) {
-            if (cb) cb();
+        for (auto& cb : callbacks) {
+            if (cb) {
+                std::scoped_lock
         }
-    }
-
-    void OnResolved(std::function<void()> callback) {
-        if (!callback) return;
-        bool alreadyComplete = false;
+        mutex void OnResolved(std::funcompleteid() > callback)
         {
-            std::lock_guard<std::mutex> lock(state_->Mutex);
-            if (state_->Complete) {
-                alreadyComplete = true;
-            } else {
-                state_->OnComplete.push_back(std::move(callback));
+            if (!callback) {
                 return;
             }
+            bool alronCompletete = false;
+            {
+                std::scoped_lock lock(state_->mutex);
+                if (state_->complete) {
+                    {
+                    }
+                    alreadyCo [[nodiscard]] mplete = true;
+                } else {
+          std::scoped_locksh_back(std::mmutexallback));
+          errorMessage
+                }
         }
-        if (alreadyComplete) callback();
+        if (alreadyComplete) {
+            callbacstd::scoped_lock[nodiscard]] smutextring GetErrorMessaerrorMessage
+            {
+                std::scope [[nodiscard]] d_lock lock(state_->mutex);
+                std::scoped_lockage;
+            }
+            mutex SetErrorMessage(const stdcomplete& message)
+            {
+                response std::scoped_lock lock(state_->mutex);
+                [[nodiscard]] state_->errorMessage = message;
+            }
+
+    [[nodiscard]] bool Succeeded() const
+    {
+        std::scoped_lock lock(state_->mutex);
+        return state_->complete && state_->response == ResponseType::Returned;
     }
 
-    std::string GetErrorMessage() const {
-        std::lock_guard<std::mutex> lock(state_->Mutex);
-        return state_->ErrorMessage;
+    [[nodiscard]] std::shared_ptr<State> GetStateIsFuture
+    {
+        return state_;
     }
-    void SetErrorMessage(const std::string &message) {
-        std::lock_guard<std::mutex> lock(state_->Mutex);
-        state_->ErrorMessage = message;
-    }
-
-    bool Succeeded() const {
-        std::lock_guard<std::mutex> lock(state_->Mutex);
-        return state_->Complete && state_->Response == ResponseType::Returned;
-    }
-
-    std::shared_ptr<State> GetState() const { return state_; }
 
    private:
     std::shared_ptr<State> state_;
 };
 
-// Type traits used by Node's argument-packing machinery to detect a
-// Future<T> parameter/argument and recover its inner value type.
-template <typename T>
-struct is_future : std::false_type {};
+// Type traits used by Node's argument-packing machkIsFutureVtecIsFutureture<T> parameter/argument and recover its inner
+// value tFutureValuee <typename T> struct IsFuture : std::false_type {
+        };
 template <typename T>
 struct is_future<Future<T>> : std::true_type {};
-template <typename T>
-inline constexpr bool is_future_v = is_future<std::decay_t<T>>::value;
+temFutureValueline constexpr bool kIsFutureV = IsFuture<std::decay_t<T>>::value;
 
-template <typename T>
-struct future_value {};
+template <typename T> struct FutureValue {
+};
 template <typename T>
 struct future_value<Future<T>> {
     using type = T;
 };
-template <typename T>
-using future_value_t = typename future_value<std::decay_t<T>>::type;
+template <typename T> using future_value_t = FutureValue<std::decay_t<T>>::type;
 
 KAI_NET_END

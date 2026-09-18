@@ -14,66 +14,61 @@ enum class Language { None = 0, Pi = 1, Rho = 2 };
 enum class ConsoleTab { Pi = 0, Rho = 1, Debugger = 2 };
 
 struct SimpleMockWindow {
-    char InputBuf[256];
-    char MultilineInputBuf[4096];
-    std::map<Language, std::vector<std::string>> Items;
-    std::map<Language, std::vector<std::string>> History;
+    char inputBuf[256]{};
+    char multilineInputBuf[4096]{};
+    std::map<Language, std::vector<std::string>> items;
+    std::map<Language, std::vector<std::string>> history;
     Language CurrentLanguage;
     ConsoleTab CurrentTab;
     int HistoryPos;
     bool ScrollToBottom;
     bool IsDebugging;
     int DebugStepCount;
-    std::vector<std::string> DebugLog;
+    std::vector<std::string> debugLog;
     int WatchIndex;
 
-    SimpleMockWindow() {
-        HistoryPos = -1;
-        CurrentLanguage = Language::Pi;
-        CurrentTab = ConsoleTab::Pi;
-        ScrollToBottom = false;
-        IsDebugging = false;
-        DebugStepCount = 0;
-        WatchIndex = 0;
+    SimpleMockWindow()
+        : HistoryPos(-1), CurrentLanguage(Language::Pi), CurrentTab(ConsoleTab::Pi), ScrollToBottom(false),
+          IsDebugging(false), DebugStepCount(0), WatchIndex(0)
+    {
+        memset(inputBuf, 0, sizeof(inputBuf));
+        memset(multilineInputBuf, 0, sizeof(multilineInputBuf));
 
-        memset(InputBuf, 0, sizeof(InputBuf));
-        memset(MultilineInputBuf, 0, sizeof(MultilineInputBuf));
-
-        Items[Language::Pi] = std::vector<std::string>();
-        Items[Language::Rho] = std::vector<std::string>();
-        History[Language::Pi] = std::vector<std::string>();
-        History[Language::Rho] = std::vector<std::string>();
-        DebugLog.push_back("Debugger initialized");
+        items[Language::Pi] = std::vector<std::string>();
+        items[Language::Rho] = std::vector<std::string>();
+        history[Language::Pi] = std::vector<std::string>();
+        history[Language::Rho] = std::vector<std::string>();
+        debugLog.emplace_back("Debugger initialized");
     }
 
     void ClearLog(Language lang = Language::None) {
         if (lang == Language::None) {
             lang = CurrentLanguage;
         }
-        Items[lang].clear();
+        items[lang].clear();
         ScrollToBottom = true;
     }
 
     void ClearAllLogs() {
-        Items[Language::Pi].clear();
-        Items[Language::Rho].clear();
-        DebugLog.clear();
-        DebugLog.push_back("Debugger reset");
+        items[Language::Pi].clear();
+        items[Language::Rho].clear();
+        debugLog.clear();
+        debugLog.emplace_back("Debugger reset");
         ScrollToBottom = true;
     }
 
     void AddLog(const char* fmt, ...) {
         char buf[1024];
-        va_list args;
+        va_list args = nullptr;
         va_start(args, fmt);
         vsnprintf(buf, sizeof(buf), fmt, args);
         buf[strlen(buf)] = 0;
         va_end(args);
 
         if (CurrentTab == ConsoleTab::Debugger) {
-            DebugLog.push_back(buf);
+            debugLog.emplace_back(buf);
         } else {
-            Items[CurrentLanguage].push_back(buf);
+            items[CurrentLanguage].emplace_back(buf);
         }
         ScrollToBottom = true;
     }
@@ -81,8 +76,8 @@ struct SimpleMockWindow {
     void SwitchLanguage(Language lang) {
         if (CurrentLanguage != lang) {
             CurrentLanguage = lang;
-            InputBuf[0] = '\0';
-            MultilineInputBuf[0] = '\0';
+            inputBuf[0] = '\0';
+            multilineInputBuf[0] = '\0';
         }
     }
 
@@ -94,8 +89,8 @@ struct SimpleMockWindow {
             } else if (tab == ConsoleTab::Rho) {
                 SwitchLanguage(Language::Rho);
             }
-            InputBuf[0] = '\0';
-            MultilineInputBuf[0] = '\0';
+            inputBuf[0] = '\0';
+            multilineInputBuf[0] = '\0';
         }
     }
 
@@ -105,10 +100,11 @@ struct SimpleMockWindow {
         AddLog("Debug step executed");
     }
 
-    void ExecCommand(const char* command_line) {
+    void ExecCommand(const char* commandLine)
+    {
         std::string cmdWithPrompt =
             (CurrentLanguage == Language::Pi) ? "Pi> " : "Rho> ";
-        cmdWithPrompt += command_line;
+        cmdWithPrompt += commandLine;
         AddLog("%s", cmdWithPrompt.c_str());
 
         if (CurrentTab == ConsoleTab::Debugger) {
@@ -117,11 +113,11 @@ struct SimpleMockWindow {
         }
 
         // Simple mock execution
-        std::string text = command_line;
+        std::string text = commandLine;
 
         // Add to history if not empty
         if (!text.empty()) {
-            History[CurrentLanguage].push_back(text);
+            history[CurrentLanguage].push_back(text);
         }
 
         // Mock some simple responses

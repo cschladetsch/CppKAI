@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <set>
 
 #include <gtest/gtest.h>
@@ -18,7 +19,7 @@ std::set<int> AgentIds(const World& world) {
 int CountAgentsOnHost(const World& world, const std::string& host) {
     int count = 0;
     for (const auto& agent : world.agents) {
-        if (world.HostForRegion(agent.region_name) == host) {
+        if (world.HostForRegion(agent.regionName) == host) {
             ++count;
         }
     }
@@ -27,7 +28,9 @@ int CountAgentsOnHost(const World& world, const std::string& host) {
 
 const MobileAgent* FindAgent(const World& world, int id) {
     for (const auto& agent : world.agents) {
-        if (agent.id == id) return &agent;
+        if (agent.id == id) {
+            return &agent;
+        }
     }
     return nullptr;
 }
@@ -59,26 +62,26 @@ TEST(ContinuationMobilityDemoTests, FailureDrillRemovesAndRestoresThreeAgents) {
 
     testing::internal::GetCapturedStdout();
 
-    EXPECT_EQ(world.tick_count, 60);
+    EXPECT_EQ(world.tickCount, 60);
     EXPECT_EQ(world.agents.size(), 10U);
-    EXPECT_EQ(world.last_snapshot.size(), 10U);
+    EXPECT_EQ(world.lastSnapshot.size(), 10U);
 
-    const std::set<int> expected_ids{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    EXPECT_EQ(AgentIds(world), expected_ids);
+    const std::set<int> expectedIds{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    EXPECT_EQ(AgentIds(world), expectedIds);
     EXPECT_EQ(CountAgentsOnHost(world, "NodeB"), 0);
 
-    int restored_count = 0;
+    int restoredCount = 0;
     for (const auto& agent : world.agents) {
         if (agent.restored) {
-            ++restored_count;
+            ++restoredCount;
             EXPECT_GE(agent.id, 1);
             EXPECT_LE(agent.id, 3);
-            EXPECT_EQ(agent.region_name, "Backup");
-            EXPECT_EQ(world.HostForRegion(agent.region_name), "NodeD");
+            EXPECT_EQ(agent.regionName, "Backup");
+            EXPECT_EQ(world.HostForRegion(agent.regionName), "NodeD");
         }
     }
 
-    EXPECT_EQ(restored_count, 3);
+    EXPECT_EQ(restoredCount, 3);
 }
 
 TEST(ContinuationMobilityDemoTests, SnapshotCapturesCurrentAgentState) {
@@ -91,16 +94,16 @@ TEST(ContinuationMobilityDemoTests, SnapshotCapturesCurrentAgentState) {
 
     testing::internal::GetCapturedStdout();
 
-    ASSERT_EQ(world.last_snapshot.size(), world.agents.size());
+    ASSERT_EQ(world.lastSnapshot.size(), world.agents.size());
 
-    for (const auto& snapshot : world.last_snapshot) {
+    for (const auto& snapshot : world.lastSnapshot) {
         const AgentState& state = snapshot.state;
         const MobileAgent* agent = FindAgent(world, state.id);
         ASSERT_NE(agent, nullptr);
         EXPECT_EQ(state.name, agent->name);
-        EXPECT_EQ(state.region_name, agent->region_name);
+        EXPECT_EQ(state.regionName, agent->regionName);
         EXPECT_EQ(state.steps, agent->steps);
-        EXPECT_EQ(state.plans_requested, agent->plans_requested);
+        EXPECT_EQ(state.plansRequested, agent->plansRequested);
         EXPECT_EQ(state.migrations, agent->migrations);
         EXPECT_EQ(state.restored, agent->restored);
     }
@@ -110,29 +113,29 @@ TEST(ContinuationMobilityDemoTests, PiReroutesMarketAgentsToHarborBeforeDrill) {
     World world = CreateDemoWorld();
     world.UpdateHostLoad();
 
-    const MobileAgent* market_agent = FindAgent(world, 5);
-    ASSERT_NE(market_agent, nullptr);
+    const MobileAgent* marketAgent = FindAgent(world, 5);
+    ASSERT_NE(marketAgent, nullptr);
 
-    Plan plan = world.pi.Ask(*market_agent, world);
+    Plan plan = world.pi.Ask(*marketAgent, world);
     EXPECT_EQ(plan.summary, "market congestion detected; re-route to Harbor");
-    ASSERT_TRUE(plan.target_region.has_value());
-    EXPECT_EQ(*plan.target_region, "Harbor");
+    ASSERT_TRUE(plan.targetRegion.has_value());
+    EXPECT_EQ(*plan.targetRegion, "Harbor");
 }
 
 TEST(ContinuationMobilityDemoTests, PiHoldsMarketAgentsInPlaceDuringFailureDrill) {
     World world = CreateDemoWorld();
-    world.tick_count = 58;
+    world.tickCount = 58;
     world.UpdateHostLoad();
 
-    MobileAgent drill_agent;
-    drill_agent.id = 99;
-    drill_agent.name = "DrillAgent";
-    drill_agent.region_name = "Market";
+    MobileAgent drillAgent;
+    drillAgent.id = 99;
+    drillAgent.name = "DrillAgent";
+    drillAgent.regionName = "Market";
 
-    Plan plan = world.pi.Ask(drill_agent, world);
+    Plan plan = world.pi.Ask(drillAgent, world);
     EXPECT_EQ(plan.summary,
               "hold position in Market so failure recovery can be tested");
-    EXPECT_FALSE(plan.target_region.has_value());
+    EXPECT_FALSE(plan.targetRegion.has_value());
 }
 
 TEST(ContinuationMobilityDemoTests, BalanceLoadMovesAgentsToLeastLoadedHost) {
@@ -140,7 +143,7 @@ TEST(ContinuationMobilityDemoTests, BalanceLoadMovesAgentsToLeastLoadedHost) {
 
     World world = CreateDemoWorld();
     world.UpdateHostLoad();
-    const int initial_min_load = world.host_load["NodeD"];
+    const int initialMinLoad = world.host_load["NodeD"];
     world.BalanceLoad();
 
     testing::internal::GetCapturedStdout();
@@ -151,17 +154,15 @@ TEST(ContinuationMobilityDemoTests, BalanceLoadMovesAgentsToLeastLoadedHost) {
               10);
     EXPECT_EQ(world.host_load["NodeC"], 2);
     EXPECT_EQ(world.host_load["NodeD"], 2);
-    EXPECT_GT(world.host_load["NodeD"], initial_min_load);
+    EXPECT_GT(world.host_load["NodeD"], initialMinLoad);
     EXPECT_EQ(CountAgentsOnHost(world, "NodeD"), 2);
     EXPECT_EQ(world.FindRegion("Backup")->visits, 2);
 
-    const int max_load = std::max(
-        std::max(world.host_load["NodeA"], world.host_load["NodeB"]),
-        std::max(world.host_load["NodeC"], world.host_load["NodeD"]));
-    const int min_load = std::min(
-        std::min(world.host_load["NodeA"], world.host_load["NodeB"]),
-        std::min(world.host_load["NodeC"], world.host_load["NodeD"]));
-    EXPECT_LE(max_load - min_load, 2);
+    const int maxLoad = std::max(
+        {world.host_load["NodeA"], world.host_load["NodeB"], world.host_load["NodeC"], world.host_load["NodeD"]});
+    const int minLoad = std::min(
+        {world.host_load["NodeA"], world.host_load["NodeB"], world.host_load["NodeC"], world.host_load["NodeD"]});
+    EXPECT_LE(maxLoad - minLoad, 2);
 }
 
 TEST(ContinuationMobilityDemoTests, FullRunPreservesAgentIdentityWithoutDuplication) {
@@ -174,20 +175,20 @@ TEST(ContinuationMobilityDemoTests, FullRunPreservesAgentIdentityWithoutDuplicat
 
     testing::internal::GetCapturedStdout();
 
-    EXPECT_EQ(world.tick_count, 80);
+    EXPECT_EQ(world.tickCount, 80);
     EXPECT_EQ(world.agents.size(), 10U);
     EXPECT_EQ(AgentIds(world).size(), world.agents.size());
 
-    int restored_count = 0;
+    int restoredCount = 0;
     for (const auto& agent : world.agents) {
         if (agent.restored) {
-            ++restored_count;
+            ++restoredCount;
         }
     }
 
-    EXPECT_EQ(restored_count, 3);
+    EXPECT_EQ(restoredCount, 3);
     EXPECT_EQ(world.FindRegion("Market")->visits, 3);
-    EXPECT_GE(world.FindRegion("Backup")->visits, restored_count);
+    EXPECT_GE(world.FindRegion("Backup")->visits, restoredCount);
 }
 
 }  // namespace

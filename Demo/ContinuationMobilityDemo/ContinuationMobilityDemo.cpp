@@ -23,15 +23,15 @@ struct Region {
 
 struct Plan {
     std::string summary;
-    std::optional<std::string> target_region;
+    std::optional<std::string> targetRegion;
 };
 
 struct AgentState {
     int id = 0;
     std::string name;
-    std::string region_name;
+    std::string regionName;
     int steps = 0;
-    int plans_requested = 0;
+    int plansRequested = 0;
     int migrations = 0;
     bool restored = false;
 };
@@ -41,7 +41,8 @@ struct AgentSnapshot {
 };
 
 struct MobileAgent : AgentState {
-    AgentSnapshot Snapshot() const {
+    [[nodiscard]] AgentSnapshot Snapshot() const
+    {
         return AgentSnapshot{static_cast<const AgentState&>(*this)};
     }
 };
@@ -51,23 +52,23 @@ struct World;
 struct PiAssistant {
     std::string host = "NodeC";
 
-    Plan Ask(const MobileAgent& agent, const World& world) const;
+    [[nodiscard]] static Plan Ask(const MobileAgent& agent, const World& world);
 };
 
 struct World {
     std::map<std::string, Region> regions;
     std::vector<MobileAgent> agents;
     std::map<std::string, int> host_load;
-    std::vector<AgentSnapshot> last_snapshot;
+    std::vector<AgentSnapshot> lastSnapshot;
     PiAssistant pi;
-    int tick_count = 0;
+    int tickCount = 0;
 
     void Log(const std::string& message) const {
-        std::cout << "[tick " << std::setw(3) << tick_count << "] " << message
-                  << '\n';
+        std::cout << "[tick " << std::setw(3) << tickCount << "] " << message << '\n';
     }
 
-    const Region* FindRegion(const std::string& name) const {
+    [[nodiscard]] const Region* FindRegion(const std::string& name) const
+    {
         auto it = regions.find(name);
         return it == regions.end() ? nullptr : &it->second;
     }
@@ -77,9 +78,10 @@ struct World {
         return it == regions.end() ? nullptr : &it->second;
     }
 
-    std::string HostForRegion(const std::string& region_name) const {
-        const Region* region = FindRegion(region_name);
-        return region ? region->host : "Unknown";
+    [[nodiscard]] std::string HostForRegion(const std::string& regionName) const
+    {
+        const Region* region = FindRegion(regionName);
+        return (region != nullptr) ? region->host : "Unknown";
     }
 
     void UpdateHostLoad() {
@@ -90,102 +92,102 @@ struct World {
         }
 
         for (const auto& agent : agents) {
-            host_load[HostForRegion(agent.region_name)] += 1;
+            host_load[HostForRegion(agent.regionName)] += 1;
         }
     }
 
-    std::string RegionOnHost(const std::string& host,
-                             const std::string& fallback_region) const {
+    [[nodiscard]] std::string RegionOnHost(const std::string& host, const std::string& fallbackRegion) const
+    {
         for (const auto& [name, region] : regions) {
-            if (region.host == host) return name;
+            if (region.host == host) {
+                return name;
+            }
         }
-        return fallback_region;
+        return fallbackRegion;
     }
 
-    void MoveAgent(MobileAgent& agent, const std::string& target_region,
-                   const std::string& reason) {
-        const std::string current_host = HostForRegion(agent.region_name);
-        const std::string target_host = HostForRegion(target_region);
-        if (target_host == "Unknown") {
-            Log("MoveAgent aborted for " + agent.name + ": unknown target " +
-                target_region);
+    void MoveAgent(MobileAgent& agent, const std::string& targetRegion, const std::string& reason)
+    {
+        const std::string currentHost = HostForRegion(agent.regionName);
+        const std::string targetHost = HostForRegion(targetRegion);
+        if (targetHost == "Unknown") {
+            Log("MoveAgent aborted for " + agent.name + ": unknown target " + targetRegion);
             return;
         }
 
-        if (agent.region_name == target_region) {
-            Log(agent.name + " stays in " + target_region + " (" + reason +
-                ")");
+        if (agent.regionName == targetRegion) {
+            Log(agent.name + " stays in " + targetRegion + " (" + reason + ")");
             return;
         }
 
-        if (current_host != target_host) {
+        if (currentHost != targetHost) {
             ++agent.migrations;
-            Log("Suspending " + agent.name + " on " + current_host +
-                " and resuming on " + target_host + " (" + reason + ")");
-        } else {
-            Log(agent.name + " moves within " + target_host + " from " +
-                agent.region_name + " to " + target_region + " (" + reason +
+            Log("Suspending " + agent.name + " on " + currentHost + " and resuming on " + targetHost + " (" + reason +
                 ")");
+        } else {
+            Log(agent.name + " moves within " + targetHost + " from " + agent.regionName + " to " + targetRegion +
+                " (" + reason + ")");
         }
 
-        agent.region_name = target_region;
-        if (Region* region = FindRegion(target_region)) {
+        agent.regionName = targetRegion;
+        if (Region* region = FindRegion(targetRegion)) {
             region->visits += 1;
         }
     }
 
     void BalanceLoad() {
         UpdateHostLoad();
-        if (host_load.size() < 2) return;
+        if (host_load.size() < 2) {
+            return;
+        }
 
-        auto max_it = std::max_element(
-            host_load.begin(), host_load.end(),
-            [](const auto& left, const auto& right) {
-                return left.second < right.second;
-            });
-        auto min_it = std::min_element(
-            host_load.begin(), host_load.end(),
-            [](const auto& left, const auto& right) {
-                return left.second < right.second;
-            });
+        auto maxIt = std::ranges::max_element(
+            host_load, [](const auto& left, const auto& right) { return left.second < right.second; });
+        auto minIt = std::ranges::min_element(
+            host_load, [](const auto& left, const auto& right) { return left.second < right.second; });
 
-        if (max_it == host_load.end() || min_it == host_load.end()) return;
-        if (max_it->second - min_it->second <= 1) return;
+        if (maxIt == host_load.end() || minIt == host_load.end()) {
+            return;
+        }
+        if (maxIt->second - minIt->second <= 1) {
+            return;
+        }
 
-        const std::string target_region =
-            RegionOnHost(min_it->first, "Backup");
-        int to_move = (max_it->second - min_it->second) / 2;
+        const std::string targetRegion = RegionOnHost(minIt->first, "Backup");
+        int toMove = (maxIt->second - minIt->second) / 2;
 
-        Log("Balancer moving " + std::to_string(to_move) + " agents from " +
-            max_it->first + " to " + min_it->first);
+        Log("Balancer moving " + std::to_string(toMove) + " agents from " + maxIt->first + " to " + minIt->first);
 
         for (auto& agent : agents) {
-            if (to_move <= 0) break;
-            if (HostForRegion(agent.region_name) != max_it->first) continue;
-            MoveAgent(agent, target_region, "load balancing");
-            --to_move;
+            if (toMove <= 0) {
+                break;
+            }
+            if (HostForRegion(agent.regionName) != maxIt->first) {
+                continue;
+            }
+            MoveAgent(agent, targetRegion, "load balancing");
+            --toMove;
         }
     }
 
     void Snapshot() {
-        last_snapshot.clear();
-        last_snapshot.reserve(agents.size());
+        lastSnapshot.clear();
+        lastSnapshot.reserve(agents.size());
         for (const auto& agent : agents) {
-            last_snapshot.push_back(agent.Snapshot());
+            lastSnapshot.push_back(agent.Snapshot());
         }
-        Log("Snapshot stored for " + std::to_string(last_snapshot.size()) +
-            " agents");
+        Log("Snapshot stored for " + std::to_string(lastSnapshot.size()) + " agents");
     }
 
-    void SimulateFailure(const std::string& failed_host,
-                         const std::string& recovery_host) {
-        std::vector<int> removed_ids;
+    void SimulateFailure(const std::string& failedHost, const std::string& recoveryHost)
+    {
+        std::vector<int> removedIds;
         std::vector<MobileAgent> survivors;
         survivors.reserve(agents.size());
 
         for (const auto& agent : agents) {
-            if (HostForRegion(agent.region_name) == failed_host) {
-                removed_ids.push_back(agent.id);
+            if (HostForRegion(agent.regionName) == failedHost) {
+                removedIds.push_back(agent.id);
             } else {
                 survivors.push_back(agent);
             }
@@ -194,49 +196,54 @@ struct World {
         agents = std::move(survivors);
 
         std::ostringstream ids;
-        for (std::size_t i = 0; i < removed_ids.size(); ++i) {
-            if (i) ids << ", ";
-            ids << removed_ids[i];
+        for (std::size_t i = 0; i < removedIds.size(); ++i) {
+            if (i != 0u) {
+                ids << ", ";
+            }
+            ids << removedIds[i];
         }
 
-        Log("Simulated failure on " + failed_host + ", removed " +
-            std::to_string(removed_ids.size()) + " agents [" + ids.str() +
-            "]");
+        Log("Simulated failure on " + failedHost + ", removed " + std::to_string(removedIds.size()) + " agents [" +
+            ids.str() + "]");
 
-        RecoverAgentsToHost(failed_host, recovery_host);
+        RecoverAgentsToHost(failedHost, recoveryHost);
     }
 
-    void RecoverAgentsToHost(const std::string& failed_host,
-                             const std::string& recovery_host) {
+    void RecoverAgentsToHost(const std::string& failedHost, const std::string& recoveryHost)
+    {
         std::unordered_map<int, bool> alive;
-        for (const auto& agent : agents) alive[agent.id] = true;
+        for (const auto& agent : agents) {
+            alive[agent.id] = true;
+        }
 
-        const std::string recovery_region =
-            RegionOnHost(recovery_host, "Backup");
-        int restored_count = 0;
+        const std::string recoveryRegion = RegionOnHost(recoveryHost, "Backup");
+        int restoredCount = 0;
 
-        for (const auto& snapshot : last_snapshot) {
+        for (const auto& snapshot : lastSnapshot) {
             const AgentState& state = snapshot.state;
-            if (alive.contains(state.id)) continue;
-            if (HostForRegion(state.region_name) != failed_host) continue;
+            if (alive.contains(state.id)) {
+                continue;
+            }
+            if (HostForRegion(state.regionName) != failedHost) {
+                continue;
+            }
 
             MobileAgent recovered;
             recovered.id = state.id;
             recovered.name = state.name;
-            recovered.region_name = recovery_region;
+            recovered.regionName = recoveryRegion;
             recovered.steps = state.steps;
-            recovered.plans_requested = state.plans_requested;
+            recovered.plansRequested = state.plansRequested;
             recovered.migrations = state.migrations + 1;
             recovered.restored = true;
             agents.push_back(recovered);
-            ++restored_count;
+            ++restoredCount;
 
-            Log("Recovered " + recovered.name + " from snapshot onto " +
-                recovery_host + " via region " + recovery_region);
+            Log("Recovered " + recovered.name + " from snapshot onto " + recoveryHost + " via region " +
+                recoveryRegion);
         }
 
-        Log("Recovery finished: " + std::to_string(restored_count) +
-            " agents restored");
+        Log("Recovery finished: " + std::to_string(restoredCount) + " agents restored");
     }
 
     void StepAgent(MobileAgent& agent) {
@@ -244,67 +251,72 @@ struct World {
 
         // Force a small drill onto NodeB shortly before the failure event so
         // recovery is exercised every run.
-        if (tick_count == 56 && agent.id >= 1 && agent.id <= 3) {
+        if (tickCount == 56 && agent.id >= 1 && agent.id <= 3) {
             MoveAgent(agent, "Market", "scheduled failure drill");
             return;
         }
 
         if (agent.steps % 5 == 0) {
-            ++agent.plans_requested;
+            ++agent.plansRequested;
             Plan plan = pi.Ask(agent, *this);
             Log(agent.name + " consults Pi on " + pi.host + ": " +
                 plan.summary);
-            if (plan.target_region) {
-                MoveAgent(agent, *plan.target_region, "Pi plan");
+            if (plan.targetRegion) {
+                MoveAgent(agent, *plan.targetRegion, "Pi plan");
                 return;
             }
         }
 
-        if ((tick_count + agent.id) % 11 == 0) {
-            const std::string current_host = HostForRegion(agent.region_name);
-            std::string next_region = agent.region_name;
+        if ((tickCount + agent.id) % 11 == 0) {
+            const std::string currentHost = HostForRegion(agent.regionName);
+            std::string nextRegion = agent.regionName;
             for (const auto& [name, region] : regions) {
-                if (region.host != current_host) {
-                    next_region = name;
+                if (region.host != currentHost) {
+                    nextRegion = name;
                     break;
                 }
             }
-            MoveAgent(agent, next_region, "autonomous patrol");
+            MoveAgent(agent, nextRegion, "autonomous patrol");
         }
     }
 
     void Tick() {
-        ++tick_count;
+        ++tickCount;
         UpdateHostLoad();
 
-        if (tick_count % 10 == 0) {
-            std::ostringstream load_line;
-            load_line << "Host load";
+        if (tickCount % 10 == 0) {
+            std::ostringstream loadLine;
+            loadLine << "Host load";
             for (const auto& [host, load] : host_load) {
-                load_line << ' ' << host << '=' << load;
+                loadLine << ' ' << host << '=' << load;
             }
-            Log(load_line.str());
+            Log(loadLine.str());
         }
 
-        for (auto& agent : agents) StepAgent(agent);
+        for (auto& agent : agents) {
+            StepAgent(agent);
+        }
 
-        if (tick_count % 20 == 0) Snapshot();
-        if (tick_count % 25 == 0) BalanceLoad();
-        if (tick_count == 60) SimulateFailure("NodeB", "NodeD");
+        if (tickCount % 20 == 0) {
+            Snapshot();
+        }
+        if (tickCount % 25 == 0) {
+            BalanceLoad();
+        }
+        if (tickCount == 60) {
+            SimulateFailure("NodeB", "NodeD");
+        }
     }
 
     void PrintSummary() const {
         std::cout << "\n=== Final Summary ===\n";
-        std::cout << "Ticks: " << tick_count << '\n';
+        std::cout << "Ticks: " << tickCount << '\n';
         std::cout << "Agents: " << agents.size() << '\n';
         for (const auto& agent : agents) {
-            std::cout << "  - " << agent.name << " region=" << agent.region_name
-                      << " host=" << HostForRegion(agent.region_name)
-                      << " steps=" << agent.steps
-                      << " plans=" << agent.plans_requested
-                      << " migrations=" << agent.migrations
-                      << " restored=" << (agent.restored ? "yes" : "no")
-                      << '\n';
+            std::cout << "  - " << agent.name << " region=" << agent.regionName
+                      << " host=" << HostForRegion(agent.regionName) << " steps=" << agent.steps
+                      << " plans=" << agent.plansRequested << " migrations=" << agent.migrations
+                      << " restored=" << (agent.restored ? "yes" : "no") << '\n';
         }
 
         std::cout << "\nRegion visits:\n";
@@ -315,44 +327,42 @@ struct World {
     }
 };
 
-Plan PiAssistant::Ask(const MobileAgent& agent, const World& world) const {
-    const std::string current_host = world.HostForRegion(agent.region_name);
-    const auto load_it = world.host_load.find(current_host);
-    const int current_load =
-        load_it == world.host_load.end() ? 0 : load_it->second;
+Plan PiAssistant::Ask(const MobileAgent& agent, const World& world)
+{
+    const std::string currentHost = world.HostForRegion(agent.regionName);
+    const auto loadIt = world.host_load.find(currentHost);
+    const int currentLoad = loadIt == world.host_load.end() ? 0 : loadIt->second;
 
-    if (agent.region_name == "Market" && world.tick_count >= 56 &&
-        world.tick_count <= 60) {
-        return Plan{
-            "hold position in Market so failure recovery can be tested",
-            std::nullopt};
+    if (agent.regionName == "Market" && world.tickCount >= 56 && world.tickCount <= 60) {
+        return Plan{.summary = "hold position in Market so failure recovery can be tested",
+                    .target_region = std::nullopt};
     }
 
-    if (agent.region_name == "Market") {
-        return Plan{"market congestion detected; re-route to Harbor",
-                    std::string("Harbor")};
+    if (agent.regionName == "Market") {
+        return Plan{.summary = "market congestion detected; re-route to Harbor",
+                    .target_region = std::string("Harbor")};
     }
 
-    if (current_load >= 4) {
-        return Plan{"host is saturated; move to backup capacity",
-                    world.RegionOnHost("NodeD", "Backup")};
+    if (currentLoad >= 4) {
+        return Plan{.summary = "host is saturated; move to backup capacity",
+                    .target_region = world.RegionOnHost("NodeD", "Backup")};
     }
 
-    return Plan{"continue local survey on " + agent.region_name, std::nullopt};
+    return Plan{.summary = "continue local survey on " + agent.regionName, .target_region = std::nullopt};
 }
 
 World CreateDemoWorld() {
     World world;
-    world.regions["Start"] = Region{"Start", "NodeA"};
-    world.regions["Market"] = Region{"Market", "NodeB"};
-    world.regions["Harbor"] = Region{"Harbor", "NodeC"};
-    world.regions["Backup"] = Region{"Backup", "NodeD"};
+    world.regions["Start"] = Region{.name = "Start", .host = "NodeA"};
+    world.regions["Market"] = Region{.name = "Market", .host = "NodeB"};
+    world.regions["Harbor"] = Region{.name = "Harbor", .host = "NodeC"};
+    world.regions["Backup"] = Region{.name = "Backup", .host = "NodeD"};
 
     for (int i = 0; i < 10; ++i) {
         MobileAgent agent;
         agent.id = i + 1;
         agent.name = "Agent_" + std::to_string(i + 1);
-        agent.region_name = (i < 4) ? "Start" : (i < 8) ? "Market" : "Harbor";
+        agent.regionName = (i < 4) ? "Start" : (i < 8) ? "Market" : "Harbor";
         world.agents.push_back(agent);
     }
 

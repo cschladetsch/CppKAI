@@ -6,28 +6,26 @@
 #include <string>
 
 KAI_BEGIN
-namespace LLM {
+namespace llm
+{
 
 struct RhoDatasetOptions {
     std::filesystem::path root;
-    std::filesystem::path output_root;
-    size_t max_records = 0;
-    size_t max_input_chars = 4096;
+    std::filesystem::path outputRoot;
+    size_t maxRecords = 0;
+    size_t maxInputChars = 4096;
 };
 
 class RhoDatasetBuilder {
    public:
     static std::filesystem::path DefaultOutputRoot();
 
-    static std::filesystem::path Build(const RhoDatasetOptions& options,
-                                       std::string* error_out = nullptr);
+    static std::filesystem::path Build(const RhoDatasetOptions& options, std::string* errorOut = nullptr);
 
-    static std::filesystem::path Build(std::filesystem::path root,
-                                       std::filesystem::path output_root = {},
-                                       size_t max_input_chars = 4096,
-                                       size_t max_records = 0,
-                                       std::string* error_out = nullptr);
+    static std::filesystem::path Build(std::filesystem::path root, std::filesystem::path outputRoot = {},
+                                       size_t maxInputChars = 4096, size_t maxRecords = 0,
+                                       std::string* errorOut = nullptr);
 };
 
-}  // namespace LLM
+} // namespace llm
 KAI_END

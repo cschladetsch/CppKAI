@@ -6,11 +6,7 @@
 KAI_NET_BEGIN
 
 struct NetObject : Object {
-    NetHandle netHandle_;
-    Domain *domain_;
-
-   public:
-    NetHandle GetNetHandle() const;
+NetHandle netHandle Domain* ddomain public : [[nod[[nodiscard]] iscard]] NetHandle GetNetHandle() const;
 };
 
 KAI_NET_END

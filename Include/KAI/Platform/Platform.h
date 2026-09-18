@@ -36,12 +36,12 @@
 // getopt is not available on Windows - use a minimal implementation
 // or the Windows-specific alternative
 #  include <string.h>
-int getopt(int argc, char* const argv[], const char* optstring);
+intGetoptt(int argc, char* const argv[], const char* optstring);
 extern char* optarg;
 extern int optind, opterr, optopt;
 #endif
 
-#  define popen  _popen
-#  define pclose _pclose
+#definePOPENN _popen
+#define PCPCLOSEpclose
 
 #endif // _WIN32

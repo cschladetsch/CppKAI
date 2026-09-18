@@ -2,8 +2,9 @@
 #include <memory>
 
 // Forward declarations to avoid including full headers
-namespace kai {
-namespace Memory {
+
+namespace kai::Memory
+{
 class IAllocator {
    public:
     virtual ~IAllocator() = default;
@@ -17,20 +18,19 @@ class StandardAllocator : public IAllocator {
 
     void DeAllocateBytes(void* ptr) override { ::operator delete(ptr); }
 };
-}  // namespace Memory
-}  // namespace kai
+} // namespace kai::Memory
 
 int main() {
-    std::cout << "Creating allocator..." << std::endl;
+    std::cout << "Creating allocator..." << '\n';
     auto alloc = std::make_shared<kai::Memory::StandardAllocator>();
-    std::cout << "Allocator created" << std::endl;
+    std::cout << "Allocator created" << '\n';
 
-    std::cout << "Allocating memory..." << std::endl;
+    std::cout << "Allocating memory..." << '\n';
     void* ptr = alloc->AllocateBytes(100);
-    std::cout << "Memory allocated" << std::endl;
+    std::cout << "Memory allocated" << '\n';
 
     alloc->DeAllocateBytes(ptr);
-    std::cout << "Memory freed" << std::endl;
+    std::cout << "Memory freed" << '\n';
 
     return 0;
 }

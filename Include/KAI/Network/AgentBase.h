@@ -6,7 +6,7 @@ KAI_NET_BEGIN
 
 struct AgentBase : Representative {
     explicit AgentBase(Node &node);
-    virtual ~AgentBase();
+    ~AgentBase() override;
 };
 
 KAI_NET_END
