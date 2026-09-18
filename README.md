@@ -208,6 +208,44 @@ result = acrossAllNodes(node, data, square)
 print(result)  // [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
 ```
 
+### Nested Futures (C++)
+
+`Future<T>` is a thin wrapper around a `shared_ptr<State<T>>`, so it nests
+cleanly: a `Future<Future<T>>` is just an outer future whose value happens
+to be another future. Resolving the outer future delivers the *inner*
+future object, not the inner value; the inner future can still be
+pending, and resolving it later is visible through any copy you already
+unwrapped, since the state is shared.
+
+```cpp
+using namespace kai::net;
+
+Future<int> inner;
+Future<Future<int>> outer;
+
+// Resolve the outer future first, carrying the still-pending inner future.
+outer.SetValue(inner);
+outer.SetResponse(ResponseType::Returned);
+outer.SetComplete(true);
+
+Future<int> unwrapped = outer.GetValue();
+assert(!unwrapped.IsComplete());  // inner is still pending
+
+// Resolving the original inner future is visible through the unwrapped copy.
+inner.SetValue(42);
+inner.SetResponse(ResponseType::Returned);
+inner.SetComplete(true);
+
+assert(unwrapped.IsComplete());
+assert(unwrapped.GetValue() == 42);
+```
+
+See `Test/Network/NestedFutureTest.cpp` and
+`Test/Network/NestedFutureParamTests.cpp` for the full test coverage of this
+pattern (22 tests). Note this covers the `Future<T>` class itself; nested
+futures as arguments across a network RPC call have not been verified and
+are a separate, unproven path.
+
 ## Getting Started
 
 ### Prerequisites
