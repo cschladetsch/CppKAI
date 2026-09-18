@@ -26,7 +26,7 @@ and language system.
 ## Core System Documentation
 
 ### Architecture
-- **[Architecure.md](Architecure.md)** - System architecture overview
+- **[Architecture.md](Architecture.md)** - System architecture overview
 - **[CommonLanguageSystem.md](CommonLanguageSystem.md)** - Language integration
 
 ### Networking

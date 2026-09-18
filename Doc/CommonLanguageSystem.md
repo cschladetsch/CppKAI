@@ -301,4 +301,4 @@ This architecture enables the full power of KAI: running distributed application
 - [Rho Language Tutorial](RhoTutorial.md)
 - [Tau Language Tutorial](TauTutorial.md)
 - [Language Guide](LanguageGuide.md)
-- [KAI Architecture](Architecure.md)
+- [KAI Architecture](Architecture.md)
