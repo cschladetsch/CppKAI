@@ -16,6 +16,7 @@ Claude outputs/
 /Build
 /_build*
 /[bB]uild*
+!/build.py
 /ninja_build*
 
 *.make
