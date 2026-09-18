@@ -15,6 +15,7 @@ project(TestNetwork)
         TauDomainPropertyTest.cpp
         ContinuationSerializationTest.cpp
 	NestedFutureTest.cpp
+        NestedFutureParamTests.cpp
         TauCodeGenParamTests.cpp
         NodeFutureNetworkParamTests.cpp
         # TestAgentProxy.cpp
