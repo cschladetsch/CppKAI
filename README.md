@@ -240,11 +240,15 @@ assert(unwrapped.IsComplete());
 assert(unwrapped.GetValue() == 42);
 ```
 
-See `Test/Network/NestedFutureTest.cpp` and
-`Test/Network/NestedFutureParamTests.cpp` for the full test coverage of this
-pattern (22 tests). Note this covers the `Future<T>` class itself; nested
-futures as arguments across a network RPC call have not been verified and
-are a separate, unproven path.
+Nesting isn't limited to one level either; `Future<Future<Future<T>>>`
+resolves the same way, one layer at a time, outside-in.
+
+See `Test/Network/NestedFutureTest.cpp`,
+`Test/Network/NestedFutureParamTests.cpp`, and
+`Test/Network/NestedFutureTripleTest.cpp` for the full test coverage of
+this pattern (24 tests). Note this covers the `Future<T>` class itself;
+nested futures as arguments across a network RPC call have not been
+verified and are a separate, unproven path.
 
 ## Getting Started
 

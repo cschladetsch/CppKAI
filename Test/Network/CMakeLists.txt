@@ -16,6 +16,7 @@ project(TestNetwork)
         ContinuationSerializationTest.cpp
 	NestedFutureTest.cpp
         NestedFutureParamTests.cpp
+        NestedFutureTripleTest.cpp
         TauCodeGenParamTests.cpp
         NodeFutureNetworkParamTests.cpp
         # TestAgentProxy.cpp
