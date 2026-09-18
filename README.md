@@ -135,9 +135,24 @@ See the full diagram: **[System Architecture Overview](resources/diagrams/system
 
 ### Languages
 
-- **Pi**: Stack-based RPN language inspired by Forth — prompt: `π`
-- **Rho**: Python-like infix language that compiles to Pi — prompt: `ρ`
-- **Tau**: Interface Definition Language (IDL) for network components
+KAI is built around three small languages with a deliberate division of labor, not one general-purpose language wearing three hats.
+
+- **Pi (π)**: The execution substrate. A minimal, imperative RPN stack language, inspired by Forth, prompt: `π`. The executor runs Pi directly; the data stack plus instruction pointer are the complete continuation state, nothing implicit is held elsewhere. That is what makes it possible to freeze a running computation, send it across the network, and resume it on a different executor with no data loss.
+- **Rho (ρ)**: The scripting layer. A structured, Python-like infix language, prompt: `ρ`, that compiles down to Pi bytecode. It exists so people do not have to write Pi by hand. For example:
+
+  ```rho
+  let a = 3
+  let b = 4
+  let c = a + b
+  ```
+
+  compiles to:
+
+  ```pi
+  3 4 +
+  // stack: [ 7 ]
+  ```
+- **Tau (τ)**: Interface Definition Language (IDL) for distributed object contracts across process boundaries. Tau is orthogonal to Pi and Rho, it describes the shape of a network interface rather than compiling into either of the other two.
 
 The prompt shows only the active language symbol. Command numbers remain
 available through `history` and `!n`; history persists in
