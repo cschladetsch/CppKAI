@@ -167,7 +167,8 @@ struct Node {
     // registered under via RegisterPendingFutureImport. Called once the far
     // side (or, for a same-process call, this same Node) reports that the
     // future has resolved. Safe to call with an unknown id (no-op).
-    void CompletePendingFutureImport(int futureId, const Object &value);
+    void CompletePendingFutureImport(int futureId, const Object &value,
+                                     ResponseType response);
 
     // Registers a completer for a still-pending Future<T> that this Node
     // received as a method argument, so that a later resolution (local or
@@ -178,15 +179,16 @@ struct Node {
     void RegisterPendingFutureImport(int futureId, Future<T> future) {
         if (futureId == 0) return;
         std::lock_guard<std::mutex> lock(futureImportMutex_);
-        pendingFutureImports_[futureId] = [future](const Object &value) mutable {
-            if constexpr (!std::is_void_v<T>) {
-                if (value.Exists()) {
-                    future.SetValue(ConstDeref<std::decay_t<T>>(value));
+        pendingFutureImports_[futureId] =
+            [future](const Object &value, ResponseType response) mutable {
+                if constexpr (!std::is_void_v<T>) {
+                    if (value.Exists()) {
+                        future.SetValue(ConstDeref<std::decay_t<T>>(value));
+                    }
                 }
-            }
-            future.SetResponse(ResponseType::Returned);
-            future.SetComplete(true);
-        };
+                future.SetResponse(response);
+                future.SetComplete(true);
+            };
     }
 
    private:
@@ -208,7 +210,7 @@ struct Node {
     // Sends a resolution notice for a future that was previously passed as
     // a still-pending method argument to `target` (see PackInvokeArg).
     void SendFutureResolution(const NetAddress &target, int futureId,
-                              const Object &value);
+                              const Object &value, ResponseType response);
     void ProcessFutureResolution(const NetPacket &packet);
 
     // Packs one Invoke() argument into an Object suitable for the args
@@ -219,8 +221,9 @@ struct Node {
     // eventually completes, the far side (or this same Node, for a local
     // call) gets told via `resolveSink(id, resolvedValueObject)`.
     template <typename T>
-    Object PackInvokeArg(T &&arg,
-                         std::function<void(int, const Object &)> resolveSink) {
+    Object PackInvokeArg(
+        T &&arg,
+        std::function<void(int, const Object &, ResponseType)> resolveSink) {
         using D = std::decay_t<T>;
         if constexpr (is_future_v<D>) {
             using U = future_value_t<D>;
@@ -245,7 +248,8 @@ struct Node {
                             valueObj = reg->New(*opt);
                         }
                     }
-                    if (resolveSink) resolveSink(id, valueObj);
+                    if (resolveSink)
+                        resolveSink(id, valueObj, arg.GetResponse());
                 });
             }
             return slot.GetObject();
@@ -302,7 +306,7 @@ struct Node {
     // Completers for still-pending Future<T> arguments this Node has
     // received (locally or over the network), keyed by the future's id.
     // See RegisterPendingFutureImport / CompletePendingFutureImport.
-    std::unordered_map<int, std::function<void(const Object &)>>
+    std::unordered_map<int, std::function<void(const Object &, ResponseType)>>
         pendingFutureImports_;
     std::mutex futureImportMutex_;
 
@@ -538,9 +542,10 @@ Future<R> Node::Invoke(NetHandle handle, const std::string &name,
             // Same-process call: a pending Future<T> argument's resolution
             // is completed directly against this same Node's pending-import
             // table, no network round trip needed.
-            std::function<void(int, const Object &)> localResolveSink =
-                [this](int futureId, const Object &value) {
-                    CompletePendingFutureImport(futureId, value);
+            std::function<void(int, const Object &, ResponseType)>
+                localResolveSink = [this](int futureId, const Object &value,
+                                          ResponseType response) {
+                    CompletePendingFutureImport(futureId, value, response);
                 };
             if constexpr (sizeof...(Args) > 0) {
                 (packedArgs.emplace_back(
@@ -577,9 +582,11 @@ Future<R> Node::Invoke(NetHandle handle, const std::string &name,
     Value<Array> argsArray = registry_->New<Array>();
     // Remote call: a pending Future<T> argument's resolution has to cross
     // the network back to whichever peer hosts `handle`.
-    std::function<void(int, const Object &)> remoteResolveSink =
-        [this, handle](int futureId, const Object &value) {
-            SendFutureResolution(RouteAddress(handle), futureId, value);
+    std::function<void(int, const Object &, ResponseType)> remoteResolveSink =
+        [this, handle](int futureId, const Object &value,
+                       ResponseType response) {
+            SendFutureResolution(RouteAddress(handle), futureId, value,
+                                 response);
         };
     if constexpr (sizeof...(Args) > 0) {
         (argsArray->Append(PackInvokeArg(std::forward<Args>(args),

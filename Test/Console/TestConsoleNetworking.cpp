@@ -362,8 +362,17 @@ TEST_F(ConsoleNetworkingTest, CrossLanguageCommunication) {
 
     EXPECT_TRUE(WaitForMessages(1, 1, 2000));
 
-    // Verify Pi command executed correctly on console1
-    string stack1 = console1_->WriteStack().c_str();
+    // Verify Pi command executed correctly on console1. Incoming network
+    // commands are applied to a per-sender stack (see SendCommandToPeer /
+    // BroadcastCommand above), not the console's own local WriteStack(), so
+    // capture the sender's connection id from the message history first.
+    std::string remoteConsoleId;
+    {
+        lock_guard<mutex> lock(messagesMutex_);
+        ASSERT_GE(messages1_.size(), 1);
+        remoteConsoleId = messages1_.back().senderId;
+    }
+    std::string stack1 = console1_->WriteStackForPeer(remoteConsoleId).c_str();
     EXPECT_TRUE(stack1.find("7") != string::npos);
 
     // Send Rho command from console1 (Pi) to console2 (Rho) - this should work

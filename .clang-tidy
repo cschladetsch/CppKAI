@@ -1,0 +1,96 @@
+---
+# Sensible general-purpose check set. Trimmed of the noisiest/most
+# opinionated modernize- and cppcoreguidelines- checks that fight a
+# codebase like KAI's rather than help it. Adjust as it settles in.
+Checks: >
+  -*,
+  bugprone-*,
+  -bugprone-easily-swappable-parameters,
+  clang-analyzer-*,
+  cppcoreguidelines-*,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -cppcoreguidelines-pro-type-reinterpret-cast,
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+  -cppcoreguidelines-non-private-member-variables-in-classes,
+  modernize-*,
+  -modernize-use-trailing-return-type,
+  performance-*,
+  portability-*,
+  readability-*,
+  -readability-magic-numbers,
+  -readability-identifier-length,
+  -readability-uppercase-literal-suffix
+
+WarningsAsErrors: ''
+HeaderFilterRegex: '.*'
+FormatStyle: file
+
+CheckOptions:
+  # --- Naming conventions ---
+  # Private/protected member fields: trailing underscore, camelCase base.
+  - key: readability-identifier-naming.PrivateMemberCase
+    value: camelBack
+  - key: readability-identifier-naming.PrivateMemberSuffix
+    value: _
+  - key: readability-identifier-naming.ProtectedMemberCase
+    value: camelBack
+  - key: readability-identifier-naming.ProtectedMemberSuffix
+    value: _
+  - key: readability-identifier-naming.PublicMemberCase
+    value: camelBack
+
+  # Methods/functions: UpperCamelCase.
+  - key: readability-identifier-naming.MethodCase
+    value: CamelCase
+  - key: readability-identifier-naming.FunctionCase
+    value: CamelCase
+
+  # Classes/structs/enums: UpperCamelCase.
+  - key: readability-identifier-naming.ClassCase
+    value: CamelCase
+  - key: readability-identifier-naming.StructCase
+    value: CamelCase
+  - key: readability-identifier-naming.EnumCase
+    value: CamelCase
+  - key: readability-identifier-naming.EnumConstantCase
+    value: CamelCase
+  - key: readability-identifier-naming.UnionCase
+    value: CamelCase
+
+  # Template parameters: UpperCamelCase (T, Container, etc).
+  - key: readability-identifier-naming.TemplateParameterCase
+    value: CamelCase
+
+  # Namespaces: lower_case.
+  - key: readability-identifier-naming.NamespaceCase
+    value: lower_case
+
+  # Local variables and parameters: camelBack.
+  - key: readability-identifier-naming.VariableCase
+    value: camelBack
+  - key: readability-identifier-naming.ParameterCase
+    value: camelBack
+
+  # Constants and static/global constants: kCamelCase.
+  - key: readability-identifier-naming.ConstantCase
+    value: camelBack
+  - key: readability-identifier-naming.GlobalConstantCase
+    value: CamelCase
+  - key: readability-identifier-naming.GlobalConstantPrefix
+    value: k
+  - key: readability-identifier-naming.StaticConstantCase
+    value: CamelCase
+  - key: readability-identifier-naming.StaticConstantPrefix
+    value: k
+
+  # Macros: UPPER_CASE.
+  - key: readability-identifier-naming.MacroDefinitionCase
+    value: UPPER_CASE
+
+  # --- Other sensible tuning ---
+  - key: readability-function-cognitive-complexity.Threshold
+    value: 50
+  - key: cppcoreguidelines-avoid-do-while.IgnoreMacros
+    value: true
+  - key: modernize-use-nullptr.NullMacros
+    value: 'NULL'

@@ -632,8 +632,9 @@ void Node::ProcessFunctionResponse(const NetPacket &packet) {
     }
 }
 
-void Node::CompletePendingFutureImport(int futureId, const Object &value) {
-    std::function<void(const Object &)> completer;
+void Node::CompletePendingFutureImport(int futureId, const Object &value,
+                                       ResponseType response) {
+    std::function<void(const Object &, ResponseType)> completer;
     {
         std::lock_guard<std::mutex> lock(futureImportMutex_);
         auto it = pendingFutureImports_.find(futureId);
@@ -644,18 +645,19 @@ void Node::CompletePendingFutureImport(int futureId, const Object &value) {
         pendingFutureImports_.erase(it);
     }
     if (completer) {
-        completer(value);
+        completer(value, response);
     }
 }
 
 void Node::SendFutureResolution(const NetAddress &target, int futureId,
-                                const Object &value) {
+                                const Object &value, ResponseType response) {
     if (!peer_ || !isRunning_) return;
 
     BinaryStream bs;
     bs.Write(
         static_cast<unsigned char>(NetworkSerializer::ID_KAI_FUTURE_RESOLVE));
     bs.Write(futureId);
+    bs.Write(static_cast<int>(response));
     if (!NetworkSerializer::SerializeObject(bs, value)) {
         NetworkLogger::LogMessage(
             "SendFutureResolution: failed to serialize value for future " +
@@ -682,13 +684,16 @@ void Node::ProcessFutureResolution(const NetPacket &packet) {
 
     unsigned char msgId = 0;
     int futureId = 0;
-    if (!stream.Read(msgId) || !stream.Read(futureId)) {
+    int responseValue = 0;
+    if (!stream.Read(msgId) || !stream.Read(futureId) ||
+        !stream.Read(responseValue)) {
         NetworkLogger::LogMessage("Failed to read future resolution header");
         return;
     }
 
     Object value = NetworkSerializer::DeserializeObject(stream, *registry_);
-    CompletePendingFutureImport(futureId, value);
+    CompletePendingFutureImport(futureId, value,
+                                static_cast<ResponseType>(responseValue));
 }
 
 void Node::SendFunctionCall(NetHandle handle, const std::string &name,

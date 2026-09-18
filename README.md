@@ -1,6 +1,5 @@
 # KAI - Distributed Object Model for C++ ![Image](Images/kai_logo.png)
 
-[![Build status](https://ci.appveyor.com/api/projects/status/github/cschladetsch/CppKAI?svg=true)](https://ci.appveyor.com/project/cschladetsch/cppkai)
 [![CodeFactor](https://www.codefactor.io/repository/github/cschladetsch/cppkai/badge)](https://www.codefactor.io/repository/github/cschladetsch/cppkai)
 [![License](https://img.shields.io/github/license/cschladetsch/CppKAI.svg?label=License&maxAge=86400)](./LICENSE)
 

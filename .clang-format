@@ -1,5 +1,53 @@
-BasedOnStyle: Google
+# K&R style, 4-space indentation, space after control keywords.
+Language: Cpp
+BasedOnStyle: LLVM
+
 IndentWidth: 4
 TabWidth: 4
 UseTab: Never
+ColumnLimit: 120
 
+# K&R: opening brace on same line as function/control statement,
+# closing brace starts its own line.
+BreakBeforeBraces: Linux
+
+# 'Linux' variant of K&R keeps case labels unindented from switch;
+# flip this if you want them indented instead.
+IndentCaseLabels: true
+
+# Space after if/for/while/switch/catch, none between function name and '('.
+SpaceBeforeParens: ControlStatements
+SpaceAfterCStyleCast: true
+SpaceAfterLogicalNot: false
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeRangeBasedForLoopColon: true
+
+# Pointers/references bound to the type, not the variable: int* p, not int *p.
+PointerAlignment: Left
+ReferenceAlignment: Left
+
+# Sensible defaults for a modern C++ codebase.
+AccessModifierOffset: -4
+NamespaceIndentation: None
+AlignAfterOpenBracket: Align
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+AlignTrailingComments: true
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortBlocksOnASingleLine: false
+BinPackArguments: true
+BinPackParameters: true
+BreakConstructorInitializers: BeforeColon
+Cpp11BracedListStyle: true
+DerivePointerAlignment: false
+FixNamespaceComments: true
+IndentPPDirectives: None
+KeepEmptyLinesAtTheStartOfBlocks: false
+MaxEmptyLinesToKeep: 1
+SortIncludes: false
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+SpacesInAngles: false
+Standard: c++20
