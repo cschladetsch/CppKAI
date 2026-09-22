@@ -4,6 +4,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 // This demonstrates the advanced chat features from our tests
@@ -18,8 +19,7 @@ struct ChannelInfo {
     int memberCount;
 
     ChannelInfo() : memberCount(0) {}
-    ChannelInfo(const std::string& n, const std::string& h)
-        : name(n), host(h), memberCount(1) {}
+    ChannelInfo(std::string n, std::string h) : name(std::move(n)), host(std::move(h)), memberCount(1) {}
 };
 
 // Chat message with metadata
@@ -29,9 +29,10 @@ struct ChatMessage {
     std::string sender;
     std::string content;
 
-    ChatMessage(MessageType t, const std::string& ch, const std::string& s,
-                const std::string& c)
-        : type(t), channel(ch), sender(s), content(c) {}
+    ChatMessage(MessageType t, std::string ch, std::string s, std::string c)
+        : type(t), channel(std::move(ch)), sender(std::move(s)), content(std::move(c))
+    {
+    }
 };
 
 // Advanced chat implementation with events
@@ -45,42 +46,48 @@ class AdvancedChat {
 
    public:
     // Event callbacks
-    std::function<void(ChatMessage)> onMessageReceived_;
-    std::function<void(std::string)> onUserJoined_;
-    std::function<void(std::string)> onUserLeft_;
-    std::function<void(ChannelInfo)> onChannelDiscovered_;
+       std::function<void(ChatMessage)> onMessageReceived;
+       std::function<void(std::string)> onUserJoined;
+       std::function<void(std::string)> onUserLeft;
+       std::function<void(ChannelInfo)> onChannelDiscovered;
 
-    AdvancedChat(const std::string& name) : username_(name) {}
+       AdvancedChat(std::string name) : username_(std::move(name)) {}
 
-    // Publish (create) a new channel
-    bool Publish(const std::string& channelName) {
-        if (channelName.empty() || username_.empty()) return false;
+       // Publish (create) a new channel
+       bool Publish(const std::string& channelName)
+       {
+           if (channelName.empty() || username_.empty()) {
+               return false;
+           }
 
-        // Leave current channel if any
-        if (!currentChannel_.empty()) Leave();
+           // Leave current channel if any
+           if (!currentChannel_.empty()) {
+               Leave();
+           }
 
-        currentChannel_ = channelName;
-        isHost_ = true;
-        channelUsers_.clear();
-        channelUsers_.push_back(username_);
+           currentChannel_ = channelName;
+           isHost_ = true;
+           channelUsers_.clear();
+           channelUsers_.push_back(username_);
 
-        // Add to available channels
-        ChannelInfo info(channelName, username_);
-        availableChannels_[channelName] = info;
+           // Add to available channels
+           ChannelInfo info(channelName, username_);
+           availableChannels_[channelName] = info;
 
-        // Trigger discovery event
-        if (onChannelDiscovered_) {
-            onChannelDiscovered_(info);
-        }
+           // Trigger discovery event
+           if (onChannelDiscovered) {
+               onChannelDiscovered(info);
+           }
 
-        std::cout << "[SYSTEM] " << username_ << " created channel '"
-                  << channelName << "'\n";
-        return true;
-    }
+           std::cout << "[SYSTEM] " << username_ << " created channel '" << channelName << "'\n";
+           return true;
+       }
 
     // Enter (join) an existing channel
     bool Enter(const std::string& channelName) {
-        if (channelName.empty() || username_.empty()) return false;
+        if (channelName.empty() || username_.empty()) {
+            return false;
+        }
 
         // Check if channel exists
         auto it = availableChannels_.find(channelName);
@@ -90,7 +97,9 @@ class AdvancedChat {
         }
 
         // Leave current channel if any
-        if (!currentChannel_.empty()) Leave();
+        if (!currentChannel_.empty()) {
+            Leave();
+        }
 
         currentChannel_ = channelName;
         isHost_ = false;
@@ -100,8 +109,12 @@ class AdvancedChat {
         // Notify others
         ChatMessage joinMsg(MessageType::Join, channelName, username_,
                             username_ + " joined the channel");
-        if (onMessageReceived_) onMessageReceived_(joinMsg);
-        if (onUserJoined_) onUserJoined_(username_);
+        if (onMessageReceived) {
+            onMessageReceived(joinMsg);
+        }
+        if (onUserJoined) {
+            onUserJoined(username_);
+        }
 
         std::cout << "[SYSTEM] " << username_ << " joined channel '"
                   << channelName << "'\n";
@@ -117,7 +130,9 @@ class AdvancedChat {
         }
 
         ChatMessage msg(MessageType::Text, currentChannel_, username_, message);
-        if (onMessageReceived_) onMessageReceived_(msg);
+        if (onMessageReceived) {
+            onMessageReceived(msg);
+        }
 
         std::cout << "[" << currentChannel_ << "] " << username_ << ": "
                   << message << "\n";
@@ -125,7 +140,9 @@ class AdvancedChat {
 
     // Leave current channel
     void Leave() {
-        if (currentChannel_.empty()) return;
+        if (currentChannel_.empty()) {
+            return;
+        }
 
         std::cout << "[SYSTEM] " << username_ << " left channel '"
                   << currentChannel_ << "'\n";
@@ -133,8 +150,12 @@ class AdvancedChat {
         // Notify others
         ChatMessage leaveMsg(MessageType::Leave, currentChannel_, username_,
                              username_ + " left the channel");
-        if (onMessageReceived_) onMessageReceived_(leaveMsg);
-        if (onUserLeft_) onUserLeft_(username_);
+        if (onMessageReceived) {
+            onMessageReceived(leaveMsg);
+        }
+        if (onUserLeft) {
+            onUserLeft(username_);
+        }
 
         // If host, remove channel
         if (isHost_) {
@@ -157,6 +178,7 @@ class AdvancedChat {
     // Discover available channels
     std::vector<ChannelInfo> Discover() {
         std::vector<ChannelInfo> channels;
+        channels.reserve(availableChannels_.size());
         for (const auto& pair : availableChannels_) {
             channels.push_back(pair.second);
         }
@@ -168,7 +190,9 @@ class AdvancedChat {
 
     // Console command handler
     void HandleCommand(const std::string& input) {
-        if (input.empty()) return;
+        if (input.empty()) {
+            return;
+        }
 
         // Parse command
         if (input[0] == '/') {
@@ -211,8 +235,9 @@ class AdvancedChat {
                     std::cout << "\nUsers in '" << currentChannel_ << "':\n";
                     for (const auto& user : userList) {
                         std::cout << "  - " << user;
-                        if (isHost_ && user == username_)
+                        if (isHost_ && user == username_) {
                             std::cout << " (host)";
+                        }
                         std::cout << "\n";
                     }
                     std::cout << "\n";
@@ -234,7 +259,7 @@ int main() {
     auto chat = std::make_unique<AdvancedChat>("");
 
     // Set up event handlers
-    chat->onMessageReceived_ = [](ChatMessage msg) {
+    chat->onMessageReceived = [](const ChatMessage& msg) {
         if (msg.type == MessageType::Join) {
             std::cout << "[EVENT] User joined: " << msg.sender << "\n";
         } else if (msg.type == MessageType::Leave) {
@@ -242,7 +267,7 @@ int main() {
         }
     };
 
-    chat->onChannelDiscovered_ = [](ChannelInfo info) {
+    chat->onChannelDiscovered = [](const ChannelInfo& info) {
         std::cout << "[EVENT] New channel discovered: " << info.name << "\n";
     };
 

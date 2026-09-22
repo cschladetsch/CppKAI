@@ -48,1885 +48,989 @@
  * cout << COLOR_BLUE_BLACK << "TEXT" << COLOR_NORMAL << endl;
  * cout << COLOR_BOLD_YELLOW_CYAN << "TEXT" << COLOR_NORMAL << endl;
  * */
-const char COLOR_NORMAL[] = {0x1b, '[', '0', ';', '3', '9', 'm', 0};
-const char COLOR_NORMAL_COLOREND[] = {0x1b, '[', '0', ';', '3', '9', 'm', 0};
-const char COLOR_ATTRIBUTES_OFF[] = {0x1b, '[', '0', 'm', 0};
-const char COLOR_BOLD[] = {0x1b, '[', '1', 'm', 0};
-const char COLOR_UNDERSCORE[] = {0x1b, '[', '4', 'm', 0};
-const char COLOR_BLINK[] = {0x1b, '[', '5', 'm', 0};
-const char COLOR_REVERSEVIDEO[] = {0x1b, '[', '7', 'm', 0};
-const char COLOR_CONCEALED[] = {0x1b, '[', '8', 'm', 0};
-const char COLOR_BLACK_BLACK[] = {0x1b, '[', '3', '0', ';', '4', '0', 'm', 0};
-const char COLOR_BLACK_RED[] = {0x1b, '[', '3', '0', ';', '4', '1', 'm', 0};
-const char COLOR_BLACK_GREEN[] = {0x1b, '[', '3', '0', ';', '4', '2', 'm', 0};
-const char COLOR_BLACK_YELLOW[] = {0x1b, '[', '3', '0', ';', '4', '3', 'm', 0};
-const char COLOR_BLACK_BLUE[] = {0x1b, '[', '3', '0', ';', '4', '4', 'm', 0};
-const char COLOR_BLACK_MAGENTA[] = {0x1b, '[', '3', '0', ';', '4', '5', 'm', 0};
-const char COLOR_BLACK_CYAN[] = {0x1b, '[', '3', '0', ';', '4', '6', 'm', 0};
-const char COLOR_BLACK_WHITE[] = {0x1b, '[', '3', '0', ';', '4', '7', 'm', 0};
-const char COLOR_BLACK_NORMAL[] = {0x1b, '[', '3', '0', ';', '4', '9', 'm', 0};
-const char COLOR_RED_BLACK[] = {0x1b, '[', '3', '1', ';', '4', '0', 'm', 0};
-const char COLOR_RED_RED[] = {0x1b, '[', '3', '1', ';', '4', '1', 'm', 0};
-const char COLOR_RED_GREEN[] = {0x1b, '[', '3', '1', ';', '4', '2', 'm', 0};
-const char COLOR_RED_YELLOW[] = {0x1b, '[', '3', '1', ';', '4', '3', 'm', 0};
-const char COLOR_RED_BLUE[] = {0x1b, '[', '3', '1', ';', '4', '4', 'm', 0};
-const char COLOR_RED_MAGENTA[] = {0x1b, '[', '3', '1', ';', '4', '5', 'm', 0};
-const char COLOR_RED_CYAN[] = {0x1b, '[', '3', '1', ';', '4', '6', 'm', 0};
-const char COLOR_RED_WHITE[] = {0x1b, '[', '3', '1', ';', '4', '7', 'm', 0};
-const char COLOR_RED_NORMAL[] = {0x1b, '[', '3', '1', ';', '4', '9', 'm', 0};
-const char COLOR_GREEN_BLACK[] = {0x1b, '[', '3', '2', ';', '4', '0', 'm', 0};
-const char COLOR_GREEN_RED[] = {0x1b, '[', '3', '2', ';', '4', '1', 'm', 0};
-const char COLOR_GREEN_GREEN[] = {0x1b, '[', '3', '2', ';', '4', '2', 'm', 0};
-const char COLOR_GREEN_YELLOW[] = {0x1b, '[', '3', '2', ';', '4', '3', 'm', 0};
-const char COLOR_GREEN_BLUE[] = {0x1b, '[', '3', '2', ';', '4', '4', 'm', 0};
-const char COLOR_GREEN_MAGENTA[] = {0x1b, '[', '3', '2', ';', '4', '5', 'm', 0};
-const char COLOR_GREEN_CYAN[] = {0x1b, '[', '3', '2', ';', '4', '6', 'm', 0};
-const char COLOR_GREEN_WHITE[] = {0x1b, '[', '3', '2', ';', '4', '7', 'm', 0};
-const char COLOR_GREEN_NORMAL[] = {0x1b, '[', '3', '2', ';', '4', '9', 'm', 0};
-const char COLOR_YELLOW_BLACK[] = {0x1b, '[', '3', '3', ';', '4', '0', 'm', 0};
-const char COLOR_YELLOW_RED[] = {0x1b, '[', '3', '3', ';', '4', '1', 'm', 0};
-const char COLOR_YELLOW_GREEN[] = {0x1b, '[', '3', '3', ';', '4', '2', 'm', 0};
-const char COLOR_YELLOW_YELLOW[] = {0x1b, '[', '3', '3', ';', '4', '3', 'm', 0};
-const char COLOR_YELLOW_BLUE[] = {0x1b, '[', '3', '3', ';', '4', '4', 'm', 0};
-const char COLOR_YELLOW_MAGENTA[] = {0x1b, '[', '3', '3', ';',
-                                     '4',  '5', 'm', 0};
-const char COLOR_YELLOW_CYAN[] = {0x1b, '[', '3', '3', ';', '4', '6', 'm', 0};
-const char COLOR_YELLOW_WHITE[] = {0x1b, '[', '3', '3', ';', '4', '7', 'm', 0};
-const char COLOR_YELLOW_NORMAL[] = {0x1b, '[', '3', '3', ';', '4', '9', 'm', 0};
-const char COLOR_BLUE_BLACK[] = {0x1b, '[', '3', '4', ';', '4', '0', 'm', 0};
-const char COLOR_BLUE_RED[] = {0x1b, '[', '3', '4', ';', '4', '1', 'm', 0};
-const char COLOR_BLUE_GREEN[] = {0x1b, '[', '3', '4', ';', '4', '2', 'm', 0};
-const char COLOR_BLUE_YELLOW[] = {0x1b, '[', '3', '4', ';', '4', '3', 'm', 0};
-const char COLOR_BLUE_BLUE[] = {0x1b, '[', '3', '4', ';', '4', '4', 'm', 0};
-const char COLOR_BLUE_MAGENTA[] = {0x1b, '[', '3', '4', ';', '4', '5', 'm', 0};
-const char COLOR_BLUE_CYAN[] = {0x1b, '[', '3', '4', ';', '4', '6', 'm', 0};
-const char COLOR_BLUE_WHITE[] = {0x1b, '[', '3', '4', ';', '4', '7', 'm', 0};
-const char COLOR_BLUE_NORMAL[] = {0x1b, '[', '3', '4', ';', '4', '9', 'm', 0};
-const char COLOR_MAGENTA_BLACK[] = {0x1b, '[', '3', '5', ';', '4', '0', 'm', 0};
-const char COLOR_MAGENTA_RED[] = {0x1b, '[', '3', '5', ';', '4', '1', 'm', 0};
-const char COLOR_MAGENTA_GREEN[] = {0x1b, '[', '3', '5', ';', '4', '2', 'm', 0};
-const char COLOR_MAGENTA_YELLOW[] = {0x1b, '[', '3', '5', ';',
-                                     '4',  '3', 'm', 0};
-const char COLOR_MAGENTA_BLUE[] = {0x1b, '[', '3', '5', ';', '4', '4', 'm', 0};
-const char COLOR_MAGENTA_MAGENTA[] = {0x1b, '[', '3', '5', ';',
-                                      '4',  '5', 'm', 0};
-const char COLOR_MAGENTA_CYAN[] = {0x1b, '[', '3', '5', ';', '4', '6', 'm', 0};
-const char COLOR_MAGENTA_WHITE[] = {0x1b, '[', '3', '5', ';', '4', '7', 'm', 0};
-const char COLOR_MAGENTA_NORMAL[] = {0x1b, '[', '3', '5', ';',
-                                     '4',  '9', 'm', 0};
-const char COLOR_CYAN_BLACK[] = {0x1b, '[', '3', '6', ';', '4', '0', 'm', 0};
-const char COLOR_CYAN_RED[] = {0x1b, '[', '3', '6', ';', '4', '1', 'm', 0};
-const char COLOR_CYAN_GREEN[] = {0x1b, '[', '3', '6', ';', '4', '2', 'm', 0};
-const char COLOR_CYAN_YELLOW[] = {0x1b, '[', '3', '6', ';', '4', '3', 'm', 0};
-const char COLOR_CYAN_BLUE[] = {0x1b, '[', '3', '6', ';', '4', '4', 'm', 0};
-const char COLOR_CYAN_MAGENTA[] = {0x1b, '[', '3', '6', ';', '4', '5', 'm', 0};
-const char COLOR_CYAN_CYAN[] = {0x1b, '[', '3', '6', ';', '4', '6', 'm', 0};
-const char COLOR_CYAN_WHITE[] = {0x1b, '[', '3', '6', ';', '4', '7', 'm', 0};
-const char COLOR_CYAN_NORMAL[] = {0x1b, '[', '3', '6', ';', '4', '9', 'm', 0};
-const char COLOR_WHITE_BLACK[] = {0x1b, '[', '3', '7', ';', '4', '0', 'm', 0};
-const char COLOR_WHITE_RED[] = {0x1b, '[', '3', '7', ';', '4', '1', 'm', 0};
-const char COLOR_WHITE_GREEN[] = {0x1b, '[', '3', '7', ';', '4', '2', 'm', 0};
-const char COLOR_WHITE_YELLOW[] = {0x1b, '[', '3', '7', ';', '4', '3', 'm', 0};
-const char COLOR_WHITE_BLUE[] = {0x1b, '[', '3', '7', ';', '4', '4', 'm', 0};
-const char COLOR_WHITE_MAGENTA[] = {0x1b, '[', '3', '7', ';', '4', '5', 'm', 0};
-const char COLOR_WHITE_CYAN[] = {0x1b, '[', '3', '7', ';', '4', '6', 'm', 0};
-const char COLOR_WHITE_WHITE[] = {0x1b, '[', '3', '7', ';', '4', '7', 'm', 0};
-const char COLOR_WHITE_NORMAL[] = {0x1b, '[', '3', '7', ';', '4', '9', 'm', 0};
-const char COLOR_NORMAL_BLACK[] = {0x1b, '[', '3', '9', ';', '4', '0', 'm', 0};
-const char COLOR_NORMAL_RED[] = {0x1b, '[', '3', '9', ';', '4', '1', 'm', 0};
-const char COLOR_NORMAL_GREEN[] = {0x1b, '[', '3', '9', ';', '4', '2', 'm', 0};
-const char COLOR_NORMAL_YELLOW[] = {0x1b, '[', '3', '9', ';', '4', '3', 'm', 0};
-const char COLOR_NORMAL_BLUE[] = {0x1b, '[', '3', '9', ';', '4', '4', 'm', 0};
-const char COLOR_NORMAL_MAGENTA[] = {0x1b, '[', '3', '9', ';',
-                                     '4',  '5', 'm', 0};
-const char COLOR_NORMAL_CYAN[] = {0x1b, '[', '3', '9', ';', '4', '6', 'm', 0};
-const char COLOR_NORMAL_WHITE[] = {0x1b, '[', '3', '9', ';', '4', '7', 'm', 0};
-const char COLOR_NORMAL_NORMAL[] = {0x1b, '[', '3', '9', ';', '4', '9', 'm', 0};
-const char COLOR_BOLD_BLACK_BLACK[] = {0x1b, '[', '1', ';', '3', '0',
-                                       ';',  '4', '0', 'm', 0};
-const char COLOR_BOLD_BLACK_RED[] = {0x1b, '[', '1', ';', '3', '0',
-                                     ';',  '4', '1', 'm', 0};
-const char COLOR_BOLD_BLACK_GREEN[] = {0x1b, '[', '1', ';', '3', '0',
-                                       ';',  '4', '2', 'm', 0};
-const char COLOR_BOLD_BLACK_YELLOW[] = {0x1b, '[', '1', ';', '3', '0',
-                                        ';',  '4', '3', 'm', 0};
-const char COLOR_BOLD_BLACK_BLUE[] = {0x1b, '[', '1', ';', '3', '0',
-                                      ';',  '4', '4', 'm', 0};
-const char COLOR_BOLD_BLACK_MAGENTA[] = {0x1b, '[', '1', ';', '3', '0',
-                                         ';',  '4', '5', 'm', 0};
-const char COLOR_BOLD_BLACK_CYAN[] = {0x1b, '[', '1', ';', '3', '0',
-                                      ';',  '4', '6', 'm', 0};
-const char COLOR_BOLD_BLACK_WHITE[] = {0x1b, '[', '1', ';', '3', '0',
-                                       ';',  '4', '7', 'm', 0};
-const char COLOR_BOLD_BLACK_NORMAL[] = {0x1b, '[', '1', ';', '3', '0',
-                                        ';',  '4', '9', 'm', 0};
-const char COLOR_BOLD_RED_BLACK[] = {0x1b, '[', '1', ';', '3', '1',
-                                     ';',  '4', '0', 'm', 0};
-const char COLOR_BOLD_RED_RED[] = {0x1b, '[', '1', ';', '3', '1',
-                                   ';',  '4', '1', 'm', 0};
-const char COLOR_BOLD_RED_GREEN[] = {0x1b, '[', '1', ';', '3', '1',
-                                     ';',  '4', '2', 'm', 0};
-const char COLOR_BOLD_RED_YELLOW[] = {0x1b, '[', '1', ';', '3', '1',
-                                      ';',  '4', '3', 'm', 0};
-const char COLOR_BOLD_RED_BLUE[] = {0x1b, '[', '1', ';', '3', '1',
-                                    ';',  '4', '4', 'm', 0};
-const char COLOR_BOLD_RED_MAGENTA[] = {0x1b, '[', '1', ';', '3', '1',
-                                       ';',  '4', '5', 'm', 0};
-const char COLOR_BOLD_RED_CYAN[] = {0x1b, '[', '1', ';', '3', '1',
-                                    ';',  '4', '6', 'm', 0};
-const char COLOR_BOLD_RED_WHITE[] = {0x1b, '[', '1', ';', '3', '1',
-                                     ';',  '4', '7', 'm', 0};
-const char COLOR_BOLD_RED_NORMAL[] = {0x1b, '[', '1', ';', '3', '1',
-                                      ';',  '4', '9', 'm', 0};
-const char COLOR_BOLD_GREEN_BLACK[] = {0x1b, '[', '1', ';', '3', '2',
-                                       ';',  '4', '0', 'm', 0};
-const char COLOR_BOLD_GREEN_RED[] = {0x1b, '[', '1', ';', '3', '2',
-                                     ';',  '4', '1', 'm', 0};
-const char COLOR_BOLD_GREEN_GREEN[] = {0x1b, '[', '1', ';', '3', '2',
-                                       ';',  '4', '2', 'm', 0};
-const char COLOR_BOLD_GREEN_YELLOW[] = {0x1b, '[', '1', ';', '3', '2',
-                                        ';',  '4', '3', 'm', 0};
-const char COLOR_BOLD_GREEN_BLUE[] = {0x1b, '[', '1', ';', '3', '2',
-                                      ';',  '4', '4', 'm', 0};
-const char COLOR_BOLD_GREEN_MAGENTA[] = {0x1b, '[', '1', ';', '3', '2',
-                                         ';',  '4', '5', 'm', 0};
-const char COLOR_BOLD_GREEN_CYAN[] = {0x1b, '[', '1', ';', '3', '2',
-                                      ';',  '4', '6', 'm', 0};
-const char COLOR_BOLD_GREEN_WHITE[] = {0x1b, '[', '1', ';', '3', '2',
-                                       ';',  '4', '7', 'm', 0};
-const char COLOR_BOLD_GREEN_NORMAL[] = {0x1b, '[', '1', ';', '3', '2',
-                                        ';',  '4', '9', 'm', 0};
-const char COLOR_BOLD_YELLOW_BLACK[] = {0x1b, '[', '1', ';', '3', '3',
-                                        ';',  '4', '0', 'm', 0};
-const char COLOR_BOLD_YELLOW_RED[] = {0x1b, '[', '1', ';', '3', '3',
-                                      ';',  '4', '1', 'm', 0};
-const char COLOR_BOLD_YELLOW_GREEN[] = {0x1b, '[', '1', ';', '3', '3',
-                                        ';',  '4', '2', 'm', 0};
-const char COLOR_BOLD_YELLOW_YELLOW[] = {0x1b, '[', '1', ';', '3', '3',
-                                         ';',  '4', '3', 'm', 0};
-const char COLOR_BOLD_YELLOW_BLUE[] = {0x1b, '[', '1', ';', '3', '3',
-                                       ';',  '4', '4', 'm', 0};
-const char COLOR_BOLD_YELLOW_MAGENTA[] = {0x1b, '[', '1', ';', '3', '3',
-                                          ';',  '4', '5', 'm', 0};
-const char COLOR_BOLD_YELLOW_CYAN[] = {0x1b, '[', '1', ';', '3', '3',
-                                       ';',  '4', '6', 'm', 0};
-const char COLOR_BOLD_YELLOW_WHITE[] = {0x1b, '[', '1', ';', '3', '3',
-                                        ';',  '4', '7', 'm', 0};
-const char COLOR_BOLD_YELLOW_NORMAL[] = {0x1b, '[', '1', ';', '3', '3',
-                                         ';',  '4', '9', 'm', 0};
-const char COLOR_BOLD_BLUE_BLACK[] = {0x1b, '[', '1', ';', '3', '4',
-                                      ';',  '4', '0', 'm', 0};
-const char COLOR_BOLD_BLUE_RED[] = {0x1b, '[', '1', ';', '3', '4',
-                                    ';',  '4', '1', 'm', 0};
-const char COLOR_BOLD_BLUE_GREEN[] = {0x1b, '[', '1', ';', '3', '4',
-                                      ';',  '4', '2', 'm', 0};
-const char COLOR_BOLD_BLUE_YELLOW[] = {0x1b, '[', '1', ';', '3', '4',
-                                       ';',  '4', '3', 'm', 0};
-const char COLOR_BOLD_BLUE_BLUE[] = {0x1b, '[', '1', ';', '3', '4',
-                                     ';',  '4', '4', 'm', 0};
-const char COLOR_BOLD_BLUE_MAGENTA[] = {0x1b, '[', '1', ';', '3', '4',
-                                        ';',  '4', '5', 'm', 0};
-const char COLOR_BOLD_BLUE_CYAN[] = {0x1b, '[', '1', ';', '3', '4',
-                                     ';',  '4', '6', 'm', 0};
-const char COLOR_BOLD_BLUE_WHITE[] = {0x1b, '[', '1', ';', '3', '4',
-                                      ';',  '4', '7', 'm', 0};
-const char COLOR_BOLD_BLUE_NORMAL[] = {0x1b, '[', '1', ';', '3', '4',
-                                       ';',  '4', '9', 'm', 0};
-const char COLOR_BOLD_MAGENTA_BLACK[] = {0x1b, '[', '1', ';', '3', '5',
-                                         ';',  '4', '0', 'm', 0};
-const char COLOR_BOLD_MAGENTA_RED[] = {0x1b, '[', '1', ';', '3', '5',
-                                       ';',  '4', '1', 'm', 0};
-const char COLOR_BOLD_MAGENTA_GREEN[] = {0x1b, '[', '1', ';', '3', '5',
-                                         ';',  '4', '2', 'm', 0};
-const char COLOR_BOLD_MAGENTA_YELLOW[] = {0x1b, '[', '1', ';', '3', '5',
-                                          ';',  '4', '3', 'm', 0};
-const char COLOR_BOLD_MAGENTA_BLUE[] = {0x1b, '[', '1', ';', '3', '5',
-                                        ';',  '4', '4', 'm', 0};
-const char COLOR_BOLD_MAGENTA_MAGENTA[] = {0x1b, '[', '1', ';', '3', '5',
-                                           ';',  '4', '5', 'm', 0};
-const char COLOR_BOLD_MAGENTA_CYAN[] = {0x1b, '[', '1', ';', '3', '5',
-                                        ';',  '4', '6', 'm', 0};
-const char COLOR_BOLD_MAGENTA_WHITE[] = {0x1b, '[', '1', ';', '3', '5',
-                                         ';',  '4', '7', 'm', 0};
-const char COLOR_BOLD_MAGENTA_NORMAL[] = {0x1b, '[', '1', ';', '3', '5',
-                                          ';',  '4', '9', 'm', 0};
-const char COLOR_BOLD_CYAN_BLACK[] = {0x1b, '[', '1', ';', '3', '6',
-                                      ';',  '4', '0', 'm', 0};
-const char COLOR_BOLD_CYAN_RED[] = {0x1b, '[', '1', ';', '3', '6',
-                                    ';',  '4', '1', 'm', 0};
-const char COLOR_BOLD_CYAN_GREEN[] = {0x1b, '[', '1', ';', '3', '6',
-                                      ';',  '4', '2', 'm', 0};
-const char COLOR_BOLD_CYAN_YELLOW[] = {0x1b, '[', '1', ';', '3', '6',
-                                       ';',  '4', '3', 'm', 0};
-const char COLOR_BOLD_CYAN_BLUE[] = {0x1b, '[', '1', ';', '3', '6',
-                                     ';',  '4', '4', 'm', 0};
-const char COLOR_BOLD_CYAN_MAGENTA[] = {0x1b, '[', '1', ';', '3', '6',
-                                        ';',  '4', '5', 'm', 0};
-const char COLOR_BOLD_CYAN_CYAN[] = {0x1b, '[', '1', ';', '3', '6',
-                                     ';',  '4', '6', 'm', 0};
-const char COLOR_BOLD_CYAN_WHITE[] = {0x1b, '[', '1', ';', '3', '6',
-                                      ';',  '4', '7', 'm', 0};
-const char COLOR_BOLD_CYAN_NORMAL[] = {0x1b, '[', '1', ';', '3', '6',
-                                       ';',  '4', '9', 'm', 0};
-const char COLOR_BOLD_WHITE_BLACK[] = {0x1b, '[', '1', ';', '3', '7',
-                                       ';',  '4', '0', 'm', 0};
-const char COLOR_BOLD_WHITE_RED[] = {0x1b, '[', '1', ';', '3', '7',
-                                     ';',  '4', '1', 'm', 0};
-const char COLOR_BOLD_WHITE_GREEN[] = {0x1b, '[', '1', ';', '3', '7',
-                                       ';',  '4', '2', 'm', 0};
-const char COLOR_BOLD_WHITE_YELLOW[] = {0x1b, '[', '1', ';', '3', '7',
-                                        ';',  '4', '3', 'm', 0};
-const char COLOR_BOLD_WHITE_BLUE[] = {0x1b, '[', '1', ';', '3', '7',
-                                      ';',  '4', '4', 'm', 0};
-const char COLOR_BOLD_WHITE_MAGENTA[] = {0x1b, '[', '1', ';', '3', '7',
-                                         ';',  '4', '5', 'm', 0};
-const char COLOR_BOLD_WHITE_CYAN[] = {0x1b, '[', '1', ';', '3', '7',
-                                      ';',  '4', '6', 'm', 0};
-const char COLOR_BOLD_WHITE_WHITE[] = {0x1b, '[', '1', ';', '3', '7',
-                                       ';',  '4', '7', 'm', 0};
-const char COLOR_BOLD_WHITE_NORMAL[] = {0x1b, '[', '1', ';', '3', '7',
-                                        ';',  '4', '9', 'm', 0};
-const char COLOR_BOLD_NORMAL_BLACK[] = {0x1b, '[', '1', ';', '3', '9',
-                                        ';',  '4', '0', 'm', 0};
-const char COLOR_BOLD_NORMAL_RED[] = {0x1b, '[', '1', ';', '3', '9',
-                                      ';',  '4', '1', 'm', 0};
-const char COLOR_BOLD_NORMAL_GREEN[] = {0x1b, '[', '1', ';', '3', '9',
-                                        ';',  '4', '2', 'm', 0};
-const char COLOR_BOLD_NORMAL_YELLOW[] = {0x1b, '[', '1', ';', '3', '9',
-                                         ';',  '4', '3', 'm', 0};
-const char COLOR_BOLD_NORMAL_BLUE[] = {0x1b, '[', '1', ';', '3', '9',
-                                       ';',  '4', '4', 'm', 0};
-const char COLOR_BOLD_NORMAL_MAGENTA[] = {0x1b, '[', '1', ';', '3', '9',
-                                          ';',  '4', '5', 'm', 0};
-const char COLOR_BOLD_NORMAL_CYAN[] = {0x1b, '[', '1', ';', '3', '9',
-                                       ';',  '4', '6', 'm', 0};
-const char COLOR_BOLD_NORMAL_WHITE[] = {0x1b, '[', '1', ';', '3', '9',
-                                        ';',  '4', '7', 'm', 0};
-const char COLOR_BOLD_NORMAL_NORMAL[] = {0x1b, '[', '1', ';', '3', '9',
-                                         ';',  '4', '9', 'm', 0};
-const char COLOR_UNDERSCORE_BLACK_BLACK[] = {0x1b, '[', '4', ';', '3', '0',
-                                             ';',  '4', '0', 'm', 0};
-const char COLOR_UNDERSCORE_BLACK_RED[] = {0x1b, '[', '4', ';', '3', '0',
-                                           ';',  '4', '1', 'm', 0};
-const char COLOR_UNDERSCORE_BLACK_GREEN[] = {0x1b, '[', '4', ';', '3', '0',
-                                             ';',  '4', '2', 'm', 0};
-const char COLOR_UNDERSCORE_BLACK_YELLOW[] = {0x1b, '[', '4', ';', '3', '0',
-                                              ';',  '4', '3', 'm', 0};
-const char COLOR_UNDERSCORE_BLACK_BLUE[] = {0x1b, '[', '4', ';', '3', '0',
-                                            ';',  '4', '4', 'm', 0};
-const char COLOR_UNDERSCORE_BLACK_MAGENTA[] = {0x1b, '[', '4', ';', '3', '0',
-                                               ';',  '4', '5', 'm', 0};
-const char COLOR_UNDERSCORE_BLACK_CYAN[] = {0x1b, '[', '4', ';', '3', '0',
-                                            ';',  '4', '6', 'm', 0};
-const char COLOR_UNDERSCORE_BLACK_WHITE[] = {0x1b, '[', '4', ';', '3', '0',
-                                             ';',  '4', '7', 'm', 0};
-const char COLOR_UNDERSCORE_BLACK_NORMAL[] = {0x1b, '[', '4', ';', '3', '0',
-                                              ';',  '4', '9', 'm', 0};
-const char COLOR_UNDERSCORE_RED_BLACK[] = {0x1b, '[', '4', ';', '3', '1',
-                                           ';',  '4', '0', 'm', 0};
-const char COLOR_UNDERSCORE_RED_RED[] = {0x1b, '[', '4', ';', '3', '1',
-                                         ';',  '4', '1', 'm', 0};
-const char COLOR_UNDERSCORE_RED_GREEN[] = {0x1b, '[', '4', ';', '3', '1',
-                                           ';',  '4', '2', 'm', 0};
-const char COLOR_UNDERSCORE_RED_YELLOW[] = {0x1b, '[', '4', ';', '3', '1',
-                                            ';',  '4', '3', 'm', 0};
-const char COLOR_UNDERSCORE_RED_BLUE[] = {0x1b, '[', '4', ';', '3', '1',
-                                          ';',  '4', '4', 'm', 0};
-const char COLOR_UNDERSCORE_RED_MAGENTA[] = {0x1b, '[', '4', ';', '3', '1',
-                                             ';',  '4', '5', 'm', 0};
-const char COLOR_UNDERSCORE_RED_CYAN[] = {0x1b, '[', '4', ';', '3', '1',
-                                          ';',  '4', '6', 'm', 0};
-const char COLOR_UNDERSCORE_RED_WHITE[] = {0x1b, '[', '4', ';', '3', '1',
-                                           ';',  '4', '7', 'm', 0};
-const char COLOR_UNDERSCORE_RED_NORMAL[] = {0x1b, '[', '4', ';', '3', '1',
-                                            ';',  '4', '9', 'm', 0};
-const char COLOR_UNDERSCORE_GREEN_BLACK[] = {0x1b, '[', '4', ';', '3', '2',
-                                             ';',  '4', '0', 'm', 0};
-const char COLOR_UNDERSCORE_GREEN_RED[] = {0x1b, '[', '4', ';', '3', '2',
-                                           ';',  '4', '1', 'm', 0};
-const char COLOR_UNDERSCORE_GREEN_GREEN[] = {0x1b, '[', '4', ';', '3', '2',
-                                             ';',  '4', '2', 'm', 0};
-const char COLOR_UNDERSCORE_GREEN_YELLOW[] = {0x1b, '[', '4', ';', '3', '2',
-                                              ';',  '4', '3', 'm', 0};
-const char COLOR_UNDERSCORE_GREEN_BLUE[] = {0x1b, '[', '4', ';', '3', '2',
-                                            ';',  '4', '4', 'm', 0};
-const char COLOR_UNDERSCORE_GREEN_MAGENTA[] = {0x1b, '[', '4', ';', '3', '2',
-                                               ';',  '4', '5', 'm', 0};
-const char COLOR_UNDERSCORE_GREEN_CYAN[] = {0x1b, '[', '4', ';', '3', '2',
-                                            ';',  '4', '6', 'm', 0};
-const char COLOR_UNDERSCORE_GREEN_WHITE[] = {0x1b, '[', '4', ';', '3', '2',
-                                             ';',  '4', '7', 'm', 0};
-const char COLOR_UNDERSCORE_GREEN_NORMAL[] = {0x1b, '[', '4', ';', '3', '2',
-                                              ';',  '4', '9', 'm', 0};
-const char COLOR_UNDERSCORE_YELLOW_BLACK[] = {0x1b, '[', '4', ';', '3', '3',
-                                              ';',  '4', '0', 'm', 0};
-const char COLOR_UNDERSCORE_YELLOW_RED[] = {0x1b, '[', '4', ';', '3', '3',
-                                            ';',  '4', '1', 'm', 0};
-const char COLOR_UNDERSCORE_YELLOW_GREEN[] = {0x1b, '[', '4', ';', '3', '3',
-                                              ';',  '4', '2', 'm', 0};
-const char COLOR_UNDERSCORE_YELLOW_YELLOW[] = {0x1b, '[', '4', ';', '3', '3',
-                                               ';',  '4', '3', 'm', 0};
-const char COLOR_UNDERSCORE_YELLOW_BLUE[] = {0x1b, '[', '4', ';', '3', '3',
-                                             ';',  '4', '4', 'm', 0};
-const char COLOR_UNDERSCORE_YELLOW_MAGENTA[] = {0x1b, '[', '4', ';', '3', '3',
-                                                ';',  '4', '5', 'm', 0};
-const char COLOR_UNDERSCORE_YELLOW_CYAN[] = {0x1b, '[', '4', ';', '3', '3',
-                                             ';',  '4', '6', 'm', 0};
-const char COLOR_UNDERSCORE_YELLOW_WHITE[] = {0x1b, '[', '4', ';', '3', '3',
-                                              ';',  '4', '7', 'm', 0};
-const char COLOR_UNDERSCORE_YELLOW_NORMAL[] = {0x1b, '[', '4', ';', '3', '3',
-                                               ';',  '4', '9', 'm', 0};
-const char COLOR_UNDERSCORE_BLUE_BLACK[] = {0x1b, '[', '4', ';', '3', '4',
-                                            ';',  '4', '0', 'm', 0};
-const char COLOR_UNDERSCORE_BLUE_RED[] = {0x1b, '[', '4', ';', '3', '4',
-                                          ';',  '4', '1', 'm', 0};
-const char COLOR_UNDERSCORE_BLUE_GREEN[] = {0x1b, '[', '4', ';', '3', '4',
-                                            ';',  '4', '2', 'm', 0};
-const char COLOR_UNDERSCORE_BLUE_YELLOW[] = {0x1b, '[', '4', ';', '3', '4',
-                                             ';',  '4', '3', 'm', 0};
-const char COLOR_UNDERSCORE_BLUE_BLUE[] = {0x1b, '[', '4', ';', '3', '4',
-                                           ';',  '4', '4', 'm', 0};
-const char COLOR_UNDERSCORE_BLUE_MAGENTA[] = {0x1b, '[', '4', ';', '3', '4',
-                                              ';',  '4', '5', 'm', 0};
-const char COLOR_UNDERSCORE_BLUE_CYAN[] = {0x1b, '[', '4', ';', '3', '4',
-                                           ';',  '4', '6', 'm', 0};
-const char COLOR_UNDERSCORE_BLUE_WHITE[] = {0x1b, '[', '4', ';', '3', '4',
-                                            ';',  '4', '7', 'm', 0};
-const char COLOR_UNDERSCORE_BLUE_NORMAL[] = {0x1b, '[', '4', ';', '3', '4',
-                                             ';',  '4', '9', 'm', 0};
-const char COLOR_UNDERSCORE_MAGENTA_BLACK[] = {0x1b, '[', '4', ';', '3', '5',
-                                               ';',  '4', '0', 'm', 0};
-const char COLOR_UNDERSCORE_MAGENTA_RED[] = {0x1b, '[', '4', ';', '3', '5',
-                                             ';',  '4', '1', 'm', 0};
-const char COLOR_UNDERSCORE_MAGENTA_GREEN[] = {0x1b, '[', '4', ';', '3', '5',
-                                               ';',  '4', '2', 'm', 0};
-const char COLOR_UNDERSCORE_MAGENTA_YELLOW[] = {0x1b, '[', '4', ';', '3', '5',
-                                                ';',  '4', '3', 'm', 0};
-const char COLOR_UNDERSCORE_MAGENTA_BLUE[] = {0x1b, '[', '4', ';', '3', '5',
-                                              ';',  '4', '4', 'm', 0};
-const char COLOR_UNDERSCORE_MAGENTA_MAGENTA[] = {0x1b, '[', '4', ';', '3', '5',
-                                                 ';',  '4', '5', 'm', 0};
-const char COLOR_UNDERSCORE_MAGENTA_CYAN[] = {0x1b, '[', '4', ';', '3', '5',
-                                              ';',  '4', '6', 'm', 0};
-const char COLOR_UNDERSCORE_MAGENTA_WHITE[] = {0x1b, '[', '4', ';', '3', '5',
-                                               ';',  '4', '7', 'm', 0};
-const char COLOR_UNDERSCORE_MAGENTA_NORMAL[] = {0x1b, '[', '4', ';', '3', '5',
-                                                ';',  '4', '9', 'm', 0};
-const char COLOR_UNDERSCORE_CYAN_BLACK[] = {0x1b, '[', '4', ';', '3', '6',
-                                            ';',  '4', '0', 'm', 0};
-const char COLOR_UNDERSCORE_CYAN_RED[] = {0x1b, '[', '4', ';', '3', '6',
-                                          ';',  '4', '1', 'm', 0};
-const char COLOR_UNDERSCORE_CYAN_GREEN[] = {0x1b, '[', '4', ';', '3', '6',
-                                            ';',  '4', '2', 'm', 0};
-const char COLOR_UNDERSCORE_CYAN_YELLOW[] = {0x1b, '[', '4', ';', '3', '6',
-                                             ';',  '4', '3', 'm', 0};
-const char COLOR_UNDERSCORE_CYAN_BLUE[] = {0x1b, '[', '4', ';', '3', '6',
-                                           ';',  '4', '4', 'm', 0};
-const char COLOR_UNDERSCORE_CYAN_MAGENTA[] = {0x1b, '[', '4', ';', '3', '6',
-                                              ';',  '4', '5', 'm', 0};
-const char COLOR_UNDERSCORE_CYAN_CYAN[] = {0x1b, '[', '4', ';', '3', '6',
-                                           ';',  '4', '6', 'm', 0};
-const char COLOR_UNDERSCORE_CYAN_WHITE[] = {0x1b, '[', '4', ';', '3', '6',
-                                            ';',  '4', '7', 'm', 0};
-const char COLOR_UNDERSCORE_CYAN_NORMAL[] = {0x1b, '[', '4', ';', '3', '6',
-                                             ';',  '4', '9', 'm', 0};
-const char COLOR_UNDERSCORE_WHITE_BLACK[] = {0x1b, '[', '4', ';', '3', '7',
-                                             ';',  '4', '0', 'm', 0};
-const char COLOR_UNDERSCORE_WHITE_RED[] = {0x1b, '[', '4', ';', '3', '7',
-                                           ';',  '4', '1', 'm', 0};
-const char COLOR_UNDERSCORE_WHITE_GREEN[] = {0x1b, '[', '4', ';', '3', '7',
-                                             ';',  '4', '2', 'm', 0};
-const char COLOR_UNDERSCORE_WHITE_YELLOW[] = {0x1b, '[', '4', ';', '3', '7',
-                                              ';',  '4', '3', 'm', 0};
-const char COLOR_UNDERSCORE_WHITE_BLUE[] = {0x1b, '[', '4', ';', '3', '7',
-                                            ';',  '4', '4', 'm', 0};
-const char COLOR_UNDERSCORE_WHITE_MAGENTA[] = {0x1b, '[', '4', ';', '3', '7',
-                                               ';',  '4', '5', 'm', 0};
-const char COLOR_UNDERSCORE_WHITE_CYAN[] = {0x1b, '[', '4', ';', '3', '7',
-                                            ';',  '4', '6', 'm', 0};
-const char COLOR_UNDERSCORE_WHITE_WHITE[] = {0x1b, '[', '4', ';', '3', '7',
-                                             ';',  '4', '7', 'm', 0};
-const char COLOR_UNDERSCORE_WHITE_NORMAL[] = {0x1b, '[', '4', ';', '3', '7',
-                                              ';',  '4', '9', 'm', 0};
-const char COLOR_UNDERSCORE_NORMAL_BLACK[] = {0x1b, '[', '4', ';', '3', '9',
-                                              ';',  '4', '0', 'm', 0};
-const char COLOR_UNDERSCORE_NORMAL_RED[] = {0x1b, '[', '4', ';', '3', '9',
-                                            ';',  '4', '1', 'm', 0};
-const char COLOR_UNDERSCORE_NORMAL_GREEN[] = {0x1b, '[', '4', ';', '3', '9',
-                                              ';',  '4', '2', 'm', 0};
-const char COLOR_UNDERSCORE_NORMAL_YELLOW[] = {0x1b, '[', '4', ';', '3', '9',
-                                               ';',  '4', '3', 'm', 0};
-const char COLOR_UNDERSCORE_NORMAL_BLUE[] = {0x1b, '[', '4', ';', '3', '9',
-                                             ';',  '4', '4', 'm', 0};
-const char COLOR_UNDERSCORE_NORMAL_MAGENTA[] = {0x1b, '[', '4', ';', '3', '9',
-                                                ';',  '4', '5', 'm', 0};
-const char COLOR_UNDERSCORE_NORMAL_CYAN[] = {0x1b, '[', '4', ';', '3', '9',
-                                             ';',  '4', '6', 'm', 0};
-const char COLOR_UNDERSCORE_NORMAL_WHITE[] = {0x1b, '[', '4', ';', '3', '9',
-                                              ';',  '4', '7', 'm', 0};
-const char COLOR_UNDERSCORE_NORMAL_NORMAL[] = {0x1b, '[', '4', ';', '3', '9',
-                                               ';',  '4', '9', 'm', 0};
-const char COLOR_BLINK_BLACK_BLACK[] = {0x1b, '[', '5', ';', '3', '0',
-                                        ';',  '4', '0', 'm', 0};
-const char COLOR_BLINK_BLACK_RED[] = {0x1b, '[', '5', ';', '3', '0',
-                                      ';',  '4', '1', 'm', 0};
-const char COLOR_BLINK_BLACK_GREEN[] = {0x1b, '[', '5', ';', '3', '0',
-                                        ';',  '4', '2', 'm', 0};
-const char COLOR_BLINK_BLACK_YELLOW[] = {0x1b, '[', '5', ';', '3', '0',
-                                         ';',  '4', '3', 'm', 0};
-const char COLOR_BLINK_BLACK_BLUE[] = {0x1b, '[', '5', ';', '3', '0',
-                                       ';',  '4', '4', 'm', 0};
-const char COLOR_BLINK_BLACK_MAGENTA[] = {0x1b, '[', '5', ';', '3', '0',
-                                          ';',  '4', '5', 'm', 0};
-const char COLOR_BLINK_BLACK_CYAN[] = {0x1b, '[', '5', ';', '3', '0',
-                                       ';',  '4', '6', 'm', 0};
-const char COLOR_BLINK_BLACK_WHITE[] = {0x1b, '[', '5', ';', '3', '0',
-                                        ';',  '4', '7', 'm', 0};
-const char COLOR_BLINK_BLACK_NORMAL[] = {0x1b, '[', '5', ';', '3', '0',
-                                         ';',  '4', '9', 'm', 0};
-const char COLOR_BLINK_RED_BLACK[] = {0x1b, '[', '5', ';', '3', '1',
-                                      ';',  '4', '0', 'm', 0};
-const char COLOR_BLINK_RED_RED[] = {0x1b, '[', '5', ';', '3', '1',
-                                    ';',  '4', '1', 'm', 0};
-const char COLOR_BLINK_RED_GREEN[] = {0x1b, '[', '5', ';', '3', '1',
-                                      ';',  '4', '2', 'm', 0};
-const char COLOR_BLINK_RED_YELLOW[] = {0x1b, '[', '5', ';', '3', '1',
-                                       ';',  '4', '3', 'm', 0};
-const char COLOR_BLINK_RED_BLUE[] = {0x1b, '[', '5', ';', '3', '1',
-                                     ';',  '4', '4', 'm', 0};
-const char COLOR_BLINK_RED_MAGENTA[] = {0x1b, '[', '5', ';', '3', '1',
-                                        ';',  '4', '5', 'm', 0};
-const char COLOR_BLINK_RED_CYAN[] = {0x1b, '[', '5', ';', '3', '1',
-                                     ';',  '4', '6', 'm', 0};
-const char COLOR_BLINK_RED_WHITE[] = {0x1b, '[', '5', ';', '3', '1',
-                                      ';',  '4', '7', 'm', 0};
-const char COLOR_BLINK_RED_NORMAL[] = {0x1b, '[', '5', ';', '3', '1',
-                                       ';',  '4', '9', 'm', 0};
-const char COLOR_BLINK_GREEN_BLACK[] = {0x1b, '[', '5', ';', '3', '2',
-                                        ';',  '4', '0', 'm', 0};
-const char COLOR_BLINK_GREEN_RED[] = {0x1b, '[', '5', ';', '3', '2',
-                                      ';',  '4', '1', 'm', 0};
-const char COLOR_BLINK_GREEN_GREEN[] = {0x1b, '[', '5', ';', '3', '2',
-                                        ';',  '4', '2', 'm', 0};
-const char COLOR_BLINK_GREEN_YELLOW[] = {0x1b, '[', '5', ';', '3', '2',
-                                         ';',  '4', '3', 'm', 0};
-const char COLOR_BLINK_GREEN_BLUE[] = {0x1b, '[', '5', ';', '3', '2',
-                                       ';',  '4', '4', 'm', 0};
-const char COLOR_BLINK_GREEN_MAGENTA[] = {0x1b, '[', '5', ';', '3', '2',
-                                          ';',  '4', '5', 'm', 0};
-const char COLOR_BLINK_GREEN_CYAN[] = {0x1b, '[', '5', ';', '3', '2',
-                                       ';',  '4', '6', 'm', 0};
-const char COLOR_BLINK_GREEN_WHITE[] = {0x1b, '[', '5', ';', '3', '2',
-                                        ';',  '4', '7', 'm', 0};
-const char COLOR_BLINK_GREEN_NORMAL[] = {0x1b, '[', '5', ';', '3', '2',
-                                         ';',  '4', '9', 'm', 0};
-const char COLOR_BLINK_YELLOW_BLACK[] = {0x1b, '[', '5', ';', '3', '3',
-                                         ';',  '4', '0', 'm', 0};
-const char COLOR_BLINK_YELLOW_RED[] = {0x1b, '[', '5', ';', '3', '3',
-                                       ';',  '4', '1', 'm', 0};
-const char COLOR_BLINK_YELLOW_GREEN[] = {0x1b, '[', '5', ';', '3', '3',
-                                         ';',  '4', '2', 'm', 0};
-const char COLOR_BLINK_YELLOW_YELLOW[] = {0x1b, '[', '5', ';', '3', '3',
-                                          ';',  '4', '3', 'm', 0};
-const char COLOR_BLINK_YELLOW_BLUE[] = {0x1b, '[', '5', ';', '3', '3',
-                                        ';',  '4', '4', 'm', 0};
-const char COLOR_BLINK_YELLOW_MAGENTA[] = {0x1b, '[', '5', ';', '3', '3',
-                                           ';',  '4', '5', 'm', 0};
-const char COLOR_BLINK_YELLOW_CYAN[] = {0x1b, '[', '5', ';', '3', '3',
-                                        ';',  '4', '6', 'm', 0};
-const char COLOR_BLINK_YELLOW_WHITE[] = {0x1b, '[', '5', ';', '3', '3',
-                                         ';',  '4', '7', 'm', 0};
-const char COLOR_BLINK_YELLOW_NORMAL[] = {0x1b, '[', '5', ';', '3', '3',
-                                          ';',  '4', '9', 'm', 0};
-const char COLOR_BLINK_BLUE_BLACK[] = {0x1b, '[', '5', ';', '3', '4',
-                                       ';',  '4', '0', 'm', 0};
-const char COLOR_BLINK_BLUE_RED[] = {0x1b, '[', '5', ';', '3', '4',
-                                     ';',  '4', '1', 'm', 0};
-const char COLOR_BLINK_BLUE_GREEN[] = {0x1b, '[', '5', ';', '3', '4',
-                                       ';',  '4', '2', 'm', 0};
-const char COLOR_BLINK_BLUE_YELLOW[] = {0x1b, '[', '5', ';', '3', '4',
-                                        ';',  '4', '3', 'm', 0};
-const char COLOR_BLINK_BLUE_BLUE[] = {0x1b, '[', '5', ';', '3', '4',
-                                      ';',  '4', '4', 'm', 0};
-const char COLOR_BLINK_BLUE_MAGENTA[] = {0x1b, '[', '5', ';', '3', '4',
-                                         ';',  '4', '5', 'm', 0};
-const char COLOR_BLINK_BLUE_CYAN[] = {0x1b, '[', '5', ';', '3', '4',
-                                      ';',  '4', '6', 'm', 0};
-const char COLOR_BLINK_BLUE_WHITE[] = {0x1b, '[', '5', ';', '3', '4',
-                                       ';',  '4', '7', 'm', 0};
-const char COLOR_BLINK_BLUE_NORMAL[] = {0x1b, '[', '5', ';', '3', '4',
-                                        ';',  '4', '9', 'm', 0};
-const char COLOR_BLINK_MAGENTA_BLACK[] = {0x1b, '[', '5', ';', '3', '5',
-                                          ';',  '4', '0', 'm', 0};
-const char COLOR_BLINK_MAGENTA_RED[] = {0x1b, '[', '5', ';', '3', '5',
-                                        ';',  '4', '1', 'm', 0};
-const char COLOR_BLINK_MAGENTA_GREEN[] = {0x1b, '[', '5', ';', '3', '5',
-                                          ';',  '4', '2', 'm', 0};
-const char COLOR_BLINK_MAGENTA_YELLOW[] = {0x1b, '[', '5', ';', '3', '5',
-                                           ';',  '4', '3', 'm', 0};
-const char COLOR_BLINK_MAGENTA_BLUE[] = {0x1b, '[', '5', ';', '3', '5',
-                                         ';',  '4', '4', 'm', 0};
-const char COLOR_BLINK_MAGENTA_MAGENTA[] = {0x1b, '[', '5', ';', '3', '5',
-                                            ';',  '4', '5', 'm', 0};
-const char COLOR_BLINK_MAGENTA_CYAN[] = {0x1b, '[', '5', ';', '3', '5',
-                                         ';',  '4', '6', 'm', 0};
-const char COLOR_BLINK_MAGENTA_WHITE[] = {0x1b, '[', '5', ';', '3', '5',
-                                          ';',  '4', '7', 'm', 0};
-const char COLOR_BLINK_MAGENTA_NORMAL[] = {0x1b, '[', '5', ';', '3', '5',
-                                           ';',  '4', '9', 'm', 0};
-const char COLOR_BLINK_CYAN_BLACK[] = {0x1b, '[', '5', ';', '3', '6',
-                                       ';',  '4', '0', 'm', 0};
-const char COLOR_BLINK_CYAN_RED[] = {0x1b, '[', '5', ';', '3', '6',
-                                     ';',  '4', '1', 'm', 0};
-const char COLOR_BLINK_CYAN_GREEN[] = {0x1b, '[', '5', ';', '3', '6',
-                                       ';',  '4', '2', 'm', 0};
-const char COLOR_BLINK_CYAN_YELLOW[] = {0x1b, '[', '5', ';', '3', '6',
-                                        ';',  '4', '3', 'm', 0};
-const char COLOR_BLINK_CYAN_BLUE[] = {0x1b, '[', '5', ';', '3', '6',
-                                      ';',  '4', '4', 'm', 0};
-const char COLOR_BLINK_CYAN_MAGENTA[] = {0x1b, '[', '5', ';', '3', '6',
-                                         ';',  '4', '5', 'm', 0};
-const char COLOR_BLINK_CYAN_CYAN[] = {0x1b, '[', '5', ';', '3', '6',
-                                      ';',  '4', '6', 'm', 0};
-const char COLOR_BLINK_CYAN_WHITE[] = {0x1b, '[', '5', ';', '3', '6',
-                                       ';',  '4', '7', 'm', 0};
-const char COLOR_BLINK_CYAN_NORMAL[] = {0x1b, '[', '5', ';', '3', '6',
-                                        ';',  '4', '9', 'm', 0};
-const char COLOR_BLINK_WHITE_BLACK[] = {0x1b, '[', '5', ';', '3', '7',
-                                        ';',  '4', '0', 'm', 0};
-const char COLOR_BLINK_WHITE_RED[] = {0x1b, '[', '5', ';', '3', '7',
-                                      ';',  '4', '1', 'm', 0};
-const char COLOR_BLINK_WHITE_GREEN[] = {0x1b, '[', '5', ';', '3', '7',
-                                        ';',  '4', '2', 'm', 0};
-const char COLOR_BLINK_WHITE_YELLOW[] = {0x1b, '[', '5', ';', '3', '7',
-                                         ';',  '4', '3', 'm', 0};
-const char COLOR_BLINK_WHITE_BLUE[] = {0x1b, '[', '5', ';', '3', '7',
-                                       ';',  '4', '4', 'm', 0};
-const char COLOR_BLINK_WHITE_MAGENTA[] = {0x1b, '[', '5', ';', '3', '7',
-                                          ';',  '4', '5', 'm', 0};
-const char COLOR_BLINK_WHITE_CYAN[] = {0x1b, '[', '5', ';', '3', '7',
-                                       ';',  '4', '6', 'm', 0};
-const char COLOR_BLINK_WHITE_WHITE[] = {0x1b, '[', '5', ';', '3', '7',
-                                        ';',  '4', '7', 'm', 0};
-const char COLOR_BLINK_WHITE_NORMAL[] = {0x1b, '[', '5', ';', '3', '7',
-                                         ';',  '4', '9', 'm', 0};
-const char COLOR_BLINK_NORMAL_BLACK[] = {0x1b, '[', '5', ';', '3', '9',
-                                         ';',  '4', '0', 'm', 0};
-const char COLOR_BLINK_NORMAL_RED[] = {0x1b, '[', '5', ';', '3', '9',
-                                       ';',  '4', '1', 'm', 0};
-const char COLOR_BLINK_NORMAL_GREEN[] = {0x1b, '[', '5', ';', '3', '9',
-                                         ';',  '4', '2', 'm', 0};
-const char COLOR_BLINK_NORMAL_YELLOW[] = {0x1b, '[', '5', ';', '3', '9',
-                                          ';',  '4', '3', 'm', 0};
-const char COLOR_BLINK_NORMAL_BLUE[] = {0x1b, '[', '5', ';', '3', '9',
-                                        ';',  '4', '4', 'm', 0};
-const char COLOR_BLINK_NORMAL_MAGENTA[] = {0x1b, '[', '5', ';', '3', '9',
-                                           ';',  '4', '5', 'm', 0};
-const char COLOR_BLINK_NORMAL_CYAN[] = {0x1b, '[', '5', ';', '3', '9',
-                                        ';',  '4', '6', 'm', 0};
-const char COLOR_BLINK_NORMAL_WHITE[] = {0x1b, '[', '5', ';', '3', '9',
-                                         ';',  '4', '7', 'm', 0};
-const char COLOR_BLINK_NORMAL_NORMAL[] = {0x1b, '[', '5', ';', '3', '9',
-                                          ';',  '4', '9', 'm', 0};
-const char COLOR_REVERSEVIDEO_BLACK_BLACK[] = {0x1b, '[', '7', ';', '3', '0',
-                                               ';',  '4', '0', 'm', 0};
-const char COLOR_REVERSEVIDEO_BLACK_RED[] = {0x1b, '[', '7', ';', '3', '0',
-                                             ';',  '4', '1', 'm', 0};
-const char COLOR_REVERSEVIDEO_BLACK_GREEN[] = {0x1b, '[', '7', ';', '3', '0',
-                                               ';',  '4', '2', 'm', 0};
-const char COLOR_REVERSEVIDEO_BLACK_YELLOW[] = {0x1b, '[', '7', ';', '3', '0',
-                                                ';',  '4', '3', 'm', 0};
-const char COLOR_REVERSEVIDEO_BLACK_BLUE[] = {0x1b, '[', '7', ';', '3', '0',
-                                              ';',  '4', '4', 'm', 0};
-const char COLOR_REVERSEVIDEO_BLACK_MAGENTA[] = {0x1b, '[', '7', ';', '3', '0',
-                                                 ';',  '4', '5', 'm', 0};
-const char COLOR_REVERSEVIDEO_BLACK_CYAN[] = {0x1b, '[', '7', ';', '3', '0',
-                                              ';',  '4', '6', 'm', 0};
-const char COLOR_REVERSEVIDEO_BLACK_WHITE[] = {0x1b, '[', '7', ';', '3', '0',
-                                               ';',  '4', '7', 'm', 0};
-const char COLOR_REVERSEVIDEO_BLACK_NORMAL[] = {0x1b, '[', '7', ';', '3', '0',
-                                                ';',  '4', '9', 'm', 0};
-const char COLOR_REVERSEVIDEO_RED_BLACK[] = {0x1b, '[', '7', ';', '3', '1',
-                                             ';',  '4', '0', 'm', 0};
-const char COLOR_REVERSEVIDEO_RED_RED[] = {0x1b, '[', '7', ';', '3', '1',
-                                           ';',  '4', '1', 'm', 0};
-const char COLOR_REVERSEVIDEO_RED_GREEN[] = {0x1b, '[', '7', ';', '3', '1',
-                                             ';',  '4', '2', 'm', 0};
-const char COLOR_REVERSEVIDEO_RED_YELLOW[] = {0x1b, '[', '7', ';', '3', '1',
-                                              ';',  '4', '3', 'm', 0};
-const char COLOR_REVERSEVIDEO_RED_BLUE[] = {0x1b, '[', '7', ';', '3', '1',
-                                            ';',  '4', '4', 'm', 0};
-const char COLOR_REVERSEVIDEO_RED_MAGENTA[] = {0x1b, '[', '7', ';', '3', '1',
-                                               ';',  '4', '5', 'm', 0};
-const char COLOR_REVERSEVIDEO_RED_CYAN[] = {0x1b, '[', '7', ';', '3', '1',
-                                            ';',  '4', '6', 'm', 0};
-const char COLOR_REVERSEVIDEO_RED_WHITE[] = {0x1b, '[', '7', ';', '3', '1',
-                                             ';',  '4', '7', 'm', 0};
-const char COLOR_REVERSEVIDEO_RED_NORMAL[] = {0x1b, '[', '7', ';', '3', '1',
-                                              ';',  '4', '9', 'm', 0};
-const char COLOR_REVERSEVIDEO_GREEN_BLACK[] = {0x1b, '[', '7', ';', '3', '2',
-                                               ';',  '4', '0', 'm', 0};
-const char COLOR_REVERSEVIDEO_GREEN_RED[] = {0x1b, '[', '7', ';', '3', '2',
-                                             ';',  '4', '1', 'm', 0};
-const char COLOR_REVERSEVIDEO_GREEN_GREEN[] = {0x1b, '[', '7', ';', '3', '2',
-                                               ';',  '4', '2', 'm', 0};
-const char COLOR_REVERSEVIDEO_GREEN_YELLOW[] = {0x1b, '[', '7', ';', '3', '2',
-                                                ';',  '4', '3', 'm', 0};
-const char COLOR_REVERSEVIDEO_GREEN_BLUE[] = {0x1b, '[', '7', ';', '3', '2',
-                                              ';',  '4', '4', 'm', 0};
-const char COLOR_REVERSEVIDEO_GREEN_MAGENTA[] = {0x1b, '[', '7', ';', '3', '2',
-                                                 ';',  '4', '5', 'm', 0};
-const char COLOR_REVERSEVIDEO_GREEN_CYAN[] = {0x1b, '[', '7', ';', '3', '2',
-                                              ';',  '4', '6', 'm', 0};
-const char COLOR_REVERSEVIDEO_GREEN_WHITE[] = {0x1b, '[', '7', ';', '3', '2',
-                                               ';',  '4', '7', 'm', 0};
-const char COLOR_REVERSEVIDEO_GREEN_NORMAL[] = {0x1b, '[', '7', ';', '3', '2',
-                                                ';',  '4', '9', 'm', 0};
-const char COLOR_REVERSEVIDEO_YELLOW_BLACK[] = {0x1b, '[', '7', ';', '3', '3',
-                                                ';',  '4', '0', 'm', 0};
-const char COLOR_REVERSEVIDEO_YELLOW_RED[] = {0x1b, '[', '7', ';', '3', '3',
-                                              ';',  '4', '1', 'm', 0};
-const char COLOR_REVERSEVIDEO_YELLOW_GREEN[] = {0x1b, '[', '7', ';', '3', '3',
-                                                ';',  '4', '2', 'm', 0};
-const char COLOR_REVERSEVIDEO_YELLOW_YELLOW[] = {0x1b, '[', '7', ';', '3', '3',
-                                                 ';',  '4', '3', 'm', 0};
-const char COLOR_REVERSEVIDEO_YELLOW_BLUE[] = {0x1b, '[', '7', ';', '3', '3',
-                                               ';',  '4', '4', 'm', 0};
-const char COLOR_REVERSEVIDEO_YELLOW_MAGENTA[] = {0x1b, '[', '7', ';', '3', '3',
-                                                  ';',  '4', '5', 'm', 0};
-const char COLOR_REVERSEVIDEO_YELLOW_CYAN[] = {0x1b, '[', '7', ';', '3', '3',
-                                               ';',  '4', '6', 'm', 0};
-const char COLOR_REVERSEVIDEO_YELLOW_WHITE[] = {0x1b, '[', '7', ';', '3', '3',
-                                                ';',  '4', '7', 'm', 0};
-const char COLOR_REVERSEVIDEO_YELLOW_NORMAL[] = {0x1b, '[', '7', ';', '3', '3',
-                                                 ';',  '4', '9', 'm', 0};
-const char COLOR_REVERSEVIDEO_BLUE_BLACK[] = {0x1b, '[', '7', ';', '3', '4',
-                                              ';',  '4', '0', 'm', 0};
-const char COLOR_REVERSEVIDEO_BLUE_RED[] = {0x1b, '[', '7', ';', '3', '4',
-                                            ';',  '4', '1', 'm', 0};
-const char COLOR_REVERSEVIDEO_BLUE_GREEN[] = {0x1b, '[', '7', ';', '3', '4',
-                                              ';',  '4', '2', 'm', 0};
-const char COLOR_REVERSEVIDEO_BLUE_YELLOW[] = {0x1b, '[', '7', ';', '3', '4',
-                                               ';',  '4', '3', 'm', 0};
-const char COLOR_REVERSEVIDEO_BLUE_BLUE[] = {0x1b, '[', '7', ';', '3', '4',
-                                             ';',  '4', '4', 'm', 0};
-const char COLOR_REVERSEVIDEO_BLUE_MAGENTA[] = {0x1b, '[', '7', ';', '3', '4',
-                                                ';',  '4', '5', 'm', 0};
-const char COLOR_REVERSEVIDEO_BLUE_CYAN[] = {0x1b, '[', '7', ';', '3', '4',
-                                             ';',  '4', '6', 'm', 0};
-const char COLOR_REVERSEVIDEO_BLUE_WHITE[] = {0x1b, '[', '7', ';', '3', '4',
-                                              ';',  '4', '7', 'm', 0};
-const char COLOR_REVERSEVIDEO_BLUE_NORMAL[] = {0x1b, '[', '7', ';', '3', '4',
-                                               ';',  '4', '9', 'm', 0};
-const char COLOR_REVERSEVIDEO_MAGENTA_BLACK[] = {0x1b, '[', '7', ';', '3', '5',
-                                                 ';',  '4', '0', 'm', 0};
-const char COLOR_REVERSEVIDEO_MAGENTA_RED[] = {0x1b, '[', '7', ';', '3', '5',
-                                               ';',  '4', '1', 'm', 0};
-const char COLOR_REVERSEVIDEO_MAGENTA_GREEN[] = {0x1b, '[', '7', ';', '3', '5',
-                                                 ';',  '4', '2', 'm', 0};
-const char COLOR_REVERSEVIDEO_MAGENTA_YELLOW[] = {0x1b, '[', '7', ';', '3', '5',
-                                                  ';',  '4', '3', 'm', 0};
-const char COLOR_REVERSEVIDEO_MAGENTA_BLUE[] = {0x1b, '[', '7', ';', '3', '5',
-                                                ';',  '4', '4', 'm', 0};
-const char COLOR_REVERSEVIDEO_MAGENTA_MAGENTA[] = {
-    0x1b, '[', '7', ';', '3', '5', ';', '4', '5', 'm', 0};
-const char COLOR_REVERSEVIDEO_MAGENTA_CYAN[] = {0x1b, '[', '7', ';', '3', '5',
-                                                ';',  '4', '6', 'm', 0};
-const char COLOR_REVERSEVIDEO_MAGENTA_WHITE[] = {0x1b, '[', '7', ';', '3', '5',
-                                                 ';',  '4', '7', 'm', 0};
-const char COLOR_REVERSEVIDEO_MAGENTA_NORMAL[] = {0x1b, '[', '7', ';', '3', '5',
-                                                  ';',  '4', '9', 'm', 0};
-const char COLOR_REVERSEVIDEO_CYAN_BLACK[] = {0x1b, '[', '7', ';', '3', '6',
-                                              ';',  '4', '0', 'm', 0};
-const char COLOR_REVERSEVIDEO_CYAN_RED[] = {0x1b, '[', '7', ';', '3', '6',
-                                            ';',  '4', '1', 'm', 0};
-const char COLOR_REVERSEVIDEO_CYAN_GREEN[] = {0x1b, '[', '7', ';', '3', '6',
-                                              ';',  '4', '2', 'm', 0};
-const char COLOR_REVERSEVIDEO_CYAN_YELLOW[] = {0x1b, '[', '7', ';', '3', '6',
-                                               ';',  '4', '3', 'm', 0};
-const char COLOR_REVERSEVIDEO_CYAN_BLUE[] = {0x1b, '[', '7', ';', '3', '6',
-                                             ';',  '4', '4', 'm', 0};
-const char COLOR_REVERSEVIDEO_CYAN_MAGENTA[] = {0x1b, '[', '7', ';', '3', '6',
-                                                ';',  '4', '5', 'm', 0};
-const char COLOR_REVERSEVIDEO_CYAN_CYAN[] = {0x1b, '[', '7', ';', '3', '6',
-                                             ';',  '4', '6', 'm', 0};
-const char COLOR_REVERSEVIDEO_CYAN_WHITE[] = {0x1b, '[', '7', ';', '3', '6',
-                                              ';',  '4', '7', 'm', 0};
-const char COLOR_REVERSEVIDEO_CYAN_NORMAL[] = {0x1b, '[', '7', ';', '3', '6',
-                                               ';',  '4', '9', 'm', 0};
-const char COLOR_REVERSEVIDEO_WHITE_BLACK[] = {0x1b, '[', '7', ';', '3', '7',
-                                               ';',  '4', '0', 'm', 0};
-const char COLOR_REVERSEVIDEO_WHITE_RED[] = {0x1b, '[', '7', ';', '3', '7',
-                                             ';',  '4', '1', 'm', 0};
-const char COLOR_REVERSEVIDEO_WHITE_GREEN[] = {0x1b, '[', '7', ';', '3', '7',
-                                               ';',  '4', '2', 'm', 0};
-const char COLOR_REVERSEVIDEO_WHITE_YELLOW[] = {0x1b, '[', '7', ';', '3', '7',
-                                                ';',  '4', '3', 'm', 0};
-const char COLOR_REVERSEVIDEO_WHITE_BLUE[] = {0x1b, '[', '7', ';', '3', '7',
-                                              ';',  '4', '4', 'm', 0};
-const char COLOR_REVERSEVIDEO_WHITE_MAGENTA[] = {0x1b, '[', '7', ';', '3', '7',
-                                                 ';',  '4', '5', 'm', 0};
-const char COLOR_REVERSEVIDEO_WHITE_CYAN[] = {0x1b, '[', '7', ';', '3', '7',
-                                              ';',  '4', '6', 'm', 0};
-const char COLOR_REVERSEVIDEO_WHITE_WHITE[] = {0x1b, '[', '7', ';', '3', '7',
-                                               ';',  '4', '7', 'm', 0};
-const char COLOR_REVERSEVIDEO_WHITE_NORMAL[] = {0x1b, '[', '7', ';', '3', '7',
-                                                ';',  '4', '9', 'm', 0};
-const char COLOR_REVERSEVIDEO_NORMAL_BLACK[] = {0x1b, '[', '7', ';', '3', '9',
-                                                ';',  '4', '0', 'm', 0};
-const char COLOR_REVERSEVIDEO_NORMAL_RED[] = {0x1b, '[', '7', ';', '3', '9',
-                                              ';',  '4', '1', 'm', 0};
-const char COLOR_REVERSEVIDEO_NORMAL_GREEN[] = {0x1b, '[', '7', ';', '3', '9',
-                                                ';',  '4', '2', 'm', 0};
-const char COLOR_REVERSEVIDEO_NORMAL_YELLOW[] = {0x1b, '[', '7', ';', '3', '9',
-                                                 ';',  '4', '3', 'm', 0};
-const char COLOR_REVERSEVIDEO_NORMAL_BLUE[] = {0x1b, '[', '7', ';', '3', '9',
-                                               ';',  '4', '4', 'm', 0};
-const char COLOR_REVERSEVIDEO_NORMAL_MAGENTA[] = {0x1b, '[', '7', ';', '3', '9',
-                                                  ';',  '4', '5', 'm', 0};
-const char COLOR_REVERSEVIDEO_NORMAL_CYAN[] = {0x1b, '[', '7', ';', '3', '9',
-                                               ';',  '4', '6', 'm', 0};
-const char COLOR_REVERSEVIDEO_NORMAL_WHITE[] = {0x1b, '[', '7', ';', '3', '9',
-                                                ';',  '4', '7', 'm', 0};
-const char COLOR_REVERSEVIDEO_NORMAL_NORMAL[] = {0x1b, '[', '7', ';', '3', '9',
-                                                 ';',  '4', '9', 'm', 0};
-const char COLOR_CONCEALED_BLACK_BLACK[] = {0x1b, '[', '8', ';', '3', '0',
-                                            ';',  '4', '0', 'm', 0};
-const char COLOR_CONCEALED_BLACK_RED[] = {0x1b, '[', '8', ';', '3', '0',
-                                          ';',  '4', '1', 'm', 0};
-const char COLOR_CONCEALED_BLACK_GREEN[] = {0x1b, '[', '8', ';', '3', '0',
-                                            ';',  '4', '2', 'm', 0};
-const char COLOR_CONCEALED_BLACK_YELLOW[] = {0x1b, '[', '8', ';', '3', '0',
-                                             ';',  '4', '3', 'm', 0};
-const char COLOR_CONCEALED_BLACK_BLUE[] = {0x1b, '[', '8', ';', '3', '0',
-                                           ';',  '4', '4', 'm', 0};
-const char COLOR_CONCEALED_BLACK_MAGENTA[] = {0x1b, '[', '8', ';', '3', '0',
-                                              ';',  '4', '5', 'm', 0};
-const char COLOR_CONCEALED_BLACK_CYAN[] = {0x1b, '[', '8', ';', '3', '0',
-                                           ';',  '4', '6', 'm', 0};
-const char COLOR_CONCEALED_BLACK_WHITE[] = {0x1b, '[', '8', ';', '3', '0',
-                                            ';',  '4', '7', 'm', 0};
-const char COLOR_CONCEALED_BLACK_NORMAL[] = {0x1b, '[', '8', ';', '3', '0',
-                                             ';',  '4', '9', 'm', 0};
-const char COLOR_CONCEALED_RED_BLACK[] = {0x1b, '[', '8', ';', '3', '1',
-                                          ';',  '4', '0', 'm', 0};
-const char COLOR_CONCEALED_RED_RED[] = {0x1b, '[', '8', ';', '3', '1',
-                                        ';',  '4', '1', 'm', 0};
-const char COLOR_CONCEALED_RED_GREEN[] = {0x1b, '[', '8', ';', '3', '1',
-                                          ';',  '4', '2', 'm', 0};
-const char COLOR_CONCEALED_RED_YELLOW[] = {0x1b, '[', '8', ';', '3', '1',
-                                           ';',  '4', '3', 'm', 0};
-const char COLOR_CONCEALED_RED_BLUE[] = {0x1b, '[', '8', ';', '3', '1',
-                                         ';',  '4', '4', 'm', 0};
-const char COLOR_CONCEALED_RED_MAGENTA[] = {0x1b, '[', '8', ';', '3', '1',
-                                            ';',  '4', '5', 'm', 0};
-const char COLOR_CONCEALED_RED_CYAN[] = {0x1b, '[', '8', ';', '3', '1',
-                                         ';',  '4', '6', 'm', 0};
-const char COLOR_CONCEALED_RED_WHITE[] = {0x1b, '[', '8', ';', '3', '1',
-                                          ';',  '4', '7', 'm', 0};
-const char COLOR_CONCEALED_RED_NORMAL[] = {0x1b, '[', '8', ';', '3', '1',
-                                           ';',  '4', '9', 'm', 0};
-const char COLOR_CONCEALED_GREEN_BLACK[] = {0x1b, '[', '8', ';', '3', '2',
-                                            ';',  '4', '0', 'm', 0};
-const char COLOR_CONCEALED_GREEN_RED[] = {0x1b, '[', '8', ';', '3', '2',
-                                          ';',  '4', '1', 'm', 0};
-const char COLOR_CONCEALED_GREEN_GREEN[] = {0x1b, '[', '8', ';', '3', '2',
-                                            ';',  '4', '2', 'm', 0};
-const char COLOR_CONCEALED_GREEN_YELLOW[] = {0x1b, '[', '8', ';', '3', '2',
-                                             ';',  '4', '3', 'm', 0};
-const char COLOR_CONCEALED_GREEN_BLUE[] = {0x1b, '[', '8', ';', '3', '2',
-                                           ';',  '4', '4', 'm', 0};
-const char COLOR_CONCEALED_GREEN_MAGENTA[] = {0x1b, '[', '8', ';', '3', '2',
-                                              ';',  '4', '5', 'm', 0};
-const char COLOR_CONCEALED_GREEN_CYAN[] = {0x1b, '[', '8', ';', '3', '2',
-                                           ';',  '4', '6', 'm', 0};
-const char COLOR_CONCEALED_GREEN_WHITE[] = {0x1b, '[', '8', ';', '3', '2',
-                                            ';',  '4', '7', 'm', 0};
-const char COLOR_CONCEALED_GREEN_NORMAL[] = {0x1b, '[', '8', ';', '3', '2',
-                                             ';',  '4', '9', 'm', 0};
-const char COLOR_CONCEALED_YELLOW_BLACK[] = {0x1b, '[', '8', ';', '3', '3',
-                                             ';',  '4', '0', 'm', 0};
-const char COLOR_CONCEALED_YELLOW_RED[] = {0x1b, '[', '8', ';', '3', '3',
-                                           ';',  '4', '1', 'm', 0};
-const char COLOR_CONCEALED_YELLOW_GREEN[] = {0x1b, '[', '8', ';', '3', '3',
-                                             ';',  '4', '2', 'm', 0};
-const char COLOR_CONCEALED_YELLOW_YELLOW[] = {0x1b, '[', '8', ';', '3', '3',
-                                              ';',  '4', '3', 'm', 0};
-const char COLOR_CONCEALED_YELLOW_BLUE[] = {0x1b, '[', '8', ';', '3', '3',
-                                            ';',  '4', '4', 'm', 0};
-const char COLOR_CONCEALED_YELLOW_MAGENTA[] = {0x1b, '[', '8', ';', '3', '3',
-                                               ';',  '4', '5', 'm', 0};
-const char COLOR_CONCEALED_YELLOW_CYAN[] = {0x1b, '[', '8', ';', '3', '3',
-                                            ';',  '4', '6', 'm', 0};
-const char COLOR_CONCEALED_YELLOW_WHITE[] = {0x1b, '[', '8', ';', '3', '3',
-                                             ';',  '4', '7', 'm', 0};
-const char COLOR_CONCEALED_YELLOW_NORMAL[] = {0x1b, '[', '8', ';', '3', '3',
-                                              ';',  '4', '9', 'm', 0};
-const char COLOR_CONCEALED_BLUE_BLACK[] = {0x1b, '[', '8', ';', '3', '4',
-                                           ';',  '4', '0', 'm', 0};
-const char COLOR_CONCEALED_BLUE_RED[] = {0x1b, '[', '8', ';', '3', '4',
-                                         ';',  '4', '1', 'm', 0};
-const char COLOR_CONCEALED_BLUE_GREEN[] = {0x1b, '[', '8', ';', '3', '4',
-                                           ';',  '4', '2', 'm', 0};
-const char COLOR_CONCEALED_BLUE_YELLOW[] = {0x1b, '[', '8', ';', '3', '4',
-                                            ';',  '4', '3', 'm', 0};
-const char COLOR_CONCEALED_BLUE_BLUE[] = {0x1b, '[', '8', ';', '3', '4',
-                                          ';',  '4', '4', 'm', 0};
-const char COLOR_CONCEALED_BLUE_MAGENTA[] = {0x1b, '[', '8', ';', '3', '4',
-                                             ';',  '4', '5', 'm', 0};
-const char COLOR_CONCEALED_BLUE_CYAN[] = {0x1b, '[', '8', ';', '3', '4',
-                                          ';',  '4', '6', 'm', 0};
-const char COLOR_CONCEALED_BLUE_WHITE[] = {0x1b, '[', '8', ';', '3', '4',
-                                           ';',  '4', '7', 'm', 0};
-const char COLOR_CONCEALED_BLUE_NORMAL[] = {0x1b, '[', '8', ';', '3', '4',
-                                            ';',  '4', '9', 'm', 0};
-const char COLOR_CONCEALED_MAGENTA_BLACK[] = {0x1b, '[', '8', ';', '3', '5',
-                                              ';',  '4', '0', 'm', 0};
-const char COLOR_CONCEALED_MAGENTA_RED[] = {0x1b, '[', '8', ';', '3', '5',
-                                            ';',  '4', '1', 'm', 0};
-const char COLOR_CONCEALED_MAGENTA_GREEN[] = {0x1b, '[', '8', ';', '3', '5',
-                                              ';',  '4', '2', 'm', 0};
-const char COLOR_CONCEALED_MAGENTA_YELLOW[] = {0x1b, '[', '8', ';', '3', '5',
-                                               ';',  '4', '3', 'm', 0};
-const char COLOR_CONCEALED_MAGENTA_BLUE[] = {0x1b, '[', '8', ';', '3', '5',
-                                             ';',  '4', '4', 'm', 0};
-const char COLOR_CONCEALED_MAGENTA_MAGENTA[] = {0x1b, '[', '8', ';', '3', '5',
-                                                ';',  '4', '5', 'm', 0};
-const char COLOR_CONCEALED_MAGENTA_CYAN[] = {0x1b, '[', '8', ';', '3', '5',
-                                             ';',  '4', '6', 'm', 0};
-const char COLOR_CONCEALED_MAGENTA_WHITE[] = {0x1b, '[', '8', ';', '3', '5',
-                                              ';',  '4', '7', 'm', 0};
-const char COLOR_CONCEALED_MAGENTA_NORMAL[] = {0x1b, '[', '8', ';', '3', '5',
-                                               ';',  '4', '9', 'm', 0};
-const char COLOR_CONCEALED_CYAN_BLACK[] = {0x1b, '[', '8', ';', '3', '6',
-                                           ';',  '4', '0', 'm', 0};
-const char COLOR_CONCEALED_CYAN_RED[] = {0x1b, '[', '8', ';', '3', '6',
-                                         ';',  '4', '1', 'm', 0};
-const char COLOR_CONCEALED_CYAN_GREEN[] = {0x1b, '[', '8', ';', '3', '6',
-                                           ';',  '4', '2', 'm', 0};
-const char COLOR_CONCEALED_CYAN_YELLOW[] = {0x1b, '[', '8', ';', '3', '6',
-                                            ';',  '4', '3', 'm', 0};
-const char COLOR_CONCEALED_CYAN_BLUE[] = {0x1b, '[', '8', ';', '3', '6',
-                                          ';',  '4', '4', 'm', 0};
-const char COLOR_CONCEALED_CYAN_MAGENTA[] = {0x1b, '[', '8', ';', '3', '6',
-                                             ';',  '4', '5', 'm', 0};
-const char COLOR_CONCEALED_CYAN_CYAN[] = {0x1b, '[', '8', ';', '3', '6',
-                                          ';',  '4', '6', 'm', 0};
-const char COLOR_CONCEALED_CYAN_WHITE[] = {0x1b, '[', '8', ';', '3', '6',
-                                           ';',  '4', '7', 'm', 0};
-const char COLOR_CONCEALED_CYAN_NORMAL[] = {0x1b, '[', '8', ';', '3', '6',
-                                            ';',  '4', '9', 'm', 0};
-const char COLOR_CONCEALED_WHITE_BLACK[] = {0x1b, '[', '8', ';', '3', '7',
-                                            ';',  '4', '0', 'm', 0};
-const char COLOR_CONCEALED_WHITE_RED[] = {0x1b, '[', '8', ';', '3', '7',
-                                          ';',  '4', '1', 'm', 0};
-const char COLOR_CONCEALED_WHITE_GREEN[] = {0x1b, '[', '8', ';', '3', '7',
-                                            ';',  '4', '2', 'm', 0};
-const char COLOR_CONCEALED_WHITE_YELLOW[] = {0x1b, '[', '8', ';', '3', '7',
-                                             ';',  '4', '3', 'm', 0};
-const char COLOR_CONCEALED_WHITE_BLUE[] = {0x1b, '[', '8', ';', '3', '7',
-                                           ';',  '4', '4', 'm', 0};
-const char COLOR_CONCEALED_WHITE_MAGENTA[] = {0x1b, '[', '8', ';', '3', '7',
-                                              ';',  '4', '5', 'm', 0};
-const char COLOR_CONCEALED_WHITE_CYAN[] = {0x1b, '[', '8', ';', '3', '7',
-                                           ';',  '4', '6', 'm', 0};
-const char COLOR_CONCEALED_WHITE_WHITE[] = {0x1b, '[', '8', ';', '3', '7',
-                                            ';',  '4', '7', 'm', 0};
-const char COLOR_CONCEALED_WHITE_NORMAL[] = {0x1b, '[', '8', ';', '3', '7',
-                                             ';',  '4', '9', 'm', 0};
-const char COLOR_CONCEALED_NORMAL_BLACK[] = {0x1b, '[', '8', ';', '3', '9',
-                                             ';',  '4', '0', 'm', 0};
-const char COLOR_CONCEALED_NORMAL_RED[] = {0x1b, '[', '8', ';', '3', '9',
-                                           ';',  '4', '1', 'm', 0};
-const char COLOR_CONCEALED_NORMAL_GREEN[] = {0x1b, '[', '8', ';', '3', '9',
-                                             ';',  '4', '2', 'm', 0};
-const char COLOR_CONCEALED_NORMAL_YELLOW[] = {0x1b, '[', '8', ';', '3', '9',
-                                              ';',  '4', '3', 'm', 0};
-const char COLOR_CONCEALED_NORMAL_BLUE[] = {0x1b, '[', '8', ';', '3', '9',
-                                            ';',  '4', '4', 'm', 0};
-const char COLOR_CONCEALED_NORMAL_MAGENTA[] = {0x1b, '[', '8', ';', '3', '9',
-                                               ';',  '4', '5', 'm', 0};
-const char COLOR_CONCEALED_NORMAL_CYAN[] = {0x1b, '[', '8', ';', '3', '9',
-                                            ';',  '4', '6', 'm', 0};
-const char COLOR_CONCEALED_NORMAL_WHITE[] = {0x1b, '[', '8', ';', '3', '9',
-                                             ';',  '4', '7', 'm', 0};
-const char COLOR_CONCEALED_NORMAL_NORMAL[] = {0x1b, '[', '8', ';', '3', '9',
-                                              ';',  '4', '9', 'm', 0};
-const char COLOR_ATTRIBUTES_OFF_COLOREND[] = {0x1b, '[', '0', 'm', 0};
-const char COLOR_BOLD_COLOREND[] = {0x1b, '[', '1', 'm', 0};
-const char COLOR_UNDERSCORE_COLOREND[] = {0x1b, '[', '4', 'm', 0};
-const char COLOR_BLINK_COLOREND[] = {0x1b, '[', '5', 'm', 0};
-const char COLOR_REVERSEVIDEO_COLOREND[] = {0x1b, '[', '7', 'm', 0};
-const char COLOR_CONCEALED_COLOREND[] = {0x1b, '[', '8', 'm', 0};
-const char COLOR_BLACK_BLACK_COLOREND[] = {0x1b, '[', '3', '0', ';',
-                                           '4',  '0', 'm', 0};
-const char COLOR_BLACK_RED_COLOREND[] = {0x1b, '[', '3', '0', ';',
-                                         '4',  '1', 'm', 0};
-const char COLOR_BLACK_GREEN_COLOREND[] = {0x1b, '[', '3', '0', ';',
-                                           '4',  '2', 'm', 0};
-const char COLOR_BLACK_YELLOW_COLOREND[] = {0x1b, '[', '3', '0', ';',
-                                            '4',  '3', 'm', 0};
-const char COLOR_BLACK_BLUE_COLOREND[] = {0x1b, '[', '3', '0', ';',
-                                          '4',  '4', 'm', 0};
-const char COLOR_BLACK_MAGENTA_COLOREND[] = {0x1b, '[', '3', '0', ';',
-                                             '4',  '5', 'm', 0};
-const char COLOR_BLACK_CYAN_COLOREND[] = {0x1b, '[', '3', '0', ';',
-                                          '4',  '6', 'm', 0};
-const char COLOR_BLACK_WHITE_COLOREND[] = {0x1b, '[', '3', '0', ';',
-                                           '4',  '7', 'm', 0};
-const char COLOR_BLACK_NORMAL_COLOREND[] = {0x1b, '[', '3', '0', ';',
-                                            '4',  '9', 'm', 0};
-const char COLOR_RED_BLACK_COLOREND[] = {0x1b, '[', '3', '1', ';',
-                                         '4',  '0', 'm', 0};
-const char COLOR_RED_RED_COLOREND[] = {0x1b, '[', '3', '1', ';',
-                                       '4',  '1', 'm', 0};
-const char COLOR_RED_GREEN_COLOREND[] = {0x1b, '[', '3', '1', ';',
-                                         '4',  '2', 'm', 0};
-const char COLOR_RED_YELLOW_COLOREND[] = {0x1b, '[', '3', '1', ';',
-                                          '4',  '3', 'm', 0};
-const char COLOR_RED_BLUE_COLOREND[] = {0x1b, '[', '3', '1', ';',
-                                        '4',  '4', 'm', 0};
-const char COLOR_RED_MAGENTA_COLOREND[] = {0x1b, '[', '3', '1', ';',
-                                           '4',  '5', 'm', 0};
-const char COLOR_RED_CYAN_COLOREND[] = {0x1b, '[', '3', '1', ';',
-                                        '4',  '6', 'm', 0};
-const char COLOR_RED_WHITE_COLOREND[] = {0x1b, '[', '3', '1', ';',
-                                         '4',  '7', 'm', 0};
-const char COLOR_RED_NORMAL_COLOREND[] = {0x1b, '[', '3', '1', ';',
-                                          '4',  '9', 'm', 0};
-const char COLOR_GREEN_BLACK_COLOREND[] = {0x1b, '[', '3', '2', ';',
-                                           '4',  '0', 'm', 0};
-const char COLOR_GREEN_RED_COLOREND[] = {0x1b, '[', '3', '2', ';',
-                                         '4',  '1', 'm', 0};
-const char COLOR_GREEN_GREEN_COLOREND[] = {0x1b, '[', '3', '2', ';',
-                                           '4',  '2', 'm', 0};
-const char COLOR_GREEN_YELLOW_COLOREND[] = {0x1b, '[', '3', '2', ';',
-                                            '4',  '3', 'm', 0};
-const char COLOR_GREEN_BLUE_COLOREND[] = {0x1b, '[', '3', '2', ';',
-                                          '4',  '4', 'm', 0};
-const char COLOR_GREEN_MAGENTA_COLOREND[] = {0x1b, '[', '3', '2', ';',
-                                             '4',  '5', 'm', 0};
-const char COLOR_GREEN_CYAN_COLOREND[] = {0x1b, '[', '3', '2', ';',
-                                          '4',  '6', 'm', 0};
-const char COLOR_GREEN_WHITE_COLOREND[] = {0x1b, '[', '3', '2', ';',
-                                           '4',  '7', 'm', 0};
-const char COLOR_GREEN_NORMAL_COLOREND[] = {0x1b, '[', '3', '2', ';',
-                                            '4',  '9', 'm', 0};
-const char COLOR_YELLOW_BLACK_COLOREND[] = {0x1b, '[', '3', '3', ';',
-                                            '4',  '0', 'm', 0};
-const char COLOR_YELLOW_RED_COLOREND[] = {0x1b, '[', '3', '3', ';',
-                                          '4',  '1', 'm', 0};
-const char COLOR_YELLOW_GREEN_COLOREND[] = {0x1b, '[', '3', '3', ';',
-                                            '4',  '2', 'm', 0};
-const char COLOR_YELLOW_YELLOW_COLOREND[] = {0x1b, '[', '3', '3', ';',
-                                             '4',  '3', 'm', 0};
-const char COLOR_YELLOW_BLUE_COLOREND[] = {0x1b, '[', '3', '3', ';',
-                                           '4',  '4', 'm', 0};
-const char COLOR_YELLOW_MAGENTA_COLOREND[] = {0x1b, '[', '3', '3', ';',
-                                              '4',  '5', 'm', 0};
-const char COLOR_YELLOW_CYAN_COLOREND[] = {0x1b, '[', '3', '3', ';',
-                                           '4',  '6', 'm', 0};
-const char COLOR_YELLOW_WHITE_COLOREND[] = {0x1b, '[', '3', '3', ';',
-                                            '4',  '7', 'm', 0};
-const char COLOR_YELLOW_NORMAL_COLOREND[] = {0x1b, '[', '3', '3', ';',
-                                             '4',  '9', 'm', 0};
-const char COLOR_BLUE_BLACK_COLOREND[] = {0x1b, '[', '3', '4', ';',
-                                          '4',  '0', 'm', 0};
-const char COLOR_BLUE_RED_COLOREND[] = {0x1b, '[', '3', '4', ';',
-                                        '4',  '1', 'm', 0};
-const char COLOR_BLUE_GREEN_COLOREND[] = {0x1b, '[', '3', '4', ';',
-                                          '4',  '2', 'm', 0};
-const char COLOR_BLUE_YELLOW_COLOREND[] = {0x1b, '[', '3', '4', ';',
-                                           '4',  '3', 'm', 0};
-const char COLOR_BLUE_BLUE_COLOREND[] = {0x1b, '[', '3', '4', ';',
-                                         '4',  '4', 'm', 0};
-const char COLOR_BLUE_MAGENTA_COLOREND[] = {0x1b, '[', '3', '4', ';',
-                                            '4',  '5', 'm', 0};
-const char COLOR_BLUE_CYAN_COLOREND[] = {0x1b, '[', '3', '4', ';',
-                                         '4',  '6', 'm', 0};
-const char COLOR_BLUE_WHITE_COLOREND[] = {0x1b, '[', '3', '4', ';',
-                                          '4',  '7', 'm', 0};
-const char COLOR_BLUE_NORMAL_COLOREND[] = {0x1b, '[', '3', '4', ';',
-                                           '4',  '9', 'm', 0};
-const char COLOR_MAGENTA_BLACK_COLOREND[] = {0x1b, '[', '3', '5', ';',
-                                             '4',  '0', 'm', 0};
-const char COLOR_MAGENTA_RED_COLOREND[] = {0x1b, '[', '3', '5', ';',
-                                           '4',  '1', 'm', 0};
-const char COLOR_MAGENTA_GREEN_COLOREND[] = {0x1b, '[', '3', '5', ';',
-                                             '4',  '2', 'm', 0};
-const char COLOR_MAGENTA_YELLOW_COLOREND[] = {0x1b, '[', '3', '5', ';',
-                                              '4',  '3', 'm', 0};
-const char COLOR_MAGENTA_BLUE_COLOREND[] = {0x1b, '[', '3', '5', ';',
-                                            '4',  '4', 'm', 0};
-const char COLOR_MAGENTA_MAGENTA_COLOREND[] = {0x1b, '[', '3', '5', ';',
-                                               '4',  '5', 'm', 0};
-const char COLOR_MAGENTA_CYAN_COLOREND[] = {0x1b, '[', '3', '5', ';',
-                                            '4',  '6', 'm', 0};
-const char COLOR_MAGENTA_WHITE_COLOREND[] = {0x1b, '[', '3', '5', ';',
-                                             '4',  '7', 'm', 0};
-const char COLOR_MAGENTA_NORMAL_COLOREND[] = {0x1b, '[', '3', '5', ';',
-                                              '4',  '9', 'm', 0};
-const char COLOR_CYAN_BLACK_COLOREND[] = {0x1b, '[', '3', '6', ';',
-                                          '4',  '0', 'm', 0};
-const char COLOR_CYAN_RED_COLOREND[] = {0x1b, '[', '3', '6', ';',
-                                        '4',  '1', 'm', 0};
-const char COLOR_CYAN_GREEN_COLOREND[] = {0x1b, '[', '3', '6', ';',
-                                          '4',  '2', 'm', 0};
-const char COLOR_CYAN_YELLOW_COLOREND[] = {0x1b, '[', '3', '6', ';',
-                                           '4',  '3', 'm', 0};
-const char COLOR_CYAN_BLUE_COLOREND[] = {0x1b, '[', '3', '6', ';',
-                                         '4',  '4', 'm', 0};
-const char COLOR_CYAN_MAGENTA_COLOREND[] = {0x1b, '[', '3', '6', ';',
-                                            '4',  '5', 'm', 0};
-const char COLOR_CYAN_CYAN_COLOREND[] = {0x1b, '[', '3', '6', ';',
-                                         '4',  '6', 'm', 0};
-const char COLOR_CYAN_WHITE_COLOREND[] = {0x1b, '[', '3', '6', ';',
-                                          '4',  '7', 'm', 0};
-const char COLOR_CYAN_NORMAL_COLOREND[] = {0x1b, '[', '3', '6', ';',
-                                           '4',  '9', 'm', 0};
-const char COLOR_WHITE_BLACK_COLOREND[] = {0x1b, '[', '3', '7', ';',
-                                           '4',  '0', 'm', 0};
-const char COLOR_WHITE_RED_COLOREND[] = {0x1b, '[', '3', '7', ';',
-                                         '4',  '1', 'm', 0};
-const char COLOR_WHITE_GREEN_COLOREND[] = {0x1b, '[', '3', '7', ';',
-                                           '4',  '2', 'm', 0};
-const char COLOR_WHITE_YELLOW_COLOREND[] = {0x1b, '[', '3', '7', ';',
-                                            '4',  '3', 'm', 0};
-const char COLOR_WHITE_BLUE_COLOREND[] = {0x1b, '[', '3', '7', ';',
-                                          '4',  '4', 'm', 0};
-const char COLOR_WHITE_MAGENTA_COLOREND[] = {0x1b, '[', '3', '7', ';',
-                                             '4',  '5', 'm', 0};
-const char COLOR_WHITE_CYAN_COLOREND[] = {0x1b, '[', '3', '7', ';',
-                                          '4',  '6', 'm', 0};
-const char COLOR_WHITE_WHITE_COLOREND[] = {0x1b, '[', '3', '7', ';',
-                                           '4',  '7', 'm', 0};
-const char COLOR_WHITE_NORMAL_COLOREND[] = {0x1b, '[', '3', '7', ';',
-                                            '4',  '9', 'm', 0};
-const char COLOR_NORMAL_BLACK_COLOREND[] = {0x1b, '[', '3', '9', ';',
-                                            '4',  '0', 'm', 0};
-const char COLOR_NORMAL_RED_COLOREND[] = {0x1b, '[', '3', '9', ';',
-                                          '4',  '1', 'm', 0};
-const char COLOR_NORMAL_GREEN_COLOREND[] = {0x1b, '[', '3', '9', ';',
-                                            '4',  '2', 'm', 0};
-const char COLOR_NORMAL_YELLOW_COLOREND[] = {0x1b, '[', '3', '9', ';',
-                                             '4',  '3', 'm', 0};
-const char COLOR_NORMAL_BLUE_COLOREND[] = {0x1b, '[', '3', '9', ';',
-                                           '4',  '4', 'm', 0};
-const char COLOR_NORMAL_MAGENTA_COLOREND[] = {0x1b, '[', '3', '9', ';',
-                                              '4',  '5', 'm', 0};
-const char COLOR_NORMAL_CYAN_COLOREND[] = {0x1b, '[', '3', '9', ';',
-                                           '4',  '6', 'm', 0};
-const char COLOR_NORMAL_WHITE_COLOREND[] = {0x1b, '[', '3', '9', ';',
-                                            '4',  '7', 'm', 0};
-const char COLOR_NORMAL_NORMAL_COLOREND[] = {0x1b, '[', '3', '9', ';',
-                                             '4',  '9', 'm', 0};
-const char COLOR_BOLD_BLACK_BLACK_COLOREND[] = {0x1b, '[', '1', ';', '3', '0',
-                                                ';',  '4', '0', 'm', 0};
-const char COLOR_BOLD_BLACK_RED_COLOREND[] = {0x1b, '[', '1', ';', '3', '0',
-                                              ';',  '4', '1', 'm', 0};
-const char COLOR_BOLD_BLACK_GREEN_COLOREND[] = {0x1b, '[', '1', ';', '3', '0',
-                                                ';',  '4', '2', 'm', 0};
-const char COLOR_BOLD_BLACK_YELLOW_COLOREND[] = {0x1b, '[', '1', ';', '3', '0',
-                                                 ';',  '4', '3', 'm', 0};
-const char COLOR_BOLD_BLACK_BLUE_COLOREND[] = {0x1b, '[', '1', ';', '3', '0',
-                                               ';',  '4', '4', 'm', 0};
-const char COLOR_BOLD_BLACK_MAGENTA_COLOREND[] = {0x1b, '[', '1', ';', '3', '0',
-                                                  ';',  '4', '5', 'm', 0};
-const char COLOR_BOLD_BLACK_CYAN_COLOREND[] = {0x1b, '[', '1', ';', '3', '0',
-                                               ';',  '4', '6', 'm', 0};
-const char COLOR_BOLD_BLACK_WHITE_COLOREND[] = {0x1b, '[', '1', ';', '3', '0',
-                                                ';',  '4', '7', 'm', 0};
-const char COLOR_BOLD_BLACK_NORMAL_COLOREND[] = {0x1b, '[', '1', ';', '3', '0',
-                                                 ';',  '4', '9', 'm', 0};
-const char COLOR_BOLD_RED_BLACK_COLOREND[] = {0x1b, '[', '1', ';', '3', '1',
-                                              ';',  '4', '0', 'm', 0};
-const char COLOR_BOLD_RED_RED_COLOREND[] = {0x1b, '[', '1', ';', '3', '1',
-                                            ';',  '4', '1', 'm', 0};
-const char COLOR_BOLD_RED_GREEN_COLOREND[] = {0x1b, '[', '1', ';', '3', '1',
-                                              ';',  '4', '2', 'm', 0};
-const char COLOR_BOLD_RED_YELLOW_COLOREND[] = {0x1b, '[', '1', ';', '3', '1',
-                                               ';',  '4', '3', 'm', 0};
-const char COLOR_BOLD_RED_BLUE_COLOREND[] = {0x1b, '[', '1', ';', '3', '1',
-                                             ';',  '4', '4', 'm', 0};
-const char COLOR_BOLD_RED_MAGENTA_COLOREND[] = {0x1b, '[', '1', ';', '3', '1',
-                                                ';',  '4', '5', 'm', 0};
-const char COLOR_BOLD_RED_CYAN_COLOREND[] = {0x1b, '[', '1', ';', '3', '1',
-                                             ';',  '4', '6', 'm', 0};
-const char COLOR_BOLD_RED_WHITE_COLOREND[] = {0x1b, '[', '1', ';', '3', '1',
-                                              ';',  '4', '7', 'm', 0};
-const char COLOR_BOLD_RED_NORMAL_COLOREND[] = {0x1b, '[', '1', ';', '3', '1',
-                                               ';',  '4', '9', 'm', 0};
-const char COLOR_BOLD_GREEN_BLACK_COLOREND[] = {0x1b, '[', '1', ';', '3', '2',
-                                                ';',  '4', '0', 'm', 0};
-const char COLOR_BOLD_GREEN_RED_COLOREND[] = {0x1b, '[', '1', ';', '3', '2',
-                                              ';',  '4', '1', 'm', 0};
-const char COLOR_BOLD_GREEN_GREEN_COLOREND[] = {0x1b, '[', '1', ';', '3', '2',
-                                                ';',  '4', '2', 'm', 0};
-const char COLOR_BOLD_GREEN_YELLOW_COLOREND[] = {0x1b, '[', '1', ';', '3', '2',
-                                                 ';',  '4', '3', 'm', 0};
-const char COLOR_BOLD_GREEN_BLUE_COLOREND[] = {0x1b, '[', '1', ';', '3', '2',
-                                               ';',  '4', '4', 'm', 0};
-const char COLOR_BOLD_GREEN_MAGENTA_COLOREND[] = {0x1b, '[', '1', ';', '3', '2',
-                                                  ';',  '4', '5', 'm', 0};
-const char COLOR_BOLD_GREEN_CYAN_COLOREND[] = {0x1b, '[', '1', ';', '3', '2',
-                                               ';',  '4', '6', 'm', 0};
-const char COLOR_BOLD_GREEN_WHITE_COLOREND[] = {0x1b, '[', '1', ';', '3', '2',
-                                                ';',  '4', '7', 'm', 0};
-const char COLOR_BOLD_GREEN_NORMAL_COLOREND[] = {0x1b, '[', '1', ';', '3', '2',
-                                                 ';',  '4', '9', 'm', 0};
-const char COLOR_BOLD_YELLOW_BLACK_COLOREND[] = {0x1b, '[', '1', ';', '3', '3',
-                                                 ';',  '4', '0', 'm', 0};
-const char COLOR_BOLD_YELLOW_RED_COLOREND[] = {0x1b, '[', '1', ';', '3', '3',
-                                               ';',  '4', '1', 'm', 0};
-const char COLOR_BOLD_YELLOW_GREEN_COLOREND[] = {0x1b, '[', '1', ';', '3', '3',
-                                                 ';',  '4', '2', 'm', 0};
-const char COLOR_BOLD_YELLOW_YELLOW_COLOREND[] = {0x1b, '[', '1', ';', '3', '3',
-                                                  ';',  '4', '3', 'm', 0};
-const char COLOR_BOLD_YELLOW_BLUE_COLOREND[] = {0x1b, '[', '1', ';', '3', '3',
-                                                ';',  '4', '4', 'm', 0};
-const char COLOR_BOLD_YELLOW_MAGENTA_COLOREND[] = {
-    0x1b, '[', '1', ';', '3', '3', ';', '4', '5', 'm', 0};
-const char COLOR_BOLD_YELLOW_CYAN_COLOREND[] = {0x1b, '[', '1', ';', '3', '3',
-                                                ';',  '4', '6', 'm', 0};
-const char COLOR_BOLD_YELLOW_WHITE_COLOREND[] = {0x1b, '[', '1', ';', '3', '3',
-                                                 ';',  '4', '7', 'm', 0};
-const char COLOR_BOLD_YELLOW_NORMAL_COLOREND[] = {0x1b, '[', '1', ';', '3', '3',
-                                                  ';',  '4', '9', 'm', 0};
-const char COLOR_BOLD_BLUE_BLACK_COLOREND[] = {0x1b, '[', '1', ';', '3', '4',
-                                               ';',  '4', '0', 'm', 0};
-const char COLOR_BOLD_BLUE_RED_COLOREND[] = {0x1b, '[', '1', ';', '3', '4',
-                                             ';',  '4', '1', 'm', 0};
-const char COLOR_BOLD_BLUE_GREEN_COLOREND[] = {0x1b, '[', '1', ';', '3', '4',
-                                               ';',  '4', '2', 'm', 0};
-const char COLOR_BOLD_BLUE_YELLOW_COLOREND[] = {0x1b, '[', '1', ';', '3', '4',
-                                                ';',  '4', '3', 'm', 0};
-const char COLOR_BOLD_BLUE_BLUE_COLOREND[] = {0x1b, '[', '1', ';', '3', '4',
-                                              ';',  '4', '4', 'm', 0};
-const char COLOR_BOLD_BLUE_MAGENTA_COLOREND[] = {0x1b, '[', '1', ';', '3', '4',
-                                                 ';',  '4', '5', 'm', 0};
-const char COLOR_BOLD_BLUE_CYAN_COLOREND[] = {0x1b, '[', '1', ';', '3', '4',
-                                              ';',  '4', '6', 'm', 0};
-const char COLOR_BOLD_BLUE_WHITE_COLOREND[] = {0x1b, '[', '1', ';', '3', '4',
-                                               ';',  '4', '7', 'm', 0};
-const char COLOR_BOLD_BLUE_NORMAL_COLOREND[] = {0x1b, '[', '1', ';', '3', '4',
-                                                ';',  '4', '9', 'm', 0};
-const char COLOR_BOLD_MAGENTA_BLACK_COLOREND[] = {0x1b, '[', '1', ';', '3', '5',
-                                                  ';',  '4', '0', 'm', 0};
-const char COLOR_BOLD_MAGENTA_RED_COLOREND[] = {0x1b, '[', '1', ';', '3', '5',
-                                                ';',  '4', '1', 'm', 0};
-const char COLOR_BOLD_MAGENTA_GREEN_COLOREND[] = {0x1b, '[', '1', ';', '3', '5',
-                                                  ';',  '4', '2', 'm', 0};
-const char COLOR_BOLD_MAGENTA_YELLOW_COLOREND[] = {
-    0x1b, '[', '1', ';', '3', '5', ';', '4', '3', 'm', 0};
-const char COLOR_BOLD_MAGENTA_BLUE_COLOREND[] = {0x1b, '[', '1', ';', '3', '5',
-                                                 ';',  '4', '4', 'm', 0};
-const char COLOR_BOLD_MAGENTA_MAGENTA_COLOREND[] = {
-    0x1b, '[', '1', ';', '3', '5', ';', '4', '5', 'm', 0};
-const char COLOR_BOLD_MAGENTA_CYAN_COLOREND[] = {0x1b, '[', '1', ';', '3', '5',
-                                                 ';',  '4', '6', 'm', 0};
-const char COLOR_BOLD_MAGENTA_WHITE_COLOREND[] = {0x1b, '[', '1', ';', '3', '5',
-                                                  ';',  '4', '7', 'm', 0};
-const char COLOR_BOLD_MAGENTA_NORMAL_COLOREND[] = {
-    0x1b, '[', '1', ';', '3', '5', ';', '4', '9', 'm', 0};
-const char COLOR_BOLD_CYAN_BLACK_COLOREND[] = {0x1b, '[', '1', ';', '3', '6',
-                                               ';',  '4', '0', 'm', 0};
-const char COLOR_BOLD_CYAN_RED_COLOREND[] = {0x1b, '[', '1', ';', '3', '6',
-                                             ';',  '4', '1', 'm', 0};
-const char COLOR_BOLD_CYAN_GREEN_COLOREND[] = {0x1b, '[', '1', ';', '3', '6',
-                                               ';',  '4', '2', 'm', 0};
-const char COLOR_BOLD_CYAN_YELLOW_COLOREND[] = {0x1b, '[', '1', ';', '3', '6',
-                                                ';',  '4', '3', 'm', 0};
-const char COLOR_BOLD_CYAN_BLUE_COLOREND[] = {0x1b, '[', '1', ';', '3', '6',
-                                              ';',  '4', '4', 'm', 0};
-const char COLOR_BOLD_CYAN_MAGENTA_COLOREND[] = {0x1b, '[', '1', ';', '3', '6',
-                                                 ';',  '4', '5', 'm', 0};
-const char COLOR_BOLD_CYAN_CYAN_COLOREND[] = {0x1b, '[', '1', ';', '3', '6',
-                                              ';',  '4', '6', 'm', 0};
-const char COLOR_BOLD_CYAN_WHITE_COLOREND[] = {0x1b, '[', '1', ';', '3', '6',
-                                               ';',  '4', '7', 'm', 0};
-const char COLOR_BOLD_CYAN_NORMAL_COLOREND[] = {0x1b, '[', '1', ';', '3', '6',
-                                                ';',  '4', '9', 'm', 0};
-const char COLOR_BOLD_WHITE_BLACK_COLOREND[] = {0x1b, '[', '1', ';', '3', '7',
-                                                ';',  '4', '0', 'm', 0};
-const char COLOR_BOLD_WHITE_RED_COLOREND[] = {0x1b, '[', '1', ';', '3', '7',
-                                              ';',  '4', '1', 'm', 0};
-const char COLOR_BOLD_WHITE_GREEN_COLOREND[] = {0x1b, '[', '1', ';', '3', '7',
-                                                ';',  '4', '2', 'm', 0};
-const char COLOR_BOLD_WHITE_YELLOW_COLOREND[] = {0x1b, '[', '1', ';', '3', '7',
-                                                 ';',  '4', '3', 'm', 0};
-const char COLOR_BOLD_WHITE_BLUE_COLOREND[] = {0x1b, '[', '1', ';', '3', '7',
-                                               ';',  '4', '4', 'm', 0};
-const char COLOR_BOLD_WHITE_MAGENTA_COLOREND[] = {0x1b, '[', '1', ';', '3', '7',
-                                                  ';',  '4', '5', 'm', 0};
-const char COLOR_BOLD_WHITE_CYAN_COLOREND[] = {0x1b, '[', '1', ';', '3', '7',
-                                               ';',  '4', '6', 'm', 0};
-const char COLOR_BOLD_WHITE_WHITE_COLOREND[] = {0x1b, '[', '1', ';', '3', '7',
-                                                ';',  '4', '7', 'm', 0};
-const char COLOR_BOLD_WHITE_NORMAL_COLOREND[] = {0x1b, '[', '1', ';', '3', '7',
-                                                 ';',  '4', '9', 'm', 0};
-const char COLOR_BOLD_NORMAL_BLACK_COLOREND[] = {0x1b, '[', '1', ';', '3', '9',
-                                                 ';',  '4', '0', 'm', 0};
-const char COLOR_BOLD_NORMAL_RED_COLOREND[] = {0x1b, '[', '1', ';', '3', '9',
-                                               ';',  '4', '1', 'm', 0};
-const char COLOR_BOLD_NORMAL_GREEN_COLOREND[] = {0x1b, '[', '1', ';', '3', '9',
-                                                 ';',  '4', '2', 'm', 0};
-const char COLOR_BOLD_NORMAL_YELLOW_COLOREND[] = {0x1b, '[', '1', ';', '3', '9',
-                                                  ';',  '4', '3', 'm', 0};
-const char COLOR_BOLD_NORMAL_BLUE_COLOREND[] = {0x1b, '[', '1', ';', '3', '9',
-                                                ';',  '4', '4', 'm', 0};
-const char COLOR_BOLD_NORMAL_MAGENTA_COLOREND[] = {
-    0x1b, '[', '1', ';', '3', '9', ';', '4', '5', 'm', 0};
-const char COLOR_BOLD_NORMAL_CYAN_COLOREND[] = {0x1b, '[', '1', ';', '3', '9',
-                                                ';',  '4', '6', 'm', 0};
-const char COLOR_BOLD_NORMAL_WHITE_COLOREND[] = {0x1b, '[', '1', ';', '3', '9',
-                                                 ';',  '4', '7', 'm', 0};
-const char COLOR_BOLD_NORMAL_NORMAL_COLOREND[] = {0x1b, '[', '1', ';', '3', '9',
-                                                  ';',  '4', '9', 'm', 0};
-const char COLOR_UNDERSCORE_BLACK_BLACK_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '0', ';', '4', '0', 'm', 0};
-const char COLOR_UNDERSCORE_BLACK_RED_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '0', ';', '4', '1', 'm', 0};
-const char COLOR_UNDERSCORE_BLACK_GREEN_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '0', ';', '4', '2', 'm', 0};
-const char COLOR_UNDERSCORE_BLACK_YELLOW_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '0', ';', '4', '3', 'm', 0};
-const char COLOR_UNDERSCORE_BLACK_BLUE_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '0', ';', '4', '4', 'm', 0};
-const char COLOR_UNDERSCORE_BLACK_MAGENTA_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '0', ';', '4', '5', 'm', 0};
-const char COLOR_UNDERSCORE_BLACK_CYAN_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '0', ';', '4', '6', 'm', 0};
-const char COLOR_UNDERSCORE_BLACK_WHITE_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '0', ';', '4', '7', 'm', 0};
-const char COLOR_UNDERSCORE_BLACK_NORMAL_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '0', ';', '4', '9', 'm', 0};
-const char COLOR_UNDERSCORE_RED_BLACK_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '1', ';', '4', '0', 'm', 0};
-const char COLOR_UNDERSCORE_RED_RED_COLOREND[] = {0x1b, '[', '4', ';', '3', '1',
-                                                  ';',  '4', '1', 'm', 0};
-const char COLOR_UNDERSCORE_RED_GREEN_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '1', ';', '4', '2', 'm', 0};
-const char COLOR_UNDERSCORE_RED_YELLOW_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '1', ';', '4', '3', 'm', 0};
-const char COLOR_UNDERSCORE_RED_BLUE_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '1', ';', '4', '4', 'm', 0};
-const char COLOR_UNDERSCORE_RED_MAGENTA_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '1', ';', '4', '5', 'm', 0};
-const char COLOR_UNDERSCORE_RED_CYAN_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '1', ';', '4', '6', 'm', 0};
-const char COLOR_UNDERSCORE_RED_WHITE_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '1', ';', '4', '7', 'm', 0};
-const char COLOR_UNDERSCORE_RED_NORMAL_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '1', ';', '4', '9', 'm', 0};
-const char COLOR_UNDERSCORE_GREEN_BLACK_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '2', ';', '4', '0', 'm', 0};
-const char COLOR_UNDERSCORE_GREEN_RED_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '2', ';', '4', '1', 'm', 0};
-const char COLOR_UNDERSCORE_GREEN_GREEN_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '2', ';', '4', '2', 'm', 0};
-const char COLOR_UNDERSCORE_GREEN_YELLOW_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '2', ';', '4', '3', 'm', 0};
-const char COLOR_UNDERSCORE_GREEN_BLUE_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '2', ';', '4', '4', 'm', 0};
-const char COLOR_UNDERSCORE_GREEN_MAGENTA_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '2', ';', '4', '5', 'm', 0};
-const char COLOR_UNDERSCORE_GREEN_CYAN_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '2', ';', '4', '6', 'm', 0};
-const char COLOR_UNDERSCORE_GREEN_WHITE_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '2', ';', '4', '7', 'm', 0};
-const char COLOR_UNDERSCORE_GREEN_NORMAL_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '2', ';', '4', '9', 'm', 0};
-const char COLOR_UNDERSCORE_YELLOW_BLACK_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '3', ';', '4', '0', 'm', 0};
-const char COLOR_UNDERSCORE_YELLOW_RED_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '3', ';', '4', '1', 'm', 0};
-const char COLOR_UNDERSCORE_YELLOW_GREEN_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '3', ';', '4', '2', 'm', 0};
-const char COLOR_UNDERSCORE_YELLOW_YELLOW_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '3', ';', '4', '3', 'm', 0};
-const char COLOR_UNDERSCORE_YELLOW_BLUE_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '3', ';', '4', '4', 'm', 0};
-const char COLOR_UNDERSCORE_YELLOW_MAGENTA_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '3', ';', '4', '5', 'm', 0};
-const char COLOR_UNDERSCORE_YELLOW_CYAN_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '3', ';', '4', '6', 'm', 0};
-const char COLOR_UNDERSCORE_YELLOW_WHITE_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '3', ';', '4', '7', 'm', 0};
-const char COLOR_UNDERSCORE_YELLOW_NORMAL_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '3', ';', '4', '9', 'm', 0};
-const char COLOR_UNDERSCORE_BLUE_BLACK_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '4', ';', '4', '0', 'm', 0};
-const char COLOR_UNDERSCORE_BLUE_RED_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '4', ';', '4', '1', 'm', 0};
-const char COLOR_UNDERSCORE_BLUE_GREEN_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '4', ';', '4', '2', 'm', 0};
-const char COLOR_UNDERSCORE_BLUE_YELLOW_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '4', ';', '4', '3', 'm', 0};
-const char COLOR_UNDERSCORE_BLUE_BLUE_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '4', ';', '4', '4', 'm', 0};
-const char COLOR_UNDERSCORE_BLUE_MAGENTA_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '4', ';', '4', '5', 'm', 0};
-const char COLOR_UNDERSCORE_BLUE_CYAN_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '4', ';', '4', '6', 'm', 0};
-const char COLOR_UNDERSCORE_BLUE_WHITE_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '4', ';', '4', '7', 'm', 0};
-const char COLOR_UNDERSCORE_BLUE_NORMAL_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '4', ';', '4', '9', 'm', 0};
-const char COLOR_UNDERSCORE_MAGENTA_BLACK_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '5', ';', '4', '0', 'm', 0};
-const char COLOR_UNDERSCORE_MAGENTA_RED_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '5', ';', '4', '1', 'm', 0};
-const char COLOR_UNDERSCORE_MAGENTA_GREEN_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '5', ';', '4', '2', 'm', 0};
-const char COLOR_UNDERSCORE_MAGENTA_YELLOW_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '5', ';', '4', '3', 'm', 0};
-const char COLOR_UNDERSCORE_MAGENTA_BLUE_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '5', ';', '4', '4', 'm', 0};
-const char COLOR_UNDERSCORE_MAGENTA_MAGENTA_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '5', ';', '4', '5', 'm', 0};
-const char COLOR_UNDERSCORE_MAGENTA_CYAN_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '5', ';', '4', '6', 'm', 0};
-const char COLOR_UNDERSCORE_MAGENTA_WHITE_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '5', ';', '4', '7', 'm', 0};
-const char COLOR_UNDERSCORE_MAGENTA_NORMAL_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '5', ';', '4', '9', 'm', 0};
-const char COLOR_UNDERSCORE_CYAN_BLACK_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '6', ';', '4', '0', 'm', 0};
-const char COLOR_UNDERSCORE_CYAN_RED_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '6', ';', '4', '1', 'm', 0};
-const char COLOR_UNDERSCORE_CYAN_GREEN_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '6', ';', '4', '2', 'm', 0};
-const char COLOR_UNDERSCORE_CYAN_YELLOW_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '6', ';', '4', '3', 'm', 0};
-const char COLOR_UNDERSCORE_CYAN_BLUE_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '6', ';', '4', '4', 'm', 0};
-const char COLOR_UNDERSCORE_CYAN_MAGENTA_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '6', ';', '4', '5', 'm', 0};
-const char COLOR_UNDERSCORE_CYAN_CYAN_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '6', ';', '4', '6', 'm', 0};
-const char COLOR_UNDERSCORE_CYAN_WHITE_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '6', ';', '4', '7', 'm', 0};
-const char COLOR_UNDERSCORE_CYAN_NORMAL_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '6', ';', '4', '9', 'm', 0};
-const char COLOR_UNDERSCORE_WHITE_BLACK_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '7', ';', '4', '0', 'm', 0};
-const char COLOR_UNDERSCORE_WHITE_RED_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '7', ';', '4', '1', 'm', 0};
-const char COLOR_UNDERSCORE_WHITE_GREEN_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '7', ';', '4', '2', 'm', 0};
-const char COLOR_UNDERSCORE_WHITE_YELLOW_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '7', ';', '4', '3', 'm', 0};
-const char COLOR_UNDERSCORE_WHITE_BLUE_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '7', ';', '4', '4', 'm', 0};
-const char COLOR_UNDERSCORE_WHITE_MAGENTA_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '7', ';', '4', '5', 'm', 0};
-const char COLOR_UNDERSCORE_WHITE_CYAN_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '7', ';', '4', '6', 'm', 0};
-const char COLOR_UNDERSCORE_WHITE_WHITE_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '7', ';', '4', '7', 'm', 0};
-const char COLOR_UNDERSCORE_WHITE_NORMAL_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '7', ';', '4', '9', 'm', 0};
-const char COLOR_UNDERSCORE_NORMAL_BLACK_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '9', ';', '4', '0', 'm', 0};
-const char COLOR_UNDERSCORE_NORMAL_RED_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '9', ';', '4', '1', 'm', 0};
-const char COLOR_UNDERSCORE_NORMAL_GREEN_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '9', ';', '4', '2', 'm', 0};
-const char COLOR_UNDERSCORE_NORMAL_YELLOW_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '9', ';', '4', '3', 'm', 0};
-const char COLOR_UNDERSCORE_NORMAL_BLUE_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '9', ';', '4', '4', 'm', 0};
-const char COLOR_UNDERSCORE_NORMAL_MAGENTA_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '9', ';', '4', '5', 'm', 0};
-const char COLOR_UNDERSCORE_NORMAL_CYAN_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '9', ';', '4', '6', 'm', 0};
-const char COLOR_UNDERSCORE_NORMAL_WHITE_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '9', ';', '4', '7', 'm', 0};
-const char COLOR_UNDERSCORE_NORMAL_NORMAL_COLOREND[] = {
-    0x1b, '[', '4', ';', '3', '9', ';', '4', '9', 'm', 0};
-const char COLOR_BLINK_BLACK_BLACK_COLOREND[] = {0x1b, '[', '5', ';', '3', '0',
-                                                 ';',  '4', '0', 'm', 0};
-const char COLOR_BLINK_BLACK_RED_COLOREND[] = {0x1b, '[', '5', ';', '3', '0',
-                                               ';',  '4', '1', 'm', 0};
-const char COLOR_BLINK_BLACK_GREEN_COLOREND[] = {0x1b, '[', '5', ';', '3', '0',
-                                                 ';',  '4', '2', 'm', 0};
-const char COLOR_BLINK_BLACK_YELLOW_COLOREND[] = {0x1b, '[', '5', ';', '3', '0',
-                                                  ';',  '4', '3', 'm', 0};
-const char COLOR_BLINK_BLACK_BLUE_COLOREND[] = {0x1b, '[', '5', ';', '3', '0',
-                                                ';',  '4', '4', 'm', 0};
-const char COLOR_BLINK_BLACK_MAGENTA_COLOREND[] = {
-    0x1b, '[', '5', ';', '3', '0', ';', '4', '5', 'm', 0};
-const char COLOR_BLINK_BLACK_CYAN_COLOREND[] = {0x1b, '[', '5', ';', '3', '0',
-                                                ';',  '4', '6', 'm', 0};
-const char COLOR_BLINK_BLACK_WHITE_COLOREND[] = {0x1b, '[', '5', ';', '3', '0',
-                                                 ';',  '4', '7', 'm', 0};
-const char COLOR_BLINK_BLACK_NORMAL_COLOREND[] = {0x1b, '[', '5', ';', '3', '0',
-                                                  ';',  '4', '9', 'm', 0};
-const char COLOR_BLINK_RED_BLACK_COLOREND[] = {0x1b, '[', '5', ';', '3', '1',
-                                               ';',  '4', '0', 'm', 0};
-const char COLOR_BLINK_RED_RED_COLOREND[] = {0x1b, '[', '5', ';', '3', '1',
-                                             ';',  '4', '1', 'm', 0};
-const char COLOR_BLINK_RED_GREEN_COLOREND[] = {0x1b, '[', '5', ';', '3', '1',
-                                               ';',  '4', '2', 'm', 0};
-const char COLOR_BLINK_RED_YELLOW_COLOREND[] = {0x1b, '[', '5', ';', '3', '1',
-                                                ';',  '4', '3', 'm', 0};
-const char COLOR_BLINK_RED_BLUE_COLOREND[] = {0x1b, '[', '5', ';', '3', '1',
-                                              ';',  '4', '4', 'm', 0};
-const char COLOR_BLINK_RED_MAGENTA_COLOREND[] = {0x1b, '[', '5', ';', '3', '1',
-                                                 ';',  '4', '5', 'm', 0};
-const char COLOR_BLINK_RED_CYAN_COLOREND[] = {0x1b, '[', '5', ';', '3', '1',
-                                              ';',  '4', '6', 'm', 0};
-const char COLOR_BLINK_RED_WHITE_COLOREND[] = {0x1b, '[', '5', ';', '3', '1',
-                                               ';',  '4', '7', 'm', 0};
-const char COLOR_BLINK_RED_NORMAL_COLOREND[] = {0x1b, '[', '5', ';', '3', '1',
-                                                ';',  '4', '9', 'm', 0};
-const char COLOR_BLINK_GREEN_BLACK_COLOREND[] = {0x1b, '[', '5', ';', '3', '2',
-                                                 ';',  '4', '0', 'm', 0};
-const char COLOR_BLINK_GREEN_RED_COLOREND[] = {0x1b, '[', '5', ';', '3', '2',
-                                               ';',  '4', '1', 'm', 0};
-const char COLOR_BLINK_GREEN_GREEN_COLOREND[] = {0x1b, '[', '5', ';', '3', '2',
-                                                 ';',  '4', '2', 'm', 0};
-const char COLOR_BLINK_GREEN_YELLOW_COLOREND[] = {0x1b, '[', '5', ';', '3', '2',
-                                                  ';',  '4', '3', 'm', 0};
-const char COLOR_BLINK_GREEN_BLUE_COLOREND[] = {0x1b, '[', '5', ';', '3', '2',
-                                                ';',  '4', '4', 'm', 0};
-const char COLOR_BLINK_GREEN_MAGENTA_COLOREND[] = {
-    0x1b, '[', '5', ';', '3', '2', ';', '4', '5', 'm', 0};
-const char COLOR_BLINK_GREEN_CYAN_COLOREND[] = {0x1b, '[', '5', ';', '3', '2',
-                                                ';',  '4', '6', 'm', 0};
-const char COLOR_BLINK_GREEN_WHITE_COLOREND[] = {0x1b, '[', '5', ';', '3', '2',
-                                                 ';',  '4', '7', 'm', 0};
-const char COLOR_BLINK_GREEN_NORMAL_COLOREND[] = {0x1b, '[', '5', ';', '3', '2',
-                                                  ';',  '4', '9', 'm', 0};
-const char COLOR_BLINK_YELLOW_BLACK_COLOREND[] = {0x1b, '[', '5', ';', '3', '3',
-                                                  ';',  '4', '0', 'm', 0};
-const char COLOR_BLINK_YELLOW_RED_COLOREND[] = {0x1b, '[', '5', ';', '3', '3',
-                                                ';',  '4', '1', 'm', 0};
-const char COLOR_BLINK_YELLOW_GREEN_COLOREND[] = {0x1b, '[', '5', ';', '3', '3',
-                                                  ';',  '4', '2', 'm', 0};
-const char COLOR_BLINK_YELLOW_YELLOW_COLOREND[] = {
-    0x1b, '[', '5', ';', '3', '3', ';', '4', '3', 'm', 0};
-const char COLOR_BLINK_YELLOW_BLUE_COLOREND[] = {0x1b, '[', '5', ';', '3', '3',
-                                                 ';',  '4', '4', 'm', 0};
-const char COLOR_BLINK_YELLOW_MAGENTA_COLOREND[] = {
-    0x1b, '[', '5', ';', '3', '3', ';', '4', '5', 'm', 0};
-const char COLOR_BLINK_YELLOW_CYAN_COLOREND[] = {0x1b, '[', '5', ';', '3', '3',
-                                                 ';',  '4', '6', 'm', 0};
-const char COLOR_BLINK_YELLOW_WHITE_COLOREND[] = {0x1b, '[', '5', ';', '3', '3',
-                                                  ';',  '4', '7', 'm', 0};
-const char COLOR_BLINK_YELLOW_NORMAL_COLOREND[] = {
-    0x1b, '[', '5', ';', '3', '3', ';', '4', '9', 'm', 0};
-const char COLOR_BLINK_BLUE_BLACK_COLOREND[] = {0x1b, '[', '5', ';', '3', '4',
-                                                ';',  '4', '0', 'm', 0};
-const char COLOR_BLINK_BLUE_RED_COLOREND[] = {0x1b, '[', '5', ';', '3', '4',
-                                              ';',  '4', '1', 'm', 0};
-const char COLOR_BLINK_BLUE_GREEN_COLOREND[] = {0x1b, '[', '5', ';', '3', '4',
-                                                ';',  '4', '2', 'm', 0};
-const char COLOR_BLINK_BLUE_YELLOW_COLOREND[] = {0x1b, '[', '5', ';', '3', '4',
-                                                 ';',  '4', '3', 'm', 0};
-const char COLOR_BLINK_BLUE_BLUE_COLOREND[] = {0x1b, '[', '5', ';', '3', '4',
-                                               ';',  '4', '4', 'm', 0};
-const char COLOR_BLINK_BLUE_MAGENTA_COLOREND[] = {0x1b, '[', '5', ';', '3', '4',
-                                                  ';',  '4', '5', 'm', 0};
-const char COLOR_BLINK_BLUE_CYAN_COLOREND[] = {0x1b, '[', '5', ';', '3', '4',
-                                               ';',  '4', '6', 'm', 0};
-const char COLOR_BLINK_BLUE_WHITE_COLOREND[] = {0x1b, '[', '5', ';', '3', '4',
-                                                ';',  '4', '7', 'm', 0};
-const char COLOR_BLINK_BLUE_NORMAL_COLOREND[] = {0x1b, '[', '5', ';', '3', '4',
-                                                 ';',  '4', '9', 'm', 0};
-const char COLOR_BLINK_MAGENTA_BLACK_COLOREND[] = {
-    0x1b, '[', '5', ';', '3', '5', ';', '4', '0', 'm', 0};
-const char COLOR_BLINK_MAGENTA_RED_COLOREND[] = {0x1b, '[', '5', ';', '3', '5',
-                                                 ';',  '4', '1', 'm', 0};
-const char COLOR_BLINK_MAGENTA_GREEN_COLOREND[] = {
-    0x1b, '[', '5', ';', '3', '5', ';', '4', '2', 'm', 0};
-const char COLOR_BLINK_MAGENTA_YELLOW_COLOREND[] = {
-    0x1b, '[', '5', ';', '3', '5', ';', '4', '3', 'm', 0};
-const char COLOR_BLINK_MAGENTA_BLUE_COLOREND[] = {0x1b, '[', '5', ';', '3', '5',
-                                                  ';',  '4', '4', 'm', 0};
-const char COLOR_BLINK_MAGENTA_MAGENTA_COLOREND[] = {
-    0x1b, '[', '5', ';', '3', '5', ';', '4', '5', 'm', 0};
-const char COLOR_BLINK_MAGENTA_CYAN_COLOREND[] = {0x1b, '[', '5', ';', '3', '5',
-                                                  ';',  '4', '6', 'm', 0};
-const char COLOR_BLINK_MAGENTA_WHITE_COLOREND[] = {
-    0x1b, '[', '5', ';', '3', '5', ';', '4', '7', 'm', 0};
-const char COLOR_BLINK_MAGENTA_NORMAL_COLOREND[] = {
-    0x1b, '[', '5', ';', '3', '5', ';', '4', '9', 'm', 0};
-const char COLOR_BLINK_CYAN_BLACK_COLOREND[] = {0x1b, '[', '5', ';', '3', '6',
-                                                ';',  '4', '0', 'm', 0};
-const char COLOR_BLINK_CYAN_RED_COLOREND[] = {0x1b, '[', '5', ';', '3', '6',
-                                              ';',  '4', '1', 'm', 0};
-const char COLOR_BLINK_CYAN_GREEN_COLOREND[] = {0x1b, '[', '5', ';', '3', '6',
-                                                ';',  '4', '2', 'm', 0};
-const char COLOR_BLINK_CYAN_YELLOW_COLOREND[] = {0x1b, '[', '5', ';', '3', '6',
-                                                 ';',  '4', '3', 'm', 0};
-const char COLOR_BLINK_CYAN_BLUE_COLOREND[] = {0x1b, '[', '5', ';', '3', '6',
-                                               ';',  '4', '4', 'm', 0};
-const char COLOR_BLINK_CYAN_MAGENTA_COLOREND[] = {0x1b, '[', '5', ';', '3', '6',
-                                                  ';',  '4', '5', 'm', 0};
-const char COLOR_BLINK_CYAN_CYAN_COLOREND[] = {0x1b, '[', '5', ';', '3', '6',
-                                               ';',  '4', '6', 'm', 0};
-const char COLOR_BLINK_CYAN_WHITE_COLOREND[] = {0x1b, '[', '5', ';', '3', '6',
-                                                ';',  '4', '7', 'm', 0};
-const char COLOR_BLINK_CYAN_NORMAL_COLOREND[] = {0x1b, '[', '5', ';', '3', '6',
-                                                 ';',  '4', '9', 'm', 0};
-const char COLOR_BLINK_WHITE_BLACK_COLOREND[] = {0x1b, '[', '5', ';', '3', '7',
-                                                 ';',  '4', '0', 'm', 0};
-const char COLOR_BLINK_WHITE_RED_COLOREND[] = {0x1b, '[', '5', ';', '3', '7',
-                                               ';',  '4', '1', 'm', 0};
-const char COLOR_BLINK_WHITE_GREEN_COLOREND[] = {0x1b, '[', '5', ';', '3', '7',
-                                                 ';',  '4', '2', 'm', 0};
-const char COLOR_BLINK_WHITE_YELLOW_COLOREND[] = {0x1b, '[', '5', ';', '3', '7',
-                                                  ';',  '4', '3', 'm', 0};
-const char COLOR_BLINK_WHITE_BLUE_COLOREND[] = {0x1b, '[', '5', ';', '3', '7',
-                                                ';',  '4', '4', 'm', 0};
-const char COLOR_BLINK_WHITE_MAGENTA_COLOREND[] = {
-    0x1b, '[', '5', ';', '3', '7', ';', '4', '5', 'm', 0};
-const char COLOR_BLINK_WHITE_CYAN_COLOREND[] = {0x1b, '[', '5', ';', '3', '7',
-                                                ';',  '4', '6', 'm', 0};
-const char COLOR_BLINK_WHITE_WHITE_COLOREND[] = {0x1b, '[', '5', ';', '3', '7',
-                                                 ';',  '4', '7', 'm', 0};
-const char COLOR_BLINK_WHITE_NORMAL_COLOREND[] = {0x1b, '[', '5', ';', '3', '7',
-                                                  ';',  '4', '9', 'm', 0};
-const char COLOR_BLINK_NORMAL_BLACK_COLOREND[] = {0x1b, '[', '5', ';', '3', '9',
-                                                  ';',  '4', '0', 'm', 0};
-const char COLOR_BLINK_NORMAL_RED_COLOREND[] = {0x1b, '[', '5', ';', '3', '9',
-                                                ';',  '4', '1', 'm', 0};
-const char COLOR_BLINK_NORMAL_GREEN_COLOREND[] = {0x1b, '[', '5', ';', '3', '9',
-                                                  ';',  '4', '2', 'm', 0};
-const char COLOR_BLINK_NORMAL_YELLOW_COLOREND[] = {
-    0x1b, '[', '5', ';', '3', '9', ';', '4', '3', 'm', 0};
-const char COLOR_BLINK_NORMAL_BLUE_COLOREND[] = {0x1b, '[', '5', ';', '3', '9',
-                                                 ';',  '4', '4', 'm', 0};
-const char COLOR_BLINK_NORMAL_MAGENTA_COLOREND[] = {
-    0x1b, '[', '5', ';', '3', '9', ';', '4', '5', 'm', 0};
-const char COLOR_BLINK_NORMAL_CYAN_COLOREND[] = {0x1b, '[', '5', ';', '3', '9',
-                                                 ';',  '4', '6', 'm', 0};
-const char COLOR_BLINK_NORMAL_WHITE_COLOREND[] = {0x1b, '[', '5', ';', '3', '9',
-                                                  ';',  '4', '7', 'm', 0};
-const char COLOR_BLINK_NORMAL_NORMAL_COLOREND[] = {
-    0x1b, '[', '5', ';', '3', '9', ';', '4', '9', 'm', 0};
-const char COLOR_REVERSEVIDEO_BLACK_BLACK_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '0', ';', '4', '0', 'm', 0};
-const char COLOR_REVERSEVIDEO_BLACK_RED_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '0', ';', '4', '1', 'm', 0};
-const char COLOR_REVERSEVIDEO_BLACK_GREEN_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '0', ';', '4', '2', 'm', 0};
-const char COLOR_REVERSEVIDEO_BLACK_YELLOW_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '0', ';', '4', '3', 'm', 0};
-const char COLOR_REVERSEVIDEO_BLACK_BLUE_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '0', ';', '4', '4', 'm', 0};
-const char COLOR_REVERSEVIDEO_BLACK_MAGENTA_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '0', ';', '4', '5', 'm', 0};
-const char COLOR_REVERSEVIDEO_BLACK_CYAN_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '0', ';', '4', '6', 'm', 0};
-const char COLOR_REVERSEVIDEO_BLACK_WHITE_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '0', ';', '4', '7', 'm', 0};
-const char COLOR_REVERSEVIDEO_BLACK_NORMAL_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '0', ';', '4', '9', 'm', 0};
-const char COLOR_REVERSEVIDEO_RED_BLACK_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '1', ';', '4', '0', 'm', 0};
-const char COLOR_REVERSEVIDEO_RED_RED_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '1', ';', '4', '1', 'm', 0};
-const char COLOR_REVERSEVIDEO_RED_GREEN_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '1', ';', '4', '2', 'm', 0};
-const char COLOR_REVERSEVIDEO_RED_YELLOW_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '1', ';', '4', '3', 'm', 0};
-const char COLOR_REVERSEVIDEO_RED_BLUE_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '1', ';', '4', '4', 'm', 0};
-const char COLOR_REVERSEVIDEO_RED_MAGENTA_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '1', ';', '4', '5', 'm', 0};
-const char COLOR_REVERSEVIDEO_RED_CYAN_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '1', ';', '4', '6', 'm', 0};
-const char COLOR_REVERSEVIDEO_RED_WHITE_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '1', ';', '4', '7', 'm', 0};
-const char COLOR_REVERSEVIDEO_RED_NORMAL_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '1', ';', '4', '9', 'm', 0};
-const char COLOR_REVERSEVIDEO_GREEN_BLACK_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '2', ';', '4', '0', 'm', 0};
-const char COLOR_REVERSEVIDEO_GREEN_RED_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '2', ';', '4', '1', 'm', 0};
-const char COLOR_REVERSEVIDEO_GREEN_GREEN_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '2', ';', '4', '2', 'm', 0};
-const char COLOR_REVERSEVIDEO_GREEN_YELLOW_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '2', ';', '4', '3', 'm', 0};
-const char COLOR_REVERSEVIDEO_GREEN_BLUE_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '2', ';', '4', '4', 'm', 0};
-const char COLOR_REVERSEVIDEO_GREEN_MAGENTA_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '2', ';', '4', '5', 'm', 0};
-const char COLOR_REVERSEVIDEO_GREEN_CYAN_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '2', ';', '4', '6', 'm', 0};
-const char COLOR_REVERSEVIDEO_GREEN_WHITE_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '2', ';', '4', '7', 'm', 0};
-const char COLOR_REVERSEVIDEO_GREEN_NORMAL_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '2', ';', '4', '9', 'm', 0};
-const char COLOR_REVERSEVIDEO_YELLOW_BLACK_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '3', ';', '4', '0', 'm', 0};
-const char COLOR_REVERSEVIDEO_YELLOW_RED_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '3', ';', '4', '1', 'm', 0};
-const char COLOR_REVERSEVIDEO_YELLOW_GREEN_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '3', ';', '4', '2', 'm', 0};
-const char COLOR_REVERSEVIDEO_YELLOW_YELLOW_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '3', ';', '4', '3', 'm', 0};
-const char COLOR_REVERSEVIDEO_YELLOW_BLUE_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '3', ';', '4', '4', 'm', 0};
-const char COLOR_REVERSEVIDEO_YELLOW_MAGENTA_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '3', ';', '4', '5', 'm', 0};
-const char COLOR_REVERSEVIDEO_YELLOW_CYAN_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '3', ';', '4', '6', 'm', 0};
-const char COLOR_REVERSEVIDEO_YELLOW_WHITE_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '3', ';', '4', '7', 'm', 0};
-const char COLOR_REVERSEVIDEO_YELLOW_NORMAL_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '3', ';', '4', '9', 'm', 0};
-const char COLOR_REVERSEVIDEO_BLUE_BLACK_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '4', ';', '4', '0', 'm', 0};
-const char COLOR_REVERSEVIDEO_BLUE_RED_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '4', ';', '4', '1', 'm', 0};
-const char COLOR_REVERSEVIDEO_BLUE_GREEN_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '4', ';', '4', '2', 'm', 0};
-const char COLOR_REVERSEVIDEO_BLUE_YELLOW_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '4', ';', '4', '3', 'm', 0};
-const char COLOR_REVERSEVIDEO_BLUE_BLUE_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '4', ';', '4', '4', 'm', 0};
-const char COLOR_REVERSEVIDEO_BLUE_MAGENTA_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '4', ';', '4', '5', 'm', 0};
-const char COLOR_REVERSEVIDEO_BLUE_CYAN_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '4', ';', '4', '6', 'm', 0};
-const char COLOR_REVERSEVIDEO_BLUE_WHITE_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '4', ';', '4', '7', 'm', 0};
-const char COLOR_REVERSEVIDEO_BLUE_NORMAL_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '4', ';', '4', '9', 'm', 0};
-const char COLOR_REVERSEVIDEO_MAGENTA_BLACK_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '5', ';', '4', '0', 'm', 0};
-const char COLOR_REVERSEVIDEO_MAGENTA_RED_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '5', ';', '4', '1', 'm', 0};
-const char COLOR_REVERSEVIDEO_MAGENTA_GREEN_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '5', ';', '4', '2', 'm', 0};
-const char COLOR_REVERSEVIDEO_MAGENTA_YELLOW_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '5', ';', '4', '3', 'm', 0};
-const char COLOR_REVERSEVIDEO_MAGENTA_BLUE_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '5', ';', '4', '4', 'm', 0};
-const char COLOR_REVERSEVIDEO_MAGENTA_MAGENTA_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '5', ';', '4', '5', 'm', 0};
-const char COLOR_REVERSEVIDEO_MAGENTA_CYAN_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '5', ';', '4', '6', 'm', 0};
-const char COLOR_REVERSEVIDEO_MAGENTA_WHITE_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '5', ';', '4', '7', 'm', 0};
-const char COLOR_REVERSEVIDEO_MAGENTA_NORMAL_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '5', ';', '4', '9', 'm', 0};
-const char COLOR_REVERSEVIDEO_CYAN_BLACK_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '6', ';', '4', '0', 'm', 0};
-const char COLOR_REVERSEVIDEO_CYAN_RED_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '6', ';', '4', '1', 'm', 0};
-const char COLOR_REVERSEVIDEO_CYAN_GREEN_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '6', ';', '4', '2', 'm', 0};
-const char COLOR_REVERSEVIDEO_CYAN_YELLOW_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '6', ';', '4', '3', 'm', 0};
-const char COLOR_REVERSEVIDEO_CYAN_BLUE_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '6', ';', '4', '4', 'm', 0};
-const char COLOR_REVERSEVIDEO_CYAN_MAGENTA_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '6', ';', '4', '5', 'm', 0};
-const char COLOR_REVERSEVIDEO_CYAN_CYAN_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '6', ';', '4', '6', 'm', 0};
-const char COLOR_REVERSEVIDEO_CYAN_WHITE_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '6', ';', '4', '7', 'm', 0};
-const char COLOR_REVERSEVIDEO_CYAN_NORMAL_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '6', ';', '4', '9', 'm', 0};
-const char COLOR_REVERSEVIDEO_WHITE_BLACK_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '7', ';', '4', '0', 'm', 0};
-const char COLOR_REVERSEVIDEO_WHITE_RED_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '7', ';', '4', '1', 'm', 0};
-const char COLOR_REVERSEVIDEO_WHITE_GREEN_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '7', ';', '4', '2', 'm', 0};
-const char COLOR_REVERSEVIDEO_WHITE_YELLOW_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '7', ';', '4', '3', 'm', 0};
-const char COLOR_REVERSEVIDEO_WHITE_BLUE_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '7', ';', '4', '4', 'm', 0};
-const char COLOR_REVERSEVIDEO_WHITE_MAGENTA_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '7', ';', '4', '5', 'm', 0};
-const char COLOR_REVERSEVIDEO_WHITE_CYAN_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '7', ';', '4', '6', 'm', 0};
-const char COLOR_REVERSEVIDEO_WHITE_WHITE_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '7', ';', '4', '7', 'm', 0};
-const char COLOR_REVERSEVIDEO_WHITE_NORMAL_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '7', ';', '4', '9', 'm', 0};
-const char COLOR_REVERSEVIDEO_NORMAL_BLACK_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '9', ';', '4', '0', 'm', 0};
-const char COLOR_REVERSEVIDEO_NORMAL_RED_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '9', ';', '4', '1', 'm', 0};
-const char COLOR_REVERSEVIDEO_NORMAL_GREEN_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '9', ';', '4', '2', 'm', 0};
-const char COLOR_REVERSEVIDEO_NORMAL_YELLOW_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '9', ';', '4', '3', 'm', 0};
-const char COLOR_REVERSEVIDEO_NORMAL_BLUE_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '9', ';', '4', '4', 'm', 0};
-const char COLOR_REVERSEVIDEO_NORMAL_MAGENTA_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '9', ';', '4', '5', 'm', 0};
-const char COLOR_REVERSEVIDEO_NORMAL_CYAN_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '9', ';', '4', '6', 'm', 0};
-const char COLOR_REVERSEVIDEO_NORMAL_WHITE_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '9', ';', '4', '7', 'm', 0};
-const char COLOR_REVERSEVIDEO_NORMAL_NORMAL_COLOREND[] = {
-    0x1b, '[', '7', ';', '3', '9', ';', '4', '9', 'm', 0};
-const char COLOR_CONCEALED_BLACK_BLACK_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '0', ';', '4', '0', 'm', 0};
-const char COLOR_CONCEALED_BLACK_RED_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '0', ';', '4', '1', 'm', 0};
-const char COLOR_CONCEALED_BLACK_GREEN_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '0', ';', '4', '2', 'm', 0};
-const char COLOR_CONCEALED_BLACK_YELLOW_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '0', ';', '4', '3', 'm', 0};
-const char COLOR_CONCEALED_BLACK_BLUE_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '0', ';', '4', '4', 'm', 0};
-const char COLOR_CONCEALED_BLACK_MAGENTA_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '0', ';', '4', '5', 'm', 0};
-const char COLOR_CONCEALED_BLACK_CYAN_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '0', ';', '4', '6', 'm', 0};
-const char COLOR_CONCEALED_BLACK_WHITE_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '0', ';', '4', '7', 'm', 0};
-const char COLOR_CONCEALED_BLACK_NORMAL_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '0', ';', '4', '9', 'm', 0};
-const char COLOR_CONCEALED_RED_BLACK_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '1', ';', '4', '0', 'm', 0};
-const char COLOR_CONCEALED_RED_RED_COLOREND[] = {0x1b, '[', '8', ';', '3', '1',
-                                                 ';',  '4', '1', 'm', 0};
-const char COLOR_CONCEALED_RED_GREEN_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '1', ';', '4', '2', 'm', 0};
-const char COLOR_CONCEALED_RED_YELLOW_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '1', ';', '4', '3', 'm', 0};
-const char COLOR_CONCEALED_RED_BLUE_COLOREND[] = {0x1b, '[', '8', ';', '3', '1',
-                                                  ';',  '4', '4', 'm', 0};
-const char COLOR_CONCEALED_RED_MAGENTA_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '1', ';', '4', '5', 'm', 0};
-const char COLOR_CONCEALED_RED_CYAN_COLOREND[] = {0x1b, '[', '8', ';', '3', '1',
-                                                  ';',  '4', '6', 'm', 0};
-const char COLOR_CONCEALED_RED_WHITE_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '1', ';', '4', '7', 'm', 0};
-const char COLOR_CONCEALED_RED_NORMAL_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '1', ';', '4', '9', 'm', 0};
-const char COLOR_CONCEALED_GREEN_BLACK_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '2', ';', '4', '0', 'm', 0};
-const char COLOR_CONCEALED_GREEN_RED_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '2', ';', '4', '1', 'm', 0};
-const char COLOR_CONCEALED_GREEN_GREEN_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '2', ';', '4', '2', 'm', 0};
-const char COLOR_CONCEALED_GREEN_YELLOW_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '2', ';', '4', '3', 'm', 0};
-const char COLOR_CONCEALED_GREEN_BLUE_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '2', ';', '4', '4', 'm', 0};
-const char COLOR_CONCEALED_GREEN_MAGENTA_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '2', ';', '4', '5', 'm', 0};
-const char COLOR_CONCEALED_GREEN_CYAN_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '2', ';', '4', '6', 'm', 0};
-const char COLOR_CONCEALED_GREEN_WHITE_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '2', ';', '4', '7', 'm', 0};
-const char COLOR_CONCEALED_GREEN_NORMAL_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '2', ';', '4', '9', 'm', 0};
-const char COLOR_CONCEALED_YELLOW_BLACK_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '3', ';', '4', '0', 'm', 0};
-const char COLOR_CONCEALED_YELLOW_RED_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '3', ';', '4', '1', 'm', 0};
-const char COLOR_CONCEALED_YELLOW_GREEN_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '3', ';', '4', '2', 'm', 0};
-const char COLOR_CONCEALED_YELLOW_YELLOW_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '3', ';', '4', '3', 'm', 0};
-const char COLOR_CONCEALED_YELLOW_BLUE_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '3', ';', '4', '4', 'm', 0};
-const char COLOR_CONCEALED_YELLOW_MAGENTA_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '3', ';', '4', '5', 'm', 0};
-const char COLOR_CONCEALED_YELLOW_CYAN_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '3', ';', '4', '6', 'm', 0};
-const char COLOR_CONCEALED_YELLOW_WHITE_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '3', ';', '4', '7', 'm', 0};
-const char COLOR_CONCEALED_YELLOW_NORMAL_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '3', ';', '4', '9', 'm', 0};
-const char COLOR_CONCEALED_BLUE_BLACK_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '4', ';', '4', '0', 'm', 0};
-const char COLOR_CONCEALED_BLUE_RED_COLOREND[] = {0x1b, '[', '8', ';', '3', '4',
-                                                  ';',  '4', '1', 'm', 0};
-const char COLOR_CONCEALED_BLUE_GREEN_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '4', ';', '4', '2', 'm', 0};
-const char COLOR_CONCEALED_BLUE_YELLOW_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '4', ';', '4', '3', 'm', 0};
-const char COLOR_CONCEALED_BLUE_BLUE_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '4', ';', '4', '4', 'm', 0};
-const char COLOR_CONCEALED_BLUE_MAGENTA_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '4', ';', '4', '5', 'm', 0};
-const char COLOR_CONCEALED_BLUE_CYAN_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '4', ';', '4', '6', 'm', 0};
-const char COLOR_CONCEALED_BLUE_WHITE_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '4', ';', '4', '7', 'm', 0};
-const char COLOR_CONCEALED_BLUE_NORMAL_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '4', ';', '4', '9', 'm', 0};
-const char COLOR_CONCEALED_MAGENTA_BLACK_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '5', ';', '4', '0', 'm', 0};
-const char COLOR_CONCEALED_MAGENTA_RED_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '5', ';', '4', '1', 'm', 0};
-const char COLOR_CONCEALED_MAGENTA_GREEN_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '5', ';', '4', '2', 'm', 0};
-const char COLOR_CONCEALED_MAGENTA_YELLOW_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '5', ';', '4', '3', 'm', 0};
-const char COLOR_CONCEALED_MAGENTA_BLUE_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '5', ';', '4', '4', 'm', 0};
-const char COLOR_CONCEALED_MAGENTA_MAGENTA_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '5', ';', '4', '5', 'm', 0};
-const char COLOR_CONCEALED_MAGENTA_CYAN_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '5', ';', '4', '6', 'm', 0};
-const char COLOR_CONCEALED_MAGENTA_WHITE_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '5', ';', '4', '7', 'm', 0};
-const char COLOR_CONCEALED_MAGENTA_NORMAL_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '5', ';', '4', '9', 'm', 0};
-const char COLOR_CONCEALED_CYAN_BLACK_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '6', ';', '4', '0', 'm', 0};
-const char COLOR_CONCEALED_CYAN_RED_COLOREND[] = {0x1b, '[', '8', ';', '3', '6',
-                                                  ';',  '4', '1', 'm', 0};
-const char COLOR_CONCEALED_CYAN_GREEN_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '6', ';', '4', '2', 'm', 0};
-const char COLOR_CONCEALED_CYAN_YELLOW_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '6', ';', '4', '3', 'm', 0};
-const char COLOR_CONCEALED_CYAN_BLUE_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '6', ';', '4', '4', 'm', 0};
-const char COLOR_CONCEALED_CYAN_MAGENTA_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '6', ';', '4', '5', 'm', 0};
-const char COLOR_CONCEALED_CYAN_CYAN_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '6', ';', '4', '6', 'm', 0};
-const char COLOR_CONCEALED_CYAN_WHITE_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '6', ';', '4', '7', 'm', 0};
-const char COLOR_CONCEALED_CYAN_NORMAL_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '6', ';', '4', '9', 'm', 0};
-const char COLOR_CONCEALED_WHITE_BLACK_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '7', ';', '4', '0', 'm', 0};
-const char COLOR_CONCEALED_WHITE_RED_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '7', ';', '4', '1', 'm', 0};
-const char COLOR_CONCEALED_WHITE_GREEN_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '7', ';', '4', '2', 'm', 0};
-const char COLOR_CONCEALED_WHITE_YELLOW_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '7', ';', '4', '3', 'm', 0};
-const char COLOR_CONCEALED_WHITE_BLUE_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '7', ';', '4', '4', 'm', 0};
-const char COLOR_CONCEALED_WHITE_MAGENTA_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '7', ';', '4', '5', 'm', 0};
-const char COLOR_CONCEALED_WHITE_CYAN_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '7', ';', '4', '6', 'm', 0};
-const char COLOR_CONCEALED_WHITE_WHITE_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '7', ';', '4', '7', 'm', 0};
-const char COLOR_CONCEALED_WHITE_NORMAL_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '7', ';', '4', '9', 'm', 0};
-const char COLOR_CONCEALED_NORMAL_BLACK_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '9', ';', '4', '0', 'm', 0};
-const char COLOR_CONCEALED_NORMAL_RED_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '9', ';', '4', '1', 'm', 0};
-const char COLOR_CONCEALED_NORMAL_GREEN_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '9', ';', '4', '2', 'm', 0};
-const char COLOR_CONCEALED_NORMAL_YELLOW_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '9', ';', '4', '3', 'm', 0};
-const char COLOR_CONCEALED_NORMAL_BLUE_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '9', ';', '4', '4', 'm', 0};
-const char COLOR_CONCEALED_NORMAL_MAGENTA_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '9', ';', '4', '5', 'm', 0};
-const char COLOR_CONCEALED_NORMAL_CYAN_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '9', ';', '4', '6', 'm', 0};
-const char COLOR_CONCEALED_NORMAL_WHITE_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '9', ';', '4', '7', 'm', 0};
-const char COLOR_CONCEALED_NORMAL_NORMAL_COLOREND[] = {
-    0x1b, '[', '8', ';', '3', '9', ';', '4', '9', 'm', 0};
+const char kColorNormal[] = {0x1b, '[', '0', ';', '3', '9', 'm', 0};
+const char kColorNormalColorend[] = {0x1b, '[', '0', ';', '3', '9', 'm', 0};
+const char kColorAttributesOff[] = {0x1b, '[', '0', 'm', 0};
+const char kColorBold[] = {0x1b, '[', '1', 'm', 0};
+const char kColorUnderscore[] = {0x1b, '[', '4', 'm', 0};
+const char kColorBlink[] = {0x1b, '[', '5', 'm', 0};
+const char kColorReversevideo[] = {0x1b, '[', '7', 'm', 0};
+const char kColorConcealed[] = {0x1b, '[', '8', 'm', 0};
+const char kColorBlackBlack[] = {0x1b, '[', '3', '0', ';', '4', '0', 'm', 0};
+const char kColorBlackRed[] = {0x1b, '[', '3', '0', ';', '4', '1', 'm', 0};
+const char kColorBlackGreen[] = {0x1b, '[', '3', '0', ';', '4', '2', 'm', 0};
+const char kColorBlackYellow[] = {0x1b, '[', '3', '0', ';', '4', '3', 'm', 0};
+const char kColorBlackBlue[] = {0x1b, '[', '3', '0', ';', '4', '4', 'm', 0};
+const char kColorBlackMagenta[] = {0x1b, '[', '3', '0', ';', '4', '5', 'm', 0};
+const char kColorBlackCyan[] = {0x1b, '[', '3', '0', ';', '4', '6', 'm', 0};
+const char kColorBlackWhite[] = {0x1b, '[', '3', '0', ';', '4', '7', 'm', 0};
+const char kColorBlackNormal[] = {0x1b, '[', '3', '0', ';', '4', '9', 'm', 0};
+const char kColorRedBlack[] = {0x1b, '[', '3', '1', ';', '4', '0', 'm', 0};
+const char kColorRedRed[] = {0x1b, '[', '3', '1', ';', '4', '1', 'm', 0};
+const char kColorRedGreen[] = {0x1b, '[', '3', '1', ';', '4', '2', 'm', 0};
+const char kColorRedYellow[] = {0x1b, '[', '3', '1', ';', '4', '3', 'm', 0};
+const char kColorRedBlue[] = {0x1b, '[', '3', '1', ';', '4', '4', 'm', 0};
+const char kColorRedMagenta[] = {0x1b, '[', '3', '1', ';', '4', '5', 'm', 0};
+const char kColorRedCyan[] = {0x1b, '[', '3', '1', ';', '4', '6', 'm', 0};
+const char kColorRedWhite[] = {0x1b, '[', '3', '1', ';', '4', '7', 'm', 0};
+const char kColorRedNormal[] = {0x1b, '[', '3', '1', ';', '4', '9', 'm', 0};
+const char kColorGreenBlack[] = {0x1b, '[', '3', '2', ';', '4', '0', 'm', 0};
+const char kColorGreenRed[] = {0x1b, '[', '3', '2', ';', '4', '1', 'm', 0};
+const char kColorGreenGreen[] = {0x1b, '[', '3', '2', ';', '4', '2', 'm', 0};
+const char kColorGreenYellow[] = {0x1b, '[', '3', '2', ';', '4', '3', 'm', 0};
+const char kColorGreenBlue[] = {0x1b, '[', '3', '2', ';', '4', '4', 'm', 0};
+const char kColorGreenMagenta[] = {0x1b, '[', '3', '2', ';', '4', '5', 'm', 0};
+const char kColorGreenCyan[] = {0x1b, '[', '3', '2', ';', '4', '6', 'm', 0};
+const char kColorGreenWhite[] = {0x1b, '[', '3', '2', ';', '4', '7', 'm', 0};
+const char kColorGreenNormal[] = {0x1b, '[', '3', '2', ';', '4', '9', 'm', 0};
+const char kColorYellowBlack[] = {0x1b, '[', '3', '3', ';', '4', '0', 'm', 0};
+const char kColorYellowRed[] = {0x1b, '[', '3', '3', ';', '4', '1', 'm', 0};
+const char kColorYellowGreen[] = {0x1b, '[', '3', '3', ';', '4', '2', 'm', 0};
+const char kColorYellowYellow[] = {0x1b, '[', '3', '3', ';', '4', '3', 'm', 0};
+const char kColorYellowBlue[] = {0x1b, '[', '3', '3', ';', '4', '4', 'm', 0};
+const char kColorYellowMagenta[] = {0x1b, '[', '3', '3', ';', '4', '5', 'm', 0};
+const char kColorYellowCyan[] = {0x1b, '[', '3', '3', ';', '4', '6', 'm', 0};
+const char kColorYellowWhite[] = {0x1b, '[', '3', '3', ';', '4', '7', 'm', 0};
+const char kColorYellowNormal[] = {0x1b, '[', '3', '3', ';', '4', '9', 'm', 0};
+const char kColorBlueBlack[] = {0x1b, '[', '3', '4', ';', '4', '0', 'm', 0};
+const char kColorBlueRed[] = {0x1b, '[', '3', '4', ';', '4', '1', 'm', 0};
+const char kColorBlueGreen[] = {0x1b, '[', '3', '4', ';', '4', '2', 'm', 0};
+const char kColorBlueYellow[] = {0x1b, '[', '3', '4', ';', '4', '3', 'm', 0};
+const char kColorBlueBlue[] = {0x1b, '[', '3', '4', ';', '4', '4', 'm', 0};
+const char kColorBlueMagenta[] = {0x1b, '[', '3', '4', ';', '4', '5', 'm', 0};
+const char kColorBlueCyan[] = {0x1b, '[', '3', '4', ';', '4', '6', 'm', 0};
+const char kColorBlueWhite[] = {0x1b, '[', '3', '4', ';', '4', '7', 'm', 0};
+const char kColorBlueNormal[] = {0x1b, '[', '3', '4', ';', '4', '9', 'm', 0};
+const char kColorMagentaBlack[] = {0x1b, '[', '3', '5', ';', '4', '0', 'm', 0};
+const char kColorMagentaRed[] = {0x1b, '[', '3', '5', ';', '4', '1', 'm', 0};
+const char kColorMagentaGreen[] = {0x1b, '[', '3', '5', ';', '4', '2', 'm', 0};
+const char kColorMagentaYellow[] = {0x1b, '[', '3', '5', ';', '4', '3', 'm', 0};
+const char kColorMagentaBlue[] = {0x1b, '[', '3', '5', ';', '4', '4', 'm', 0};
+const char kColorMagentaMagenta[] = {0x1b, '[', '3', '5', ';', '4', '5', 'm', 0};
+const char kColorMagentaCyan[] = {0x1b, '[', '3', '5', ';', '4', '6', 'm', 0};
+const char kColorMagentaWhite[] = {0x1b, '[', '3', '5', ';', '4', '7', 'm', 0};
+const char kColorMagentaNormal[] = {0x1b, '[', '3', '5', ';', '4', '9', 'm', 0};
+const char kColorCyanBlack[] = {0x1b, '[', '3', '6', ';', '4', '0', 'm', 0};
+const char kColorCyanRed[] = {0x1b, '[', '3', '6', ';', '4', '1', 'm', 0};
+const char kColorCyanGreen[] = {0x1b, '[', '3', '6', ';', '4', '2', 'm', 0};
+const char kColorCyanYellow[] = {0x1b, '[', '3', '6', ';', '4', '3', 'm', 0};
+const char kColorCyanBlue[] = {0x1b, '[', '3', '6', ';', '4', '4', 'm', 0};
+const char kColorCyanMagenta[] = {0x1b, '[', '3', '6', ';', '4', '5', 'm', 0};
+const char kColorCyanCyan[] = {0x1b, '[', '3', '6', ';', '4', '6', 'm', 0};
+const char kColorCyanWhite[] = {0x1b, '[', '3', '6', ';', '4', '7', 'm', 0};
+const char kColorCyanNormal[] = {0x1b, '[', '3', '6', ';', '4', '9', 'm', 0};
+const char kColorWhiteBlack[] = {0x1b, '[', '3', '7', ';', '4', '0', 'm', 0};
+const char kColorWhiteRed[] = {0x1b, '[', '3', '7', ';', '4', '1', 'm', 0};
+const char kColorWhiteGreen[] = {0x1b, '[', '3', '7', ';', '4', '2', 'm', 0};
+const char kColorWhiteYellow[] = {0x1b, '[', '3', '7', ';', '4', '3', 'm', 0};
+const char kColorWhiteBlue[] = {0x1b, '[', '3', '7', ';', '4', '4', 'm', 0};
+const char kColorWhiteMagenta[] = {0x1b, '[', '3', '7', ';', '4', '5', 'm', 0};
+const char kColorWhiteCyan[] = {0x1b, '[', '3', '7', ';', '4', '6', 'm', 0};
+const char kColorWhiteWhite[] = {0x1b, '[', '3', '7', ';', '4', '7', 'm', 0};
+const char kColorWhiteNormal[] = {0x1b, '[', '3', '7', ';', '4', '9', 'm', 0};
+const char kColorNormalBlack[] = {0x1b, '[', '3', '9', ';', '4', '0', 'm', 0};
+const char kColorNormalRed[] = {0x1b, '[', '3', '9', ';', '4', '1', 'm', 0};
+const char kColorNormalGreen[] = {0x1b, '[', '3', '9', ';', '4', '2', 'm', 0};
+const char kColorNormalYellow[] = {0x1b, '[', '3', '9', ';', '4', '3', 'm', 0};
+const char kColorNormalBlue[] = {0x1b, '[', '3', '9', ';', '4', '4', 'm', 0};
+const char kColorNormalMagenta[] = {0x1b, '[', '3', '9', ';', '4', '5', 'm', 0};
+const char kColorNormalCyan[] = {0x1b, '[', '3', '9', ';', '4', '6', 'm', 0};
+const char kColorNormalWhite[] = {0x1b, '[', '3', '9', ';', '4', '7', 'm', 0};
+const char kColorNormalNormal[] = {0x1b, '[', '3', '9', ';', '4', '9', 'm', 0};
+const char kColorBoldBlackBlack[] = {0x1b, '[', '1', ';', '3', '0', ';', '4', '0', 'm', 0};
+const char kColorBoldBlackRed[] = {0x1b, '[', '1', ';', '3', '0', ';', '4', '1', 'm', 0};
+const char kColorBoldBlackGreen[] = {0x1b, '[', '1', ';', '3', '0', ';', '4', '2', 'm', 0};
+const char kColorBoldBlackYellow[] = {0x1b, '[', '1', ';', '3', '0', ';', '4', '3', 'm', 0};
+const char kColorBoldBlackBlue[] = {0x1b, '[', '1', ';', '3', '0', ';', '4', '4', 'm', 0};
+const char kColorBoldBlackMagenta[] = {0x1b, '[', '1', ';', '3', '0', ';', '4', '5', 'm', 0};
+const char kColorBoldBlackCyan[] = {0x1b, '[', '1', ';', '3', '0', ';', '4', '6', 'm', 0};
+const char kColorBoldBlackWhite[] = {0x1b, '[', '1', ';', '3', '0', ';', '4', '7', 'm', 0};
+const char kColorBoldBlackNormal[] = {0x1b, '[', '1', ';', '3', '0', ';', '4', '9', 'm', 0};
+const char kColorBoldRedBlack[] = {0x1b, '[', '1', ';', '3', '1', ';', '4', '0', 'm', 0};
+const char kColorBoldRedRed[] = {0x1b, '[', '1', ';', '3', '1', ';', '4', '1', 'm', 0};
+const char kColorBoldRedGreen[] = {0x1b, '[', '1', ';', '3', '1', ';', '4', '2', 'm', 0};
+const char kColorBoldRedYellow[] = {0x1b, '[', '1', ';', '3', '1', ';', '4', '3', 'm', 0};
+const char kColorBoldRedBlue[] = {0x1b, '[', '1', ';', '3', '1', ';', '4', '4', 'm', 0};
+const char kColorBoldRedMagenta[] = {0x1b, '[', '1', ';', '3', '1', ';', '4', '5', 'm', 0};
+const char kColorBoldRedCyan[] = {0x1b, '[', '1', ';', '3', '1', ';', '4', '6', 'm', 0};
+const char kColorBoldRedWhite[] = {0x1b, '[', '1', ';', '3', '1', ';', '4', '7', 'm', 0};
+const char kColorBoldRedNormal[] = {0x1b, '[', '1', ';', '3', '1', ';', '4', '9', 'm', 0};
+const char kColorBoldGreenBlack[] = {0x1b, '[', '1', ';', '3', '2', ';', '4', '0', 'm', 0};
+const char kColorBoldGreenRed[] = {0x1b, '[', '1', ';', '3', '2', ';', '4', '1', 'm', 0};
+const char kColorBoldGreenGreen[] = {0x1b, '[', '1', ';', '3', '2', ';', '4', '2', 'm', 0};
+const char kColorBoldGreenYellow[] = {0x1b, '[', '1', ';', '3', '2', ';', '4', '3', 'm', 0};
+const char kColorBoldGreenBlue[] = {0x1b, '[', '1', ';', '3', '2', ';', '4', '4', 'm', 0};
+const char kColorBoldGreenMagenta[] = {0x1b, '[', '1', ';', '3', '2', ';', '4', '5', 'm', 0};
+const char kColorBoldGreenCyan[] = {0x1b, '[', '1', ';', '3', '2', ';', '4', '6', 'm', 0};
+const char kColorBoldGreenWhite[] = {0x1b, '[', '1', ';', '3', '2', ';', '4', '7', 'm', 0};
+const char kColorBoldGreenNormal[] = {0x1b, '[', '1', ';', '3', '2', ';', '4', '9', 'm', 0};
+const char kColorBoldYellowBlack[] = {0x1b, '[', '1', ';', '3', '3', ';', '4', '0', 'm', 0};
+const char kColorBoldYellowRed[] = {0x1b, '[', '1', ';', '3', '3', ';', '4', '1', 'm', 0};
+const char kColorBoldYellowGreen[] = {0x1b, '[', '1', ';', '3', '3', ';', '4', '2', 'm', 0};
+const char kColorBoldYellowYellow[] = {0x1b, '[', '1', ';', '3', '3', ';', '4', '3', 'm', 0};
+const char kColorBoldYellowBlue[] = {0x1b, '[', '1', ';', '3', '3', ';', '4', '4', 'm', 0};
+const char kColorBoldYellowMagenta[] = {0x1b, '[', '1', ';', '3', '3', ';', '4', '5', 'm', 0};
+const char kColorBoldYellowCyan[] = {0x1b, '[', '1', ';', '3', '3', ';', '4', '6', 'm', 0};
+const char kColorBoldYellowWhite[] = {0x1b, '[', '1', ';', '3', '3', ';', '4', '7', 'm', 0};
+const char kColorBoldYellowNormal[] = {0x1b, '[', '1', ';', '3', '3', ';', '4', '9', 'm', 0};
+const char kColorBoldBlueBlack[] = {0x1b, '[', '1', ';', '3', '4', ';', '4', '0', 'm', 0};
+const char kColorBoldBlueRed[] = {0x1b, '[', '1', ';', '3', '4', ';', '4', '1', 'm', 0};
+const char kColorBoldBlueGreen[] = {0x1b, '[', '1', ';', '3', '4', ';', '4', '2', 'm', 0};
+const char kColorBoldBlueYellow[] = {0x1b, '[', '1', ';', '3', '4', ';', '4', '3', 'm', 0};
+const char kColorBoldBlueBlue[] = {0x1b, '[', '1', ';', '3', '4', ';', '4', '4', 'm', 0};
+const char kColorBoldBlueMagenta[] = {0x1b, '[', '1', ';', '3', '4', ';', '4', '5', 'm', 0};
+const char kColorBoldBlueCyan[] = {0x1b, '[', '1', ';', '3', '4', ';', '4', '6', 'm', 0};
+const char kColorBoldBlueWhite[] = {0x1b, '[', '1', ';', '3', '4', ';', '4', '7', 'm', 0};
+const char kColorBoldBlueNormal[] = {0x1b, '[', '1', ';', '3', '4', ';', '4', '9', 'm', 0};
+const char kColorBoldMagentaBlack[] = {0x1b, '[', '1', ';', '3', '5', ';', '4', '0', 'm', 0};
+const char kColorBoldMagentaRed[] = {0x1b, '[', '1', ';', '3', '5', ';', '4', '1', 'm', 0};
+const char kColorBoldMagentaGreen[] = {0x1b, '[', '1', ';', '3', '5', ';', '4', '2', 'm', 0};
+const char kColorBoldMagentaYellow[] = {0x1b, '[', '1', ';', '3', '5', ';', '4', '3', 'm', 0};
+const char kColorBoldMagentaBlue[] = {0x1b, '[', '1', ';', '3', '5', ';', '4', '4', 'm', 0};
+const char kColorBoldMagentaMagenta[] = {0x1b, '[', '1', ';', '3', '5', ';', '4', '5', 'm', 0};
+const char kColorBoldMagentaCyan[] = {0x1b, '[', '1', ';', '3', '5', ';', '4', '6', 'm', 0};
+const char kColorBoldMagentaWhite[] = {0x1b, '[', '1', ';', '3', '5', ';', '4', '7', 'm', 0};
+const char kColorBoldMagentaNormal[] = {0x1b, '[', '1', ';', '3', '5', ';', '4', '9', 'm', 0};
+const char kColorBoldCyanBlack[] = {0x1b, '[', '1', ';', '3', '6', ';', '4', '0', 'm', 0};
+const char kColorBoldCyanRed[] = {0x1b, '[', '1', ';', '3', '6', ';', '4', '1', 'm', 0};
+const char kColorBoldCyanGreen[] = {0x1b, '[', '1', ';', '3', '6', ';', '4', '2', 'm', 0};
+const char kColorBoldCyanYellow[] = {0x1b, '[', '1', ';', '3', '6', ';', '4', '3', 'm', 0};
+const char kColorBoldCyanBlue[] = {0x1b, '[', '1', ';', '3', '6', ';', '4', '4', 'm', 0};
+const char kColorBoldCyanMagenta[] = {0x1b, '[', '1', ';', '3', '6', ';', '4', '5', 'm', 0};
+const char kColorBoldCyanCyan[] = {0x1b, '[', '1', ';', '3', '6', ';', '4', '6', 'm', 0};
+const char kColorBoldCyanWhite[] = {0x1b, '[', '1', ';', '3', '6', ';', '4', '7', 'm', 0};
+const char kColorBoldCyanNormal[] = {0x1b, '[', '1', ';', '3', '6', ';', '4', '9', 'm', 0};
+const char kColorBoldWhiteBlack[] = {0x1b, '[', '1', ';', '3', '7', ';', '4', '0', 'm', 0};
+const char kColorBoldWhiteRed[] = {0x1b, '[', '1', ';', '3', '7', ';', '4', '1', 'm', 0};
+const char kColorBoldWhiteGreen[] = {0x1b, '[', '1', ';', '3', '7', ';', '4', '2', 'm', 0};
+const char kColorBoldWhiteYellow[] = {0x1b, '[', '1', ';', '3', '7', ';', '4', '3', 'm', 0};
+const char kColorBoldWhiteBlue[] = {0x1b, '[', '1', ';', '3', '7', ';', '4', '4', 'm', 0};
+const char kColorBoldWhiteMagenta[] = {0x1b, '[', '1', ';', '3', '7', ';', '4', '5', 'm', 0};
+const char kColorBoldWhiteCyan[] = {0x1b, '[', '1', ';', '3', '7', ';', '4', '6', 'm', 0};
+const char kColorBoldWhiteWhite[] = {0x1b, '[', '1', ';', '3', '7', ';', '4', '7', 'm', 0};
+const char kColorBoldWhiteNormal[] = {0x1b, '[', '1', ';', '3', '7', ';', '4', '9', 'm', 0};
+const char kColorBoldNormalBlack[] = {0x1b, '[', '1', ';', '3', '9', ';', '4', '0', 'm', 0};
+const char kColorBoldNormalRed[] = {0x1b, '[', '1', ';', '3', '9', ';', '4', '1', 'm', 0};
+const char kColorBoldNormalGreen[] = {0x1b, '[', '1', ';', '3', '9', ';', '4', '2', 'm', 0};
+const char kColorBoldNormalYellow[] = {0x1b, '[', '1', ';', '3', '9', ';', '4', '3', 'm', 0};
+const char kColorBoldNormalBlue[] = {0x1b, '[', '1', ';', '3', '9', ';', '4', '4', 'm', 0};
+const char kColorBoldNormalMagenta[] = {0x1b, '[', '1', ';', '3', '9', ';', '4', '5', 'm', 0};
+const char kColorBoldNormalCyan[] = {0x1b, '[', '1', ';', '3', '9', ';', '4', '6', 'm', 0};
+const char kColorBoldNormalWhite[] = {0x1b, '[', '1', ';', '3', '9', ';', '4', '7', 'm', 0};
+const char kColorBoldNormalNormal[] = {0x1b, '[', '1', ';', '3', '9', ';', '4', '9', 'm', 0};
+const char kColorUnderscoreBlackBlack[] = {0x1b, '[', '4', ';', '3', '0', ';', '4', '0', 'm', 0};
+const char kColorUnderscoreBlackRed[] = {0x1b, '[', '4', ';', '3', '0', ';', '4', '1', 'm', 0};
+const char kColorUnderscoreBlackGreen[] = {0x1b, '[', '4', ';', '3', '0', ';', '4', '2', 'm', 0};
+const char kColorUnderscoreBlackYellow[] = {0x1b, '[', '4', ';', '3', '0', ';', '4', '3', 'm', 0};
+const char kColorUnderscoreBlackBlue[] = {0x1b, '[', '4', ';', '3', '0', ';', '4', '4', 'm', 0};
+const char kColorUnderscoreBlackMagenta[] = {0x1b, '[', '4', ';', '3', '0', ';', '4', '5', 'm', 0};
+const char kColorUnderscoreBlackCyan[] = {0x1b, '[', '4', ';', '3', '0', ';', '4', '6', 'm', 0};
+const char kColorUnderscoreBlackWhite[] = {0x1b, '[', '4', ';', '3', '0', ';', '4', '7', 'm', 0};
+const char kColorUnderscoreBlackNormal[] = {0x1b, '[', '4', ';', '3', '0', ';', '4', '9', 'm', 0};
+const char kColorUnderscoreRedBlack[] = {0x1b, '[', '4', ';', '3', '1', ';', '4', '0', 'm', 0};
+const char kColorUnderscoreRedRed[] = {0x1b, '[', '4', ';', '3', '1', ';', '4', '1', 'm', 0};
+const char kColorUnderscoreRedGreen[] = {0x1b, '[', '4', ';', '3', '1', ';', '4', '2', 'm', 0};
+const char kColorUnderscoreRedYellow[] = {0x1b, '[', '4', ';', '3', '1', ';', '4', '3', 'm', 0};
+const char kColorUnderscoreRedBlue[] = {0x1b, '[', '4', ';', '3', '1', ';', '4', '4', 'm', 0};
+const char kColorUnderscoreRedMagenta[] = {0x1b, '[', '4', ';', '3', '1', ';', '4', '5', 'm', 0};
+const char kColorUnderscoreRedCyan[] = {0x1b, '[', '4', ';', '3', '1', ';', '4', '6', 'm', 0};
+const char kColorUnderscoreRedWhite[] = {0x1b, '[', '4', ';', '3', '1', ';', '4', '7', 'm', 0};
+const char kColorUnderscoreRedNormal[] = {0x1b, '[', '4', ';', '3', '1', ';', '4', '9', 'm', 0};
+const char kColorUnderscoreGreenBlack[] = {0x1b, '[', '4', ';', '3', '2', ';', '4', '0', 'm', 0};
+const char kColorUnderscoreGreenRed[] = {0x1b, '[', '4', ';', '3', '2', ';', '4', '1', 'm', 0};
+const char kColorUnderscoreGreenGreen[] = {0x1b, '[', '4', ';', '3', '2', ';', '4', '2', 'm', 0};
+const char kColorUnderscoreGreenYellow[] = {0x1b, '[', '4', ';', '3', '2', ';', '4', '3', 'm', 0};
+const char kColorUnderscoreGreenBlue[] = {0x1b, '[', '4', ';', '3', '2', ';', '4', '4', 'm', 0};
+const char kColorUnderscoreGreenMagenta[] = {0x1b, '[', '4', ';', '3', '2', ';', '4', '5', 'm', 0};
+const char kColorUnderscoreGreenCyan[] = {0x1b, '[', '4', ';', '3', '2', ';', '4', '6', 'm', 0};
+const char kColorUnderscoreGreenWhite[] = {0x1b, '[', '4', ';', '3', '2', ';', '4', '7', 'm', 0};
+const char kColorUnderscoreGreenNormal[] = {0x1b, '[', '4', ';', '3', '2', ';', '4', '9', 'm', 0};
+const char kColorUnderscoreYellowBlack[] = {0x1b, '[', '4', ';', '3', '3', ';', '4', '0', 'm', 0};
+const char kColorUnderscoreYellowRed[] = {0x1b, '[', '4', ';', '3', '3', ';', '4', '1', 'm', 0};
+const char kColorUnderscoreYellowGreen[] = {0x1b, '[', '4', ';', '3', '3', ';', '4', '2', 'm', 0};
+const char kColorUnderscoreYellowYellow[] = {0x1b, '[', '4', ';', '3', '3', ';', '4', '3', 'm', 0};
+const char kColorUnderscoreYellowBlue[] = {0x1b, '[', '4', ';', '3', '3', ';', '4', '4', 'm', 0};
+const char kColorUnderscoreYellowMagenta[] = {0x1b, '[', '4', ';', '3', '3', ';', '4', '5', 'm', 0};
+const char kColorUnderscoreYellowCyan[] = {0x1b, '[', '4', ';', '3', '3', ';', '4', '6', 'm', 0};
+const char kColorUnderscoreYellowWhite[] = {0x1b, '[', '4', ';', '3', '3', ';', '4', '7', 'm', 0};
+const char kColorUnderscoreYellowNormal[] = {0x1b, '[', '4', ';', '3', '3', ';', '4', '9', 'm', 0};
+const char kColorUnderscoreBlueBlack[] = {0x1b, '[', '4', ';', '3', '4', ';', '4', '0', 'm', 0};
+const char kColorUnderscoreBlueRed[] = {0x1b, '[', '4', ';', '3', '4', ';', '4', '1', 'm', 0};
+const char kColorUnderscoreBlueGreen[] = {0x1b, '[', '4', ';', '3', '4', ';', '4', '2', 'm', 0};
+const char kColorUnderscoreBlueYellow[] = {0x1b, '[', '4', ';', '3', '4', ';', '4', '3', 'm', 0};
+const char kColorUnderscoreBlueBlue[] = {0x1b, '[', '4', ';', '3', '4', ';', '4', '4', 'm', 0};
+const char kColorUnderscoreBlueMagenta[] = {0x1b, '[', '4', ';', '3', '4', ';', '4', '5', 'm', 0};
+const char kColorUnderscoreBlueCyan[] = {0x1b, '[', '4', ';', '3', '4', ';', '4', '6', 'm', 0};
+const char kColorUnderscoreBlueWhite[] = {0x1b, '[', '4', ';', '3', '4', ';', '4', '7', 'm', 0};
+const char kColorUnderscoreBlueNormal[] = {0x1b, '[', '4', ';', '3', '4', ';', '4', '9', 'm', 0};
+const char kColorUnderscoreMagentaBlack[] = {0x1b, '[', '4', ';', '3', '5', ';', '4', '0', 'm', 0};
+const char kColorUnderscoreMagentaRed[] = {0x1b, '[', '4', ';', '3', '5', ';', '4', '1', 'm', 0};
+const char kColorUnderscoreMagentaGreen[] = {0x1b, '[', '4', ';', '3', '5', ';', '4', '2', 'm', 0};
+const char kColorUnderscoreMagentaYellow[] = {0x1b, '[', '4', ';', '3', '5', ';', '4', '3', 'm', 0};
+const char kColorUnderscoreMagentaBlue[] = {0x1b, '[', '4', ';', '3', '5', ';', '4', '4', 'm', 0};
+const char kColorUnderscoreMagentaMagenta[] = {0x1b, '[', '4', ';', '3', '5', ';', '4', '5', 'm', 0};
+const char kColorUnderscoreMagentaCyan[] = {0x1b, '[', '4', ';', '3', '5', ';', '4', '6', 'm', 0};
+const char kColorUnderscoreMagentaWhite[] = {0x1b, '[', '4', ';', '3', '5', ';', '4', '7', 'm', 0};
+const char kColorUnderscoreMagentaNormal[] = {0x1b, '[', '4', ';', '3', '5', ';', '4', '9', 'm', 0};
+const char kColorUnderscoreCyanBlack[] = {0x1b, '[', '4', ';', '3', '6', ';', '4', '0', 'm', 0};
+const char kColorUnderscoreCyanRed[] = {0x1b, '[', '4', ';', '3', '6', ';', '4', '1', 'm', 0};
+const char kColorUnderscoreCyanGreen[] = {0x1b, '[', '4', ';', '3', '6', ';', '4', '2', 'm', 0};
+const char kColorUnderscoreCyanYellow[] = {0x1b, '[', '4', ';', '3', '6', ';', '4', '3', 'm', 0};
+const char kColorUnderscoreCyanBlue[] = {0x1b, '[', '4', ';', '3', '6', ';', '4', '4', 'm', 0};
+const char kColorUnderscoreCyanMagenta[] = {0x1b, '[', '4', ';', '3', '6', ';', '4', '5', 'm', 0};
+const char kColorUnderscoreCyanCyan[] = {0x1b, '[', '4', ';', '3', '6', ';', '4', '6', 'm', 0};
+const char kColorUnderscoreCyanWhite[] = {0x1b, '[', '4', ';', '3', '6', ';', '4', '7', 'm', 0};
+const char kColorUnderscoreCyanNormal[] = {0x1b, '[', '4', ';', '3', '6', ';', '4', '9', 'm', 0};
+const char kColorUnderscoreWhiteBlack[] = {0x1b, '[', '4', ';', '3', '7', ';', '4', '0', 'm', 0};
+const char kColorUnderscoreWhiteRed[] = {0x1b, '[', '4', ';', '3', '7', ';', '4', '1', 'm', 0};
+const char kColorUnderscoreWhiteGreen[] = {0x1b, '[', '4', ';', '3', '7', ';', '4', '2', 'm', 0};
+const char kColorUnderscoreWhiteYellow[] = {0x1b, '[', '4', ';', '3', '7', ';', '4', '3', 'm', 0};
+const char kColorUnderscoreWhiteBlue[] = {0x1b, '[', '4', ';', '3', '7', ';', '4', '4', 'm', 0};
+const char kColorUnderscoreWhiteMagenta[] = {0x1b, '[', '4', ';', '3', '7', ';', '4', '5', 'm', 0};
+const char kColorUnderscoreWhiteCyan[] = {0x1b, '[', '4', ';', '3', '7', ';', '4', '6', 'm', 0};
+const char kColorUnderscoreWhiteWhite[] = {0x1b, '[', '4', ';', '3', '7', ';', '4', '7', 'm', 0};
+const char kColorUnderscoreWhiteNormal[] = {0x1b, '[', '4', ';', '3', '7', ';', '4', '9', 'm', 0};
+const char kColorUnderscoreNormalBlack[] = {0x1b, '[', '4', ';', '3', '9', ';', '4', '0', 'm', 0};
+const char kColorUnderscoreNormalRed[] = {0x1b, '[', '4', ';', '3', '9', ';', '4', '1', 'm', 0};
+const char kColorUnderscoreNormalGreen[] = {0x1b, '[', '4', ';', '3', '9', ';', '4', '2', 'm', 0};
+const char kColorUnderscoreNormalYellow[] = {0x1b, '[', '4', ';', '3', '9', ';', '4', '3', 'm', 0};
+const char kColorUnderscoreNormalBlue[] = {0x1b, '[', '4', ';', '3', '9', ';', '4', '4', 'm', 0};
+const char kColorUnderscoreNormalMagenta[] = {0x1b, '[', '4', ';', '3', '9', ';', '4', '5', 'm', 0};
+const char kColorUnderscoreNormalCyan[] = {0x1b, '[', '4', ';', '3', '9', ';', '4', '6', 'm', 0};
+const char kColorUnderscoreNormalWhite[] = {0x1b, '[', '4', ';', '3', '9', ';', '4', '7', 'm', 0};
+const char kColorUnderscoreNormalNormal[] = {0x1b, '[', '4', ';', '3', '9', ';', '4', '9', 'm', 0};
+const char kColorBlinkBlackBlack[] = {0x1b, '[', '5', ';', '3', '0', ';', '4', '0', 'm', 0};
+const char kColorBlinkBlackRed[] = {0x1b, '[', '5', ';', '3', '0', ';', '4', '1', 'm', 0};
+const char kColorBlinkBlackGreen[] = {0x1b, '[', '5', ';', '3', '0', ';', '4', '2', 'm', 0};
+const char kColorBlinkBlackYellow[] = {0x1b, '[', '5', ';', '3', '0', ';', '4', '3', 'm', 0};
+const char kColorBlinkBlackBlue[] = {0x1b, '[', '5', ';', '3', '0', ';', '4', '4', 'm', 0};
+const char kColorBlinkBlackMagenta[] = {0x1b, '[', '5', ';', '3', '0', ';', '4', '5', 'm', 0};
+const char kColorBlinkBlackCyan[] = {0x1b, '[', '5', ';', '3', '0', ';', '4', '6', 'm', 0};
+const char kColorBlinkBlackWhite[] = {0x1b, '[', '5', ';', '3', '0', ';', '4', '7', 'm', 0};
+const char kColorBlinkBlackNormal[] = {0x1b, '[', '5', ';', '3', '0', ';', '4', '9', 'm', 0};
+const char kColorBlinkRedBlack[] = {0x1b, '[', '5', ';', '3', '1', ';', '4', '0', 'm', 0};
+const char kColorBlinkRedRed[] = {0x1b, '[', '5', ';', '3', '1', ';', '4', '1', 'm', 0};
+const char kColorBlinkRedGreen[] = {0x1b, '[', '5', ';', '3', '1', ';', '4', '2', 'm', 0};
+const char kColorBlinkRedYellow[] = {0x1b, '[', '5', ';', '3', '1', ';', '4', '3', 'm', 0};
+const char kColorBlinkRedBlue[] = {0x1b, '[', '5', ';', '3', '1', ';', '4', '4', 'm', 0};
+const char kColorBlinkRedMagenta[] = {0x1b, '[', '5', ';', '3', '1', ';', '4', '5', 'm', 0};
+const char kColorBlinkRedCyan[] = {0x1b, '[', '5', ';', '3', '1', ';', '4', '6', 'm', 0};
+const char kColorBlinkRedWhite[] = {0x1b, '[', '5', ';', '3', '1', ';', '4', '7', 'm', 0};
+const char kColorBlinkRedNormal[] = {0x1b, '[', '5', ';', '3', '1', ';', '4', '9', 'm', 0};
+const char kColorBlinkGreenBlack[] = {0x1b, '[', '5', ';', '3', '2', ';', '4', '0', 'm', 0};
+const char kColorBlinkGreenRed[] = {0x1b, '[', '5', ';', '3', '2', ';', '4', '1', 'm', 0};
+const char kColorBlinkGreenGreen[] = {0x1b, '[', '5', ';', '3', '2', ';', '4', '2', 'm', 0};
+const char kColorBlinkGreenYellow[] = {0x1b, '[', '5', ';', '3', '2', ';', '4', '3', 'm', 0};
+const char kColorBlinkGreenBlue[] = {0x1b, '[', '5', ';', '3', '2', ';', '4', '4', 'm', 0};
+const char kColorBlinkGreenMagenta[] = {0x1b, '[', '5', ';', '3', '2', ';', '4', '5', 'm', 0};
+const char kColorBlinkGreenCyan[] = {0x1b, '[', '5', ';', '3', '2', ';', '4', '6', 'm', 0};
+const char kColorBlinkGreenWhite[] = {0x1b, '[', '5', ';', '3', '2', ';', '4', '7', 'm', 0};
+const char kColorBlinkGreenNormal[] = {0x1b, '[', '5', ';', '3', '2', ';', '4', '9', 'm', 0};
+const char kColorBlinkYellowBlack[] = {0x1b, '[', '5', ';', '3', '3', ';', '4', '0', 'm', 0};
+const char kColorBlinkYellowRed[] = {0x1b, '[', '5', ';', '3', '3', ';', '4', '1', 'm', 0};
+const char kColorBlinkYellowGreen[] = {0x1b, '[', '5', ';', '3', '3', ';', '4', '2', 'm', 0};
+const char kColorBlinkYellowYellow[] = {0x1b, '[', '5', ';', '3', '3', ';', '4', '3', 'm', 0};
+const char kColorBlinkYellowBlue[] = {0x1b, '[', '5', ';', '3', '3', ';', '4', '4', 'm', 0};
+const char kColorBlinkYellowMagenta[] = {0x1b, '[', '5', ';', '3', '3', ';', '4', '5', 'm', 0};
+const char kColorBlinkYellowCyan[] = {0x1b, '[', '5', ';', '3', '3', ';', '4', '6', 'm', 0};
+const char kColorBlinkYellowWhite[] = {0x1b, '[', '5', ';', '3', '3', ';', '4', '7', 'm', 0};
+const char kColorBlinkYellowNormal[] = {0x1b, '[', '5', ';', '3', '3', ';', '4', '9', 'm', 0};
+const char kColorBlinkBlueBlack[] = {0x1b, '[', '5', ';', '3', '4', ';', '4', '0', 'm', 0};
+const char kColorBlinkBlueRed[] = {0x1b, '[', '5', ';', '3', '4', ';', '4', '1', 'm', 0};
+const char kColorBlinkBlueGreen[] = {0x1b, '[', '5', ';', '3', '4', ';', '4', '2', 'm', 0};
+const char kColorBlinkBlueYellow[] = {0x1b, '[', '5', ';', '3', '4', ';', '4', '3', 'm', 0};
+const char kColorBlinkBlueBlue[] = {0x1b, '[', '5', ';', '3', '4', ';', '4', '4', 'm', 0};
+const char kColorBlinkBlueMagenta[] = {0x1b, '[', '5', ';', '3', '4', ';', '4', '5', 'm', 0};
+const char kColorBlinkBlueCyan[] = {0x1b, '[', '5', ';', '3', '4', ';', '4', '6', 'm', 0};
+const char kColorBlinkBlueWhite[] = {0x1b, '[', '5', ';', '3', '4', ';', '4', '7', 'm', 0};
+const char kColorBlinkBlueNormal[] = {0x1b, '[', '5', ';', '3', '4', ';', '4', '9', 'm', 0};
+const char kColorBlinkMagentaBlack[] = {0x1b, '[', '5', ';', '3', '5', ';', '4', '0', 'm', 0};
+const char kColorBlinkMagentaRed[] = {0x1b, '[', '5', ';', '3', '5', ';', '4', '1', 'm', 0};
+const char kColorBlinkMagentaGreen[] = {0x1b, '[', '5', ';', '3', '5', ';', '4', '2', 'm', 0};
+const char kColorBlinkMagentaYellow[] = {0x1b, '[', '5', ';', '3', '5', ';', '4', '3', 'm', 0};
+const char kColorBlinkMagentaBlue[] = {0x1b, '[', '5', ';', '3', '5', ';', '4', '4', 'm', 0};
+const char kColorBlinkMagentaMagenta[] = {0x1b, '[', '5', ';', '3', '5', ';', '4', '5', 'm', 0};
+const char kColorBlinkMagentaCyan[] = {0x1b, '[', '5', ';', '3', '5', ';', '4', '6', 'm', 0};
+const char kColorBlinkMagentaWhite[] = {0x1b, '[', '5', ';', '3', '5', ';', '4', '7', 'm', 0};
+const char kColorBlinkMagentaNormal[] = {0x1b, '[', '5', ';', '3', '5', ';', '4', '9', 'm', 0};
+const char kColorBlinkCyanBlack[] = {0x1b, '[', '5', ';', '3', '6', ';', '4', '0', 'm', 0};
+const char kColorBlinkCyanRed[] = {0x1b, '[', '5', ';', '3', '6', ';', '4', '1', 'm', 0};
+const char kColorBlinkCyanGreen[] = {0x1b, '[', '5', ';', '3', '6', ';', '4', '2', 'm', 0};
+const char kColorBlinkCyanYellow[] = {0x1b, '[', '5', ';', '3', '6', ';', '4', '3', 'm', 0};
+const char kColorBlinkCyanBlue[] = {0x1b, '[', '5', ';', '3', '6', ';', '4', '4', 'm', 0};
+const char kColorBlinkCyanMagenta[] = {0x1b, '[', '5', ';', '3', '6', ';', '4', '5', 'm', 0};
+const char kColorBlinkCyanCyan[] = {0x1b, '[', '5', ';', '3', '6', ';', '4', '6', 'm', 0};
+const char kColorBlinkCyanWhite[] = {0x1b, '[', '5', ';', '3', '6', ';', '4', '7', 'm', 0};
+const char kColorBlinkCyanNormal[] = {0x1b, '[', '5', ';', '3', '6', ';', '4', '9', 'm', 0};
+const char kColorBlinkWhiteBlack[] = {0x1b, '[', '5', ';', '3', '7', ';', '4', '0', 'm', 0};
+const char kColorBlinkWhiteRed[] = {0x1b, '[', '5', ';', '3', '7', ';', '4', '1', 'm', 0};
+const char kColorBlinkWhiteGreen[] = {0x1b, '[', '5', ';', '3', '7', ';', '4', '2', 'm', 0};
+const char kColorBlinkWhiteYellow[] = {0x1b, '[', '5', ';', '3', '7', ';', '4', '3', 'm', 0};
+const char kColorBlinkWhiteBlue[] = {0x1b, '[', '5', ';', '3', '7', ';', '4', '4', 'm', 0};
+const char kColorBlinkWhiteMagenta[] = {0x1b, '[', '5', ';', '3', '7', ';', '4', '5', 'm', 0};
+const char kColorBlinkWhiteCyan[] = {0x1b, '[', '5', ';', '3', '7', ';', '4', '6', 'm', 0};
+const char kColorBlinkWhiteWhite[] = {0x1b, '[', '5', ';', '3', '7', ';', '4', '7', 'm', 0};
+const char kColorBlinkWhiteNormal[] = {0x1b, '[', '5', ';', '3', '7', ';', '4', '9', 'm', 0};
+const char kColorBlinkNormalBlack[] = {0x1b, '[', '5', ';', '3', '9', ';', '4', '0', 'm', 0};
+const char kColorBlinkNormalRed[] = {0x1b, '[', '5', ';', '3', '9', ';', '4', '1', 'm', 0};
+const char kColorBlinkNormalGreen[] = {0x1b, '[', '5', ';', '3', '9', ';', '4', '2', 'm', 0};
+const char kColorBlinkNormalYellow[] = {0x1b, '[', '5', ';', '3', '9', ';', '4', '3', 'm', 0};
+const char kColorBlinkNormalBlue[] = {0x1b, '[', '5', ';', '3', '9', ';', '4', '4', 'm', 0};
+const char kColorBlinkNormalMagenta[] = {0x1b, '[', '5', ';', '3', '9', ';', '4', '5', 'm', 0};
+const char kColorBlinkNormalCyan[] = {0x1b, '[', '5', ';', '3', '9', ';', '4', '6', 'm', 0};
+const char kColorBlinkNormalWhite[] = {0x1b, '[', '5', ';', '3', '9', ';', '4', '7', 'm', 0};
+const char kColorBlinkNormalNormal[] = {0x1b, '[', '5', ';', '3', '9', ';', '4', '9', 'm', 0};
+const char kColorReversevideoBlackBlack[] = {0x1b, '[', '7', ';', '3', '0', ';', '4', '0', 'm', 0};
+const char kColorReversevideoBlackRed[] = {0x1b, '[', '7', ';', '3', '0', ';', '4', '1', 'm', 0};
+const char kColorReversevideoBlackGreen[] = {0x1b, '[', '7', ';', '3', '0', ';', '4', '2', 'm', 0};
+const char kColorReversevideoBlackYellow[] = {0x1b, '[', '7', ';', '3', '0', ';', '4', '3', 'm', 0};
+const char kColorReversevideoBlackBlue[] = {0x1b, '[', '7', ';', '3', '0', ';', '4', '4', 'm', 0};
+const char kColorReversevideoBlackMagenta[] = {0x1b, '[', '7', ';', '3', '0', ';', '4', '5', 'm', 0};
+const char kColorReversevideoBlackCyan[] = {0x1b, '[', '7', ';', '3', '0', ';', '4', '6', 'm', 0};
+const char kColorReversevideoBlackWhite[] = {0x1b, '[', '7', ';', '3', '0', ';', '4', '7', 'm', 0};
+const char kColorReversevideoBlackNormal[] = {0x1b, '[', '7', ';', '3', '0', ';', '4', '9', 'm', 0};
+const char kColorReversevideoRedBlack[] = {0x1b, '[', '7', ';', '3', '1', ';', '4', '0', 'm', 0};
+const char kColorReversevideoRedRed[] = {0x1b, '[', '7', ';', '3', '1', ';', '4', '1', 'm', 0};
+const char kColorReversevideoRedGreen[] = {0x1b, '[', '7', ';', '3', '1', ';', '4', '2', 'm', 0};
+const char kColorReversevideoRedYellow[] = {0x1b, '[', '7', ';', '3', '1', ';', '4', '3', 'm', 0};
+const char kColorReversevideoRedBlue[] = {0x1b, '[', '7', ';', '3', '1', ';', '4', '4', 'm', 0};
+const char kColorReversevideoRedMagenta[] = {0x1b, '[', '7', ';', '3', '1', ';', '4', '5', 'm', 0};
+const char kColorReversevideoRedCyan[] = {0x1b, '[', '7', ';', '3', '1', ';', '4', '6', 'm', 0};
+const char kColorReversevideoRedWhite[] = {0x1b, '[', '7', ';', '3', '1', ';', '4', '7', 'm', 0};
+const char kColorReversevideoRedNormal[] = {0x1b, '[', '7', ';', '3', '1', ';', '4', '9', 'm', 0};
+const char kColorReversevideoGreenBlack[] = {0x1b, '[', '7', ';', '3', '2', ';', '4', '0', 'm', 0};
+const char kColorReversevideoGreenRed[] = {0x1b, '[', '7', ';', '3', '2', ';', '4', '1', 'm', 0};
+const char kColorReversevideoGreenGreen[] = {0x1b, '[', '7', ';', '3', '2', ';', '4', '2', 'm', 0};
+const char kColorReversevideoGreenYellow[] = {0x1b, '[', '7', ';', '3', '2', ';', '4', '3', 'm', 0};
+const char kColorReversevideoGreenBlue[] = {0x1b, '[', '7', ';', '3', '2', ';', '4', '4', 'm', 0};
+const char kColorReversevideoGreenMagenta[] = {0x1b, '[', '7', ';', '3', '2', ';', '4', '5', 'm', 0};
+const char kColorReversevideoGreenCyan[] = {0x1b, '[', '7', ';', '3', '2', ';', '4', '6', 'm', 0};
+const char kColorReversevideoGreenWhite[] = {0x1b, '[', '7', ';', '3', '2', ';', '4', '7', 'm', 0};
+const char kColorReversevideoGreenNormal[] = {0x1b, '[', '7', ';', '3', '2', ';', '4', '9', 'm', 0};
+const char kColorReversevideoYellowBlack[] = {0x1b, '[', '7', ';', '3', '3', ';', '4', '0', 'm', 0};
+const char kColorReversevideoYellowRed[] = {0x1b, '[', '7', ';', '3', '3', ';', '4', '1', 'm', 0};
+const char kColorReversevideoYellowGreen[] = {0x1b, '[', '7', ';', '3', '3', ';', '4', '2', 'm', 0};
+const char kColorReversevideoYellowYellow[] = {0x1b, '[', '7', ';', '3', '3', ';', '4', '3', 'm', 0};
+const char kColorReversevideoYellowBlue[] = {0x1b, '[', '7', ';', '3', '3', ';', '4', '4', 'm', 0};
+const char kColorReversevideoYellowMagenta[] = {0x1b, '[', '7', ';', '3', '3', ';', '4', '5', 'm', 0};
+const char kColorReversevideoYellowCyan[] = {0x1b, '[', '7', ';', '3', '3', ';', '4', '6', 'm', 0};
+const char kColorReversevideoYellowWhite[] = {0x1b, '[', '7', ';', '3', '3', ';', '4', '7', 'm', 0};
+const char kColorReversevideoYellowNormal[] = {0x1b, '[', '7', ';', '3', '3', ';', '4', '9', 'm', 0};
+const char kColorReversevideoBlueBlack[] = {0x1b, '[', '7', ';', '3', '4', ';', '4', '0', 'm', 0};
+const char kColorReversevideoBlueRed[] = {0x1b, '[', '7', ';', '3', '4', ';', '4', '1', 'm', 0};
+const char kColorReversevideoBlueGreen[] = {0x1b, '[', '7', ';', '3', '4', ';', '4', '2', 'm', 0};
+const char kColorReversevideoBlueYellow[] = {0x1b, '[', '7', ';', '3', '4', ';', '4', '3', 'm', 0};
+const char kColorReversevideoBlueBlue[] = {0x1b, '[', '7', ';', '3', '4', ';', '4', '4', 'm', 0};
+const char kColorReversevideoBlueMagenta[] = {0x1b, '[', '7', ';', '3', '4', ';', '4', '5', 'm', 0};
+const char kColorReversevideoBlueCyan[] = {0x1b, '[', '7', ';', '3', '4', ';', '4', '6', 'm', 0};
+const char kColorReversevideoBlueWhite[] = {0x1b, '[', '7', ';', '3', '4', ';', '4', '7', 'm', 0};
+const char kColorReversevideoBlueNormal[] = {0x1b, '[', '7', ';', '3', '4', ';', '4', '9', 'm', 0};
+const char kColorReversevideoMagentaBlack[] = {0x1b, '[', '7', ';', '3', '5', ';', '4', '0', 'm', 0};
+const char kColorReversevideoMagentaRed[] = {0x1b, '[', '7', ';', '3', '5', ';', '4', '1', 'm', 0};
+const char kColorReversevideoMagentaGreen[] = {0x1b, '[', '7', ';', '3', '5', ';', '4', '2', 'm', 0};
+const char kColorReversevideoMagentaYellow[] = {0x1b, '[', '7', ';', '3', '5', ';', '4', '3', 'm', 0};
+const char kColorReversevideoMagentaBlue[] = {0x1b, '[', '7', ';', '3', '5', ';', '4', '4', 'm', 0};
+const char kColorReversevideoMagentaMagenta[] = {0x1b, '[', '7', ';', '3', '5', ';', '4', '5', 'm', 0};
+const char kColorReversevideoMagentaCyan[] = {0x1b, '[', '7', ';', '3', '5', ';', '4', '6', 'm', 0};
+const char kColorReversevideoMagentaWhite[] = {0x1b, '[', '7', ';', '3', '5', ';', '4', '7', 'm', 0};
+const char kColorReversevideoMagentaNormal[] = {0x1b, '[', '7', ';', '3', '5', ';', '4', '9', 'm', 0};
+const char kColorReversevideoCyanBlack[] = {0x1b, '[', '7', ';', '3', '6', ';', '4', '0', 'm', 0};
+const char kColorReversevideoCyanRed[] = {0x1b, '[', '7', ';', '3', '6', ';', '4', '1', 'm', 0};
+const char kColorReversevideoCyanGreen[] = {0x1b, '[', '7', ';', '3', '6', ';', '4', '2', 'm', 0};
+const char kColorReversevideoCyanYellow[] = {0x1b, '[', '7', ';', '3', '6', ';', '4', '3', 'm', 0};
+const char kColorReversevideoCyanBlue[] = {0x1b, '[', '7', ';', '3', '6', ';', '4', '4', 'm', 0};
+const char kColorReversevideoCyanMagenta[] = {0x1b, '[', '7', ';', '3', '6', ';', '4', '5', 'm', 0};
+const char kColorReversevideoCyanCyan[] = {0x1b, '[', '7', ';', '3', '6', ';', '4', '6', 'm', 0};
+const char kColorReversevideoCyanWhite[] = {0x1b, '[', '7', ';', '3', '6', ';', '4', '7', 'm', 0};
+const char kColorReversevideoCyanNormal[] = {0x1b, '[', '7', ';', '3', '6', ';', '4', '9', 'm', 0};
+const char kColorReversevideoWhiteBlack[] = {0x1b, '[', '7', ';', '3', '7', ';', '4', '0', 'm', 0};
+const char kColorReversevideoWhiteRed[] = {0x1b, '[', '7', ';', '3', '7', ';', '4', '1', 'm', 0};
+const char kColorReversevideoWhiteGreen[] = {0x1b, '[', '7', ';', '3', '7', ';', '4', '2', 'm', 0};
+const char kColorReversevideoWhiteYellow[] = {0x1b, '[', '7', ';', '3', '7', ';', '4', '3', 'm', 0};
+const char kColorReversevideoWhiteBlue[] = {0x1b, '[', '7', ';', '3', '7', ';', '4', '4', 'm', 0};
+const char kColorReversevideoWhiteMagenta[] = {0x1b, '[', '7', ';', '3', '7', ';', '4', '5', 'm', 0};
+const char kColorReversevideoWhiteCyan[] = {0x1b, '[', '7', ';', '3', '7', ';', '4', '6', 'm', 0};
+const char kColorReversevideoWhiteWhite[] = {0x1b, '[', '7', ';', '3', '7', ';', '4', '7', 'm', 0};
+const char kColorReversevideoWhiteNormal[] = {0x1b, '[', '7', ';', '3', '7', ';', '4', '9', 'm', 0};
+const char kColorReversevideoNormalBlack[] = {0x1b, '[', '7', ';', '3', '9', ';', '4', '0', 'm', 0};
+const char kColorReversevideoNormalRed[] = {0x1b, '[', '7', ';', '3', '9', ';', '4', '1', 'm', 0};
+const char kColorReversevideoNormalGreen[] = {0x1b, '[', '7', ';', '3', '9', ';', '4', '2', 'm', 0};
+const char kColorReversevideoNormalYellow[] = {0x1b, '[', '7', ';', '3', '9', ';', '4', '3', 'm', 0};
+const char kColorReversevideoNormalBlue[] = {0x1b, '[', '7', ';', '3', '9', ';', '4', '4', 'm', 0};
+const char kColorReversevideoNormalMagenta[] = {0x1b, '[', '7', ';', '3', '9', ';', '4', '5', 'm', 0};
+const char kColorReversevideoNormalCyan[] = {0x1b, '[', '7', ';', '3', '9', ';', '4', '6', 'm', 0};
+const char kColorReversevideoNormalWhite[] = {0x1b, '[', '7', ';', '3', '9', ';', '4', '7', 'm', 0};
+const char kColorReversevideoNormalNormal[] = {0x1b, '[', '7', ';', '3', '9', ';', '4', '9', 'm', 0};
+const char kColorConcealedBlackBlack[] = {0x1b, '[', '8', ';', '3', '0', ';', '4', '0', 'm', 0};
+const char kColorConcealedBlackRed[] = {0x1b, '[', '8', ';', '3', '0', ';', '4', '1', 'm', 0};
+const char kColorConcealedBlackGreen[] = {0x1b, '[', '8', ';', '3', '0', ';', '4', '2', 'm', 0};
+const char kColorConcealedBlackYellow[] = {0x1b, '[', '8', ';', '3', '0', ';', '4', '3', 'm', 0};
+const char kColorConcealedBlackBlue[] = {0x1b, '[', '8', ';', '3', '0', ';', '4', '4', 'm', 0};
+const char kColorConcealedBlackMagenta[] = {0x1b, '[', '8', ';', '3', '0', ';', '4', '5', 'm', 0};
+const char kColorConcealedBlackCyan[] = {0x1b, '[', '8', ';', '3', '0', ';', '4', '6', 'm', 0};
+const char kColorConcealedBlackWhite[] = {0x1b, '[', '8', ';', '3', '0', ';', '4', '7', 'm', 0};
+const char kColorConcealedBlackNormal[] = {0x1b, '[', '8', ';', '3', '0', ';', '4', '9', 'm', 0};
+const char kColorConcealedRedBlack[] = {0x1b, '[', '8', ';', '3', '1', ';', '4', '0', 'm', 0};
+const char kColorConcealedRedRed[] = {0x1b, '[', '8', ';', '3', '1', ';', '4', '1', 'm', 0};
+const char kColorConcealedRedGreen[] = {0x1b, '[', '8', ';', '3', '1', ';', '4', '2', 'm', 0};
+const char kColorConcealedRedYellow[] = {0x1b, '[', '8', ';', '3', '1', ';', '4', '3', 'm', 0};
+const char kColorConcealedRedBlue[] = {0x1b, '[', '8', ';', '3', '1', ';', '4', '4', 'm', 0};
+const char kColorConcealedRedMagenta[] = {0x1b, '[', '8', ';', '3', '1', ';', '4', '5', 'm', 0};
+const char kColorConcealedRedCyan[] = {0x1b, '[', '8', ';', '3', '1', ';', '4', '6', 'm', 0};
+const char kColorConcealedRedWhite[] = {0x1b, '[', '8', ';', '3', '1', ';', '4', '7', 'm', 0};
+const char kColorConcealedRedNormal[] = {0x1b, '[', '8', ';', '3', '1', ';', '4', '9', 'm', 0};
+const char kColorConcealedGreenBlack[] = {0x1b, '[', '8', ';', '3', '2', ';', '4', '0', 'm', 0};
+const char kColorConcealedGreenRed[] = {0x1b, '[', '8', ';', '3', '2', ';', '4', '1', 'm', 0};
+const char kColorConcealedGreenGreen[] = {0x1b, '[', '8', ';', '3', '2', ';', '4', '2', 'm', 0};
+const char kColorConcealedGreenYellow[] = {0x1b, '[', '8', ';', '3', '2', ';', '4', '3', 'm', 0};
+const char kColorConcealedGreenBlue[] = {0x1b, '[', '8', ';', '3', '2', ';', '4', '4', 'm', 0};
+const char kColorConcealedGreenMagenta[] = {0x1b, '[', '8', ';', '3', '2', ';', '4', '5', 'm', 0};
+const char kColorConcealedGreenCyan[] = {0x1b, '[', '8', ';', '3', '2', ';', '4', '6', 'm', 0};
+const char kColorConcealedGreenWhite[] = {0x1b, '[', '8', ';', '3', '2', ';', '4', '7', 'm', 0};
+const char kColorConcealedGreenNormal[] = {0x1b, '[', '8', ';', '3', '2', ';', '4', '9', 'm', 0};
+const char kColorConcealedYellowBlack[] = {0x1b, '[', '8', ';', '3', '3', ';', '4', '0', 'm', 0};
+const char kColorConcealedYellowRed[] = {0x1b, '[', '8', ';', '3', '3', ';', '4', '1', 'm', 0};
+const char kColorConcealedYellowGreen[] = {0x1b, '[', '8', ';', '3', '3', ';', '4', '2', 'm', 0};
+const char kColorConcealedYellowYellow[] = {0x1b, '[', '8', ';', '3', '3', ';', '4', '3', 'm', 0};
+const char kColorConcealedYellowBlue[] = {0x1b, '[', '8', ';', '3', '3', ';', '4', '4', 'm', 0};
+const char kColorConcealedYellowMagenta[] = {0x1b, '[', '8', ';', '3', '3', ';', '4', '5', 'm', 0};
+const char kColorConcealedYellowCyan[] = {0x1b, '[', '8', ';', '3', '3', ';', '4', '6', 'm', 0};
+const char kColorConcealedYellowWhite[] = {0x1b, '[', '8', ';', '3', '3', ';', '4', '7', 'm', 0};
+const char kColorConcealedYellowNormal[] = {0x1b, '[', '8', ';', '3', '3', ';', '4', '9', 'm', 0};
+const char kColorConcealedBlueBlack[] = {0x1b, '[', '8', ';', '3', '4', ';', '4', '0', 'm', 0};
+const char kColorConcealedBlueRed[] = {0x1b, '[', '8', ';', '3', '4', ';', '4', '1', 'm', 0};
+const char kColorConcealedBlueGreen[] = {0x1b, '[', '8', ';', '3', '4', ';', '4', '2', 'm', 0};
+const char kColorConcealedBlueYellow[] = {0x1b, '[', '8', ';', '3', '4', ';', '4', '3', 'm', 0};
+const char kColorConcealedBlueBlue[] = {0x1b, '[', '8', ';', '3', '4', ';', '4', '4', 'm', 0};
+const char kColorConcealedBlueMagenta[] = {0x1b, '[', '8', ';', '3', '4', ';', '4', '5', 'm', 0};
+const char kColorConcealedBlueCyan[] = {0x1b, '[', '8', ';', '3', '4', ';', '4', '6', 'm', 0};
+const char kColorConcealedBlueWhite[] = {0x1b, '[', '8', ';', '3', '4', ';', '4', '7', 'm', 0};
+const char kColorConcealedBlueNormal[] = {0x1b, '[', '8', ';', '3', '4', ';', '4', '9', 'm', 0};
+const char kColorConcealedMagentaBlack[] = {0x1b, '[', '8', ';', '3', '5', ';', '4', '0', 'm', 0};
+const char kColorConcealedMagentaRed[] = {0x1b, '[', '8', ';', '3', '5', ';', '4', '1', 'm', 0};
+const char kColorConcealedMagentaGreen[] = {0x1b, '[', '8', ';', '3', '5', ';', '4', '2', 'm', 0};
+const char kColorConcealedMagentaYellow[] = {0x1b, '[', '8', ';', '3', '5', ';', '4', '3', 'm', 0};
+const char kColorConcealedMagentaBlue[] = {0x1b, '[', '8', ';', '3', '5', ';', '4', '4', 'm', 0};
+const char kColorConcealedMagentaMagenta[] = {0x1b, '[', '8', ';', '3', '5', ';', '4', '5', 'm', 0};
+const char kColorConcealedMagentaCyan[] = {0x1b, '[', '8', ';', '3', '5', ';', '4', '6', 'm', 0};
+const char kColorConcealedMagentaWhite[] = {0x1b, '[', '8', ';', '3', '5', ';', '4', '7', 'm', 0};
+const char kColorConcealedMagentaNormal[] = {0x1b, '[', '8', ';', '3', '5', ';', '4', '9', 'm', 0};
+const char kColorConcealedCyanBlack[] = {0x1b, '[', '8', ';', '3', '6', ';', '4', '0', 'm', 0};
+const char kColorConcealedCyanRed[] = {0x1b, '[', '8', ';', '3', '6', ';', '4', '1', 'm', 0};
+const char kColorConcealedCyanGreen[] = {0x1b, '[', '8', ';', '3', '6', ';', '4', '2', 'm', 0};
+const char kColorConcealedCyanYellow[] = {0x1b, '[', '8', ';', '3', '6', ';', '4', '3', 'm', 0};
+const char kColorConcealedCyanBlue[] = {0x1b, '[', '8', ';', '3', '6', ';', '4', '4', 'm', 0};
+const char kColorConcealedCyanMagenta[] = {0x1b, '[', '8', ';', '3', '6', ';', '4', '5', 'm', 0};
+const char kColorConcealedCyanCyan[] = {0x1b, '[', '8', ';', '3', '6', ';', '4', '6', 'm', 0};
+const char kColorConcealedCyanWhite[] = {0x1b, '[', '8', ';', '3', '6', ';', '4', '7', 'm', 0};
+const char kColorConcealedCyanNormal[] = {0x1b, '[', '8', ';', '3', '6', ';', '4', '9', 'm', 0};
+const char kColorConcealedWhiteBlack[] = {0x1b, '[', '8', ';', '3', '7', ';', '4', '0', 'm', 0};
+const char kColorConcealedWhiteRed[] = {0x1b, '[', '8', ';', '3', '7', ';', '4', '1', 'm', 0};
+const char kColorConcealedWhiteGreen[] = {0x1b, '[', '8', ';', '3', '7', ';', '4', '2', 'm', 0};
+const char kColorConcealedWhiteYellow[] = {0x1b, '[', '8', ';', '3', '7', ';', '4', '3', 'm', 0};
+const char kColorConcealedWhiteBlue[] = {0x1b, '[', '8', ';', '3', '7', ';', '4', '4', 'm', 0};
+const char kColorConcealedWhiteMagenta[] = {0x1b, '[', '8', ';', '3', '7', ';', '4', '5', 'm', 0};
+const char kColorConcealedWhiteCyan[] = {0x1b, '[', '8', ';', '3', '7', ';', '4', '6', 'm', 0};
+const char kColorConcealedWhiteWhite[] = {0x1b, '[', '8', ';', '3', '7', ';', '4', '7', 'm', 0};
+const char kColorConcealedWhiteNormal[] = {0x1b, '[', '8', ';', '3', '7', ';', '4', '9', 'm', 0};
+const char kColorConcealedNormalBlack[] = {0x1b, '[', '8', ';', '3', '9', ';', '4', '0', 'm', 0};
+const char kColorConcealedNormalRed[] = {0x1b, '[', '8', ';', '3', '9', ';', '4', '1', 'm', 0};
+const char kColorConcealedNormalGreen[] = {0x1b, '[', '8', ';', '3', '9', ';', '4', '2', 'm', 0};
+const char kColorConcealedNormalYellow[] = {0x1b, '[', '8', ';', '3', '9', ';', '4', '3', 'm', 0};
+const char kColorConcealedNormalBlue[] = {0x1b, '[', '8', ';', '3', '9', ';', '4', '4', 'm', 0};
+const char kColorConcealedNormalMagenta[] = {0x1b, '[', '8', ';', '3', '9', ';', '4', '5', 'm', 0};
+const char kColorConcealedNormalCyan[] = {0x1b, '[', '8', ';', '3', '9', ';', '4', '6', 'm', 0};
+const char kColorConcealedNormalWhite[] = {0x1b, '[', '8', ';', '3', '9', ';', '4', '7', 'm', 0};
+const char kColorConcealedNormalNormal[] = {0x1b, '[', '8', ';', '3', '9', ';', '4', '9', 'm', 0};
+const char kColorAttributesOffColorend[] = {0x1b, '[', '0', 'm', 0};
+const char kColorBoldColorend[] = {0x1b, '[', '1', 'm', 0};
+const char kColorUnderscoreColorend[] = {0x1b, '[', '4', 'm', 0};
+const char kColorBlinkColorend[] = {0x1b, '[', '5', 'm', 0};
+const char kColorReversevideoColorend[] = {0x1b, '[', '7', 'm', 0};
+const char kColorConcealedColorend[] = {0x1b, '[', '8', 'm', 0};
+const char kColorBlackBlackColorend[] = {0x1b, '[', '3', '0', ';', '4', '0', 'm', 0};
+const char kColorBlackRedColorend[] = {0x1b, '[', '3', '0', ';', '4', '1', 'm', 0};
+const char kColorBlackGreenColorend[] = {0x1b, '[', '3', '0', ';', '4', '2', 'm', 0};
+const char kColorBlackYellowColorend[] = {0x1b, '[', '3', '0', ';', '4', '3', 'm', 0};
+const char kColorBlackBlueColorend[] = {0x1b, '[', '3', '0', ';', '4', '4', 'm', 0};
+const char kColorBlackMagentaColorend[] = {0x1b, '[', '3', '0', ';', '4', '5', 'm', 0};
+const char kColorBlackCyanColorend[] = {0x1b, '[', '3', '0', ';', '4', '6', 'm', 0};
+const char kColorBlackWhiteColorend[] = {0x1b, '[', '3', '0', ';', '4', '7', 'm', 0};
+const char kColorBlackNormalColorend[] = {0x1b, '[', '3', '0', ';', '4', '9', 'm', 0};
+const char kColorRedBlackColorend[] = {0x1b, '[', '3', '1', ';', '4', '0', 'm', 0};
+const char kColorRedRedColorend[] = {0x1b, '[', '3', '1', ';', '4', '1', 'm', 0};
+const char kColorRedGreenColorend[] = {0x1b, '[', '3', '1', ';', '4', '2', 'm', 0};
+const char kColorRedYellowColorend[] = {0x1b, '[', '3', '1', ';', '4', '3', 'm', 0};
+const char kColorRedBlueColorend[] = {0x1b, '[', '3', '1', ';', '4', '4', 'm', 0};
+const char kColorRedMagentaColorend[] = {0x1b, '[', '3', '1', ';', '4', '5', 'm', 0};
+const char kColorRedCyanColorend[] = {0x1b, '[', '3', '1', ';', '4', '6', 'm', 0};
+const char kColorRedWhiteColorend[] = {0x1b, '[', '3', '1', ';', '4', '7', 'm', 0};
+const char kColorRedNormalColorend[] = {0x1b, '[', '3', '1', ';', '4', '9', 'm', 0};
+const char kColorGreenBlackColorend[] = {0x1b, '[', '3', '2', ';', '4', '0', 'm', 0};
+const char kColorGreenRedColorend[] = {0x1b, '[', '3', '2', ';', '4', '1', 'm', 0};
+const char kColorGreenGreenColorend[] = {0x1b, '[', '3', '2', ';', '4', '2', 'm', 0};
+const char kColorGreenYellowColorend[] = {0x1b, '[', '3', '2', ';', '4', '3', 'm', 0};
+const char kColorGreenBlueColorend[] = {0x1b, '[', '3', '2', ';', '4', '4', 'm', 0};
+const char kColorGreenMagentaColorend[] = {0x1b, '[', '3', '2', ';', '4', '5', 'm', 0};
+const char kColorGreenCyanColorend[] = {0x1b, '[', '3', '2', ';', '4', '6', 'm', 0};
+const char kColorGreenWhiteColorend[] = {0x1b, '[', '3', '2', ';', '4', '7', 'm', 0};
+const char kColorGreenNormalColorend[] = {0x1b, '[', '3', '2', ';', '4', '9', 'm', 0};
+const char kColorYellowBlackColorend[] = {0x1b, '[', '3', '3', ';', '4', '0', 'm', 0};
+const char kColorYellowRedColorend[] = {0x1b, '[', '3', '3', ';', '4', '1', 'm', 0};
+const char kColorYellowGreenColorend[] = {0x1b, '[', '3', '3', ';', '4', '2', 'm', 0};
+const char kColorYellowYellowColorend[] = {0x1b, '[', '3', '3', ';', '4', '3', 'm', 0};
+const char kColorYellowBlueColorend[] = {0x1b, '[', '3', '3', ';', '4', '4', 'm', 0};
+const char kColorYellowMagentaColorend[] = {0x1b, '[', '3', '3', ';', '4', '5', 'm', 0};
+const char kColorYellowCyanColorend[] = {0x1b, '[', '3', '3', ';', '4', '6', 'm', 0};
+const char kColorYellowWhiteColorend[] = {0x1b, '[', '3', '3', ';', '4', '7', 'm', 0};
+const char kColorYellowNormalColorend[] = {0x1b, '[', '3', '3', ';', '4', '9', 'm', 0};
+const char kColorBlueBlackColorend[] = {0x1b, '[', '3', '4', ';', '4', '0', 'm', 0};
+const char kColorBlueRedColorend[] = {0x1b, '[', '3', '4', ';', '4', '1', 'm', 0};
+const char kColorBlueGreenColorend[] = {0x1b, '[', '3', '4', ';', '4', '2', 'm', 0};
+const char kColorBlueYellowColorend[] = {0x1b, '[', '3', '4', ';', '4', '3', 'm', 0};
+const char kColorBlueBlueColorend[] = {0x1b, '[', '3', '4', ';', '4', '4', 'm', 0};
+const char kColorBlueMagentaColorend[] = {0x1b, '[', '3', '4', ';', '4', '5', 'm', 0};
+const char kColorBlueCyanColorend[] = {0x1b, '[', '3', '4', ';', '4', '6', 'm', 0};
+const char kColorBlueWhiteColorend[] = {0x1b, '[', '3', '4', ';', '4', '7', 'm', 0};
+const char kColorBlueNormalColorend[] = {0x1b, '[', '3', '4', ';', '4', '9', 'm', 0};
+const char kColorMagentaBlackColorend[] = {0x1b, '[', '3', '5', ';', '4', '0', 'm', 0};
+const char kColorMagentaRedColorend[] = {0x1b, '[', '3', '5', ';', '4', '1', 'm', 0};
+const char kColorMagentaGreenColorend[] = {0x1b, '[', '3', '5', ';', '4', '2', 'm', 0};
+const char kColorMagentaYellowColorend[] = {0x1b, '[', '3', '5', ';', '4', '3', 'm', 0};
+const char kColorMagentaBlueColorend[] = {0x1b, '[', '3', '5', ';', '4', '4', 'm', 0};
+const char kColorMagentaMagentaColorend[] = {0x1b, '[', '3', '5', ';', '4', '5', 'm', 0};
+const char kColorMagentaCyanColorend[] = {0x1b, '[', '3', '5', ';', '4', '6', 'm', 0};
+const char kColorMagentaWhiteColorend[] = {0x1b, '[', '3', '5', ';', '4', '7', 'm', 0};
+const char kColorMagentaNormalColorend[] = {0x1b, '[', '3', '5', ';', '4', '9', 'm', 0};
+const char kColorCyanBlackColorend[] = {0x1b, '[', '3', '6', ';', '4', '0', 'm', 0};
+const char kColorCyanRedColorend[] = {0x1b, '[', '3', '6', ';', '4', '1', 'm', 0};
+const char kColorCyanGreenColorend[] = {0x1b, '[', '3', '6', ';', '4', '2', 'm', 0};
+const char kColorCyanYellowColorend[] = {0x1b, '[', '3', '6', ';', '4', '3', 'm', 0};
+const char kColorCyanBlueColorend[] = {0x1b, '[', '3', '6', ';', '4', '4', 'm', 0};
+const char kColorCyanMagentaColorend[] = {0x1b, '[', '3', '6', ';', '4', '5', 'm', 0};
+const char kColorCyanCyanColorend[] = {0x1b, '[', '3', '6', ';', '4', '6', 'm', 0};
+const char kColorCyanWhiteColorend[] = {0x1b, '[', '3', '6', ';', '4', '7', 'm', 0};
+const char kColorCyanNormalColorend[] = {0x1b, '[', '3', '6', ';', '4', '9', 'm', 0};
+const char kColorWhiteBlackColorend[] = {0x1b, '[', '3', '7', ';', '4', '0', 'm', 0};
+const char kColorWhiteRedColorend[] = {0x1b, '[', '3', '7', ';', '4', '1', 'm', 0};
+const char kColorWhiteGreenColorend[] = {0x1b, '[', '3', '7', ';', '4', '2', 'm', 0};
+const char kColorWhiteYellowColorend[] = {0x1b, '[', '3', '7', ';', '4', '3', 'm', 0};
+const char kColorWhiteBlueColorend[] = {0x1b, '[', '3', '7', ';', '4', '4', 'm', 0};
+const char kColorWhiteMagentaColorend[] = {0x1b, '[', '3', '7', ';', '4', '5', 'm', 0};
+const char kColorWhiteCyanColorend[] = {0x1b, '[', '3', '7', ';', '4', '6', 'm', 0};
+const char kColorWhiteWhiteColorend[] = {0x1b, '[', '3', '7', ';', '4', '7', 'm', 0};
+const char kColorWhiteNormalColorend[] = {0x1b, '[', '3', '7', ';', '4', '9', 'm', 0};
+const char kColorNormalBlackColorend[] = {0x1b, '[', '3', '9', ';', '4', '0', 'm', 0};
+const char kColorNormalRedColorend[] = {0x1b, '[', '3', '9', ';', '4', '1', 'm', 0};
+const char kColorNormalGreenColorend[] = {0x1b, '[', '3', '9', ';', '4', '2', 'm', 0};
+const char kColorNormalYellowColorend[] = {0x1b, '[', '3', '9', ';', '4', '3', 'm', 0};
+const char kColorNormalBlueColorend[] = {0x1b, '[', '3', '9', ';', '4', '4', 'm', 0};
+const char kColorNormalMagentaColorend[] = {0x1b, '[', '3', '9', ';', '4', '5', 'm', 0};
+const char kColorNormalCyanColorend[] = {0x1b, '[', '3', '9', ';', '4', '6', 'm', 0};
+const char kColorNormalWhiteColorend[] = {0x1b, '[', '3', '9', ';', '4', '7', 'm', 0};
+const char kColorNormalNormalColorend[] = {0x1b, '[', '3', '9', ';', '4', '9', 'm', 0};
+const char kColorBoldBlackBlackColorend[] = {0x1b, '[', '1', ';', '3', '0', ';', '4', '0', 'm', 0};
+const char kColorBoldBlackRedColorend[] = {0x1b, '[', '1', ';', '3', '0', ';', '4', '1', 'm', 0};
+const char kColorBoldBlackGreenColorend[] = {0x1b, '[', '1', ';', '3', '0', ';', '4', '2', 'm', 0};
+const char kColorBoldBlackYellowColorend[] = {0x1b, '[', '1', ';', '3', '0', ';', '4', '3', 'm', 0};
+const char kColorBoldBlackBlueColorend[] = {0x1b, '[', '1', ';', '3', '0', ';', '4', '4', 'm', 0};
+const char kColorBoldBlackMagentaColorend[] = {0x1b, '[', '1', ';', '3', '0', ';', '4', '5', 'm', 0};
+const char kColorBoldBlackCyanColorend[] = {0x1b, '[', '1', ';', '3', '0', ';', '4', '6', 'm', 0};
+const char kColorBoldBlackWhiteColorend[] = {0x1b, '[', '1', ';', '3', '0', ';', '4', '7', 'm', 0};
+const char kColorBoldBlackNormalColorend[] = {0x1b, '[', '1', ';', '3', '0', ';', '4', '9', 'm', 0};
+const char kColorBoldRedBlackColorend[] = {0x1b, '[', '1', ';', '3', '1', ';', '4', '0', 'm', 0};
+const char kColorBoldRedRedColorend[] = {0x1b, '[', '1', ';', '3', '1', ';', '4', '1', 'm', 0};
+const char kColorBoldRedGreenColorend[] = {0x1b, '[', '1', ';', '3', '1', ';', '4', '2', 'm', 0};
+const char kColorBoldRedYellowColorend[] = {0x1b, '[', '1', ';', '3', '1', ';', '4', '3', 'm', 0};
+const char kColorBoldRedBlueColorend[] = {0x1b, '[', '1', ';', '3', '1', ';', '4', '4', 'm', 0};
+const char kColorBoldRedMagentaColorend[] = {0x1b, '[', '1', ';', '3', '1', ';', '4', '5', 'm', 0};
+const char kColorBoldRedCyanColorend[] = {0x1b, '[', '1', ';', '3', '1', ';', '4', '6', 'm', 0};
+const char kColorBoldRedWhiteColorend[] = {0x1b, '[', '1', ';', '3', '1', ';', '4', '7', 'm', 0};
+const char kColorBoldRedNormalColorend[] = {0x1b, '[', '1', ';', '3', '1', ';', '4', '9', 'm', 0};
+const char kColorBoldGreenBlackColorend[] = {0x1b, '[', '1', ';', '3', '2', ';', '4', '0', 'm', 0};
+const char kColorBoldGreenRedColorend[] = {0x1b, '[', '1', ';', '3', '2', ';', '4', '1', 'm', 0};
+const char kColorBoldGreenGreenColorend[] = {0x1b, '[', '1', ';', '3', '2', ';', '4', '2', 'm', 0};
+const char kColorBoldGreenYellowColorend[] = {0x1b, '[', '1', ';', '3', '2', ';', '4', '3', 'm', 0};
+const char kColorBoldGreenBlueColorend[] = {0x1b, '[', '1', ';', '3', '2', ';', '4', '4', 'm', 0};
+const char kColorBoldGreenMagentaColorend[] = {0x1b, '[', '1', ';', '3', '2', ';', '4', '5', 'm', 0};
+const char kColorBoldGreenCyanColorend[] = {0x1b, '[', '1', ';', '3', '2', ';', '4', '6', 'm', 0};
+const char kColorBoldGreenWhiteColorend[] = {0x1b, '[', '1', ';', '3', '2', ';', '4', '7', 'm', 0};
+const char kColorBoldGreenNormalColorend[] = {0x1b, '[', '1', ';', '3', '2', ';', '4', '9', 'm', 0};
+const char kColorBoldYellowBlackColorend[] = {0x1b, '[', '1', ';', '3', '3', ';', '4', '0', 'm', 0};
+const char kColorBoldYellowRedColorend[] = {0x1b, '[', '1', ';', '3', '3', ';', '4', '1', 'm', 0};
+const char kColorBoldYellowGreenColorend[] = {0x1b, '[', '1', ';', '3', '3', ';', '4', '2', 'm', 0};
+const char kColorBoldYellowYellowColorend[] = {0x1b, '[', '1', ';', '3', '3', ';', '4', '3', 'm', 0};
+const char kColorBoldYellowBlueColorend[] = {0x1b, '[', '1', ';', '3', '3', ';', '4', '4', 'm', 0};
+const char kColorBoldYellowMagentaColorend[] = {0x1b, '[', '1', ';', '3', '3', ';', '4', '5', 'm', 0};
+const char kColorBoldYellowCyanColorend[] = {0x1b, '[', '1', ';', '3', '3', ';', '4', '6', 'm', 0};
+const char kColorBoldYellowWhiteColorend[] = {0x1b, '[', '1', ';', '3', '3', ';', '4', '7', 'm', 0};
+const char kColorBoldYellowNormalColorend[] = {0x1b, '[', '1', ';', '3', '3', ';', '4', '9', 'm', 0};
+const char kColorBoldBlueBlackColorend[] = {0x1b, '[', '1', ';', '3', '4', ';', '4', '0', 'm', 0};
+const char kColorBoldBlueRedColorend[] = {0x1b, '[', '1', ';', '3', '4', ';', '4', '1', 'm', 0};
+const char kColorBoldBlueGreenColorend[] = {0x1b, '[', '1', ';', '3', '4', ';', '4', '2', 'm', 0};
+const char kColorBoldBlueYellowColorend[] = {0x1b, '[', '1', ';', '3', '4', ';', '4', '3', 'm', 0};
+const char kColorBoldBlueBlueColorend[] = {0x1b, '[', '1', ';', '3', '4', ';', '4', '4', 'm', 0};
+const char kColorBoldBlueMagentaColorend[] = {0x1b, '[', '1', ';', '3', '4', ';', '4', '5', 'm', 0};
+const char kColorBoldBlueCyanColorend[] = {0x1b, '[', '1', ';', '3', '4', ';', '4', '6', 'm', 0};
+const char kColorBoldBlueWhiteColorend[] = {0x1b, '[', '1', ';', '3', '4', ';', '4', '7', 'm', 0};
+const char kColorBoldBlueNormalColorend[] = {0x1b, '[', '1', ';', '3', '4', ';', '4', '9', 'm', 0};
+const char kColorBoldMagentaBlackColorend[] = {0x1b, '[', '1', ';', '3', '5', ';', '4', '0', 'm', 0};
+const char kColorBoldMagentaRedColorend[] = {0x1b, '[', '1', ';', '3', '5', ';', '4', '1', 'm', 0};
+const char kColorBoldMagentaGreenColorend[] = {0x1b, '[', '1', ';', '3', '5', ';', '4', '2', 'm', 0};
+const char kColorBoldMagentaYellowColorend[] = {0x1b, '[', '1', ';', '3', '5', ';', '4', '3', 'm', 0};
+const char kColorBoldMagentaBlueColorend[] = {0x1b, '[', '1', ';', '3', '5', ';', '4', '4', 'm', 0};
+const char kColorBoldMagentaMagentaColorend[] = {0x1b, '[', '1', ';', '3', '5', ';', '4', '5', 'm', 0};
+const char kColorBoldMagentaCyanColorend[] = {0x1b, '[', '1', ';', '3', '5', ';', '4', '6', 'm', 0};
+const char kColorBoldMagentaWhiteColorend[] = {0x1b, '[', '1', ';', '3', '5', ';', '4', '7', 'm', 0};
+const char kColorBoldMagentaNormalColorend[] = {0x1b, '[', '1', ';', '3', '5', ';', '4', '9', 'm', 0};
+const char kColorBoldCyanBlackColorend[] = {0x1b, '[', '1', ';', '3', '6', ';', '4', '0', 'm', 0};
+const char kColorBoldCyanRedColorend[] = {0x1b, '[', '1', ';', '3', '6', ';', '4', '1', 'm', 0};
+const char kColorBoldCyanGreenColorend[] = {0x1b, '[', '1', ';', '3', '6', ';', '4', '2', 'm', 0};
+const char kColorBoldCyanYellowColorend[] = {0x1b, '[', '1', ';', '3', '6', ';', '4', '3', 'm', 0};
+const char kColorBoldCyanBlueColorend[] = {0x1b, '[', '1', ';', '3', '6', ';', '4', '4', 'm', 0};
+const char kColorBoldCyanMagentaColorend[] = {0x1b, '[', '1', ';', '3', '6', ';', '4', '5', 'm', 0};
+const char kColorBoldCyanCyanColorend[] = {0x1b, '[', '1', ';', '3', '6', ';', '4', '6', 'm', 0};
+const char kColorBoldCyanWhiteColorend[] = {0x1b, '[', '1', ';', '3', '6', ';', '4', '7', 'm', 0};
+const char kColorBoldCyanNormalColorend[] = {0x1b, '[', '1', ';', '3', '6', ';', '4', '9', 'm', 0};
+const char kColorBoldWhiteBlackColorend[] = {0x1b, '[', '1', ';', '3', '7', ';', '4', '0', 'm', 0};
+const char kColorBoldWhiteRedColorend[] = {0x1b, '[', '1', ';', '3', '7', ';', '4', '1', 'm', 0};
+const char kColorBoldWhiteGreenColorend[] = {0x1b, '[', '1', ';', '3', '7', ';', '4', '2', 'm', 0};
+const char kColorBoldWhiteYellowColorend[] = {0x1b, '[', '1', ';', '3', '7', ';', '4', '3', 'm', 0};
+const char kColorBoldWhiteBlueColorend[] = {0x1b, '[', '1', ';', '3', '7', ';', '4', '4', 'm', 0};
+const char kColorBoldWhiteMagentaColorend[] = {0x1b, '[', '1', ';', '3', '7', ';', '4', '5', 'm', 0};
+const char kColorBoldWhiteCyanColorend[] = {0x1b, '[', '1', ';', '3', '7', ';', '4', '6', 'm', 0};
+const char kColorBoldWhiteWhiteColorend[] = {0x1b, '[', '1', ';', '3', '7', ';', '4', '7', 'm', 0};
+const char kColorBoldWhiteNormalColorend[] = {0x1b, '[', '1', ';', '3', '7', ';', '4', '9', 'm', 0};
+const char kColorBoldNormalBlackColorend[] = {0x1b, '[', '1', ';', '3', '9', ';', '4', '0', 'm', 0};
+const char kColorBoldNormalRedColorend[] = {0x1b, '[', '1', ';', '3', '9', ';', '4', '1', 'm', 0};
+const char kColorBoldNormalGreenColorend[] = {0x1b, '[', '1', ';', '3', '9', ';', '4', '2', 'm', 0};
+const char kColorBoldNormalYellowColorend[] = {0x1b, '[', '1', ';', '3', '9', ';', '4', '3', 'm', 0};
+const char kColorBoldNormalBlueColorend[] = {0x1b, '[', '1', ';', '3', '9', ';', '4', '4', 'm', 0};
+const char kColorBoldNormalMagentaColorend[] = {0x1b, '[', '1', ';', '3', '9', ';', '4', '5', 'm', 0};
+const char kColorBoldNormalCyanColorend[] = {0x1b, '[', '1', ';', '3', '9', ';', '4', '6', 'm', 0};
+const char kColorBoldNormalWhiteColorend[] = {0x1b, '[', '1', ';', '3', '9', ';', '4', '7', 'm', 0};
+const char kColorBoldNormalNormalColorend[] = {0x1b, '[', '1', ';', '3', '9', ';', '4', '9', 'm', 0};
+const char kColorUnderscoreBlackBlackColorend[] = {0x1b, '[', '4', ';', '3', '0', ';', '4', '0', 'm', 0};
+const char kColorUnderscoreBlackRedColorend[] = {0x1b, '[', '4', ';', '3', '0', ';', '4', '1', 'm', 0};
+const char kColorUnderscoreBlackGreenColorend[] = {0x1b, '[', '4', ';', '3', '0', ';', '4', '2', 'm', 0};
+const char kColorUnderscoreBlackYellowColorend[] = {0x1b, '[', '4', ';', '3', '0', ';', '4', '3', 'm', 0};
+const char kColorUnderscoreBlackBlueColorend[] = {0x1b, '[', '4', ';', '3', '0', ';', '4', '4', 'm', 0};
+const char kColorUnderscoreBlackMagentaColorend[] = {0x1b, '[', '4', ';', '3', '0', ';', '4', '5', 'm', 0};
+const char kColorUnderscoreBlackCyanColorend[] = {0x1b, '[', '4', ';', '3', '0', ';', '4', '6', 'm', 0};
+const char kColorUnderscoreBlackWhiteColorend[] = {0x1b, '[', '4', ';', '3', '0', ';', '4', '7', 'm', 0};
+const char kColorUnderscoreBlackNormalColorend[] = {0x1b, '[', '4', ';', '3', '0', ';', '4', '9', 'm', 0};
+const char kColorUnderscoreRedBlackColorend[] = {0x1b, '[', '4', ';', '3', '1', ';', '4', '0', 'm', 0};
+const char kColorUnderscoreRedRedColorend[] = {0x1b, '[', '4', ';', '3', '1', ';', '4', '1', 'm', 0};
+const char kColorUnderscoreRedGreenColorend[] = {0x1b, '[', '4', ';', '3', '1', ';', '4', '2', 'm', 0};
+const char kColorUnderscoreRedYellowColorend[] = {0x1b, '[', '4', ';', '3', '1', ';', '4', '3', 'm', 0};
+const char kColorUnderscoreRedBlueColorend[] = {0x1b, '[', '4', ';', '3', '1', ';', '4', '4', 'm', 0};
+const char kColorUnderscoreRedMagentaColorend[] = {0x1b, '[', '4', ';', '3', '1', ';', '4', '5', 'm', 0};
+const char kColorUnderscoreRedCyanColorend[] = {0x1b, '[', '4', ';', '3', '1', ';', '4', '6', 'm', 0};
+const char kColorUnderscoreRedWhiteColorend[] = {0x1b, '[', '4', ';', '3', '1', ';', '4', '7', 'm', 0};
+const char kColorUnderscoreRedNormalColorend[] = {0x1b, '[', '4', ';', '3', '1', ';', '4', '9', 'm', 0};
+const char kColorUnderscoreGreenBlackColorend[] = {0x1b, '[', '4', ';', '3', '2', ';', '4', '0', 'm', 0};
+const char kColorUnderscoreGreenRedColorend[] = {0x1b, '[', '4', ';', '3', '2', ';', '4', '1', 'm', 0};
+const char kColorUnderscoreGreenGreenColorend[] = {0x1b, '[', '4', ';', '3', '2', ';', '4', '2', 'm', 0};
+const char kColorUnderscoreGreenYellowColorend[] = {0x1b, '[', '4', ';', '3', '2', ';', '4', '3', 'm', 0};
+const char kColorUnderscoreGreenBlueColorend[] = {0x1b, '[', '4', ';', '3', '2', ';', '4', '4', 'm', 0};
+const char kColorUnderscoreGreenMagentaColorend[] = {0x1b, '[', '4', ';', '3', '2', ';', '4', '5', 'm', 0};
+const char kColorUnderscoreGreenCyanColorend[] = {0x1b, '[', '4', ';', '3', '2', ';', '4', '6', 'm', 0};
+const char kColorUnderscoreGreenWhiteColorend[] = {0x1b, '[', '4', ';', '3', '2', ';', '4', '7', 'm', 0};
+const char kColorUnderscoreGreenNormalColorend[] = {0x1b, '[', '4', ';', '3', '2', ';', '4', '9', 'm', 0};
+const char kColorUnderscoreYellowBlackColorend[] = {0x1b, '[', '4', ';', '3', '3', ';', '4', '0', 'm', 0};
+const char kColorUnderscoreYellowRedColorend[] = {0x1b, '[', '4', ';', '3', '3', ';', '4', '1', 'm', 0};
+const char kColorUnderscoreYellowGreenColorend[] = {0x1b, '[', '4', ';', '3', '3', ';', '4', '2', 'm', 0};
+const char kColorUnderscoreYellowYellowColorend[] = {0x1b, '[', '4', ';', '3', '3', ';', '4', '3', 'm', 0};
+const char kColorUnderscoreYellowBlueColorend[] = {0x1b, '[', '4', ';', '3', '3', ';', '4', '4', 'm', 0};
+const char kColorUnderscoreYellowMagentaColorend[] = {0x1b, '[', '4', ';', '3', '3', ';', '4', '5', 'm', 0};
+const char kColorUnderscoreYellowCyanColorend[] = {0x1b, '[', '4', ';', '3', '3', ';', '4', '6', 'm', 0};
+const char kColorUnderscoreYellowWhiteColorend[] = {0x1b, '[', '4', ';', '3', '3', ';', '4', '7', 'm', 0};
+const char kColorUnderscoreYellowNormalColorend[] = {0x1b, '[', '4', ';', '3', '3', ';', '4', '9', 'm', 0};
+const char kColorUnderscoreBlueBlackColorend[] = {0x1b, '[', '4', ';', '3', '4', ';', '4', '0', 'm', 0};
+const char kColorUnderscoreBlueRedColorend[] = {0x1b, '[', '4', ';', '3', '4', ';', '4', '1', 'm', 0};
+const char kColorUnderscoreBlueGreenColorend[] = {0x1b, '[', '4', ';', '3', '4', ';', '4', '2', 'm', 0};
+const char kColorUnderscoreBlueYellowColorend[] = {0x1b, '[', '4', ';', '3', '4', ';', '4', '3', 'm', 0};
+const char kColorUnderscoreBlueBlueColorend[] = {0x1b, '[', '4', ';', '3', '4', ';', '4', '4', 'm', 0};
+const char kColorUnderscoreBlueMagentaColorend[] = {0x1b, '[', '4', ';', '3', '4', ';', '4', '5', 'm', 0};
+const char kColorUnderscoreBlueCyanColorend[] = {0x1b, '[', '4', ';', '3', '4', ';', '4', '6', 'm', 0};
+const char kColorUnderscoreBlueWhiteColorend[] = {0x1b, '[', '4', ';', '3', '4', ';', '4', '7', 'm', 0};
+const char kColorUnderscoreBlueNormalColorend[] = {0x1b, '[', '4', ';', '3', '4', ';', '4', '9', 'm', 0};
+const char kColorUnderscoreMagentaBlackColorend[] = {0x1b, '[', '4', ';', '3', '5', ';', '4', '0', 'm', 0};
+const char kColorUnderscoreMagentaRedColorend[] = {0x1b, '[', '4', ';', '3', '5', ';', '4', '1', 'm', 0};
+const char kColorUnderscoreMagentaGreenColorend[] = {0x1b, '[', '4', ';', '3', '5', ';', '4', '2', 'm', 0};
+const char kColorUnderscoreMagentaYellowColorend[] = {0x1b, '[', '4', ';', '3', '5', ';', '4', '3', 'm', 0};
+const char kColorUnderscoreMagentaBlueColorend[] = {0x1b, '[', '4', ';', '3', '5', ';', '4', '4', 'm', 0};
+const char kColorUnderscoreMagentaMagentaColorend[] = {0x1b, '[', '4', ';', '3', '5', ';', '4', '5', 'm', 0};
+const char kColorUnderscoreMagentaCyanColorend[] = {0x1b, '[', '4', ';', '3', '5', ';', '4', '6', 'm', 0};
+const char kColorUnderscoreMagentaWhiteColorend[] = {0x1b, '[', '4', ';', '3', '5', ';', '4', '7', 'm', 0};
+const char kColorUnderscoreMagentaNormalColorend[] = {0x1b, '[', '4', ';', '3', '5', ';', '4', '9', 'm', 0};
+const char kColorUnderscoreCyanBlackColorend[] = {0x1b, '[', '4', ';', '3', '6', ';', '4', '0', 'm', 0};
+const char kColorUnderscoreCyanRedColorend[] = {0x1b, '[', '4', ';', '3', '6', ';', '4', '1', 'm', 0};
+const char kColorUnderscoreCyanGreenColorend[] = {0x1b, '[', '4', ';', '3', '6', ';', '4', '2', 'm', 0};
+const char kColorUnderscoreCyanYellowColorend[] = {0x1b, '[', '4', ';', '3', '6', ';', '4', '3', 'm', 0};
+const char kColorUnderscoreCyanBlueColorend[] = {0x1b, '[', '4', ';', '3', '6', ';', '4', '4', 'm', 0};
+const char kColorUnderscoreCyanMagentaColorend[] = {0x1b, '[', '4', ';', '3', '6', ';', '4', '5', 'm', 0};
+const char kColorUnderscoreCyanCyanColorend[] = {0x1b, '[', '4', ';', '3', '6', ';', '4', '6', 'm', 0};
+const char kColorUnderscoreCyanWhiteColorend[] = {0x1b, '[', '4', ';', '3', '6', ';', '4', '7', 'm', 0};
+const char kColorUnderscoreCyanNormalColorend[] = {0x1b, '[', '4', ';', '3', '6', ';', '4', '9', 'm', 0};
+const char kColorUnderscoreWhiteBlackColorend[] = {0x1b, '[', '4', ';', '3', '7', ';', '4', '0', 'm', 0};
+const char kColorUnderscoreWhiteRedColorend[] = {0x1b, '[', '4', ';', '3', '7', ';', '4', '1', 'm', 0};
+const char kColorUnderscoreWhiteGreenColorend[] = {0x1b, '[', '4', ';', '3', '7', ';', '4', '2', 'm', 0};
+const char kColorUnderscoreWhiteYellowColorend[] = {0x1b, '[', '4', ';', '3', '7', ';', '4', '3', 'm', 0};
+const char kColorUnderscoreWhiteBlueColorend[] = {0x1b, '[', '4', ';', '3', '7', ';', '4', '4', 'm', 0};
+const char kColorUnderscoreWhiteMagentaColorend[] = {0x1b, '[', '4', ';', '3', '7', ';', '4', '5', 'm', 0};
+const char kColorUnderscoreWhiteCyanColorend[] = {0x1b, '[', '4', ';', '3', '7', ';', '4', '6', 'm', 0};
+const char kColorUnderscoreWhiteWhiteColorend[] = {0x1b, '[', '4', ';', '3', '7', ';', '4', '7', 'm', 0};
+const char kColorUnderscoreWhiteNormalColorend[] = {0x1b, '[', '4', ';', '3', '7', ';', '4', '9', 'm', 0};
+const char kColorUnderscoreNormalBlackColorend[] = {0x1b, '[', '4', ';', '3', '9', ';', '4', '0', 'm', 0};
+const char kColorUnderscoreNormalRedColorend[] = {0x1b, '[', '4', ';', '3', '9', ';', '4', '1', 'm', 0};
+const char kColorUnderscoreNormalGreenColorend[] = {0x1b, '[', '4', ';', '3', '9', ';', '4', '2', 'm', 0};
+const char kColorUnderscoreNormalYellowColorend[] = {0x1b, '[', '4', ';', '3', '9', ';', '4', '3', 'm', 0};
+const char kColorUnderscoreNormalBlueColorend[] = {0x1b, '[', '4', ';', '3', '9', ';', '4', '4', 'm', 0};
+const char kColorUnderscoreNormalMagentaColorend[] = {0x1b, '[', '4', ';', '3', '9', ';', '4', '5', 'm', 0};
+const char kColorUnderscoreNormalCyanColorend[] = {0x1b, '[', '4', ';', '3', '9', ';', '4', '6', 'm', 0};
+const char kColorUnderscoreNormalWhiteColorend[] = {0x1b, '[', '4', ';', '3', '9', ';', '4', '7', 'm', 0};
+const char kColorUnderscoreNormalNormalColorend[] = {0x1b, '[', '4', ';', '3', '9', ';', '4', '9', 'm', 0};
+const char kColorBlinkBlackBlackColorend[] = {0x1b, '[', '5', ';', '3', '0', ';', '4', '0', 'm', 0};
+const char kColorBlinkBlackRedColorend[] = {0x1b, '[', '5', ';', '3', '0', ';', '4', '1', 'm', 0};
+const char kColorBlinkBlackGreenColorend[] = {0x1b, '[', '5', ';', '3', '0', ';', '4', '2', 'm', 0};
+const char kColorBlinkBlackYellowColorend[] = {0x1b, '[', '5', ';', '3', '0', ';', '4', '3', 'm', 0};
+const char kColorBlinkBlackBlueColorend[] = {0x1b, '[', '5', ';', '3', '0', ';', '4', '4', 'm', 0};
+const char kColorBlinkBlackMagentaColorend[] = {0x1b, '[', '5', ';', '3', '0', ';', '4', '5', 'm', 0};
+const char kColorBlinkBlackCyanColorend[] = {0x1b, '[', '5', ';', '3', '0', ';', '4', '6', 'm', 0};
+const char kColorBlinkBlackWhiteColorend[] = {0x1b, '[', '5', ';', '3', '0', ';', '4', '7', 'm', 0};
+const char kColorBlinkBlackNormalColorend[] = {0x1b, '[', '5', ';', '3', '0', ';', '4', '9', 'm', 0};
+const char kColorBlinkRedBlackColorend[] = {0x1b, '[', '5', ';', '3', '1', ';', '4', '0', 'm', 0};
+const char kColorBlinkRedRedColorend[] = {0x1b, '[', '5', ';', '3', '1', ';', '4', '1', 'm', 0};
+const char kColorBlinkRedGreenColorend[] = {0x1b, '[', '5', ';', '3', '1', ';', '4', '2', 'm', 0};
+const char kColorBlinkRedYellowColorend[] = {0x1b, '[', '5', ';', '3', '1', ';', '4', '3', 'm', 0};
+const char kColorBlinkRedBlueColorend[] = {0x1b, '[', '5', ';', '3', '1', ';', '4', '4', 'm', 0};
+const char kColorBlinkRedMagentaColorend[] = {0x1b, '[', '5', ';', '3', '1', ';', '4', '5', 'm', 0};
+const char kColorBlinkRedCyanColorend[] = {0x1b, '[', '5', ';', '3', '1', ';', '4', '6', 'm', 0};
+const char kColorBlinkRedWhiteColorend[] = {0x1b, '[', '5', ';', '3', '1', ';', '4', '7', 'm', 0};
+const char kColorBlinkRedNormalColorend[] = {0x1b, '[', '5', ';', '3', '1', ';', '4', '9', 'm', 0};
+const char kColorBlinkGreenBlackColorend[] = {0x1b, '[', '5', ';', '3', '2', ';', '4', '0', 'm', 0};
+const char kColorBlinkGreenRedColorend[] = {0x1b, '[', '5', ';', '3', '2', ';', '4', '1', 'm', 0};
+const char kColorBlinkGreenGreenColorend[] = {0x1b, '[', '5', ';', '3', '2', ';', '4', '2', 'm', 0};
+const char kColorBlinkGreenYellowColorend[] = {0x1b, '[', '5', ';', '3', '2', ';', '4', '3', 'm', 0};
+const char kColorBlinkGreenBlueColorend[] = {0x1b, '[', '5', ';', '3', '2', ';', '4', '4', 'm', 0};
+const char kColorBlinkGreenMagentaColorend[] = {0x1b, '[', '5', ';', '3', '2', ';', '4', '5', 'm', 0};
+const char kColorBlinkGreenCyanColorend[] = {0x1b, '[', '5', ';', '3', '2', ';', '4', '6', 'm', 0};
+const char kColorBlinkGreenWhiteColorend[] = {0x1b, '[', '5', ';', '3', '2', ';', '4', '7', 'm', 0};
+const char kColorBlinkGreenNormalColorend[] = {0x1b, '[', '5', ';', '3', '2', ';', '4', '9', 'm', 0};
+const char kColorBlinkYellowBlackColorend[] = {0x1b, '[', '5', ';', '3', '3', ';', '4', '0', 'm', 0};
+const char kColorBlinkYellowRedColorend[] = {0x1b, '[', '5', ';', '3', '3', ';', '4', '1', 'm', 0};
+const char kColorBlinkYellowGreenColorend[] = {0x1b, '[', '5', ';', '3', '3', ';', '4', '2', 'm', 0};
+const char kColorBlinkYellowYellowColorend[] = {0x1b, '[', '5', ';', '3', '3', ';', '4', '3', 'm', 0};
+const char kColorBlinkYellowBlueColorend[] = {0x1b, '[', '5', ';', '3', '3', ';', '4', '4', 'm', 0};
+const char kColorBlinkYellowMagentaColorend[] = {0x1b, '[', '5', ';', '3', '3', ';', '4', '5', 'm', 0};
+const char kColorBlinkYellowCyanColorend[] = {0x1b, '[', '5', ';', '3', '3', ';', '4', '6', 'm', 0};
+const char kColorBlinkYellowWhiteColorend[] = {0x1b, '[', '5', ';', '3', '3', ';', '4', '7', 'm', 0};
+const char kColorBlinkYellowNormalColorend[] = {0x1b, '[', '5', ';', '3', '3', ';', '4', '9', 'm', 0};
+const char kColorBlinkBlueBlackColorend[] = {0x1b, '[', '5', ';', '3', '4', ';', '4', '0', 'm', 0};
+const char kColorBlinkBlueRedColorend[] = {0x1b, '[', '5', ';', '3', '4', ';', '4', '1', 'm', 0};
+const char kColorBlinkBlueGreenColorend[] = {0x1b, '[', '5', ';', '3', '4', ';', '4', '2', 'm', 0};
+const char kColorBlinkBlueYellowColorend[] = {0x1b, '[', '5', ';', '3', '4', ';', '4', '3', 'm', 0};
+const char kColorBlinkBlueBlueColorend[] = {0x1b, '[', '5', ';', '3', '4', ';', '4', '4', 'm', 0};
+const char kColorBlinkBlueMagentaColorend[] = {0x1b, '[', '5', ';', '3', '4', ';', '4', '5', 'm', 0};
+const char kColorBlinkBlueCyanColorend[] = {0x1b, '[', '5', ';', '3', '4', ';', '4', '6', 'm', 0};
+const char kColorBlinkBlueWhiteColorend[] = {0x1b, '[', '5', ';', '3', '4', ';', '4', '7', 'm', 0};
+const char kColorBlinkBlueNormalColorend[] = {0x1b, '[', '5', ';', '3', '4', ';', '4', '9', 'm', 0};
+const char kColorBlinkMagentaBlackColorend[] = {0x1b, '[', '5', ';', '3', '5', ';', '4', '0', 'm', 0};
+const char kColorBlinkMagentaRedColorend[] = {0x1b, '[', '5', ';', '3', '5', ';', '4', '1', 'm', 0};
+const char kColorBlinkMagentaGreenColorend[] = {0x1b, '[', '5', ';', '3', '5', ';', '4', '2', 'm', 0};
+const char kColorBlinkMagentaYellowColorend[] = {0x1b, '[', '5', ';', '3', '5', ';', '4', '3', 'm', 0};
+const char kColorBlinkMagentaBlueColorend[] = {0x1b, '[', '5', ';', '3', '5', ';', '4', '4', 'm', 0};
+const char kColorBlinkMagentaMagentaColorend[] = {0x1b, '[', '5', ';', '3', '5', ';', '4', '5', 'm', 0};
+const char kColorBlinkMagentaCyanColorend[] = {0x1b, '[', '5', ';', '3', '5', ';', '4', '6', 'm', 0};
+const char kColorBlinkMagentaWhiteColorend[] = {0x1b, '[', '5', ';', '3', '5', ';', '4', '7', 'm', 0};
+const char kColorBlinkMagentaNormalColorend[] = {0x1b, '[', '5', ';', '3', '5', ';', '4', '9', 'm', 0};
+const char kColorBlinkCyanBlackColorend[] = {0x1b, '[', '5', ';', '3', '6', ';', '4', '0', 'm', 0};
+const char kColorBlinkCyanRedColorend[] = {0x1b, '[', '5', ';', '3', '6', ';', '4', '1', 'm', 0};
+const char kColorBlinkCyanGreenColorend[] = {0x1b, '[', '5', ';', '3', '6', ';', '4', '2', 'm', 0};
+const char kColorBlinkCyanYellowColorend[] = {0x1b, '[', '5', ';', '3', '6', ';', '4', '3', 'm', 0};
+const char kColorBlinkCyanBlueColorend[] = {0x1b, '[', '5', ';', '3', '6', ';', '4', '4', 'm', 0};
+const char kColorBlinkCyanMagentaColorend[] = {0x1b, '[', '5', ';', '3', '6', ';', '4', '5', 'm', 0};
+const char kColorBlinkCyanCyanColorend[] = {0x1b, '[', '5', ';', '3', '6', ';', '4', '6', 'm', 0};
+const char kColorBlinkCyanWhiteColorend[] = {0x1b, '[', '5', ';', '3', '6', ';', '4', '7', 'm', 0};
+const char kColorBlinkCyanNormalColorend[] = {0x1b, '[', '5', ';', '3', '6', ';', '4', '9', 'm', 0};
+const char kColorBlinkWhiteBlackColorend[] = {0x1b, '[', '5', ';', '3', '7', ';', '4', '0', 'm', 0};
+const char kColorBlinkWhiteRedColorend[] = {0x1b, '[', '5', ';', '3', '7', ';', '4', '1', 'm', 0};
+const char kColorBlinkWhiteGreenColorend[] = {0x1b, '[', '5', ';', '3', '7', ';', '4', '2', 'm', 0};
+const char kColorBlinkWhiteYellowColorend[] = {0x1b, '[', '5', ';', '3', '7', ';', '4', '3', 'm', 0};
+const char kColorBlinkWhiteBlueColorend[] = {0x1b, '[', '5', ';', '3', '7', ';', '4', '4', 'm', 0};
+const char kColorBlinkWhiteMagentaColorend[] = {0x1b, '[', '5', ';', '3', '7', ';', '4', '5', 'm', 0};
+const char kColorBlinkWhiteCyanColorend[] = {0x1b, '[', '5', ';', '3', '7', ';', '4', '6', 'm', 0};
+const char kColorBlinkWhiteWhiteColorend[] = {0x1b, '[', '5', ';', '3', '7', ';', '4', '7', 'm', 0};
+const char kColorBlinkWhiteNormalColorend[] = {0x1b, '[', '5', ';', '3', '7', ';', '4', '9', 'm', 0};
+const char kColorBlinkNormalBlackColorend[] = {0x1b, '[', '5', ';', '3', '9', ';', '4', '0', 'm', 0};
+const char kColorBlinkNormalRedColorend[] = {0x1b, '[', '5', ';', '3', '9', ';', '4', '1', 'm', 0};
+const char kColorBlinkNormalGreenColorend[] = {0x1b, '[', '5', ';', '3', '9', ';', '4', '2', 'm', 0};
+const char kColorBlinkNormalYellowColorend[] = {0x1b, '[', '5', ';', '3', '9', ';', '4', '3', 'm', 0};
+const char kColorBlinkNormalBlueColorend[] = {0x1b, '[', '5', ';', '3', '9', ';', '4', '4', 'm', 0};
+const char kColorBlinkNormalMagentaColorend[] = {0x1b, '[', '5', ';', '3', '9', ';', '4', '5', 'm', 0};
+const char kColorBlinkNormalCyanColorend[] = {0x1b, '[', '5', ';', '3', '9', ';', '4', '6', 'm', 0};
+const char kColorBlinkNormalWhiteColorend[] = {0x1b, '[', '5', ';', '3', '9', ';', '4', '7', 'm', 0};
+const char kColorBlinkNormalNormalColorend[] = {0x1b, '[', '5', ';', '3', '9', ';', '4', '9', 'm', 0};
+const char kColorReversevideoBlackBlackColorend[] = {0x1b, '[', '7', ';', '3', '0', ';', '4', '0', 'm', 0};
+const char kColorReversevideoBlackRedColorend[] = {0x1b, '[', '7', ';', '3', '0', ';', '4', '1', 'm', 0};
+const char kColorReversevideoBlackGreenColorend[] = {0x1b, '[', '7', ';', '3', '0', ';', '4', '2', 'm', 0};
+const char kColorReversevideoBlackYellowColorend[] = {0x1b, '[', '7', ';', '3', '0', ';', '4', '3', 'm', 0};
+const char kColorReversevideoBlackBlueColorend[] = {0x1b, '[', '7', ';', '3', '0', ';', '4', '4', 'm', 0};
+const char kColorReversevideoBlackMagentaColorend[] = {0x1b, '[', '7', ';', '3', '0', ';', '4', '5', 'm', 0};
+const char kColorReversevideoBlackCyanColorend[] = {0x1b, '[', '7', ';', '3', '0', ';', '4', '6', 'm', 0};
+const char kColorReversevideoBlackWhiteColorend[] = {0x1b, '[', '7', ';', '3', '0', ';', '4', '7', 'm', 0};
+const char kColorReversevideoBlackNormalColorend[] = {0x1b, '[', '7', ';', '3', '0', ';', '4', '9', 'm', 0};
+const char kColorReversevideoRedBlackColorend[] = {0x1b, '[', '7', ';', '3', '1', ';', '4', '0', 'm', 0};
+const char kColorReversevideoRedRedColorend[] = {0x1b, '[', '7', ';', '3', '1', ';', '4', '1', 'm', 0};
+const char kColorReversevideoRedGreenColorend[] = {0x1b, '[', '7', ';', '3', '1', ';', '4', '2', 'm', 0};
+const char kColorReversevideoRedYellowColorend[] = {0x1b, '[', '7', ';', '3', '1', ';', '4', '3', 'm', 0};
+const char kColorReversevideoRedBlueColorend[] = {0x1b, '[', '7', ';', '3', '1', ';', '4', '4', 'm', 0};
+const char kColorReversevideoRedMagentaColorend[] = {0x1b, '[', '7', ';', '3', '1', ';', '4', '5', 'm', 0};
+const char kColorReversevideoRedCyanColorend[] = {0x1b, '[', '7', ';', '3', '1', ';', '4', '6', 'm', 0};
+const char kColorReversevideoRedWhiteColorend[] = {0x1b, '[', '7', ';', '3', '1', ';', '4', '7', 'm', 0};
+const char kColorReversevideoRedNormalColorend[] = {0x1b, '[', '7', ';', '3', '1', ';', '4', '9', 'm', 0};
+const char kColorReversevideoGreenBlackColorend[] = {0x1b, '[', '7', ';', '3', '2', ';', '4', '0', 'm', 0};
+const char kColorReversevideoGreenRedColorend[] = {0x1b, '[', '7', ';', '3', '2', ';', '4', '1', 'm', 0};
+const char kColorReversevideoGreenGreenColorend[] = {0x1b, '[', '7', ';', '3', '2', ';', '4', '2', 'm', 0};
+const char kColorReversevideoGreenYellowColorend[] = {0x1b, '[', '7', ';', '3', '2', ';', '4', '3', 'm', 0};
+const char kColorReversevideoGreenBlueColorend[] = {0x1b, '[', '7', ';', '3', '2', ';', '4', '4', 'm', 0};
+const char kColorReversevideoGreenMagentaColorend[] = {0x1b, '[', '7', ';', '3', '2', ';', '4', '5', 'm', 0};
+const char kColorReversevideoGreenCyanColorend[] = {0x1b, '[', '7', ';', '3', '2', ';', '4', '6', 'm', 0};
+const char kColorReversevideoGreenWhiteColorend[] = {0x1b, '[', '7', ';', '3', '2', ';', '4', '7', 'm', 0};
+const char kColorReversevideoGreenNormalColorend[] = {0x1b, '[', '7', ';', '3', '2', ';', '4', '9', 'm', 0};
+const char kColorReversevideoYellowBlackColorend[] = {0x1b, '[', '7', ';', '3', '3', ';', '4', '0', 'm', 0};
+const char kColorReversevideoYellowRedColorend[] = {0x1b, '[', '7', ';', '3', '3', ';', '4', '1', 'm', 0};
+const char kColorReversevideoYellowGreenColorend[] = {0x1b, '[', '7', ';', '3', '3', ';', '4', '2', 'm', 0};
+const char kColorReversevideoYellowYellowColorend[] = {0x1b, '[', '7', ';', '3', '3', ';', '4', '3', 'm', 0};
+const char kColorReversevideoYellowBlueColorend[] = {0x1b, '[', '7', ';', '3', '3', ';', '4', '4', 'm', 0};
+const char kColorReversevideoYellowMagentaColorend[] = {0x1b, '[', '7', ';', '3', '3', ';', '4', '5', 'm', 0};
+const char kColorReversevideoYellowCyanColorend[] = {0x1b, '[', '7', ';', '3', '3', ';', '4', '6', 'm', 0};
+const char kColorReversevideoYellowWhiteColorend[] = {0x1b, '[', '7', ';', '3', '3', ';', '4', '7', 'm', 0};
+const char kColorReversevideoYellowNormalColorend[] = {0x1b, '[', '7', ';', '3', '3', ';', '4', '9', 'm', 0};
+const char kColorReversevideoBlueBlackColorend[] = {0x1b, '[', '7', ';', '3', '4', ';', '4', '0', 'm', 0};
+const char kColorReversevideoBlueRedColorend[] = {0x1b, '[', '7', ';', '3', '4', ';', '4', '1', 'm', 0};
+const char kColorReversevideoBlueGreenColorend[] = {0x1b, '[', '7', ';', '3', '4', ';', '4', '2', 'm', 0};
+const char kColorReversevideoBlueYellowColorend[] = {0x1b, '[', '7', ';', '3', '4', ';', '4', '3', 'm', 0};
+const char kColorReversevideoBlueBlueColorend[] = {0x1b, '[', '7', ';', '3', '4', ';', '4', '4', 'm', 0};
+const char kColorReversevideoBlueMagentaColorend[] = {0x1b, '[', '7', ';', '3', '4', ';', '4', '5', 'm', 0};
+const char kColorReversevideoBlueCyanColorend[] = {0x1b, '[', '7', ';', '3', '4', ';', '4', '6', 'm', 0};
+const char kColorReversevideoBlueWhiteColorend[] = {0x1b, '[', '7', ';', '3', '4', ';', '4', '7', 'm', 0};
+const char kColorReversevideoBlueNormalColorend[] = {0x1b, '[', '7', ';', '3', '4', ';', '4', '9', 'm', 0};
+const char kColorReversevideoMagentaBlackColorend[] = {0x1b, '[', '7', ';', '3', '5', ';', '4', '0', 'm', 0};
+const char kColorReversevideoMagentaRedColorend[] = {0x1b, '[', '7', ';', '3', '5', ';', '4', '1', 'm', 0};
+const char kColorReversevideoMagentaGreenColorend[] = {0x1b, '[', '7', ';', '3', '5', ';', '4', '2', 'm', 0};
+const char kColorReversevideoMagentaYellowColorend[] = {0x1b, '[', '7', ';', '3', '5', ';', '4', '3', 'm', 0};
+const char kColorReversevideoMagentaBlueColorend[] = {0x1b, '[', '7', ';', '3', '5', ';', '4', '4', 'm', 0};
+const char kColorReversevideoMagentaMagentaColorend[] = {0x1b, '[', '7', ';', '3', '5', ';', '4', '5', 'm', 0};
+const char kColorReversevideoMagentaCyanColorend[] = {0x1b, '[', '7', ';', '3', '5', ';', '4', '6', 'm', 0};
+const char kColorReversevideoMagentaWhiteColorend[] = {0x1b, '[', '7', ';', '3', '5', ';', '4', '7', 'm', 0};
+const char kColorReversevideoMagentaNormalColorend[] = {0x1b, '[', '7', ';', '3', '5', ';', '4', '9', 'm', 0};
+const char kColorReversevideoCyanBlackColorend[] = {0x1b, '[', '7', ';', '3', '6', ';', '4', '0', 'm', 0};
+const char kColorReversevideoCyanRedColorend[] = {0x1b, '[', '7', ';', '3', '6', ';', '4', '1', 'm', 0};
+const char kColorReversevideoCyanGreenColorend[] = {0x1b, '[', '7', ';', '3', '6', ';', '4', '2', 'm', 0};
+const char kColorReversevideoCyanYellowColorend[] = {0x1b, '[', '7', ';', '3', '6', ';', '4', '3', 'm', 0};
+const char kColorReversevideoCyanBlueColorend[] = {0x1b, '[', '7', ';', '3', '6', ';', '4', '4', 'm', 0};
+const char kColorReversevideoCyanMagentaColorend[] = {0x1b, '[', '7', ';', '3', '6', ';', '4', '5', 'm', 0};
+const char kColorReversevideoCyanCyanColorend[] = {0x1b, '[', '7', ';', '3', '6', ';', '4', '6', 'm', 0};
+const char kColorReversevideoCyanWhiteColorend[] = {0x1b, '[', '7', ';', '3', '6', ';', '4', '7', 'm', 0};
+const char kColorReversevideoCyanNormalColorend[] = {0x1b, '[', '7', ';', '3', '6', ';', '4', '9', 'm', 0};
+const char kColorReversevideoWhiteBlackColorend[] = {0x1b, '[', '7', ';', '3', '7', ';', '4', '0', 'm', 0};
+const char kColorReversevideoWhiteRedColorend[] = {0x1b, '[', '7', ';', '3', '7', ';', '4', '1', 'm', 0};
+const char kColorReversevideoWhiteGreenColorend[] = {0x1b, '[', '7', ';', '3', '7', ';', '4', '2', 'm', 0};
+const char kColorReversevideoWhiteYellowColorend[] = {0x1b, '[', '7', ';', '3', '7', ';', '4', '3', 'm', 0};
+const char kColorReversevideoWhiteBlueColorend[] = {0x1b, '[', '7', ';', '3', '7', ';', '4', '4', 'm', 0};
+const char kColorReversevideoWhiteMagentaColorend[] = {0x1b, '[', '7', ';', '3', '7', ';', '4', '5', 'm', 0};
+const char kColorReversevideoWhiteCyanColorend[] = {0x1b, '[', '7', ';', '3', '7', ';', '4', '6', 'm', 0};
+const char kColorReversevideoWhiteWhiteColorend[] = {0x1b, '[', '7', ';', '3', '7', ';', '4', '7', 'm', 0};
+const char kColorReversevideoWhiteNormalColorend[] = {0x1b, '[', '7', ';', '3', '7', ';', '4', '9', 'm', 0};
+const char kColorReversevideoNormalBlackColorend[] = {0x1b, '[', '7', ';', '3', '9', ';', '4', '0', 'm', 0};
+const char kColorReversevideoNormalRedColorend[] = {0x1b, '[', '7', ';', '3', '9', ';', '4', '1', 'm', 0};
+const char kColorReversevideoNormalGreenColorend[] = {0x1b, '[', '7', ';', '3', '9', ';', '4', '2', 'm', 0};
+const char kColorReversevideoNormalYellowColorend[] = {0x1b, '[', '7', ';', '3', '9', ';', '4', '3', 'm', 0};
+const char kColorReversevideoNormalBlueColorend[] = {0x1b, '[', '7', ';', '3', '9', ';', '4', '4', 'm', 0};
+const char kColorReversevideoNormalMagentaColorend[] = {0x1b, '[', '7', ';', '3', '9', ';', '4', '5', 'm', 0};
+const char kColorReversevideoNormalCyanColorend[] = {0x1b, '[', '7', ';', '3', '9', ';', '4', '6', 'm', 0};
+const char kColorReversevideoNormalWhiteColorend[] = {0x1b, '[', '7', ';', '3', '9', ';', '4', '7', 'm', 0};
+const char kColorReversevideoNormalNormalColorend[] = {0x1b, '[', '7', ';', '3', '9', ';', '4', '9', 'm', 0};
+const char kColorConcealedBlackBlackColorend[] = {0x1b, '[', '8', ';', '3', '0', ';', '4', '0', 'm', 0};
+const char kColorConcealedBlackRedColorend[] = {0x1b, '[', '8', ';', '3', '0', ';', '4', '1', 'm', 0};
+const char kColorConcealedBlackGreenColorend[] = {0x1b, '[', '8', ';', '3', '0', ';', '4', '2', 'm', 0};
+const char kColorConcealedBlackYellowColorend[] = {0x1b, '[', '8', ';', '3', '0', ';', '4', '3', 'm', 0};
+const char kColorConcealedBlackBlueColorend[] = {0x1b, '[', '8', ';', '3', '0', ';', '4', '4', 'm', 0};
+const char kColorConcealedBlackMagentaColorend[] = {0x1b, '[', '8', ';', '3', '0', ';', '4', '5', 'm', 0};
+const char kColorConcealedBlackCyanColorend[] = {0x1b, '[', '8', ';', '3', '0', ';', '4', '6', 'm', 0};
+const char kColorConcealedBlackWhiteColorend[] = {0x1b, '[', '8', ';', '3', '0', ';', '4', '7', 'm', 0};
+const char kColorConcealedBlackNormalColorend[] = {0x1b, '[', '8', ';', '3', '0', ';', '4', '9', 'm', 0};
+const char kColorConcealedRedBlackColorend[] = {0x1b, '[', '8', ';', '3', '1', ';', '4', '0', 'm', 0};
+const char kColorConcealedRedRedColorend[] = {0x1b, '[', '8', ';', '3', '1', ';', '4', '1', 'm', 0};
+const char kColorConcealedRedGreenColorend[] = {0x1b, '[', '8', ';', '3', '1', ';', '4', '2', 'm', 0};
+const char kColorConcealedRedYellowColorend[] = {0x1b, '[', '8', ';', '3', '1', ';', '4', '3', 'm', 0};
+const char kColorConcealedRedBlueColorend[] = {0x1b, '[', '8', ';', '3', '1', ';', '4', '4', 'm', 0};
+const char kColorConcealedRedMagentaColorend[] = {0x1b, '[', '8', ';', '3', '1', ';', '4', '5', 'm', 0};
+const char kColorConcealedRedCyanColorend[] = {0x1b, '[', '8', ';', '3', '1', ';', '4', '6', 'm', 0};
+const char kColorConcealedRedWhiteColorend[] = {0x1b, '[', '8', ';', '3', '1', ';', '4', '7', 'm', 0};
+const char kColorConcealedRedNormalColorend[] = {0x1b, '[', '8', ';', '3', '1', ';', '4', '9', 'm', 0};
+const char kColorConcealedGreenBlackColorend[] = {0x1b, '[', '8', ';', '3', '2', ';', '4', '0', 'm', 0};
+const char kColorConcealedGreenRedColorend[] = {0x1b, '[', '8', ';', '3', '2', ';', '4', '1', 'm', 0};
+const char kColorConcealedGreenGreenColorend[] = {0x1b, '[', '8', ';', '3', '2', ';', '4', '2', 'm', 0};
+const char kColorConcealedGreenYellowColorend[] = {0x1b, '[', '8', ';', '3', '2', ';', '4', '3', 'm', 0};
+const char kColorConcealedGreenBlueColorend[] = {0x1b, '[', '8', ';', '3', '2', ';', '4', '4', 'm', 0};
+const char kColorConcealedGreenMagentaColorend[] = {0x1b, '[', '8', ';', '3', '2', ';', '4', '5', 'm', 0};
+const char kColorConcealedGreenCyanColorend[] = {0x1b, '[', '8', ';', '3', '2', ';', '4', '6', 'm', 0};
+const char kColorConcealedGreenWhiteColorend[] = {0x1b, '[', '8', ';', '3', '2', ';', '4', '7', 'm', 0};
+const char kColorConcealedGreenNormalColorend[] = {0x1b, '[', '8', ';', '3', '2', ';', '4', '9', 'm', 0};
+const char kColorConcealedYellowBlackColorend[] = {0x1b, '[', '8', ';', '3', '3', ';', '4', '0', 'm', 0};
+const char kColorConcealedYellowRedColorend[] = {0x1b, '[', '8', ';', '3', '3', ';', '4', '1', 'm', 0};
+const char kColorConcealedYellowGreenColorend[] = {0x1b, '[', '8', ';', '3', '3', ';', '4', '2', 'm', 0};
+const char kColorConcealedYellowYellowColorend[] = {0x1b, '[', '8', ';', '3', '3', ';', '4', '3', 'm', 0};
+const char kColorConcealedYellowBlueColorend[] = {0x1b, '[', '8', ';', '3', '3', ';', '4', '4', 'm', 0};
+const char kColorConcealedYellowMagentaColorend[] = {0x1b, '[', '8', ';', '3', '3', ';', '4', '5', 'm', 0};
+const char kColorConcealedYellowCyanColorend[] = {0x1b, '[', '8', ';', '3', '3', ';', '4', '6', 'm', 0};
+const char kColorConcealedYellowWhiteColorend[] = {0x1b, '[', '8', ';', '3', '3', ';', '4', '7', 'm', 0};
+const char kColorConcealedYellowNormalColorend[] = {0x1b, '[', '8', ';', '3', '3', ';', '4', '9', 'm', 0};
+const char kColorConcealedBlueBlackColorend[] = {0x1b, '[', '8', ';', '3', '4', ';', '4', '0', 'm', 0};
+const char kColorConcealedBlueRedColorend[] = {0x1b, '[', '8', ';', '3', '4', ';', '4', '1', 'm', 0};
+const char kColorConcealedBlueGreenColorend[] = {0x1b, '[', '8', ';', '3', '4', ';', '4', '2', 'm', 0};
+const char kColorConcealedBlueYellowColorend[] = {0x1b, '[', '8', ';', '3', '4', ';', '4', '3', 'm', 0};
+const char kColorConcealedBlueBlueColorend[] = {0x1b, '[', '8', ';', '3', '4', ';', '4', '4', 'm', 0};
+const char kColorConcealedBlueMagentaColorend[] = {0x1b, '[', '8', ';', '3', '4', ';', '4', '5', 'm', 0};
+const char kColorConcealedBlueCyanColorend[] = {0x1b, '[', '8', ';', '3', '4', ';', '4', '6', 'm', 0};
+const char kColorConcealedBlueWhiteColorend[] = {0x1b, '[', '8', ';', '3', '4', ';', '4', '7', 'm', 0};
+const char kColorConcealedBlueNormalColorend[] = {0x1b, '[', '8', ';', '3', '4', ';', '4', '9', 'm', 0};
+const char kColorConcealedMagentaBlackColorend[] = {0x1b, '[', '8', ';', '3', '5', ';', '4', '0', 'm', 0};
+const char kColorConcealedMagentaRedColorend[] = {0x1b, '[', '8', ';', '3', '5', ';', '4', '1', 'm', 0};
+const char kColorConcealedMagentaGreenColorend[] = {0x1b, '[', '8', ';', '3', '5', ';', '4', '2', 'm', 0};
+const char kColorConcealedMagentaYellowColorend[] = {0x1b, '[', '8', ';', '3', '5', ';', '4', '3', 'm', 0};
+const char kColorConcealedMagentaBlueColorend[] = {0x1b, '[', '8', ';', '3', '5', ';', '4', '4', 'm', 0};
+const char kColorConcealedMagentaMagentaColorend[] = {0x1b, '[', '8', ';', '3', '5', ';', '4', '5', 'm', 0};
+const char kColorConcealedMagentaCyanColorend[] = {0x1b, '[', '8', ';', '3', '5', ';', '4', '6', 'm', 0};
+const char kColorConcealedMagentaWhiteColorend[] = {0x1b, '[', '8', ';', '3', '5', ';', '4', '7', 'm', 0};
+const char kColorConcealedMagentaNormalColorend[] = {0x1b, '[', '8', ';', '3', '5', ';', '4', '9', 'm', 0};
+const char kColorConcealedCyanBlackColorend[] = {0x1b, '[', '8', ';', '3', '6', ';', '4', '0', 'm', 0};
+const char kColorConcealedCyanRedColorend[] = {0x1b, '[', '8', ';', '3', '6', ';', '4', '1', 'm', 0};
+const char kColorConcealedCyanGreenColorend[] = {0x1b, '[', '8', ';', '3', '6', ';', '4', '2', 'm', 0};
+const char kColorConcealedCyanYellowColorend[] = {0x1b, '[', '8', ';', '3', '6', ';', '4', '3', 'm', 0};
+const char kColorConcealedCyanBlueColorend[] = {0x1b, '[', '8', ';', '3', '6', ';', '4', '4', 'm', 0};
+const char kColorConcealedCyanMagentaColorend[] = {0x1b, '[', '8', ';', '3', '6', ';', '4', '5', 'm', 0};
+const char kColorConcealedCyanCyanColorend[] = {0x1b, '[', '8', ';', '3', '6', ';', '4', '6', 'm', 0};
+const char kColorConcealedCyanWhiteColorend[] = {0x1b, '[', '8', ';', '3', '6', ';', '4', '7', 'm', 0};
+const char kColorConcealedCyanNormalColorend[] = {0x1b, '[', '8', ';', '3', '6', ';', '4', '9', 'm', 0};
+const char kColorConcealedWhiteBlackColorend[] = {0x1b, '[', '8', ';', '3', '7', ';', '4', '0', 'm', 0};
+const char kColorConcealedWhiteRedColorend[] = {0x1b, '[', '8', ';', '3', '7', ';', '4', '1', 'm', 0};
+const char kColorConcealedWhiteGreenColorend[] = {0x1b, '[', '8', ';', '3', '7', ';', '4', '2', 'm', 0};
+const char kColorConcealedWhiteYellowColorend[] = {0x1b, '[', '8', ';', '3', '7', ';', '4', '3', 'm', 0};
+const char kColorConcealedWhiteBlueColorend[] = {0x1b, '[', '8', ';', '3', '7', ';', '4', '4', 'm', 0};
+const char kColorConcealedWhiteMagentaColorend[] = {0x1b, '[', '8', ';', '3', '7', ';', '4', '5', 'm', 0};
+const char kColorConcealedWhiteCyanColorend[] = {0x1b, '[', '8', ';', '3', '7', ';', '4', '6', 'm', 0};
+const char kColorConcealedWhiteWhiteColorend[] = {0x1b, '[', '8', ';', '3', '7', ';', '4', '7', 'm', 0};
+const char kColorConcealedWhiteNormalColorend[] = {0x1b, '[', '8', ';', '3', '7', ';', '4', '9', 'm', 0};
+const char kColorConcealedNormalBlackColorend[] = {0x1b, '[', '8', ';', '3', '9', ';', '4', '0', 'm', 0};
+const char kColorConcealedNormalRedColorend[] = {0x1b, '[', '8', ';', '3', '9', ';', '4', '1', 'm', 0};
+const char kColorConcealedNormalGreenColorend[] = {0x1b, '[', '8', ';', '3', '9', ';', '4', '2', 'm', 0};
+const char kColorConcealedNormalYellowColorend[] = {0x1b, '[', '8', ';', '3', '9', ';', '4', '3', 'm', 0};
+const char kColorConcealedNormalBlueColorend[] = {0x1b, '[', '8', ';', '3', '9', ';', '4', '4', 'm', 0};
+const char kColorConcealedNormalMagentaColorend[] = {0x1b, '[', '8', ';', '3', '9', ';', '4', '5', 'm', 0};
+const char kColorConcealedNormalCyanColorend[] = {0x1b, '[', '8', ';', '3', '9', ';', '4', '6', 'm', 0};
+const char kColorConcealedNormalWhiteColorend[] = {0x1b, '[', '8', ';', '3', '9', ';', '4', '7', 'm', 0};
+const char kColorConcealedNormalNormalColorend[] = {0x1b, '[', '8', ';', '3', '9', ';', '4', '9', 'm', 0};

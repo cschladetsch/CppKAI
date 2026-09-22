@@ -3,6 +3,7 @@
 #include <memory>
 #include <string>
 #include <thread>
+#include <utility>
 #include <vector>
 
 // This is a working example of the chat system from the tests
@@ -14,9 +15,9 @@ struct ChatMessage {
     std::string content;
     long timestamp;
 
-    ChatMessage(const std::string& ch, const std::string& s,
-                const std::string& c)
-        : channel(ch), sender(s), content(c) {
+    ChatMessage(std::string ch, std::string s, std::string c)
+        : channel(std::move(ch)), sender(std::move(s)), content(std::move(c))
+    {
         timestamp = std::chrono::system_clock::now().time_since_epoch().count();
     }
 };
@@ -30,52 +31,52 @@ class ChatClient {
     std::vector<ChatMessage> messages_;
 
    public:
-    ChatClient(const std::string& name) : username_(name) {}
+       ChatClient(std::string name) : username_(std::move(name)) {}
 
-    // Create a new channel
-    bool CreateChannel(const std::string& channelName) {
-        if (channelName.empty()) return false;
+       // Create a new channel
+       bool CreateChannel(const std::string& channelName)
+       {
+           if (channelName.empty()) {
+               return false;
+           }
 
-        currentChannel_ = channelName;
-        isHost_ = true;
+           currentChannel_ = channelName;
+           isHost_ = true;
 
-        std::cout << "[" << username_ << "] Created channel: " << channelName
-                  << std::endl;
-        return true;
-    }
+           std::cout << "[" << username_ << "] Created channel: " << channelName << '\n';
+           return true;
+       }
 
     // Join an existing channel
     bool JoinChannel(const std::string& channelName) {
-        if (channelName.empty()) return false;
+        if (channelName.empty()) {
+            return false;
+        }
 
         currentChannel_ = channelName;
         isHost_ = false;
 
-        std::cout << "[" << username_ << "] Joined channel: " << channelName
-                  << std::endl;
+        std::cout << "[" << username_ << "] Joined channel: " << channelName << '\n';
         return true;
     }
 
     // Send a message
     void SendMessage(const std::string& message) {
         if (currentChannel_.empty()) {
-            std::cout << "[" << username_ << "] Error: Not in a channel!"
-                      << std::endl;
+            std::cout << "[" << username_ << "] Error: Not in a channel!" << '\n';
             return;
         }
 
         ChatMessage msg(currentChannel_, username_, message);
         messages_.push_back(msg);
 
-        std::cout << "[" << currentChannel_ << "] " << username_ << ": "
-                  << message << std::endl;
+        std::cout << "[" << currentChannel_ << "] " << username_ << ": " << message << '\n';
     }
 
     // Leave current channel
     void LeaveChannel() {
         if (!currentChannel_.empty()) {
-            std::cout << "[" << username_
-                      << "] Left channel: " << currentChannel_ << std::endl;
+            std::cout << "[" << username_ << "] Left channel: " << currentChannel_ << '\n';
             currentChannel_.clear();
             isHost_ = false;
         }
@@ -85,8 +86,7 @@ class ChatClient {
     void ShowHistory() {
         std::cout << "\n=== Message History ===\n";
         for (const auto& msg : messages_) {
-            std::cout << "[" << msg.channel << "] " << msg.sender << ": "
-                      << msg.content << std::endl;
+            std::cout << "[" << msg.channel << "] " << msg.sender << ": " << msg.content << '\n';
         }
         std::cout << "=====================\n\n";
     }
