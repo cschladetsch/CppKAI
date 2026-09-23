@@ -17,60 +17,60 @@ int main() {
     std::cout << std::endl;
 
     // Basic foreground colors
-    std::cout << rang::fg::green << "This is green text" << rang::fg::reset
+    std::cout << rang::Fg::Green << "This is green text" << rang::Fg::Reset
               << std::endl;
-    std::cout << rang::fg::red << "This is red text" << rang::fg::reset
+    std::cout << rang::Fg::Red << "This is red text" << rang::Fg::Reset
               << std::endl;
-    std::cout << rang::fg::yellow << "This is yellow text" << rang::fg::reset
+    std::cout << rang::Fg::Yellow << "This is yellow text" << rang::Fg::Reset
               << std::endl;
-    std::cout << rang::fg::blue << "This is blue text" << rang::fg::reset
+    std::cout << rang::Fg::Blue << "This is blue text" << rang::Fg::Reset
               << std::endl;
-    std::cout << rang::fg::magenta << "This is magenta text" << rang::fg::reset
+    std::cout << rang::Fg::Magenta << "This is magenta text" << rang::Fg::Reset
               << std::endl;
-    std::cout << rang::fg::cyan << "This is cyan text" << rang::fg::reset
+    std::cout << rang::Fg::Cyan << "This is cyan text" << rang::Fg::Reset
               << std::endl;
-    std::cout << rang::fg::gray << "This is gray text" << rang::fg::reset
+    std::cout << rang::Fg::Gray << "This is gray text" << rang::Fg::Reset
               << std::endl;
     std::cout << std::endl;
 
     // Text styles
-    std::cout << rang::style::bold << "This is bold text" << rang::style::reset
+    std::cout << rang::Style::Bold << "This is bold text" << rang::Style::Reset
               << std::endl;
-    std::cout << rang::style::italic << "This is italic text"
-              << rang::style::reset << std::endl;
-    std::cout << rang::style::underline << "This is underlined text"
-              << rang::style::reset << std::endl;
+    std::cout << rang::Style::Italic << "This is italic text"
+              << rang::Style::Reset << std::endl;
+    std::cout << rang::Style::Underline << "This is underlined text"
+              << rang::Style::Reset << std::endl;
     std::cout << std::endl;
 
     // Combining styles and colors
-    std::cout << rang::style::bold << rang::fg::green
-              << "This is bold green text" << rang::style::reset
-              << rang::fg::reset << std::endl;
+    std::cout << rang::Style::Bold << rang::Fg::Green
+              << "This is bold green text" << rang::Style::Reset
+              << rang::Fg::Reset << std::endl;
 
-    std::cout << rang::style::underline << rang::fg::blue
-              << "This is underlined blue text" << rang::style::reset
-              << rang::fg::reset << std::endl;
+    std::cout << rang::Style::Underline << rang::Fg::Blue
+              << "This is underlined blue text" << rang::Style::Reset
+              << rang::Fg::Reset << std::endl;
     std::cout << std::endl;
 
     // Background colors
-    std::cout << rang::bg::yellow << rang::fg::black
-              << "This is black text on yellow background" << rang::bg::reset
-              << rang::fg::reset << std::endl;
+    std::cout << rang::Bg::Yellow << rang::Fg::Black
+              << "This is black text on yellow background" << rang::Bg::Reset
+              << rang::Fg::Reset << std::endl;
 
-    std::cout << rang::bg::blue << rang::fg::cyan
-              << "This is cyan text on blue background" << rang::bg::reset
-              << rang::fg::reset << std::endl;
+    std::cout << rang::Bg::Blue << rang::Fg::Cyan
+              << "This is cyan text on blue background" << rang::Bg::Reset
+              << rang::Fg::Reset << std::endl;
     std::cout << std::endl;
 
     // Log-like output
-    std::cout << rang::fg::green << "[INFO] " << rang::fg::reset
+    std::cout << rang::Fg::Green << "[INFO] " << rang::Fg::Reset
               << "This is an informational message" << std::endl;
 
-    std::cout << rang::fg::yellow << "[WARNING] " << rang::fg::reset
+    std::cout << rang::Fg::Yellow << "[WARNING] " << rang::Fg::Reset
               << "This is a warning message" << std::endl;
 
-    std::cout << rang::fg::red << rang::style::bold << "[ERROR] "
-              << rang::style::reset << rang::fg::reset
+    std::cout << rang::Fg::Red << rang::Style::Bold << "[ERROR] "
+              << rang::Style::Reset << rang::Fg::Reset
               << "This is an error message" << std::endl;
 
     return 0;

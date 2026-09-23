@@ -407,29 +407,33 @@ template <typename T> inline void SetWinColorAnsi(std::ostream& os, T const valu
 
 template <typename T> inline void SetWinColorNative(std::ostream& os, T const value)
 {
-    const HANDLE h = getConsoleHandle(os.rdbuf());
+    const HANDLE h = GetConsoleHandle(os.rdbuf());
     if (h != INVALID_HANDLE_VALUE) {
-        setWinSGR(value, current_state());
+        SetWinSgr(value, CurrentState());
         // Out all buffered text to console with previous settings:
         os.flush();
-        SetConsoleTextAttribute(h, SGR2Attr(current_state()));
+        SetConsoleTextAttribute(h, SGR2Attr(CurrentState()));
     }
 }
 
 template <typename T> inline enableStd<T> SetColor(std::ostream& os, T const value)
 {
-    if (winTermMode() == winTerm::Auto) {
-        if (supportsAnsi(os.rdbuf())) {
-            setWinColorAnsi(os, value);
+    if (WinTermMode() == WinTerm::Auto) {
+        if (SupportsAnsi(os.rdbuf())) {
+            SetWinColorAnsi(os, value);
         } else {
-            setWinColorNative(os, value);
+            SetWinColorNative(os, value);
         }
-    } else if (winTermMode() == winTerm::Ansi) {
-        setWinColorAnsi(os, value);
+    } else if (WinTermMode() == WinTerm::Ansi) {
+        SetWinColorAnsi(os, value);
     } else {
-        setWinColorNative(os, value);
+        SetWinColorNative(os, value);
     }
     return os;
+}
+
+template <typename T> inline enableStd<T> setColor(std::ostream& os, T const value) {
+    return SetColor(os, value);
 }
 #else
 template <typename T>
@@ -442,14 +446,14 @@ inline enableStd<T> setColor(std::ostream &os, T const value) {
 template <typename T>
 inline rang_implementation::enableStd<T> operator<<(std::ostream &os,
                                                     const T value) {
-    const control option = rang_implementation::controlMode();
+    const Control option = rang_implementation::ControlMode();
     switch (option) {
-        case control::Auto:
-            return rang_implementation::supportsColor() &&
-                           rang_implementation::isTerminal(os.rdbuf())
+        case Control::Auto:
+            return rang_implementation::SupportsColor() &&
+                           rang_implementation::IsTerminal(os.rdbuf())
                        ? rang_implementation::setColor(os, value)
                        : os;
-        case control::Force:
+        case Control::Force:
             return rang_implementation::setColor(os, value);
         default:
             return os;

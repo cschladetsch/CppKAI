@@ -38,8 +38,8 @@ std::string KaiVersionString() {
 }
 
 void ShowHelp(const char* programName) {
-    cout << rang::style::bold << "KAI Console v" << KaiVersionString()
-         << rang::style::reset << "\n\n"
+    cout << rang::Style::Bold << "KAI Console v" << KaiVersionString()
+         << rang::Style::Reset << "\n\n"
          << "Usage: " << programName << " [OPTIONS] [FILE]\n\n"
          << "OPTIONS:\n"
          << "  -h, --help              Show this help message\n"
@@ -51,12 +51,12 @@ void ShowHelp(const char* programName) {
          << "  --verbose               Enable verbose output\n\n"
          << "FILE:\n"
          << "  Script file to execute (.pi or .rho)\n\n"
-         << rang::fg::cyan << "Examples:\n" << rang::fg::reset
+         << rang::Fg::Cyan << "Examples:\n" << rang::Fg::Reset
          << "  " << programName << "                    # Interactive Pi mode\n"
          << "  " << programName << " -l rho             # Interactive Rho mode\n"
          << "  " << programName << " script.pi          # Execute Pi script\n"
          << "  " << programName << " -t 2 script.rho    # Execute with trace level 2\n\n"
-         << rang::fg::yellow << "Built-in Commands (in REPL):\n" << rang::fg::reset
+         << rang::Fg::Yellow << "Built-in Commands (in REPL):\n" << rang::Fg::Reset
          << "  help, clear, exit, quit, pi, rho, history, stack\n";
 }
 
@@ -93,7 +93,7 @@ ConsoleOptions ParseArguments(int argc, char** argv) {
             if (lang == "pi")       options.defaultLanguage = Language::Pi;
             else if (lang == "rho") options.defaultLanguage = Language::Rho;
             else {
-                cerr << rang::fg::red << "Error: " << rang::fg::reset
+                cerr << rang::Fg::Red << "Error: " << rang::Fg::Reset
                      << "Unknown language: " << lang << "\n"
                      << "Supported: pi, rho\n";
                 exit(1);
@@ -105,13 +105,13 @@ ConsoleOptions ParseArguments(int argc, char** argv) {
                 if (options.traceLevel < 0 || options.traceLevel > 5)
                     throw std::out_of_range("");
             } catch (...) {
-                cerr << rang::fg::red << "Error: " << rang::fg::reset
+                cerr << rang::Fg::Red << "Error: " << rang::Fg::Reset
                      << "Trace level must be 0-5\n";
                 exit(1);
             }
         } else if (arg[0] != '-') {
             if (options.filename.empty()) options.filename = arg;
-            else cerr << rang::fg::yellow << "Warning: " << rang::fg::reset
+            else cerr << rang::Fg::Yellow << "Warning: " << rang::Fg::Reset
                       << "Multiple files specified, using: " << options.filename << "\n";
         } else {
             cerr << "Unknown option: " << arg << "\n"
@@ -154,20 +154,20 @@ int main(int argc, char** argv) {
         if (executor.Exists()) {
             executor->SetTraceLevel(options.traceLevel);
         } else {
-            cerr << rang::fg::red << "Error: " << rang::fg::reset
+            cerr << rang::Fg::Red << "Error: " << rang::Fg::Reset
                  << "Console failed to initialize\n";
             return 1;
         }
 
         if (options.interactive || options.filename.empty()) {
-            cout << rang::style::bold << "KAI Console v" << KaiVersionString()
-                 << rang::style::reset << "\n"
+            cout << rang::Style::Bold << "KAI Console v" << KaiVersionString()
+                 << rang::Style::Reset << "\n"
                  << "Built on " << __DATE__ << " at " << __TIME__ << "\n";
             if (options.verbose)
-                cout << rang::fg::gray << "Trace level: " << options.traceLevel
-                     << rang::fg::reset << "\n";
-            cout << rang::fg::cyan << "Type 'help' for available commands."
-                 << rang::fg::reset << "\n\n";
+                cout << rang::Fg::Gray << "Trace level: " << options.traceLevel
+                     << rang::Fg::Reset << "\n";
+            cout << rang::Fg::Cyan << "Type 'help' for available commands."
+                 << rang::Fg::Reset << "\n\n";
         }
 
         if (!options.filename.empty()) {
@@ -177,7 +177,7 @@ int main(int argc, char** argv) {
 
             std::ifstream file(options.filename);
             if (!file.good()) {
-                cerr << rang::fg::red << "Error: " << rang::fg::reset
+                cerr << rang::Fg::Red << "Error: " << rang::Fg::Reset
                      << "File not found: " << options.filename << "\n";
                 return 1;
             }
@@ -186,29 +186,29 @@ int main(int argc, char** argv) {
             console.SetLanguage(lang);
             auto translator = CreateTranslatorForLanguage(console.GetRegistry(), lang);
             if (!translator) {
-                cerr << rang::fg::red << "Error: " << rang::fg::reset
+                cerr << rang::Fg::Red << "Error: " << rang::Fg::Reset
                      << "Failed to create translator\n";
                 return 1;
             }
             console.SetTranslator(translator);
 
             if (!console.ExecuteFile(options.filename.c_str())) {
-                cerr << rang::fg::red << "Error: " << rang::fg::reset
+                cerr << rang::Fg::Red << "Error: " << rang::Fg::Reset
                      << "Failed to execute: " << options.filename << "\n";
                 return 1;
             }
 
             if (!options.interactive) return 0;
 
-            cout << "\n" << rang::fg::green << "File execution completed."
-                 << rang::fg::reset << " Entering interactive mode...\n\n";
+            cout << "\n" << rang::Fg::Green << "File execution completed."
+                 << rang::Fg::Reset << " Entering interactive mode...\n\n";
         }
 
         console.SetLanguage(options.defaultLanguage);
         auto translator = CreateTranslatorForLanguage(console.GetRegistry(),
                                                       options.defaultLanguage);
         if (!translator) {
-            cerr << rang::fg::red << "Error: " << rang::fg::reset
+            cerr << rang::Fg::Red << "Error: " << rang::Fg::Reset
                  << "Failed to create translator\n";
             return 1;
         }
@@ -216,10 +216,10 @@ int main(int argc, char** argv) {
         return console.Run();
 
     } catch (const std::exception& e) {
-        cerr << rang::fg::red << "Fatal error: " << rang::fg::reset << e.what() << "\n";
+        cerr << rang::Fg::Red << "Fatal error: " << rang::Fg::Reset << e.what() << "\n";
         return 1;
     } catch (...) {
-        cerr << rang::fg::red << "Unknown fatal error\n" << rang::fg::reset;
+        cerr << rang::Fg::Red << "Unknown fatal error\n" << rang::Fg::Reset;
         return 1;
     }
 }
