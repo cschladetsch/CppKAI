@@ -34,10 +34,10 @@ void SetColorOutput(bool enabled) {
     // Set the rang control mode based on user preference
     if (enabled) {
         // Force color even if output is redirected
-        rang::SetControlMode(rang::Control::Force);
+        rang::setControlMode(rang::control::Force);
     } else {
         // Let rang auto-detect (usually disables color for redirected output)
-        rang::SetControlMode(rang::Control::Auto);
+        rang::setControlMode(rang::control::Auto);
     }
 }
 
@@ -84,9 +84,9 @@ int main(int argc, char **argv) {
             argc--;
             i--;  // Process the next argument at the current position
 
-            std::cout << rang::Fg::Green
+            std::cout << rang::fg::green
                       << "Colored test output is enabled (default)"
-                      << rang::Fg::Reset << std::endl;
+                      << rang::fg::reset << std::endl;
         }
     }
 
@@ -96,3 +96,6 @@ int main(int argc, char **argv) {
     // Run the tests
     return RUN_ALL_TESTS();
 }
+
+
+

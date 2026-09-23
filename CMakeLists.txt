@@ -239,6 +239,7 @@ foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
 endforeach()
 
 include_directories(${KAI_HOME}/Include)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -include ${KAI_HOME}/Include/kai_compat.h")
 # Core/Executor/CommonLang headers now live in the CppKaiCore submodule, and
 # the Pi/Rho languages in the CppKaiLanguage submodule.
 include_directories(${KAI_HOME}/Ext/CppKaiCore/Include)

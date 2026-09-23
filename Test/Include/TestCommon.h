@@ -51,7 +51,7 @@ KAI_END
  * uses grey text for the console metadata/prefix.
  */
 #define GTEST_COUT \
-    std::cerr << rang::Fg::Gray << "[          ]" << rang::Fg::Reset
+    std::cerr << rang::fg::gray << "[          ]" << rang::fg::reset
 
 // Forward declaration of color output function from Main.cpp
 bool IsColorOutputEnabled();
@@ -76,12 +76,12 @@ class TestCout : public std::stringstream {
         if (IsColorOutputEnabled()) {
             // Use colored output
             if (isError_) {
-                GTEST_COUT << " " << rang::Fg::Red << rang::Style::Bold
-                           << "[ERROR]" << rang::Style::Reset << rang::Fg::Reset
+                GTEST_COUT << " " << rang::fg::red << rang::style::bold
+                           << "[ERROR]" << rang::style::reset << rang::fg::reset
                            << " " << str().c_str();
             } else {
-                GTEST_COUT << " " << rang::Fg::Green << "[INFO]"
-                           << rang::Fg::Reset << " " << str().c_str();
+                GTEST_COUT << " " << rang::fg::green << "[INFO]"
+                           << rang::fg::reset << " " << str().c_str();
             }
         } else {
             // Use plain output
@@ -95,3 +95,5 @@ class TestCout : public std::stringstream {
 
 #define TEST_COUT TestCout()
 #define TEST_CERR TestCout(true)
+
+
