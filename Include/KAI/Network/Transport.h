@@ -40,14 +40,22 @@ struct NetAddress {
     unsigned short port = 0;
 
     NetAddress() = default;
-    NetAddress(std::string host_, unsigned short port_)
-        : host(std::move(host_)), port(port_) {}
+    NetAddress(std::string host, unsigned short port) : host(std::move(host)), port(port) {}
 
-    bool IsValid() const { return !host.empty() && port != 0; }
+    [[nodiscard]] bool IsValid() const
+    {
+        return !host.empty() && port != 0;
+    }
 
-    std::string ToString() const { return host + ":" + std::to_string(port); }
+    [[nodiscard]] std::string ToString() const
+    {
+        return host + ":" + std::to_string(port);
+    }
 
-    unsigned short GetPort() const { return port; }
+    [[nodiscard]] unsigned short GetPort() const
+    {
+        return port;
+    }
 
     friend bool operator==(const NetAddress& a, const NetAddress& b) {
         return a.port == b.port && a.host == b.host;
@@ -89,8 +97,8 @@ class NetPeer {
                     static_cast<int>(channel.value), target,
                     routing == SendRouting::Broadcast);
     }
-    virtual NetAddress GetInternalAddress() const = 0;
-    virtual int GetAveragePing(const NetAddress& address) const = 0;
+    [[nodiscard]] virtual NetAddress GetInternalAddress() const = 0;
+    [[nodiscard]] virtual int GetAveragePing(const NetAddress& address) const = 0;
     virtual void Ping(const NetAddress& address) = 0;
     virtual void SetOfflinePingResponse(const unsigned char* data,
                                         std::size_t size) = 0;

@@ -22,8 +22,8 @@ void PrintHelp() {
 
 int main(int argc, char** argv) {
     fs::path root = fs::current_path();
-    fs::path out = LLM::RepoIndexer::DefaultOutputRoot();
-    size_t chunk_lines = 200;
+    fs::path out = llm::RepoIndexer::DefaultOutputRoot();
+    size_t chunkLines = 200;
 
     for (int i = 1; i < argc; ++i) {
         const string arg = argv[i];
@@ -40,25 +40,25 @@ int main(int argc, char** argv) {
             continue;
         }
         if (arg == "--chunk-lines" && i + 1 < argc) {
-            chunk_lines = static_cast<size_t>(stoul(argv[++i]));
+            chunkLines = static_cast<size_t>(stoul(argv[++i]));
             continue;
         }
-        cerr << "Unknown or incomplete argument: " << arg << endl;
+        cerr << "Unknown or incomplete argument: " << arg << '\n';
         return 1;
     }
 
     string error;
-    LLM::RepoIndexOptions options;
+    llm::RepoIndexOptions options;
     options.root = root;
-    options.output_root = out;
-    options.chunk_lines = chunk_lines;
+    options.outputRoot = out;
+    options.chunkLines = chunkLines;
 
-    const fs::path built = LLM::RepoIndexer::Build(options, &error);
+    const fs::path built = llm::RepoIndexer::Build(options, &error);
     if (built.empty()) {
-        cerr << error << endl;
+        cerr << error << '\n';
         return 1;
     }
 
-    cout << "Repo knowledge base written to " << built << endl;
+    cout << "Repo knowledge base written to " << built << '\n';
     return 0;
 }

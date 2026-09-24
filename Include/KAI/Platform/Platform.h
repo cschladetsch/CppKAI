@@ -35,7 +35,7 @@
 #ifdef _WIN32
 // getopt is not available on Windows - use a minimal implementation
 // or the Windows-specific alternative
-#  include <string.h>
+#include <cstring>
 int Getopt(int argc, char* const argv[], const char* optstring);
 extern char* optarg;
 extern int optind, opterr, optopt;

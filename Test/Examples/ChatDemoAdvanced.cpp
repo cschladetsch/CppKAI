@@ -210,12 +210,12 @@ class AdvancedChat {
                     << "  /help             - Show this help\n"
                     << "  <message>         - Send message to current "
                        "channel\n\n";
-            } else if (cmd.substr(0, 8) == "username") {
+            } else if (cmd.starts_with("username")) {
                 username_ = cmd.substr(9);
                 std::cout << "[SYSTEM] Username set to: " << username_ << "\n";
-            } else if (cmd.substr(0, 7) == "publish") {
+            } else if (cmd.starts_with("publish")) {
                 Publish(cmd.substr(8));
-            } else if (cmd.substr(0, 5) == "enter") {
+            } else if (cmd.starts_with("enter")) {
                 Enter(cmd.substr(6));
             } else if (cmd == "leave") {
                 Leave();

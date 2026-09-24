@@ -7,17 +7,17 @@
 #include <string_view>
 
 KAI_BEGIN
-namespace LLM {
+namespace llm
+{
 
 class ModelCache {
    public:
     static std::string ResolveHome();
-    static std::string ResolvePath(std::string_view model_name);
+    static std::string ResolvePath(std::string_view modelName);
 
-    static std::optional<std::string> Ensure(std::string_view model_name,
-                                             std::string* error_out = nullptr);
-    static bool Exists(std::string_view model_name);
+    static std::optional<std::string> Ensure(std::string_view modelName, std::string* errorOut = nullptr);
+    static bool Exists(std::string_view modelName);
 };
 
-}  // namespace LLM
+} // namespace llm
 KAI_END

@@ -52,12 +52,15 @@ struct Node {
     std::function<void()> updatePump_;
 
    public:
-    static int constexpr DefaultPort = 14589;
+       static int constexpr kDefaultPort = 14589;
 
-    Node();
-    ~Node();
+       Node();
+       ~Node();
 
-    void SetRegistry(Registry *registry) { registry_ = registry; }
+       void SetRegistry(Registry* registry)
+       {
+           registry_ = registry;
+       }
     Registry *GetRegistry() const { return registry_; }
 
     void SetUpdatePump(std::function<void()> pump) {
@@ -75,7 +78,7 @@ struct Node {
                     // processed
 
     // Peer discovery methods
-    void StartDiscovery(int discoveryPort = DefaultPort);
+    void StartDiscovery(int discoveryPort = kDefaultPort);
     void StopDiscovery();
     bool IsDiscovering() const;
     std::vector<NetAddress> GetDiscoveredPeers() const;
@@ -177,8 +180,10 @@ struct Node {
     // implementation.
     template <typename T>
     void RegisterPendingFutureImport(int futureId, Future<T> future) {
-        if (futureId == 0) return;
-        std::lock_guard<std::mutex> lock(futureImportMutex_);
+        if (futureId == 0) {
+            return;
+        }
+        std::scoped_lock lock(futureImportMutex_);
         pendingFutureImports_[futureId] =
             [future](const Object &value, ResponseType response) mutable {
                 if constexpr (!std::is_void_v<T>) {
@@ -221,11 +226,10 @@ struct Node {
     // eventually completes, the far side (or this same Node, for a local
     // call) gets told via `resolveSink(id, resolvedValueObject)`.
     template <typename T>
-    Object PackInvokeArg(
-        T &&arg,
-        std::function<void(int, const Object &, ResponseType)> resolveSink) {
+    Object PackInvokeArg(T&& arg, const std::function<void(int, const Object&, ResponseType)>& resolveSink)
+    {
         using D = std::decay_t<T>;
-        if constexpr (is_future_v<D>) {
+        if constexpr (kIsFutureV<D>) {
             using U = future_value_t<D>;
             Value<Array> slot = registry_->New<Array>();
             if (arg.IsComplete()) {
@@ -234,7 +238,9 @@ struct Node {
                     slot->Append(registry_->New(arg.GetValue()));
                 }
             } else {
-                if (arg.GetId() == 0) arg.SetId(nextFutureId_++);
+                if (arg.GetId() == 0) {
+                    arg.SetId(nextFutureId_++);
+                }
                 int id = arg.GetId();
                 slot->Append(registry_->New(false));
                 slot->Append(registry_->New(id));
@@ -248,8 +254,9 @@ struct Node {
                             valueObj = reg->New(*opt);
                         }
                     }
-                    if (resolveSink)
+                    if (resolveSink) {
                         resolveSink(id, valueObj, arg.GetResponse());
+                    }
                 });
             }
             return slot.GetObject();
@@ -265,17 +272,11 @@ struct Node {
     // Helper method to get the packet identifier
     unsigned char GetPacketIdentifier(const NetPacket &packet);
 
-   private:
     // Use raw pointer for Registry to avoid build issues
     // std::shared_ptr<Registry> _reg;
 
-   private:
-    typedef std::unordered_map<NetHandle, std::shared_ptr<ProxyBase>,
-                               HashNetHandle>
-        Proxies;
-    typedef std::unordered_map<NetHandle, std::shared_ptr<AgentBase>,
-                               HashNetHandle>
-        Agents;
+    using Proxies = std::unordered_map<NetHandle, std::shared_ptr<ProxyBase>, HashNetHandle>;
+    using Agents = std::unordered_map<NetHandle, std::shared_ptr<AgentBase>, HashNetHandle>;
 
     Agents agents_;
     Proxies proxies_;
@@ -388,11 +389,11 @@ struct MethodInvoker : MethodInvokerBase {
     }
 
     template <std::size_t... Indices>
-    Object InvokeImpl(const std::vector<Object> &args,
-                      std::index_sequence<Indices...>) {
+    Object InvokeImpl(const std::vector<Object>& args, std::index_sequence<Indices...> /*unused*/)
+    {
         if constexpr (std::is_void_v<R>) {
             fn_(ExtractArg<Args>(args[Indices])...);
-            return Object();
+            return {};
         } else {
             if (!registry_) {
                 throw std::runtime_error("Null registry for return value");
@@ -414,7 +415,10 @@ struct PropertyAccessorBase {
         KAI_UNUSED_1(value);
         throw std::runtime_error("Property is read-only");
     }
-    virtual bool CanWrite() const { return false; }
+    [[nodiscard]] virtual bool CanWrite() const
+    {
+        return false;
+    }
     // Object-level accessors used by the remote property get/set path.
     virtual Object GetAsObject(Registry *reg) = 0;
     virtual void SetFromObject(const Object &obj) {
@@ -426,60 +430,71 @@ struct PropertyAccessorBase {
 
 template <typename Value>
 struct PropertyAccessor : PropertyAccessorBase {
-    PropertyAccessor(std::function<Value()> getter,
-                     std::function<void(Value)> setter)
-        : getter_(std::move(getter)), setter_(std::move(setter)) {
+    PropertyAccessor(std::function<Value()> getter, std::function<void(Value)> setter)
+        : getter(std::move(getter)), setter(std::move(setter))
+    {
         this->type = typeid(Value);
     }
 
-    std::any Get() override { return std::any(getter_()); }
-
-    void Set(const std::any &value) override {
-        setter_(std::any_cast<Value>(value));
+    std::any Get() override {
+        return std::any(getter());
     }
 
-    bool CanWrite() const override { return static_cast<bool>(setter_); }
+    void Set(const std::any &value) override {
+        setter(std::any_cast<Value>(value));
+    }
+
+    [[nodiscard]] bool CanWrite() const override
+    {
+        return static_cast<bool>(setter);
+    }
 
     Object GetAsObject(Registry *reg) override {
-        if (!reg) throw std::runtime_error("Null registry in GetAsObject");
-        return reg->New(getter_());
+        if (reg == nullptr) {
+            throw std::runtime_error("Null registry in GetAsObject");
+        }
+        return reg->New(getter());
     }
 
     void SetFromObject(const Object &obj) override {
-        setter_(ConstDeref<std::decay_t<Value>>(obj));
+        setter(ConstDeref<std::decay_t<Value>>(obj));
     }
 
-    std::function<Value()> getter_;
-    std::function<void(Value)> setter_;
+    std::function<Value()> getter;
+    std::function<void(Value)> setter;
 };
 
 template <typename Value>
 struct ReadOnlyAccessor : PropertyAccessorBase {
-    explicit ReadOnlyAccessor(std::function<Value()> getter)
-        : getter_(std::move(getter)) {
+    explicit ReadOnlyAccessor(std::function<Value()> getter) : getter(std::move(getter))
+    {
         this->type = typeid(Value);
     }
 
-    std::any Get() override { return std::any(getter_()); }
-
-    Object GetAsObject(Registry *reg) override {
-        if (!reg) throw std::runtime_error("Null registry in GetAsObject");
-        return reg->New(getter_());
+    std::any Get() override {
+        return std::any(getter());
     }
 
-    std::function<Value()> getter_;
+    Object GetAsObject(Registry *reg) override {
+        if (reg == nullptr) {
+            throw std::runtime_error("Null registry in GetAsObject");
+        }
+        return reg->New(getter());
+    }
+
+    std::function<Value()> getter;
 };
 }  // namespace detail
 
 inline NetHandle Node::AttachAgent(AgentBase *agent) {
-    std::lock_guard<std::mutex> lock(agentMutex_);
+    std::scoped_lock lock(agentMutex_);
     NetHandle handle(nextHandle_++);
     agentEntries_[handle.value].agent = agent;
     return handle;
 }
 
 inline void Node::DetachAgent(NetHandle handle, AgentBase *agent) {
-    std::lock_guard<std::mutex> lock(agentMutex_);
+    std::scoped_lock lock(agentMutex_);
     auto it = agentEntries_.find(handle.value);
     if (it != agentEntries_.end() && it->second.agent == agent) {
         agentEntries_.erase(it);
@@ -489,7 +504,7 @@ inline void Node::DetachAgent(NetHandle handle, AgentBase *agent) {
 template <typename R, typename... Args>
 void Node::RegisterMethod(NetHandle handle, const std::string &name,
                           std::function<R(Args...)> fn) {
-    std::lock_guard<std::mutex> lock(agentMutex_);
+    std::scoped_lock lock(agentMutex_);
     auto &entry = agentEntries_[handle.value];
     entry.methods[name] = std::make_shared<detail::MethodInvoker<R, Args...>>(
         registry_, this, std::move(fn));
@@ -499,7 +514,7 @@ template <typename Value>
 void Node::RegisterProperty(NetHandle handle, const std::string &name,
                             std::function<Value()> getter,
                             std::function<void(Value)> setter) {
-    std::lock_guard<std::mutex> lock(agentMutex_);
+    std::scoped_lock lock(agentMutex_);
     auto accessor = std::make_shared<detail::PropertyAccessor<Value>>(
         std::move(getter), std::move(setter));
     agentEntries_[handle.value].properties[name] = accessor;
@@ -508,7 +523,7 @@ void Node::RegisterProperty(NetHandle handle, const std::string &name,
 template <typename Value>
 void Node::RegisterProperty(NetHandle handle, const std::string &name,
                             std::function<Value()> getter) {
-    std::lock_guard<std::mutex> lock(agentMutex_);
+    std::scoped_lock lock(agentMutex_);
     auto accessor =
         std::make_shared<detail::ReadOnlyAccessor<Value>>(std::move(getter));
     agentEntries_[handle.value].properties[name] = accessor;
@@ -522,7 +537,7 @@ Future<R> Node::Invoke(NetHandle handle, const std::string &name,
     std::shared_ptr<detail::MethodInvokerBase> invoker;
 
     {
-        std::lock_guard<std::mutex> lock(agentMutex_);
+        std::scoped_lock lock(agentMutex_);
         auto entry = agentEntries_.find(handle.value);
         if (entry != agentEntries_.end()) {
             auto it = entry->second.methods.find(name);
@@ -597,24 +612,23 @@ Future<R> Node::Invoke(NetHandle handle, const std::string &name,
     Object argsObject = argsArray.GetObject();
 
     {
-        std::lock_guard<std::mutex> lock(pendingMutex_);
+        std::scoped_lock lock(pendingMutex_);
         auto state = future.GetState();
-        pendingResponses_[future.GetId()].complete =
-            [state](const Object &obj, ResponseType response,
-                    const std::string &error) {
-                state->Response = response;
-                state->Complete = true;
-                state->ErrorMessage = error;
-                if constexpr (!std::is_void_v<R>) {
-                    if (response == ResponseType::Returned) {
-                        if constexpr (std::is_same_v<std::decay_t<R>, Object>) {
-                            state->Value = obj;
-                        } else {
-                            state->Value = ConstDeref<std::decay_t<R>>(obj);
-                        }
+        pendingResponses_[future.GetId()].complete = [state](const Object& obj, ResponseType response,
+                                                             const std::string& error) {
+            state->response = response;
+            state->complete = true;
+            state->errorMessage = error;
+            if constexpr (!std::is_void_v<R>) {
+                if (response == ResponseType::Returned) {
+                    if constexpr (std::is_same_v<std::decay_t<R>, Object>) {
+                        state->Value = obj;
+                    } else {
+                        state->value = ConstDeref<std::decay_t<R>>(obj);
                     }
                 }
-            };
+            }
+        };
     }
 
     // Implemented in Node.cpp
@@ -630,7 +644,7 @@ Future<P> Node::FetchProperty(NetHandle handle, const std::string &name) {
     std::shared_ptr<detail::PropertyAccessorBase> accessor;
 
     {
-        std::lock_guard<std::mutex> lock(agentMutex_);
+        std::scoped_lock lock(agentMutex_);
         auto entry = agentEntries_.find(handle.value);
         if (entry != agentEntries_.end()) {
             auto it = entry->second.properties.find(name);
@@ -664,7 +678,7 @@ Future<P> Node::FetchProperty(NetHandle handle, const std::string &name) {
     }
 
     {
-        std::lock_guard<std::mutex> lock(pendingMutex_);
+        std::scoped_lock lock(pendingMutex_);
         auto state = future.GetState();
         pendingResponses_[future.GetId()].complete =
             [state](const Object &obj, ResponseType response,
@@ -695,7 +709,7 @@ Future<void> Node::StoreProperty(NetHandle handle, const std::string &name,
     std::shared_ptr<detail::PropertyAccessorBase> accessor;
 
     {
-        std::lock_guard<std::mutex> lock(agentMutex_);
+        std::scoped_lock lock(agentMutex_);
         auto entry = agentEntries_.find(handle.value);
         if (entry != agentEntries_.end()) {
             auto it = entry->second.properties.find(name);
@@ -728,15 +742,14 @@ Future<void> Node::StoreProperty(NetHandle handle, const std::string &name,
     }
 
     {
-        std::lock_guard<std::mutex> lock(pendingMutex_);
+        std::scoped_lock lock(pendingMutex_);
         auto state = future.GetState();
-        pendingResponses_[future.GetId()].complete =
-            [state](const Object & /*obj*/, ResponseType response,
-                    const std::string &error) {
-                state->Response = response;
-                state->Complete = true;
-                state->ErrorMessage = error;
-            };
+        pendingResponses_[future.GetId()].complete = [state](const Object& /*obj*/, ResponseType response,
+                                                             const std::string& error) {
+            state->response = response;
+            state->complete = true;
+            state->errorMessage = error;
+        };
     }
 
     Object valueObj = registry_->New(std::forward<P>(value));
@@ -750,7 +763,9 @@ T Node::WaitFor(Future<T> &future, std::chrono::milliseconds timeout) {
     auto start = std::chrono::steady_clock::now();
     while (!future.IsComplete()) {
         Update();
-        if (updatePump_) updatePump_();
+        if (updatePump_) {
+            updatePump_();
+        }
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
         if (timeout.count() >= 0 &&
             std::chrono::steady_clock::now() - start > timeout) {
@@ -767,7 +782,9 @@ inline void Node::WaitFor(Future<void> &future,
     auto start = std::chrono::steady_clock::now();
     while (!future.IsComplete()) {
         Update();
-        if (updatePump_) updatePump_();
+        if (updatePump_) {
+            updatePump_();
+        }
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
         if (timeout.count() >= 0 &&
             std::chrono::steady_clock::now() - start > timeout) {

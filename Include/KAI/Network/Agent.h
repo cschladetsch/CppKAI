@@ -22,7 +22,10 @@ struct Agent : AgentBase {
     T &Instance() { return *servant_; }
     const T &Instance() const { return *servant_; }
 
-    NetHandle Handle() const { return this->GetHandle(); }
+    [[nodiscard]] NetHandle Handle() const
+    {
+        return this->GetHandle();
+    }
 
     template <typename R, typename... Args>
     void BindMethod(const std::string &name, R (T::*method)(Args...)) {

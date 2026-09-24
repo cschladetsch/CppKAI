@@ -24,9 +24,9 @@ void PrintHelp() {
 
 int main(int argc, char** argv) {
     fs::path root = fs::current_path();
-    fs::path out = kai::LLM::RhoDatasetBuilder::DefaultOutputRoot();
-    size_t max_input_chars = 4096;
-    size_t max_records = 0;
+    fs::path out = kai::llm::RhoDatasetBuilder::DefaultOutputRoot();
+    size_t maxInputChars = 4096;
+    size_t maxRecords = 0;
 
     for (int i = 1; i < argc; ++i) {
         const string arg = argv[i];
@@ -43,30 +43,30 @@ int main(int argc, char** argv) {
             continue;
         }
         if (arg == "--max-input-chars" && i + 1 < argc) {
-            max_input_chars = static_cast<size_t>(stoul(argv[++i]));
+            maxInputChars = static_cast<size_t>(stoul(argv[++i]));
             continue;
         }
         if (arg == "--max-records" && i + 1 < argc) {
-            max_records = static_cast<size_t>(stoul(argv[++i]));
+            maxRecords = static_cast<size_t>(stoul(argv[++i]));
             continue;
         }
-        cerr << "Unknown or incomplete argument: " << arg << endl;
+        cerr << "Unknown or incomplete argument: " << arg << '\n';
         return 1;
     }
 
     string error;
-    kai::LLM::RhoDatasetOptions options;
+    kai::llm::RhoDatasetOptions options;
     options.root = root;
-    options.output_root = out;
-    options.max_input_chars = max_input_chars;
-    options.max_records = max_records;
+    options.outputRoot = out;
+    options.maxInputChars = maxInputChars;
+    options.maxRecords = maxRecords;
 
-    const fs::path built = kai::LLM::RhoDatasetBuilder::Build(options, &error);
+    const fs::path built = kai::llm::RhoDatasetBuilder::Build(options, &error);
     if (built.empty()) {
-        cerr << error << endl;
+        cerr << error << '\n';
         return 1;
     }
 
-    cout << "KAI language dataset written to " << built << endl;
+    cout << "KAI language dataset written to " << built << '\n';
     return 0;
 }

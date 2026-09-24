@@ -9,10 +9,10 @@
 #  include <windows.h>
 #  include <process.h>
 #  ifndef popen
-#    define popen _popen
+#define POPEN _popen
 #  endif
 #  ifndef pclose
-#    define pclose _pclose
+#define PCLOSE _pclose
 #  endif
 #endif
 #include <cstddef>

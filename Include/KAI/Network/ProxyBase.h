@@ -8,15 +8,14 @@ KAI_NET_BEGIN
 
 struct ProxyBase : Representative {
    protected:
-    typedef StringStream StreamType;
+       using StreamType = StringStream;
 
-    ProxyBase(Node &node, NetHandle handle) : Representative(node, handle) {}
+       ProxyBase(Node& node, NetHandle handle) : Representative(node, handle) {}
 
-    template <class Ty, class... Args>
-    Future<Ty> Exec(const char *name, Args &&...args) {
-        return GetNode().Invoke<Ty>(GetHandle(), name,
-                                    std::forward<Args>(args)...);
-    }
+       template <class Ty, class... Args> Future<Ty> Exec(const char* name, Args&&... args)
+       {
+           return GetNode().Invoke<Ty>(GetHandle(), name, std::forward<Args>(args)...);
+       }
 
     template <class Ty>
     Future<Ty> Fetch(const char *name) {

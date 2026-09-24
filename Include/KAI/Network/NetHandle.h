@@ -11,8 +11,9 @@ struct NetHandle {
     NetHandle() : value(0) {}
     explicit NetHandle(int v) : value(v) {}
 
-    friend bool operator==(NetHandle const &A, NetHandle const &B) {
-        return A.value == B.value;
+    friend bool operator==(NetHandle const& a, NetHandle const& b)
+    {
+        return a.value == b.value;
     }
 };
 

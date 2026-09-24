@@ -33,7 +33,7 @@ struct Options {
     std::string host = "127.0.0.1";
     int port = 17100;
     int handle = 1;
-    int timeout_ms = 15000;
+    int timeoutMs = 15000;
 };
 
 void PrintUsage(const char *program) {
@@ -65,7 +65,7 @@ Options ParseOptions(int argc, char **argv) {
         } else if (arg == "--handle") {
             options.handle = std::stoi(requireValue("--handle"));
         } else if (arg == "--timeout") {
-            options.timeout_ms = std::stoi(requireValue("--timeout"));
+            options.timeoutMs = std::stoi(requireValue("--timeout"));
         } else if (arg == "--help" || arg == "-h") {
             PrintUsage(argv[0]);
             std::exit(0);
@@ -76,13 +76,14 @@ Options ParseOptions(int argc, char **argv) {
     return options;
 }
 
-bool WaitForConnection(Node &node, bool &connected, int timeout_ms) {
+bool WaitForConnection(Node& node, bool& connected, int timeoutMs)
+{
     using clock = std::chrono::steady_clock;
     const auto start = clock::now();
     while (!connected) {
         node.Update();
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        if (clock::now() - start > std::chrono::milliseconds(timeout_ms)) {
+        if (clock::now() - start > std::chrono::milliseconds(timeoutMs)) {
             return false;
         }
     }
@@ -107,10 +108,9 @@ int RunServer(const Options &options) {
     std::atomic<int> migratedResult{0};
 
     node.RegisterMethod<int, Object>(
-        agentHandle, "ThawAndResume",
-        std::function<int(Object)>([&](Object frozen) {
+        agentHandle, "ThawAndResume", std::function<int(Object)>([&](const Object& frozen) {
             try {
-                Object cont = Bin::Thaw(frozen);
+                Object cont = bin::Thaw(frozen);
                 if (!cont.Exists() || !cont.IsType<Continuation>()) {
                     throw std::runtime_error("Expected a thawed continuation");
                 }
@@ -145,8 +145,7 @@ int RunServer(const Options &options) {
     while (!completed) {
         node.Update();
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        if (clock::now() - start >
-            std::chrono::milliseconds(options.timeout_ms)) {
+        if (clock::now() - start > std::chrono::milliseconds(options.timeoutMs)) {
             std::cerr << "SERVER_ERROR: timed out waiting for migration\n";
             return 1;
         }
@@ -172,7 +171,7 @@ int RunClient(const Options &options) {
         });
 
     node.Connect(IpAddress(options.host), options.port);
-    if (!WaitForConnection(node, connected, options.timeout_ms)) {
+    if (!WaitForConnection(node, connected, options.timeoutMs)) {
         std::cerr << "CLIENT_ERROR: timed out connecting to " << options.host
                   << ":" << options.port << "\n";
         return 1;
@@ -191,7 +190,7 @@ int RunClient(const Options &options) {
         return 1;
     }
 
-    Object frozen = Bin::Freeze(*cont->Self);
+    Object frozen = bin::Freeze(*cont->self);
     if (!frozen.Exists()) {
         std::cerr << "CLIENT_ERROR: failed to freeze continuation\n";
         return 1;
@@ -203,8 +202,7 @@ int RunClient(const Options &options) {
     while (!future.IsComplete()) {
         node.Update();
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        if (clock::now() - start >
-            std::chrono::milliseconds(options.timeout_ms)) {
+        if (clock::now() - start > std::chrono::milliseconds(options.timeoutMs)) {
             std::cerr << "CLIENT_ERROR: timed out waiting for response\n";
             return 1;
         }
