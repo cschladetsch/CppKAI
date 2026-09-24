@@ -1,0 +1,7 @@
+build/
+claude_logs/
+.git/
+*.log
+*.obj
+*.ilk
+*.pdb
