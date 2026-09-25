@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifdef _WIN32
 #  ifndef WIN32_LEAN_AND_MEAN
 #    define WIN32_LEAN_AND_MEAN
@@ -9,10 +9,10 @@
 #  include <windows.h>
 #  include <process.h>
 #  ifndef popen
-#define POPEN _popen
+#define popen _popen
 #  endif
 #  ifndef pclose
-#define PCLOSE _pclose
+#define pclose _pclose
 #  endif
 #endif
 #include <cstddef>

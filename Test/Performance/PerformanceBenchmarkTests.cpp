@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 
 #include <algorithm>
 #include <chrono>
@@ -103,7 +103,7 @@ class PerformanceBenchmarkTests : public ::testing::Test {
 
             auto parser = make_shared<tau::TauParser>(localRegistry);
             return parser->Process(lexer, Structure::Module);
-        } catch (const exception&) {
+        } catch (const std::exception&) {
             return false;
         }
     }
@@ -112,7 +112,7 @@ class PerformanceBenchmarkTests : public ::testing::Test {
         try {
             tau::Generate::GenerateProxy generator(code.c_str(), output);
             return !generator.Failed;
-        } catch (const exception&) {
+        } catch (const std::exception&) {
             return false;
         }
     }
@@ -121,7 +121,7 @@ class PerformanceBenchmarkTests : public ::testing::Test {
         try {
             tau::Generate::GenerateAgent generator(code.c_str(), output);
             return !generator.Failed;
-        } catch (const exception&) {
+        } catch (const std::exception&) {
             return false;
         }
     }

@@ -1,4 +1,4 @@
-#include <KAI/Core/BuiltinTypes.h>
+﻿#include <KAI/Core/BuiltinTypes.h>
 #include <KAI/Core/Console.h>
 
 #include <iostream>
@@ -96,7 +96,7 @@ int main(int argc, char** argv) {
         }
 
         return 0;
-    } catch (const Exception::Base& e) {
+    } catch (const exception::Base& e) {
         cerr << "KAI Exception: " << e.ToString() << endl;
         return 1;
     } catch (const std::exception& e) {

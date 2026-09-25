@@ -1,4 +1,4 @@
-#include "TestLangCommon.h"
+﻿#include "TestLangCommon.h"
 
 #include <KAI/Core/Exception.h>
 #include <KAI/Core/Logger.h>
@@ -264,7 +264,7 @@ void TestLangCommon::ExecScriptFile(const std::string &scriptFileName) {
         // Execute the script with error handling
         try {
             console_.Execute(contents.c_str());
-        } catch (const Exception::Base &e) {
+        } catch (const exception::Base &e) {
             std::cerr << "KAI exception during script execution: "
                       << e.ToString() << std::endl;
             throw;  // Re-throw after logging
@@ -405,7 +405,7 @@ void TestLangCommon::ExecScripts() {
             console_.Execute(contents.c_str());
 
             std::cout << "Script execution successful" << std::endl;
-        } catch (const Exception::Base &e) {
+        } catch (const exception::Base &e) {
             // Handle KAI exception specifically
             std::cout << "KAI Exception in script "
                       << scriptName.filename().string() << ": " << e.what()

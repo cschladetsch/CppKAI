@@ -1,4 +1,4 @@
-#include <KAI/Language/Rho/RhoLexer.h>
+﻿#include <KAI/Language/Rho/RhoLexer.h>
 
 using namespace std;
 
@@ -145,7 +145,7 @@ bool RhoLexer::LexPathname() {
 
         prevIdent = true;
 
-        auto isSeparator = Contains(Pathname::Literals::AllButQuote, Current());
+        auto isSeparator = Contains(Pathname::Literals::kAllButQuote, Current());
         if (isSeparator) {
             Next();
             continue;

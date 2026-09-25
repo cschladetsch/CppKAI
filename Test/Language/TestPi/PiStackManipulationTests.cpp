@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 
 #include <fstream>
 #include <sstream>
@@ -33,7 +33,7 @@ struct PiStackTests : TestLangCommon {
             }
 
             VerifyStack(*dataStack, expected, std::index_sequence_for<Ts...>{});
-        } catch (const Exception::Base &e) {
+        } catch (const exception::Base &e) {
             FAIL() << "Exception: " << e.ToString();
         } catch (const std::exception &e) {
             FAIL() << "std::exception: " << e.what();

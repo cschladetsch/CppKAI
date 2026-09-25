@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 
 #include <cmath>
 #include <iostream>
@@ -196,7 +196,7 @@ TEST_F(ExtendedBinaryOpTests, StringNumberConversion) {
     Object intObj = reg_->New<int>(42);
 
     EXPECT_THROW(exec_->PerformBinaryOp(strObj, intObj, Operation::Plus),
-                 Exception::Base);
+                 exception::Base);
 }
 
 // Negative Number Operations

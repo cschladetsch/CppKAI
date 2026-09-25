@@ -1,4 +1,4 @@
-#include <KAI/Language/Tau/Generate/GenerateAgent.h>
+﻿#include <KAI/Language/Tau/Generate/GenerateAgent.h>
 
 TAU_BEGIN
 
@@ -48,8 +48,8 @@ bool GenerateAgent::GenerateFromFile(const char *filename, string &output,
     }
 
     GenerateAgent agent(contents.c_str(), output);
-    if (agent.Failed) {
-        error = agent.Error;
+    if (agent.failed) {
+        error = agent.error;
         return false;
     }
 

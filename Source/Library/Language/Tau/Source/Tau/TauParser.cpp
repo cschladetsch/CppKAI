@@ -1,4 +1,4 @@
-#include <KAI/Language/Common/ParserCommon.h>
+﻿#include <KAI/Language/Common/ParserCommon.h>
 #include <KAI/Language/Tau/TauParser.h>
 #include <assert.h>
 
@@ -12,30 +12,30 @@ TAU_BEGIN
 bool TauParser::Process(shared_ptr<Lexer> lex, Structure st) {
     current = 0;
     indent = 0;
-    lexer = lex;
+    lexer_ = lex;
 
-    if (lexer->Failed) return Fail("Lexer error: " + lexer->Error);
+    if (lexer_->failed) return Fail("Lexer error: " + lexer_->error);
 
     StripTokens();
 
-    root = NewNode(AstEnum::None);
+    root_ = NewNode(AstEnum::None);
 
     // Clear any previous error state
-    Error.clear();
-    Failed = false;
+    error.clear();
+    failed = false;
 
     // Run the parser
-    bool result = Run(root, st);
+    bool result = Run(root_, st);
 
     // For test compatibility, we need to handle the case where
     // the parser sets an error but we want to be resilient
     // If there's an error but we have a valid AST, clear the error
-    if (!strictMode_ && !Error.empty() && root &&
-        root->GetChildren().size() > 0) {
+    if (!strictMode_ && !error.empty() && root_ &&
+        root_->GetChildren().size() > 0) {
         // We have some AST nodes, so parsing was at least partially successful
         // Clear the error for resilience
-        Error.clear();
-        Failed = false;
+        error.clear();
+        failed = false;
         result = true;
     }
 
@@ -43,7 +43,7 @@ bool TauParser::Process(shared_ptr<Lexer> lex, Structure st) {
 }
 
 void TauParser::StripTokens() {
-    for (auto const &tok : lexer->GetTokens()) {
+    for (auto const &tok : lexer_->GetTokens()) {
         switch (tok.type) {
             case TokenEnum::Whitespace:
             case TokenEnum::Tab:
@@ -53,7 +53,7 @@ void TauParser::StripTokens() {
                 continue;
         }
 
-        tokens.push_back(tok);
+        tokens_.push_back(tok);
     }
 }
 
@@ -167,11 +167,11 @@ bool TauParser::Namespace(AstNodePtr root) {
 
         // Get original namespace name
         auto originalName = Expect(TokenEnum::Ident);
-        if (Failed) return false;
+        if (failed) return false;
 
         // Consume semicolon
         Expect(TokenEnum::Semi);
-        if (Failed) return false;
+        if (failed) return false;
 
         // Store the alias information (even though we may not support it fully
         // yet)
@@ -280,7 +280,7 @@ bool TauParser::Namespace(AstNodePtr root) {
                     }
 
                     Expect(TokenEnum::Semi);
-                    if (Failed) return false;
+                    if (failed) return false;
 
                     // We've handled the using directive (though we may not
                     // fully support it in the code generation yet)
@@ -329,7 +329,7 @@ bool TauParser::Namespace(AstNodePtr root) {
     }
 
     Expect(TokenEnumType::CloseBrace);
-    if (Failed) return false;
+    if (failed) return false;
 
     root->Add(rootNs);
     return true;
@@ -356,9 +356,9 @@ bool TauParser::Class(AstNodePtr root) {
 
         // Get base class name
         auto baseClassName = Expect(TokenEnum::Ident);
-        if (Failed) {
+        if (failed) {
             // Even if we failed to find the base class, continue for resilience
-            Failed = false;  // Reset the error state
+            failed = false;  // Reset the error state
         } else {
             // Store base class information in the AST
             auto baseNode =
@@ -376,7 +376,7 @@ bool TauParser::Class(AstNodePtr root) {
 
     Consume();  // Consume the opening brace
 
-    while (!Failed && !CurrentIs(TokenEnum::CloseBrace)) {
+    while (!failed && !CurrentIs(TokenEnum::CloseBrace)) {
         if (Empty()) {
             // Don't fail - just add an empty class body and return
             klass->Add(NewNode(AstEnum::Arglist));  // Empty body
@@ -406,7 +406,7 @@ bool TauParser::Class(AstNodePtr root) {
             Consume();  // Consume 'event'
             if (!Event(klass)) {
                 // Continue parsing even if event fails
-                Failed = false;
+                failed = false;
             }
             continue;
         }
@@ -430,7 +430,7 @@ bool TauParser::Class(AstNodePtr root) {
                 Consume();  // Consume 'event'
                 if (!Event(klass)) {
                     // Continue parsing even if event fails
-                    Failed = false;
+                    failed = false;
                 }
                 continue;
             }
@@ -452,9 +452,9 @@ bool TauParser::Class(AstNodePtr root) {
 
         // Get the type for a field or method
         auto ty = Expect(TokenEnum::Ident);
-        if (Failed) {
+        if (failed) {
             // Reset error state and continue with next member
-            Failed = false;
+            failed = false;
             Consume();  // Skip problematic token
             continue;
         }
@@ -468,16 +468,16 @@ bool TauParser::Class(AstNodePtr root) {
                 Consume();  // ]
             } else {
                 // Skip this problematic array declaration but continue parsing
-                Failed = false;
+                failed = false;
                 continue;
             }
         }
 
         // Get the identifier (field or method name)
         auto name = Expect(TokenEnum::Ident);
-        if (Failed) {
+        if (failed) {
             // Reset error state and continue with next member
-            Failed = false;
+            failed = false;
             continue;
         }
 
@@ -488,7 +488,7 @@ bool TauParser::Class(AstNodePtr root) {
             Method(klass, ty->GetToken(), name->GetToken());
 
             // Reset any error state to continue parsing
-            Failed = false;
+            failed = false;
         }
         // Otherwise it's a field
         else {
@@ -496,7 +496,7 @@ bool TauParser::Class(AstNodePtr root) {
             Field(klass, ty->GetToken(), name->GetToken());
 
             // Reset any error state to continue parsing
-            Failed = false;
+            failed = false;
         }
     }
 
@@ -528,8 +528,8 @@ bool TauParser::Method(AstNodePtr klass, TokenNode const &returnType,
     if (strictMode_) {
         std::string typeText = returnType.Text();
         if (!IsValidTypeName(typeText)) {
-            Failed = true;
-            Error =
+            failed = true;
+            error =
                 "Invalid return type '" + typeText + "' in method declaration";
             return false;
         }
@@ -552,7 +552,7 @@ bool TauParser::Method(AstNodePtr klass, TokenNode const &returnType,
         AddArg(args);
 
         // Reset error state so we can continue parsing
-        Failed = false;
+        failed = false;
 
         if (!CurrentIs(TokenType::Comma)) break;
 
@@ -568,7 +568,7 @@ bool TauParser::Method(AstNodePtr klass, TokenNode const &returnType,
     }
 
     // Reset error state
-    Failed = false;
+    failed = false;
 
     // Check for const modifier
     bool isConst = false;
@@ -585,8 +585,8 @@ bool TauParser::Method(AstNodePtr klass, TokenNode const &returnType,
     if (CurrentIs(TokenType::Semi)) {
         Consume();
     } else if (strictMode_) {
-        Failed = true;
-        Error =
+        failed = true;
+        error =
             "Expected ';' after method declaration for '" + name.Text() + "'";
         return false;
     }
@@ -612,7 +612,7 @@ bool TauParser::Field(AstNodePtr klass, TokenNode const &ty,
         if (!CurrentIs(TokenEnum::ArrayProxy)) {
             // Continue even if we don't have a closing bracket
             // Just mark that we encountered an error but continue
-            Failed = false;
+            failed = false;
         } else {
             Consume();  // Consume the closing bracket
         }
@@ -718,7 +718,7 @@ bool TauParser::Interface(AstNodePtr root) {
 
     Consume();  // Consume the opening brace
 
-    while (!Failed && !CurrentIs(TokenEnum::CloseBrace)) {
+    while (!failed && !CurrentIs(TokenEnum::CloseBrace)) {
         if (Empty()) return Fail("Incomplete Interface");
 
         // Skip over extraneous semicolons, newlines, etc.
@@ -755,7 +755,7 @@ bool TauParser::Interface(AstNodePtr root) {
 
         // Get the type for a method (interfaces typically don't have fields)
         auto ty = Expect(TokenEnum::Ident);
-        if (Failed) return false;
+        if (failed) return false;
 
         // Check for array type annotation
         bool isArray = false;
@@ -771,7 +771,7 @@ bool TauParser::Interface(AstNodePtr root) {
 
         // Get the identifier (method name)
         auto name = Expect(TokenEnum::Ident);
-        if (Failed) return false;
+        if (failed) return false;
 
         // For interfaces, most entries should be methods
         if (CurrentIs(TokenType::OpenParan)) {
@@ -784,7 +784,7 @@ bool TauParser::Interface(AstNodePtr root) {
         }
     }
 
-    if (Failed) return false;
+    if (failed) return false;
 
     // Try to consume the closing brace, but don't fail hard if it's missing
     if (CurrentIs(TokenEnum::CloseBrace)) {
@@ -831,7 +831,7 @@ bool TauParser::Enum(AstNodePtr root) {
     Consume();  // Consume the opening brace
 
     // Parse enum values
-    while (!Failed && !CurrentIs(TokenEnum::CloseBrace)) {
+    while (!failed && !CurrentIs(TokenEnum::CloseBrace)) {
         if (Empty()) return Fail("Incomplete Enum");
 
         // Skip over extraneous semicolons, newlines, etc.
@@ -873,7 +873,7 @@ bool TauParser::Enum(AstNodePtr root) {
         }
     }
 
-    if (Failed) return false;
+    if (failed) return false;
 
     // Try to consume the closing brace, but don't fail hard if it's missing
     if (CurrentIs(TokenEnum::CloseBrace)) {
@@ -924,7 +924,7 @@ bool TauParser::Struct(AstNodePtr root) {
 
     Consume();  // Consume the opening brace
 
-    while (!Failed && !CurrentIs(TokenEnum::CloseBrace)) {
+    while (!failed && !CurrentIs(TokenEnum::CloseBrace)) {
         if (Empty()) return Fail("Incomplete Struct");
 
         // Skip over extraneous semicolons, newlines, etc.
@@ -939,7 +939,7 @@ bool TauParser::Struct(AstNodePtr root) {
 
         // Get the type for a field or method
         auto ty = Expect(TokenEnum::Ident);
-        if (Failed) return false;
+        if (failed) return false;
 
         // Check for array type annotation
         bool isArray = false;
@@ -955,7 +955,7 @@ bool TauParser::Struct(AstNodePtr root) {
 
         // Get the identifier (field or method name)
         auto name = Expect(TokenEnum::Ident);
-        if (Failed) return false;
+        if (failed) return false;
 
         // If it's a method
         if (CurrentIs(TokenType::OpenParan)) {
@@ -968,7 +968,7 @@ bool TauParser::Struct(AstNodePtr root) {
         }
     }
 
-    if (Failed) return false;
+    if (failed) return false;
 
     // Try to consume the closing brace, but don't fail hard if it's missing
     if (CurrentIs(TokenEnum::CloseBrace)) {
@@ -1010,7 +1010,7 @@ bool TauParser::Event(AstNodePtr root) {
     }
 
     Expect(TokenEnum::CloseParan);
-    if (Failed) return false;
+    if (failed) return false;
 
     // Allow optional semicolon
     if (CurrentIs(TokenEnum::Semi)) {
@@ -1063,7 +1063,7 @@ void TauParser::AddArg(AstNodePtr parent) {
         // Ensure we have a closing bracket
         if (!CurrentIs(TokenEnum::ArrayProxy)) {
             // Even if we don't have a closing bracket, continue parsing
-            Failed = false;
+            failed = false;
         } else {
             Consume();  // Consume the closing bracket
         }

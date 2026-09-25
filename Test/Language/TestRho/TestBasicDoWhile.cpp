@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 
 #include "KAI/Core/BuiltinTypes.h"
 #include "KAI/Core/Console.h"
@@ -32,7 +32,7 @@ TEST(BasicDoWhileTest, SimpleDoWhileExecutesOnce) {
         auto stack = console.GetExecutor()->GetDataStack();
         ASSERT_GE(stack->Size(), 1) << "Stack should have at least one element";
         ASSERT_EQ(ConstDeref<int>(stack->Top()), 3) << "Counter should be 3";
-    } catch (const Exception::Base& e) {
+    } catch (const exception::Base& e) {
         FAIL() << "KAI Exception: " << e.ToString();
     } catch (const std::exception& e) {
         FAIL() << "Exception: " << e.what();
@@ -63,7 +63,7 @@ TEST(BasicDoWhileTest, ExecutesAtLeastOnce) {
         auto stack = console.GetExecutor()->GetDataStack();
         ASSERT_GE(stack->Size(), 1) << "Stack should have at least one element";
         ASSERT_EQ(ConstDeref<int>(stack->Top()), 11) << "Counter should be 11";
-    } catch (const Exception::Base& e) {
+    } catch (const exception::Base& e) {
         FAIL() << "KAI Exception: " << e.ToString();
     } catch (const std::exception& e) {
         FAIL() << "Exception: " << e.what();

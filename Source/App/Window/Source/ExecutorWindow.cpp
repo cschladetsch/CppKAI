@@ -1,4 +1,4 @@
-#include <KAI/Console.h>
+﻿#include <KAI/Console.h>
 #include <KAI/Core/Exception.h>
 #include <KAI/Core/FunctionBase.h>
 #include <KAI/Core/Logger.h>
@@ -270,7 +270,7 @@ struct ExecutorWindow {
     // execution errors internally and returns them as plain result text
     // ("Exception: ...", "StdException: ...", "UnknownException:") rather
     // than letting them propagate - so ExecCommand's own
-    // catch (Exception::Base&) block never sees a syntax error like an
+    // catch (exception::Base&) block never sees a syntax error like an
     // unmatched brace; it only ever sees what Process() decided to hand
     // back as a normal string. Route that string through here so it still
     // renders red/"[Error]" like a caught exception would, instead of
@@ -1126,7 +1126,7 @@ struct ExecutorWindow {
                     AddLog("No active scope");
                 }
             }
-        } catch (Exception::Base& e) {
+        } catch (exception::Base& e) {
             Logger::Error("ImGui Window debug step failed: " +
                           std::string(e.ToString().c_str()));
             AddLog("Debug operation failed: %s", e.ToString().c_str());
@@ -1202,7 +1202,7 @@ struct ExecutorWindow {
                 SelectedTreeObject = node;
                 SelectedTreePath = path;
             }
-        } catch (Exception::Base& e) {
+        } catch (exception::Base& e) {
             ImGui::TextColored(ImVec4(0.8f, 0.4f, 0.4f, 1.0f),
                                "%s  (error: %s)", label.c_str(),
                                e.ToString().c_str());
@@ -1243,7 +1243,7 @@ struct ExecutorWindow {
                 RenderTreeObjectNode(child.second, childName, childPath, seen,
                                      depth + 1);
             }
-        } catch (Exception::Base& e) {
+        } catch (exception::Base& e) {
             ImGui::TextColored(ImVec4(0.8f, 0.4f, 0.4f, 1.0f),
                                "  (error listing children: %s)",
                                e.ToString().c_str());
@@ -1484,7 +1484,7 @@ struct ExecutorWindow {
                                               *exec_->GetDataStack());
                                     AddLog("Invoked %s -> result pushed to stack",
                                           mb->ToString().c_str());
-                                } catch (Exception::Base& e) {
+                                } catch (exception::Base& e) {
                                     AddLog(
                                         kErrorColor,
                                         "[Error] Failed to invoke %s: %s "
@@ -1514,7 +1514,7 @@ struct ExecutorWindow {
                         }
                     }
                 }
-            } catch (Exception::Base& e) {
+            } catch (exception::Base& e) {
                 ImGui::TextColored(ImVec4(0.8f, 0.4f, 0.4f, 1.0f),
                                    "Error reading this object: %s",
                                    e.ToString().c_str());
@@ -1648,7 +1648,7 @@ struct ExecutorWindow {
                                ColorForType(obj.GetTypeNumber()));
                 }
             }
-        } catch (Exception::Base& e) {
+        } catch (exception::Base& e) {
             // Same Logger (Logs/kai.log) the Console app and the rest of
             // KAI use, so command failures here show up alongside
             // everything else instead of only in this window's in-memory

@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 
 #include "KAI/Console/Console.h"
 #include "KAI/Core/BuiltinTypes.h"
@@ -49,7 +49,7 @@ struct RhoAllIterationMethodsTest : TestLangCommon {
                 << "\nCode:\n"
                 << code;
 
-        } catch (const Exception::Base& e) {
+        } catch (const exception::Base& e) {
             FAIL() << "Exception: " << e.ToString()
                    << (testName.empty() ? "" : "\nTest: " + testName)
                    << "\nCode:\n"

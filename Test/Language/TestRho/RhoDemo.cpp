@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 
 #include <filesystem>
 #include <fstream>
@@ -65,7 +65,7 @@ class RhoDemo : public TestLangCommon {
             }
 
             return true;
-        } catch (const Exception::Base &e) {
+        } catch (const exception::Base &e) {
             Logger::ErrorWithLocation("Exception: " + std::string(e.ToString()),
                                       __FILE__, __LINE__);
             return false;

@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 
 #include <iostream>
 #include <sstream>
@@ -167,12 +167,12 @@ TEST_F(ConsoleRegressionTests, StringConcat_RightEmpty) {
 
 TEST_F(ConsoleRegressionTests, StringPlusInt_Throws) {
     exec_->ClearStacks();
-    EXPECT_THROW(console_.Execute("\"a\" 3 +"), Exception::Base);
+    EXPECT_THROW(console_.Execute("\"a\" 3 +"), exception::Base);
 }
 
 TEST_F(ConsoleRegressionTests, IntPlusString_Throws) {
     exec_->ClearStacks();
-    EXPECT_THROW(console_.Execute("3 \"a\" +"), Exception::Base);
+    EXPECT_THROW(console_.Execute("3 \"a\" +"), exception::Base);
 }
 
 // ---------------------------------------------------------------------

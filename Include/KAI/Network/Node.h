@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <any>
 #include <atomic>
@@ -353,7 +353,7 @@ struct MethodInvoker : MethodInvokerBase {
         using D = std::decay_t<T>;
         if constexpr (std::is_same_v<D, Object>) {
             return obj;
-        } else if constexpr (is_future_v<D>) {
+        } else if constexpr (kIsFutureV<D>) {
             // A Future<U> argument travels as a 2-element Array:
             // [true, value] if the sender had already resolved it, or
             // [false, id] if it was still pending - see
@@ -683,14 +683,14 @@ Future<P> Node::FetchProperty(NetHandle handle, const std::string &name) {
         pendingResponses_[future.GetId()].complete =
             [state](const Object &obj, ResponseType response,
                     const std::string &error) {
-                state->Response = response;
-                state->Complete = true;
-                state->ErrorMessage = error;
+                state->response = response;
+                state->complete = true;
+                state->errorMessage = error;
                 if (response == ResponseType::Returned) {
                     if constexpr (std::is_same_v<std::decay_t<P>, Object>) {
                         state->Value = obj;
                     } else {
-                        state->Value = ConstDeref<std::decay_t<P>>(obj);
+                        state->value = ConstDeref<std::decay_t<P>>(obj);
                     }
                 }
             };

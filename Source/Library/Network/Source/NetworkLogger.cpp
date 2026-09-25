@@ -1,4 +1,4 @@
-#include <KAI/Core/Logger.h>
+﻿#include <KAI/Core/Logger.h>
 #include <KAI/Network/NetworkLogger.h>
 
 #include <KAI/Console/rang.hpp>

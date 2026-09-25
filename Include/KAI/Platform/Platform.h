@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 // KAI Platform abstraction layer
 // Included transitively by all KAI translation units via Config/Platform.h
 
@@ -41,7 +41,7 @@ extern char* optarg;
 extern int optind, opterr, optopt;
 #endif
 
-#define POPEN _popen
-#define PCLOSE _pclose
+#define popen _popen
+#define pclose _pclose
 
 #endif // _WIN32

@@ -1,4 +1,4 @@
-#include "ExecutorWindow.h"
+﻿#include "ExecutorWindow.h"
 
 KAI_BEGIN
 
@@ -242,7 +242,7 @@ int RhoTabToSpacesCallback(ImGuiInputTextCallbackData* data) {
     // execution errors internally and returns them as plain result text
     // ("Exception: ...", "StdException: ...", "UnknownException:") rather
     // than letting them propagate - so ExecCommand's own
-    // catch (Exception::Base&) block never sees a syntax error like an
+    // catch (exception::Base&) block never sees a syntax error like an
     // unmatched brace; it only ever sees what Process() decided to hand
     // back as a normal string. Route that string through here so it still
     // renders red/"[Error]" like a caught exception would, instead of

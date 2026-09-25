@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 
 #include "TestLangCommon.h"
 #include "KAI/Language/Rho/RhoTranslator.h"
@@ -36,7 +36,7 @@ TEST_F(AssertSyntaxTest, AssertFailure) {
     // This should throw an exception
     EXPECT_THROW(
         { console_.Execute("assert(1 + 1 == 3)", Structure::Statement); },
-        Exception::Base);
+        exception::Base);
 }
 
 TEST_F(AssertSyntaxTest, AssertInFunction) {

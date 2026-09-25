@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 
 #include <fstream>
 #include <sstream>
@@ -69,7 +69,7 @@ struct RhoControlTestsFixed : TestLangCommon {
             }
             ASSERT_EQ(expected, actual)
                 << "Result doesn't match expected value";
-        } catch (const Exception::Base &e) {
+        } catch (const exception::Base &e) {
             KAI_LOG_ERROR("Exception: " + std::string(e.ToString()));
             FAIL() << "Exception: " << e.ToString();
         } catch (const std::exception &e) {

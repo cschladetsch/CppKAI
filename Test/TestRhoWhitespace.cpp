@@ -1,4 +1,4 @@
-#include <KAI/Core/BuiltinTypes.h>
+﻿#include <KAI/Core/BuiltinTypes.h>
 #include <KAI/Core/Console.h>
 #include <KAI/Language/Rho/RhoAstNode.h>
 #include <KAI/Language/Rho/RhoLexer.h>
@@ -115,7 +115,7 @@ int main() {
             cout << "No translator available" << endl;
         }
 
-    } catch (const exception &e) {
+    } catch (const std::exception &e) {
         cerr << "Exception: " << e.what() << endl;
         return 1;
     }

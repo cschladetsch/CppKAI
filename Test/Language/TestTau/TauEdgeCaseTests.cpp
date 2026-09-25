@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 
 #include <memory>
 #include <sstream>
@@ -51,7 +51,7 @@ class TauEdgeCaseTests : public ::testing::Test {
 
             auto root = parser->GetRoot();
             return root && !root->GetChildren().empty();
-        } catch (const exception&) {
+        } catch (const std::exception&) {
             return false;
         }
     }
@@ -60,7 +60,7 @@ class TauEdgeCaseTests : public ::testing::Test {
         try {
             tau::Generate::GenerateProxy generator(content.c_str(), output);
             return !generator.Failed;
-        } catch (const exception&) {
+        } catch (const std::exception&) {
             return false;
         }
     }
@@ -69,7 +69,7 @@ class TauEdgeCaseTests : public ::testing::Test {
         try {
             tau::Generate::GenerateAgent generator(content.c_str(), output);
             return !generator.Failed;
-        } catch (const exception&) {
+        } catch (const std::exception&) {
             return false;
         }
     }

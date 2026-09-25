@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 
 #include "KAI/Console/Console.h"
 #include "KAI/Core/BuiltinTypes.h"
@@ -40,7 +40,7 @@ struct RhoIterationComprehensiveTests : TestLangCommon {
             T actual = ConstDeref<T>(result);
             ASSERT_EQ(actual, expected) << "Value mismatch\nCode:\n" << code;
 
-        } catch (const Exception::Base& e) {
+        } catch (const exception::Base& e) {
             FAIL() << "Exception: " << e.ToString() << "\nCode:\n" << code;
         } catch (const std::exception& e) {
             FAIL() << "std::exception: " << e.what() << "\nCode:\n" << code;

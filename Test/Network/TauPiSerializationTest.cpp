@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 
 #include <chrono>
 #include <cstdint>
@@ -105,12 +105,12 @@ TEST(TauPiSerializationTest, LocalNodeRoundTrip) {
 
     std::string proxyOutput;
     tau::Generate::GenerateProxy proxyGen(tauScript.c_str(), proxyOutput);
-    ASSERT_FALSE(proxyGen.Failed);
+    ASSERT_FALSE(proxyGen.failed);
     ASSERT_NE(proxyOutput.find("ICalcProxy"), std::string::npos);
 
     std::string agentOutput;
     tau::Generate::GenerateAgent agentGen(tauScript.c_str(), agentOutput);
-    ASSERT_FALSE(agentGen.Failed);
+    ASSERT_FALSE(agentGen.failed);
     ASSERT_NE(agentOutput.find("ICalcAgent"), std::string::npos);
 
     ICalcAgent agent(nodeA);

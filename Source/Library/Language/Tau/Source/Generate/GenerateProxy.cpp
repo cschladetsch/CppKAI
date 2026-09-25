@@ -1,4 +1,4 @@
-#include <KAI/Language/Tau/Generate/GenerateProxy.h>
+﻿#include <KAI/Language/Tau/Generate/GenerateProxy.h>
 #include <KAI/Language/Tau/TauParser.h>
 
 using namespace std;
@@ -47,8 +47,8 @@ bool GenerateProxy::GenerateFromFile(const char *filename, string &output,
     }
 
     GenerateProxy proxy(contents.c_str(), output);
-    if (proxy.Failed) {
-        error = proxy.Error;
+    if (proxy.failed) {
+        error = proxy.error;
         return false;
     }
 

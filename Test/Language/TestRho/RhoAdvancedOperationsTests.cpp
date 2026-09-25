@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 
 #include <fstream>
 #include <sstream>
@@ -210,5 +210,5 @@ TEST_F(RhoAdvancedTests, AdvancedCompoundExpressions) {
     ExecuteRhoAndVerify<bool>("(5 > 3 && 7 < 10) || (2 == 3)", true);
     ExecuteRhoAndVerify<bool>("(5 < 3 || 7 > 10) && (2 != 2)", false);
     EXPECT_THROW(console_.Execute("\"Result: \" + ((5 + 3) * 2)"),
-                 Exception::Base);
+                 exception::Base);
 }

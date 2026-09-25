@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 
 #include "KAI/Console/Console.h"
 #include "KAI/Core/BuiltinTypes/All.h"

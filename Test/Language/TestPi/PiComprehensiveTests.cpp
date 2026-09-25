@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 
 #include "KAI/Core/BuiltinTypes/Stack.h"
 #include "KAI/Core/Config/Base.h"
@@ -33,7 +33,7 @@ struct PiComprehensiveTests : TestLangCommon {
             T actual = ConstDeref<T>(result);
             ASSERT_EQ(actual, expected) << "Value mismatch\nScript: " << script;
 
-        } catch (const Exception::Base& e) {
+        } catch (const exception::Base& e) {
             FAIL() << "Exception: " << e.ToString() << "\nScript: " << script;
         } catch (const std::exception& e) {
             FAIL() << "std::exception: " << e.what() << "\nScript: " << script;

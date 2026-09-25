@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <functional>
 #include <memory>
@@ -57,8 +57,8 @@ struct Future {
 
     [[nodiscard]] ResponseType GetResponse() const
     {
-        std::lock_guard<std::mutex> lock(state_->Mutex);
-        return state_->Response;
+        std::lock_guard<std::mutex> lock(state_->mutex);
+        return state_->response;
     }
     void SetResponse(ResponseType response) {
         std::lock_guard<std::mutex> lock(state_->mutex);
@@ -107,11 +107,11 @@ struct Future {
         }
         bool alreadyComplete = false;
         {
-            std::lock_guard<std::mutex> lock(state_->Mutex);
-            if (state_->Complete) {
+            std::lock_guard<std::mutex> lock(state_->mutex);
+            if (state_->complete) {
                 alreadyComplete = true;
             } else {
-                state_->OnComplete.push_back(std::move(callback));
+                state_->onComplete.push_back(std::move(callback));
                 return;
             }
         }
@@ -122,16 +122,16 @@ struct Future {
 
     [[nodiscard]] std::optional<T> GetOptionalValue() const
     {
-        std::lock_guard<std::mutex> lock(state_->Mutex);
-        return state_->Value;
+        std::lock_guard<std::mutex> lock(state_->mutex);
+        return state_->value;
     }
     void SetValue(const T &value) {
         std::lock_guard<std::mutex> lock(state_->mutex);
         state_->value = value;
     }
     void SetValue(T &&value) {
-        std::lock_guard<std::mutex> lock(state_->Mutex);
-        state_->Value = std::move(value);
+        std::lock_guard<std::mutex> lock(state_->mutex);
+        state_->value = std::move(value);
     }
 
     [[nodiscard]] std::string GetErrorMessage() const
@@ -273,13 +273,13 @@ struct Future<void> {
 template <typename T> struct IsFuture : std::false_type {
 };
 template <typename T>
-struct is_future<Future<T>> : std::true_type {};
+struct IsFuture<Future<T>> : std::true_type {};
 template <typename T> inline constexpr bool kIsFutureV = IsFuture<std::decay_t<T>>::value;
 
 template <typename T> struct FutureValue {
 };
 template <typename T>
-struct future_value<Future<T>> {
+struct FutureValue<Future<T>> {
     using type = T;
 };
 template <typename T> using future_value_t = FutureValue<std::decay_t<T>>::type;

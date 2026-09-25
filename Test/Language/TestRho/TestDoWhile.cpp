@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 
 #include <cstdlib>
 #include <filesystem>
@@ -92,7 +92,7 @@ TEST(RhoLanguage, TestDoWhileLoops) {
 
         cout << "Test completed successfully!" << endl;
         SUCCEED();
-    } catch (const Exception::Base& e) {
+    } catch (const exception::Base& e) {
         cerr << "KAI Exception: " << e.ToString() << endl;
         FAIL() << "KAI Exception: " << e.ToString();
     } catch (const std::exception& e) {

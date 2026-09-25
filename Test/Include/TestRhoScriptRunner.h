@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <KAI/Console/Console.h>
 #include <KAI/KAI.h>
@@ -48,7 +48,7 @@ class RhoScriptRunner {
             UnwrapValues();
 
             return true;
-        } catch (Exception::Base& ex) {
+        } catch (exception::Base& ex) {
             std::cerr << "Exception running script: " << ex.ToString()
                       << std::endl;
             return false;

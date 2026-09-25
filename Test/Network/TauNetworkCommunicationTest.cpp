@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 
 #include <chrono>
 #include <filesystem>
@@ -166,14 +166,14 @@ namespace TestNetwork {
 
         string proxyOutput;
         tau::Generate::GenerateProxy proxyGen(tauContent.c_str(), proxyOutput);
-        if (proxyGen.Failed) {
+        if (proxyGen.failed) {
             KAI_LOG_ERROR("Proxy generation failed: " + proxyGen.Error);
             return false;
         }
 
         string agentOutput;
         tau::Generate::GenerateAgent agentGen(tauContent.c_str(), agentOutput);
-        if (agentGen.Failed) {
+        if (agentGen.failed) {
             KAI_LOG_ERROR("Agent generation failed: " + agentGen.Error);
             return false;
         }
@@ -289,10 +289,10 @@ namespace TestNetwork {
             string proxyOutput;
             tau::Generate::GenerateProxy proxy(tauContent.c_str(), proxyOutput);
 
-            bool proxySuccess = !proxy.Failed;
+            bool proxySuccess = !proxy.failed;
             KAI_LOG_INFO("Direct proxy generation: " +
                          string(proxySuccess ? "SUCCESS" : "FAILED"));
-            if (proxy.Failed) {
+            if (proxy.failed) {
                 KAI_LOG_ERROR("Proxy generation error: " + proxy.Error);
             }
 
@@ -300,16 +300,16 @@ namespace TestNetwork {
             string agentOutput;
             tau::Generate::GenerateAgent agent(tauContent.c_str(), agentOutput);
 
-            bool agentSuccess = !agent.Failed;
+            bool agentSuccess = !agent.failed;
             KAI_LOG_INFO("Direct agent generation: " +
                          string(agentSuccess ? "SUCCESS" : "FAILED"));
-            if (agent.Failed) {
+            if (agent.failed) {
                 KAI_LOG_ERROR("Agent generation error: " + agent.Error);
             }
 
             return proxySuccess && agentSuccess;
 
-        } catch (const exception& e) {
+        } catch (const std::exception& e) {
             KAI_LOG_ERROR("Exception during direct generation: " +
                           string(e.what()));
             return false;
@@ -360,7 +360,7 @@ namespace TestNetwork {
 
             return parseResult;
 
-        } catch (const exception& e) {
+        } catch (const std::exception& e) {
             KAI_LOG_ERROR("Exception during Tau parsing: " + string(e.what()));
             return false;
         }

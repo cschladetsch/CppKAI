@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 
 #include <iostream>
 #include <string>
@@ -347,7 +347,7 @@ TEST_F(AdvancedPiTests, DivisionByZero) {
     data_->Push(num);
     data_->Push(zero);
 
-    EXPECT_THROW(exec_->Perform(Operation::Divide), Exception::Base);
+    EXPECT_THROW(exec_->Perform(Operation::Divide), exception::Base);
 }
 
 // Test floating point comparison with epsilon

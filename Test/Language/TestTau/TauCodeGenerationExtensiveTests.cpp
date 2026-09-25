@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 
 #include <regex>
 #include <sstream>
@@ -32,7 +32,7 @@ class TauCodeGenerationExtensiveTests : public ::testing::Test {
                 return false;
             }
             return !output.empty();
-        } catch (const exception& e) {
+        } catch (const std::exception& e) {
             error = e.what();
             return false;
         }
@@ -48,7 +48,7 @@ class TauCodeGenerationExtensiveTests : public ::testing::Test {
                 return false;
             }
             return !output.empty();
-        } catch (const exception& e) {
+        } catch (const std::exception& e) {
             error = e.what();
             return false;
         }

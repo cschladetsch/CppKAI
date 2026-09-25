@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <string>
 #include <vector>
@@ -45,7 +45,7 @@ class NetworkSerializer {
                 stream.Write(size, objectStream.Begin());
             }
             return true;
-        } catch (const Exception::Base &e) {
+        } catch (const exception::Base &e) {
             KAI_TRACE_ERROR() << "Error serializing object: " << e.ToString();
         } catch (const std::exception &e) {
             KAI_TRACE_ERROR() << "Error serializing object: " << e.what();

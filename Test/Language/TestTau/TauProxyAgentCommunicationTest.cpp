@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 
 #include <chrono>
 #include <filesystem>
@@ -142,7 +142,7 @@ class TauProxyAgentCommunicationTest : public TestLangCommon {
                          " bytes): " + generatedProxyPath);
             return true;
 
-        } catch (const exception& e) {
+        } catch (const std::exception& e) {
             KAI_LOG_ERROR("Exception during proxy generation: " +
                           string(e.what()));
             return false;
@@ -175,7 +175,7 @@ class TauProxyAgentCommunicationTest : public TestLangCommon {
                          " bytes): " + generatedAgentPath);
             return true;
 
-        } catch (const exception& e) {
+        } catch (const std::exception& e) {
             KAI_LOG_ERROR("Exception during agent generation: " +
                           string(e.what()));
             return false;
@@ -209,7 +209,7 @@ class TauProxyAgentCommunicationTest : public TestLangCommon {
                          " bytes): " + generatedStructPath);
             return true;
 
-        } catch (const exception& e) {
+        } catch (const std::exception& e) {
             KAI_LOG_ERROR("Exception during struct generation: " +
                           string(e.what()));
             return false;

@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 
 #include <iostream>
 #include <string>
@@ -545,7 +545,7 @@ TEST(DirectBinaryOp, ContinuationEvaluation) {
         ASSERT_EQ(ConstDeref<int>(stack->Top()), 10) << "5 + 5 should equal 10";
 
         std::cout << "Test completed successfully" << std::endl;
-    } catch (const Exception::Base& e) {
+    } catch (const exception::Base& e) {
         std::cerr << "KAI exception: " << e.ToString() << std::endl;
         FAIL() << "KAI exception: " << e.ToString();
     } catch (const std::exception& e) {
@@ -629,7 +629,7 @@ TEST(DirectBinaryOp, UnwrapContinuation) {
             << "Stack value should be 42";
 
         std::cout << "Test completed successfully" << std::endl;
-    } catch (const Exception::Base& e) {
+    } catch (const exception::Base& e) {
         std::cerr << "KAI exception: " << e.ToString() << std::endl;
         FAIL() << "KAI exception: " << e.ToString();
     } catch (const std::exception& e) {

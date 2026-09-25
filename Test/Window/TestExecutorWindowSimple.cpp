@@ -1,4 +1,4 @@
-#include <KAI/Console.h>
+﻿#include <KAI/Console.h>
 #include <KAI/Core/Exception.h>
 #include <gtest/gtest.h>
 
@@ -97,11 +97,11 @@ TEST_F(WindowConsoleTest, Pi_Functions) {
 TEST_F(WindowConsoleTest, Pi_ErrorHandling) {
     // Test undefined variable - should throw
     EXPECT_THROW(console.Execute("undefined_var", Structure::Expression),
-                 Exception::Base);
+                 exception::Base);
 
     // Test division by zero
     EXPECT_THROW(console.Execute("1 0 /", Structure::Expression),
-                 Exception::Base);
+                 exception::Base);
 }
 
 // =============================================================================
@@ -167,7 +167,7 @@ TEST_F(WindowConsoleTest, Rho_ErrorHandling) {
 
     // Test undefined variable
     EXPECT_THROW(console.Execute("undefined_variable", Structure::Expression),
-                 Exception::Base);
+                 exception::Base);
 }
 
 // =============================================================================

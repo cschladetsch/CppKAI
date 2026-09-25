@@ -1,4 +1,4 @@
-#include <KAI/Core/BuiltinTypes.h>
+﻿#include <KAI/Core/BuiltinTypes.h>
 #include <KAI/Core/File.h>
 #include <KAI/Language/Tau/Generate/GenerateProcess.h>
 
@@ -34,7 +34,7 @@ shared_ptr<TauParser> GenerateProcess::Parse(const char *input) const {
 
     auto lex = make_shared<TauLexer>(input, r);
     if (!lex->Process()) {
-        Fail(lex->Error);
+        Fail(lex->error);
         return nullptr;
     }
 
@@ -43,7 +43,7 @@ shared_ptr<TauParser> GenerateProcess::Parse(const char *input) const {
     auto parser = make_shared<TauParser>(r);
     // Use Structure::Module for top-level parsing
     if (!parser->Process(lex, Structure::Module)) {
-        Fail(parser->Error);
+        Fail(parser->error);
         return nullptr;
     }
 
@@ -56,7 +56,7 @@ bool GenerateProcess::Generate(TauParser const &p, string &output) {
     stringstream str;
     str << CommonPrepend() << Prepend() << str_.str() << ends;
     output = str.str();
-    return !Failed;
+    return !failed;
 }
 
 string GenerateProcess::CommonPrepend() {

@@ -1,4 +1,4 @@
-// Tests the Tau IDL -> Agent/Proxy workflow across two named domains.
+﻿// Tests the Tau IDL -> Agent/Proxy workflow across two named domains.
 // Domain A hosts an ISensorAgent that exposes a single integer property.
 // Domain B holds an ISensorProxy and fetches that property value over the
 // network.
@@ -101,16 +101,16 @@ static ListenResult ListenOnAvailablePort(Node &node, int beginPort,
 TEST(TauDomainPropertyTest, IdlGeneratesExpectedClassNames) {
     std::string proxyOut;
     tau::Generate::GenerateProxy proxyGen(kSensorTau.c_str(), proxyOut);
-    ASSERT_FALSE(proxyGen.Failed)
-        << "Proxy generation failed: " << proxyGen.Error;
+    ASSERT_FALSE(proxyGen.failed)
+        << "Proxy generation failed: " << proxyGen.error;
     EXPECT_NE(proxyOut.find("ISensorProxy"), std::string::npos)
         << "Generated proxy should contain ISensorProxy:\n"
         << proxyOut;
 
     std::string agentOut;
     tau::Generate::GenerateAgent agentGen(kSensorTau.c_str(), agentOut);
-    ASSERT_FALSE(agentGen.Failed)
-        << "Agent generation failed: " << agentGen.Error;
+    ASSERT_FALSE(agentGen.failed)
+        << "Agent generation failed: " << agentGen.error;
     EXPECT_NE(agentOut.find("ISensorAgent"), std::string::npos)
         << "Generated agent should contain ISensorAgent:\n"
         << agentOut;

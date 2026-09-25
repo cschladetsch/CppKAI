@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <KAI/Config.h>
 
@@ -151,7 +151,7 @@ struct ExecutorWindow {
     void ExecCommand(const char* command_line) {
         try {
             console_.Execute(command_line, Structure::Expression);
-        } catch (Exception::Base& e) {
+        } catch (exception::Base& e) {
             StringStream st;
             st << e.ToString() << "\n";
             ImVec4 color(1, 0, 0, 1);

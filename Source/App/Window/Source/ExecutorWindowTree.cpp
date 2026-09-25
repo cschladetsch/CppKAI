@@ -1,4 +1,4 @@
-#include "ExecutorWindow.h"
+﻿#include "ExecutorWindow.h"
 
 KAI_BEGIN
 
@@ -74,7 +74,7 @@ KAI_BEGIN
                 SelectedTreeObject = node;
                 SelectedTreePath = path;
             }
-        } catch (Exception::Base& e) {
+        } catch (exception::Base& e) {
             ImGui::TextColored(ImVec4(0.8f, 0.4f, 0.4f, 1.0f),
                                "%s  (error: %s)", label.c_str(),
                                e.ToString().c_str());
@@ -115,7 +115,7 @@ KAI_BEGIN
                 RenderTreeObjectNode(child.second, childName, childPath, seen,
                                      depth + 1);
             }
-        } catch (Exception::Base& e) {
+        } catch (exception::Base& e) {
             ImGui::TextColored(ImVec4(0.8f, 0.4f, 0.4f, 1.0f),
                                "  (error listing children: %s)",
                                e.ToString().c_str());
@@ -357,7 +357,7 @@ KAI_BEGIN
                                               *exec_->GetDataStack());
                                     AddLog("Invoked %s -> result pushed to stack",
                                           mb->ToString().c_str());
-                                } catch (Exception::Base& e) {
+                                } catch (exception::Base& e) {
                                     AddLog(
                                         kErrorColor,
                                         "[Error] Failed to invoke %s: %s "
@@ -387,7 +387,7 @@ KAI_BEGIN
                         }
                     }
                 }
-            } catch (Exception::Base& e) {
+            } catch (exception::Base& e) {
                 ImGui::TextColored(ImVec4(0.8f, 0.4f, 0.4f, 1.0f),
                                    "Error reading this object: %s",
                                    e.ToString().c_str());

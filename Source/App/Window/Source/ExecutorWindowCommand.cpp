@@ -1,4 +1,4 @@
-#include "ExecutorWindow.h"
+﻿#include "ExecutorWindow.h"
 
 KAI_BEGIN
 
@@ -109,7 +109,7 @@ KAI_BEGIN
             // Executor after the command ran, not a second stack widget
             // sitting next to the log.
             DumpDataStackToLog();
-        } catch (Exception::Base& e) {
+        } catch (exception::Base& e) {
             // Same Logger (Logs/kai.log) the Console app and the rest of
             // KAI use, so command failures here show up alongside
             // everything else instead of only in this window's in-memory

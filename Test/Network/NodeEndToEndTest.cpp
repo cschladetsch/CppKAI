@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 
 #include <chrono>
 #include <functional>
@@ -450,7 +450,7 @@ TEST_F(NodeEndToEndTest, RemoteContinuationMigration) {
                 }
                 int result = ConstDeref<int>(stack->Top());
                 return result;
-            } catch (const Exception::Base &e) {
+            } catch (const exception::Base &e) {
                 throw std::runtime_error(
                     "Server ThawAndResume KAI exception: " + e.ToString());
             } catch (const std::exception &e) {
@@ -487,7 +487,7 @@ TEST_F(NodeEndToEndTest, RemoteContinuationMigration) {
                                       Structure::Program);
     ASSERT_TRUE(cont.Exists());
 
-    Object frozen = Bin::Freeze(*cont->Self);
+    Object frozen = Bin::Freeze(*cont->self);
     ASSERT_TRUE(frozen.Exists());
 
     auto future = client.Invoke<int>(agentHandle, "ThawAndResume", frozen);

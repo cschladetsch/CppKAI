@@ -1,4 +1,4 @@
-#include "ExecutorWindow.h"
+﻿#include "ExecutorWindow.h"
 
 KAI_BEGIN
 
@@ -413,7 +413,7 @@ KAI_BEGIN
                     AddLog("No active scope");
                 }
             }
-        } catch (Exception::Base& e) {
+        } catch (exception::Base& e) {
             Logger::Error("ImGui Window debug step failed: " +
                           std::string(e.ToString().c_str()));
             AddLog("Debug operation failed: %s", e.ToString().c_str());

@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 
 #include <atomic>
 #include <chrono>
@@ -139,7 +139,7 @@ class TauStressTests : public ::testing::Test {
             if (!parser->Process(lexer, Structure::Module)) {
                 return false;
             }
-        } catch (const exception&) {
+        } catch (const std::exception&) {
             return false;
         }
 
@@ -154,7 +154,7 @@ class TauStressTests : public ::testing::Test {
             if (proxyGen.Failed) {
                 return false;
             }
-        } catch (const exception&) {
+        } catch (const std::exception&) {
             return false;
         }
 
@@ -169,7 +169,7 @@ class TauStressTests : public ::testing::Test {
             if (agentGen.Failed) {
                 return false;
             }
-        } catch (const exception&) {
+        } catch (const std::exception&) {
             return false;
         }
 
@@ -339,7 +339,7 @@ TEST_F(TauStressTests, ConcurrentGenerationTest) {
                          << ", proxy size: " << proxyOutput.size()
                          << ", agent size: " << agentOutput.size() << endl;
                 }
-            } catch (const exception& e) {
+            } catch (const std::exception& e) {
                 cout << "Exception in thread " << i << ": " << e.what() << endl;
                 return false;
             }

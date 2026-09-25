@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 
 #include <memory>
 #include <sstream>
@@ -48,7 +48,7 @@ class MultiLanguageIntegrationTests : public ::testing::Test {
 
             executor->Continue(continuation);
             return !executor->Failed;
-        } catch (const exception&) {
+        } catch (const std::exception&) {
             return false;
         }
     }
@@ -73,7 +73,7 @@ class MultiLanguageIntegrationTests : public ::testing::Test {
 
             result = executor->GetDataStack().Top();
             return true;
-        } catch (const exception&) {
+        } catch (const std::exception&) {
             return false;
         }
     }
@@ -87,7 +87,7 @@ class MultiLanguageIntegrationTests : public ::testing::Test {
 
             auto parser = make_shared<tau::TauParser>(registry);
             return parser->Process(lexer, Structure::Module);
-        } catch (const exception&) {
+        } catch (const std::exception&) {
             return false;
         }
     }
@@ -97,7 +97,7 @@ class MultiLanguageIntegrationTests : public ::testing::Test {
             tau::Generate::GenerateProxy generator(tauCode.c_str(),
                                                    proxyOutput);
             return !generator.Failed;
-        } catch (const exception&) {
+        } catch (const std::exception&) {
             return false;
         }
     }

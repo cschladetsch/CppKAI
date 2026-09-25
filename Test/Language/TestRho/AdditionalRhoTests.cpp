@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 
 #include <iostream>
 #include <string>
@@ -64,7 +64,7 @@ TEST_F(RhoPiTests, ContinuationBeginValueEndPattern) {
                     ? data_->Top().GetClass()->GetName().ToString()
                     : "<null>");
         ASSERT_EQ(ConstDeref<int>(data_->Top()), 5);
-    } catch (const Exception::Base& e) {
+    } catch (const exception::Base& e) {
         FAIL() << "KAI exception: " << e.ToString();
     } catch (const std::exception& e) {
         FAIL() << "std::exception: " << e.what();
@@ -173,7 +173,7 @@ TEST_F(RhoPiTests, PiTextExecution) {
                     ? data_->Top().GetClass()->GetName().ToString()
                     : "<null>");
         ASSERT_TRUE(ConstDeref<bool>(data_->Top()));
-    } catch (const Exception::Base& e) {
+    } catch (const exception::Base& e) {
         FAIL() << "KAI exception: " << e.ToString();
     } catch (const std::exception& e) {
         FAIL() << "std::exception: " << e.what();

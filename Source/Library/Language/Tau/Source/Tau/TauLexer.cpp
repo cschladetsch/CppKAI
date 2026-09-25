@@ -1,4 +1,4 @@
-#include <KAI/Language/Tau/TauLexer.h>
+﻿#include <KAI/Language/Tau/TauLexer.h>
 
 #include <cctype>
 
@@ -7,16 +7,16 @@ using namespace std;
 TAU_BEGIN
 
 void TauLexer::AddKeyWords() {
-    keyWords["namespace"] = Enum::Namespace;
-    keyWords["class"] = Enum::Class;
-    keyWords["sync"] = Enum::Sync;
-    keyWords["async"] = Enum::Async;
-    keyWords["Proxy"] = Enum::Proxy;
-    keyWords["interface"] = Enum::Interface;
-    keyWords["event"] = Enum::Event;
-    keyWords["struct"] = Enum::Struct;
-    keyWords["enum"] = Enum::EnumKeyword;
-    keyWords["const"] = Enum::ConstKeyword;
+    keyWords_["namespace"] = Enum::Namespace;
+    keyWords_["class"] = Enum::Class;
+    keyWords_["sync"] = Enum::Sync;
+    keyWords_["async"] = Enum::Async;
+    keyWords_["Proxy"] = Enum::Proxy;
+    keyWords_["interface"] = Enum::Interface;
+    keyWords_["event"] = Enum::Event;
+    keyWords_["struct"] = Enum::Struct;
+    keyWords_["enum"] = Enum::EnumKeyword;
+    keyWords_["const"] = Enum::ConstKeyword;
 }
 
 bool TauLexer::NextToken() {
@@ -40,7 +40,7 @@ bool TauLexer::NextToken() {
                     break;
             }
             if (Current() == '>') Next();  // consume '>'
-            return Add(Enum::Ident, Slice(start, offset));
+            return Add(Enum::Ident, Slice(start, offset_));
         }
         Add(tok);
         return true;  // parser will deal with keywords in wrong places
@@ -48,7 +48,7 @@ bool TauLexer::NextToken() {
 
     if (isdigit(current) || (current == '-' && isdigit(Peek()))) {
         // Implement number lexing directly here
-        int start = offset;
+        int start = offset_;
 
         if (current == '-') {
             Next();
@@ -82,7 +82,7 @@ bool TauLexer::NextToken() {
             }
         }
 
-        return Add(Enum::Number, Slice(start, offset));
+        return Add(Enum::Number, Slice(start, offset_));
     }
 
     switch (current) {
@@ -124,12 +124,12 @@ bool TauLexer::NextToken() {
         case '/':
             if (Peek() == '/') {
                 Next();  // consume second '/'
-                int start = offset;
+                int start = offset_;
                 // Consume until and including the newline (same as Rho and Pi)
                 while (Next() != '\n' && Current() != 0);
 
                 // Create the comment token
-                Add(Enum::Comment, Slice(start, offset));
+                Add(Enum::Comment, Slice(start, offset_));
 
                 // If we stopped at a newline, consume it
                 if (Current() == '\n') {
@@ -169,7 +169,7 @@ bool TauLexer::NextToken() {
             {
                 // Simplified approach for handling template parameters
                 // Just treat the entire template syntax as an identifier
-                int start = offset;
+                int start = offset_;
                 int depth = 1;
                 Next();  // consume '<'
 
@@ -188,7 +188,7 @@ bool TauLexer::NextToken() {
                 // Consume the final '>'
                 if (Current() == '>') Next();
 
-                return Add(Enum::Ident, Slice(start, offset));
+                return Add(Enum::Ident, Slice(start, offset_));
             }
         case '>':
             // This should only happen in isolation if there's a mistake in the
