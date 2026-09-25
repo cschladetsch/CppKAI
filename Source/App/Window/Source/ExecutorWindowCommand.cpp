@@ -1,4 +1,4 @@
-﻿#include "ExecutorWindow.h"
+#include "ExecutorWindow.h"
 
 KAI_BEGIN
 
@@ -51,14 +51,14 @@ KAI_BEGIN
                 // Handle quick substitution ^old^new^
                 String substituted =
                     console_.ProcessQuickSubstitution(String(text));
-                if (substituted.size() > 0) {
-                    AddLog("=> %s", substituted.c_str());
+                if (substituted.Size() > 0) {
+                    AddLog("=> %s", substituted.CStr());
 
                     // Process the substituted command
                     String expandedText =
                         console_.ExpandShellCommands(substituted);
                     String result = console_.Process(expandedText);
-                    if (!result.empty()) {
+                    if (!result.Empty()) {
                         AddProcessResultLog(result.StdString());
                     }
                 } else {
@@ -68,7 +68,7 @@ KAI_BEGIN
                 // Check for shell commands
                 if (text[0] == '`') {
                     String output = console_.ProcessShellCommand(String(text));
-                    AddLog("%s", output.c_str());
+                    AddLog("%s", output.CStr());
                 } else {
                     // Handle zsh-like history commands
                     std::string processedText = text;
@@ -78,7 +78,7 @@ KAI_BEGIN
                     if (text[0] == '!' && text.find(' ') == std::string::npos) {
                         String expanded =
                             console_.ProcessZshCommand(String(text));
-                        if (expanded.size() > 0) {
+                        if (expanded.Size() > 0) {
                             processedText = expanded.StdString();
                             // Show what command is being executed
                             AddLog("=> %s", processedText.c_str());
@@ -97,7 +97,7 @@ KAI_BEGIN
                     String expandedText =
                         console_.ExpandShellCommands(String(processedText));
                     String result = console_.Process(expandedText);
-                    if (!result.empty()) {
+                    if (!result.Empty()) {
                         AddProcessResultLog(result.StdString());
                     }
                 }

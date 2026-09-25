@@ -1,4 +1,4 @@
-﻿#include <KAI/Console.h>
+#include <KAI/Console.h>
 #include <KAI/Core/Exception.h>
 #include <KAI/Core/FunctionBase.h>
 #include <KAI/Core/Logger.h>
@@ -33,17 +33,17 @@ std::string FormatStackValue(const Object& object) {
     // does - use that instead of the generic (and broken) dispatch.
     if (object.Exists()) {
         std::string className = object.GetClass()
-                                     ? object.GetClass()->GetName().ToString().c_str()
+                                     ? object.GetClass()->GetName().ToString().CStr()
                                      : "";
         if (className == "Function") {
-            return ConstDeref<BasePointer<FunctionBase>>(object)->ToString().c_str();
+            return ConstDeref<BasePointer<FunctionBase>>(object)->ToString().CStr();
         }
         if (className == "Method") {
-            return ConstDeref<BasePointer<MethodBase>>(object)->ToString().c_str();
+            return ConstDeref<BasePointer<MethodBase>>(object)->ToString().CStr();
         }
         if (className == "Class") {
             const ClassBase* cls = ConstDeref<const ClassBase*>(object);
-            return cls ? ("Class: " + std::string(cls->GetName().ToString().c_str()))
+            return cls ? ("Class: " + std::string(cls->GetName().ToString().CStr()))
                        : "Class: (null)";
         }
     }
@@ -863,7 +863,7 @@ struct ExecutorWindow {
                 st << "[" << displayIndex << "]: "
                    << FormatStackValue(obj).c_str();
 
-                if (ImGui::Selectable(st.ToString().c_str(), WatchIndex == i)) {
+                if (ImGui::Selectable(st.ToString().CStr(), WatchIndex == i)) {
                     WatchIndex = i;
                 }
 
@@ -1006,7 +1006,7 @@ struct ExecutorWindow {
             ImGui::BeginChild("ValueView", ImVec2(0, 80), true);
             ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.7f, 1.0f), "Value:");
             ImGui::Separator();
-            ImGui::TextWrapped("%s", st.ToString().c_str());
+            ImGui::TextWrapped("%s", st.ToString().CStr());
             ImGui::EndChild();
 
             // Show object information
@@ -1094,7 +1094,7 @@ struct ExecutorWindow {
         // Show current executor state
         StringStream st;
         st << "Data Stack Size: " << exec_->GetDataStack()->Size();
-        AddLog("%s", st.ToString().c_str());
+        AddLog("%s", st.ToString().CStr());
 
         // Show all stack items
         if (exec_->GetDataStack()->Size() > 0) {
@@ -1104,7 +1104,7 @@ struct ExecutorWindow {
                 StringStream itemSt;
                 itemSt << "  [" << displayIndex << "]: "
                        << FormatStackValue(obj).c_str();
-                AddLog("%s", itemSt.ToString().c_str());
+                AddLog("%s", itemSt.ToString().CStr());
             }
         }
 
@@ -1121,15 +1121,15 @@ struct ExecutorWindow {
                 if (scope.Exists()) {
                     StringStream scopeSt;
                     scopeSt << scope;
-                    AddLog("%s", scopeSt.ToString().c_str());
+                    AddLog("%s", scopeSt.ToString().CStr());
                 } else {
                     AddLog("No active scope");
                 }
             }
         } catch (exception::Base& e) {
             Logger::Error("ImGui Window debug step failed: " +
-                          std::string(e.ToString().c_str()));
-            AddLog("Debug operation failed: %s", e.ToString().c_str());
+                          std::string(e.ToString().CStr()));
+            AddLog("Debug operation failed: %s", e.ToString().CStr());
         }
     }
 
@@ -1181,7 +1181,7 @@ struct ExecutorWindow {
 
             std::string className =
                 node.GetClass()
-                    ? node.GetClass()->GetName().ToString().c_str()
+                    ? node.GetClass()->GetName().ToString().CStr()
                     : "?";
 
             ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow |
@@ -1205,7 +1205,7 @@ struct ExecutorWindow {
         } catch (exception::Base& e) {
             ImGui::TextColored(ImVec4(0.8f, 0.4f, 0.4f, 1.0f),
                                "%s  (error: %s)", label.c_str(),
-                               e.ToString().c_str());
+                               e.ToString().CStr());
             return;
         } catch (const std::exception& e) {
             ImGui::TextColored(ImVec4(0.8f, 0.4f, 0.4f, 1.0f),
@@ -1230,7 +1230,7 @@ struct ExecutorWindow {
             const Dictionary& dict = node.GetDictionary();
             children.reserve(dict.size());
             for (const auto& entry : dict) {
-                children.emplace_back(entry.first.ToString().c_str(),
+                children.emplace_back(entry.first.ToString().CStr(),
                                       entry.second);
             }
 
@@ -1246,7 +1246,7 @@ struct ExecutorWindow {
         } catch (exception::Base& e) {
             ImGui::TextColored(ImVec4(0.8f, 0.4f, 0.4f, 1.0f),
                                "  (error listing children: %s)",
-                               e.ToString().c_str());
+                               e.ToString().CStr());
         } catch (const std::exception& e) {
             ImGui::TextColored(ImVec4(0.8f, 0.4f, 0.4f, 1.0f),
                                "  (error listing children: %s)", e.what());
@@ -1329,7 +1329,7 @@ struct ExecutorWindow {
                         ? SelectedTreeObject.GetClass()
                               ->GetName()
                               .ToString()
-                              .c_str()
+                              .CStr()
                         : "?";
                 ImGui::Text("Path:   %s", SelectedTreePath.c_str());
                 ImGui::Text("Type:   %s", className.c_str());
@@ -1354,22 +1354,22 @@ struct ExecutorWindow {
                             SelectedTreeObject);
                     ImGui::TextColored(ImVec4(0.6f, 0.9f, 0.6f, 1.0f),
                                        "Signature:");
-                    ImGui::TextWrapped("%s", fn->ToString().c_str());
+                    ImGui::TextWrapped("%s", fn->ToString().CStr());
                     ImGui::Separator();
                     ImGui::Text("Name:        %s",
-                                fn->GetName().ToString().c_str());
+                                fn->GetName().ToString().CStr());
                     ImGui::Text("Return type: %s",
-                                fn->GetReturnType().ToString().c_str());
+                                fn->GetReturnType().ToString().CStr());
                     const auto& args = fn->GetArgumentTypes();
                     ImGui::Text("Arguments:   %d", (int)args.size());
                     for (size_t i = 0; i < args.size(); ++i) {
                         ImGui::BulletText("[%d] %s", (int)i,
-                                          args[i].ToString().c_str());
+                                          args[i].ToString().CStr());
                     }
-                    if (!fn->Description.Empty()) {
+                    if (!fn->description.Empty()) {
                         ImGui::Separator();
                         ImGui::TextWrapped("Description: %s",
-                                           fn->Description.c_str());
+                                           fn->description.CStr());
                     }
                 } else if (className == "Method") {
                     const BasePointer<MethodBase>& m =
@@ -1377,14 +1377,14 @@ struct ExecutorWindow {
                             SelectedTreeObject);
                     ImGui::TextColored(ImVec4(0.6f, 0.9f, 0.6f, 1.0f),
                                        "Signature:");
-                    ImGui::TextWrapped("%s", m->ToString().c_str());
+                    ImGui::TextWrapped("%s", m->ToString().CStr());
                     ImGui::Separator();
                     ImGui::Text("Name:        %s",
-                                m->GetName().ToString().c_str());
+                                m->GetName().ToString().CStr());
                     ImGui::Text("Class type:  %s",
-                                m->GetClassType().ToString().c_str());
+                                m->GetClassType().ToString().CStr());
                     ImGui::Text("Return type: %s",
-                                m->GetReturnType().ToString().c_str());
+                                m->GetReturnType().ToString().CStr());
                     ImGui::Text(
                         "Const:       %s",
                         m->GetConstness() == Constness::Const ? "yes" : "no");
@@ -1392,12 +1392,12 @@ struct ExecutorWindow {
                     ImGui::Text("Arguments:   %d", (int)args.size());
                     for (size_t i = 0; i < args.size(); ++i) {
                         ImGui::BulletText("[%d] %s", (int)i,
-                                          args[i].ToString().c_str());
+                                          args[i].ToString().CStr());
                     }
-                    if (!m->Description.Empty()) {
+                    if (!m->description.Empty()) {
                         ImGui::Separator();
                         ImGui::TextWrapped("Description: %s",
-                                           m->Description.c_str());
+                                           m->description.CStr());
                     }
                 } else if (className == "Class") {
                     // Class objects hold a `const ClassBase *` describing a
@@ -1410,9 +1410,9 @@ struct ExecutorWindow {
                                            "(null class)");
                     } else {
                         ImGui::Text("Class name:  %s",
-                                    cls->GetName().ToString().c_str());
+                                    cls->GetName().ToString().CStr());
                         ImGui::Text("Type number: %s",
-                                    cls->GetTypeNumber().ToString().c_str());
+                                    cls->GetTypeNumber().ToString().CStr());
                         ImGui::Separator();
                         const auto& methods = cls->GetMethods();
                         ImGui::TextColored(ImVec4(0.6f, 0.9f, 0.6f, 1.0f),
@@ -1421,10 +1421,10 @@ struct ExecutorWindow {
                         for (const auto& kv : methods) {
                             MethodBase* mb = kv.second;
                             if (mb) {
-                                ImGui::BulletText("%s", mb->ToString().c_str());
+                                ImGui::BulletText("%s", mb->ToString().CStr());
                             } else {
                                 ImGui::BulletText(
-                                    "%s", kv.first.ToString().c_str());
+                                    "%s", kv.first.ToString().CStr());
                             }
                         }
                         ImGui::Separator();
@@ -1434,7 +1434,7 @@ struct ExecutorWindow {
                                            (int)props.size());
                         for (const auto& kv : props) {
                             ImGui::BulletText("%s",
-                                              kv.first.ToString().c_str());
+                                              kv.first.ToString().CStr());
                         }
                     }
                 } else {
@@ -1461,7 +1461,7 @@ struct ExecutorWindow {
                             MethodBase* mb = kv.second;
                             if (!mb) {
                                 ImGui::BulletText(
-                                    "%s", kv.first.ToString().c_str());
+                                    "%s", kv.first.ToString().CStr());
                                 continue;
                             }
                             // Double-click to invoke: the method pops its
@@ -1475,7 +1475,7 @@ struct ExecutorWindow {
                             // switch to the Pi tab afterward so the result
                             // (or, on failure, the stack as it stands) is
                             // immediately visible.
-                            ImGui::Selectable(mb->ToString().c_str());
+                            ImGui::Selectable(mb->ToString().CStr());
                             if (ImGui::IsItemHovered() &&
                                 ImGui::IsMouseDoubleClicked(
                                     /* ImGuiMouseButton_Left */ 0)) {
@@ -1483,22 +1483,22 @@ struct ExecutorWindow {
                                     mb->Invoke(SelectedTreeObject,
                                               *exec_->GetDataStack());
                                     AddLog("Invoked %s -> result pushed to stack",
-                                          mb->ToString().c_str());
+                                          mb->ToString().CStr());
                                 } catch (exception::Base& e) {
                                     AddLog(
                                         kErrorColor,
                                         "[Error] Failed to invoke %s: %s "
                                         "(push the required arguments onto "
                                         "the stack first)",
-                                        mb->ToString().c_str(),
-                                        e.ToString().c_str());
+                                        mb->ToString().CStr(),
+                                        e.ToString().CStr());
                                 } catch (const std::exception& e) {
                                     AddLog(
                                         kErrorColor,
                                         "[Error] Failed to invoke %s: %s "
                                         "(push the required arguments onto "
                                         "the stack first)",
-                                        mb->ToString().c_str(), e.what());
+                                        mb->ToString().CStr(), e.what());
                                 }
                                 SwitchTab(ConsoleTab::Pi);
                             }
@@ -1510,14 +1510,14 @@ struct ExecutorWindow {
                                            (int)props.size());
                         for (const auto& kv : props) {
                             ImGui::BulletText("%s",
-                                              kv.first.ToString().c_str());
+                                              kv.first.ToString().CStr());
                         }
                     }
                 }
             } catch (exception::Base& e) {
                 ImGui::TextColored(ImVec4(0.8f, 0.4f, 0.4f, 1.0f),
                                    "Error reading this object: %s",
-                                   e.ToString().c_str());
+                                   e.ToString().CStr());
             } catch (const std::exception& e) {
                 ImGui::TextColored(ImVec4(0.8f, 0.4f, 0.4f, 1.0f),
                                    "Error reading this object: %s", e.what());
@@ -1655,7 +1655,7 @@ struct ExecutorWindow {
             // log.
             Logger::Error("ImGui Window command failed: " +
                           std::string(command_line) + " -> " +
-                          e.ToString().c_str());
+                          e.ToString().CStr());
 
             // NOTE: this used to wrap the AddLog() call in a
             // PushStyleColor(ImGuiCol_Text, red)/PopStyleColor() pair, which
@@ -1665,7 +1665,7 @@ struct ExecutorWindow {
             // call has nothing to apply to. Use the colored AddLog()
             // overload instead, which stores the color alongside the text
             // so DrawConsoleContent() can render it correctly later.
-            AddLog(kErrorColor, "[Error] %s", e.ToString().c_str());
+            AddLog(kErrorColor, "[Error] %s", e.ToString().CStr());
         }
 
         // Commands like "pi"/"rho" switch the console's language directly

@@ -1,4 +1,4 @@
-﻿#include "ExecutorWindow.h"
+#include "ExecutorWindow.h"
 
 KAI_BEGIN
 
@@ -149,7 +149,7 @@ KAI_BEGIN
                 st << "[" << displayIndex << "]: "
                    << FormatStackValue(obj).c_str();
 
-                if (ImGui::Selectable(st.ToString().c_str(), WatchIndex == i)) {
+                if (ImGui::Selectable(st.ToString().CStr(), WatchIndex == i)) {
                     WatchIndex = i;
                 }
 
@@ -197,7 +197,7 @@ KAI_BEGIN
                            cont->HasScope() ? "yes" : "no");
                 Pointer<String> src = cont->GetSourceCode();
                 if (src.Exists() && src->Size() > 0) {
-                    ImGui::TextWrapped("Source: %s", src->c_str());
+                    ImGui::TextWrapped("Source: %s", src->CStr());
                 }
             } else {
                 ImGui::TextColored(ImVec4(0.6f, 0.6f, 0.6f, 1.0f),
@@ -292,7 +292,7 @@ KAI_BEGIN
             ImGui::BeginChild("ValueView", ImVec2(0, 80), true);
             ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.7f, 1.0f), "Value:");
             ImGui::Separator();
-            ImGui::TextWrapped("%s", st.ToString().c_str());
+            ImGui::TextWrapped("%s", st.ToString().CStr());
             ImGui::EndChild();
 
             // Show object information
@@ -381,7 +381,7 @@ KAI_BEGIN
         // Show current executor state
         StringStream st;
         st << "Data Stack Size: " << exec_->GetDataStack()->Size();
-        AddLog("%s", st.ToString().c_str());
+        AddLog("%s", st.ToString().CStr());
 
         // Show all stack items
         if (exec_->GetDataStack()->Size() > 0) {
@@ -391,7 +391,7 @@ KAI_BEGIN
                 StringStream itemSt;
                 itemSt << "  [" << displayIndex << "]: "
                        << FormatStackValue(obj).c_str();
-                AddLog("%s", itemSt.ToString().c_str());
+                AddLog("%s", itemSt.ToString().CStr());
             }
         }
 
@@ -408,7 +408,7 @@ KAI_BEGIN
                 if (scope.Exists()) {
                     StringStream scopeSt;
                     scopeSt << scope;
-                    AddLog("%s", scopeSt.ToString().c_str());
+                    AddLog("%s", scopeSt.ToString().CStr());
                 } else {
                     AddLog("No active scope");
                 }

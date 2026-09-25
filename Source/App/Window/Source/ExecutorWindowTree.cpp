@@ -1,4 +1,4 @@
-﻿#include "ExecutorWindow.h"
+#include "ExecutorWindow.h"
 
 KAI_BEGIN
 
@@ -49,7 +49,7 @@ KAI_BEGIN
 
             std::string className =
                 node.GetClass()
-                    ? node.GetClass()->GetName().ToString().c_str()
+                    ? node.GetClass()->GetName().ToString().CStr()
                     : "?";
 
             ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow |
@@ -102,7 +102,7 @@ KAI_BEGIN
             const Dictionary& dict = node.GetDictionary();
             children.reserve(dict.size());
             for (const auto& entry : dict) {
-                children.emplace_back(entry.first.ToString().c_str(),
+                children.emplace_back(entry.first.ToString().CStr(),
                                       entry.second);
             }
 
@@ -202,7 +202,7 @@ KAI_BEGIN
                         ? SelectedTreeObject.GetClass()
                               ->GetName()
                               .ToString()
-                              .c_str()
+                              .CStr()
                         : "?";
                 ImGui::Text("Path:   %s", SelectedTreePath.c_str());
                 ImGui::Text("Type:   %s", className.c_str());
@@ -227,10 +227,10 @@ KAI_BEGIN
                             SelectedTreeObject);
                     ImGui::TextColored(ImVec4(0.6f, 0.9f, 0.6f, 1.0f),
                                        "Signature:");
-                    ImGui::TextWrapped("%s", fn->ToString().c_str());
+                    ImGui::TextWrapped("%s", fn->ToString().CStr());
                     ImGui::Separator();
                     ImGui::Text("Name:        %s",
-                                fn->GetName().ToString().c_str());
+                                fn->GetName().ToString().CStr());
                     ImGui::Text("Return type: %s",
                                 fn->GetReturnType().ToString().c_str());
                     const auto& args = fn->GetArgumentTypes();
@@ -239,10 +239,10 @@ KAI_BEGIN
                         ImGui::BulletText("[%d] %s", (int)i,
                                           args[i].ToString().c_str());
                     }
-                    if (!fn->Description.Empty()) {
+                    if (!fn->description.Empty()) {
                         ImGui::Separator();
                         ImGui::TextWrapped("Description: %s",
-                                           fn->Description.c_str());
+                                           fn->description.CStr());
                     }
                 } else if (className == "Method") {
                     const BasePointer<MethodBase>& m =
@@ -250,10 +250,10 @@ KAI_BEGIN
                             SelectedTreeObject);
                     ImGui::TextColored(ImVec4(0.6f, 0.9f, 0.6f, 1.0f),
                                        "Signature:");
-                    ImGui::TextWrapped("%s", m->ToString().c_str());
+                    ImGui::TextWrapped("%s", m->ToString().CStr());
                     ImGui::Separator();
                     ImGui::Text("Name:        %s",
-                                m->GetName().ToString().c_str());
+                                m->GetName().ToString().CStr());
                     ImGui::Text("Class type:  %s",
                                 m->GetClassType().ToString().c_str());
                     ImGui::Text("Return type: %s",
@@ -267,10 +267,10 @@ KAI_BEGIN
                         ImGui::BulletText("[%d] %s", (int)i,
                                           args[i].ToString().c_str());
                     }
-                    if (!m->Description.Empty()) {
+                    if (!m->description.Empty()) {
                         ImGui::Separator();
                         ImGui::TextWrapped("Description: %s",
-                                           m->Description.c_str());
+                                           m->description.CStr());
                     }
                 } else if (className == "Class") {
                     // Class objects hold a `const ClassBase *` describing a
@@ -283,7 +283,7 @@ KAI_BEGIN
                                            "(null class)");
                     } else {
                         ImGui::Text("Class name:  %s",
-                                    cls->GetName().ToString().c_str());
+                                    cls->GetName().ToString().CStr());
                         ImGui::Text("Type number: %s",
                                     cls->GetTypeNumber().ToString().c_str());
                         ImGui::Separator();
@@ -294,10 +294,10 @@ KAI_BEGIN
                         for (const auto& kv : methods) {
                             MethodBase* mb = kv.second;
                             if (mb) {
-                                ImGui::BulletText("%s", mb->ToString().c_str());
+                                ImGui::BulletText("%s", mb->ToString().CStr());
                             } else {
                                 ImGui::BulletText(
-                                    "%s", kv.first.ToString().c_str());
+                                    "%s", kv.first.ToString().CStr());
                             }
                         }
                         ImGui::Separator();
@@ -307,7 +307,7 @@ KAI_BEGIN
                                            (int)props.size());
                         for (const auto& kv : props) {
                             ImGui::BulletText("%s",
-                                              kv.first.ToString().c_str());
+                                              kv.first.ToString().CStr());
                         }
                     }
                 } else {
@@ -334,7 +334,7 @@ KAI_BEGIN
                             MethodBase* mb = kv.second;
                             if (!mb) {
                                 ImGui::BulletText(
-                                    "%s", kv.first.ToString().c_str());
+                                    "%s", kv.first.ToString().CStr());
                                 continue;
                             }
                             // Double-click to invoke: the method pops its
@@ -348,7 +348,7 @@ KAI_BEGIN
                             // switch to the Pi tab afterward so the result
                             // (or, on failure, the stack as it stands) is
                             // immediately visible.
-                            ImGui::Selectable(mb->ToString().c_str());
+                            ImGui::Selectable(mb->ToString().CStr());
                             if (ImGui::IsItemHovered() &&
                                 ImGui::IsMouseDoubleClicked(
                                     /* ImGuiMouseButton_Left */ 0)) {
@@ -356,14 +356,14 @@ KAI_BEGIN
                                     mb->Invoke(SelectedTreeObject,
                                               *exec_->GetDataStack());
                                     AddLog("Invoked %s -> result pushed to stack",
-                                          mb->ToString().c_str());
+                                          mb->ToString().CStr());
                                 } catch (exception::Base& e) {
                                     AddLog(
                                         kErrorColor,
                                         "[Error] Failed to invoke %s: %s "
                                         "(push the required arguments onto "
                                         "the stack first)",
-                                        mb->ToString().c_str(),
+                                        mb->ToString().CStr(),
                                         e.ToString().c_str());
                                 } catch (const std::exception& e) {
                                     AddLog(
@@ -371,7 +371,7 @@ KAI_BEGIN
                                         "[Error] Failed to invoke %s: %s "
                                         "(push the required arguments onto "
                                         "the stack first)",
-                                        mb->ToString().c_str(), e.what());
+                                        mb->ToString().CStr(), e.what());
                                 }
                                 SwitchTab(ConsoleTab::Pi);
                             }
@@ -383,7 +383,7 @@ KAI_BEGIN
                                            (int)props.size());
                         for (const auto& kv : props) {
                             ImGui::BulletText("%s",
-                                              kv.first.ToString().c_str());
+                                              kv.first.ToString().CStr());
                         }
                     }
                 }

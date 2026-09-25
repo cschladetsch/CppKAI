@@ -1,4 +1,4 @@
-﻿#include "ExecutorWindow.h"
+#include "ExecutorWindow.h"
 
 KAI_BEGIN
 
@@ -14,17 +14,17 @@ std::string FormatStackValue(const Object& object) {
     // does - use that instead of the generic (and broken) dispatch.
     if (object.Exists()) {
         std::string className = object.GetClass()
-                                     ? object.GetClass()->GetName().ToString().c_str()
+                                     ? object.GetClass()->GetName().ToString().CStr()
                                      : "";
         if (className == "Function") {
-            return ConstDeref<BasePointer<FunctionBase>>(object)->ToString().c_str();
+            return ConstDeref<BasePointer<FunctionBase>>(object)->ToString().CStr();
         }
         if (className == "Method") {
-            return ConstDeref<BasePointer<MethodBase>>(object)->ToString().c_str();
+            return ConstDeref<BasePointer<MethodBase>>(object)->ToString().CStr();
         }
         if (className == "Class") {
             const ClassBase* cls = ConstDeref<const ClassBase*>(object);
-            return cls ? ("Class: " + std::string(cls->GetName().ToString().c_str()))
+            return cls ? ("Class: " + std::string(cls->GetName().ToString().CStr()))
                        : "Class: (null)";
         }
     }
