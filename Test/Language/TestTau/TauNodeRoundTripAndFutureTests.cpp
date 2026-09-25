@@ -31,11 +31,11 @@ struct TauNodeRoundTripAndFutureTests : TestLangCommon {
 
         auto parser = make_shared<tau::TauParser>(*reg_);
         if (!parser->Process(lexer, Structure::Module)) {
-            ADD_FAILURE() << "Parser failed: " << parser->Error;
+            ADD_FAILURE() << "Parser failed: " << parser->error;
             return false;
         }
 
-        return parser->Error.empty();
+        return parser->error.empty();
     }
 
     // Verify the IDL also survives at least one of the code generators,
@@ -46,7 +46,7 @@ struct TauNodeRoundTripAndFutureTests : TestLangCommon {
         string proxyOutput, agentOutput;
         tau::Generate::GenerateProxy proxy(code.c_str(), proxyOutput);
         tau::Generate::GenerateAgent agent(code.c_str(), agentOutput);
-        return !proxy.Failed || !agent.Failed;
+        return !proxy.failed || !agent.failed;
     }
 };
 

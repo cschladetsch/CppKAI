@@ -27,11 +27,11 @@ struct TauFutureProxyTests : TestLangCommon {
 
         auto parser = make_shared<tau::TauParser>(*reg_);
         if (!parser->Process(lexer, Structure::Module)) {
-            ADD_FAILURE() << "Parser failed: " << parser->Error;
+            ADD_FAILURE() << "Parser failed: " << parser->error;
             return false;
         }
 
-        return parser->Error.empty();
+        return parser->error.empty();
     }
 };
 

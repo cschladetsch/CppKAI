@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 
 #include <chrono>
 #include <memory>
@@ -76,13 +76,13 @@ class ConsoleNetworkingTest : public ::testing::Test {
     // Helper to execute command and get result
     string ExecuteCommand(Console& console, const string& command) {
         console.Execute(String(command.c_str()));
-        return console.WriteStack().c_str();
+        return console.WriteStack().CStr();
     }
 
     // Helper to execute network command and get response
     string ExecuteNetworkCommand(Console& console, const string& command) {
         String result = console.ProcessNetworkCommand(String(command.c_str()));
-        return result.c_str();
+        return result.CStr();
     }
 
     // Wait for network messages with timeout
@@ -205,11 +205,11 @@ TEST_F(ConsoleNetworkingTest, SendCommandToPeer) {
 
     // Verify the peer-specific stack contains the expected result
     std::string peerStack =
-        console1_->WriteStackForPeer(remoteConsoleId).c_str();
+        console1_->WriteStackForPeer(remoteConsoleId).CStr();
     EXPECT_TRUE(peerStack.find("294") != std::string::npos);
 
     // Ensure local console stack was not modified by the peer
-    std::string localStack = console1_->WriteStack().c_str();
+    std::string localStack = console1_->WriteStack().CStr();
     EXPECT_TRUE(localStack.find("294") == std::string::npos);
 }
 
@@ -245,11 +245,11 @@ TEST_F(ConsoleNetworkingTest, BroadcastCommand) {
     }
 
     std::string broadcastStack =
-        console1_->WriteStackForPeer(broadcastConsoleId).c_str();
+        console1_->WriteStackForPeer(broadcastConsoleId).CStr();
     EXPECT_TRUE(broadcastStack.find("15") != std::string::npos);
 
     // Local stack should remain untouched unless explicitly modified
-    std::string localStack = console1_->WriteStack().c_str();
+    std::string localStack = console1_->WriteStack().CStr();
     EXPECT_TRUE(localStack.find("15") == std::string::npos);
 
     // Check message history for broadcast
@@ -318,8 +318,8 @@ TEST_F(ConsoleNetworkingTest, MultiPeerBroadcast) {
         Wait(50);
     }
 
-    std::string stack2 = console2_->WriteStack().c_str();
-    std::string stack3 = console3->WriteStack().c_str();
+    std::string stack2 = console2_->WriteStack().CStr();
+    std::string stack3 = console3->WriteStack().CStr();
     EXPECT_TRUE(stack2.find("10") != std::string::npos);
     EXPECT_TRUE(stack3.find("10") != std::string::npos);
 
@@ -372,7 +372,7 @@ TEST_F(ConsoleNetworkingTest, CrossLanguageCommunication) {
         ASSERT_GE(messages1_.size(), 1);
         remoteConsoleId = messages1_.back().senderId;
     }
-    std::string stack1 = console1_->WriteStackForPeer(remoteConsoleId).c_str();
+    std::string stack1 = console1_->WriteStackForPeer(remoteConsoleId).CStr();
     EXPECT_TRUE(stack1.find("7") != string::npos);
 
     // Send Rho command from console1 (Pi) to console2 (Rho) - this should work
@@ -546,7 +546,7 @@ TEST_F(ConsoleNetworkingTest, CompleteWorkflow) {
     EXPECT_TRUE(WaitForMessages(3, 3, 3000));
 
     // Verify final result on console1
-    string finalStack = console1_->WriteStack().c_str();
+    string finalStack = console1_->WriteStack().CStr();
     EXPECT_TRUE(finalStack.find("125") != string::npos);
 
     // Console1: Broadcast a command to all peers (console2)
@@ -557,7 +557,7 @@ TEST_F(ConsoleNetworkingTest, CompleteWorkflow) {
     EXPECT_TRUE(WaitForMessages(4, 4, 2000));
 
     // Verify console2's stack
-    string console2Stack = console2_->WriteStack().c_str();
+    string console2Stack = console2_->WriteStack().CStr();
     EXPECT_TRUE(console2Stack.find("10") != string::npos);
     EXPECT_TRUE(console2Stack.find("50") != string::npos);
 
@@ -607,7 +607,7 @@ TEST_F(ConsoleNetworkingTest, PeerDisconnectCleanup) {
     Wait(200);
 
     EXPECT_TRUE(console1_->GetConnectedPeers().empty());
-    EXPECT_TRUE(console1_->WriteStackForPeer(peerId).empty());
+    EXPECT_TRUE(console1_->WriteStackForPeer(peerId).Empty());
 }
 
 TEST_F(ConsoleNetworkingTest, ResultHistoryNormalization) {

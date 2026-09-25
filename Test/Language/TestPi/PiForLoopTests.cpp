@@ -39,7 +39,7 @@ TEST_F(PiForLoopTest, SimpleRangeSum) {
         std::cout << "Checking result...\n";
         ASSERT_EQ(stack->Size(), 1);
         EXPECT_EQ(kai::ConstDeref<int>(stack->Top()), 15);  // 1+2+3+4+5
-    } catch (const kai::Exception::Base& e) {
+    } catch (const kai::exception::Base& e) {
         FAIL() << "KAI Exception: " << e.ToString();
     } catch (const std::exception& e) {
         FAIL() << "Exception: " << e.what();

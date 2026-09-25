@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 
 #include <fstream>
 #include <regex>
@@ -27,10 +27,10 @@ struct TauCodeGenerationTests : TestLangCommon {
             tau::Generate::GenerateProxy proxy(script.c_str(), output);
 
             // Check if generation was successful
-            if (proxy.Failed) {
+            if (proxy.failed) {
                 KAI_LOG_WARNING("Proxy generation for " + testName +
                                 " failed: " + proxy.Error);
-                FAIL() << "Proxy generation failed: " << proxy.Error;
+                FAIL() << "Proxy generation failed: " << proxy.error;
             }
 
             KAI_LOG_INFO(
@@ -69,10 +69,10 @@ struct TauCodeGenerationTests : TestLangCommon {
             tau::Generate::GenerateAgent agent(script.c_str(), output);
 
             // Check if generation was successful
-            if (agent.Failed) {
+            if (agent.failed) {
                 KAI_LOG_WARNING("Agent generation for " + testName +
                                 " failed: " + agent.Error);
-                FAIL() << "Agent generation failed: " << agent.Error;
+                FAIL() << "Agent generation failed: " << agent.error;
             }
 
             KAI_LOG_INFO(

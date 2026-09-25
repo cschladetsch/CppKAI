@@ -1,4 +1,4 @@
-﻿#include <gtest/gtest.h>
+#include <gtest/gtest.h>
 
 #include <chrono>
 #include <filesystem>
@@ -355,7 +355,7 @@ namespace TestNetwork {
             KAI_LOG_INFO("Tau parsing: " +
                          string(parseResult ? "SUCCESS" : "FAILED"));
             if (!parseResult) {
-                KAI_LOG_ERROR("Parser failed: " + parser->Error);
+                KAI_LOG_ERROR("Parser failed: " + parser->error);
             }
 
             return parseResult;

@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 
 #include "KAI/Language/Tau/Generate/GenerateAgent.h"
 #include "KAI/Language/Tau/Generate/GenerateProxy.h"
@@ -36,14 +36,14 @@ struct TauFutureArgumentCodeGenTests : TestLangCommon {
     string GenerateProxyCode(const string& idl) {
         string output;
         tau::Generate::GenerateProxy proxy(idl.c_str(), output);
-        EXPECT_FALSE(proxy.Failed) << proxy.Error;
+        EXPECT_FALSE(proxy.failed) << proxy.error;
         return output;
     }
 
     string GenerateAgentCode(const string& idl) {
         string output;
         tau::Generate::GenerateAgent agent(idl.c_str(), output);
-        EXPECT_FALSE(agent.Failed) << agent.Error;
+        EXPECT_FALSE(agent.failed) << agent.error;
         return output;
     }
 };

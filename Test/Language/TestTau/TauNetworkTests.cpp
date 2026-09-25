@@ -57,7 +57,7 @@ class TauNetworkTest : public TestLangCommon {
         bool parseResult = parser->Process(lexer, Structure::Module);
 
         if (!parseResult) {
-            KAI_LOG_ERROR("Parser failed for " + name + ": " + parser->Error);
+            KAI_LOG_ERROR("Parser failed for " + name + ": " + parser->error);
         }
 
         // Parsing might fail in current implementation, but we want to see how

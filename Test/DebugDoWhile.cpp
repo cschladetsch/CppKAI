@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <memory>
 #include <string>
 
@@ -40,7 +40,7 @@ int main() {
         cout << "Final value of i: " << i << endl;
 
         cout << "Execution succeeded!" << endl;
-    } catch (const exception::Base& e) {
+    } catch (const kai::exception::Base& e) {
         cerr << "KAI Exception: " << e.ToString() << endl;
         return 1;
     } catch (const std::exception& e) {

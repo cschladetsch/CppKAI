@@ -37,7 +37,7 @@ struct RhoFunctionTestsWorking : kai::TestLangCommon {
             T actual = kai::ConstDeref<T>(result);
             ASSERT_EQ(actual, expected) << "Value mismatch";
 
-        } catch (const kai::Exception::Base& e) {
+        } catch (const kai::exception::Base& e) {
             FAIL() << "Exception: " << e.ToString();
         } catch (const std::exception& e) {
             FAIL() << "std::exception: " << e.what();

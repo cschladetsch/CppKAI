@@ -1,4 +1,4 @@
-﻿#include <KAI/Core/Console.h>
+#include <KAI/Core/Console.h>
 
 #include <iostream>
 
@@ -43,7 +43,7 @@ int main() {
 
         std::cout << "Do-while loop test completed successfully!" << std::endl;
         return 0;
-    } catch (const exception::Base& e) {
+    } catch (const kai::exception::Base& e) {
         std::cerr << "KAI exception: " << e.ToString() << std::endl;
     } catch (const std::exception& e) {
         std::cerr << "Standard exception: " << e.what() << std::endl;

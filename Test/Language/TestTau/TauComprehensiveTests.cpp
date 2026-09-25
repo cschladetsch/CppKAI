@@ -28,7 +28,7 @@ TEST(TauComprehensive, TripleNestedNamespaces) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
     EXPECT_NE(proxyOutput.find("namespace A"), string::npos);
     EXPECT_NE(proxyOutput.find("namespace B"), string::npos);
     EXPECT_NE(proxyOutput.find("namespace C"), string::npos);
@@ -46,7 +46,7 @@ TEST(TauComprehensive, MultipleNamespacesInModule) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
     EXPECT_NE(proxyOutput.find("namespace First"), string::npos);
     EXPECT_NE(proxyOutput.find("namespace Second"), string::npos);
     EXPECT_NE(proxyOutput.find("IFirst"), string::npos);
@@ -65,7 +65,7 @@ TEST(TauComprehensive, MixedNestedAndFlatNamespaces) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
     EXPECT_NE(proxyOutput.find("IFlat"), string::npos);
     EXPECT_NE(proxyOutput.find("INested"), string::npos);
 }
@@ -81,7 +81,7 @@ TEST(TauComprehensive, NamespaceWithMultipleInterfaces) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
     EXPECT_NE(proxyOutput.find("IAuth"), string::npos);
     EXPECT_NE(proxyOutput.find("IData"), string::npos);
     EXPECT_NE(proxyOutput.find("ILogger"), string::npos);
@@ -98,7 +98,7 @@ TEST(TauComprehensive, NamespaceWithEnumsAndStructs) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
     EXPECT_NE(proxyOutput.find("namespace Types"), string::npos);
 }
 
@@ -112,7 +112,7 @@ TEST(TauComprehensive, EmptyNamespace) {
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
     // May fail or succeed depending on implementation - just shouldn't crash
-    EXPECT_TRUE(proxy.Failed || !proxyOutput.empty());
+    EXPECT_TRUE(proxy.failed || !proxyOutput.empty());
 }
 
 TEST(TauComprehensive, NamespaceWithOnlyStructs) {
@@ -125,7 +125,7 @@ TEST(TauComprehensive, NamespaceWithOnlyStructs) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, NamespaceWithOnlyEnums) {
@@ -138,7 +138,7 @@ TEST(TauComprehensive, NamespaceWithOnlyEnums) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, DeepNestedNamespaceWithContent) {
@@ -152,7 +152,7 @@ TEST(TauComprehensive, DeepNestedNamespaceWithContent) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, NamespaceWithNestedInterface) {
@@ -170,7 +170,7 @@ TEST(TauComprehensive, NamespaceWithNestedInterface) {
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
     // Nested interfaces may or may not be supported
-    EXPECT_TRUE(!proxy.Failed || proxy.Failed);
+    EXPECT_TRUE(!proxy.failed || proxy.failed);
 }
 
 // ============================================================================
@@ -190,7 +190,7 @@ TEST(TauComprehensive, AsyncMethods) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
     EXPECT_NE(proxyOutput.find("StartTask"), string::npos);
     EXPECT_NE(proxyOutput.find("ProcessData"), string::npos);
 }
@@ -209,7 +209,7 @@ TEST(TauComprehensive, MethodsWithNoParameters) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, MethodsWithSingleParameter) {
@@ -225,7 +225,7 @@ TEST(TauComprehensive, MethodsWithSingleParameter) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, MethodsWithMultipleParameters) {
@@ -241,7 +241,7 @@ TEST(TauComprehensive, MethodsWithMultipleParameters) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, MethodsWithDefaultParameters) {
@@ -256,7 +256,7 @@ TEST(TauComprehensive, MethodsWithDefaultParameters) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, MethodsReturningVoid) {
@@ -272,7 +272,7 @@ TEST(TauComprehensive, MethodsReturningVoid) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, MethodsReturningPrimitives) {
@@ -289,7 +289,7 @@ TEST(TauComprehensive, MethodsReturningPrimitives) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, MethodsReturningArrays) {
@@ -305,7 +305,7 @@ TEST(TauComprehensive, MethodsReturningArrays) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, MethodsWithArrayParameters) {
@@ -321,7 +321,7 @@ TEST(TauComprehensive, MethodsWithArrayParameters) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, MethodsReturningCustomTypes) {
@@ -338,7 +338,7 @@ TEST(TauComprehensive, MethodsReturningCustomTypes) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, OverloadedMethodNames) {
@@ -354,7 +354,7 @@ TEST(TauComprehensive, OverloadedMethodNames) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, MixedAsyncAndSyncMethods) {
@@ -371,7 +371,7 @@ TEST(TauComprehensive, MixedAsyncAndSyncMethods) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, MethodsWithComplexSignatures) {
@@ -387,7 +387,7 @@ TEST(TauComprehensive, MethodsWithComplexSignatures) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, MethodNamingConventions) {
@@ -406,7 +406,7 @@ TEST(TauComprehensive, MethodNamingConventions) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, LongParameterLists) {
@@ -421,7 +421,7 @@ TEST(TauComprehensive, LongParameterLists) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, MethodsWithEnumParameters) {
@@ -437,7 +437,7 @@ TEST(TauComprehensive, MethodsWithEnumParameters) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, MethodsWithNestedStructs) {
@@ -454,7 +454,7 @@ TEST(TauComprehensive, MethodsWithNestedStructs) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, GetterSetterPatterns) {
@@ -473,7 +473,7 @@ TEST(TauComprehensive, GetterSetterPatterns) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, CRUDOperations) {
@@ -492,7 +492,7 @@ TEST(TauComprehensive, CRUDOperations) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, EventHandlerPattern) {
@@ -509,7 +509,7 @@ TEST(TauComprehensive, EventHandlerPattern) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 // ============================================================================
@@ -528,7 +528,7 @@ TEST(TauComprehensive, SimpleStruct) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, StructWithAllPrimitives) {
@@ -545,7 +545,7 @@ TEST(TauComprehensive, StructWithAllPrimitives) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, StructWithArrayFields) {
@@ -561,7 +561,7 @@ TEST(TauComprehensive, StructWithArrayFields) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, NestedStructs) {
@@ -580,7 +580,7 @@ TEST(TauComprehensive, NestedStructs) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, StructWithEnumField) {
@@ -596,7 +596,7 @@ TEST(TauComprehensive, StructWithEnumField) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, MultipleStructsInNamespace) {
@@ -610,7 +610,7 @@ TEST(TauComprehensive, MultipleStructsInNamespace) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, StructAsMethodParameter) {
@@ -626,7 +626,7 @@ TEST(TauComprehensive, StructAsMethodParameter) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, StructArrayAsReturnType) {
@@ -642,7 +642,7 @@ TEST(TauComprehensive, StructArrayAsReturnType) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, EmptyStruct) {
@@ -656,7 +656,7 @@ TEST(TauComprehensive, EmptyStruct) {
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
     // May fail or succeed depending on implementation
-    EXPECT_TRUE(proxy.Failed || !proxy.Failed);
+    EXPECT_TRUE(proxy.failed || !proxy.failed);
 }
 
 TEST(TauComprehensive, StructWithSingleField) {
@@ -670,7 +670,7 @@ TEST(TauComprehensive, StructWithSingleField) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, StructWithManyFields) {
@@ -690,7 +690,7 @@ TEST(TauComprehensive, StructWithManyFields) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, DTOPattern) {
@@ -711,7 +711,7 @@ TEST(TauComprehensive, DTOPattern) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, RequestResponsePattern) {
@@ -734,7 +734,7 @@ TEST(TauComprehensive, RequestResponsePattern) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, StructFieldNaming) {
@@ -751,7 +751,7 @@ TEST(TauComprehensive, StructFieldNaming) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, ComplexNestedStructure) {
@@ -766,7 +766,7 @@ TEST(TauComprehensive, ComplexNestedStructure) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 // ============================================================================
@@ -786,7 +786,7 @@ TEST(TauComprehensive, SimpleEnum) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, EnumWithTwoValues) {
@@ -801,7 +801,7 @@ TEST(TauComprehensive, EnumWithTwoValues) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, EnumWithManyValues) {
@@ -821,7 +821,7 @@ TEST(TauComprehensive, EnumWithManyValues) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, MultipleEnums) {
@@ -834,7 +834,7 @@ TEST(TauComprehensive, MultipleEnums) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, EnumInInterface) {
@@ -850,7 +850,7 @@ TEST(TauComprehensive, EnumInInterface) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, EnumArrays) {
@@ -866,7 +866,7 @@ TEST(TauComprehensive, EnumArrays) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, EnumNamingStyles) {
@@ -884,7 +884,7 @@ TEST(TauComprehensive, EnumNamingStyles) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, StatusEnumPattern) {
@@ -902,7 +902,7 @@ TEST(TauComprehensive, StatusEnumPattern) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, ErrorCodeEnum) {
@@ -920,7 +920,7 @@ TEST(TauComprehensive, ErrorCodeEnum) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, EnumWithStructAndInterface) {
@@ -936,7 +936,7 @@ TEST(TauComprehensive, EnumWithStructAndInterface) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, EnumSingleValue) {
@@ -950,7 +950,7 @@ TEST(TauComprehensive, EnumSingleValue) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, DirectionEnum) {
@@ -967,7 +967,7 @@ TEST(TauComprehensive, DirectionEnum) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, LogLevelEnum) {
@@ -989,7 +989,7 @@ TEST(TauComprehensive, LogLevelEnum) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, PermissionEnum) {
@@ -1007,7 +1007,7 @@ TEST(TauComprehensive, PermissionEnum) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, StateTransitionEnum) {
@@ -1025,7 +1025,7 @@ TEST(TauComprehensive, StateTransitionEnum) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 // ============================================================================
@@ -1043,7 +1043,7 @@ TEST(TauComprehensive, SimpleEvent) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, EventWithParameters) {
@@ -1058,7 +1058,7 @@ TEST(TauComprehensive, EventWithParameters) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, MultipleEvents) {
@@ -1075,7 +1075,7 @@ TEST(TauComprehensive, MultipleEvents) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, EventsWithStructParameters) {
@@ -1090,7 +1090,7 @@ TEST(TauComprehensive, EventsWithStructParameters) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, EventsWithArrayParameters) {
@@ -1105,7 +1105,7 @@ TEST(TauComprehensive, EventsWithArrayParameters) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, MixedMethodsAndEvents) {
@@ -1122,7 +1122,7 @@ TEST(TauComprehensive, MixedMethodsAndEvents) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, EventNamingConventions) {
@@ -1139,7 +1139,7 @@ TEST(TauComprehensive, EventNamingConventions) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, LifecycleEvents) {
@@ -1158,7 +1158,7 @@ TEST(TauComprehensive, LifecycleEvents) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, DataChangeEvents) {
@@ -1175,7 +1175,7 @@ TEST(TauComprehensive, DataChangeEvents) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, EventsWithEnumParameters) {
@@ -1191,7 +1191,7 @@ TEST(TauComprehensive, EventsWithEnumParameters) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 // ============================================================================
@@ -1214,7 +1214,7 @@ TEST(TauComprehensive, CompleteServiceInterface) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, DatabaseInterface) {
@@ -1233,7 +1233,7 @@ TEST(TauComprehensive, DatabaseInterface) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, MessagingSystem) {
@@ -1251,7 +1251,7 @@ TEST(TauComprehensive, MessagingSystem) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, FileSystemInterface) {
@@ -1270,7 +1270,7 @@ TEST(TauComprehensive, FileSystemInterface) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, AuthenticationService) {
@@ -1290,7 +1290,7 @@ TEST(TauComprehensive, AuthenticationService) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, CacheInterface) {
@@ -1308,7 +1308,7 @@ TEST(TauComprehensive, CacheInterface) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, GameStateInterface) {
@@ -1329,7 +1329,7 @@ TEST(TauComprehensive, GameStateInterface) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, PaymentGateway) {
@@ -1348,7 +1348,7 @@ TEST(TauComprehensive, PaymentGateway) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, NotificationService) {
@@ -1367,7 +1367,7 @@ TEST(TauComprehensive, NotificationService) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, WorkflowEngine) {
@@ -1387,7 +1387,7 @@ TEST(TauComprehensive, WorkflowEngine) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, MediaPlayer) {
@@ -1409,7 +1409,7 @@ TEST(TauComprehensive, MediaPlayer) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, SensorDataCollector) {
@@ -1429,7 +1429,7 @@ TEST(TauComprehensive, SensorDataCollector) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, TaskScheduler) {
@@ -1449,7 +1449,7 @@ TEST(TauComprehensive, TaskScheduler) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, ShoppingCart) {
@@ -1470,7 +1470,7 @@ TEST(TauComprehensive, ShoppingCart) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, ChatApplication) {
@@ -1493,7 +1493,7 @@ TEST(TauComprehensive, ChatApplication) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 // ============================================================================
@@ -1511,7 +1511,7 @@ TEST(TauComprehensive, AgentBasicGeneration) {
 
     string agentOutput;
     Generate::GenerateAgent agent(tauCode.c_str(), agentOutput);
-    ASSERT_FALSE(agent.Failed) << agent.Error;
+    ASSERT_FALSE(agent.failed) << agent.error;
     EXPECT_NE(agentOutput.find("namespace Agent"), string::npos);
 }
 
@@ -1526,7 +1526,7 @@ TEST(TauComprehensive, AgentWithEvents) {
 
     string agentOutput;
     Generate::GenerateAgent agent(tauCode.c_str(), agentOutput);
-    ASSERT_FALSE(agent.Failed) << agent.Error;
+    ASSERT_FALSE(agent.failed) << agent.error;
 }
 
 TEST(TauComprehensive, AgentWithStructs) {
@@ -1541,7 +1541,7 @@ TEST(TauComprehensive, AgentWithStructs) {
 
     string agentOutput;
     Generate::GenerateAgent agent(tauCode.c_str(), agentOutput);
-    ASSERT_FALSE(agent.Failed) << agent.Error;
+    ASSERT_FALSE(agent.failed) << agent.error;
 }
 
 TEST(TauComprehensive, AgentWithEnums) {
@@ -1556,7 +1556,7 @@ TEST(TauComprehensive, AgentWithEnums) {
 
     string agentOutput;
     Generate::GenerateAgent agent(tauCode.c_str(), agentOutput);
-    ASSERT_FALSE(agent.Failed) << agent.Error;
+    ASSERT_FALSE(agent.failed) << agent.error;
 }
 
 TEST(TauComprehensive, AgentWithAsyncMethods) {
@@ -1570,7 +1570,7 @@ TEST(TauComprehensive, AgentWithAsyncMethods) {
 
     string agentOutput;
     Generate::GenerateAgent agent(tauCode.c_str(), agentOutput);
-    ASSERT_FALSE(agent.Failed) << agent.Error;
+    ASSERT_FALSE(agent.failed) << agent.error;
 }
 
 TEST(TauComprehensive, AgentWithMultipleMethods) {
@@ -1586,7 +1586,7 @@ TEST(TauComprehensive, AgentWithMultipleMethods) {
 
     string agentOutput;
     Generate::GenerateAgent agent(tauCode.c_str(), agentOutput);
-    ASSERT_FALSE(agent.Failed) << agent.Error;
+    ASSERT_FALSE(agent.failed) << agent.error;
 }
 
 TEST(TauComprehensive, AgentNestedNamespaces) {
@@ -1600,7 +1600,7 @@ TEST(TauComprehensive, AgentNestedNamespaces) {
 
     string agentOutput;
     Generate::GenerateAgent agent(tauCode.c_str(), agentOutput);
-    ASSERT_FALSE(agent.Failed) << agent.Error;
+    ASSERT_FALSE(agent.failed) << agent.error;
 }
 
 TEST(TauComprehensive, AgentComplexInterface) {
@@ -1617,7 +1617,7 @@ TEST(TauComprehensive, AgentComplexInterface) {
 
     string agentOutput;
     Generate::GenerateAgent agent(tauCode.c_str(), agentOutput);
-    ASSERT_FALSE(agent.Failed) << agent.Error;
+    ASSERT_FALSE(agent.failed) << agent.error;
 }
 
 TEST(TauComprehensive, ProxyAndAgentMatch) {
@@ -1631,11 +1631,11 @@ TEST(TauComprehensive, ProxyAndAgentMatch) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed);
+    ASSERT_FALSE(proxy.failed);
 
     string agentOutput;
     Generate::GenerateAgent agent(tauCode.c_str(), agentOutput);
-    ASSERT_FALSE(agent.Failed);
+    ASSERT_FALSE(agent.failed);
 
     // Both should contain the interface name
     EXPECT_NE(proxyOutput.find("IMatch"), string::npos);
@@ -1653,7 +1653,7 @@ TEST(TauComprehensive, AgentWithArrays) {
 
     string agentOutput;
     Generate::GenerateAgent agent(tauCode.c_str(), agentOutput);
-    ASSERT_FALSE(agent.Failed) << agent.Error;
+    ASSERT_FALSE(agent.failed) << agent.error;
 }
 
 // ============================================================================
@@ -1674,7 +1674,7 @@ TEST(TauComprehensive, VeryLongIdentifiers) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, SpecialCharactersInStrings) {
@@ -1691,7 +1691,7 @@ TEST(TauComprehensive, SpecialCharactersInStrings) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, MinimalInterface) {
@@ -1705,7 +1705,7 @@ TEST(TauComprehensive, MinimalInterface) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, LargeInterface) {
@@ -1723,7 +1723,7 @@ TEST(TauComprehensive, LargeInterface) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 }
 
 TEST(TauComprehensive, AllFeaturesCombiined) {
@@ -1748,11 +1748,11 @@ TEST(TauComprehensive, AllFeaturesCombiined) {
 
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
 
     string agentOutput;
     Generate::GenerateAgent agent(tauCode.c_str(), agentOutput);
-    ASSERT_FALSE(agent.Failed) << agent.Error;
+    ASSERT_FALSE(agent.failed) << agent.error;
 
     EXPECT_NE(proxyOutput.find("ISystem"), string::npos);
     EXPECT_NE(agentOutput.find("ISystem"), string::npos);

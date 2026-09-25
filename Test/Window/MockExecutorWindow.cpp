@@ -1,4 +1,4 @@
-﻿#include "MockExecutorWindow.h"
+#include "MockExecutorWindow.h"
 
 using namespace std;
 
@@ -133,7 +133,7 @@ void ExecutorWindow::ExecuteDebugStep() {
                 AddLog("No active scope");
             }
         }
-    } catch (exception::Base& e) {
+    } catch (kai::exception::Base& e) {
         AddLog("Debug operation failed: %s", e.ToString().c_str());
     }
 }
@@ -194,7 +194,7 @@ void ExecutorWindow::ExecCommand(const char* command_line) {
         } else {
             AddLog("Stack is empty");
         }
-    } catch (exception::Base& e) {
+    } catch (kai::exception::Base& e) {
         AddLog("Error: %s", e.what());
     }
 }

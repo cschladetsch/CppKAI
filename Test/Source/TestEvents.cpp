@@ -1,4 +1,4 @@
-#include "EventHelper.h"
+﻿#include "EventHelper.h"
 #include "TestCommon.h"
 
 USING_NAMESPACE_KAI
@@ -82,8 +82,8 @@ TEST_F(TestEvents, TestFunctionsAndMethods) {
     ASSERT_EQ(123, foo.r2);
     ASSERT_EQ(-2, foo.r3);
     ASSERT_EQ(3.14f, foo.f3);
-    ASSERT_STREQ("hello", foo.s2.c_str());
-    ASSERT_STREQ("world", foo.s3.c_str());
+    ASSERT_STREQ("hello", foo.s2.CStr());
+    ASSERT_STREQ("world", foo.s3.CStr());
 
     Registry reg;
     reg.AddClass<void>();

@@ -110,7 +110,7 @@ int RunServer(const Options &options) {
     node.RegisterMethod<int, Object>(
         agentHandle, "ThawAndResume", std::function<int(Object)>([&](const Object& frozen) {
             try {
-                Object cont = bin::Thaw(frozen);
+                Object cont = Bin::Thaw(frozen);
                 if (!cont.Exists() || !cont.IsType<Continuation>()) {
                     throw std::runtime_error("Expected a thawed continuation");
                 }
@@ -190,7 +190,7 @@ int RunClient(const Options &options) {
         return 1;
     }
 
-    Object frozen = bin::Freeze(*cont->self);
+    Object frozen = Bin::Freeze(*cont->self);
     if (!frozen.Exists()) {
         std::cerr << "CLIENT_ERROR: failed to freeze continuation\n";
         return 1;

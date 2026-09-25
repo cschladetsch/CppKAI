@@ -1,4 +1,4 @@
-﻿#include <gtest/gtest.h>
+#include <gtest/gtest.h>
 
 #include "KAI/Console/Console.h"
 #include "KAI/Core/BuiltinTypes.h"
@@ -43,7 +43,7 @@ struct RhoMoreControlFixedTests : TestLangCommon {
             T actual = ConstDeref<T>(result);
             ASSERT_EQ(actual, expected) << "Value mismatch";
 
-        } catch (const exception::Base& e) {
+        } catch (const kai::exception::Base& e) {
             FAIL() << "Exception: " << e.ToString();
         } catch (const std::exception& e) {
             FAIL() << "std::exception: " << e.what();

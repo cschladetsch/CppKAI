@@ -1,4 +1,4 @@
-#include "KAI/Core/StringStream.h"
+﻿#include "KAI/Core/StringStream.h"
 #include "TestCommon.h"
 
 USING_NAMESPACE_KAI
@@ -53,7 +53,7 @@ TEST_F(TestMap, TestInsertDelete) {
     ASSERT_TRUE(map->ContainsKey(n));
     Object found = map->GetValue(n);
 
-    ASSERT_STREQ(ConstDeref<String>(found).c_str(), "Hello");
+    ASSERT_STREQ(ConstDeref<String>(found).CStr(), "Hello");
     ASSERT_EQ(found.GetHandle(), s.GetHandle());
 
     ASSERT_TRUE(map.Exists());
@@ -111,7 +111,7 @@ TEST_F(TestMap, TestStringStream) {
     Pointer<StringStream> t = Reg().New<StringStream>();
     *t << m;
 
-    std::cout << t->ToString().c_str() << std::endl;
+    std::cout << t->ToString().CStr() << std::endl;
 
     // here, we extract a map back out of the stream.
     //

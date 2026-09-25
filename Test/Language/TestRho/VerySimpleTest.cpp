@@ -27,7 +27,7 @@ TEST_F(VerySimpleTest, JustAssignment) {
         // For now, just pass if no exception was thrown
         SUCCEED() << "Script executed without exceptions";
 
-    } catch (const kai::Exception::Base& e) {
+    } catch (const kai::exception::Base& e) {
         FAIL() << "Exception: " << e.ToString();
     }
 }

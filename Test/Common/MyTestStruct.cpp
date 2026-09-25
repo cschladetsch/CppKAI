@@ -1,4 +1,4 @@
-#include "MyTestStruct.h"
+﻿#include "MyTestStruct.h"
 
 #include "TestCommon.h"
 
@@ -12,10 +12,10 @@ KAI_BEGIN
 // register MyStruct with a registry. it couldn't be easier.
 void MyStruct::Register(Registry &registry) {
     ClassBuilder<MyStruct>(registry, "MyStruct")
-        .Methods("Method0", &MyStruct::Method0, "A method")(
+        .methods("Method0", &MyStruct::Method0, "A method")(
             "Method1", &MyStruct::Method1, "Another method")(
             "Method2", &MyStruct::Method2, "Another method")
-        .Properties("num", &MyStruct::num, "a number")(
+        .properties("num", &MyStruct::num, "a number")(
             "string", &MyStruct::string, "a string")
         //("list", &MyStruct::list, "a list")
         ;

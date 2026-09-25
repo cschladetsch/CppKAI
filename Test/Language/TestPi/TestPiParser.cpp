@@ -1,4 +1,4 @@
-#include <KAI/Language/Pi/Pi.h>
+﻿#include <KAI/Language/Pi/Pi.h>
 
 #include "TestCommon.h"
 
@@ -20,8 +20,8 @@ TEST(PiParser, TestSimple) {
     parse->Process(lex, Structure::Sequence);
 
     if (trace) KAI_TRACE_1(parse->PrintTree());
-    ASSERT_FALSE(lex->Failed);
-    ASSERT_FALSE(parse->Failed);
+    ASSERT_FALSE(lex->failed);
+    ASSERT_FALSE(parse->failed);
 
     auto root = parse->GetRoot();
     ASSERT_EQ(root->GetChildren().size(), 1);
@@ -34,13 +34,13 @@ TEST(PiParser, TestCompoundWorks) {
     shared_ptr<PiLexer> lex = make_shared<PiLexer>(input, reg);
     lex->Process();
     if (trace) KAI_TRACE_1(lex->Print());
-    if (lex->Failed) KAI_TRACE_1(lex->Error);
+    if (lex->failed) KAI_TRACE_1(lex->Error);
 
     shared_ptr<PiParser> parser = make_shared<PiParser>(reg);
     parser->Process(lex, Structure::Sequence);
 
-    ASSERT_FALSE(lex->Failed);
-    ASSERT_FALSE(parser->Failed);
+    ASSERT_FALSE(lex->failed);
+    ASSERT_FALSE(parser->failed);
 
     if (trace) parser->PrintTree();
 
@@ -63,14 +63,14 @@ TEST(PiParser, TestMixedCompound) {
     shared_ptr<PiLexer> lex = make_shared<PiLexer>(input, reg);
     lex->Process();
     if (trace) KAI_TRACE_1(lex->Print());
-    if (lex->Failed) KAI_TRACE_1(lex->Error);
+    if (lex->failed) KAI_TRACE_1(lex->Error);
 
     shared_ptr<PiParser> parse = make_shared<PiParser>(reg);
     parse->Process(lex, Structure::Sequence);
 
     if (trace) KAI_TRACE_1(parse->PrintTree());
-    ASSERT_FALSE(lex->Failed);
-    ASSERT_FALSE(parse->Failed);
+    ASSERT_FALSE(lex->failed);
+    ASSERT_FALSE(parse->failed);
 }
 
 TEST(PiParser, TestCompoundFail) {
@@ -79,14 +79,14 @@ TEST(PiParser, TestCompoundFail) {
     shared_ptr<PiLexer> lex = make_shared<PiLexer>(input, reg);
     lex->Process();
     if (trace) KAI_TRACE_1(lex->Print());
-    if (lex->Failed) KAI_TRACE_1(lex->Error);
+    if (lex->failed) KAI_TRACE_1(lex->Error);
 
     shared_ptr<PiParser> parse = make_shared<PiParser>(reg);
     parse->Process(lex, Structure::Sequence);
 
     if (trace) KAI_TRACE_1(parse->PrintTree());
-    ASSERT_FALSE(lex->Failed);
-    ASSERT_TRUE(parse->Failed);
+    ASSERT_FALSE(lex->failed);
+    ASSERT_TRUE(parse->failed);
 }
 
 TEST(PiParser, TestCompoundFail2) {
@@ -96,15 +96,15 @@ TEST(PiParser, TestCompoundFail2) {
     shared_ptr<PiLexer> lex = make_shared<PiLexer>(input, reg);
     lex->Process();
     if (trace) KAI_TRACE_1(lex->Print());
-    if (lex->Failed) KAI_TRACE_1(lex->Error);
+    if (lex->failed) KAI_TRACE_1(lex->Error);
 
     shared_ptr<PiParser> parse = make_shared<PiParser>(reg);
     parse->Process(lex, Structure::Sequence);
 
     // Disabled for cleaner output
     // KAI_TRACE_1(parse->PrintTree());
-    ASSERT_FALSE(lex->Failed);
-    ASSERT_TRUE(parse->Failed);
+    ASSERT_FALSE(lex->failed);
+    ASSERT_TRUE(parse->failed);
 }
 
 TEST(PiParser, TestCompoundFail3) {
@@ -114,13 +114,13 @@ TEST(PiParser, TestCompoundFail3) {
     shared_ptr<PiLexer> lex = make_shared<PiLexer>(input, reg);
     lex->Process();
     if (trace) KAI_TRACE_1(lex->Print());
-    if (lex->Failed) KAI_TRACE_1(lex->Error);
+    if (lex->failed) KAI_TRACE_1(lex->Error);
 
     shared_ptr<PiParser> parse = make_shared<PiParser>(reg);
     parse->Process(lex, Structure::Sequence);
 
     if (trace) KAI_TRACE_1(parse->PrintTree());
-    ASSERT_FALSE(lex->Failed);
-    ASSERT_TRUE(parse->Failed);
+    ASSERT_FALSE(lex->failed);
+    ASSERT_TRUE(parse->failed);
 }
 }  // namespace

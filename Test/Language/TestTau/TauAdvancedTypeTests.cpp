@@ -48,7 +48,7 @@ struct TauAdvancedTypeTests : TestLangCommon {
 
         if (!success) {
             KAI_LOG_WARNING("Parser for " + testName +
-                            " reported failure: " + parser->Error);
+                            " reported failure: " + parser->error);
             if (!expectSuccess) {
                 SUCCEED() << "Parser failed as expected for test: " << testName;
                 return;
@@ -57,7 +57,7 @@ struct TauAdvancedTypeTests : TestLangCommon {
 
         if (expectSuccess) {
             EXPECT_TRUE(success)
-                << "Parser for " << testName << " failed: " << parser->Error;
+                << "Parser for " << testName << " failed: " << parser->error;
         } else {
             SUCCEED() << "Test completed for: " << testName
                       << " (known limitation)";
@@ -70,7 +70,7 @@ struct TauAdvancedTypeTests : TestLangCommon {
         string output;
         tau::Generate::GenerateProxy proxy(script.c_str(), output);
 
-        if (proxy.Failed) {
+        if (proxy.failed) {
             KAI_LOG_WARNING("Proxy generation for " + testName +
                             " reported failure: " + proxy.Error);
             if (!expectSuccess) {
@@ -85,8 +85,8 @@ struct TauAdvancedTypeTests : TestLangCommon {
         }
 
         if (expectSuccess) {
-            EXPECT_FALSE(proxy.Failed) << "Proxy generation for " << testName
-                                       << " failed: " << proxy.Error;
+            EXPECT_FALSE(proxy.failed) << "Proxy generation for " << testName
+                                       << " failed: " << proxy.error;
             EXPECT_FALSE(output.empty()) << "Proxy generation for " << testName
                                          << " produced empty output";
         } else {
@@ -100,7 +100,7 @@ struct TauAdvancedTypeTests : TestLangCommon {
         string output;
         tau::Generate::GenerateAgent agent(script.c_str(), output);
 
-        if (agent.Failed) {
+        if (agent.failed) {
             KAI_LOG_WARNING("Agent generation for " + testName +
                             " reported failure: " + agent.Error);
             if (!expectSuccess) {
@@ -115,8 +115,8 @@ struct TauAdvancedTypeTests : TestLangCommon {
         }
 
         if (expectSuccess) {
-            EXPECT_FALSE(agent.Failed) << "Agent generation for " << testName
-                                       << " failed: " << agent.Error;
+            EXPECT_FALSE(agent.failed) << "Agent generation for " << testName
+                                       << " failed: " << agent.error;
             EXPECT_FALSE(output.empty()) << "Agent generation for " << testName
                                          << " produced empty output";
         } else {

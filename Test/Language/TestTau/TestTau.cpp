@@ -24,15 +24,15 @@ struct TestTau : TestLangCommon {
         KAI_LOG_INFO("Lexer output for " + testName + ": " + lex->Print());
 
         if (!lexResult) {
-            FAIL() << "Lexer failed for " << testName << ": " << lex->Error;
+            FAIL() << "Lexer failed for " << testName << ": " << lex->error;
             return;
         }
 
         auto parser = std::make_shared<tau::TauParser>(r);
         parser->Process(lex, Structure::Module);
 
-        if (!parser->Error.empty()) {
-            FAIL() << "Parser failed for " << testName << ": " << parser->Error;
+        if (!parser->error.empty()) {
+            FAIL() << "Parser failed for " << testName << ": " << parser->error;
             return;
         }
 
@@ -45,7 +45,7 @@ struct TestTau : TestLangCommon {
         string proxyOutput;
         tau::Generate::GenerateProxy proxy(script.c_str(), proxyOutput);
 
-        if (proxy.Failed) {
+        if (proxy.failed) {
             KAI_LOG_WARNING("Proxy generation for " + testName +
                             " failed: " + proxy.Error);
         } else {
@@ -58,7 +58,7 @@ struct TestTau : TestLangCommon {
         string agentOutput;
         tau::Generate::GenerateAgent agent(script.c_str(), agentOutput);
 
-        if (agent.Failed) {
+        if (agent.failed) {
             KAI_LOG_WARNING("Agent generation for " + testName +
                             " failed: " + agent.Error);
         } else {
@@ -68,7 +68,7 @@ struct TestTau : TestLangCommon {
         }
 
         // Success if at least one generator worked
-        if (!proxy.Failed || !agent.Failed) {
+        if (!proxy.failed || !agent.failed) {
             SUCCEED() << "Code generation for " << testName << " completed";
         } else {
             FAIL() << "Both proxy and agent generation failed for " << testName;
@@ -242,12 +242,12 @@ const char* kTauModule = R"(namespace MLB
 TEST(TauParser, ParsesInlineModule) {
     Registry reg;
     auto lex = make_shared<tau::TauLexer>(kTauModule, reg);
-    ASSERT_TRUE(lex->Process()) << lex->Error << "\nTokens: " << lex->Print();
-    ASSERT_FALSE(lex->Failed) << lex->Error << "\nTokens: " << lex->Print();
+    ASSERT_TRUE(lex->Process()) << lex->error << "\nTokens: " << lex->Print();
+    ASSERT_FALSE(lex->failed) << lex->error << "\nTokens: " << lex->Print();
 
     auto parser = make_shared<tau::TauParser>(reg);
-    ASSERT_TRUE(parser->Process(lex, Structure::Module)) << parser->Error;
-    ASSERT_FALSE(parser->Failed) << parser->Error;
+    ASSERT_TRUE(parser->Process(lex, Structure::Module)) << parser->error;
+    ASSERT_FALSE(parser->failed) << parser->error;
 
     auto root = parser->GetRoot();
     ASSERT_FALSE(root->GetChildren().empty());
@@ -261,7 +261,7 @@ TEST(TauGenerate, GeneratesProxyFromInlineModule) {
     string output;
     tau::Generate::GenerateProxy proxy(kTauModule, output);
 
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
     ASSERT_FALSE(output.empty());
     ASSERT_NE(output.find("namespace MLB"), string::npos);
     ASSERT_NE(output.find("class C"), string::npos);

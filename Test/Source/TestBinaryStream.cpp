@@ -1,4 +1,4 @@
-#include <KAI/Network/Serialization.h>
+﻿#include <KAI/Network/Serialization.h>
 
 #include "TestCommon.h"
 
@@ -148,7 +148,7 @@ TEST(TestBinaryStream, TestProperties) {
     R.AddClass<bool>();
     R.AddClass<String>();
     ClassBuilder<TestPropertiesStruct>(R, "TestPropertiesStruct")
-        .Methods.Properties("num", &TestPropertiesStruct::num)(
+        .methods.properties("num", &TestPropertiesStruct::num)(
             "str", &TestPropertiesStruct::str)("foo",
                                                &TestPropertiesStruct::foo);
     Pointer<TestPropertiesStruct> tps = R.New<TestPropertiesStruct>();
@@ -168,7 +168,7 @@ TEST(TestBinaryStream, TestProperties) {
     ASSERT_TRUE(result.Exists());
     ASSERT_TRUE(result.IsType<TestPropertiesStruct>());
     EXPECT_EQ(ConstDeref<int>(result.Get(Label("num"))), 42);
-    EXPECT_STREQ(ConstDeref<String>(result.Get(Label("str"))).c_str(), "hello");
+    EXPECT_STREQ(ConstDeref<String>(result.Get(Label("str"))).CStr(), "hello");
     // ASSERT_TRUE(result.Get("foo").IsType<TestPropertiesStruct>());
     ASSERT_TRUE(result.Get("foo").IsType<bool>());
 }

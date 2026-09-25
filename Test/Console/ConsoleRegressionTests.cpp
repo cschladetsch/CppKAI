@@ -1,4 +1,4 @@
-﻿#include <gtest/gtest.h>
+#include <gtest/gtest.h>
 
 #include <iostream>
 #include <sstream>
@@ -167,12 +167,12 @@ TEST_F(ConsoleRegressionTests, StringConcat_RightEmpty) {
 
 TEST_F(ConsoleRegressionTests, StringPlusInt_Throws) {
     exec_->ClearStacks();
-    EXPECT_THROW(console_.Execute("\"a\" 3 +"), exception::Base);
+    EXPECT_THROW(console_.Execute("\"a\" 3 +"), kai::exception::Base);
 }
 
 TEST_F(ConsoleRegressionTests, IntPlusString_Throws) {
     exec_->ClearStacks();
-    EXPECT_THROW(console_.Execute("3 \"a\" +"), exception::Base);
+    EXPECT_THROW(console_.Execute("3 \"a\" +"), kai::exception::Base);
 }
 
 // ---------------------------------------------------------------------
@@ -246,31 +246,31 @@ TEST_F(ConsoleRegressionTests, StackSize_ZeroOnFreshExecutor) {
 // ---------------------------------------------------------------------
 
 TEST_F(ConsoleRegressionTests, WriteStack_EmptyStack_IsEmptyString) {
-    ASSERT_TRUE(console_.WriteStack().empty());
+    ASSERT_TRUE(console_.WriteStack().Empty());
 }
 
 TEST_F(ConsoleRegressionTests, WriteStack_SingleInt_ContainsValue) {
     console_.Execute("42");
-    std::string dump = console_.WriteStack().c_str();
+    std::string dump = console_.WriteStack().CStr();
     ASSERT_NE(dump.find("42"), std::string::npos);
 }
 
 TEST_F(ConsoleRegressionTests, WriteStack_SingleString_IsQuoted) {
     console_.Execute("\"hi\"");
-    std::string dump = console_.WriteStack().c_str();
+    std::string dump = console_.WriteStack().CStr();
     ASSERT_NE(dump.find("\"hi\""), std::string::npos);
 }
 
 TEST_F(ConsoleRegressionTests, WriteStack_TwoInts_BothPresent) {
     console_.Execute("1 2");
-    std::string dump = console_.WriteStack().c_str();
+    std::string dump = console_.WriteStack().CStr();
     ASSERT_NE(dump.find("1"), std::string::npos);
     ASSERT_NE(dump.find("2"), std::string::npos);
 }
 
 TEST_F(ConsoleRegressionTests, WriteStack_ReflectsDrop) {
     console_.Execute("1 2 drop");
-    std::string dump = console_.WriteStack().c_str();
+    std::string dump = console_.WriteStack().CStr();
     ASSERT_NE(dump.find("1"), std::string::npos);
     ASSERT_EQ(dump.find("2"), std::string::npos);
 }
@@ -408,7 +408,7 @@ TEST_F(ConsoleRegressionTests, ClearKeyword_OnEmptyStack_NoThrow) {
 
 TEST_F(ConsoleRegressionTests, ClearKeyword_WriteStack_EmptyAfterClear) {
     console_.Execute("1 2 3 clear");
-    ASSERT_TRUE(console_.WriteStack().empty());
+    ASSERT_TRUE(console_.WriteStack().Empty());
 }
 
 TEST_F(ConsoleRegressionTests, ClearKeyword_ShowColoredStack_NoOutputAfterClear) {

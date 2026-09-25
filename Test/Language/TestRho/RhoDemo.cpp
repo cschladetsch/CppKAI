@@ -1,4 +1,4 @@
-﻿#include <gtest/gtest.h>
+#include <gtest/gtest.h>
 
 #include <filesystem>
 #include <fstream>
@@ -54,7 +54,7 @@ class RhoDemo : public TestLangCommon {
             String script = String(scriptStr.c_str());
 
             // Execute the script
-            console.Execute(script.c_str());
+            console.Execute(script.CStr());
 
             // Get result from data stack if needed
             auto stack = console.GetExecutor()->GetDataStack();
@@ -65,7 +65,7 @@ class RhoDemo : public TestLangCommon {
             }
 
             return true;
-        } catch (const exception::Base &e) {
+        } catch (const kai::exception::Base &e) {
             Logger::ErrorWithLocation("Exception: " + std::string(e.ToString()),
                                       __FILE__, __LINE__);
             return false;

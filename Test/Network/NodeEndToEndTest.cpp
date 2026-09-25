@@ -1,4 +1,4 @@
-﻿#include <gtest/gtest.h>
+#include <gtest/gtest.h>
 
 #include <chrono>
 #include <functional>
@@ -450,7 +450,7 @@ TEST_F(NodeEndToEndTest, RemoteContinuationMigration) {
                 }
                 int result = ConstDeref<int>(stack->Top());
                 return result;
-            } catch (const exception::Base &e) {
+            } catch (const kai::exception::Base &e) {
                 throw std::runtime_error(
                     "Server ThawAndResume KAI exception: " + e.ToString());
             } catch (const std::exception &e) {

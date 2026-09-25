@@ -1,4 +1,4 @@
-﻿#include <gtest/gtest.h>
+#include <gtest/gtest.h>
 
 #include "KAI/Console/Console.h"
 #include "TestLangCommon.h"
@@ -35,7 +35,7 @@ struct MinimalControlFlowTest : TestLangCommon {
                     std::cout << "ERROR: Stack is empty!" << std::endl;
                 }
             }
-        } catch (const exception::Base &e) {
+        } catch (const kai::exception::Base &e) {
             std::cout << "Exception: " << e.ToString() << std::endl;
         } catch (...) {
             std::cout << "Unknown exception" << std::endl;

@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 
 #include <iostream>
 #include <string>
@@ -34,8 +34,8 @@ TEST(RhoLanguage, AssertTest) {
     String result1 = console.Process("true assert");
 
     // If there's no error message, the assertion passed
-    ASSERT_TRUE(result1.empty())
-        << "Assertion with true value failed unexpectedly: " << result1.c_str();
+    ASSERT_TRUE(result1.Empty())
+        << "Assertion with true value failed unexpectedly: " << result1.CStr();
 
     // The second part is a bit tricky because console.Process() catches
     // exceptions and might return an empty string or a string with an exception
@@ -56,6 +56,6 @@ TEST(RhoLanguage, AssertTest) {
 
     // Log the actual result for information
     std::cout << "Assertion result: "
-              << (result2.empty() ? "[no output]" : result2.c_str())
+              << (result2.Empty() ? "[no output]" : result2.CStr())
               << std::endl;
 }

@@ -1,4 +1,4 @@
-// Reference executable model for the continuation mobility story.
+﻿// Reference executable model for the continuation mobility story.
 // The canonical version of the demo now lives in
 // Demo/ContinuationMobilityDemo/ContinuationMobilityDemo.rho.
 
@@ -335,20 +335,20 @@ Plan PiAssistant::Ask(const MobileAgent& agent, const World& world)
 
     if (agent.regionName == "Market" && world.tickCount >= 56 && world.tickCount <= 60) {
         return Plan{.summary = "hold position in Market so failure recovery can be tested",
-                    .target_region = std::nullopt};
+                    .targetRegion = std::nullopt};
     }
 
     if (agent.regionName == "Market") {
         return Plan{.summary = "market congestion detected; re-route to Harbor",
-                    .target_region = std::string("Harbor")};
+                    .targetRegion = std::string("Harbor")};
     }
 
     if (currentLoad >= 4) {
         return Plan{.summary = "host is saturated; move to backup capacity",
-                    .target_region = world.RegionOnHost("NodeD", "Backup")};
+                    .targetRegion = world.RegionOnHost("NodeD", "Backup")};
     }
 
-    return Plan{.summary = "continue local survey on " + agent.regionName, .target_region = std::nullopt};
+    return Plan{.summary = "continue local survey on " + agent.regionName, .targetRegion = std::nullopt};
 }
 
 World CreateDemoWorld() {

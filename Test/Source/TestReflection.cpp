@@ -41,10 +41,10 @@ class ReflectionTest : public kai::TestCommon {
 
         // Register test class
         kai::ClassBuilder<TestClass>(*reg_, "TestClass")
-            .Methods("SetValue", &TestClass::SetValue)(
+            .methods("SetValue", &TestClass::SetValue)(
                 "GetValue", &TestClass::GetValue)("GetDescription",
                                                   &TestClass::GetDescription)
-            .Properties("value", &TestClass::value)("name", &TestClass::name);
+            .properties("value", &TestClass::value)("name", &TestClass::name);
     }
 };
 
@@ -101,10 +101,10 @@ TEST_F(ReflectionTest, DynamicMethodInvocation) {
         setValueMethod->Invoke(obj, stack);
 
         EXPECT_EQ(kai::Deref<TestClass>(obj).value, 123);
-    } catch (const kai::Exception::ConstError& e) {
+    } catch (const kai::exception::ConstError& e) {
         GTEST_SKIP() << "Method invocation fails with const error: "
                      << e.ToString() << ". Object IsConst: " << obj.IsConst();
-    } catch (const kai::Exception::Base& e) {
+    } catch (const kai::exception::Base& e) {
         FAIL() << "Unexpected exception: " << e.ToString();
     }
 }
@@ -151,9 +151,9 @@ TEST_F(ReflectionTest, PropertyAccessReflection) {
         // Get property value
         auto propValue = valueProp.GetValue(obj);
         EXPECT_EQ(kai::ConstDeref<int>(propValue), 456);
-    } catch (const kai::Exception::UnknownProperty& e) {
+    } catch (const kai::exception::UnknownProperty& e) {
         GTEST_SKIP() << "UnknownProperty exception: " << e.ToString();
-    } catch (const kai::Exception::Base& e) {
+    } catch (const kai::exception::Base& e) {
         GTEST_SKIP() << "Exception: " << e.ToString();
     } catch (...) {
         GTEST_SKIP() << "Unknown exception thrown";

@@ -166,7 +166,7 @@ TEST_F(RhoAdvancedTest, PiBlockErrorHandling) {
     console_.SetLanguage(kai::Language::Rho);
 
     // Test 1: Empty pi block
-    EXPECT_THROW(console_.Execute("empty = pi{ }"), kai::Exception::Base);
+    EXPECT_THROW(console_.Execute("empty = pi{ }"), kai::exception::Base);
 }
 
 // Test performance-critical operations with pi blocks

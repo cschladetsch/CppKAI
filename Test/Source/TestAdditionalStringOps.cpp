@@ -1,4 +1,4 @@
-#include <algorithm>
+﻿#include <algorithm>
 
 #include "TestCommon.h"
 
@@ -58,13 +58,13 @@ TEST_F(TestAdditionalStringOps, TestSizeAndEmpty) {
     Pointer<String> str2 = Reg().New<String>("");
 
     // Test size methods
-    ASSERT_EQ(str1->size(), 13);
     ASSERT_EQ(str1->Size(), 13);
-    ASSERT_EQ(str2->size(), 0);
+    ASSERT_EQ(str1->Size(), 13);
+    ASSERT_EQ(str2->Size(), 0);
 
     // Test empty methods
-    ASSERT_FALSE(str1->empty());
     ASSERT_FALSE(str1->Empty());
-    ASSERT_TRUE(str2->empty());
+    ASSERT_FALSE(str1->Empty());
+    ASSERT_TRUE(str2->Empty());
     ASSERT_TRUE(str2->Empty());
 }

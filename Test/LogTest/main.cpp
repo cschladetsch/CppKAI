@@ -1,4 +1,4 @@
-#include <KAI/Core/Base.h>
+﻿#include <KAI/Core/Base.h>
 #include <KAI/Core/Debug.h>
 #include <KAI/Core/Logger.h>
 
@@ -12,9 +12,9 @@ int main() {
         kai::Logger::Init();
 
         // Ensure trace settings are set to show file and line info
-        kai::debug::Trace::TraceFileLocation = true;
-        kai::debug::Trace::StripPath = true;
-        kai::debug::Trace::TraceFunction = true;
+        kai::debug::Trace::traceFileLocation = true;
+        kai::debug::Trace::stripPath = true;
+        kai::debug::Trace::traceFunction = true;
 
         std::cout << "Testing basic Logger methods..." << std::endl;
         // Test basic Logger methods directly

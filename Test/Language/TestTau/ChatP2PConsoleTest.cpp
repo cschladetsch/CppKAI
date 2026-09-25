@@ -47,11 +47,11 @@ TEST_F(ChatP2PConsoleTest, BasicChatCommands) {
 
     // Lex and parse
     lexer->Process();
-    ASSERT_FALSE(lexer->Failed) << "Lexer failed: " << lexer->Error;
+    ASSERT_FALSE(lexer->failed) << "Lexer failed: " << lexer->error;
 
     bool parseResult = parser.Process(lexer, Structure::Module);
     EXPECT_TRUE(parseResult)
-        << "Failed to parse ChatInterface.tau: " << parser.Error;
+        << "Failed to parse ChatInterface.tau: " << parser.error;
 
     // Verify parsing succeeded
     auto root = parser.GetRoot();
@@ -61,7 +61,7 @@ TEST_F(ChatP2PConsoleTest, BasicChatCommands) {
     string proxyOutput;
     tau::Generate::GenerateProxy proxy(chatInterfaceTau_.c_str(), proxyOutput);
 
-    ASSERT_FALSE(proxy.Failed) << "Proxy generation failed: " << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << "Proxy generation failed: " << proxy.error;
     ASSERT_FALSE(proxyOutput.empty());
 
     // Verify proxy contains chat interfaces
@@ -76,7 +76,7 @@ TEST_F(ChatP2PConsoleTest, ConsoleRhoIntegration) {
     string proxyOutput;
     tau::Generate::GenerateProxy proxy(chatInterfaceTau_.c_str(), proxyOutput);
 
-    if (proxy.Failed || proxyOutput.empty()) {
+    if (proxy.failed || proxyOutput.empty()) {
         GTEST_SKIP()
             << "Proxy generation not fully implemented for nested namespaces";
     }
@@ -103,7 +103,7 @@ TEST_F(ChatP2PConsoleTest, WindowIntegrationConcept) {
     string agentOutput;
     tau::Generate::GenerateAgent agent(chatInterfaceTau_.c_str(), agentOutput);
 
-    if (agent.Failed || agentOutput.empty()) {
+    if (agent.failed || agentOutput.empty()) {
         GTEST_SKIP()
             << "Agent generation not fully implemented for nested namespaces";
     }
@@ -129,7 +129,7 @@ TEST_F(ChatP2PConsoleTest, ErrorHandling) {
     // Generate proxy and verify types are included
     string proxyOutput;
     tau::Generate::GenerateProxy proxy(chatInterfaceTau_.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << "Proxy generation failed: " << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << "Proxy generation failed: " << proxy.error;
 
     // Check that events are defined
     EXPECT_NE(chatInterfaceTau_.find("event OnMessageReceived"), string::npos);

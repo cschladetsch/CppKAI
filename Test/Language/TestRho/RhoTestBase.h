@@ -43,7 +43,7 @@ struct RhoTestBase : kai::TestLangCommon {
                 std::string actualTypeName =
                     val.GetClass()
                         ? std::string(
-                              val.GetClass()->GetName().ToString().c_str())
+                              val.GetClass()->GetName().ToString().CStr())
                         : "unknown";
                 KAI_LOG_ERROR("Type mismatch. Expected: " + expectedTypeName +
                               ", Got: " + actualTypeName);
@@ -67,7 +67,7 @@ struct RhoTestBase : kai::TestLangCommon {
             }
             ASSERT_EQ(expected, actual)
                 << "Result doesn't match expected value";
-        } catch (const kai::Exception::Base &e) {
+        } catch (const kai::exception::Base &e) {
             KAI_LOG_ERROR("Exception: " + std::string(e.ToString()));
             FAIL() << "Exception: " << e.ToString();
         } catch (const std::exception &e) {
@@ -107,7 +107,7 @@ struct RhoTestBase : kai::TestLangCommon {
                 std::string actualTypeName =
                     val.GetClass()
                         ? std::string(
-                              val.GetClass()->GetName().ToString().c_str())
+                              val.GetClass()->GetName().ToString().CStr())
                         : "unknown";
                 FAIL() << "Type mismatch. Expected: " << expectedTypeName
                        << ", Got: " << actualTypeName;
@@ -117,7 +117,7 @@ struct RhoTestBase : kai::TestLangCommon {
             T actual = kai::ConstDeref<T>(val);
             ASSERT_EQ(expected, actual)
                 << "Result doesn't match expected value";
-        } catch (const kai::Exception::Base &e) {
+        } catch (const kai::exception::Base &e) {
             FAIL() << "Exception: " << e.ToString();
         } catch (const std::exception &e) {
             FAIL() << "std::exception: " << e.what();

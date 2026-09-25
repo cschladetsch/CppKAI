@@ -1,4 +1,4 @@
-﻿#include <gtest/gtest.h>
+#include <gtest/gtest.h>
 
 #include <fstream>
 #include <sstream>
@@ -45,7 +45,7 @@ struct RhoControlTestsFixed : TestLangCommon {
                 std::string actualTypeName =
                     val.GetClass()
                         ? std::string(
-                              val.GetClass()->GetName().ToString().c_str())
+                              val.GetClass()->GetName().ToString().CStr())
                         : "unknown";
                 KAI_LOG_ERROR("Type mismatch. Expected: " + expectedTypeName +
                               ", Got: " + actualTypeName);
@@ -69,7 +69,7 @@ struct RhoControlTestsFixed : TestLangCommon {
             }
             ASSERT_EQ(expected, actual)
                 << "Result doesn't match expected value";
-        } catch (const exception::Base &e) {
+        } catch (const kai::exception::Base &e) {
             KAI_LOG_ERROR("Exception: " + std::string(e.ToString()));
             FAIL() << "Exception: " << e.ToString();
         } catch (const std::exception &e) {

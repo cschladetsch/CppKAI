@@ -1,4 +1,4 @@
-﻿#include <gtest/gtest.h>
+#include <gtest/gtest.h>
 
 #include <chrono>
 #include <filesystem>
@@ -106,9 +106,9 @@ class TauProxyAgentCommunicationTest : public TestLangCommon {
         auto parser = make_shared<tau::TauParser>(registry);
         bool parseResult = parser->Process(lexer, Structure::Module);
 
-        EXPECT_TRUE(parseResult) << "Parser failed: " + parser->Error;
+        EXPECT_TRUE(parseResult) << "Parser failed: " + parser->error;
         if (!parseResult) {
-            KAI_LOG_ERROR("Parser failed: " + parser->Error);
+            KAI_LOG_ERROR("Parser failed: " + parser->error);
             return nullptr;
         }
 
@@ -122,7 +122,7 @@ class TauProxyAgentCommunicationTest : public TestLangCommon {
             string output;
             tau::Generate::GenerateProxy proxy(script.c_str(), output);
 
-            if (proxy.Failed) {
+            if (proxy.failed) {
                 KAI_LOG_ERROR("Proxy generation failed: " + proxy.Error);
                 return false;
             }
@@ -155,7 +155,7 @@ class TauProxyAgentCommunicationTest : public TestLangCommon {
             string output;
             tau::Generate::GenerateAgent agent(script.c_str(), output);
 
-            if (agent.Failed) {
+            if (agent.failed) {
                 KAI_LOG_ERROR("Agent generation failed: " + agent.Error);
                 return false;
             }
@@ -188,7 +188,7 @@ class TauProxyAgentCommunicationTest : public TestLangCommon {
             string output;
             tau::Generate::GenerateStruct structGen(script.c_str(), output);
 
-            if (structGen.Failed) {
+            if (structGen.failed) {
                 KAI_LOG_ERROR("Struct generation failed: " + structGen.Error);
                 return false;
             }
@@ -415,15 +415,15 @@ TEST_F(TauProxyAgentCommunicationTest, MinimalInterface) {
     // Test proxy generation
     string proxyOutput;
     tau::Generate::GenerateProxy proxy(minimalTau.c_str(), proxyOutput);
-    EXPECT_FALSE(proxy.Failed)
-        << "Minimal proxy generation should succeed: " << proxy.Error;
+    EXPECT_FALSE(proxy.failed)
+        << "Minimal proxy generation should succeed: " << proxy.error;
     EXPECT_FALSE(proxyOutput.empty()) << "Proxy output should not be empty";
 
     // Test agent generation
     string agentOutput;
     tau::Generate::GenerateAgent agent(minimalTau.c_str(), agentOutput);
-    EXPECT_FALSE(agent.Failed)
-        << "Minimal agent generation should succeed: " << agent.Error;
+    EXPECT_FALSE(agent.failed)
+        << "Minimal agent generation should succeed: " << agent.error;
     EXPECT_FALSE(agentOutput.empty()) << "Agent output should not be empty";
 
     KAI_LOG_INFO("Minimal interface test completed successfully");
@@ -452,7 +452,7 @@ TEST_F(TauProxyAgentCommunicationTest, InvalidTauSyntax) {
         // Either lexing or parsing should fail with invalid syntax
         if (!parseResult) {
             KAI_LOG_INFO("Parser correctly rejected invalid syntax: " +
-                         parser->Error);
+                         parser->error);
             EXPECT_FALSE(parseResult) << "Parser should reject invalid syntax";
         }
     } else {

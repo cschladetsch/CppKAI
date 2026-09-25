@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <sstream>
 
 #include "../../Include/TestLangCommon.h"
@@ -23,7 +23,7 @@ TEST_F(TestLangCommon, SemicolonBasics) {
 
         console_.Execute(ss.str());
         std::cout << "SemicolonBasics test passed!" << std::endl;
-    } catch (const exception::Base& e) {
+    } catch (const kai::exception::Base& e) {
         std::cerr << "KAI Exception: " << e.ToString() << std::endl;
         FAIL() << "SemicolonBasics test failed with KAI exception: "
                << e.ToString();
@@ -53,7 +53,7 @@ TEST_F(TestLangCommon, MultipleSemicolonStatements) {
 
         console_.Execute(ss.str());
         std::cout << "MultipleSemicolonStatements test passed!" << std::endl;
-    } catch (const exception::Base& e) {
+    } catch (const kai::exception::Base& e) {
         std::cerr << "KAI Exception: " << e.ToString() << std::endl;
         FAIL() << "MultipleSemicolonStatements test failed with KAI exception: "
                << e.ToString();
@@ -84,7 +84,7 @@ TEST_F(TestLangCommon, SemicolonsInExpressions) {
 
         console_.Execute(ss.str());
         std::cout << "SemicolonsInExpressions test passed!" << std::endl;
-    } catch (const exception::Base& e) {
+    } catch (const kai::exception::Base& e) {
         std::cerr << "KAI Exception: " << e.ToString() << std::endl;
         FAIL() << "SemicolonsInExpressions test failed with KAI exception: "
                << e.ToString();
@@ -116,7 +116,7 @@ TEST_F(TestLangCommon, NestedExpressionsWithSemicolons) {
         console_.Execute(ss.str());
         std::cout << "NestedExpressionsWithSemicolons test passed!"
                   << std::endl;
-    } catch (const exception::Base& e) {
+    } catch (const kai::exception::Base& e) {
         std::cerr << "KAI Exception: " << e.ToString() << std::endl;
         FAIL() << "NestedExpressionsWithSemicolons test failed with KAI "
                   "exception: "
@@ -146,7 +146,7 @@ TEST_F(TestLangCommon, TrailingSemicolon) {
 
         console_.Execute(ss.str());
         std::cout << "TrailingSemicolon test passed!" << std::endl;
-    } catch (const exception::Base& e) {
+    } catch (const kai::exception::Base& e) {
         std::cerr << "KAI Exception: " << e.ToString() << std::endl;
         FAIL() << "TrailingSemicolon test failed with KAI exception: "
                << e.ToString();
@@ -173,7 +173,7 @@ TEST_F(TestLangCommon, EmptyStatement) {
 
         console_.Execute(ss.str());
         std::cout << "EmptyStatement test passed!" << std::endl;
-    } catch (const exception::Base& e) {
+    } catch (const kai::exception::Base& e) {
         std::cerr << "KAI Exception: " << e.ToString() << std::endl;
         FAIL() << "EmptyStatement test failed with KAI exception: "
                << e.ToString();
@@ -203,7 +203,7 @@ TEST_F(TestLangCommon, MixedNewlinesAndSemicolons) {
 
         console_.Execute(ss.str());
         std::cout << "MixedNewlinesAndSemicolons test passed!" << std::endl;
-    } catch (const exception::Base& e) {
+    } catch (const kai::exception::Base& e) {
         std::cerr << "KAI Exception: " << e.ToString() << std::endl;
         FAIL() << "MixedNewlinesAndSemicolons test failed with KAI exception: "
                << e.ToString();
@@ -233,7 +233,7 @@ TEST_F(TestLangCommon, InlineForLoopWithSemicolons) {
 
         console_.Execute(ss.str());
         std::cout << "InlineForLoopWithSemicolons test passed!" << std::endl;
-    } catch (const exception::Base& e) {
+    } catch (const kai::exception::Base& e) {
         std::cerr << "KAI Exception: " << e.ToString() << std::endl;
         FAIL() << "InlineForLoopWithSemicolons test failed with KAI exception: "
                << e.ToString();
@@ -268,7 +268,7 @@ TEST_F(TestLangCommon, ForLoopEmptySections) {
 
         console_.Execute(ss.str());
         std::cout << "ForLoopEmptySections test passed!" << std::endl;
-    } catch (const exception::Base& e) {
+    } catch (const kai::exception::Base& e) {
         std::cerr << "KAI Exception: " << e.ToString() << std::endl;
         FAIL() << "ForLoopEmptySections test failed with KAI exception: "
                << e.ToString();
@@ -298,7 +298,7 @@ TEST_F(TestLangCommon, InlineIfElse) {
 
         console_.Execute(ss.str());
         std::cout << "InlineIfElse test passed!" << std::endl;
-    } catch (const exception::Base& e) {
+    } catch (const kai::exception::Base& e) {
         std::cerr << "KAI Exception: " << e.ToString() << std::endl;
         FAIL() << "InlineIfElse test failed with KAI exception: "
                << e.ToString();
@@ -328,7 +328,7 @@ TEST_F(TestLangCommon, FunctionWithSemicolons) {
 
         console_.Execute(ss.str());
         std::cout << "FunctionWithSemicolons test passed!" << std::endl;
-    } catch (const exception::Base& e) {
+    } catch (const kai::exception::Base& e) {
         std::cerr << "KAI Exception: " << e.ToString() << std::endl;
         FAIL() << "FunctionWithSemicolons test failed with KAI exception: "
                << e.ToString();
@@ -363,7 +363,7 @@ TEST_F(TestLangCommon, ComplexExpressionWithSemicolons) {
         console_.Execute(ss.str());
         std::cout << "ComplexExpressionWithSemicolons test passed!"
                   << std::endl;
-    } catch (const exception::Base& e) {
+    } catch (const kai::exception::Base& e) {
         std::cerr << "KAI Exception: " << e.ToString() << std::endl;
         FAIL() << "ComplexExpressionWithSemicolons test failed with KAI "
                   "exception: "

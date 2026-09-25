@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <sstream>
 
 #include "../../Include/TestLangCommon.h"
@@ -83,7 +83,7 @@ TEST_F(TestLangCommon, ForLoopSemicolonsSyntax) {
 
         // Success if we get here (all assertions passed)
         std::cout << "ForLoopSemicolonsSyntax test passed!" << std::endl;
-    } catch (const exception::Base& e) {
+    } catch (const kai::exception::Base& e) {
         std::cerr << "KAI Exception: " << e.ToString() << std::endl;
         FAIL() << "ForLoopSemicolonsSyntax test failed with KAI exception: "
                << e.ToString();
@@ -143,7 +143,7 @@ TEST_F(TestLangCommon, ForLoopFormattingVariations) {
 
         // Success if we get here (all assertions passed)
         std::cout << "ForLoopFormattingVariations test passed!" << std::endl;
-    } catch (const exception::Base& e) {
+    } catch (const kai::exception::Base& e) {
         std::cerr << "KAI Exception: " << e.ToString() << std::endl;
         FAIL() << "ForLoopFormattingVariations test failed with KAI exception: "
                << e.ToString();

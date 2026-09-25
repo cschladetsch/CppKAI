@@ -1,4 +1,4 @@
-﻿#include <gtest/gtest.h>
+#include <gtest/gtest.h>
 
 #include "KAI/Console/Console.h"
 #include "TestLangCommon.h"
@@ -29,7 +29,7 @@ struct RhoLambdaTestsFixed : TestLangCommon {
 
             T actual = ConstDeref<T>(val);
             EXPECT_EQ(expected, actual);
-        } catch (const exception::Base &e) {
+        } catch (const kai::exception::Base &e) {
             FAIL() << "Exception: " << e.ToString();
         } catch (const std::exception &e) {
             FAIL() << "std::exception: " << e.what();

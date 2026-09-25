@@ -35,9 +35,9 @@ TEST(TauAttribute, BasicAttributes) {
 
     // For now, attributes are not implemented in the parser
     // This test just verifies the IDL can be lexed without errors
-    EXPECT_TRUE(parser->Error.empty() ||
-                parser->Error.find("Not Implemented") != std::string::npos)
-        << "Parser error: " << parser->Error;
+    EXPECT_TRUE(parser->error.empty() ||
+                parser->error.find("Not Implemented") != std::string::npos)
+        << "Parser error: " << parser->error;
 }
 
 TEST(TauAttribute, CustomAttributes) {
@@ -70,9 +70,9 @@ TEST(TauAttribute, CustomAttributes) {
     (void)parser->Process(lexer, kai::Structure::Module);
 
     // Attributes are not yet implemented
-    EXPECT_TRUE(parser->Error.empty() ||
-                parser->Error.find("Not Implemented") != std::string::npos)
-        << "Parser error: " << parser->Error;
+    EXPECT_TRUE(parser->error.empty() ||
+                parser->error.find("Not Implemented") != std::string::npos)
+        << "Parser error: " << parser->error;
 }
 
 TEST(TauAttribute, MethodAttributes) {
@@ -102,9 +102,9 @@ TEST(TauAttribute, MethodAttributes) {
     auto parser = std::make_shared<kai::tau::TauParser>(reg);
     (void)parser->Process(lexer, kai::Structure::Module);
 
-    EXPECT_TRUE(parser->Error.empty() ||
-                parser->Error.find("Not Implemented") != std::string::npos)
-        << "Parser error: " << parser->Error;
+    EXPECT_TRUE(parser->error.empty() ||
+                parser->error.find("Not Implemented") != std::string::npos)
+        << "Parser error: " << parser->error;
 }
 
 TEST(TauAttribute, CompileTimeAttributes) {
@@ -132,9 +132,9 @@ TEST(TauAttribute, CompileTimeAttributes) {
     auto parser = std::make_shared<kai::tau::TauParser>(reg);
     (void)parser->Process(lexer, kai::Structure::Module);
 
-    EXPECT_TRUE(parser->Error.empty() ||
-                parser->Error.find("Not Implemented") != std::string::npos)
-        << "Parser error: " << parser->Error;
+    EXPECT_TRUE(parser->error.empty() ||
+                parser->error.find("Not Implemented") != std::string::npos)
+        << "Parser error: " << parser->error;
 }
 
 TEST(TauAttribute, ConditionalAttributes) {
@@ -164,7 +164,7 @@ TEST(TauAttribute, ConditionalAttributes) {
     auto parser = std::make_shared<kai::tau::TauParser>(reg);
     (void)parser->Process(lexer, kai::Structure::Module);
 
-    EXPECT_TRUE(parser->Error.empty() ||
-                parser->Error.find("Not Implemented") != std::string::npos)
-        << "Parser error: " << parser->Error;
+    EXPECT_TRUE(parser->error.empty() ||
+                parser->error.find("Not Implemented") != std::string::npos)
+        << "Parser error: " << parser->error;
 }

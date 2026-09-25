@@ -58,12 +58,12 @@ struct TauCodeGenTests : TestLangCommon {
         bool parserResult = parser->Process(lex, Structure::Module);
 
         if (!parserResult) {
-            KAI_LOG_WARNING("Parser error: " + parser->Error);
+            KAI_LOG_WARNING("Parser error: " + parser->error);
         }
 
         tau::Generate::GenerateProxy proxy(script.c_str(), output);
 
-        if (proxy.Failed) {
+        if (proxy.failed) {
             KAI_LOG_WARNING("Proxy generation failed: " + proxy.Error);
             return false;
         }
@@ -89,12 +89,12 @@ struct TauCodeGenTests : TestLangCommon {
         bool parserResult = parser->Process(lex, Structure::Module);
 
         if (!parserResult) {
-            KAI_LOG_WARNING("Parser error: " + parser->Error);
+            KAI_LOG_WARNING("Parser error: " + parser->error);
         }
 
         tau::Generate::GenerateAgent agent(script.c_str(), output);
 
-        if (agent.Failed) {
+        if (agent.failed) {
             KAI_LOG_WARNING("Agent generation failed: " + agent.Error);
             return false;
         }

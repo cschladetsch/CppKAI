@@ -1,4 +1,4 @@
-#include <KAI/Core/BuiltinTypes.h>
+﻿#include <KAI/Core/BuiltinTypes.h>
 #include <KAI/Core/BuiltinTypes/Array.h>
 #include <KAI/Core/BuiltinTypes/Map.h>
 
@@ -71,7 +71,7 @@ TEST_F(TestPiAdvanced, TestArrayOperations) {
     ASSERT_EQ(data_->Size(), 1) << "Stack should have 1 item";
     std::cout << "Top item type: "
               << (data_->Top().GetClass()
-                      ? data_->Top().GetClass()->GetName().ToString().c_str()
+                      ? data_->Top().GetClass()->GetName().ToString().CStr()
                       : "No class")
               << std::endl;
 
@@ -99,7 +99,7 @@ TEST_F(TestPiAdvanced, TestArrayOperations) {
     ASSERT_EQ(data_->Size(), 1) << "Stack should have 1 item";
     std::cout << "Top item type: "
               << (data_->Top().GetClass()
-                      ? data_->Top().GetClass()->GetName().ToString().c_str()
+                      ? data_->Top().GetClass()->GetName().ToString().CStr()
                       : "No class")
               << std::endl;
 
@@ -123,7 +123,7 @@ TEST_F(TestPiAdvanced, TestArrayOperations) {
 
     std::cout << "Top item type after direct array creation: "
               << (data_->Top().GetClass()
-                      ? data_->Top().GetClass()->GetName().ToString().c_str()
+                      ? data_->Top().GetClass()->GetName().ToString().CStr()
                       : "No class")
               << std::endl;
 
@@ -137,7 +137,7 @@ TEST_F(TestPiAdvanced, TestArrayOperations) {
         Object elemObj = arr.At(i);
         std::cout << "Array element " << i << " type: "
                   << (elemObj.GetClass()
-                          ? elemObj.GetClass()->GetName().ToString().c_str()
+                          ? elemObj.GetClass()->GetName().ToString().CStr()
                           : "No class")
                   << std::endl;
         if (elemObj.IsType<int>()) {

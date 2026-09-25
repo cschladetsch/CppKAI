@@ -1,4 +1,4 @@
-#include <KAI/Core/BuiltinTypes.h>
+﻿#include <KAI/Core/BuiltinTypes.h>
 #include <KAI/Core/Registry.h>
 #include <KAI/Language/Tau/Generate/GenerateAgent.h>
 #include <KAI/Language/Tau/Generate/GenerateProxy.h>
@@ -31,7 +31,7 @@ TEST(TauInterface, BasicInterface) {
     // Test proxy generation
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << "Proxy generation failed: " << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << "Proxy generation failed: " << proxy.error;
     ASSERT_FALSE(proxyOutput.empty());
 
     // Verify proxy contains expected elements
@@ -45,7 +45,7 @@ TEST(TauInterface, BasicInterface) {
     // Test agent generation
     string agentOutput;
     Generate::GenerateAgent agent(tauCode.c_str(), agentOutput);
-    ASSERT_FALSE(agent.Failed) << "Agent generation failed: " << agent.Error;
+    ASSERT_FALSE(agent.failed) << "Agent generation failed: " << agent.error;
     ASSERT_FALSE(agentOutput.empty());
 
     // Verify agent contains expected elements
@@ -72,7 +72,7 @@ TEST(TauInterface, MultipleInterfaces) {
     // Test proxy generation
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << "Proxy generation failed: " << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << "Proxy generation failed: " << proxy.error;
 
     // Verify both interfaces are generated
     EXPECT_NE(proxyOutput.find("IUserService"), string::npos);
@@ -83,7 +83,7 @@ TEST(TauInterface, MultipleInterfaces) {
     // Test agent generation
     string agentOutput;
     Generate::GenerateAgent agent(tauCode.c_str(), agentOutput);
-    ASSERT_FALSE(agent.Failed) << "Agent generation failed: " << agent.Error;
+    ASSERT_FALSE(agent.failed) << "Agent generation failed: " << agent.error;
 
     // Verify both interfaces are in agent code
     EXPECT_NE(agentOutput.find("IUserService"), string::npos);
@@ -107,7 +107,7 @@ TEST(TauInterface, InterfaceInheritance) {
     // Test proxy generation - verify it parses and generates code
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << "Proxy generation failed: " << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << "Proxy generation failed: " << proxy.error;
     ASSERT_FALSE(proxyOutput.empty()) << "Proxy output is empty";
 
     // Verify both interfaces are present in output
@@ -124,7 +124,7 @@ TEST(TauInterface, InterfaceInheritance) {
     // Test agent generation
     string agentOutput;
     Generate::GenerateAgent agent(tauCode.c_str(), agentOutput);
-    ASSERT_FALSE(agent.Failed) << "Agent generation failed: " << agent.Error;
+    ASSERT_FALSE(agent.failed) << "Agent generation failed: " << agent.error;
     ASSERT_FALSE(agentOutput.empty()) << "Agent output is empty";
 }
 
@@ -142,7 +142,7 @@ TEST(TauInterface, DefaultInterfaceMethods) {
     // Test proxy generation
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << "Proxy generation failed: " << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << "Proxy generation failed: " << proxy.error;
 
     // Verify methods are generated
     EXPECT_NE(proxyOutput.find("Connect"), string::npos);
@@ -151,7 +151,7 @@ TEST(TauInterface, DefaultInterfaceMethods) {
     // Test agent generation
     string agentOutput;
     Generate::GenerateAgent agent(tauCode.c_str(), agentOutput);
-    ASSERT_FALSE(agent.Failed) << "Agent generation failed: " << agent.Error;
+    ASSERT_FALSE(agent.failed) << "Agent generation failed: " << agent.error;
 }
 
 // Test generic/template interfaces
@@ -169,7 +169,7 @@ TEST(TauInterface, GenericInterfaces) {
     // Test proxy generation
     string proxyOutput;
     Generate::GenerateProxy proxy(tauCode.c_str(), proxyOutput);
-    ASSERT_FALSE(proxy.Failed) << "Proxy generation failed: " << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << "Proxy generation failed: " << proxy.error;
 
     // Verify interface methods
     EXPECT_NE(proxyOutput.find("IRepository"), string::npos);
@@ -180,5 +180,5 @@ TEST(TauInterface, GenericInterfaces) {
     // Test agent generation
     string agentOutput;
     Generate::GenerateAgent agent(tauCode.c_str(), agentOutput);
-    ASSERT_FALSE(agent.Failed) << "Agent generation failed: " << agent.Error;
+    ASSERT_FALSE(agent.failed) << "Agent generation failed: " << agent.error;
 }

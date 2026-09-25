@@ -1,4 +1,4 @@
-﻿#include <gtest/gtest.h>
+#include <gtest/gtest.h>
 
 #include <cstdlib>
 #include <filesystem>
@@ -66,7 +66,7 @@ TEST(RhoLanguage, TestDoWhileLoops) {
         bool found = false;
 
         if (fs::exists(scriptPath)) {
-            scriptContent = String(File::ReadAllText(scriptPath)).c_str();
+            scriptContent = String(File::ReadAllText(scriptPath)).CStr();
             found = !scriptContent.empty();
             cout << "Found script at: " << scriptPath.string() << endl;
         }
@@ -87,12 +87,12 @@ TEST(RhoLanguage, TestDoWhileLoops) {
         // Print stack contents
         while (!stack->Empty()) {
             Object obj = stack->Pop();
-            cout << "  Stack element: " << obj.ToString().c_str() << endl;
+            cout << "  Stack element: " << obj.ToString().CStr() << endl;
         }
 
         cout << "Test completed successfully!" << endl;
         SUCCEED();
-    } catch (const exception::Base& e) {
+    } catch (const kai::exception::Base& e) {
         cerr << "KAI Exception: " << e.ToString() << endl;
         FAIL() << "KAI Exception: " << e.ToString();
     } catch (const std::exception& e) {

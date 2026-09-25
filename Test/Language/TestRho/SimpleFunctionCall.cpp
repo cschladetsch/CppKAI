@@ -31,7 +31,7 @@ TEST_F(SimpleFunctionCall, BasicCall) {
         ASSERT_EQ(kai::ConstDeref<int>(result), 6)
             << "double(3) should return 6";
 
-    } catch (const kai::Exception::Base &e) {
+    } catch (const kai::exception::Base &e) {
         FAIL() << "Exception: " << e.ToString();
     }
 

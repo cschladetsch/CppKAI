@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 
 #include "TestLangCommon.h"
 
@@ -32,7 +32,7 @@ TEST_F(ExpressionProgramParityTest, ConsoleProcessProducesValueForCompactArithme
 
     data_->Clear();
     String output = console_.Process("1+2");
-    EXPECT_TRUE(output.Empty()) << output.c_str();
+    EXPECT_TRUE(output.Empty()) << output.CStr();
 
     ASSERT_FALSE(data_->Empty()) << "Console::Process produced no stack value";
     Object result = data_->Top();

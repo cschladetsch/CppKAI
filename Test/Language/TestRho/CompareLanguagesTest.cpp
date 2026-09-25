@@ -1,4 +1,4 @@
-﻿#include <gtest/gtest.h>
+#include <gtest/gtest.h>
 
 #include <iostream>
 #include <string>
@@ -89,7 +89,7 @@ TEST(LanguageComparison, ArithmeticRhoVsPi) {
 
             cout << "Pi test passed: 2 3 + = " << ConstDeref<int>(piResult)
                  << endl;
-        } catch (const exception::Base& e) {
+        } catch (const kai::exception::Base& e) {
             cerr << "Inner KAI Exception: " << e.ToString() << endl;
             FAIL() << "Inner exception during Pi execution: " << e.ToString();
         } catch (const std::exception& e) {
@@ -100,7 +100,7 @@ TEST(LanguageComparison, ArithmeticRhoVsPi) {
             FAIL() << "Inner unknown exception during Pi execution";
         }
 
-    } catch (const exception::Base& e) {
+    } catch (const kai::exception::Base& e) {
         cerr << "Pi KAI Exception: " << e.ToString() << endl;
         FAIL() << "Pi test failed with KAI exception: " << e.ToString();
     }
@@ -186,7 +186,7 @@ TEST(LanguageComparison, ArithmeticRhoVsPi) {
 
             cout << "Rho test passed: 2 + 3 = " << ConstDeref<int>(rhoResult)
                  << endl;
-        } catch (const exception::Base& e) {
+        } catch (const kai::exception::Base& e) {
             cerr << "Inner KAI Exception: " << e.ToString() << endl;
             FAIL() << "Inner exception during Rho execution: " << e.ToString();
         } catch (const std::exception& e) {
@@ -197,7 +197,7 @@ TEST(LanguageComparison, ArithmeticRhoVsPi) {
             FAIL() << "Inner unknown exception during Rho execution";
         }
 
-    } catch (const exception::Base& e) {
+    } catch (const kai::exception::Base& e) {
         cerr << "Rho KAI Exception: " << e.ToString() << endl;
         FAIL() << "Rho test failed with KAI exception: " << e.ToString();
     }

@@ -119,7 +119,7 @@ TEST_F(CoreAdvancedTests, ExceptionHandlingRobustness) {
         // Try to create object with invalid type
         Reg().GetObject(kai::Handle(9999999));
         FAIL() << "Expected exception for invalid handle";
-    } catch (const kai::Exception::Base &e) {
+    } catch (const kai::exception::Base &e) {
         // Expected
         SUCCEED();
     }
@@ -131,7 +131,7 @@ TEST_F(CoreAdvancedTests, ExceptionHandlingRobustness) {
         int val = kai::ConstDeref<int>(obj);
         (void)val;
         FAIL() << "Expected exception for deleted object access";
-    } catch (const kai::Exception::Base &e) {
+    } catch (const kai::exception::Base &e) {
         // Expected
         SUCCEED();
     }

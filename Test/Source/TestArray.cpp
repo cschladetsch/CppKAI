@@ -1,4 +1,4 @@
-﻿#include "TestCommon.h"
+#include "TestCommon.h"
 
 USING_NAMESPACE_KAI
 
@@ -391,10 +391,10 @@ TEST_F(TestArray, TestArrayInsertBoundaryConditions) {
     ASSERT_EQ(array->Size(), 3);
 
     // Test inserting past size (should throw)
-    ASSERT_THROW(array->Insert(10, Reg().New<int>(4)), exception::BadIndex);
+    ASSERT_THROW(array->Insert(10, Reg().New<int>(4)), kai::exception::BadIndex);
 
     // Test inserting at negative index (should throw)
-    ASSERT_THROW(array->Insert(-1, Reg().New<int>(0)), exception::BadIndex);
+    ASSERT_THROW(array->Insert(-1, Reg().New<int>(0)), kai::exception::BadIndex);
 }
 
 // Test 8: Insert arrays into arrays (nested arrays)

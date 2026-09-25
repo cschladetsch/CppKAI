@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <KAI/Console/Console.h>
 #include <KAI/Language/Pi/PiTranslator.h>
@@ -29,18 +29,18 @@ inline void SetupConsoleTranslators(Console& console) {
             switch (static_cast<Language>(lang)) {
                 case Language::Pi: {
                     piTranslator->trace = traceLevel;
-                    auto result = piTranslator->Translate(text.c_str(), st);
-                    if (piTranslator->Failed) {
-                        KAI_TRACE_ERROR() << piTranslator->Error;
+                    auto result = piTranslator->Translate(text.CStr(), st);
+                    if (piTranslator->failed) {
+                        KAI_TRACE_ERROR() << piTranslator->error;
                         return Object();
                     }
                     return result;
                 }
                 case Language::Rho: {
                     rhoTranslator->trace = traceLevel;
-                    auto result = rhoTranslator->Translate(text.c_str(), st);
-                    if (rhoTranslator->Failed) {
-                        KAI_TRACE_ERROR() << rhoTranslator->Error;
+                    auto result = rhoTranslator->Translate(text.CStr(), st);
+                    if (rhoTranslator->failed) {
+                        KAI_TRACE_ERROR() << rhoTranslator->error;
                         return Object();
                     }
                     return result;

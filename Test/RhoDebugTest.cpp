@@ -34,7 +34,7 @@ int main() {
             std::cout << "Parse tree: " << parser.PrintTree() << std::endl;
         } else {
             std::cout << "Parsing failed!" << std::endl;
-            std::cout << "Error: " << parser.Error << std::endl;
+            std::cout << "Error: " << parser.error << std::endl;
         }
 
     } catch (const std::exception& e) {

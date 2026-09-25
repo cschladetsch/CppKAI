@@ -27,8 +27,8 @@ class TauCodeGenerationExtensiveTests : public ::testing::Test {
                            string& error) {
         try {
             tau::Generate::GenerateProxy generator(tauCode.c_str(), output);
-            if (generator.Failed) {
-                error = generator.Error;
+            if (generator.failed) {
+                error = generator.error;
                 return false;
             }
             return !output.empty();
@@ -43,8 +43,8 @@ class TauCodeGenerationExtensiveTests : public ::testing::Test {
                            string& error) {
         try {
             tau::Generate::GenerateAgent generator(tauCode.c_str(), output);
-            if (generator.Failed) {
-                error = generator.Error;
+            if (generator.failed) {
+                error = generator.error;
                 return false;
             }
             return !output.empty();

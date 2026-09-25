@@ -110,7 +110,7 @@ struct TestNetworkConnection : TestLangCommon {
         bool success = parser->Process(lex, Structure::Module);
         if (!success) {
             KAI_LOG_WARNING("Parser for " + name +
-                            " reported failure: " + parser->Error);
+                            " reported failure: " + parser->error);
         }
 
         // Since we're just testing that the files can be loaded, we'll succeed
@@ -174,7 +174,7 @@ struct TestNetworkConnection : TestLangCommon {
         tau::Generate::GenerateProxy proxy(modifiedScript.c_str(), output);
 
         // Report the result
-        if (proxy.Failed) {
+        if (proxy.failed) {
             KAI_LOG_WARNING("Proxy generation for " + name +
                             " reported failure: " + proxy.Error);
         } else {
@@ -242,7 +242,7 @@ struct TestNetworkConnection : TestLangCommon {
         tau::Generate::GenerateAgent agent(modifiedScript.c_str(), output);
 
         // Report the result
-        if (agent.Failed) {
+        if (agent.failed) {
             KAI_LOG_WARNING("Agent generation for " + name +
                             " reported failure: " + agent.Error);
         } else {

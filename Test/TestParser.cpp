@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
     std::cout << "Parser result: " << (parserResult ? "SUCCESS" : "FAILED")
               << std::endl;
     if (!parserResult) {
-        std::cout << "Parser error: " << parser->Error << std::endl;
+        std::cout << "Parser error: " << parser->error << std::endl;
         return 1;
     }
 

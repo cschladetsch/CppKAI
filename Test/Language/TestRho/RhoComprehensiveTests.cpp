@@ -697,5 +697,5 @@ TEST_F(RhoComprehensiveTests, DoubleNegation) {
 }
 
 TEST_F(RhoComprehensiveTests, EmptyPiBlock) {
-    EXPECT_THROW(console_.Execute("x = pi{}"), kai::Exception::Base);
+    EXPECT_THROW(console_.Execute("x = pi{}"), kai::exception::Base);
 }

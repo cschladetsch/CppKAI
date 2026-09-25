@@ -1,4 +1,4 @@
-#include "KAI/Core/BuiltinTypes.h"
+﻿#include "KAI/Core/BuiltinTypes.h"
 #include "KAI/Core/DotGraph.h"
 #include "KAI/Core/Object/ClassBuilder.h"
 #include "KAI/Core/Tree.h"
@@ -24,7 +24,7 @@ TEST(TestDotGraph, Test) {
     R.AddClass<int>();
     R.AddClass<List>();
     ClassBuilder<TestOwned>(R, "TestOwned")
-        .Methods.Properties
+        .methods.properties
         //("list", &TestOwned::list, "", CreateParams::Create)
         ("num", &TestOwned::num);
 

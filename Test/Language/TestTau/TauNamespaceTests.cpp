@@ -27,17 +27,17 @@ struct TauNamespaceTests : TestLangCommon {
 
         if (!lexerSuccess) {
             KAI_LOG_WARNING("Lexer for " + testName + " failed: " + lex->Error);
-            FAIL() << "Lexer failed for " << testName << ": " << lex->Error;
+            FAIL() << "Lexer failed for " << testName << ": " << lex->error;
             return;
         }
 
         auto parser = std::make_shared<tau::TauParser>(r);
         parser->Process(lex, Structure::Module);
 
-        if (!parser->Error.empty()) {
+        if (!parser->error.empty()) {
             KAI_LOG_WARNING("Parser for " + testName +
-                            " reported error: " + parser->Error);
-            FAIL() << "Parser failed for " << testName << ": " << parser->Error;
+                            " reported error: " + parser->error);
+            FAIL() << "Parser failed for " << testName << ": " << parser->error;
             return;
         }
 

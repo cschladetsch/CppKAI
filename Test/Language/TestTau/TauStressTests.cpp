@@ -151,7 +151,7 @@ class TauStressTests : public ::testing::Test {
         try {
             tau::Generate::GenerateProxy proxyGen(tauContent.c_str(),
                                                   proxyOutput);
-            if (proxyGen.Failed) {
+            if (proxyGen.failed) {
                 return false;
             }
         } catch (const std::exception&) {
@@ -166,7 +166,7 @@ class TauStressTests : public ::testing::Test {
         try {
             tau::Generate::GenerateAgent agentGen(tauContent.c_str(),
                                                   agentOutput);
-            if (agentGen.Failed) {
+            if (agentGen.failed) {
                 return false;
             }
         } catch (const std::exception&) {
@@ -313,14 +313,14 @@ TEST_F(TauStressTests, ConcurrentGenerationTest) {
 
                 tau::Generate::GenerateProxy proxyGen(tauContent.c_str(),
                                                       proxyOutput);
-                if (proxyGen.Failed) {
+                if (proxyGen.failed) {
                     cout << "Proxy generation failed for thread " << i << endl;
                     return false;
                 }
 
                 tau::Generate::GenerateAgent agentGen(tauContent.c_str(),
                                                       agentOutput);
-                if (agentGen.Failed) {
+                if (agentGen.failed) {
                     cout << "Agent generation failed for thread " << i << endl;
                     return false;
                 }

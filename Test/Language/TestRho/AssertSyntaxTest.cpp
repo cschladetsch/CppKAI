@@ -1,4 +1,4 @@
-﻿#include <gtest/gtest.h>
+#include <gtest/gtest.h>
 
 #include "TestLangCommon.h"
 #include "KAI/Language/Rho/RhoTranslator.h"
@@ -18,13 +18,13 @@ TEST_F(AssertSyntaxTest, AssertRequiresParentheses) {
     RhoTranslator translator(*reg_);
     auto bare_assert =
         translator.Translate("assert true", Structure::Statement);
-    EXPECT_TRUE(translator.Failed);
+    EXPECT_TRUE(translator.failed);
     EXPECT_FALSE(bare_assert.Exists());
 
     RhoTranslator expression_translator(*reg_);
     auto bare_expression_assert = expression_translator.Translate(
         "assert 1 + 1 == 2", Structure::Statement);
-    EXPECT_TRUE(expression_translator.Failed);
+    EXPECT_TRUE(expression_translator.failed);
     EXPECT_FALSE(bare_expression_assert.Exists());
 
     SUCCEED();
@@ -36,7 +36,7 @@ TEST_F(AssertSyntaxTest, AssertFailure) {
     // This should throw an exception
     EXPECT_THROW(
         { console_.Execute("assert(1 + 1 == 3)", Structure::Statement); },
-        exception::Base);
+        kai::exception::Base);
 }
 
 TEST_F(AssertSyntaxTest, AssertInFunction) {

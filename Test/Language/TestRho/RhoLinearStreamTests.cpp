@@ -1,4 +1,4 @@
-﻿#include <gtest/gtest.h>
+#include <gtest/gtest.h>
 
 #include <iostream>
 #include <string>
@@ -26,7 +26,7 @@ class RhoScriptTest : public TestLangCommon {
             UnwrapStackValues();
 
             return true;
-        } catch (const exception::Base& e) {
+        } catch (const kai::exception::Base& e) {
             std::cerr << "Exception running script: " << e.ToString()
                       << std::endl;
             return false;

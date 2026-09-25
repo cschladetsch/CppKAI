@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 
 #include <string>
 #include <vector>
@@ -86,7 +86,7 @@ TEST(TauVeryComplexTests, GeneratesProxyForDeepRiskAndRoutingModel) {
     string output;
     tau::Generate::GenerateProxy proxy(ComplexTradingTau().c_str(), output);
 
-    ASSERT_FALSE(proxy.Failed) << proxy.Error;
+    ASSERT_FALSE(proxy.failed) << proxy.error;
     ASSERT_FALSE(output.empty());
     // Every proxy method returns a real Future<T> (via Exec<T> ->
     // Node::Invoke), so the declared return type is always wrapped.
@@ -103,7 +103,7 @@ TEST(TauVeryComplexTests, GeneratesAgentForDeepRiskAndRoutingModel) {
     string output;
     tau::Generate::GenerateAgent agent(ComplexTradingTau().c_str(), output);
 
-    ASSERT_FALSE(agent.Failed) << agent.Error;
+    ASSERT_FALSE(agent.failed) << agent.error;
     ASSERT_FALSE(output.empty());
     ExpectAll(output,
               {"namespace Trading", "namespace Risk", "namespace V2",
