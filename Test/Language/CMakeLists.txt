@@ -174,6 +174,7 @@ foreach (lang ${langs})
             ${source_path}/TutorialTest.cpp                 # Pi tutorial example smoke tests
             ${source_path}/PiNovelTests.cpp                 # New sequential-session, chained-arithmetic and string novel tests
             ${source_path}/PiCenturyTests.cpp                # 100 more tests: arithmetic, comparisons, boolean logic, min/max, abs, stack ops, floats, strings, compound expressions
+            ${source_path}/PiCenturyTests2.cpp               # 50 more tests: if/ife/while control flow, nested control flow, extended arithmetic/comparison/boolean edge cases
         )
     elseif(lang STREQUAL "Tau")
         # Explicitly list Tau tests including our new network connection tests
@@ -203,6 +204,7 @@ foreach (lang ${langs})
             ${source_path}/TauNodeRoundTripAndFutureTests.cpp  # 100 tests: 1-50 node round trips, continuations, classes with futures, futures over the network
             ${source_path}/TauFutureArgumentCodeGenTests.cpp   # Regression: Future<T> parameters must generate resolve-before-send / rebuild-on-receive code, not naive pass-through
             ${source_path}/TauCenturyTests.cpp                 # 50 more tests: realistic domain services, type coverage, inheritance, enums, composed files, malformed-input rejection
+            ${source_path}/TauCenturyTests2.cpp                # 50 more tests: Proxy/Agent naming, struct exclusion, event handler codegen, agent dispatch pattern, further malformed-input and composed-IDL tests
         )
     else()
         # For other languages, use the standard approach
