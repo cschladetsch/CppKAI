@@ -173,6 +173,7 @@ foreach (lang ${langs})
             ${source_path}/TestPiParser.cpp                 # Direct PiLexer/PiParser unit tests
             ${source_path}/TutorialTest.cpp                 # Pi tutorial example smoke tests
             ${source_path}/PiNovelTests.cpp                 # New sequential-session, chained-arithmetic and string novel tests
+            ${source_path}/PiCenturyTests.cpp                # 100 more tests: arithmetic, comparisons, boolean logic, min/max, abs, stack ops, floats, strings, compound expressions
         )
     elseif(lang STREQUAL "Tau")
         # Explicitly list Tau tests including our new network connection tests
