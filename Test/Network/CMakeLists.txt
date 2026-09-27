@@ -19,6 +19,7 @@ project(TestNetwork)
         NestedFutureTripleTest.cpp
         TauCodeGenParamTests.cpp
         NodeFutureNetworkParamTests.cpp
+        NetworkAddressCenturyTests.cpp
         # TestAgentProxy.cpp
         # ICQStyleChatTest.cpp
         # ChatProxyGenerationTest.cpp
