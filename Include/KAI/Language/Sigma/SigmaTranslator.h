@@ -1,110 +1,51 @@
 #pragma once
 
-#include <KAI/Language/Common/LexerCommon.h>
-#include <KAI/Language/Common/ParserCommon.h>
 #include <KAI/Language/Common/TranslatorBase.h>
+#include <KAI/Language/Sigma/SigmaChecker.h>
+#include <KAI/Language/Sigma/SigmaParser.h>
+
+#include <string>
+#include <vector>
 
 KAI_BEGIN
 
-// Example of how to add a new language translator
-// This is a minimal stub implementation
-
-// Define token types for Sigma language
-struct SigmaTokens {
-    enum Enum {
-        None,
-        Number,
-        String,
-        Identifier,
-        Plus,
-        Minus,
-        Multiply,
-        Divide,
-        OpenParen,
-        CloseParen,
-        // Add more tokens as needed
-    };
-};
-
-// Define AST node types for Sigma
-struct SigmaAstNodes {
-    enum Enum {
-        None,
-        Program,
-        Expression,
-        BinaryOp,
-        Number,
-        String,
-        Identifier,
-        // Add more node types as needed
-    };
-};
-
-// Lexer for Sigma
-class SigmaLexer : public LexerCommon<SigmaTokens> {
-   public:
-    typedef LexerCommon<SigmaTokens> Parent;
-    typedef TokenBase<SigmaTokens> TokenNode;
-
-    SigmaLexer(const char *text, Registry &r) : Parent(text, r) {}
-
-    void AddKeyWords() override {
-        // Add language-specific keywords here
-    }
-
-    bool NextToken() override {
-        // Implement tokenization logic
-        return false;
-    }
-
-    void Terminate() override {
-        // Cleanup if needed
-    }
-};
-
-// Parser for Sigma
-class SigmaParser : public ParserCommon<SigmaLexer, SigmaAstNodes> {
-   public:
-    typedef ParserCommon<SigmaLexer, SigmaAstNodes> Parent;
-    typedef typename Parent::TokenNode TokenNode;
-    typedef typename Parent::AstNode AstNode;
-    typedef typename Parent::AstNodePtr AstNodePtr;
-
-    SigmaParser(Registry &r) : Parent(r) {}
-
-    void Process(std::shared_ptr<Lexer> lex, Structure st) override {
-        // Implement parsing logic
-        // For now, just create an empty program node
-        root = std::make_shared<AstNode>(SigmaAstNodes::Program);
-    }
-};
-
-// Translator for Sigma
+/// Sigma: statically typed KAI. Sigma source is lexed and parsed with the
+/// Language/Common framework, type checked by SigmaChecker, then lowered to
+/// Rho source, which RhoTranslator turns into a Pi continuation.
+///
+/// Any type error fails translation; nothing runs. The generated Rho is
+/// fully parenthesised and makes int -> float widening explicit, so it does
+/// not depend on Rho's operator precedence.
 class SigmaTranslator : public TranslatorBase<SigmaParser> {
    public:
-    typedef TranslatorBase<SigmaParser> Parent;
+    using Parent = TranslatorBase<SigmaParser>;
 
-    SigmaTranslator(Registry &reg) : Parent(reg) {}
+    explicit SigmaTranslator(Registry &reg) : Parent(reg) {}
+
+    Pointer<Continuation> Translate(const char *text, Structure st) override;
+
+    /// Check `text` and produce Rho without running RhoTranslator. Returns
+    /// false on any lexical, syntax or type error; see GetErrors().
+    bool Compile(const char *text);
+
+    /// The Rho produced by the last successful Compile() or Translate().
+    [[nodiscard]] const std::string &GetRho() const { return rho_; }
+
+    /// "line:column: message" for each problem found by the last call.
+    [[nodiscard]] const std::vector<std::string> &GetErrors() const { return errors_; }
+
+    /// Top-level names from earlier successful compilations are remembered,
+    /// so a REPL can declare `x` on one line and use it on the next.
+    void ResetSession() { session_.clear(); }
 
    protected:
-    void TranslateNode(AstNodePtr node) override {
-        // Implement translation from AST to bytecode
-        // This is where you convert your parsed program into KAI operations
+    // Sigma lowers to Rho text rather than appending operations itself.
+    void TranslateNode(AstNodePtr) override {}
 
-        if (!node) return;
-
-        switch (node->GetType()) {
-            case SigmaAstNodes::Program:
-                // Translate program
-                break;
-            case SigmaAstNodes::Expression:
-                // Translate expression
-                break;
-            // Add more cases as needed
-            default:
-                break;
-        }
-    }
+   private:
+    std::string rho_;
+    std::vector<std::string> errors_;
+    SigmaChecker::Globals session_;
 };
 
 KAI_END
