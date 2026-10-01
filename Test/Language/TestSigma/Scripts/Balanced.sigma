@@ -1,0 +1,11 @@
+// Bracket balance over a token list: 1 opens, -1 closes.
+
+fun balanced(tokens: List[int]) -> bool
+    level = 0
+    ok = true
+    for t in tokens
+        level += t
+        ok = ok && level >= 0
+    return ok && level == 0
+
+balanced([1, 1, -1, -1]) && balanced([1, -1, 1, -1]) && !balanced([1, -1, -1, 1]) && !balanced([1, 1, -1])

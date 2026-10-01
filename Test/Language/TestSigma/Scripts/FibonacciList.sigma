@@ -1,0 +1,7 @@
+// Fibonacci numbers kept in a list.
+
+fibs: List[int] = [0, 1]
+for i = 2; i <= 30; i += 1
+    fibs.push(fibs[i - 1] + fibs[i - 2])
+
+fibs.size() == 31 && fibs[10] == 55 && fibs[30] == 832040

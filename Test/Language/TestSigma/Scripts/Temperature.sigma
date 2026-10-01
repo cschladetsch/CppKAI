@@ -1,0 +1,9 @@
+// Celsius and Fahrenheit, with int arguments widened to float.
+
+fun toF(c: float) -> float
+    return c * 9 / 5 + 32
+
+fun toC(f: float) -> float
+    return (f - 32) * 5 / 9
+
+toF(100) == 212.0 && toC(32) == 0.0 && toC(toF(40)) == 40.0

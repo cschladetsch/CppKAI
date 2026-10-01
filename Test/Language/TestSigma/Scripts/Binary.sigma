@@ -1,0 +1,12 @@
+// Integer to binary string, built by prepending digits.
+
+fun toBinary(n: int) -> str
+    if n == 0
+        return "0"
+    s = ""
+    while n > 0
+        s = (n % 2 == 0 ? "0" : "1") + s
+        n /= 2
+    return s
+
+toBinary(0) == "0" && toBinary(5) == "101" && toBinary(10) == "1010" && toBinary(255) == "11111111"

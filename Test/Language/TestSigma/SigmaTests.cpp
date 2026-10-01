@@ -330,14 +330,19 @@ TEST_F(SigmaTests, Scripts) {
         SigmaTranslator sigma(*reg_);
         ASSERT_TRUE(sigma.Compile(text.str().c_str())) << entry.path() << "\n" << Join(sigma.GetErrors());
 
+        // A fresh translator per script, so one script's declarations do not
+        // clash with another's (the console's translator keeps a session).
+        SigmaTranslator runner(*reg_);
+        auto program = runner.Translate(text.str().c_str(), Structure::Program);
+        ASSERT_FALSE(runner.failed) << entry.path() << "\n" << runner.error;
         data_->Clear();
-        EXPECT_NO_THROW(console_.Execute(text.str().c_str(), Structure::Program)) << entry.path();
+        EXPECT_NO_THROW(console_.Execute(program)) << entry.path();
         ASSERT_FALSE(data_->Empty()) << entry.path() << "\n--- rho:\n" << sigma.GetRho();
         EXPECT_TRUE(data_->Top().IsType<bool>() && ConstDeref<bool>(data_->Top()))
             << entry.path() << " should end with a true expression";
         ++ran;
     }
-    EXPECT_GE(ran, 3);
+    EXPECT_GE(ran, 23);
 }
 
 // Rho runtime bug, not a Sigma one: an early `return` inside an `if` is lost

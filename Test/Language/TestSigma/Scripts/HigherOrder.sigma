@@ -1,0 +1,16 @@
+// Functions as values: apply a function twice, and pick one by name.
+
+fun inc(n: int) -> int
+    return n + 1
+
+fun square(n: int) -> int
+    return n * n
+
+fun twice(f: fun(int) -> int, x: int) -> int
+    return f(f(x))
+
+fun choose(useSquare: bool) -> fun(int) -> int
+    return useSquare ? square : inc
+
+g = choose(true)
+twice(inc, 5) == 7 && twice(square, 3) == 81 && g(9) == 81

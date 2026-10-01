@@ -1,0 +1,17 @@
+// Repeat and join strings.
+
+fun repeat(s: str, n: int) -> str
+    out = ""
+    for i = 0; i < n; i += 1
+        out += s
+    return out
+
+fun join(parts: List[str], sep: str) -> str
+    out = ""
+    first = true
+    for p in parts
+        out = first ? p : out + sep + p
+        first = false
+    return out
+
+repeat("ab", 3) == "ababab" && join(["a", "b", "c"], ", ") == "a, b, c" && join([], "-") == ""

@@ -1,0 +1,9 @@
+// Greatest common divisor and least common multiple.
+
+fun gcd(a: int, b: int) -> int
+    return b == 0 ? a : gcd(b, a % b)
+
+fun lcm(a: int, b: int) -> int
+    return a / gcd(a, b) * b
+
+gcd(48, 18) == 6 && gcd(17, 5) == 1 && lcm(4, 6) == 12 && lcm(21, 6) == 42

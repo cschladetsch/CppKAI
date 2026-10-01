@@ -1,0 +1,22 @@
+// Sieve of Eratosthenes: 25 primes below 100.
+
+limit = 100
+composite: List[bool] = []
+for i = 0; i < limit; i += 1
+    composite.push(false)
+
+p = 2
+while p * p < limit
+    if !composite[p]
+        m = p * p
+        while m < limit
+            composite[m] = true
+            m += p
+    p += 1
+
+count = 0
+for i = 2; i < limit; i += 1
+    if !composite[i]
+        count += 1
+
+count == 25

@@ -1,0 +1,10 @@
+// Number of Collatz steps from n down to 1.
+
+fun steps(n: int) -> int
+    count = 0
+    while n != 1
+        n = n % 2 == 0 ? n / 2 : 3 * n + 1
+        count += 1
+    return count
+
+steps(1) == 0 && steps(6) == 8 && steps(27) == 111

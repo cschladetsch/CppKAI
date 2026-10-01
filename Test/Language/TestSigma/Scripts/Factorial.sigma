@@ -1,0 +1,16 @@
+// Recursive and iterative factorial agree.
+
+fun factRec(n: int) -> int
+    return n <= 1 ? 1 : n * factRec(n - 1)
+
+fun factLoop(n: int) -> int
+    p = 1
+    for i = 2; i <= n; i += 1
+        p *= i
+    return p
+
+ok = true
+for k in [0, 1, 5, 10]
+    ok = ok && factRec(k) == factLoop(k)
+
+ok && factLoop(10) == 3628800
