@@ -1,13 +1,23 @@
 ﻿#pragma once
-
-#ifdef __cplusplus
-
-#include <tuple>
-#include <utility>
-#include <type_traits>
-#include <cstdint>
+#ifdef _WIN32
+#  ifndef WIN32_LEAN_AND_MEAN
+#    define WIN32_LEAN_AND_MEAN
+#  endif
+#  ifndef NOMINMAX
+#    define NOMINMAX
+#  endif
+#  include <windows.h>
+#  include <process.h>
+#  ifndef popen
+#define popen _popen
+#  endif
+#  ifndef pclose
+#define pclose _pclose
+#  endif
+#endif
 #include <cstddef>
-
-// Add any other C++ compatibility macros, type traits, or helpers here.
-
-#endif // __cplusplus
+#include <tuple>
+#include <string>
+#include <iostream>
+using std::tuple;
+using std::size_t;
