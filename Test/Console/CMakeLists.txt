@@ -27,6 +27,7 @@ add_executable(${name} ${sources})
 # Link with required libraries
 target_link_libraries(${name}
     ConsoleLib
+    SigmaLang
     CommonLang
     Executor
     Core

@@ -1,0 +1,18 @@
+// Mean and variance of a list, using float widening from ints.
+
+fun mean(xs: List[float]) -> float
+    total: float = 0
+    for x in xs
+        total += x
+    return total / xs.size()
+
+fun variance(xs: List[float]) -> float
+    m = mean(xs)
+    acc: float = 0
+    for x in xs
+        d = x - m
+        acc += d * d
+    return acc / xs.size()
+
+samples: List[float] = [2, 4, 4, 4, 5, 5, 7, 9]
+mean(samples) == 5.0 && variance(samples) == 4.0

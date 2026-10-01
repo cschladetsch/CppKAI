@@ -1,0 +1,16 @@
+// Sum of squares by loop matches the closed form n(n+1)(2n+1)/6.
+
+fun byLoop(n: int) -> int
+    t = 0
+    for i = 1; i <= n; i += 1
+        t += i * i
+    return t
+
+fun byFormula(n: int) -> int
+    return n * (n + 1) * (2 * n + 1) / 6
+
+ok = true
+for n in [1, 2, 10, 50]
+    ok = ok && byLoop(n) == byFormula(n)
+
+ok && byLoop(10) == 385

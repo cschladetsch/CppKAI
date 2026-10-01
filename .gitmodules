@@ -22,3 +22,6 @@
 [submodule "Ext/slint"]
 	path = Ext/slint
 	url = https://github.com/slint-ui/slint.git
+[submodule "Ext/CppKaiConsoleLib"]
+	path = Ext/CppKaiConsoleLib
+	url = https://github.com/cschladetsch/CppKaiConsoleLib.git

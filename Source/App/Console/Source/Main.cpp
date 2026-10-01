@@ -13,6 +13,7 @@
 #include "KAI/Language/Common/TranslatorFactory.h"
 #include "KAI/Language/Pi/PiTranslator.h"
 #include "KAI/Language/Rho/RhoTranslator.h"
+#include "KAI/Language/Sigma/SigmaTranslator.h"
 #include "rang.hpp"
 
 using namespace std;
@@ -44,26 +45,26 @@ void ShowHelp(const char* programName) {
          << "OPTIONS:\n"
          << "  -h, --help              Show this help message\n"
          << "  -v, --version           Show version information\n"
-         << "  -l, --language LANG     Set default language (pi, rho)\n"
+         << "  -l, --language LANG     Set default language (pi, rho, sigma)\n"
          << "  -t, --trace LEVEL       Set trace level (0-5)\n"
          << "  -i, --interactive       Force interactive mode\n"
          << "  -n, --non-interactive   Non-interactive mode\n"
          << "  --verbose               Enable verbose output\n\n"
          << "FILE:\n"
-         << "  Script file to execute (.pi or .rho)\n\n"
+         << "  Script file to execute (.pi, .rho or .sigma)\n\n"
          << rang::fg::cyan << "Examples:\n" << rang::fg::reset
          << "  " << programName << "                    # Interactive Pi mode\n"
          << "  " << programName << " -l rho             # Interactive Rho mode\n"
          << "  " << programName << " script.pi          # Execute Pi script\n"
          << "  " << programName << " -t 2 script.rho    # Execute with trace level 2\n\n"
          << rang::fg::yellow << "Built-in Commands (in REPL):\n" << rang::fg::reset
-         << "  help, clear, exit, quit, pi, rho, history, stack\n";
+         << "  help, clear, exit, quit, pi, rho, sigma, history, stack\n";
 }
 
 void ShowVersion() {
     cout << "KAI Console v" << KaiVersionString() << "\n"
          << "Built on " << __DATE__ << " at " << __TIME__ << "\n"
-         << "Supported languages: Pi, Rho\n";
+         << "Supported languages: Pi, Rho, Sigma\n";
 }
 
 ConsoleOptions ParseArguments(int argc, char** argv) {
@@ -92,10 +93,11 @@ ConsoleOptions ParseArguments(int argc, char** argv) {
             std::string lang = next();
             if (lang == "pi")       options.defaultLanguage = Language::Pi;
             else if (lang == "rho") options.defaultLanguage = Language::Rho;
+            else if (lang == "sigma") options.defaultLanguage = Language::Sigma;
             else {
                 cerr << rang::fg::red << "Error: " << rang::fg::reset
                      << "Unknown language: " << lang << "\n"
-                     << "Supported: pi, rho\n";
+                     << "Supported: pi, rho, sigma\n";
                 exit(1);
             }
         } else if (arg == "-t" || arg == "--trace") {
@@ -123,13 +125,6 @@ ConsoleOptions ParseArguments(int argc, char** argv) {
     return options;
 }
 
-std::shared_ptr<TranslatorCommon> CreateTranslatorForLanguage(Registry& reg, Language lang) {
-    auto translator = TranslatorFactory::Instance().CreateTranslator(lang, reg);
-    if (!translator)
-        KAI_TRACE_ERROR() << "Unsupported language: " << static_cast<int>(lang);
-    return translator;
-}
-
 int main(int argc, char** argv) {
 #ifdef _WIN32
     // The Windows console defaults to a legacy codepage (not UTF-8), so
@@ -148,6 +143,10 @@ int main(int argc, char** argv) {
         if (options.showVersion) { ShowVersion(); return 0; }
 
         Console console;
+        // Sigma lives in CppKAI, not CppKaiCore, so the app registers it.
+        console.AddTranslator(Language::Sigma,
+                              std::make_shared<SigmaTranslator>(console.GetRegistry()),
+                              /*indentedBlocks*/ true, /*prompt*/ "σ");
         Process::trace = options.verbose ? 1 : 0;
 
         auto executor = console.GetExecutor();
@@ -174,6 +173,7 @@ int main(int argc, char** argv) {
             Language lang = options.defaultLanguage;
             if      (options.filename.ends_with(".pi"))  lang = Language::Pi;
             else if (options.filename.ends_with(".rho")) lang = Language::Rho;
+            else if (options.filename.ends_with(".sigma")) lang = Language::Sigma;
 
             std::ifstream file(options.filename);
             if (!file.good()) {
@@ -183,14 +183,9 @@ int main(int argc, char** argv) {
             }
             file.close();
 
+            // The console's own translator follows the active language, so
+            // the pi/rho/sigma commands switch translation as well as mode.
             console.SetLanguage(lang);
-            auto translator = CreateTranslatorForLanguage(console.GetRegistry(), lang);
-            if (!translator) {
-                cerr << rang::fg::red << "Error: " << rang::fg::reset
-                     << "Failed to create translator\n";
-                return 1;
-            }
-            console.SetTranslator(translator);
 
             if (!console.ExecuteFile(options.filename.c_str())) {
                 cerr << rang::fg::red << "Error: " << rang::fg::reset
@@ -205,14 +200,6 @@ int main(int argc, char** argv) {
         }
 
         console.SetLanguage(options.defaultLanguage);
-        auto translator = CreateTranslatorForLanguage(console.GetRegistry(),
-                                                      options.defaultLanguage);
-        if (!translator) {
-            cerr << rang::fg::red << "Error: " << rang::fg::reset
-                 << "Failed to create translator\n";
-            return 1;
-        }
-        console.SetTranslator(translator);
         return console.Run();
 
     } catch (const std::exception& e) {

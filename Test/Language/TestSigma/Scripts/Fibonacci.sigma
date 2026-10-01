@@ -1,0 +1,19 @@
+// Recursive and iterative Fibonacci agree.
+
+fun fib(n: int) -> int
+    return n < 2 ? n : fib(n - 1) + fib(n - 2)
+
+fun fibLoop(n: int) -> int
+    a = 0
+    b = 1
+    for i = 0; i < n; i += 1
+        next = a + b
+        a = b
+        b = next
+    return a
+
+ok = true
+for k in [0, 1, 2, 5, 8]
+    ok = ok && fib(k) == fibLoop(k)
+
+ok && fibLoop(20) == 6765

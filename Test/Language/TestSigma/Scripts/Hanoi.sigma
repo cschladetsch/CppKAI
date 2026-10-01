@@ -1,0 +1,13 @@
+// Moves needed for the Towers of Hanoi: 2^n - 1.
+
+fun moves(n: int) -> int
+    return n == 0 ? 0 : 2 * moves(n - 1) + 1
+
+fun pow2(n: int) -> int
+    return 1 << n
+
+ok = true
+for n in [1, 2, 5, 10]
+    ok = ok && moves(n) == pow2(n) - 1
+
+ok && moves(10) == 1023

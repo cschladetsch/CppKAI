@@ -1,0 +1,12 @@
+// Square roots by Newton's method, compared with known values.
+
+fun absf(x: float) -> float
+    return x < 0 ? -x : x
+
+fun squareRoot(x: float) -> float
+    g = x / 2
+    for i = 0; i < 20; i += 1
+        g = (g + x / g) / 2
+    return g
+
+absf(squareRoot(2) - 1.41421356) < 0.000001 && absf(squareRoot(81) - 9) < 0.000001
