@@ -128,7 +128,10 @@ else for (auto const &e : sigma.GetErrors()) std::cerr << e << '\n';
 | Type | Values |
 |------|--------|
 | `bool` | `true`, `false` |
-| `int` | `42` |
+| `int` | `42` |cd ~\local\repos\CppKAI
+git branch --show-current                 # should say: sigma
+Get-ChildItem Source\Library\Language     # Hlsl, Lisp, Sigma, Tau, ...
+git log --oneline -6
 | `float` | `2.5` |
 | `str` | `"text"` or `'text'` (`string` is an alias) |
 | `List[T]` | `[1, 2, 3]` |
