@@ -18,6 +18,7 @@ endif()
 add_subdirectory(Ext/CppKaiCore)
 add_subdirectory(Ext/CppKaiLanguage)
 add_subdirectory(Ext/ENet)
+add_subdirectory(Source/Library/Language/Sigma)
 
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/ksh")
     add_subdirectory(ksh)
