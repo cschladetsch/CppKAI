@@ -128,10 +128,7 @@ else for (auto const &e : sigma.GetErrors()) std::cerr << e << '\n';
 | Type | Values |
 |------|--------|
 | `bool` | `true`, `false` |
-| `int` | `42` |cd ~\local\repos\CppKAI
-git branch --show-current                 # should say: sigma
-Get-ChildItem Source\Library\Language     # Hlsl, Lisp, Sigma, Tau, ...
-git log --oneline -6
+| `int` | `42` |
 | `float` | `2.5` |
 | `str` | `"text"` or `'text'` (`string` is an alias) |
 | `List[T]` | `[1, 2, 3]` |
@@ -403,8 +400,10 @@ flowchart BT
 - `yield` and generators
 - nullable types, union types and user-defined generics
 - multi-line `pi { ... }` blocks
-- shell commands, pathnames, `self`, and the continuation operators (`&`,
-  `...`, `!` after a call)
+- shell commands, pathnames and `self`
+- the continuation operators after a call: `f(x)&` (suspend), `f(x)!`
+  (replace) and `f(x)...` (resume). Rho has them; the lexer rejects `...`
+  today. See [the design note](../Sigma.md) for how Sigma will type them.
 - `++` and `--` (use `+= 1`)
 
 ## Known issues
@@ -432,7 +431,9 @@ sequenceDiagram
     D->>D: next step: break_ = false
     D->>F: carries on after the if
     F-->>L: return true (wrong)
-``` Until then, give functions that are called from loops a single
+```
+
+Until then, give functions that are called from loops a single
 `return` at the end, as the example scripts do:
 
 ```sigma
@@ -446,13 +447,20 @@ fun isPrime(n: int) -> bool
     return prime
 ```
 
+**Line numbers when running a file.** `Console file.sigma` reports
+positions that are too small by the number of blank lines above the error,
+because `Console::ExecuteFile` (in CppKaiConsoleLib) skips empty lines before
+the text reaches `SigmaTranslator`. The positions from `SigmaTranslator`
+itself, from the tests and from interactive input are correct.
+
 ## Source and tests
 
 | What | Where |
 |------|-------|
 | Headers | `Include/KAI/Language/Sigma` |
 | Sources | `Source/Library/Language/Sigma/Source` (the `SigmaLang` library) |
-| Tests | `Test/Language/TestSigma` (`TestSigma`: 102 tests, 1 disabled) |
+| Design notes | [`Doc/Sigma.md`](../Sigma.md): planned continuation operators |
+| Tests | `Test/Language/TestSigma` (`TestSigma`: 103 tests, 1 of them disabled) |
 | Example programs | `Test/Language/TestSigma/Scripts/*.sigma` (23 programs) |
 
 Build and run the tests from the CppKAI root:

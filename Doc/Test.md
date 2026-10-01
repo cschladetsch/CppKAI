@@ -9,6 +9,7 @@ Test programs are located in the `Bin/Test/` directory after building the projec
 - `TestCore`: Core functionality tests
 - `TestPi`: Pi language tests
 - `TestRho`: Rho language tests
+- `TestSigma`: Sigma language tests
 - `TestTau`: Tau language tests
 - `TestNetwork`: Networking and Tau-over-network tests
 
@@ -50,4 +51,4 @@ Test output includes:
 
 Tests are organized by language and functionality:
 - Core tests: Basic data structures, memory management, registry operations
-- Language tests: Pi, Rho, and Tau language features
+- Language tests: Pi, Rho, Sigma, and Tau language features

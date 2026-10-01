@@ -1,6 +1,6 @@
 # KAI Language System Guide
 
-The KAI system includes three integrated languages that serve different roles in the distributed computing environment. This guide provides an overview of these languages and links to detailed tutorials for each.
+The KAI system includes four integrated languages that serve different roles in the distributed computing environment. This guide provides an overview of these languages and links to detailed tutorials for each.
 
 For an in-depth look at how these languages share a common underlying architecture, see the [Common Language System Architecture](CommonLanguageSystem.md) document.
 
@@ -10,11 +10,12 @@ For an in-depth look at how these languages share a common underlying architectu
 |----------|---------|----------|-----------------|
 | **Pi** | Foundation language | Stack-based, RPN | Dual stacks, continuations, efficient execution |
 | **Rho** | Application language | Infix, Python-like | Native continuations, Pi embedding, familiar syntax |
+| **Sigma** | Typed application language | Infix, statically typed | Rho syntax plus types, checked before it runs, compiles to Rho |
 | **Tau** | Interface definition | Declarative, IDL | Network proxies, distributed objects, code generation |
 
 ## Common Features
 
-All three languages in the KAI system share several important characteristics:
+All four languages in the KAI system share several important characteristics:
 
 1. **Type Safety**: Strong typing throughout the language system
 2. **Network Awareness**: Designed for distributed computing
@@ -53,6 +54,27 @@ Key characteristics:
 
 [Learn more in the Rho Tutorial](RhoTutorial.md)
 
+## Sigma: The Typed Language
+
+Sigma (σ) is Rho's indentation-based syntax plus static types. Every program is type-checked before it runs, then compiled to Rho and from there to Pi, so a program with a type error never runs.
+
+Key characteristics:
+- **Static types**: `bool`, `int`, `float`, `str`, `List[T]`, `Map[str, V]`, `fun(T, ...) -> R`, `void`, `any`, and any C++ class registered with the Registry
+- **Inference**: the first assignment to a name fixes its type
+- **No truthiness**: conditions must be `bool`; the only implicit conversion is `int` to `float`
+- **Errors before execution**: every type error is reported as `line:col: message`, and nothing runs
+- **Same executor**: the type checker runs, then Sigma emits Rho, which runs on the same Pi executor as everything else
+
+```sigma
+fun gcd(a: int, b: int) -> int
+    return b == 0 ? a : gcd(b, a % b)
+
+g = gcd(48, 18)       // g: int, inferred
+g = "six"             // 5:5: cannot assign to 'g': expected int, got str
+```
+
+[Learn more in the Sigma reference](Sigma/README.md)
+
 ## Tau: The Interface Definition Language
 
 Tau is KAI's Interface Definition Language (IDL), designed for defining how components communicate across network boundaries.
@@ -81,6 +103,14 @@ result = 10 + pi{ 3 4 + }  // result = 10 + 7 = 17
 // Accessing Rho variables from Pi
 x = 5
 pi_result = pi{ x @ 2 * }  // pi_result = 10
+```
+
+### Sigma → Rho → Pi
+
+Sigma compiles to Rho, so a Sigma program and a Rho program share the same executor and registry. A one-line `pi { ... }` block in Sigma passes through unchanged; its type is `any`, so its value must be stored in a variable with a declared type:
+
+```sigma
+n: int = pi { 2 3 + }       // 5
 ```
 
 ### Tau ↔ Implementation Language Integration
@@ -178,6 +208,7 @@ When working with KAI, choose the appropriate language based on your needs:
 
 - **Pi**: For low-level operations, stack manipulation, or when maximum efficiency is required
 - **Rho**: For application logic, algorithms, or when readability and familiarity are priorities
+- **Sigma**: For code that should be checked before it runs: libraries, code that crosses a network boundary, and anything large enough that a typo should not surface at runtime
 - **Tau**: For defining interfaces between distributed components or services
 
 ## Development Workflow
@@ -185,7 +216,7 @@ When working with KAI, choose the appropriate language based on your needs:
 A typical development workflow with KAI's language system might look like:
 
 1. Define component interfaces using **Tau**
-2. Implement application logic using **Rho**
+2. Implement application logic using **Rho**, or **Sigma** where it should be type-checked
 3. Optimize performance-critical sections with **Pi**
 4. Connect components across the network using Tau-generated proxies
 
@@ -193,7 +224,7 @@ A typical development workflow with KAI's language system might look like:
 
 KAI provides several tools for working with its languages:
 
-- **Console**: Interactive REPL for Pi and Rho
+- **Console**: Interactive REPL for Pi, Rho and Sigma
 - **Code generators**: For processing Tau IDL files
 - **Debuggers**: For tracing execution and viewing stack state
 - **Network monitors**: For tracking distributed object communication
@@ -204,11 +235,16 @@ The best way to get started with KAI's language system is to:
 
 1. Learn basic Pi operations from the [Pi Tutorial](PiTutorial.md)
 2. Become familiar with Rho syntax using the [Rho Tutorial](RhoTutorial.md)
-3. Understand distributed object modeling with the [Tau Tutorial](TauTutorial.md)
-4. Learn about advanced control flow with the [Continuation Control documentation](ContinuationControl.md)
-5. Experiment with the Console application to try examples
+3. Add static types with [Sigma](Sigma/README.md)
+4. Understand distributed object modeling with the [Tau Tutorial](TauTutorial.md)
+5. Learn about advanced control flow with the [Continuation Control documentation](ContinuationControl.md)
+6. Experiment with the Console application to try examples
 
 ## Recent Improvements (2026)
+
+### Sigma: Statically Typed Layer
+
+Sigma, a new statically typed language with Rho's syntax, lives in CppKAI (`Include/KAI/Language/Sigma`, `Source/Library/Language/Sigma`, the `SigmaLang` library). The Console registers it through `Console::AddTranslator`, so CppKaiCore and CppKaiConsoleLib do not depend on it. `TestSigma` covers it with unit tests and example programs. See [Doc/Sigma](Sigma/README.md).
 
 ### Tau — Template Return Type Parsing
 
@@ -245,6 +281,6 @@ For details on the Rho translator architecture, see [Rho Fix Documentation](Rho-
 
 ## Conclusion
 
-KAI's integrated language system provides a powerful foundation for distributed computing. By combining the efficiency of Pi, the expressiveness of Rho, and the interface clarity of Tau, developers can build robust distributed applications that scale across networks.
+KAI's integrated language system provides a powerful foundation for distributed computing. By combining the efficiency of Pi, the expressiveness of Rho, the static checking of Sigma, and the interface clarity of Tau, developers can build robust distributed applications that scale across networks.
 
 For more detailed information on each language, please refer to the specific tutorials linked above.

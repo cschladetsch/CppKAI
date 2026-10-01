@@ -20,6 +20,8 @@ The KAI documentation is organized into the following main categories:
 #### Language-Specific Guides
 - [Pi Language](PiTutorial.md) - Foundation language (stack-based)
 - [Rho Language](RhoLanguage.md) - Application language (infix notation)
+- [Sigma Language](Sigma/README.md) - Statically typed language; Rho syntax plus types, compiles to Rho
+  - [Sigma Continuation Operators](Sigma.md) - Design note for a planned feature
   - [Tau Language](TauTutorial.md) - Interface definition language
   - [Tau Formal Definition](TauFormalDefinition.md) - Grammar and lexical specification
   - [Tau Code Generation](TauCodeGeneration.md) - Code generation architecture and usage
@@ -84,6 +86,7 @@ Example scripts for each language can be found in:
 
 - Pi scripts: `Test/Language/TestPi/Scripts/*.pi`
 - Rho scripts: `Test/Language/TestRho/Scripts/*.rho`
+- Sigma scripts: `Test/Language/TestSigma/Scripts/*.sigma`
 - Tau scripts: `Test/Language/TestTau/Scripts/*.tau`
 
 ## Documentation Conventions

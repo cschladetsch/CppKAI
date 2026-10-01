@@ -14,7 +14,7 @@ Foundation types and macros used throughout the KAI system.
 Utilities for building and registering C++ classes with the KAI reflection system.
 
 ### Language.h
-Language enumeration and language-related utilities for Pi, Rho, and Tau.
+Language enumeration and language-related utilities for Pi, Rho, Tau, Hlsl, and Sigma.
 
 ## Core System Headers
 

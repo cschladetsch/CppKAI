@@ -54,6 +54,27 @@ Rho gets translated to Pi code on the fly, making it both expressive and efficie
 
 For more details and examples, see the [Rho Language Tutorial](RhoTutorial.md).
 
+## Sigma
+
+[Sigma](Sigma/README.md) (σ) is KAI's statically typed language. It has Rho's indentation-based syntax plus types, and it compiles to Rho, which compiles to Pi. Every program is type-checked before it runs; a program with a type error does not run at all.
+
+The same example as above, in Sigma:
+
+```sigma
+fun add(a: int) -> int
+    return a + 1
+
+print(add(2))
+```
+
+Changing the call to `add("2")` is rejected before anything runs:
+
+```
+4:11: argument 1 of 'add': expected int, got str
+```
+
+In the Console, type `sigma` to switch to it (the prompt becomes `σ`), or start with `Console -l sigma`. For the full language, see the [Sigma reference](Sigma/README.md).
+
 ## Tau
 
 [Tau](../Include/KAI/Language/Tau) is KAI's Interface Definition Language (IDL) used to describe objects that are visible across a network. 

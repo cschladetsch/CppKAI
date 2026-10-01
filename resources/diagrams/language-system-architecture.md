@@ -6,30 +6,35 @@
 graph TD
     subgraph "Source Languages"
         TAU_SRC["Tau Source<br/>interface Calculator {<br/>  float add(float, float);<br/>}"]
+        SIG_SRC["Sigma Source<br/>fun add(a: int, b: int) -> int<br/>    return a + b"]
         RHO_SRC["Rho Source<br/>fun add(a, b) {<br/>  return a + b<br/>}"]
         PI_SRC["Pi Source<br/>2 3 + dup *"]
     end
     
     subgraph "Lexical Analysis"
         TAU_LEX[Tau Lexer]
+        SIG_LEX[Sigma Lexer]
         RHO_LEX[Rho Lexer]  
         PI_LEX[Pi Lexer]
     end
     
     subgraph "Syntax Analysis"
         TAU_PAR[Tau Parser]
+        SIG_PAR[Sigma Parser]
         RHO_PAR[Rho Parser]
         PI_PAR[Pi Parser]
     end
     
     subgraph "AST Generation"
         TAU_AST[Tau AST<br/>Interface nodes]
+        SIG_CHK[Sigma Checker<br/>static types]
         RHO_AST[Rho AST<br/>Function nodes]
         PI_AST[Pi AST<br/>Operation nodes]
     end
     
     subgraph "Code Generation"
         TAU_GEN[C++ Generator<br/>Proxy/Agent files]
+        SIG_TRANS[Sigma Translator<br/>to Rho source]
         RHO_TRANS[Rho Translator<br/>to Pi operations]
         PI_TRANS[Pi Translator<br/>to Continuations]
     end
@@ -41,12 +46,14 @@ graph TD
     end
     
     TAU_SRC --> TAU_LEX --> TAU_PAR --> TAU_AST --> TAU_GEN --> CPP_CODE
+    SIG_SRC --> SIG_LEX --> SIG_PAR --> SIG_CHK --> SIG_TRANS -->|Rho source| RHO_LEX
     RHO_SRC --> RHO_LEX --> RHO_PAR --> RHO_AST --> RHO_TRANS --> PI_OPS
     PI_SRC --> PI_LEX --> PI_PAR --> PI_AST --> PI_TRANS --> CONTINUATIONS
     
     PI_OPS --> CONTINUATIONS
     
     style TAU_SRC fill:#e8eaf6
+    style SIG_SRC fill:#fce4ec
     style RHO_SRC fill:#f3e5f5
     style PI_SRC fill:#e8f5e8
     style CONTINUATIONS fill:#fff3e0
@@ -85,6 +92,10 @@ graph TB
         TAU_FEATURES["✓ Interface definitions<br/>✓ Struct/Enum types<br/>✓ Network proxy generation<br/>✓ C++ code output<br/>✓ Namespace support<br/>✓ Event declarations"]
     end
     
+    subgraph "Sigma (Typed)"
+        SIG_FEATURES["✓ Rho syntax plus static types<br/>✓ Type inference on first assignment<br/>✓ List[T], Map[str, V], fun types<br/>✓ Registered C++ classes as types<br/>✓ Checked before it runs<br/>✓ Compiles to Rho"]
+    end
+    
     subgraph "Rho (Infix)"
         RHO_FEATURES["✓ Python-like syntax<br/>✓ Functions & closures<br/>✓ Control flow (if/while/for)<br/>✓ Variable assignment<br/>✓ Arithmetic expressions<br/>✓ Pi code embedding<br/>✓ Object-oriented features"]
     end
@@ -98,10 +109,12 @@ graph TB
     end
     
     TAU_FEATURES -.-> COMMON
+    SIG_FEATURES --> RHO_FEATURES
     RHO_FEATURES --> PI_FEATURES
     PI_FEATURES --> COMMON
     
     style TAU_FEATURES fill:#e1bee7
+    style SIG_FEATURES fill:#f8bbd0
     style RHO_FEATURES fill:#c8e6c9  
     style PI_FEATURES fill:#bbdefb
     style COMMON fill:#fff9c4

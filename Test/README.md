@@ -32,6 +32,7 @@ After building the project, you'll find these test executables in the `Bin/Test/
 * **TestCore**: Tests for core functionality, containers, and memory management
 * **TestPi**: Tests for the Pi stack-based language
 * **TestRho**: Tests for the Rho expression-based language
+* **TestSigma**: Tests for the statically typed Sigma language
 * **TestTau**: Tests for the Tau network description language
 * **TestNetwork**: Networking, continuation migration, and Tau-over-network tests
 

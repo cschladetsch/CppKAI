@@ -2,17 +2,19 @@
 
 ## Overview
 
-KAI is a distributed object model for C++ with full runtime reflection, incremental garbage collection, and a multi-language execution environment. Three languages — Pi, Rho, and Tau — share a common lexer/parser/executor pipeline, all running on a stack-based virtual machine.
+KAI is a distributed object model for C++ with full runtime reflection, incremental garbage collection, and a multi-language execution environment. Four languages (Pi, Rho, Sigma, and Tau) share a common lexer/parser framework. Pi, Rho and Sigma all run on a stack-based virtual machine: Sigma is type-checked and compiled to Rho, Rho is compiled to Pi. Tau generates C++ code instead.
 
 ```mermaid
 graph TB
     subgraph Languages
+        SIG[Sigma<br/>statically typed]
         RHO[Rho<br/>infix, Python-like]
         PI[Pi<br/>stack-based, Forth-like]
         TAU[Tau<br/>IDL, code generation]
     end
 
     subgraph Translation
+        SIGTRANS[SigmaTranslator<br/>lex, parse, check]
         RHOLEX[RhoLexer]
         RHOPAR[RhoParser]
         RHOTRANS[RhoTranslator]
@@ -41,6 +43,7 @@ graph TB
         ENET[ENet<br/>UDP transport]
     end
 
+    SIG --> SIGTRANS -->|Rho source| RHOLEX
     RHO --> RHOLEX --> RHOPAR --> RHOTRANS --> PIPAR
     TAU --> PIPAR
     PI  --> PILEX  --> PIPAR
@@ -108,6 +111,16 @@ Rho source
     → Executor
 ```
 
+Sigma adds a type-checking stage in front of that pipeline:
+
+```
+Sigma source
+    → SigmaLexer, SigmaParser (AST)
+    → SigmaChecker (type errors stop here; nothing runs)
+    → SigmaTranslator (Rho source)
+    → RhoTranslator → Pi Continuation → Executor
+```
+
 Tau IDL is compiled offline to C++ proxy/agent headers — it does not run through the executor.
 
 ## Language Architecture
@@ -132,6 +145,15 @@ fun factorial(n) {
     if (n <= 1) { return 1 }
     else { return n * factorial(n - 1) }
 }
+```
+
+### Sigma: Typed Language
+
+Sigma is Rho's indentation-based syntax plus static types. `SigmaChecker` type-checks the whole program before anything runs, then `SigmaTranslator` emits Rho. The Sigma library lives in CppKAI and the Console registers it through `Console::AddTranslator`, so CppKaiCore and CppKaiConsoleLib do not depend on it. See [Sigma](Sigma/README.md).
+
+```sigma
+fun factorial(n: int) -> int
+    return n <= 1 ? 1 : n * factorial(n - 1)
 ```
 
 ### Tau — Interface Definition Language

@@ -1,6 +1,6 @@
 # KAI Language Tests
 
-This directory contains comprehensive test suites for all KAI programming languages: Pi, Rho, Tau, and Hlsl.
+This directory contains comprehensive test suites for all KAI programming languages: Pi, Rho, Sigma, Tau, and Hlsl.
 
 ## Language Test Directories
 
@@ -19,6 +19,13 @@ Tests for the Rho infix language:
 - **Language Features**: Variables, scoping, recursion
 - **Cross-Language**: Rho-to-Pi compilation verification
 - **Advanced Constructs**: Closures, generators, pattern matching
+
+### TestSigma/
+Tests for the statically typed Sigma language:
+- **SigmaTests**: lexing, parsing, type checking, generated Rho, and running programs
+- **SigmaMoreTests**: further type rules and rejected programs, with the expected `line:col` errors
+- **SigmaScriptTests**: one test per example program in `TestSigma/Scripts/*.sigma`
+- One test, `SigmaTests.DISABLED_EarlyReturnInFunctionCalledFromLoop`, waits on an executor fix (see [Doc/Sigma](../../Doc/Sigma/README.md#known-issues))
 
 ### TestTau/
 Tests for the Tau Interface Definition Language:
@@ -54,6 +61,7 @@ ctest -R Language
 ```bash
 ctest -R TestPi     # Pi language tests
 ctest -R TestRho    # Rho language tests  
+ctest -R TestSigma  # Sigma language tests
 ctest -R TestTau    # Tau IDL tests
 ctest -R TestHlsl   # HLSL tests
 ```
@@ -79,6 +87,7 @@ ctest -R TestRho -V  # Shows detailed test output
 
 ### Cross-Language Integration
 - Pi ↔ Rho interoperability
+- Sigma → Rho → Pi compilation
 - Language switching in console
 - Mixed-language script execution
 - Type compatibility across languages
@@ -105,6 +114,13 @@ Located in `TestRho/Scripts/`:
 - Functional programming constructs
 - Error handling patterns
 
+### Sigma Examples
+Located in `TestSigma/Scripts/`:
+- Sorting, searching, a prime sieve and matrix multiplication
+- Recursion (Hanoi, Fibonacci, GCD/LCM) and higher-order functions
+- Lists, maps and strings with static types
+- Each script must type-check, run, and end with a `true` expression
+
 ### Tau Examples
 Located in `TestTau/Scripts/`:
 - Interface definitions
@@ -116,6 +132,7 @@ Located in `TestTau/Scripts/`:
 
 - [Pi Language Tutorial](../../Doc/PiTutorial.md)
 - [Rho Language Tutorial](../../Doc/RhoTutorial.md)
+- [Sigma Language Reference](../../Doc/Sigma/README.md)
 - [Tau Language Tutorial](../../Doc/TauTutorial.md)
 - [Language Guide](../../Doc/LanguageGuide.md)
 - [Common Language System](../../Doc/CommonLanguageSystem.md)

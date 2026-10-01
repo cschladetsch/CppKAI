@@ -20,6 +20,7 @@ and language system.
 ### Language Tutorials
 - **[PiTutorial.md](PiTutorial.md)** - Pi stack-based language tutorial
 - **[RhoTutorial.md](RhoTutorial.md)** - Rho infix language tutorial
+- **[Sigma/README.md](Sigma/README.md)** - Sigma, the statically typed language
 - **[TauTutorial.md](TauTutorial.md)** - Tau IDL tutorial
 - **[LanguageGuide.md](LanguageGuide.md)** - Multi-language overview
 
@@ -55,6 +56,10 @@ and language system.
 
 #### Rho Language
 - **[RhoLanguage.md](RhoLanguage.md)** - Rho language specification
+
+#### Sigma Language
+- **[Sigma/README.md](Sigma/README.md)** - Sigma language reference
+- **[Sigma.md](Sigma.md)** - Design note: planned continuation operators
 
 #### Tau Language
 - **[TauFormalDefinition.md](TauFormalDefinition.md)** - Tau formal definition

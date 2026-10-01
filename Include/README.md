@@ -2,7 +2,7 @@
 
 ## Console
 
-A cross-platform REPL console for Pi or Rho languages. Then language can be switched on the fly.
+A cross-platform REPL console for the Pi, Rho or Sigma languages. Then language can be switched on the fly.
 
 ## Core
 
@@ -14,10 +14,11 @@ This is a common virtual machine that uses two stacks: one for data and one for 
 
 ## Language
 
-There are currently three languages in the KAI system:
+There are currently four languages in the KAI system:
 
 1. Pi. Post-fix, forth-like.
 1. Rho. In-fix, python-like.
+1. Sigma. Rho's syntax plus static types; type-checked, then compiled to Rho. Headers are in `KAI/Language/Sigma`. See [Doc/Sigma](../Doc/Sigma/README.md).
 1. Tau. An IDL that generates C++ code for C++ agents and proxies.
 
 The languages are all located in <KAI/Lang/Lang.h> for each of Pi, Rho and Tau for _Lang_.

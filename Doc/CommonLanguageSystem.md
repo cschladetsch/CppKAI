@@ -1,10 +1,10 @@
 # KAI Common Language System Architecture
 
-This document explains the underlying architecture shared by all languages in the KAI system. Understanding this common foundation helps developers better work with Pi, Rho, and Tau, and explains how these languages seamlessly interoperate.
+This document explains the underlying architecture shared by all languages in the KAI system. Understanding this common foundation helps developers better work with Pi, Rho, Sigma, and Tau, and explains how these languages seamlessly interoperate.
 
 ## Architecture Overview
 
-All KAI languages (Pi, Rho, and Tau) share a common architecture with three main components:
+All KAI languages (Pi, Rho, Sigma, and Tau) share a common architecture with three main components:
 
 1. **Lexer**: Transforms raw text into tokens
 2. **Parser**: Converts tokens into an Abstract Syntax Tree (AST)
@@ -98,9 +98,13 @@ All language-specific features ultimately translate into combinations of these b
 
 ## Translation Layer
 
-The translation layer is what allows different syntaxes (Pi, Rho, Tau) to work with the same underlying execution model:
+The translation layer is what allows different syntaxes (Pi, Rho, Sigma, Tau) to work with the same underlying execution model:
 
 ```
+┌───────┐     ┌─────────────┐
+│ Sigma │ --> │ Sigma       │ --> Rho source
+└───────┘     │ Translator  │        │
+              └─────────────┘        v
 ┌───────┐     ┌─────────────┐     ┌─────────────┐
 │  Rho  │ --> │ Rho         │ --> │             │
 └───────┘     │ Translator  │     │             │
@@ -119,7 +123,8 @@ Each translator converts its language's specific syntax into:
 
 1. **Pi**: Directly translates to Executor operations
 2. **Rho**: Translates to Pi code, which then executes as operations
-3. **Tau**: Generates code (C++, C#, etc.) that interfaces with the KAI system
+3. **Sigma**: Type-checks the whole program, then translates to Rho; a program with a type error is never run
+4. **Tau**: Generates code (C++, C#, etc.) that interfaces with the KAI system
 
 ## Abstract Syntax Tree (AST)
 
@@ -223,6 +228,22 @@ Then executes as operations:
 6. Push label `'x` onto data stack
 7. Execute `Store` operation (associates 14 with 'x in current scope)
 
+### Sigma to Rho Translation
+
+Sigma code:
+```sigma
+ratio: float = 1
+ratio += 2
+```
+
+Is type-checked, then written out as Rho:
+```rho
+ratio = (1 + 0.0)
+ratio = (ratio + 2)
+```
+
+The `int` literal is widened to `float` explicitly, and `+=` is expanded, because of current Rho behaviour (see [How Sigma compiles](Sigma/README.md#how-sigma-compiles)). The Rho then translates to Pi as above.
+
 ### Tau to Code Generation
 
 Tau code:
@@ -281,7 +302,8 @@ The KAI language system is designed for extensibility:
 1. **Adding types**: Register new C++ types with the Registry
 2. **Custom operations**: Add new operations to the Executor
 3. **Language features**: Extend translators to support new syntax
-4. **Network protocols**: Add serialization for new types
+4. **New languages**: Build a lexer, parser and translator on Language/Common and register it with `Console::AddTranslator`, as Sigma does
+5. **Network protocols**: Add serialization for new types
 
 ## Conclusion
 
@@ -299,6 +321,7 @@ This architecture enables the full power of KAI: running distributed application
 
 - [Pi Language Tutorial](PiTutorial.md)
 - [Rho Language Tutorial](RhoTutorial.md)
+- [Sigma Language Reference](Sigma/README.md)
 - [Tau Language Tutorial](TauTutorial.md)
 - [Language Guide](LanguageGuide.md)
 - [KAI Architecture](Architecture.md)

@@ -9,7 +9,7 @@ resources/
 ├── diagrams/                    # System architecture diagrams
 │   ├── system-architecture-overview.md     # Layered overview (linked from the main README)
 │   ├── overall-system-architecture.md      # High-level system overview
-│   ├── language-system-architecture.md     # Pi/Rho/Tau language systems overview
+│   ├── language-system-architecture.md     # Pi/Rho/Sigma/Tau language systems overview
 │   ├── pi-language-architecture.md         # Pi stack-based language details
 │   ├── rho-language-architecture.md        # Rho infix language details
 │   ├── tau-language-architecture.md        # Tau IDL code generation details
@@ -38,7 +38,7 @@ All diagrams are created using Mermaid syntax and can be viewed in any Markdown 
 
 ### 2. Language System Architecture  
 - Translation pipeline overview (Lexer → Parser → Translator)
-- Language hierarchy (Tau → Rho → Pi → Executor)
+- Language hierarchy (Sigma → Rho → Pi → Executor; Tau → generated C++)
 - Cross-language communication patterns
 - AST and code generation processes
 
@@ -116,7 +116,7 @@ The Mermaid diagrams can be viewed in several ways:
 - **Test Cases**: 1,780+ tests across Pi, Rho, Tau, console and network suites (TestPi alone has 585+)
 - **Build Targets**: 15+ libraries and executables
 - **Network Protocols**: 4 message types for console communication
-- **Languages**: 3 integrated programming languages (Pi/Rho/Tau)
+- **Languages**: 4 integrated programming languages (Pi/Rho/Sigma/Tau)
 - **Platforms**: Linux, Windows, macOS support
 
 ## Contributing

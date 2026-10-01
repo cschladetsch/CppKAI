@@ -2,7 +2,7 @@
 
 ## Overview
 
-The KAI Console is a professional, cross-platform REPL (Read-Eval-Print-Loop) interface for the KAI language system. It provides a comprehensive interactive environment for executing Pi, Rho, and Tau language code with advanced features including command-line argument parsing, interactive help system, persistent history, shell integration, and enhanced user experience.
+The KAI Console is a professional, cross-platform REPL (Read-Eval-Print-Loop) interface for the KAI language system. It provides a comprehensive interactive environment for executing Pi, Rho, and Sigma code with advanced features including command-line argument parsing, interactive help system, persistent history, shell integration, and enhanced user experience.
 
 ## Getting Started
 
@@ -16,11 +16,13 @@ $ ./Console --version
 # Interactive modes
 $ ./Console                    # Interactive Pi mode (default)
 $ ./Console -l rho             # Interactive Rho mode
+$ ./Console -l sigma           # Interactive Sigma mode (statically typed)
 $ ./Console -l pi              # Interactive Pi mode (explicit)
 
 # Script execution
 $ ./Console script.pi          # Execute Pi script
 $ ./Console script.rho         # Execute Rho script
+$ ./Console script.sigma       # Type-check, then execute a Sigma script
 $ ./Console -l rho script.txt  # Execute as Rho regardless of extension
 
 # Advanced options
@@ -34,7 +36,7 @@ $ ./Console -n script.pi       # Non-interactive mode (no REPL)
 
 - `-h, --help` - Show comprehensive help message
 - `-v, --version` - Show version and build information
-- `-l, --language LANG` - Set default language (pi, rho)
+- `-l, --language LANG` - Set default language (pi, rho, sigma)
 - `-t, --trace LEVEL` - Set trace level (0-5)
 - `-i, --interactive` - Force interactive mode
 - `-n, --non-interactive` - Non-interactive mode
@@ -78,7 +80,7 @@ The Console provides several built-in commands for enhanced usability:
 - `help [topic]` - Show help (optionally for specific topic)
 - `clear`, `cls` - Clear screen
 - `exit`, `quit` - Exit console
-- `pi`, `rho` - Switch language mode
+- `pi`, `rho`, `sigma` - Switch language mode
 - `history` - Show command history
 - `stack` - Show current stack contents
 - `$ <command>` - Execute shell command (when shell syntax enabled)
@@ -140,6 +142,24 @@ C-like syntax with variables and control structures:
 [0]: "Large"
 ```
 
+### Sigma Language (Statically Typed)
+Rho's indentation-based syntax plus types. Each input is type-checked before
+it runs; a type error is printed as `line:col: message` and nothing runs.
+A line that opens a block continues until an empty line, and declarations
+carry over between inputs:
+```
+Pi λ sigma
+Sigma σ x: int = 6
+Sigma σ fun sq(n: int) -> int
+Sigma ...     return n * n
+Sigma ...
+Sigma σ sq(x)
+[0]: 36
+Sigma σ y: int = "s"
+1:10: cannot initialise 'y': expected int, got str
+```
+See [Doc/Sigma](Sigma/README.md) for the full language.
+
 ### Language Switching
 Switch between languages using built-in commands:
 ```
@@ -195,7 +215,7 @@ Exited shell mode. Back to Pi mode.
 ### Shell Integration Features
 - **Two modes**: Standalone (`$`) and embedded (`` `command` ``)
 - **Works in all contexts**: Interactive REPL, piped input, and file execution
-- **Language agnostic**: Works in Pi, Rho, and Tau modes
+- **Language agnostic**: Works in Pi and Rho modes
 - **Command history**: Shell commands are added to the command history
 - **Exit code display**: Non-zero exit codes are shown for `$` commands
 - **Error handling**: Empty commands and failed commands handled gracefully
@@ -356,7 +376,7 @@ sudo cp ./Bin/Console /usr/local/bin/
 
 ### Architecture
 - **Built on KAI Core**: Uses the Registry, Executor, and Memory systems
-- **Multi-language support**: Integrates Pi, Rho, and Tau translators
+- **Multi-language support**: Integrates the Pi and Rho translators, and the Sigma translator through `Console::AddTranslator`
 - **Modular design**: Separate components for history, help, shell integration
 - **Cross-platform**: Uses rang library for consistent color output
 

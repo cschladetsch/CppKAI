@@ -4,7 +4,7 @@ Interactive REPL console for the KAI language system with shell command integrat
 
 ## Features
 
-- **Multi-language Support**: Pi (stack-based), Rho (infix), and Tau languages
+- **Multi-language Support**: Pi (stack-based), Rho (infix), and Sigma (statically typed, `-l sigma` or `.sigma` files)
 - **Shell Command Integration**: Execute shell commands with backtick syntax
 - **Automatic Stack Display**: Top-first stack visualization after each command,
   with `[0]` on the bottom line
@@ -54,7 +54,7 @@ The Console is built on top of the [Executor](/Source/Library/Executor/Source) a
 - Language-agnostic shell command preprocessing
 - Automatic top-first stack visualization
 - Multi-Executor Tree inspection and handle-targeted debugger operations
-- Integration with Pi, Rho, and Tau language translators
+- Integration with the Pi and Rho translators, plus Sigma registered through `Console::AddTranslator` (prompt `σ`)
 
 For full documentation, see [Console Documentation](../../../Doc/Console.md).
 

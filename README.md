@@ -65,7 +65,7 @@ See the full diagram: **[System Architecture Overview](resources/diagrams/system
 ### **System Architecture**
 **[Architecture Resources](resources/README.md)** - Comprehensive system architecture documentation and diagrams
 - **[Overall System Architecture](resources/diagrams/overall-system-architecture.md)** - High-level component relationships and data flow
-- **[Language System Architecture](resources/diagrams/language-system-architecture.md)** - Pi/Rho/Tau translation pipeline and interoperability
+- **[Language System Architecture](resources/diagrams/language-system-architecture.md)** - Pi/Rho/Sigma/Tau translation pipeline and interoperability
 - **[Console Networking Architecture](resources/diagrams/console-networking-architecture.md)** - P2P communication model and protocols
 - **[Build System Architecture](resources/diagrams/build-system-architecture.md)** - CMake structure and dependencies
 - **[Test System Architecture](resources/diagrams/test-system-architecture.md)** - Test infrastructure and validation workflows
@@ -84,7 +84,7 @@ See the full diagram: **[System Architecture Overview](resources/diagrams/system
 - **Core System**: [Core README](Ext/CppKaiCore/Include/KAI/Core/README.md) | [Registry](Ext/CppKaiCore/Include/KAI/Core/Object/README.md) | [Config](Ext/CppKaiCore/Include/KAI/Core/Config/README.md)
 - **Executor**: [Executor README](Ext/CppKaiCore/Include/KAI/Executor/README.md) - Virtual machine and execution engine
 - **Console**: [Console README](Ext/CppKaiCore/Include/KAI/Console/README.md) - Interactive shell with networking
-- **Languages**: [Common](Ext/CppKaiCore/Include/KAI/Language/Common/README.md) | [Pi](Ext/CppKaiLanguage/Include/KAI/Language/Pi/README.md) | [Rho](Ext/CppKaiLanguage/Include/KAI/Language/Rho/README.md) | [Tau](Include/KAI/Language/Tau/README.md)
+- **Languages**: [Common](Ext/CppKaiCore/Include/KAI/Language/Common/README.md) | [Pi](Ext/CppKaiLanguage/Include/KAI/Language/Pi/README.md) | [Rho](Ext/CppKaiLanguage/Include/KAI/Language/Rho/README.md) | [Sigma](Doc/Sigma/README.md) | [Tau](Include/KAI/Language/Tau/README.md)
 - **Platform Support**: [Platforms](Include/KAI/Platform/README.md) | [Linux](Include/KAI/Platform/Linux/README.md) | [Windows](Include/KAI/Platform/Windows/README.md) | [macOS](Include/KAI/Platform/OSX/README.md)
 
 ### **Testing & Examples**
@@ -118,7 +118,7 @@ See the full diagram: **[System Architecture Overview](resources/diagrams/system
 - **Zero-Macro Reflection**: Expose C++ types and methods to scripting without macros or source modifications
 - **Distributed Computing**: Share both data and computation across networked nodes
 - **Console Networking**: Real-time console-to-console communication with command sharing
-- **Multiple Languages**: Use Pi (stack-based), Rho (infix), or Tau (IDL) as needed
+- **Multiple Languages**: Use Pi (stack-based), Rho (infix), Sigma (statically typed), or Tau (IDL) as needed
 - **Type Safety**: Full type checking across network boundaries
 - **Incremental GC**: Smooth, constant-time garbage collection with no spikes
 - **Cross-Platform**: Linux, WSL2, Windows (native, VS 2022/2026), macOS, Unity3D
@@ -161,7 +161,7 @@ KAI is built around four small languages with a deliberate division of labor, no
   g = gcd(48, 18)       // g: int, inferred
   g = "six"             // 5:5: cannot assign to 'g': expected int, got str
   ```
-- **Tau (τ)**: Interface Definition Language (IDL) for distributed object contracts across process boundaries. Tau is orthogonal to Pi and Rho, it describes the shape of a network interface rather than compiling into either of the other two.
+- **Tau (τ)**: Interface Definition Language (IDL) for distributed object contracts across process boundaries. Tau is orthogonal to Pi, Rho and Sigma; it describes the shape of a network interface rather than compiling into either of the other two.
 
 The prompt shows only the active language symbol. Command numbers remain
 available through `history` and `!n`; history persists in
@@ -462,7 +462,7 @@ This project is licensed under the MIT License — see the [LICENSE](LICENSE) fi
 ## Project Statistics
 
 - **629+** C++ source files
-- **3** integrated programming languages (Pi / Rho / Tau)
+- **4** integrated programming languages (Pi / Rho / Sigma / Tau)
 - **1,780+** passing tests across Pi, Rho, Tau, and network suites (TestPi alone has 585+) — see [Doc/TEST_SUMMARY.md](Doc/TEST_SUMMARY.md) for the per-suite breakdown and [Doc/TODO.md](Doc/TODO.md) for currently-tracked language gaps and failing tests
 - **Full** Agent/Proxy/Domain networking over ENet UDP
 - **Tau IDL** generates type-safe proxy/agent pairs from `.tau` interfaces
