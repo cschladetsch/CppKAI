@@ -73,7 +73,7 @@ See the full diagram: **[System Architecture Overview](resources/diagrams/system
 
 ### **Development Guides**
 - **Building**: [Build Guide](Doc/BUILD.md) | [Out-of-Source Build Notes](Doc/OUT_OF_SOURCE_BUILD.md) | [Installation](Doc/Install.md) | [CMake Guide](CMake/README.md)
-- **Languages**: [Pi Tutorial](Doc/PiTutorial.md) | [Rho Tutorial](Doc/RhoTutorial.md) | [Tau Tutorial](Doc/TauTutorial.md) | [Language System](Include/KAI/Language/README.md)
+- **Languages**: [Pi Tutorial](Doc/PiTutorial.md) | [Rho Tutorial](Doc/RhoTutorial.md) | [Sigma](Doc/Sigma/README.md) | [Tau Tutorial](Doc/TauTutorial.md) | [Language System](Include/KAI/Language/README.md)
 - **Networking**: [Overview](Doc/Networking.md) | [Architecture](Doc/NetworkArchitecture.md) | [Console Networking](Doc/CONSOLE_NETWORKING.md)
 - **Testing**: [Test Guide](Doc/Test.md) | [Connection Testing](Doc/ConnectionTesting.md) | [Test Overview](Test/README.md)
 - **Code Generation**: [Tau Code Generation](Doc/TauCodeGeneration.md) | [Tau Generate](Include/KAI/Language/Tau/Generate/README.md)
@@ -135,7 +135,7 @@ See the full diagram: **[System Architecture Overview](resources/diagrams/system
 
 ### Languages
 
-KAI is built around three small languages with a deliberate division of labor, not one general-purpose language wearing three hats.
+KAI is built around four small languages with a deliberate division of labor, not one general-purpose language wearing three hats.
 
 - **Pi (π)**: The execution substrate. A minimal, imperative RPN stack language, inspired by Forth, prompt: `π`. The executor runs Pi directly; the data stack plus instruction pointer are the complete continuation state, nothing implicit is held elsewhere. That is what makes it possible to freeze a running computation, send it across the network, and resume it on a different executor with no data loss.
 - **Rho (ρ)**: The scripting layer. A structured, Python-like infix language, prompt: `ρ`, that compiles down to Pi bytecode. It exists so people do not have to write Pi by hand. For example:
@@ -151,6 +151,15 @@ KAI is built around three small languages with a deliberate division of labor, n
   ```pi
   3 4 +
   // stack: [ 7 ]
+  ```
+- **Sigma (σ)**: The typed layer. Rho's syntax plus static types, prompt: `σ`. Every program is type-checked before it runs, then compiled to Rho and from there to Pi, so a Sigma program with a type error never runs. See **[Doc/Sigma](Doc/Sigma/README.md)**. For example:
+
+  ```sigma
+  fun gcd(a: int, b: int) -> int
+      return b == 0 ? a : gcd(b, a % b)
+
+  g = gcd(48, 18)       // g: int, inferred
+  g = "six"             // 5:5: cannot assign to 'g': expected int, got str
   ```
 - **Tau (τ)**: Interface Definition Language (IDL) for distributed object contracts across process boundaries. Tau is orthogonal to Pi and Rho, it describes the shape of a network interface rather than compiling into either of the other two.
 
