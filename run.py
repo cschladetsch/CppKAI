@@ -153,14 +153,11 @@ def resolve_exe(target, config):
 
 
 def run_tests(config):
-    test_script = REPO_ROOT / "run_all_tests.sh"
-    bash = subprocess.run(["where", "bash"], capture_output=True).returncode == 0
-    if test_script.exists() and bash:
-        cmd = ["bash", str(test_script)]
-    else:
-        cmd = ["ctest", "--output-on-failure", "-C", config]
+    # Same runner as `py run_tests.py`: every registered CTest suite, with a
+    # warning if the root CMakeLists.txt has stopped registering Test/.
+    cmd = [sys.executable, str(REPO_ROOT / "run_tests.py"), "-C", config]
     print(f"\n>>> {' '.join(cmd)}\n")
-    return subprocess.run(cmd, cwd=REPO_ROOT / "build").returncode
+    return subprocess.run(cmd, cwd=REPO_ROOT).returncode
 
 
 def main():
