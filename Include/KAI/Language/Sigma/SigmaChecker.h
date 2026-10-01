@@ -3,6 +3,7 @@
 #include <KAI/Core/Config/Base.h>
 #include <KAI/Language/Sigma/SigmaAstNode.h>
 
+#include <deque>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -106,7 +107,7 @@ class SigmaChecker {
 
     Registry *reg_ = nullptr;
     Globals session_;
-    std::vector<Scope> scopes_;
+    std::deque<Scope> scopes_;  // deque: growing it never moves existing scopes
     std::vector<SigmaDiagnostic> diagnostics_;
     std::unordered_set<const SigmaAstNode *> widened_;
     std::vector<NodePtr> functions_;
