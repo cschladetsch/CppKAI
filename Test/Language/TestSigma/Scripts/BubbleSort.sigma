@@ -1,0 +1,12 @@
+// Bubble sort in place, using index assignment.
+
+xs: List[int] = [5, 3, 8, 1, 9, 2]
+n = xs.size()
+for i = 0; i < n; i += 1
+    for j = 0; j < n - 1 - i; j += 1
+        if xs[j] > xs[j + 1]
+            t = xs[j]
+            xs[j] = xs[j + 1]
+            xs[j + 1] = t
+
+xs[0] == 1 && xs[1] == 2 && xs[2] == 3 && xs[3] == 5 && xs[4] == 8 && xs[5] == 9

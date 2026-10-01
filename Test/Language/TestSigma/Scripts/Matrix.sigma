@@ -1,0 +1,16 @@
+// 2x2 matrix multiplication with nested lists.
+
+fun matMul(a: List[List[int]], b: List[List[int]]) -> List[List[int]]
+    out: List[List[int]] = []
+    for i = 0; i < 2; i += 1
+        row: List[int] = []
+        for j = 0; j < 2; j += 1
+            s = 0
+            for k = 0; k < 2; k += 1
+                s += a[i][k] * b[k][j]
+            row.push(s)
+        out.push(row)
+    return out
+
+c = matMul([[1, 2], [3, 4]], [[5, 6], [7, 8]])
+c[0][0] == 19 && c[0][1] == 22 && c[1][0] == 43 && c[1][1] == 50

@@ -1,0 +1,16 @@
+// Smallest and largest elements of a list.
+
+fun smallest(xs: List[int]) -> int
+    m = xs[0]
+    for x in xs
+        m = x < m ? x : m
+    return m
+
+fun largest(xs: List[int]) -> int
+    m = xs[0]
+    for x in xs
+        m = x > m ? x : m
+    return m
+
+data = [7, -3, 12, 0, 5]
+smallest(data) == -3 && largest(data) == 12

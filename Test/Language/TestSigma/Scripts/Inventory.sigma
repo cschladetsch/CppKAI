@@ -1,0 +1,11 @@
+// Totals over a map of prices and a map of quantities.
+
+prices: Map[str, float] = {"apple": 0.5, "pear": 0.75, "plum": 0.25}
+stock = {"apple": 10, "pear": 4, "plum": 8}
+
+total: float = 0
+for item in prices.keys()
+    total += prices[item] * stock[item]
+
+items = prices.keys()
+items.size() == 3 && total == 10.0
