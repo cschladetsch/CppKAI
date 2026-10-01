@@ -487,18 +487,22 @@ bool SigmaChecker::AlwaysReturns(const NodePtr &node) {
 }
 
 void SigmaChecker::FunctionBody(const NodePtr &fun) {
-    auto sig = Lookup(fun->GetToken().Text());
-    if (!sig || !sig->type->Is(Kind::Fun)) return;
+    // Copy the signature: pushing a scope below may reallocate scopes_, and
+    // a pointer into the old global scope would then dangle (MSVC copies
+    // unordered_maps when a vector grows, because their move isn't noexcept).
+    const Binding *found = Lookup(fun->GetToken().Text());
+    if (!found || !found->type->Is(Kind::Fun)) return;
+    const SigmaTypePtr sig = found->type;
 
     function_ = fun.get();
-    result_ = sig->type->result;
+    result_ = sig->result;
     scopes_.emplace_back();
 
     const auto &params = fun->GetChild(0)->GetChildren();
     for (size_t n = 0; n < params.size(); ++n) {
         const std::string name = params[n]->GetToken().Text();
         if (scopes_.back().contains(name)) Report(params[n], std::format("duplicate parameter '{}'", name));
-        Bind(name, sig->type->args[n]);
+        Bind(name, sig->args[n]);
     }
 
     const auto &body = fun->GetChild(2);
