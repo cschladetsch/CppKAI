@@ -11,7 +11,7 @@
 
 KAI_BEGIN
 
-class Registry;
+struct Registry;
 
 struct SigmaType;
 using SigmaTypePtr = std::shared_ptr<const SigmaType>;
