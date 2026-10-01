@@ -4,6 +4,7 @@
 #include <KAI/Core/Logger.h>
 #include <KAI/Language/Pi/PiTranslator.h>
 #include <KAI/Language/Rho/RhoTranslator.h>
+#include <KAI/Language/Sigma/SigmaTranslator.h>
 
 #include <algorithm>
 #include <cctype>
@@ -40,6 +41,7 @@ class MultiLanguageTranslator : public TranslatorCommon {
    private:
     std::shared_ptr<PiTranslator> piTranslator;
     std::shared_ptr<RhoTranslator> rhoTranslator;
+    std::shared_ptr<SigmaTranslator> sigmaTranslator;
     Pointer<Compiler> compiler;
 
    public:
@@ -47,6 +49,7 @@ class MultiLanguageTranslator : public TranslatorCommon {
         : TranslatorCommon(r), compiler(comp) {
         piTranslator = std::make_shared<PiTranslator>(r);
         rhoTranslator = std::make_shared<RhoTranslator>(r);
+        sigmaTranslator = std::make_shared<SigmaTranslator>(r);
     }
 
     Pointer<Continuation> Translate(
@@ -74,6 +77,15 @@ class MultiLanguageTranslator : public TranslatorCommon {
                 auto result = rhoTranslator->Translate(text, st);
                 if (rhoTranslator->failed) {
                     KAI_TRACE_ERROR() << rhoTranslator->error;
+                    return Object();
+                }
+                return result;
+            }
+            case Language::Sigma: {
+                sigmaTranslator->trace = traceLevel;
+                auto result = sigmaTranslator->Translate(text, st);
+                if (sigmaTranslator->failed) {
+                    KAI_TRACE_ERROR() << sigmaTranslator->error;
                     return Object();
                 }
                 return result;

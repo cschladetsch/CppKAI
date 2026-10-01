@@ -1,0 +1,19 @@
+// Trial-division primes below 50.
+// Written with a single exit because of the Rho runtime bug documented in
+// SigmaTests.DISABLED_EarlyReturnInFunctionCalledFromLoop.
+
+fun isPrime(n: int) -> bool
+    prime = n >= 2
+    d = 2
+    while prime && d * d <= n
+        if n % d == 0
+            prime = false
+        d += 1
+    return prime
+
+primes: List[int] = []
+for n = 0; n < 50; n += 1
+    if isPrime(n)
+        primes.push(n)
+
+primes.size() == 15 && primes[14] == 47
