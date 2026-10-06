@@ -37,10 +37,6 @@ const char *SigmaAstNodeEnumType::ToString(Enum val) {
     return "Unknown";
 }
 
-// ---------------------------------------------------------------------------
-// helpers
-// ---------------------------------------------------------------------------
-
 SigmaParser::TokenNode const &SigmaParser::Peek(size_t ahead) const {
     const size_t at = current + ahead;
     return at < tokens_.size() ? tokens_[at] : tokens_.back();
@@ -89,10 +85,6 @@ bool SigmaParser::CheckName(TokenNode const &tok, const char *what) {
     Error(tok, std::format("'{}' is a Pi word and cannot be used as a {} name", tok.Text(), what));
     return false;
 }
-
-// ---------------------------------------------------------------------------
-// program and statements
-// ---------------------------------------------------------------------------
 
 bool SigmaParser::Process(std::shared_ptr<Lexer> lex, Structure) {
     lexer_ = lex;
@@ -355,10 +347,6 @@ SigmaParser::AstNodePtr SigmaParser::SimpleStatement() {
     }
 }
 
-// ---------------------------------------------------------------------------
-// types
-// ---------------------------------------------------------------------------
-
 SigmaParser::AstNodePtr SigmaParser::Type() {
     if (Is(Tok::Fun)) {
         auto fun = NewNode(Ast::Type, Take());
@@ -396,10 +384,6 @@ SigmaParser::AstNodePtr SigmaParser::Type() {
     if (Is(Tok::Question)) return Error("nullable types (T?) are not supported in Sigma yet");
     return type;
 }
-
-// ---------------------------------------------------------------------------
-// expressions
-// ---------------------------------------------------------------------------
 
 SigmaParser::AstNodePtr SigmaParser::Expression() {
     auto cond = Or();
