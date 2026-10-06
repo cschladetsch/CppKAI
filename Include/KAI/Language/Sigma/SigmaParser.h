@@ -71,6 +71,7 @@ class SigmaParser : public ParserCommon<SigmaLexer, SigmaAstNodeEnumType> {
     bool Is(Tok::Enum type) const;
     TokenNode const &Peek(size_t ahead = 0) const;
     TokenNode Take();
+    static bool Adjacent(const TokenNode &a, const TokenNode &b);  // b starts where a ends
     bool Accept(Tok::Enum type);
     bool Require(Tok::Enum type, const char *what);
     bool CheckName(TokenNode const &tok, const char *what);

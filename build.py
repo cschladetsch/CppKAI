@@ -12,6 +12,7 @@ Visual Studio generator + vcpkg instead.
 import argparse
 import os
 import shutil
+import stat
 import subprocess
 import sys
 from pathlib import Path
@@ -197,18 +198,22 @@ def build(args, cmake: str) -> None:
 
 
 def run_tests(args) -> None:
-    test_script = REPO_ROOT / "run_all_tests.sh"
-    if test_script.exists():
-        run(["bash", str(test_script)])
-    else:
-        # Fall back to ctest
-        run(["ctest", "--output-on-failure", "-C", args.config], cwd=BUILD_DIR)
+    # Same runner as `py run_tests.py`: every registered CTest suite.
+    run([sys.executable, str(REPO_ROOT / "run_tests.py"), "-C", args.config])
+
+
+def _clear_readonly_and_retry(func, path, exc_info) -> None:
+    # Git marks its object files read-only, and on Windows a read-only file
+    # cannot be deleted. FetchContent clones (build/_deps/googletest-src/.git)
+    # hit this, so clear the flag and try again.
+    os.chmod(path, stat.S_IWRITE)
+    func(path)
 
 
 def clean() -> None:
     if BUILD_DIR.exists():
         print(f"Removing {BUILD_DIR}")
-        shutil.rmtree(BUILD_DIR)
+        shutil.rmtree(BUILD_DIR, onerror=_clear_readonly_and_retry)
     # Bin/ is NOT removed - it may contain assets or manually placed binaries
 
 

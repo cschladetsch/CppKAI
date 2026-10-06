@@ -357,7 +357,19 @@ TEST_F(SigmaTests, Scripts) {
 //                                   c = c + 1
 //                               m = m + 1
 //                           c                  // 5, should be 3
-TEST_F(SigmaTests, DISABLED_EarlyReturnInFunctionCalledFromLoop) {
+TEST_F(SigmaTests, ReturnOfCallInsideIf) {
+    EXPECT_EQ(Run<int>(
+                  "fun tens(n: int) -> int\n"
+                  "    return n * 10\n"
+                  "fun f(n: int) -> int\n"
+                  "    if n > 1\n"
+                  "        return tens(n)\n"
+                  "    return 0\n"
+                  "f(4) + f(1)"),
+              40);
+}
+
+TEST_F(SigmaTests, EarlyReturnInFunctionCalledFromLoop) {
     EXPECT_EQ(Run<int>(
                   "fun f(n: int) -> bool\n"
                   "    if n < 2\n"

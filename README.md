@@ -463,7 +463,7 @@ This project is licensed under the MIT License — see the [LICENSE](LICENSE) fi
 
 - **629+** C++ source files
 - **4** integrated programming languages (Pi / Rho / Sigma / Tau)
-- **1,780+** passing tests across Pi, Rho, Tau, and network suites (TestPi alone has 585+) — see [Doc/TEST_SUMMARY.md](Doc/TEST_SUMMARY.md) for the per-suite breakdown and [Doc/TODO.md](Doc/TODO.md) for currently-tracked language gaps and failing tests
+- **2,202** CTest entries, all passing, across Core, Pi, Rho, Sigma, Tau, Console and network suites (TestRho alone has 864) — see [Doc/TEST_SUMMARY.md](Doc/TEST_SUMMARY.md) for the per-suite breakdown and [Doc/TODO.md](Doc/TODO.md) for currently-tracked language gaps and failing tests
 - **Full** Agent/Proxy/Domain networking over ENet UDP
 - **Tau IDL** generates type-safe proxy/agent pairs from `.tau` interfaces
 - **Networking on by default** — disable with `./b --no-network`

@@ -29,7 +29,7 @@ KAI_BEGIN
 ///   Binary       (token: operator)  left, right
 ///   Unary        (token: operator)  operand
 ///   Ternary      condition, then, else
-///   Call         callee, Args
+///   Call         callee, Args, [continuation operator token: '&' or '!']
 ///   Args         arguments...
 ///   Index        container, index
 ///   Member       (token: member name)  object

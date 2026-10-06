@@ -25,7 +25,7 @@ Tests for the statically typed Sigma language:
 - **SigmaTests**: lexing, parsing, type checking, generated Rho, and running programs
 - **SigmaMoreTests**: further type rules and rejected programs, with the expected `line:col` errors
 - **SigmaScriptTests**: one test per example program in `TestSigma/Scripts/*.sigma`
-- One test, `SigmaTests.DISABLED_EarlyReturnInFunctionCalledFromLoop`, waits on an executor fix (see [Doc/Sigma](../../Doc/Sigma/README.md#known-issues))
+- **SigmaContinuationTests**: `f(x)&` and `f(x)!` (tail calls), and every rejected use
 
 ### TestTau/
 Tests for the Tau Interface Definition Language:

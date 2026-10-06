@@ -65,11 +65,10 @@ gantt
 
 ### Rho
 - [x] Persistent `RhoTranslator` reused across sequential `Console` commands accumulated state and corrupted later translations (`a = 2` then `a+4` threw `Empty Stack`/`InvalidPathname`). Fixed by constructing a fresh `RhoTranslator` per call at all four `Console.cpp` call sites (`Process`, `ExecuteWithExecutor`, `Compile`, `SetTranslateFunction`). See `Doc/Rho-Fix-Documentation.md` addendum and `Test/Language/TestRho/RhoTranslatorReuseAndNovelTests.cpp`.
-- [ ] Inline function calls inside `for x in container` loops (currently return 0)
-  - `fun double(x) { x * 2 }` works; `for x in arr { sum = sum + double(x) }` does not
-  - Root cause: Call nodes in ForEach body don't dispatch correctly
-- [ ] `continue` in `foreach` (Mixed_ContinueInForEach still failing)
-- [ ] Nested break/continue in C-style for loops
+- [x] Inline function calls inside `for x in container` loops (work as of 2026-10-02, checked with indentation syntax through Sigma-generated Rho)
+- [x] `continue` in `foreach` (`Mixed_ContinueInForEach` passes as of 2026-10-02)
+- [x] Nested break/continue in C-style for loops (work as of 2026-10-02, checked through Sigma-generated Rho)
+- [x] Early `return` inside an `if` was lost in a function called from a loop, and in an `if` block that called a function first (fixed in CppKaiCore 2026-10-02; `RhoEarlyReturnInLoop` tests)
 - [x] Python-style `for x in container` syntax
 - [x] `break` and `continue` keywords
 - [x] `foreach` keyword in Pi

@@ -36,6 +36,7 @@ flowchart LR
 - [Types](#types)
 - [Declarations](#declarations)
 - [Functions](#functions)
+  - [Continuation operators](#continuation-operators)
 - [Statements](#statements)
 - [Expressions](#expressions)
 - [Lists and maps](#lists-and-maps)
@@ -197,6 +198,39 @@ fun apply(f: fun(int) -> int, x: int) -> int
 - A named function is a value of its `fun(...)` type. It can be stored in a
   variable of that type and passed as an argument.
 
+### Continuation operators
+
+A call can end in one of Rho's continuation operators, written directly
+after the `)` with no space:
+
+| Sigma | Rho / Pi | Meaning |
+|-------|----------|---------|
+| `f(x)` | `Suspend` | an ordinary call |
+| `f(x)&` | `Suspend` | the same, written out; same type as `f(x)` |
+| `f(x)!` | `Replace` | a tail call: `f` takes the place of the running function |
+
+```sigma
+fun sum(n: int, acc: int) -> int
+    if n == 0
+        return acc
+    return sum(n - 1, acc + n)!      // tail call
+
+total = sum(100, 0)                  // 5050
+```
+
+- With a space the operator means something else: `f(x) & mask` is a bitwise
+  and, and `f(x) !` is a syntax error.
+- `!` is only allowed as the last statement of a function body: `return
+  f(...)!`, or `f(...)!` on its own in a `void` function calling a `void`
+  function. It is rejected inside `if`, `while` and `for` bodies, in
+  expressions, and outside functions.
+- The callee must return exactly the function's result type. `int` is not
+  widened to `float`, because no code of the calling function runs after a
+  tail call.
+- `&` and `!` apply to calls of Sigma functions, including function values,
+  but not to `print` or methods.
+- `...` (resume) is not supported; see [Not supported yet](#not-supported-yet).
+
 ## Statements
 
 ```sigma
@@ -257,6 +291,7 @@ From lowest to highest precedence:
 | `!` (prefix) | `bool` |
 | `~` (prefix) | `int` |
 | `f(...)` `a[i]` `a.m` | must follow a name |
+| `f(...)&` `f(...)!` | continuation operators, written directly after the `)` |
 
 - `int` with `int` gives `int`, so `7 / 2` is `3`. If either operand is a
   `float`, the result is a `float`.
@@ -401,57 +436,20 @@ flowchart BT
 - nullable types, union types and user-defined generics
 - multi-line `pi { ... }` blocks
 - shell commands, pathnames and `self`
-- the continuation operators after a call: `f(x)&` (suspend), `f(x)!`
-  (replace) and `f(x)...` (resume). Rho has them; the lexer rejects `...`
-  today. See [the design note](../Sigma.md) for how Sigma will type them.
+- `f(x)...` (resume): in Rho it clears the context stack and stops without
+  calling `f`, so there is nothing sensible to type yet
 - `++` and `--` (use `+= 1`)
 
 ## Known issues
 
-An early `return` inside an `if` is lost when the function is called from
-inside a loop, so the function carries on and returns later. This is a bug in
-the Pi executor, not in Sigma, and Sigma's checker cannot detect it:
-`Executor::ExecuteContinuationInlineAndDrain` resets `break_` on every drain
-step, which discards the `break_` that `Return` set. Plain Rho reproduces it.
-`SigmaTests.DISABLED_EarlyReturnInFunctionCalledFromLoop` is ready for when
-it is fixed.
-
-```mermaid
-sequenceDiagram
-    participant L as Loop body (inline)
-    participant D as ExecuteContinuationInlineAndDrain
-    participant F as f(n)
-    participant I as if-block in f
-
-    L->>D: call f(0)
-    D->>F: step
-    F->>I: n < 2
-    I->>I: return false: sets break_
-    I-->>D: back to the drain loop
-    D->>D: next step: break_ = false
-    D->>F: carries on after the if
-    F-->>L: return true (wrong)
-```
-
-Until then, give functions that are called from loops a single
-`return` at the end, as the example scripts do:
-
-```sigma
-fun isPrime(n: int) -> bool
-    prime = n >= 2
-    d = 2
-    while prime && d * d <= n
-        if n % d == 0
-            prime = false
-        d += 1
-    return prime
-```
-
-**Line numbers when running a file.** `Console file.sigma` reports
-positions that are too small by the number of blank lines above the error,
-because `Console::ExecuteFile` (in CppKaiConsoleLib) skips empty lines before
-the text reaches `SigmaTranslator`. The positions from `SigmaTranslator`
-itself, from the tests and from interactive input are correct.
+- **`!` only as the last statement of a function body.** In Rho, a replace
+  (`f(x)!`) inside an `if` or a loop corrupts the data stack or hangs, so
+  Sigma rejects it there. See [Continuation operators](#continuation-operators).
+- **Maps in the Console app.** `Console file.sigma` stops with `Unknown
+  Class ... type_number_=30` (Map) on a program that uses a `Map`, such as
+  `Scripts/Inventory.sigma`. The same program type-checks and runs in
+  `TestSigma`, whose registry is set up by the test fixture, so the problem is
+  in how the Console app's registry handles `Map`, not in Sigma.
 
 ## Source and tests
 
@@ -459,8 +457,8 @@ itself, from the tests and from interactive input are correct.
 |------|-------|
 | Headers | `Include/KAI/Language/Sigma` |
 | Sources | `Source/Library/Language/Sigma/Source` (the `SigmaLang` library) |
-| Design notes | [`Doc/Sigma.md`](../Sigma.md): planned continuation operators |
-| Tests | `Test/Language/TestSigma` (`TestSigma`: 103 tests, 1 of them disabled) |
+| Design notes | [`Doc/Sigma.md`](../Sigma.md): continuation operators |
+| Tests | `Test/Language/TestSigma` (`TestSigma`: 129 tests) |
 | Example programs | `Test/Language/TestSigma/Scripts/*.sigma` (23 programs) |
 
 Build and run the tests from the CppKAI root:
@@ -475,3 +473,6 @@ expression. `SigmaScriptTests` has one test per script (sorting, a sieve,
 matrix multiplication, binary search, Newton's method, higher-order
 functions, and more), so a failure names the program; `SigmaTests.Scripts`
 also runs every script in the folder, including new ones.
+
+`SigmaContinuationTests` covers `&` and `!`: what runs, what the generated
+Rho looks like, and every rejected use.

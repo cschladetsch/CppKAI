@@ -1,35 +1,49 @@
 # KAI Project Test Summary
 
-Generated: 2026-09-13 (Core/Rho/Tau/Network counts are a 2026-04-04 snapshot; Pi has been re-verified since - see Notes).
+Generated: 2026-10-02, from a full build of `master` on Linux (Clang, Release,
+`KAI_NETWORKING=ON`) with the CppKaiCore and CppKaiConsoleLib fixes of the
+same date. `py run_tests.py` registers **2,202 CTest entries; all pass, none
+disabled.**
 
 ## Overall Status
 
-| Suite | Passed | Total | Rate | Notes |
-|-------|--------|-------|------|-------|
-| Core | 147 | 147 | 100% | Registry, GC, BinaryStream, Array, Map |
-| Pi | 519 | 519 | 100% | All Pi language tests passing (grew from 330 as of the 2026-04-04 snapshot - see Notes) |
-| Rho | 876 | 876 | 100% | Full language suite passing |
-| Tau | 308 | 308 | 100% | Tau parser/codegen and future/proxy tests passing |
-| Network | 17 | 17 | 100% | Network and Tau-over-network tests passing |
+Counts are gtest cases per binary (`--gtest_list_tests`). The language and
+core suites register one CTest entry per case; `TestConsole` and
+`TestNetwork` register one entry each.
+
+| Suite | Tests | Status | Covers |
+|-------|-------|--------|--------|
+| TestCore | 178 | all pass | Registry, GC, BinaryStream, Array, Map |
+| TestPi | 683 | all pass | Pi language, continuations, control flow |
+| TestRho | 864 | all pass | Rho language, iteration, functions, early returns |
+| TestSigma | 129 | all pass | Sigma type checker, generated Rho, example scripts, continuation operators |
+| TestTau | 519 | all pass | Tau parser/codegen, futures, proxies |
+| TestConsole | 70 | all pass | Console commands, history, languages |
+| TestNetwork | 332 | all pass | Networking and Tau-over-network |
+| Others | | all pass | LogTest, PerformanceTests, Test_ProxyGeneration, ContinuationMobilityDemoTests, KshUnitTests |
 
 ## Test Suite Details
 
-### Core Tests (147/147)
+### Core Tests (178)
 - Registry, type system, memory management, garbage collection
 - BinaryStream serialization, Array, Map containers
 
-### Pi Language Tests (519/519)
+### Pi Language Tests (683)
 - Stack operations, control flow, continuations, functions
-- Arithmetic, stack manipulation, control flow, and interpreter coverage all pass
+- Arithmetic, stack manipulation, control flow, and interpreter coverage
 
-### Rho Language Tests (876/876)
-- Expressions, control flow, functions, recursion, closures, iteration, and translation coverage pass
-- Historical continuation and loop regressions referenced in older reports are no longer present in the current suite snapshot
+### Rho Language Tests (864)
+- Expressions, control flow, functions, recursion, closures, iteration, and translation coverage
+- `RhoEarlyReturnInLoop`: early `return` inside an `if`, both in a function called from a loop and where the `if` calls a function first
 
-### Tau Language Tests (308/308)
+### Sigma Language Tests (129)
+- Type checking and `line:col` errors, generated Rho, sessions, native C++ types
+- `SigmaScriptTests`: one test per program in `Test/Language/TestSigma/Scripts`
+- `SigmaContinuationTests`: `f(x)&` and `f(x)!`, and every rejected use
+
+### Tau Language Tests (519)
 - Namespace/class/interface parsing, struct and enum handling
 - Proxy/agent code generation, `Future<T>` parsing, strict-mode validation
-- Includes Tau future, proxy, and codegen coverage
 
 ## Build Commands
 
@@ -45,6 +59,7 @@ py build.py
 ./Bin/Test/TestCore
 ./Bin/Test/TestPi
 ./Bin/Test/TestRho
+./Bin/Test/TestSigma
 ./Bin/Test/TestTau
 ./Bin/Test/TestNetwork      # Built by default (KAI_NETWORKING=ON); pass -DKAI_NETWORKING=OFF to skip
 
@@ -89,11 +104,14 @@ Built by default (`KAI_NETWORKING=ON`); pass `-DKAI_NETWORKING=OFF` to skip.
 
 ## Notes
 
-- The Core/Rho/Tau/Network counts above reflect a `develop` branch snapshot as
-  of 2026-04-04. Historical documents that mention partial Rho failures
-  describe older baselines still further back and should not be treated as
-  current. The Pi count has since been re-verified at 519/519 (see below) and
-  is more current than the rest of this table.
+- **2026-10-02:** every count above was re-run. Two executor fixes in
+  CppKaiCore made early returns work in Rho and Sigma (a `return` inside an
+  `if`, in a function called from a loop, and in an `if` block that calls a
+  function first); `SigmaTests.EarlyReturnInFunctionCalledFromLoop` is no
+  longer disabled. `RhoAllIterationMethodsTest.Mixed_ContinueInForEach`,
+  listed as failing in older notes, passes.
+- Historical documents that mention partial Rho failures describe older
+  baselines and should not be treated as current.
 - **As of 2026-09-13, two Pi continuation tests that were failing are now
   fixed**: `TestPiAdvancedContinuations.TestConditionalContinuation` and
   `TestPiAdvancedControlFlow.TestContinuationConditional` (a `TypeMismatch`

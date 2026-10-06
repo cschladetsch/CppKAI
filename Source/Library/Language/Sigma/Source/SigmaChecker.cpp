@@ -506,6 +506,7 @@ void SigmaChecker::FunctionBody(const NodePtr &fun) {
     }
 
     const auto &body = fun->GetChild(2);
+    tailCall_ = TailCallIn(body);
     Statements(body, false);
     if (!result_->Is(Kind::Void) && !AlwaysReturns(body))
         Report(fun, std::format("'{}' does not return a value on every path", fun->GetToken().Text()));
@@ -513,6 +514,30 @@ void SigmaChecker::FunctionBody(const NodePtr &fun) {
     scopes_.pop_back();
     function_ = nullptr;
     result_ = nullptr;
+    tailCall_ = nullptr;
+}
+
+// The call carrying '&' or '!' (Rho's suspend and replace), or None.
+static SigmaTokenEnumType::Enum Continuation(const SigmaChecker::NodePtr &call) {
+    if (call->GetType() != SigmaAstNodeEnumType::Call || call->GetChildren().size() < 3)
+        return SigmaTokenEnumType::None;
+    return call->GetChild(2)->GetToken().type;
+}
+
+// `f(...)!` replaces the running function with f, so the function never
+// resumes. Rho only does that correctly when the call is the last statement
+// of the function body itself (inside an if or a loop it corrupts the stack
+// or hangs), so that is the only place Sigma allows it:
+//     return f(...)!      or, in a void function,      f(...)!
+const SigmaAstNode *SigmaChecker::TailCallIn(const NodePtr &body) {
+    const auto &statements = body->GetChildren();
+    if (statements.empty()) return nullptr;
+    const auto &last = statements.back();
+    if ((last->GetType() == Ast::Return || last->GetType() == Ast::ExprStatement) && !last->GetChildren().empty()) {
+        const auto &call = last->GetChild(0);
+        if (Continuation(call) == Tok::Not) return call.get();
+    }
+    return nullptr;
 }
 
 // ---------------------------------------------------------------------------
@@ -749,6 +774,48 @@ SigmaTypePtr SigmaChecker::Arguments(const NodePtr &at, const std::string &what,
 }
 
 SigmaTypePtr SigmaChecker::Call(const NodePtr &node) {
+    const auto &callee = node->GetChild(0);
+    const auto &args = node->GetChild(1);
+    const auto control = Continuation(node);
+
+    if (control != Tok::None) {
+        auto type = PlainCall(node);
+        if (callee->GetType() == Ast::Member || (IsName(callee) && callee->GetToken().Text() == "print" && !Lookup("print"))) {
+            Report(node->GetChild(2), std::format("'{}' applies to calls of Sigma functions, not built-ins or methods",
+                                                  node->GetChild(2)->GetToken().Text()));
+            return type;
+        }
+        if (control == Tok::Not) TailCall(node, type);
+        return type;
+    }
+    return PlainCall(node);
+}
+
+void SigmaChecker::TailCall(const NodePtr &node, const SigmaTypePtr &type) {
+    const auto &op = node->GetChild(2);
+    if (!function_) {
+        Report(op, "'!' (tail call) can only be used inside a function");
+        return;
+    }
+    if (node.get() != tailCall_) {
+        Report(op, "'!' (tail call) must be the last statement of a function body: 'return f(...)!', or 'f(...)!' in a void function");
+        return;
+    }
+    if (IsBad(type) || IsAny(type)) return;
+    const std::string fname = function_->GetToken().Text();
+    if (result_->Is(Kind::Void)) {
+        if (!type->Is(Kind::Void))
+            Report(node, std::format("tail call in void '{}' must call a void function, got {}", fname, type->ToString()));
+        return;
+    }
+    // No int-to-float widening: the callee's result becomes this function's
+    // result directly, with no code of ours left to run.
+    if (!SigmaType::Same(type, result_))
+        Report(node, std::format("tail call: '{}' returns {}, so the called function must return exactly {}, got {}",
+                                 fname, result_->ToString(), result_->ToString(), type->ToString()));
+}
+
+SigmaTypePtr SigmaChecker::PlainCall(const NodePtr &node) {
     const auto &callee = node->GetChild(0);
     const auto &args = node->GetChild(1);
 

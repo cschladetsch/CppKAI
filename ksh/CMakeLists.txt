@@ -3,7 +3,6 @@ project(ksh CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_TOOLCHAIN_FILE "" CACHE STRING "" FORCE)
 
 add_library(ksh_core
     src/object.cpp

@@ -141,7 +141,13 @@ class RhoEmitter {
             case Ast::TokenType:
                 return node->GetToken().type == Tok::String ? StringLiteral(node) : node->Text();
             case Ast::PiBlock: return node->Text();
-            case Ast::Binary: return "(" + Expr(ch[0]) + " " + node->Text() + " " + Expr(ch[1]) + ")";
+            case Ast::Binary: {
+                std::string left = Expr(ch[0]);
+                // Rho reads '&' after a call's ')' as the suspend operator
+                // whatever the spacing, so `f(x) & m` needs the call wrapped.
+                if (node->GetToken().type == Tok::BitAnd && ch[0]->GetType() == Ast::Call) left = "(" + left + ")";
+                return "(" + left + " " + node->Text() + " " + Expr(ch[1]) + ")";
+            }
             case Ast::Unary: return "(" + node->Text() + Expr(ch[0]) + ")";
             case Ast::Ternary: return "(" + Expr(ch[0]) + " ? " + Expr(ch[1]) + " : " + Expr(ch[2]) + ")";
             case Ast::Member: return Raw(ch[0]) + "." + node->Text();
@@ -149,7 +155,8 @@ class RhoEmitter {
             case Ast::Call: {
                 std::string args;
                 for (auto const &a : ch[1]->GetChildren()) args += (args.empty() ? "" : ", ") + Expr(a);
-                return Raw(ch[0]) + "(" + args + ")";
+                // A continuation operator stays glued to the ')', as Rho expects.
+                return Raw(ch[0]) + "(" + args + ")" + (ch.size() > 2 ? ch[2]->Text() : std::string());
             }
             case Ast::List: {
                 std::string items;

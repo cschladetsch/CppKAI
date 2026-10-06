@@ -242,6 +242,19 @@ The best way to get started with KAI's language system is to:
 
 ## Recent Improvements (2026)
 
+### Executor: Early Returns
+
+Two executor bugs that lost an early `return` are fixed (in CppKaiCore):
+
+- a `return` inside an `if`, in a function called from a `for` or `while` body
+- a `return` in an `if` block that calls a function first, such as `if n > 1: return n * fact(n - 1)`, which used to return from the `if` only
+
+`TestRho`'s `RhoEarlyReturnInLoop` tests and `SigmaTests.EarlyReturnInFunctionCalledFromLoop` (no longer disabled) cover both.
+
+### Sigma: Continuation Operators
+
+Sigma accepts Rho's `f(x)&` (suspend) and `f(x)!` (a tail call), written directly after the `)`. See [Continuation operators](Sigma/README.md#continuation-operators).
+
 ### Sigma: Statically Typed Layer
 
 Sigma, a new statically typed language with Rho's syntax, lives in CppKAI (`Include/KAI/Language/Sigma`, `Source/Library/Language/Sigma`, the `SigmaLang` library). The Console registers it through `Console::AddTranslator`, so CppKaiCore and CppKaiConsoleLib do not depend on it. `TestSigma` covers it with unit tests and example programs. See [Doc/Sigma](Sigma/README.md).

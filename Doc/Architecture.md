@@ -149,11 +149,13 @@ fun factorial(n) {
 
 ### Sigma: Typed Language
 
-Sigma is Rho's indentation-based syntax plus static types. `SigmaChecker` type-checks the whole program before anything runs, then `SigmaTranslator` emits Rho. The Sigma library lives in CppKAI and the Console registers it through `Console::AddTranslator`, so CppKaiCore and CppKaiConsoleLib do not depend on it. See [Sigma](Sigma/README.md).
+Sigma is Rho's indentation-based syntax plus static types. `SigmaChecker` type-checks the whole program before anything runs, then `SigmaTranslator` emits Rho. The Sigma library lives in CppKAI and the Console registers it through `Console::AddTranslator`, so CppKaiCore and CppKaiConsoleLib do not depend on it. A call can end in `&` (suspend) or, as the last statement of a function, `!` (a tail call), written directly after the `)`. See [Sigma](Sigma/README.md).
 
 ```sigma
-fun factorial(n: int) -> int
-    return n <= 1 ? 1 : n * factorial(n - 1)
+fun factorial(n: int, acc: int) -> int
+    if n <= 1
+        return acc
+    return factorial(n - 1, acc * n)!
 ```
 
 ### Tau — Interface Definition Language

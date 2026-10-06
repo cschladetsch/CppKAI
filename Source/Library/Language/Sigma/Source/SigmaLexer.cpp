@@ -186,7 +186,8 @@ bool SigmaLexer::NextToken() {
 
         case ',': return Add(Enum::Comma);
         case '.':
-            if (n == '.') return Error("'...' is not supported in Sigma");
+            if (n == '.')
+                return Error("'...' (resume) is not supported in Sigma: in Rho it leaves for the top level without calling the function");
             return Add(Enum::Dot);
         case ';': return Add(Enum::Semi);
         case '?': return Add(Enum::Question);

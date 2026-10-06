@@ -113,6 +113,7 @@ class SigmaChecker {
     std::vector<NodePtr> functions_;
     const SigmaAstNode *function_ = nullptr;  // function whose body is being checked
     SigmaTypePtr result_;                     // its result type
+    const SigmaAstNode *tailCall_ = nullptr;  // the one `f(...)!` allowed in that body, if any
     int loops_ = 0;
 
     // statements
@@ -133,6 +134,9 @@ class SigmaChecker {
     SigmaTypePtr Unary(const NodePtr &node);
     SigmaTypePtr Ternary(const NodePtr &node, const SigmaTypePtr &expected);
     SigmaTypePtr Call(const NodePtr &node);
+    SigmaTypePtr PlainCall(const NodePtr &node);
+    void TailCall(const NodePtr &node, const SigmaTypePtr &type);
+    const SigmaAstNode *TailCallIn(const NodePtr &body);
     SigmaTypePtr MethodCall(const NodePtr &call, const NodePtr &member, const NodePtr &args);
     SigmaTypePtr Arguments(const NodePtr &at, const std::string &what, const std::vector<SigmaTypePtr> &params,
                            const NodePtr &args);

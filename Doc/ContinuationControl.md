@@ -246,20 +246,33 @@ In Pi, these operations are used explicitly with continuations on the stack:
 
 ### In Rho (Infix Syntax)
 
-Rho provides more familiar syntax for using these operations:
+In Rho the operation is chosen by a postfix operator written directly after
+a call's closing `)`. `RhoTranslator::TranslateCall` emits the matching Pi
+operation after pushing the arguments and the function:
+
+| Rho | Pi operation |
+|-----|--------------|
+| `f(x)` or `f(x)&` | `Suspend` |
+| `f(x)!` | `Replace` |
+| `f(x)...` | `Resume` |
+
+`return` itself is the separate `Return` operation, not a Resume.
 
 ```rho
-// Create a function with early return using Resume
-function search_array(array, target) {
-    for (i = 0; i < array.length; i++) {
-        if (array[i] == target) {
-            // Found the target, return early
-            return i;  // Translates to a Resume operation
-        }
-    }
-    return -1;  // Not found
-}
+fun sum(n, acc)
+    if n == 0
+        return acc
+    return sum(n - 1, acc + n)!     // Replace: a tail call
 ```
+
+### In Sigma (Typed)
+
+Sigma accepts `&` and `!` with the same meaning, written directly after the
+`)` (with a space, `f(x) & m` is a bitwise and). It only allows `!` as the
+last statement of a function body, requires the callee to return exactly
+the function's result type, and rejects `...`. See
+[Sigma: continuation operators](Sigma/README.md#continuation-operators) and
+the [design note](Sigma.md).
 
 ## Implementation Considerations
 
@@ -296,4 +309,5 @@ For practical examples, explore the [Continuation Control Tests](../Test/Languag
 
 - [Pi Language Tutorial](PiTutorial.md)
 - [Rho Language Tutorial](RhoTutorial.md)
+- [Sigma Language Reference](Sigma/README.md)
 - [Common Language System Architecture](CommonLanguageSystem.md)

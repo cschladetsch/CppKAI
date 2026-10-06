@@ -128,6 +128,7 @@ foreach (lang ${langs})
             ${source_path}/AdvancedForLoopTests.cpp          # Advanced for loop tests
             ${source_path}/RhoVeryComplexTests.cpp           # Complex nested Rho/Pi integration tests
             ${source_path}/RhoTranslatorReuseAndNovelTests.cpp # Regression coverage for the translator-reuse bug (a=2, a+4) plus new sequential-session tests
+            ${source_path}/RhoEarlyReturnInLoopTests.cpp   # Early return inside an if, in a function called from a loop body
         )
     elseif(lang STREQUAL "Pi")
         # Explicitly list Pi tests to avoid including unwanted files

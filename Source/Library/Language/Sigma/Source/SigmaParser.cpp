@@ -491,9 +491,16 @@ SigmaParser::AstNodePtr SigmaParser::Postfix() {
                     args->Add(arg);
                 } while (Accept(Tok::Comma));
             }
+            const TokenNode close = Peek();
             if (!Require(Tok::CloseParen, "')' after the arguments")) return nullptr;
             call->Add(expr);
             call->Add(args);
+            // Continuation operator, as in Rho: `f(x)&` (suspend, an ordinary
+            // call written out) or `f(x)!` (replace: a tail call). It must be
+            // written directly after the ')'. With a space between them,
+            // `f(x) & mask` is a bitwise and, and `f(x) !` is not a call
+            // operator at all.
+            if ((Is(Tok::Not) || Is(Tok::BitAnd)) && Adjacent(close, Peek())) call->Add(NewNode(Take()));
             expr = call;
         } else if (Is(Tok::OpenSquare)) {
             auto index = NewNode(Ast::Index, Take());
@@ -506,6 +513,10 @@ SigmaParser::AstNodePtr SigmaParser::Postfix() {
             return expr;
         }
     }
+}
+
+bool SigmaParser::Adjacent(const TokenNode &a, const TokenNode &b) {
+    return a.lineNumber == b.lineNumber && a.slice.End == b.slice.Start;
 }
 
 SigmaParser::AstNodePtr SigmaParser::Primary() {
