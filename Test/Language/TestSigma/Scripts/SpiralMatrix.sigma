@@ -1,0 +1,33 @@
+// Walk a 4x4 matrix in spiral order by shrinking its bounds.
+
+fun spiral(m: List[List[int]]) -> List[int]
+    out: List[int] = []
+    top = 0
+    bottom = m.size() - 1
+    left = 0
+    first = m[0]
+    right = first.size() - 1
+    while top <= bottom && left <= right
+        for c = left; c <= right; c += 1
+            out.push(m[top][c])
+        top += 1
+        for r = top; r <= bottom; r += 1
+            out.push(m[r][right])
+        right -= 1
+        if top <= bottom
+            for c = right; c >= left; c -= 1
+                out.push(m[bottom][c])
+            bottom -= 1
+        if left <= right
+            for r = bottom; r >= top; r -= 1
+                out.push(m[r][left])
+            left += 1
+    return out
+
+s = spiral([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16]])
+expected = [1, 2, 3, 4, 8, 12, 16, 15, 14, 13, 9, 5, 6, 7, 11, 10]
+ok = s.size() == 16
+for i = 0; i < 16; i += 1
+    ok = ok && s[i] == expected[i]
+t = spiral([[1, 2, 3], [4, 5, 6]])
+ok && t.size() == 6 && t[3] == 6 && t[5] == 4

@@ -1,0 +1,23 @@
+// Breadth-first search distances over an adjacency list.
+
+adj: List[List[int]] = [[1, 2], [0, 3], [0, 3, 4], [1, 2, 5], [2, 5], [3, 4], [6]]
+
+fun bfs(start: int) -> List[int]
+    dist: List[int] = []
+    for i = 0; i < adj.size(); i += 1
+        dist.push(-1)
+    dist[start] = 0
+    queue: List[int] = [start]
+    head = 0
+    while head < queue.size()
+        u = queue[head]
+        head += 1
+        for v in adj[u]
+            if dist[v] == -1
+                dist[v] = dist[u] + 1
+                queue.push(v)
+    return dist
+
+d = bfs(0)
+e = bfs(5)
+d[1] == 1 && d[3] == 2 && d[4] == 2 && d[5] == 3 && d[6] == -1 && e[0] == 3 && e[2] == 2

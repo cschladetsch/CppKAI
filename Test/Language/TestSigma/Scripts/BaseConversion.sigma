@@ -1,0 +1,31 @@
+// Convert between bases 2 to 16; digit lists round-trip for every base.
+
+alphabet = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"]
+
+fun digitsOf(n: int, base: int) -> List[int]
+    out: List[int] = []
+    if n == 0
+        out.push(0)
+    while n > 0
+        out = [n % base] + out
+        n /= base
+    return out
+
+fun fromDigits(ds: List[int], base: int) -> int
+    n = 0
+    for d in ds
+        n = n * base + d
+    return n
+
+fun toBase(n: int, base: int) -> str
+    s = ""
+    for d in digitsOf(n, base)
+        s += alphabet[d]
+    return s
+
+ok = true
+for base = 2; base <= 16; base += 1
+    for n = 0; n <= 100; n += 7
+        ok = ok && fromDigits(digitsOf(n, base), base) == n
+
+ok && toBase(255, 16) == "FF" && toBase(255, 2) == "11111111" && toBase(8, 8) == "10" && toBase(0, 7) == "0" && toBase(48879, 16) == "BEEF"

@@ -1,0 +1,19 @@
+// Hofstadter's Female and Male sequences. Each is defined through the other,
+// and each calls the other on the result of calling itself, so neither call
+// is in tail position.
+
+fun female(n: int) -> int
+    if n == 0
+        return 1
+    return n - male(female(n - 1))
+
+fun male(n: int) -> int
+    return n == 0 ? 0 : n - female(male(n - 1))
+
+fs: List[int] = []
+ms: List[int] = []
+for i = 0; i < 15; i += 1
+    fs.push(female(i))
+    ms.push(male(i))
+
+fs[7] == 5 && fs[14] == 9 && ms[3] == 2 && ms[12] == 7 && female(20) == 13 && male(20) == 12

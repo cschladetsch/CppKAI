@@ -1,0 +1,18 @@
+// The longest Collatz chain starting below 100, with its length.
+
+fun chain(n: int) -> int
+    steps = 0
+    while n != 1
+        n = n % 2 == 0 ? n / 2 : 3 * n + 1
+        steps += 1
+    return steps
+
+best = 1
+bestSteps = 0
+for start = 1; start < 100; start += 1
+    s = chain(start)
+    if s > bestSteps
+        best = start
+        bestSteps = s
+
+best == 97 && bestSteps == 118 && chain(1) == 0 && chain(16) == 4

@@ -1,0 +1,24 @@
+// Day of the week by Sakamoto's method (0 = Sunday), leap years, and the
+// Fridays the 13th of 2026.
+
+offsets = [0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4]
+
+fun dayOfWeek(y: int, m: int, d: int) -> int
+    if m < 3
+        y -= 1
+    return (y + y / 4 - y / 100 + y / 400 + offsets[m - 1] + d) % 7
+
+fun isLeap(y: int) -> bool
+    return (y % 4 == 0 && y % 100 != 0) || y % 400 == 0
+
+leaps = 0
+for y = 1900; y <= 2000; y += 1
+    if isLeap(y)
+        leaps += 1
+
+fridays: List[int] = []
+for m = 1; m <= 12; m += 1
+    if dayOfWeek(2026, m, 13) == 5
+        fridays.push(m)
+
+dayOfWeek(2000, 1, 1) == 6 && dayOfWeek(1969, 7, 20) == 0 && dayOfWeek(2026, 10, 6) == 2 && leaps == 25 && fridays.size() == 3 && fridays[0] == 2 && fridays[2] == 11

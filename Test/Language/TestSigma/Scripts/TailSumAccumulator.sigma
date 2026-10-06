@@ -1,0 +1,13 @@
+// Accumulator-passing recursion with tail calls, 10000 deep.
+
+fun sumTo(n: int, acc: int) -> int
+    if n == 0
+        return acc
+    return sumTo(n - 1, acc + n)!
+
+fun sumSquares(n: int, acc: int) -> int
+    if n == 0
+        return acc
+    return sumSquares(n - 1, acc + n * n)!
+
+sumTo(10000, 0) == 50005000 && sumSquares(100, 0) == 338350 && sumTo(0, 7) == 7

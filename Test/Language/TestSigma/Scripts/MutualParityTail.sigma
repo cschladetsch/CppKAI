@@ -1,0 +1,14 @@
+// isEven and isOdd call each other as tail calls ('!'), so a depth of
+// thousands of calls needs no stack growth.
+
+fun isEven(n: int) -> bool
+    if n == 0
+        return true
+    return isOdd(n - 1)!
+
+fun isOdd(n: int) -> bool
+    if n == 0
+        return false
+    return isEven(n - 1)!
+
+isEven(0) && !isOdd(0) && isOdd(7) && !isEven(7) && isEven(2000) && isOdd(2001)

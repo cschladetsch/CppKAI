@@ -1,0 +1,31 @@
+// Years to double at several rates, with a do-while loop, a float map, and
+// break and continue.
+
+rates: Map[str, float] = {"savings": 0.05, "term": 0.08, "cash": 0}
+
+fun yearsToDouble(rate: float) -> int
+    if rate <= 0
+        return -1
+    balance: float = 1
+    years = 0
+    do
+        balance = balance * (1 + rate)
+        years += 1
+    while balance < 2
+    return years
+
+fastest = 1000
+for name in rates.keys()
+    y = yearsToDouble(rates[name])
+    if y < 0
+        continue
+    if y < fastest
+        fastest = y
+
+firstOverHundred = 0
+for n = 1; n < 1000; n += 1
+    if 100 * n * n > 50000
+        firstOverHundred = n
+        break
+
+yearsToDouble(rates["savings"]) == 15 && yearsToDouble(rates["term"]) == 10 && yearsToDouble(rates["cash"]) == -1 && fastest == 10 && firstOverHundred == 23

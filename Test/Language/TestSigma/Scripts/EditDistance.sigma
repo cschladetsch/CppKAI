@@ -1,0 +1,25 @@
+// Levenshtein distance over lists of letters, keeping two rows of the table.
+
+fun editDistance(a: List[str], b: List[str]) -> int
+    prev: List[int] = []
+    for j = 0; j <= b.size(); j += 1
+        prev.push(j)
+    for i = 1; i <= a.size(); i += 1
+        cur: List[int] = [i]
+        for j = 1; j <= b.size(); j += 1
+            cost = a[i - 1] == b[j - 1] ? 0 : 1
+            best = prev[j - 1] + cost
+            if prev[j] + 1 < best
+                best = prev[j] + 1
+            if cur[j - 1] + 1 < best
+                best = cur[j - 1] + 1
+            cur.push(best)
+        prev = cur
+    return prev[b.size()]
+
+kitten = ["k", "i", "t", "t", "e", "n"]
+sitting = ["s", "i", "t", "t", "i", "n", "g"]
+flaw = ["f", "l", "a", "w"]
+lawn = ["l", "a", "w", "n"]
+empty: List[str] = []
+editDistance(kitten, sitting) == 3 && editDistance(flaw, lawn) == 2 && editDistance(empty, lawn) == 4 && editDistance(kitten, kitten) == 0

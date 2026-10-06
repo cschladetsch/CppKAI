@@ -1,0 +1,20 @@
+// Sums of proper divisors: perfect numbers and an amicable pair.
+
+fun divisorSum(n: int) -> int
+    s = 1
+    d = 2
+    while d * d <= n
+        if n % d == 0
+            s += d
+            other = n / d
+            if other != d
+                s += other
+        d += 1
+    return s
+
+perfect: List[int] = []
+for n = 2; n < 500; n += 1
+    if divisorSum(n) == n
+        perfect.push(n)
+
+perfect.size() == 3 && perfect[0] == 6 && perfect[1] == 28 && perfect[2] == 496 && divisorSum(220) == 284 && divisorSum(284) == 220

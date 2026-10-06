@@ -1,0 +1,24 @@
+// Format ints with thousands separators, building strings from a digit table.
+
+digits = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+
+fun toStr(n: int) -> str
+    if n == 0
+        return "0"
+    s = ""
+    while n > 0
+        s = digits[n % 10] + s
+        n /= 10
+    return s
+
+fun pad3(n: int) -> str
+    return n < 10 ? "00" + toStr(n) : n < 100 ? "0" + toStr(n) : toStr(n)
+
+fun withCommas(n: int) -> str
+    if n < 0
+        return "-" + withCommas(-n)
+    if n < 1000
+        return toStr(n)
+    return withCommas(n / 1000) + "," + pad3(n % 1000)
+
+withCommas(1234567) == "1,234,567" && withCommas(1000) == "1,000" && withCommas(999) == "999" && withCommas(1002003) == "1,002,003" && withCommas(0) == "0" && withCommas(-45678) == "-45,678"

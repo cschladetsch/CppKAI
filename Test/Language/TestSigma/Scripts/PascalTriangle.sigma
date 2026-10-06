@@ -1,0 +1,22 @@
+// Rows of Pascal's triangle, built from the previous row.
+
+fun nextRow(row: List[int]) -> List[int]
+    out: List[int] = [1]
+    for i = 1; i < row.size(); i += 1
+        out.push(row[i - 1] + row[i])
+    out.push(1)
+    return out
+
+row: List[int] = [1]
+for n = 1; n <= 10; n += 1
+    row = nextRow(row)
+
+total = 0
+alternating = 0
+sign = 1
+for x in row
+    total += x
+    alternating += sign * x
+    sign = -sign
+
+row.size() == 11 && row[5] == 252 && row[3] == row[7] && total == 1024 && alternating == 0

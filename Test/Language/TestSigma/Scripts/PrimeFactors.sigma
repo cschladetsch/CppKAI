@@ -1,0 +1,28 @@
+// Prime factorisation by trial division; the factors multiply back to n.
+
+fun factors(n: int) -> List[int]
+    out: List[int] = []
+    d = 2
+    while d * d <= n
+        while n % d == 0
+            out.push(d)
+            n /= d
+        d += 1
+    if n > 1
+        out.push(n)
+    return out
+
+fun product(xs: List[int]) -> int
+    p = 1
+    for x in xs
+        p *= x
+    return p
+
+ok = true
+for n = 2; n <= 200; n += 1
+    ok = ok && product(factors(n)) == n
+
+f = factors(360)
+g = factors(1001)
+q = factors(97)
+ok && f.size() == 6 && f[2] == 2 && f[4] == 3 && f[5] == 5 && g.size() == 3 && g[0] == 7 && g[2] == 13 && q.size() == 1

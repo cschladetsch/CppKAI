@@ -1,0 +1,14 @@
+// Integers to Roman numerals with parallel lookup lists.
+
+values = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1]
+symbols = ["M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"]
+
+fun toRoman(n: int) -> str
+    out = ""
+    for i = 0; i < values.size(); i += 1
+        while n >= values[i]
+            out += symbols[i]
+            n -= values[i]
+    return out
+
+toRoman(1994) == "MCMXCIV" && toRoman(3999) == "MMMCMXCIX" && toRoman(444) == "CDXLIV" && toRoman(9) == "IX" && toRoman(2026) == "MMXXVI" && toRoman(4) < toRoman(5)

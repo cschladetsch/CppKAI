@@ -1,0 +1,29 @@
+// All-pairs shortest paths; the result satisfies the triangle inequality.
+
+big = 1000000
+w = [[0, 4, 1, 0, 0], [4, 0, 2, 5, 0], [1, 2, 0, 8, 10], [0, 5, 8, 0, 3], [0, 0, 10, 3, 0]]
+
+fun floyd() -> List[List[int]]
+    n = w.size()
+    table: List[List[int]] = []
+    for i = 0; i < n; i += 1
+        row: List[int] = []
+        for j = 0; j < n; j += 1
+            row.push(i == j ? 0 : (w[i][j] > 0 ? w[i][j] : big))
+        table.push(row)
+    for k = 0; k < n; k += 1
+        for i = 0; i < n; i += 1
+            for j = 0; j < n; j += 1
+                if table[i][k] + table[k][j] < table[i][j]
+                    table[i][j] = table[i][k] + table[k][j]
+    return table
+
+d = floyd()
+ok = true
+for i = 0; i < 5; i += 1
+    for j = 0; j < 5; j += 1
+        ok = ok && d[i][j] == d[j][i]
+        for k = 0; k < 5; k += 1
+            ok = ok && d[i][j] <= d[i][k] + d[k][j]
+
+ok && d[0][3] == 8 && d[0][4] == 11 && d[2][3] == 7 && d[1][4] == 8

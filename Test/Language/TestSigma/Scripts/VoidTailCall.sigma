@@ -1,0 +1,16 @@
+// Two void functions bounce between each other with '!' a thousand times,
+// recording each step in a global list.
+
+trail: List[int] = []
+
+fun countdown(n: int)
+    trail.push(n)
+    next(n - 1)!
+
+fun next(n: int)
+    if n < 0
+        return
+    countdown(n)!
+
+countdown(1000)
+trail.size() == 1001 && trail[0] == 1000 && trail[500] == 500 && trail[1000] == 0

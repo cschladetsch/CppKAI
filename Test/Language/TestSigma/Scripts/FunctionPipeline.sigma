@@ -1,0 +1,19 @@
+// A list of functions applied in order; the order matters.
+
+fun inc(n: int) -> int
+    return n + 1
+
+fun double(n: int) -> int
+    return n * 2
+
+fun square(n: int) -> int
+    return n * n
+
+fun runAll(fs: List[fun(int) -> int], x: int) -> int
+    for f in fs
+        x = f(x)
+    return x
+
+forward: List[fun(int) -> int] = [inc, double, square]
+backward: List[fun(int) -> int] = [square, double, inc]
+runAll(forward, 3) == 64 && runAll(backward, 3) == 19 && forward.size() == 3

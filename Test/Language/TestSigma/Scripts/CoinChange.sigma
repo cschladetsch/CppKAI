@@ -1,0 +1,23 @@
+// Coin change: number of ways to make an amount, and the fewest coins.
+
+fun ways(coins: List[int], amount: int) -> int
+    w: List[int] = [1]
+    for s = 1; s <= amount; s += 1
+        w.push(0)
+    for c in coins
+        for s = c; s <= amount; s += 1
+            w[s] = w[s] + w[s - c]
+    return w[amount]
+
+fun fewest(coins: List[int], amount: int) -> int
+    big = 1000000
+    best: List[int] = [0]
+    for s = 1; s <= amount; s += 1
+        best.push(big)
+        for c in coins
+            if c <= s
+                if best[s - c] + 1 < best[s]
+                    best[s] = best[s - c] + 1
+    return best[amount] == big ? -1 : best[amount]
+
+ways([1, 5, 10, 25, 50], 100) == 292 && ways([2], 3) == 0 && fewest([1, 5, 10, 21, 25], 63) == 3 && fewest([2], 3) == -1 && fewest([1, 2, 5], 11) == 3

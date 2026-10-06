@@ -1,0 +1,25 @@
+// Modular exponentiation by squaring, checked against repeated multiplication
+// and Fermat's little theorem.
+
+fun powMod(base: int, exp: int, m: int) -> int
+    result = 1
+    b = base % m
+    while exp > 0
+        if (exp & 1) == 1
+            result = result * b % m
+        b = b * b % m
+        exp = exp >> 1
+    return result
+
+fun slowPowMod(base: int, exp: int, m: int) -> int
+    result = 1
+    for i = 0; i < exp; i += 1
+        result = result * base % m
+    return result
+
+ok = true
+for a = 2; a < 20; a += 1
+    ok = ok && powMod(a, 996, 997) == 1
+    ok = ok && powMod(a, 37, 101) == slowPowMod(a, 37, 101)
+
+ok && powMod(2, 10, 1000) == 24 && powMod(3, 200, 13) == 9 && powMod(5, 0, 7) == 1

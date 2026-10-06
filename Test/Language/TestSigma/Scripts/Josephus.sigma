@@ -1,0 +1,24 @@
+// The Josephus problem: the recursive formula agrees with a simulation that
+// removes people from a list.
+
+fun josephus(n: int, k: int) -> int
+    if n == 1
+        return 0
+    return (josephus(n - 1, k) + k) % n
+
+fun simulate(n: int, k: int) -> int
+    people: List[int] = []
+    for i = 0; i < n; i += 1
+        people.push(i)
+    idx = 0
+    while people.size() > 1
+        idx = (idx + k - 1) % people.size()
+        people = people.slice(0, idx) + people.slice(idx + 1, people.size())
+    return people[0]
+
+ok = true
+for n = 1; n <= 10; n += 1
+    for k = 1; k <= 4; k += 1
+        ok = ok && josephus(n, k) == simulate(n, k)
+
+ok && josephus(7, 3) == 3 && josephus(41, 3) == 30 && josephus(10, 2) == 4

@@ -1,0 +1,27 @@
+// Gray code: conversion both ways, and successive codes differ in one bit.
+
+fun toGray(n: int) -> int
+    return n ^ (n >> 1)
+
+fun fromGray(g: int) -> int
+    n = g
+    shift = g >> 1
+    while shift != 0
+        n = n ^ shift
+        shift = shift >> 1
+    return n
+
+fun popcount(x: int) -> int
+    c = 0
+    while x != 0
+        x = x & (x - 1)
+        c += 1
+    return c
+
+ok = true
+for i = 0; i < 64; i += 1
+    ok = ok && fromGray(toGray(i)) == i
+    if i > 0
+        ok = ok && popcount(toGray(i) ^ toGray(i - 1)) == 1
+
+ok && toGray(5) == 7 && toGray(8) == 12

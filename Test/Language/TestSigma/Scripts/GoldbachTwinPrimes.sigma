@@ -1,0 +1,36 @@
+// A sieve below 200 feeds two checks: every even number from 4 to 198 is a
+// sum of two primes, and there are 15 twin-prime pairs.
+
+limit = 200
+isPrime: List[bool] = []
+for i = 0; i < limit; i += 1
+    isPrime.push(i >= 2)
+p = 2
+while p * p < limit
+    if isPrime[p]
+        for m = p * p; m < limit; m += p
+            isPrime[m] = false
+    p += 1
+
+fun goldbach(n: int) -> bool
+    found = false
+    for a = 2; a <= n / 2; a += 1
+        if isPrime[a] && isPrime[n - a]
+            found = true
+    return found
+
+ok = true
+for n = 4; n < limit; n += 2
+    ok = ok && goldbach(n)
+
+twins = 0
+for q = 3; q + 2 < limit; q += 2
+    if isPrime[q] && isPrime[q + 2]
+        twins += 1
+
+primes = 0
+for i = 0; i < limit; i += 1
+    if isPrime[i]
+        primes += 1
+
+ok && twins == 15 && primes == 46

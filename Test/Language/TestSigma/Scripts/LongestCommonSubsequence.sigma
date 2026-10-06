@@ -1,0 +1,20 @@
+// LCS length with a full 2D table updated through nested index assignment.
+
+fun lcs(a: List[str], b: List[str]) -> int
+    table: List[List[int]] = []
+    for i = 0; i <= a.size(); i += 1
+        row: List[int] = []
+        for j = 0; j <= b.size(); j += 1
+            row.push(0)
+        table.push(row)
+    for i = 1; i <= a.size(); i += 1
+        for j = 1; j <= b.size(); j += 1
+            if a[i - 1] == b[j - 1]
+                table[i][j] = table[i - 1][j - 1] + 1
+            else
+                up = table[i - 1][j]
+                left = table[i][j - 1]
+                table[i][j] = up > left ? up : left
+    return table[a.size()][b.size()]
+
+lcs(["A", "B", "C", "B", "D", "A", "B"], ["B", "D", "C", "A", "B", "A"]) == 4 && lcs(["A", "G", "G", "T", "A", "B"], ["G", "X", "T", "X", "A", "Y", "B"]) == 4 && lcs(["x"], ["y"]) == 0

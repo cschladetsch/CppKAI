@@ -1,0 +1,21 @@
+// Three-way quicksort that partitions into new lists and joins them with '+'.
+// Each recursive call needs its own less/same/more.
+
+fun quickSort(xs: List[int]) -> List[int]
+    if xs.size() <= 1
+        return xs
+    pivot = xs[0]
+    less: List[int] = []
+    same: List[int] = []
+    more: List[int] = []
+    for x in xs
+        if x < pivot
+            less.push(x)
+        else if x == pivot
+            same.push(x)
+        else
+            more.push(x)
+    return quickSort(less) + same + quickSort(more)
+
+s = quickSort([5, 1, 4, 1, 5, 9, 2, 6, 5, 3])
+s.size() == 10 && s[0] == 1 && s[1] == 1 && s[2] == 2 && s[5] == 5 && s[7] == 5 && s[9] == 9

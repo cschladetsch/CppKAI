@@ -1,0 +1,31 @@
+// Validate 4x4 Sudoku grids: every row, column and 2x2 box holds 1 to 4 once.
+
+fun groupOk(cells: List[int]) -> bool
+    seen: List[bool] = [false, false, false, false, false]
+    ok = true
+    for v in cells
+        if v < 1 || v > 4
+            ok = false
+        else if seen[v]
+            ok = false
+        else
+            seen[v] = true
+    return ok
+
+fun valid(g: List[List[int]]) -> bool
+    ok = true
+    for i = 0; i < 4; i += 1
+        col: List[int] = []
+        for j = 0; j < 4; j += 1
+            col.push(g[j][i])
+        ok = ok && groupOk(g[i]) && groupOk(col)
+    for br = 0; br < 4; br += 2
+        for bc = 0; bc < 4; bc += 2
+            box = [g[br][bc], g[br][bc + 1], g[br + 1][bc], g[br + 1][bc + 1]]
+            ok = ok && groupOk(box)
+    return ok
+
+good = [[1, 2, 3, 4], [3, 4, 1, 2], [2, 1, 4, 3], [4, 3, 2, 1]]
+badBox = [[1, 2, 3, 4], [2, 1, 4, 3], [3, 4, 1, 2], [4, 3, 2, 1]]
+badRow = [[1, 1, 3, 4], [3, 4, 1, 2], [2, 3, 4, 1], [4, 2, 2, 3]]
+valid(good) && !valid(badBox) && !valid(badRow)

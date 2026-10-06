@@ -1,0 +1,26 @@
+// Insertion sort into a new list, with an isSorted check.
+
+fun insertionSort(xs: List[int]) -> List[int]
+    out: List[int] = []
+    for x in xs
+        out.push(x)
+        i = out.size() - 1
+        moving = true
+        while moving && i > 0
+            if out[i - 1] > out[i]
+                t = out[i]
+                out[i] = out[i - 1]
+                out[i - 1] = t
+                i -= 1
+            else
+                moving = false
+    return out
+
+fun isSorted(xs: List[int]) -> bool
+    ok = true
+    for i = 1; i < xs.size(); i += 1
+        ok = ok && xs[i - 1] <= xs[i]
+    return ok
+
+s = insertionSort([9, -2, 7, 7, 0, 15, 3, -8, 4])
+isSorted(s) && s.size() == 9 && s[0] == -8 && s[4] == 4 && s[8] == 15 && !isSorted([1, 3, 2])

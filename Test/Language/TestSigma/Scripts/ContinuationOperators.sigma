@@ -1,0 +1,18 @@
+// '&' (explicit suspend) and '!' (tail call) mixed with ordinary calls; a
+// suspended call has the same type and value as a plain call.
+
+fun square(n: int) -> int
+    return n * n
+
+fun sumSquares(n: int, acc: int) -> int
+    if n == 0
+        return acc
+    return sumSquares(n - 1, acc + square(n)&)!
+
+fun twice(f: fun(int) -> int, x: int) -> int
+    return f(f(x)&)&
+
+a = square(4)&
+b = square(4)
+c = square(3)& + square(4)&
+a == b && c == 25 && sumSquares(10, 0) == 385 && twice(square, 3) == 81

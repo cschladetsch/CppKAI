@@ -1,0 +1,26 @@
+// Bit manipulation: population count, powers of two, bit reversal and an
+// XOR swap.
+
+fun popcount(x: int) -> int
+    c = 0
+    while x != 0
+        x = x & (x - 1)
+        c += 1
+    return c
+
+fun isPowerOfTwo(x: int) -> bool
+    return x > 0 && (x & (x - 1)) == 0
+
+fun reverseBits8(x: int) -> int
+    r = 0
+    for i = 0; i < 8; i += 1
+        r = (r << 1) | (x & 1)
+        x = x >> 1
+    return r
+
+a = 12; b = 25
+a = a ^ b
+b = a ^ b
+a = a ^ b
+
+popcount(255) == 8 && popcount(1023 & 682) == 5 && isPowerOfTwo(1024) && !isPowerOfTwo(1000) && reverseBits8(1) == 128 && reverseBits8(6) == 96 && a == 25 && b == 12 && (~0) == -1

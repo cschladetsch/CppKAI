@@ -1,0 +1,45 @@
+// Kahn's algorithm: a DAG yields a full order respecting every edge, and a
+// graph with a cycle does not.
+
+fun topo(adj: List[List[int]]) -> List[int]
+    n = adj.size()
+    indeg: List[int] = []
+    for i = 0; i < n; i += 1
+        indeg.push(0)
+    for u = 0; u < n; u += 1
+        for v in adj[u]
+            indeg[v] = indeg[v] + 1
+    queue: List[int] = []
+    for i = 0; i < n; i += 1
+        if indeg[i] == 0
+            queue.push(i)
+    order: List[int] = []
+    head = 0
+    while head < queue.size()
+        u = queue[head]
+        head += 1
+        order.push(u)
+        for v in adj[u]
+            indeg[v] = indeg[v] - 1
+            if indeg[v] == 0
+                queue.push(v)
+    return order
+
+fun respects(adj: List[List[int]], order: List[int]) -> bool
+    pos: List[int] = []
+    for i = 0; i < order.size(); i += 1
+        pos.push(0)
+    for i = 0; i < order.size(); i += 1
+        pos[order[i]] = i
+    ok = true
+    for u = 0; u < adj.size(); u += 1
+        for v in adj[u]
+            ok = ok && pos[u] < pos[v]
+    return ok
+
+none: List[int] = []
+dag: List[List[int]] = [[1, 2], [3], [3, 4], [5], [5], none]
+cyclic: List[List[int]] = [[1], [2], [0, 3], none]
+dagOrder = topo(dag)
+stuck = topo(cyclic)
+dagOrder.size() == 6 && dagOrder[0] == 0 && respects(dag, dagOrder) && stuck.size() == 0

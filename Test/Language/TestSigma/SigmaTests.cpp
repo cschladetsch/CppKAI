@@ -330,15 +330,22 @@ TEST_F(SigmaTests, Scripts) {
         SigmaTranslator sigma(*reg_);
         ASSERT_TRUE(sigma.Compile(text.str().c_str())) << entry.path() << "\n" << Join(sigma.GetErrors());
 
-        // A fresh translator per script, so one script's declarations do not
-        // clash with another's (the console's translator keeps a session).
-        SigmaTranslator runner(*reg_);
+        // A fresh console and translator per script. Rho resolves names when
+        // a function is called, so globals one script leaves in a shared
+        // console are visible to the next: a later script's loop can read an
+        // earlier script's variable and never terminate.
+        Console console;
+        TestLangCommon::SetupTranslatorsForConsole(console);
+        // As in TestLangCommon::SetUp; the Console app does not register Map.
+        if (!console.GetRegistry().GetClass(Label("Map")))
+            console.GetRegistry().AddClass<Map>(Label("Map"));
+        SigmaTranslator runner(console.GetRegistry());
         auto program = runner.Translate(text.str().c_str(), Structure::Program);
         ASSERT_FALSE(runner.failed) << entry.path() << "\n" << runner.error;
-        data_->Clear();
-        EXPECT_NO_THROW(console_.Execute(program)) << entry.path();
-        ASSERT_FALSE(data_->Empty()) << entry.path() << "\n--- rho:\n" << sigma.GetRho();
-        EXPECT_TRUE(data_->Top().IsType<bool>() && ConstDeref<bool>(data_->Top()))
+        EXPECT_NO_THROW(console.Execute(program)) << entry.path();
+        auto data = console.GetExecutor()->GetDataStack();
+        ASSERT_FALSE(data->Empty()) << entry.path() << "\n--- rho:\n" << sigma.GetRho();
+        EXPECT_TRUE(data->Top().IsType<bool>() && ConstDeref<bool>(data->Top()))
             << entry.path() << " should end with a true expression";
         ++ran;
     }

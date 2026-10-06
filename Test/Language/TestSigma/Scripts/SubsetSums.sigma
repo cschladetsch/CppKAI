@@ -1,0 +1,26 @@
+// Subsets of 1..10 summing to 15: brute force over bitmasks agrees with a
+// dynamic-programming count.
+
+fun byBitmask(n: int, target: int) -> int
+    count = 0
+    for mask = 0; mask < (1 << n); mask += 1
+        s = 0
+        for i = 0; i < n; i += 1
+            if ((mask >> i) & 1) == 1
+                s += i + 1
+        if s == target
+            count += 1
+    return count
+
+fun byTable(n: int, target: int) -> int
+    ways: List[int] = [1]
+    for s = 1; s <= target; s += 1
+        ways.push(0)
+    for item = 1; item <= n; item += 1
+        s = target
+        while s >= item
+            ways[s] = ways[s] + ways[s - item]
+            s -= 1
+    return ways[target]
+
+byBitmask(10, 15) == 20 && byTable(10, 15) == 20 && byTable(4, 10) == 1 && byBitmask(4, 11) == 0

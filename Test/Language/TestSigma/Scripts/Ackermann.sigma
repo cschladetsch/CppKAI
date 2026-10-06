@@ -1,0 +1,11 @@
+// The Ackermann function: deep, non-primitive recursion with a nested call
+// as an argument.
+
+fun ack(m: int, n: int) -> int
+    if m == 0
+        return n + 1
+    if n == 0
+        return ack(m - 1, 1)
+    return ack(m - 1, ack(m, n - 1))
+
+ack(0, 0) == 1 && ack(1, 2) == 4 && ack(2, 3) == 9 && ack(3, 3) == 61

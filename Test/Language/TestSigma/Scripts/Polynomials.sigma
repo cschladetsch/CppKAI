@@ -1,0 +1,28 @@
+// Polynomials as coefficient lists (highest degree first): Horner evaluation,
+// derivative and multiplication.
+
+fun evalPoly(cs: List[int], x: int) -> int
+    acc = 0
+    for c in cs
+        acc = acc * x + c
+    return acc
+
+fun derivative(cs: List[int]) -> List[int]
+    out: List[int] = []
+    degree = cs.size() - 1
+    for i = 0; i < degree; i += 1
+        out.push(cs[i] * (degree - i))
+    return out
+
+fun polyMul(a: List[int], b: List[int]) -> List[int]
+    out: List[int] = []
+    for i = 0; i < a.size() + b.size() - 1; i += 1
+        out.push(0)
+    for i = 0; i < a.size(); i += 1
+        for j = 0; j < b.size(); j += 1
+            out[i + j] = out[i + j] + a[i] * b[j]
+    return out
+
+p = [2, -6, 2, -1]
+cubic = polyMul(polyMul([1, -1], [1, -2]), [1, -3])
+evalPoly(p, 3) == 5 && evalPoly(derivative(p), 3) == 20 && cubic[1] == -6 && cubic[2] == 11 && cubic[3] == -6 && evalPoly(cubic, 1) == 0 && evalPoly(cubic, 2) == 0 && evalPoly(cubic, 3) == 0 && evalPoly(cubic, 4) == 6

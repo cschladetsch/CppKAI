@@ -1,0 +1,36 @@
+// Run-length encode a list into values and counts, then decode it back.
+
+fun encode(xs: List[int]) -> List[List[int]]
+    values: List[int] = []
+    counts: List[int] = []
+    for x in xs
+        last = values.size() - 1
+        extend = false
+        if last >= 0
+            extend = values[last] == x
+        if extend
+            counts[last] = counts[last] + 1
+        else
+            values.push(x)
+            counts.push(1)
+    return [values, counts]
+
+fun decode(values: List[int], counts: List[int]) -> List[int]
+    out: List[int] = []
+    for i = 0; i < values.size(); i += 1
+        for k = 0; k < counts[i]; k += 1
+            out.push(values[i])
+    return out
+
+fun same(a: List[int], b: List[int]) -> bool
+    ok = a.size() == b.size()
+    if ok
+        for i = 0; i < a.size(); i += 1
+            ok = ok && a[i] == b[i]
+    return ok
+
+data = [1, 1, 1, 2, 2, 3, 1, 1]
+enc = encode(data)
+vs = enc[0]
+cs = enc[1]
+vs.size() == 4 && vs[3] == 1 && cs[0] == 3 && cs[1] == 2 && cs[3] == 2 && same(decode(vs, cs), data)

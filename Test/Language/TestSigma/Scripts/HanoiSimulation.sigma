@@ -1,0 +1,39 @@
+// Towers of Hanoi: record the moves recursively, then replay them, checking
+// that no disk ever lands on a smaller one.
+
+froms: List[int] = []
+tos: List[int] = []
+
+fun solve(n: int, src: int, dst: int, spare: int)
+    if n == 0
+        return
+    solve(n - 1, src, spare, dst)
+    froms.push(src)
+    tos.push(dst)
+    solve(n - 1, spare, dst, src)
+
+disks = 6
+solve(disks, 0, 2, 1)
+
+// pos[d] is the peg holding disk d; disk 0 is the smallest
+pos: List[int] = []
+for d = 0; d < disks; d += 1
+    pos.push(0)
+
+legal = true
+for i = 0; i < froms.size(); i += 1
+    top = -1
+    for d = disks - 1; d >= 0; d -= 1
+        if pos[d] == froms[i]
+            top = d
+    legal = legal && top != -1
+    if top != -1
+        for d = 0; d < top; d += 1
+            legal = legal && pos[d] != tos[i]
+        pos[top] = tos[i]
+
+allMoved = true
+for d = 0; d < disks; d += 1
+    allMoved = allMoved && pos[d] == 2
+
+froms.size() == 63 && legal && allMoved

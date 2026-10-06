@@ -1,0 +1,17 @@
+// 0/1 knapsack by dynamic programming over capacities.
+
+fun knapsack(weights: List[int], values: List[int], capacity: int) -> int
+    best: List[int] = []
+    for c = 0; c <= capacity; c += 1
+        best.push(0)
+    for i = 0; i < weights.size(); i += 1
+        w = weights[i]
+        c = capacity
+        while c >= w
+            candidate = best[c - w] + values[i]
+            if candidate > best[c]
+                best[c] = candidate
+            c -= 1
+    return best[capacity]
+
+knapsack([1, 3, 4, 5], [1, 4, 5, 7], 7) == 9 && knapsack([10, 20, 30], [60, 100, 120], 50) == 220 && knapsack([2, 3, 4, 5], [3, 4, 5, 6], 5) == 7 && knapsack([5], [10], 4) == 0

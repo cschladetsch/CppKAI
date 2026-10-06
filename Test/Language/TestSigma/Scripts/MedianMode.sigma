@@ -1,0 +1,46 @@
+// Median (as a float) and mode of int lists.
+
+fun sorted(xs: List[int]) -> List[int]
+    out: List[int] = []
+    for x in xs
+        out.push(x)
+    for i = 1; i < out.size(); i += 1
+        j = i
+        moving = true
+        while moving && j > 0
+            if out[j - 1] > out[j]
+                t = out[j]
+                out[j] = out[j - 1]
+                out[j - 1] = t
+                j -= 1
+            else
+                moving = false
+    return out
+
+fun median(xs: List[int]) -> float
+    s = sorted(xs)
+    n = s.size()
+    if n % 2 == 1
+        return s[n / 2]
+    return (s[n / 2 - 1] + s[n / 2]) / 2.0
+
+fun mode(xs: List[int]) -> int
+    values: List[int] = []
+    counts: List[int] = []
+    for x in xs
+        found = -1
+        for i = 0; i < values.size(); i += 1
+            if values[i] == x
+                found = i
+        if found == -1
+            values.push(x)
+            counts.push(1)
+        else
+            counts[found] = counts[found] + 1
+    best = 0
+    for i = 1; i < values.size(); i += 1
+        if counts[i] > counts[best]
+            best = i
+    return values[best]
+
+median([5, 3, 1, 4, 2]) == 3.0 && median([4, 1, 3, 2]) == 2.5 && mode([1, 3, 3, 7, 7, 7, 2]) == 7 && mode([4]) == 4

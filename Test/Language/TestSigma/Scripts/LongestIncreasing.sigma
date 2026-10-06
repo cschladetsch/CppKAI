@@ -1,0 +1,14 @@
+// Length of the longest strictly increasing subsequence, O(n^2) DP.
+
+fun lis(xs: List[int]) -> int
+    lengths: List[int] = []
+    best = 0
+    for i = 0; i < xs.size(); i += 1
+        lengths.push(1)
+        for j = 0; j < i; j += 1
+            if xs[j] < xs[i] && lengths[j] + 1 > lengths[i]
+                lengths[i] = lengths[j] + 1
+        best = lengths[i] > best ? lengths[i] : best
+    return best
+
+lis([10, 9, 2, 5, 3, 7, 101, 18]) == 4 && lis([0, 1, 0, 3, 2, 3]) == 4 && lis([3, 10, 2, 1, 20]) == 3 && lis([7, 7, 7]) == 1 && lis([5, 4, 3, 2, 1]) == 1

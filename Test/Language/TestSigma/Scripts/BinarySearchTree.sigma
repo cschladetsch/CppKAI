@@ -1,0 +1,59 @@
+// A binary search tree kept in parallel lists, with recursive traversal.
+
+keys: List[int] = []
+lefts: List[int] = []
+rights: List[int] = []
+
+fun insert(k: int)
+    keys.push(k)
+    lefts.push(-1)
+    rights.push(-1)
+    node = keys.size() - 1
+    if node == 0
+        return
+    cur = 0
+    placed = false
+    while !placed
+        if k < keys[cur]
+            if lefts[cur] == -1
+                lefts[cur] = node
+                placed = true
+            else
+                cur = lefts[cur]
+        else
+            if rights[cur] == -1
+                rights[cur] = node
+                placed = true
+            else
+                cur = rights[cur]
+
+fun inorder(node: int) -> List[int]
+    out: List[int] = []
+    if node != -1
+        out = inorder(lefts[node]) + [keys[node]] + inorder(rights[node])
+    return out
+
+fun height(node: int) -> int
+    if node == -1
+        return 0
+    l = height(lefts[node])
+    r = height(rights[node])
+    return 1 + (l > r ? l : r)
+
+fun contains(k: int) -> bool
+    cur = 0
+    found = false
+    while cur != -1 && !found
+        if keys[cur] == k
+            found = true
+        else if k < keys[cur]
+            cur = lefts[cur]
+        else
+            cur = rights[cur]
+    return found
+
+for k in [50, 30, 70, 20, 40, 60, 80, 35]
+    insert(k)
+
+walk = inorder(0)
+walk.size() == 8 && walk[0] == 20 && walk[3] == 40 && walk[7] == 80 && height(0) == 4 && contains(35) && !contains(65)

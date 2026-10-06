@@ -1,0 +1,44 @@
+// map, filter and fold written with function-typed parameters.
+
+fun mapInts(f: fun(int) -> int, xs: List[int]) -> List[int]
+    out: List[int] = []
+    for x in xs
+        out.push(f(x))
+    return out
+
+fun filterInts(p: fun(int) -> bool, xs: List[int]) -> List[int]
+    out: List[int] = []
+    for x in xs
+        if p(x)
+            out.push(x)
+    return out
+
+fun fold(f: fun(int, int) -> int, init: int, xs: List[int]) -> int
+    acc = init
+    for x in xs
+        acc = f(acc, x)
+    return acc
+
+fun add(a: int, b: int) -> int
+    return a + b
+
+fun times(a: int, b: int) -> int
+    return a * b
+
+fun maxOf(a: int, b: int) -> int
+    return a > b ? a : b
+
+fun square(n: int) -> int
+    return n * n
+
+fun negate(n: int) -> int
+    return -n
+
+fun isOdd(n: int) -> bool
+    return n % 2 == 1
+
+fun isEven(n: int) -> bool
+    return n % 2 == 0
+
+xs = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+fold(add, 0, mapInts(square, filterInts(isOdd, xs))) == 165 && fold(times, 1, filterInts(isEven, xs)) == 3840 && fold(maxOf, -1000, mapInts(negate, xs)) == -1

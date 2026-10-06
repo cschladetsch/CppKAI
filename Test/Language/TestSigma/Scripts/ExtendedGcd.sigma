@@ -1,0 +1,19 @@
+// Extended Euclid returning [g, x, y], and modular inverses built on it.
+
+fun egcd(a: int, b: int) -> List[int]
+    if b == 0
+        return [a, 1, 0]
+    r = egcd(b, a % b)
+    return [r[0], r[2], r[1] - (a / b) * r[2]]
+
+fun modInverse(a: int, m: int) -> int
+    r = egcd(a, m)
+    x = r[1] % m
+    return x < 0 ? x + m : x
+
+e = egcd(240, 46)
+ok = e[0] == 2 && 240 * e[1] + 46 * e[2] == 2
+for a = 1; a < 31; a += 1
+    ok = ok && (a * modInverse(a, 31)) % 31 == 1
+
+ok && modInverse(3, 11) == 4 && modInverse(10, 17) == 12

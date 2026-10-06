@@ -458,8 +458,8 @@ flowchart BT
 | Headers | `Include/KAI/Language/Sigma` |
 | Sources | `Source/Library/Language/Sigma/Source` (the `SigmaLang` library) |
 | Design notes | [`Doc/Sigma.md`](../Sigma.md): continuation operators |
-| Tests | `Test/Language/TestSigma` (`TestSigma`: 129 tests) |
-| Example programs | `Test/Language/TestSigma/Scripts/*.sigma` (23 programs) |
+| Tests | `Test/Language/TestSigma` (`TestSigma`: 179 tests) |
+| Example programs | `Test/Language/TestSigma/Scripts/*.sigma` (73 programs) |
 
 Build and run the tests from the CppKAI root:
 
