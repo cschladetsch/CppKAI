@@ -1,0 +1,33 @@
+// Euler's totient from the prime factorisation, checked against a gcd count.
+
+fun gcd(a: int, b: int) -> int
+    return b == 0 ? a : gcd(b, a % b)
+
+fun phi(n: int) -> int
+    result = n
+    m = n
+    d = 2
+    while d * d <= m
+        if m % d == 0
+            while m % d == 0
+                m /= d
+            result -= result / d
+        d += 1
+    if m > 1
+        result -= result / m
+    return result
+
+fun phiByCount(n: int) -> int
+    count = 0
+    for k = 1; k <= n; k += 1
+        if gcd(k, n) == 1
+            count += 1
+    return count
+
+ok = true
+total = 0
+for n = 1; n <= 50; n += 1
+    ok = ok && phi(n) == phiByCount(n)
+    total += phi(n)
+
+ok && phi(36) == 12 && phi(97) == 96 && total == 774

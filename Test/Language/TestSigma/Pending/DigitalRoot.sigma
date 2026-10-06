@@ -1,0 +1,19 @@
+// Digit sums and digital roots, checked against the closed form 1 + (n - 1) % 9.
+
+fun digitSum(n: int) -> int
+    s = 0
+    while n > 0
+        s += n % 10
+        n /= 10
+    return s
+
+fun digitalRoot(n: int) -> int
+    while n >= 10
+        n = digitSum(n)
+    return n
+
+ok = true
+for n = 1; n < 300; n += 1
+    ok = ok && digitalRoot(n) == 1 + (n - 1) % 9
+
+ok && digitSum(987654321) == 45 && digitalRoot(987654321) == 9

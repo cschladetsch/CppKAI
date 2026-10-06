@@ -1,0 +1,24 @@
+// Determinant by recursive cofactor expansion along the first row.
+
+fun minor(m: List[List[int]], col: int) -> List[List[int]]
+    out: List[List[int]] = []
+    for i = 1; i < m.size(); i += 1
+        row: List[int] = []
+        for j = 0; j < m.size(); j += 1
+            if j != col
+                row.push(m[i][j])
+        out.push(row)
+    return out
+
+fun det(m: List[List[int]]) -> int
+    n = m.size()
+    if n == 1
+        return m[0][0]
+    total = 0
+    sign = 1
+    for c = 0; c < n; c += 1
+        total += sign * m[0][c] * det(minor(m, c))
+        sign = -sign
+    return total
+
+det([[7]]) == 7 && det([[1, 2], [3, 4]]) == -2 && det([[6, 1, 1], [4, -2, 5], [2, 8, 7]]) == -306 && det([[3, 2, 0, 1], [4, 0, 1, 2], [3, 0, 2, 1], [9, 2, 3, 1]]) == 24 && det([[1, 2, 3], [2, 4, 6], [7, 8, 9]]) == 0

@@ -1,0 +1,19 @@
+// Root of x^3 - x - 2 by bisection, with int bounds widened to float.
+
+fun absf(x: float) -> float
+    return x < 0 ? -x : x
+
+fun f(x: float) -> float
+    return x * x * x - x - 2
+
+fun bisect(lo: float, hi: float) -> float
+    for i = 0; i < 50; i += 1
+        mid = (lo + hi) / 2
+        if f(lo) * f(mid) <= 0
+            hi = mid
+        else
+            lo = mid
+    return (lo + hi) / 2
+
+r = bisect(1, 2)
+absf(r - 1.5213797) < 0.0001 && absf(f(r)) < 0.001

@@ -1,0 +1,31 @@
+// Fibonacci by 2x2 matrix exponentiation, checked against iteration.
+// A 2x2 matrix is stored as [a, b, c, d].
+
+fun mul2(a: List[int], b: List[int]) -> List[int]
+    return [a[0] * b[0] + a[1] * b[2], a[0] * b[1] + a[1] * b[3], a[2] * b[0] + a[3] * b[2], a[2] * b[1] + a[3] * b[3]]
+
+fun fibMatrix(n: int) -> int
+    result: List[int] = [1, 0, 0, 1]
+    m = [1, 1, 1, 0]
+    while n > 0
+        if (n & 1) == 1
+            result = mul2(result, m)
+        n = n >> 1
+        if n > 0
+            m = mul2(m, m)
+    return result[1]
+
+fun fibLoop(n: int) -> int
+    a = 0
+    b = 1
+    for i = 0; i < n; i += 1
+        t = a + b
+        a = b
+        b = t
+    return a
+
+ok = true
+for n = 0; n <= 30; n += 1
+    ok = ok && fibMatrix(n) == fibLoop(n)
+
+ok && fibMatrix(30) == 832040

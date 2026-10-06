@@ -1,0 +1,25 @@
+// Palindromic numbers and the reverse-and-add process.
+
+fun reverseDigits(n: int) -> int
+    r = 0
+    while n > 0
+        r = r * 10 + n % 10
+        n /= 10
+    return r
+
+fun isPalindrome(n: int) -> bool
+    return n == reverseDigits(n)
+
+fun stepsToPalindrome(n: int) -> int
+    steps = 0
+    while !isPalindrome(n)
+        n += reverseDigits(n)
+        steps += 1
+    return steps
+
+count = 0
+for n = 1; n < 1000; n += 1
+    if isPalindrome(n)
+        count += 1
+
+count == 108 && reverseDigits(1200) == 21 && stepsToPalindrome(87) == 4 && stepsToPalindrome(10) == 1 && stepsToPalindrome(121) == 0

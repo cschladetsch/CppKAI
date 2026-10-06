@@ -1,0 +1,64 @@
+// Conway's Life on a bounded grid: a blinker has period 2 and a glider keeps
+// five cells while it moves.
+
+fun emptyGrid(n: int) -> List[List[int]]
+    g: List[List[int]] = []
+    for r = 0; r < n; r += 1
+        row: List[int] = []
+        for c = 0; c < n; c += 1
+            row.push(0)
+        g.push(row)
+    return g
+
+fun neighbours(g: List[List[int]], r: int, c: int) -> int
+    n = g.size()
+    count = 0
+    for dr = -1; dr <= 1; dr += 1
+        for dc = -1; dc <= 1; dc += 1
+            rr = r + dr
+            cc = c + dc
+            if dr != 0 || dc != 0
+                if rr >= 0 && rr < n && cc >= 0 && cc < n
+                    count += g[rr][cc]
+    return count
+
+fun step(g: List[List[int]]) -> List[List[int]]
+    n = g.size()
+    out = emptyGrid(n)
+    for r = 0; r < n; r += 1
+        for c = 0; c < n; c += 1
+            k = neighbours(g, r, c)
+            alive = g[r][c] == 1
+            if (alive && (k == 2 || k == 3)) || (!alive && k == 3)
+                out[r][c] = 1
+    return out
+
+fun population(g: List[List[int]]) -> int
+    total = 0
+    for row in g
+        for x in row
+            total += x
+    return total
+
+fun same(a: List[List[int]], b: List[List[int]]) -> bool
+    ok = true
+    for r = 0; r < a.size(); r += 1
+        for c = 0; c < a.size(); c += 1
+            ok = ok && a[r][c] == b[r][c]
+    return ok
+
+blinker = emptyGrid(5)
+blinker[2][1] = 1
+blinker[2][2] = 1
+blinker[2][3] = 1
+once = step(blinker)
+
+glider = emptyGrid(8)
+glider[0][1] = 1
+glider[1][2] = 1
+glider[2][0] = 1
+glider[2][1] = 1
+glider[2][2] = 1
+moved = step(step(step(step(glider))))
+
+!same(once, blinker) && once[1][2] == 1 && once[3][2] == 1 && same(step(once), blinker) && population(moved) == 5 && moved[3][3] == 1 && moved[1][2] == 0

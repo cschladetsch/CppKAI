@@ -1,0 +1,22 @@
+// A map from operator names to functions drives a small interpreter.
+
+fun add(a: int, b: int) -> int
+    return a + b
+
+fun sub(a: int, b: int) -> int
+    return a - b
+
+fun times(a: int, b: int) -> int
+    return a * b
+
+ops: Map[str, fun(int, int) -> int] = {"add": add, "sub": sub, "mul": times}
+
+fun run(names: List[str], args: List[int], start: int) -> int
+    acc = start
+    for i = 0; i < names.size(); i += 1
+        f = ops[names[i]]
+        acc = f(acc, args[i])
+    return acc
+
+// ((2 + 3) * 4) - 6
+run(["add", "mul", "sub"], [3, 4, 6], 2) == 14 && run(["mul", "mul"], [5, 5], 1) == 25 && ops.size() == 3

@@ -1,0 +1,13 @@
+// Minimal repro: inside a function, assigning the result of a call made in a
+// loop body does not update the caller's local. With 'for' the update is
+// lost (root(15) gives 15, not 12); with 'while' the loop never ends.
+
+fun dec(m: int) -> int
+    return m - 1
+
+fun viaFor(n: int) -> int
+    for i = 0; i < 3; i += 1
+        n = dec(n)
+    return n
+
+viaFor(15) == 12

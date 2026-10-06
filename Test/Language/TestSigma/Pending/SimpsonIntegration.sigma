@@ -1,0 +1,23 @@
+// Simpson's rule with the integrand passed as a function value.
+
+fun absf(x: float) -> float
+    return x < 0 ? -x : x
+
+fun square(x: float) -> float
+    return x * x
+
+fun cube(x: float) -> float
+    return x * x * x
+
+fun quarterCircle(x: float) -> float
+    return 4 / (1 + x * x)
+
+fun simpson(f: fun(float) -> float, a: float, b: float, n: int) -> float
+    h = (b - a) / n
+    s = f(a) + f(b)
+    for i = 1; i < n; i += 1
+        x = a + i * h
+        s += (i % 2 == 1 ? 4 : 2) * f(x)
+    return s * h / 3
+
+absf(simpson(square, 0, 3, 6) - 9) < 0.0001 && absf(simpson(cube, 0, 2, 4) - 4) < 0.0001 && absf(simpson(quarterCircle, 0, 1, 100) - 3.14159265) < 0.0001

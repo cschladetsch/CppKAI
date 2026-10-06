@@ -1,0 +1,27 @@
+// Count N-queens solutions by backtracking; each call extends a copy of the
+// placement with '+'.
+
+fun safe(cols: List[int], col: int) -> bool
+    row = cols.size()
+    ok = true
+    for r = 0; r < row; r += 1
+        d = cols[r] - col
+        if d < 0
+            d = -d
+        ok = ok && cols[r] != col && d != row - r
+    return ok
+
+fun place(cols: List[int], n: int) -> int
+    if cols.size() == n
+        return 1
+    count = 0
+    for col = 0; col < n; col += 1
+        if safe(cols, col)
+            count += place(cols + [col], n)
+    return count
+
+fun queens(n: int) -> int
+    none: List[int] = []
+    return place(none, n)
+
+queens(1) == 1 && queens(3) == 0 && queens(4) == 2 && queens(5) == 10 && queens(6) == 4
