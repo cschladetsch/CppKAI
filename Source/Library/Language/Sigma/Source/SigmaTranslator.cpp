@@ -2,6 +2,8 @@
 #include <KAI/Language/Sigma/SigmaTranslator.h>
 
 #include <algorithm>
+#include <optional>
+#include <utility>
 
 KAI_BEGIN
 
@@ -17,18 +19,115 @@ using NodePtr = SigmaAstNodePtr;
 /// on Rho's precedence rules (Rho parses `-1 + 5` as `-1`, for example), and
 /// compound assignments are expanded because Rho's `+=` family is not
 /// implemented at runtime.
+//
+/// A variadic template becomes one Rho function per pack length, `name__N`,
+/// whose pack parameter `xs` is spelled out as `xs__0, ..., xs__N-1`.
+/// Expansions, folds and `xs.size()` are written out for that length, and a
+/// condition on a pack's length keeps only the branch it selects.
 class RhoEmitter {
    public:
-    explicit RhoEmitter(const std::unordered_set<const SigmaAstNode *> &widened) : widened_(widened) {}
+    explicit RhoEmitter(const SigmaChecker &checker)
+        : checker_(checker), widened_(&checker.GetWidened()), variadics_(checker.GetVariadics()) {}
 
     std::string Program(const NodePtr &root) {
         std::string out;
+        // Instances of variadic templates defined by earlier session inputs.
+        for (auto const &inst : checker_.GetVariadicInstances()) {
+            const auto &top = root->GetChildren();
+            if (std::find(top.begin(), top.end(), inst.fun) == top.end()) Instance(out, inst, 0);
+        }
         for (auto const &st : root->GetChildren()) Statement(out, st, 0);
         return out;
     }
 
    private:
-    const std::unordered_set<const SigmaAstNode *> &widened_;
+    const SigmaChecker &checker_;
+    const std::unordered_set<const SigmaAstNode *> *widened_;
+    std::unordered_map<std::string, int> variadics_;  // name -> parameters before the pack
+    std::unordered_map<std::string, int> packs_;      // pack parameter -> its length, in an instance
+
+    bool Widened(const NodePtr &node) const { return widened_->contains(node.get()); }
+
+    static std::string Mangle(const std::string &name, int arity) { return name + "__" + std::to_string(arity); }
+
+    static bool IsVariadic(const NodePtr &fun) {
+        const auto &ch = fun->GetChildren();
+        return ch.size() > 3 && !ch[3]->GetChildren().empty() && ch[3]->GetChildren().back()->GetType() == Ast::Expand;
+    }
+
+    void Instance(std::string &out, const SigmaChecker::VariadicInstance &inst, int depth) {
+        const auto &ch = inst.fun->GetChildren();
+        std::string params;
+        const auto &ps = ch[0]->GetChildren();
+        for (size_t n = 0; n < ps.size(); ++n) {
+            if (n + 1 == ps.size()) {
+                for (int e = 0; e < inst.arity; ++e) params += (params.empty() ? "" : ", ") + Mangle(ps[n]->Text(), e);
+                packs_[ps[n]->Text()] = inst.arity;
+            } else {
+                params += (params.empty() ? "" : ", ") + ps[n]->Text();
+            }
+        }
+        auto outer = std::exchange(widened_, &inst.widened);
+        out += Indent(depth) + "fun " + Mangle(inst.fun->Text(), inst.arity) + "(" + params + ")\n";
+        Block(out, ch[2], depth + 1);
+        widened_ = outer;
+        packs_.clear();
+    }
+
+    std::optional<bool> Static(const NodePtr &condition) const {
+        return SigmaChecker::StaticCondition(condition, [this](const std::string &name) -> std::optional<int> {
+            auto found = packs_.find(name);
+            return found == packs_.end() ? std::nullopt : std::optional<int>(found->second);
+        });
+    }
+
+    // Arguments or list elements, with `xs...` spelled out.
+    std::string Items(const std::vector<NodePtr> &nodes, int *count = nullptr) {
+        std::string items;
+        int n = 0;
+        for (auto const &a : nodes) {
+            if (a->GetType() == Ast::Expand) {
+                const std::string pack = a->GetChild(0)->Text();
+                const int length = packs_.at(pack);
+                for (int e = 0; e < length; ++e, ++n) items += (items.empty() ? "" : ", ") + Mangle(pack, e);
+            } else {
+                items += (items.empty() ? "" : ", ") + Expr(a);
+                ++n;
+            }
+        }
+        if (count) *count = n;
+        return items;
+    }
+
+    // (xs op ...) is x0 op (x1 op (... op init)); (... op xs) is ((init op x0) op x1) ...
+    std::string FoldOut(const NodePtr &node) {
+        const auto &left = node->GetChild(0);
+        const auto &right = node->GetChild(1);
+        const bool fromRight = left->GetType() != Ast::None && packs_.contains(left->Text()) &&
+                               left->GetType() == Ast::TokenType;
+        const NodePtr &packNode = fromRight ? left : right;
+        const NodePtr &init = fromRight ? right : left;
+        const std::string pack = packNode->Text();
+        const int length = packs_.at(pack);
+        const std::string op = node->Text();
+        std::vector<std::string> terms;
+        for (int e = 0; e < length; ++e) terms.push_back(Mangle(pack, e));
+        if (init->GetType() != Ast::None) {
+            if (fromRight)
+                terms.push_back(Expr(init));
+            else
+                terms.insert(terms.begin(), Expr(init));
+        }
+        if (terms.empty()) return node->GetToken().type == Tok::And ? "true" : "false";
+        if (fromRight) {
+            std::string acc = terms.back();
+            for (size_t n = terms.size() - 1; n-- > 0;) acc = "(" + terms[n] + " " + op + " " + acc + ")";
+            return acc;
+        }
+        std::string acc = terms.front();
+        for (size_t n = 1; n < terms.size(); ++n) acc = "(" + acc + " " + op + " " + terms[n] + ")";
+        return acc;
+    }
 
     static std::string Indent(int depth) { return std::string(static_cast<size_t>(depth) * 4, ' '); }
 
@@ -41,7 +140,10 @@ class RhoEmitter {
         Block(out, node->GetChild(1), depth + 1);
         if (node->GetChildren().size() < 3) return;
         const auto &other = node->GetChild(2);
-        if (other->GetType() == Ast::If) {
+        if (other->GetType() == Ast::If && Static(other->GetChild(0))) {
+            out += Indent(depth) + "else\n";
+            Statement(out, other, depth + 1);
+        } else if (other->GetType() == Ast::If) {
             If(out, other, depth, "else ");
         } else {
             out += Indent(depth) + "else\n";
@@ -53,13 +155,28 @@ class RhoEmitter {
         const auto &ch = node->GetChildren();
         switch (node->GetType()) {
             case Ast::Function: {
+                if (IsVariadic(node)) {
+                    for (auto const &inst : checker_.GetVariadicInstances())
+                        if (inst.fun == node) Instance(out, inst, depth);
+                    return;
+                }
                 std::string params;
                 for (auto const &p : ch[0]->GetChildren()) params += (params.empty() ? "" : ", ") + p->Text();
                 out += Indent(depth) + "fun " + node->Text() + "(" + params + ")\n";
                 Block(out, ch[2], depth + 1);
                 return;
             }
-            case Ast::If: If(out, node, depth, ""); return;
+            case Ast::If:
+                // Decided by a pack's length: keep only the branch it selects.
+                if (auto taken = Static(ch[0])) {
+                    if (*taken)
+                        Block(out, ch[1], depth);
+                    else if (ch.size() > 2)
+                        Statement(out, ch[2], depth);
+                    return;
+                }
+                If(out, node, depth, "");
+                return;
             case Ast::While:
                 out += Indent(depth) + "while " + Expr(ch[0]) + "\n";
                 Block(out, ch[1], depth + 1);
@@ -97,7 +214,7 @@ class RhoEmitter {
                 std::string text = node->Text();  // "+=", "-=", ...
                 text.pop_back();
                 std::string value = "(" + target + " " + text + " " + Expr(ch[1]) + ")";
-                if (widened_.contains(node.get())) value = "(" + value + " + 0.0)";
+                if (Widened(node)) value = "(" + value + " + 0.0)";
                 return target + " = " + value;
             }
             case Ast::Return: return ch.empty() ? "return" : "return " + Expr(ch[0]);
@@ -111,7 +228,7 @@ class RhoEmitter {
 
     std::string Expr(const NodePtr &node) {
         std::string text = Raw(node);
-        return widened_.contains(node.get()) ? "(" + text + " + 0.0)" : text;
+        return Widened(node) ? "(" + text + " + 0.0)" : text;
     }
 
     static std::string StringLiteral(const NodePtr &node) {
@@ -149,20 +266,26 @@ class RhoEmitter {
                 return "(" + left + " " + node->Text() + " " + Expr(ch[1]) + ")";
             }
             case Ast::Unary: return "(" + node->Text() + Expr(ch[0]) + ")";
-            case Ast::Ternary: return "(" + Expr(ch[0]) + " ? " + Expr(ch[1]) + " : " + Expr(ch[2]) + ")";
+            case Ast::Ternary:
+                if (auto taken = Static(ch[0])) return Expr(*taken ? ch[1] : ch[2]);
+                return "(" + Expr(ch[0]) + " ? " + Expr(ch[1]) + " : " + Expr(ch[2]) + ")";
+            case Ast::Fold: return FoldOut(node);
             case Ast::Member: return Raw(ch[0]) + "." + node->Text();
             case Ast::Index: return Raw(ch[0]) + "[" + Expr(ch[1]) + "]";
             case Ast::Call: {
-                std::string args;
-                for (auto const &a : ch[1]->GetChildren()) args += (args.empty() ? "" : ", ") + Expr(a);
+                // xs.size() is the pack's length, a constant in each instance.
+                if (ch[0]->GetType() == Ast::Member && ch[0]->Text() == "size" &&
+                    ch[0]->GetChild(0)->GetType() == Ast::TokenType && packs_.contains(ch[0]->GetChild(0)->Text()))
+                    return std::to_string(packs_.at(ch[0]->GetChild(0)->Text()));
+                int count = 0;
+                const std::string args = Items(ch[1]->GetChildren(), &count);
+                std::string callee = Raw(ch[0]);
+                if (ch[0]->GetType() == Ast::TokenType)
+                    if (auto v = variadics_.find(callee); v != variadics_.end()) callee = Mangle(callee, count - v->second);
                 // A continuation operator stays glued to the ')', as Rho expects.
-                return Raw(ch[0]) + "(" + args + ")" + (ch.size() > 2 ? ch[2]->Text() : std::string());
+                return callee + "(" + args + ")" + (ch.size() > 2 ? ch[2]->Text() : std::string());
             }
-            case Ast::List: {
-                std::string items;
-                for (auto const &e : ch) items += (items.empty() ? "" : ", ") + Expr(e);
-                return "[" + items + "]";
-            }
+            case Ast::List: return "[" + Items(ch) + "]";
             case Ast::Map: {
                 std::string items;
                 for (auto const &e : ch)
@@ -209,7 +332,7 @@ bool SigmaTranslator::Compile(const char *text) {
         return false;
     }
 
-    rho_ = RhoEmitter(checker.GetWidened()).Program(parser.GetRoot());
+    rho_ = RhoEmitter(checker).Program(parser.GetRoot());
     session_ = checker.GetGlobals();
     return true;
 }

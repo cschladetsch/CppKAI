@@ -1,0 +1,24 @@
+// Variadic templates: packs are expanded, folded, counted, and recursed over
+// with a branch on the pack's length that is decided at compile time.
+
+fun sum[...Ts](xs: Ts...) -> int
+    return (xs + ... + 0)
+
+fun joinAll[...Ts](xs: Ts...) -> str
+    return ("" + ... + xs)
+
+fun maxOf[T, ...Ts](first: T, rest: Ts...) -> T
+    if rest.size() == 0
+        return first
+    else
+        m = maxOf(rest...)
+        return first > m ? first : m
+
+fun listOf[T, ...Ts](first: T, rest: Ts...) -> List[T]
+    return [first, rest...]
+
+fun arity[...Ts](xs: Ts...) -> int
+    return xs.size()
+
+nums = listOf(4, 8, 15, 16, 23, 42)
+sum(4, 8, 15, 16, 23, 42) == 108 && sum() == 0 && joinAll("k", "a", "i") == "kai" && maxOf(4, 42, 15) == 42 && maxOf("pi", "rho", "sigma") == "sigma" && nums.size() == 6 && nums[5] == 42 && arity(1, "two", 3.0) == 3

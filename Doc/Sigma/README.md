@@ -38,6 +38,7 @@ flowchart LR
 - [Functions](#functions)
   - [Continuation operators](#continuation-operators)
   - [Templates](#templates)
+  - [Variadic templates](#variadic-templates)
 - [Statements](#statements)
 - [Expressions](#expressions)
 - [Lists and maps](#lists-and-maps)
@@ -280,6 +281,54 @@ mapList(isEven, [1, 2])    // mapList[int, bool]: List[bool]
   passed as a function value.
 - Templates may call other templates and themselves, including with `!`.
 
+### Variadic templates
+
+The last type parameter can be a pack, `...Ts`, and then the last parameter
+takes any number of arguments of any types: `xs: Ts...`.
+
+```sigma
+fun sum[...Ts](xs: Ts...) -> int
+    return (xs + ... + 0)
+
+fun maxOf[T, ...Ts](first: T, rest: Ts...) -> T
+    if rest.size() == 0
+        return first
+    else
+        m = maxOf(rest...)
+        return first > m ? first : m
+
+sum(1, 2, 3)                 // 6
+sum()                        // 0
+maxOf("pi", "rho", "sigma")  // "sigma"
+```
+
+A pack can only be used in three ways:
+
+| Use | Meaning |
+|-----|---------|
+| `f(a, xs...)`, `[a, xs...]` | expanded into arguments or list elements |
+| `(xs op ...)`, `(xs op ... op init)` | folded from the right: `x0 op (x1 op (... op init))` |
+| `(... op xs)`, `(init op ... op xs)` | folded from the left: `((init op x0) op x1) op ...` |
+| `xs.size()` | its length, a constant in each instantiation |
+
+- Folds take `+ - * / % && || & | ^`. Folding an empty pack needs an initial
+  value, except `&&` (giving `true`) and `||` (giving `false`).
+- An `if` or `?:` whose condition depends on a pack's length, such as
+  `rest.size() == 0`, is decided per instantiation, like C++'s
+  `if constexpr`: only the branch taken is checked and emitted. That is what
+  lets head/tail recursion stop. Code after such an `if` is always checked,
+  so put the recursive case in its `else`.
+- Packs may be heterogeneous: `count(1, "a", 2.5)` binds `Ts` to
+  `int, str, float`. Pack elements are never widened from `int` to `float`,
+  since each is passed through by name.
+- Rho functions have a fixed number of parameters, so a variadic template
+  is emitted once per pack length used: `sum(1, 2)` calls
+  `fun sum__2(xs__0, xs__1)`. A template is checked once per distinct set of
+  type arguments, and int-to-float widening must agree across instances of
+  the same length.
+- A variadic template is not checked until it is called, since what its body
+  means depends on the pack.
+
 ## Statements
 
 ```sigma
@@ -485,10 +534,14 @@ flowchart BT
 - nullable types and union types
 - constraints on template type parameters, explicit type arguments
   (`f[int](x)`), and templates as function values
+- pack indexing (`xs...[0]`), packs inside other types (`List[Ts]...`), and
+  expanding a pattern (`f(g(xs)...)`): only a pack itself can be expanded
+- user-defined types, so nothing like classes or CRTP
 - multi-line `pi { ... }` blocks
 - shell commands, pathnames and `self`
 - `f(x)...` (resume): in Rho it clears the context stack and stops without
-  calling `f`, so there is nothing sensible to type yet
+  calling `f`, so there is nothing sensible to type yet. `...` after a call's
+  `)` is still rejected; elsewhere it belongs to variadic templates
 - `++` and `--` (use `+= 1`)
 
 ## Known issues
@@ -509,8 +562,8 @@ flowchart BT
 | Headers | `Include/KAI/Language/Sigma` |
 | Sources | `Source/Library/Language/Sigma/Source` (the `SigmaLang` library) |
 | Design notes | [`Doc/Sigma.md`](../Sigma.md): continuation operators |
-| Tests | `Test/Language/TestSigma` (`TestSigma`: 219 tests) |
-| Example programs | `Test/Language/TestSigma/Scripts/*.sigma` (94 programs) |
+| Tests | `Test/Language/TestSigma` (`TestSigma`: 240 tests) |
+| Example programs | `Test/Language/TestSigma/Scripts/*.sigma` (95 programs) |
 
 Build and run the tests from the CppKAI root:
 
@@ -527,4 +580,6 @@ also runs every script in the folder, including new ones.
 
 `SigmaContinuationTests` covers `&` and `!`: what runs, what the generated
 Rho looks like, and every rejected use. `SigmaTemplateTests` covers
-templates: inference, instantiation, and their errors.
+templates: inference, instantiation, and their errors. `SigmaVariadicTests`
+covers packs: folds, expansion, compile-time branches, the generated Rho, and
+their errors.

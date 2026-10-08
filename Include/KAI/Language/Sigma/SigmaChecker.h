@@ -4,7 +4,9 @@
 #include <KAI/Language/Sigma/SigmaAstNode.h>
 
 #include <deque>
+#include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -22,18 +24,20 @@ using SigmaTypePtr = std::shared_ptr<const SigmaType>;
 ///   any  void  bool  int  float  str  List[T]  Map[str, V]  fun(T, ...) -> R
 ///   <registered class name>   (native C++ type, resolved through the Registry)
 ///   fun[T, ...](...) -> R        (a template function; T appears as Var)
+///   fun[...Ts](Ts...) -> R       (a variadic template; its pack parameter is bound to a Pack)
 ///
 /// Generics are invariant. The only implicit conversion is int -> float, which
 /// the compiler makes explicit in the generated Rho.
 struct SigmaType {
-    enum class Kind { Any, Void, Bool, Int, Float, Str, List, Map, Fun, Native, Var };
+    enum class Kind { Any, Void, Bool, Int, Float, Str, List, Map, Fun, Native, Var, Pack };
 
     Kind kind = Kind::Any;
-    std::vector<SigmaTypePtr> args;       // List: [T]. Map: [K, V]. Fun: parameters.
+    std::vector<SigmaTypePtr> args;       // List: [T]. Map: [K, V]. Fun: parameters. Pack: elements.
     SigmaTypePtr result;                  // Fun only
     int native = 0;                       // Native: Type::Number
     std::string name;                     // Native: class name. Var: type parameter name
     std::vector<std::string> typeParams;  // Fun only: non-empty for a template function
+    bool variadic = false;                // Fun only: the last parameter is a pack of the last type parameter
 
     [[nodiscard]] bool Is(Kind k) const { return kind == k; }
     [[nodiscard]] bool IsNumeric() const { return kind == Kind::Int || kind == Kind::Float; }
@@ -45,6 +49,7 @@ struct SigmaType {
     static SigmaTypePtr FunOf(std::vector<SigmaTypePtr> params, SigmaTypePtr result,
                               std::vector<std::string> typeParams = {});
     static SigmaTypePtr VarOf(std::string name);
+    static SigmaTypePtr PackOf(std::vector<SigmaTypePtr> elements);
 
     [[nodiscard]] bool IsTemplate() const { return kind == Kind::Fun && !typeParams.empty(); }
     static SigmaTypePtr NativeOf(int typeNumber, std::string name);
@@ -112,6 +117,26 @@ class SigmaChecker {
     /// Type of a top-level name after Check(), or null.
     [[nodiscard]] SigmaTypePtr GetGlobalType(const std::string &name) const;
 
+    /// A variadic template is emitted as one Rho function per pack length,
+    /// `name__N`, since Rho functions have a fixed number of parameters.
+    struct VariadicInstance {
+        NodePtr fun;
+        int arity = 0;  // length of the pack
+        std::unordered_set<const SigmaAstNode *> widened;
+    };
+    [[nodiscard]] const std::vector<VariadicInstance> &GetVariadicInstances() const { return variadicInstances_; }
+
+    /// Variadic templates by name (including the session's), with the
+    /// number of parameters before the pack.
+    [[nodiscard]] std::unordered_map<std::string, int> GetVariadics() const;
+
+    /// The value of a condition that depends on a pack's length, such as
+    /// `xs.size() == 0`, or nullopt if it does not depend on one or is not a
+    /// compile-time constant. Such a condition picks its branch per
+    /// instantiation, like C++'s `if constexpr`.
+    using PackSizes = std::function<std::optional<int>(const std::string &)>;
+    static std::optional<bool> StaticCondition(const NodePtr &condition, const PackSizes &sizes);
+
    private:
     struct Binding {
         SigmaTypePtr type;
@@ -137,9 +162,11 @@ class SigmaChecker {
     using TypeArgs = std::unordered_map<std::string, SigmaTypePtr>;
     struct Instance {
         NodePtr fun;
-        TypeArgs args;
-        std::string key;  // e.g. "max[int]"
+        TypeArgs args;    // a pack's type parameter is bound to a Pack type
+        std::string key;  // e.g. "max[int]", "sum[int, ...[int, float]]"
+        int arity = -1;   // pack length, or -1 for a template without a pack
     };
+    std::vector<VariadicInstance> variadicInstances_;
     std::unordered_map<std::string, NodePtr> templates_;  // name -> definition
     std::vector<Instance> instances_;
     std::unordered_set<std::string> instanceKeys_;
@@ -172,6 +199,20 @@ class SigmaChecker {
     SigmaTypePtr MethodCall(const NodePtr &call, const NodePtr &member, const NodePtr &args);
     SigmaTypePtr Arguments(const NodePtr &at, const std::string &what, const std::vector<SigmaTypePtr> &params,
                            const NodePtr &args);
+
+    // Packs. An argument list or list literal may expand a pack (`xs...`);
+    // each element becomes an Arg whose type is already known.
+    struct Arg {
+        NodePtr node;
+        SigmaTypePtr type;  // set for pack elements
+        int element = -1;   // index in the pack, or -1
+    };
+    bool Expand(const std::vector<NodePtr> &nodes, std::vector<Arg> &out);
+    SigmaTypePtr ArgType(const Arg &arg, const SigmaTypePtr &expected = nullptr);
+    bool ConvertArg(const Arg &arg, const SigmaTypePtr &from, const SigmaTypePtr &to, const std::string &context);
+    SigmaTypePtr Fold(const NodePtr &node);
+    std::optional<bool> StaticCondition(const NodePtr &condition);
+    static std::string PackName(const NodePtr &fun);
     SigmaTypePtr Member(const NodePtr &node);
     SigmaTypePtr Index(const NodePtr &node);
     SigmaTypePtr List(const NodePtr &node, const SigmaTypePtr &expected);

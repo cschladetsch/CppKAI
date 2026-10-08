@@ -127,3 +127,4 @@ TEST_F(SigmaScriptTests, CycleDetection) { RunScript("CycleDetection"); }
 TEST_F(SigmaScriptTests, MajorityVote) { RunScript("MajorityVote"); }
 TEST_F(SigmaScriptTests, FunctionIterate) { RunScript("FunctionIterate"); }
 TEST_F(SigmaScriptTests, Templates) { RunScript("Templates"); }
+TEST_F(SigmaScriptTests, Variadic) { RunScript("Variadic"); }

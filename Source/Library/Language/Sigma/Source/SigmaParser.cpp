@@ -31,7 +31,7 @@ const char *SigmaAstNodeEnumType::ToString(Enum val) {
         CASE(Type) CASE(Declaration) CASE(Assignment) CASE(If) CASE(While) CASE(DoWhile) CASE(For) CASE(ForEach)
         CASE(Return) CASE(Break) CASE(Continue) CASE(Assert) CASE(ExprStatement) CASE(Binary) CASE(Unary)
         CASE(Ternary) CASE(Call) CASE(Args) CASE(Index) CASE(Member) CASE(List) CASE(Map) CASE(MapEntry)
-        CASE(PiBlock) CASE(TypeParams)
+        CASE(PiBlock) CASE(TypeParams) CASE(Expand) CASE(Fold)
 #undef CASE
     }
     return "Unknown";
@@ -185,11 +185,14 @@ SigmaParser::AstNodePtr SigmaParser::FunctionDefinition() {
     AstNodePtr typeParams;
     if (Is(Tok::OpenSquare)) {
         typeParams = NewNode(Ast::TypeParams, Take());
+        bool pack = false;
         do {
-            if (!Is(Tok::Name)) return Error("expected a type parameter name");
+            if (pack) return Error("a type parameter pack ('...Ts') must be the last type parameter");
+            pack = Accept(Tok::Ellipsis);
+            if (!Is(Tok::Name)) return Error(pack ? "expected a name after '...'" : "expected a type parameter name");
             const auto t = Take();
             if (!CheckName(t, "type parameter")) return nullptr;
-            typeParams->Add(NewNode(t));
+            typeParams->Add(pack ? NewNode(Ast::Expand, t) : NewNode(t));
         } while (Accept(Tok::Comma));
         if (!Require(Tok::CloseSquare, "']' after the type parameters")) return nullptr;
     }
@@ -207,6 +210,7 @@ SigmaParser::AstNodePtr SigmaParser::FunctionDefinition() {
             if (!type) return nullptr;
             auto param = NewNode(Ast::Param, p);
             param->Add(type);
+            if (Is(Tok::Ellipsis)) param->Add(NewNode(Take()));  // `xs: Ts...`, a pack parameter
             params->Add(param);
         } while (Accept(Tok::Comma));
     }
@@ -486,13 +490,15 @@ SigmaParser::AstNodePtr SigmaParser::Postfix() {
             auto args = NewNode(Ast::Args);
             if (!Is(Tok::CloseParen)) {
                 do {
-                    auto arg = Expression();
+                    auto arg = Expansion();
                     if (!arg) return nullptr;
                     args->Add(arg);
                 } while (Accept(Tok::Comma));
             }
             const TokenNode close = Peek();
             if (!Require(Tok::CloseParen, "')' after the arguments")) return nullptr;
+            if (Is(Tok::Ellipsis))
+                return Error("'...' (resume) is not supported in Sigma: in Rho it leaves for the top level without calling the function");
             call->Add(expr);
             call->Add(args);
             // Continuation operator, as in Rho: `f(x)&` (suspend, an ordinary
@@ -531,6 +537,7 @@ SigmaParser::AstNodePtr SigmaParser::Primary() {
         case Tok::PiBlock: return NewNode(Ast::PiBlock, Take());
 
         case Tok::OpenParen: {
+            if (FoldAhead()) return Fold();
             Take();
             auto expr = Expression();
             if (!expr || !Require(Tok::CloseParen, "')'")) return nullptr;
@@ -546,10 +553,93 @@ SigmaParser::AstNodePtr SigmaParser::Primary() {
     }
 }
 
+// An argument or list element: an expression, or a pack expansion `xs...`.
+SigmaParser::AstNodePtr SigmaParser::Expansion() {
+    auto expr = Expression();
+    if (!expr || !Is(Tok::Ellipsis)) return expr;
+    auto expand = NewNode(Ast::Expand, Take());
+    expand->Add(expr);
+    return expand;
+}
+
+namespace {
+bool IsFoldOperator(SigmaTokenEnumType::Enum t) {
+    using T = SigmaTokenEnumType;
+    switch (t) {
+        case T::Plus:
+        case T::Minus:
+        case T::Mul:
+        case T::Divide:
+        case T::Mod:
+        case T::And:
+        case T::Or:
+        case T::BitAnd:
+        case T::BitOr:
+        case T::BitXor: return true;
+        default: return false;
+    }
+}
+}  // namespace
+
+// True if the parenthesised expression starting here is a fold: a '...' at
+// its own bracket depth, before the matching ')'.
+bool SigmaParser::FoldAhead() const {
+    int depth = 0;
+    for (size_t n = 0;; ++n) {
+        const auto t = Peek(n).type;
+        if (t == Tok::End) return false;
+        if (t == Tok::OpenParen || t == Tok::OpenSquare || t == Tok::OpenBrace) ++depth;
+        if (t == Tok::CloseParen || t == Tok::CloseSquare || t == Tok::CloseBrace) {
+            if (--depth == 0) return false;
+        }
+        // `xs...` (an expansion) follows a name; a fold's '...' follows an operator or '('.
+        if (t == Tok::Ellipsis && depth == 1 && Peek(n - 1).type != Tok::Name) return true;
+    }
+}
+
+// Fold expressions, as in C++17:
+//   (xs op ...)   (... op xs)   (xs op ... op init)   (init op ... op xs)
+SigmaParser::AstNodePtr SigmaParser::Fold() {
+    Take();  // (
+    AstNodePtr left = NewNode(Ast::None);
+    if (!Is(Tok::Ellipsis)) {
+        left = Unary();
+        if (!left) return nullptr;
+    }
+    auto opBefore = Peek();
+    if (Is(Tok::Ellipsis)) {
+        // (... op xs)
+        Take();
+        if (!IsFoldOperator(Peek().type)) return Error("expected an operator after '...' in a fold expression");
+        auto fold = NewNode(Ast::Fold, Take());
+        auto right = Unary();
+        if (!right) return nullptr;
+        fold->Add(left);
+        fold->Add(right);
+        if (!Require(Tok::CloseParen, "')' to close the fold expression")) return nullptr;
+        return fold;
+    }
+    if (!IsFoldOperator(opBefore.type)) return Error("expected an operator before '...' in a fold expression");
+    auto fold = NewNode(Ast::Fold, Take());
+    if (!Require(Tok::Ellipsis, "'...' in a fold expression")) return nullptr;
+    AstNodePtr right = NewNode(Ast::None);
+    if (!Is(Tok::CloseParen)) {
+        if (Peek().type != opBefore.type)
+            return Error(Peek(), std::format("both operators of a fold expression must be '{}'", opBefore.Text()));
+        Take();
+        right = Unary();
+        if (!right) return nullptr;
+    }
+    fold->Add(left);
+    fold->Add(right);
+    if (!Require(Tok::CloseParen, "')' to close the fold expression")) return nullptr;
+    return fold;
+}
+
 SigmaParser::AstNodePtr SigmaParser::ListLiteral() {
     auto list = NewNode(Ast::List, Take());
     while (!Is(Tok::CloseSquare)) {
-        auto element = Expression();
+        auto element = Expansion();
         if (!element) return nullptr;
         list->Add(element);
         if (!Accept(Tok::Comma)) break;

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <array>
 #include <format>
+#include <map>
 #include <set>
 #include <string_view>
 #include <utility>
@@ -47,6 +48,13 @@ SigmaTypePtr SigmaType::FunOf(std::vector<SigmaTypePtr> params, SigmaTypePtr res
     return t;
 }
 
+SigmaTypePtr SigmaType::PackOf(std::vector<SigmaTypePtr> elements) {
+    auto t = std::make_shared<SigmaType>();
+    t->kind = Kind::Pack;
+    t->args = std::move(elements);
+    return t;
+}
+
 SigmaTypePtr SigmaType::VarOf(std::string name) {
     auto t = std::make_shared<SigmaType>();
     t->kind = Kind::Var;
@@ -74,6 +82,11 @@ std::string SigmaType::ToString() const {
         case Kind::Map: return "Map[" + args[0]->ToString() + ", " + args[1]->ToString() + "]";
         case Kind::Native: return name.empty() ? std::format("#{}", native) : name;
         case Kind::Var: return name;
+        case Kind::Pack: {
+            std::string s = "...[";
+            for (size_t n = 0; n < args.size(); ++n) s += (n ? ", " : "") + args[n]->ToString();
+            return s + "]";
+        }
         case Kind::Fun: {
             std::string s = "fun";
             if (!typeParams.empty()) {
@@ -82,7 +95,8 @@ std::string SigmaType::ToString() const {
                 s += "]";
             }
             s += "(";
-            for (size_t n = 0; n < args.size(); ++n) s += (n ? ", " : "") + args[n]->ToString();
+            for (size_t n = 0; n < args.size(); ++n)
+                s += (n ? ", " : "") + args[n]->ToString() + (variadic && n + 1 == args.size() ? "..." : "");
             return s + ") -> " + result->ToString();
         }
     }
@@ -93,7 +107,7 @@ bool SigmaType::Same(const SigmaTypePtr &a, const SigmaTypePtr &b) {
     if (a->kind != b->kind || a->args.size() != b->args.size()) return false;
     if (a->Is(Kind::Native) && a->native != b->native) return false;
     if (a->Is(Kind::Var)) return a->name == b->name;
-    if (a->Is(Kind::Fun) && a->typeParams != b->typeParams) return false;
+    if (a->Is(Kind::Fun) && (a->typeParams != b->typeParams || a->variadic != b->variadic)) return false;
     for (size_t n = 0; n < a->args.size(); ++n)
         if (!Same(a->args[n], b->args[n])) return false;
     if (a->Is(Kind::Fun)) return Same(a->result, b->result);
@@ -268,6 +282,10 @@ SigmaTypePtr SigmaChecker::Resolve(const NodePtr& node, bool allowVoid)
     const std::string name = tok.Text();
     if (auto found = typeArgs_.find(name); found != typeArgs_.end()) {
         if (!args.empty()) Report(node, std::format("type parameter '{}' takes no type arguments", name));
+        if (found->second->Is(Kind::Pack)) {
+            Report(node, std::format("type parameter pack '{}' is only the type of a pack parameter, 'xs: {}...'", name, name));
+            return Bad();
+        }
         return found->second;
     }
     auto arity = [&](size_t n) {
@@ -311,6 +329,12 @@ std::vector<std::string> SigmaChecker::TypeParamNames(const NodePtr &fun) {
     return names;
 }
 
+std::string SigmaChecker::PackName(const NodePtr &fun) {
+    if (fun->GetChildren().size() <= 3) return {};
+    const auto &params = fun->GetChild(3)->GetChildren();
+    return !params.empty() && params.back()->GetType() == Ast::Expand ? params.back()->GetToken().Text() : std::string();
+}
+
 namespace {
 bool Mentions(const SigmaTypePtr &type, const std::string &var) {
     if (!type) return false;
@@ -343,6 +367,32 @@ SigmaTypePtr SigmaChecker::Signature(const NodePtr &fun) {
     auto result = Resolve(fun->GetChild(1), true);
     typeArgs_ = std::move(outer);
 
+    // A pack `...Ts` is only the type of the last parameter, `xs: Ts...`.
+    const std::string pack = PackName(fun);
+    const auto &paramNodes = fun->GetChild(0)->GetChildren();
+    bool variadic = false;
+    for (size_t n = 0; n < paramNodes.size(); ++n) {
+        const bool isPack = paramNodes[n]->GetChildren().size() > 1;
+        const std::string pname = paramNodes[n]->GetToken().Text();
+        if (isPack) {
+            if (pack.empty()) {
+                Report(paramNodes[n], std::format("'{}...' needs a type parameter pack: 'fun {}[...Ts]({}: Ts...)'", pname,
+                                                  fun->GetToken().Text(), pname));
+            } else if (n + 1 != paramNodes.size()) {
+                Report(paramNodes[n], std::format("pack parameter '{}' must be the last parameter", pname));
+            } else if (!params[n]->Is(Kind::Var) || params[n]->name != pack) {
+                Report(paramNodes[n], std::format("pack parameter '{}' must have the type '{}...'", pname, pack));
+            } else {
+                variadic = true;
+            }
+        } else if (!pack.empty() && Mentions(params[n], pack)) {
+            Report(paramNodes[n], std::format("type parameter pack '{}' is only the type of a pack parameter, '{}: {}...'",
+                                              pack, pname, pack));
+        }
+    }
+    if (!pack.empty() && Mentions(result, pack))
+        Report(fun, std::format("type parameter pack '{}' cannot be part of the result type", pack));
+
     // Type arguments are only inferred from the arguments of a call.
     for (size_t n = 0; n < names.size(); ++n) {
         if (!vars.contains(names[n])) continue;
@@ -352,7 +402,9 @@ SigmaTypePtr SigmaChecker::Signature(const NodePtr &fun) {
                    std::format("type parameter '{}' of '{}' is not used by any parameter, so it cannot be inferred",
                                names[n], fun->GetToken().Text()));
     }
-    return SigmaType::FunOf(std::move(params), std::move(result), names);
+    auto sig = std::make_shared<SigmaType>(*SigmaType::FunOf(std::move(params), std::move(result), names));
+    sig->variadic = variadic;
+    return sig;
 }
 
 SigmaTypePtr SigmaChecker::Substitute(const SigmaTypePtr &type, const TypeArgs &args) {
@@ -411,6 +463,7 @@ bool SigmaChecker::Check(const NodePtr &program) {
     templates_.clear();
     instances_.clear();
     instanceKeys_.clear();
+    variadicInstances_.clear();
     typeArgs_.clear();
     note_.clear();
     for (auto const &[name, g] : session_) {
@@ -469,6 +522,15 @@ void SigmaChecker::Statement(const NodePtr &node, bool topLevel) {
 
         case Ast::If:
             Condition(ch[0], "an if condition");
+            // A condition on a pack's length is decided per instantiation, so
+            // only the branch taken is checked (and emitted).
+            if (auto taken = StaticCondition(ch[0])) {
+                if (*taken)
+                    Statements(ch[1], false);
+                else if (ch.size() > 2)
+                    Statement(ch[2], false);
+                return;
+            }
             Statements(ch[1], false);
             if (ch.size() > 2) Statement(ch[2], false);
             return;
@@ -666,18 +728,23 @@ void SigmaChecker::FunctionBody(const NodePtr &fun, const TypeArgs &typeArgs) {
 // instantiation's errors name it, e.g. "(in max[str])". The Rho is emitted
 // once, so int-to-float widening in the body must agree across instances.
 void SigmaChecker::CheckTemplates() {
+    // One Body per emitted function: a template without a pack is emitted
+    // once (arity -1); a variadic one once per pack length.
     struct Body {
         NodePtr fun;
-        std::set<std::pair<int, int>> reported;
+        int arity = -1;
         std::unordered_set<const SigmaAstNode *> base;  // widened whatever the type arguments
         std::unordered_map<const SigmaAstNode *, int> hits;
         int instances = 0;
     };
-    std::unordered_map<const SigmaAstNode *, Body> bodies;
+    std::map<std::pair<const SigmaAstNode *, int>, size_t> index;
+    std::vector<Body> bodies;
+    std::unordered_map<const SigmaAstNode *, std::set<std::pair<int, int>>> reported;
 
-    auto check = [&](const NodePtr &fun, const TypeArgs &args, const std::string &note, bool instance) {
-        Body &body = bodies[fun.get()];
-        body.fun = fun;
+    auto check = [&](const NodePtr &fun, int arity, const TypeArgs &args, const std::string &note, bool instance) {
+        auto [it, added] = index.try_emplace({fun.get(), arity}, bodies.size());
+        if (added) bodies.push_back(Body{fun, arity});
+        Body &body = bodies[it->second];
         const size_t first = diagnostics_.size();
         auto outer = std::exchange(widened_, {});
         note_ = note;
@@ -694,21 +761,23 @@ void SigmaChecker::CheckTemplates() {
         }
 
         // Report each place in a body once, however many instances hit it.
+        auto &seen = reported[fun.get()];
         std::vector<SigmaDiagnostic> kept(diagnostics_.begin(), diagnostics_.begin() + static_cast<std::ptrdiff_t>(first));
         for (size_t n = first; n < diagnostics_.size(); ++n)
-            if (body.reported.insert({diagnostics_[n].line, diagnostics_[n].column}).second)
-                kept.push_back(diagnostics_[n]);
+            if (seen.insert({diagnostics_[n].line, diagnostics_[n].column}).second) kept.push_back(diagnostics_[n]);
         diagnostics_ = std::move(kept);
     };
 
     // On its own: type parameters are unknown, and like an expression that
     // already failed they type-check against anything without cascading.
+    // A variadic template is only checked per instantiation, since what its
+    // body does (and which branches are live) depends on the pack's length.
     for (auto const &fun : functions_) {
         const auto names = TypeParamNames(fun);
-        if (names.empty()) continue;
+        if (names.empty() || !PackName(fun).empty()) continue;
         TypeArgs unknown;
         for (auto const &n : names) unknown[n] = Bad();
-        check(fun, unknown, "", false);
+        check(fun, -1, unknown, "", false);
     }
 
     constexpr size_t maxInstances = 500;
@@ -718,20 +787,25 @@ void SigmaChecker::CheckTemplates() {
             break;
         }
         const Instance inst = instances_[n];  // a copy: checking it may queue more
-        check(inst.fun, inst.args, "in " + inst.key, true);
+        check(inst.fun, inst.arity, inst.args, "in " + inst.key, true);
     }
 
-    for (auto const &[_, body] : bodies) {
+    for (auto const &body : bodies) {
+        std::unordered_set<const SigmaAstNode *> widened;
         for (auto const &[node, hits] : body.hits) {
             if (body.base.contains(node)) continue;
             if (hits == body.instances) {
-                widened_.insert(node);
+                widened.insert(node);
             } else {
                 Report(NodePtr(body.fun, const_cast<SigmaAstNode *>(node)),
                        std::format("'{}' converts int to float here for some type arguments but not others",
                                    body.fun->GetToken().Text()));
             }
         }
+        if (body.arity < 0)
+            widened_.insert(widened.begin(), widened.end());
+        else
+            variadicInstances_.push_back(VariadicInstance{body.fun, body.arity, std::move(widened)});
     }
 }
 
@@ -784,6 +858,10 @@ SigmaTypePtr SigmaChecker::Expr(const NodePtr &node, const SigmaTypePtr &expecte
         case Ast::Index: return Index(node);
         case Ast::List: return List(node, expected);
         case Ast::Map: return Map(node, expected);
+        case Ast::Fold: return Fold(node);
+        case Ast::Expand:
+            Report(node, "a pack expansion ('xs...') is only allowed in a call's arguments or a list literal");
+            return Bad();
         default: break;
     }
     Report(node, "unsupported expression");
@@ -793,6 +871,11 @@ SigmaTypePtr SigmaChecker::Expr(const NodePtr &node, const SigmaTypePtr &expecte
 SigmaTypePtr SigmaChecker::Name(const NodePtr &node) {
     const std::string name = node->GetToken().Text();
     if (auto b = Lookup(name)) {
+        if (b->type->Is(Kind::Pack)) {
+            Report(node, std::format("'{}' is a parameter pack: expand it ('{}...'), fold it ('({} + ...)') or count it ('{}.size()')",
+                                     name, name, name, name));
+            return Bad();
+        }
         if (!b->type->IsTemplate()) return b->type;
         Report(node, std::format("template function '{}' can only be called; it cannot be used as a value", name));
         return Bad();
@@ -894,6 +977,14 @@ SigmaTypePtr SigmaChecker::Ternary(const NodePtr &node, const SigmaTypePtr &expe
     Condition(node->GetChild(0), "a conditional expression's condition");
     const auto &a = node->GetChild(1);
     const auto &b = node->GetChild(2);
+    if (auto taken = StaticCondition(node->GetChild(0))) {
+        const auto &branch = *taken ? a : b;
+        if (expected && !IsAny(expected)) {
+            Convert(branch, Expr(branch, expected), expected, "conditional branch");
+            return expected;
+        }
+        return Expr(branch);
+    }
     if (expected && !IsAny(expected)) {
         Convert(a, Expr(a, expected), expected, "conditional branch");
         Convert(b, Expr(b, expected), expected, "conditional branch");
@@ -903,18 +994,32 @@ SigmaTypePtr SigmaChecker::Ternary(const NodePtr &node, const SigmaTypePtr &expe
 }
 
 SigmaTypePtr SigmaChecker::List(const NodePtr &node, const SigmaTypePtr &expected) {
-    const auto &elements = node->GetChildren();
+    std::vector<Arg> elements;
+    if (!Expand(node->GetChildren(), elements)) return Bad();
     if (expected && expected->Is(Kind::List)) {
-        for (auto const &e : elements) Convert(e, Expr(e, expected->args[0]), expected->args[0], "list element");
+        for (auto const &e : elements) ConvertArg(e, ArgType(e, expected->args[0]), expected->args[0], "list element");
         return expected;
     }
     if (elements.empty()) {
         Report(node, "cannot infer the element type of an empty list; declare it, e.g. 'xs: List[int] = []'");
         return Bad();
     }
+    std::vector<NodePtr> nodes;
     std::vector<SigmaTypePtr> types;
-    for (auto const &e : elements) types.push_back(Expr(e));
-    auto element = Unify(elements, types, node, "list elements");
+    for (auto const &e : elements) {
+        nodes.push_back(e.node);
+        types.push_back(ArgType(e));
+    }
+    auto element = Unify(nodes, types, node, "list elements");
+    // Pack elements are emitted as separate names, so none can be widened.
+    for (size_t n = 0; n < elements.size(); ++n) {
+        if (elements[n].element < 0) continue;
+        widened_.erase(elements[n].node.get());
+        if (!IsBad(element) && element->Is(Kind::Float) && types[n]->Is(Kind::Int)) {
+            Report(elements[n].node, "list elements: pack elements are not widened from int to float");
+            return Bad();
+        }
+    }
     return IsBad(element) ? element : SigmaType::ListOf(element);
 }
 
@@ -980,24 +1085,187 @@ SigmaTypePtr SigmaChecker::Member(const NodePtr &node) {
 
 SigmaTypePtr SigmaChecker::Arguments(const NodePtr &at, const std::string &what,
                                      const std::vector<SigmaTypePtr> &params, const NodePtr &args) {
-    const auto &given = args->GetChildren();
+    std::vector<Arg> given;
+    if (!Expand(args->GetChildren(), given)) return nullptr;
     if (given.size() != params.size()) {
         Report(at, std::format("{} expects {} argument{}, got {}", what, params.size(), params.size() == 1 ? "" : "s",
                                given.size()));
     }
     for (size_t n = 0; n < given.size(); ++n) {
         if (n >= params.size()) {
-            Expr(given[n]);
+            ArgType(given[n]);
             continue;
         }
-        Convert(given[n], Expr(given[n], params[n]), params[n], std::format("argument {} of {}", n + 1, what));
+        ConvertArg(given[n], ArgType(given[n], params[n]), params[n], std::format("argument {} of {}", n + 1, what));
     }
     return nullptr;
 }
 
+// Expand `xs...` in an argument list or list literal into the pack's elements.
+bool SigmaChecker::Expand(const std::vector<NodePtr> &nodes, std::vector<Arg> &out) {
+    bool ok = true;
+    for (auto const &n : nodes) {
+        if (n->GetType() != Ast::Expand) {
+            out.push_back(Arg{n, nullptr, -1});
+            continue;
+        }
+        const auto &packNode = n->GetChild(0);
+        const Binding *b = IsName(packNode) ? Lookup(packNode->GetToken().Text()) : nullptr;
+        if (!b || !b->type->Is(Kind::Pack)) {
+            if (!(b && IsBad(b->type)))
+                Report(n, std::format("'...' expands a parameter pack, and '{}' is not one",
+                                      IsName(packNode) ? packNode->GetToken().Text() : std::string("this")));
+            ok = false;
+            continue;
+        }
+        for (size_t e = 0; e < b->type->args.size(); ++e) out.push_back(Arg{n, b->type->args[e], static_cast<int>(e)});
+    }
+    return ok;
+}
+
+SigmaTypePtr SigmaChecker::ArgType(const Arg &arg, const SigmaTypePtr &expected) {
+    return arg.type ? arg.type : Expr(arg.node, expected);
+}
+
+bool SigmaChecker::ConvertArg(const Arg &arg, const SigmaTypePtr &from, const SigmaTypePtr &to,
+                              const std::string &context) {
+    if (arg.element >= 0 && from->Is(Kind::Int) && to->Is(Kind::Float)) {
+        Report(arg.node, std::format("{}: element {} of the pack is int, and pack elements are not widened to float",
+                                     context, arg.element));
+        return false;
+    }
+    return Convert(arg.node, from, to, context);
+}
+
+// `(xs op ...)` folds from the right: x0 op (x1 op (... op init)).
+// `(... op xs)` folds from the left: ((init op x0) op x1) op ...
+SigmaTypePtr SigmaChecker::Fold(const NodePtr &node) {
+    const auto &left = node->GetChild(0);
+    const auto &right = node->GetChild(1);
+    auto packOf = [&](const NodePtr &side) -> const SigmaType * {
+        if (side->GetType() == Ast::None || !IsName(side)) return nullptr;
+        const Binding *b = Lookup(side->GetToken().Text());
+        return b && b->type->Is(Kind::Pack) ? b->type.get() : nullptr;
+    };
+    const SigmaType *leftPack = packOf(left);
+    const SigmaType *rightPack = packOf(right);
+    if ((leftPack != nullptr) == (rightPack != nullptr)) {
+        Report(node, "a fold expression needs exactly one parameter pack, e.g. '(xs + ...)'");
+        return Bad();
+    }
+    const bool fromRight = leftPack != nullptr;
+    const auto elements = (fromRight ? leftPack : rightPack)->args;
+    const auto &initNode = fromRight ? right : left;
+    const auto op = node->GetToken().type;
+
+    SigmaTypePtr acc;
+    if (initNode->GetType() != Ast::None) {
+        acc = Expr(initNode);
+        if (IsBad(acc)) return acc;
+    }
+    if (elements.empty() && !acc) {
+        if (op == Tok::And) return T(Kind::Bool);
+        if (op == Tok::Or) return T(Kind::Bool);
+        Report(node, std::format("fold over an empty pack: '{}' needs an initial value, e.g. '(xs {} ... {} init)'",
+                                 node->GetToken().Text(), node->GetToken().Text(), node->GetToken().Text()));
+        return Bad();
+    }
+    if (fromRight) {
+        for (size_t n = elements.size(); n-- > 0;) acc = acc ? BinaryResult(node, op, elements[n], acc) : elements[n];
+    } else {
+        for (auto const &e : elements) acc = acc ? BinaryResult(node, op, acc, e) : e;
+    }
+    return acc;
+}
+
+std::optional<bool> SigmaChecker::StaticCondition(const NodePtr &condition) {
+    return StaticCondition(condition, [this](const std::string &name) -> std::optional<int> {
+        const Binding *b = Lookup(name);
+        if (b && b->type->Is(Kind::Pack)) return static_cast<int>(b->type->args.size());
+        return std::nullopt;
+    });
+}
+
+namespace {
+// Evaluate an int or bool expression built from literals, packs' sizes and
+// operators. `usesPack` reports whether a pack's size was involved.
+std::optional<long long> StaticValue(const SigmaAstNodePtr &node, const SigmaChecker::PackSizes &sizes,
+                                     bool &usesPack) {
+    using A = SigmaAstNodeEnumType;
+    const auto &ch = node->GetChildren();
+    switch (node->GetType()) {
+        case A::TokenType:
+            switch (node->GetToken().type) {
+                case Tok::Int: return std::stoll(node->GetToken().Text());
+                case Tok::True: return 1;
+                case Tok::False: return 0;
+                default: return std::nullopt;
+            }
+        case A::Call: {
+            // xs.size()
+            const auto &callee = ch[0];
+            if (callee->GetType() != A::Member || callee->GetToken().Text() != "size" || !ch[1]->GetChildren().empty())
+                return std::nullopt;
+            const auto &object = callee->GetChild(0);
+            if (!IsName(object)) return std::nullopt;
+            auto n = sizes(object->GetToken().Text());
+            if (!n) return std::nullopt;
+            usesPack = true;
+            return *n;
+        }
+        case A::Unary: {
+            auto v = StaticValue(ch[0], sizes, usesPack);
+            if (!v) return std::nullopt;
+            switch (node->GetToken().type) {
+                case Tok::Not: return *v == 0 ? 1 : 0;
+                case Tok::Minus: return -*v;
+                case Tok::Plus: return *v;
+                default: return std::nullopt;
+            }
+        }
+        case A::Binary: {
+            auto a = StaticValue(ch[0], sizes, usesPack);
+            auto b = StaticValue(ch[1], sizes, usesPack);
+            if (!a || !b) return std::nullopt;
+            switch (node->GetToken().type) {
+                case Tok::Plus: return *a + *b;
+                case Tok::Minus: return *a - *b;
+                case Tok::Mul: return *a * *b;
+                case Tok::Divide: return *b == 0 ? std::nullopt : std::optional<long long>(*a / *b);
+                case Tok::Mod: return *b == 0 ? std::nullopt : std::optional<long long>(*a % *b);
+                case Tok::Equiv: return *a == *b;
+                case Tok::NotEquiv: return *a != *b;
+                case Tok::Less: return *a < *b;
+                case Tok::Greater: return *a > *b;
+                case Tok::LessEquiv: return *a <= *b;
+                case Tok::GreaterEquiv: return *a >= *b;
+                case Tok::And: return *a && *b;
+                case Tok::Or: return *a || *b;
+                default: return std::nullopt;
+            }
+        }
+        default: return std::nullopt;
+    }
+}
+}  // namespace
+
+std::optional<bool> SigmaChecker::StaticCondition(const NodePtr &condition, const PackSizes &sizes) {
+    bool usesPack = false;
+    auto v = StaticValue(condition, sizes, usesPack);
+    if (!v || !usesPack) return std::nullopt;
+    return *v != 0;
+}
+
+std::unordered_map<std::string, int> SigmaChecker::GetVariadics() const {
+    std::unordered_map<std::string, int> out;
+    if (!scopes_.empty())
+        for (auto const &[name, b] : scopes_.front())
+            if (b.type->IsTemplate() && b.type->variadic) out[name] = static_cast<int>(b.type->args.size()) - 1;
+    return out;
+}
+
 SigmaTypePtr SigmaChecker::Call(const NodePtr &node) {
     const auto &callee = node->GetChild(0);
-    const auto &args = node->GetChild(1);
     const auto control = Continuation(node);
 
     if (control != Tok::None) {
@@ -1080,12 +1348,14 @@ SigmaTypePtr SigmaChecker::PlainCall(const NodePtr &node) {
 // and the ints are widened. Inside List, Map or fun types it must match
 // exactly, as generics are invariant.
 SigmaTypePtr SigmaChecker::TemplateCall(const NodePtr &node, const std::string &name, const SigmaTypePtr &sig) {
-    const auto &given = node->GetChild(1)->GetChildren();
+    std::vector<Arg> given;
+    if (!Expand(node->GetChild(1)->GetChildren(), given)) return Bad();
     const std::string what = std::format("'{}'", name);
-    if (given.size() != sig->args.size()) {
-        Report(node, std::format("{} expects {} argument{}, got {}", what, sig->args.size(),
-                                 sig->args.size() == 1 ? "" : "s", given.size()));
-        for (auto const &a : given) Expr(a);
+    const size_t fixed = sig->args.size() - (sig->variadic ? 1 : 0);
+    if (sig->variadic ? given.size() < fixed : given.size() != fixed) {
+        Report(node, std::format("{} expects {}{} argument{}, got {}", what, sig->variadic ? "at least " : "", fixed,
+                                 fixed == 1 ? "" : "s", given.size()));
+        for (auto const &a : given) ArgType(a);
         return Bad();
     }
 
@@ -1094,39 +1364,40 @@ SigmaTypePtr SigmaChecker::TemplateCall(const NodePtr &node, const std::string &
     std::vector<std::pair<std::string, const SigmaAstNode *>> ints;  // `a: T` arguments that were int
     bool bad = false;
 
-    for (size_t n = 0; n < given.size(); ++n) {
+    for (size_t n = 0; n < fixed; ++n) {
         const auto &param = sig->args[n];
-        const auto &arg = given[n];
+        const Arg &arg = given[n];
         const std::string context = std::format("argument {} of {}", n + 1, what);
 
         if (param->Is(Kind::Var)) {
             auto found = bound.find(param->name);
             const SigmaTypePtr hint = found != bound.end() && !found->second->IsNumeric() ? found->second : nullptr;
-            auto t = Expr(arg, hint);
+            auto t = ArgType(arg, hint);
             if (IsBad(t)) {
                 bad = true;
                 continue;
             }
             if (t->Is(Kind::Void)) {
-                Report(arg, context + ": cannot pass a void value");
+                Report(arg.node, context + ": cannot pass a void value");
                 bad = true;
                 continue;
             }
             if (found == bound.end()) {
                 bound[param->name] = t;
-                if (t->Is(Kind::Int)) ints.emplace_back(param->name, arg.get());
+                if (t->Is(Kind::Int) && arg.element < 0) ints.emplace_back(param->name, arg.node.get());
+                if (arg.element >= 0) exact.insert(param->name);  // a pack element can't be widened later
                 continue;
             }
             auto &b = found->second;
             if (b->Is(Kind::Int) && t->Is(Kind::Float) && !exact.contains(param->name)) {
                 b = t;
             } else if (b->Is(Kind::Int) && t->Is(Kind::Int)) {
-                ints.emplace_back(param->name, arg.get());
+                if (arg.element < 0) ints.emplace_back(param->name, arg.node.get());
             } else if (b->Is(Kind::Float) && t->Is(Kind::Int)) {
-                widened_.insert(arg.get());
+                if (!ConvertArg(arg, t, b, context)) bad = true;
             } else if (!SigmaType::Same(b, t) && !IsAny(b) && !IsAny(t)) {
-                Report(arg, std::format("{}: {} is {} from an earlier argument, got {}", context, param->name,
-                                        b->ToString(), t->ToString()));
+                Report(arg.node, std::format("{}: {} is {} from an earlier argument, got {}", context, param->name,
+                                             b->ToString(), t->ToString()));
                 bad = true;
             }
             continue;
@@ -1136,24 +1407,38 @@ SigmaTypePtr SigmaChecker::TemplateCall(const NodePtr &node, const std::string &
             if (Mentions(param, p)) exact.insert(p);
         auto expected = Substitute(param, bound);
         if (!HasVars(expected)) {
-            auto t = Expr(arg, expected);
-            if (IsBad(t) || !Convert(arg, t, expected, context)) bad = true;
+            auto t = ArgType(arg, expected);
+            if (IsBad(t) || !ConvertArg(arg, t, expected, context)) bad = true;
             continue;
         }
-        auto t = Expr(arg);
+        auto t = ArgType(arg);
         if (IsBad(t)) {
             bad = true;
             continue;
         }
         if (!Match(expected, t, bound)) {
-            Report(arg, std::format("{}: expected {}, got {}", context, expected->ToString(), t->ToString()));
+            Report(arg.node, std::format("{}: expected {}, got {}", context, expected->ToString(), t->ToString()));
             bad = true;
         }
+    }
+
+    // The rest of the arguments make up the pack, element by element.
+    std::vector<SigmaTypePtr> pack;
+    for (size_t n = fixed; n < given.size(); ++n) {
+        auto t = ArgType(given[n]);
+        if (IsBad(t)) {
+            bad = true;
+        } else if (t->Is(Kind::Void)) {
+            Report(given[n].node, std::format("argument {} of {}: cannot pass a void value", n + 1, what));
+            bad = true;
+        }
+        pack.push_back(t);
     }
     if (bad) return Bad();
 
     for (auto const &[var, at] : ints)
         if (bound[var]->Is(Kind::Float)) widened_.insert(at);
+    if (sig->variadic) bound[sig->typeParams.back()] = SigmaType::PackOf(pack);
 
     std::string key = name + "[";
     for (size_t n = 0; n < sig->typeParams.size(); ++n) {
@@ -1167,11 +1452,20 @@ SigmaTypePtr SigmaChecker::TemplateCall(const NodePtr &node, const std::string &
     key += "]";
 
     if (auto definition = templates_.find(name); definition != templates_.end() && instanceKeys_.insert(key).second)
-        instances_.push_back(Instance{definition->second, bound, key});
+        instances_.push_back(Instance{definition->second, bound, key, sig->variadic ? static_cast<int>(pack.size()) : -1});
     return Substitute(sig->result, bound);
 }
 
 SigmaTypePtr SigmaChecker::MethodCall(const NodePtr &call, const NodePtr &member, const NodePtr &args) {
+    // xs.size(): the length of a parameter pack, known per instantiation.
+    if (const auto &object = member->GetChild(0); IsName(object)) {
+        const Binding *b = Lookup(object->GetToken().Text());
+        if (b && b->type->Is(Kind::Pack)) {
+            if (member->GetToken().Text() == "size" && args->GetChildren().empty()) return T(Kind::Int);
+            Report(member, std::format("a parameter pack has only 'size()', not '{}'", member->GetToken().Text()));
+            return Bad();
+        }
+    }
     auto receiver = Expr(member->GetChild(0));
     const std::string name = member->GetToken().Text();
     const std::string what = std::format("'{}'", name);

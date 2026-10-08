@@ -186,8 +186,15 @@ bool SigmaLexer::NextToken() {
 
         case ',': return Add(Enum::Comma);
         case '.':
-            if (n == '.')
-                return Error("'...' (resume) is not supported in Sigma: in Rho it leaves for the top level without calling the function");
+            if (n == '.') {
+                // `...` declares, expands and folds template parameter packs.
+                // After a call's ')' it would be Rho's resume, which the
+                // parser rejects.
+                const std::string &line = Line();
+                if (static_cast<size_t>(offset_) + 2 < line.size() && line[static_cast<size_t>(offset_) + 2] == '.')
+                    return Add(Enum::Ellipsis, 3);
+                return Error("'..' is not an operator");
+            }
             return Add(Enum::Dot);
         case ';': return Add(Enum::Semi);
         case '?': return Add(Enum::Question);
@@ -253,7 +260,7 @@ const char *SigmaTokenEnumType::ToString(Enum val) {
         CASE(None) CASE(End) CASE(NewLine) CASE(Indent) CASE(Dedent) CASE(Int) CASE(Float) CASE(String)
         CASE(True) CASE(False) CASE(Name) CASE(Fun) CASE(Return) CASE(Yield) CASE(If) CASE(Else) CASE(While)
         CASE(Do) CASE(For) CASE(In) CASE(Break) CASE(Continue) CASE(Assert) CASE(Self) CASE(PiBlock) CASE(Dot)
-        CASE(Comma) CASE(Colon) CASE(Semi) CASE(Question) CASE(Arrow) CASE(OpenParen) CASE(CloseParen)
+        CASE(Comma) CASE(Colon) CASE(Semi) CASE(Question) CASE(Arrow) CASE(Ellipsis) CASE(OpenParen) CASE(CloseParen)
         CASE(OpenSquare) CASE(CloseSquare) CASE(OpenBrace) CASE(CloseBrace) CASE(Plus) CASE(Minus) CASE(Mul)
         CASE(Divide) CASE(Mod) CASE(Assign) CASE(PlusAssign) CASE(MinusAssign) CASE(MulAssign) CASE(DivAssign)
         CASE(ModAssign) CASE(Equiv) CASE(NotEquiv) CASE(Less) CASE(Greater) CASE(LessEquiv) CASE(GreaterEquiv)

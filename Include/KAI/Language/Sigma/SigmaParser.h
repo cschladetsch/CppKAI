@@ -62,6 +62,9 @@ class SigmaParser : public ParserCommon<SigmaLexer, SigmaAstNodeEnumType> {
     AstNodePtr Postfix();
     AstNodePtr Primary();
     AstNodePtr ListLiteral();
+    AstNodePtr Expansion();
+    bool FoldAhead() const;
+    AstNodePtr Fold();
     AstNodePtr MapLiteral();
 
     using Level = AstNodePtr (SigmaParser::*)();

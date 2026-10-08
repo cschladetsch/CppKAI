@@ -44,6 +44,7 @@ struct SigmaTokenEnumType {
         Semi,
         Question,
         Arrow,
+        Ellipsis,  // `...`: a template parameter pack, its expansion, or a fold
         OpenParen,
         CloseParen,
         OpenSquare,

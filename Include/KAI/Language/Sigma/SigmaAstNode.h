@@ -10,9 +10,12 @@ KAI_BEGIN
 ///   Program      statements...
 ///   Block        statements...
 ///   Function     (token: name)    Params, Type|None (result), Block, [TypeParams]
-///   TypeParams   (token: '[')     TokenType names...
+///   TypeParams   (token: '[')     TokenType names..., [Expand (token: name): a pack `...Ts`, last]
+///   Expand       (token: '...')   Name of a pack: `xs...` in arguments and list literals
+///   Fold         (token: operator)  left|None, right|None: `(xs op ...)` is [xs, None],
+///                                 `(... op xs)` is [None, xs], `(a op ... op b)` is [a, b]
 ///   Params       Param...
-///   Param        (token: name)    Type
+///   Param        (token: name)    Type, [Ellipsis token: a pack parameter `xs: Ts...`]
 ///   Type         (token: name | 'fun')
 ///                  named: type arguments...
 ///                  fun:   None(parameter Types...), Type|None (result)
@@ -74,6 +77,8 @@ struct SigmaAstNodeEnumType {
         MapEntry,
         PiBlock,
         TypeParams,
+        Expand,
+        Fold,
     };
 
     static const char *ToString(Enum val);
