@@ -221,40 +221,33 @@ bool SigmaChecker::Convert(const NodePtr &node, const SigmaTypePtr &from, const 
 // types
 // ---------------------------------------------------------------------------
 
-SigmaTypePtr SigmaChecker::FromTypeNumber(Type::Number n) const
-{
-    using N = Type::Number;
+SigmaTypePtr SigmaChecker::FromTypeNumber(int n) const {
+    using N = Type::Number;  // a struct wrapping an unscoped enum, so switch on the int
     switch (n) {
-        case N::Void:
-            return T(Kind::Void);
-        case N::Bool:
-            return T(Kind::Bool);
-        case N::Signed32:
-            return T(Kind::Int); // other int widths: intentionally native?
+        case N::Void: return T(Kind::Void);
+        case N::Bool: return T(Kind::Bool);
+        case N::Signed32: return T(Kind::Int);
         case N::Single:
-        case N::Double:
-            return T(Kind::Float);
-        case N::String:
-            return T(Kind::Str);
-        case N::Object:
-            return T(Kind::Any);
-        case N::None:
-            return T(Kind::Void); // or a dedicated None kind
+        case N::Double: return T(Kind::Float);
+        case N::String: return T(Kind::Str);
         case N::Undefined:
-            return T(Kind::Unknown);
-        default:
-            break; // user/native classes
+        case N::None:
+        case N::Object: return T(Kind::Any);
+        default: break;
     }
 
+    // Registry::GetClass(Type::Number) throws only for a number past the end
+    // of its table, so check the bound rather than catching everything.
     std::string name;
-    if (reg_) {
-        if (auto klass = reg_->FindClass(n))
-            name = klass->GetName().ToString().StdString();
+    if (reg_ != nullptr) {
+        auto const &classes = reg_->GetClasses();
+        if (n >= 0 && n < static_cast<int>(classes.size()) && classes[n] != nullptr)
+            name = classes[n]->GetName().ToString().StdString();
     }
-    if (name.empty())
-        name = "<native #" + std::to_string(static_cast<int>(n)) + ">";
-    return SigmaType::NativeOf(static_cast<int>(n), std::move(name));
+    if (name.empty()) name = std::format("<native #{}>", n);
+    return SigmaType::NativeOf(n, std::move(name));
 }
+
 SigmaTypePtr SigmaChecker::Resolve(const NodePtr& node, bool allowVoid)
 {
     if (!node || node->GetType() == Ast::None) return T(Kind::Void);
