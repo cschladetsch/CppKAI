@@ -13,6 +13,12 @@ def_lang_library(Sigma)
 target_include_directories(SigmaLang PUBLIC ${KAI_HOME}/Include)
 target_link_libraries(SigmaLang PUBLIC RhoLang PiLang CommonLang Executor Core)
 
+# PiNet: what a continuation may reference to be sent to another node (see
+# Doc/PiNet.md). The Console app registers it as a send check.
+def_lang_library(PiNet)
+target_include_directories(PiNetLang PUBLIC ${KAI_HOME}/Include)
+target_link_libraries(PiNetLang PUBLIC Executor Core)
+
 if(KAI_NETWORKING AND NOT KAI_ANDROID)
     def_lang_library(Tau)
     target_link_libraries(TauLang CommonLang Executor)

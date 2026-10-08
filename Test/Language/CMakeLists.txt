@@ -2,11 +2,11 @@ cmake_minimum_required(VERSION 3.10)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${BIN_HOME}/Test")
 if(KAI_NETWORKING)
-    set(core_libs ConsoleLib Executor Core SigmaLang PiLang RhoLang TauLang)
-    set(langs Tau Rho Pi Sigma)
+    set(core_libs ConsoleLib Executor Core SigmaLang PiNetLang PiLang RhoLang TauLang)
+    set(langs Tau Rho Pi Sigma PiNet)
 else()
-    set(core_libs ConsoleLib Executor Core SigmaLang PiLang RhoLang)
-    set(langs Rho Pi Sigma)
+    set(core_libs ConsoleLib Executor Core SigmaLang PiNetLang PiLang RhoLang)
+    set(langs Rho Pi Sigma PiNet)
 endif()
 
 macro(build_lang_test lang)
@@ -21,6 +21,12 @@ foreach (lang ${langs})
     set(header_path ${home}/Include)
     set(script_path ${TEST_HOME}/Language/Test${lang}/Scripts/)
     string(TOLOWER ${lang} ext)
+    # PiNet is a rule over Pi continuations, not a Language of its own, so
+    # its tests run with Pi selected.
+    set(lang_enum ${lang})
+    if(lang STREQUAL "PiNet")
+        set(lang_enum Pi)
+    endif()
     
     # Special handling for Rho language tests to deal with duplicates
     if(lang STREQUAL "Rho")
@@ -263,7 +269,7 @@ foreach (lang ${langs})
     target_compile_definitions(${testName} PRIVATE
         KAI_SCRIPT_ROOT=${script_path}
         KAI_LANG_ROOT=${home}
-        KAI_LANG_NAME=${lang}
+        KAI_LANG_NAME=${lang_enum}
         KAI_LANG_EXT=.${ext}
     )
 endforeach()

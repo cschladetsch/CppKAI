@@ -14,6 +14,7 @@
 #include "KAI/Language/Pi/PiTranslator.h"
 #include "KAI/Language/Rho/RhoTranslator.h"
 #include "KAI/Language/Sigma/SigmaTranslator.h"
+#include <KAI/Language/PiNet/PiNet.h>
 #include "rang.hpp"
 
 using namespace std;
@@ -147,6 +148,8 @@ int main(int argc, char** argv) {
         console.AddTranslator(Language::Sigma,
                               std::make_shared<SigmaTranslator>(console.GetRegistry()),
                               /*indentedBlocks*/ true, /*prompt*/ "σ");
+        // PiNet: a continuation may only be sent if it binds every name it uses.
+        console.AddSendCheck([&console](Object payload) { PiNet::Require(payload, &console.GetTree()); });
         Process::trace = options.verbose ? 1 : 0;
 
         auto executor = console.GetExecutor();
