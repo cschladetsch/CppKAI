@@ -79,6 +79,7 @@ set(core_sources
     ${source_path}/CoreAdditionalTests2.cpp
     ${source_path}/TestGarbageCycles.cpp
     ${source_path}/TestContainerDetach.cpp
+    ${source_path}/TestVariadicTemplates.cpp
     # TestAdvancedCore.cpp - Disabled - requires proper type traits
 )
 # Add common test files

@@ -3,6 +3,9 @@
 
 USING_NAMESPACE_KAI
 
+// The mock in EventHelper.h, not the real kai::Event in KAI/Core/Event.h.
+using kai::event_mock::Event;
+
 struct TestEvents : TestCommon {};
 
 static bool funCalled[4];

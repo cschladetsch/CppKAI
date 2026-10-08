@@ -7,6 +7,11 @@
 
 namespace kai {
 
+// Kept in its own namespace: as kai::Event it collided with the real
+// kai::Event<Args...> (KAI/Core/Event.h) in the same test binary, an ODR
+// violation that let the linker mix their member functions.
+namespace event_mock {
+
 // Simple implementation of Event for testing
 
 // Event with no parameters
@@ -215,4 +220,5 @@ struct Event<T0, T1, T2> {
     void operator()(T0 arg0, T1 arg1, T2 arg2) { impl(arg0, arg1, arg2); }
 };
 
+}  // namespace event_mock
 }  // namespace kai
