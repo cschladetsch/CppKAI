@@ -272,21 +272,17 @@ TEST_F(CoreAdditionalTests2, ObjectExists_FalseForDefaultConstructed) {
 // --- Garbage collection lifecycle ---
 
 TEST_F(CoreAdditionalTests2, GarbageCollection_RemovedObjectIsCollected) {
-    {
-        Pointer<int> obj = Reg().New<int>();
-        *obj = 55;
-        Root().Set(Label("gc_temp"), obj);
+    Pointer<int> obj = Reg().New<int>();
+    *obj = 55;
+    Root().Set(Label("gc_temp"), obj);
+    ASSERT_TRUE(Root().Get(Label("gc_temp")).Exists());
 
-        Object retrieved = Root().Get(Label("gc_temp"));
-        ASSERT_TRUE(retrieved.Exists());
-
-        Root().Remove(Label("gc_temp"));
-    }
-
+    Root().Remove(Label("gc_temp"));
     Reg().GarbageCollect();
 
-    Object shouldNotExist = Root().Get(Label("gc_temp"));
-    ASSERT_FALSE(shouldNotExist.Exists());
+    // Check the object itself: once the label is removed, Root().Get() is
+    // empty whether or not the object was actually destroyed.
+    ASSERT_FALSE(obj.Exists());
 }
 
 TEST_F(CoreAdditionalTests2, GarbageCollection_KeptObjectSurvives) {

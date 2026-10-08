@@ -77,6 +77,7 @@ set(core_sources
     ${source_path}/TestReflection.cpp
     ${source_path}/TestSerialization.cpp
     ${source_path}/CoreAdditionalTests2.cpp
+    ${source_path}/TestGarbageCycles.cpp
     # TestAdvancedCore.cpp - Disabled - requires proper type traits
 )
 # Add common test files
