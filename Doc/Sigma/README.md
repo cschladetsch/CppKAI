@@ -569,7 +569,7 @@ flowchart BT
 | Headers | `Include/KAI/Language/Sigma` |
 | Sources | `Source/Library/Language/Sigma/Source` (the `SigmaLang` library) |
 | Design notes | [`Doc/Sigma.md`](../Sigma.md): continuation operators |
-| Tests | `Test/Language/TestSigma` (`TestSigma`: 260 tests) |
+| Tests | `Test/Language/TestSigma` (`TestSigma`: 360 tests) |
 | Example programs | `Test/Language/TestSigma/Scripts/*.sigma` (115 programs) |
 
 Build and run the tests from the CppKAI root:
@@ -586,7 +586,11 @@ functions, and more), so a failure names the program; `SigmaTests.Scripts`
 also runs every script in the folder, including new ones.
 
 `SigmaContinuationTests` covers `&` and `!`: what runs, what the generated
-Rho looks like, and every rejected use. `SigmaTemplateTests` covers
+Rho looks like, and every rejected use. `SigmaContinuationSuite` adds 100
+more: 40 for `&`, 45 for `!` (including tail calls 20,000 to 30,000 deep,
+void chains, mutual recursion, templates and variadics), and 15 for `...`,
+which check that resume is rejected wherever it can appear and that `...`
+in variadic templates is not taken for it. `SigmaTemplateTests` covers
 templates: inference, instantiation, and their errors. `SigmaVariadicTests`
 covers packs: folds, expansion, compile-time branches, the generated Rho, and
 their errors.
