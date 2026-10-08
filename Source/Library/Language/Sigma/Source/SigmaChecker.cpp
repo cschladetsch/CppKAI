@@ -193,31 +193,42 @@ bool SigmaChecker::Convert(const NodePtr &node, const SigmaTypePtr &from, const 
 // types
 // ---------------------------------------------------------------------------
 
-SigmaTypePtr SigmaChecker::FromTypeNumber(int n) const {
+SigmaTypePtr SigmaChecker::FromTypeNumber(Type::Number n) const
+{
     using N = Type::Number;
     switch (n) {
-        case N::Void: return T(Kind::Void);
-        case N::Bool: return T(Kind::Bool);
-        case N::Signed32: return T(Kind::Int);
+        case N::Void:
+            return T(Kind::Void);
+        case N::Bool:
+            return T(Kind::Bool);
+        case N::Signed32:
+            return T(Kind::Int); // other int widths: intentionally native?
         case N::Single:
-        case N::Double: return T(Kind::Float);
-        case N::String: return T(Kind::Str);
-        case N::Undefined:
+        case N::Double:
+            return T(Kind::Float);
+        case N::String:
+            return T(Kind::Str);
+        case N::Object:
+            return T(Kind::Any);
         case N::None:
-        case N::Object: return T(Kind::Any);
-        default: break;
+            return T(Kind::Void); // or a dedicated None kind
+        case N::Undefined:
+            return T(Kind::Unknown);
+        default:
+            break; // user/native classes
     }
-    std::string name;
-    if (reg_ != nullptr) {
-        try {
-            if (auto klass = reg_->GetClass(Type::Number(n))) name = klass->GetName().ToString().StdString();
-        } catch (...) {
-        }
-    }
-    return SigmaType::NativeOf(n, name);
-}
 
-SigmaTypePtr SigmaChecker::Resolve(const NodePtr &node, bool allowVoid) {
+    std::string name;
+    if (reg_) {
+        if (auto klass = reg_->FindClass(n))
+            name = klass->GetName().ToString().StdString();
+    }
+    if (name.empty())
+        name = "<native #" + std::to_string(static_cast<int>(n)) + ">";
+    return SigmaType::NativeOf(static_cast<int>(n), std::move(name));
+}
+SigmaTypePtr SigmaChecker::Resolve(const NodePtr& node, bool allowVoid)
+{
     if (!node || node->GetType() == Ast::None) return T(Kind::Void);
     const auto &tok = node->GetToken();
     const auto &args = node->GetChildren();
