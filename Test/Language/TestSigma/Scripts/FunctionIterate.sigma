@@ -15,8 +15,8 @@ fun iterate(f: fun(int) -> int, times: int, x: int) -> int
         return x
     return iterate(f, times - 1, f(x))!
 
-fun pick(name: str) -> fun(int) -> int
+fun chooseStep(name: str) -> fun(int) -> int
     return name == "double" ? timesTwo : name == "collatz" ? collatzStep : inc
 
-stepper = pick("collatz")
-iterate(timesTwo, 10, 1) == 1024 && iterate(collatzStep, 10, 27) == 214 && iterate(stepper, 8, 6) == 1 && iterate(inc, 0, 5) == 5 && iterate(pick("other"), 7, 3) == 10 && iterate(pick("double"), 3, 5) == 40
+stepper = chooseStep("collatz")
+iterate(timesTwo, 10, 1) == 1024 && iterate(collatzStep, 10, 27) == 214 && iterate(stepper, 8, 6) == 1 && iterate(inc, 0, 5) == 5 && iterate(chooseStep("other"), 7, 3) == 10 && iterate(chooseStep("double"), 3, 5) == 40
