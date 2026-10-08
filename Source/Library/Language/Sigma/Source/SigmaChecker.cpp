@@ -4,7 +4,12 @@
 #include <KAI/Core/Registry.h>
 #include <KAI/Language/Sigma/SigmaChecker.h>
 
+#include <algorithm>
+#include <array>
 #include <format>
+#include <set>
+#include <string_view>
+#include <utility>
 
 KAI_BEGIN
 
@@ -32,11 +37,20 @@ SigmaTypePtr SigmaType::MapOf(SigmaTypePtr key, SigmaTypePtr value) {
     return t;
 }
 
-SigmaTypePtr SigmaType::FunOf(std::vector<SigmaTypePtr> params, SigmaTypePtr result) {
+SigmaTypePtr SigmaType::FunOf(std::vector<SigmaTypePtr> params, SigmaTypePtr result,
+                              std::vector<std::string> typeParams) {
     auto t = std::make_shared<SigmaType>();
     t->kind = Kind::Fun;
     t->args = std::move(params);
     t->result = std::move(result);
+    t->typeParams = std::move(typeParams);
+    return t;
+}
+
+SigmaTypePtr SigmaType::VarOf(std::string name) {
+    auto t = std::make_shared<SigmaType>();
+    t->kind = Kind::Var;
+    t->name = std::move(name);
     return t;
 }
 
@@ -59,8 +73,15 @@ std::string SigmaType::ToString() const {
         case Kind::List: return "List[" + args[0]->ToString() + "]";
         case Kind::Map: return "Map[" + args[0]->ToString() + ", " + args[1]->ToString() + "]";
         case Kind::Native: return name.empty() ? std::format("#{}", native) : name;
+        case Kind::Var: return name;
         case Kind::Fun: {
-            std::string s = "fun(";
+            std::string s = "fun";
+            if (!typeParams.empty()) {
+                s += "[";
+                for (size_t n = 0; n < typeParams.size(); ++n) s += (n ? ", " : "") + typeParams[n];
+                s += "]";
+            }
+            s += "(";
             for (size_t n = 0; n < args.size(); ++n) s += (n ? ", " : "") + args[n]->ToString();
             return s + ") -> " + result->ToString();
         }
@@ -71,6 +92,8 @@ std::string SigmaType::ToString() const {
 bool SigmaType::Same(const SigmaTypePtr &a, const SigmaTypePtr &b) {
     if (a->kind != b->kind || a->args.size() != b->args.size()) return false;
     if (a->Is(Kind::Native) && a->native != b->native) return false;
+    if (a->Is(Kind::Var)) return a->name == b->name;
+    if (a->Is(Kind::Fun) && a->typeParams != b->typeParams) return false;
     for (size_t n = 0; n < a->args.size(); ++n)
         if (!Same(a->args[n], b->args[n])) return false;
     if (a->Is(Kind::Fun)) return Same(a->result, b->result);
@@ -125,7 +148,7 @@ Tok::Enum CompoundToBinary(Tok::Enum op) {
 void SigmaChecker::Report(const SigmaToken &at, const std::string &message) {
     // A string token's slice excludes its opening quote; point at the quote.
     const int column = at.type == Tok::String && at.slice.Start > 0 ? at.slice.Start - 1 : at.slice.Start;
-    diagnostics_.push_back({at.lineNumber, column, message});
+    diagnostics_.push_back({at.lineNumber, column, note_.empty() ? message : message + " (" + note_ + ")"});
 }
 
 void SigmaChecker::Report(const NodePtr &at, const std::string &message) {
@@ -136,7 +159,7 @@ void SigmaChecker::Report(const NodePtr &at, const std::string &message) {
         if (work[n]->GetToken().lexer != nullptr) return Report(work[n]->GetToken(), message);
         for (auto const &ch : work[n]->GetChildren()) work.push_back(ch);
     }
-    diagnostics_.push_back({0, 0, message});
+    diagnostics_.push_back({0, 0, note_.empty() ? message : message + " (" + note_ + ")"});
 }
 
 SigmaChecker::Binding *SigmaChecker::Lookup(const std::string &name) {
@@ -168,7 +191,12 @@ bool SigmaChecker::Declarable(const NodePtr &at, const std::string &name, const 
 SigmaChecker::Globals SigmaChecker::GetGlobals() const {
     Globals globals;
     if (!scopes_.empty())
-        for (auto const &[name, b] : scopes_.front()) globals[name] = Global{b.type, b.function};
+        for (auto const &[name, b] : scopes_.front()) {
+            NodePtr definition;
+            if (b.type->IsTemplate())
+                if (auto t = templates_.find(name); t != templates_.end()) definition = t->second;
+            globals[name] = Global{b.type, b.function, definition};
+        }
     return globals;
 }
 
@@ -240,6 +268,10 @@ SigmaTypePtr SigmaChecker::Resolve(const NodePtr& node, bool allowVoid)
     }
 
     const std::string name = tok.Text();
+    if (auto found = typeArgs_.find(name); found != typeArgs_.end()) {
+        if (!args.empty()) Report(node, std::format("type parameter '{}' takes no type arguments", name));
+        return found->second;
+    }
     auto arity = [&](size_t n) {
         if (args.size() == n) return true;
         Report(node, std::format("'{}' takes {} type argument{}", name, n, n == 1 ? "" : "s"));
@@ -274,10 +306,99 @@ SigmaTypePtr SigmaChecker::Resolve(const NodePtr& node, bool allowVoid)
     return Bad();
 }
 
+std::vector<std::string> SigmaChecker::TypeParamNames(const NodePtr &fun) {
+    std::vector<std::string> names;
+    if (fun->GetChildren().size() > 3)
+        for (auto const &t : fun->GetChild(3)->GetChildren()) names.push_back(t->GetToken().Text());
+    return names;
+}
+
+namespace {
+bool Mentions(const SigmaTypePtr &type, const std::string &var) {
+    if (!type) return false;
+    if (type->Is(Kind::Var)) return type->name == var;
+    for (auto const &a : type->args)
+        if (Mentions(a, var)) return true;
+    return Mentions(type->result, var);
+}
+}  // namespace
+
 SigmaTypePtr SigmaChecker::Signature(const NodePtr &fun) {
+    // A template's parameters resolve to Var types in its signature.
+    const auto names = TypeParamNames(fun);
+    TypeArgs vars;
+    for (size_t n = 0; n < names.size(); ++n) {
+        constexpr auto builtin = std::to_array<std::string_view>(
+            {"any", "void", "bool", "int", "float", "str", "string", "List", "Map", "fun"});
+        const auto &at = fun->GetChild(3)->GetChild(n);
+        if (std::find(builtin.begin(), builtin.end(), names[n]) != builtin.end())
+            Report(at, std::format("'{}' is a built-in type and cannot be a type parameter", names[n]));
+        else if (vars.contains(names[n]))
+            Report(at, std::format("duplicate type parameter '{}'", names[n]));
+        else
+            vars[names[n]] = SigmaType::VarOf(names[n]);
+    }
+
+    auto outer = std::exchange(typeArgs_, vars);
     std::vector<SigmaTypePtr> params;
     for (auto const &p : fun->GetChild(0)->GetChildren()) params.push_back(Resolve(p->GetChild(0)));
-    return SigmaType::FunOf(std::move(params), Resolve(fun->GetChild(1), true));
+    auto result = Resolve(fun->GetChild(1), true);
+    typeArgs_ = std::move(outer);
+
+    // Type arguments are only inferred from the arguments of a call.
+    for (size_t n = 0; n < names.size(); ++n) {
+        if (!vars.contains(names[n])) continue;
+        const bool used = std::any_of(params.begin(), params.end(), [&](auto const &p) { return Mentions(p, names[n]); });
+        if (!used)
+            Report(fun->GetChild(3)->GetChild(n),
+                   std::format("type parameter '{}' of '{}' is not used by any parameter, so it cannot be inferred",
+                               names[n], fun->GetToken().Text()));
+    }
+    return SigmaType::FunOf(std::move(params), std::move(result), names);
+}
+
+SigmaTypePtr SigmaChecker::Substitute(const SigmaTypePtr &type, const TypeArgs &args) {
+    if (!type) return type;
+    if (type->Is(Kind::Var)) {
+        auto found = args.find(type->name);
+        return found == args.end() ? type : found->second;
+    }
+    if (type->args.empty() && !type->result) return type;
+    auto t = std::make_shared<SigmaType>(*type);
+    for (auto &a : t->args) a = Substitute(a, args);
+    t->result = Substitute(t->result, args);
+    t->typeParams.clear();  // an instantiated template is an ordinary function
+    return t;
+}
+
+bool SigmaChecker::HasVars(const SigmaTypePtr &type) {
+    if (!type) return false;
+    if (type->Is(Kind::Var)) return true;
+    for (auto const &a : type->args)
+        if (HasVars(a)) return true;
+    return HasVars(type->result);
+}
+
+// Structural match of a parameter type against an argument type, binding the
+// type parameters it mentions. Generics are invariant, so a bound parameter
+// must match exactly.
+bool SigmaChecker::Match(const SigmaTypePtr &param, const SigmaTypePtr &arg, TypeArgs &bound) {
+    if (param->Is(Kind::Var)) {
+        auto found = bound.find(param->name);
+        if (found == bound.end()) {
+            if (arg->Is(Kind::Void)) return false;
+            bound[param->name] = arg;
+            return true;
+        }
+        return IsAny(arg) || IsAny(found->second) || SigmaType::Same(found->second, arg);
+    }
+    if (IsAny(arg)) return true;
+    if (param->kind != arg->kind || param->args.size() != arg->args.size()) return false;
+    if (param->Is(Kind::Native)) return param->native == arg->native;
+    for (size_t n = 0; n < param->args.size(); ++n)
+        if (!Match(param->args[n], arg->args[n], bound)) return false;
+    if (param->Is(Kind::Fun)) return arg->typeParams.empty() && Match(param->result, arg->result, bound);
+    return true;
 }
 
 // ---------------------------------------------------------------------------
@@ -289,7 +410,15 @@ bool SigmaChecker::Check(const NodePtr &program) {
     widened_.clear();
     functions_.clear();
     scopes_.assign(1, Scope{});
-    for (auto const &[name, g] : session_) scopes_.front()[name] = Binding{g.type, g.function, true};
+    templates_.clear();
+    instances_.clear();
+    instanceKeys_.clear();
+    typeArgs_.clear();
+    note_.clear();
+    for (auto const &[name, g] : session_) {
+        scopes_.front()[name] = Binding{g.type, g.function, true};
+        if (g.definition) templates_[name] = g.definition;
+    }
     loops_ = 0;
     function_ = nullptr;
 
@@ -297,7 +426,9 @@ bool SigmaChecker::Check(const NodePtr &program) {
 
     // Function bodies are checked after the top level, so they may use any
     // global the program declares (as Rho resolves names when called).
-    for (auto const &fun : functions_) FunctionBody(fun);
+    for (auto const &fun : functions_)
+        if (TypeParamNames(fun).empty()) FunctionBody(fun);
+    CheckTemplates();
 
     return diagnostics_.empty();
 }
@@ -313,6 +444,7 @@ void SigmaChecker::Statements(const NodePtr &block, bool topLevel) {
             if (!Declarable(st, name, sig, true)) continue;
             Bind(name, sig, true);
             functions_.push_back(st);
+            if (sig->IsTemplate()) templates_[name] = st;
         }
     }
     for (auto const &st : block->GetChildren()) Statement(st, topLevel);
@@ -497,14 +629,15 @@ bool SigmaChecker::AlwaysReturns(const NodePtr &node) {
     }
 }
 
-void SigmaChecker::FunctionBody(const NodePtr &fun) {
+void SigmaChecker::FunctionBody(const NodePtr &fun, const TypeArgs &typeArgs) {
     // Copy the signature: pushing a scope below may reallocate scopes_, and
     // a pointer into the old global scope would then dangle (MSVC copies
     // unordered_maps when a vector grows, because their move isn't noexcept).
     const Binding *found = Lookup(fun->GetToken().Text());
     if (!found || !found->type->Is(Kind::Fun)) return;
-    const SigmaTypePtr sig = found->type;
+    const SigmaTypePtr sig = found->type->IsTemplate() ? Substitute(found->type, typeArgs) : found->type;
 
+    typeArgs_ = typeArgs;  // `x: T = ...` and `List[T]` in the body
     function_ = fun.get();
     result_ = sig->result;
     scopes_.emplace_back();
@@ -526,6 +659,82 @@ void SigmaChecker::FunctionBody(const NodePtr &fun) {
     function_ = nullptr;
     result_ = nullptr;
     tailCall_ = nullptr;
+    typeArgs_.clear();
+}
+
+// Templates are checked like C++ templates: once on their own, with every
+// type parameter unknown, to catch mistakes that do not depend on it; then
+// once per distinct set of type arguments the program calls them with. An
+// instantiation's errors name it, e.g. "(in max[str])". The Rho is emitted
+// once, so int-to-float widening in the body must agree across instances.
+void SigmaChecker::CheckTemplates() {
+    struct Body {
+        NodePtr fun;
+        std::set<std::pair<int, int>> reported;
+        std::unordered_set<const SigmaAstNode *> base;  // widened whatever the type arguments
+        std::unordered_map<const SigmaAstNode *, int> hits;
+        int instances = 0;
+    };
+    std::unordered_map<const SigmaAstNode *, Body> bodies;
+
+    auto check = [&](const NodePtr &fun, const TypeArgs &args, const std::string &note, bool instance) {
+        Body &body = bodies[fun.get()];
+        body.fun = fun;
+        const size_t first = diagnostics_.size();
+        auto outer = std::exchange(widened_, {});
+        note_ = note;
+        FunctionBody(fun, args);
+        note_.clear();
+        auto mine = std::exchange(widened_, std::move(outer));
+
+        if (instance) {
+            ++body.instances;
+            for (auto const *n : mine) ++body.hits[n];
+        } else {
+            body.base = mine;
+            widened_.insert(mine.begin(), mine.end());
+        }
+
+        // Report each place in a body once, however many instances hit it.
+        std::vector<SigmaDiagnostic> kept(diagnostics_.begin(), diagnostics_.begin() + static_cast<std::ptrdiff_t>(first));
+        for (size_t n = first; n < diagnostics_.size(); ++n)
+            if (body.reported.insert({diagnostics_[n].line, diagnostics_[n].column}).second)
+                kept.push_back(diagnostics_[n]);
+        diagnostics_ = std::move(kept);
+    };
+
+    // On its own: type parameters are unknown, and like an expression that
+    // already failed they type-check against anything without cascading.
+    for (auto const &fun : functions_) {
+        const auto names = TypeParamNames(fun);
+        if (names.empty()) continue;
+        TypeArgs unknown;
+        for (auto const &n : names) unknown[n] = Bad();
+        check(fun, unknown, "", false);
+    }
+
+    constexpr size_t maxInstances = 500;
+    for (size_t n = 0; n < instances_.size(); ++n) {
+        if (n == maxInstances) {
+            Report(instances_[n].fun, std::format("more than {} template instantiations; does a template call itself with ever larger types?", maxInstances));
+            break;
+        }
+        const Instance inst = instances_[n];  // a copy: checking it may queue more
+        check(inst.fun, inst.args, "in " + inst.key, true);
+    }
+
+    for (auto const &[_, body] : bodies) {
+        for (auto const &[node, hits] : body.hits) {
+            if (body.base.contains(node)) continue;
+            if (hits == body.instances) {
+                widened_.insert(node);
+            } else {
+                Report(NodePtr(body.fun, const_cast<SigmaAstNode *>(node)),
+                       std::format("'{}' converts int to float here for some type arguments but not others",
+                                   body.fun->GetToken().Text()));
+            }
+        }
+    }
 }
 
 // The call carrying '&' or '!' (Rho's suspend and replace), or None.
@@ -585,7 +794,11 @@ SigmaTypePtr SigmaChecker::Expr(const NodePtr &node, const SigmaTypePtr &expecte
 
 SigmaTypePtr SigmaChecker::Name(const NodePtr &node) {
     const std::string name = node->GetToken().Text();
-    if (auto b = Lookup(name)) return b->type;
+    if (auto b = Lookup(name)) {
+        if (!b->type->IsTemplate()) return b->type;
+        Report(node, std::format("template function '{}' can only be called; it cannot be used as a value", name));
+        return Bad();
+    }
     Report(node, std::format("undefined name '{}'", name));
     return Bad();
 }
@@ -840,6 +1053,14 @@ SigmaTypePtr SigmaChecker::PlainCall(const NodePtr &node) {
         return T(Kind::Void);
     }
 
+    if (IsName(callee)) {
+        const std::string name = callee->GetToken().Text();
+        if (const Binding *b = Lookup(name); b && b->type->IsTemplate()) {
+            const SigmaTypePtr sig = b->type;  // a copy: checking the arguments may bind names
+            return TemplateCall(node, name, sig);
+        }
+    }
+
     auto fun = Expr(callee);
     if (IsAny(fun)) {
         for (auto const &a : args->GetChildren()) Expr(a);
@@ -853,6 +1074,103 @@ SigmaTypePtr SigmaChecker::PlainCall(const NodePtr &node) {
     }
     Arguments(node, what, fun->args, args);
     return fun->result;
+}
+
+// Infer a template's type arguments from a call, check the arguments, and
+// queue the instantiation. A type parameter used directly as a parameter type
+// (`a: T`) may be bound by int and float arguments together; it becomes float
+// and the ints are widened. Inside List, Map or fun types it must match
+// exactly, as generics are invariant.
+SigmaTypePtr SigmaChecker::TemplateCall(const NodePtr &node, const std::string &name, const SigmaTypePtr &sig) {
+    const auto &given = node->GetChild(1)->GetChildren();
+    const std::string what = std::format("'{}'", name);
+    if (given.size() != sig->args.size()) {
+        Report(node, std::format("{} expects {} argument{}, got {}", what, sig->args.size(),
+                                 sig->args.size() == 1 ? "" : "s", given.size()));
+        for (auto const &a : given) Expr(a);
+        return Bad();
+    }
+
+    TypeArgs bound;
+    std::unordered_set<std::string> exact;                            // bound inside a List, Map or fun
+    std::vector<std::pair<std::string, const SigmaAstNode *>> ints;  // `a: T` arguments that were int
+    bool bad = false;
+
+    for (size_t n = 0; n < given.size(); ++n) {
+        const auto &param = sig->args[n];
+        const auto &arg = given[n];
+        const std::string context = std::format("argument {} of {}", n + 1, what);
+
+        if (param->Is(Kind::Var)) {
+            auto found = bound.find(param->name);
+            const SigmaTypePtr hint = found != bound.end() && !found->second->IsNumeric() ? found->second : nullptr;
+            auto t = Expr(arg, hint);
+            if (IsBad(t)) {
+                bad = true;
+                continue;
+            }
+            if (t->Is(Kind::Void)) {
+                Report(arg, context + ": cannot pass a void value");
+                bad = true;
+                continue;
+            }
+            if (found == bound.end()) {
+                bound[param->name] = t;
+                if (t->Is(Kind::Int)) ints.emplace_back(param->name, arg.get());
+                continue;
+            }
+            auto &b = found->second;
+            if (b->Is(Kind::Int) && t->Is(Kind::Float) && !exact.contains(param->name)) {
+                b = t;
+            } else if (b->Is(Kind::Int) && t->Is(Kind::Int)) {
+                ints.emplace_back(param->name, arg.get());
+            } else if (b->Is(Kind::Float) && t->Is(Kind::Int)) {
+                widened_.insert(arg.get());
+            } else if (!SigmaType::Same(b, t) && !IsAny(b) && !IsAny(t)) {
+                Report(arg, std::format("{}: {} is {} from an earlier argument, got {}", context, param->name,
+                                        b->ToString(), t->ToString()));
+                bad = true;
+            }
+            continue;
+        }
+
+        for (auto const &p : sig->typeParams)
+            if (Mentions(param, p)) exact.insert(p);
+        auto expected = Substitute(param, bound);
+        if (!HasVars(expected)) {
+            auto t = Expr(arg, expected);
+            if (IsBad(t) || !Convert(arg, t, expected, context)) bad = true;
+            continue;
+        }
+        auto t = Expr(arg);
+        if (IsBad(t)) {
+            bad = true;
+            continue;
+        }
+        if (!Match(expected, t, bound)) {
+            Report(arg, std::format("{}: expected {}, got {}", context, expected->ToString(), t->ToString()));
+            bad = true;
+        }
+    }
+    if (bad) return Bad();
+
+    for (auto const &[var, at] : ints)
+        if (bound[var]->Is(Kind::Float)) widened_.insert(at);
+
+    std::string key = name + "[";
+    for (size_t n = 0; n < sig->typeParams.size(); ++n) {
+        auto found = bound.find(sig->typeParams[n]);
+        if (found == bound.end()) {
+            Report(node, std::format("cannot infer type parameter '{}' of {}", sig->typeParams[n], what));
+            return Bad();
+        }
+        key += (n ? ", " : "") + found->second->ToString();
+    }
+    key += "]";
+
+    if (auto definition = templates_.find(name); definition != templates_.end() && instanceKeys_.insert(key).second)
+        instances_.push_back(Instance{definition->second, bound, key});
+    return Substitute(sig->result, bound);
 }
 
 SigmaTypePtr SigmaChecker::MethodCall(const NodePtr &call, const NodePtr &member, const NodePtr &args) {

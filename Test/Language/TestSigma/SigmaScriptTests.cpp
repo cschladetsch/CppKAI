@@ -126,3 +126,4 @@ TEST_F(SigmaScriptTests, ScrabbleScore) { RunScript("ScrabbleScore"); }
 TEST_F(SigmaScriptTests, CycleDetection) { RunScript("CycleDetection"); }
 TEST_F(SigmaScriptTests, MajorityVote) { RunScript("MajorityVote"); }
 TEST_F(SigmaScriptTests, FunctionIterate) { RunScript("FunctionIterate"); }
+TEST_F(SigmaScriptTests, Templates) { RunScript("Templates"); }

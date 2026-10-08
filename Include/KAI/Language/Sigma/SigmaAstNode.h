@@ -9,7 +9,8 @@ KAI_BEGIN
 ///
 ///   Program      statements...
 ///   Block        statements...
-///   Function     (token: name)    Params, Type|None (result), Block
+///   Function     (token: name)    Params, Type|None (result), Block, [TypeParams]
+///   TypeParams   (token: '[')     TokenType names...
 ///   Params       Param...
 ///   Param        (token: name)    Type
 ///   Type         (token: name | 'fun')
@@ -72,6 +73,7 @@ struct SigmaAstNodeEnumType {
         Map,
         MapEntry,
         PiBlock,
+        TypeParams,
     };
 
     static const char *ToString(Enum val);

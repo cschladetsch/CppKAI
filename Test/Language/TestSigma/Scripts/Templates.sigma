@@ -1,0 +1,48 @@
+// Template functions: type arguments are inferred at each call, and each
+// distinct instantiation is type-checked on its own, like C++ templates.
+
+fun max[T](a: T, b: T) -> T
+    return a > b ? a : b
+
+fun largest[T](xs: List[T]) -> T
+    best = xs[0]
+    for x in xs
+        if x > best
+            best = x
+    return best
+
+fun sorted[T](xs: List[T]) -> List[T]
+    out: List[T] = []
+    for x in xs
+        out.push(x)
+    for i = 1; i < out.size(); i += 1
+        j = i
+        moving = true
+        while moving && j > 0
+            if out[j - 1] > out[j]
+                t = out[j]
+                out[j] = out[j - 1]
+                out[j - 1] = t
+                j -= 1
+            else
+                moving = false
+    return out
+
+fun zipWith[A, B, C](f: fun(A, B) -> C, xs: List[A], ys: List[B]) -> List[C]
+    out: List[C] = []
+    for i = 0; i < xs.size() && i < ys.size(); i += 1
+        out.push(f(xs[i], ys[i]))
+    return out
+
+fun times(a: int, b: float) -> float
+    return a * b
+
+fun label(name: str, n: int) -> str
+    return n > 1 ? name + "s" : name
+
+nums = sorted([5, 3, 9, 1])
+words = sorted(["pear", "fig", "apple"])
+prices = zipWith(times, [2, 3], [1.5, 0.25])
+labels = zipWith(label, ["cat", "dog"], [1, 2])
+
+max(4, 7) == 7 && max(2, 2.5) == 2.5 && max("b", "a") == "b" && largest([3, 8, 2]) == 8 && largest(["kiwi", "lime"]) == "lime" && nums[0] == 1 && nums[3] == 9 && words[0] == "apple" && words[2] == "pear" && prices[0] == 3.0 && prices[1] == 0.75 && labels[0] == "cat" && labels[1] == "dogs"

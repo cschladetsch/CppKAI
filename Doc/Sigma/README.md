@@ -37,6 +37,7 @@ flowchart LR
 - [Declarations](#declarations)
 - [Functions](#functions)
   - [Continuation operators](#continuation-operators)
+  - [Templates](#templates)
 - [Statements](#statements)
 - [Expressions](#expressions)
 - [Lists and maps](#lists-and-maps)
@@ -135,6 +136,7 @@ else for (auto const &e : sigma.GetErrors()) std::cerr << e << '\n';
 | `List[T]` | `[1, 2, 3]` |
 | `Map[str, V]` | `{"a": 1, "b": 2}`; keys are string literals |
 | `fun(T, ...) -> R` | any named function with that signature |
+| `T` | a [template](#templates)'s type parameter |
 | `void` | function results only |
 | `any` | an explicit escape hatch; never inferred |
 | *ClassName* | any C++ class registered with the Registry |
@@ -230,6 +232,53 @@ total = sum(100, 0)                  // 5050
 - `&` and `!` apply to calls of Sigma functions, including function values,
   but not to `print` or methods.
 - `...` (resume) is not supported; see [Not supported yet](#not-supported-yet).
+
+### Templates
+
+A function can take type parameters in square brackets. They work like C++
+templates: the type arguments are inferred from each call, and the body is
+type-checked once for each distinct set of them.
+
+```sigma
+fun max[T](a: T, b: T) -> T
+    return a > b ? a : b
+
+fun mapList[A, B](f: fun(A) -> B, xs: List[A]) -> List[B]
+    out: List[B] = []
+    for x in xs
+        out.push(f(x))
+    return out
+
+max(3, 9)                  // max[int]: 9
+max("pear", "apple")       // max[str]: "pear"
+max(1, 2.5)                // max[float]: 2.5, the 1 is widened
+mapList(isEven, [1, 2])    // mapList[int, bool]: List[bool]
+```
+
+- A type parameter can be used anywhere a type can in the signature and the
+  body: `x: T = ...`, `List[T]`, `fun(T) -> U`.
+- Every type parameter must appear in a parameter's type, since that is the
+  only place it can be inferred from. There is no explicit `f[int](x)`.
+- A parameter declared as plain `T` may receive ints and floats in the same
+  call; `T` is then `float` and the ints are widened. Inside `List`, `Map`
+  or `fun` types the arguments must agree exactly, as generics are invariant.
+- The body is checked on its own first, with the type parameters unknown, so
+  mistakes that don't depend on them (an undefined name, a missing return)
+  are reported even if the template is never called. Everything else is
+  checked per instantiation, and an error names the instantiation:
+
+  ```
+  2:14: operator '>' cannot be applied to List[int] and List[int] (in max[List[int]])
+  ```
+
+  An error in the body is reported once, however many instantiations hit it.
+- Rho is untyped, so a template compiles to one ordinary Rho function. For
+  that reason an int-to-float conversion inside the body must happen for
+  every instantiation or for none: `fun g[T](x: T) -> float` returning `x`
+  is an error if it is called with both an `int` and a `float`.
+- A template can only be called; it cannot be stored in a variable or
+  passed as a function value.
+- Templates may call other templates and themselves, including with `!`.
 
 ## Statements
 
@@ -433,7 +482,9 @@ flowchart BT
 
 - anonymous and nested functions
 - `yield` and generators
-- nullable types, union types and user-defined generics
+- nullable types and union types
+- constraints on template type parameters, explicit type arguments
+  (`f[int](x)`), and templates as function values
 - multi-line `pi { ... }` blocks
 - shell commands, pathnames and `self`
 - `f(x)...` (resume): in Rho it clears the context stack and stops without
@@ -458,8 +509,8 @@ flowchart BT
 | Headers | `Include/KAI/Language/Sigma` |
 | Sources | `Source/Library/Language/Sigma/Source` (the `SigmaLang` library) |
 | Design notes | [`Doc/Sigma.md`](../Sigma.md): continuation operators |
-| Tests | `Test/Language/TestSigma` (`TestSigma`: 199 tests) |
-| Example programs | `Test/Language/TestSigma/Scripts/*.sigma` (93 programs) |
+| Tests | `Test/Language/TestSigma` (`TestSigma`: 219 tests) |
+| Example programs | `Test/Language/TestSigma/Scripts/*.sigma` (94 programs) |
 
 Build and run the tests from the CppKAI root:
 
@@ -475,4 +526,5 @@ functions, and more), so a failure names the program; `SigmaTests.Scripts`
 also runs every script in the folder, including new ones.
 
 `SigmaContinuationTests` covers `&` and `!`: what runs, what the generated
-Rho looks like, and every rejected use.
+Rho looks like, and every rejected use. `SigmaTemplateTests` covers
+templates: inference, instantiation, and their errors.

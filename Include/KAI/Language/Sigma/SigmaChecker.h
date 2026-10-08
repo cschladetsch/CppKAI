@@ -21,17 +21,19 @@ using SigmaTypePtr = std::shared_ptr<const SigmaType>;
 ///
 ///   any  void  bool  int  float  str  List[T]  Map[str, V]  fun(T, ...) -> R
 ///   <registered class name>   (native C++ type, resolved through the Registry)
+///   fun[T, ...](...) -> R        (a template function; T appears as Var)
 ///
 /// Generics are invariant. The only implicit conversion is int -> float, which
 /// the compiler makes explicit in the generated Rho.
 struct SigmaType {
-    enum class Kind { Any, Void, Bool, Int, Float, Str, List, Map, Fun, Native };
+    enum class Kind { Any, Void, Bool, Int, Float, Str, List, Map, Fun, Native, Var };
 
     Kind kind = Kind::Any;
-    std::vector<SigmaTypePtr> args;  // List: [T]. Map: [K, V]. Fun: parameters.
-    SigmaTypePtr result;             // Fun only
-    int native = 0;                  // Native: Type::Number
-    std::string name;                // Native: class name
+    std::vector<SigmaTypePtr> args;       // List: [T]. Map: [K, V]. Fun: parameters.
+    SigmaTypePtr result;                  // Fun only
+    int native = 0;                       // Native: Type::Number
+    std::string name;                     // Native: class name. Var: type parameter name
+    std::vector<std::string> typeParams;  // Fun only: non-empty for a template function
 
     [[nodiscard]] bool Is(Kind k) const { return kind == k; }
     [[nodiscard]] bool IsNumeric() const { return kind == Kind::Int || kind == Kind::Float; }
@@ -40,7 +42,11 @@ struct SigmaType {
     static SigmaTypePtr Of(Kind k);
     static SigmaTypePtr ListOf(SigmaTypePtr element);
     static SigmaTypePtr MapOf(SigmaTypePtr key, SigmaTypePtr value);
-    static SigmaTypePtr FunOf(std::vector<SigmaTypePtr> params, SigmaTypePtr result);
+    static SigmaTypePtr FunOf(std::vector<SigmaTypePtr> params, SigmaTypePtr result,
+                              std::vector<std::string> typeParams = {});
+    static SigmaTypePtr VarOf(std::string name);
+
+    [[nodiscard]] bool IsTemplate() const { return kind == Kind::Fun && !typeParams.empty(); }
     static SigmaTypePtr NativeOf(int typeNumber, std::string name);
 
     static bool Same(const SigmaTypePtr &a, const SigmaTypePtr &b);
@@ -76,6 +82,7 @@ class SigmaChecker {
     struct Global {
         SigmaTypePtr type;
         bool function = false;
+        NodePtr definition;  // template functions only: needed to check later instantiations
     };
     using Globals = std::unordered_map<std::string, Global>;
 
@@ -116,6 +123,20 @@ class SigmaChecker {
     const SigmaAstNode *tailCall_ = nullptr;  // the one `f(...)!` allowed in that body, if any
     int loops_ = 0;
 
+    // Template functions. Each call infers the type arguments and queues an
+    // instantiation; Check() then checks the body once per distinct set.
+    using TypeArgs = std::unordered_map<std::string, SigmaTypePtr>;
+    struct Instance {
+        NodePtr fun;
+        TypeArgs args;
+        std::string key;  // e.g. "max[int]"
+    };
+    std::unordered_map<std::string, NodePtr> templates_;  // name -> definition
+    std::vector<Instance> instances_;
+    std::unordered_set<std::string> instanceKeys_;
+    TypeArgs typeArgs_;  // type parameters in scope while resolving types
+    std::string note_;   // appended to diagnostics, e.g. "in max[int]"
+
     // statements
     void Statements(const NodePtr &block, bool topLevel);
     void Statement(const NodePtr &node, bool topLevel);
@@ -123,7 +144,8 @@ class SigmaChecker {
     void Assignment(const NodePtr &node);
     void ForEach(const NodePtr &node);
     void Return(const NodePtr &node);
-    void FunctionBody(const NodePtr &fun);
+    void FunctionBody(const NodePtr &fun, const TypeArgs &typeArgs = {});
+    void CheckTemplates();
     void Condition(const NodePtr &node, const char *what);
     static bool AlwaysReturns(const NodePtr &node);
 
@@ -135,6 +157,7 @@ class SigmaChecker {
     SigmaTypePtr Ternary(const NodePtr &node, const SigmaTypePtr &expected);
     SigmaTypePtr Call(const NodePtr &node);
     SigmaTypePtr PlainCall(const NodePtr &node);
+    SigmaTypePtr TemplateCall(const NodePtr &node, const std::string &name, const SigmaTypePtr &sig);
     void TailCall(const NodePtr &node, const SigmaTypePtr &type);
     const SigmaAstNode *TailCallIn(const NodePtr &body);
     SigmaTypePtr MethodCall(const NodePtr &call, const NodePtr &member, const NodePtr &args);
@@ -152,6 +175,10 @@ class SigmaChecker {
     SigmaTypePtr Resolve(const NodePtr &typeNode, bool allowVoid = false);
     SigmaTypePtr Signature(const NodePtr &fun);
     SigmaTypePtr FromTypeNumber(int typeNumber) const;
+    static std::vector<std::string> TypeParamNames(const NodePtr &fun);
+    static SigmaTypePtr Substitute(const SigmaTypePtr &type, const TypeArgs &args);
+    static bool HasVars(const SigmaTypePtr &type);
+    static bool Match(const SigmaTypePtr &param, const SigmaTypePtr &arg, TypeArgs &bound);
 
     // scopes and diagnostics
     Binding *Lookup(const std::string &name);

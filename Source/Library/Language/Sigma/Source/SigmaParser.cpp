@@ -31,7 +31,7 @@ const char *SigmaAstNodeEnumType::ToString(Enum val) {
         CASE(Type) CASE(Declaration) CASE(Assignment) CASE(If) CASE(While) CASE(DoWhile) CASE(For) CASE(ForEach)
         CASE(Return) CASE(Break) CASE(Continue) CASE(Assert) CASE(ExprStatement) CASE(Binary) CASE(Unary)
         CASE(Ternary) CASE(Call) CASE(Args) CASE(Index) CASE(Member) CASE(List) CASE(Map) CASE(MapEntry)
-        CASE(PiBlock)
+        CASE(PiBlock) CASE(TypeParams)
 #undef CASE
     }
     return "Unknown";
@@ -179,6 +179,21 @@ SigmaParser::AstNodePtr SigmaParser::FunctionDefinition() {
     if (!CheckName(name, "function")) return nullptr;
     auto fun = NewNode(Ast::Function, name);
 
+    // Template parameters: `fun max[T](a: T, b: T) -> T`. The type arguments
+    // are inferred at each call; the checker checks the body once per
+    // distinct set of them. Rho is untyped, so the output is the same.
+    AstNodePtr typeParams;
+    if (Is(Tok::OpenSquare)) {
+        typeParams = NewNode(Ast::TypeParams, Take());
+        do {
+            if (!Is(Tok::Name)) return Error("expected a type parameter name");
+            const auto t = Take();
+            if (!CheckName(t, "type parameter")) return nullptr;
+            typeParams->Add(NewNode(t));
+        } while (Accept(Tok::Comma));
+        if (!Require(Tok::CloseSquare, "']' after the type parameters")) return nullptr;
+    }
+
     if (!Require(Tok::OpenParen, "'(' after the function name")) return nullptr;
     auto params = NewNode(Ast::Params);
     if (!Is(Tok::CloseParen)) {
@@ -210,6 +225,7 @@ SigmaParser::AstNodePtr SigmaParser::FunctionDefinition() {
     --functionDepth_;
     if (!body) return nullptr;
     fun->Add(body);
+    if (typeParams) fun->Add(typeParams);
     return fun;
 }
 
