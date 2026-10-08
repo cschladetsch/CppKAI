@@ -78,6 +78,7 @@ set(core_sources
     ${source_path}/TestSerialization.cpp
     ${source_path}/CoreAdditionalTests2.cpp
     ${source_path}/TestGarbageCycles.cpp
+    ${source_path}/TestContainerDetach.cpp
     # TestAdvancedCore.cpp - Disabled - requires proper type traits
 )
 # Add common test files
