@@ -193,9 +193,14 @@ SigmaChecker::Globals SigmaChecker::GetGlobals() const {
     if (!scopes_.empty())
         for (auto const &[name, b] : scopes_.front()) {
             NodePtr definition;
-            if (b.type->IsTemplate())
+            std::shared_ptr<const void> source;
+            if (b.type->IsTemplate()) {
                 if (auto t = templates_.find(name); t != templates_.end()) definition = t->second;
-            globals[name] = Global{b.type, b.function, definition};
+                auto earlier = session_.find(name);
+                source = earlier != session_.end() && earlier->second.definition == definition ? earlier->second.source
+                                                                                                : source_;
+            }
+            globals[name] = Global{b.type, b.function, definition, source};
         }
     return globals;
 }

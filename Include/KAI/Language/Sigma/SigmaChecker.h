@@ -83,12 +83,20 @@ class SigmaChecker {
         SigmaTypePtr type;
         bool function = false;
         NodePtr definition;  // template functions only: needed to check later instantiations
+        // What the definition's tokens read their text from (its lexer).
+        // Tokens hold a raw pointer to it, so it must outlive the AST.
+        std::shared_ptr<const void> source;
     };
     using Globals = std::unordered_map<std::string, Global>;
 
     /// Names declared by earlier programs in the same session. They may be
     /// redeclared, but only with the same type.
     void SetSession(Globals globals) { session_ = std::move(globals); }
+
+    /// What this program's tokens read their text from (its lexer). Kept by
+    /// GetGlobals() alongside any template defined here, so the session can
+    /// check later calls to it after the program's lexer would have gone.
+    void SetSource(std::shared_ptr<const void> source) { source_ = std::move(source); }
 
     /// All top-level names after Check(), including the session's.
     [[nodiscard]] Globals GetGlobals() const;
@@ -114,6 +122,7 @@ class SigmaChecker {
 
     Registry *reg_ = nullptr;
     Globals session_;
+    std::shared_ptr<const void> source_;
     std::deque<Scope> scopes_;  // deque: growing it never moves existing scopes
     std::vector<SigmaDiagnostic> diagnostics_;
     std::unordered_set<const SigmaAstNode *> widened_;

@@ -199,6 +199,7 @@ bool SigmaTranslator::Compile(const char *text) {
 
     SigmaChecker checker(reg_);
     checker.SetSession(session_);
+    checker.SetSource(lex);
     if (!checker.Check(parser.GetRoot())) {
         auto diagnostics = checker.GetDiagnostics();
         std::stable_sort(diagnostics.begin(), diagnostics.end(), [](auto const &a, auto const &b) {
