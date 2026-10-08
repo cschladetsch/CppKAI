@@ -12,8 +12,9 @@ PiAdditionalTests2, RhoAdditionalTests2, TauAdditionalTests2, and others),
 cutting a 1676-test run down to 101 with no warning.
 
 What gets run is whatever the root CMakeLists.txt registers: every suite
-under Test/ (TestCore, TestPi, TestRho, TestSigma, TestTau, TestNetwork,
-TestConsole, LogTest, PerformanceTests, Test_ProxyGeneration, ...) plus
+under Test/ (TestCore, TestPi, TestRho, TestSigma, TestPiNet, TestTau,
+TestNetwork, TestConsole, LogTest, PerformanceTests, Test_ProxyGeneration,
+...) plus
 KshUnitTests from ksh/. Before running, this script reports how many tests
 are registered, names any main suite that is missing, and warns if CTest
 knows about suspiciously few tests, which is what happens when the root
@@ -21,7 +22,8 @@ CMakeLists.txt stops calling add_subdirectory(Test).
 
 Any extra command-line arguments are appended to the ctest invocation, so
 e.g. `py run_tests.py -R TestNetwork` or `py run_tests.py -C Debug` both
-work as you'd expect - pass your own -R if you want a subset.
+work as you'd expect - pass your own -R if you want a subset, such as
+`py run_tests.py -R PiNet` for just the PiNet tests.
 """
 import re
 import subprocess
@@ -36,8 +38,8 @@ MIN_EXPECTED_TESTS = 500
 
 # Suites a full build should register (checked by name, so a missing one is
 # reported instead of silently skipped). TestNetwork needs KAI_NETWORKING=ON.
-KEY_SUITES = ["SigmaTests", "TestConsole", "TestNetwork", "KshUnitTests",
-              "LogTest", "PerformanceTests"]
+KEY_SUITES = ["SigmaTests", "PiNetTests", "TestConsole", "TestNetwork",
+              "KshUnitTests", "LogTest", "PerformanceTests"]
 
 
 def list_suites(extra_args):
