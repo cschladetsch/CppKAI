@@ -1,0 +1,22 @@
+// Apply a function value n times with a tail-recursive helper, and pick
+// functions at runtime.
+
+fun timesTwo(n: int) -> int
+    return n * 2
+
+fun collatzStep(n: int) -> int
+    return n % 2 == 0 ? n / 2 : 3 * n + 1
+
+fun inc(n: int) -> int
+    return n + 1
+
+fun iterate(f: fun(int) -> int, times: int, x: int) -> int
+    if times == 0
+        return x
+    return iterate(f, times - 1, f(x))!
+
+fun pick(name: str) -> fun(int) -> int
+    return name == "double" ? timesTwo : name == "collatz" ? collatzStep : inc
+
+stepper = pick("collatz")
+iterate(timesTwo, 10, 1) == 1024 && iterate(collatzStep, 10, 27) == 214 && iterate(stepper, 8, 6) == 1 && iterate(inc, 0, 5) == 5 && iterate(pick("other"), 7, 3) == 10 && iterate(pick("double"), 3, 5) == 40

@@ -1,0 +1,22 @@
+// Gregorian leap years and day-of-year from a month-length table.
+
+monthDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+
+fun isLeap(y: int) -> bool
+    return (y % 4 == 0 && y % 100 != 0) || y % 400 == 0
+
+fun dayOfYear(y: int, m: int, d: int) -> int
+    leap = (y % 4 == 0 && y % 100 != 0) || y % 400 == 0
+    total = d
+    for k = 0; k < m - 1; k += 1
+        total += monthDays[k]
+    if leap && m > 2
+        total += 1
+    return total
+
+leapCount = 0
+for year = 1900; year <= 2100; year += 1
+    if isLeap(year)
+        leapCount += 1
+
+leapCount == 49 && isLeap(2000) && !isLeap(1900) && isLeap(2024) && !isLeap(2026) && dayOfYear(2024, 12, 31) == 366 && dayOfYear(2023, 3, 1) == 60 && dayOfYear(2024, 3, 1) == 61 && dayOfYear(1900, 12, 31) == 365 && dayOfYear(2000, 2, 29) == 60

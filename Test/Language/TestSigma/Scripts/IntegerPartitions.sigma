@@ -1,0 +1,20 @@
+// Integer partition counts: a bottom-up table over part sizes, cross-checked
+// against the recursion p(n, m) on the largest part allowed.
+
+fun partitions(n: int) -> int
+    ways: List[int] = [1]
+    for j = 1; j <= n; j += 1
+        ways.push(0)
+    for k = 1; k <= n; k += 1
+        for j = k; j <= n; j += 1
+            ways[j] = ways[j] + ways[j - k]
+    return ways[n]
+
+fun partsUpTo(n: int, m: int) -> int
+    return n == 0 ? 1 : n < 0 || m == 0 ? 0 : partsUpTo(n - m, m) + partsUpTo(n, m - 1)
+
+agree = true
+for t = 1; t <= 12; t += 1
+    agree = agree && partitions(t) == partsUpTo(t, t)
+
+agree && partitions(10) == 42 && partitions(20) == 627 && partitions(30) == 5604 && partsUpTo(15, 15) == 176 && partsUpTo(10, 3) == 14

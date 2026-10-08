@@ -1,0 +1,29 @@
+// Floyd's tortoise and hare on a functional graph given as a successor
+// list: returns [mu, lambda], the tail length and the cycle length.
+
+succ = [1, 2, 3, 4, 5, 6, 3, 0, 9, 7]
+
+fun floyd(x0: int) -> List[int]
+    tortoise = succ[x0]
+    hare = succ[succ[x0]]
+    while tortoise != hare
+        tortoise = succ[tortoise]
+        hare = succ[succ[hare]]
+    mu = 0
+    tortoise = x0
+    while tortoise != hare
+        tortoise = succ[tortoise]
+        hare = succ[hare]
+        mu += 1
+    cycleLen = 1
+    hare = succ[tortoise]
+    while tortoise != hare
+        hare = succ[hare]
+        cycleLen += 1
+    return [mu, cycleLen]
+
+fromZero = floyd(0)
+fromEight = floyd(8)
+fromSeven = floyd(7)
+onCycle = floyd(4)
+fromZero[0] == 3 && fromZero[1] == 4 && fromEight[0] == 6 && fromEight[1] == 4 && fromSeven[0] == 4 && onCycle[0] == 0 && onCycle[1] == 4

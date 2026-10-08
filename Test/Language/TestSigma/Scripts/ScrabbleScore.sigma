@@ -1,0 +1,29 @@
+// Scrabble word scores from a letter-value map, with words as letter lists.
+
+letterValues: Map[str, int] = {"a": 1, "b": 3, "c": 3, "d": 2, "e": 1, "g": 2, "i": 1, "k": 5, "l": 1, "o": 1, "q": 10, "r": 1, "s": 1, "t": 1, "u": 1, "x": 8, "z": 10}
+
+fun score(letters: List[str]) -> int
+    total = 0
+    for l in letters
+        total += letterValues[l]
+    return total
+
+fun spell(letters: List[str]) -> str
+    out = ""
+    for l in letters
+        out += l
+    return out
+
+words = [["q", "u", "i", "z"], ["c", "a", "b", "b", "a", "g", "e"], ["o", "x", "i", "d", "e"], ["s", "t", "r", "e", "e", "t"]]
+scores: List[int] = []
+for w in words
+    scores.push(score(w))
+
+bestIndex = 0
+for q = 1; q < scores.size(); q += 1
+    if scores[q] > scores[bestIndex]
+        bestIndex = q
+bestWord = spell(words[bestIndex])
+bestScore = scores[bestIndex]
+
+score(words[0]) == 22 && score(words[1]) == 14 && score(words[2]) == 13 && score(words[3]) == 6 && bestWord == "quiz" && bestScore == 22

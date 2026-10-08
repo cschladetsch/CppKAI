@@ -1,0 +1,35 @@
+// Integer square root by binary search and by Newton's iteration on ints,
+// kept below 46341 so mid * mid stays inside 32 bits.
+
+fun isqrtSearch(n: int) -> int
+    lo = 0
+    hi = n < 46340 ? n : 46340
+    while lo < hi
+        mid = (lo + hi + 1) / 2
+        if mid * mid <= n
+            lo = mid
+        else
+            hi = mid - 1
+    return lo
+
+fun isqrtNewton(n: int) -> int
+    x = n
+    if n >= 2
+        x = n / 2
+        if x > 46340
+            x = 46340
+        y = (x + n / x) / 2
+        while y < x
+            x = y
+            y = (x + n / x) / 2
+    return x
+
+agree = true
+squares = 0
+for v = 0; v <= 1000; v += 1
+    r = isqrtSearch(v)
+    agree = agree && r == isqrtNewton(v) && r * r <= v && (r + 1) * (r + 1) > v
+    if v > 0 && r * r == v
+        squares += 1
+
+agree && squares == 31 && isqrtSearch(1000000000) == 31622 && isqrtNewton(1000000000) == 31622 && isqrtSearch(99) == 9

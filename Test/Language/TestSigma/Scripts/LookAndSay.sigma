@@ -1,0 +1,32 @@
+// The look-and-say sequence on digit lists: each term reads the previous one
+// aloud as (count, digit) pairs.
+
+fun nextTerm(xs: List[int]) -> List[int]
+    out: List[int] = []
+    i = 0
+    while i < xs.size()
+        j = i + 1
+        running = true
+        while running && j < xs.size()
+            if xs[j] == xs[i]
+                j += 1
+            else
+                running = false
+        out.push(j - i)
+        out.push(xs[i])
+        i = j
+    return out
+
+term = [1]
+lengths: List[int] = [1]
+for step = 0; step < 11; step += 1
+    term = nextTerm(term)
+    lengths.push(term.size())
+
+fifth = nextTerm(nextTerm(nextTerm(nextTerm([1]))))
+expected = [1, 2, 2, 4, 6, 6, 8, 10, 14, 20, 26, 34]
+ok = lengths.size() == 12
+for q = 0; q < 12; q += 1
+    ok = ok && lengths[q] == expected[q]
+
+ok && fifth.size() == 6 && fifth[0] == 1 && fifth[1] == 1 && fifth[2] == 1 && fifth[3] == 2 && fifth[4] == 2 && fifth[5] == 1

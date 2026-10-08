@@ -1,0 +1,25 @@
+// Kadane's maximum subarray sum, returning the sum and the bounds of the
+// best run as [sum, lo, hi].
+
+fun maxSubarray(xs: List[int]) -> List[int]
+    best = xs[0]
+    bestLo = 0
+    bestHi = 0
+    cur = xs[0]
+    lo = 0
+    for i = 1; i < xs.size(); i += 1
+        if cur < 0
+            cur = xs[i]
+            lo = i
+        else
+            cur += xs[i]
+        if cur > best
+            best = cur
+            bestLo = lo
+            bestHi = i
+    return [best, bestLo, bestHi]
+
+mixed = maxSubarray([-2, 1, -3, 4, -1, 2, 1, -5, 4])
+allNeg = maxSubarray([-8, -3, -6, -2, -5, -4])
+split = maxSubarray([5, -9, 6, -2, 3])
+mixed[0] == 6 && mixed[1] == 3 && mixed[2] == 6 && allNeg[0] == -2 && allNeg[1] == 3 && allNeg[2] == 3 && split[0] == 7 && split[1] == 2 && split[2] == 4

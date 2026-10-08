@@ -1,0 +1,25 @@
+// The Luhn checksum over digit lists, and finding the check digit that makes
+// a number valid.
+
+fun luhnValid(digits: List[int]) -> bool
+    total = 0
+    doubled = false
+    i = digits.size() - 1
+    while i >= 0
+        d = digits[i]
+        if doubled
+            d *= 2
+            if d > 9
+                d -= 9
+        total += d
+        doubled = !doubled
+        i -= 1
+    return total % 10 == 0
+
+base = [7, 9, 9, 2, 7, 3, 9, 8, 7, 1]
+check = -1
+for c = 0; c < 10; c += 1
+    if luhnValid(base + [c])
+        check = c
+
+luhnValid([7, 9, 9, 2, 7, 3, 9, 8, 7, 1, 3]) && !luhnValid([7, 9, 9, 2, 7, 3, 9, 8, 7, 1, 0]) && luhnValid([4, 5, 3, 9, 1, 4, 8, 8, 0, 3, 4, 3, 6, 4, 6, 7]) && check == 3

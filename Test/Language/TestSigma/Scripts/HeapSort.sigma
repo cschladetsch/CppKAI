@@ -1,0 +1,61 @@
+// Heap sort in place: build a max-heap, then repeatedly swap the root to the
+// end and sift down. The sift is written out in both phases, and bounds are
+// tested before indexing rather than relying on '&&' to short-circuit.
+
+fun heapSort(xs: List[int]) -> List[int]
+    n = xs.size()
+    start = n / 2 - 1
+    while start >= 0
+        root = start
+        sifting = true
+        while sifting
+            child = 2 * root + 1
+            if child >= n
+                sifting = false
+            else
+                if child + 1 < n
+                    if xs[child + 1] > xs[child]
+                        child += 1
+                if xs[child] > xs[root]
+                    t = xs[root]
+                    xs[root] = xs[child]
+                    xs[child] = t
+                    root = child
+                else
+                    sifting = false
+        start -= 1
+    last = n - 1
+    while last > 0
+        t = xs[0]
+        xs[0] = xs[last]
+        xs[last] = t
+        root = 0
+        sifting = true
+        while sifting
+            child = 2 * root + 1
+            if child >= last
+                sifting = false
+            else
+                if child + 1 < last
+                    if xs[child + 1] > xs[child]
+                        child += 1
+                if xs[child] > xs[root]
+                    t = xs[root]
+                    xs[root] = xs[child]
+                    xs[child] = t
+                    root = child
+                else
+                    sifting = false
+        last -= 1
+    return xs
+
+fun ascending(xs: List[int]) -> bool
+    ok = true
+    for i = 1; i < xs.size(); i += 1
+        ok = ok && xs[i - 1] <= xs[i]
+    return ok
+
+sorted = heapSort([9, 4, 7, 1, 8, 2, 2, 6, 3, 5, 0])
+single = heapSort([42])
+dupes = heapSort([3, 3, 1, 3, 1])
+ascending(sorted) && sorted.size() == 11 && sorted[0] == 0 && sorted[10] == 9 && sorted[3] == 2 && single[0] == 42 && ascending(dupes) && dupes[1] == 1 && dupes[2] == 3

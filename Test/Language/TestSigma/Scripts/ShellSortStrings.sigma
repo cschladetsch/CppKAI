@@ -1,0 +1,27 @@
+// Shell sort over strings with a halving gap sequence; strings compare
+// lexicographically with '<' and '>'.
+
+fun shellSort(xs: List[str]) -> List[str]
+    n = xs.size()
+    gap = n / 2
+    while gap > 0
+        for i = gap; i < n; i += 1
+            v = xs[i]
+            j = i
+            moving = true
+            while moving && j >= gap
+                if xs[j - gap] > v
+                    xs[j] = xs[j - gap]
+                    j -= gap
+                else
+                    moving = false
+            xs[j] = v
+        gap /= 2
+    return xs
+
+names = shellSort(["pear", "apple", "fig", "kiwi", "banana", "cherry", "date", "apple", "grape"])
+okOrder = true
+for q = 1; q < names.size(); q += 1
+    okOrder = okOrder && !(names[q] < names[q - 1])
+
+okOrder && names[0] == "apple" && names[1] == "apple" && names[2] == "banana" && names[8] == "pear" && names[5] == "fig"

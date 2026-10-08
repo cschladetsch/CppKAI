@@ -1,0 +1,31 @@
+// Counting sort for small non-negative ints, with the histogram checked too.
+
+fun countingSort(xs: List[int], maxValue: int) -> List[int]
+    counts: List[int] = []
+    for v = 0; v <= maxValue; v += 1
+        counts.push(0)
+    for x in xs
+        counts[x] = counts[x] + 1
+    out: List[int] = []
+    for v = 0; v <= maxValue; v += 1
+        for k = 0; k < counts[v]; k += 1
+            out.push(v)
+    return out
+
+fun histogram(xs: List[int], maxValue: int) -> List[int]
+    h: List[int] = []
+    for v = 0; v <= maxValue; v += 1
+        h.push(0)
+    for x in xs
+        h[x] = h[x] + 1
+    return h
+
+data = [4, 1, 3, 4, 0, 2, 4, 1, 9, 0]
+s = countingSort(data, 9)
+hist = histogram(data, 9)
+expect = [0, 0, 1, 1, 2, 3, 4, 4, 4, 9]
+same = s.size() == expect.size()
+for p = 0; p < expect.size(); p += 1
+    same = same && s[p] == expect[p]
+
+same && hist[4] == 3 && hist[5] == 0 && hist[9] == 1

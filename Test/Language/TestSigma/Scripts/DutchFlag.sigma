@@ -1,0 +1,37 @@
+// Dijkstra's Dutch national flag partition: sort 0s, 1s and 2s in one pass
+// with three indices, then check order and counts.
+
+fun threeWay(xs: List[int]) -> List[int]
+    lo = 0
+    mid = 0
+    hi = xs.size() - 1
+    while mid <= hi
+        if xs[mid] == 0
+            t = xs[lo]
+            xs[lo] = xs[mid]
+            xs[mid] = t
+            lo += 1
+            mid += 1
+        else if xs[mid] == 1
+            mid += 1
+        else
+            t = xs[hi]
+            xs[hi] = xs[mid]
+            xs[mid] = t
+            hi -= 1
+    return xs
+
+flags = threeWay([2, 0, 1, 2, 1, 0, 0, 2, 1, 1, 0])
+ordered = true
+zeros = 0
+twos = 0
+for q = 0; q < flags.size(); q += 1
+    if q > 0
+        ordered = ordered && flags[q - 1] <= flags[q]
+    if flags[q] == 0
+        zeros += 1
+    if flags[q] == 2
+        twos += 1
+
+allTwos = threeWay([2, 2, 2])
+ordered && flags.size() == 11 && zeros == 4 && twos == 3 && flags[4] == 1 && flags[8] == 2 && allTwos[0] == 2

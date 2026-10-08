@@ -1,0 +1,47 @@
+// Odd-order magic square by the Siamese method, stored row-major in a flat
+// list, then every row, column and both diagonals checked.
+
+fun siamese(n: int) -> List[int]
+    cells: List[int] = []
+    for i = 0; i < n * n; i += 1
+        cells.push(0)
+    r = 0
+    c = n / 2
+    for v = 1; v <= n * n; v += 1
+        cells[r * n + c] = v
+        nr = (r + n - 1) % n
+        nc = (c + 1) % n
+        if cells[nr * n + nc] != 0
+            nr = (r + 1) % n
+            nc = c
+        r = nr
+        c = nc
+    return cells
+
+fun isMagic(cells: List[int], n: int) -> bool
+    target = n * (n * n + 1) / 2
+    ok = true
+    d1 = 0
+    d2 = 0
+    for i = 0; i < n; i += 1
+        rowSum = 0
+        colSum = 0
+        for j = 0; j < n; j += 1
+            rowSum += cells[i * n + j]
+            colSum += cells[j * n + i]
+        ok = ok && rowSum == target && colSum == target
+        d1 += cells[i * n + i]
+        d2 += cells[i * n + (n - 1 - i)]
+    return ok && d1 == target && d2 == target
+
+sq5 = siamese(5)
+sq3 = siamese(3)
+seen: List[bool] = []
+for q = 0; q <= 25; q += 1
+    seen.push(false)
+distinct = true
+for cell in sq5
+    distinct = distinct && !seen[cell]
+    seen[cell] = true
+
+isMagic(sq5, 5) && isMagic(sq3, 3) && distinct && sq3[0] == 8 && sq3[1] == 1 && sq3[4] == 5 && sq5[2] == 1

@@ -1,0 +1,31 @@
+// Float series: e from 1/k!, pi from the Nilakantha series, and pi^2/6 from
+// the Basel sum, each compared with a tolerance.
+
+fun absf(x: float) -> float
+    return x < 0 ? -x : x
+
+fun eulerE(terms: int) -> float
+    e: float = 1
+    t: float = 1
+    for k = 1; k <= terms; k += 1
+        t = t / k
+        e += t
+    return e
+
+fun nilakantha(terms: int) -> float
+    p: float = 3
+    sign: float = 1
+    for k = 1; k <= terms; k += 1
+        a = 2 * k
+        p += sign * 4 / (a * (a + 1) * (a + 2))
+        sign = -sign
+    return p
+
+fun basel(terms: int) -> float
+    s: float = 0
+    for k = 1; k <= terms; k += 1
+        s += 1.0 / (k * k)
+    return s
+
+piRef = 3.14159265
+absf(eulerE(14) - 2.71828183) < 0.00001 && absf(nilakantha(50) - piRef) < 0.0001 && absf(basel(1000) - piRef * piRef / 6) < 0.0011 && absf(basel(1000) - piRef * piRef / 6) > 0.0009 && eulerE(0) == 1.0

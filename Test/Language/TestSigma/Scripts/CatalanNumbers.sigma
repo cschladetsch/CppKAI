@@ -1,0 +1,23 @@
+// Catalan numbers two ways: the convolution recurrence as a table, and a
+// recursive count of balanced bracket strings.
+
+fun catalanTable(n: int) -> List[int]
+    c: List[int] = [1]
+    for m = 1; m <= n; m += 1
+        total = 0
+        for i = 0; i < m; i += 1
+            total += c[i] * c[m - 1 - i]
+        c.push(total)
+    return c
+
+// toOpen: brackets still to open; toClose: brackets open and not yet closed
+fun balanced(toOpen: int, toClose: int) -> int
+    ways = toOpen == 0 && toClose == 0 ? 1 : 0
+    if toOpen > 0
+        ways += balanced(toOpen - 1, toClose + 1)
+    if toClose > 0
+        ways += balanced(toOpen, toClose - 1)
+    return ways
+
+cat = catalanTable(15)
+cat[0] == 1 && cat[5] == 42 && cat[10] == 16796 && cat[15] == 9694845 && balanced(6, 0) == cat[6] && balanced(8, 0) == 1430
