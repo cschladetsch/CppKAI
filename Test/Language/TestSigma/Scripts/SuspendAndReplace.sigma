@@ -1,0 +1,11 @@
+// Both operators in one function: Ackermann's inner call is suspended (its
+// result is needed), and the outer one is a tail call that replaces the
+// running function.
+
+fun ack(m: int, n: int) -> int
+    if m == 0
+        return n + 1
+    inner = n == 0 ? 1 : ack(m, n - 1)&
+    return ack(m - 1, inner)!
+
+ack(0, 0) == 1 && ack(1, 2) == 4 && ack(2, 3) == 9 && ack(3, 3) == 61

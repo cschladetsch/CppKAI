@@ -1,0 +1,27 @@
+// A finite automaton with one function per state. Each state picks the next
+// state as a function value and tail-calls it, so the machine runs in
+// constant stack. It accepts binary numbers divisible by 3.
+
+fun s0(bits: List[int], i: int) -> bool
+    if i == bits.size()
+        return true
+    go = bits[i] == 0 ? s0 : s1
+    return go(bits, i + 1)!
+
+fun s1(bits: List[int], i: int) -> bool
+    if i == bits.size()
+        return false
+    go = bits[i] == 0 ? s2 : s0
+    return go(bits, i + 1)!
+
+fun s2(bits: List[int], i: int) -> bool
+    if i == bits.size()
+        return false
+    go = bits[i] == 0 ? s1 : s2
+    return go(bits, i + 1)!
+
+fun divisibleBy3(bits: List[int]) -> bool
+    return s0(bits, 0)!
+
+none: List[int] = []
+divisibleBy3([1, 1, 0]) && !divisibleBy3([1, 1, 1]) && divisibleBy3([1, 0, 0, 1]) && !divisibleBy3([1, 0, 1, 0]) && divisibleBy3([1, 1, 1, 1, 0, 0, 0, 0, 1, 1]) && divisibleBy3(none)

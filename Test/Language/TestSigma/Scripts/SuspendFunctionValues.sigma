@@ -1,0 +1,16 @@
+// '&' on calls through function values: a function passed as an argument
+// is suspended into just like a named one.
+
+fun double(n: int) -> int
+    return n * 2
+
+fun negate(n: int) -> int
+    return -n
+
+fun apply(f: fun(int) -> int, x: int) -> int
+    return f(x)&
+
+fun compose(f: fun(int) -> int, g: fun(int) -> int, x: int) -> int
+    return f(g(x)&)&
+
+apply(double, 21) == 42 && apply(negate, 5) == -5 && compose(double, negate, 4) == -8 && compose(negate, double, 4) == -8

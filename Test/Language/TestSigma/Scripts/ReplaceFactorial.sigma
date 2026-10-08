@@ -1,0 +1,12 @@
+// Factorial with an accumulator, so the recursive call is in tail
+// position and can replace the running function.
+
+fun factAcc(n: int, acc: int) -> int
+    if n <= 1
+        return acc
+    return factAcc(n - 1, acc * n)!
+
+fun fact(n: int) -> int
+    return factAcc(n, 1)!
+
+fact(1) == 1 && fact(5) == 120 && fact(10) == 3628800 && fact(12) == 479001600

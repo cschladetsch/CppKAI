@@ -546,6 +546,13 @@ flowchart BT
 
 ## Known issues
 
+- **Resume can't be reached from Sigma.** Besides `f(x)...` being rejected
+  (above), Pi's own `...` can't be used through a `pi { }` block: Rho's pi
+  blocks reject a nested `{ }` continuation, and a bare `pi { true ... }`
+  (at top level or inside a function) sends the executor into a loop that
+  allocates until it is killed. The `Suspend*` and `Replace*` scripts
+  demonstrate `&` and `!`; there is no resume demo until this is fixed.
+
 - **`!` only as the last statement of a function body.** In Rho, a replace
   (`f(x)!`) inside an `if` or a loop corrupts the data stack or hangs, so
   Sigma rejects it there. See [Continuation operators](#continuation-operators).
@@ -562,8 +569,8 @@ flowchart BT
 | Headers | `Include/KAI/Language/Sigma` |
 | Sources | `Source/Library/Language/Sigma/Source` (the `SigmaLang` library) |
 | Design notes | [`Doc/Sigma.md`](../Sigma.md): continuation operators |
-| Tests | `Test/Language/TestSigma` (`TestSigma`: 240 tests) |
-| Example programs | `Test/Language/TestSigma/Scripts/*.sigma` (95 programs) |
+| Tests | `Test/Language/TestSigma` (`TestSigma`: 260 tests) |
+| Example programs | `Test/Language/TestSigma/Scripts/*.sigma` (115 programs) |
 
 Build and run the tests from the CppKAI root:
 

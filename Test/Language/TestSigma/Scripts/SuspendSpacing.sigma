@@ -1,0 +1,11 @@
+// '&' belongs to the call only when it touches the ')': 'f(x)&' is a
+// suspend, while 'f(x) & m' is a bitwise and of the result.
+
+fun low(n: int) -> int
+    return n
+
+suspended = low(13)&
+masked = low(13) & 6
+both = low(13)& & 6
+
+suspended == 13 && masked == 4 && both == 4

@@ -1,0 +1,15 @@
+// Tail calls inside template functions: each instantiation tail-calls
+// itself with the same type arguments.
+
+fun lastOf[T](xs: List[T], i: int) -> T
+    if i == xs.size() - 1
+        return xs[i]
+    return lastOf(xs, i + 1)!
+
+fun countOf[T](xs: List[T], v: T, i: int, acc: int) -> int
+    if i == xs.size()
+        return acc
+    hit = xs[i] == v ? 1 : 0
+    return countOf(xs, v, i + 1, acc + hit)!
+
+lastOf([3, 1, 4], 0) == 4 && lastOf(["x", "y"], 0) == "y" && countOf([1, 2, 1, 1], 1, 0, 0) == 3 && countOf(["a", "b"], "c", 0, 0) == 0

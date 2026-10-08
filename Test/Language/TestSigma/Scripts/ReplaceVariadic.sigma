@@ -1,0 +1,12 @@
+// Tail-calling a variadic template, forwarding a pack (twice) with '!'.
+
+fun sum[...Ts](xs: Ts...) -> int
+    return (xs + ... + 0)
+
+fun sumTwice[...Ts](xs: Ts...) -> int
+    return sum(xs..., xs...)!
+
+fun total(a: int, b: int, c: int) -> int
+    return sum(a, b, c)!
+
+sumTwice(1, 2, 3) == 12 && sumTwice() == 0 && total(4, 5, 6) == 15

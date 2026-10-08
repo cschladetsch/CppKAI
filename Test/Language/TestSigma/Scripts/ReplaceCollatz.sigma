@@ -1,0 +1,9 @@
+// Counting Collatz steps with a tail call per step.
+
+fun steps(n: int, acc: int) -> int
+    if n == 1
+        return acc
+    next = n % 2 == 0 ? n / 2 : 3 * n + 1
+    return steps(next, acc + 1)!
+
+steps(1, 0) == 0 && steps(6, 0) == 8 && steps(27, 0) == 111 && steps(97, 0) == 118

@@ -1,0 +1,10 @@
+// Suspending into template functions: each instantiation is an ordinary
+// function at run time, so '&' works the same way.
+
+fun max[T](a: T, b: T) -> T
+    return a > b ? a : b
+
+fun max3[T](a: T, b: T, c: T) -> T
+    return max(max(a, b)&, c)&
+
+max(3, 8)& == 8 && max("fig", "date")& == "fig" && max3(4, 9, 2)& == 9 && max3("b", "c", "a") == "c"

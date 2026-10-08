@@ -1,0 +1,14 @@
+// A tail call does not grow the context stack, so the recursion can go far
+// deeper than one that suspends.
+
+fun countUp(n: int, acc: int) -> int
+    if n == 0
+        return acc
+    return countUp(n - 1, acc + 1)!
+
+fun countUpSuspended(n: int) -> int
+    if n == 0
+        return 0
+    return 1 + countUpSuspended(n - 1)&
+
+countUp(50000, 0) == 50000 && countUpSuspended(200) == 200 && countUp(200, 0) == countUpSuspended(200)

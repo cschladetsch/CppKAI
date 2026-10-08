@@ -1,0 +1,10 @@
+// Mutual recursion through suspends: each function waits for the other to
+// return, so the depth grows with n.
+
+fun isEven(n: int) -> bool
+    return n == 0 ? true : isOdd(n - 1)&
+
+fun isOdd(n: int) -> bool
+    return n == 0 ? false : isEven(n - 1)&
+
+isEven(0) && isEven(10) && !isEven(7) && isOdd(13) && !isOdd(20)

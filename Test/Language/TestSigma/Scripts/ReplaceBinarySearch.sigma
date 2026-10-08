@@ -1,0 +1,15 @@
+// Binary search as a tail call: each step narrows the range and replaces
+// itself with the search over the remaining half.
+
+fun find(xs: List[int], target: int, lo: int, hi: int) -> int
+    if lo > hi
+        return -1
+    mid = (lo + hi) / 2
+    if xs[mid] == target
+        return mid
+    below = xs[mid] < target
+    return find(xs, target, below ? mid + 1 : lo, below ? hi : mid - 1)!
+
+primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31]
+last = primes.size() - 1
+find(primes, 2, 0, last) == 0 && find(primes, 31, 0, last) == 10 && find(primes, 13, 0, last) == 5 && find(primes, 4, 0, last) == -1 && find(primes, 40, 0, last) == -1

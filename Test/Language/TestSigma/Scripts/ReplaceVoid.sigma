@@ -1,0 +1,16 @@
+// A void function may tail-call a void function with a bare 'f(...)!' as
+// its last statement.
+
+trail: List[int] = []
+
+fun countdown(n: int)
+    trail.push(n)
+    if n == 0
+        return
+    countdown(n - 1)!
+
+fun start(n: int)
+    countdown(n)!
+
+start(5)
+trail.size() == 6 && trail[0] == 5 && trail[5] == 0

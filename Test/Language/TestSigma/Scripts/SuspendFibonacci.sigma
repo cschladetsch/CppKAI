@@ -1,0 +1,9 @@
+// Two suspends per frame: both recursive calls return before their sum is
+// taken, so the call tree is walked depth first.
+
+fun fib(n: int) -> int
+    if n < 2
+        return n
+    return fib(n - 1)& + fib(n - 2)&
+
+fib(0) == 0 && fib(1) == 1 && fib(10) == 55 && fib(15) == 610

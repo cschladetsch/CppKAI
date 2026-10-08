@@ -1,0 +1,15 @@
+// '&' (suspend) written out: the caller is pushed on the context stack, the
+// callee runs, and control comes back. A suspended call has the same type
+// and value as a plain one.
+
+fun cube(n: int) -> int
+    return n * n * n
+
+fun add(a: int, b: int) -> int
+    return a + b
+
+a = cube(3)&
+b = cube(3)
+c = add(cube(2)&, cube(1)&)&
+d = add(cube(2), cube(1))
+a == b && c == d && c == 9 && cube(cube(2)&)& == 512

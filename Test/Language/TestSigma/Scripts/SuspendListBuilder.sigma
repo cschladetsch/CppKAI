@@ -1,0 +1,18 @@
+// Building a list on the way back up: each level appends after the
+// suspended call below it has returned its shorter list.
+
+fun range(n: int) -> List[int]
+    if n == 0
+        empty: List[int] = []
+        return empty
+    return range(n - 1)& + [n]
+
+fun squares(n: int) -> List[int]
+    if n == 0
+        none: List[int] = []
+        return none
+    return squares(n - 1)& + [n * n]
+
+r = range(5)
+s = squares(4)
+r.size() == 5 && r[0] == 1 && r[4] == 5 && s[3] == 16 && range(0).size() == 0
