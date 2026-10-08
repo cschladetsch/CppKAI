@@ -1,41 +1,61 @@
 # Language
 
-This module defines a set of Languages.
+Headers for the KAI languages that live in CppKAI. Every language is its own static library, and all of them are built on the shared lexer, parser, AST and translator framework in `KAI/Language/Common` (from the CppKaiCore submodule).
 
-Each language is in it's own static library, but they share a common core system.
+| Language | Headers | Library | Status |
+|----------|---------|---------|--------|
+| **Pi** (π) | `Ext/CppKaiLanguage/Include/KAI/Language/Pi` | `PiLang` | Bedrock RPN language, runs on the Executor |
+| **Rho** (ρ) | `Ext/CppKaiLanguage/Include/KAI/Language/Rho` | `RhoLang` | Infix, Python-like, compiles to Pi |
+| **Sigma** (σ) | [`Sigma/`](Sigma) | `SigmaLang` | Rho's syntax plus static types, compiles to Rho |
+| **PiNet** | [`PiNet/`](PiNet) | `PiNetLang` | Transport check for continuations sent between nodes |
+| **Tau** | [`Tau/`](Tau) | `TauLang` | IDL that generates network Agents and Proxies (needs `KAI_NETWORKING`) |
+| **Lisp** | [`Lisp/`](Lisp) | not built | Scaffold copied from Rho |
+| **Hlsl** | [`Hlsl/`](Hlsl) | not built | Experimental HLSL front end |
 
-Specifically, each language (Pi, Rho, Sigma, Tau) is implemented using the same core language systems defined in KAI/Language/Common.
+```mermaid
+flowchart LR
+    subgraph Common["Language/Common (CppKaiCore)"]
+        LC[LexerCommon] --> PC[ParserCommon] --> AST[AstNodeBase] --> TB[TranslatorBase]
+    end
+    TB --> SIG[Sigma]
+    TB --> RHO[Rho]
+    TB --> PI[Pi]
+    TB --> TAU[Tau]
+    SIG -->|Rho source| RHO
+    RHO -->|Pi continuation| PI
+    PI --> EX([Executor])
+    TAU -->|tau::Generate| CPP[/"Agent and Proxy headers"/]
+    PNC[PiNet] -.->|checks before send| PI
+```
 
 ## Pi
 
-Post-fix notation with two stacks: one for data, one for context. Like Forth.
+Postfix, with two stacks: one for data and one for context. Inspired by Forth. The data stack plus the instruction pointer are the whole continuation state, which is what makes continuations transportable.
 
 ## Rho
 
-In-fix notation. Translated to Pi code. Looks like Python.
+Infix and indentation-based, like Python. Translated to Pi.
 
 ## Sigma
 
-In-fix notation with static types. Rho's syntax plus types; every program is type-checked, then translated to Rho. Headers are in `Sigma/`. See the [Sigma reference](../../../Doc/Sigma/README.md).
+Rho's syntax plus static types. Every program is type-checked, then translated to Rho. See the [Sigma reference](../../../Doc/Sigma/README.md).
+
+## PiNet
+
+A continuation that travels may only use names it binds itself. PiNet enforces that before `send`, and is registered by the Console app through `Console::AddSendCheck`. See [PiNet](../../../Doc/PiNet.md).
 
 ## Tau
 
-An interface definition language (IDL) used to generate network agent and proxies.
+An interface definition language used to generate network Agents and Proxies. It is not executable. See [Tau](Tau/README.md).
 
 ## See Also
 
-### Language Tutorials
-- **[Pi Tutorial](../../../Doc/PiTutorial.md)** - Complete Pi language guide
-- **[Rho Tutorial](../../../Doc/RhoTutorial.md)** - Comprehensive Rho language documentation  
-- **[Sigma Reference](../../../Doc/Sigma/README.md)** - Statically typed Sigma language
-- **[Tau Tutorial](../../../Doc/TauTutorial.md)** - Tau IDL complete reference
-- **[Language Guide](../../../Doc/LanguageGuide.md)** - Multi-language overview
-
-### Implementation Details
-- **[Common Language System](../../../Doc/CommonLanguageSystem.md)** - Shared architecture
-- **[Console Integration](../../../Source/App/Console/README.md)** - How languages work in the console
-
-### Architecture Documentation
-- **[Language System Architecture](../../../resources/diagrams/language-system-architecture.md)** - Complete language pipeline
-- **[Main Documentation Hub](../../../Doc/Documentation.md)** - Central navigation point
-
+- [Pi Tutorial](../../../Doc/PiTutorial.md)
+- [Rho Tutorial](../../../Doc/RhoTutorial.md)
+- [Sigma Reference](../../../Doc/Sigma/README.md)
+- [PiNet](../../../Doc/PiNet.md)
+- [Tau Tutorial](../../../Doc/TauTutorial.md)
+- [Language Guide](../../../Doc/LanguageGuide.md)
+- [Common Language System](../../../Doc/CommonLanguageSystem.md)
+- [Console Integration](../../../Source/App/Console/README.md)
+- [Language System Architecture](../../../resources/diagrams/language-system-architecture.md)

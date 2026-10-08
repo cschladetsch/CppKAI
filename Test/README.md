@@ -1,71 +1,63 @@
-# Test Systems
+# Tests
 
-These are test systems based on GoogleTest of the core systems and languages created by KAI:
+GoogleTest suites for the core, the languages, the console and the network. Test executables are written to `Bin/Test/`. `py run_tests.py` (or `ctest --test-dir build`) runs everything; see [Doc/TEST_SUMMARY.md](../Doc/TEST_SUMMARY.md) for the current counts.
 
-* Core
-* Language
-* Network
+```mermaid
+flowchart TB
+    subgraph Shared
+        INC["Include/<br/>TestCommon.h, TestLangCommon.h"]
+        COM["Common/<br/>TestCommon.cpp"]
+    end
+    INC & COM --> CORE["TestCore<br/>Source/"]
+    INC & COM --> LANG["TestPi, TestRho, TestSigma,<br/>TestTau, TestPiNet<br/>Language/"]
+    INC & COM --> CON["TestConsole<br/>Console/"]
+    INC & COM --> NET["TestNetwork<br/>Network/"]
+```
 
-These share a `Common` test library.
+## Executables
 
-Tests are built in the `Bin/Test/` directory.
+| Executable | Folder | Covers |
+|------------|--------|--------|
+| `TestCore` | [Source](Source/README.md) | Registry, types, reflection, GC, BinaryStream, containers, LLM utilities |
+| `TestPi` | [Language/TestPi](Language/TestPi/README.md) | Pi: stack, control flow, continuations, Suspend/Resume/Replace |
+| `TestRho` | [Language/TestRho](Language/TestRho/README.md) | Rho: expressions, control flow, functions, closures, translation to Pi |
+| `TestSigma` | `Language/TestSigma` | Sigma: type checking, generated Rho, example programs, `&` and `!` |
+| `TestPiNet` | `Language/TestPiNet` | PiNet: which continuations may be sent |
+| `TestTau` | [Language/TestTau](Language/TestTau/README.md) | Tau parsing and Agent/Proxy generation (needs networking) |
+| `TestConsole` | [Console](Console/README.md) | Console commands, history, languages, networking |
+| `TestNetwork` | [Network](Network/README.md) | Nodes, Domains, futures, Tau over the network, continuation serialisation |
 
-## Test Documentation
-
-- **[Console Networking Tests](Console/README.md)** - Console-to-console communication testing
-- **[Connection Testing Guide](../Doc/ConnectionTesting.md)** - Network connection validation
-- **[Test Status Summary](../Doc/TEST_SUMMARY.md)** - Current test suite status
-- **[Main Test Guide](../Doc/Test.md)** - Comprehensive testing documentation
+Also built: `LogTest`, `PerformanceTests`, `Test_ProxyGeneration`, `ContinuationMobilityDemoTests` and `ksh_tests`, plus the standalone network programs `ConsoleConnectionTest`, `IntegratedConsoleTest` and `CalculationTest`. Shell command tests are script-driven ([ShellCommandTests](ShellCommandTests/README.md)). The [Window](Window/README.md) tests are not in the default build.
 
 ## Folders
 
-* **Common**. Common to all tests
-* **Include**. Common to all tests
-* **Language**. Tests for each language.
-* **Network**. Network tests.
-* **Source**. General KAI Tests
+| Folder | Contents |
+|--------|----------|
+| [Include](Include/README.md) | Shared test headers |
+| `Common` | Shared test sources |
+| [Source](Source/README.md) | Core tests |
+| [Language](Language/README.md) | One folder per language |
+| [Console](Console/README.md) | Console tests |
+| [Network](Network/README.md) | Network tests |
+| [ShellCommandTests](ShellCommandTests/README.md) | Shell integration tests |
+| [Window](Window/README.md) | ImGui window tests |
+| `Examples`, `LogTest`, `Performance`, `Standalone` | Example, logging, performance and standalone tests |
 
-## Test Programs
-
-After building the project, you'll find these test executables in the `Bin/Test/` directory:
-
-* **TestCore**: Tests for core functionality, containers, and memory management
-* **TestPi**: Tests for the Pi stack-based language
-* **TestRho**: Tests for the Rho expression-based language
-* **TestSigma**: Tests for the statically typed Sigma language
-* **TestTau**: Tests for the Tau network description language
-* **TestNetwork**: Networking, continuation migration, and Tau-over-network tests
-
-## Selecting Tests
-
-To focus only on some tests, use the `--gtest_filter` flag:
+## Selecting tests
 
 ```bash
-# Run only tests in the PiBinaryOpTests test suite
 ./Bin/Test/TestPi --gtest_filter=PiBinaryOpTests.*
-
-# Run a specific test
 ./Bin/Test/TestPi --gtest_filter=PiBinaryOpTests.IntegerAddition
+ctest --test-dir build -R TestSigma
 ```
 
-## Colored Output
+## Coloured output
 
-All test programs feature colored output by default to improve readability:
+On by default: green for INFO, yellow for WARNING, red for ERROR, grey for console metadata. `--no-color` turns it off. See [ColorOutput.md](../Doc/ColorOutput.md).
 
-* **Green**: INFO log messages
-* **Yellow**: WARNING log messages
-* **Red**: ERROR log messages
-* **Grey**: Console metadata
+## See Also
 
-### Color-Related Command-Line Options
-
-* `--debug-color` or `--color`: Explicitly enable colored output (redundant as color is on by default)
-* `--no-color`: Disable colored output
-
-Example:
-```bash
-# Run with colored output disabled
-./Bin/Test/TestPi --no-color --gtest_filter=PiBinaryOpTests.IntegerAddition
-```
-
-For more details, see [ColorOutput.md](/Doc/ColorOutput.md).
+- [Test guide](../Doc/Test.md)
+- [Test summary](../Doc/TEST_SUMMARY.md)
+- [Connection testing](../Doc/ConnectionTesting.md)
+- [Log format](../Doc/LogFormat.md)

@@ -1,38 +1,40 @@
-# KAI Include
+# Include
 
-## Console
+Public headers built in CppKAI. Most of KAI's headers come from the submodules, which add their own `Include` directories to the path, so `#include <KAI/...>` works the same either way.
 
-A cross-platform REPL console for the Pi, Rho or Sigma languages. Then language can be switched on the fly.
+```mermaid
+flowchart TB
+    subgraph Here["Include/KAI (this repo)"]
+        L["Language/<br/>Sigma, PiNet, Tau, Lisp, Hlsl"]
+        N["Network/"]
+        LLM["LLM/"]
+        P["Platform/"]
+    end
+    subgraph Core["Ext/CppKaiCore/Include/KAI"]
+        C["Core/, Executor/,<br/>Language/Common, KAI.h"]
+    end
+    subgraph Lang["Ext/CppKaiLanguage/Include/KAI"]
+        PR["Language/Pi, Language/Rho"]
+    end
+    subgraph CL["Ext/CppKaiConsoleLib/Include/KAI"]
+        CO["Console/"]
+    end
+    Here --> Core
+    PR --> Core
+    CO --> PR
+```
 
-## Core
+| Area | Where | What |
+|------|-------|------|
+| Core | `Ext/CppKaiCore` | Objects, Registry, Tree, types, reflection, tri-colour GC |
+| Executor | `Ext/CppKaiCore` | Two-stack virtual machine (data and context), inspired by Forth |
+| Pi, Rho | `Ext/CppKaiLanguage` | Postfix and infix languages |
+| Console | `Ext/CppKaiConsoleLib` | Cross-platform REPL for Pi, Rho and Sigma; switch language on the fly |
+| Sigma, PiNet, Tau | [`KAI/Language`](KAI/Language/README.md) | Typed language, send check, IDL |
+| Network | `KAI/Network` | Node, Domain, Agent, Proxy, `Future<T>`. Independent of transport; ENet is the current implementation |
+| LLM | `KAI/LLM` | Model cache, session, repo indexer, dataset builder |
+| Platform | [`KAI/Platform`](KAI/Platform/README.md) | Platform-specific headers |
 
-The root library. Defines what an Object is, how they work, and also containers, Reegistries etc. More detail in that folder.
+`kai_compat.h` and `rang.hpp` (terminal colours) are also here.
 
-## Executor
-
-This is a common virtual machine that uses two stacks: one for data and one for context. This is based on ideas from Forth and the like.
-
-## Language
-
-There are currently four languages in the KAI system:
-
-1. Pi. Post-fix, forth-like.
-1. Rho. In-fix, python-like.
-1. Sigma. Rho's syntax plus static types; type-checked, then compiled to Rho. Headers are in `KAI/Language/Sigma`. See [Doc/Sigma](../Doc/Sigma/README.md).
-1. Tau. An IDL that generates C++ code for C++ agents and proxies.
-
-The languages are all located in <KAI/Lang/Lang.h> for each of Pi, Rho and Tau for _Lang_.
-
-## Network
-
-The common networking system. This is entirely indepedant of actual transport layers or libraries. Currently first implementation is based on ENet, but that is not needed to build - only to link.
-
-## Platform
-
-Contains platform-specific code. Currently supported platforms are:
-
-* OSX
-* Ubuntu
-* Windows 7-10
-
-The CMakeFiles should deal with the details, however you may need to install boost and ENet and provide some hints to their location.
+See [KAI/README.md](KAI/README.md) for the header-level tour.

@@ -1,49 +1,43 @@
-# Tau Source Implementation
+# Tau Sources
 
-The Tau language implementation is divided into two main components:
+The `TauLang` library, built when `KAI_NETWORKING` is on and `KAI_ANDROID` is off. It has two parts.
 
-## Tau Language
+```mermaid
+flowchart LR
+    subgraph Tau["Tau/"]
+        TK[TauToken] --> LX[TauLexer] --> PR[TauParser] --> AN[TauAstNode]
+    end
+    subgraph Gen["Generate/"]
+        GP[GenerateProcess]
+        GP --> PX[GenerateProxy]
+        GP --> AG[GenerateAgent]
+        GP --> ST[GenerateStruct]
+    end
+    AN --> GP
+```
 
-This section contains the lexer and parser for the Tau Interface Definition Language (IDL). It processes `.tau` source files and generates an Abstract Syntax Tree (AST) that represents the structure of the interface definitions.
+## [Tau/](Tau): the language
 
-Key components:
-- **TauLexer**: Tokenizes Tau source code into a stream of tokens
-- **TauToken**: Defines the token types used in the Tau language
-- **TauParser**: Parses token streams into an AST
-- **TauAstNode**: Represents nodes in the Tau AST
+Lexer and parser for `.tau` files, producing an AST of namespaces, interfaces, methods, properties, events, structs and enums.
 
-Recent improvements:
-- Support for C++17 nested namespace syntax (`namespace A::B::C`)
-- Enhanced error reporting during parsing
-- Better handling of complex type hierarchies and inheritance
-- Improved support for default values and parameters
+- **TauToken**: token types
+- **TauLexer**: source to tokens
+- **TauParser**: tokens to AST, including nested `namespace A::B::C`, interface inheritance and default parameter values
+- **TauAstNode**: AST nodes
 
-## Tau Generator Library
+## [Generate/](Generate): the generator
 
-This component uses the Tau AST to generate network Proxy and Agent C++ code.
-Applications or build tools can call the generator APIs directly to produce
-working C++ classes from Tau interface definitions.
+Walks the AST and writes C++.
 
-Key components:
-- **GenerateProcess**: Abstract base class for all code generators
-- **GenerateProxy**: Generates client-side proxy classes that forward method calls to remote agents
-- **GenerateAgent**: Generates server-side agent classes that receive and handle remote calls
+- **GenerateProcess**: base class for all generators
+- **GenerateProxy**: client-side `<Name>Proxy` classes that forward calls and return futures
+- **GenerateAgent**: server-side `<Name>Agent` classes that handle incoming calls
+- **GenerateStruct**: plain data structs
 
-The generated code includes:
-1. Method definitions that match the Tau interfaces
-2. Event handling with registration and callback mechanisms
-3. Parameter serialization/deserialization
-4. Network communication plumbing
+Generated code covers method signatures matching the interface, argument and result serialisation, event registration and triggering, and the network plumbing to a `Node`.
 
-## Testing
+## See Also
 
-The Tau implementation includes comprehensive test suites:
-- Basic lexer and parser tests
-- Advanced type system tests
-- Code generation tests for proxies and agents
-- Integration tests with the networking infrastructure
-
-For practical examples and documentation, see:
-1. [Tau Tutorial](../../../../../Doc/TauTutorial.md)
-2. [Generator sources](Generate)
-3. [Test suites](../../../../../Test/Language/TestTau)
+- [Tau headers](../../../../../Include/KAI/Language/Tau/README.md)
+- [Tau Tutorial](../../../../../Doc/TauTutorial.md)
+- [Tests](../../../../../Test/Language/TestTau/README.md)

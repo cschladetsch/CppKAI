@@ -1,12 +1,10 @@
-# Platform Specific code.
+# Platform
 
-Not much here. The code has been written to be cross-platform from the start.
+Platform-specific sources. Very little lives here: the code has been cross-platform from the start, and platform differences are mostly handled in headers under [`Include/KAI/Platform`](../../../Include/KAI/Platform/README.md).
 
-That said, there will definitely some platform-specific libraries required, especially for different hardware support like VR/AR headsets etc.
+| Directory | Contents |
+|-----------|----------|
+| `Windows/` | `ConsoleColors.cpp`: console colour support |
+| `GearVr/`, `Hololense/`, `PS4/`, `Rift/` | Placeholders, no code |
 
-In those cases, this is where that platformp-specific code will live. There's already support for it in both the source and headers and the CMake files.
-
-
-## Future Proofing
-
-It just hasn't been used yet because the underlying systems are still under construction. However, when all the networking is done, then yeah there will be some platform-specific support for different controllers and headsets etc.
+The CMake and header structure is already in place for platform libraries (`platform-<name>`), intended for hardware such as VR and AR headsets and game controllers.

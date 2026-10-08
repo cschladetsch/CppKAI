@@ -1,3 +1,3 @@
-# Rift Support
+# Rift
 
-No current support for Rift.
+Placeholder for Oculus Rift support. No code yet; see [Platform](../README.md).

@@ -1,30 +1,28 @@
-# Rho Language Issues and Fixes
+# Rho (historical)
 
-This file documents the issues with the Rho language implementation and the fixes that have been made.
+Rho itself no longer lives here. `RhoLang` is built from the [CppKaiLanguage](../../../Ext/CppKaiLanguage) submodule. This directory holds only `DiagnoseTests.cpp`, a standalone diagnostic that is not part of the build, and this note.
 
-## Issues
+## The continuation-wrapping fix
 
-The Rho language implementation had an issue where binary operations were being wrapped in Continuations, 
-which was causing type mismatch errors when executing Rho code.
+An earlier `RhoTranslator` wrapped binary operations, calls and assignments in their own `Continuation`s, which caused type-mismatch errors at runtime. In Pi, binary operations are appended directly to the code array, so the wrappers were removed:
 
-## Fix Summary
+| Translator method | Change |
+|-------------------|--------|
+| `TranslateBinaryOp` | Append the operation directly; no `PushNew()` / `Append(Pop())` |
+| `TranslateCall` | No wrapping continuation |
+| `TranslateIf` | Continuations for the then and else blocks only |
+| `TranslateFunction` | One continuation for the body, not wrapped again |
+| `TranslateWhile`, `TranslateDoWhile` | No extra nesting |
+| Assignment | No wrapping continuation |
 
-The fix involved modifying the RhoTranslator.cpp file to remove Continuations wrapping from various operations:
+```mermaid
+flowchart LR
+    subgraph Before
+        B1["a + b"] --> B2["{ a b + }"] --> B3["type mismatch"]
+    end
+    subgraph After
+        A1["a + b"] --> A2["a b +"] --> A3["ok"]
+    end
+```
 
-1. TranslateBinaryOp - removed PushNew() and Append(Pop()) calls that were wrapping binary operations in Continuations
-2. TranslateCall - simplified to not use Continuations for wrapping call operations
-3. TranslateIf - modified to create Continuations for the then and else blocks, but not for the entire if statement
-4. TranslateFunction - modified to create a Continuation for the function body, but not wrap it in another Continuation
-5. TranslateWhile/TranslateDoWhile - simplified to avoid unnecessary Continuation nesting
-6. Assignment - modified to not wrap assignments in Continuations
-
-## Remaining Work
-
-There might still be issues with some tests, especially those that expect Pi behavior while running Rho code.
-The core issue appears to be in the TranslatorBase class, which wraps the entire translation in a Continuation.
-
-## Implementation Note
-
-In Pi, binary operations are directly appended to the code array. In Rho, we had been wrapping these operations
-in Continuations, which was causing type mismatches when executing the code. The fix removes these unnecessary
-Continuation wrappers.
+This is kept for history. For current Rho status see [Doc/TODO.md](../../../Doc/TODO.md) and [Doc/TEST_SUMMARY.md](../../../Doc/TEST_SUMMARY.md); for the language, see the [Rho Tutorial](../../../Doc/RhoTutorial.md).

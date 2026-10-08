@@ -43,6 +43,15 @@ This is useful for:
 
 The demo is easiest to understand as three layers:
 
+```mermaid
+flowchart TB
+    RHO[/"ContinuationMobilityDemo.rho<br/>source of truth"/]
+    RHO --> HTML["HTML views<br/>explain the story"]
+    RHO --> SIM["Bin/ContinuationMobilityDemo<br/>deterministic C++ model"]
+    RHO --> PROOF["run_continuation_migration_demo.sh<br/>two processes, real freeze and thaw"]
+    PROOF --> R(["MIGRATION_OK result=42"])
+```
+
 1. Conceptual view: the RhoMog model in this directory explains the distributed
    agent story in human-readable form.
 2. Executable model: `./Bin/ContinuationMobilityDemo` runs a deterministic C++

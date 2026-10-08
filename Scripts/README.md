@@ -1,142 +1,87 @@
-# KAI Scripts
+# Scripts
 
-This directory contains utility scripts for building, testing, and demonstrating KAI functionality.
+Utility scripts for building, testing and demonstrating KAI. On Windows, prefer `py build.py` and `py run.py` at the repository root.
 
-## Build Scripts
-
-### build.sh
-Main build script with options for different build types:
-```bash
-./build.sh              # Debug build
-./build.sh release      # Release build
-./build.sh clean        # Clean build
+```mermaid
+flowchart LR
+    B["build.sh"] --> BIN[/"Bin/"/]
+    BIN --> T["run_all_tests.sh,<br/>run_tests"]
+    BIN --> D["network/run_continuation_migration_demo.sh"]
+    BIN --> R["run_rho_demo.sh,<br/>run_console_demo.sh"]
+    BIN --> TR["RhoDataset<br/>reads Training/"]
 ```
 
-### clean_and_build.sh
-Complete clean rebuild of the entire project.
+## Build
 
-### install-llvm.sh
-Installs LLVM dependencies required for KAI compilation.
+| Script | Does |
+|--------|------|
+| `build.sh` | Deletes and recreates `build/`, then a Debug build with Clang and Ninja |
+| `clean_and_build.sh`, `clean_build.sh` | Clean rebuilds |
+| `buildtau.sh` | Build the Tau pieces |
+| `build-android.sh` | Cross-compile `libkai.so` for Android (needs `ANDROID_NDK_HOME`); see [Android](../Android/README.md) |
+| `install-llvm.sh` | Install the LLVM toolchain |
 
-## Test Scripts
+## Test
 
-### run_all_tests.sh
-Comprehensive test runner that executes all test suites:
-- Core system tests
-- Language tests (Pi, Rho, Tau)
-- Network tests
-- Console tests
+| Script | Does |
+|--------|------|
+| `run_all_tests.sh` | Every suite |
+| `run_tests` | Deletes `build/`, rebuilds, and runs the binaries in `Bin/Test` |
+| `run_rho_tests.sh` | Rho tests |
+| `test_tau.sh`, `test_tau_interfaces.sh`, `test_tau_network.sh` | Tau tests |
+| `run_connection_tests.sh`, `run_tau_connection_tests.sh`, `run_minimal_connection_demo.sh` | Network connections |
+| `run_chat_tests.sh` | Chat tests |
+| `run_fixed_tests.sh` | A historical subset from when many tests were failing |
+| `mock_llm_inference.sh` | Stand-in model command for the LLM evaluation suite |
 
-### Language-Specific Test Scripts
+## Demos
 
-- **run_rho_tests.sh** - Execute all Rho language tests
-- **run_rho_demo.sh** - Interactive Rho language demonstration
-- **test_tau.sh** - Tau language test suite
-- **run_chat_tests.sh** - Chat system validation
+| Script | Does |
+|--------|------|
+| `run_console_demo.sh` | Console demo |
+| `run_rho_demo.sh` | Tour of Rho |
+| [`network/run_continuation_migration_demo.sh`](network/README.md) | Freeze a Pi workflow in one process, resume it in another, return `42` |
+| [`network/run_continuation_migration_tmux_demo.sh`](network/README.md) | The same, in tmux, paced for recording |
 
-### Network Test Scripts
-
-- **run_connection_tests.sh** - Network connection validation
-- **run_tau_connection_tests.sh** - Tau network interface tests
-- **p2p_test.sh** - Peer-to-peer networking tests
-- **p2p_test_dynamic.sh** - Dynamic P2P configuration tests
-
-### Console Test Scripts
-
-- **run_console_demo.sh** - Console application demonstration
-- **run_fixed_tests.sh** - Specific fixed test cases
-
-## Network Scripts
-
-### network/
-Contains specialized networking scripts:
-- **run_peers.sh** - Start multiple peer instances
-- **automated_demo.sh** - Automated network demonstration
-- **run_continuation_migration_demo.sh** - Two-process proof that freezes a Pi
-  continuation in one process, sends it to another process, thaws it, resumes
-  it, and verifies the returned result
-- **run_continuation_migration_tmux_demo.sh** - tmux-friendly continuation migration demo
-
-## Analysis Scripts
-
-### analyze_complexity.py
-Python script for code complexity analysis with configuration in `complexity_config.json`.
-
-### analyze_test_history.sh
-Analyzes test execution history and generates reports.
-
-## Utility Scripts
-
-### remove_claude_refs.sh
-Utility for cleaning up AI-generated comments and references.
-
-### calc_test.sh
-Calculator functionality testing script.
-
-## Helper Scripts
-
-- **b** - Root-oriented CMake build wrapper. Run it from the repository root as `./Scripts/b`.
-- **be** - Build with networking enabled and run the scripted test suite.
-- **run_tests** - Run the in-tree test binaries from `Bin/Test`.
-- **tidy** - Apply `clang-format` to source and test C++ files.
-- **r** - Repair encoding artifacts in `Test/demo_console_communication.sh`.
-
-## Usage Examples
-
-### Quick Build and Test
 ```bash
-./Scripts/clean_and_build.sh
-./Scripts/run_all_tests.sh
-```
-
-### Language Development Workflow
-```bash
-# Test Rho language changes
-./Scripts/run_rho_tests.sh
-./Scripts/run_rho_demo.sh
-
-# Test networking changes
-./Scripts/p2p_test.sh
-```
-
-### Interactive Demos
-```bash
-# Console networking demo
-./Scripts/run_console_demo.sh
-
-# Language feature demo
-./Scripts/run_rho_demo.sh
-
-# Continuation mobility proof stack
 ./Bin/ContinuationMobilityDemo
 ./Scripts/network/run_continuation_migration_demo.sh
 ```
 
-## Script Requirements
+## Analysis and housekeeping
 
-Most scripts require:
-- CMake 3.10+
-- C++17 compatible compiler
-- ENet networking library
-- tmux (for interactive demos)
+| Script | Does |
+|--------|------|
+| `analyze_complexity.py` | Code complexity, configured by `complexity_config.json` |
+| `analyze_test_history.sh` | Reports from test history |
+| `tidy` | `clang-format -i` over `Source`, `Include` and `Test` |
+| `r` | Repairs encoding artifacts in `Test/demo_console_communication.sh` |
+| `remove_claude_refs.sh` | Removes AI-generated comments and references |
 
-Network scripts may require:
-- Multiple terminal sessions
-- Available network ports (14600-14699 range)
-- Firewall permissions for local networking
+## Stale
 
-## Adding New Scripts
+These build or launch apps that no longer exist (`NetworkPeer`, `ConfigurableServer`, `ConfigurableClient`): `p2p_test.sh`, `p2p_test_dynamic.sh`, `p2p_test_simple.sh`, `p2p_test_standalone.sh`, `calc_test.sh`, `network/run_peers.sh` and `network/automated_demo.sh`. Use the Console's `/network` commands instead; see [Console Networking](../Doc/CONSOLE_NETWORKING.md).
 
-When creating new scripts:
-1. Make them executable: `chmod +x script_name.sh`
-2. Add usage comments at the top
-3. Include error handling and cleanup
-4. Test on multiple platforms
-5. Update this README with the new script description
+## Folders
 
-## Related Documentation
+- [network/](network/README.md): networking demos
+- [Training/](Training/README.md): lessons for the local LLM corpus
+
+## Requirements
+
+- CMake 3.28+, a C++23 compiler (Clang 16+ by default), Ninja
+- tmux for the tmux demos
+- Free local ports in the 14600 to 14699 range for network scripts
+
+## Adding scripts
+
+1. `chmod +x`
+2. Usage comments at the top
+3. Error handling and cleanup
+4. Add it to this README
+
+## See Also
 
 - [Build Guide](../Doc/BUILD.md)
 - [Test Guide](../Doc/Test.md)
-- [Network Testing](../Doc/ConnectionTesting.md)
-- [Console Guide](../Source/App/Console/README.md)
+- [Connection Testing](../Doc/ConnectionTesting.md)

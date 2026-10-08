@@ -1,90 +1,71 @@
 # Tau Code Generation
 
-This module contains the code generation components for the Tau Interface Definition Language (IDL). It transforms Tau AST (Abstract Syntax Tree) into C++ code for distributed networking.
+Headers for the generators that turn a Tau AST into C++.
 
-## Code Generation Architecture
+```mermaid
+classDiagram
+    class GenerateProcess {
+        <<base>>
+        AST traversal
+        StartBlock / EndBlock
+        error reporting
+    }
+    class GenerateProxy {
+        methods forward over the network
+        Register/Unregister event handlers
+        Future-based returns
+    }
+    class GenerateAgent {
+        handlers for incoming calls
+        invoke the servant
+        Trigger event methods
+    }
+    class GenerateStruct {
+        plain C++ structs
+        field order preserved
+    }
+    GenerateProcess <|-- GenerateProxy
+    GenerateProcess <|-- GenerateAgent
+    GenerateProcess <|-- GenerateStruct
+```
 
-The Tau code generation system uses a clean, separated architecture:
+| Header | Produces |
+|--------|----------|
+| `GenerateProcess.h` | Base class: AST walking, output formatting, errors |
+| `GenerateProxy.h` | `<Name>Proxy`: serialises arguments into a `BinaryStream`, returns `Future<T>`, and adds `Register<Event>Handler` / `Unregister<Event>Handler` for each event |
+| `GenerateAgent.h` | `<Name>Agent`: deserialises arguments, calls the servant, serialises non-void results, and adds `Trigger<Event>` for each event |
+| `GenerateStruct.h` | Plain structs for data transfer, including nested structs |
 
-### Base Class
-- **GenerateProcess** - Base class providing common functionality for all generators
-  - AST traversal and transformation
-  - Code formatting utilities (StartBlock, EndBlock, etc.)
-  - Common parsing and error handling
+## Stages
 
-### Specialized Generators
-1. **GenerateProxy** - Generates client-side proxy classes
-   - Methods that forward calls over the network
-   - Event registration/unregistration handlers
-   - Serialization of parameters using BinaryStreams
-   - Future-based return value handling
-
-2. **GenerateAgent** - Generates server-side agent classes
-   - Handler methods for incoming network requests
-   - Deserialization of parameters from BinaryStreams
-   - Implementation method invocation
-   - Response serialization for non-void methods
-
-3. **GenerateStruct** - Generates plain C++ struct definitions
-   - Simple data structures for DTOs (Data Transfer Objects)
-   - Preserves field ordering and types
-   - Supports nested structures
-   - Can include method declarations
-
-## Key Design Principles
-
-- **Separation of Concerns**: Each generator has a single responsibility
-- **Type Safety**: Generated code maintains full C++ type safety
-- **Network Transparency**: Proxies look and feel like local objects
-- **Clean Inheritance**: All generators properly inherit from GenerateProcess
-
-## Usage
-
-The generation process happens in several stages:
-
-1. Parse Tau source code into an AST
-2. Process the AST to extract interfaces, methods, events, and types
-3. Generate code based on the extracted information
-4. Write the generated code to output files
-
-This is handled by the Tau generator library. Applications or build tools can
-call the generator APIs directly; the old `NetworkGenerate` command-line
-executable is no longer built.
+```mermaid
+flowchart LR
+    A[/".tau"/] --> B["Parse to AST"] --> C["Collect interfaces,<br/>methods, events, types"] --> D["Generate"] --> E[/"headers"/]
+```
 
 ## Example
-
-For a Tau interface:
 
 ```tau
 namespace ChatApp {
     interface IChatService {
         void SendMessage(string user, string message);
         string[] GetRecentMessages(int count = 10);
-        
+
         event MessageReceived(string user, string message, string timestamp);
     }
 }
 ```
 
-The generator will produce:
+produces
 
-1. A proxy class `ChatApp::IChatServiceProxy` with:
-   - `void SendMessage(string user, string message)` method
-   - `string[] GetRecentMessages(int count = 10)` method
-   - `RegisterMessageReceivedHandler(std::function<void(string, string, string)>)` method
+- `ChatApp::IChatServiceProxy` with `SendMessage`, `GetRecentMessages`, and `RegisterMessageReceivedHandler(std::function<void(string, string, string)>)`
+- `ChatApp::IChatServiceAgent` with handlers for both methods and `TriggerMessageReceived`
 
-2. An agent class `ChatApp::IChatServiceAgent` with:
-   - `SendMessage` and `GetRecentMessages` handler implementations
-   - `TriggerMessageReceived` method to raise the event
+The generator is a library; the old `NetworkGenerate` executable is no longer built.
 
-## Recent Improvements
+## See Also
 
-- Support for C++17 nested namespace syntax (`namespace A::B::C`)
-- Improved event handling with callback registration
-- Enhanced error reporting during code generation
-- Better support for complex type hierarchies and inheritance
-
-For practical examples, see:
-1. [Tau generator sources](../../../../Source/Library/Language/Tau/Source/Generate)
-2. [Tau Tutorial](../../../../Doc/TauTutorial.md)
-3. [Tau code generation tests](../../../../Test/Language/TestTau)
+- [Generator sources](../../../../../Source/Library/Language/Tau/Source/Generate)
+- [Tau Tutorial](../../../../../Doc/TauTutorial.md)
+- [Tau Code Generation](../../../../../Doc/TauCodeGeneration.md)
+- [Code generation tests](../../../../../Test/Language/TestTau)

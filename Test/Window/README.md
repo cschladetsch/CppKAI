@@ -1,6 +1,18 @@
 # Window Application Tests
 
-This directory contains comprehensive tests for the KAI Window application, covering all three tabs (Pi, Rho, and Debugger) and their interactions.
+Tests for the ImGui Window application ([Source/App/Window](../../Source/App/Window/README.md)), covering its Pi, Rho and Debugger tabs and how they interact.
+
+**Status:** not in the default build. `add_subdirectory(Window)` is commented out in `Test/CMakeLists.txt`, and the app itself needs `KAI_BUILD_IMGUI=ON`.
+
+```mermaid
+flowchart LR
+    T1[TestExecutorWindow.cpp] --> EW[ExecutorWindow]
+    T2[TestWindowUI.cpp] --> EW
+    EW --> PI[Pi tab]
+    EW --> RHO[Rho tab]
+    EW --> DBG[Debugger tab]
+    PI & RHO & DBG --> EX([Executor])
+```
 
 ## Test Structure
 

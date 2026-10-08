@@ -1,16 +1,24 @@
 # DemoConintuationLocal
 
-`DemoConintuationLocal` is a static browser demo for comparing local continuation
-control forms in Rho and their Pi shape.
+A static browser demo comparing the local continuation control forms in Rho, and the Pi each one becomes.
 
-- `f(a)` / `f(a)&`: suspend the current continuation, push a return point, and
-  return to the caller when the callee completes.
-- `f(a)...`: resume/switch to the callee without pushing a new return point.
-  The existing context stack is left intact.
-- `f(a)!`: replace the current continuation with the callee and drop the current
-  top context stack entry.
+| Rho | Pi | What happens |
+|-----|----|--------------|
+| `f(a)`, `f(a)&` | `Suspend` | Push a return point; control comes back to the caller when the callee finishes |
+| `f(a)...` | `Resume` | Switch to the callee without pushing a return point; the context stack is left as it is |
+| `f(a)!` | `Replace` | Replace the current continuation with the callee, dropping the top context entry (a tail call) |
 
-Open `index.html` in a browser. The demo reuses
-`../ContinuationMobilityDemo/style.css`, shared KAI web styling from
-`../../SharedWeb/styles/kai-shared.css`, and local page-specific behavior in
-`app.js`.
+```mermaid
+sequenceDiagram
+    participant C as Caller
+    participant F as f
+    Note over C,F: f(a) / f(a)&  (Suspend)
+    C->>F: push return point, enter f
+    F-->>C: return to caller
+    Note over C,F: f(a)!  (Replace)
+    C->>F: f replaces the caller, nothing to return to
+```
+
+Sigma supports `&` and `!` with the same meaning; `...` is not yet available from Sigma. See [Sigma: continuation operators](../../Doc/Sigma/README.md#continuation-operators).
+
+Open `index.html` in a browser. The page reuses `../ContinuationMobilityDemo/style.css`, shared styling from `../../SharedWeb/styles/kai-shared.css`, and its own `app.js`.

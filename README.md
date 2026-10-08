@@ -1,425 +1,111 @@
-# KAI - Distributed Object Model for C++ ![Image](Images/kai_logo.png)
+# KAI ![Image](Images/kai_logo.png)
 
 [![CodeFactor](https://www.codefactor.io/repository/github/cschladetsch/cppkai/badge)](https://www.codefactor.io/repository/github/cschladetsch/cppkai)
 [![License](https://img.shields.io/github/license/cschladetsch/CppKAI.svg?label=License&maxAge=86400)](./LICENSE)
 
-_KAI_ is a network distributed **Object Model** for C++ with full runtime reflection, persistence, and incremental garbage collection. No macros are needed to expose fields or methods to the scripting runtime, including external code from other libraries.
+KAI is a network-distributed object model for C++ with full runtime reflection, persistence and incremental garbage collection, and a family of languages that all compile down to one execution model. No macros are needed to expose fields or methods to the runtime, including types from other libraries.
 
-Objects and *compute* can be distributed across Nodes in a Domain.
+Everything runs on an **Executor**. Higher-level languages are translated, layer by layer, into **Pi**, the stack-based bedrock language. Objects live in a **Registry**; nodes that share object handles form a **Domain**; and a running continuation can be frozen on one node, sent to another, and resumed there.
 
-## Demo
+There is no global state in the design and no central server: KAI is peer to peer.
+
+## Contents
+
+- [Overview](#overview)
+- [Sigma](#sigma)
+- [Tau](#tau)
+- [Rho](#rho)
+- [Pi](#pi)
+- [Domain](#domain)
+- [Object Model](#object-model)
+- [Console](#console)
+- [Building](#building)
+- [Repository Layout](#repository-layout)
+- [Documentation](#documentation)
+
+---
+
+## Overview
+
+KAI has four languages with a deliberate division of labour. Three are executable; one is an interface definition language.
+
+| Language | Prompt | Kind | Role |
+|----------|--------|------|------|
+| **Sigma** | `σ` | Executable, statically typed | Rho's syntax plus static types; type-checked, then compiled to Rho |
+| **Rho** | `ρ` | Executable, infix | Python-like scripting; compiled to Pi |
+| **Pi** | `π` | Executable, RPN | The execution substrate; runs directly on the Executor |
+| **Tau** | | Not executable, IDL | Describes network interfaces; generates C++ Agent and Proxy pairs |
+
+```mermaid
+flowchart LR
+    S["Sigma<br/>typed infix"] -->|"SigmaChecker, then emit"| R["Rho<br/>infix"]
+    R -->|RhoTranslator| P["Pi<br/>RPN"]
+    P --> E(["Executor"])
+    T["Tau<br/>IDL"] -->|"tau::Generate"| C["C++ Agent<br/>and Proxy"]
+    C <-->|"ENet UDP"| E
+```
+
+The bedrock is four things: **Pi**, **Continuation**, **Executor** and **Tau**. Everything else is built on them.
+
+### Demo
 
 ![Continuation Mobility Demo](resources/Snap2.png)
 
-**[▶ Live Interactive Demo](https://cschladetsch.github.io/CppKAI/Demo/ContinuationMobilityDemo/)**
+**[Live Interactive Demo](https://cschladetsch.github.io/CppKAI/Demo/ContinuationMobilityDemo/)**
 
-Animated walk-through of agent migration, Pi-guided routing, load balancing,
-and snapshot-based recovery after a simulated host failure. Source of truth:
-[`ContinuationMobilityDemo.rho`](Demo/ContinuationMobilityDemo/ContinuationMobilityDemo.html).
+An animated walk-through of agent migration, Pi-guided routing, load balancing and snapshot-based recovery after a simulated host failure. It has three layers: the interactive RhoMog visualisation explains the idea, `./Bin/ContinuationMobilityDemo` runs the deterministic executable model, and `./Scripts/network/run_continuation_migration_demo.sh` proves the runtime path by freezing a stateful Pi workflow in one process, sending it to another, thawing it, resuming it, and returning `42`.
 
-The demo has three layers: the interactive RhoMog visualization explains the
-idea, `./Bin/ContinuationMobilityDemo` runs the deterministic executable model,
-and `./Scripts/network/run_continuation_migration_demo.sh` proves the runtime
-path by freezing a stateful Pi workflow in one process, sending it to another
-process, thawing it, resuming it, and returning `42`.
+---
 
-Requires GitHub Pages enabled from the `master` branch root.
+## Sigma
 
-## System Architecture Overview
+Sigma is the typed layer: Rho's syntax plus static types. Every program is type-checked before it runs, so a Sigma program with a type error never runs.
 
-The KAI system provides a multi-layered architecture that enables distributed object programming with multiple language frontends.
+```sigma
+fun gcd(a: int, b: int) -> int
+    return b == 0 ? a : gcd(b, a % b)
 
-**[Project Overview](Doc/ProjectOverview.md)** - Learn about the core CppKAI runtime and KAI-aware shared web layer.
-
-See the full diagram: **[System Architecture Overview](resources/diagrams/system-architecture-overview.md)** (Mermaid, rendered on GitHub).
-
-### Key System Components
-
-- **Multi-Language Frontend**: Rho (infix), Pi (stack-based), and Tau (IDL) languages with seamless interoperability
-- **Interactive Console**: Real-time REPL with peer-to-peer networking capabilities
-- **Distributed Object Model**: Network-transparent objects with type safety across node boundaries
-- **Stack-based Execution**: High-performance virtual machine with continuation support and binary migration between nodes
-- **LLM Tooling**: `RepoIndex` builds a local repo knowledge base and `RhoDataset` exports incremental training corpus records from Rho, Pi, Tau, tests, scripts, `Logs/`, history files, README files, and `Scripts/Training`. The generated manifest is the training memory.
-- **Incremental Garbage Collection**: Smooth memory management without performance spikes
-- **Code Generation**: Tau IDL generates proxy/agent pairs for network communication
-- **Cross-platform Support**: Linux, WSL2, Windows (native), macOS
-- **RhoMog Model**: Live interactive demo of continuation mobility — agent migration, Pi-guided routing, load balancing, and snapshot-based recovery after host failure
-
-## Demo Views
-
-[Pi](Doc/PiTutorial.md) is a postfix language.
-
-![Console](Images/BasicConsole.png)
-
-![Arch](Images/architecture.png)
-
-`Window` illustrates how **Rho** is transpiled to **Pi**:
-
-![Window](Images/Window.png)
-
-## Documentation & Architecture
-
-### **Main Documentation Hub**
-**[Documentation Guide](Doc/Documentation.md)** - Start here for organized navigation of all documentation | **[Doc/ README](Doc/README.md)**
-
-### **System Architecture**
-**[Architecture Resources](resources/README.md)** - Comprehensive system architecture documentation and diagrams
-- **[Overall System Architecture](resources/diagrams/overall-system-architecture.md)** - High-level component relationships and data flow
-- **[Language System Architecture](resources/diagrams/language-system-architecture.md)** - Pi/Rho/Sigma/Tau translation pipeline and interoperability
-- **[Console Networking Architecture](resources/diagrams/console-networking-architecture.md)** - P2P communication model and protocols
-- **[Build System Architecture](resources/diagrams/build-system-architecture.md)** - CMake structure and dependencies
-- **[Test System Architecture](resources/diagrams/test-system-architecture.md)** - Test infrastructure and validation workflows
-- **[System Overview](resources/architecture/system-overview.md)** - Complete architectural analysis with statistics
-
-### **Development Guides**
-- **Building**: [Build Guide](Doc/BUILD.md) | [Out-of-Source Build Notes](Doc/OUT_OF_SOURCE_BUILD.md) | [Installation](Doc/Install.md) | [CMake Guide](CMake/README.md)
-- **Languages**: [Pi Tutorial](Doc/PiTutorial.md) | [Rho Tutorial](Doc/RhoTutorial.md) | [Sigma](Doc/Sigma/README.md) | [Tau Tutorial](Doc/TauTutorial.md) | [Language System](Include/KAI/Language/README.md)
-- **Networking**: [Overview](Doc/Networking.md) | [Architecture](Doc/NetworkArchitecture.md) | [Console Networking](Doc/CONSOLE_NETWORKING.md)
-- **Testing**: [Test Guide](Doc/Test.md) | [Connection Testing](Doc/ConnectionTesting.md) | [Test Overview](Test/README.md)
-- **Code Generation**: [Tau Code Generation](Doc/TauCodeGeneration.md) | [Tau Generate](Include/KAI/Language/Tau/Generate/README.md)
-- **Project Status**: [TODO](Doc/TODO.md) | [Test Summary](Doc/TEST_SUMMARY.md)
-
-### **Component Documentation**
-- **LLM Overview**: [LmmReadme.md](Doc/LmmReadme.md) - Cache, repo indexing, and Rho dataset export
-- **Core System**: [Core README](Ext/CppKaiCore/Include/KAI/Core/README.md) | [Registry](Ext/CppKaiCore/Include/KAI/Core/Object/README.md) | [Config](Ext/CppKaiCore/Include/KAI/Core/Config/README.md)
-- **Executor**: [Executor README](Ext/CppKaiCore/Include/KAI/Executor/README.md) - Virtual machine and execution engine
-- **Console**: [Console README](Ext/CppKaiCore/Include/KAI/Console/README.md) - Interactive shell with networking
-- **Languages**: [Common](Ext/CppKaiCore/Include/KAI/Language/Common/README.md) | [Pi](Ext/CppKaiLanguage/Include/KAI/Language/Pi/README.md) | [Rho](Ext/CppKaiLanguage/Include/KAI/Language/Rho/README.md) | [Sigma](Doc/Sigma/README.md) | [Tau](Include/KAI/Language/Tau/README.md)
-- **Platform Support**: [Platforms](Include/KAI/Platform/README.md) | [Linux](Include/KAI/Platform/Linux/README.md) | [Windows](Include/KAI/Platform/Windows/README.md) | [macOS](Include/KAI/Platform/OSX/README.md)
-
-### **Testing & Examples**
-- **Test Suites**: [Test Overview](Test/README.md) | [Language Tests](Test/Language/README.md) | [Console Tests](Test/Console/README.md) | [Network Tests](Test/Network/README.md)
-- **Example Code**: [Examples](Examples/README.md) - Sample applications and use cases
-- **Scripts**: [Scripts](Scripts/README.md) - Build and demo scripts
-
-### **External Dependencies**
-- **External Libraries**: [Ext/](Ext/README.md) - Third-party dependencies and libraries
-- **Build System**: [CMake](CMake/README.md) - Build configuration and macros
-
-### **Quick Start**
-
-**Linux / WSL2 / macOS:**
-- Build with `./Scripts/build.sh` (quick Debug build), or plain CMake from a `build/` directory for full control over options — networking is enabled by default (`-DKAI_NETWORKING=OFF` to disable)
-- Test binaries are written to `./Bin/Test`, including `TestNetwork` and `TestTau`
-- Run `./Scripts/run_rho_demo.sh` for a comprehensive demo of Rho language features
-- Run `./Scripts/calc_test.sh` for a demonstration of network calculation
-- Run `./Scripts/network/run_continuation_migration_demo.sh` to prove continuation migration across two processes
-- Run `./Scripts/network/run_continuation_migration_tmux_demo.sh` for a tmux-recordable migration demo
-
-**Windows (native):**
-- `py build.py` — configure and build
-- `py run.py console` — build and launch the Console
-- `py run.py tests` (or `py run_tests.py`) — build and run all tests
-- `py run.py window` (or `py run_window.py`) — build and launch the ImGui/Window frontend (requires `glfw3`, and `GLEW` on Windows — e.g. `vcpkg install glfw3 glew`)
-- `py run.py --help` — full option list
-
-## Key Features
-
-- **Zero-Macro Reflection**: Expose C++ types and methods to scripting without macros or source modifications
-- **Distributed Computing**: Share both data and computation across networked nodes
-- **Console Networking**: Real-time console-to-console communication with command sharing
-- **Multiple Languages**: Use Pi (stack-based), Rho (infix), Sigma (statically typed), or Tau (IDL) as needed
-- **Type Safety**: Full type checking across network boundaries
-- **Incremental GC**: Smooth, constant-time garbage collection with no spikes
-- **Cross-Platform**: Linux, WSL2, Windows (native, VS 2022/2026), macOS, Unity3D
-- **Network Transparency**: Access remote objects as if they were local
-- **Dynamic Load Balancing**: Automatically distribute workload across network nodes
-- **RhoMog Model**: Live interactive demo of continuation mobility with fantasy-themed visualisation
-
-## Core Components
-
-- **Registry**: Type-safe object factory for creating, managing, and reflecting C++ objects
-- **Domain**: A collection of registries across network nodes
-- **Executor**: Stack-based virtual machine for executing code
-- **Memory Management**: Incremental tri-color garbage collector
-
-### Languages
-
-KAI is built around four small languages with a deliberate division of labor, not one general-purpose language wearing three hats.
-
-- **Pi (π)**: The execution substrate. A minimal, imperative RPN stack language, inspired by Forth, prompt: `π`. The executor runs Pi directly; the data stack plus instruction pointer are the complete continuation state, nothing implicit is held elsewhere. That is what makes it possible to freeze a running computation, send it across the network, and resume it on a different executor with no data loss.
-- **Rho (ρ)**: The scripting layer. A structured, Python-like infix language, prompt: `ρ`, that compiles down to Pi bytecode. It exists so people do not have to write Pi by hand. For example:
-
-  ```rho
-  let a = 3
-  let b = 4
-  let c = a + b
-  ```
-
-  compiles to:
-
-  ```pi
-  3 4 +
-  // stack: [ 7 ]
-  ```
-- **Sigma (σ)**: The typed layer. Rho's syntax plus static types, prompt: `σ`. Every program is type-checked before it runs, then compiled to Rho and from there to Pi, so a Sigma program with a type error never runs. See **[Doc/Sigma](Doc/Sigma/README.md)**. For example:
-
-  ```sigma
-  fun gcd(a: int, b: int) -> int
-      return b == 0 ? a : gcd(b, a % b)
-
-  g = gcd(48, 18)       // g: int, inferred
-  g = "six"             // 5:5: cannot assign to 'g': expected int, got str
-  ```
-- **Tau (τ)**: Interface Definition Language (IDL) for distributed object contracts across process boundaries. Tau is orthogonal to Pi, Rho and Sigma; it describes the shape of a network interface rather than compiling into either of the other two.
-
-The prompt shows only the active language symbol. Command numbers remain
-available through `history` and `!n`; history persists in
-`~/.kai/{pi,rho}.history`. The complete data stack is printed after each command,
-top-first, with `[0]` on the bottom line.
-
-### Console Networking
-
-KAI consoles can communicate with each other over the network in real-time:
-
-```bash
-# Console 1 (Server)
-./Console
-π /network start 14600
-π 2 3 +
-
-# Console 2 (Client)
-./Console
-π /network start 14601
-π /connect localhost 14600
-π /@0 10 *              # Multiply Console 1's result by 10
-π /broadcast stack      # Show stack on all connected consoles
+g = gcd(48, 18)       // g: int, inferred
+g = "six"             // 5:5: cannot assign to 'g': expected int, got str
 ```
 
-`localhost`, `::1`, and `127.0.0.1` are treated as the same loopback endpoint
-by the ENet transport, so local console peers can use whichever form is most
-convenient.
+- Built on the `Language/Common` framework (`LexerCommon`, `ParserCommon`, `AstNodeBase`, `TranslatorBase`)
+- Lives in `Source/Library/Language/Sigma` and `Include/KAI/Language/Sigma`, built as `SigmaLang`
+- Registered by the Console app through `Console::AddTranslator`, so CppKaiCore and CppKaiConsoleLib never depend on it
 
-**Network Commands:**
-- `/network start [port]` - Enable networking
-- `/connect <host> <port>` - Connect to peer console
-- `/@<peer> <command>` - Execute command on specific peer
-- `/broadcast <command>` - Execute command on all peers
-- `/peers` - List connected consoles
+### Continuation operators
 
-See [Console Networking Guide](Doc/CONSOLE_NETWORKING.md) for complete documentation.
+A call can end in one of Rho's continuation operators, written directly after the `)` with no space:
 
-## Example Code
+| Sigma | Pi | Meaning |
+|-------|----|---------|
+| `f(x)` | `Suspend` | an ordinary call |
+| `f(x)&` | `Suspend` | the same, written out |
+| `f(x)!` | `Replace` | a tail call: `f` takes the place of the running function |
 
-### Pi (Stack-based)
+With a space the operator means something else: `f(x) & mask` is a bitwise and, and `f(x) !` is a syntax error.
 
-```pi
-{ dup * } 'square #  // Define a function that squares its input
-5 square @           // Retrieve the function
-&                    // Execute the function
+### How Sigma compiles
+
+```mermaid
+flowchart LR
+    src[/"Sigma source"/] --> lex["SigmaLexer"]
+    lex --> parse["SigmaParser<br/>AST"]
+    parse --> check{"SigmaChecker"}
+    check -->|errors| err[/"line:col: message<br/>nothing runs"/]
+    check -->|well typed| emit["Rho emitter"]
+    emit --> rt["RhoTranslator"]
+    rt --> pi[/"Pi continuation"/]
+    pi --> ex[("Executor")]
 ```
 
-### Rho (Infix)
+Full reference: **[Doc/Sigma](Doc/Sigma/README.md)**.
 
-```rho
-fun square(x) {
-    return x * x
-}
-result = square(5)  // result is 25
-```
+---
 
-### Distributed Computing
+## Tau
 
-```rho
-node = createNetworkNode()
-node.listen(14589)
-node.connect("192.168.1.10", 14589)
-
-data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-fun square(x) { return x * x }
-
-result = acrossAllNodes(node, data, square)
-print(result)  // [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
-```
-
-### Nested Futures (C++)
-
-`Future<T>` is a thin wrapper around a `shared_ptr<State<T>>`, so it nests
-cleanly: a `Future<Future<T>>` is just an outer future whose value happens
-to be another future. Resolving the outer future delivers the *inner*
-future object, not the inner value; the inner future can still be
-pending, and resolving it later is visible through any copy you already
-unwrapped, since the state is shared.
-
-```cpp
-using namespace kai::net;
-
-Future<int> inner;
-Future<Future<int>> outer;
-
-// Resolve the outer future first, carrying the still-pending inner future.
-outer.SetValue(inner);
-outer.SetResponse(ResponseType::Returned);
-outer.SetComplete(true);
-
-Future<int> unwrapped = outer.GetValue();
-assert(!unwrapped.IsComplete());  // inner is still pending
-
-// Resolving the original inner future is visible through the unwrapped copy.
-inner.SetValue(42);
-inner.SetResponse(ResponseType::Returned);
-inner.SetComplete(true);
-
-assert(unwrapped.IsComplete());
-assert(unwrapped.GetValue() == 42);
-```
-
-Nesting isn't limited to one level either; `Future<Future<Future<T>>>`
-resolves the same way, one layer at a time, outside-in.
-
-See `Test/Network/NestedFutureTest.cpp`,
-`Test/Network/NestedFutureParamTests.cpp`, and
-`Test/Network/NestedFutureTripleTest.cpp` for the full test coverage of
-this pattern (24 tests). Note this covers the `Future<T>` class itself;
-nested futures as arguments across a network RPC call have not been
-verified and are a separate, unproven path.
-
-## Getting Started
-
-### Prerequisites
-
-- C++23 compiler: Clang 16+ (default on Linux/macOS; also supported natively on Windows), GCC 13+, or MSVC 19.5+ (VS 2022/2026)
-- CMake 3.28+
-- Python 3.10+ (Windows build scripts)
-- Ninja (optional, faster builds on Linux/macOS)
-
-### Building on Linux / WSL2 / macOS
-
-```bash
-git clone https://github.com/cschladetsch/CppKAI.git
-cd CppKAI
-git submodule init && git submodule update
-
-./Scripts/build.sh                          # Quick Debug build (Clang, Ninja)
-
-# Or plain CMake for full control over options:
-mkdir -p build && cd build
-cmake ..                                    # Networking on by default
-cmake .. -DKAI_NETWORKING=OFF               # Build without networking
-cmake .. -DBUILD_GCC=ON                     # Use GCC instead of Clang
-cmake --build .
-```
-
-### Building on Windows (native)
-
-```powershell
-git clone https://github.com/cschladetsch/CppKAI.git
-cd CppKAI
-git submodule init
-git submodule update --recursive
-
-py build.py                     # Release build (Clang + Ninja by default, shell syntax OFF)
-py build.py --config Debug      # Debug build
-py build.py --msvc              # Use MSVC + Visual Studio generator + vcpkg instead
-py build.py --no-network        # Disable networking
-py build.py --imgui             # Build the ImGui/Window frontend (needs glfw3, and GLEW on Windows)
-py build.py --reconfigure       # Clean and reconfigure
-
-py run.py console               # Build + launch Console (Pi mode)
-py run.py rho                   # Build + launch Console in Rho mode
-py run.py tests                 # Build + run all tests (same as py run_tests.py)
-py run.py test-pi               # Build + run TestPi only
-py run.py demo                  # Build + run ContinuationMobilityDemo
-py run.py window                # Build + launch the ImGui/Window frontend (same as py run_window.py)
-py run.py console --no-build    # Just launch (skip build)
-```
-
-### Building on Windows with Clang
-
-`py build.py` already does this by default (Ninja + auto-detected
-`clang++`/`clang`, erroring out with instructions if either is missing).
-Two ways to do it manually instead, e.g. for a separate build directory:
-
-```powershell
-# clang-cl (MSVC-compatible driver, uses the same VS toolchain/SDK)
-cmake -B build-clang -G "Visual Studio 17 2022" -A x64 -T ClangCL
-cmake --build build-clang --config Release
-
-# real clang/clang++ (GNU-style driver, needs Ninja instead of the VS generator)
-cmake -B build-clang -G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
-cmake --build build-clang --target Console
-```
-
-Run the Ninja variant from a Developer PowerShell for VS (or the
-`x64 Native Tools Command Prompt`) so Clang can find the MSVC headers/libs it
-still links against on Windows.
-
-To use MSVC + Visual Studio instead, pass `--msvc` to `build.py` (or use
-`py build.py --msvc --clean` if switching an existing Ninja-configured
-`build/` directory — CMake refuses to change generator in place).
-
-### Security Configuration
-
-Shell operations (backtick syntax, e.g. `` `pwd` `` in Rho/Pi) are **disabled
-by default** (`ENABLE_SHELL_SYNTAX=OFF`) — evaluating Pi/Rho source that
-contains a backtick expression runs a real shell command, so this is opt-in
-rather than opt-out. When enabled, native Windows routes commands through
-WSL2's bash (`wsl.exe`) — a WSL2 distro with bash/coreutils installed and
-`wsl` on PATH is required there for backtick expressions to work — while
-Linux/macOS/WSL2 use the system shell directly. To enable it:
-```bash
-cmake .. -DENABLE_SHELL_SYNTAX=ON
-```
-On Windows, `py build.py --enable-shell` does the same.
-
-## Applications
-
-### Console
-
-```bash
-./Console                    # Interactive Pi mode (default)
-./Console -l rho             # Interactive Rho mode
-./Console script.pi          # Execute Pi script
-./Console -t 2 script.rho    # Execute with trace level 2
-```
-
-**Interactive Session:**
-```
-KAI Console v0.3.0
-Type 'help' for available commands.
-
-π 2 3 +
-[0]: 5
-
-π rho
-Switched to Rho language mode
-
-ρ x = 42; y = x * 2; y
-[0]: 84
-```
-
-**Features:**
-- Plain language prompts: `π`, `ρ`, and `$`
-- Stack contents shown after every command, top-first with `[0]` at the bottom
-- Per-language persistent history saved to `~/.kai/pi.history` and `~/.kai/rho.history`
-- Context-sensitive help system
-- Shell integration (backtick expansion, disabled by default - opt in with `-DENABLE_SHELL_SYNTAX=ON`; native Windows then routes commands through WSL2's bash)
-- Color-coded stack display; floating-point values use the neutral value color
-- Native KAI Logger initialization for Console lifecycle, inspection, debugger
-  attachment/action, and failure records
-
-### Network Applications
-
-Networking is enabled by default. The build includes the ENet transport layer,
-Tau IDL libraries, and all network tests. The old `NetworkGenerate` command-line
-tool has been removed; Tau proxy/agent generation remains available through the
-Tau generator library.
-
-Continuations are serialized as binary payloads — suspended execution can be frozen on one node, transferred over the network, and resumed on another node.
-
-```cpp
-// Domain A: register a service
-Node nodeA;
-nodeA.Listen(IpAddress("127.0.0.1"), 14600);
-ISensorAgent agent(nodeA);
-
-// Domain B: call it remotely
-Node nodeB;
-nodeB.Connect(IpAddress("127.0.0.1"), 14600);
-ISensorProxy proxy(nodeB, agent.Handle());
-auto future = proxy.Value();          // returns Future<int> immediately
-nodeB.Step();
-```
+Tau is an IDL for distributed object contracts across process boundaries. It is orthogonal to Pi, Rho and Sigma: it describes the shape of a network interface rather than compiling into them.
 
 ```tau
 namespace Sensor {
@@ -430,46 +116,409 @@ namespace Sensor {
 }
 ```
 
-Embed the Tau generator APIs when proxy/agent headers need to be produced from
-IDL as part of a tool or build step.
+From a `.tau` file the generator library (`tau::Generate`) produces:
 
-## Project Structure
+- an **Agent** (`*.agent.h`): the endpoint that wraps the real object
+- a **Proxy** (`*.proxy.h`): the local stand-in that forwards calls to the agent and returns `Future<T>`
 
-- **Bin**: Executable output files
-- **build**: Build directory (out-of-source)
-- **CMake**: Auxiliary CMake modules
-- **Doc**: Documentation and tutorials
-- **Ext**: External dependencies (git submodules)
-- **Include**: Global include path
-- **Source**: Project source code
-- **Test**: Unit tests
-- **build.py**: Windows build script (Clang + Ninja by default; `--msvc` for Visual Studio + vcpkg)
-- **run.py**: Windows build-and-run script (console, tests, demo, etc.)
+```mermaid
+flowchart LR
+    IDL[/"ISensor.tau"/] --> GA["GenerateAgent"] --> AH[/"ISensor.agent.h"/]
+    IDL --> GP["GenerateProxy"] --> PH[/"ISensor.proxy.h"/]
 
-## Platforms
+    subgraph B["Node B"]
+        Caller --> PX[Proxy]
+    end
+    subgraph A["Node A"]
+        AG[Agent] --> Obj[Servant]
+    end
+    PX <-->|"ENet UDP"| AG
+```
 
-- Windows 10/11 (VS 2022, VS 2026)
-- Linux (Ubuntu, Debian, WSL2)
-- macOS (Sierra and newer)
-- Unity3D (2017+)
+```cpp
+// Domain A: host a service
+Node nodeA;
+nodeA.Listen(IpAddress("127.0.0.1"), 14600);
+ISensorAgent agent(nodeA);
 
-## License
+// Domain B: call it remotely
+Node nodeB;
+nodeB.Connect(IpAddress("127.0.0.1"), 14600);
+ISensorProxy proxy(nodeB, agent.Handle());
+auto future = proxy.Value();          // Future<int>, returns immediately
+nodeB.Step();
+```
 
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+The old `NetworkGenerate` command-line tool has been removed; embed the Tau generator APIs when headers need to be produced as part of a tool or build step. See **[Tau](Include/KAI/Language/Tau/README.md)** and **[Tau Tutorial](Doc/TauTutorial.md)**.
 
 ---
 
-## Project Statistics
+## Rho
 
-- **629+** C++ source files
-- **4** integrated programming languages (Pi / Rho / Sigma / Tau)
-- **2,202** CTest entries, all passing, across Core, Pi, Rho, Sigma, Tau, Console and network suites (TestRho alone has 864) — see [Doc/TEST_SUMMARY.md](Doc/TEST_SUMMARY.md) for the per-suite breakdown and [Doc/TODO.md](Doc/TODO.md) for currently-tracked language gaps and failing tests
-- **Full** Agent/Proxy/Domain networking over ENet UDP
-- **Tau IDL** generates type-safe proxy/agent pairs from `.tau` interfaces
-- **Networking on by default** — disable with `./b --no-network`
-- **Single flag** `KAI_BUILD_LLM=ON` enables the local model-cache layer
-- **Model storage**: `~/.cache/deepseek/models` by default
-- **Repo knowledge base**: `./Bin/RepoIndex` builds a local code/test index
-- **Training corpus**: `./Bin/RhoDataset` exports code, tests, scripts, `Logs/`, history, README files, and `Scripts/Training` lessons. It is silent by default and only asks when a proposed corpus change would have large impact.
+Rho is the scripting layer: a structured, Python-like, indentation-based infix language that compiles down to Pi. It exists so people do not have to write Pi by hand.
 
-**Start exploring**: Begin with the **[Documentation Guide](Doc/Documentation.md)** or dive into **[System Architecture](resources/README.md)** for technical details.
+```rho
+square = fun(x)
+    return x * x
+
+makeMultiplier = fun(factor)
+    multiplier = fun(x)
+        return x * factor
+    return multiplier
+
+triple = makeMultiplier(3)
+assert(square(5) == 25)
+assert(triple(4) == 12)
+```
+
+```rho
+let a = 3
+let b = 4
+let c = a + b
+```
+
+compiles to
+
+```pi
+3 4 +
+// stack: [ 7 ]
+```
+
+Rho has no GIL, has native coroutines, and its values are type-safe over the wire. It is duck-typed; Sigma is the statically typed layer on top.
+
+```mermaid
+flowchart LR
+    SRC[/"Rho source"/] --> LEX[RhoLexer] --> PAR[RhoParser] --> AST[AST]
+    AST --> TR[RhoTranslator] --> CONT[/"Pi continuation"/]
+    CONT --> EX(["Executor"])
+```
+
+See **[Rho Tutorial](Doc/RhoTutorial.md)**.
+
+---
+
+## Pi
+
+Pi is the execution substrate: a minimal, imperative RPN stack language inspired by Forth. The Executor runs Pi directly. The data stack plus the instruction pointer are the complete continuation state; nothing implicit is held elsewhere. That is what makes it possible to freeze a running computation, send it across the network, and resume it on another Executor with no data loss.
+
+```pi
+2 3 +                // 5
+{ dup * } 'square #  // store a continuation under the name square
+5 square &           // run it: 25
+```
+
+```mermaid
+flowchart TB
+    subgraph X["Executor"]
+        DS[("Data stack")]
+        CS[("Context stack")]
+        LOOP{{"Fetch and dispatch"}}
+    end
+    CONT[/"Continuation"/] --> LOOP
+    LOOP <--> DS
+    LOOP <--> CS
+    LOOP -->|freeze| SER[/"BinaryStream"/]
+    SER -->|send| REM(["Executor on another node"])
+```
+
+### PiNet
+
+A continuation that travels may only use names it binds itself. `{ 'n # n n * }` can travel; `{ a + }` is refused, because `a` would be looked up on whatever node it lands on. PiNet checks this before `send` does anything, on the sender, and names what is at fault.
+
+```mermaid
+flowchart LR
+    C[/"Payload"/] --> CHK{"Uses a name it<br/>does not bind?"}
+    CHK -->|no| SEND["Freeze and send"]
+    CHK -->|yes| FAIL["send fails on the sender"]
+```
+
+PiNet lives in CppKAI (`PiNetLang`), not CppKaiCore. CppKaiConsoleLib exposes a generic `Console::AddSendCheck` hook and the Console app registers PiNet with it. See **[PiNet](Doc/PiNet.md)** and **[Pi Tutorial](Doc/PiTutorial.md)**.
+
+---
+
+## Domain
+
+A **Domain** is the set of nodes that share object handles. In code (`Include/KAI/Network/Domain.h`) it wraps a `Node` and is the factory for the two ends of a network call:
+
+- `MakeAgent<T>()`: an endpoint that receives calls for a servant on this node
+- `MakeProxy<T>(NetHandle)`: a local representative of an agent on this node or another
+
+```mermaid
+flowchart LR
+    subgraph DA["Domain A"]
+        NA[Node] --- AG1[Agent] --- S1[(Servant)]
+    end
+    subgraph DB["Domain B"]
+        NB[Node] --- PX1[Proxy]
+    end
+    subgraph DC["Domain C"]
+        NC[Node] --- PX2[Proxy]
+    end
+    PX1 <-->|"ENet UDP"| AG1
+    PX2 <-->|"ENet UDP"| AG1
+```
+
+Every node is a peer. There is no central server and no network-wide lock, and parallelism comes from running several Registries that talk to each other rather than threads inside one Registry.
+
+### Continuation migration
+
+Because serialisation is first-class, a running continuation can move between Domains:
+
+```mermaid
+sequenceDiagram
+    participant A as Domain A
+    participant B as Domain B
+    A->>A: run Pi workflow, suspend
+    A->>A: freeze to BinaryStream
+    A->>B: send
+    B->>B: thaw
+    B->>B: resume on local Executor
+    B-->>A: result (42)
+```
+
+`./Scripts/network/run_continuation_migration_demo.sh` runs exactly this between two processes. From the Console, `send` also runs PiNet first, so a continuation that would break on the far node is refused on the sender.
+
+### Design direction
+
+Not yet in the code: a three-part address (`node:reg:#`) so Executors can migrate without breaking references, and a model for shared state with no single owner, where an object's state is the reconciled centroid of every peer holding an opinion on it, propagated by State Update Packets at a rate set per node pair. Object identity and discovery across the network is the open problem in this layer.
+
+See **[Networking](Doc/Networking.md)**, **[Peer to Peer](Doc/PeerToPeerNetworking.md)** and **[Network Architecture](Doc/NetworkArchitecture.md)**.
+
+---
+
+## Object Model
+
+- **Registry**: type-safe object factory that creates, reflects and owns objects
+- **ClassBuilder**: exposes C++ types, fields and methods to the runtime with no macros
+- **Executor**: the stack machine that runs Pi
+- **Garbage collector**: incremental tri-colour, run by the Registry
+
+```mermaid
+stateDiagram-v2
+    [*] --> White: allocated
+    White --> Grey: reachable from the tree root<br/>or an Executor context
+    Grey --> Black: references scanned,<br/>reachable Whites turned Grey
+    White --> [*]: collected when no Grey remain
+    Black --> White: next cycle
+```
+
+### Nested futures
+
+`Future<T>` wraps a `shared_ptr<State<T>>`, so it nests cleanly: resolving a `Future<Future<T>>` delivers the inner future, which may still be pending, and resolving that later is visible through any copy already unwrapped.
+
+```cpp
+using namespace kai::net;
+
+Future<int> inner;
+Future<Future<int>> outer;
+
+outer.SetValue(inner);
+outer.SetResponse(ResponseType::Returned);
+outer.SetComplete(true);
+
+Future<int> unwrapped = outer.GetValue();
+assert(!unwrapped.IsComplete());
+
+inner.SetValue(42);
+inner.SetResponse(ResponseType::Returned);
+inner.SetComplete(true);
+
+assert(unwrapped.GetValue() == 42);
+```
+
+Covered by `Test/Network/NestedFutureTest.cpp`, `NestedFutureParamTests.cpp` and `NestedFutureTripleTest.cpp`. Nested futures as arguments across a network RPC have not been verified.
+
+---
+
+## Console
+
+```bash
+./Console                    # interactive Pi (default)
+./Console -l rho             # interactive Rho
+./Console script.pi          # run a Pi script
+./Console -t 2 script.rho    # run with trace level 2
+```
+
+```
+π 2 3 +
+[0]: 5
+
+π rho
+Switched to Rho language mode
+
+ρ x = 42; y = x * 2; y
+[0]: 84
+```
+
+- The prompt shows only the active language symbol (`π`, `ρ`, `σ`, `$`)
+- The whole data stack is printed after each command, top first, with `[0]` on the bottom line
+- History persists in `~/.kai_history`; command numbers are available through `history` and `!n`
+- Shell backticks are **off by default** (`-DENABLE_SHELL_SYNTAX=ON` to enable; native Windows then routes commands through WSL2's bash)
+
+### Console networking
+
+```bash
+# Console 1
+π /network start 14600
+π 2 3 +
+
+# Console 2
+π /network start 14601
+π /connect localhost 14600
+π /@0 10 *              # run on peer 0
+π /broadcast stack      # run on every peer
+```
+
+| Command | Effect |
+|---------|--------|
+| `/network start [port]` | Enable networking |
+| `/connect <host> <port>` | Connect to a peer |
+| `/@<peer> <command>` | Run a command on one peer |
+| `/broadcast <command>` | Run a command on all peers |
+| `/peers` | List connected peers |
+
+```mermaid
+flowchart TB
+    subgraph FE["Front ends in this repo"]
+        CON["Console (CLI)"]
+        WIN["Window (ImGui)"]
+        SL["SlintUI (in progress)"]
+        KSH["ksh (object shell)"]
+    end
+    FE --> CL["CppKaiConsoleLib"]
+    CON -.->|"AddTranslator"| SIG["SigmaLang"]
+    CON -.->|"AddSendCheck"| PN["PiNetLang"]
+    CL --> LANG["CppKaiLanguage<br/>Pi, Rho"]
+    SIG --> LANG
+    LANG --> CORE["CppKaiCore<br/>Registry, Executor"]
+    PN --> CORE
+```
+
+See **[Console Networking](Doc/CONSOLE_NETWORKING.md)**.
+
+---
+
+## Building
+
+### Prerequisites
+
+- C++23 compiler: Clang 16+ (default), GCC 13+, or MSVC 19.5+ (VS 2022/2026)
+- CMake 3.28+
+- Ninja
+- Python 3.10+ (Windows build scripts)
+
+### Linux / WSL2 / macOS
+
+```bash
+git clone https://github.com/cschladetsch/CppKAI.git
+cd CppKAI
+git submodule update --init --recursive
+
+./Scripts/build.sh                     # quick Debug build (Clang, Ninja)
+
+# or plain CMake
+cmake -S . -B build -G Ninja
+cmake --build build
+ctest --test-dir build
+```
+
+### Windows
+
+```powershell
+git clone https://github.com/cschladetsch/CppKAI.git
+cd CppKAI
+git submodule update --init --recursive
+
+py build.py                     # Release, Clang + Ninja
+py build.py --config Debug
+py build.py --msvc              # MSVC + Visual Studio generator + vcpkg
+py run.py console               # build and launch the Console
+py run.py rho                   # Console in Rho mode
+py run.py tests                 # build and run every test
+py run.py window                # ImGui front end (needs glfw3 and GLEW)
+py run.py --help
+```
+
+### CMake options
+
+| Option | Default | Effect |
+|--------|---------|--------|
+| `KAI_NETWORKING` | `ON` | ENet transport, Tau and network tests |
+| `KAI_BUILD_IMGUI` | `OFF` | ImGui Window front end |
+| `KAI_BUILD_SLINT` | `OFF` | Slint front end (in progress) |
+| `KAI_BUILD_LLM` | `OFF` | Local model cache, `RepoIndex`, `RhoDataset` |
+| `KAI_ANDROID` | `OFF` | Android-reusable library subset |
+| `ENABLE_SHELL_SYNTAX` | `OFF` | Backtick shell commands in Pi and Rho |
+| `KAI_ENABLE_TRACE` | `OFF` | `KAI_TRACE` diagnostic logging |
+| `BUILD_GCC` | `OFF` | Use GCC instead of Clang |
+
+All diagnostic output goes through the `KAI_TRACE` macros (`KAI_TRACE`, `KAI_TRACE_WARN`, ...). `VERBOSE` is a separate channel from `TRACE`, not a sub-level of it.
+
+`py run_tests.py` registers **2,202 CTest entries**, all passing, across Core, Pi, Rho, Sigma, Tau, PiNet, Console and network suites. See [Doc/TEST_SUMMARY.md](Doc/TEST_SUMMARY.md).
+
+---
+
+## Repository Layout
+
+```text
+CppKAI/
+├── Include/KAI/
+│   ├── Language/      Sigma, PiNet, Tau, Lisp, Hlsl headers
+│   ├── Network/       Node, Domain, Agent, Proxy, Future
+│   └── Platform/
+├── Source/
+│   ├── App/           Console, Window, RepoIndex, RhoDataset
+│   └── Library/       Language (Sigma, PiNet, Tau, Lisp, Hlsl), Network, LLM, ImGui
+├── ksh/               KAI object shell
+├── Test/              gtest suites and script tests
+├── Examples/          Tau and Calculator examples
+├── Demo/              ContinuationMobilityDemo
+├── Doc/               Guides, tutorials, design notes
+├── Scripts/           Build, test and demo scripts
+└── Ext/               Submodules
+    ├── CppKaiCore/        Registry, Executor, GC, Language/Common
+    ├── CppKaiLanguage/    Pi and Rho
+    ├── CppKaiConsoleLib/  Console, AddTranslator, AddSendCheck
+    ├── ENet/              UDP transport (third party)
+    ├── CppLmmModelStore/  local model store
+    └── imgui, cpp-httplib, slint, rang
+```
+
+```mermaid
+flowchart BT
+    CORE["CppKaiCore"]
+    LANG["CppKaiLanguage"] --> CORE
+    CL["CppKaiConsoleLib"] --> LANG
+    SIG["SigmaLang"] --> LANG
+    PN["PiNetLang"] --> CORE
+    TAU["TauLang"] --> CORE
+    NET["Network"] --> TAU
+    NET --> ENET["ENet"]
+    APP["Console app"] --> CL
+    APP --> SIG
+    APP --> PN
+    APP --> NET
+```
+
+Core never depends on Sigma, PiNet or any front end. Extensions attach through hooks (`Console::AddTranslator`, `Console::AddSendCheck`) rather than direct references.
+
+---
+
+## Documentation
+
+- **Start here**: [Documentation Guide](Doc/Documentation.md) | [Doc/ index](Doc/README.md) | [Project Overview](Doc/ProjectOverview.md) | [Architecture](Doc/Architecture.md)
+- **Languages**: [Sigma](Doc/Sigma/README.md) | [Rho Tutorial](Doc/RhoTutorial.md) | [Pi Tutorial](Doc/PiTutorial.md) | [PiNet](Doc/PiNet.md) | [Tau Tutorial](Doc/TauTutorial.md) | [Language System](Include/KAI/Language/README.md)
+- **Networking**: [Overview](Doc/Networking.md) | [Architecture](Doc/NetworkArchitecture.md) | [Peer to Peer](Doc/PeerToPeerNetworking.md) | [Console Networking](Doc/CONSOLE_NETWORKING.md)
+- **Building**: [Build Guide](Doc/BUILD.md) | [Out-of-Source Builds](Doc/OUT_OF_SOURCE_BUILD.md) | [Install](Doc/Install.md) | [CMake](CMake/README.md)
+- **Testing**: [Test Overview](Test/README.md) | [Language Tests](Test/Language/README.md) | [Network Tests](Test/Network/README.md) | [Test Summary](Doc/TEST_SUMMARY.md)
+- **Diagrams**: [Architecture Resources](resources/README.md)
+- **LLM tooling**: [LmmReadme](Doc/LmmReadme.md)
+- **Status**: [TODO](Doc/TODO.md)
+
+## Platforms
+
+Windows 10/11 (VS 2022, VS 2026), Linux (Ubuntu, Debian, CentOS, WSL2), macOS, Android (library subset), Unity3D.
+
+## License
+
+MIT. See [LICENSE](LICENSE).

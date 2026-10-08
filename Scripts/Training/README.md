@@ -11,6 +11,14 @@ impact on the training set, such as a new external corpus, a broad rewrite of
 curated examples, or a provenance change that materially alters what the model
 will learn.
 
+```mermaid
+flowchart LR
+    L[/"Training/*.md lessons"/] --> RD["Bin/RhoDataset"]
+    O[/"tests, scripts, Logs/,<br/>history, READMEs"/] --> RD
+    RD --> J[("dataset.jsonl<br/>+ manifest.json")]
+    J --> E["eval/ prompt suites"]
+```
+
 `./Bin/RhoDataset` includes this folder together with:
 
 - Rho, Pi, and Tau language tests

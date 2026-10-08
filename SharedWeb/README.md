@@ -1,19 +1,27 @@
 # KAI Shared Web
 
-SharedWeb contains KAI-aware web components and browser-facing runtime adapters.
-It is intended to be consumed by CppKAI demos and external KAI applications
-without CppKAI depending on those consumers.
+KAI-aware web components and browser-side runtime adapters, shared by the CppKAI demos and by external KAI web applications without CppKAI depending on those consumers.
 
-## Structure
+| Path | Contents |
+|------|----------|
+| `components/` | Static HTML fragments used by the demos (`kai-pi-stack.html`, `kai-log-panel.html`) |
+| `styles/` | Shared styling (`kai-shared.css`) |
+| `src/components/` | TypeScript custom elements |
+| `src/runtime/` | KAI runtime interfaces and shared types |
+| `src/adapters/` | Platform bridge adapters |
+| `src/index.ts` | Package entry point |
 
-- `components/` contains static HTML fragments used by existing demos.
-- `styles/` contains shared KAI web styling.
-- `src/components/` contains TypeScript custom elements.
-- `src/runtime/` contains KAI runtime interfaces and shared types.
-- `src/adapters/` contains platform bridge adapters.
+```mermaid
+flowchart LR
+    KAI["KAI core"] --> SW["SharedWeb<br/>@kai/shared-web"]
+    SW --> DEMO["Demo/ContinuationMobilityDemo,<br/>Demo/DemoConintuationLocal"]
+    SW --> EXT["External KAI web apps"]
+```
 
-The intended dependency direction is:
+The dependency only ever points that way: KAI core to SharedWeb to consumers.
 
-```text
-KAI core -> SharedWeb -> consumers
+```bash
+npm install
+npm run build        # tsc
+npm run typecheck
 ```

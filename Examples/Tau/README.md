@@ -1,6 +1,6 @@
 # Tau IDL Examples
 
-This directory contains practical examples of Tau Interface Definition Language (IDL) files demonstrating various features and patterns for distributed system development.
+Practical Tau interface definitions showing the language's features and common patterns for distributed services. These are inputs for the Tau generator; they are not built.
 
 ## Examples Overview
 
@@ -65,28 +65,39 @@ This directory contains practical examples of Tau Interface Definition Language 
 
 ## Usage Examples
 
-### Generating Code from Examples
+### Generating code from an example
 
-```bash
-# Generate proxy and agent for Calculator service
-./NetworkGenerate Calculator.tau --out=./generated
+The old `NetworkGenerate` tool has been removed; generation is a library call. Each generator takes the Tau source text and writes C++ into a string:
 
-# Generate only proxy for ChatService
-./NetworkGenerate ChatService.tau --proxy_dir=./client --agent_dir=""
+```cpp
+#include <KAI/Language/Tau/Generate/GenerateProxy.h>
+#include <KAI/Language/Tau/Generate/GenerateAgent.h>
 
-# Generate to separate directories
-./NetworkGenerate GameServer.tau \
-  --proxy_dir=./client/gaming \
-  --agent_dir=./server/gaming
+std::string source = ReadFile("Examples/Tau/Calculator.tau");
+
+std::string proxyCode, agentCode;
+tau::Generate::GenerateProxy proxy(source.c_str(), proxyCode);
+tau::Generate::GenerateAgent agent(source.c_str(), agentCode);
+
+if (proxy.failed) std::cerr << proxy.error;
+WriteFile("Calculator.proxy.h", proxyCode);
+WriteFile("Calculator.agent.h", agentCode);
 ```
 
-### Integration in Projects
+```mermaid
+flowchart LR
+    T[/"Calculator.tau"/] --> GP["GenerateProxy"] --> P[/"Calculator.proxy.h<br/>client"/]
+    T --> GA["GenerateAgent"] --> A[/"Calculator.agent.h<br/>server"/]
+    P <-->|"Node, ENet UDP"| A
+```
 
-1. **Choose an appropriate example** based on your use case
-2. **Modify the interfaces** to match your specific requirements
-3. **Generate C++ code** using NetworkGenerate
-4. **Implement the agent classes** with your business logic
-5. **Use proxy classes** in client code for network calls
+### Using an example in a project
+
+1. Pick the example closest to your use case
+2. Change the interfaces to fit
+3. Generate the Proxy and Agent with the library calls above, as a build step or tool
+4. Implement the servant behind the Agent
+5. Call it through the Proxy; every call returns a `Future<T>`
 
 ## Feature Reference
 
@@ -154,6 +165,6 @@ These examples serve as starting points for your own Tau interfaces. Consider:
 ## See Also
 
 - **[Tau Tutorial](../../Doc/TauTutorial.md)** - Complete language reference
-- **NetworkGenerate README** - Code generation tool
+- **[Tau headers](../../Include/KAI/Language/Tau/README.md)** - Generator API
 - **[Tau Code Generation Guide](../../Doc/TauCodeGeneration.md)** - Architecture details
 - **[Test Examples](../../Test/Language/TestTau/)** - Additional test cases

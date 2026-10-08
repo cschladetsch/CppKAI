@@ -1,16 +1,23 @@
 # RepoIndex
 
-RepoIndex scans the KAI repository and builds a local chunked knowledge base for
-assistant-style retrieval.
+Scans the KAI repository and builds a local chunked knowledge base for assistant-style retrieval. Built with `-DKAI_BUILD_LLM=ON`.
 
-By default it writes to the local model cache from `CppLmmModelStore`:
+```mermaid
+flowchart LR
+    SRC[/"Source, tests, docs"/] --> RI[RepoIndex] --> KB[("chunked index<br/>model cache tree")]
+    KB --> LLM["LLM::Session<br/>retrieval"]
+```
+
+By default it writes to the local model cache from `CppLmmModelStore` (`~/.cache/deepseek/models`):
 
 ```bash
 ./Bin/RepoIndex
 ```
 
-Override the source root or output root if you want to index a different tree:
+To index a different tree or write elsewhere:
 
 ```bash
 ./Bin/RepoIndex --root /path/to/KAI --out /tmp/kai-index
 ```
+
+See [LmmReadme](../../../Doc/LmmReadme.md).

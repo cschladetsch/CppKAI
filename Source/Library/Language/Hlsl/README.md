@@ -1,9 +1,12 @@
 # Hlsl
 
-HLSL is a *High Level Shader Language* created by Microsoft to support development of shaders for DirectX9+ GPUs.
+An experimental front end for HLSL, Microsoft's High Level Shader Language for DirectX.
 
-It was 'improved' with *Cg* language, but it seems GLSL, supported by OpenGL, Unity3d and Kronos is gaining wider support.
+The aim is to produce an AST for an HLSL shader, which can then be used to generate equivalent GLSL. The original goal was to reuse ShaderToy-style raymarching distance-field shaders in 360° Unity3D VR apps.
 
-This language library will produce an AST for a HLSL shader file, which can then be used to generate appropriate GLSL shader coder.
+**Status:** not built. Headers are in [`Include/KAI/Language/Hlsl`](../../../../Include/KAI/Language/Hlsl) (`HlslLexer`, `HlslParser`, `HlslTranslator`), and the only test, [`Test/Language/TestHlsl`](../../../../Test/Language/TestHlsl), is commented out.
 
-An ultimate goal is to easily use the raymarching depth-field shaders from [ShaderToy](https://www.shadertoy.com) in 360 Unity3d VR apps and experiences.
+```mermaid
+flowchart LR
+    SRC[/"HLSL shader"/] -.-> LEX[HlslLexer] -.-> PAR[HlslParser] -.-> AST[AST] -.-> GLSL[/"GLSL"/]
+```

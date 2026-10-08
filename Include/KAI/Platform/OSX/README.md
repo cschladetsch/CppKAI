@@ -1,3 +1,3 @@
-# OSX
+# macOS
 
-Code specific to OSX platform.
+macOS-specific headers: `ConsoleColors.h`.

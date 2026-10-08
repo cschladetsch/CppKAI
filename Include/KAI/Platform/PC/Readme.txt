@@ -1,2 +1,1 @@
-PC-Platform impelemtations for interfaces defined in Platform/
-
+Legacy PC implementations of interfaces declared in Platform/: GameController.h and Network/TcpClientImpl.h.

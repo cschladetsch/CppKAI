@@ -1,3 +1,3 @@
-# PS4 Support
+# PS4
 
-Support for PS4.
+Placeholder for PlayStation 4 support. No code yet; see [Platform](../README.md).

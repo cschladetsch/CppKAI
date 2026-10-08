@@ -1,11 +1,30 @@
 # KAI Applications
 
-There are are a number of applications of KAI. This folder contains all of the root applications, including:
+Executables are written to `Bin/`.
 
-1. **Console**. A basic colored console interface to an Executor.
-1. **ImGui**. New GUI console based on ImGui. Build it with `./Scripts/b --imgui` or `-DKAI_BUILD_IMGUI=ON`.
-1. **RepoIndex**. Builds a local code/test knowledge base for LLM-assisted retrieval. Build it with `-DKAI_BUILD_LLM=ON`. It writes under the same `~/.cache/deepseek/models` model cache used by `Ext/CppLmmModelStore`.
-1. **RhoDataset**. Builds a JSONL training corpus from Rho, Pi, Tau, gtests, `Logs/`, history files, README documentation, and `Scripts/Training` lessons. It uses the same cache tree and is also enabled with `-DKAI_BUILD_LLM=ON`.
-1. **NetworkGen**. Used to generate _Agents_ and _Proxies_ for networking.
-1. **NetworkPeer**. More advanced: will be a way to connect and communicate with other peers.
-1. **Deprecated**. Apps that no longer serve a purpose but are kept around for reference.
+| App | Executable | Built when | What it is |
+|-----|------------|------------|------------|
+| [Console](Console/README.md) | `Console` | always | Coloured REPL onto an Executor: Pi, Rho and Sigma, with peer-to-peer networking |
+| [Window](Window/README.md) | `ImGui` | `KAI_BUILD_IMGUI=ON` (`py build.py --imgui`) | Dear ImGui console, debugger and object-tree viewer |
+| [RepoIndex](RepoIndex/README.md) | `RepoIndex` | `KAI_BUILD_LLM=ON` | Local code and test knowledge base for retrieval |
+| [RhoDataset](RhoDataset/README.md) | `RhoDataset` | `KAI_BUILD_LLM=ON` | JSONL training corpus from Rho, Pi, Tau, tests, logs, history, READMEs and `Scripts/Training` |
+
+With networking on, the Console target also builds `SimpleServer`, `SimpleClient` and `ContinuationMigrationDemo`.
+
+`Chat/` holds only `ChatInterface.tau`, a Tau interface for a chat service; nothing is built from it.
+
+The old `NetworkGenerate` tool has been removed. Tau Agent and Proxy generation is a library call (`tau::Generate::*`); see [Tau](../../Include/KAI/Language/Tau/README.md).
+
+```mermaid
+flowchart LR
+    CON[Console] --> CL[CppKaiConsoleLib]
+    WIN[ImGui] --> CL
+    CON -.->|AddTranslator| SIG[SigmaLang]
+    CON -.->|AddSendCheck| PN[PiNetLang]
+    CON --> NET[Network]
+    RI[RepoIndex] --> LLM[LLM]
+    RD[RhoDataset] --> LLM
+    LLM --> MS[CppLmmModelStore]
+```
+
+Other front ends on the same object model, such as [ksh](../../ksh/README.md), live outside this folder.

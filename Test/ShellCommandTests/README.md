@@ -1,6 +1,15 @@
 # Shell Command Test Suite
 
-This test suite comprehensively tests the shell command functionality added to the KAI Console.
+Script-driven tests of the Console's shell command support: backticks, embedded substitution and the `$` prefix, in Pi and Rho.
+
+Shell syntax is **off by default**. Build the Console with `-DENABLE_SHELL_SYNTAX=ON` (`py build.py --enable-shell` on Windows) before running these. On native Windows commands go through WSL2's bash, so a WSL2 distro is required.
+
+```mermaid
+flowchart LR
+    TXT[/"test_*.txt"/] --> RUN["run_shell_tests.sh"] --> CON["Bin/Console"]
+    CON --> SH[(system shell)]
+    RUN --> LOG[/"results/test_results.log"/]
+```
 
 ## Features Tested
 
@@ -52,10 +61,10 @@ This test suite comprehensively tests the shell command functionality added to t
 ## Running the Tests
 
 ### Prerequisites
-1. Build the KAI Console:
+1. Build the KAI Console with shell syntax enabled:
    ```bash
-   cd $KAI_ROOT/build
-   ninja Console
+   cmake -S . -B build -G Ninja -DENABLE_SHELL_SYNTAX=ON
+   cmake --build build --target Console
    ```
 
 2. Ensure shell tools are available: `pwd`, `whoami`, `echo`, `ls`, `date`, `bc`

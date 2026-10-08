@@ -1,102 +1,63 @@
-# KAI Network Tests
+# Network Tests
 
-This directory contains comprehensive tests for KAI's networking capabilities, including peer-to-peer communication, distributed computing, and console networking.
+Tests for Nodes, Domains, futures, Tau over the network and continuation serialisation. Built when `KAI_NETWORKING=ON` (the default).
 
-## Test Categories
-
-### Core Network Tests
-
-- **TestNode.cpp** - Tests for basic network node functionality
-- **TestGenerateProxy.cpp** - Proxy generation and network object creation
-- **ConsoleConnectionTest.cpp** - Console networking integration tests
-
-### Chat System Tests
-
-- **ChatDemo.rho** - Rho-based chat demonstration script
-- **ChatFunctionalityTests.cpp** - Chat system feature validation
-- **ChatAdvancedTests.cpp** - Advanced chat scenarios and edge cases
-- **ChatProxyGenerationTest.cpp** - Chat proxy object generation
-- **ICQStyleChatTest.cpp** - ICQ-style instant messaging tests
-
-### Network Calculation Tests
-
-- **CalculationTest.cpp** - Distributed calculation validation
-- **IntegratedConsoleTest.cpp** - Console integration with network calculations
-
-### Console Networking
-
-- **TestConsoleNetworking.cpp** - Comprehensive console-to-console communication tests
-
-## Key Features Tested
-
-### Peer-to-Peer Communication
-- Node discovery and connection establishment
-- Bi-directional message passing
-- Connection management and error handling
-
-### Console Networking
-- Multi-console real-time communication
-- Remote command execution
-- Cross-language command compatibility (Pi ↔ Rho)
-- Broadcasting to multiple peers
-- Network message history
-
-### Distributed Computing
-- Remote object creation and manipulation
-- Proxy generation for network objects
-- Load balancing across network nodes
-- Failure handling and recovery
-
-## Running Network Tests
-
-### All Network Tests
-```bash
-make test
-ctest -R Network
+```mermaid
+flowchart LR
+    subgraph TestNetwork
+        N["Node end to end"]
+        F["Futures<br/>(nested, as arguments)"]
+        T["Tau over the network<br/>(Domain properties, codegen)"]
+        C["Continuation and Pi<br/>serialisation"]
+    end
+    N & F & T & C --> NET[Network library] --> ENET[ENet UDP on localhost]
 ```
 
-### Console Networking Tests
+## TestNetwork
+
+| File | Covers |
+|------|--------|
+| `NodeEndToEndTest.cpp` | Two Nodes connecting and exchanging calls |
+| `NodeFutureArgumentTest.cpp`, `NodeFutureArgumentThreadTest.cpp`, `NodeFutureNetworkParamTests.cpp` | `Future<T>` as RPC arguments |
+| `NestedFutureTest.cpp`, `NestedFutureParamTests.cpp`, `NestedFutureTripleTest.cpp` | `Future<Future<T>>` and deeper |
+| `TauDomainPropertyTest.cpp` | Properties through a Domain's Agents and Proxies |
+| `TauNetworkCommunicationTest.cpp` | Generated Proxy and Agent talking over a Node |
+| `TauCodeGenParamTests.cpp`, `TestGenerateProxy.cpp` | Generated code for network parameters |
+| `TauPiSerializationTest.cpp`, `ContinuationSerializationTest.cpp` | Freezing Pi values and continuations to a `BinaryStream` and back |
+| `NetworkAdditionalTests.cpp`, `NetworkAddressCenturyTests.cpp` | Addresses, connections, edge cases |
+
 ```bash
-ctest -R ConsoleNetworking -V
+./Bin/Test/TestNetwork
+./Bin/Test/TestNetwork --gtest_filter="TauDomainPropertyTest*"
+ctest --test-dir build -R TestNetwork
 ```
 
-### Specific Test Categories
+## Standalone programs
+
+| Program | Purpose |
+|---------|---------|
+| `ConsoleConnectionTest` | Console networking integration |
+| `IntegratedConsoleTest` | Console with network calculations |
+| `CalculationTest` | Distributed calculation |
+| `Test_ProxyGeneration` (in `ProxyTest/`) | Proxy generation |
+
+## Not built
+
+The chat tests (`ChatFunctionalityTests.cpp`, `ChatAdvancedTests.cpp`, `ChatProxyGenerationTest.cpp`, `ICQStyleChatTest.cpp`) and `ChatDemo.rho` are kept for reference but are not in any target.
+
+## Demos
+
 ```bash
-ctest -R Chat          # Chat-related tests
-ctest -R Calculation   # Network calculation tests
-ctest -R Proxy         # Proxy generation tests
+./Test/demo_console_communication.sh                        # tmux console-to-console demo
+./Scripts/network/run_continuation_migration_demo.sh        # freeze, send, thaw, resume: returns 42
 ```
 
-## Interactive Demos
+Tests connect over localhost only.
 
-### Console Communication Demo
-Run the interactive tmux-based demo:
-```bash
-cd ../..
-./demo_console_communication.sh
-```
+## See Also
 
-### Chat Demo
-```bash
-# Terminal 1
-./console
-pi> load "Test/Network/ChatDemo.rho"
-
-# Terminal 2  
-./console
-pi> load "Test/Network/ChatDemo.rho"
-```
-
-## Test Configuration
-
-Network tests use configurable ports and addresses:
-- Default test port range: 14700-14799
-- Localhost connections for safety
-- Automatic port selection to avoid conflicts
-
-## Related Documentation
-
-- [Console Networking Guide](../../Doc/CONSOLE_NETWORKING.md)
+- [Console Networking](../../Doc/CONSOLE_NETWORKING.md)
 - [Network Architecture](../../Doc/NetworkArchitecture.md)
+- [Peer to Peer](../../Doc/PeerToPeerNetworking.md)
 - [Connection Testing](../../Doc/ConnectionTesting.md)
-- [Peer-to-Peer Documentation](../../Doc/PeerToPeerNetworking.md)
+- [Network library](../../Source/Library/Network/Source/README.md)

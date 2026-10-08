@@ -1,113 +1,115 @@
 # KAI Documentation
 
-This directory contains documentation for the KAI distributed object model
-and language system.
+Documentation for the KAI distributed object model and its languages. For the project overview, start with the [main README](../README.md).
 
-## Quick Start Guides
+```mermaid
+flowchart TB
+    START["Documentation.md<br/>start here"] --> LANG & NET & CORE & BUILD
+    subgraph LANG["Languages"]
+        SIG["Sigma/README.md"] --> RHO["RhoTutorial.md"] --> PI["PiTutorial.md"]
+        PI --> PN["PiNet.md"]
+        TAU["TauTutorial.md"]
+    end
+    subgraph NET["Domain and networking"]
+        N1["Networking.md"] --> N2["NetworkArchitecture.md"] --> N3["PeerToPeerNetworking.md"]
+    end
+    subgraph CORE["Architecture"]
+        A1["ProjectOverview.md"] --> A2["Architecture.md"]
+    end
+    subgraph BUILD["Build and test"]
+        B1["BUILD.md"] --> B2["Test.md"] --> B3["TEST_SUMMARY.md"]
+    end
+```
 
-- **[BUILD.md](BUILD.md)** - Building KAI from source (all platforms, all CMake options)
-- **[Install.md](Install.md)** - Installation instructions
-- **[Documentation.md](Documentation.md)** - Main documentation index
-- **[Test.md](Test.md)** - Running the test suites and filtering failures
+## Quick Start
+
+- **[BUILD.md](BUILD.md)**: building from source, all platforms and CMake options
+- **[Install.md](Install.md)**: installation
+- **[Android.md](Android.md)**: building the Android library subset
+- **[Documentation.md](Documentation.md)**: main documentation index
+- **[Test.md](Test.md)**: running the test suites and filtering failures
 
 ## Current Status
 
 - Networking is built by default (`KAI_NETWORKING=ON`); pass `-DKAI_NETWORKING=OFF` to skip it.
-- Shell/backtick syntax is disabled by default (`ENABLE_SHELL_SYNTAX=OFF`); pass `-DENABLE_SHELL_SYNTAX=ON` to enable it.
-- See **[TEST_SUMMARY.md](TEST_SUMMARY.md)** for the current test status snapshot and **[TODO.md](TODO.md)** for currently-tracked gaps and known-failing tests.
-- See **[REVIEW.md](REVIEW.md)** for a full architectural/code review of the codebase.
+- Shell backtick syntax is off by default (`ENABLE_SHELL_SYNTAX=OFF`).
+- **[TEST_SUMMARY.md](TEST_SUMMARY.md)** is the current test snapshot and **[TODO.md](TODO.md)** tracks known gaps and failing tests.
+- **[REVIEW.md](REVIEW.md)** is the current architectural and code review.
 
-### Language Tutorials
-- **[PiTutorial.md](PiTutorial.md)** - Pi stack-based language tutorial
-- **[RhoTutorial.md](RhoTutorial.md)** - Rho infix language tutorial
-- **[Sigma/README.md](Sigma/README.md)** - Sigma, the statically typed language
-- **[TauTutorial.md](TauTutorial.md)** - Tau IDL tutorial
-- **[LanguageGuide.md](LanguageGuide.md)** - Multi-language overview
+## Languages
 
-## Core System Documentation
+| Language | Reference | Role |
+|----------|-----------|------|
+| Sigma (σ) | [Sigma/README.md](Sigma/README.md), [Sigma.md](Sigma.md) (continuation operators) | Statically typed; compiles to Rho |
+| Rho (ρ) | [RhoTutorial.md](RhoTutorial.md), [RhoLanguage.md](RhoLanguage.md) | Infix scripting; compiles to Pi |
+| Pi (π) | [PiTutorial.md](PiTutorial.md), [Meaning.md](Meaning.md), [ClosuresVsContinuations.md](ClosuresVsContinuations.md), [ContinuationControl.md](ContinuationControl.md) | RPN bedrock; runs on the Executor |
+| PiNet | [PiNet.md](PiNet.md) | What a continuation may reference to be sent to another node |
+| Tau | [TauTutorial.md](TauTutorial.md), [TauFormalDefinition.md](TauFormalDefinition.md), [TauArchitectureDiagrams.md](TauArchitectureDiagrams.md), [TauCodeGeneration.md](TauCodeGeneration.md) | IDL; generates Agents and Proxies |
 
-### Architecture
-- **[Architecture.md](Architecture.md)** - System architecture overview
-- **[CommonLanguageSystem.md](CommonLanguageSystem.md)** - Language integration
+- **[LanguageGuide.md](LanguageGuide.md)**: how the four languages fit together
+- **[Languages.md](Languages.md)**: the shared language-construction system
+- **[CommonLanguageSystem.md](CommonLanguageSystem.md)**: `Language/Common` in detail
 
-### Networking
-- **[Networking.md](Networking.md)** - Network system overview
-- **[NetworkArchitecture.md](NetworkArchitecture.md)** - Network design
-- **[PeerToPeerNetworking.md](PeerToPeerNetworking.md)** - P2P communication
-- **[NetworkSecurity.md](NetworkSecurity.md)** - Security considerations
-- **[NetworkTauInterfaces.md](NetworkTauInterfaces.md)** - Network interfaces in Tau
-- **[NetworkPerformance.md](NetworkPerformance.md)** - Performance optimization
+## Architecture
 
-### Console System
-- **[Console.md](Console.md)** - Interactive console documentation
-- **[CONSOLE_NETWORKING.md](CONSOLE_NETWORKING.md)** - Console-to-console networking
-- **[ColorOutput.md](ColorOutput.md)** - Console color and formatting
+- **[Manifesto.md](Manifesto.md)**: what KAI is for
+- **[ProjectOverview.md](ProjectOverview.md)**: CppKAI and its submodules
+- **[Architecture.md](Architecture.md)**: system architecture
+- **[DistributedGarbageCollection.md](DistributedGarbageCollection.md)**: GC across nodes
+- **[EventSystem.md](EventSystem.md)**: events and callbacks ([EventExample.cpp](EventExample.cpp))
 
-### Code Generation
-- **[TauCodeGeneration.md](TauCodeGeneration.md)** - Tau code generation system
-- **[EventSystem.md](EventSystem.md)** - Event handling and callbacks
+## Domain and Networking
 
-### Language-Specific Documentation
+- **[NetworkDocumentation.md](NetworkDocumentation.md)**: networking index
+- **[Networking.md](Networking.md)**: overview
+- **[NetworkArchitecture.md](NetworkArchitecture.md)**: Node, Domain, Agent, Proxy
+- **[PeerToPeerNetworking.md](PeerToPeerNetworking.md)**: peer-to-peer Domains
+- **[NetworkTauInterfaces.md](NetworkTauInterfaces.md)**: network interfaces in Tau
+- **[NetworkSecurity.md](NetworkSecurity.md)**: security
+- **[NetworkPerformance.md](NetworkPerformance.md)**: performance
 
-#### Pi Language
-- **[Meaning.md](Meaning.md)** - Pi language semantics
-- **[ClosuresVsContinuations.md](ClosuresVsContinuations.md)** - Advanced Pi concepts
-- **[ContinuationControl.md](ContinuationControl.md)** - Continuation control flow
+## Console
 
-#### Rho Language
-- **[RhoLanguage.md](RhoLanguage.md)** - Rho language specification
+- **[Console.md](Console.md)**: the interactive console
+- **[CONSOLE_NETWORKING.md](CONSOLE_NETWORKING.md)**: console-to-console networking
+- **[ColorOutput.md](ColorOutput.md)**: colour and formatting
 
-#### Sigma Language
-- **[Sigma/README.md](Sigma/README.md)** - Sigma language reference
-- **[Sigma.md](Sigma.md)** - Design note: planned continuation operators
+## Testing
 
-#### Tau Language
-- **[TauFormalDefinition.md](TauFormalDefinition.md)** - Tau formal definition
-- **[TauArchitectureDiagrams.md](TauArchitectureDiagrams.md)** - Tau architecture
+- **[Test.md](Test.md)**: testing guide
+- **[TEST_SUMMARY.md](TEST_SUMMARY.md)**: current status
+- **[LogFormat.md](LogFormat.md)**: test runner log format
 
-## Testing Documentation
-- **[Test.md](Test.md)** - Testing guide and best practices
-- **[TEST_SUMMARY.md](TEST_SUMMARY.md)** - Current test status snapshot
+## Tooling and Maintenance
 
-## Maintenance
-- **[StyleGuide.md](StyleGuide.md)** - Code style guidelines
-- **[TODO.md](TODO.md)** - Tracked gaps, in-progress work, known-failing tests
+- **[LmmReadme.md](LmmReadme.md)**: local model cache, `RepoIndex`, `RhoDataset`
+- **[StyleGuide.md](StyleGuide.md)**: code style
+- **[OUT_OF_SOURCE_BUILD.md](OUT_OF_SOURCE_BUILD.md)**: out-of-source builds
+- **[TODO.md](TODO.md)**: tracked gaps, in-progress work, known-failing tests
+- **[COMPARE_RUST.md](COMPARE_RUST.md)**: comparison with a Rust approach
 
-## Images and Diagrams
-- **Images/** - Architecture diagrams and screenshots
+## Historical and Superseded Reports
 
-## Historical / Superseded Reports
-
-The documents below are point-in-time investigation notes, fix write-ups,
-and status reports from earlier work sessions. They are kept for reference
-but describe past states of the code — do **not** treat them as current.
-Where they conflict with TODO.md, TEST_SUMMARY.md, or REVIEW.md, those three
-are authoritative.
+These are point-in-time investigation notes, fix write-ups and status reports. They describe past states of the code; do **not** treat them as current. Where they conflict with TODO.md, TEST_SUMMARY.md or REVIEW.md, those three are authoritative.
 
 - Code reviews: `core_review.md`, `core_review_updated.md`, `KAI_Review.md` (superseded by [REVIEW.md](REVIEW.md))
-- Rho investigation notes: `Rho-Analysis.md`, `Rho-Findings.md`, `Rho-Fix.md`, `Rho-Fix-Documentation.md`, `Rho-Issues.md`, `Rho-Regression-Analysis.md`, `Rho-SemicolonIssue.md`, `RhoTestFailureAnalysis.md`, `RhoTestStatusUpdate.md`, `RhoIterationMethodsReport.md`, `RhoModelTrainingPlan.md`
+- Rho investigation notes: `Rho-Analysis.md`, `Rho-Findings.md`, `Rho-Fix.md`, `Rho-Fix-Documentation.md`, `Rho-Issues.md`, `Rho-Regression-Analysis.md`, `RhoSemicolonIssue.md`, `RhoTestFailureAnalysis.md`, `RhoTestStatusUpdate.md`, `RhoIterationMethodsReport.md`, `RhoModelTrainingPlan.md`
 - Tau investigation notes: `Tau-Analysis.md`
 - Test status snapshots: `TEST_BASELINE_REPORT.md`, `test_summary_report.md`, `Test-Fixes-Summary.md`, `Test-Improvements.md`, `Test-Suite-Summary-Feature.md`, `Test-Summary-Feature.md`, `TestStatusFinal.md`, `DisabledTestsAnalysis.md`
 - Control-flow fix write-ups: `DoWhileStatus.md`, `DoWhileCombinedTestsDescription.md`, `WhileAndDoWhileTestsDescription.md`
-- Migration/fix write-ups: `SmartPointerMigration.md`, `SmartPointerMigrationPlan.md`, `SmartPointerMigrationProgress.md`, `NullRegistryFix.md`, `raw_pointer_analysis.md`, `fixes-summary.md`, `future_work.md`
+- Migration and fix write-ups: `SmartPointerMigration.md`, `SmartPointerMigrationPlan.md`, `SmartPointerMigrationProgress.md`, `NullRegistryFix.md`, `raw_pointer_analysis.md`, `fixes-summary.md`, `future_work.md`
 - Networking session notes: `ConnectionTesting.md`, `NetworkCalculationTest.md`, `NetworkIteration.md`, `NetworkingChanges.md`, `PeerToPeerSummary.md`, `PROJECT_ANALYSIS.md`
 
-## Related Resources
+## Related
 
-- **[Main README](../README.md)** - Project overview
-- **[Examples](../Examples/)** - Code examples
-- **[Test Documentation](../Test/)** - Test guides
+- [Main README](../README.md)
+- [Examples](../Examples/README.md)
+- [Tests](../Test/README.md)
+- [Architecture diagrams](../resources/README.md)
 
 ## Documentation Standards
 
-When contributing documentation:
-1. Use Markdown format (.md extension)
-2. Include clear headings and code examples where appropriate
-3. Link to related documentation
-4. Keep information current with code changes — update TODO.md and
-   TEST_SUMMARY.md together whenever test status changes
-5. A one-off investigation or fix write-up belongs under "Historical /
-   Superseded Reports" above, not the main navigation — fold anything still
-   true into the relevant living doc (BUILD.md, TODO.md, TEST_SUMMARY.md,
-   REVIEW.md, or a language/architecture guide) instead of leaving it to be
-   rediscovered as a standalone file
+1. Markdown, with clear headings and code examples
+2. Link to related documentation
+3. Keep it current with the code; update TODO.md and TEST_SUMMARY.md together whenever test status changes
+4. A one-off investigation or fix write-up belongs under Historical, not the main navigation; fold anything still true into the relevant living doc instead of leaving it as a standalone file

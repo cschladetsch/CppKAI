@@ -1,17 +1,20 @@
-# Common Test Class Bases
+# Shared Test Fixtures
 
-Contains code that is used by many other test suites in the system.
+Code used by many test suites. Headers are in [`Test/Include`](../../Include/README.md); sources are in `Test/Common` and `Test/Language/TestLangCommon.cpp`.
 
 ## TestCommon
 
-Class provides a minimalistic *Registry* and *Tree* structure. This is a base class for simple tests that use just a *Registry*.
+A minimal `Registry` and `Tree`. The base class for tests that only need a Registry.
 
 ## TestLangCommon
 
-Provides a more expansive landscape including a *Console* and associated *Executor* and direct access to _Data_ and _Context_ stacks.
+A fuller environment: a `Console` with its `Executor`, and direct access to the data and context stacks. The base for tests that simulate a user at the console, and for the language suites (Pi, Rho, Sigma, PiNet).
 
-*TestLangCommon* is used as a base class for tests that simulate interaction with the user, and or test various languages.
+```mermaid
+flowchart LR
+    TC[TestCommon] -->|Registry, Tree| CORE[core tests]
+    TLC[TestLangCommon] -->|Console, Executor, stacks| LANG[language tests]
+    TC --> TLC
+```
 
-### Note
-
-**TestCommon** and **TestLangCommon** are poorly named. They do not actually perform any tests. Rather, they are base classes for other test suites.
+**Note:** despite the names, neither runs any tests itself. They are fixtures.

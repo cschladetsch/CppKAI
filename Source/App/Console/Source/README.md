@@ -1,144 +1,112 @@
-# KAI Console Documentation
+# Console Sources and Feature Docs
 
-## What is the KAI Console?
+Sources for the Console app, plus the feature walkthroughs written while the console was built. For the overview, see the [Console README](../README.md).
 
-The KAI Console is an interactive REPL (Read-Eval-Print-Loop) for the Pi and Rho programming languages. Pi is a stack-based language, while Rho provides a more traditional syntax.
+## Sources
 
-## Key Features
+| File | Purpose |
+|------|---------|
+| `Main.cpp` | Command line, language selection, registers Sigma (`AddTranslator`) and PiNet (`AddSendCheck`) |
+| `EnhancedConsole.cpp/.h` | Console extensions used by the app |
+| `ExampleNewLanguage.cpp` | How to plug a new language into the console |
+| `SimpleServer.cpp`, `SimpleClient.cpp` | Minimal networking examples |
+| `ContinuationMigrationDemo.cpp` | Cross-process continuation migration |
 
-1. **Multi-Language Support**: Switch between Pi and Rho languages
-2. **Integrated Shell Access**: Execute system commands without leaving the Console
-3. **Advanced History**: Zsh-like history expansion for maximum productivity
-4. **Stack Visualization**: See your computation stack after each operation
-5. **Executor Inspection**: Enumerate live Executors and inspect each Executor's
-   own Tree independently
-6. **Native Logging**: Record Console inspection and debugger lifecycle through
-   KAI's `Logger`
+The console implementation itself is in `Ext/CppKaiConsoleLib` (`Include/KAI/Console/Console.h`, `Source/Console.cpp`). The Window app uses the same library, so console features work identically there.
 
-## Documentation Index
+## Quick start
 
-### Getting Started
-- [**QuickStartGuide.md**](QuickStartGuide.md) - Essential commands and basic usage
-- [**ShellModeDemo.md**](ShellModeDemo.md) - How to use shell commands (3 methods!)
-- [**TestAllFeatures.md**](TestAllFeatures.md) - Complete feature test checklist
-
-### Core Features
-- [**TestZshFeatures.md**](TestZshFeatures.md) - Overview of all zsh-like features implemented
-- [**ZshQuickReference.md**](ZshQuickReference.md) - Quick reference card for all commands
-- [**AdvancedZshFeatures.md**](AdvancedZshFeatures.md) - Detailed documentation of advanced features
-
-### Interactive Examples
-- [**VisualDemo.md**](VisualDemo.md) - Visual demonstration of key features
-- [**CommonUsage.md**](CommonUsage.md) - Common usage patterns and examples
-- [**InteractiveExamples.md**](InteractiveExamples.md) - Comprehensive interactive examples
-- [**InteractiveDemo.md**](InteractiveDemo.md) - Step-by-step interactive tutorial
-
-### Demo Sessions
-- [**TypicalSession.md**](TypicalSession.md) - Complete typical usage session
-- [**AdvancedDemo.md**](AdvancedDemo.md) - Advanced feature demonstrations
-- [**ClarificationDemo.md**](ClarificationDemo.md) - Common misconceptions clarified
-
-## Quick Start
-
-### Basic Pi Programming
 ```console
-π 2 3 +         # Stack-based: push 2, push 3, add
+π 2 3 +
 [0]: 5
 
-π 10 20 *
-[0]: 200
-
-π fun double { 2 * }   # Define a function
-π 7 double
+π { 2 * } 'double #     // store a continuation
+π 7 double &            // run it
 [0]: 14
+
+π rho
+Switched to Rho language mode
+
+ρ x = 42; y = x * 2; y
+[0]: 84
 ```
 
-### Shell Integration (3 Methods)
+Multi-line Rho and Sigma programs are easiest to run as files: `./Bin/Console prog.rho`, `./Bin/Console prog.sigma`.
 
-Sometimes you need to interact with your system while programming. The Console provides three ways:
+## Shell integration
 
-1. **Backticks**: `` `ls -la` `` - Run a shell command and continue in Pi
-2. **Dollar Prefix**: `$ ls -la` - Quick shell command (like a shell alias)
-3. **Shell Mode**: `sh` - Switch to full shell mode (prompt changes to "$")
+Off by default; build with `-DENABLE_SHELL_SYNTAX=ON`. Three forms:
 
-### History Expansion Features
+1. **Backticks**: `` `ls -la` `` runs a command and continues in the current language
+2. **Dollar prefix**: `$ ls -la`
+3. **Shell mode**: `sh` switches to a `$` prompt; `exit` returns
 
-1. **Basic History**: `!!`, `!n`, `!-n`, `!string`
-2. **Word Designators**: `:0`, `:^`, `:$`, `:*`, `:n`, `:n-m`, `:n*`
-3. **Quick Substitution**: `^old^new^`
-4. **Search Anywhere**: `!?string?`
-5. **Argument Shortcuts**: `!$`, `!^`
-6. **Modifiers**: `:h`, `:t`, `:r`, `:e`, `:u`, `:l`, `:q`, `:x`
-7. **Substitutions**: `:s/old/new/`, `:gs/old/new/`
-
-## Example Usage
-
-### Why Shell Integration?
-
-When programming, you often need to:
-- Check files: `$ ls *.txt`
-- See where you are: `$ pwd`
-- Process data: `$ grep pattern file.txt`
-- Save results: `$ echo "result" > output.txt`
-
-### Shell Command Examples
-```console
-π # Calculate something
-π 100 25 /
-[0]: 4
-
-π # Save result to file using shell
-π $ echo "Division result: 4" > calc_result.txt
-
-π # Or use backticks to embed shell output in Pi
-π print "Current directory: `pwd`"
-[0]: "Current directory: /home/user/KAI"
-
-π # For extended shell work, use shell mode
-π sh
-Entering shell mode. Type 'exit' to return to Pi mode.
-$ grep -r "function" *.cpp | wc -l
-42
-$ exit
-π # Back to Pi programming
+```mermaid
+flowchart LR
+    IN[/input/] --> Q{starts with $ ?}
+    Q -->|yes| SH[run in shell]
+    Q -->|no| BT{contains backticks?}
+    BT -->|yes| SUB[substitute command output] --> LANG
+    BT -->|no| LANG[translate in π / ρ / σ]
 ```
 
-### History Expansion Examples
+## History expansion
+
+| Feature | Syntax |
+|---------|--------|
+| Basic | `!!`, `!n`, `!-n`, `!string`, `!?string?` |
+| Word designators | `:0`, `:^`, `:$`, `:*`, `:n`, `:n-m`, `:n*`, `!$`, `!^` |
+| Quick substitution | `^old^new^` |
+| Modifiers | `:h`, `:t`, `:r`, `:e`, `:p`, `:u`, `:l`, `:q`, `:x` |
+| Substitutions | `:s/old/new/`, `:gs/old/new/` |
+
 ```console
-π fun calculate { + * 2 }    # Made a mistake?
-π ^+^dup +^                  # Quick fix!
-=> fun calculate { dup + * 2 }
-
-π process_file input.txt output.json
-π !!:s/json/xml/            # Change output format
-=> process_file input.txt output.xml
-
 π /path/to/some/file.txt
-π !!:h                      # Get directory: /path/to/some
-π !!:t                      # Get filename: file.txt
+π !!:h                      # /path/to/some
+π !!:t                      # file.txt
 ```
 
-## Implementation
+## Executor inspection
 
-The features are implemented in:
-- `/Include/KAI/Console/Console.h` - Header with new method declarations
-- `/Source/Library/Executor/Source/Console.cpp` - Core implementation
-- `/Source/App/Window/Source/ExecutorWindow.cpp` - Window app integration
+The private NodeGLM inspection protocol, implemented in ConsoleLib's `Console.cpp`, enumerates Registry objects of type `Executor`, identifies each by handle, and serialises the selected Executor's own Tree. Debug and Tree clients must name an Executor explicitly. Traversal is bounded to 1000 nodes and depth 32. Requests and request-ID-correlated newline-delimited JSON responses use the duplex `KAI_CONTROL_FD`; operational events and failures go to KAI's `Logger`, and stdout stays the user-facing terminal stream.
 
-The private NodeGLM inspection protocol is implemented in `Console.cpp`. It
-enumerates Registry objects of type `Executor`, identifies each by handle, and
-serializes the selected Executor's own Tree hierarchy. Debug and Tree clients
-must expose an explicit Executor selector. Snapshot traversal is bounded to
-1000 nodes and depth 32. Requests and request-ID-correlated newline-delimited
-JSON responses use the duplex `KAI_CONTROL_FD`. Operational events and failures
-use KAI `Logger`; stdout remains the user-facing terminal stream.
+```mermaid
+sequenceDiagram
+    participant G as Client (NodeGLM)
+    participant C as Console
+    participant R as Registry
+    G->>C: list executors (KAI_CONTROL_FD)
+    C->>R: find objects of type Executor
+    C-->>G: handles
+    G->>C: snapshot(handle)
+    C->>C: walk that Executor's Tree (≤1000 nodes, depth ≤32)
+    C-->>G: JSON, correlated by request id
+```
+
+## Feature walkthroughs
+
+### Getting started
+- [QuickStartGuide.md](QuickStartGuide.md)
+- [ShellModeDemo.md](ShellModeDemo.md)
+- [TestAllFeatures.md](TestAllFeatures.md)
+
+### History and shell features
+- [TestZshFeatures.md](TestZshFeatures.md)
+- [ZshQuickReference.md](ZshQuickReference.md)
+- [AdvancedZshFeatures.md](AdvancedZshFeatures.md)
+
+### Examples and sessions
+- [VisualDemo.md](VisualDemo.md)
+- [CommonUsage.md](CommonUsage.md)
+- [InteractiveExamples.md](InteractiveExamples.md)
+- [InteractiveDemo.md](InteractiveDemo.md)
+- [TypicalSession.md](TypicalSession.md)
+- [AdvancedDemo.md](AdvancedDemo.md)
+- [ClarificationDemo.md](ClarificationDemo.md)
+
+### Historical notes
+- [ImplementationSummary.md](ImplementationSummary.md), [ArrayInsertTestsSummary.md](ArrayInsertTestsSummary.md), [ArrayTestRefactoringSummary.md](ArrayTestRefactoringSummary.md), [ContainerTestRefactoringSummary.md](ContainerTestRefactoringSummary.md), [TestRefactoringComplete.md](TestRefactoringComplete.md)
 
 ## Testing
 
-See `/Test/Console/` for:
-- Unit tests (TestConsoleZshFeatures.cpp, TestAdvancedZshFeatures.cpp)
-- Shell test scripts (RunConsoleTests.sh)
-- Python test suite (TestConsoleZsh.py)
-- Interactive test cases (InteractiveTests.txt)
-
-All features work identically in both Console and Window applications!
+See [Test/Console](../../../../Test/Console/README.md): gtest suites (`TestConsoleZshFeatures.cpp`, `TestAdvancedZshFeatures.cpp`), `RunConsoleTests.sh`, `TestConsoleZsh.py` and `InteractiveTests.txt`.

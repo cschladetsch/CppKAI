@@ -1,3 +1,3 @@
-# GearVr Support
+# Gear VR
 
-Support for GearVR.
+Placeholder for Samsung Gear VR support. No code yet; see [Platform](../README.md).

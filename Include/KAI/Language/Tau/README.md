@@ -1,136 +1,72 @@
 # Tau
 
-Tau is KAI's Interface Definition Language (IDL), designed for describing networked objects, interfaces, and services within the KAI distributed object model. It provides a way to define how components communicate across the network.
+Tau is KAI's Interface Definition Language for networked objects. It is the one KAI language that is **not executable**: it describes the shape of a network interface, and the generator turns that description into C++.
 
-**[Complete Tau Architecture Diagrams](../../../../Doc/TauArchitectureDiagrams.md)** - Complete visual documentation of Tau's IDL processing pipeline, multi-target code generation, and network integration architecture with detailed Mermaid diagrams.
+Tau uses the same `Language/Common` lexer and parser framework as Pi, Rho and Sigma. The input is a `.tau` file; the output is:
 
-### Tau Interface Definition Language Pipeline
+1. **Proxies** (`<Name>Proxy`): local stand-ins that forward calls to a remote agent and return `Future<T>`
+2. **Agents** (`<Name>Agent`): endpoints that receive calls and invoke the real implementation
+3. **Structs**: plain C++ data types shared by both ends
 
 ```mermaid
-graph TB
-    subgraph "Tau Source Code"
-        SRC["Tau IDL<br/>interface Calculator {<br/>  float add(float, float);<br/>}"]
-    end
-    
-    subgraph "Lexical Analysis"
-        LEX["Tau Lexer<br/>Tokenization"]
-        TOKENS["Token Stream<br/>INTERFACE, IDENTIFIER<br/>FLOAT, IDENTIFIER"]
-    end
-    
-    subgraph "Syntax Analysis"
-        PAR["Tau Parser<br/>AST Construction"]
-        AST["Tau AST Nodes<br/>Interface nodes<br/>Method nodes<br/>Type nodes"]
-    end
-    
-    subgraph "Code Generation"
-        GEN["Tau Generator<br/>Multi-target generation"]
-        PROXY["Proxy Generation<br/>Client-side stubs"]
-        AGENT["Agent Generation<br/>Server-side handlers"]
-        STRUCT["Struct Generation<br/>Data structures"]
-    end
-    
-    subgraph "Generated Output"
-        CPP_PROXY["C++ Proxy Classes<br/>Network client code"]
-        CPP_AGENT["C++ Agent Classes<br/>Network server code"]  
-        CPP_STRUCT["C++ Struct Definitions<br/>Data transfer objects"]
-    end
-    
-    SRC --> LEX
-    LEX --> TOKENS
-    TOKENS --> PAR
-    PAR --> AST
-    AST --> GEN
-    GEN --> PROXY
-    GEN --> AGENT
-    GEN --> STRUCT
-    PROXY --> CPP_PROXY
-    AGENT --> CPP_AGENT
-    STRUCT --> CPP_STRUCT
-    
-    style SRC fill:#e1bee7
-    style GEN fill:#ff9800
-    style CPP_PROXY fill:#4caf50
-    style CPP_AGENT fill:#2196f3
-    style CPP_STRUCT fill:#9c27b0
+flowchart TB
+    SRC[/".tau source"/] --> LEX["TauLexer"] --> PAR["TauParser"] --> AST["TauAstNode tree"]
+    AST --> GP["GenerateProxy"] --> P[/"*Proxy classes"/]
+    AST --> GA["GenerateAgent"] --> A[/"*Agent classes"/]
+    AST --> GS["GenerateStruct"] --> S[/"structs"/]
 ```
 
-## Key Features
-
-- **Interface-focused**: Defines the public interfaces of networked objects
-- **Network-oriented**: Designed for cross-network communication
-- **Type-safe**: Ensures type compatibility across network boundaries
-- **Declarative**: Focuses on what rather than how
-
-For the full grammar and lexical rules, consult the [Tau Language Formal Definition](../../../Doc/TauFormalDefinition.md).
-
-## Syntax Overview
-
-Tau uses the same lexing and parsing systems as the interpreted languages Pi and Rho. **Unlike** those systems, Tau is an Interface Definition Language. The input is `.tau` files; the output is C++ files for:
-
-1. Proxies - Client-side interfaces that forward calls to remote agents
-2. Agents - Server-side implementations that receive and process remote calls
-
-### Example
+## Example
 
 ```tau
 namespace Trading {
-    // Define an interface
     interface ITrader {
-        // Method definitions
         bool PlaceOrder(string symbol, int quantity, float price);
         void CancelOrder(string orderId);
-        
-        // Define an event
+
         event OrderPlaced(string symbol, int quantity, float price);
     }
 }
 ```
 
-### Tau Proxy Generation Pattern
+Supported: `namespace` (including nested `A::B::C`), `interface` with inheritance, methods, properties, `event`, `struct` and `enum`. The full grammar is in the [Tau Formal Definition](../../../../Doc/TauFormalDefinition.md).
+
+## A call through a Proxy
 
 ```mermaid
 sequenceDiagram
-    participant Client as Client Code
-    participant Proxy as Generated Proxy
-    participant Network as Network Layer
-    participant Agent as Remote Agent
-    participant Server as Server Implementation
-    
-    Client->>Proxy: calculator.add(5.0, 3.0)
-    Proxy->>Proxy: Serialize parameters
-    Proxy->>Network: Send method call request
-    Network->>Agent: Receive method call
-    Agent->>Agent: Deserialize parameters
-    Agent->>Server: Call actual add(5.0, 3.0)
-    Server->>Agent: Return result: 8.0
-    Agent->>Agent: Serialize result
-    Agent->>Network: Send response
-    Network->>Proxy: Receive response
-    Proxy->>Proxy: Deserialize result
-    Proxy->>Client: Return 8.0
+    participant C as Caller
+    participant P as ITraderProxy
+    participant N as Node (ENet UDP)
+    participant A as ITraderAgent
+    participant S as Servant
+    C->>P: PlaceOrder("KAI", 10, 1.5)
+    P->>P: serialise arguments
+    P->>N: request
+    P-->>C: Future<bool>
+    N->>A: request
+    A->>A: deserialise
+    A->>S: PlaceOrder(...)
+    S-->>A: true
+    A->>N: response
+    N->>P: response
+    P->>P: complete the Future
 ```
 
-## Recent Enhancements
-
-- Support for C++17 nested namespace syntax (`namespace A::B::C`)
-- Support for interface inheritance hierarchies
-- Improved event handling with callback registration
-- Enhanced type system with enums, structs, and complex types
-- Better error reporting during parsing and code generation
+Agents and Proxies are created through a `Domain` (`Include/KAI/Network/Domain.h`): `MakeAgent<T>()` on the hosting node, `MakeProxy<T>(NetHandle)` everywhere else.
 
 ## Usage
 
-To generate code from Tau definitions, use the Tau generator library
-(`tau::Generate::*`) from an application or build tool. The old
-`NetworkGenerate` command-line executable is no longer built.
+Call the generator library (`tau::Generate::*`) from an application or build step. The old `NetworkGenerate` command-line tool is no longer built. Tau is only built with `KAI_NETWORKING=ON` and not for Android.
 
-For detailed usage instructions and syntax guide, see:
-1. [Tau Tutorial](../../../Doc/TauTutorial.md) for comprehensive documentation
-2. The generator sources under `Source/Library/Language/Tau/Source/Generate`
+- Headers: [`Generate/`](Generate/README.md)
+- Sources: [`Source/Library/Language/Tau/Source`](../../../../Source/Library/Language/Tau/Source/README.md)
+- Tests: [`Test/Language/TestTau`](../../../../Test/Language/TestTau/README.md)
+- Examples: [`Examples/Tau`](../../../../Examples/Tau/README.md)
 
-## Testing
+## See Also
 
-Extensive test suites are available to demonstrate Tau's capabilities:
-- Basic syntax and parsing tests
-- Advanced type system tests
-- Code generation tests for proxies and agents
+- [Tau Tutorial](../../../../Doc/TauTutorial.md)
+- [Tau Code Generation](../../../../Doc/TauCodeGeneration.md)
+- [Tau Architecture Diagrams](../../../../Doc/TauArchitectureDiagrams.md)
+- [Network Tau Interfaces](../../../../Doc/NetworkTauInterfaces.md)

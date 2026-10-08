@@ -1,30 +1,59 @@
-# Network System
+# Network
 
-This library relies on Core, and provides Agents and Proxies.
+The `Network` library: Nodes, Domains, Agents and Proxies over ENet UDP. Built when `KAI_NETWORKING=ON` (the default). Headers are in [`Include/KAI/Network`](../../../../Include/KAI/Network).
 
-It allows the application programmer to write natural code that is really deeply network dependant - without using callbacks and without the need for explicit threading.
+It lets you write code that is deeply network-dependent without callbacks-within-callbacks and without explicit threading: every remote call returns a `Future<T>`.
 
-For example:
+```mermaid
+flowchart LR
+    subgraph B["Node B"]
+        C[Caller] --> P["Proxy&lt;T&gt;"]
+    end
+    subgraph A["Node A"]
+        AG["Agent&lt;T&gt;"] --> S[(Servant)]
+    end
+    P -->|"request (BinaryStream)"| T1[EnetTransport]
+    T1 --> AG
+    AG -->|response| T1
+    T1 -->|"completes Future&lt;T&gt;"| P
+```
 
-	// connect to another node using default port
-	Node local(nodeIP);
-	Proxy<Foo> foo = local.MakeProxy<Foo>(NetworkHandle(1234)); // how you get the handle is up to you
-	Future<int> result = foo->TimesTwo(5);						// invoke remote method
-	result.arrived += []{ int n } => { cout << ConstDeref<int>(result.Value); }	// do something when it arrives
+```cpp
+Node local;
+local.Connect(IpAddress("192.168.1.10"), 14600);
 
+IFooProxy foo(local, NetHandle(1234));   // generated from Foo.tau; how you get the handle is up to you
+Future<int> result = foo.TimesTwo(5);    // returns immediately
+local.Step();                                               // pump the network
+if (result.IsComplete())
+    std::cout << result.GetValue();
+```
 
-## Agents
+## Concepts
 
-An agent responds to requests.
+| Type | Role |
+|------|------|
+| `Node` | One peer: `Listen`, `Connect`, `Step`, connection events |
+| `Domain` | The set of nodes that share object handles. Wraps a `Node` and creates Agents (`MakeAgent<T>`) and Proxies (`MakeProxy<T>(NetHandle)`). Objects in a Domain have a unique `NetHandle`, as objects in a Registry have a unique `Handle` |
+| `Agent<T>` | Responds to requests for a servant on this node |
+| `Proxy<T>` | Local representative of a remote agent. Methods, properties and events are used as if local; every result is a `Future<T>` |
+| `Future<T>` | Shared-state result: `IsComplete`, `GetValue`, `OnResolved`. Nests cleanly as `Future<Future<T>>` |
+| `PeerDiscovery` | Finding peers |
+| `ConnectionManager` | Connection lifecycle and events |
 
-## Proxy
+Agent and Proxy classes for an interface are normally generated from Tau; see [Tau](../../../../Include/KAI/Language/Tau/README.md).
 
-A proxy is the local reqpresentation of a remote agent. We invoke methods on, access properties of, and use events within Proxies as if they were agents. All the results are **Future** values.
+## Sources
 
-## Domain
+| File | Contents |
+|------|----------|
+| `Node.cpp` | Node lifecycle, listen, connect, step |
+| `EnetTransport.cpp` | ENet UDP transport |
+| `ConnectionManager.cpp` | Connections and connection events |
+| `PeerDiscovery.cpp` | Peer discovery |
+| `AgentBase.cpp` | Agent dispatch |
+| `NetworkLogger.cpp` | Network logging |
 
-A Domain is a network-aware KAI Registry. Objects within a Domain have a unique NetworkHandle. This is synonymous with objects in a Registry having a unique Handle.
+Application code never touches ENet directly; the transport is behind `Transport`.
 
-## System Agnostic
-
-There is no expsosure to any underlying networking sub-system.
+See [Networking](../../../../Doc/Networking.md), [Network Architecture](../../../../Doc/NetworkArchitecture.md) and [Network tests](../../../../Test/Network/README.md).

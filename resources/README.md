@@ -21,6 +21,21 @@ resources/
 └── README.md                   # This file
 ```
 
+```mermaid
+flowchart TB
+    SAO["system-architecture-overview"] --> OSA["overall-system-architecture"]
+    SAO --> LSA["language-system-architecture"]
+    LSA --> PI["pi-language-architecture"]
+    LSA --> RHO["rho-language-architecture"]
+    LSA --> TAU["tau-language-architecture"]
+    SAO --> CNA["console-networking-architecture"]
+    SAO --> BSA["build-system-architecture"]
+    SAO --> TSA["test-system-architecture"]
+    OSA --> SO["architecture/system-overview"]
+```
+
+Sigma, PiNet and the Domain have diagrams in the [main README](../README.md) and in [Doc/Sigma](../Doc/Sigma/README.md) and [Doc/PiNet.md](../Doc/PiNet.md).
+
 ## Architecture Diagrams
 
 All diagrams are created using Mermaid syntax and can be viewed in any Markdown viewer that supports Mermaid rendering (GitHub, GitLab, VS Code, etc.).
@@ -113,10 +128,10 @@ The Mermaid diagrams can be viewed in several ways:
 
 - **Total Source Files**: 629 C++/.h files
 - **Documentation Files**: 70+ README.md files  
-- **Test Cases**: 2,202 CTest entries across Core, Pi, Rho, Sigma, Tau, console and network suites, all passing (TestRho alone has 864)
+- **Test Cases**: 2,202 CTest entries across Core, Pi, Rho, Sigma, Tau, PiNet, console and network suites, all passing (see [Doc/TEST_SUMMARY.md](../Doc/TEST_SUMMARY.md))
 - **Build Targets**: 15+ libraries and executables
 - **Network Protocols**: 4 message types for console communication
-- **Languages**: 4 integrated programming languages (Pi/Rho/Sigma/Tau)
+- **Languages**: Pi, Rho and Sigma (executable), Tau (IDL), plus the PiNet transport check
 - **Platforms**: Linux, Windows, macOS support
 
 ## Contributing

@@ -1,40 +1,23 @@
-# Tau Language Test Scripts
+# Tau Test Scripts
 
-This directory contains test scripts for the Tau language parser, lexer, and code generators. Each script tests different aspects of the Tau language.
+Reference `.tau` inputs for the Tau lexer, parser and generators. `TestTau` embeds its Tau source inline, so these are not run automatically; use them to try the parser and generators by hand.
 
-## Test Script Overview
+| Script | Tests |
+|--------|-------|
+| `Tau0.tau`, `Tau1.tau`, `Tau2.tau` | Basic syntax |
+| `NumberTest.tau` | Integer, float and scientific literals |
+| `AssignmentTest.tau` | Field assignments and default parameter values |
+| `InheritanceTest.tau` | Inheritance |
+| `NestedNamespaces.tau`, `NamespaceStructure.tau` | Nested namespaces, including `A::B::C` |
+| `ClassWithArrays.tau`, `ComplexClassFeatures.tau`, `GenericClasses.tau`, `VisibilityModifiers.tau` | Class features |
+| `ComplexProxy.tau` | Proxy generation for several classes |
+| `TestCalculator.tau` | A small service interface |
+| `ErrorTest.tau` | Intentional errors |
+| `Connection/` | Connection interfaces |
 
-- **Tau1.tau, Tau2.tau**: Basic syntax tests for the Tau language
-- **NumberTest.tau**: Tests numeric literal parsing (integers, floats, scientific notation)
-- **AssignmentTest.tau**: Tests field assignments and default parameter values
-- **InheritanceTest.tau**: Tests class inheritance syntax and parsing
-- **NestedNamespaces.tau**: Tests nested namespace syntax and parsing
-- **ErrorTest.tau**: Contains intentional errors to test error handling
-- **ComplexProxy.tau**: Tests complex proxy generation with multiple classes
-
-## Running the Tests
-
-The test scripts are automatically executed by the TestTau executable. To run the tests:
-
+```mermaid
+flowchart LR
+    S[/"*.tau"/] -.->|by hand| G["tau::Generate"] --> O[/"Output/"/]
 ```
-./Bin/Test/TestTau
-```
 
-## Test Features
-
-The test scripts cover the following Tau language features:
-
-- Basic class and interface declarations
-- Property/field declarations and initialization
-- Method declarations with parameters and return types
-- Default parameter values
-- Numeric literals (integers, floats, scientific notation)
-- String literals
-- Inheritance 
-- Nested namespaces
-- Error handling
-- Proxy generation
-
-## Output Directory
-
-Generated code from the test scripts will be stored in the `Output` directory.
+Generated code written to disk goes in [`Output/`](Output/README.md).

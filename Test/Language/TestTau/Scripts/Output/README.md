@@ -1,5 +1,3 @@
-# Ouputs of the Tau tests
+# Tau Output
 
-Not sure about these. They may be used in later tests, or just visually inspected.
-
-
+A place to write Proxy, Agent and struct code generated from the scripts in the parent folder, for inspection. Nothing here is compiled.

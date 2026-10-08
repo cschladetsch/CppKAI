@@ -1,85 +1,86 @@
 # Console ![Console](/Images/Console.png)
 
-Interactive REPL console for the KAI language system with shell command integration.
+The interactive REPL for KAI. It runs Pi, Rho and Sigma on one Executor and one shared stack, switches language on the fly, and talks to other consoles peer to peer.
+
+```bash
+./Bin/Console                    # interactive Pi (default)
+./Bin/Console -l rho             # interactive Rho
+./Bin/Console -l sigma           # interactive Sigma
+./Bin/Console script.sigma       # run a script; language from .pi, .rho or .sigma
+./Bin/Console -t 2 script.rho    # with trace level 2
+```
+
+Built-in commands: `help`, `clear`, `exit`, `quit`, `pi`, `rho`, `sigma`, `history`, `stack`.
+
+## How it is put together
+
+The app is thin. The console itself is `CppKaiConsoleLib`; the app registers the CppKAI-only languages and checks with it, so neither CppKaiCore nor ConsoleLib depends on them.
+
+```mermaid
+flowchart LR
+    MAIN["Main.cpp"] --> CON["kai::Console<br/>(CppKaiConsoleLib)"]
+    MAIN -.->|"AddTranslator(Sigma, ..., σ)"| CON
+    MAIN -.->|"AddSendCheck(PiNet)"| CON
+    CON --> PI["Pi translator"]
+    CON --> RHO["Rho translator"]
+    CON --> SIG["SigmaTranslator"]
+    PI & RHO & SIG --> EX([Executor])
+    CON --> NET["Network<br/>/network, /connect, /@n"]
+```
+
+```mermaid
+sequenceDiagram
+    participant U as You
+    participant C as Console
+    participant T as Translator (π / ρ / σ)
+    participant X as Executor
+    U->>C: input line
+    C->>C: history expansion, shell backticks (if enabled)
+    C->>T: translate in the active language
+    T->>X: Pi continuation
+    X-->>C: data stack
+    C-->>U: stack, top first, [0] on the bottom line
+```
 
 ## Features
 
-- **Multi-language Support**: Pi (stack-based), Rho (infix), and Sigma (statically typed, `-l sigma` or `.sigma` files)
-- **Shell Command Integration**: Execute shell commands with backtick syntax
-- **Automatic Stack Display**: Top-first stack visualization after each command,
-  with `[0]` on the bottom line
-- **Cross-platform**: Works on Windows, Linux, and macOS
-- **Colored Output**: Strings and integers retain type cues; floating-point
-  values use the normal neutral value color
-- **Executor Inspection**: Machine-readable snapshots enumerate every live
-  Executor and each Executor's own Tree, root, scope, and stack sizes
-- **KAI Logging**: Console startup, Tree snapshots, debugger attachments/actions,
-  and failures use the native `Logger`
+- **Languages**: Pi (`π`), Rho (`ρ`) and Sigma (`σ`); the prompt shows only the active symbol
+- **Stack display**: the whole data stack after each command, top first, `[0]` at the bottom
+- **History**: persisted in `~/.kai_history`; zsh-style expansion (`!!`, `!n`, `^old^new^`, word designators, modifiers)
+- **Networking**: `/network start`, `/connect`, `/@<peer>`, `/broadcast`, `/peers`; see [Console Networking](../../../Doc/CONSOLE_NETWORKING.md)
+- **PiNet**: `send` refuses a continuation that uses names it does not bind; see [PiNet](../../../Doc/PiNet.md)
+- **Shell commands**: backticks, `$ cmd`, and `sh` mode. **Off by default**; build with `-DENABLE_SHELL_SYNTAX=ON`. Native Windows then routes commands through WSL2's bash
+- **Colour**: strings and integers keep type cues; floats use the neutral value colour
+- **Executor inspection**: machine-readable snapshots of every live Executor and its own Tree
+- **Logging**: startup, tree snapshots, debugger actions and failures go through KAI's `Logger`
 
-## Shell Commands
+## Shell commands
 
-Execute shell commands directly:
+With shell syntax enabled:
+
 ```
 π `pwd
 /home/user/project
 
-π `ls -la | head -3
-total 60
-drwxr-xr-x  3 user user 4096 May 30 00:15 .
-drwxr-xr-x 11 user user 4096 May 29 23:34 ..
-```
-
-Embed shell output in expressions:
-```
 π 10 `echo 5` +
 [0]: 15
 
 π 1 `echo 2` + 3 ==
 [0]: true
-
-ρ result = `echo 42`
-[0]: 2
 ```
 
-## Usage
+## Other executables
 
-Run the console after building:
-```bash
-./build/Bin/Console
-```
+With networking on, this target also builds:
 
-## Implementation
+| Executable | Purpose |
+|------------|---------|
+| `SimpleServer`, `SimpleClient` | Minimal Node examples |
+| `ContinuationMigrationDemo` | Freeze a Pi workflow in one process, resume it in another; driven by `Scripts/network/run_continuation_migration_demo.sh` |
 
-The Console is built on top of the [Executor](/Source/Library/Executor/Source) and provides:
-- Language-agnostic shell command preprocessing
-- Automatic top-first stack visualization
-- Multi-Executor Tree inspection and handle-targeted debugger operations
-- Integration with the Pi and Rho translators, plus Sigma registered through `Console::AddTranslator` (prompt `σ`)
+## Documentation
 
-For full documentation, see [Console Documentation](../../../Doc/Console.md).
-
-## Console Documentation
-
-### Quick Start and Usage
-- **[Quick Start Guide](Source/QuickStartGuide.md)** - Get up and running quickly
-- **[Console Networking](../../../Doc/CONSOLE_NETWORKING.md)** - Console-to-console communication
-- **[Implementation Summary](Source/ImplementationSummary.md)** - Technical implementation details
-
-### Advanced Features
-- **[Shell Mode Demo](Source/ShellModeDemo.md)** - Shell integration examples
-- **[Interactive Demo](Source/InteractiveDemo.md)** - Comprehensive feature demonstration
-- **[Advanced Features](Source/AdvancedZshFeatures.md)** - Power-user features
-
-### Testing and Examples
-- **[Console Tests](../../../Test/Console/README.md)** - Test suite documentation
-- **[Typical Session](Source/TypicalSession.md)** - Example usage session
-
-## Testing
-
-Shell command functionality is tested in `Test/ShellCommandTests/` with over 50 test cases covering:
-- Basic shell commands
-- Embedded command substitution
-- Error handling
-- Cross-language support
-
-The Pi and Rho language tests also indirectly test the Executor functionality.
+- [Console guide](../../../Doc/Console.md)
+- [Console sources and feature docs](Source/README.md)
+- [Console Networking](../../../Doc/CONSOLE_NETWORKING.md)
+- [Console tests](../../../Test/Console/README.md) and [shell command tests](../../../Test/ShellCommandTests/README.md)
