@@ -91,6 +91,8 @@ if(TARGET TauLang)
 endif()
 target_link_libraries(${core_name} ${testcore_libs})
 
+include(GoogleTest)
+
 if(KAI_BUILD_LLM)
     set(llm_name LlmTest)
     add_executable(${llm_name}
