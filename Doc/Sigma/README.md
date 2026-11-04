@@ -211,6 +211,7 @@ after the `)` with no space:
 | `f(x)` | `Suspend` | an ordinary call |
 | `f(x)&` | `Suspend` | the same, written out; same type as `f(x)` |
 | `f(x)!` | `Replace` | a tail call: `f` takes the place of the running function |
+| `f(x)...` | `Resume` | not supported: Sigma rejects it, see [Not supported yet](#not-supported-yet) |
 
 ```sigma
 fun sum(n: int, acc: int) -> int
