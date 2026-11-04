@@ -238,18 +238,20 @@ class RhoEmitter {
         const bool single = tok.slice.Start > 0 && line[tok.slice.Start - 1] == '\'';
         if (!single) return "\"" + text + "\"";
 
-        std::string out = "\"";
+        // Rho strings have no escapes, so pick the quote character that does
+        // not occur in the text. The lexer has already rejected text that
+        // needs both kinds.
+        std::string value;
         for (size_t n = 0; n < text.size(); ++n) {
             if (text[n] == '\\' && n + 1 < text.size() && text[n + 1] == '\'') {
-                out += '\'';
+                value += '\'';
                 ++n;
-            } else if (text[n] == '"') {
-                out += "\\\"";
             } else {
-                out += text[n];
+                value += text[n];
             }
         }
-        return out + "\"";
+        const char quote = value.find('"') != std::string::npos ? '\'' : '"';
+        return quote + value + quote;
     }
 
     std::string Raw(const NodePtr &node) {

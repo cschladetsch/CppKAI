@@ -559,11 +559,10 @@ flowchart BT
   Sigma rejects it there. See [Continuation operators](#continuation-operators).
 - **No escape sequences in strings.** Rho keeps a backslash and the character
   after it as two characters, so `"a\nb"` has size 4, not 3, and contains no
-  newline.
-- **Double quotes inside a single-quoted string.** `'say "hi"'` is emitted as
-  `"say \"hi\""`, and Rho keeps both backslashes, so the string is 10
-  characters long instead of 8. Write such text with a double-quoted string
-  that has no inner double quote, or build it from pieces.
+  newline. For the same reason a string literal can hold a double quote or an
+  apostrophe but not both; Sigma uses whichever quote is free in the generated
+  Rho and rejects text that needs the pair: `a string cannot contain both '
+  and "`.
 - **Maps in the Console app.** `Console file.sigma` stops with `Unknown
   Class ... type_number_=30` (Map) on a program that uses a `Map`, such as
   `Scripts/Inventory.sigma`. The same program type-checks and runs in
@@ -577,7 +576,7 @@ flowchart BT
 | Headers | `Include/KAI/Language/Sigma` |
 | Sources | `Source/Library/Language/Sigma/Source` (the `SigmaLang` library) |
 | Design notes | [`Doc/Sigma.md`](../Sigma.md): continuation operators |
-| Tests | `Test/Language/TestSigma` (`TestSigma`: 410 tests) |
+| Tests | `Test/Language/TestSigma` (`TestSigma`: 415 tests) |
 | Example programs | `Test/Language/TestSigma/Scripts/*.sigma` (115 programs) |
 
 Build and run the tests from the CppKAI root:
@@ -607,3 +606,5 @@ syntax (semicolons, comments, tabs, CRLF, `assert`), shifts and the bitwise
 precedence ladder, widening inside list and map literals, scope and
 reference semantics, the `SigmaTranslator` API (determinism, sessions, error
 format), and the exact examples printed in this document.
+`SigmaStringTests` covers string literals and how Sigma picks the quote
+character in the generated Rho.

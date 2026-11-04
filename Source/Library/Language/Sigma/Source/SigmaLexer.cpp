@@ -134,6 +134,11 @@ bool SigmaLexer::LexSingleQuoted() {
         } else if (line[i] == '\\') {
             escaped = true;
         } else if (line[i] == '\'') {
+            // Rho has no escapes, so a string holds a double quote or an
+            // apostrophe but not both: there is no spelling for the pair.
+            const std::string inner = line.substr(static_cast<size_t>(start) + 1, i - static_cast<size_t>(start) - 1);
+            if (inner.find('"') != std::string::npos && inner.find("\\'") != std::string::npos)
+                return Error("a string cannot contain both ' and \"");
             offset_ = static_cast<int>(i) + 1;
             AddStringToken(lineNumber_, Slice(start + 1, static_cast<int>(i)));
             return true;
