@@ -630,7 +630,7 @@ flowchart BT
 | Headers | `Include/KAI/Language/Sigma` |
 | Sources | `Source/Library/Language/Sigma/Source` (the `SigmaLang` library) |
 | Design notes | [`Doc/Sigma.md`](../Sigma.md): continuation operators |
-| Tests | `Test/Language/TestSigma` (`TestSigma`: 516 tests) |
+| Tests | `Test/Language/TestSigma` (`TestSigma`: 558 tests) |
 | Example programs | `Test/Language/TestSigma/Scripts/*.sigma` (115 programs) |
 
 Build and run the tests from the CppKAI root:
@@ -669,6 +669,9 @@ position.
 `SigmaNativeTests` covers calling registered C++ functions, methods and
 properties from Sigma, and `SigmaHostTests` covers `SigmaHost`: binding,
 factories, `Eval`, `Call`, `Callback` and compile errors.
+`SigmaInteropTests` has 42 round trips across the boundary: values in and
+out, native functions in loops and templates, `Call` and `Callback` into
+Sigma, and objects built by factories with methods and properties.
 `SigmaRangeTests` adds 50 more: templates as higher-order helpers (map,
 filter, fold), variadic folds, list and map element assignment, nested
 control flow, recursion (Ackermann, fast power, Fibonacci), operator edge
