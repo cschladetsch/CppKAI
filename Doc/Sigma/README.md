@@ -465,6 +465,7 @@ Constructor arguments are type-checked like any call.
 SigmaHost sigma(console);
 sigma.Bind("clamp", [](int v, int lo, int hi) { return std::clamp(v, lo, hi); });
 sigma.Set("limit", 10);                       // a value Sigma can read
+                                              // (a Pointer<T> is shared, not copied)
 sigma.Run("fun double_it(n: int) -> int\n    return n * 2");
 int r = sigma.Eval<int>("clamp(double_it(limit), 0, 15)");     // 15
 int a = sigma.Call<int>("double_it", 21);                      // 42
@@ -630,7 +631,7 @@ flowchart BT
 | Headers | `Include/KAI/Language/Sigma` |
 | Sources | `Source/Library/Language/Sigma/Source` (the `SigmaLang` library) |
 | Design notes | [`Doc/Sigma.md`](../Sigma.md): continuation operators |
-| Tests | `Test/Language/TestSigma` (`TestSigma`: 558 tests) |
+| Tests | `Test/Language/TestSigma` (`TestSigma`: 603 tests) |
 | Example programs | `Test/Language/TestSigma/Scripts/*.sigma` (115 programs) |
 
 Build and run the tests from the CppKAI root:
@@ -672,6 +673,9 @@ factories, `Eval`, `Call`, `Callback` and compile errors.
 `SigmaInteropTests` has 42 round trips across the boundary: values in and
 out, native functions in loops and templates, `Call` and `Callback` into
 Sigma, and objects built by factories with methods and properties.
+`SigmaInteropMoreTests` adds 45: evaluation order and short-circuit around
+native calls, wider signatures, session behaviour across `Run` calls, objects
+shared with `Set`, and compile-time checks of native signatures.
 `SigmaRangeTests` adds 50 more: templates as higher-order helpers (map,
 filter, fold), variadic folds, list and map element assignment, nested
 control flow, recursion (Ackermann, fast power, Fibonacci), operator edge

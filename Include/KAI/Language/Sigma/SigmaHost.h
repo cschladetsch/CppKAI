@@ -57,10 +57,16 @@ class SigmaHost {
         BindImpl(name, std::function<T()>([] { return T(); }));
     }
 
-    /// Publish a value (or a registered object) as a name Sigma can read.
+    /// Publish a value, or share an object (a Pointer<T>) with Sigma, as a name
+    /// Sigma can read.
     template <class T>
     void Set(const char *name, const T &value) {
-        Root().SetChild(Label(name), console_.GetRegistry().New(value));
+        // An object (or Pointer<>) is published itself, so C++ and Sigma share it.
+        if constexpr (std::is_convertible_v<const T &, Object>) {
+            Root().SetChild(Label(name), Object(value));
+        } else {
+            Root().SetChild(Label(name), console_.GetRegistry().New(value));
+        }
     }
 
     /// Read a published or top-level name back.
@@ -119,12 +125,14 @@ class SigmaHost {
 
     void Execute(const std::string &code) {
         auto cont = translator_.Translate(code.c_str(), Structure::Program);
-        if (translator_.failed || !cont.Exists()) {
+        if (translator_.failed) {
             std::string all;
             for (auto const &e : translator_.GetErrors()) all += e + "\n";
             if (all.empty()) all = translator_.error;
             throw SigmaError(all);
         }
+        // A program of only template definitions compiles to nothing to run.
+        if (!cont.Exists()) return;
         console_.Execute(cont);
     }
 
