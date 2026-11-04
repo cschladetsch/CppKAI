@@ -2,6 +2,7 @@
 
 **Review Date**: August 5, 2025  
 **Reviewer**: Claude Code Assistant  
+**Note**: Snapshot from before Sigma was added. KAI now has four languages: Sigma, Rho, Pi and Tau (see the README).  
 **Scope**: Complete system architecture, documentation, build system, and functionality review
 
 ## Executive Summary

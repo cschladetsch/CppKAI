@@ -463,12 +463,12 @@ All diagnostic output goes through the `KAI_TRACE` macros (`KAI_TRACE`, `KAI_TRA
 ```text
 CppKAI/
 ├── Include/KAI/
-│   ├── Language/      Sigma, PiNet, Tau, Lisp, Hlsl headers
+│   ├── Language/      Sigma, PiNet, Tau headers; Lisp and Hlsl are unbuilt scaffolds (see Language/README.md)
 │   ├── Network/       Node, Domain, Agent, Proxy, Future
 │   └── Platform/
 ├── Source/
 │   ├── App/           Console, Window, RepoIndex, RhoDataset
-│   └── Library/       Language (Sigma, PiNet, Tau, Lisp, Hlsl), Network, LLM, ImGui
+│   └── Library/       Language (Sigma, PiNet, Tau), Network, LLM, ImGui
 ├── ksh/               KAI object shell
 ├── Test/              gtest suites and script tests
 ├── Examples/          Tau and Calculator examples

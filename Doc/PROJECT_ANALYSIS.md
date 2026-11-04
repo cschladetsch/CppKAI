@@ -312,7 +312,7 @@ Execute:
 
 **Lines of Code (estimate from structure):**
 - Core: ~15K lines
-- Languages: ~30K lines (Pi, Rho, Tau, Lisp, Hlsl)
+- Languages: ~30K lines (Pi, Rho, Sigma, Tau, PiNet, plus the unbuilt Lisp and Hlsl scaffolds)
 - Tests: ~50K lines
 - Apps: ~5K lines
 - Total: ~100K+ lines
