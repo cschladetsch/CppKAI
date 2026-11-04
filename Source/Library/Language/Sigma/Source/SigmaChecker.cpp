@@ -1,7 +1,9 @@
 #include <KAI/Core/Object/ClassBase.h>
 #include <KAI/Core/Object/MethodBase.h>
 #include <KAI/Core/Object/PropertyBase.h>
+#include <KAI/Core/FunctionBase.h>
 #include <KAI/Core/Registry.h>
+#include <KAI/Core/Tree.h>
 #include <KAI/Language/Sigma/SigmaChecker.h>
 
 #include <algorithm>
@@ -880,8 +882,33 @@ SigmaTypePtr SigmaChecker::Name(const NodePtr &node) {
         Report(node, std::format("template function '{}' can only be called; it cannot be used as a value", name));
         return Bad();
     }
+    if (auto native = NativeName(name)) return native;
     Report(node, std::format("undefined name '{}'", name));
     return Bad();
+}
+
+// A name that Sigma did not declare may still be an object in the host's
+// tree: a C++ function registered with AddFunction, or any other object the
+// host put there. Functions take their signature from the argument and result
+// type numbers recorded by the registration; other objects have their own type.
+SigmaTypePtr SigmaChecker::NativeName(const std::string &name) {
+    if (reg_ == nullptr || reg_->GetTree() == nullptr) return nullptr;
+    Object found;
+    try {
+        found = reg_->GetTree()->Resolve(Label(name.c_str()));
+    } catch (...) {
+        return nullptr;
+    }
+    if (!found.Exists()) return nullptr;
+    if (found.IsType<BasePointer<FunctionBase>>()) {
+        auto const &holder = ConstDeref<BasePointer<FunctionBase>>(found);
+        FunctionBase *function = holder.GetBase();
+        if (function == nullptr) return nullptr;
+        std::vector<SigmaTypePtr> params;
+        for (auto const &a : function->GetArgumentTypes()) params.push_back(FromTypeNumber(a.ToInt()));
+        return SigmaType::FunOf(std::move(params), FromTypeNumber(function->GetReturnType().ToInt()));
+    }
+    return FromTypeNumber(found.GetTypeNumber().ToInt());
 }
 
 SigmaTypePtr SigmaChecker::BinaryResult(const NodePtr &at, Tok::Enum op, const SigmaTypePtr &a,

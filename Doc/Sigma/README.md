@@ -43,6 +43,7 @@ flowchart LR
 - [Expressions](#expressions)
 - [Lists and maps](#lists-and-maps)
 - [Native C++ types](#native-c-types)
+- [Talking to C++](#talking-to-c)
 - [Pi blocks and `any`](#pi-blocks-and-any)
 - [Errors](#errors)
 - [How Sigma compiles](#how-sigma-compiles)
@@ -427,6 +428,59 @@ fun describe(s: MyStruct) -> str
     return s.Method1(n, "x")
 ```
 
+## Talking to C++
+
+Sigma checks every use of a C++ name against its registered signature before
+anything runs, and the call itself runs in the executor.
+
+**Sigma calls C++.** A function registered with `AddFunction` (or
+`SigmaHost::Bind`) is an ordinary name in Sigma. Its parameter and result types
+come from the C++ signature, `int` widens to `float` as usual, and it can be
+passed to a template or stored in a `fun(...)` variable:
+
+```sigma
+r = clamp(double_it(limit), 0, 15)      // C++ clamp, C++ limit
+f: fun(int, int) -> int = add_ints
+total = fold(add_ints, 0, [1, 2, 3, 4])
+```
+
+A name Sigma declares itself shadows a native one. Methods and properties of
+registered classes run too: `s.Method1(3, "ab")` and `s.num = 77` reach the
+C++ object.
+
+**Constructing native objects.** KAI reflection records no constructors, so a
+type is made by a factory the host binds under the type's name:
+
+```cpp
+host.Construct<Point>("Point");                          // p = Point()
+host.Bind("Point", [](int x, int y) { return Point{x, y}; });   // p = Point(3, 4)
+```
+
+Constructor arguments are type-checked like any call.
+
+**C++ embeds Sigma.** `SigmaHost` (`KAI/Language/Sigma/SigmaHost.h`) wraps a
+`Console`:
+
+```cpp
+SigmaHost sigma(console);
+sigma.Bind("clamp", [](int v, int lo, int hi) { return std::clamp(v, lo, hi); });
+sigma.Set("limit", 10);                       // a value Sigma can read
+sigma.Run("fun double_it(n: int) -> int\n    return n * 2");
+int r = sigma.Eval<int>("clamp(double_it(limit), 0, 15)");     // 15
+int a = sigma.Call<int>("double_it", 21);                      // 42
+auto f = sigma.Callback<int(int)>("double_it");                // std::function
+```
+
+Definitions persist between calls. A program that does not compile throws
+`SigmaError`, whose message is the usual `line:column: message` list, and
+`Eval<T>` throws if the result is not a `T`.
+
+**Limits.** Native parameters and results must be types KAI knows (`bool`,
+`int`, `float`, `String`, registered classes). A Sigma function cannot be
+passed to C++ as an argument (C++ has no type for it); the C++ side reaches
+Sigma functions by name through `Call` or `Callback`. String arguments given to
+`Call` cannot contain a double quote.
+
 ## Pi blocks and `any`
 
 A one-line `pi { ... }` block is passed through to Rho unchanged. Its type is
@@ -576,7 +630,7 @@ flowchart BT
 | Headers | `Include/KAI/Language/Sigma` |
 | Sources | `Source/Library/Language/Sigma/Source` (the `SigmaLang` library) |
 | Design notes | [`Doc/Sigma.md`](../Sigma.md): continuation operators |
-| Tests | `Test/Language/TestSigma` (`TestSigma`: 476 tests) |
+| Tests | `Test/Language/TestSigma` (`TestSigma`: 516 tests) |
 | Example programs | `Test/Language/TestSigma/Scripts/*.sigma` (115 programs) |
 
 Build and run the tests from the CppKAI root:
@@ -612,6 +666,9 @@ character in the generated Rho.
 (they are emitted as `?:`, since Rho's own operators evaluate both sides), void
 operands and elements are rejected, `%` is int only, and string errors carry a
 position.
+`SigmaNativeTests` covers calling registered C++ functions, methods and
+properties from Sigma, and `SigmaHostTests` covers `SigmaHost`: binding,
+factories, `Eval`, `Call`, `Callback` and compile errors.
 `SigmaRangeTests` adds 50 more: templates as higher-order helpers (map,
 filter, fold), variadic folds, list and map element assignment, nested
 control flow, recursion (Ackermann, fast power, Fibonacci), operator edge

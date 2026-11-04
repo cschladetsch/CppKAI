@@ -196,6 +196,7 @@ class SigmaChecker {
     SigmaTypePtr TemplateCall(const NodePtr &node, const std::string &name, const SigmaTypePtr &sig);
     void TailCall(const NodePtr &node, const SigmaTypePtr &type);
     const SigmaAstNode *TailCallIn(const NodePtr &body);
+    SigmaTypePtr NativeName(const std::string &name);
     SigmaTypePtr MethodCall(const NodePtr &call, const NodePtr &member, const NodePtr &args);
     SigmaTypePtr Arguments(const NodePtr &at, const std::string &what, const std::vector<SigmaTypePtr> &params,
                            const NodePtr &args);
