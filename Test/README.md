@@ -21,7 +21,7 @@ flowchart TB
 | `TestCore` | [Source](Source/README.md) | Registry, types, reflection, GC, BinaryStream, containers, LLM utilities |
 | `TestPi` | [Language/TestPi](Language/TestPi/README.md) | Pi: stack, control flow, continuations, Suspend/Resume/Replace |
 | `TestRho` | [Language/TestRho](Language/TestRho/README.md) | Rho: expressions, control flow, functions, closures, translation to Pi |
-| `TestSigma` | `Language/TestSigma` | Sigma: type checking, generated Rho, example programs, `&` and `!` |
+| `TestSigma` | `Language/TestSigma` | Sigma: type checking, templates and variadics, generated Rho, example programs, `&` and `!` |
 | `TestPiNet` | `Language/TestPiNet` | PiNet: which continuations may be sent |
 | `TestTau` | [Language/TestTau](Language/TestTau/README.md) | Tau parsing and Agent/Proxy generation (needs networking) |
 | `TestConsole` | [Console](Console/README.md) | Console commands, history, languages, networking |

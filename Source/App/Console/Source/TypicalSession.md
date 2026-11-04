@@ -2,7 +2,7 @@
 
 ```console
 $ ./KAI/Bin/Console
-KAI Console v1.0.0 - Interactive REPL for Pi, Rho, and Tau languages
+KAI Console - Interactive REPL for Pi, Rho, and Sigma languages
 Type 'help' for assistance
 
 Pi λ 42

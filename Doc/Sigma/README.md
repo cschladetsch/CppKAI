@@ -556,6 +556,13 @@ flowchart BT
 - **`!` only as the last statement of a function body.** In Rho, a replace
   (`f(x)!`) inside an `if` or a loop corrupts the data stack or hangs, so
   Sigma rejects it there. See [Continuation operators](#continuation-operators).
+- **No escape sequences in strings.** Rho keeps a backslash and the character
+  after it as two characters, so `"a\nb"` has size 4, not 3, and contains no
+  newline.
+- **Double quotes inside a single-quoted string.** `'say "hi"'` is emitted as
+  `"say \"hi\""`, and Rho keeps both backslashes, so the string is 10
+  characters long instead of 8. Write such text with a double-quoted string
+  that has no inner double quote, or build it from pieces.
 - **Maps in the Console app.** `Console file.sigma` stops with `Unknown
   Class ... type_number_=30` (Map) on a program that uses a `Map`, such as
   `Scripts/Inventory.sigma`. The same program type-checks and runs in

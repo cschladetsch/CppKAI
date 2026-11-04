@@ -13,10 +13,11 @@
 3. **Incremental Tri-Color Garbage Collection**
    * Memory management in long-running distributed or script-driven environments is notoriously tricky. KAI incorporates a smooth, incremental tri-color garbage collector designed to prevent latency spikes, making it well-suited for interactive or real-time domains (like game engines or low-latency coordination layers).
 
-4. **Multi-Language Paradigm (Pi, Rho, and Tau)**
+4. **Multi-Language Paradigm (Pi, Rho, Sigma, and Tau)**
    * KAI isn’t tied to a single syntax paradigm. It incorporates multiple language frontends:
      * **Pi**: A stack-based, concatenative RPN language (inspired by Forth).
      * **Rho**: An intuitive infix-notation scripting language.
+     * **Sigma**: Rho's syntax plus static types; programs are type-checked, then compiled to Rho.
      * **Tau**: An Interface Definition Language (IDL) used to generate cross-boundary proxy/agent pairs.
 
 ## Engineering Assessment

@@ -41,7 +41,7 @@ graph TB
         
         subgraph "Test Categories"
             CORE_TESTS[Core Tests<br/>Unit tests for core systems]
-            LANG_TESTS[Language Tests<br/>Pi, Rho, Tau validation]
+            LANG_TESTS[Language Tests<br/>Pi, Rho, Sigma, PiNet, Tau validation]
             NET_TESTS[Network Tests<br/>Distributed computing]
             CONSOLE_TESTS[Console Tests<br/>Interactive features]
         end

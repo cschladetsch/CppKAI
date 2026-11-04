@@ -2,7 +2,7 @@
 
 ## Project Overview
 KAI is a C++ project implementing a multi-language runtime system with networking capabilities. It includes:
-- Language interpreters (Pi, Rho, Sigma, Tau, Lisp, Hlsl)
+- Languages: Pi, Rho, Sigma and the Tau IDL (Lisp and Hlsl exist as unbuilt scaffolds)
 - Core object system with garbage collection
 - Network layer with peer-to-peer capabilities
 - Console and GUI applications
@@ -51,7 +51,7 @@ KAI is a C++ project implementing a multi-language runtime system with networkin
 ## Key Components
 - **Core**: Object system, registry, memory management
 - **Executor**: Stack-based execution engine  
-- **Languages**: Pi (stack-based), Rho (functional), Sigma (Rho plus static types, compiles to Rho; see Doc/Sigma/README.md), Tau (C++-like)
+- **Languages**: Pi (stack-based), Rho (Python-like infix, compiles to Pi), Sigma (Rho plus static types, compiles to Rho; see Doc/Sigma/README.md), Tau (IDL that generates network Agents and Proxies)
 - **Network**: Peer-to-peer networking with ENet
 - **Console**: Interactive REPL with language switching
 
