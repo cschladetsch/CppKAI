@@ -1,6 +1,6 @@
 [submodule "Ext/imgui"]
 	path = Ext/imgui
-	url = git@github.com:cschladetsch/imgui.git
+	url = https://github.com/cschladetsch/imgui.git
 [submodule "Ext/cpp-httplib"]
 	path = Ext/cpp-httplib
 	url = https://github.com/yhirose/cpp-httplib.git
@@ -12,10 +12,10 @@
 	url = https://github.com/cschladetsch/CppLmmModelStore
 [submodule "Ext/CppKaiCore"]
 	path = Ext/CppKaiCore
-	url = git@github.com:cschladetsch/CppKaiCore.git
+	url = https://github.com/cschladetsch/CppKaiCore.git
 [submodule "Ext/CppKaiLanguage"]
 	path = Ext/CppKaiLanguage
-	url = git@github.com:cschladetsch/CppKaiLanguage.git
+	url = https://github.com/cschladetsch/CppKaiLanguage.git
 [submodule "Demo/ContinuationMobilityDemo/ThirdParty/playwright"]
 	path = Demo/ContinuationMobilityDemo/ThirdParty/playwright
 	url = https://github.com/microsoft/playwright.git

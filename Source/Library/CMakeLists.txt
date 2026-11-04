@@ -6,7 +6,9 @@ cmake_minimum_required(VERSION 3.28...3.30)
 add_subdirectory(${KAI_HOME}/Ext/CppKaiCore ${CMAKE_BINARY_DIR}/CppKaiCore)
 
 # ImGui core lib (desktop only; the GL/GLFW frontend lives in App/Window).
-if(NOT KAI_ANDROID)
+# Only the ImGui app links it, so skip it unless that app is being built; a
+# clone without the Ext/imgui submodule then still configures.
+if(KAI_BUILD_IMGUI AND NOT KAI_ANDROID)
     add_subdirectory(${LIBRARY_HOME}/ImGui)
 endif()
 
