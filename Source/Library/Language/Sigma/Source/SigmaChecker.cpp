@@ -887,6 +887,11 @@ SigmaTypePtr SigmaChecker::Name(const NodePtr &node) {
 SigmaTypePtr SigmaChecker::BinaryResult(const NodePtr &at, Tok::Enum op, const SigmaTypePtr &a,
                                         const SigmaTypePtr &b) {
     if (IsBad(a) || IsBad(b)) return Bad();
+    if (a->Is(Kind::Void) || b->Is(Kind::Void)) {
+        Report(at, std::format("operator '{}' cannot be applied to {} and {}", at->GetToken().Text(),
+                               a->ToString(), b->ToString()));
+        return Bad();
+    }
     const bool any = IsAny(a) || IsAny(b);
     auto numeric = [&] { return a->Is(Kind::Int) && b->Is(Kind::Int) ? T(Kind::Int) : T(Kind::Float); };
     auto reject = [&](SigmaTypePtr r) {
@@ -902,10 +907,12 @@ SigmaTypePtr SigmaChecker::BinaryResult(const NodePtr &at, Tok::Enum op, const S
             if (a->Is(Kind::Str) && b->Is(Kind::Str)) return T(Kind::Str);
             if (a->Is(Kind::List) && SigmaType::Same(a, b)) return a;
             return reject(T(Kind::Any));
+        case Tok::Mod:
+            if (a->Is(Kind::Int) && b->Is(Kind::Int)) return T(Kind::Int);
+            return reject(T(Kind::Any));
         case Tok::Minus:
         case Tok::Mul:
         case Tok::Divide:
-        case Tok::Mod:
             if (a->IsNumeric() && b->IsNumeric()) return numeric();
             return reject(T(Kind::Any));
         case Tok::Less:
@@ -958,6 +965,10 @@ SigmaTypePtr SigmaChecker::Unify(const std::vector<NodePtr> &nodes, const std::v
     SigmaTypePtr common;
     for (auto const &t : types) {
         if (IsBad(t)) return Bad();
+        if (t->Is(Kind::Void)) {
+            Report(at, std::format("{} cannot be void", what));
+            return Bad();
+        }
         if (!common) {
             common = t;
         } else if (common->IsNumeric() && t->IsNumeric()) {
@@ -1313,6 +1324,7 @@ SigmaTypePtr SigmaChecker::PlainCall(const NodePtr &node) {
 
     // print(...) is built into Rho and accepts anything.
     if (IsName(callee) && callee->GetToken().Text() == "print" && !Lookup("print")) {
+        if (args->GetChildren().empty()) Report(node, "'print' expects at least 1 argument, got 0");
         for (auto const &a : args->GetChildren()) {
             if (Expr(a)->Is(Kind::Void)) Report(a, "cannot print a void value");
         }

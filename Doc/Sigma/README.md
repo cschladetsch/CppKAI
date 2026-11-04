@@ -576,7 +576,7 @@ flowchart BT
 | Headers | `Include/KAI/Language/Sigma` |
 | Sources | `Source/Library/Language/Sigma/Source` (the `SigmaLang` library) |
 | Design notes | [`Doc/Sigma.md`](../Sigma.md): continuation operators |
-| Tests | `Test/Language/TestSigma` (`TestSigma`: 465 tests) |
+| Tests | `Test/Language/TestSigma` (`TestSigma`: 476 tests) |
 | Example programs | `Test/Language/TestSigma/Scripts/*.sigma` (115 programs) |
 
 Build and run the tests from the CppKAI root:
@@ -608,6 +608,10 @@ reference semantics, the `SigmaTranslator` API (determinism, sessions, error
 format), and the exact examples printed in this document.
 `SigmaStringTests` covers string literals and how Sigma picks the quote
 character in the generated Rho.
+`SigmaSemanticsTests` pins operator semantics: `&&` and `||` short-circuit
+(they are emitted as `?:`, since Rho's own operators evaluate both sides), void
+operands and elements are rejected, `%` is int only, and string errors carry a
+position.
 `SigmaRangeTests` adds 50 more: templates as higher-order helpers (map,
 filter, fold), variadic folds, list and map element assignment, nested
 control flow, recursion (Ackermann, fast power, Fibonacci), operator edge

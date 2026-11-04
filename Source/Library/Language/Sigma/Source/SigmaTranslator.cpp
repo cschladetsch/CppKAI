@@ -266,6 +266,11 @@ class RhoEmitter {
                 // Rho reads '&' after a call's ')' as the suspend operator
                 // whatever the spacing, so `f(x) & m` needs the call wrapped.
                 if (node->GetToken().type == Tok::BitAnd && ch[0]->GetType() == Ast::Call) left = "(" + left + ")";
+                // Rho's && and || evaluate both sides; its ?: does not.
+                if (node->GetToken().type == Tok::And)
+                    return "(" + left + " ? " + Expr(ch[1]) + " : false)";
+                if (node->GetToken().type == Tok::Or)
+                    return "(" + left + " ? true : " + Expr(ch[1]) + ")";
                 return "(" + left + " " + node->Text() + " " + Expr(ch[1]) + ")";
             }
             case Ast::Unary: return "(" + node->Text() + Expr(ch[0]) + ")";

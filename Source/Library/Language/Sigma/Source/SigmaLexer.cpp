@@ -176,7 +176,18 @@ bool SigmaLexer::NextToken() {
             Next();
             return true;
 
-        case '"': return LexString();
+        case '"': {
+            // The base lexer fails without a position on a missing closing quote.
+            const std::string &text = Line();
+            bool escaped = false, closed = false;
+            for (size_t i = static_cast<size_t>(offset_) + 1; i < text.size() && text[i] != '\n'; ++i) {
+                if (escaped) escaped = false;
+                else if (text[i] == '\\') escaped = true;
+                else if (text[i] == '"') { closed = true; break; }
+            }
+            if (!closed) return Error("unterminated string");
+            return LexString();
+        }
         case '\'': return LexSingleQuoted();
 
         case '(': ++depth_; return Add(Enum::OpenParen);
