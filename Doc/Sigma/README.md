@@ -569,7 +569,7 @@ flowchart BT
 | Headers | `Include/KAI/Language/Sigma` |
 | Sources | `Source/Library/Language/Sigma/Source` (the `SigmaLang` library) |
 | Design notes | [`Doc/Sigma.md`](../Sigma.md): continuation operators |
-| Tests | `Test/Language/TestSigma` (`TestSigma`: 360 tests) |
+| Tests | `Test/Language/TestSigma` (`TestSigma`: 410 tests) |
 | Example programs | `Test/Language/TestSigma/Scripts/*.sigma` (115 programs) |
 
 Build and run the tests from the CppKAI root:
@@ -594,3 +594,8 @@ in variadic templates is not taken for it. `SigmaTemplateTests` covers
 templates: inference, instantiation, and their errors. `SigmaVariadicTests`
 covers packs: folds, expansion, compile-time branches, the generated Rho, and
 their errors.
+`SigmaGapTests` adds 50 more for what the other suites leave open: statement
+syntax (semicolons, comments, tabs, CRLF, `assert`), shifts and the bitwise
+precedence ladder, widening inside list and map literals, scope and
+reference semantics, the `SigmaTranslator` API (determinism, sessions, error
+format), and the exact examples printed in this document.
